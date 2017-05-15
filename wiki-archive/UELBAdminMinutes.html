@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : UELBAdminMinutes</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="UELBAdminMinutes-LoadbalancerAdministrationUserExperience"></a>Loadbalancer Administration User Experience</h2> <p><b>Attendees:</b><br> Ken Paulsen, Vince Kraemer, Siraj Ghaffar, Satish Viswanatham, Jagadesh Babu Munta, Anissa Lam, Varun Rupela, Shing Wai Chan, Mike Wright, Jane Young</p> <p><b>Summary:</b></p> 
+     <ul> 
+      <li><b>Pointer to loadbalancer documentation</b> (see slide 4) 
+       <ul> 
+        <li>Hardware Loadbalancers 
+         <ul> 
+          <li>F5 - <a href="http://blogs.oracle.com/roller/page/sv96363?entry=setting_up_big_ip_v4">http://blogs.oracle.com/roller/page/sv96363?entry=setting_up_big_ip_v4</a></li> 
+          <li>Sun Secure Application Switch - <a href="http://developers.sun.com/prodtech/appserver/reference/techart/load-balancing.html">http://developers.sun.com/prodtech/appserver/reference/techart/load-balancing.html</a></li> 
+         </ul> </li> 
+        <li>Software Loadbalancers 
+         <ul> 
+          <li>LB Plugin - <a href="http://docs.sun.com/app/docs/doc/819-2555/6n4r9qo8g?a=view">http://docs.sun.com/app/docs/doc/819-2555/6n4r9qo8g?a=view</a></li> 
+          <li>LB Plugin Installation - <a href="http://blogs.oracle.com/roller/page/sv96363?entry=installing_load_balancer_using_aps">http://blogs.oracle.com/roller/page/sv96363?entry=installing_load_balancer_using_aps</a></li> 
+          <li>Apache (mod_jk) - <a href="http://weblogs.java.net/blog/jfarcand/archive/2006/03/running_glassfi_1.html">http://weblogs.java.net/blog/jfarcand/archive/2006/03/running_glassfi_1.html</a></li> 
+         </ul> </li> 
+       </ul> </li> 
+      <li>SJS AS 8.1 EE Quick Start Guide - <a href="http://docs.sun.com/app/docs/doc/819-2553">http://docs.sun.com/app/docs/doc/819-2553</a></li> 
+     </ul> 
+     <ul> 
+      <li><b>LB Plugin Installation</b> 
+       <ul> 
+        <li>Absence of installer in GlassFish is a pain for LB plugin installation since it involved many steps. Recommend to use the Java Application Platform Suite installer in the mean time. See Satish's <a href="http://blogs.oracle.com/roller/page/sv96363?entry=installing_load_balancer_using_aps">blog</a>.</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li><b>Generating loadbalancer.xml</b> 
+       <ul> 
+        <li>Use configure-http-lb-config command to generate the loadbalancer.xml. This xml is used by the LB plugin. 
+         <ul> 
+          <li>Example - asadmin configure-http-lb-config -target cluster1-lb-config "C:\loadbalancer.xml"</li> 
+          <li>This command is not working in M1. Refer to bug <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6186848">6186848</a>.</li> 
+          <li>We should allow user to download the loadbalancer.xml in the client host similar to how we treat client jar in deployment.</li> 
+         </ul> </li> 
+        <li>User may also use Admin GUi to generate the loadbalancer.xml (see slide 10) 
+         <ul> 
+          <li>User will not be able to enable applications now. Refer to bug <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6347791">6347791</a>.</li> 
+          <li>Admin GUI team may not be able to fix this bug by M2. We should clarify this in our milestone definition.</li> 
+          <li>We should allow user to name and save this file locally. Current experience is not very friendly.</li> 
+         </ul> </li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li><b>Auto Apply of Changes</b> 
+       <ul> 
+        <li>SSL setup is not working. We need to fix this. Harsha looked at using Web Server 7. The setup is simpler.</li> 
+        <li>We should disable "Apply Changes Now" button when DAS can not communicate with LB.</li> 
+        <li>Auto Apply should not be enabled by default. In the DTD, it is false.</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li><b>Documentation</b> 
+       <ul> 
+        <li>GlassFish documentation does not talk about clustering. Need to update <a href="https://glassfish.java.net/downloads/quickstart/index.html">Quick Start Guide</a> and <a href="https://glassfish.java.net/javaee5/docs/DocsIndex.html">documentation page</a>.</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li><b>Misc</b> 
+       <ul> 
+        <li>Slide 7 refers to HADB which is available in <a href="http://www.sun.com/software/solaris/get.jsp">Java ES Bundle</a> only. GlassFish has support for in-memory replication. Larry White will talk about this feature on Oct 18, 2006.</li> 
+        <li>ANT target "setup-one-machine-cluster" sometimes hangs. Recommend using asadmin command to create the node-agent. Cluster can be created easily in GUI. For example, 
+         <ul> 
+          <li>asadmin start-domain --user admin --passwordfile &lt;path-to-password-file&gt; domain1</li> 
+          <li>asadmin create-node-agent --user admin --passwordfile &lt;path-to-password-file&gt; --port 4848 na1 
+           <ul> 
+            <li>Default master password is "changeit".</li> 
+           </ul> </li> 
+          <li>asadmin start-node-agent --user admin --passwordfile &lt;path-to-password-file&gt; --startinstances=false na1</li> 
+          <li>Log on to Administration GUI to create cluster, etc. Use <a href="https://localhost:4848">https://localhost:4848</a>. Default user name and password is "admin"/"adminadmin".</li> 
+         </ul> </li> 
+        <li><a href="https://glassfish.java.net/javaee5/build/GlassFish_LB_Cluster.html">Setup instructions</a> need to be updated. Satish has sent the information to Dinesh.</li> 
+       </ul> </li> 
+     </ul> <p><b>Action Items:</b></p> 
+     <ul> 
+      <li>Need EE Quick Start Guide in GlassFish - Ann Hillesland, Carla Mott</li> 
+      <li>Need clustering documentation in GlassFish - Hanan Lang, Carla Mott</li> 
+      <li>Module page for Loadbalancer Administration is missing in GlassFish - Satish</li> 
+      <li>Update current setup instructions - Dinesh, Satish</li> 
+      <li>Blocking bugs for this feature. 
+       <ul> 
+        <li><a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6186848">Bug 6186848</a> - configure-http-lb-config is not working - Satish</li> 
+        <li><a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6347791">Bug# 6347791</a> - lb-enable/disable of application is missing in gui. - Anissa</li> 
+        <li><a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6461739">Bug# 6461739</a> - Stickiness is not maintained in the second cluster. - Pankaj</li> 
+        <li><a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6340518">Bug# 6340518</a> - SSL setup - loadbalaner plugin installation with Sun's Web Server. - Satish</li> 
+       </ul> </li> 
+      <li>Fix "setup-one-machine-cluster" hang issues. - Dinesh</li> 
+      <li>File an RFE for installer in GlassFish - Varun 
+       <ul> 
+        <li>Refer to issue number <a href="https://github.com/javaee/glassfish/issues/1040">1040</a></li> 
+       </ul> </li> 
+      <li>Allow user to save loadbalancer.xml into the local machine from browser - Anissa</li> 
+      <li>Allow user to download the loadbalancer.xml into the local machine in configure-http-lb-config command - Satish</li> 
+      <li>Clarify M2 definition if bug 6347791 can not be fixed - Anissa</li> 
+      <li>Disable "Auto Apply Change" when DAS can not contact LB - Anissa</li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 08, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

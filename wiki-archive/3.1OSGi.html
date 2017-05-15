@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : 3.1OSGi</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="3.1OSGi-GlassFishServerOpenSourceEdition3.1OSGi"></a>GlassFish Server Open Source Edition 3.1 - OSGi</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#3.1OSGi-GlassFishServerOpenSourceEdition3.1OSGi">GlassFish Server Open Source Edition 3.1 - OSGi</a></li> 
+       <ul> 
+        <li><a href="#3.1OSGi-Introduction">Introduction</a></li> 
+        <li><a href="#3.1OSGi-Scope">Scope</a></li> 
+        <li><a href="#3.1OSGi-FeatureOverview">Feature Overview</a></li> 
+        <ul> 
+         <li><a href="#3.1OSGi-UpgradingcoreOSGiruntime%28OSGi01%29">Upgrading core OSGi runtime (OSGi-01)</a></li> 
+         <li><a href="#3.1OSGi-EmbeddableGlassFish%28OSGi02%29">Embeddable GlassFish (OSGi-02)</a></li> 
+         <li><a href="#3.1OSGi-ImplementationofEnterpriseOSGiSpecs%28OSGi03%29">Implementation of Enterprise OSGi Specs (OSGi-03)</a></li> 
+         <li><a href="#3.1OSGi-OSGi%26JavaEEintegration%28Experimental%29%28OSGi04%29">OSGi &amp; Java EE integration (Experimental) (OSGi-04)</a></li> 
+         <li><a href="#3.1OSGi-GenericOSGiFeatures%28OSGi05%29">Generic OSGi Features (OSGi-05)</a></li> 
+        </ul> 
+        <li><a href="#3.1OSGi-DesignDocument">Design Document</a></li> 
+        <li><a href="#3.1OSGi-MilestoneSchedule">Milestone Schedule</a></li> 
+        <li><a href="#3.1OSGi-TaskList">Task List</a></li> 
+        <li><a href="#3.1OSGi-DevTests">Dev Tests</a></li> 
+        <li><a href="#3.1OSGi-References">References</a></li> 
+        <li><a href="#3.1OSGi-EmailAlias">Email Alias</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="3.1OSGi-Introduction"></a>Introduction</h2> <p>The high-level goals for OSGi for 3.1 are to improve upon OSGi technology usage and to integrate the latest Felix and OSGi technology releases.</p> <h4><a name="3.1OSGi-Scope"></a>Scope</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Feature ID </th> 
+         <th class="confluenceTh"> Priority </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> Eng Response </th> 
+         <th class="confluenceTh"> Owner(s) </th> 
+         <th class="confluenceTh"> Estimate (Man Days) </th> 
+         <th class="confluenceTh"> Source of Requirement </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> OSGi-01 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Upgrading core OSGi runtime </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Richard </td> 
+         <td class="confluenceTd"> 25 </td> 
+         <td class="confluenceTd"> Performance, specification compliance </td> 
+         <td class="confluenceTd"> Complete </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> OSGi-02 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Embeddable GlassFish </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Sahoo, Richard </td> 
+         <td class="confluenceTd"> 30 </td> 
+         <td class="confluenceTd"> Expand use case, market demand </td> 
+         <td class="confluenceTd"> Complete </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> OSGi-03 </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> Implementation of various Enterprise OSGi Specs </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Sahoo, Others </td> 
+         <td class="confluenceTd"> ? </td> 
+         <td class="confluenceTd"> Specification compliance </td> 
+         <td class="confluenceTd"> Mostly complete </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> OSGi-04 </td> 
+         <td class="confluenceTd"> P4 </td> 
+         <td class="confluenceTd"> OSGi &amp; Java EE integration (Experimental) </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Sahoo, Others </td> 
+         <td class="confluenceTd"> ? </td> 
+         <td class="confluenceTd"> New opportunity </td> 
+         <td class="confluenceTd"> Mostly complete </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> OSGi-05 </td> 
+         <td class="confluenceTd"> P4 </td> 
+         <td class="confluenceTd"> Generic OSGi Features </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Richard, Sahoo </td> 
+         <td class="confluenceTd"> ? </td> 
+         <td class="confluenceTd"> Expand use cases, productivity </td> 
+         <td class="confluenceTd"> Started </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.1OSGi-FeatureOverview"></a>Feature Overview</h2> <h4><a name="3.1OSGi-UpgradingcoreOSGiruntime%28OSGi01%29"></a>Upgrading core OSGi runtime (OSGi-01)</h3> <p>GlassFish will continue to use and distribute Felix as the default OSGi runtime. Currently, GlassFish uses Felix 2.0.2 and in this release we shall upgrade to Felix 3.0.x. Felix 3.0 (yet to be released) has a new resolver which is not only faster, but also has many important bug fixes.</p> <h4><a name="3.1OSGi-EmbeddableGlassFish%28OSGi02%29"></a>Embeddable GlassFish (OSGi-02)</h3> <p>We will allow GlassFish to be embedded in existing OSGi as well as non-OSGi runtime and yet function like a regular GlassFish. See <a href="http://www.java.net/blog/ss141213/archive/2010/02/14/how-embed-glassfish-existing-osgi-runtime">this</a> for example.</p> <h4><a name="3.1OSGi-ImplementationofEnterpriseOSGiSpecs%28OSGi03%29"></a>Implementation of Enterprise OSGi Specs (OSGi-03)</h3> <p>In order to support hybrid (OSGi + Java EE) application development, we shall try to implement as many relevant enterprise OSGi specs as possible, but because of resource constraints and other technical issues we may not be able to meet our end goal. At the very least, we shall try to cover the following specs and be compliant with the specs:</p> <p>OSGi/HTTP Service</p> <p>RFC #66 (OSGi/Web Container)</p> <p>RFC #98 (OSGi/JTA)</p> <p>RFC #122 (OSGi/JDBC)</p> <p>RFC #142 (OSGi/JNDI) : Due to lack of resource, this won't be done as part of 3.1. We will try to provide alternative means to lookup OSGi services from EE components.</p> <p>RFC #143 (OSGi/JPA) : Since GlassFish uses EclipseLink as the persistence provider, the implementation will be part of eclipselink.</p> <h4><a name="3.1OSGi-OSGi%26JavaEEintegration%28Experimental%29%28OSGi04%29"></a>OSGi &amp; Java EE integration (Experimental) (OSGi-04)</h3> <p>These are to do with features related to hybrid applications that are not currently covered by OSGi enterprise specs, but we shall implement them as we think they are important use cases:</p> <p>OSGi/EJB Container: Automatic enlistment of EJBs as OSGi services and allow EJBs to run with OSGi context</p> <p>JPA in hybrid applications: This is not currently covered in RFC #143</p> <p>JAX-RS and OSGi: Better integration of Jersey bundles in glassfish, explore use of OSGi/HTTP Service by Jersey, etc.</p> <p>CDI and OSGi: To be explored</p> <p>Resolve META-INF/services issue in OSGi.</p> <h4><a name="3.1OSGi-GenericOSGiFeatures%28OSGi05%29"></a>Generic OSGi Features (OSGi-05)</h3> <p>This includes features that are not just specific to enterprise OSGi use case, but they will be very much used by enterprise OSGi users. e.g.,</p> <p>a) OBR integration: We plan to have OBR integration in place so that GlassFish deployment process can resolve dependencies of bundles via OBR. OBR integration will also help us having a better provisioning story for embedded glassfish use case, for we can then provide a la carte access to GF modules via OBR.</p> <p>b) Adopt Apache Gogo shell: This provides a scripting environment for administering OSGi runtime</p> <p>c) Better integration of OSGi web console and admin console</p> <h4><a name="3.1OSGi-DesignDocument"></a>Design Document</h2> <p><a href="http://wiki.glassfish.java.net/attach/V3FunctionalSpecs/GFv3.1-OSGi-onepager-v0.2.txt">one-pager</a></p> <h4><a name="3.1OSGi-MilestoneSchedule"></a>Milestone Schedule</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 01 </td> 
+         <td class="confluenceTd"> M3 </td> 
+         <td class="confluenceTd"> OSGi-01 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Started. By M2, we would hope to upgrade to Felix 3.0 and buy M3, we would have done final Felix integration for this release. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 02 </td> 
+         <td class="confluenceTd"> M3 </td> 
+         <td class="confluenceTd"> OSGi-02 </td> 
+         <td class="confluenceTd"> Complete the feature </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Mostly complete. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 03 </td> 
+         <td class="confluenceTd"> M5 </td> 
+         <td class="confluenceTd"> OSGi-03 </td> 
+         <td class="confluenceTd"> Complete the feature, run compliance test </td> 
+         <td class="confluenceTd"> Docs only </td> 
+         <td class="confluenceTd"> Some features are already available, but compliance test execution is pending. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 04 </td> 
+         <td class="confluenceTd"> M5 </td> 
+         <td class="confluenceTd"> OSGi-04 </td> 
+         <td class="confluenceTd"> Complete the feature </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Mostly complete. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 05 </td> 
+         <td class="confluenceTd"> M4 </td> 
+         <td class="confluenceTd"> OSGi-05 </td> 
+         <td class="confluenceTd"> Complete the feature </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Not started </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.1OSGi-TaskList"></a>Task List</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task </th> 
+         <th class="confluenceTh"> Target Milestone </th> 
+         <th class="confluenceTh"> Start </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Owner(s) </th> 
+         <th class="confluenceTh"> Feature ID </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Integrate Felix 3.0.x </td> 
+         <td class="confluenceTd"> M2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Richard </td> 
+         <td class="confluenceTd"> OSGi-01-01 </td> 
+         <td class="confluenceTd"> Complete - Integrated 3.0.6 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Improve module metadata </td> 
+         <td class="confluenceTd"> M2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Chriss Casso (He will coordinate with various module owners) </td> 
+         <td class="confluenceTd"> OSGi-02-01 </td> 
+         <td class="confluenceTd"> Started </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Support Embedded GlassFish in OSGi </td> 
+         <td class="confluenceTd"> M3 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Sahoo, Richard </td> 
+         <td class="confluenceTd"> OSGi-02-02 </td> 
+         <td class="confluenceTd"> Complete </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Verify OSGi HTTP Service implementation specification compliance </td> 
+         <td class="confluenceTd"> M4 </td> 
+         <td class="confluenceTd"> M2 </td> 
+         <td class="confluenceTd"> M4 </td> 
+         <td class="confluenceTd"> Sahoo, Mohit </td> 
+         <td class="confluenceTd"> OSGi-03-01 </td> 
+         <td class="confluenceTd"> Complete, Success ratio:29/29 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> RFC #66 CT </td> 
+         <td class="confluenceTd"> M4 </td> 
+         <td class="confluenceTd"> M2 </td> 
+         <td class="confluenceTd"> M4 </td> 
+         <td class="confluenceTd"> Mohit, Sahoo </td> 
+         <td class="confluenceTd"> OSGi-03-02 </td> 
+         <td class="confluenceTd"> Started - Need to investigate test failures </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> RFC #122 CT </td> 
+         <td class="confluenceTd"> M4 </td> 
+         <td class="confluenceTd"> M3 </td> 
+         <td class="confluenceTd"> M4 </td> 
+         <td class="confluenceTd"> Mohit, Sahoo </td> 
+         <td class="confluenceTd"> OSGi-03-03 </td> 
+         <td class="confluenceTd"> Started - success ratio: 5/5 (with embedded derby driver), 4/5 (with any other driver because of <a href="https://www.osgi.org/members/bugzilla/show_bug.cgi-1841">CT issue 1841 </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> RFC #98 CT </td> 
+         <td class="confluenceTd"> M4 </td> 
+         <td class="confluenceTd"> M2 </td> 
+         <td class="confluenceTd"> M4 </td> 
+         <td class="confluenceTd"> Mohit, Sahoo </td> 
+         <td class="confluenceTd"> OSGi-03-04 </td> 
+         <td class="confluenceTd"> Started - success ratio: 228/263 - Analysing test failures, issues - <a href="https://github.com/javaee/glassfish/issues/13321">13321 </a>,<a href="https://github.com/javaee/glassfish/issues/13325">13325 </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> RFC #142 </td> 
+         <td class="confluenceTd"> M5 </td> 
+         <td class="confluenceTd"> M3 </td> 
+         <td class="confluenceTd"> M5 </td> 
+         <td class="confluenceTd"> Sahoo </td> 
+         <td class="confluenceTd"> OSGi-03-05 </td> 
+         <td class="confluenceTd"> Dropped - lack of resource </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> RFC #143 </td> 
+         <td class="confluenceTd"> M6 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Sahoo </td> 
+         <td class="confluenceTd"> OSGi-03-06 </td> 
+         <td class="confluenceTd"> Provide sample and document steps for using RFC #143 in GlassFish. Sahoo working with EclipseLink team. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Allow EJBs to run within OSGi context </td> 
+         <td class="confluenceTd"> M5 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Sahoo </td> 
+         <td class="confluenceTd"> OSGi-04-01 </td> 
+         <td class="confluenceTd"> Complete </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JPA in hybrid applications </td> 
+         <td class="confluenceTd"> M3 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Sahoo </td> 
+         <td class="confluenceTd"> OSGi-04-02 </td> 
+         <td class="confluenceTd"> Complete </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Support multiple JPA providers for OSGi enterprise applications </td> 
+         <td class="confluenceTd"> M5 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Sahoo </td> 
+         <td class="confluenceTd"> OSGi-04-03 </td> 
+         <td class="confluenceTd"> Need to support Hibernate and Open/JPA - Dropped at this point of time </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Jesey/OSGi </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Jersey Team </td> 
+         <td class="confluenceTd"> OSGi-04-04 </td> 
+         <td class="confluenceTd"> Complete - <a href="https://jersey.java.net/nonav/documentation/1.4-SNAPSHOT/user-guide.html#osgi">See Jersey user guide </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Explore use of CDI in hybrid applications </td> 
+         <td class="confluenceTd"> M5 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Siva </td> 
+         <td class="confluenceTd"> OSGi-04-05 </td> 
+         <td class="confluenceTd"> Complete, See T-13 in the <a href="3.1CDI.html#3.1CDI-section3.1CDITaskList">CDI tasks page </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Provide an API to handle META-INF/services in OSGi context </td> 
+         <td class="confluenceTd"> M2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Sahoo, Richard </td> 
+         <td class="confluenceTd"> OSGi-04-06 </td> 
+         <td class="confluenceTd"> Complete </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Stop relying on Thread context class loader for META-INF/services </td> 
+         <td class="confluenceTd"> M3 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Jersey, Metro Team </td> 
+         <td class="confluenceTd"> OSGi-04-07 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA resource such as jdbc-resource, jms-resource (connection-factory &amp; destination) as OSGi service </td> 
+         <td class="confluenceTd"> M2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> JCA Team </td> 
+         <td class="confluenceTd"> OSGi-04-08 </td> 
+         <td class="confluenceTd"> Complete </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Make OBR runtime part of GlassFish </td> 
+         <td class="confluenceTd"> M2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Sahoo </td> 
+         <td class="confluenceTd"> OSGi-05-01 </td> 
+         <td class="confluenceTd"> Complete </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Integration of OBR with deployment backend </td> 
+         <td class="confluenceTd"> M5 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Richard </td> 
+         <td class="confluenceTd"> OSGi-05-02 </td> 
+         <td class="confluenceTd"> Dropped - lack of resource - User advised to use OSGi console to deploy via OBR </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Provide a la carte access to GF modules via OBR </td> 
+         <td class="confluenceTd"> M4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Richard </td> 
+         <td class="confluenceTd"> OSGi-05-03 </td> 
+         <td class="confluenceTd"> Dropped - lack of resource </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Adopt Apache Felix Gogo shell </td> 
+         <td class="confluenceTd"> M4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Richard </td> 
+         <td class="confluenceTd"> OSGi-05-04 </td> 
+         <td class="confluenceTd"> Complete (Oct. 6, 2010) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Better integration with OSGi Web Console and GF Admin Console </td> 
+         <td class="confluenceTd"> M4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Mohit </td> 
+         <td class="confluenceTd"> OSGi-05-05 </td> 
+         <td class="confluenceTd"> Complete. ﻿<a href="http://wikis.sun.com/display/GFOSGIConsole/Using+GlassFish+OSGi+Console+in+V3">(usage)</a> <br class="atl-forced-newline"> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.1OSGi-DevTests"></a>Dev Tests</h2> 
+     <ul> 
+      <li>Coming soon</li> 
+     </ul> <h4><a name="3.1OSGi-References"></a>References</h2> 
+     <ul> 
+      <li><a href="OsgiDashboard.html" title="OsgiDashboard">GlassFish/OSGi dashboard </a></li> 
+      <li><a href="OSGi.html" title="OSGi">OSGi in GlassFish </a></li> 
+     </ul> <h4><a name="3.1OSGi-EmailAlias"></a>Email Alias</h2> 
+     <ul> 
+      <li>Please contact us at <a href="mailto:dev@glassfish.java.net">dev@glassfish.java.net</a></li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Feb 06, 2011 by 
+<font color="#0050B2">sahoosk</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

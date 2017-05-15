@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : 3.1SSHDemoScript</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="3.1SSHDemoScript-3.1SSHDemoScript"></a>3.1 SSH Demo Script</h1> <p>Brought to you by: Carla Mott, Rajiv Mordani, Joe Di Pol</p> 
+     <ul> 
+      <li>Demonstration of instance lifecycle management over SSH (create-instance, start-instance, start-cluster, etc).</li> 
+      <li>DAS uses SSH client to communicate to instance servers and run local commands on those servers</li> 
+      <li>MS2 contains initial integration: Unix only (Windows in MS3) and there are rough edges.</li> 
+      <li>Refining in MS3</li> 
+     </ul> <h4><a name="3.1SSHDemoScript-Setup"></a>Setup</h1> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <td class="confluenceTd"><span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20875230/21364928.png" style="border: 0px solid black"></span><br> Setup: 
+          <ol> 
+           <li>Configure ssh on all nodes to use key (certificate) authentication. From the DAS machine you must be able to: <tt>ssh hostname</tt> without being prompted for anything when you are logged in as the user that will be running the DAS. 
+            <ul> 
+             <li>Currently only key authentication using unencrypted key files is supported.</li> 
+             <li>Details on configuring SSH is comming</li> 
+            </ul> </li> 
+           <li>GlassFish MS2 installed on instance machines in a known location (/export/glassfishv3 in this demo)</li> 
+           <li>Start the DAS on the DAS machine (MacBook in this demo)</li> 
+          </ol> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.1SSHDemoScript-Demo"></a>Demo</h1> 
+     <ol> 
+      <li>asadmin create-cluster c1</li> 
+      <li>asadmin create-node-ssh --nodehost nwc.red.iplanet.com --nodehome /export/glassfishv3 n1</li> 
+      <li>asadmin create-node-ssh --nodehost sidewinder.red.iplanet.com --nodehome /export/glassfishv3 n2</li> 
+      <li>asadmin list-nodes</li> 
+      <li>asadmin create-instance --cluster c1 --node n1 i1</li> 
+      <li>asadmin create-instance --cluster c1 --node n2 i2</li> 
+      <li>asadmin list-instances</li> 
+      <li>asadmin start-instance i1</li> 
+      <li>asadmin list-instances</li> 
+      <li>asadmin stop-instance i1</li> 
+      <li>asadmin start-cluster --verbose c1</li> 
+      <li>asadmin list-instances</li> 
+      <li>Go to browser and show instances are up: 
+       <ol> 
+        <li><a href="http://nwc.red.iplanet.com:28080">http://nwc.red.iplanet.com:28080</a></li> 
+        <li><a href="http://sidewinder.red.iplanet.com:28080">http://sidewinder.red.iplanet.com:28080</a></li> 
+       </ol> </li> 
+      <li>asadmin stop-cluster c1</li> 
+      <li>asadmin list-instances</li> 
+     </ol> <h4><a name="3.1SSHDemoScript-SettingupSSHDaemononsomeplatforms"></a>Setting up SSH Daemon on some platforms</h1> <p>If you are using linux - then use the package manager on the system to install the openssh-server and openssh-client.</p> <p>For example on Ubuntu you would do the following</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">sudo apt-get install openssh-server openssh-client</pre> 
+       </div> 
+      </div>
+     </div> <p>On the mac you need to do the following </p> <p>Go to 'System Preferences'. Under 'Internet &amp; Networking' there is a 'Sharing' icon. Click on it. In the list that appears, check the 'Remote Login' option.</p> <p>For windows you will need to install cygwin ssh daemon for example. Note as of milestone 2 we have not tested with windows as yet.</p> <p>For other operating systems make sure that you have client and server installed (client only needed to verify that the ssh setup is in fact working).</p> <p>Once you have ssh installed create keys for your use. The key file is for the user under which the DAS will be running and is the key that will be used by default unless a different one is specified.<br> To generate the key again you will need to use platform specific tools. On most unix and mac you should be able to generate a key by running </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">ssh-keygen</pre> 
+       </div> 
+      </div>
+     </div> <p>Make sure that you specify no passphrase for the key to use with milestone 2.</p> <p>Once the key is generated you will have an id_rsa, id_rsa.pub or id_dsa, id_dsa.pub in the default location which for most unix systems is ~/.ssh/</p> <p>Copy the .pub key (id_rsa.pub or id_dsa.pub) to the remote system that you want to setup as an instance and put it in the authorized_keys file. This file should be in ~/.ssh/ on most unix systems. Create one if it does not exist.</p> <p>Once you have copied the key to the authorized_keys file the simple test is to use the ssh client to connect to the remote system. If everything is setup correct you should be able to connect to the system without being prompted for a password.</p> <p>For example</p> <p>Using the systems above macbook and nwc. The authorized_keys on nwc is setup with public key (id_dsa.pub) from the macbook. Doing the following logs me in to nwc from macbook without any password prompt.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">macbook% ssh nwc</pre> 
+       </div> 
+      </div>
+     </div> <p>If you are not prompted for a password, you are setup correctly. If not try the following to get verbose output of what is going on and where it fails.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">macbook% ssh -v  nwc</pre> 
+       </div> 
+      </div>
+     </div> 
+     <hr> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875230/21364928.png">DemoDrawing3.png</a> (image/png) 
+      <br> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 09, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

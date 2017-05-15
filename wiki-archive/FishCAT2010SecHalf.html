@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : FishCAT2010SecHalf</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="FishCAT2010SecHalf-CurrentFishCATtimeline"></a>Current FishCAT timeline</h2> <p><span class="image-wrap" style="float: left"><img src="http://download.java.net/glassfish/wiki-archive/attachments/20875612/21365326.png" style="border: 1px solid black"></span></p> 
+     <ul> 
+      <li><a href="./GlassFishV3Schedule.html">updated schedule</a> *</li> 
+     </ul> <h4><a name="FishCAT2010SecHalf-Importantcurrentnews"></a>Important current news</h2> 
+     <ol> 
+      <li>*Log your issues here <a href="http://java.net/jira/browse/GLASSFISH.*">http://java.net/jira/browse/GLASSFISH.*</a></li> 
+      <li><b>GlassFish 3.1 is under FishCAT testing as of 21 October 2010.</b></li> 
+      <li><b>Show why FishCAT is such a great program :When you log a issue, please put the '3.1-fishcat' keyword in the issue.</b></li> 
+      <li><b>Who is being a good Cat <a href="https://glassfish.java.net/issues/buglist.cgi?Submit+query=Submit+query&amp;issue_type=DEFECT&amp;issue_type=ENHANCEMENT&amp;issue_type=FEATURE&amp;issue_type=TASK&amp;issue_type=PATCH&amp;component=glassfish&amp;issue_status=UNCONFIRMED&amp;issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED&amp;issue_status=RESOLVED&amp;issue_status=VERIFIED&amp;issue_status=CLOSED&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=fulltext&amp;keywords=3.1-fishcat&amp;keywords_type=anytokens&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=&amp;cmdtype=doit&amp;order=Reuse+same+sort+as+last+time">FishCATBugQuery</a></b></li> 
+      <li>5 points for each thing explicitly tested and Google Form submitted (below)</li> 
+     </ol> <h4><a name="FishCAT2010SecHalf-FocusArea%3ATestingGlassFish3.1beginning21October2010"></a>Focus Area : Testing GlassFish 3.1 beginning 21 October 2010</h3> 
+     <ul> 
+      <li><a href="PlanForGlassFish3.1.html" title="PlanForGlassFish3.1">GlassFish Server Open Source Edition 3.1</a></li> 
+     </ul> <p>Features available to test :</p> <p>1) Testing GlassFish 3.1 with complex Java EE6 Applications (see Java <a href="http://www.oracle.com/technetwork/java/javaee/tech/index.html">EE 6 technologies</a>)<br> 2) Clustering, loadbalancing and failover with mod_jk (SSL and non-SSL mode) <a href="http://docs.sun.com/app/docs/doc/821-1751/gfaad?l=en&amp;a=view">link</a><br> 3) JDBC feature testing (see demo <a href="./Application+Scoped+Resources+and+JDBC+Monitoring+Features+for+MS4.html">wiki</a>) with different database (Sybase 15.x with jConnect Driver, DB2 9.x with DB2 JDBC 4 Driver, MySQL 5.x with Connector.J Driver)<br> 4) Trying out clustering on different OS with SSH provisioning (see reference section of this <a href="./3.1SSHProvisioning.html">wiki</a>)<br> 5) Trying out admin console with different browsers (IE, FireFox, Safari, Chrome)</p> <p>6) Upgrading from GlassFish v2.x to GlassFish 3.1 (see <a href="./GlassFishv3.1Upgrade.html">wiki</a>)<br> 7) Tyring out JMS clustering and high availability (with new configure-jms-cluster command)<br> 8) Trying out the installer on different OS<br> 9) Trying out web services (Metro, Jersey) in a GlassFish cluster<br> 10) Monitoring (and management) with RESTful API&nbsp; (see <a href="./V3FunctionalSpecs.html">one-pager</a>)<br> 11) High availability : <a href="http://blogs.oracle.com/shreedhar/entry/how_to_configure_and_test">blog</a></p> <p>More info <a href="http://www.youtube.com/glassfishvideos#g/c/1808040BD1409BF0">YouTube</a></p> <p>References:<br> GlassFish 3.1 wiki: <a href="./PlanForGlassFish3.1.html">PlanForGlassFish3.1</a></p> <h4><a name="FishCAT2010SecHalf-DatabaseenvironmentsthataredifficulttotestintheGlassFishdevelopmentenvironment"></a>Database environments that are difficult to test in the GlassFish development environment</h3> <p><a href="https://spreadsheets.google.com/viewform?formkey=dFBMWVEyWk9Ud3VWTHRhTjJBanBIVFE6MQ">https://spreadsheets.google.com/viewform?formkey=dFBMWVEyWk9Ud3VWTHRhTjJBanBIVFE6MQ</a></p> <p><a href="https://spreadsheets.google.com/pub?key=0AiEqQiEko_55dFBMWVEyWk9Ud3VWTHRhTjJBanBIVFE&amp;hl=en&amp;single=true&amp;gid=0&amp;output=html">Results</a></p> <h4><a name="FishCAT2010SecHalf-InstallondifferentOSplatforms"></a>Install on different OS platforms</h3> <p><a href="https://spreadsheets.google.com/viewform?formkey=dEZhZGkxS2hicEhpdnFQVVlCNGpOSXc6MQ">https://spreadsheets.google.com/viewform?formkey=dEZhZGkxS2hicEhpdnFQVVlCNGpOSXc6MQ</a></p> <p><a href="https://spreadsheets.google.com/pub?key=0AiEqQiEko_55dEZhZGkxS2hicEhpdnFQVVlCNGpOSXc&amp;hl=en&amp;single=true&amp;gid=0&amp;output=html">Results</a></p> <h4><a name="FishCAT2010SecHalf-GlassFishadminconsolewithbrowsergalore"></a>GlassFish admin console with browser galore</h3> <p><a href="https://spreadsheets.google.com/viewform?formkey=dFJCZmllUEtMY1F3bUY4bEk2ZmpKWnc6MQ">https://spreadsheets.google.com/viewform?formkey=dFJCZmllUEtMY1F3bUY4bEk2ZmpKWnc6MQ</a></p> <p><a href="https://spreadsheets.google.com/pub?key=0AiEqQiEko_55dFJCZmllUEtMY1F3bUY4bEk2ZmpKWnc&amp;hl=en&amp;single=true&amp;gid=0&amp;output=html">Results</a></p> <h4><a name="FishCAT2010SecHalf-CurrentFocusforthisFishCATphase"></a>Current Focus for this FishCAT phase</h2> <p>Focus of FishCAT will be on testing GlassFish 3.1, but we may want to check there are no regressions in 3.0.1 and verify that key bugs in 3.0 that were marked as fixed in 3.0.1 were indeed fixed correctly.</p> <h4><a name="FishCAT2010SecHalf-CurrentFishCATtestleads%3A"></a>Current FishCAT test leads :</h3> <p>Manfred Riem : mriem (at) dev.java.net</p> <p>Richard Kolb : rjdkolb (at) dev.java.net</p> <p>Please see points awarded for this type of test.</p> <h4><a name="FishCAT2010SecHalf-FocusArea%3AVerifythatkeybugsin3.0thatweremarkedasfixedin3.0.1wereindeedfixedcorrectly."></a>Focus Area : Verify that key bugs in 3.0 that were marked as fixed in 3.0.1 were indeed fixed correctly.</h3> <p>There are XYZ key issues fixed from 3.0 release.<br> Here is a list of key issue fixed :<br> XYZ</p> <p>Please see points awarded for this type of test.</p> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875612/21365844.png">GFGold.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875612/21365326.png">GFGold.png</a> (image/png) 
+      <br> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Dec 06, 2010 by 
+<font color="#0050B2">richardkolb</font>. Exported from wikis.oracle.com on May 27, 2015 20:44.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

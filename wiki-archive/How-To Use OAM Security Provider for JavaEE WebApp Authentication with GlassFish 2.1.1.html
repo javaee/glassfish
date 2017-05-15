@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : How-To Use OAM Security Provider for JavaEE WebApp Authentication with GlassFish 2.1.1</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="How-ToUseOAMSecurityProviderforJavaEEWebAppAuthenticationwithGlassFish2.1.1-Introduction"></a>Introduction</h3> <p>GlassFish V2.1.1 Patch #7 introduces a new Security Provider which allows WebApplications to authenticate and obtain Single Sign-On functionality by authenticating against Oracle Access Manager 10g. The Security Provider has been implemented as a JSR-196 Server Authentication Module (SAM) and must be configured at the HttpServlet layer interception point in GlassFish. The OAM Security Provider can be used in two modes.</p> 
+     <ul> 
+      <li>As an Authenticator</li> 
+      <li>As an Identity Asserter</li> 
+     </ul> <h5><a name="How-ToUseOAMSecurityProviderforJavaEEWebAppAuthenticationwithGlassFish2.1.1-AsanAuthenticator"></a>As an Authenticator</h5> <p>This usecase would occur when GlassFish is directly recieveing unauthenticated requests from end-user Clients for applications deployed. As an Authenticator the Provider would challenge the user for credential collection. The form of challenge issued (BASIC, FORM, Client-Certificate) and the security characteristics of the Transport (SSL or PlainText) depends on the Policies configured at OAM for the resource being accessed.</p> <p>The Provider challenges the user, collects the credentials and sends them over to OAM via its configured AccessGate. OAM would authenticate the credentials and upon successful authentication create an OBSSOSession. The Provider would recieve this Session and set its identifier as a Cookie in the response. This allows subsequent requests from the client for other resources protected by the same policy-domain to not require authentication, thus achieveing Single Sign-On access to resources.</p> <p>Note: OAM supports several modes of authentication between the AccessGate hosted on GlassFish and the OAM instance. This includes plain-text (with/without password), SSL with OAM generated certificates or any general third party trusted certificates. Refer OAM documentation for more details on this. This aspect is out-of-scope of the OAM security provider. The type of communication channel and authentication requirements depends on the topology of the deployment (for example : if the GlassFish instance with its AccessGate is colocated with the OAM instance on the same Network then SSL maynot be required for the channel).</p> <h5><a name="How-ToUseOAMSecurityProviderforJavaEEWebAppAuthenticationwithGlassFish2.1.1-AsanIdentityAsserter"></a>As an Identity Asserter</h5> <p>This usecase would occur when GlassFish is FrontEnded by a Proxy WebServer which has an installed WebGate plugin. It is assumed that there is a ModJK/AJP connector to GlassFish WebContainer from the Proxy. In this case the WebGate would be responsible for challenging the enduser resquests for resources. It is assumed that the connector would pass either the authenticated user principal or the OBSSOCookie in a designated header while forwarding the request to GlassFish WebContainer.</p> <p>In this function the OAM Security Provider tries to assert the identity of the user, or the OBSSOCookie that was sent in the configured http header. If the cookie has expired since the header was sent then the Security Provider would reject the requested resource access.</p> <p>In both functions the Security Provider also tries to obtain Group Memembership information for the authenticated end-user from the OAM Backend. This information is set in a SecurityContext which is then passed onto the Authorization System of the Container to determine if Access to the resource should be allowed.</p> <h5><a name="How-ToUseOAMSecurityProviderforJavaEEWebAppAuthenticationwithGlassFish2.1.1-Processoverview%3AUserauthentication%28FORMandBASIC%29"></a>Process overview: User authentication (FORM and BASIC)</h5> 
+     <ol> 
+      <li>A user attempts to access a Oracle Access Manager-protected GlassFish resource.</li> 
+      <li>The GlassFish Server challenges the user for a username and password (not Oracle Access Manager) using a predefined login form because the application's deployment descriptor requires authentication from the container. You may use your own login form, which must can be specified as an option to the Security Provider.</li> 
+      <li>The GlassFish Server forwards the username and password to the Security Provider for authentication and authorization.</li> 
+      <li>The Authentication Provider uses the AccessGate to communicate with the Access Server to verify the user's identity.</li> 
+      <li>If authentication is successful, the Security Provider would create a Subject with the authenticated principal and also set a Cookie in the response. The ObSSOCookie is set so that when the user attempts to access additional Oracle Access Manager-protected non-GlassFish resources, reauthentication is not performed. In this scenario, if the ObSSOCookie is already set and the user has logged in using form-based authentication, the user is logged in without being challenged.</li> 
+      <li>The control returns to Container Authorization mechanism which would check if the user has permission to access the requested resource. The policies that protect resources are specified in the Policy Manager application in Oracle Access Manager. Policies that are defined in web.xml are honored by default and authorization based on policies at the Policy Manager can be configured as an option. In case the Security Provider is configured to do additional authorization check based on policies at the Policy Manager, the resource access would still be disallowed if the policies defined at web.xml are not satisfied.</li> 
+      <li>If authorization is successful, the GlassFish Server enables the user to access the requested resource.</li> 
+     </ol> <h4><a name="How-ToUseOAMSecurityProviderforJavaEEWebAppAuthenticationwithGlassFish2.1.1-Prerequesites"></a>Prerequesites</h3> <h4><a name="How-ToUseOAMSecurityProviderforJavaEEWebAppAuthenticationwithGlassFish2.1.1-Whatyouneedtoknow"></a>What you need to know</h4> 
+     <ul> 
+      <li>Basic GlassFish V2.1.1, JavaEE WebApplication development, application deployment processes, Oracle Access Manager (OAM 10g) (Configuring AccessServer, AccessGate, WebGate, creating users in the OAM backend, defining Policy Domains and specifying their Authentication and Authorization policies).</li> 
+     </ul> <h4><a name="How-ToUseOAMSecurityProviderforJavaEEWebAppAuthenticationwithGlassFish2.1.1-SoftwareRequirements"></a>Software Requirements</h4> 
+     <ul> 
+      <li>GlassFish V2.1.1 with Patch #7</li> 
+      <li>Oracle Access Manager (OAM) 10g.</li> 
+      <li>OAM Access Server SDK API 10g.</li> 
+      <li>JDK 1.5.0_07 or above.</li> 
+     </ul> <h4><a name="How-ToUseOAMSecurityProviderforJavaEEWebAppAuthenticationwithGlassFish2.1.1-Notations"></a>Notations </h4> <p>&lt;GLASSFISH_HOME&gt; : The install root for glassfish V2.1.1 application server.</p> <h4><a name="How-ToUseOAMSecurityProviderforJavaEEWebAppAuthenticationwithGlassFish2.1.1-Assumption"></a>Assumption</h4> <p>The JavaEE Web applications are assumed to have been configured with deployment descriptors containing required &lt;security-constraint&gt; and associated &lt;auth-constraint&gt; specifying the roles. The descriptors would not be assumed to contain the &lt;login-config&gt; elements that specify the JavaEE supported authentication methods. The Security Provider instead infers the authentication mechanisms based on AuthenticationScheme configured for the resource at OAM. The mechanisms supported are BASIC, FORM or Client-Cert as the authentication methods. The default being BASIC. Options for configuring SSL transport in all the cases is also present. The Authentication Schemes supported at OAM include BASIC, FORM and Client-Cert and use of SSL transport is optional for BASIC and FORM.</p> <h4><a name="How-ToUseOAMSecurityProviderforJavaEEWebAppAuthenticationwithGlassFish2.1.1-Buildingtheapplication"></a>Building the application</h3> <p> The Application can be any JavaEE WebApplication with security-constraint's and associated auth-constraint's. Attached is a sample application that can be used [ Sample Application WAR |http://wikis.sun.com/download/attachments/215071314/BasicAuthen.war].</p> <h4><a name="How-ToUseOAMSecurityProviderforJavaEEWebAppAuthenticationwithGlassFish2.1.1-RunningtheApplication"></a>Running the Application</h3> 
+     <ol> 
+      <li>Install AccessServer SDK 10g on your system <a href="http://www.oracle.com/technology/software/products/ias/htdocs/101401.html">Access Server SDK </a> Please download from OAM (2nd row). We shall refer to the install dir for AccessServer SDK as &lt;AccessServerSDK-install-dir&gt;</li> 
+      <li>Configure AccessServer SDK on your system from where you intend to run the glassfish hosted Application 
+       <div class="code panel" style="border-style: solid;border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">for example :&lt;AccessServerSDK-install-dir&gt;/oblix/tools/configureAccessGate&gt;configureAccessGate -i &lt;AccessServerSDK-install-dir&gt;
+-t AccessGate -w GlassfishAG -m open -h staqh24-5.us.oracle.com -p 6021 -a GlassfishAS</pre> 
+         </div> 
+        </div>
+       </div> <p>The above command configures the AccessGate named "GlassfishAS" for use by the OAM Security Provider hosted on GlassFish. Please read the OAM user guide for more details on Configuring AccessGate.</p></li> 
+      <li>In GlassFish JVM options add the following : &lt;jvm-options&gt;-DOBACCESS_INSTALL_DIR=&lt;AccessServerSDK-install-dir&gt;&lt;/jvm-options&gt;</li> 
+      <li>Copy jobacces.jar from from &lt;AccessServerSDK-install-dir&gt;/oblix/lib into &lt;Glassfish&gt;/lib</li> 
+      <li>Create a new httpservlet layer MessageSecurityProvider in GlassFish V2.1.1 via Admin GUI or CLI which configures the OAM Security Provider (SAM), example : 
+       <div class="code panel" style="border-style: solid;border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">&lt;message-security-config auth-layer="HttpServlet"&gt;
+          &lt;provider-config provider-type="server" provider-id="MySAM" class-name="com.sun.glassfish.oamsam.OAMAuthenticatorSAM"&gt;
+            &lt;property name="oam.resource.hostid.variation" value="sm224050-chamaka.india.sun.com" /&gt;
+            &lt;!--property name="form.login.page" value="" /--&gt;
+          &lt;/provider-config&gt;
+        &lt;/message-security-config&gt;</pre> 
+         </div> 
+        </div>
+       </div></li> 
+      <li>Deploy the attached Application <span class="error">[#http://wikis.sun.com/download/attachments/215071314/BasicAuthen.war]</span> on your GlassFish V2.1.1 instance.</li> 
+      <li>Configure the SAM for the attached application in sun-web.xml for example if the SAM was configured as MySAM then here is what the first line of sun-web.xml would contain : &lt;sun-web-app error-url="" httpservlet-security-provider="MySAM"&gt;.</li> 
+      <li>set OBACCESS_INSTALL_DIR in the commandline where you start GlassFish (should do this before glassfish is started), set PATH to contain &lt;AccessServerSDK-Install-Dir&gt;/oblix/lib</li> 
+      <li>Configure LDAPRealm in GlassFish (using Admin GUI or CLI) to point to OAM backend 
+       <div class="code panel" style="border-style: solid;border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">for example :
+ &lt;auth-realm classname="com.sun.enterprise.security.auth.realm.ldap.LDAPRealm" name="ldaprealm"&gt;
+          &lt;property name="jaas-context" value="ldapRealm" /&gt;
+          &lt;property name="base-dn" value="o=company,c=us" /&gt;
+          &lt;property name="directory" value="ldap://140.87.134.98:1389" /&gt;
+          &lt;property name="search-bind-dn" value="cn=Directory Manager" /&gt;
+          &lt;property name="search-bind-password" value="welcome1" /&gt;
+        &lt;/auth-realm&gt;</pre> 
+         </div> 
+        </div>
+       </div></li> 
+      <li>Make ldaprealm the default realm in glassfish &lt;security-service default-realm="ldaprealm"&gt;</li> 
+      <li>In case of Windows make sure the PATH environment variable is set to contain &lt;AccessServerSDK-Install-Dir&gt;\oblix\lib. This should be set in the CMD window from which you start glassfish</li> 
+      <li>For GF V2.X we also need to set ApplicationServer-&gt;JVM Settings-&gt;Path Settings-&gt;Native Library Path Prefix : to contain &lt;AccessServerSDK-Install-Dir&gt;/oblix/lib</li> 
+      <li>Create a test user "glassfish" with some password on the OAM instance and make sure the user is in the following group : Glassfish_group<br> This is incase you are planning to run the attached sample application. Otherwise generally you will need to make sure that that authenticated user is in a group that is allowed to access the resource from the WebApplication hosted on GlassFish.</li> 
+      <li>RESTART GLASSFISH and Access Protected resource in browser : http://&lt;hostname&gt;.&lt;domainname&gt;:8080/BasicAuthen/SecureServlet<br> Note: if you are trying to use <a href="http://locahost:8080/BasicAuthen/SecureServlet">http://locahost:8080/BasicAuthen/SecureServlet</a> then the case where a cookie needs to be sent from the browser will not work. So for example if you configured Form login for the SAM, you will find that you are in an infinite loop because the cookie is never sent post successful form authentication.</li> 
+     </ol> <h4><a name="How-ToUseOAMSecurityProviderforJavaEEWebAppAuthenticationwithGlassFish2.1.1-ConfiguringOAM"></a>Configuring OAM</h4> 
+     <ol> 
+      <li>Identity System Console: 
+       <ol> 
+        <li>User Manager - create user(s) - (eg) glassfish</li> 
+        <li>GroupManager - create groups and add the user created to the groups (eg) - Glassfish_group.<br> Note: The above steps can also be done through the backend LDAP directly.</li> 
+       </ol> </li> 
+      <li>Access System Configuration: 
+       <ol> 
+        <li>Add a new Access Server: Provide the required parameters including name, host name , enable it. Refer OAM users guide for more details on how to create and configure an Access Server.</li> 
+        <li>Add a new Access Gate : Provide the required parameters including name, host name (in which Access Gate would be configured), cookie domain (eg) .oracle.com. and Enable it. Refer OAM users guide for more details on how to create and configure an Access Server.</li> 
+        <li>Associate the Access Gate and the Access Server.</li> 
+        <li>Host Identifiers - Create a new Host Identifier with a hostname variation that points to the IP address or the FQDN of the machine where the Access Gate is configured.</li> 
+        <li>Authentication Management - Create a new Authentication Scheme for each login-mechanism method (BASIC, FORM, CERTIFICATE) 
+         <div class="code panel" style="border-style: solid;border-width: 1px;">
+          <div class="codeContent panelContent"> 
+           <div id="root"> 
+            <pre class="theme: Confluence; brush: java; gutter: false">(eg 1) - Glassfish BASIC over LDAP: (required for Glassfish BASIC auth  mechanism)
+Challenge Method            Basic          
+Challenge Parameter         realm:LDAP User Name/Password</pre> 
+           </div> 
+          </div>
+         </div> 
+         <ol> 
+          <li>Plugins: Add a credential mapping plugin for this auth-scheme: 
+           <div class="code panel" style="border-style: solid;border-width: 1px;">
+            <div class="codeContent panelContent"> 
+             <div id="root"> 
+              <pre class="theme: Confluence; brush: java; gutter: false">(eg 1)
+credential_mapping    obMappingBase="o=company,c=us",obMappingFilter="(&amp;(objectclass=inetOrgPerson)(genuserid=%userid%))"
+validate_password     obCredentialPassword="password"</pre> 
+             </div> 
+            </div>
+           </div> <p>This is a mapping between the LDAP attributes of the user ( obCredentialPassword, genuserid ) and the auth-scheme params( userid,password). Please make sure the LDAP attributes of the user and the OAM Request parameters are mapped correctly here.Also make sure that you setup the the Authentication Flow at OAM for the Authentication_Scheme. For example the validate_password plugin should be the next plugin after credential_mapping and the flow would stop if validate_password fails. Refer to OAM User Guide for more details on how to setup Authentication Flow for the plugins.</p> 
+           <div class="code panel" style="border-style: solid;border-width: 1px;">
+            <div class="codeContent panelContent"> 
+             <div id="root"> 
+              <pre class="theme: Confluence; brush: java; gutter: false">(eg 2) - Client certificate (required for CERTIFICATE auth mech)
+Challenge Method            X509Cert          
+Challenge Parameter            X509          
+SSL Required            Yes</pre> 
+             </div> 
+            </div>
+           </div></li> 
+         </ol> </li> 
+       </ol> </li> 
+      <li>Policy Manager 
+       <ol> 
+        <li>Policy Domains - Create a policy domain.(eg) GlassfishPD: 
+         <ol> 
+          <li>Configure a resource<br> The glassfish protected resources could be configured individually here if authorization is also desired at OAM. If only authentication and identity assertion are desired, then a proxy resource, (eg) /glassfish-default can be configured here. To run the attached sample application <a href="http://wikis.sun.com/download/attachments/215071314/BasicAuthen.war">Sample App </a> just create a proxy resource: /glassfish-default</li> 
+          <li>Add an authentication rule (under Default rules). Choose the auth-scheme that has been configured in step 2(v) above</li> 
+          <li>Policies - Provide a name, choose the operations and choose the configured resource (HostIdentifier + resourceURL)</li> 
+         </ol> </li> 
+       </ol> </li> 
+     </ol> <h4><a name="How-ToUseOAMSecurityProviderforJavaEEWebAppAuthenticationwithGlassFish2.1.1-ConfiguringGlassfishAccessGate"></a>Configuring Glassfish AccessGate</h4> <p> This has been explained in the section above on Running the Application.</p> <h4><a name="How-ToUseOAMSecurityProviderforJavaEEWebAppAuthenticationwithGlassFish2.1.1-ConfiguringtheOAMSecurityProviderfortheWebApplication"></a>Configuring the OAM Security Provider for the WebApplication</h4> <p>Configure the SAM for the attached application in sun-web.xml for example if the SAM was configured as MySAM then here is what the first line of sun-web.xml would contain : &lt;sun-web-app error-url="" httpservlet-security-provider="MySAM"&gt;. </p> <h4><a name="How-ToUseOAMSecurityProviderforJavaEEWebAppAuthenticationwithGlassFish2.1.1-DeployingtheWebApplication"></a>Deploying the WebApplication</h4> <p>Deploy the web application to GlassFish. Refer to GlassFish user guide for more details on how to deploy an Application using Admin GUI or CLI.</p> <h4><a name="How-ToUseOAMSecurityProviderforJavaEEWebAppAuthenticationwithGlassFish2.1.1-RunningtheWebApplication"></a>Running the WebApplication</h4> <p>To run the sample application attached type the following in your browser : http://&lt;hostname&gt;.&lt;domainname&gt;:8080/BasicAuthen/SecureServlet</p> <h4><a name="How-ToUseOAMSecurityProviderforJavaEEWebAppAuthenticationwithGlassFish2.1.1-Summary"></a>Summary</h3> <p>The OAM Security Provider for GlassFish V2.1.1 provides for authentication and establishing Single Sign-On with Enterprise class Oracle Access Manager.</p> <h4><a name="How-ToUseOAMSecurityProviderforJavaEEWebAppAuthenticationwithGlassFish2.1.1-JavaDocofoptionssupportedbytheOAMSecurityProvider"></a>JavaDoc of options supported by the OAM Security Provider</h4> <p> The OAM Security Provider supports various options which can be configured to affect the behavior of the SAM. More details can be found in the JavaDocs. <a href="http://appserver.sfbay.sun.com/attach/3.1OAM%2Fjavadoc-oam1.0.zip">JavaDocs Internal Site </a></p> <h4><a name="How-ToUseOAMSecurityProviderforJavaEEWebAppAuthenticationwithGlassFish2.1.1-References"></a>References</h3> <h4><a name="How-ToUseOAMSecurityProviderforJavaEEWebAppAuthenticationwithGlassFish2.1.1-OAMandAccessServerSDKdocumentation"></a>OAM and AccessServer SDK documentation</h4> 
+     <ol> 
+      <li><a href="http://www.oracle.com/technetwork/middleware/ias/downloads/101401-099957.html">http://www.oracle.com/technetwork/middleware/ias/downloads/101401-099957.html</a></li> 
+      <li><a href="http://download.oracle.com/docs/cd/E17390_01/doc.650/e17370/oam.htm">http://download.oracle.com/docs/cd/E17390_01/doc.650/e17370/oam.htm</a> <h4><a name="How-ToUseOAMSecurityProviderforJavaEEWebAppAuthenticationwithGlassFish2.1.1-JSR196inGlassFish"></a>JSR-196 in GlassFish</h4></li> 
+      <li><a href="http://blogs.oracle.com/enterprisetechtips/entry/adding_authentication_mechanisms_to_the">http://blogs.oracle.com/enterprisetechtips/entry/adding_authentication_mechanisms_to_the</a></li> 
+      <li><a href="http://blogs.oracle.com/monzillo/entry/pluggable_authentication_in_the_glassfish">http://blogs.oracle.com/monzillo/entry/pluggable_authentication_in_the_glassfish</a></li> 
+     </ol> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Sep 06, 2010 by 
+<font color="#0050B2">kumarjayanti@sun</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

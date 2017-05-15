@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : FaqShoalGMSAttributesInDomainXML</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="FaqShoalGMSAttributesInDomainXML-Whatdothegroupmanagementserviceelement%27sattributesinGlassFishv2%27sdomain.xmlmean%3F"></a>What do the group-management-service element's attributes in GlassFish v2's domain.xml mean ? </h1> <p>This FAQ entry explains the meaning and implications of changing configuration values for the group-management-service element in domain.xml. </p> <p>The group-management-service element provides attributes, whose values determine the health monitoring and discovery protocol behavior in Shoal GMS. </p> <p>The default values in the GlassFish domain.xml have been arrived at by taking into account our testing, both functionally and with system under load, with an 8 instance cluster. Recently, we have received feedback from customers that with these values, they were able to have a large GMS group with Sailfin, working without issue and reporting group membership event notifications correctly - so these domain.xml values are a good default for large number of instances in the cluster.</p> <p>The following attributes are present in the &lt;group-management-service&gt; element along with their default values :</p> 
+     <ul> 
+      <li>cluster-name-config.group-management-service.<b>fd-protocol-max-tries</b> = 3</li> 
+      <li>cluster-name-config.group-management-service.<b>fd-protocol-timeout-in-millis</b> = 2000</li> 
+      <li>cluster-name-config.group-management-service.<b>merge-protocol-max-interval-in-millis</b> = 10000</li> 
+      <li>cluster-name-config.group-management-service.<b>merge-protocol-min-interval-in-millis</b> = 5000</li> 
+      <li>cluster-name-config.group-management-service.<b>ping-protocol-timeout-in-millis</b> = 5000</li> 
+      <li>cluster-name-config.group-management-service.<b>vs-protocol-timeout-in-millis</b> = 1500</li> 
+     </ul> <p>fd stands for Failure Detection</p> <p><b>fd-protocol-max-tries</b> stands for the maximum number of missed heartbeats that the GMS service provider's HealthMonitor would wait for, before marking an instance as suspected to have failed - in addition to the max tries, GMS also tries to make a peer-2-peer connection with the suspected member and if that also fails, the member is marked suspected failed.</p> <p><b>fd-protocol-timeout-in-millis</b> stands for the number of milliseconds interval between each heartbeat message that an instance would wait to send out its Alive state, AND as a result, the number of milliseconds between missed heartbeats that the max-retry logic would wait for, in GMS service provider's Master Node, before counting another missed heartbeat.</p> <p>Changing the value of max-retries lower would result in failure suspicion determination with a shorter number of missed heartbeats and vice versa. More below on consequences of different settings in the <b>Impact of Changing Values section</b>.</p> <p><b>merge-protocol-max-interval-in-millis</b> and <b>merge-protocol-min-interval-in-millis</b> are no-op attributes that have no effect on GMS behavior. These attributes remained in the v2 release due to oversight. In the upcoming v2.1.1 release, we are planning to deprecate or remove these attributes along with more meaningful descriptive attribute names. </p> <p><b>ping-protocol-timeout-in-millis</b> stands for initial discovery timeout. This is the amount of time an instance's GMS module will wait during instance startup (on a background thread, so that appserver startup does not wait for the timeout) for discovering the master member of the group - called master node discovery protocol in GMS. The instance's GMS module sends out a master node query to the multicast group address and waits until a response is received or the timeout occurs. If the wait times out i.e. the instance does not receive a master node response from another instance within this time, indicating the absence of a master, then it assumes the master role, sending out a master node announcement to the group. This instance subsequently responds to all future master node query messages from other members with a master node response. In the appserver, since DAS joins a cluster as soon as it is created, the DAS becomes a master member of the group ahead of time allowing cluster members to discover master quickly without having to timeout. More below on impact of changing settings. </p> <p><b>vs-protocol-timeout-in-millis</b> stands for Verify Suspect protocol's timeout used by the HealthMonitor. Once a member is marked suspect based on missed heartbeats and a failed p2p connection check, the verify suspect protocol kicks in waiting for the specified timeout to check for any further health state message received in that time and, to see if a peer-2-peer connection can be made with this suspect member. If not (i.e both the health state update missing and a p2p connection attempt failing), the suspected failed member is marked as confirmed failed and a failure notification is sent out.</p> <h4><a name="FaqShoalGMSAttributesInDomainXML-ImpactofChangingValues"></a>Impact of Changing Values</h2> <h4><a name="FaqShoalGMSAttributesInDomainXML-FailureDetectionvalues"></a>Failure Detection values</h3> <p>Changing the value of fd-protocol-timeout-in-millis lower than default, would result in more frequent heartbeat messages being sent out in the system from each member. Higher timeout value will result in lesser heartbeats in the system as the time interval between heartbeats is longer.</p> <p>Mileage gained from the above varies depending on how quickly and reliably the deployment environment needs to have failures detected. </p> <p>Setting the fd-protocol-timeout-in-millis (and/or fd-protocol-max-retries) lower or higher has impact that you should consider :</p> 
+     <ul> 
+      <li>Lower timeout value would result in a larger number of heartbeat messages going out periodically in the network than a system actually needs in order to perform failure detection protocols effectively.</li> 
+      <li>Lower timeout value (and/or retries) could result in false positives such as detecting a member as failed when in fact, the member's heartbeat may not have reached in time due to network load from other parts of appserver.</li> 
+      <li>With higher timeout, failure detection would take a bit longer with the added possibility of the failed member starting up during detection process resulting in a new join notification, without a preceding failure notification since failure detection and determination had not completed. This fact of a join notification without a preceding failure notification is logged (thanks to Joe Fialli's work on adding more diagnostics)</li> 
+      <li>Changing both the values of retries and the timeout would have consequences that can be extrapolated based on the above information.</li> 
+     </ul> <h4><a name="FaqShoalGMSAttributesInDomainXML-ImprovementinFailureDetectionprotocolsforGlassFishv2.1.1%28Sailfin2.0%29"></a>Improvement in Failure Detection protocols for GlassFish v2.1.1 (Sailfin 2.0)</h3> <p>In upcoming GlassFish v2.1.1/Sailfin 2.0, Shoal now has the capability of <b>Watchdog</b> type members (typical members are Spectators or Core type) allowing processes like GlassFish Node Agent to participate in the GMS group of a cluster. This helps with quickly detecting and reporting process failures without having to change timeout and retries values that are part of the heartbeat based system for process failure detection - node agent detects process failures faster than the GMS heartbeat based system can detect and with the Watchdog facility, the Node Agent can report such failures to GMS as soon as it occurs. The heartbeat based system is now a secondary fall-back for process failures while being the primary means of failure detection when hardware or network failures are involved wherein one loses reachability with both Node Agents and Instances involved. The heartbeat based system is thus a significant part of the health monitoring functionality.</p> <p>The retries, missed heartbeat intervals, peer-2-peer connection based failure detection, the watchdog based failure reporting, and verify suspect protocols are all needed ensure that failure detection is robust and reliable in GlassFish/Sailfin. Most of these protocols (except for watchdog protocol) are employed as standard in many group communication solutions such as JGroups, Coherence, GridGain, GigaSpaces, etc., so our goal is to have parity with those solutions and with additional watchdog capability we are augmenting failure detection functionality. </p> <h4><a name="FaqShoalGMSAttributesInDomainXML-Note"></a>Note </h3> <p>For hardware failures and/or network failures, GMS uses a default of 10 seconds to timeout a blocking TCP connection attempt that will otherwise wait for the system specific TCP retransmission timeout (typically 3-5 minutes). Combined with the heartbeat based system, this effectively means approximately under 30 secs to detect a hardware or network failure. </p> <h4><a name="FaqShoalGMSAttributesInDomainXML-Discoveryrelatedvalues"></a>Discovery related values</h3> <p>Setting the ping timeout lower would cause a member to timeout quicker than it should, in discovering the master node, and as a result may end up having multiple masters in the group leading to the master collision and resolution protocol to kick in. The master collision and resolution protocol results in multiple masters telling each other who the true master candidate is based on sorted order of memberships based on their UUIDs, but can be intensive in messaging if there are large number of masters in the group. Hence the ping timeout value should ideally be set to defaults or more but not less.</p> <p>For any further questions, please send email to <b>users at shoal dot dev dot java dot net</b></p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 03, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:44.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : MonitoringReviewComments</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="MonitoringReviewComments-ResponseforReviewComments"></a>Response for Review Comments</h2> <h4><a name="MonitoringReviewComments-JanLuehe"></a>Jan Luehe</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Comment </th> 
+         <th class="confluenceTh"> Response </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.1.1.1 Probe Provider Factory. ProbeProviderFactory defined as interface, but it is a real class. createInstance should be createProvider.When you say The method returns a class that implements this interface, explain how. </td> 
+         <td class="confluenceTd"> Addressed. ProbeProviderFactory has a getProvider method instead of getInstance - updated spec. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.1.1.2 Probe Providers. Should the TxManager interface not be annotated with @ProbeProvider? When you say that the return value from this method will be a class that implements the TxManager interface, you might want to explain how the impl is created, and what the impl looks like initially (i.e., zero-overhead methods). </td> 
+         <td class="confluenceTd"> Addressed - a brief explanation is provided. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.1.1.5 Emitting probe events Minor typo in code snippet: txProvider should be txMgr, or the other way round </td> 
+         <td class="confluenceTd"> Addressed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.1.1.6 ProviderRegistry. Can you explain the meaning of the pattern components in :::. I think it's as follows: moduleId:providerName:appName:probeName. What are the naming conventions for moduleId and appName? </td> 
+         <td class="confluenceTd">Out of scope. Addressed in the out of scope section. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.1.1.12 Registering clients. Definition of ProbeProviderInfo from 4.1.1.7 repeated and probably out-of-scope here. The terms Client and Listener seem to be used interchangeably. Should we use Listener consistently in the API, i.e., change Client to Listener in ProbeClientMediator and registerClient? Should ProbeClientMediator also define a method for unregistering a listener/client? </td> 
+         <td class="confluenceTd"> ProbeClientMediator is different from the code </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.1.1.13 Note about gfProbe clients. A client that does not have any of its methods annotated with ProbeListener will never receive any probe events and will be ignored by the framework, right? </td> 
+         <td class="confluenceTd"> Yes - clarified in the spec </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.1.1.14 ProbeContainer. So the plan is to be able to deploy probe listeners: Packaged in standalone JAR files Packaged in WAR- and EAR-bundled JAR files As part of a WAR file's WEB-INF/classes (would they not inherit the permissions granted to the WAR file's other classes, which would make it difficult for the security system to enforce the restriction that probe listeners must not be able to open server sockets or create threads?) Will the probe listeners be automatically unregistered from the ProbeClientMediator during undeployment? </td> 
+         <td class="confluenceTd"> Out of scope. The listeners will work under the same SecurityManager as that of the standalone war or ear. As soon as the jar is undeployed - it will be unregistered </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.1.2.3.1 Probe Listener. listeners for a provider will be registered or unregistered based on the lifecycle event from the provider (when provider is coming up or going down): Do providers implement some kind of state machine? When a provider is created using ProbeProviderFactory.createProvider, will it automatically be put in STARTED? </td> 
+         <td class="confluenceTd"> The provider is free to register the provider as they deem appropriate. Once registered, the provider is in the started state (although we do not have an lifecycle event that deems it as started) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.1.2.3.3 OVH. It consists of interfaces for the Telemetry objects to register/unregister themselves as the tree nodes. Not sure I completely understand, but does this mean that in addition to registering itself by calling ProbeClientMediator.registerClient, a client must also register with the OVH? How does it do that, and under what name? Is this interface the same as the TreeNodeFactory in 4.1.2.6? What does the term client mean here? In earlier sections, client meant ProbeListener, but in the context of the OVH, it also refers to REST and CLI (once part of the tree, they are exposed to any client). </td> 
+         <td class="confluenceTd"> The telemetry object will register themselves and any other nodes that they want to be used during runtime to provide monitoring data into the tree node. The OVH follows the same pattern as v2. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.1.2.4 Custom ProbeListeners or Scripts. What is the difference between ProbeClient and ProbeListener? How can a ProbeClient be turned into a script? </td> 
+         <td class="confluenceTd"> There is no difference between ProbeClient/ProbeListener - they have been used interchangeably. Removed reference to clients / scripts. Moved the section out under 4.4 (Out of Scope) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.1.2.6 Framework Utilities Code snippet: What happens to TreeNode child? Is it ever used? </td> 
+         <td class="confluenceTd"> It will be used by admin cli/ui to return the value the child object - explained it in the spec </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.5.1.2 gfProbes Infrastructure Exported Interfaces. ProbeProviderFactory: Is it createProvider or createInstance? Is ProbeProviderFactory really an interface? How do you acquire an instance of it ProbeProvider, ProbeProviderInfo, ProbeProviderRegistry missing? </td> 
+         <td class="confluenceTd"> Changed getInstance to getProvider. You get an instance of the ProbeProviderFactory through the Habitat. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.5.1.3 Utility Framework Classes. Why does FlashlightMonitoringRegistry have Flashlight in its name, when none of the other classes (e.g., TreeNodeFactory) do? </td> 
+         <td class="confluenceTd"> Addressed. FlashlighMonitoringRegistry renamed as MonitoringDataRuntimeRegistry </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="MonitoringReviewComments-NazrulIslam"></a>Nazrul Islam</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> comments </th> 
+         <th class="confluenceTh"> response </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1) Section 4.1.2.3.3: Please ensure that the object view hierarchy is aligned with GFv2 and the dotted names are backward compatible. </td> 
+         <td class="confluenceTd"> Addressed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2) Section 4.1.2.5: Please ensure that monitor_type is correctly mapped for GFv2 types also. </td> 
+         <td class="confluenceTd"> Addressed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3) Section 4.1.2.5: asadmin set command does not work without domain.xml persistence. </td> 
+         <td class="confluenceTd"> Addressed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4) Section 4.12: Please specify how GFv2 monitoring levels (OFF, LOW, HIGH) will work. </td> 
+         <td class="confluenceTd"> Addressed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5) Please ensure that this works for both JDK 5 and JDK6. </td> 
+         <td class="confluenceTd"> It will work on JDK 5 and JDK 6 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6) Please expose the monitoring information with JMX MBeans. REST support may come post Prelude. </td> 
+         <td class="confluenceTd"> Evaluating the feasibility, will update </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 7) Please check all the APIs for naming consistency and align. </td> 
+         <td class="confluenceTd">Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 8) Secion 4.1.1.1: Please specify that appName can be null. </td> 
+         <td class="confluenceTd"> done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 9) Section 4.3: Please specify what is in scope for GFv3 Prelude. </td> 
+         <td class="confluenceTd"> Specified all items that are not in scope in the out of scope section </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 10) Section 4.4: Please clearly specify what is out of scope so that future design goals are understood. </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 11) Section 4.5.1.2: Do we need to expose the probe annotations (@ProbeName, @ProbeParams, @MethodEntry) and ProbeProviderInfo? </td> 
+         <td class="confluenceTd"> Yes, Providers need to know this to signal what they want to expose </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 12) Section 4.5.1.2: Is there any risk with exposing /remove/ method on TreeNode to 3rd parties? Should we have exposed only the integration point (example parentId)? See example at: <a href="./GFV3PluggabilityOnePager#section-GFV3PluggabilityOnePager-4.1.1AdminConsole.html">http://wiki.glassfish.java.net/Wiki.jsp?page=GFV3PluggabilityOnePager#section-GFV3PluggabilityOnePager-4.1.1AdminConsole</a> <p> </p></td> 
+         <td class="confluenceTd"> Do not need to expose it. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 13) Section 4.1.2.5: Question Example shows "gf:tx:*". Should the first tupple be "gf" in the example? How does this relate to DTrace? </td> 
+         <td class="confluenceTd"> First tuple is related to the moduleName as outlined in 4.1.1.1. DTrace is out of scope for this release, however an example is provided on how DTrace monitoring can be provided in JDK 1.7 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 14) Please clarify support for JVM, JDBC, JPA, jRubby monitoring and CallFlow support. </td> 
+         <td class="confluenceTd"> All these will be provided Post Prelude. CallFlow was mentioned as post-prelude in the Compatibility section - it is now moved to the out of scope section. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="MonitoringReviewComments-LloydChambers"></a>Lloyd Chambers</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> comments </th> 
+         <th class="confluenceTh"> response </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> llc-01 Monitoring via JMX could happen for Prelude, but seems "tight". JMX+Notifications should be added to the API stack in 4.1.0. </td> 
+         <td class="confluenceTd"> Sure its tight. We are exposing the Monitoring through the OVH tree structure. We have two possible ways to go about. Will discuss with you and update the decision. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> llc-02 the creation and removal and listing/status of probes should be exposed via JMX I think. Perhaps an annotation to that effect can be placed upon a probe. Then the GUI could easily search for and fine all probes, as well as create and remove them. </td> 
+         <td class="confluenceTd"> Mahesh? </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> llc-03 I'm a bit confused by section 4.1.1.5. If it is a zero overhead system, why is the TransactionManagerImpl doing explicit calls to onTxBegin? Or is it that this always needs to be done, and the probe can be one of the listeners? </td> 
+         <td class="confluenceTd"> If there are no underlying listeners listening to this event, this call is a no-op call. If there are listeners registered for this Probe then they receive these events. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> llc-04 The ProviderRegistry and ProbeProviderInfo looks perfect for exposing via MBeans. </td> 
+         <td class="confluenceTd"> ProviderRegistry is out of scope for Prelude and has been marked as such. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> llc-05 The Stats classes as well as Maps are awkward in a CLI. Is there a better way to expose this data? </td> 
+         <td class="confluenceTd"> The cli/ui will call the TreeNode api and invoke getValue on a particular node to get the data. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> llc-06 In 4.1.2.5, monitoring seems to be based on config dotted names. But the components to be monitored are often runtime entities which don't exist in config eg Servlets. </td> 
+         <td class="confluenceTd"> Good point. We will be relying on the Probe events like ServletLoaded or JSPLoaded, to create and populate the tree. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> llc-07 For compatibility layer we may need "get --monitor". But the V3 final dotted names will not distinguish that way; dotted names are pervasive and share one hierarchy for all names. </td> 
+         <td class="confluenceTd"> We will have to distinguish some way as there are several overlaps, and I think --monitor is the way to do that. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> llc-08 Packages names include "gfprobe" but others use "flashlight". Shouldn't they share the same terminology? </td> 
+         <td class="confluenceTd"> They should all use Flashlight - modified to be consistent. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="MonitoringReviewComments-SanjeebSahoo"></a>Sanjeeb Sahoo</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> comments </th> 
+         <th class="confluenceTh"> response </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> section #2.1: I don't see why we should write a tool that can be used by a wide variety of Java applications. Surely, application server will be one of the primary users of such a tool, but not the only one. This infrastructure should be be provided by underlying platform, which in our case is JDK. </td> 
+         <td class="confluenceTd">Our framework contains a probe container, which hosts Probe applications. A probe application is simply a jar containing probe clients. By doing this, we can leverage our deployment framework to deploy the app. The ProbeContainer (which is just another V3 container) can host these probe clients and do a bunch of things like publishing the monitored data in MBeanServer, registering with any JSR 311 implementaiton (like Jersey). Also, doing the above in appserver will help out monitization story. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> section #2.2: Since JDK 6 is the minimum platform, I can't see how this can satisfy needs of V3 Prelude, which is anticipated to be used in JDK 5 more often than not. Pl. correct me if I am wrong here. </td> 
+         <td class="confluenceTd">We do support JDK 1.5 with the provider approach. Note that this approach is still better and it is definitely "lighter" compared to V2. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> section #3.1: Is there not a need to monitor a cluster of application server instances? btrace allows this. </td> 
+         <td class="confluenceTd"> Can you explain how BTrace does this? Does Btrace understand enough about our GlassFish cluster. As explained previously, we just use our existing deployment model which allows a probe app to be deployed onto our cluster. You will be able to monitor clusters, each instance in a cluster will have its own OVH that can be aggregated at the cluster level. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> section #4.1.1: What happens when some other parts of runtime tries to insert ClassFileTransformer? e.g., JPA implementations are known to do so. </td> 
+         <td class="confluenceTd">The Instrumentation API doesn't prohibit multiple Transformers in the system. When retransform is called, it simply passes the output (of the transformed class) to the next Transformer. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> section #4.1.1: It says /Application server would be the right product to build this intelligence of generating the lightweight data in production environment and analysing them to present it in a meaningful way, so the administrators can get to the root cause of the problem./ Can you please describe how you achieve <b>zero</b> overhead when the code has been statically instrumented to emit events as described in section #4.1.1.5? </td> 
+         <td class="confluenceTd">OK, almost <b>Zero</b> in this case and definitely zero for non provider case. Also, it is fairly easy to retransform the caller itself to make it really zero overhead. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> section #4.1.1.15: It says &gt; /This means that there is no client here./ This is incorrect. There is a client API for BTrace – is used by command line client and VisualVM client. In a private email conversation, btrace author, Sundar ( <a href="http://blogs.oracle.com/sundararajan/">http://blogs.oracle.com/sundararajan/</a> <p>), has confirmed that a JMX cover is being planned. He says: /BTrace author can annotate a bit more in trace class so that the trace class registers itself as a MXBean. Specially annotated fields will be exposed as MXBean attributes. This way any JMX client can consume trace data. / i.e., something like " @BTrace(MBean="com.acme.MyBean"), public class X </p> 
+          <div class="error">
+           <span class="error">Unknown macro: { @Attribute(name="cacheSize") private static int i; 'i' is updated from various action methods of various probes }</span> 
+          </div> <p> </p></td> 
+         <td class="confluenceTd">Good. So it is not there yet. Also, we are talking of providing support for JMX, REST etc. More importantly, the client need not worry about writing transport specific way </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> section #4.1.1.15: It says /Also, the set of operations that a Btrace client can perform is also limited./ It is fairly simple to relax BTrace strictness. Sundar says they need to change BTrace code in just two places. If desired, we can allow restricted method calls (say calls to specific Sun classes only). How to write higher level probes (rather than trace author using internal code names which would be unstable) using btrace? It is given below: /BTrace allows one or more probe descriptors be written. The probe descriptors map abstract provide/probe name to concrete class/method (or some other concrete probes). This way trace author can write trace code that is "stable". For example, see "$BTRACE/samples/SocketTracker1.java". The probe descriptor file is $BTRACE/samples/java.net.Socket.xml This file maps JDK's internal class/method names to higher level provide/probe names. This method is better compared to doing code changes to traced code. i.e., DTrace expects traced program authors to insert macros in their code. While that approach is okay for C/C++ world, for java world any code change in traced program just for observability is undesirable. Even a simple "event out" method will be a cost. The XML mapping scheme removes that disadvantage. You may want probe points at specific locations which may not be expressible as BTrace probe points. Even in such cases it is possible to call an empty static method from a class – which can be instrumented by BTrace. The empty methods are inlined and optimized away by hotspot and other VMs anyway. (whereas event firing methods may not optimized that way). </td> 
+         <td class="confluenceTd"> Maybe we could use bTrace's byte code retransformation capabilities. If bTrace would provide an API to register callback methods, then we treat Btrace as one of the providers of byteCode transformation engine. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:49.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

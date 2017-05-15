@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : TmpGMSonepager</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Dynamic Runtime Clustering in Glassfish v3.1 using Shoal Group Management Service
+
+
+One pager template version: 1.9
+
+1. Introduction
+    1.1. Project/Component Working Name:
+    	   Dynamic Runtime Clustering Support via Shoal Group Management Service
+
+    1.2. Name(s) and e-mail address of Document Author(s)/Supplier:
+	   Name: joe.fialli@oracle.com
+
+    1.3. Date of This Document:
+	   05/07/2010
+
+2. Project Summary
+    2.1. Project Description:
+	 Group Management Services include 
+           
+         * notification of members joining and leaving group
+         * sending a message to one, some or all group members
+
+    2.2. Risks and Assumptions:
+	// Note any risks and assumptions that must be considered along 
+	// with the proposal. Include technical risks.
+
+3. Problem Summary
+    3.1. Problem Area:
+	// What problem or need does this project solve?
+
+    3.2. Justification:
+	// Why is it important to do this project?
+
+4. Technical Description:
+     4.1. Details:
+	// To the extent known, how is this project going to be done?
+	// This information is used by the reviewer to get a feel for the
+	// complexity and risk involved, and
+	// the architectural constraints that this project is working
+	// under.  Try to present alternatives and show relationships to
+	// existing or proposed projects/standards.
+
+     4.2. Bug/RFE Number(s):
+	// List any Bug(s)/RFE(s) which will be addressed by this proposed change.
+	// Provide links to the Bug(s)/RFE(s)where possible.
+        // RFE's must be trackable via an issue in Issue Tracker for
+        // features in the open source distro and in Bugster for value-add 
+        // features to be released in the commercial distro. 
+
+
+     4.3. In Scope:
+	// Aspects that are in scope of this proposal if not obvious from above.
+
+     4.4. Out of Scope:
+	// Aspects that are out of scope if not obvious from above.
+	Virtual Multicast Support (substitute UDP broadcast with a static 
+                                   list of IP Addresses and ports).
+
+
+     4.5. Interfaces:
+	// Interfaces may be commands, files, directory structure, ports,
+	// DTD/Schema, tools, APIs, CLIs, etc. 
+	// Note: In lieu of listing the interfaces in the one pager, providing 
+	// a link to another specification which defines the interfaces
+	// is acceptable.
+
+        4.5.1.  Public Interfaces
+	    // List new, public interfaces this project exports.
+
+	    Add method GroupHandle.getPreviousAliveAndReadyMembers().  // to be used by HA
+
+            Add interface for Rejoin subevent to GMS Join and         
+            JoinedAndReady Notificiation signal.
+
+	    Add diagnostic utility to confirm that multicast is enabled between 
+            a set of machines. This tool diagnoses one issue on why cluster members 
+            may not be seeing each other. The tool only uses java MulticastSocket 
+            and does not use GMS nor its transport. Name for tool and where it will live
+            are to be determined.  Documentation is needed on when and how to use it.
+
+        4.5.2.  Private Interfaces:
+	    // List private interfaces which are externally observable.
+
+        4.5.3.  Deprecated/Removed Interfaces:
+	    // List existing public interfaces which will be deprecated or
+	    // removed by this project.
+
+     4.6. Doc Impact:
+	// List any Documentation (man pages, manuals, service guides...)
+	// that will be impacted by this proposal.
+        Doc new diagnosi utility to confirm that multicast is enabled on a subnet.
+        Assists in diagnosing why dynamic clustering is not working for a set of clustered instances.
+
+
+     4.7. Admin/Config Impact:
+	// How will this change impact the administration of the product?
+	// Identify changes to GUIs, CLI, agents, plugins...
+
+	Changes are required for Admin GUI configuration of a cluster and group-management-service.
+        gmsconfig.rtf describes changes.
+
+
+
+     4.8. HA Impact:
+	// What new requirements does this proposal place on the High
+	// Availability or Clustering aspects of the component?
+        None
+
+        HA has requirements that GMS must meet.
+
+     4.9. I18N/L10N Impact:
+	// Does this proposal impact internationalization or
+	// localization?
+
+     4.10. Packaging, Delivery &amp; Upgrade:
+
+	4.10.1. Packaging
+	    // What packages does this proposal impact?  How will the packages
+	    // be impacted?  Will new IPS/pkg(5) packages need to be created?
+
+	    Not sure what this means. 
+            v3 did not support Shoal GMS.
+           
+            Adding "SHOAL_1_5.jar".
+
+	4.10.2. Delivery
+	    // What impact will this proposal have on product installation?
+            Usage implies that multicast must be enabled on subnet containing a Glassfish cluster with gms-enabled.
+
+        4.10.3. Upgrade and Migration:
+	    // What impact will this proposal have on product upgrade and/or
+	    // migration from prior releases?  Enumerate requirements this
+	    // project has on upgrade and migration.
+
+     4.11. Security Impact:
+	// How does this proposal interact with security-related APIs
+	// or interfaces?  Does it rely on any Java policy or platform
+	// user/permissions implication?  If the feature exposes any
+	// new ports, Or any similar communication points which may 
+        // have security implications, note these here.
+
+        GMS using Grizzly over SSL is not currently in scope.
+
+     4.12. Compatibility Impact
+
+	// Incompatible changes to interfaces that others expect
+	// to be stable may cause other parts of application server or
+	// other dependent products to break. 
+
+	// Discuss changes to the imported or exported interfaces.
+	// Describe how an older version of the interface would
+	// be handled.
+        NONE
+
+     4.13. Dependencies:
+	// List all dependencies that this proposal has on other
+	// proposals, components or products.
+        // LIST dependency component version requirements here.
+
+	grizzly-framework.jar version 1.19.9-beta2 or higher  (GMS code will not compile with 1.19.8 or lower) 
+        grizzly-utils.jar     version 1.19.9-beta2 or higher
+
+	Admin GUI for ability to configure cluster and group-management-service properties.
+        asadmin CLI for setting domain.xml cluster and group-management-service attribute and properties.
+
+        Depend on symbolic token replacement in domain.xml to set BIND_INTERFACE_ADDRESS different for each clustered instance.
+        ${&lt;cluster-name&gt;-GMS_BIND_INTERFACE_ADDRESS}.
+
+        Depend on existence of "asadmin start-cluster" to inject supplemental GMS behavior to call GroupManagmentService.announceGroupStartup()
+
+        Distributed testing of GMS in GF v3.1 environment relies on remote starting/stopping of cluster and instances.
+        asadmin start-cluster, stop-cluster, start-instance, stop-instance.
+         
+
+        Subevent REJOIN of ADD event should be implemented by time that automatic restart of a failed clustered instance is in GF v3.1. 
+
+        Developer level testing of a cluster on one machine requires the ability to easily start multiple clustered instances on one machine.
+        In Glassfish v2.1,  creating multiple instances on one machine resulted in each instance using different ports for HTTP, IIOP, ....
+        CONFIG-05 feature provides this.
+
+     4.14. Testing Impact
+        // How will the new feature(s) introduced by this project be tested?
+	// Do tests exist from prior releases (e.g. v2) that can be reused?  
+	// Will new tests need to be written?  Can they be automated?
+
+
+5. Reference Documents:
+	// List of related documents, if any (BugID's, RFP's, papers).
+	// Explain how/where to obtain the documents, and what each
+	// contains, not just their titles.  
+
+6. Schedule:
+    6.1. Projected Availability:
+	// Indicate which milestone from the current schedule the project 
+	//  will be:
+	//   * Initially integrated (may not be feature complete)
+	//   * Feature complete (ready for handoff to QA)
+	//   * At production quality level</pre> 
+       </div> 
+      </div>
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 02, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

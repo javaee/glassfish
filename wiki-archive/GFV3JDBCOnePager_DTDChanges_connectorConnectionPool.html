@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GFV3JDBCOnePager_DTDChanges_connectorConnectionPool</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> *Date* </th> 
+         <th class="confluenceTh"> *Version* </th> 
+         <th class="confluenceTh"> *Author* </th> 
+         <th class="confluenceTh"> *Remarks* </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Nov-3-2009 </td> 
+         <td class="confluenceTd"> 3 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Added Ping attribute to the DTD. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> May-27-2009 </td> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Modified based on comments from Bill Shannon. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Dec-26-2008 </td> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> Jagadish Ramu, Shalini Muthukrishnan </td> 
+         <td class="confluenceTd"> Created. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;!-- connector-connection-pool
+    connector-connection-pool defines configuration used to create
+    and manage a pool of connections to a EIS. Pool definition is
+    named, and can be referred to by multiple connector-resource
+    elements (See connector-resource).
+
+    Each named pool definition results in a pool instantiated at server
+    start-up. Pool is populated when accessed for the first time. If two or
+    more connector-resource elements point to the same
+    connector-connection-pool element, they are using the same pool of
+    connections, at run time.
+
+    There can be more than one pool for one connection-definition in one
+    resource-adapter.
+
+
+  children
+    property
+        Properties are used to override the ManagedConnectionFactory
+        javabean configuration settings.
+
+        When one or more of these properties are specified, they are passed as
+        is using set&lt;Name&gt;(&lt;Value&gt;) methods to the Resource Adapter's
+        ManagedConnectionfactory class (specified in ra.xml).
+
+
+  attributes
+    associate-with-thread
+|       Associate connection(s) with a thread such that when the
+        same thread is in need of a connection, it can reuse the
+        connection already associated with that thread, thereby not
+        incurring the overhead of getting a connection from the pool.
+        Default value is false.
+|   associate-with-thread-connections-count
+|      Maximum number of connections to associate with a thread. Default
+|      value is 1. Takes effect only when associate-with-thread is true.
+    connection-creation-retry-attempts
+        The number of attempts to create a new connection. Default is
+        0, which implies no retries.
+    connection-creation-retry-interval-in-seconds
+        The time interval between retries while attempting to create
+        a connection. Default is 10 seconds. Effective when
+        connection-creation-retry-attempts is greater than 0.
+    connection-definition-name
+        unique name, identifying one connection-definition in a
+        Resource Adapter. Currently this is ConnectionFactory type.
+    connection-leak-reclaim
+        If enabled, connection will be reusable (put back into pool)
+        after connection-leak-timeout-in-seconds occurs. Default
+        value is false.
+    connection-leak-timeout-in-seconds
+        To aid user in detecting potential connection leaks by the
+        application. When a connection is not returned back to the
+        pool by the application within the specified period, it is
+        assumed to be a potential leak and stack trace of the caller
+        will be logged. Default is 0, which implies there is no leak
+        detection, by default. A positive non-zero value turns on
+        leak detection. Note however that, this attribute only
+        detects if there is a connection leak. The connection can be
+        reclaimed only if connection-leak-reclaim is set to true.
+    fail-all-connections
+        indicates if all connections in the pool must be closed
+        should a single connection fail validation. The default is
+        false. One attempt will be made to re-establish failed
+        connections.
+    idle-timeout-in-seconds
+        maximum time in seconds, that a connection can remain idle in
+        the pool. After this time, the pool implementation can close
+        this connection. Note that this does not control connection
+        timeouts enforced at the database server side. Adminsitrators
+        are advised to keep this timeout shorter than the EIS
+        connection timeout (if such timeouts are configured on the
+        specific EIS), to prevent accumulation of unusable connection
+        in Application Server.
+    is-connection-validation-required
+        This attribute specifies if the connection that is about to
+        be returned is to be validated by the container,
+    lazy-connection-association
+        Connections are lazily associated when an operation is
+        performed on them. Also, they are disassociated when the
+        transaction is completed and a component method ends, which
+        helps reuse of the physical connections. Default value is
+        false.
+    lazy-connection-enlistment
+        Enlist a resource to the transaction only when it is actually
+        used in a method, which avoids enlistment of connections that
+        are not used in a transaction. This also prevents unnecessary
+        enlistment of connections cached in the calling components.
+        Default value is false.
+    match-connections
+        To switch on/off connection matching for the pool. It can be
+        set to false if the administrator knows that the connections
+        in the pool will always be homogeneous and hence a connection
+        picked from the pool need not be matched by the resource
+        adapter. Default value is true.
+    max-connection-usage-count
+        When specified, connections will be re-used by the pool for
+        the specified number of times after which it will be closed.
+        This is useful for instance, to avoid statement-leaks.
+        Default value is 0, which implies the feature is not enabled.
+    max-pool-size
+        maximum number of conections that can be created
+    max-wait-time-in-millis
+        amount of time the caller will wait before getting a
+        connection timeout. The default is 60 seconds. A value of 0
+        will force caller to wait indefinitely.
+    name
+        unique name of the pool definition.
+|   ping
+|       A pool with this attribute set to true is pinged during the pool
+|       creation or reconfiguration to identify and warn of any erroneous
+|       values for the its attributes. Default value of this attribute 
+|       is false.
+    pool-resize-quantity
+        number of connections to be removed when
+        idle-timeout-in-seconds timer expires. Connections that have
+        idled for longer than the timeout are candidates for removal.
+        When the pool size reaches steady-pool-size, the connection
+        removal stops.
+|   pooling
+|      When set to false, this attribute disables connection pooling.
+|      Default value of this attribute is true.
+    resource-adapter-name
+        This is the name of resource adapter. Name of .rar file is
+        taken as the unique name for the resource adapter.
+    steady-pool-size
+        minimum and initial number of connections maintained in the
+        pool.
+    transaction-support
+        Indicates the level of transaction support that this pool
+        will have. Possible values are "XATransaction",
+        "LocalTransaction" and "NoTransaction". This attribute will
+        override that transaction support attribute in the Resource
+        Adapter in a downward compatible way, i.e it can support a
+        lower/equal transaction level than specified in the RA, but
+        not a higher level.
+    validate-atmost-once-period-in-seconds
+        Used to set the time-interval within which a connection is
+        validated atmost once. Default is 0 which implies that it is
+        not enabled. TBD: Documentation is to be corrected.
+
+  Used in:
+    resources
+--&gt;
+&lt;!ELEMENT connector-connection-pool (description?, security-map*, property*)&gt;
+
+&lt;!ATTLIST connector-connection-pool
+    name CDATA #REQUIRED
+    resource-adapter-name CDATA #REQUIRED
+    connection-definition-name CDATA #REQUIRED
+    steady-pool-size CDATA "8"
+    max-pool-size CDATA "32"
+    max-wait-time-in-millis CDATA "60000"
+    pool-resize-quantity CDATA "2"
+    idle-timeout-in-seconds CDATA "300"
+    fail-all-connections %boolean; "false"
+    transaction-support (XATransaction | LocalTransaction | NoTransaction) #IMPLIED
+    is-connection-validation-required %boolean; "false"
+    validate-atmost-once-period-in-seconds CDATA "0"
+    connection-leak-timeout-in-seconds CDATA "0"
+    connection-leak-reclaim %boolean; "false"
+    connection-creation-retry-attempts CDATA "0"
+    connection-creation-retry-interval-in-seconds CDATA "10"
+    lazy-connection-enlistment %boolean; "false"
+    lazy-connection-association %boolean; "false"
+    associate-with-thread %boolean; "false"
+|   associate-with-thread-connections-count CDATA "1"
+    match-connections %boolean; "true"
+    max-connection-usage-count CDATA "0"
+|   ping %boolean; "false"
+|   pooling %boolean; "true"&gt;</pre> 
+       </div> 
+      </div>
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 02, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:44.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

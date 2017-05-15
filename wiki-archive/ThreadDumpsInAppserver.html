@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : ThreadDumpsInAppserver</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   
+     <div class="panel" style="border-width: 1px;">
+      <div class="panelContent"> 
+       <h4><a name="ThreadDumpsInAppserver-ThreadDumpsinAppserver"></a>Thread Dumps in Appserver</h1> 
+       <hr> 
+       <p>Jspwiki style: center</p> 
+      </div>
+     </div> <p></p>
+     <div class="panel" style="border-width: 1px;">
+      <div class="panelContent"> 
+       <div class="table-wrap"> 
+        <table class="confluenceTable">
+         <tbody> 
+          <tr> 
+           <th class="confluenceTh"> Solution </th> 
+           <th class="confluenceTh"> Component </th> 
+           <th class="confluenceTh"> Single </th> 
+           <th class="confluenceTh"> Multimode </th> 
+           <th class="confluenceTh"> Win Service </th> 
+           <th class="confluenceTh"> TD-Console </th> 
+           <th class="confluenceTh"> TD-Server.log </th> 
+           <th class="confluenceTh"> TD-Jvm.log </th> 
+           <th class="confluenceTh"> Rating </th> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> 1 </td> 
+           <td class="confluenceTd"> DAS </td> 
+           <td class="confluenceTd"> X </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd"> No </td> 
+           <td class="confluenceTd"> No </td> 
+           <td class="confluenceTd"> No </td> 
+           <td class="confluenceTd"> 0 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> 1 </td> 
+           <td class="confluenceTd"> DAS </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd"> X </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd"> Yes </td> 
+           <td class="confluenceTd"> No </td> 
+           <td class="confluenceTd"> No </td> 
+           <td class="confluenceTd"> 0 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> 1 </td> 
+           <td class="confluenceTd"> DAS </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd"> X </td> 
+           <td class="confluenceTd"> No </td> 
+           <td class="confluenceTd"> No </td> 
+           <td class="confluenceTd"> No </td> 
+           <td class="confluenceTd"> 0 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> 1 </td> 
+           <td class="confluenceTd"> NA </td> 
+           <td class="confluenceTd"> X </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd"> No </td> 
+           <td class="confluenceTd"> No </td> 
+           <td class="confluenceTd"> No </td> 
+           <td class="confluenceTd"> 0 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> 1 </td> 
+           <td class="confluenceTd"> NA </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd"> X </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd"> Yes </td> 
+           <td class="confluenceTd"> No </td> 
+           <td class="confluenceTd"> No </td> 
+           <td class="confluenceTd"> 0 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> 1 </td> 
+           <td class="confluenceTd"> NA </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd"> X </td> 
+           <td class="confluenceTd"> No </td> 
+           <td class="confluenceTd"> No </td> 
+           <td class="confluenceTd"> No </td> 
+           <td class="confluenceTd"> 0 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> 1 </td> 
+           <td class="confluenceTd"> Inst </td> 
+           <td class="confluenceTd"> X </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd"> No </td> 
+           <td class="confluenceTd"> No </td> 
+           <td class="confluenceTd"> No </td> 
+           <td class="confluenceTd"> 0 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> 1 </td> 
+           <td class="confluenceTd"> Inst </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd"> X </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd"> No </td> 
+           <td class="confluenceTd"> No </td> 
+           <td class="confluenceTd"> No </td> 
+           <td class="confluenceTd"> 0 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> 1 </td> 
+           <td class="confluenceTd"> Inst </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd"> X </td> 
+           <td class="confluenceTd"> No </td> 
+           <td class="confluenceTd"> No </td> 
+           <td class="confluenceTd"> No </td> 
+           <td class="confluenceTd"> 0 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> 2 </td> 
+           <td class="confluenceTd"> DAS </td> 
+           <td class="confluenceTd"> X </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd"> No </td> 
+           <td class="confluenceTd"> No </td> 
+           <td class="confluenceTd"> Yes </td> 
+           <td class="confluenceTd"> 0 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> 2 </td> 
+           <td class="confluenceTd"> DAS </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd"> X </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd"> Yes </td> 
+           <td class="confluenceTd"> Yes </td> 
+           <td class="confluenceTd"> Yes </td> 
+           <td class="confluenceTd"> 0 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> 2 </td> 
+           <td class="confluenceTd"> DAS </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd"> X </td> 
+           <td class="confluenceTd"> No </td> 
+           <td class="confluenceTd"> No </td> 
+           <td class="confluenceTd"> Yes </td> 
+           <td class="confluenceTd"> 0 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> 2 </td> 
+           <td class="confluenceTd"> NA </td> 
+           <td class="confluenceTd"> X </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd"> No </td> 
+           <td class="confluenceTd"> No </td> 
+           <td class="confluenceTd"> Yes </td> 
+           <td class="confluenceTd"> 0 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> 2 </td> 
+           <td class="confluenceTd"> NA </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd"> X </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd"> Yes </td> 
+           <td class="confluenceTd"> Yes </td> 
+           <td class="confluenceTd"> Yes </td> 
+           <td class="confluenceTd"> 0 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> 2 </td> 
+           <td class="confluenceTd"> NA </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd"> X </td> 
+           <td class="confluenceTd"> No </td> 
+           <td class="confluenceTd"> No </td> 
+           <td class="confluenceTd"> Yes </td> 
+           <td class="confluenceTd"> 0 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> 2 </td> 
+           <td class="confluenceTd"> Inst </td> 
+           <td class="confluenceTd"> X </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd"> No </td> 
+           <td class="confluenceTd"> Yes </td> 
+           <td class="confluenceTd"> No </td> 
+           <td class="confluenceTd"> 0 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> 2 </td> 
+           <td class="confluenceTd"> Inst </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd"> X </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd"> No </td> 
+           <td class="confluenceTd"> Yes </td> 
+           <td class="confluenceTd"> No </td> 
+           <td class="confluenceTd"> 0 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> 2 </td> 
+           <td class="confluenceTd"> Inst </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd"> X </td> 
+           <td class="confluenceTd"> No </td> 
+           <td class="confluenceTd"> Yes </td> 
+           <td class="confluenceTd"> No </td> 
+           <td class="confluenceTd"> 0 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> 3 </td> 
+           <td class="confluenceTd"> DAS </td> 
+           <td class="confluenceTd"> X </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd"> No </td> 
+           <td class="confluenceTd"> No </td> 
+           <td class="confluenceTd"> Yes </td> 
+           <td class="confluenceTd"> 0 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> 3 </td> 
+           <td class="confluenceTd"> DAS </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd"> X </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd"> Yes </td> 
+           <td class="confluenceTd"> No </td> 
+           <td class="confluenceTd"> Yes </td> 
+           <td class="confluenceTd"> 0 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> 3 </td> 
+           <td class="confluenceTd"> DAS </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd"> X </td> 
+           <td class="confluenceTd"> No </td> 
+           <td class="confluenceTd"> No </td> 
+           <td class="confluenceTd"> Yes </td> 
+           <td class="confluenceTd"> 0 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> 3 </td> 
+           <td class="confluenceTd"> NA </td> 
+           <td class="confluenceTd"> X </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd"> No </td> 
+           <td class="confluenceTd"> No </td> 
+           <td class="confluenceTd"> Yes </td> 
+           <td class="confluenceTd"> 0 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> 3 </td> 
+           <td class="confluenceTd"> NA </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd"> X </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd"> Yes </td> 
+           <td class="confluenceTd"> No </td> 
+           <td class="confluenceTd"> Yes </td> 
+           <td class="confluenceTd"> 0 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> 3 </td> 
+           <td class="confluenceTd"> NA </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd"> X </td> 
+           <td class="confluenceTd"> No </td> 
+           <td class="confluenceTd"> No </td> 
+           <td class="confluenceTd"> Yes </td> 
+           <td class="confluenceTd"> 0 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> 3 </td> 
+           <td class="confluenceTd"> Inst </td> 
+           <td class="confluenceTd"> X </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd"> No </td> 
+           <td class="confluenceTd"> No </td> 
+           <td class="confluenceTd"> Yes </td> 
+           <td class="confluenceTd"> 0 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> 3 </td> 
+           <td class="confluenceTd"> Inst </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd"> X </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd"> No </td> 
+           <td class="confluenceTd"> No </td> 
+           <td class="confluenceTd"> Yes </td> 
+           <td class="confluenceTd"> 0 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> 3 </td> 
+           <td class="confluenceTd"> Inst </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd"> X </td> 
+           <td class="confluenceTd"> No </td> 
+           <td class="confluenceTd"> No </td> 
+           <td class="confluenceTd"> Yes </td> 
+           <td class="confluenceTd"> 0 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> 4 </td> 
+           <td class="confluenceTd"> DAS </td> 
+           <td class="confluenceTd"> X </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd"> No </td> 
+           <td class="confluenceTd"> No </td> 
+           <td class="confluenceTd"> No </td> 
+           <td class="confluenceTd"> 0 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> 4 </td> 
+           <td class="confluenceTd"> DAS </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd"> X </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd"> Yes </td> 
+           <td class="confluenceTd"> Yes </td> 
+           <td class="confluenceTd"> No </td> 
+           <td class="confluenceTd"> 0 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> 4 </td> 
+           <td class="confluenceTd"> DAS </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd"> X </td> 
+           <td class="confluenceTd"> No </td> 
+           <td class="confluenceTd"> No </td> 
+           <td class="confluenceTd"> No* </td> 
+           <td class="confluenceTd"> 0 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> 4 </td> 
+           <td class="confluenceTd"> NA </td> 
+           <td class="confluenceTd"> X </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd"> No </td> 
+           <td class="confluenceTd"> No </td> 
+           <td class="confluenceTd"> No </td> 
+           <td class="confluenceTd"> 0 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> 4 </td> 
+           <td class="confluenceTd"> NA </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd"> X </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd"> Yes </td> 
+           <td class="confluenceTd"> Yes </td> 
+           <td class="confluenceTd"> No </td> 
+           <td class="confluenceTd"> 0 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> 4 </td> 
+           <td class="confluenceTd"> NA </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd"> X </td> 
+           <td class="confluenceTd"> No </td> 
+           <td class="confluenceTd"> No </td> 
+           <td class="confluenceTd"> No </td> 
+           <td class="confluenceTd"> 0 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> 4 </td> 
+           <td class="confluenceTd"> Inst(next columns for NA) </td> 
+           <td class="confluenceTd"> X </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd"> No </td> 
+           <td class="confluenceTd"> No </td> 
+           <td class="confluenceTd"> No </td> 
+           <td class="confluenceTd"> 0 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> 4 </td> 
+           <td class="confluenceTd"> Inst </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd"> X </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd"> No </td> 
+           <td class="confluenceTd"> Yes </td> 
+           <td class="confluenceTd"> No </td> 
+           <td class="confluenceTd"> 0 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> 4 </td> 
+           <td class="confluenceTd"> Inst </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd"> X </td> 
+           <td class="confluenceTd"> No </td> 
+           <td class="confluenceTd"> No </td> 
+           <td class="confluenceTd"> No </td> 
+           <td class="confluenceTd"> 0 
+            <hr> <p>Jspwiki style: sortable</p></td> 
+          </tr> 
+         </tbody>
+        </table> 
+       </div> 
+      </div>
+     </div> |<p></p> <p>%%<br> %%</p> 
+     <div class="panel" style="border-width: 1px;">
+      <div class="panelContent"> 
+       <div class="table-wrap"> 
+        <table class="confluenceTable">
+         <tbody> 
+          <tr> 
+           <th class="confluenceTh"> Solution </th> 
+           <th class="confluenceTh"> Description </th> 
+           <th class="confluenceTh"> Pro </th> 
+           <th class="confluenceTh"> Con </th> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> 1 </td> 
+           <td class="confluenceTd"> Current Code </td> 
+           <td class="confluenceTd"> No effort. Safe. </td> 
+           <td class="confluenceTd">No TDs in the usual cases </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> 2 </td> 
+           <td class="confluenceTd"> Combined Approach </td> 
+           <td class="confluenceTd"> Guaranteed TDs. Use -XX only where neccessary. Cheap. </td> 
+           <td class="confluenceTd"> TDs sometimes go to jvm.log, sometimes to server.log </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> 3 </td> 
+           <td class="confluenceTd"> All -XX </td> 
+           <td class="confluenceTd"> Guaranteed TDs. Simple to implement. Consistent log files. </td> 
+           <td class="confluenceTd"> Hidden. Not neccessary for instances </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> 4 </td> 
+           <td class="confluenceTd"> no -XX </td> 
+           <td class="confluenceTd"> No usage of -XX args. Cheap </td> 
+           <td class="confluenceTd"> No TDs in many situations </td> 
+          </tr> 
+         </tbody>
+        </table> 
+       </div> 
+       <hr> 
+       <p>Jspwiki style: sortable</p> 
+      </div>
+     </div> <p></p>
+     <div class="panel" style="border-width: 1px;">
+      <div class="panelContent"> 
+       <p>. Details</p> 
+       <p>Option #1 – Current Situation:</p> 
+       <p><b>DAS</b>-- start-domain --verbose gets all TDs in console and server.log<br> start-domain mm – TD goes to console does NOT go to server.log<br> start-domain as a Windows Service – no thread dumps anywhere</p> 
+       <p><b>NA</b><br> ONLY appear in the console in MM </p> 
+       <p><b>Instances -</b></p> 
+       <p>IF the NA was started in MM and is still running --&gt; TDs go to the console.<br> If NA's parent process is dead (the usual situation) then no TDs.</p> 
+       <p>---------------------------------------------------------------------------------</p> 
+       <p>Option #2<br> This is the best option in my opinion. The -XX options are only used on the server<br> types that don't have a guaranteed living parent process. </p> 
+       <p>DAS gets -XX JVM args for threaddumps via its server config in domain.xml<br> NA gets -XX JVM args for threaddumps via its section of processLauncher.xml</p> 
+       <p>NA redirects all instance TDs to the correct server.log file<br> NA TDs go to jvm.log<br> DAS TDs go to jvm.log</p> 
+       <p>note: JVM truncates log file, thus server.log can't be used.<br> note: instances do not get -XX args</p> 
+       <p>PRO:<br> User can fine-tune logfile locations for DAS and possibly NA (pl.xml is "internal")<br> We avoid using -XX args for instances<br> TDs are guaranteed to be logged in almost all cases for DAS and NA and in all cases <br> for instances. The possible exception is if the user runs on a VM that doesn't handle<br> the logging args.<br> Cheap</p> 
+       <p>CON:<br> instance TDs go to server.log. DAS, NA TDs go to jvm.log. <br> If running DAS or NA in MM then TDs will go to both server.log and jvm.log</p> 
+       <p>---------------------------------------------------------------------------------</p> 
+       <p>Option #3<br> Launcher automatically adds the -XX options for all servers. TDs go to the individual <br> jvm.log files.</p> 
+       <p>PRO<br> Simple to implement. <br> Very consistent. All types will have their TDs written to jvm.log<br> Cheap</p> 
+       <p>CON<br> Not a good idea to hide tricky jvm args like this<br> No way for the user to turn it off<br> Instances have to use the -XX args even though they are not needed.</p> 
+       <p>--------------------------------------------------------------------------------------</p> 
+       <p>Option #4<br> This is the best solution we can provide with the requirement of NOT using the -XX args</p> 
+       <p>As long as the parent process is still alive, the TDs will be written to the correct server.log</p> 
+       <p>Note that in the case of instances, the parent process is always alive (NA) so instances will<br> always get the TDs logged properly.</p> 
+       <p>If DAS and/or NA are started in MM (or DAS-verbose mode) the TDs are logged.<br> If DAS and/or NA are started in single-command mode (the usual way), no TDs are logged</p> 
+       <p>PRO<br> No use of the -XX args<br> Cheap</p> 
+       <p>CON<br> The most common situation is that DAS and NA will not be logging TDs at all.</p> 
+       <p>----------------------------------------------------------------------------------------</p> 
+       <hr> 
+       <p>Jspwiki style: h2</p> 
+      </div>
+     </div>center<br> %%<p></p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:49.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

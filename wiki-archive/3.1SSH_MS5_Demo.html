@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : 3.1SSH_MS5_Demo</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="3.1SSH_MS5_Demo-3.1SSHKeyGenerationandGlassFishInstallDemo"></a>3.1 SSH Key Generation and GlassFish Install Demo</h1> <p><em>v1</em></p> <p>Brought to you by: Yamini K B, Rajiv Mordani, Carla Mott, Joe Di Pol</p> 
+     <ul> 
+      <li>Start with one GlassFish system running the DAS, and two blank systems and have a two instance cluster running in just a few minutes.</li> 
+      <li>Two new asadmin utility commands: 
+       <ul> 
+        <li>setup-ssh: sets up SSH authentication on remote hosts</li> 
+        <li>install-node: installs GlassFish, using the DAS installation, onto remote hosts</li> 
+       </ul> </li> 
+      <li>Some rough edges 
+       <ul> 
+        <li>overly chatty output</li> 
+        <li>prompts/formatting/usability</li> 
+        <li>exactly what gets installed</li> 
+        <li>install-node is sequential</li> 
+       </ul> </li> 
+     </ul> <h4><a name="3.1SSH_MS5_Demo-Setup"></a>Setup</h1> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <td class="confluenceTd"> <span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20874327/21365798.png" style="border: 0px solid black"></span><br class="atl-forced-newline"> Setup: 
+          <ol> 
+           <li>GlassFish MS5 installed on one system in /export/tmp/glassfishv3 with DAS running (MacBook in this demo)</li> 
+           <li>Two other instance systems with sshd running and the ability to authenticate using username/password</li> 
+           <li>The directory /export/tmp must exist on the instance systems</li> 
+           <li>All systems must use the same SSH user and password.</li> 
+           <li>GlassFish not installed nor running on instance systems</li> 
+           <li>In the demo script the host names for the two instance systems are adc2101159.us.oracle.com and sidewinder.us.oracle.com</li> 
+          </ol> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.1SSH_MS5_Demo-DemoScript"></a>Demo Script</h1> 
+     <ol> 
+      <li>asadmin setup-ssh adc2101159.us.oracle.com sidewinder.us.oracle.com 
+       <ol> 
+        <li>Answer 'y' to generate key question</li> 
+        <li>Hit &lt;return&gt; when prompted for key file passphrase</li> 
+        <li>Enter SSH password for the host when prompted</li> 
+       </ol> </li> 
+      <li>asadmin install-node --install-location /export/tmp adc2101159.us.oracle.com sidewinder.us.oracle.com</li> 
+      <li>asadmin create-node-ssh --nodehost adc2101159.us.oracle.com n1</li> 
+      <li>asadmin create-node-ssh --nodehost sidewinder.us.oracle.com n2</li> 
+      <li>asadmin create-cluster c1</li> 
+      <li>asadmin create-instance --node n1 --cluster c1 i1</li> 
+      <li>asadmin create-instance --node n2 --cluster c1 i2</li> 
+      <li>asadmin start-cluster --verbose c1</li> 
+      <li>asadmin list-instances --long</li> 
+      <li>In web browser show: 
+       <ol> 
+        <li><a href="http://adc2101159.us.oracle.com:28080/">http://adc2101159.us.oracle.com:28080/</a></li> 
+        <li><a href="http://sidewinder.us.oracle.com:28080/">http://sidewinder.us.oracle.com:28080/</a></li> 
+       </ol> </li> 
+      <li>asadmin stop-cluster c1</li> 
+      <li>asadmin list-instances --long</li> 
+      <li>asadmin uninstall-node --install-location /export/tmp adc2101159.us.oracle.com sidewinder.us.oracle.com</li> 
+     </ol> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874327/21365798.png">DemoDrawing2.png</a> (image/png) 
+      <br> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Sep 29, 2010 by 
+<font color="#0050B2">dipol</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

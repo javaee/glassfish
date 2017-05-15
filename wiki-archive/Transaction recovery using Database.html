@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : Transaction recovery using Database</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>1. Introduction<br> 1.1. Project/Component Working Name:</p> <p>GlassFish Server Open Source Edition 3.1.2 - Support for Storing Transaction Logs in a Database for Recovery after Crash of a Stand-alone Instance or a Delegated Transaction Recovery in a Cluster One Pager</p> <p>1.2. Name(s) and e-mail address of Document Author(s)/Supplier:</p> <p>Marina Vatkina: <a href="mailto:mvatkina@java.net">mvatkina@java.net</a><br> 1.3. Date of This Document:</p> <p>10/28/11</p> <p>2. Project Summary<br> 2.1. Project Description:</p> <p>Achieve functional parity between storing transaction logs in a database and a file system.<br> 2.2. Risks and Assumptions:</p> <p>Risks: complete parity is not achieved.<br> Assumptions:<br> a) Upgrade from an existing table (if the users made it work in v2.x) is not supported.<br> b) Extra manual setup will be required for some databases.</p> <p>3. Problem Summary<br> 3.1. Problem Area:</p> <p>Transaction recovery is an important part of XA transaction support. Currently storing transaction logs in a database has a very limited support - only recovery on a single instance from another database crush is supported. I.e. there is no support for delegated recovery in a cluster or a single server recovery after a crash, if such logs are stored in a database.</p> <p>Storing transaction logs as a set of files leads to a contention in file access under heavy load. Also, in a clustered environment, storing transaction logs on a file system requires mounting a shareable file system (NFS) so that it can be accessible by all instances in a cluster for a delegated transaction recovery.</p> <p>3.2. Justification:</p> <p>Useful feature</p> <p>4. Technical Description:<br> 4.1. Details:</p> <p>A very limited support for storing transaction logs in a database will be extended to a full parity with all features available when such logs are stored in a file system.</p> <p>In addition to the setup described in the current documentation (<a href="http://download.oracle.com/docs/cd/E18930_01/html/821-2416/beanq.html#gcmam">http://download.oracle.com/docs/cd/E18930_01/html/821-2416/beanq.html#gcmam</a>), the following features will be provided:<br> a) Automatic table creation will be done at the time of XA transaction service bootstrap. It will also be possible for the user to create the table themselves. Failed automatic table creation will not be considered an error.<br> b) To allow more database types to be supported out of the box, column type VARCHAR will be used for the LOCALTID column.<br> c) If the users choose not to create a separate non-transactional jdbc resource for the logging, but reference an existing transactional resource but use non-transactional connections for the INSERT statements, a system property "com.sun.jts.dblogging.use.nontx.connection.for.add" set to "true" (-Dcom.sun.jts.dblogging.use.nontx.connection.for.add=true) will be used.</p> <p>4.2. Bug/RFE Number(s):</p> <p>17405</p> <p>4.3. In Scope:</p> <p>Manual and automated delegated transaction recovery for transaction logs stored in a database</p> <p>4.4. Out of Scope:</p> <p>Automatic database type detection and ability to generated DDL and SQL statements for all otherwise supported databases.</p> <p>4.5. Interfaces:<br> 4.5.1 Public Interfaces</p> <p>a) User-visible setup will slightly change</p> <p>b) Interfaces in transaction/internal-api module might need improvements to fix deadlock during transaction recovery on server restart</p> <p>4.5.2 Private Interfaces</p> <p>No change from GlassFish 3.1.1<br> 4.5.3 Deprecated/Removed Interfaces:</p> <p>N/A<br> 4.6. Doc Impact:</p> <p>Will need to update the corresponding section in the "Transaction Logging" chapter to reflect the updated setup.</p> <p>4.7. Admin/Config Impact:</p> <p>Relax requirement for recover-transactions CLI to provide --transactionlogdir value for delegated recovery (this parameter is not used for database based transaction logs).</p> <p>4.8. HA Impact:</p> <p>N/A<br> 4.9. I18N/L10N Impact:</p> <p>Minimal. Only new log and exception messages will need to be localized.</p> <p>4.10. Packaging, Delivery &amp; Upgrade:<br> 4.10.1. Packaging</p> <p>Will follow GlassFish 3.1.2 Packaging.</p> <p>4.10.2. Delivery</p> <p>Will be delivered as part of GlassFish 3.1.2</p> <p>4.10.3. Upgrade and Migration:</p> <p>Upgrade from an existing table will not be supported due to the table DDL changes.</p> <p>4.11. Security Impact:</p> <p>N/A<br> 4.12. Compatibility Impact</p> <p>Column type VARCHAR will be used for the LOCALTID column</p> <p>4.13. Dependencies:</p> <p>No external dependencies.<br> 4.13.1 Internal Dependencies</p> <p>N/A</p> <p>4.13.2 External Dependencies</p> <p>N/A<br> 4.14. Testing Impact:</p> <p>&nbsp;&nbsp; * Regression QA tests will be executed.<br> &nbsp;&nbsp; * New development test setup for cluster with 3 instances and failover behavior will need to be added.</p> <p>5. Reference Documents:</p> <p>6. Schedule:<br> 6.1. Projected Availability:</p> <p>Indicate which milestones from the current schedule the project<br> will be:</p> <p>&nbsp;TBD</p> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Aug 28, 2012 by 
+<font color="#0050B2">10193</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

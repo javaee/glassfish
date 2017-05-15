@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : 3.1TransactionOnePager</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="3.1TransactionOnePager-GlassFishServerOpenSourceEdition3.1DelegatedTransactionRecoveryOnePager"></a>GlassFish Server Open Source Edition 3.1 - Delegated Transaction Recovery One Pager</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#3.1TransactionOnePager-GlassFishServerOpenSourceEdition3.1DelegatedTransactionRecoveryOnePager">GlassFish Server Open Source Edition 3.1 - Delegated Transaction Recovery One Pager</a></li> 
+       <li><a href="#3.1TransactionOnePager-1.Introduction">1. Introduction</a></li> 
+       <ul> 
+        <li><a href="#3.1TransactionOnePager-1.1.Project%2FComponentWorkingName%3A">1.1. Project/Component Working Name:</a></li> 
+        <li><a href="#3.1TransactionOnePager-1.2.Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier%3A">1.2. Name(s) and e-mail address of Document Author(s)/Supplier:</a></li> 
+        <li><a href="#3.1TransactionOnePager-1.3.DateofThisDocument%3A">1.3. Date of This Document:</a></li> 
+       </ul> 
+       <li><a href="#3.1TransactionOnePager-2.ProjectSummary">2. Project Summary</a></li> 
+       <ul> 
+        <li><a href="#3.1TransactionOnePager-2.1.ProjectDescription%3A">2.1. Project Description:</a></li> 
+        <li><a href="#3.1TransactionOnePager-2.2.RisksandAssumptions%3A">2.2. Risks and Assumptions:</a></li> 
+       </ul> 
+       <li><a href="#3.1TransactionOnePager-3.ProblemSummary">3. Problem Summary</a></li> 
+       <ul> 
+        <li><a href="#3.1TransactionOnePager-3.1.ProblemArea%3A">3.1. Problem Area:</a></li> 
+        <li><a href="#3.1TransactionOnePager-3.2.Justification%3A">3.2. Justification:</a></li> 
+       </ul> 
+       <li><a href="#3.1TransactionOnePager-4.TechnicalDescription%3A">4. Technical Description:</a></li> 
+       <ul> 
+        <li><a href="#3.1TransactionOnePager-4.1.Details%3A">4.1. Details:</a></li> 
+        <li><a href="#3.1TransactionOnePager-4.2.Bug%2FRFENumber%28s%29%3A">4.2. Bug/RFE Number(s):</a></li> 
+        <li><a href="#3.1TransactionOnePager-4.3.InScope%3A">4.3. In Scope:</a></li> 
+        <li><a href="#3.1TransactionOnePager-4.4.OutofScope%3A">4.4. Out of Scope:</a></li> 
+        <li><a href="#3.1TransactionOnePager-4.5.Interfaces%3A">4.5. Interfaces:</a></li> 
+        <ul> 
+         <li><a href="#3.1TransactionOnePager-4.5.1PublicInterfaces">4.5.1 Public Interfaces</a></li> 
+         <li><a href="#3.1TransactionOnePager-4.5.2PrivateInterfaces">4.5.2 Private Interfaces</a></li> 
+         <li><a href="#3.1TransactionOnePager-4.5.3Deprecated%2FRemovedInterfaces%3A">4.5.3 Deprecated/Removed Interfaces:</a></li> 
+        </ul> 
+        <li><a href="#3.1TransactionOnePager-4.6.DocImpact%3A">4.6. Doc Impact:</a></li> 
+        <li><a href="#3.1TransactionOnePager-4.7.Admin%2FConfigImpact%3A">4.7. Admin/Config Impact:</a></li> 
+        <li><a href="#3.1TransactionOnePager-4.8.HAImpact%3A">4.8. HA Impact:</a></li> 
+        <li><a href="#3.1TransactionOnePager-4.9.I18N%2FL10NImpact%3A">4.9. I18N/L10N Impact:</a></li> 
+        <li><a href="#3.1TransactionOnePager-4.10.Packaging%2CDelivery%26Upgrade%3A">4.10. Packaging, Delivery &amp; Upgrade:</a></li> 
+        <ul> 
+         <li><a href="#3.1TransactionOnePager-4.10.1.Packaging">4.10.1. Packaging</a></li> 
+         <li><a href="#3.1TransactionOnePager-4.10.2.Delivery">4.10.2. Delivery</a></li> 
+         <li><a href="#3.1TransactionOnePager-4.10.3.UpgradeandMigration%3A">4.10.3. Upgrade and Migration:</a></li> 
+        </ul> 
+        <li><a href="#3.1TransactionOnePager-4.11.SecurityImpact%3A">4.11. Security Impact:</a></li> 
+        <li><a href="#3.1TransactionOnePager-4.12.CompatibilityImpact">4.12. Compatibility Impact</a></li> 
+        <li><a href="#3.1TransactionOnePager-4.13.Dependencies%3A">4.13. Dependencies:</a></li> 
+        <ul> 
+         <li><a href="#3.1TransactionOnePager-4.13.1InternalDependencies">4.13.1 Internal Dependencies</a></li> 
+         <li><a href="#3.1TransactionOnePager-4.13.2ExternalDependencies">4.13.2 External Dependencies</a></li> 
+        </ul> 
+        <li><a href="#3.1TransactionOnePager-4.14.TestingImpact%3A">4.14. Testing Impact:</a></li> 
+       </ul> 
+       <li><a href="#3.1TransactionOnePager-5.ReferenceDocuments%3A">5. Reference Documents:</a></li> 
+       <li><a href="#3.1TransactionOnePager-6.Schedule%3A">6. Schedule:</a></li> 
+       <ul> 
+        <li><a href="#3.1TransactionOnePager-6.1.ProjectedAvailability%3A">6.1. Projected Availability:</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="3.1TransactionOnePager-1.Introduction"></a>1. Introduction</h1> <h4><a name="3.1TransactionOnePager-1.1.Project%2FComponentWorkingName%3A"></a>1.1. Project/Component Working Name:</h2> <p>GlassFish Server Open Source Edition 3.1 - Delegated Transaction Recovery</p> <h4><a name="3.1TransactionOnePager-1.2.Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier%3A"></a>1.2. Name(s) and e-mail address of Document Author(s)/Supplier:</h2> <p>Marina Vatkina: mvatkina@java.net</p> <h4><a name="3.1TransactionOnePager-1.3.DateofThisDocument%3A"></a>1.3. Date of This Document:</h2> <p>05/13/10</p> <h4><a name="3.1TransactionOnePager-2.ProjectSummary"></a>2. Project Summary</h1> <h4><a name="3.1TransactionOnePager-2.1.ProjectDescription%3A"></a>2.1. Project Description:</h2> <p>Support delegated transaction recovery in GlassFish Server Open Source Edition 3.1 with transaction logs stored in a file system. No new functionality will be added as compared to GlassFish 2.1.1.</p> <h4><a name="3.1TransactionOnePager-2.2.RisksandAssumptions%3A"></a>2.2. Risks and Assumptions:</h2> <p>The new implementation will replace GMS fencing used in GlassFish 2.1.1 with locks based on the shared file system and managed by transaction service itself.</p> <h4><a name="3.1TransactionOnePager-3.ProblemSummary"></a>3. Problem Summary</h1> <h4><a name="3.1TransactionOnePager-3.1.ProblemArea%3A"></a>3.1. Problem Area:</h2> <p>Delegated transaction recovery is an important part of the clustering and failover support.</p> <p>GMS fencing as implemented in GlasFish 2.1.1, uses an unreliable protocol to save the state transitions of the recovery states in the shared cache. In addition, there occasional bugs had been reported by customers where turning delegated transaction recovery unintentionally in their loaded system on, caused instances intermittently hanging due to a race condition.</p> <h4><a name="3.1TransactionOnePager-3.2.Justification%3A"></a>3.2. Justification:</h2> <p>Feature parity with GlassFish 2.1.1</p> <h4><a name="3.1TransactionOnePager-4.TechnicalDescription%3A"></a>4. Technical Description:</h1> <h4><a name="3.1TransactionOnePager-4.1.Details%3A"></a>4.1. Details:</h2> <p>Delegated transaction recovery will be supported in two ways:</p> 
+     <ol> 
+      <li>Manual recovery using <em>asadmin</em> CLI</li> 
+      <li>Automated recovery as a result of the GMS notification.</li> 
+     </ol> <p><b>Manual recovery</b> implementation will be based on full support for the <em>--transactionlogdir</em>, <em>--destination</em>, and <em>--target</em> options to the <em>asadmin recover-transactions</em> CLI and will have exactly the same user visible behavior as in GlassFish 2.1.1.</p> <p><b>Automated recovery</b> implementation will replace GMS fencing for locking and storing information about the instances involved in the recovery process with locks based on the file system, managed by transaction service itself.</p> <p>Similar to GlassFish 2.1.1 corresponding feature, the new implementation will allow support of scenarios when a delegated recovery was attempted but not completed in case an instance that started the delegated recovery crashed before completing the task. To do so, an empty file will be placed in a shared file system directory specified by TX-LOG-DIR (which is part of the shared file system setup). The name of the file will be constructed from the instance names, starting with the name of the instance that is performing the recovery. If such instance crashes, and a new instance is designated to do the recovery, the latter can easily identify the former and it's target, to perform an unfinished operation.</p> <p>The new code should also allow for extension to support database based transaction logging.</p> <h4><a name="3.1TransactionOnePager-4.2.Bug%2FRFENumber%28s%29%3A"></a>4.2. Bug/RFE Number(s):</h2> <p><a href="https://github.com/javaee/glassfish/issues/11966">11966</a></p> <p><a href="https://github.com/javaee/glassfish/issues/11967">11967</a></p> <p><a href="https://github.com/javaee/glassfish/issues/12212">12212</a></p> <h4><a name="3.1TransactionOnePager-4.3.InScope%3A"></a>4.3. In Scope:</h2> <p>Manual and automated delegated transaction recovery for transaction logs stored in a shared file system</p> <h4><a name="3.1TransactionOnePager-4.4.OutofScope%3A"></a>4.4. Out of Scope:</h2> <p>Delegated transaction recovery for logs not accessible from another instance or stored in a database.</p> <h4><a name="3.1TransactionOnePager-4.5.Interfaces%3A"></a>4.5. Interfaces:</h2> <h4><a name="3.1TransactionOnePager-4.5.1PublicInterfaces"></a>4.5.1 Public Interfaces</h3> <p>No change from <a href="TransactionServiceHalfPager.html" title="TransactionServiceHalfPager">GlassFish 3.0</a></p> 
+     <ul> 
+      <li>Interface: <em>javax.transaction</em></li> 
+      <li>Stability: Standard</li> 
+      <li>Exporting Project: <a href="http://java.sun.com/products/jta/">Java Transaction API</a></li> 
+      <li>Comments:</li> 
+     </ul> 
+     <ul> 
+      <li>Interface: All classes and interfaces in <em>transaction/internal-api</em> module</li> 
+      <li>Stability: Evolving</li> 
+      <li>Comments: 
+       <ul> 
+        <li><em>com.sun.enterprise.transaction.</em><b><em>api</em></b> package contains interfaces to be <b>used</b> by modules accessing transaction service</li> 
+        <li><em>com.sun.enterprise.transaction.</em><b><em>spi</em></b> package contains interfaces to be <b>implemented</b> by modules interacting with transaction service (like connectors, or Web, or EJB)</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li>Interface: asadmin recover-transactions</li> 
+      <li>Comments: stability defined by GlassFish CLI.</li> 
+     </ul> <h4><a name="3.1TransactionOnePager-4.5.2PrivateInterfaces"></a>4.5.2 Private Interfaces</h3> <p>No change from <a href="TransactionServiceHalfPager.html" title="TransactionServiceHalfPager">GlassFish 3.0</a></p> <h4><a name="3.1TransactionOnePager-4.5.3Deprecated%2FRemovedInterfaces%3A"></a>4.5.3 Deprecated/Removed Interfaces:</h3> <p>N/A</p> <h4><a name="3.1TransactionOnePager-4.6.DocImpact%3A"></a>4.6. Doc Impact:</h2> <p>While 3.1 will support only transaction logs stored in a shared file system, the 2.x documentation (incorrectly) listed storing them in a database as a valid option. The latter was not fully supported, and if we chose to keep any relevant description in the docs, we will need to clearly document all limitations.</p> <h4><a name="3.1TransactionOnePager-4.7.Admin%2FConfigImpact%3A"></a>4.7. Admin/Config Impact:</h2> <p>Will add support for <em>--target</em> option for transaction service CLI <em>recover-transactions</em>. Corresponding behavior will be identical to GlassFish 2.1.1.</p> <h4><a name="3.1TransactionOnePager-4.8.HAImpact%3A"></a>4.8. HA Impact:</h2> <p>N/A</p> <h4><a name="3.1TransactionOnePager-4.9.I18N%2FL10NImpact%3A"></a>4.9. I18N/L10N Impact:</h2> <p>Minimal. Only new log and exception messages will need to be localized.</p> <h4><a name="3.1TransactionOnePager-4.10.Packaging%2CDelivery%26Upgrade%3A"></a>4.10. Packaging, Delivery &amp; Upgrade:</h2> <h4><a name="3.1TransactionOnePager-4.10.1.Packaging"></a>4.10.1. Packaging</h3> <p>Will follow <a href="GlassFishv3.1Packaging.html" title="GlassFishv3.1Packaging">GlassFishv 3.1 Packaging</a></p> <h4><a name="3.1TransactionOnePager-4.10.2.Delivery"></a>4.10.2. Delivery</h3> <p>No setup changes are expected in comparison with GlassFish 2.1.1.</p> <h4><a name="3.1TransactionOnePager-4.10.3.UpgradeandMigration%3A"></a>4.10.3. Upgrade and Migration:</h3> <p>Do not expect any requirements.</p> <h4><a name="3.1TransactionOnePager-4.11.SecurityImpact%3A"></a>4.11. Security Impact:</h2> <p>N/A</p> <h4><a name="3.1TransactionOnePager-4.12.CompatibilityImpact"></a>4.12. Compatibility Impact</h2> <p>No compatibility changes are expected.</p> <h4><a name="3.1TransactionOnePager-4.13.Dependencies%3A"></a>4.13. Dependencies:</h2> <p>No external dependencies.</p> <h4><a name="3.1TransactionOnePager-4.13.1InternalDependencies"></a>4.13.1 Internal Dependencies</h3> 
+     <ul> 
+      <li>admin cluster support</li> 
+      <li>admin module changes to support new asadmin parameter</li> 
+      <li>GMS ( for failure detection notifications )</li> 
+     </ul> <h4><a name="3.1TransactionOnePager-4.13.2ExternalDependencies"></a>4.13.2 External Dependencies</h3> <p>N/A</p> <h4><a name="3.1TransactionOnePager-4.14.TestingImpact%3A"></a>4.14. Testing Impact:</h2> 
+     <ul> 
+      <li>Regression QA tests will be executed.</li> 
+      <li>New development test setup for cluster with 3 instances and failover behavior will need to be added.</li> 
+     </ul> <h4><a name="3.1TransactionOnePager-5.ReferenceDocuments%3A"></a>5. Reference Documents:</h1> 
+     <ul> 
+      <li><a href="http://java.sun.com/products/jts/">Java Transaction Service specification</a></li> 
+      <li><a href="TransactionServiceHalfPager.html" title="TransactionServiceHalfPager">Transaction Service half pager for GlassFish 3.0 features</a></li> 
+      <li><a href="http://docs.sun.com/app/docs/doc/820-4336/gaxim?a=view">Distributed Transaction Recovery section in v2.1 Developer's Guide</a></li> 
+      <li><a href="https://shoal.java.net/ShoalGroupEventNotifications.html">Shoal Group Event Notifications</a></li> 
+      <li><a href="http://blogs.oracle.com/shreedhar/entry/glassfish_hidden_nugget_automatic_delegated">Shreedhar' s blog on Automatic Distributed Transaction Recovery Service in v2</a></li> 
+     </ul> <h4><a name="3.1TransactionOnePager-6.Schedule%3A"></a>6. Schedule:</h1> <h4><a name="3.1TransactionOnePager-6.1.ProjectedAvailability%3A"></a>6.1. Projected Availability:</h2> <p>Indicate which milestones from the current schedule the project<br> will be:</p> 
+     <ul> 
+      <li>Integration of this feature will begin with when internal dependencies are resolved, with Milestone 3 the latest, and continue through Milestone 5.</li> 
+      <li>The features will be complete at Milestone 5.</li> 
+      <li>At production quality level by the HCF.</li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Aug 28, 2012 by 
+<font color="#0050B2">10193</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

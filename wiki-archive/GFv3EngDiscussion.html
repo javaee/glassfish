@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GFv3EngDiscussion</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GFv3EngDiscussion-Objectiveofthemeeting"></a>Objective of the meeting </h1> <p>We will schedule 30 minutes to 1 hour time for every module/technical area. The initial list of topics to be covered is below. We will start with product wide issues first and may decide to drill down further in some areas. For all topics, please be sure to address following bullet points in addition to the technical items noted under that topic.</p> <h4><a name="GFv3EngDiscussion-Scope"></a>Scope </h3> 
+     <ul> 
+      <li>Determine the feature set for the release (Reference: PRD)</li> 
+      <li>How many functional specifications/one pagers are needed? When will the specs be ready for asarch review?</li> 
+     </ul> <h4><a name="GFv3EngDiscussion-ReleasePlan"></a>Release Plan </h3> 
+     <ul> 
+      <li>Binding of PCD items to the timeline – Sep '08, JavaOne '09, Final Release (Time TBD)</li> 
+     </ul> <h4><a name="GFv3EngDiscussion-TechnicalReadiness"></a>Technical Readiness </h3> 
+     <ul> 
+      <li>What is your module definition?</li> 
+      <li>What is your worksapce structure? (Refer to best practices, to be updated later, List of Exports/Imports)</li> 
+      <li>How far are you into modularizing your area? What is the remaining work?</li> 
+      <li>What do you depend on? What do you need from other modules?</li> 
+      <li>What are the "consumabes" for this area? A "consumable" is something that can be used outside of GlassFish (example, as a library jar file)</li> 
+     </ul> <h4><a name="GFv3EngDiscussion-OpenItems"></a>Open Items </h3> 
+     <ul> 
+      <li>Open items in your area. The goal is to ensure wider visibility of the issues.</li> 
+     </ul> 
+     <hr> <h4><a name="GFv3EngDiscussion-Schedule"></a>Schedule</h1> 
+     <ul> 
+      <li>All times in US/Pacific Time Zone</li> 
+      <li>We use the following document as a whiteboard during the meeting. Please add your google id <a href="GFv3EngDiscussionAttendees.html" title="GFv3EngDiscussionAttendees">here</a> to request access. 
+       <ul> 
+        <li><a href="http://docs.google.com/Doc-dhd4f927_1f99vr3f7&amp;invite=cqzx7zn">http://docs.google.com/Doc-dhd4f927_1f99vr3f7&amp;invite=cqzx7zn</a></li> 
+       </ul> </li> 
+      <li>Dial-in Number: 
+       <ul> 
+        <li>Toll Free: (866) 545-5227</li> 
+        <li>Int'l Access/Caller Paid: 215-446-3648</li> 
+        <li>Access Code: 3535518</li> 
+       </ul> </li> 
+      <li>GlassFish Channel (Video) 
+       <ul> 
+        <li><a href="http://www.ustream.tv/channel/theaquarium">http://www.ustream.tv/channel/theaquarium</a></li> 
+       </ul> </li> 
+     </ul> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Date </th> 
+         <th class="confluenceTh"> Time </th> 
+         <th class="confluenceTh"> Topic </th> 
+         <th class="confluenceTh"> Driver </th> 
+         <th class="confluenceTh"> Scribe </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> Notes </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> June 03, 2008 </td> 
+         <td class="confluenceTd"> 14:00-14:15 </td> 
+         <td class="confluenceTd"> Overview </td> 
+         <td class="confluenceTd"> Eduardo </td> 
+         <td class="confluenceTd"> Abhijit </td> 
+         <td class="confluenceTd"> What are these meetings about </td> 
+         <td class="confluenceTd"> <a href="http://wiki.glassfish.java.net/attach/GFv3EngDiscussion/GFv3EngMeeting.html">Notes </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> June 03, 2008 </td> 
+         <td class="confluenceTd"> 14:15-16:00 </td> 
+         <td class="confluenceTd"> GF v3 Lite Features </td> 
+         <td class="confluenceTd"> Jerome </td> 
+         <td class="confluenceTd"> Abhijit </td> 
+         <td class="confluenceTd"> Overall v3 Lite Plan and Functional Specifications, Features </td> 
+         <td class="confluenceTd"> <a href="http://wiki.glassfish.java.net/attach/GFv3EngDiscussion/GFv3LiteFeatures.html">Notes </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> June 04, 2008 </td> 
+         <td class="confluenceTd"> 16:00-17:00 </td> 
+         <td class="confluenceTd"> OSGi </td> 
+         <td class="confluenceTd"> Sahoo </td> 
+         <td class="confluenceTd"> Jerome </td> 
+         <td class="confluenceTd"> What does it mean to do OSGi? What's in it for our users </td> 
+         <td class="confluenceTd"> <a href="http://wiki.glassfish.java.net/attach/GFv3EngDiscussion/GlassFishV3AndOSGi-June2008.pdf">Presentation </a> <a href="GFv3EngDiscussOSGiNote.html" title="GFv3EngDiscussOSGiNote">Notes </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> June 05, 2008 </td> 
+         <td class="confluenceTd"> 16:00-17:00 </td> 
+         <td class="confluenceTd"> Web Tier </td> 
+         <td class="confluenceTd"> Jan/Jean-Francois </td> 
+         <td class="confluenceTd"> Jan </td> 
+         <td class="confluenceTd"> Web Tier Features for v3 Lite </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> June 06, 2008 </td> 
+         <td class="confluenceTd"> 11:00-12:00 </td> 
+         <td class="confluenceTd"> Scripting </td> 
+         <td class="confluenceTd"> Vivek </td> 
+         <td class="confluenceTd"> Jerome </td> 
+         <td class="confluenceTd"> Overview of scripting features for v3 Lite. jRuby Performance </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> June 06, 2008 </td> 
+         <td class="confluenceTd"> 13:00-14:00 </td> 
+         <td class="confluenceTd"> Embedded </td> 
+         <td class="confluenceTd"> Byron </td> 
+         <td class="confluenceTd"> Nazrul </td> 
+         <td class="confluenceTd"> Roadmap for embedded GlassFish. Pending Work and Open Issues </td> 
+         <td class="confluenceTd"> <a href="http://wiki.glassfish.java.net/attach/GFv3EngDiscussion/Embedded.odp">Presentation </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> June 06, 2008 </td> 
+         <td class="confluenceTd"> 14:00-15:00 </td> 
+         <td class="confluenceTd"> Packaging </td> 
+         <td class="confluenceTd"> Bhakti, Snjezana, Tom Mueller </td> 
+         <td class="confluenceTd"> Nazrul </td> 
+         <td class="confluenceTd"> IPS, Update Center, How many repositories? Beta vs Final, OSGi bundle repository alignment, maven repository alignment, Options for on-demand downloading of components, External components in update center (Spring, Hibernate etc.) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> June 11, 2008 </td> 
+         <td class="confluenceTd"> 14:00-15:00 </td> 
+         <td class="confluenceTd"> Build </td> 
+         <td class="confluenceTd"> Bhakti </td> 
+         <td class="confluenceTd"> Sahoo </td> 
+         <td class="confluenceTd"> Off-Line build, Complete build from source, When to switch from snapshot to versions, Build of native code </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> June 20, 2008 </td> 
+         <td class="confluenceTd"> 9:15-10:00 </td> 
+         <td class="confluenceTd"> Deployment </td> 
+         <td class="confluenceTd"> Hong/Tim </td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd"> Deployment v3 plan </td> 
+         <td class="confluenceTd"> <span class="error">[Presentation |^GlassFishV3Planning.pdf]</span> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Jun 20, 2008 </td> 
+         <td class="confluenceTd"> 10-10:45 </td> 
+         <td class="confluenceTd"> Admin GUI </td> 
+         <td class="confluenceTd"> Anissa, Ken </td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd"> Delivery for V3 Lite </td> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875898/21365126.pdf">Presentation </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> June 20, 2008 </td> 
+         <td class="confluenceTd"> 11 - 11:45 </td> 
+         <td class="confluenceTd"> Monitoring </td> 
+         <td class="confluenceTd"> Harpreet, Jeniffer, Mahesh, Rajeshwar </td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd"> Monitoring framework, gProbes </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> TBD </td> 
+         <td class="confluenceTd"> TBD </td> 
+         <td class="confluenceTd"> Unit Test </td> 
+         <td class="confluenceTd"> Jerome </td> 
+         <td class="confluenceTd"> Kedar </td> 
+         <td class="confluenceTd"> Unit test strategy. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>------</p> <h4><a name="GFv3EngDiscussion-Topicstobescheduled"></a>Topics to be scheduled </h1> 
+     <ul> 
+      <li>Distributions (Lite, Full, Embedded, GEM, Nucleus) (Abhijit, Notes: Jerome) 
+       <ul> 
+        <li>Embedded (Byron, Notes: Nazrul) Friday</li> 
+        <li>GEM (Vivek and Jerome, Notes: One of them)</li> 
+        <li>Nucleus Cleanup (Jerome, Notes: Siraj)</li> 
+       </ul> </li> 
+      <li>Installer (Thursday)</li> 
+      <li>Performance 
+       <ul> 
+        <li>Developer use case</li> 
+       </ul> </li> 
+      <li>Rapid Deploy</li> 
+      <li>Monitoring (Friday)</li> 
+      <li>Configuration</li> 
+      <li>Cluster Management</li> 
+      <li>JSR-77</li> 
+      <li>Pluggability (Admin Console and CLI), Skins, OEM</li> 
+      <li>EJB 3.1</li> 
+      <li>Web Services (Metro)</li> 
+      <li>Administration Interface 
+       <ul> 
+        <li>CLI</li> 
+        <li>REST API for Administration</li> 
+       </ul> </li> 
+      <li>IDE Deliverables 
+       <ul> 
+        <li>Run with JRE</li> 
+       </ul> </li> 
+      <li>Upgrade implicaiton of GlassFish v3 Lite 
+       <ul> 
+        <li>No upgrade from v2 or prior releases of v3</li> 
+        <li>Desirable to upgrade to a future "final" version of v3 Lite</li> 
+       </ul> </li> 
+     </ul> 
+     <hr> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875898/21364855.pdf">GlassFishV3AndOSGi-June2008.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875898/21365126.pdf">GlassFishV3LiteAdminConsole.pdf</a> (application/pdf) 
+      <br> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Nov 07, 2011 by 
+<font color="#0050B2">3070</font>. Exported from wikis.oracle.com on May 27, 2015 20:44.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

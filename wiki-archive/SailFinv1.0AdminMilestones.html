@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : SailFinv1.0AdminMilestones</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="SailFinv1.0AdminMilestones-SailFinv1.0AdminMilestones"></a>SailFin v1.0 Admin Milestones</h1> <p><a href="./MilestoneSchedule.html">Overall Milestone Page</a></p> <p><b>Beta Completion Date: 21 January 2008</b></p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> ID </th> 
+         <th class="confluenceTh"> Feature/Task </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> Owner </th> 
+         <th class="confluenceTh"> Status </th> 
+         <th class="confluenceTh"> Notes/Updates </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1.1 </td> 
+         <td class="confluenceTd"> CLB dynamic reconfig </td> 
+         <td class="confluenceTd"> create instance not generating events </td> 
+         <td class="confluenceTd"> Srini </td> 
+         <td class="confluenceTd"> Completed </td> 
+         <td class="confluenceTd">-Raised GlassFish issues 3954,3955. Needs follow up with Kedar for fix&lt;br&gt;-Srini is working with Pankaj on an alternate solution.&lt;br&gt;-Fix checked in on 16th Jan </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1.2 </td> 
+         <td class="confluenceTd"> CLB </td> 
+         <td class="confluenceTd"> P1-364, P2s-186,306,321,369 </td> 
+         <td class="confluenceTd"> Srini </td> 
+         <td class="confluenceTd"> Completed </td> 
+         <td class="confluenceTd">-364 &amp; 369 fixed on Jan10 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1.3 </td> 
+         <td class="confluenceTd"> CLB </td> 
+         <td class="confluenceTd"> Config folder for default-cluster is missing as a result of which copy configuration fails. GlassFish admin needs to create the directories for all configurations in domain.xml </td> 
+         <td class="confluenceTd"> Kedar/Srini </td> 
+         <td class="confluenceTd"> Completed </td> 
+         <td class="confluenceTd">-Raised GlassFish issue 3980&lt;br&gt;-Fix checked in by Kedar on 17th Jan </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd"> Security dynamic reconfig </td> 
+         <td class="confluenceTd"> Provide event and event listener interfaces </td> 
+         <td class="confluenceTd"> Yamini </td> 
+         <td class="confluenceTd"> Completed </td> 
+         <td class="confluenceTd">Checked in on Jan11 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3.1 </td> 
+         <td class="confluenceTd"> AMX </td> 
+         <td class="confluenceTd"> Introduce new AMX mbeans for CLB and security elements. Define all interfaces along with javadoc </td> 
+         <td class="confluenceTd"> Yamini </td> 
+         <td class="confluenceTd"> Completed </td> 
+         <td class="confluenceTd">-Checked in on Jan21st </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3.2 </td> 
+         <td class="confluenceTd"> AMX </td> 
+         <td class="confluenceTd"> Removal of AMX feature as system property </td> 
+         <td class="confluenceTd"> Yamini </td> 
+         <td class="confluenceTd"> Completed </td> 
+         <td class="confluenceTd">-Changes reviewed by Lloyd, has to be tested and checked in&lt;br&gt;-Checked in on 14th Jan </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3.3 </td> 
+         <td class="confluenceTd"> AMX </td> 
+         <td class="confluenceTd"> Enhancements to AMX extension </td> 
+         <td class="confluenceTd"> Yamini </td> 
+         <td class="confluenceTd"> Completed </td> 
+         <td class="confluenceTd">-Changes approved by Lloyd. Need to test and checkin&lt;br&gt;-Checked in on 14th Jan </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3.4 </td> 
+         <td class="confluenceTd"> AMX </td> 
+         <td class="confluenceTd"> Load AMX feature name "COMMS_APPSERV_FEATURE" during container startup. Client can query via AMX API for this feature to identity SailFin instances </td> 
+         <td class="confluenceTd"> Yamini </td> 
+         <td class="confluenceTd"> Completed </td> 
+         <td class="confluenceTd">-GlassFish changes checked in by Lloyd. Utilize the exposed API in SailFin startup&lt;br&gt;-Checked in on 14th Jan </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4 </td> 
+         <td class="confluenceTd"> Domain DTD </td> 
+         <td class="confluenceTd"> DTD version needs to be revved up to 1.4 Separate out GlassFish and SailFin config beans. Modify/extend server validator to pick up correct DTD during runtime </td> 
+         <td class="confluenceTd"> Srini </td> 
+         <td class="confluenceTd"> Completed </td> 
+         <td class="confluenceTd">Checked in on 21st Jan </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5 </td> 
+         <td class="confluenceTd"> Admin </td> 
+         <td class="confluenceTd"> Renaming of SessionManager to DialogManager has impacted admin module. AMX and stats interfaces need to be changed </td> 
+         <td class="confluenceTd"> Yamini </td> 
+         <td class="confluenceTd"> Completed </td> 
+         <td class="confluenceTd">Checked in on Jan11 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6 </td> 
+         <td class="confluenceTd"> Container dynamic reconfig </td> 
+         <td class="confluenceTd"> Pending dynamic reconfig tasks </td> 
+         <td class="confluenceTd"> Eltjo </td> 
+         <td class="confluenceTd">Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 7 </td> 
+         <td class="confluenceTd"> Stack config </td> 
+         <td class="confluenceTd"> dispatcher.xml has been merged into domain.xml Implementation changes to pick up layer config from domain.xml needs to be done. This has an impact on CLB module as well. </td> 
+         <td class="confluenceTd"> Eltjo </td> 
+         <td class="confluenceTd">Completed </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p><b>Milestone 3 Completion Date: 10 December2007</b></p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> ID </th> 
+         <th class="confluenceTh"> Feature/Task </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> Owner </th> 
+         <th class="confluenceTh"> Status </th> 
+         <th class="confluenceTh"> Date of completion </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 0 </td> 
+         <td class="confluenceTd"> AMX </td> 
+         <td class="confluenceTd"> Provide AMX support for SailFin MBeans </td> 
+         <td class="confluenceTd"> Yamini </td> 
+         <td class="confluenceTd"> Completed </td> 
+         <td class="confluenceTd">20 Nov 2007 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 0.1 </td> 
+         <td class="confluenceTd"> AMX </td> 
+         <td class="confluenceTd"> Define SailFin AMX MBeans interfaces </td> 
+         <td class="confluenceTd"> Yamini </td> 
+         <td class="confluenceTd"> Completed </td> 
+         <td class="confluenceTd">28 Nov 2007 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> GUI </td> 
+         <td class="confluenceTd"> Screens </td> 
+         <td class="confluenceTd"> Irfan </td> 
+         <td class="confluenceTd"> Completed </td> 
+         <td class="confluenceTd">10.Dec.2007 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1.1 </td> 
+         <td class="confluenceTd"> GUI </td> 
+         <td class="confluenceTd"> Deployment </td> 
+         <td class="confluenceTd"> Irfan </td> 
+         <td class="confluenceTd"> Completed </td> 
+         <td class="confluenceTd">15.Nov.2007 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1.2 </td> 
+         <td class="confluenceTd"> GUI </td> 
+         <td class="confluenceTd"> SIP Service </td> 
+         <td class="confluenceTd"> Irfan </td> 
+         <td class="confluenceTd"> Completed </td> 
+         <td class="confluenceTd">19.Nov.2007 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1.3 </td> 
+         <td class="confluenceTd"> GUI </td> 
+         <td class="confluenceTd"> CLB </td> 
+         <td class="confluenceTd"> Irfan </td> 
+         <td class="confluenceTd"> Completed </td> 
+         <td class="confluenceTd">23.Nov.2007 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1.4 </td> 
+         <td class="confluenceTd"> GUI </td> 
+         <td class="confluenceTd"> SIP Container Configuration </td> 
+         <td class="confluenceTd"> Irfan </td> 
+         <td class="confluenceTd"> Completed </td> 
+         <td class="confluenceTd">28.Nov.2007 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1.5 </td> 
+         <td class="confluenceTd"> GUI </td> 
+         <td class="confluenceTd"> Monitoring &amp; Log Level Settings </td> 
+         <td class="confluenceTd"> Irfan </td> 
+         <td class="confluenceTd"> These are configured as properties and hence do not need a GUI change. </td> 
+         <td class="confluenceTd">30.Nov.2007 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1.6 </td> 
+         <td class="confluenceTd"> GUI </td> 
+         <td class="confluenceTd"> Security </td> 
+         <td class="confluenceTd"> Irfan </td> 
+         <td class="confluenceTd"> Completed </td> 
+         <td class="confluenceTd">03.Dec.2007 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1.8 </td> 
+         <td class="confluenceTd"> GUI </td> 
+         <td class="confluenceTd"> Name changes &amp; Icons </td> 
+         <td class="confluenceTd"> Irfan </td> 
+         <td class="confluenceTd"> Still under discussion </td> 
+         <td class="confluenceTd">06.Dec.2007 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd"> Call Flow Extension </td> 
+         <td class="confluenceTd"> Extend GlassFish call flow mechanism to support new request type for SIP </td> 
+         <td class="confluenceTd"> Vijay </td> 
+         <td class="confluenceTd"> Completed </td> 
+         <td class="confluenceTd">14 Nov 2007 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3 </td> 
+         <td class="confluenceTd"> Call Flow Implementation </td> 
+         <td class="confluenceTd"> Actual implementation for tracing SIP messages </td> 
+         <td class="confluenceTd"> Peter </td> 
+         <td class="confluenceTd"> Completed </td> 
+         <td class="confluenceTd">21 Nov 2007 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4 </td> 
+         <td class="confluenceTd"> Domain extension </td> 
+         <td class="confluenceTd"> Revv up DTD version to 1.4 and modify server validator </td> 
+         <td class="confluenceTd"> Srini </td> 
+         <td class="confluenceTd"> Still under discussion </td> 
+         <td class="confluenceTd">30 Nov 2007 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5 </td> 
+         <td class="confluenceTd"> Domain.xml elements validation </td> 
+         <td class="confluenceTd"> Extend validation-descriptors.xml </td> 
+         <td class="confluenceTd"> Srini </td> 
+         <td class="confluenceTd"> Completed </td> 
+         <td class="confluenceTd">7 Dec 2007 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6 </td> 
+         <td class="confluenceTd"> Security commands </td> 
+         <td class="confluenceTd"> Support for identity assertion trust management </td> 
+         <td class="confluenceTd"> Yamini </td> 
+         <td class="confluenceTd"> Completed </td> 
+         <td class="confluenceTd">9 Dec 2007 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 7 </td> 
+         <td class="confluenceTd"> Monitoring </td> 
+         <td class="confluenceTd"> StatsDescriptionHelper extension to localize SailFin monitoring objects description texts </td> 
+         <td class="confluenceTd"> Yamini </td> 
+         <td class="confluenceTd"> Completed </td> 
+         <td class="confluenceTd">16 Nov 2007 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 8 </td> 
+         <td class="confluenceTd"> Monitoring </td> 
+         <td class="confluenceTd"> Dynamic reconfiguration support for monitoring level </td> 
+         <td class="confluenceTd"> Yamini </td> 
+         <td class="confluenceTd"> Completed </td> 
+         <td class="confluenceTd"> 7 Dec 2007 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 9 </td> 
+         <td class="confluenceTd"> isEE() methods cleanup </td> 
+         <td class="confluenceTd"> Remove PE/EE from interface names </td> 
+         <td class="confluenceTd"> Vijay </td> 
+         <td class="confluenceTd"> Partly done </td> 
+         <td class="confluenceTd">22 Nov 2007 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 10 </td> 
+         <td class="confluenceTd"> Dynamic reconfiguration support for SIP container management </td> 
+         <td class="confluenceTd"> Provide listener implementations for SIP elements requiring dynamic reconfig </td> 
+         <td class="confluenceTd"> Eltjo </td> 
+         <td class="confluenceTd"> Almost ready </td> 
+         <td class="confluenceTd">10 Dec 2007 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 10.1 </td> 
+         <td class="confluenceTd"> Dynamic reconfig </td> 
+         <td class="confluenceTd"> Provide event interfaces </td> 
+         <td class="confluenceTd"> Yamini </td> 
+         <td class="confluenceTd"> Completed </td> 
+         <td class="confluenceTd">22 Nov 2007 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 11 </td> 
+         <td class="confluenceTd"> Cluster profile style sheets cleanup </td> 
+         <td class="confluenceTd"> Re-structure the XSL rules into a single file, currently they are split into 4 files </td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd"> Low priority for M3 </td> 
+         <td class="confluenceTd">- </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 12 </td> 
+         <td class="confluenceTd"> CLB log level issue </td> 
+         <td class="confluenceTd"> Debug and fix the issue of CLB log level showing up in GlassFish node agents </td> 
+         <td class="confluenceTd"> Vijay </td> 
+         <td class="confluenceTd"> Completed </td> 
+         <td class="confluenceTd">20 Nov 2007 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 13 </td> 
+         <td class="confluenceTd"> Module dependencies cleanup (Issue 116) </td> 
+         <td class="confluenceTd"> Fix module dependencies and layering </td> 
+         <td class="confluenceTd"> Eltjo </td> 
+         <td class="confluenceTd"> Low priority for M3 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 14 </td> 
+         <td class="confluenceTd"> Mbeans for shared elements </td> 
+         <td class="confluenceTd"> Describe Mbeans for shared elements (like access-log, session-config etc.) in sip-admin-descriptors.xml </td> 
+         <td class="confluenceTd"> Yamini </td> 
+         <td class="confluenceTd"> Completed </td> 
+         <td class="confluenceTd">12 Nov 2007 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 15 </td> 
+         <td class="confluenceTd"> Pending CLB tasks </td> 
+         <td class="confluenceTd"> #183, #190, #191, remove create-converged-lb-config command, introduce set-dcr-file command </td> 
+         <td class="confluenceTd"> Srini </td> 
+         <td class="confluenceTd"> Completed </td> 
+         <td class="confluenceTd">10 Dec 2007 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 16 </td> 
+         <td class="confluenceTd"> Bugs: <a href="https:--sailfin.java.net-issues-buglist.cgi?subcomponent=admin_gui&amp;issue_status=UNCONFIRMED&amp;issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED">GUI </a> <a href="https:--sailfin.java.net-issues-buglist.cgi?subcomponent=admin&amp;issue_status=UNCONFIRMED&amp;issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED">Admin </a> </td> 
+         <td class="confluenceTd"> Evaluate and fix bugs </td> 
+         <td class="confluenceTd"> All </td> 
+         <td class="confluenceTd"> In process </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 17 </td> 
+         <td class="confluenceTd"> Developer tests </td> 
+         <td class="confluenceTd"> Add developer test cases for every checkin (where ever possible) </td> 
+         <td class="confluenceTd"> All </td> 
+         <td class="confluenceTd">In process </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:49.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : V3HTTPInterfacesReviewKenPaulsen</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="V3HTTPInterfacesReviewKenPaulsen-GlassFishHTTP%2FRESTAPIInterfacesReview"></a>GlassFish HTTP/REST API Interfaces Review</h1> <h4><a name="V3HTTPInterfacesReviewKenPaulsen-Document%3AGlassFishv3HTTP%2FRESTInterfacesOnePager"></a>Document: GlassFish v3 HTTP/REST Interfaces One Pager</h3> <h4><a name="V3HTTPInterfacesReviewKenPaulsen-Reviewer%3AKenPaulsen"></a>Reviewer: Ken Paulsen</h3> <h4><a name="V3HTTPInterfacesReviewKenPaulsen-Reviewdate%3A"></a>Review date:</h3> <h4><a name="V3HTTPInterfacesReviewKenPaulsen-Responsedate%3A"></a>Response date: </h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item </th> 
+         <td class="confluenceTd"> Section </td> 
+         <td class="confluenceTd"> Comment </td> 
+         <th class="confluenceTh"> Response </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> KP1 </td> 
+         <td class="confluenceTd"> 4.1 </td> 
+         <td class="confluenceTd"> "...constitutes new API for GlassFish administration in addition to existing API's." You may want to clarify this. We <b>should not</b> provide a duplicate API implementation. You may want to write: The new REST interface (API) provides a unified mapping to existing GlassFish API's, and therefor can be thought of as a transport protocol to existing API's instead of an API layer itself. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> KP2 </td> 
+         <td class="confluenceTd"> 4.1 </td> 
+         <td class="confluenceTd"> "through adapter interface" - I think this should be "through a Grizzly Adapter"? </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> KP3 </td> 
+         <td class="confluenceTd"> 4.1 </td> 
+         <td class="confluenceTd"> I am still unclear about the 2 "categories" of the HTTP interface ("configuration" and "monitoring"). The wording is better, but both state "...through HTTP urls" and do not explain the significance of dividing the interface. What is different? I suspect nothing. If this is the case, I recommend leaving out this grouping as it is artificial and will confuse people (Where does viewing a deployment descriptor fall? Deploying an application? Viewing a Log File?). If I write an extension for GlassFish, in which category do I put my new REST api's? </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> KP4 </td> 
+         <td class="confluenceTd"> 4.1.1 </td> 
+         <td class="confluenceTd"> (NOTE: I like the short definitions you added for each of these here, thanks.) At least for the "Generic HTTP API", I strongly feel we should make this fully RESTful. In fact, we may ONLY want to expose the generic HTTP API and keep the CLI HTTP API private. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> KP5 </td> 
+         <td class="confluenceTd"> 4.1.1.1 </td> 
+         <td class="confluenceTd"> "using adapter interface" =&gt; "using the Grizzly Adapter interface" </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> KP6 </td> 
+         <td class="confluenceTd"> 4.1.1.1.1 </td> 
+         <td class="confluenceTd"> URL format does not say that http*s* is available. Is this intentional? If not, please specify that this is possible: https://... This is required for the Admin Console. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> KP7 </td> 
+         <td class="confluenceTd"> 4.1.1.1.1 </td> 
+         <td class="confluenceTd">It is unclear what request methods are supported. GET should not be supported for any command which alters the server (security violation). </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> KP8 </td> 
+         <td class="confluenceTd"> 4.1.1.1.1 </td> 
+         <td class="confluenceTd">While this may be the current URL format, I think it should be changed. 1. {extension} – This does not belong in the URL. This should be specified in a request header. (Accept header? And/or possibly a custom header.) 2. {command parameters} – These should be renamed to QUERY_STRING and should follow HTTP specifications for a QS: name1=value1&amp;name2=value2&amp;... 3. Things like "help" should be represented something like: &lt;pre&gt;<tt>https://{host}:{port}/_asadmin/help/{command</tt>}&lt;/pre&gt; 4. Action should inferred based on GET (read) / PUT (update,create) / POST (create) / DELETE (delete) when possible (list actions should be a GET on a collection object).</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> KP9 </td> 
+         <td class="confluenceTd"> 4.1.1.1.2 </td> 
+         <td class="confluenceTd"> In these particular examples it was unclear to me how to specify the "configuration" to be used. If there are multiple configurations, how do I pick the one I want? </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> KP10 </td> 
+         <td class="confluenceTd"> 4.1.1.1.2 </td> 
+         <td class="confluenceTd"> *Example 1:* "http://localhost:port/_asadmin/list-http-listeners" should be: &lt;pre&gt;<tt>GET /_asadmin/http-listeners HTTP/1.1 accept: text/xml</tt>&lt;/pre&gt; </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> KP11 </td> 
+         <td class="confluenceTd"> 4.1.1.1.2 </td> 
+         <td class="confluenceTd"> *Example 2:* "http://localhost:port/_asadmin/list-http-listeners.json" should be: &lt;pre&gt;<tt>GET /_asadmin/http-listeners HTTP/1.1 accept: application/json</tt> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> KP12 </td> 
+         <td class="confluenceTd"> 4.1.1.1.2 </td> 
+         <td class="confluenceTd"> Example 3: Did not specify the url change necessary to get the additional output. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> KP13 </td> 
+         <td class="confluenceTd"> 4.1.1.1.2 </td> 
+         <td class="confluenceTd"> Example 3: 0.0.0.0 is not a valid number, it is a String and should be "0.0.0.0" (in quotes) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> KP14 </td> 
+         <td class="confluenceTd"> 4.1.1.2.1 </td> 
+         <td class="confluenceTd">JSON format: {attributes} is not sufficiently specified. Arrays ([]'s) should be supported, as well as nested objects. I would suggest referring to (<a href="http:--en.wikipedia.org-wiki-Json">http:--en.wikipedia.org-wiki-Json</a>) or better yet (<a href="http://www.json.org/">http://www.json.org/</a>). If some of that is NOT supported, it should be stated.</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> KP15 </td> 
+         <td class="confluenceTd"> 4.1.1.2.1 </td> 
+         <td class="confluenceTd">How much control over this object does a 3rd party add-on have? The content of {attributes} and values only? Part of those content areas? The entire response String?</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> KP16 </td> 
+         <td class="confluenceTd"> 4.1.1.2.1 </td> 
+         <td class="confluenceTd"> XML format: How are more complicated objects represented, such as log records? </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> KP17 </td> 
+         <td class="confluenceTd"> 4.1.1.2.1 </td> 
+         <td class="confluenceTd"> HTML format: Instead of using &lt;h2&gt;, etc (or in addition to), you should provide CSS classes (i.e. class="foo"), this will help people style this content. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> KP18 </td> 
+         <td class="confluenceTd"> 4.1.1.2.2 </td> 
+         <td class="confluenceTd"> Link to CLI spec should be to the Path spec, I think the correct URL is: <a href="https://glassfish.java.net/nonav/v3/admin/planning/V3Changes/V3_Pathnames.html">https://glassfish.java.net/nonav/v3/admin/planning/V3Changes/V3_Pathnames.html</a> <p> (confirm with Lloyd) </p></td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> KP19 </td> 
+         <td class="confluenceTd"> 4.1.1.2.2 </td> 
+         <td class="confluenceTd"> https must be supported for the admin console (or any other client) to securely access the server </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> KP20 </td> 
+         <td class="confluenceTd"> 4.1.1.2.2 </td> 
+         <td class="confluenceTd"> I would like to see a discussion in this document on how to map AMX object names to these paths and a commitment to support a predictable mapping back and forth between the 2. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> KP21 </td> 
+         <td class="confluenceTd"> 4.1.1.2.2 </td> 
+         <td class="confluenceTd"> I noticed that "_management" instead of "_asadmin" is used in these urls, I'm not sure if we should have 2 different mappings as it may not make sense to an end user. Although if _asadmin commands are private, this may make sense. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> KP22 </td> 
+         <td class="confluenceTd"> 4.1.1.2.2 </td> 
+         <td class="confluenceTd"> Please talk to Lloyd to ensure the alternate characters '/' or otherwise do not introduce any ambiguity. I believe '/' in place of []'s and maybe @ will introduce problems. I think ()'s may be a better substitution. After studying <a href="http:--www.faqs.org-rfcs-rfc1738.html">http:--www.faqs.org-rfcs-rfc1738.html</a>, I think we can use @ in the PATH_INFO area of a URL w/o any problems, especially if we specify its purpose in our REST URLs. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> KP23 </td> 
+         <td class="confluenceTd"> 4.1.1.2.2.1 </td> 
+         <td class="confluenceTd"> Elaborate on "meta-data", even if you're still unsure of what meta-data will be supported. Give examples of what it "might" contain: data types, operations, description, etc. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> KP24 </td> 
+         <td class="confluenceTd"> 4.1.1.2.3 </td> 
+         <td class="confluenceTd"> Output (JSON): 0.0.0.0 -&gt; "0.0.0.0" </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> KP25 </td> 
+         <td class="confluenceTd"> 4.1.1.2.3 </td> 
+         <td class="confluenceTd"> Output (JSON), inside "resources" value: <a href="http://">http://</a> <p>... -&gt; "http://..." </p></td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> KP26 </td> 
+         <td class="confluenceTd"> 4.1.1.2.3 </td> 
+         <td class="confluenceTd"> It appears that all content besides simple attribute values require a separate request. This is not ideal. I would like objects to be returned instead of URLs to objects. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> KP27 </td> 
+         <td class="confluenceTd"> 4.1.1.2.3 </td> 
+         <td class="confluenceTd"> Full urls with host/port should not appear in the data. In the case of http browsers, they infer this from the current document (therefor overcoming proxy and other problems introduced by the server returning full urls). Other clients are capable of doing the same more effectively than the server. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> KP28 </td> 
+         <td class="confluenceTd"> 4.1.1.2.3 </td> 
+         <td class="confluenceTd"> I like that LIST is removed and you are using GET now, question, is Example 2 targeting a List/array type of object, or are you just implicitly returning the children of an object? I suggest only supporting the former to avoid the confusion of returning an Object vs. a List of Objects. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> KP29 </td> 
+         <td class="confluenceTd"> 4.1.2.1 </td> 
+         <td class="confluenceTd"> Please show URLs for examples 1 and 2. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> KP30 </td> 
+         <td class="confluenceTd"> 4.1.2.1 </td> 
+         <td class="confluenceTd"> Minor typo: Missing quotes around xyz in JSON examples 1 and 2. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> KP31 </td> 
+         <td class="confluenceTd"> 4.1.2.1 </td> 
+         <td class="confluenceTd"> HTML Output: I suggest using CSS classes instead of (or in addition to) H1/H2/etc. (not very important, but might be nice) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> KP32 </td> 
+         <td class="confluenceTd"> 4.1.2.2 </td> 
+         <td class="confluenceTd"> https is required. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> KP33 </td> 
+         <td class="confluenceTd"> 4.1.2.2 </td> 
+         <td class="confluenceTd"> Are QUERY_STRINGs supported? I suspect yes, it should be listed. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> KP34 </td> 
+         <td class="confluenceTd"> 4.4 </td> 
+         <td class="confluenceTd"> Scope of this document should be for v3 Final (not just what we can do by JavaOne) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> KP35 </td> 
+         <td class="confluenceTd"> 4.4 </td> 
+         <td class="confluenceTd"> Role-based authentication will probably be required for v3 final </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> KP36 </td> 
+         <td class="confluenceTd"> 4.4 </td> 
+         <td class="confluenceTd"> HTTP/1.1 does support multiple requests in a single connection. I believe this is easily done via Grizzly as well, this should be easy to support with little or no effort. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> KP37 </td> 
+         <td class="confluenceTd"> 4.4 </td> 
+         <td class="confluenceTd"> Notifications via long requests (comet) should be supported at least by v3 final. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> KP38 </td> 
+         <td class="confluenceTd"> 4.9 </td> 
+         <td class="confluenceTd"> I18N/L10N support should be in place by v3 final (is this what you mean by next release?) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> KP39 </td> 
+         <td class="confluenceTd"> 4.10 </td> 
+         <td class="confluenceTd"> I suspect new commands generic and CLI will become available via 3rd party add-ons as well, which implies that some part of those commands are bundled with the plugins? </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> KP40 </td> 
+         <td class="confluenceTd"> 4.11 </td> 
+         <td class="confluenceTd"> The admin console needs a solution which is more robust. Perhaps some certificate-based trust relationship with the client (admin console process) and the server? I am not sure what the best solution is here, but username/password is not a good option as we should not gather / maintain the password for the user (especially in clear text) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> KP41 </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> We may need support for Push (comet) calls. Sreeni and Prashanth intend to communicate via comet with us as well. This gives us multiple access points for us to connect to the same host, which presents a problem since some browsers only allow 2 connections to the same server. They also must solve security and authentication issues. I think it would be worth working together to come up with a common re-usable solution which solves these problems. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> KP42 </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> I think we should attempt to make the "generic HTTP API" truly RESTful. If this is not possible, we should document the reasons why it is not possible so we can work toward overcoming them in a future release. I do not see anything obvious that is preventing us from being REST compliant. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 08, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

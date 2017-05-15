@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : TSG_CommonProblemsJa04</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="TSG_CommonProblemsJa04-%E3%83%AD%E3%83%BC%E3%82%AB%E3%83%AB%E3%82%B5%E3%83%BC%E3%83%90%E3%81%AB%E3%82%A2%E3%82%AF%E3%82%BB%E3%82%B9%E3%81%A7%E3%81%8D%E3%81%AA%E3%81%84%28"></a>ローカルサーバにアクセスできない (<a href="http://localhost:8080">http://localhost:8080</a>) </h2> <p>このエラーが発生した場合、以下をチェックしてください：</p> 
+     <ul> 
+      <li>サーバは起動されていますか？</li> 
+      <li>サーバは正しいポートで開始されていますか？</li> 
+     </ul> <h4><a name="TSG_CommonProblemsJa04-%E3%82%B5%E3%83%BC%E3%83%90%E3%81%AF%E8%B5%B7%E5%8B%95%E3%81%95%E3%82%8C%E3%81%A6%E3%81%84%E3%81%BE%E3%81%99%E3%81%8B%EF%BC%9F"></a>サーバは起動されていますか？</h3> 
+     <ul> 
+      <li><b>説明</b><br> コンソールが開かれている場合、以下のようなメッセージが表示されているはずです： 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">Domain domain Started</pre> 
+         </div> 
+        </div>
+       </div> <p><em>domain</em> はデフォルト・ドメインの名前となります。このように表示されていれば、デフォルト・ドメインが正しく開始されています。<br> コンソールウィンドウが既に閉じられている場合は、以下のログファイル内のメッセージを確認してください：</p> 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">install_dir/domains/domain1/logs/server.log</pre> 
+         </div> 
+        </div>
+       </div> <p>サーバが正しく開始されていれば、コンソールに表示されるものと同じようなメッセージがログファイルの末尾に出力されます：</p></li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">[INFO][...][..][date&amp;time][Application server startup complete .]</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="TSG_CommonProblemsJa04-%E3%82%B5%E3%83%BC%E3%83%90%E3%81%AF%E6%AD%A3%E3%81%97%E3%81%84%E3%83%9D%E3%83%BC%E3%83%88%E3%81%A7%E8%B5%B7%E5%8B%95%E3%81%95%E3%82%8C%E3%81%A6%E3%81%84%E3%81%BE%E3%81%99%E3%81%8B%EF%BC%9F"></a>サーバは正しいポートで起動されていますか？</h3> 
+     <ul> 
+      <li><b>説明</b><br> 想定されたものと異なるポート番号でサーバが起動されている可能性があります。<br> 原因としては、インストールの際に意図的に指定されたか、もしくはインストール時に別のサーバがデフォルトのポートを使って起動されていたなどが考えられます。</li> 
+     </ul> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li><b>サーバが実際に使用しているポートを調べるには</b></li> 
+       </ul> 
+       <ol> 
+        <li>サーバ構成を調査する\\設定ファイル:<br class="atl-forced-newline">
+         <div class="code panel" style="border-width: 1px;">
+          <div class="codeContent panelContent"> 
+           <div id="root"> 
+            <pre class="theme: Confluence; brush: java; gutter: false">install_dir/domains/domain1/config/domain.xml</pre> 
+           </div> 
+          </div>
+         </div></li> 
+        <li>上記ファイル内から <tt>http-listener</tt> 要素を探す。</li> 
+        <li><tt>port</tt> 属性の設定値を調べる。<br class="atl-forced-newline">サーバ起動時には正しいポート番号を指定してください。<br> <b>注意：</b> サーバのデフォルトのポート番号は <tt>8080</tt> ですが、次のような理由により変更されている可能性もあります。 
+         <ul> 
+          <li>インストール時に異なるポート番号が指定される。</li> 
+          <li>以前のインストールが残っている。</li> 
+          <li>サーバの起動時に、指定したポートが他のアプリケーションにより既に使用されていた場合、使用可能な次のポート番号が割り当てられます。たとえば、サーバがポート <tt>8080</tt> で実行されている状態で新たに GlassFish Application Server のインスタンスには <tt>8081</tt> が割り当てられます。二つのサーバが実行されている場合、ポート番号は <tt>8082</tt> などに繰り上げられます。</li> 
+         </ul> </li> 
+       </ol> </li> 
+     </ul> <p><sup><a href="./TSG_CommonProblemsJa.html">Back</a></sup></p> 
+     <hr> <p>日本語翻訳: <a href="http://apercu-j.blogspot.com/">Kana</a></p> <p><a href="TSG_CommonProblems.html" title="TSG_CommonProblems">英文 </a> (翻訳したバージョン: 104)</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 09, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : PlanForGlassFish3.1.1</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="PlanForGlassFish3.1.1-GlassFishServerOpenSourceEdition3.1.1"></a>GlassFish Server Open Source Edition 3.1.1</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#PlanForGlassFish3.1.1-GlassFishServerOpenSourceEdition3.1.1">GlassFish Server Open Source Edition 3.1.1</a></li> 
+       <ul> 
+        <li><a href="#PlanForGlassFish3.1.1-ReleaseScope%2FGoals">Release Scope / Goals</a></li> 
+        <ul> 
+         <li><a href="#PlanForGlassFish3.1.1-Roadmap">Roadmap</a></li> 
+        </ul> 
+        <li><a href="#PlanForGlassFish3.1.1-Engineering">Engineering</a></li> 
+        <ul> 
+         <li><a href="#PlanForGlassFish3.1.1-Overview">Overview</a></li> 
+         <li><a href="#PlanForGlassFish3.1.1-DesignDocuments">Design Documents</a></li> 
+         <li><a href="#PlanForGlassFish3.1.1-Copyright">Copyright</a></li> 
+        </ul> 
+        <li><a href="#PlanForGlassFish3.1.1-Builds%2FDownloads">Builds / Downloads</a></li> 
+        <li><a href="#PlanForGlassFish3.1.1-QualityEngineering">Quality Engineering</a></li> 
+        <ul> 
+         <li><a href="#PlanForGlassFish3.1.1-Bugs%2FIssues">Bugs / Issues</a></li> 
+         <li><a href="#PlanForGlassFish3.1.1-DevTests">Dev Tests</a></li> 
+        </ul> 
+        <li><a href="#PlanForGlassFish3.1.1-Documentation">Documentation</a></li> 
+        <ul> 
+         <li><a href="#PlanForGlassFish3.1.1-References">References</a></li> 
+        </ul> 
+        <li><a href="#PlanForGlassFish3.1.1-Schedule">Schedule</a></li> 
+        <li><a href="#PlanForGlassFish3.1.1-Feedback">Feedback</a></li> 
+        <li><a href="#PlanForGlassFish3.1.1-SubProjects">Sub Projects</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="PlanForGlassFish3.1.1-ReleaseScope%2FGoals"></a>Release Scope / Goals</h2> <p>Minor update release to the just released GlassFish Server Open Source Edition 3.1 version. This release is currently under development and will focus on the following:</p> 
+     <ul> 
+      <li>Provide support for additional platforms including IBM's AIX.</li> 
+      <li>Extend run-time environment support to include upcoming major and update releases of Oracle's Java SE implementations.</li> 
+      <li>Critical bug fixes.</li> 
+     </ul> <h4><a name="PlanForGlassFish3.1.1-Roadmap"></a>Roadmap</h3> <p>Refer to <a href="http://glassfish.org/roadmap">roadmap</a> slides and <a href="http://blogs.oracle.com/theaquarium/entry/replays_for_glassfish_roadmap_now">this blog</a> for more details on GlassFish Server Open Source Edition roadmap.</p> <h4><a name="PlanForGlassFish3.1.1-Engineering"></a>Engineering</h2> <h4><a name="PlanForGlassFish3.1.1-Overview"></a>Overview</h3> <p>Minor release targeting critical bug fixes, extending platform and Java SE support and certifications.</p> <h4><a name="PlanForGlassFish3.1.1-DesignDocuments"></a>Design Documents</h3> <p>N/A.</p> <h4><a name="PlanForGlassFish3.1.1-Copyright"></a>Copyright</h3> 
+     <ul> 
+      <li><a href="./Copyrights.html">Copyright and License HOWTO</a></li> 
+     </ul> <h4><a name="PlanForGlassFish3.1.1-Builds%2FDownloads"></a>Builds / Downloads</h2> 
+     <ul> 
+      <li><a href="3.1.1BuildSchedule.html" title="3.1.1BuildSchedule">Build Schedule</a></li> 
+      <li><a href="CheckInBestPractice.html" title="CheckInBestPractice">Check in Best Practices</a></li> 
+      <li>GlassFish community <a href="https://glassfish.java.net/public/downloadsindex.html">download</a> page</li> 
+      <li><a href="FullBuildInstructions.html" title="FullBuildInstructions">FullBuildInstructions</a> for instructions how to fully rebuild everything in v3 from scratch.</li> 
+      <li>How to <a href="DevelopmentInstructions.html" title="DevelopmentInstructions">build from source</a>.</li> 
+      <li>Notification - Build promotions are announced via e-mail at dev@glassfish.java.net. Please subscribe to the community alias if you would like to be notified</li> 
+      <li><a href="3.1.1 Branch Info.html" title="3.1.1 Branch Info">3.1.1 Branch Information</a></li> 
+     </ul> <h4><a name="PlanForGlassFish3.1.1-QualityEngineering"></a>Quality Engineering</h2> <h4><a name="PlanForGlassFish3.1.1-Bugs%2FIssues"></a>Bugs / Issues</h3> 
+     <ul> 
+      <li><a href="./GuidelinesOnBugFixesFor311.html">Guidelines for bug fixes/checkin/management </a></li> 
+      <li>All bugs fixed in all the builds of 3.1.1 <a href="http://java.net/jira/secure/IssueNavigator.jspa?mode=hide&amp;requestId=10475">http://java.net/jira/secure/IssueNavigator.jspa?mode=hide&amp;requestId=10475</a></li> 
+      <li>Bugs waiting for approval <a href="http://java.net/jira/secure/IssueNavigator.jspa?mode=hide&amp;requestId=10508">http://java.net/jira/secure/IssueNavigator.jspa?mode=hide&amp;requestId=10508</a></li> 
+      <li>Bugs approved after review <a href="http://java.net/jira/secure/IssueNavigator.jspa?mode=hide&amp;requestId=10509">http://java.net/jira/secure/IssueNavigator.jspa?mode=hide&amp;requestId=10509</a></li> 
+      <li>Bugs to scrub to pick potential 3.1.1 bugs <a href="http://java.net/jira/secure/IssueNavigator.jspa?mode=hide&amp;requestId=10498">http://java.net/jira/secure/IssueNavigator.jspa?mode=hide&amp;requestId=10498</a></li> 
+      <li>Bugs not approved after review <a href="http://java.net/jira/secure/IssueNavigator.jspa?mode=hide&amp;requestId=10510">http://java.net/jira/secure/IssueNavigator.jspa?mode=hide&amp;requestId=10510</a></li> 
+      <li>JIRA Dashboard <a href="http://java.net/jira/secure/Dashboard.jspa?selectPageId=10114">http://java.net/jira/secure/Dashboard.jspa?selectPageId=10114</a></li> 
+     </ul> <h4><a name="PlanForGlassFish3.1.1-DevTests"></a>Dev Tests</h3> 
+     <ul> 
+      <li><a href="DeveloperTestDashboard.html" title="DeveloperTestDashboard">GlassFish 3.x Developer Tests </a></li> 
+     </ul> <h4><a name="PlanForGlassFish3.1.1-Documentation"></a>Documentation</h2> <p>TBD</p> <h4><a name="PlanForGlassFish3.1.1-References"></a>References</h3> 
+     <ul> 
+      <li><a href="./PlanForGlassFish3.1.html">GlassFish Open Source Edition 3.1 Planning page </a></li> 
+     </ul> <h4><a name="PlanForGlassFish3.1.1-Schedule"></a>Schedule</h2> 
+     <ul> 
+      <li>Draft Engineering <a href="GlassFishV3Schedule.html#GlassFishV3Schedule-sectionGlassFishV3ScheduleGlassFishServerOpenS...">Schedule</a></li> 
+     </ul> <h4><a name="PlanForGlassFish3.1.1-Feedback"></a>Feedback</h2> <p>Please send us your feedback to <a href="mailto:dev@glassfish.java.net">GlassFish developer alias</a>.</p> <h4><a name="PlanForGlassFish3.1.1-SubProjects"></a>Sub Projects</h2> <p>Here are the list of sub-projects for GlassFish 3.1.1 release(The same set of projects used in 3.1).</p> <p><a href="./PlanForGlassFish3.1#PlanForGlassFish3.1-SubProjects.html">Refer to 3.1 info </a></p> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 22, 2011 by 
+<font color="#0050B2">jane.young</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

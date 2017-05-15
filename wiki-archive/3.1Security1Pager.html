@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : 3.1Security1Pager</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="3.1Security1Pager-GlassFishServerOpenSourceEdition3.1SecurityOnePager"></a>GlassFish Server Open Source Edition 3.1 - Security One Pager</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#3.1Security1Pager-GlassFishServerOpenSourceEdition3.1SecurityOnePager">GlassFish Server Open Source Edition 3.1 - Security One Pager</a></li> 
+       <li><a href="#3.1Security1Pager-1.Introduction">1. Introduction</a></li> 
+       <ul> 
+        <li><a href="#3.1Security1Pager-1.1.Project%2FComponentWorkingName%3A">1.1. Project/Component Working Name:</a></li> 
+        <li><a href="#3.1Security1Pager-1.2.Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier%3A">1.2. Name(s) and e-mail address of Document Author(s)/Supplier:</a></li> 
+        <li><a href="#3.1Security1Pager-1.3.DateofThisDocument%3A">1.3. Date of This Document:</a></li> 
+       </ul> 
+       <li><a href="#3.1Security1Pager-2.ProjectSummary">2. Project Summary</a></li> 
+       <ul> 
+        <li><a href="#3.1Security1Pager-2.1.ProjectDescription%3A">2.1. Project Description:</a></li> 
+        <li><a href="#3.1Security1Pager-2.2.RisksandAssumptions%3A">2.2. Risks and Assumptions:</a></li> 
+       </ul> 
+       <li><a href="#3.1Security1Pager-3.ProblemSummary">3. Problem Summary</a></li> 
+       <ul> 
+        <li><a href="#3.1Security1Pager-3.1.ProblemArea%3A">3.1. Problem Area:</a></li> 
+        <li><a href="#3.1Security1Pager-3.2.Justification%3A">3.2. Justification:</a></li> 
+       </ul> 
+       <li><a href="#3.1Security1Pager-4.TechnicalDescription%3A">4. Technical Description:</a></li> 
+       <ul> 
+        <li><a href="#3.1Security1Pager-4.1.Details%3A">4.1. Details:</a></li> 
+        <li><a href="#3.1Security1Pager-4.1.1SecurityinClusterMode">4.1.1 Security in Cluster Mode</a></li> 
+        <li><a href="#3.1Security1Pager-4.1.2IntegrationofOracleAccessManager%28OAM%29">4.1.2 Integration of Oracle AccessManager (OAM)</a></li> 
+        <li><a href="#3.1Security1Pager-4.1.3InteroperabilitywithOWSM">4.1.3 Interoperability with OWSM</a></li> 
+        <li><a href="#3.1Security1Pager-4.1.4RestructuringofCSIv2codetoalignwithplannedORBchanges">4.1.4 Restructuring of CSIv2 code to align with planned ORB changes</a></li> 
+        <li><a href="#3.1Security1Pager-4.1.5NewFeaturesandBugFixesinGlassFishV3.1Security">4.1.5 New Features and BugFixes in GlassFish V3.1 Security</a></li> 
+        <ul> 
+         <li><a href="#3.1Security1Pager-4.1.5.1EnhancedsecurityoftheGFMasterPassword">4.1.5.1 Enhanced security of the GF MasterPassword</a></li> 
+         <li><a href="#3.1Security1Pager-4.1.5.2CleanupUniversalgrantsinServer.policy">4.1.5.2 Cleanup Universal grants in Server.policy</a></li> 
+         <li><a href="#3.1Security1Pager-4.1.5.2.1ClassLoaderEnhancementsProposed">4.1.5.2.1 ClassLoader Enhancements Proposed</a></li> 
+         <li><a href="#3.1Security1Pager-4.1.5.2.1.1WhatExistsToday">4.1.5.2.1.1 What Exists Today</a></li> 
+         <li><a href="#3.1Security1Pager-4.1.5.2.1.2WhatCanbeImproved">4.1.5.2.1.2 What Can be Improved</a></li> 
+         <li><a href="#3.1Security1Pager-4.1.5.3CertificateRealmExtension">4.1.5.3 Certificate Realm Extension</a></li> 
+         <li><a href="#3.1Security1Pager-4.1.5.3.1AdminImpact">4.1.5.3.1 Admin Impact</a></li> 
+         <li><a href="#3.1Security1Pager-4.1.5.4PAMRealm">4.1.5.4 PAM Realm</a></li> 
+         <li><a href="#3.1Security1Pager-4.1.5.4.1AdminImpact">4.1.5.4.1 Admin Impact</a></li> 
+         <li><a href="#3.1Security1Pager-4.1.5.5ReplaceGlassFishSecurityPipeswithTubes">4.1.5.5 Replace GlassFish Security Pipes with Tubes</a></li> 
+         <li><a href="#3.1Security1Pager-4.1.5.5.1Risk">4.1.5.5.1 Risk</a></li> 
+         <li><a href="#3.1Security1Pager-4.1.5.6DevTestsinEmbeddedMode">4.1.5.6 DevTests in Embedded Mode</a></li> 
+         <li><a href="#3.1Security1Pager-4.1.5.7LocalizationandMessageID%27sforINFOLogs">4.1.5.7 Localization and Message ID's for INFO Logs</a></li> 
+         <li><a href="#3.1Security1Pager-4.1.5.8Cleanupofimported%2CexportedpackagesfromSecurityModules">4.1.5.8 Cleanup of imported, exported packages from Security Modules</a></li> 
+        </ul> 
+        <li><a href="#3.1Security1Pager-4.1.6WebLogicDeploymentDescriptorSupport">4.1.6 WebLogic Deployment Descriptor Support</a></li> 
+        <li><a href="#3.1Security1Pager-4.2.Bug%2FRFENumber%28s%29%3A">4.2. Bug/RFE Number(s):</a></li> 
+        <li><a href="#3.1Security1Pager-4.3.InScope%3A">4.3. In Scope:</a></li> 
+        <li><a href="#3.1Security1Pager-4.4.OutofScope%3A">4.4. Out of Scope:</a></li> 
+        <li><a href="#3.1Security1Pager-4.5.Interfaces%3A">4.5. Interfaces:</a></li> 
+        <ul> 
+         <li><a href="#3.1Security1Pager-4.5.1PublicInterfaces">4.5.1 Public Interfaces</a></li> 
+         <li><a href="#3.1Security1Pager-4.5.2PrivateInterfaces">4.5.2 Private Interfaces</a></li> 
+         <li><a href="#3.1Security1Pager-4.5.3Deprecated%2FRemovedInterfaces%3A">4.5.3 Deprecated/Removed Interfaces:</a></li> 
+         <li><a href="#3.1Security1Pager-4.5.3.1RemovedInterfaces">4.5.3.1 Removed Interfaces</a></li> 
+         <li><a href="#3.1Security1Pager-4.5.3.1.1">4.5.3.1.1</a></li> 
+        </ul> 
+        <li><a href="#3.1Security1Pager-4.6.DocImpact%3A">4.6. Doc Impact:</a></li> 
+        <li><a href="#3.1Security1Pager-4.7.Admin%2FConfigImpact%3A">4.7. Admin/Config Impact:</a></li> 
+        <ul> 
+         <li><a href="#3.1Security1Pager-4.7.1NewCLIcommandsneededbyAdminGUIforitsRestBasedImplementation">4.7.1 New CLI commands needed by Admin-GUI for its Rest Based Implementation</a></li> 
+        </ul> 
+        <li><a href="#3.1Security1Pager-4.8.HAImpact%3A">4.8. HA Impact:</a></li> 
+        <li><a href="#3.1Security1Pager-4.9.I18N%2FL10NImpact%3A">4.9. I18N/L10N Impact:</a></li> 
+        <li><a href="#3.1Security1Pager-4.10.Packaging%2CDelivery%26Upgrade%3A">4.10. Packaging, Delivery &amp; Upgrade:</a></li> 
+        <ul> 
+         <li><a href="#3.1Security1Pager-4.10.1.Packaging">4.10.1. Packaging</a></li> 
+         <li><a href="#3.1Security1Pager-4.10.2.Delivery">4.10.2. Delivery</a></li> 
+         <li><a href="#3.1Security1Pager-4.10.3.UpgradeandMigration%3A">4.10.3. Upgrade and Migration:</a></li> 
+        </ul> 
+        <li><a href="#3.1Security1Pager-4.11.SecurityImpact%3A">4.11. Security Impact:</a></li> 
+        <li><a href="#3.1Security1Pager-4.12.CompatibilityImpact">4.12. Compatibility Impact</a></li> 
+        <li><a href="#3.1Security1Pager-4.13.Dependencies%3A">4.13. Dependencies:</a></li> 
+        <ul> 
+         <li><a href="#3.1Security1Pager-4.13.1InternalDependencies">4.13.1 Internal Dependencies</a></li> 
+         <li><a href="#3.1Security1Pager-4.13.2ExternalDependencies">4.13.2 External Dependencies</a></li> 
+        </ul> 
+        <li><a href="#3.1Security1Pager-4.14.TestingImpact%3A">4.14. Testing Impact:</a></li> 
+       </ul> 
+       <li><a href="#3.1Security1Pager-5.ReferenceDocuments%3A">5. Reference Documents:</a></li> 
+       <li><a href="#3.1Security1Pager-6.Schedule%3A">6. Schedule:</a></li> 
+       <ul> 
+        <li><a href="#3.1Security1Pager-6.1.ProjectedAvailability%3A">6.1. Projected Availability:</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="3.1Security1Pager-1.Introduction"></a>1. Introduction</h1> <h4><a name="3.1Security1Pager-1.1.Project%2FComponentWorkingName%3A"></a>1.1. Project/Component Working Name: </h2> <p>GlassFish Server Open Source Edition 3.1 Security</p> <h4><a name="3.1Security1Pager-1.2.Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier%3A"></a>1.2. Name(s) and e-mail address of Document Author(s)/Supplier:</h2> <p>Kumar Jayanti (vbkumar.jayanti@sun.com)</p> <h4><a name="3.1Security1Pager-1.3.DateofThisDocument%3A"></a>1.3. Date of This Document:</h2> <p>05/21/2010</p> <h4><a name="3.1Security1Pager-2.ProjectSummary"></a>2. Project Summary</h1> <h4><a name="3.1Security1Pager-2.1.ProjectDescription%3A"></a>2.1. Project Description:</h2> <p>GlassFish V3.1 Security.</p> <h4><a name="3.1Security1Pager-2.2.RisksandAssumptions%3A"></a>2.2. Risks and Assumptions:</h2> <h4><a name="3.1Security1Pager-3.ProblemSummary"></a>3. Problem Summary</h1> <h4><a name="3.1Security1Pager-3.1.ProblemArea%3A"></a>3.1. Problem Area:</h2> <p>Security module in V3.1 would address the following high-level problems.</p> <p>1. Security in Cluster Mode<br> 2. Integration of Oracle Access Manager (OAM) with GlassFish V3 via JSR-196<br> 3. Glassfish3.1(Metro2.1)Interoperability with OWSM (Oracle WebServices Manager)<br> 4. Restructuring of CSIv2 code to align with the ORB layer changes planned<br> 5. New Features and BugFixes in the core security framework of GlassFish V3.1<br> 6. WebLogic Deployment Descriptor Support</p> <h4><a name="3.1Security1Pager-3.2.Justification%3A"></a>3.2. Justification:</h2> <p>Clustering support is a release driver for V3.1. Support for Oracle Access Manager and WebLogic Deployment Descriptor is considered strategic.</p> <p>The ORB team has proposed a restructuring of the ORB code with a view to unify the different execution paths within the ORB and specifically with respect to CSIv2, so the corresponding code in security module that handles security for IIOP requests will need to be restructured to align with the ORB changes.</p> <p>The new features and bug-fixes are intended to improve the overall security, remove some limitations that existed in earlier releases and enhance the feature set of GlassFish Security.</p> <h4><a name="3.1Security1Pager-4.TechnicalDescription%3A"></a>4. Technical Description:</h1> <h4><a name="3.1Security1Pager-4.1.Details%3A"></a>4.1. Details:</h2> <p>The details of the problem-areas described in 3.1 above are as follows.</p> <h4><a name="3.1Security1Pager-4.1.1SecurityinClusterMode"></a>4.1.1 Security in Cluster Mode</h2> <p> Security in Cluster Mode is discussed in detail in the <a href="3.1ClusteringSecurity.html" title="3.1ClusteringSecurity">3.1ClusteringSecurity Design</a></p> <h4><a name="3.1Security1Pager-4.1.2IntegrationofOracleAccessManager%28OAM%29"></a>4.1.2 Integration of Oracle AccessManager (OAM)</h2> <p> The design work for Oracle AccessManager integration is in progress and more details about the initial proposed design can be accessed <a href="http://appserver.sfbay.sun.com/Wiki.jsp?page=3.1OAM">here</a>.</p> <h4><a name="3.1Security1Pager-4.1.3InteroperabilitywithOWSM"></a>4.1.3 Interoperability with OWSM</h2> <p>This task is about demonstrating interoperability with Oracle Webservice Manager (OWSM). The Interop Scenarios have been defined by Oracle Product Management and mostly involve invoking the Metro Webservices Security Component with various configurations of the Oracle/WLS/OWSM stack.</p> <p>The work is being tracked <a href="http://appserver.sfbay.sun.com/Wiki.jsp?page=3.1OWSM">here</a>.</p> <h4><a name="3.1Security1Pager-4.1.4RestructuringofCSIv2codetoalignwithplannedORBchanges"></a>4.1.4 Restructuring of CSIv2 code to align with planned ORB changes</h2> <p>Product Management for V3 had mentioned their opinon that customers use IIOP internally in a second or third tier architecture, so CSIv2 FOLB can be dropped from the GF 3.1 release. The ORB team however has proposed a restructring of the ORB code w.r.t CSIv2 because it has the potential to clean up and simplify the ORB &lt;-&gt;GF interface, and this is important to the ORB team both for sustaining support and for things like properly handling isLocal() (CR:6919275). The restructuring would focus on the ORB-related parts of CSIv2 so that the ORB is more directly handling the CSIv2 service contexts<br> and tagged component. This will make is easier to unify the handling of secure and non-secure IIOP failover, and also lay a foundation for migrating to Grizzly for the ORB transport. The goal is that using CSIv2 from the ORB should be done simply by passing some new policies into the EJB POAs when they are created. </p> <p>In addition an issue in GlassFish V2.X that has come to notice of V3 development team on 5/6/2010 (CR :6913736) seems to suggest that there is a potential design flaw in the ConnectionContext related classes being used by the CSIv2 Interceptors. </p> <p>The primary focus of CSIv2 work then is :</p> <p>1. coordinate with ORB team on restructing CSIv2 code between ORB and GF, this should also eventually fix CR:6919275<br> 2. Fix issue CR :6913736</p> <p>Additional details on planned ORB changes w.r.t CSIv2 can be found <a href="http://gf-corba-v3-mirror.kenai.com/design/FOLB/IIOPFOLBOnePager.html">here </a></p> <h4><a name="3.1Security1Pager-4.1.5NewFeaturesandBugFixesinGlassFishV3.1Security"></a>4.1.5 New Features and BugFixes in GlassFish V3.1 Security</h2> <p>The following new security related features and bugfixes are planned for GlassFish V3.1.</p> <p>1. Enhanced security of the GF MasterPassword<br> 2. Cleanup universal grants in server.policy<br> 3. Extend Certificate realm to allow custom validation and group assignment based on the recieved client certificate in an SSL Mutual Authentcation.<br> 4. Finalize the support for PAM Realm in V3.1. This will allow secure apps deployed on V3.1 to authenticate its users against the native Solaris/Linux users list.<br> 5. Use of Tubes in GlassFish instead of Pipes for supporting Asychrony.<br> 6. Making DevTests or a subset of it work in Embedded Mode<br> 7. Localization and Message ID's of INFO Logs<br> 8. Module imported/exported packages cleanup</p> <p>These features are being tracked in the <a href="V3.1Security.html#V3.1Security-sectionV3.1SecurityScope">V3.1Security Wiki</a> along with Milestone assignment and other <a href="V3.1Security.html" title="V3.1Security">details</a>.</p> <p>More details of the above 8 features are below.</p> <h4><a name="3.1Security1Pager-4.1.5.1EnhancedsecurityoftheGFMasterPassword"></a>4.1.5.1 Enhanced security of the GF MasterPassword</h3> <p>GlassFish V2.x and GlassFish V3.0 provide access to the MasterPassword of the server via sytem properties javax.net.ssl.keyStorePassword and javax.net.ssl.trustStorePassword. The syntax of the Java Permissions does not support exceptions and the current permissions in the server.policy file allow read, write of all properties.</p> <p>This is a problem since this means any deployed application can access the GF MasterPassword. </p> <p>There are two solutions possible :<br> 1. In the Custom Security Manager make access control checks for specific access to these Properties using a permission that is not granted to deployed applications.<br> 2. Remove dependency on these properties.</p> <p>We are following approach (2) and have restructured code in Admin and Security Modules that deal with this. The final piece is to fix how Grizzly gets this information securely. There is also a JarSigner usage in AppClient that expects a password from the SecuritySupport SPI which needs to be changed. </p> <h4><a name="3.1Security1Pager-4.1.5.2CleanupUniversalgrantsinServer.policy"></a>4.1.5.2 Cleanup Universal grants in Server.policy</h3> <p>This work will look at the server.policy and cleanup grants to applications and untrusted code. The grants that exist today for all applications are as follows :</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">//(1)Loading MBeans from anywhere, to take care of side effects of 6235678.
+grant {
+    permission javax.management.MBeanTrustPermission "register" ;
+};
+
+//(2) Basic set of required permissions granted to all remaining code
+grant {
+    //Workaround for bugs #6484935, 6513799
+    permission java.lang.RuntimePermission "getProtectionDomain";
+    permission com.sun.corba.ee.impl.presentation.rmi.DynamicAccessPermission "access";
+    permission java.util.PropertyPermission "*", "read,write";
+
+    permission java.lang.RuntimePermission  "loadLibrary.*";
+    permission java.lang.RuntimePermission  "queuePrintJob";
+    permission java.net.SocketPermission    "*", "connect";
+    permission java.io.FilePermission       "&lt;&lt;ALL FILES&gt;&gt;", "read,write";
+
+        // work-around for pointbase bug 4864405      
+        permission java.io.FilePermission "${com.sun.aas.instanceRoot}${/}lib${/}databases${/}-", "delete";
+        permission java.io.FilePermission "${java.io.tmpdir}${/}-", "delete";
+
+    permission java.util.PropertyPermission "*", "read";
+
+    permission java.lang.RuntimePermission    "modifyThreadGroup";
+    permission java.lang.RuntimePermission    "getClassLoader";
+    permission java.lang.RuntimePermission    "setContextClassLoader";
+    permission javax.management.MBeanPermission "[com.sun.messaging.jms.*:*]", "*"; 
+};
+
+
+// (3) Following grant block is only required by Connectors. If Connectors
+// are not in use the recommendation is to remove this grant.
+grant {
+        permission javax.security.auth.PrivateCredentialPermission "javax.resource.spi.security.PasswordCredential * \"*\"","read";
+};
+
+//(4) Following grant block is only required for Reflection. If Reflection
+// is not in use the recommendation is to remove this section.
+grant {
+    permission java.lang.RuntimePermission "accessDeclaredMembers";
+};
+
+//(5) Permissions to invoke CORBA objects in server
+grant {
+    permission com.sun.enterprise.security.CORBAObjectPermission "*", "*";
+};</pre> 
+       </div> 
+      </div>
+     </div> <p>A few permissions in (2) and permission (3) are the primary focus of this task. </p> <p>The GlassFish Security Review has recommended that a Security Guide be produced which documents the application's security mechanisms and outlines how to install and manage the application securely. GlassFish Product management has defined 3.1 as the target release for the Guide. Documentation on what components/frameworks would be affected when any of the 5 grants are removed/altered would be part of the Security Guide. This would allow GlassFish administrator to better secure the instance and applications running on it.</p> <p>1. The Permissions in (2) allow all applications to read and write all properties and read and write all files on the FileSystem.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">permission java.util.PropertyPermission "*", "read,write";
+ permission java.io.FilePermission       "&lt;&lt;ALL FILES\&gt;&gt;", "read,write";</pre> 
+       </div> 
+      </div>
+     </div> <p>The permission to read and write ALL FILES can be problematic, since a malicious application can then try and fill the disk. Ofcourse OS level permissions can still be used to prevent the Glassfish user-account from doing anything like that. </p> <p>This situation can be improved by removing the universal grant and having the ClassLoader assign default read and write permissions to only the application's install directory (context-root). Any application which needs to read and write additional directories will then have to be explicitly allowed such permission(s) by adding additional grants inside server.policy for the codebase of the application.</p> <p>2. The permission in (3) defines a PrivateCredentialPermission for the credential class "javax.resource.spi.security.PasswordCredential". Again we need to investigate here if the ClassLoader can do this only for applications that need this permission.</p> <h4><a name="3.1Security1Pager-4.1.5.2.1ClassLoaderEnhancementsProposed"></a>4.1.5.2.1 ClassLoader Enhancements Proposed</h3> <h4><a name="3.1Security1Pager-4.1.5.2.1.1WhatExistsToday"></a>4.1.5.2.1.1 What Exists Today</h3> <p>The ClassLoader(s) in GF are setting a ProtectionDomain for the class. There are two parts to a ProtectionDomain, the CodeSource and the PermissionCollection. The CodeSource inturn consists of a URL and an array of Certificates/CodeSigners.</p> <p>1. The CodeSource URL for classes loaded is being set correctly, however the Certificate/Signer information is null.<br> 2. The static PermissionCollection that is being assigned seems to be simply a default FilePermission (allowed by Java) which allows a "read" of the particular class file. However the ProtectionDomain being created is such that the permissions granted to this domain are dynamic; they include both the static permissions passed to constructor, and any permissions granted to this domain by the current Policy at the time a permission is checked.</p> <h4><a name="3.1Security1Pager-4.1.5.2.1.2WhatCanbeImproved"></a>4.1.5.2.1.2 What Can be Improved </h3> <p>1. The Static PermissionCollection being passed to the ProtectionDomain can give a recursive read+write permission to the entire application context-root directory (eg. /root/..../domain1/applications/my-web-app)</p> <p>2. The CodeSource is being created with null Certificates/CodeSigner. This one is probably more difficult. This enhancement is applicable to Application archives which were Signed by the developer/deployer. For an unsigned Application Archive this improvement will be a NOP.</p> <p>Enhancement (1) will allow us to remove the default universal grant in server.policy which exists today, which allows any-app to read/write the entire filesystem (Note OS level protection may still prevent this to happen). So the end result of this enhancement is that, by default an application will be allowed to only read and write its own installed application directory and no-where-else. Any extra read/write's that the app needs to do will have to be explicitly configured in server.policy, specifying its codesource. This seems easy to fix, by having appropriate code in overridden getPermissions method of the ClassLoader.</p> 
+     <ul> 
+      <li>protected PermissionCollection getPermissions(CodeSource codeSource) {}</li> 
+     </ul> <p>Enhancement (2) would allow us to have Signer Based Policy Administration. In server.policy today we can only have policy administration based on codebase (URL) of the applications. But by making this enhancement we can express things like allow all code Signed by XXX the following set of Permissions (...).</p> <p>The proposal was discussed with ClassLoader team and it was agreed that (1) can be fixed in GF 3.1 timeframe whereas (2) above might need some experimentation. </p> <p>For (2) we need the ability to verify and assign code signers while loading the bytes of the exploded application archive (that was signed) files. Solving this problem at least partially boils down to dealing with the case when WebAppClassLoader#readEntryData is called with a null value for jarEntry. One approach would be to provide an implementation of JarEntry#getPeerCertificates that works directly off the exploded archive. If (2) can be achieved then it can be a differentiator for GlassFish.</p> <h4><a name="3.1Security1Pager-4.1.5.3CertificateRealmExtension"></a>4.1.5.3 Certificate Realm Extension</h3> <p>GlassFish users have often wanted to do custom validation of the Client Certificate in an SSL Mutual Authentication Scenario and do custom group assignment based on certains attributes and extensions in the Certificate. GlassFish V3.1 will provide the ability to do this. </p> <p>The solution implemented is to allow a JAAS LoginModule to be configured for the CertificateRealm in GlassFish. More details are <a href="http://www.java.net/blog/kumarjayanti/archive/2010/03/25/custom-authentication-client-certificate-mutual-ssl-scenarios-g">here</a></p> <p>A convenient abstract base class for Certificate LoginModule has been introduced. The user's LoginModule may now extend com.sun.appserv.security.AppservCertificateLoginModule. The user now has to implement only the authenticateUser method and call the commitUserAuthentication method to signify success. However it is not necessary that the Certificate LoginModule has to extend the convenience base class (it can be a pure JAAS LoginModule instead). The package com.sun.appserv.security is the legacy Public API package for GlassFish since Appserver 8.x, where the original abstract base class for LoginModules (AppservPasswordLoginModule) exits. </p> <h4><a name="3.1Security1Pager-4.1.5.3.1AdminImpact"></a>4.1.5.3.1 Admin Impact</h3> <p>The Admin GUI needs to allow configuration of JAAS LoginModules for the CertificateRealm.</p> <h4><a name="3.1Security1Pager-4.1.5.4PAMRealm"></a>4.1.5.4 PAM Realm</h3> <p>This New Feature subsumes and extends what we had in terms of SolarisRealm. It will allow secure apps deployed on V3.1 to authenticate its users against native Unix (Solaris/Linux/Mac) users list.</p> <p>New Public classes com.sun.enterprise.security.auth.realm.pam.PamRealm.java, and com.sun.enterprise.security.auth.login.PamLoginModule.java are being introduced for this task. Developers do not directly call API methods on them, instead these classes get mentioned in the Realm configuration in domain.xml and JAAS configuration (login.conf) respectively. The package used for the new public classes follow the same package prefix and naming convention as the other existing Realm's and LoginModules.</p> <p>Like the Solaris Realm, the PAM Realm also does not work for Windows OS.</p> <h4><a name="3.1Security1Pager-4.1.5.4.1AdminImpact"></a>4.1.5.4.1 Admin Impact</h3> <p>The Admin GUI needs to show the PAM Realm as another configurable Realm for applications. And the Default JAAS_CONTEXT property for it should be set to PAMLoginModule. The CLI also needs to allow configuration of this realm and the CLI help page for create-auth-realm needs to be updated to list the PAM realm.</p> <h4><a name="3.1Security1Pager-4.1.5.5ReplaceGlassFishSecurityPipeswithTubes"></a>4.1.5.5 Replace GlassFish Security Pipes with Tubes </h3> <p>This task pertains to replacing the GlassFish Security Pipes with <a href="https://jax-ws-architecture-document.java.net/nonav/doc21/com/sun/xml/ws/api/pipe/Tube.html">Tubes</a> to support Asynchrony in WebService Execution. The Tubes have been implemented but not enabled. </p> <h4><a name="3.1Security1Pager-4.1.5.5.1Risk"></a>4.1.5.5.1 Risk </h3> <p>Tubes require special handling by the Tube implementation to deal with ThreadLocals and GF-Security uses ThreadLocal(s) for a few set of things and we need make sure we are not breaking basic functionality here. There is an effort do define a new Tubes.next API that would be suitable for a full-featured support of asynchronous server side processing, addressable clients, as well as other requirements from WLS team. This is however not targeted for the GFv3.1 timeframe. </p> <p>The intergration SPI for integration of GlassFish WebServices Security with the WebServices stack has been changing many times from </p> 
+     <ul> 
+      <li>JAXRPC-&gt;JAXWS1.X(SystemHandlerDelegate)<del>&gt;JAXW2.X(Pipes)</del>&gt;JAXWS2.X(Tubes)-&gt;Tubes.Next in GF3.2?</li> 
+     </ul> <p>Besides, the API (<a href="https://jax-ws-architecture-document.java.net/nonav/doc21/com/sun/xml/ws/api/pipe/FiberContextSwitchInterceptor.html">com.sun.xml.ws.api.pipe.FiberContextSwitchInterceptor</a>) defined to deal with ThreadLocal's has not been used so far in any of the known Tube implementations that exist today in GlassFish/Metro.</p> <h4><a name="3.1Security1Pager-4.1.5.6DevTestsinEmbeddedMode"></a>4.1.5.6 DevTests in Embedded Mode</h3> <p>The Security DevTests do not run in Embedded Mode and there is a need to make atleast a subset of them run in Embedded mode.</p> <h4><a name="3.1Security1Pager-4.1.5.7LocalizationandMessageID%27sforINFOLogs"></a>4.1.5.7 Localization and Message ID's for INFO Logs</h3> <p>For V3.1 it appears that even INFO logs need to be localized with a proper Message ID. More details are [ here |GlassFishV3LoggingMessageFormat]</p> <h4><a name="3.1Security1Pager-4.1.5.8Cleanupofimported%2CexportedpackagesfromSecurityModules"></a>4.1.5.8 Cleanup of imported, exported packages from Security Modules</h3> <p>There is a need to clean up the imported and exported packages for Security Module based on general guidelines defined <a href="OsgiPkgDepAnalyser.html" title="OsgiPkgDepAnalyser">here</a></p> <h4><a name="3.1Security1Pager-4.1.6WebLogicDeploymentDescriptorSupport"></a>4.1.6 WebLogic Deployment Descriptor Support</h2> <p>The overall WebLogic Deployment Descriptor support work is being tracked <a href="SupportWLDD.html" title="SupportWLDD">here </a>. Based on the initial analysis of relevance and effort the following things would be considered for support in Security module in GlassFish V3.1. </p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Element Name </th> 
+         <th class="confluenceTh"> Effort Level (low/medium/high/unknown)</th> 
+         <th class="confluenceTh"> Priority </th> 
+         <th class="confluenceTh"> Glassfish Corresponding Element (if applicable) </th> 
+         <th class="confluenceTh"> Comments </th> 
+         <th class="confluenceTh">&nbsp;</th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> security-role-assignment:role-name </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> security-role-mapping:role-name in sun-web.xml </td> 
+         <td class="confluenceTd"> SECURITY </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> security-role-assignment:principal-name </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> security-role-mapping:principal-name in sun-web.xml </td> 
+         <td class="confluenceTd"> SECURITY </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> security-permission </td> 
+         <td class="confluenceTd"> medium </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> SECURITY </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> servlet-descriptor </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> We will implement run-as-principal-name. But not init-as-principal-name, destroy-as-principal-name as we do not distinguish run-as for init and destroy. SECURITY. The dispatch-policy is a deprecated element in weblogic.xml </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>The <a href="http://download.oracle.com/docs/cd/E12840_01/wls/docs103/webapp/weblogic_xml.html#wp1073709">security-permission feature</a> in weblogic.xml allows Applications to bundle a single Java Policy grant {...} statement without any codebase and codesigner. The GlassFish Policy processing code would need to be enhanced to pick this additional grant. We may or maynot be able to support the security-permission element in GlassFish 3.1 since it requires enhancements and we were planning a more advanced feature here on the same lines (see <a href="3.1NewSecurityFeatures.html" title="3.1NewSecurityFeatures">SEC-009</a>), but have marked it as P3 (would be taken up based on availability of time and resources).</p> <p>The Weblogic <a href="http://download.oracle.com/docs/cd/E12840_01/wls/docs103/webapp/weblogic_xml.html#wp1073622">servlet-descriptor</a> element has the notions of principal names for init() and destroy() methods of the servlet. We plan to support only the run-as-principal-name and not the init-as-principal-name and destroy-as-principal-name.</p> <h4><a name="3.1Security1Pager-4.2.Bug%2FRFENumber%28s%29%3A"></a>4.2. Bug/RFE Number(s):</h2> <p>1. CR :6913736<br> 2. <a href="https://github.com/javaee/glassfish/issues/11995">11995</a><br> 3. <a href="https://github.com/javaee/glassfish/issues/11996">11996</a></p> <p>More Bugs and RFE's for all the tasks to be Filed.</p> <h4><a name="3.1Security1Pager-4.3.InScope%3A"></a>4.3. In Scope:</h2> <h4><a name="3.1Security1Pager-4.4.OutofScope%3A"></a>4.4. Out of Scope:</h2> <p>The full set of New Security Features are being tracked in the <a href="V3.1Security.html#V3.1Security-sectionV3.1SecurityScope">V3.1Security Wiki</a>. However the features SEC-003, SEC-009 to SEC-012, SEC-014 which are P3/P4 in nature will be taken up if the team gets time to work on them (before the SCF). Otherwise these features would be deferred to a later release.</p> <h4><a name="3.1Security1Pager-4.5.Interfaces%3A"></a>4.5. Interfaces:</h2> <p>Interfaces may be commands, files, directory structure, ports,<br> DTD/Schema, tools, APIs, CLIs, etc.<br> Note: In lieu of listing the interfaces in the one pager, providing<br> a link to another specification which defines the interfaces<br> is acceptable.</p> <h4><a name="3.1Security1Pager-4.5.1PublicInterfaces"></a>4.5.1 Public Interfaces</h3> <p>This list of Exported and Imported Interfaces in V3.1 is the same as <a href="GFV3SecurityOnePager.html#GFV3SecurityOnePager-sectionGFV3SecurityOnePager4.5.Interfaces">V3</a>. There are a few additions in the list of exported interfaces/classes detailed in sections <a href="#3.1Security1Pager-section3.1Security1Pager4.1.5.3CertificateReal...">4.1.5.3 </a> and <a href="#3.1Security1Pager-section3.1Security1Pager4.1.5.4PAMRealm">4.1.5.4 </a> above.</p> <h4><a name="3.1Security1Pager-4.5.2PrivateInterfaces"></a>4.5.2 Private Interfaces</h3> <p> The list of Private Interfaces in V3.1 are the same as those in <a href="GFV3SecurityOnePager.html#GFV3SecurityOnePager-sectionGFV3SecurityOnePager4.5.3OtherInterface...">V3 </a></p> <h4><a name="3.1Security1Pager-4.5.3Deprecated%2FRemovedInterfaces%3A"></a>4.5.3 Deprecated/Removed Interfaces:</h3> <p> The following Interfaces/methods have been deprecated in V3.1 and new counterparts have been added for them. This is primarily done to deal with the issue that the original methods used Strings for storing Passwords whose values can only be removed by GarbageCollector. The new methods accept a char[] to facilitate clearing of collected password values; other than as a result of GC. </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1. trunk/v3/security/core/src/main/java/com/iplanet/ias/security/auth/login/PasswordLoginModule.java 
+
+  Deprecated:
+     public final AuthenticationStatus commitAuthentication(String username,
+                                        String password,
+                                        Realm theRealm,
+                                        String[] groups)
+
+Newly added:
+
+     public final AuthenticationStatus commitAuthentication(String username,
+                                        char[] password,
+                                         Realm theRealm,
+                                         String[] groups)
+
+2. trunk/v3/security/core/src/main/java/com/sun/appserv/security/AppservPasswordLoginModule.java
+
+    Deprecated:
+
+     protected String _password;
+
+     public String getPassword()
+
+
+   Newly added:
+
+      private char[] _passwd;
+
+      protected char[] getPasswordChar()
+
+
+
+3. trunk/v3/security/core/src/main/java/com/sun/appserv/security/AppservRealm.java
+
+Deprecated:
+
+    public  void addUser(String name, String password, String[] groupList)
+
+
+    public void updateUser(String name, String newName, String password,
+                           String[] groups)
+
+
+
+Newly added:
+
+    public  void addUser(String name, char[] password, String[] groupList)
+    public void updateUser(String name, String newName, char[] password,
+                            String[] groups)
+
+4. trunk/v3/security/core/src/main/java/com/sun/appserv/security/ProgrammaticLogin.java
+
+
+    Deprecated:
+
+    public Boolean login(final String user, final String password,
+       final String realm, boolean errors)
+
+    public Boolean login(final String user, final String password)
+
+
+    public Boolean login(final String user, final String password,
+                         final String realm,
+                         final HttpServletRequest request,
+                         final HttpServletResponse response, boolean errors)
+ 
+    public Boolean login(final String user, final String password,
+                     final HttpServletRequest request,
+                     final HttpServletResponse response)
+
+
+Newly added:
+
+    public Boolean login(final String user, final char[] password,
+         final String realm, boolean errors)
+
+    public Boolean login(final String user, final char[] password)
+
+    public Boolean login(final String user, final char[] password,
+                          final String realm,
+                          final HttpServletRequest request,
+                          final HttpServletResponse response, boolean errors)
+
+    public Boolean login(final String user, final char[] password,
+                          final HttpServletRequest request,
+                          final HttpServletResponse response)
+
+
+5. trunk/v3/security/core/src/main/java/com/sun/enterprise/security/auth/login/PasswordLoginModule.java
+
+Deprecated:
+
+ public abstract class PasswordLoginModule extends AppservPasswordLoginModule
+
+ public final void commitAuthentication(String username,
+                                         String password,
+                                         Realm theRealm,
+
+Newly added:
+
+   public final void commitAuthentication(String username,
+                                        char[] password,
+                                        Realm theRealm,
+                                        String[] groups)
+
+6. trunk/v3/security/core/src/main/java/com/sun/enterprise/security/web/integration/WebPrincipal.java
+
+Deprecated:
+    public WebPrincipal(String user, String password,
+                        SecurityContext context)
+
+Newly added:
+    public WebPrincipal(String user, char[] password,
+                         SecurityContext context)</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="3.1Security1Pager-4.5.3.1RemovedInterfaces"></a>4.5.3.1 Removed Interfaces</h3> <p>There is a desire to change the protected access to member(s)</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">protected String _username;
+protected String _password;</pre> 
+       </div> 
+      </div>
+     </div> <p>in <a href="http://javadoc.glassfish.org/v3/apidoc/com/sun/appserv/security/AppservPasswordLoginModule.html">AppservPasswordLoginModule</a> to private access and introduce getter and setter methods. In addition the type of the _password should be changed to char[] instead of String. Doing this would break backward-compatibility of Custom-Realms defined by End-Users and it also likely to cause failures in SQE tests.</p> <p>Currently we have just deprecated them and introduced new variants that just use getter and setter with private char[] for storing the password.</p> <p>The other alternative is to introduce a new alternative base class which can serve as a replacement for AppservPasswordLoginModule where we have the correct access modifiers and data types. We could then deprecate AppservPasswordLoginModule class and make sure all the internal implementations of Realms in GlassFish make use of the new class.</p> <h4><a name="3.1Security1Pager-4.5.3.1.1"></a>4.5.3.1.1</h3> <p> The default-principal-password attribute in security-service is a legacy attribute which is unused in V3. Only the default-principal-name is used to initialize the Default Principal for the SecurityContext. This password attribute appears in the admin-gui and needs to be removed.</p> <h4><a name="3.1Security1Pager-4.6.DocImpact%3A"></a>4.6. Doc Impact:</h2> <p>All the Proposed new features would need to be documented in the Glassfish Documentation Security Chapter. The Non-Standard API's which have been deprecated and their new variants/alternatives would also need to be documented See section for the list of deprecated API's and their replacements. Since no new Standard API's are being Exported there should be no impact to JavaEE 6 JavaDocs. </p> <p>There is however one proposal sent to Servlet Expert Group which could result in a change to the JavaEE 6 Javadocs.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">we should deprecate:
+
+public void login(String username, String password) throws ServletException;
+
+in favor of
+
+public void login(String username, char[] password) throws ServletException;
+
+to facilitate clearing of collected password values; other than as a result of GC.</pre> 
+       </div> 
+      </div>
+     </div> <p>There is text in "asadmin create-auth-realm --help" which talks about support for a non-existent property "clientAuth" for the CertificateRealm to enable client authentication for all apps. This needs to be removed if it is also present in the Docs (see 4.7 below).</p> <h4><a name="3.1Security1Pager-4.7.Admin%2FConfigImpact%3A"></a>4.7. Admin/Config Impact:</h2> <p> Admin GUI/CLI support will be required for the following :</p> <p>1. LoginModule configuration for <a href="#3.1Security1Pager-section3.1Security1Pager4.1.5.3CertificateReal...">CertificateRealm</a><br> 2. PAMRealm and PAMLoginModule configuration in <a href="#3.1Security1Pager-section3.1Security1Pager4.1.5.4PAMRealm">GUI and CLI </a><br> 3. The <a href="#3.1Security1Pager-section3.1Security1Pager4.1.2IntegrationOfOrac...">OAM integration work</a> would produce a SAM (JSR-196 Server Authentication Module) that should be configurable at Global-Instance-Level and individual Application-Level. We may endup levaraging the existing message-security-config element under security-service (for which Admin GUI/CLI support exists today). But a little bit more investigation is needed to say what new support is required (if any)<br> 4. CLI support in the form of an admin command to synchronize server.policy and login.conf from DAS to instances would be required. More details are <a href="#3.1Security1Pager-section3.1Security1Pager4.1.1SecurityInClusterMode">here</a><br> 5. The defaul-principal-password field appears under Admin GUI security-service. This should be removed as it is an unused filed (see section 4.5.3.1.1 above).<br> Bugs filed for the admin work are <a href="#3.1Security1Pager-section3.1Security1Pager4.2.BugRFENumberS">here</a>. The buglist is not complete and will be completed soon.<br> 6. There is text in "asadmin create-auth-realm --help" which talks about support for a non-existent property "clientAuth" for the CertificateRealm to enable client authentication for all apps. This needs to be removed. It is actually controlled by having an attribute "client-auth-enabled" set on the ssl child element of the protocol elements.</p> <h4><a name="3.1Security1Pager-4.7.1NewCLIcommandsneededbyAdminGUIforitsRestBasedImplementation"></a>4.7.1 New CLI commands needed by Admin-GUI for its Rest Based Implementation</h3> <p>This requirement was communicated by the Admin GUI team to the security team. </p> <p>1. Need to list out which group a user belongs to. This is getGroupNames (String realmName, String userName) method.</p> <p>2. Need to know if a realm supports user management. This is supportsUserManagement(String realmName) method.</p> <p>3. Get the list of predefined auth realm class. This is the getPredefinedAuthRealmClassNames() method.</p> <p>4. There doesn't seem to be a way of using CLI to change a user password. The current CLI</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Usage: asadmin [asadmin-utility-options] update-file-user [--groups &lt;groups&gt;]
+    [--authrealmname &lt;authrealmname&gt;] [--target &lt;target&gt;]
+    [-?|--help[=&lt;help(default:false)&gt;]] username
+
+doesn't allow change of password. 
+However, the man page says:   This subcommand updates an existing  entry  in  the  keyfile using the specified user name, password and groups.</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="3.1Security1Pager-4.8.HAImpact%3A"></a>4.8. HA Impact:</h2> <p>There is no HA impact of this proposal. The Clustering Impact is discussed <a href="#3.1Security1Pager-section3.1Security1Pager4.1.1SecurityInClusterMode">above </a></p> <h4><a name="3.1Security1Pager-4.9.I18N%2FL10NImpact%3A"></a>4.9. I18N/L10N Impact:</h2> <p>None</p> <h4><a name="3.1Security1Pager-4.10.Packaging%2CDelivery%26Upgrade%3A"></a>4.10. Packaging, Delivery &amp; Upgrade:</h2> <h4><a name="3.1Security1Pager-4.10.1.Packaging"></a>4.10.1. Packaging</h3> <p> The only new external dependency that this project introduces is libpam4j.</p> <h4><a name="3.1Security1Pager-4.10.2.Delivery"></a>4.10.2. Delivery</h3> <p>None.</p> <h4><a name="3.1Security1Pager-4.10.3.UpgradeandMigration%3A"></a>4.10.3. Upgrade and Migration:</h3> <p>There are no new requirements imposed on upgrade tool and migration tool other than those in V3. There is one small item for the upgrade tool which is that the server.policy file in V3.1 may be a little cleaned up w.r.t grants given to applications and untrusted code. See section <a href="#3.1Security1Pager-section3.1Security1Pager4.1.5.2CleanupUniversa...">above</a></p> <h4><a name="3.1Security1Pager-4.11.SecurityImpact%3A"></a>4.11. Security Impact:</h2> <p>This proposal does rely on the Java Policy framework, but does not add any additional requirements than what is already part of Glassfish V2. </p> <h4><a name="3.1Security1Pager-4.12.CompatibilityImpact"></a>4.12. Compatibility Impact</h2> <p>Incompatible changes to interfaces that others expect to be stable may cause other parts of application server or<br> other dependent products to break. </p> <p>Discuss changes to the imported or exported interfaces.Describe how an older version of the interface would<br> be handled.</p> <h4><a name="3.1Security1Pager-4.13.Dependencies%3A"></a>4.13. Dependencies:</h2> <p>An internal dependency is a dependency on a project, module, <br> component or product that is within the GlassFish project.<br> An external dependency is a dependency on a project, component<br> or product that resides outside of the GlassFish project. </p> <h4><a name="3.1Security1Pager-4.13.1InternalDependencies"></a>4.13.1 Internal Dependencies </h3> <p> The Security Module in GlassFish V3.1 depends on the following internal modules.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;groupId&gt;org.glassfish.admin&lt;/groupId&gt;
+     &lt;artifactId&gt;config-api&lt;/artifactId&gt;
+     &lt;version&gt;${project.version}&lt;/version&gt;
+
+     &lt;groupId&gt;org.glassfish.deployment&lt;/groupId&gt;
+     &lt;artifactId&gt;dol&lt;/artifactId&gt;
+     &lt;version&gt;${project.version}&lt;/version&gt;
+
+     &lt;groupId&gt;org.glassfish.common&lt;/groupId&gt;
+     &lt;artifactId&gt;common-util&lt;/artifactId&gt;
+     &lt;version&gt;${project.version}&lt;/version&gt;
+
+     &lt;groupId&gt;org.glassfish.deployment&lt;/groupId&gt;
+     &lt;artifactId&gt;deployment-common&lt;/artifactId&gt;
+     &lt;version&gt;${project.version}&lt;/version&gt;
+
+     &lt;groupId&gt;org.glassfish.common&lt;/groupId&gt;
+     &lt;artifactId&gt;internal-api&lt;/artifactId&gt;
+     &lt;version&gt;${project.version}&lt;/version&gt;
+
+     &lt;groupId&gt;org.glassfish&lt;/groupId&gt;
+     &lt;artifactId&gt;javax.servlet&lt;/artifactId&gt;
+     &lt;version&gt;${project.version}&lt;/version&gt;
+
+     &lt;groupId&gt;org.glassfish.common&lt;/groupId&gt;
+     &lt;artifactId&gt;glassfish-api&lt;/artifactId&gt;
+     &lt;version&gt;${project.version}&lt;/version&gt;
+
+     &lt;groupId&gt;org.glassfish&lt;/groupId&gt;
+     &lt;artifactId&gt;javax.ejb&lt;/artifactId&gt;
+     &lt;version&gt;${project.version}&lt;/version&gt;
+
+     &lt;groupId&gt;org.glassfish.ejb&lt;/groupId&gt;
+     &lt;artifactId&gt;ejb-internal-api&lt;/artifactId&gt;
+     &lt;version&gt;${project.version}&lt;/version&gt;
+
+     &lt;groupId&gt;org.glassfish.connectors&lt;/groupId&gt;
+     &lt;artifactId&gt;connectors-internal-api&lt;/artifactId&gt;
+     &lt;version&gt;${project.version}&lt;/version&gt;
+
+     &lt;groupId&gt;org.glassfish.orb&lt;/groupId&gt;
+     &lt;artifactId&gt;orb-iiop&lt;/artifactId&gt;
+     &lt;version&gt;${project.version}&lt;/version&gt;
+
+     &lt;groupId&gt;org.glassfish.orb&lt;/groupId&gt;
+     &lt;artifactId&gt;orb-connector&lt;/artifactId&gt;
+     &lt;version&gt;${project.version}&lt;/version&gt;
+
+     &lt;groupId&gt;org.glassfish.core&lt;/groupId&gt;
+     &lt;artifactId&gt;kernel&lt;/artifactId&gt;
+     &lt;version&gt;${project.version}&lt;/version&gt;
+     
+     &lt;groupId&gt;org.glassfish.deployment&lt;/groupId&gt;      
+     &lt;artifactId&gt;deployment-common&lt;/artifactId&gt;
+     &lt;version&gt;${project.version}&lt;/version&gt;
+      
+     
+     &lt;groupId&gt;org.glassfish.web&lt;/groupId&gt;
+     &lt;artifactId&gt;web-glue&lt;/artifactId&gt;
+     &lt;version&gt;${project.version}&lt;/version&gt;
+     
+     &lt;groupId&gt;org.glassfish.webservices&lt;/groupId
+     &lt;artifactId&gt;jsr109-impl&lt;/artifactId&gt;
+     &lt;version&gt;${project.version}&lt;/version&gt;
+     
+     
+     &lt;groupId&gt;org.glassfish.appclient&lt;/groupId&gt;
+     &lt;artifactId&gt;acc-config&lt;/artifactId&gt;
+     &lt;version&gt;${project.version}&lt;/version&gt;
+ 
+     &lt;groupId&gt;org.glassfish.web&lt;/groupId&gt;
+     &lt;artifactId&gt;web-core&lt;/artifactId&gt;
+     &lt;version&gt;${project.version}&lt;/version&gt;
+
+     &lt;groupId&gt;org.glassfish.web&lt;/groupId&gt;
+     &lt;artifactId&gt;war-util&lt;/artifactId&gt;
+     &lt;version&gt;${project.version}&lt;/version&gt;
+
+     &lt;groupId&gt;com.sun.grizzly&lt;/groupId&gt;
+     &lt;artifactId&gt;grizzly-utils&lt;/artifactId&gt;</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="3.1Security1Pager-4.13.2ExternalDependencies"></a>4.13.2 External Dependencies </h3> <p>The External Dependencies in GlassFish V3.1 Security Module are the same as in GlassFish V3, with one new addition. The <a href="#3.1Security1Pager-section3.1Security1Pager4.1.5.4PAMRealm">PAMRealm</a> support requires a new external dependency on libpam4j. The <a href="https://libpam4j.java.net/">libpam4j</a> is a java.net OpenSource project that uses MIT License.</p> <p>The external dependencies in GlassFish V3 Security Module included HK2, the LDAP Booster Pack (ldapbp-repackaged.jar) from the JDK JNDI team, the libsolsparcauth.so and libsolx86auth.so files required by SolarisRealm which are produced from native code which is present in the V3 workspace, the management-api and GMBAL API, the following ORB API's</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;groupId&gt;com.sun.corba&lt;/groupId&gt;
+     &lt;artifactId&gt;glassfish-corba-csiv2-idl&lt;/artifactId&gt;
+
+     &lt;groupId&gt;com.sun.corba&lt;/groupId&gt;
+     &lt;artifactId&gt;glassfish-corba-omgapi&lt;/artifactId&gt;
+
+     &lt;groupId&gt;com.sun.corba&lt;/groupId&gt;
+     &lt;artifactId&gt;glassfish-corba-orb&lt;/artifactId&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>and the following Metro (WebServices) API :</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;groupId&gt;com.sun.xml.ws&lt;/groupId&gt;
+     &lt;artifactId&gt;webservices-osgi&lt;/artifactId&gt;
+           
+     &lt;groupId&gt;javax.xml&lt;/groupId&gt;
+     &lt;artifactId&gt;webservices-api-osgi&lt;/artifactId&gt;
+ 
+     &lt;groupId&gt;com.sun.xml.bind&lt;/groupId&gt;
+     &lt;artifactId&gt;jaxb-osgi&lt;/artifactId&gt;tId&gt;
+            
+     &lt;groupId&gt;javax.xml.bind&lt;/groupId&gt;
+     &lt;artifactId&gt;jaxb-api-osgi&lt;/artifactId&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>These external dependencies, along with instructions on how to do source build for them are being tracked <a href="http://appserver.sfbay.sun.com/Wiki.jsp?page=GFv3ExternalModules">here</a>.</p> <h4><a name="3.1Security1Pager-4.14.TestingImpact%3A"></a>4.14. Testing Impact:</h2> <p>New Tests will need to be written for all features which have been marked for <a href="V3.1Security.html#V3.1Security-sectionV3.1SecurityMilestoneSchedule">QA hand-off</a>. The development team would write Automated DevTests which will be used for the QA-HandOff procedure.</p> <h4><a name="3.1Security1Pager-5.ReferenceDocuments%3A"></a>5. Reference Documents:</h1> <p>1. JSR 196 : <a href="http://jcp.org/en/jsr/detail-196">http://jcp.org/en/jsr/detail-196</a><br> 2. JSR 115 : <a href="http://jcp.org/aboutJava/communityprocess/maintenance/jsr115/index5.html">http://jcp.org/aboutJava/communityprocess/maintenance/jsr115/index5.html</a><br> 3. JSR 250 : <a href="http://jcp.org/en/jsr/detail-250">http://jcp.org/en/jsr/detail-250</a><br> 4. JSR 315 : <a href="http://jcp.org/en/jsr/detail-315">http://jcp.org/en/jsr/detail-315</a><br> 5. JSR 316 : <a href="http://jcp.org/en/jsr/detail-316">http://jcp.org/en/jsr/detail-316</a><br> 6. <a href="GFV3SecurityOnePager.html" title="GFV3SecurityOnePager">Security OnePager for GlassFish V3.0 </a></p> <h4><a name="3.1Security1Pager-6.Schedule%3A"></a>6. Schedule:</h1> <h4><a name="3.1Security1Pager-6.1.ProjectedAvailability%3A"></a>6.1. Projected Availability:</h2> <p>The Milestone assignment and QA-Handoff dates are being tracked <a href="V3.1Security.html#V3.1Security-sectionV3.1SecurityMilestoneSchedule">here</a>.</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

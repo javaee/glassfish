@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : 3.1SSHOneNode</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>Draft ramblings.</p> <p>Currently we have two ways to create a node:</p> 
+     <ul> 
+      <li>create-node-config</li> 
+      <li>create-node-ssh</li> 
+     </ul> <p>The original idea was that create-node-config would be used for non-ssh scenarios where the user runs "create-node-config mynode" on the DAS and then "create-local-instance --node mynode" on the instance machine, and then not manage the nodes via SSH.</p> <p>The problem is this distinction is somewhat artificial. If I have SSH set up how we want users to set it up (ie the DAS is running as the SSH user and they are using key file authentication) then a populated "config" node has everything we need to connect to the remote system (hostname, glassfish installdir, nodedir). So to prevent users from using SSH with that node we must do an artificial check. Also having two sets of commands adds complexity if one set would do.</p> <p>The proposal is to do away with this distinction. A node is a node, and we try to use SSH with all nodes. Bascially all nodes are "ssh nodes". In this proposal the commands look like:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">create-node
+    [--nodehost remote_host_name]
+    [--installdir glassfish_home_path]
+    [--nodedir path_to_node_directory_on_nodehost]
+    [--sshnodehost ssh_host_name]
+    [--sshport port_number_for_ssh_on_nodehost]
+    [--sshuser ssh_username ]
+    [--sshkeyfile ssh_key_file_path]
+    [--sshpassphrase passphrase_alias ]
+    [--sshpassword password_alias ]
+    [--force={true|false}]
+    node_name
+
+update-node
+    [--nodehost remote_host_name]
+    [--installdir glassfish_home_path]
+    [--nodedir path_to_node_directory_on_nodehost]
+    [--sshnodehost ssh_host_name]
+    [--sshport port_number_for_ssh_on_nodehost]
+    [--sshuser ssh_username ]
+    [--sshkeyfile ssh_key_file_path]
+    [--sshpassphrase passphrase_alias ]
+    [--sshpassword password_alias ]
+    [--force={true|false}]
+    node_name
+
+delete-node node_name
+
+list-nodes [--verbose] target</pre> 
+       </div> 
+      </div>
+     </div> <p>So what are the drawbacks of this? The general drawback is that we loose the ability for the user to clearly state their intention. We assume they want to use SSH instead of knowing for sure. Trouble areas:</p> <h5><a name="3.1SSHOneNode-Validation"></a>Validation</h5> <p>create-node-ssh currently validates all parameters because we know the user plans on using SSH. If a user runs "create-node-ssh --nodehost foobar.com mynode" we do SSH validations – if the user does "create-node-config --nodehost foobar.com mynode" we do not. What do we do for "create-node --nodehost foobar.com mynode".</p> <p><b>Proposal</b></p> <p>We assume the user will be using SSH nodes and we generally do validation. Whether things are warnings or errors depend on the option. Examples:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">create-node mynode
+Validate nothing
+
+create-node --nodehost foobar.com mynode
+Validate foobar.com is a valid host (Error). 
+Validate it can be contacted via SSH (Warning).
+
+create-node --nodehost foobar.com --installdir /export/gf mynode
+Validate foobar.com is a valid host (Error). 
+Validate it can be contacted via SSH (Warning).
+If can connect validate that /export/gf exists (Error).
+
+create-node --nodehost foobar.com --installdir /export/gf --sshkeyfile /foo/bar mynode
+Also validate keyfile exists, isreadable, etc (Error).
+
+Basically if an option is provided and we can validate it then we do. If the option is bad then it's an Error. If we can't contact the host via SSH it's a warning.</pre> 
+       </div> 
+      </div>
+     </div> <h5><a name="3.1SSHOneNode-Handlingerrorsclearlyforstartinstance%2Ccreateinstance%2Cdeleteinstance"></a>Handling errors clearly for start-instance, create-instance, delete-instance</h5> <p>Today (in theory – it's not implemented well) if somebody does start-instance on an instance associated with a config node we can tell them that start-instance needs an SSH node. With one node type we don't know for sure if we should try SSH on a node or not.</p> <p><b>Proposal</b></p> <p>Try to use SSH and be clear if it doesn't work.</p> 
+     <ul> 
+      <li>If the node has no nodehost then create-instance should fail.</li> 
+      <li>If we can't contact the remote instance using SSH then we give an error stating so</li> 
+     </ul> <h5><a name="3.1SSHOneNode-Futuresupportfornodagents"></a>Future support for nodagents</h5> <p>In the future we may add support for nodeagents. Now we can't assume every node is an SSH node.</p> <p><b>Proposal</b></p> <p>We add nodeagent specific versions if that makes sense (create-node-agent).</p> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Oct 05, 2010 by 
+<font color="#0050B2">dipol</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

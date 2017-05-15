@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : 3.1DevToolingNB</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="3.1DevToolingNB-GlassFishServerOpenSourceEdition3.1DeveloperToolingwithNetBeans"></a>GlassFish Server Open Source Edition 3.1 - Developer Tooling with NetBeans</h1> <p><b>author:</b> <a href="mailto:vince.kraemer@oracle.com">Vince Kraemer</a></p> 
+     <div> 
+      <ul> 
+       <li><a href="#3.1DevToolingNB-GlassFishServerOpenSourceEdition3.1DeveloperToolingwithNetBeans">GlassFish Server Open Source Edition 3.1 - Developer Tooling with NetBeans</a></li> 
+       <ul> 
+        <li><a href="#3.1DevToolingNB-Introduction">Introduction</a></li> 
+        <li><a href="#3.1DevToolingNB-Goal%2FScope">Goal / Scope</a></li> 
+        <ul> 
+         <li><a href="#3.1DevToolingNB-ComparativeSchedulinginfo">Comparative Scheduling info</a></li> 
+         <li><a href="#3.1DevToolingNB-Features">Features</a></li> 
+         <li><a href="#3.1DevToolingNB-OutofScope">Out of Scope</a></li> 
+        </ul> 
+        <li><a href="#3.1DevToolingNB-TaskList">Task List</a></li> 
+        <li><a href="#3.1DevToolingNB-DesignDocument">Design Document</a></li> 
+        <li><a href="#3.1DevToolingNB-Quality">Quality</a></li> 
+        <li><a href="#3.1DevToolingNB-Documentation">Documentation</a></li> 
+        <li><a href="#3.1DevToolingNB-Workspace">Workspace</a></li> 
+        <li><a href="#3.1DevToolingNB-Estimates">Estimates</a></li> 
+        <li><a href="#3.1DevToolingNB-Research">Research</a></li> 
+        <li><a href="#3.1DevToolingNB-References">References</a></li> 
+        <li><a href="#3.1DevToolingNB-DevTests">Dev Tests</a></li> 
+        <li><a href="#3.1DevToolingNB-EmailAlias">Email Alias</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="3.1DevToolingNB-Introduction"></a>Introduction</h2> <p>When GlassFish Server Open Source Edition 3.1 ships users will expect to be able to work with it in various IDEs. This is especially true of NetBeans. This project is supposed to make that happen.</p> <h4><a name="3.1DevToolingNB-Goal%2FScope"></a>Goal / Scope</h2> <p>The goal of this project is to allow users to develop Java EE 6, Java EE 5 and J2EE 1.4 based apps and deploy them onto GlassFish Server 3.1 as easily as possible from inside the most recently released version of the NetBeans IDE available.</p> <p>Since the NetBeans roadmap beyond 6.9, which will ship in June 2010, is unclear; there may be some work necessary to create an update to 6.9 that includes the ability to interact with GlassFish Server 3.1... This update would be on a different 'track' than the main body of the NetBeans codebase.</p> <p>This would make the work a bit more complex, since there would be a release of the GlassFish integration modules for NetBeans 6.9 AND a release of the 'same modules' that targets the NetBeans DEV build. The code in the DEV build could leverage new NB APIs, while the code that is built against 6.9 would not be able to leverage these changes.</p> <h4><a name="3.1DevToolingNB-ComparativeSchedulinginfo"></a>Comparative Scheduling info</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Date </th> 
+         <th class="confluenceTh"> NB 6.9 </th> 
+         <th class="confluenceTh"> <a href="GlassFishV3Schedule.html#GlassFishV3Schedule-sectionGlassFishV3ScheduleGlassFishServerOpenS...">GFS OSE 3.1</a> </th> 
+         <th class="confluenceTh"> Post NB 6.9 </th> 
+         <th class="confluenceTh"> Note </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2010/02/17 </td> 
+         <td class="confluenceTd"> M1 release </td> 
+         <td class="confluenceTd"> X </td> 
+         <td class="confluenceTd"> X </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2010/03/08 </td> 
+         <td class="confluenceTd"> feature freeze </td> 
+         <td class="confluenceTd"> X </td> 
+         <td class="confluenceTd"> X </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2010/04/20 </td> 
+         <td class="confluenceTd"> X </td> 
+         <td class="confluenceTd"> kickoff meeting </td> 
+         <td class="confluenceTd"> X </td> 
+         <td class="confluenceTd"> first intro to plans from other teams that may require changes to the plugin </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2010/04/22 </td> 
+         <td class="confluenceTd"> beta release </td> 
+         <td class="confluenceTd"> X </td> 
+         <td class="confluenceTd"> X </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2010/05/10 </td> 
+         <td class="confluenceTd"> code freeze </td> 
+         <td class="confluenceTd"> X </td> 
+         <td class="confluenceTd"> X </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2010/05/14 </td> 
+         <td class="confluenceTd"> X </td> 
+         <td class="confluenceTd"> 1 pager initial drafts </td> 
+         <td class="confluenceTd"> X </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2010/05/21 </td> 
+         <td class="confluenceTd"> X </td> 
+         <td class="confluenceTd"> 1 pager reviewed </td> 
+         <td class="confluenceTd"> X </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2010/05/24 </td> 
+         <td class="confluenceTd"> X </td> 
+         <td class="confluenceTd"> M1 </td> 
+         <td class="confluenceTd"> X </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2010/06/09 </td> 
+         <td class="confluenceTd"> FCS </td> 
+         <td class="confluenceTd"> X </td> 
+         <td class="confluenceTd"> X </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2010/06/21 </td> 
+         <td class="confluenceTd"> X </td> 
+         <td class="confluenceTd"> M2 </td> 
+         <td class="confluenceTd"> X </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2010/07/19 </td> 
+         <td class="confluenceTd"> X </td> 
+         <td class="confluenceTd"> M3 </td> 
+         <td class="confluenceTd"> X </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2010/08/16 </td> 
+         <td class="confluenceTd"> X </td> 
+         <td class="confluenceTd"> M4 </td> 
+         <td class="confluenceTd"> X </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2010/09/13 </td> 
+         <td class="confluenceTd"> X </td> 
+         <td class="confluenceTd"> SCF </td> 
+         <td class="confluenceTd"> X </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2010/11/22 </td> 
+         <td class="confluenceTd"> X </td> 
+         <td class="confluenceTd"> HCF </td> 
+         <td class="confluenceTd"> X </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.1DevToolingNB-Features"></a>Features</h3> <p>The priorities listed here are for the next release of NetBeans (which should bundle 3.1). There are no plugin features that would block the release of Glassfish Server 3.1.</p> <p>%%sortable</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Feature ID </th> 
+         <th class="confluenceTh"> Priority </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> Engineering response </th> 
+         <th class="confluenceTh"> Owner </th> 
+         <th class="confluenceTh"> Estimated effort </th> 
+         <th class="confluenceTh"> Source of Requirement </th> 
+         <th class="confluenceTh"> Status/Comment </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> nbinteg-001 </td> 
+         <td class="confluenceTd"> p1 </td> 
+         <td class="confluenceTd"> feature parity with GlassFish 3.0 integration in NetBeans </td> 
+         <td class="confluenceTd"> yes </td> 
+         <td class="confluenceTd"> vbk </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> feature parity </td> 
+         <td class="confluenceTd"> done - MS2 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> nbinteg-002 </td> 
+         <td class="confluenceTd"> p1 </td> 
+         <td class="confluenceTd"> glassfish-*.xml deployment descriptor support </td> 
+         <td class="confluenceTd"> yes </td> 
+         <td class="confluenceTd"> vbk </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 3.1 feature support </td> 
+         <td class="confluenceTd"> done - MS2 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> nbinteg-003 </td> 
+         <td class="confluenceTd"> p2 </td> 
+         <td class="confluenceTd"> app scoped resources </td> 
+         <td class="confluenceTd"> if ASR support from server isn't too buggy </td> 
+         <td class="confluenceTd"> vbk </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 3.1 feature support </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> nbinteg-004 </td> 
+         <td class="confluenceTd"> p2 </td> 
+         <td class="confluenceTd"> restart a remote domain (if it is running) </td> 
+         <td class="confluenceTd"> yes </td> 
+         <td class="confluenceTd"> vbk </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> missing feature in 3.0 integ </td> 
+         <td class="confluenceTd"> done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> nbinteg-005 </td> 
+         <td class="confluenceTd"> p3 </td> 
+         <td class="confluenceTd"> restart a remote domain into debug mode (if it is running) </td> 
+         <td class="confluenceTd"> if enhancement is accepted by admin team </td> 
+         <td class="confluenceTd"> vbk </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> new feature </td> 
+         <td class="confluenceTd"> done ms3 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> nbinteg-006 </td> 
+         <td class="confluenceTd"> p3 </td> 
+         <td class="confluenceTd"> view log of running remote server </td> 
+         <td class="confluenceTd"> yes </td> 
+         <td class="confluenceTd"> vbk </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> new feature </td> 
+         <td class="confluenceTd"> done ms4 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> nbinteg-007 </td> 
+         <td class="confluenceTd"> p2 </td> 
+         <td class="confluenceTd"> expose deployed web services on Servers explorer </td> 
+         <td class="confluenceTd"> yes </td> 
+         <td class="confluenceTd"> vbk </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> new feature </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> nbinteg-008 </td> 
+         <td class="confluenceTd"> p2 </td> 
+         <td class="confluenceTd"> code completion and other xml features enabled for WebLogic deployment descriptor files when included in a project that targets GlassFish 3.1 </td> 
+         <td class="confluenceTd"> yes </td> 
+         <td class="confluenceTd"> vbk </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> new feature </td> 
+         <td class="confluenceTd"> done - MS3 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> nbinteg-009 </td> 
+         <td class="confluenceTd"> p1 </td> 
+         <td class="confluenceTd"> Wizard to allow user to add a WebLogic DD to a project (that doesn't target WL) </td> 
+         <td class="confluenceTd"> yes </td> 
+         <td class="confluenceTd"> vbk </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> new feature </td> 
+         <td class="confluenceTd"> done - MS3 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> nbinteg-010 </td> 
+         <td class="confluenceTd"> p1 </td> 
+         <td class="confluenceTd"> deliver bits that 6.9 users can use to work with 3.1 from inside the IDE. </td> 
+         <td class="confluenceTd"> yes </td> 
+         <td class="confluenceTd"> vbk </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> update center? </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> nbinteg-011 </td> 
+         <td class="confluenceTd"> p1 </td> 
+         <td class="confluenceTd"> account for versioned apps in the Servers explorer </td> 
+         <td class="confluenceTd"> yes </td> 
+         <td class="confluenceTd"> vbk </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> new feature </td> 
+         <td class="confluenceTd"> done </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.1DevToolingNB-OutofScope"></a>Out of Scope</h3> <p>The initial developer tooling plugin will not expose the clustering features of GlassFish Server Open Source Edition 3.1. This means that users will only be able to interact with the DAS and perform actions similar to those exposed by the plugin for GlassFish v3 and GlassFish Server Open Source Edition 3.0.1.</p> <p>Application versioning will not be supported in the developer workflow from NetBeans.</p> <h4><a name="3.1DevToolingNB-TaskList"></a>Task List</h2> <p><a href="https://glassfish.java.net/issues/showdependencytree.cgi-11921">Issue tracker based 'view'</a> is likely to be more up-to-date, since it is easier to update.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task </th> 
+         <th class="confluenceTh"> Target Milestone </th> 
+         <th class="confluenceTh"> Start </th> 
+         <th class="confluenceTh"> End </th> 
+         <th class="confluenceTh"> Owner </th> 
+         <th class="confluenceTh"> Supports Feature ID </th> 
+         <th class="confluenceTh"> Status/Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Create new instance object for WizardProvider (ee6plusClustering) </td> 
+         <td class="confluenceTd"> m2 </td> 
+         <td class="confluenceTd"> may 24 </td> 
+         <td class="confluenceTd"> May 26 </td> 
+         <td class="confluenceTd"> vbk </td> 
+         <td class="confluenceTd"> nbinteg-001 </td> 
+         <td class="confluenceTd"> adds GF 3.1 to the server registration dialog. <b>dependency:</b> promoted builds available (for download now support) <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Create new instance object for InstanceProvider (ee6plusCluatsering) </td> 
+         <td class="confluenceTd"> m2 </td> 
+         <td class="confluenceTd"> may 26 </td> 
+         <td class="confluenceTd"> may 28 </td> 
+         <td class="confluenceTd"> vbk </td> 
+         <td class="confluenceTd"> nbinteg-001 </td> 
+         <td class="confluenceTd"> many features use this object Prevents registering 3.0 as 3.1 <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> extend the 3.0 instance object to prevent 3.1 domains getting misregistered </td> 
+         <td class="confluenceTd"> m2 </td> 
+         <td class="confluenceTd"> may 28 </td> 
+         <td class="confluenceTd"> may 28 </td> 
+         <td class="confluenceTd"> vbk </td> 
+         <td class="confluenceTd"> nbinteg-001 </td> 
+         <td class="confluenceTd"> error checking <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Create new instance object for DeploymentFactory (ee6plusClustering) </td> 
+         <td class="confluenceTd"> m2 </td> 
+         <td class="confluenceTd"> may 31 </td> 
+         <td class="confluenceTd"> june 2 </td> 
+         <td class="confluenceTd"> vbk </td> 
+         <td class="confluenceTd"> nbinteg-001 </td> 
+         <td class="confluenceTd"> Java EE features use this object <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create new instance object for J2eePlatformFactory </td> 
+         <td class="confluenceTd"> m2 </td> 
+         <td class="confluenceTd"> june 3 </td> 
+         <td class="confluenceTd"> june 4 </td> 
+         <td class="confluenceTd"> vbk </td> 
+         <td class="confluenceTd"> nbinteg-001 </td> 
+         <td class="confluenceTd"> Java EE feature support <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create new instance object for OptionalDeploymentManagerFactory </td> 
+         <td class="confluenceTd"> m2 </td> 
+         <td class="confluenceTd"> june 7 </td> 
+         <td class="confluenceTd"> june 9 </td> 
+         <td class="confluenceTd"> vbk </td> 
+         <td class="confluenceTd"> nbinteg-001 </td> 
+         <td class="confluenceTd"> Java EE features support <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create new instance object for RunTimeDDCatalog </td> 
+         <td class="confluenceTd"> m2 </td> 
+         <td class="confluenceTd"> June 10 </td> 
+         <td class="confluenceTd"> june 12 </td> 
+         <td class="confluenceTd"> vbk </td> 
+         <td class="confluenceTd"> nbinteg-002 </td> 
+         <td class="confluenceTd"> maps public id and private id to installed dtds; basis of code completion in xml editor <b>dependency:</b> new glassfish-*.dtd files available in promoted builds <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create/publish nbms for NB 6.9 </td> 
+         <td class="confluenceTd"> m2 </td> 
+         <td class="confluenceTd"> post 6.9 clone </td> 
+         <td class="confluenceTd"> post 6.9 release beta date </td> 
+         <td class="confluenceTd"> vbk </td> 
+         <td class="confluenceTd"> nbinteg-010 </td> 
+         <td class="confluenceTd"> let folks using 6.9 'upgrade' to a plugin that exposes new 3.1 integration features. release schedule is adhoc. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> extend DD api project to know glassfish-* descriptors </td> 
+         <td class="confluenceTd"> m2 </td> 
+         <td class="confluenceTd"> june 14 </td> 
+         <td class="confluenceTd"> june 17 </td> 
+         <td class="confluenceTd"> vbk </td> 
+         <td class="confluenceTd"> nbinteg-02 </td> 
+         <td class="confluenceTd"> primarily to allow GUI to read/write the new glassfish-* descriptors <b>dependency:</b> new glassfish-*.dtd files available in promoted builds <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create 'new' templates to support File-&gt;New File-&gt;Other... (category: GlassFish; type: Glassfish Deployment Descriptor) </td> 
+         <td class="confluenceTd"> m2 </td> 
+         <td class="confluenceTd"> june 18 </td> 
+         <td class="confluenceTd"> June 18 </td> 
+         <td class="confluenceTd"> vbk </td> 
+         <td class="confluenceTd"> nbinteg-002 </td> 
+         <td class="confluenceTd"> put the 'right'descriptor into a new project that targets GlassFish 3.1 <b>dependency:</b> new glassfish-*.dtd files available in promoted builds <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> include weblogic deployment descriptors into the RunTimeDDCatalog support </td> 
+         <td class="confluenceTd"> m2 </td> 
+         <td class="confluenceTd"> June 12 </td> 
+         <td class="confluenceTd"> June 12 </td> 
+         <td class="confluenceTd"> vbk </td> 
+         <td class="confluenceTd"> nbinteg-008 </td> 
+         <td class="confluenceTd"> To support xml editor features. <b>dependency:</b> the dtd and xsd files for the supported descriptor files need to be available in the 3.1 promoted build <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Create a new WizardIterator to support File-&gt;New File-&gt;Other... (category: WebLogic; type: WebLogic Deployment Descriptor) likely based on org.netbeans.modules.j2ee.sun.share.configbean.templates.SunDDWizardIterator </td> 
+         <td class="confluenceTd"> m3 </td> 
+         <td class="confluenceTd"> July </td> 
+         <td class="confluenceTd"> July </td> 
+         <td class="confluenceTd"> vbk </td> 
+         <td class="confluenceTd"> nbinteg-009 </td> 
+         <td class="confluenceTd"> allow user to create a WebLogic DD file in a project that targets GlassFish <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> extend iterator to translate glassfish-*.xml values to weblogic*.xml values where appropriate </td> 
+         <td class="confluenceTd"> m5 </td> 
+         <td class="confluenceTd"> sep </td> 
+         <td class="confluenceTd"> sep </td> 
+         <td class="confluenceTd"> vbk </td> 
+         <td class="confluenceTd"> nbinteg-002 </td> 
+         <td class="confluenceTd"> <b>dropped</b> this is a p4 feature... </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Create a new Panel to support File-&gt;New File-&gt;Other... (category: WebLogic; type: WebLogic Deployment Descriptor) likely based on org.netbeans.modules.j2ee.sun.share.configbean.templates.SunDDWizardIterator </td> 
+         <td class="confluenceTd"> m3 </td> 
+         <td class="confluenceTd"> July </td> 
+         <td class="confluenceTd"> July </td> 
+         <td class="confluenceTd"> vbk </td> 
+         <td class="confluenceTd"> nbinteg-009 </td> 
+         <td class="confluenceTd"> allow user to create a WebLogic DD file in a project that targets GlassFish <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Create a new VisualPanel to support File-&gt;New File-&gt;Other... (category: WebLogic; type: WebLogic Deployment Descriptor) likely based on org.netbeans.modules.j2ee.sun.share.configbean.templates.SunDDWizardIterator </td> 
+         <td class="confluenceTd"> m3 </td> 
+         <td class="confluenceTd"> July </td> 
+         <td class="confluenceTd"> July </td> 
+         <td class="confluenceTd"> vbk </td> 
+         <td class="confluenceTd"> nbinteg-009 </td> 
+         <td class="confluenceTd"> allow user to create a WebLogic DD file in a project that targets GlassFish <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> write test suite for app scoped resources </td> 
+         <td class="confluenceTd"> m4 </td> 
+         <td class="confluenceTd"> july </td> 
+         <td class="confluenceTd"> july </td> 
+         <td class="confluenceTd"> vbk </td> 
+         <td class="confluenceTd"> nbinteg-003 </td> 
+         <td class="confluenceTd"> past implementation of 'deploy embedded resources' have been too buggy to use <br class="atl-forced-newline"> <b>found different solution... task dropped</b></td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> resurrect sun-resources.xml inclusion code for 3.1 plugin </td> 
+         <td class="confluenceTd"> m4 </td> 
+         <td class="confluenceTd"> July </td> 
+         <td class="confluenceTd"> July </td> 
+         <td class="confluenceTd"> vbk </td> 
+         <td class="confluenceTd"> nbinteg-003 </td> 
+         <td class="confluenceTd"> if the server code passes my test suite <br class="atl-forced-newline"> <b>found different solution... task dropped</b>*</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> extend Restart action to work with remote servers </td> 
+         <td class="confluenceTd"> m3 </td> 
+         <td class="confluenceTd"> july </td> 
+         <td class="confluenceTd"> july </td> 
+         <td class="confluenceTd"> vbk </td> 
+         <td class="confluenceTd"> nbinteg-004 </td> 
+         <td class="confluenceTd"> this will also probably get supported on 3.0.x domains, too <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create new action for restart in debug mode </td> 
+         <td class="confluenceTd"> m3 </td> 
+         <td class="confluenceTd"> aug </td> 
+         <td class="confluenceTd"> aug </td> 
+         <td class="confluenceTd"> vbk </td> 
+         <td class="confluenceTd"> nbinteg-005 </td> 
+         <td class="confluenceTd"> <b>dependency:</b> asadmin command extended to support this <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> extend log viewer to get data from remote server </td> 
+         <td class="confluenceTd"> m4 </td> 
+         <td class="confluenceTd"> aug </td> 
+         <td class="confluenceTd"> aug </td> 
+         <td class="confluenceTd"> vbk </td> 
+         <td class="confluenceTd"> nbinteg-006 </td> 
+         <td class="confluenceTd"> <b>dependency:</b> an api from the server <b>DONE</b></td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> open the log viewer when deploying to remote servers, etc.. </td> 
+         <td class="confluenceTd"> m4 </td> 
+         <td class="confluenceTd"> aug </td> 
+         <td class="confluenceTd"> aug </td> 
+         <td class="confluenceTd"> vbk </td> 
+         <td class="confluenceTd"> nbinteg-006 </td> 
+         <td class="confluenceTd"> allows users to see results of actions on remote instance <b>DONE</b></td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> new node for web services under a domain node </td> 
+         <td class="confluenceTd"> m5 </td> 
+         <td class="confluenceTd"> sep </td> 
+         <td class="confluenceTd"> sep </td> 
+         <td class="confluenceTd"> vbk </td> 
+         <td class="confluenceTd"> nbinteg-007 </td> 
+         <td class="confluenceTd"> <b>done</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> new node for a web service endpoint </td> 
+         <td class="confluenceTd"> m5 </td> 
+         <td class="confluenceTd"> sep </td> 
+         <td class="confluenceTd"> sep </td> 
+         <td class="confluenceTd"> vbk </td> 
+         <td class="confluenceTd"> nbinteg-007 </td> 
+         <td class="confluenceTd"> <b>done</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> test action on web service endpoint </td> 
+         <td class="confluenceTd"> m5 </td> 
+         <td class="confluenceTd"> sep </td> 
+         <td class="confluenceTd"> sep </td> 
+         <td class="confluenceTd"> vbk </td> 
+         <td class="confluenceTd"> nbinteg-007 </td> 
+         <td class="confluenceTd"> <b>done</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> copy wsdl url to clipboard action on web service endpoint </td> 
+         <td class="confluenceTd"> m5 </td> 
+         <td class="confluenceTd"> sep </td> 
+         <td class="confluenceTd"> sep </td> 
+         <td class="confluenceTd"> vbk </td> 
+         <td class="confluenceTd"> nbinteg-007 </td> 
+         <td class="confluenceTd"> <b>done</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> save wsdl to file action on web service enpoint </td> 
+         <td class="confluenceTd"> m5 </td> 
+         <td class="confluenceTd"> sep </td> 
+         <td class="confluenceTd"> sep </td> 
+         <td class="confluenceTd"> vbk </td> 
+         <td class="confluenceTd"> nbinteg-007 </td> 
+         <td class="confluenceTd"> <b>dropped</b> this action did not really accomplish anything in the development workflow </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> test and fix issues on the Servers explorer by presence of versioned apps </td> 
+         <td class="confluenceTd"> m2 </td> 
+         <td class="confluenceTd"> june </td> 
+         <td class="confluenceTd"> june </td> 
+         <td class="confluenceTd"> vbk </td> 
+         <td class="confluenceTd"> nbinteg-011 </td> 
+         <td class="confluenceTd"> <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> additional action on application node: Enable </td> 
+         <td class="confluenceTd"> m2 </td> 
+         <td class="confluenceTd"> june </td> 
+         <td class="confluenceTd"> june </td> 
+         <td class="confluenceTd"> vbk </td> 
+         <td class="confluenceTd"> nbinteg-011 </td> 
+         <td class="confluenceTd"> <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> new badge for app nodes to signify enabled or disabled </td> 
+         <td class="confluenceTd"> m3 </td> 
+         <td class="confluenceTd"> july </td> 
+         <td class="confluenceTd"> july </td> 
+         <td class="confluenceTd"> vbk </td> 
+         <td class="confluenceTd"> nbinteg-011 </td> 
+         <td class="confluenceTd"> <b>DONE</b> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.1DevToolingNB-DesignDocument"></a>Design Document</h2> 
+     <ul> 
+      <li>coming soon</li> 
+     </ul> <h4><a name="3.1DevToolingNB-Quality"></a>Quality</h2> 
+     <ul> 
+      <li>Link to Test Plan</li> 
+     </ul> <h4><a name="3.1DevToolingNB-Documentation"></a>Documentation</h2> 
+     <ul> 
+      <li>Link to Documentation</li> 
+     </ul> <h4><a name="3.1DevToolingNB-Workspace"></a>Workspace</h2> 
+     <ul> 
+      <li>coming soon</li> 
+     </ul> <h4><a name="3.1DevToolingNB-Estimates"></a>Estimates</h2> <p>The list is somewhat order-dependent.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Area </th> 
+         <th class="confluenceTh"> When </th> 
+         <th class="confluenceTh"> Notes </th> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.1DevToolingNB-Research"></a>Research</h2> 
+     <ul> 
+      <li>coming soon</li> 
+     </ul> <h4><a name="3.1DevToolingNB-References"></a>References</h2> 
+     <ul> 
+      <li><a href="http://docs.sun.com/app/docs/doc/821-0179/6nl8hchmr?l=en&amp;a=expand">GlassFish v2.x CLI Commands</a></li> 
+      <li><a href="PlanForGlassFish3.1.html" title="PlanForGlassFish3.1">GlassFish Server Open Source Edition 3.1 Plans including Sub Projects</a></li> 
+     </ul> <h4><a name="3.1DevToolingNB-DevTests"></a>Dev Tests</h2> 
+     <ul> 
+      <li>Coming soon</li> 
+     </ul> <h4><a name="3.1DevToolingNB-EmailAlias"></a>Email Alias</h2> 
+     <ul> 
+      <li>Please contact us at <a href="mailto:dev@glassfish.java.net">dev@glassfish.java.net</a></li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Sep 15, 2010 by 
+<font color="#0050B2">vsunk2</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

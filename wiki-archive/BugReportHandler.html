@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : BugReportHandler</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>The BugReportHandler is a sample <a href="WikiForms.html" title="WikiForms">WikiForms</a> handler which can be used to generate bug reports. This handler creates a new page based on the parameters passed to it. The page contents consist of one table, filled with all parameters given, and then finally the "description" parameter.</p> <h4><a name="BugReportHandler-Parameters"></a>Parameters</h3> 
+     <ul> 
+      <li><b>title</b> = <em>String</em>. Title of the bug. Mandatory. This should be a full sentence. The created page name will be constructed from the title. Mandatory.</li> 
+     </ul> <p>The following parameters are optional.</p> 
+     <ul> 
+      <li><b>description</b> = <em>String</em>. A general description string (which may contain WikiMarkup) which gets added to the end of the report.</li> 
+      <li><b>version</b> = <em>String</em>. You probably want to tie the bug report to a specific version of the software - this allows you to do that.</li> 
+      <li><b>page</b> = <em>String</em>. Each created page gets its name by concatenating the "title" parameter to the "page" parameter. Default is "Bug".</li> 
+      <li><b>map</b> = <em>String</em>. Normally, this plugin would just use the parameter name for the field names in the created table. You can use the <em>map</em> parameter to map the field names to longer strings. The syntax is "&lt;field name&gt;=&lt;a longer string&gt;;&lt;field name 2&gt;=&lt;something else in the way of description;...".</li> 
+     </ul> <h4><a name="BugReportHandler-Example"></a>Example</h3> <p>The following creates a bug report form. Notice how the submit button value of "x" is mapped to an empty string in the "map" parameter, which makes the BugReportHandler ignore the field completely.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">[{FormSet form='reportform' status='NewBug' title='' 
+map='container=Servlet Container;java_version=Java version;pageprovider=[PageProvider] used;criticality=[Bug criticality];x;status=[Bug status];browser_version=Browser version;url=URL;os=Operating System'}]
+[{FormOutput form='reportform' handler='BugReportHandler' populate='handler'}]
+
+[{FormOpen form='reportform'}]
+
+|Title of the bug:| [{FormInput type='text' name='title' size=80}]\\''Mandatory. Please try to be brief, use a whole sentence of ten words or less.''
+|JSPWiki version: |[{FormInput type='text' name='version'}]
+|Servlet container: |[{FormInput type='text' name='container' size=40}]
+|Java version: |[{FormInput type='text' name='java_version'}]
+|Browser used: |[{FormInput type='text' name='browser_version'}]
+|Operating system: |[{FormInput type='text' name='os'}]
+|URL that shows the bug: |[{FormInput type='text' name='url' size=60}]\\''or type in a JSPWiki page name''
+|Page Provider: |[{FormInput type='text' name='pageprovider' size=40}]
+|Criticality: |[{FormSelect name='criticality' value='EnhancementRequest;CosmeticBug;*LightBug;MediumBug;BadBug;CriticalBug;FatalBug'}]
+
+Please enter a freeform description here (in WikiMarkup!):UWC_TOKEN_DBBS
+[{FormTextarea name='description' rows=25 cols=80}]
+
+[{FormInput type='submit' name='x' value='Submit report' size=100}]  (Please click only once!)
+[{FormClose}]</pre> 
+       </div> 
+      </div>
+     </div> <p>The result would look like this:</p> <p>[</p> 
+     <div class="error">
+      <span class="error">Unknown macro: {FormSet form='reportform' status='NewBug' title='' map='container=Servlet Container;java_version=Java version;pageprovider=[PageProvider|(FormSetform='reportform'status='NewBug'title=''map='container=ServletContainer.java_version=Javaversion.pageprovider=(PageProvider] used;criticality=[Bug criticality|Bugcriticality];x;status=[Bug status|Bugstatus];browser_version=Browser version;url=URL;os=Operating System'}</span> 
+     </div> <p>]<br> [</p> 
+     <div class="error">
+      <span class="error">Unknown macro: {FormOutput form='reportform' handler='BugReportHandler' populate='handler'}</span> 
+     </div> <p>|(FormOutputform='reportform'handler='BugReportHandler'populate='handler')]</p> <p>[</p> 
+     <div class="error">
+      <span class="error">Unknown macro: {FormOpen form='reportform'}</span> 
+     </div> <p>|(FormOpenform='reportform')]</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <td class="confluenceTd"> Title of the bug: </td> 
+         <td class="confluenceTd"> 
+          <div class="error">
+           <span class="error">Unknown macro: {FormInput type='text' name='title' size=80}</span> 
+          </div> <em>Mandatory. Please try to be brief, use a whole sentence of ten words or less.</em> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JSPWiki version: </td> 
+         <td class="confluenceTd"> 
+          <div class="error">
+           <span class="error">Unknown macro: {FormInput type='text' name='version'}</span> 
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Servlet container: </td> 
+         <td class="confluenceTd"> 
+          <div class="error">
+           <span class="error">Unknown macro: {FormInput type='text' name='container' size=40}</span> 
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Java version: </td> 
+         <td class="confluenceTd"> 
+          <div class="error">
+           <span class="error">Unknown macro: {FormInput type='text' name='java_version'}</span> 
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Browser used: </td> 
+         <td class="confluenceTd"> 
+          <div class="error">
+           <span class="error">Unknown macro: {FormInput type='text' name='browser_version'}</span> 
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Operating system: </td> 
+         <td class="confluenceTd"> 
+          <div class="error">
+           <span class="error">Unknown macro: {FormInput type='text' name='os'}</span> 
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> URL that shows the bug: </td> 
+         <td class="confluenceTd"> 
+          <div class="error">
+           <span class="error">Unknown macro: {FormInput type='text' name='url' size=60}</span> 
+          </div> <em>or type in a JSPWiki page name</em> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Page Provider: </td> 
+         <td class="confluenceTd"> 
+          <div class="error">
+           <span class="error">Unknown macro: {FormInput type='text' name='pageprovider' size=40}</span> 
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Criticality: </td> 
+         <td class="confluenceTd"> 
+          <div class="error">
+           <span class="error">Unknown macro: {FormSelect name='criticality' value='EnhancementRequest;CosmeticBug;*LightBug;MediumBug;BadBug;CriticalBug;FatalBug'}</span> 
+          </div> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>Please enter a freeform description here (in WikiMarkup!):<br> [</p> 
+     <div class="error">
+      <span class="error">Unknown macro: {FormTextarea name='description' rows=25 cols=80}</span> 
+     </div> <p>|(FormTextareaname='description'rows=25cols=80)]</p> <p>[</p> 
+     <div class="error">
+      <span class="error">Unknown macro: {FormInput type='submit' name='x' value='Submit report' size=100}</span> 
+     </div> <p>|(FormInputtype='submit'name='x'value='Submitreport'size=100)] (Please click only once!)<br> -(FormClose)</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:43.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

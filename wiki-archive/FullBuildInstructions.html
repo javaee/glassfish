@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : FullBuildInstructions</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   
+     <div> 
+      <ul> 
+       <li><a href="#FullBuildInstructions-GlassFishFullBuildInstructions">GlassFish Full Build Instructions</a></li> 
+       <ul> 
+        <ul> 
+         <li><a href="#FullBuildInstructions-Mavenversion">Maven version</a></li> 
+         <li><a href="#FullBuildInstructions-Mavenoptions">Maven options</a></li> 
+         <li><a href="#FullBuildInstructions-JDKversion">JDK version</a></li> 
+         <li><a href="#FullBuildInstructions-Checkouttheworkspace">Checkout the workspace</a></li> 
+        </ul> 
+        <li><a href="#FullBuildInstructions-Rebuildfromexistingworkspace%2C">Re-build from existing workspace,</a></li> 
+        <li><a href="#FullBuildInstructions-Distributions">Distributions</a></li> 
+        <li><a href="#FullBuildInstructions-RunningV3">Running V3</a></li> 
+        <li><a href="#FullBuildInstructions-BuildingOffline">Building Offline</a></li> 
+        <li><a href="#FullBuildInstructions-KenaiMigration">Kenai Migration</a></li> 
+        <li><a href="#FullBuildInstructions-BuildingEmbedded">Building Embedded</a></li> 
+        <ul> 
+         <ul> 
+          <li><a href="#FullBuildInstructions-EmbeddedAll">Embedded All</a></li> 
+          <li><a href="#FullBuildInstructions-EmbeddedNucleus">Embedded Nucleus</a></li> 
+          <li><a href="#FullBuildInstructions-EmbeddedWeb">Embedded Web</a></li> 
+         </ul> 
+        </ul> 
+        <li><a href="#FullBuildInstructions-DecisionRegardingBinaryClassVersionofGlassFishBuild.">Decision Regarding Binary Class Version of GlassFish Build.</a></li> 
+        <li><a href="#FullBuildInstructions-Unabletobuildbecausemaven.glassfish.orgisoffline">Unable to build because maven.glassfish.org is offline</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="FullBuildInstructions-GlassFishFullBuildInstructions"></a>GlassFish Full Build Instructions</h1> <p>These instructions are for those who want to fully build everything from scratch. Most developers should follow <a href="DevelopmentInstructions.html" title="DevelopmentInstructions">DevelopmentInstructions</a>. To build GlassFish V2, see <a href="./BuildInformation.html">here </a>.</p> <h4><a name="FullBuildInstructions-Mavenversion"></a>Maven version</h3> 
+     <ul> 
+      <li>trunk -&gt; maven 3.0.3 or above</li> 
+      <li>3.X -&gt; maven 2.2.1 only</li> 
+     </ul> <h4><a name="FullBuildInstructions-Mavenoptions"></a>Maven options</h3> <p>MAVEN_OPTS environment variable must include the following:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">-Xmx1024M -XX:MaxPermSize=512m</pre> 
+       </div> 
+      </div>
+     </div> <p>Not using the above setting will likely cause an&nbsp;<em>OutOfMemoryException.</em></p> <h4><a name="FullBuildInstructions-JDKversion"></a>JDK version</h3> 
+     <ul> 
+      <li>trunk -&gt; JDK 1.7 Update Release 9</li> 
+      <li>3.x -&gt;&nbsp;JDK 1.6 Update Release 4 or above, JDK 1.7 is not supported</li> 
+     </ul> <p><b>Settings.xml (only required for building 3.x)</b></p> <p>You need to have the following mirror element in &lt;user.home&gt;/.m2/settings.xml so that all Maven artifacts are downloaded from Maven Central except for EclipseLink artifacts. &nbsp;</p> <p>&nbsp;&lt;mirrors&gt;<br> &nbsp; &nbsp; &lt;mirror&gt;<br> &nbsp; &nbsp; &nbsp; &lt;id&gt;maven-central&lt;/id&gt;<br> &nbsp; &nbsp; &nbsp; &lt;url&gt;<a href="http://repo1.maven.org/maven2/">http://repo1.maven.org/maven2/</a>&lt;/url&gt;<br> &nbsp; &nbsp; &nbsp; &lt;mirrorOf&gt;*,!eclipselink.repository,!jvnet-nexus-promoted&lt;/mirrorOf&gt;<br> &nbsp; &nbsp; &lt;/mirror&gt;<br> &nbsp; &lt;/mirrors&gt;</p> <h4><a name="FullBuildInstructions-Checkouttheworkspace"></a>Checkout the workspace</h3> <p>To checkout the entire trunk workspace,</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">svn checkout https://svn.java.net/svn/glassfish~svn/trunk/main</pre> 
+       </div> 
+      </div>
+     </div> <p>If you don't have svn, please download it <a href="http://subversion.tigris.org/getting.html">here</a>.</p> <p>To checkout the 3.1.2 workspace,</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">svn checkout https://svn.java.net/svn/glassfish~svn/tags/3.1.2</pre> 
+       </div> 
+      </div>
+     </div> <p>To checkout the 3.1.1 workspace,</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">svn checkout https://svn.java.net/svn/glassfish~svn/tags/3.1.1</pre> 
+       </div> 
+      </div>
+     </div> <p>To checkout the 3.1 workspace,</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">svn checkout https://svn.java.net/svn/glassfish~svn/tags/3.1</pre> 
+       </div> 
+      </div>
+     </div> <p>To checkout the 3.0.1 FCS workspace,</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">svn checkout https://svn.java.net/svn/glassfish~svn/tags/3.0.1</pre> 
+       </div> 
+      </div>
+     </div> <p>To checkout the 3.0 FCS workspace,</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">svn checkout https://svn.java.net/svn/glassfish~svn/tags/3.0</pre> 
+       </div> 
+      </div>
+     </div> <p>To checkout the V3Preview workspace,</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">svn checkout https://svn.java.net/svn/glassfish~svn/branches/3.0-Preview</pre> 
+       </div> 
+      </div>
+     </div> <p>To checkout the V3Prelude workspace,</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">svn checkout https://svn.java.net/svn/glassfish~svn/branches/v3_prelude_release</pre> 
+       </div> 
+      </div>
+     </div> <p>Tip: If you don't have svn installed, you can use mvn to checkout trunk workspace:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">mvn scm:checkout -DconnectionUrl=scm:svn:https://svn.java.net/svn/glassfish~svn/trunk/main -DcheckoutDirectory=main</pre> 
+       </div> 
+      </div>
+     </div> <p>This command will create a subdirectory 'main' from the directory where you run the command. You can do the same for V3Prelude workspace by replacing the URL.<br> After that, perform the following steps to build GFv3</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">cd main
+mvn install</pre> 
+       </div> 
+      </div>
+     </div> <p>Note: if you get a java OutOfMemory Error while running the mvn command, add this entry to your shell's rc file or environment:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">export MAVEN_OPTS=-Xmx512m</pre> 
+       </div> 
+      </div>
+     </div> <p>Tip: If you want to dedicate a maven local repository:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">mvn -Dmaven.repo.local=/tmp/m2 clean install</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="FullBuildInstructions-Rebuildfromexistingworkspace%2C"></a>Re-build from existing workspace,</h2> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">cd main
+svn update
+mvn install</pre> 
+       </div> 
+      </div>
+     </div> <p>You can use the "-U" option if you want maven to check and download the updated SNAPSHOT and release artifacts. However, build will take much longer using this option. If you have one successful build which means your local Maven repository (by default it's <tt>&lt;user-home&gt;/.m2/repository</tt>) is populated with the artifacts referenced in GlassFish v3 workspace, then you don't need to use "-U".</p> <p>You can use the "clean" target if you want maven to delete the modules' target directories and force maven to build all the modules. Without the clean target, maven will build the modules that have been modified.</p> <p><b>NOTE</b> if your code change impacts other modules, it is recommended that you do a "clean".</p> <p>Also, once you have a successful build, you can build selected modules in the v3 directory by using the "-pl or --projects" option.</p> <p>e.g.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">mvn  -Dmaven.repo.local=/export/GlassFish/Apr20/repository -pl admin,common install</pre> 
+       </div> 
+      </div>
+     </div> <p>If you already have a GlassFish installation and would like to update that jar files built in your workspace to the installed glassfish/modules directory, you can either directly copy to the glassfish/modules directory or create a symlink in Unix/Linux or use Junction in Windows OS (see <a href="http://technet.microsoft.com/en-us/sysinternals/bb896768.aspx">here</a>.</p> <p>Currently the Maven GlassFish Build plugin's "run" goal (described <a href="DevelopmentInstructions.html" title="DevelopmentInstructions">here</a>) is broken due to changes in the GlassFish launcher code. Once this is fixed, you can also use this option to start domain with the artifacts built in your workspace.</p> <h4><a name="FullBuildInstructions-Distributions"></a>Distributions</h2> <p>At the end of this, you will have various distributions. These distributions are nothing but zip files with specific Main Class and contents. For example, one of the distributions is the GlassFish distribution available at: <tt>main/appserver/distributions/glassfish/target</tt>, named <tt>glassfish.zip</tt>.</p> <p>Note that the so-called "admin domain" is already available as a zipped-up folder with prebuilt structure. This is a deviation from how GlassFish V2 used to install/create the domain.</p> <h4><a name="FullBuildInstructions-RunningV3"></a>Running V3</h2> <p>Unzip the distribution in your favorite directory and do</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">glassfish/bin/asadmin start-domain [--verbose|-v]</pre> 
+       </div> 
+      </div>
+     </div> <p>where the option <tt>--verbose|-v</tt> starts the server embedded, in the same vm and displays the server log on the console<br> or</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">java -jar glassfish/modules/glassfish.jar</pre> 
+       </div> 
+      </div>
+     </div> <p>you can then use the asadmin client to deploy applications</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">bin/asadmin deploy foo.war</pre> 
+       </div> 
+      </div>
+     </div> <p>Note: Make sure that you are using JDK 1.6 update release 4 or above and it must be in the path.</p> <h4><a name="FullBuildInstructions-BuildingOffline"></a>Building Offline</h2> <p>You can build offline if you have all the external dependencies downloaded in the local Maven repository. The dependencies are downloaded if you have a previously successful v3 build. To build offline, use the following command:<br> </p>
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">mvn -DskipTests=true  -o clean install</pre> 
+       </div> 
+      </div>
+     </div>You need to add <tt>-DskipTests=true</tt> to skip the unit tests since the acc-config unit test is retrieving the DTD over the network when using JAXB to convert XML files to Java code. See: <a href="https://github.com/javaee/glassfish/issues/4756">IT 4756</a><p></p> <h4><a name="FullBuildInstructions-KenaiMigration"></a>Kenai Migration</h2> <p>If you have an existing workspace from java.net (Collab) and would like to switch to the new java.net (Kenai) infrastructure, please use switch --relocate command.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">$ cd work/ws/main
+$ svn switch --relocate https://svn.java.net/svn/glassfish-svn https://svn.java.net/svn/glassfish~svn
+Error validating server certificate for 'https://svn.java.net:443':
+ - The certificate is not issued by a trusted authority. Use the
+   fingerprint to validate the certificate manually!
+Certificate information:
+ - Hostname: www.java.net
+ - Valid: from Mon, 20 Sep 2010 08:00:00 GMT until Thu, 20 Sep 2012 07:59:59 GMT
+ - Issuer: Class 3 MPKI Secure Server CA, VeriSign Trust Network, Sun Microsystems Inc
+ - Fingerprint: 22:d2:d5:43:96:0f:eb:e0:9a:20:b9:14:b4:d9:32:1e:6a:f3:37:11
+(R)eject, accept (t)emporarily or accept (p)ermanently? p
+$ svn update
+Updated to revision 43064.</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="FullBuildInstructions-BuildingEmbedded"></a>Building Embedded</h2> <p>You must first build main workspace and have a local Maven repository containing the main/appserver and main/nucleus artifacts. The embedded workspace will need to reference the same local Maven repository used for building main. If you're not using the default Maven repository, (<tt>&lt;home&gt;/.m2/repository</tt>), you can set the local Maven repository with the property <tt>-Dmaven.repo.local=...</tt> on the command line. If you just want to build embedded without building v3, the v3 SNAPSHOT artifacts from the remote Maven repository will be used to assemble the embedded artifacts.</p> <h5><a name="FullBuildInstructions-EmbeddedAll"></a>Embedded All</h5> <p>cd main/appserver/extras/embedded/all<br> mvn install</p> <h5><a name="FullBuildInstructions-EmbeddedNucleus"></a>Embedded Nucleus</h5> <p>cd main/appserver/extras/embedded/nucleus<br> mvn install</p> <h5><a name="FullBuildInstructions-EmbeddedWeb"></a>Embedded Web</h5> <p>cd main/appserver/extras/embedded/web<br> mvn install</p> <h4><a name="FullBuildInstructions-DecisionRegardingBinaryClassVersionofGlassFishBuild."></a>Decision Regarding Binary Class Version of GlassFish Build.</h2> <p>This was discussed during the engineering meeting on Tuesday 17 Feb 2009.</p> <p>Since <em>by definition</em>, Java EE 6 requires Java SE 6 <em>runtime</em>, it is obvious that we use Java 6 for <em>compilation</em>. Thus, the javac used for compilation of Java sources in GlassFish v3 trunk is <tt>&lt;java6&gt;/bin/javac</tt> (or its equivalent). Now, the target for such a build is Java 6 runtime. Thus, by default, i.e. if we don't specify the <tt>-target</tt> option on <tt>javac</tt>, the generated classes would have a Major Version of 50.0 (which corresponds to Java 6). Thus, if we did that, all the modules will only create classes that can be loaded by Java 6 runtime. In order to support Java 5 runtime (<a href="ListOfV3ModulesSupportingJava5Runtime.html" title="ListOfV3ModulesSupportingJava5Runtime">ListOfV3ModulesSupportingJava5Runtime</a>) which might be required by some of the components (although their source are checked in to v3 trunk), here is the decision taken:</p> 
+     <ol> 
+      <li>GlassFish v3 must be run with Java 6+ runtime only. (Can someone clarify if it applies to all the distro's?)</li> 
+      <li>We use javac from Java 6 for compilation. Because of that, any module can declare compile-time dependencies on Java 6 classes, e.g. java.io.Console.</li> 
+      <li>We use <tt>-target</tt> as <tt>1.5</tt> which means, by default, the major version of classes generated by build would be 49. This is to take care of running certain modules with Java 5 runtime.</li> 
+      <li>asadmin will detect an attempt to run GlassFish with Java 5 Runtime <a href="https://github.com/javaee/glassfish/issues/7038">See: 7038</a> and will flag it as an error.</li> 
+     </ol> <h4><a name="FullBuildInstructions-Unabletobuildbecausemaven.glassfish.orgisoffline"></a>Unable to build because maven.glassfish.org is offline</h2> <p>The GlassFish Nexus Server (maven.glassfish.org) is offline due to internal infrastructure changes.<br> This of course impacts GlassFish builds.&nbsp; Since almost all GlassFish dependencies are available in Maven Central, except for EclipseLink artifacts, you'll need to create a mirror element in settings.xml:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt; !-- mirror all repositories to central except for EclipseLink  repository --&gt;
+&lt;mirror&gt;
+&lt;id&gt;maven-central&lt;/id&gt;
+&lt;url&gt;http://repo1.maven.org/maven2/&lt;/url&gt;
+&lt;mirrorOf&gt;*,!eclipselink.repository&lt;/mirrorOf&gt;
+&lt;/mirror&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>For 3.x, you'll need to add the following profile in settings.xml:<br> </p>
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;profile&gt;
+    &lt;id&gt;gf-repo&lt;/id&gt;
+    &lt;repositories&gt;
+        &lt;repository&gt;
+            &lt;id&gt;eclipselink.repository&lt;/id&gt;
+            &lt;name&gt;EclipseLink Repo&lt;/name&gt;
+            &lt;releases&gt;
+                &lt;enabled&gt;true&lt;/enabled&gt;
+            &lt;/releases&gt;
+            &lt;snapshots&gt;
+                &lt;enabled&gt;false&lt;/enabled&gt;
+            &lt;/snapshots&gt;
+            &lt;url&gt;http://download.eclipse.org/rt/eclipselink/maven.repo/&lt;/url&gt;
+            &lt;layout&gt;default&lt;/layout&gt;
+        &lt;/repository&gt;
+        &lt;repository&gt;
+            &lt;id&gt;netbeans.repository&lt;/id&gt;
+            &lt;name&gt;Maven Repo containing NetBeans artifacts&lt;/name&gt;
+            &lt;releases&gt;
+                &lt;enabled&gt;true&lt;/enabled&gt;
+            &lt;/releases&gt;
+            &lt;snapshots&gt;
+                &lt;enabled&gt;false&lt;/enabled&gt;
+            &lt;/snapshots&gt;
+            &lt;url&gt;http://dev.nightlabs.org/maven-repository/repo/&lt;/url&gt;
+            &lt;layout&gt;default&lt;/layout&gt;
+        &lt;/repository&gt;
+    &lt;/repositories&gt;
+&lt;/profile&gt;</pre> 
+       </div> 
+      </div>
+     </div>and add the following mirror element:<p></p> <p></p>
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;mirror&gt;
+    &lt;id&gt;maven-central&lt;/id&gt;
+    &lt;url&gt;http://repo1.maven.org/maven2/&lt;/url&gt;
+    &lt;mirrorOf&gt;*,!eclipselink.repository,!netbeans.repository&lt;/mirrorOf&gt;
+&lt;/mirror&gt;</pre> 
+       </div> 
+      </div>
+     </div>invoke Maven with <b>gf-repo</b> profile:<p></p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">mvn -Pgf-repo install</pre> 
+       </div> 
+      </div>
+     </div> 
+     <div class="tabletitle"> 
+      <a name="comments"> <h4>Comments:</h2> </a> 
+     </div> 
+     <table border="0" width="100%"> 
+      <tbody>
+       <tr> 
+        <td> <a name="comment-20878542"></a> <font class="smallfont"> <p>Why do we have to checkout from ./branch/... but not from ./tags/... ?<br> Today someone renamed ./branches/3.1.1 to ./branches/3.1.2<br> This page: <a href="./FullBuildInstructions.html">http://wikis.sun.com/display/GlassFish/FullBuildInstructions</a><br> explains to new-comers like me how to fully build from sources. <br> And beleve me it would work for me much better if I can expect sources<br> to come from a stabe place as normaly found under ./tags then a branch <br> which seems to change or gets renemd on the fly.</p> <p>Josef</p></font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by stadelma at Aug 02, 2011 06:02 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20883851"></a> <font class="smallfont"><p>Thank for the exhaustive instructions... I am also new to this and I will probably have to bookamrk this page and refer to it a few times but I do get the gist of it.</p> <p>Thanks!</p> <p>Pareto@<br> <a href="http://businessexpert.co.za">Business Ideas</a></p></font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by pareto99 at Aug 08, 2011 10:34 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20876437"></a> <font class="smallfont"><p>I want to import the glassfish projects into eclipse for debugging, which prject do I have to import?</p></font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by veit_ullmann at Nov 02, 2011 13:33 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-42109071"></a> <font class="smallfont"><p>Hey guys, I am new to glassfish source code, when I use try to build the source code of glassfish 3.1.2, I kept encounter the error as following, please guide me out of this:</p> <p>INFO] ------------------------------------------------------------------------<br> [INFO] Building mejb distribution fragment 3.1.2<br> [INFO] ------------------------------------------------------------------------<br> [INFO]&nbsp;<br> [INFO] --- maven-enforcer-plugin:1.0-beta-1:enforce (enforce-maven) @ mejb-frag ---<br> [INFO]&nbsp;<br> [INFO] --- maven-enforcer-plugin:1.0-beta-1:enforce (enforce-versions) @ mejb-frag ---<br> [INFO]&nbsp;<br> [INFO] --- osgiversion-maven-plugin:1.1.14:compute-osgi-version (compute-osgi-version) @ mejb-frag ---<br> [INFO]&nbsp;<br> [INFO] --- maven-glassfishbuild-plugin:3.1.1:echo (echo) @ mejb-frag ---<br> [INFO] ------------------------------------------------------------------------<br> [INFO] Building in /Users/barry/Professionals/Workspaces/Others/Glassfish/v3/3.1.2/common/mejb-frag<br> [INFO] ------------------------------------------------------------------------<br> [INFO]&nbsp;<br> [INFO] --- maven-antrun-extended-plugin:1.41:run (default) @ mejb-frag ---<br> [INFO] Executing tasks<br> [resolveArtifact] Copying /Users/barry/Professionals/Workspaces/Others/Glassfish/v3/3.1.2/common/mejb/target/mejb.jar to /Users/barry/Professionals/Workspaces/Others/Glassfish/v3/3.1.2/common/mejb-frag/target/classes/glassfish/lib/install/applications/mejb.jar<br> &nbsp; &nbsp; &nbsp;[null] Copying 1 file to /Users/barry/Professionals/Workspaces/Others/Glassfish/v3/3.1.2/common/mejb-frag/target/classes/glassfish/lib/install/applications<br> [INFO] Executed tasks<br> [INFO]&nbsp;<br> [INFO] --- maven-resources-plugin:2.4.3:resources (default-resources) @ mejb-frag ---<br> [INFO] Using 'UTF-8' encoding to copy filtered resources.<br> [INFO] skip non existing resourceDirectory /Users/barry/Professionals/Workspaces/Others/Glassfish/v3/3.1.2/common/mejb-frag/src/main/resources<br> [INFO]&nbsp;<br> [INFO] --- maven-bundle-plugin:2.0.1:manifest (bundle-manifest) @ mejb-frag ---<br> [WARNING] Ignoring project type distribution-fragment - supportedProjectTypes = [hk2-jar, bundle]<br> [INFO]&nbsp;<br> [INFO] --- maven-jar-plugin:2.4:jar (default-jar) @ mejb-frag ---<br> [INFO] ------------------------------------------------------------------------<br> INFO] ------------------------------------------------------------------------</p> <p>[INFO] Building mejb distribution fragment 3.1.2</p> <p>[INFO] ------------------------------------------------------------------------</p> <p>[INFO]&nbsp;</p> <p>[INFO] --- maven-enforcer-plugin:1.0-beta-1:enforce (enforce-maven) @ mejb-frag ---</p> <p>[INFO]&nbsp;</p> <p>[INFO] --- maven-enforcer-plugin:1.0-beta-1:enforce (enforce-versions) @ mejb-frag ---</p> <p>[INFO]&nbsp;</p> <p>[INFO] --- osgiversion-maven-plugin:1.1.14:compute-osgi-version (compute-osgi-version) @ mejb-frag ---</p> <p>[INFO]&nbsp;</p> <p>[INFO] --- maven-glassfishbuild-plugin:3.1.1:echo (echo) @ mejb-frag ---</p> <p>[INFO] ------------------------------------------------------------------------</p> <p>[INFO] Building in /Users/barry/Professionals/Workspaces/Others/Glassfish/v3/3.1.2/common/mejb-frag</p> <p>[INFO] ------------------------------------------------------------------------</p> <p>[INFO]&nbsp;</p> <p>[INFO] --- maven-antrun-extended-plugin:1.41:run (default) @ mejb-frag ---</p> <p>[INFO] Executing tasks</p> <p>[resolveArtifact] Copying /Users/barry/Professionals/Workspaces/Others/Glassfish/v3/3.1.2/common/mejb/target/mejb.jar to /Users/barry/Professionals/Workspaces/Others/Glassfish/v3/3.1.2/common/mejb-frag/target/classes/glassfish/lib/install/applications/mejb.jar</p> <p>&nbsp; &nbsp; &nbsp;[null] Copying 1 file to /Users/barry/Professionals/Workspaces/Others/Glassfish/v3/3.1.2/common/mejb-frag/target/classes/glassfish/lib/install/applications</p> <p>[INFO] Executed tasks</p> <p>[INFO]&nbsp;</p> <p>[INFO] --- maven-resources-plugin:2.4.3:resources (default-resources) @ mejb-frag ---</p> <p>[INFO] Using 'UTF-8' encoding to copy filtered resources.</p> <p>[INFO] skip non existing resourceDirectory /Users/barry/Professionals/Workspaces/Others/Glassfish/v3/3.1.2/common/mejb-frag/src/main/resources</p> <p>[INFO]&nbsp;</p> <p>[INFO] --- maven-bundle-plugin:2.0.1:manifest (bundle-manifest) @ mejb-frag ---</p> <p>[WARNING] Ignoring project type distribution-fragment - supportedProjectTypes = [hk2-jar, bundle]</p> <p>[INFO]&nbsp;</p> <p>[INFO] --- maven-jar-plugin:2.4:jar (default-jar) @ mejb-frag ---</p> <p>[INFO] ------------------------------------------------------------------------</p> <p>[INFO] Reactor Summary:<br> [INFO]&nbsp;<br> [INFO] GlassFish Parent Project .......................... SUCCESS [1.146s]<br> [INFO] GlassFish Common modules .......................... SUCCESS [0.048s]<br> [INFO] Scattered Archive APIs of Glassfish ............... SUCCESS [1.119s]<br> [INFO] Public APIs of Glassfish V3 ....................... SUCCESS [1.058s]<br> [INFO] Repackaged external modules ....................... SUCCESS [0.241s]<br> [INFO] j-interop repackaged as a module .................. SUCCESS [1.758s]<br> [INFO] Common Utilities .................................. SUCCESS [6.745s]<br> [INFO] Simple Public APIs of Glassfish V3 ................ SUCCESS [0.142s]<br> [INFO] GlassFish Core modules ............................ SUCCESS [0.014s]<br> [INFO] Appserver Core Bootstraping Classes ............... SUCCESS [1.139s]<br> [INFO] Test utilities .................................... SUCCESS [0.242s]<br> [INFO] Admin Modules ..................................... SUCCESS [0.014s]<br> [INFO] admin-config-api .................................. SUCCESS [11.948s]<br> [INFO] Private APIs of Glassfish V3 ...................... SUCCESS [0.525s]<br> [INFO] Java EE API modules repackaged as OSGi bundles in GlassFish &nbsp;SUCCESS [0.682s]<br> [INFO] javax.annotation API v.1.1 ........................ SUCCESS [0.628s]<br> [INFO] Super POM for Java EE API modules ................. SUCCESS [0.034s]<br> [INFO] javax.transaction API v.1.1 ....................... SUCCESS [0.607s]<br> [INFO] javax.enterprise.deploy API v.1.2 ................. SUCCESS [0.806s]<br> [INFO] javax.resource API v.1.6 .......................... SUCCESS [0.998s]<br> [INFO] javax.xml.rpc API v.1.1 ........................... SUCCESS [1.070s]<br> [INFO] javax.ejb API v.3.1 ............................... SUCCESS [1.396s]<br> [INFO] GlassFish Deployment Related Modules .............. SUCCESS [0.142s]<br> [INFO] Deployment Related Common Classes ................. SUCCESS [1.329s]<br> [INFO] GlassFish Java EE Annotation Framework ............ SUCCESS [0.338s]<br> [INFO] Deployment Object Library ......................... SUCCESS [16.732s]<br> [INFO] GlassFish Security Infrastructure and Technology Integration Modules &nbsp;SUCCESS [0.010s]<br> [INFO] GlassFish SSL Implementation Module ............... SUCCESS [0.302s]<br> [INFO] javax.security.auth.message API v.1.0 ............. SUCCESS [0.334s]<br> [INFO] javax.security.jacc API v.1.4 ..................... SUCCESS [0.689s]<br> [INFO] JSR-196 Provider Framework Reference Implementation &nbsp;SUCCESS [5.471s]<br> [INFO] GlassFish Transaction modules ..................... SUCCESS [0.009s]<br> [INFO] Transaction Service Internal API .................. SUCCESS [0.571s]<br> [INFO] GlassFish Java EE Connector Architecture related modules &nbsp;SUCCESS [0.026s]<br> [INFO] Connectors Private APIs for GlassFish Containers .. SUCCESS [1.164s]<br> [INFO] GlassFish EJB container related modules ........... SUCCESS [0.025s]<br> [INFO] EJB container Internal API ........................ SUCCESS [0.272s]<br> [INFO] ldapbp repackaged as a module ..................... SUCCESS [0.470s]<br> [INFO] libpam4j repackaged as a module ................... SUCCESS [1.166s]<br> [INFO] Security Core Classes ............................. SUCCESS [1:31.442s]<br> [INFO] admin-util ........................................ SUCCESS [1:20.660s]<br> [INFO] Cluster 3.1.2 ..................................... SUCCESS [0.022s]<br> [INFO] Cluster Common 3.1.2 .............................. SUCCESS [0.735s]<br> [INFO] flashlight-framework .............................. SUCCESS [1:20.503s]<br> [INFO] Branding .......................................... SUCCESS [0.160s]<br> [INFO] trilead-ssh2 repackaged as a module ............... SUCCESS [0.496s]<br> [INFO] Cluster SSH Provisioning .......................... SUCCESS [0.755s]<br> [INFO] Appserver Logging Classes ......................... SUCCESS [1:22.142s]<br> [INFO] Kernel Classes .................................... SUCCESS [1:14.930s]<br> [INFO] GMS Bootstrap Module .............................. SUCCESS [12.115s]<br> [INFO] Cluster Admin ..................................... SUCCESS [7.351s]<br> [INFO] admin-launcher .................................... SUCCESS [0.703s]<br> [INFO] admin-cli ......................................... SUCCESS [6.308s]<br> [INFO] admin-server-management ........................... SUCCESS [1.366s]<br> [INFO] Cluster Admin CLI 3.1.2 ........................... SUCCESS [6.370s]<br> [INFO] GMS Module ........................................ SUCCESS [22.682s]<br> [INFO] javax.jms API v.1.1 ............................... SUCCESS [0.745s]<br> [INFO] javax.jws API v.1.1 ............................... SUCCESS [0.604s]<br> [INFO] javax.xml.soap API v.1.3 .......................... SUCCESS [0.450s]<br> [INFO] jmxremote_optional repackaged as a module ......... SUCCESS [0.745s]<br> [INFO] Glassfish MBeanServer support ..................... SUCCESS [0.733s]<br> [INFO] stats77 ........................................... SUCCESS [0.530s]<br> [INFO] AMX V3 Core ....................................... SUCCESS [4.073s]<br> [INFO] AMX V3 Core implementation ........................ SUCCESS [1.472s]<br> [INFO] AMX V3 Config ..................................... SUCCESS [1.435s]<br> [INFO] AMX V3 Config implementation ...................... SUCCESS [1.058s]<br> [INFO] javax.management.j2ee API v.1.1 ................... SUCCESS [0.871s]<br> [INFO] AMX V3 Java EE Management (JSR 77) API ............ SUCCESS [0.386s]<br> [INFO] AMX V3 Java EE Management (JSR 77) implemention ... SUCCESS [1.125s]<br> [INFO] AMX V3 extensions implementation .................. SUCCESS [1.238s]<br> [INFO] AMX Combining ..................................... SUCCESS [5.806s]<br> [INFO] Java EE Management JSR 77 MEJB .................... SUCCESS [1.158s]<br> [INFO] mejb distribution fragment ........................ FAILURE [2.506s]<br> [INFO] Java EE dependent public APIs of Glassfish V3 ..... SKIPPED<br> [INFO] admin-monitoring .................................. SKIPPED<br> [INFO] GlassFish ORB related modules ..................... SKIPPED<br> [INFO] GlassFish ORB connector implementation ............ SKIPPED<br> [INFO] Glassfish Naming .................................. SKIPPED<br> [INFO] Container Common .................................. SKIPPED<br> [INFO] GlassFish HA modules .............................. SKIPPED<br> [INFO] GlassFish ha-file-store ........................... SKIPPED<br> [INFO] GlassFish ha-shoal-cache-bootstrap ................ SKIPPED<br> [INFO] GlassFish ha-shoal-store .......................... SKIPPED<br> [INFO] Set of DTDs for GlassFish Java EE distributions ... SKIPPED<br> [INFO] Set of schemas for Java EE ........................ SKIPPED<br> [INFO] Deployment Client Classes and Interfaces .......... SKIPPED<br> [INFO] Deployment Related JavaEE Core Classes ............ SKIPPED<br> [INFO] Deployment Related JavaEE Full Profile Classes .... SKIPPED<br> [INFO] Deployment Related Admin Classes .................. SKIPPED<br> [INFO] AutoDeploy Classes ................................ SKIPPED<br> [INFO] JSR-88 JAR and dist. fragment ..................... SKIPPED<br> [INFO] JSR-88 implementation declaration JAR ............. SKIPPED<br> [INFO] JSR-88 dist. fragment ............................. SKIPPED<br> [INFO] admin-core ........................................ SKIPPED<br> [INFO] Backup Restore classes ............................ SKIPPED<br> [INFO] admin-cli-optional ................................ SKIPPED<br> [INFO] admin-rest ........................................ SKIPPED<br> [INFO] Java EE related distributions kernel Classes ...... SKIPPED<br> [INFO] GlassFish API Exporter Module ..................... SKIPPED<br> [INFO] GlassFish API Exporter Module Fragment ............ SKIPPED<br> [INFO] GlassFish Module Extending system bundle to provide access to additional JRE packages &nbsp;SKIPPED<br> [INFO] JTA Implementation for Glassfish .................. SKIPPED<br> [INFO] Java EE Connector Architecture Runtime for GlassFish &nbsp;SKIPPED<br> [INFO] JTS Implementation for Glassfish .................. SKIPPED<br> [INFO] GlassFish Web container related modules ........... SKIPPED<br> [INFO] Web Container Naming Utilities .................... SKIPPED<br> [INFO] Web Container Common Utilities .................... SKIPPED<br> [INFO] Core Servlet Container ............................ SKIPPED<br> [INFO] JSTL implementation connector module .............. SKIPPED<br> [INFO] Web module command line interface ................. SKIPPED<br> [INFO] Web container and GUI plug-in common classes ...... SKIPPED<br> [INFO] WebTier Security Integration ...................... SKIPPED<br> [INFO] GlassFish Web container embedded related modules .. SKIPPED<br> [INFO] GlassFish Web container Embedded APIs ............. SKIPPED<br> [INFO] Web Container glue code ........................... SKIPPED<br> [INFO] JSF implementation connector module ............... SKIPPED<br> [INFO] JSP caching taglib connector module ............... SKIPPED<br> [INFO] Connector for GlassFish Web Container ............. SKIPPED<br> [INFO] GlassFish Web container Embedded Implementation ... SKIPPED<br> [INFO] Web Container HA code ............................. SKIPPED<br> [INFO] Web Related Implementations for GlassFish ......... SKIPPED<br> [INFO] Weld integration for glassfish .................... SKIPPED<br> [INFO] Fragment bundle for exporting additional Weld packages for Weld generated proxies &nbsp;SKIPPED<br> [INFO] Fragment bundle for Weld related testing .......... SKIPPED<br> [INFO] EJB Container connector for Glassfish ............. SKIPPED<br> [INFO] GlassFish persistence related modules ............. SKIPPED<br> [INFO] Common persistence code between JPA and CMP ....... SKIPPED<br> [INFO] GlassFish Core EJB container implementation ....... SKIPPED<br> [INFO] EJB Timer Service Application ..................... SKIPPED<br> [INFO] GlassFish EJB timer app database init scripts ..... SKIPPED<br> [INFO] EJB tier for GlassFish ............................ SKIPPED<br> [INFO] Descriptors of Java EE Connector Architecture module &nbsp;SKIPPED<br> [INFO] Connector (gluecode) for GlassFish Java EE Connector Architecture Runtime &nbsp;SKIPPED<br> [INFO] Connectors Inbound Support ........................ SKIPPED<br> [INFO] Java EE Connector Architecture Work Management module &nbsp;SKIPPED<br> [INFO] Connectors admin .................................. SKIPPED<br> [INFO] org.netbeans.modules.schema2beans.all version RELEASE55 repackaged as a module &nbsp;SKIPPED<br> [INFO] GlassFish Load-Balancer Plugin related modules .... SKIPPED<br> [INFO] Load-Balancer admin ............................... SKIPPED<br> [INFO] GlassFish JMS modules ............................. SKIPPED<br> [INFO] JMS Module ........................................ SKIPPED<br> [INFO] JMS admin ......................................... SKIPPED<br> [INFO] JDBC Resource Adapter ............................. SKIPPED<br> [INFO] Core JDBC Resource Adapter classes ................ SKIPPED<br> [INFO] JDBC 30 related classes for JDBC Resource Adapter . SKIPPED<br> [INFO] JDBC 40 related classes for JDBC Resource Adapter . SKIPPED<br> [INFO] JDBC Module ....................................... SKIPPED<br> [INFO] JDBC Templates .................................... SKIPPED<br> [INFO] Distribution Module for JDBC Resource Adapter ..... SKIPPED<br> [INFO] JDBC admin ........................................ SKIPPED<br> [INFO] GlassFish Module Extending system bundle to provide access to additional packages from oracle jdbc driver &nbsp;SKIPPED<br> [INFO] JPA connector for glassfish ....................... SKIPPED<br> [INFO] Declaring EclipseLink dependencies ................ SKIPPED<br> [INFO] GlassFish cmp related modules ..................... SKIPPED<br> [INFO] utility module for cmp ............................ SKIPPED<br> [INFO] org.netbeans.modules.org-netbeans-modules-dbschema version RELEASE60 repackaged as a module &nbsp;SKIPPED<br> [INFO] model module for cmp .............................. SKIPPED<br> [INFO] Database Generator module for cmp ................. SKIPPED<br> [INFO] ejb-mapping module for cmp ........................ SKIPPED<br> [INFO] enhancer module for cmp ........................... SKIPPED<br> [INFO] internal-api module for cmp ....................... SKIPPED<br> [INFO] antlr.all version 2.7.6 repackaged as a module .... SKIPPED<br> [INFO] support-sqlstore module for cmp ................... SKIPPED<br> [INFO] support ejb module for cmp ........................ SKIPPED<br> [INFO] GlassFish cmp scripts ............................. SKIPPED<br> [INFO] CMP tier for GlassFish ............................ SKIPPED<br> [INFO] GlassFish Extras modules .......................... SKIPPED<br> [INFO] GlassFish Grizzly adapter container implementation &nbsp;SKIPPED<br> [INFO] GlassFish OSGi adapter to use OSGi modules as application code &nbsp;SKIPPED<br> [INFO] GlassFish Upgrade Tool ............................ SKIPPED<br> [INFO] Upgrade Tool ...................................... SKIPPED<br> [INFO] GlassFish upgrade scripts ......................... SKIPPED<br> [INFO] GlassFish JavaEE Manifest pom ..................... SKIPPED<br> [INFO] GlassFish javaee.jar .............................. SKIPPED<br> [INFO] GlassFish javaee.jar distribution fragment used for packaging. &nbsp;SKIPPED<br> [INFO] GlassFish appserv-rt Manifest pom ................. SKIPPED<br> [INFO] GlassFish appserv-rt.jar .......................... SKIPPED<br> [INFO] GlassFish appserv-rt distribution fragment used for packaging. &nbsp;SKIPPED<br> [INFO] Admin Console Packages ............................ SKIPPED<br> [INFO] DataProvider ...................................... SKIPPED<br> [INFO] Admin Console Integration ......................... SKIPPED<br> [INFO] Admin Console Common .............................. SKIPPED<br> [INFO] Registration ...................................... SKIPPED<br> [INFO] Registration API .................................. SKIPPED<br> [INFO] Registration Impl ................................. SKIPPED<br> [INFO] GlassFish Registration ............................ SKIPPED<br> [INFO] Admin Console Core Jar ............................ SKIPPED<br> [INFO] Admin Console Clustering Support Plugin ........... SKIPPED<br> [INFO] Admin Console Community Edition Theme Plugin ...... SKIPPED<br> [INFO] Admin Console Web Container Plugin ................ SKIPPED<br> [INFO] Admin Console JTS Plugin .......................... SKIPPED<br> [INFO] Admin Console JDBC Plugin ......................... SKIPPED<br> [INFO] Admin Console Connectors Plugin ................... SKIPPED<br> [INFO] Admin Console JMS Plugin .......................... SKIPPED<br> [INFO] Admin Console EJB Container Plugin ................ SKIPPED<br> [INFO] Admin Console EJB Local (Lite) Plugin ............. SKIPPED<br> [INFO] Admin Console Corba Plugin ........................ SKIPPED<br> [INFO] Admin Console Full distribution plugin ............ SKIPPED<br> [INFO] Admin Console Update Center Plugin ................ SKIPPED<br> [INFO] Admin Console WAR ................................. SKIPPED<br> [INFO] Admin Console Install Fragment for distributions/web &nbsp;SKIPPED<br> [INFO] Embedded GlassFish Shell .......................... SKIPPED<br> [INFO] Embedded GlassFish Shell dist. fragment ........... SKIPPED<br> [INFO] GlassFish ORB interface layer implementation ...... SKIPPED<br> [INFO] Ejb Security Integration .......................... SKIPPED<br> [INFO] GlassFish ORB enabler implementation .............. SKIPPED<br> [INFO] JMS GlassFish System RA Assembly .................. SKIPPED<br> [INFO] JAXR GlassFish System RA Assembly ................. SKIPPED<br> [INFO] Distribution Fragments for various OSGi platforms . SKIPPED<br> [INFO] Felix Web Console Extension for GlassFish ......... SKIPPED<br> [INFO] Glassfish OSGI Console Plugin ..................... SKIPPED<br> [INFO] A Pluggable InMemory JACC Provider ................ SKIPPED<br> [INFO] Security Related Implementatios for GlassFish ..... SKIPPED<br> [INFO] Ant repackaging ................................... SKIPPED<br> [INFO] Glassfish packages ................................ SKIPPED<br> [INFO] Glassfish Nucleus Base Bundle ..................... SKIPPED<br> [INFO] flashlight-agent .................................. SKIPPED<br> [INFO] GlassFish Flashlight Extra JDK Pkgs ............... SKIPPED<br> [INFO] Apache Felix and associated bundles and configuration files &nbsp;SKIPPED<br> [INFO] Felix Package ..................................... SKIPPED<br> [INFO] GlassFish HK2 Package ............................. SKIPPED<br> [INFO] Glassfish Grizzly Package ......................... SKIPPED<br> [INFO] Glassfish Nucleus Package ......................... SKIPPED<br> [INFO] Glassfish Grizzly Package for Web/Full distribution &nbsp;SKIPPED<br> [INFO] Base CORBA APIs Package ........................... SKIPPED<br> [INFO] Glassfish Commons Temporary Package ............... SKIPPED<br> [INFO] Shoal Package ..................................... SKIPPED<br> [INFO] Glassfish Clustering Package ...................... SKIPPED<br> [INFO] Glassfish HA Package .............................. SKIPPED<br> [INFO] Glassfish JavaHelp Package ........................ SKIPPED<br> [INFO] Upgrade Tool Package .............................. SKIPPED<br> [INFO] Glassfish Registration Package .................... SKIPPED<br> [INFO] Glassfish Management Package ...................... SKIPPED<br> [INFO] Glassfish Connector Package ....................... SKIPPED<br> [INFO] Glassfish JPA Package ............................. SKIPPED<br> [INFO] Corba Package ..................................... SKIPPED<br> [INFO] Glassfish Transaction Package ..................... SKIPPED<br> [INFO] Glassfish JSF Package ............................. SKIPPED<br> [INFO] Glassfish Web Container Package ................... SKIPPED<br> [INFO] Glassfish OSGi HTTP Service package ............... SKIPPED<br> [INFO] Glassfish OSGi Management console package ......... SKIPPED<br> [INFO] Glassfish JDBC Package ............................ SKIPPED<br> [INFO] Glassfish Admin GUI Package ....................... SKIPPED<br> [INFO] Glassfish EJB Lite Container Package .............. SKIPPED<br> [INFO] Glassfish Commons for Full Distribution ........... SKIPPED<br> [INFO] Glassfish Java Transaction Service ................ SKIPPED<br> [INFO] Glassfish Java Message Service .................... SKIPPED<br> [INFO] Glassfish EJB Package ............................. SKIPPED<br> [INFO] Glassfish CMP Package ............................. SKIPPED<br> [INFO] Glassfish JCDI Package ............................ SKIPPED<br> [INFO] Jersey Package .................................... SKIPPED<br> [INFO] GlassFish Web Services related modules ............ SKIPPED<br> [INFO] JSR-109 implementation to deploy Metro ............ SKIPPED<br> [INFO] GlassFish Metro Glue Code ......................... SKIPPED<br> [INFO] Connector for GlassFish Web Services Container .... SKIPPED<br> [INFO] SOAP/TCP integration code ......................... SKIPPED<br> [INFO] WebServices Security and JSR 196 SOAP Profile Implementation &nbsp;SKIPPED<br> [INFO] GlassFish webservices scripts ..................... SKIPPED<br> [INFO] GlassFish Metro Related Fragments ................. SKIPPED<br> [INFO] Metro Package ..................................... SKIPPED<br> [INFO] Embedded GlassFish Static Shell ................... SKIPPED<br> [INFO] Embedded GlassFish Static Shell dist. fragment .... SKIPPED<br> [INFO] Embedded GlassFish Shell Jars ..................... SKIPPED<br> [INFO] JavaDB to be bundled into GlassFish ............... SKIPPED<br> [INFO] Glassfish Legal content distribution fragment ..... SKIPPED<br> [INFO] Verifier implementation module .................... SKIPPED<br> [INFO] GlassFish Verifier Extension Bundle ............... SKIPPED<br> [INFO] Verifier scripts .................................. SKIPPED<br> [INFO] Verifier Package .................................. SKIPPED<br> [INFO] App Client Modules ................................ SKIPPED<br> [INFO] App Client - client-side modules .................. SKIPPED<br> [INFO] ACC Config Classes (JAXB) ......................... SKIPPED<br> [INFO] Appclient Security Integration .................... SKIPPED<br> [INFO] Client OSGi module (including ACC) ................ SKIPPED<br> [INFO] Client library (including ACC) .................... SKIPPED<br> [INFO] GlassFish appclient scripts ....................... SKIPPED<br> [INFO] GlassFish App Client Server-side Modules .......... SKIPPED<br> [INFO] GlassFish AppClient Server-Side Connector ......... SKIPPED<br> [INFO] GlassFish AppClient Server-Side Core .............. SKIPPED<br> [INFO] Glassfish Application Client Package .............. SKIPPED<br> [INFO] Java DB Package ................................... SKIPPED<br> [INFO] MQ Package ........................................ SKIPPED<br> [INFO] Glassfish Commons Package ......................... SKIPPED<br> [INFO] Glassfish Web Profile Incorporation Package ....... SKIPPED<br> [INFO] Glassfish Full Profile Incorporation Package ...... SKIPPED<br> [INFO] Glassfish Web Profile Metapackage ................. SKIPPED<br> [INFO] Glassfish Full Profile Metapackage ................ SKIPPED<br> [INFO] Glassfish OSGi Feature Pack Incorporation Package . SKIPPED<br> [INFO] Glassfish OSGi Feature Pack Metapackage ........... SKIPPED<br> [INFO] Ant tasks ......................................... SKIPPED<br> [INFO] GlassFish Ant Tasks Package ....................... SKIPPED<br> [INFO] Service tag registry file distribution fragment ... SKIPPED<br> [INFO] Glassfish distributions ........................... SKIPPED<br> [INFO] Glassfish v3 Nucleus Distribution ................. SKIPPED<br> [INFO] Glassfish Minnow Distribution ..................... SKIPPED<br> [INFO] Glassfish v3 Web Distribution ..................... SKIPPED<br> [INFO] Glassfish Distribution ............................ SKIPPED<br> [INFO] GlassFish Tests related modules ................... SKIPPED<br> [INFO] btrace jar files .................................. SKIPPED<br> [INFO] GlassFish Flashlight Client ....................... SKIPPED<br> [INFO] GlassFish Flashlight Module ....................... SKIPPED<br> [INFO] ------------------------------------------------------------------------<br> [INFO] BUILD FAILURE<br> [INFO] ------------------------------------------------------------------------<br> [INFO] Total time: 9:20.292s<br> [INFO] Finished at: Wed Aug 01 18:29:39 CST 2012<br> [INFO] Final Memory: 139M/300M<br> [INFO] ------------------------------------------------------------------------<br> [ERROR] Failed to execute goal org.apache.maven.plugins:maven-jar-plugin:2.4:jar (default-jar) on project mejb-frag: Execution default-jar of goal org.apache.maven.plugins:maven-jar-plugin:2.4:jar failed: An API incompatibility was encountered while executing org.apache.maven.plugins:maven-jar-plugin:2.4:jar: java.lang.NoSuchMethodError: org.apache.maven.archiver.MavenArchiver.createArchive(Lorg/apache/maven/execution/MavenSession;Lorg/apache/maven/project/MavenProject;Lorg/apache/maven/archiver/MavenArchiveConfiguration;)V<br> [ERROR] -----------------------------------------------------<br> [ERROR] realm = &nbsp; &nbsp;plugin&gt;org.apache.maven.plugins:maven-jar-plugin:2.4<br> [ERROR] strategy = org.codehaus.plexus.classworlds.strategy.SelfFirstStrategy<br> [ERROR] urls[0] = <a href="file:/Users/barry/.m2/repository/org/apache/maven/plugins/maven-jar-plugin/2.4/maven-jar-plugin-2.4.jar">file:/Users/barry/.m2/repository/org/apache/maven/plugins/maven-jar-plugin/2.4/maven-jar-plugin-2.4.jar</a><br> [ERROR] urls[1] = <a href="file:/Users/barry/.m2/repository/org/apache/maven/maven-archiver/2.4/maven-archiver-2.4.jar">file:/Users/barry/.m2/repository/org/apache/maven/maven-archiver/2.4/maven-archiver-2.4.jar</a><br> [ERROR] urls[2] = <a href="file:/Users/barry/.m2/repository/org/codehaus/plexus/plexus-interpolation/1.6/plexus-interpolation-1.6.jar">file:/Users/barry/.m2/repository/org/codehaus/plexus/plexus-interpolation/1.6/plexus-interpolation-1.6.jar</a><br> [ERROR] urls[3] = <a href="file:/Users/barry/.m2/repository/junit/junit/3.8.1/junit-3.8.1.jar">file:/Users/barry/.m2/repository/junit/junit/3.8.1/junit-3.8.1.jar</a><br> [ERROR] urls[4] = <a href="file:/Users/barry/.m2/repository/org/codehaus/plexus/plexus-archiver/2.1/plexus-archiver-2.1.jar">file:/Users/barry/.m2/repository/org/codehaus/plexus/plexus-archiver/2.1/plexus-archiver-2.1.jar</a><br> [ERROR] urls[5] = <a href="file:/Users/barry/.m2/repository/org/codehaus/plexus/plexus-io/2.0.2/plexus-io-2.0.2.jar">file:/Users/barry/.m2/repository/org/codehaus/plexus/plexus-io/2.0.2/plexus-io-2.0.2.jar</a><br> [ERROR] urls[6] = <a href="file:/Users/barry/.m2/repository/commons-lang/commons-lang/2.1/commons-lang-2.1.jar">file:/Users/barry/.m2/repository/commons-lang/commons-lang/2.1/commons-lang-2.1.jar</a><br> [ERROR] urls[7] = <a href="file:/Users/barry/.m2/repository/org/codehaus/plexus/plexus-utils/3.0/plexus-utils-3.0.jar">file:/Users/barry/.m2/repository/org/codehaus/plexus/plexus-utils/3.0/plexus-utils-3.0.jar</a><br> [ERROR] Number of foreign imports: 1<br> [ERROR] import: Entry[import &nbsp;from realm ClassRealm[project&gt;org.glassfish.main.common:mejb-frag:3.1.2, parent: ClassRealm[maven.api, parent: null]]]<br> [ERROR]&nbsp;<br> [ERROR] -----------------------------------------------------<br> [ERROR] -&gt; [Help 1]<br> [ERROR]&nbsp;<br> [ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.<br> [ERROR] Re-run Maven using the -X switch to enable full debug logging.<br> [ERROR]&nbsp;<br> [ERROR] For more information about the errors and possible solutions, please read the following articles:<br> [ERROR] [Help 1] <a href="http://cwiki.apache.org/confluence/display/MAVEN/PluginContainerException">http://cwiki.apache.org/confluence/display/MAVEN/PluginContainerException</a><br> [ERROR]&nbsp;<br> [ERROR] After correcting the problems, you can resume the build with the command<br> [ERROR] &nbsp; mvn &lt;goals&gt; -rf :mejb-frag</p></font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by 20943 at Aug 01, 2012 10:46 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-41846842"></a> <font class="smallfont"><p>what version of mvn/jdk are you using ?</p></font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by 12181 at Aug 01, 2012 10:50 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-42109072"></a> <font class="smallfont"><p>Thank you so much to reply fast.</p> <p>According to&nbsp;<a href="https://github.com/javaee/glassfish/issues/18346">https://github.com/javaee/glassfish/issues/18346</a><br> I replaced the&nbsp;<font color="#333333">maven-jar-plugin</font>&nbsp;part with the code mentioned in that thread, and the module built passed.</p></font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by 20943 at Aug 01, 2012 11:09 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-42109074"></a> <font class="smallfont"><p>this issue is related to trunk.</p> <p>Can you please answer my question ?</p></font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by 12181 at Aug 01, 2012 11:12 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-41846843"></a> <font class="smallfont"><p>Zhong-Barrys-MacBook-Pro:3.1.2 barry$ java -version</p> <p>java version "1.6.0_33"</p> <p>Java(TM) SE Runtime Environment (build 1.6.0_33-b03-424-11M3720)</p> <p>Java HotSpot(TM) 64-Bit Server VM (build 20.8-b03-424, mixed mode)<br class="atl-forced-newline"></p> <p>Zhong-Barrys-MacBook-Pro:3.1.2 barry$ mvn -v</p> <p>Apache Maven 3.0.3 (r1075438; 2011-03-01 01:31:09+0800)</p> <p>Maven home: /usr/share/maven</p> <p>Java version: 1.6.0_33, vendor: Apple Inc.</p> <p>Java home: /System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Home</p> <p>Default locale: en_US, platform encoding: MacRoman</p> <p>OS name: "mac os x", version: "10.7.4", arch: "x86_64", family: "mac"</p></font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by 20943 at Aug 01, 2012 11:23 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-41846845"></a> <font class="smallfont"><p>GlassFish 3.x must be built using maven <b>2.2.1</b></p></font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by 12181 at Aug 01, 2012 11:27 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-41846846"></a> <font class="smallfont"><p>Oops!</p> <p>Thanks!</p></font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by 20943 at Aug 01, 2012 11:48 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-41846858"></a> <font class="smallfont"><p>Build passed. Thanks.</p> <p>Is there any guide for developers to import glassfish projects into eclipse?</p> <p>After mvn install successfully executed, and then I tried mvn eclipse:eclispe, but it was weird that "java nature" was not generated in ".project" file, and .classpath, .setting folder were not generated.</p> <p>I also tried using "Maven Eclipse Plugin" to "import maven project", after a while analyzing all the pom.xml files, many projects generated, but some of them were not generated properly, their named as "$</p> 
+          <div class="error">
+           <span class="error">Unknown macro: {extension-name}</span> 
+          </div> <p>".</p> <p>Can you guide me?</p> <p>Eclipse Version: Helios&nbsp;</p> <p>m2eclipse version:1.0.0.20110607-2117</p></font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by 20943 at Aug 01, 2012 15:42 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-48201747"></a> <font class="smallfont"><p>on a attempt to $ svn update my 6 months old local copy of the gf trunk, I run into an unexpected authentication problem; my $ svn update started normal and then some 40 minutes later login mask pops up asking me for a usernam and a password, which ofcourse I obviously dont have. What bothers me is that this request was not done immediatly but about after 40 minutes of updating my trunk-working copy. Now leaving me in a real mess! Then I saw somehere that a server certificate has been timed out. Now I just wonder how do I need to checkout from your trunks again. I am using Tortoise SVN for that. For developers with write / commit access to a remote svn repos https:// with SVN is OK, but what for the rest of the world? I would expect that there is a http:// url used to update working copies of the trunk without a need to commit, and without a need to login very late.</p> <p>So - How can I checkout?what I saw was:</p> <p>$ svn checkout <a href="https://svn.java.net/svn/glassfish~svn/trunk">https://svn.java.net/svn/glassfish~svn/trunk</a></p> <p>authorization failed: Could not authenticate to server. rejected Basic challenge (<a href="https://svn.java.net">https://svn.java.net</a>)</p> <p>Josef</p></font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by 23678 at Feb 18, 2013 09:51 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-48201748"></a> <font class="smallfont"><p>We are all experiencing the same problem currently. This is a temporary issue in java.net</p> <p>It should be fixed very soon.</p></font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by 12181 at Feb 18, 2013 09:55 
+         </div> </td> 
+       </tr> 
+      </tbody>
+     </table> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Oct 03, 2013 by 
+<font color="#0050B2">12181</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

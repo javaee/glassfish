@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : SipContainerTasks</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="SipContainerTasks-SSA1.1TasksandStatus"></a>SSA 1.1 Tasks and Status</h1> <p></p>
+     <div class="panel" style="border-width: 1px;">
+      <div class="panelContent"> 
+       <hr> 
+       <p>Jspwiki style: sortable</p> 
+      </div>
+     </div>table-filter<p></p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task Name</th> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <td class="confluenceTd"> 2 The Servlet Interface </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2.1 Servlet Life Cycle </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2.1.1 Servlet Life Cycle Listener </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2.2 Processing SIP Messages </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2.3 SIP Specific Request Handling Methods </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2.4 Receiving Requests </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2.5 SIP Specific Response Handling Methods </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2.6 Number of Instances </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3 Servlet Context </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3.1 The SipFactory </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3.2 Extensions Supported </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3.3 Context Path </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3.4 Context Parameters </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4 Addressing </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.1 The Address Interface </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: red;border-width: 1px;">
+           <div class="panelContent" style="background-color: red;"> 
+            <p>4.1.1 The Parameterable Interface</p> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.1.2 The From and To Header Fields </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.1.3 The Contact Header Field </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.1.3.1 Transport Parameters in Contact Header </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.2 URIs </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.2.1 SipURI </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.2.2 TelURL </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5 Requests and Responses </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5.1 The SipServletMessage Interface </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: red;border-width: 1px;">
+           <div class="panelContent" style="background-color: red;"> 
+            <p>5.2 Implicit Transaction State</p> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5.3 Access to Message Content </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5.3.1 Character Encoding </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5.4 Headers </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5.4.1 Address Header Fields </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5.4.2 System Headers </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5.4.3 TLS Attributes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: red;border-width: 1px;">
+           <div class="panelContent" style="background-color: red;"> 
+            <p>5.5 Transport Level Information</p> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5.6 Requests </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5.6.1 Parameters </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5.6.2 Attributes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5.6.3 Popped Route Header </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5.7 Responses </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: red;border-width: 1px;">
+           <div class="panelContent" style="background-color: red;"> 
+            <p>5.7.1 Reliable Provisional Responses</p> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5.7.2 Buffering </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5.8 Accessibility of SIP Servlet Messages </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5.9 Internationalization </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5.9.1 Indicating Preferred Language </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5.9.2 Indicating Language of Message Content </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6 Sessions </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6.1 SipApplicationSession </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6.1.1 Protocol Sessions </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6.1.2 SipApplicationSession Lifetime </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6.1.2.1 Application Session Timer Operation and SipApplicationSession Expiration </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6.1.2.2 SipApplicationSession Invalidation </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6.1.2.2.1 Application Invalidation </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6.1.2.2.2 Container Invalidation </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6.2 SipSession </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6.2.1 Relationship to SIP Dialogs </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6.2.1.1 Cancel Message Processing </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6.2.2 Maintaining Dialog State in the SipSession </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: red;border-width: 1px;">
+           <div class="panelContent" style="background-color: red;"> 
+            <p>6.2.2.1 When in a Dialog</p> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6.2.2.2 When in the INITIAL SipSession State </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6.2.3 Creation of SipSessions </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6.2.3.1 Extensions Creating Dialogs </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6.2.3.2 Derived SipSessions </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6.2.4 SipSession Lifetime </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6.2.4.1 Ongoing Transactions </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6.2.4.2 Session Invalidation </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6.2.5 Important Changes From v1.0 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6.2.6 The RequestDispatcher Interface </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6.2.7 The SipSession Handler </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6.2.8 Binding Attributes into a SipSession </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: red;border-width: 1px;">
+           <div class="panelContent" style="background-color: red;"> 
+            <p>6.3 Last Accessed Times</p> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6.4 Important Session Semantics </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6.4.1 Message Context </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6.4.2 Threading Issues </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6.4.3 Distributed Environments </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 7 SIP Servlet Applications </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 7.1 Relationship with HTTP Servlet Applications </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 7.2 Relationship to ServletContext </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 7.3 Elements of a SIP Application </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 7.4 Deployment Hierarchies </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 7.5 Directory Structure </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 7.6 Application Names </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 7.6.1 Example Application Directory Structure </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 7.7 Servlet Application Archive File </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 7.8 SIP Application Configuration Descriptor </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 7.9 Dependencies On Extensions </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 7.10 Servlet Application Classloader </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 7.11 Replacing a Servlet Application </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 7.12 Servlet Application Environment </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 8 Application Listeners and Events </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 8.1 SIP Servlet Event Types and Listener Interfaces </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 9 Timer Service </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 9.1 TimerService </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 9.2 ServletTimer </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 9.3 TimerListener </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 10 Proxying </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 10.1 Parameters </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: red;border-width: 1px;">
+           <div class="panelContent" style="background-color: red;"> 
+            <p>10.2 Operation</p> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 10.2.1 Proxy Branches </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 10.2.2 Pushing Route headers </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 10.2.3 Sending Responses </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 10.2.4 Receiving Responses </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 10.2.4.1 Handling 2xx Responses to INVITE </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 10.2.4.2 Correlating responses to proxy branches </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 10.2.4.3 Sequential Search Timeout </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 10.2.5 Sending CANCEL </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 10.2.6 Receiving CANCEL </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 10.2.7 Sending ACK </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 10.2.8 Receiving ACK </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 10.2.9 Handling Subsequent Requests </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 10.2.10 Max-Forwards Check </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 10.3 Proxying and Sessions </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 10.4 Record-Route Parameters </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 10.5 Path Header and Path Parameters </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 11 Acting as a User Agent </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 11.1 Client Functions </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: red;border-width: 1px;">
+           <div class="panelContent" style="background-color: red;"> 
+            <p>11.1.1 Creating Initial Requests</p> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 11.1.1.1 Copying From and To Addresses </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 11.1.2 Creating Subsequent Requests </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 11.1.3 Pushing Route Header Field Values </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 11.1.4 Sending a Request as a UAC </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 11.1.5 Receiving Responses </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 11.1.5.1 Handling Multiple Dialogs </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 11.1.6 Transaction Timeout </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 11.1.7 Sending ACK </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 11.1.8 Sending PRACK </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 11.1.9 Sending CANCEL </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 11.2 Server Functions </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 11.2.1 Sending Responses </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 11.2.2 Receiving ACK </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 11.2.3 Receiving CANCEL </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 11.3 Merged Requests </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 12 Back To Back User Agents </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 12.1 B2BUA Helper Class </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 12.2 Creating new B2BUA Request </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 12.3 Linked SipSessions And Linked Requests </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 12.3.1 Explicit Session Linkage </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 12.3.2 Implicit Session Linkage </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 12.4 Access to Un-Committed Messages </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 12.5 Original Request and Session Cloning </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 12.5.1 Cloning and Linking </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: yellow;border-width: 1px;">
+           <div class="panelContent" style="background-color: yellow;"> 
+            <p>13 Converged Container and Applications</p> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: yellow;border-width: 1px;">
+           <div class="panelContent" style="background-color: yellow;"> 
+            <p>13.1 Converged Application</p> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: yellow;border-width: 1px;">
+           <div class="panelContent" style="background-color: yellow;"> 
+            <p>13.1.1 SIP and J2EE Converged Application</p> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: yellow;border-width: 1px;">
+           <div class="panelContent" style="background-color: yellow;"> 
+            <p>13.1.2 SIP and HTTP Converged Application</p> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: yellow;border-width: 1px;">
+           <div class="panelContent" style="background-color: yellow;"> 
+            <p>13.2 Accessing SIP Factory</p> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: yellow;border-width: 1px;">
+           <div class="panelContent" style="background-color: yellow;"> 
+            <p>13.3 Accessing SipApplicationSession By Id</p> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: yellow;border-width: 1px;">
+           <div class="panelContent" style="background-color: yellow;"> 
+            <p>13.4 Encoding URLs</p> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: yellow;border-width: 1px;">
+           <div class="panelContent" style="background-color: yellow;"> 
+            <p>13.5 Association of HTTP Session With SipApplicationSession</p> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: yellow;border-width: 1px;">
+           <div class="panelContent" style="background-color: yellow;"> 
+            <p>13.6 Finding Parent SipApplicationsSession From A Protocol Session</p> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: yellow;border-width: 1px;">
+           <div class="panelContent" style="background-color: yellow;"> 
+            <p>13.7 Encoding HTTP URLs With HTTP Sessions In Non HTTP Scope</p> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 14 Container Functions </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 14.1 Division of Responsibility </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 14.1.1 Protocol Compliance </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: red;border-width: 1px;">
+           <div class="panelContent" style="background-color: red;"> 
+            <p>14.2 Multihomed Host Support</p> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 14.2.1 Application Composition on Multihomed Container </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: yellow;border-width: 1px;">
+           <div class="panelContent" style="background-color: yellow;"> 
+            <p>15 Application Selection And Composition Model | | |</p> 
+           </div>
+          </div>(background-color:yellow;)15.1 Application Selection Process </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: yellow;border-width: 1px;">
+           <div class="panelContent" style="background-color: yellow;"> 
+            <p>15.1.1 The Role of the Application Router | | |</p> 
+           </div>
+          </div>(background-color:yellow;)15.1.2 The Role of Applications </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: yellow;border-width: 1px;">
+           <div class="panelContent" style="background-color: yellow;"> 
+            <p>15.1.3 The Role of the Container | | |</p> 
+           </div>
+          </div>(background-color:yellow;)15.1.4 Application Independence </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: yellow;border-width: 1px;">
+           <div class="panelContent" style="background-color: yellow;"> 
+            <p>15.1.5 Subscriber Identity and Routing Regions | | |</p> 
+           </div>
+          </div>(background-color:yellow;)15.1.6 Routing Directives </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: yellow;border-width: 1px;">
+           <div class="panelContent" style="background-color: yellow;"> 
+            <p>15.2 Application Environment and Behaviour | | |</p> 
+           </div>
+          </div>(background-color:yellow;)15.2.1 Receiving an Initial Request </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: yellow;border-width: 1px;">
+           <div class="panelContent" style="background-color: yellow;"> 
+            <p>15.2.2 Sending an Initial Request | | |</p> 
+           </div>
+          </div>(background-color:yellow;)15.3 Application Router Behavior </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: yellow;border-width: 1px;">
+           <div class="panelContent" style="background-color: yellow;"> 
+            <p>15.3.1 Order of Routing Regions | | |</p> 
+           </div>
+          </div>(background-color:yellow;)15.3.2 Inter-Container Application Routing </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: yellow;border-width: 1px;">
+           <div class="panelContent" style="background-color: yellow;"> 
+            <p>15.4 Container Behavior | | |</p> 
+           </div>
+          </div>(background-color:yellow;)15.4.1 Procedure for Routing an Initial Request </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: yellow;border-width: 1px;">
+           <div class="panelContent" style="background-color: yellow;"> 
+            <p>15.5 Application Names | | |</p> 
+           </div>
+          </div>(background-color:yellow;)15.6 Responses, Subsequent Requests and Application Path </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: yellow;border-width: 1px;">
+           <div class="panelContent" style="background-color: yellow;"> 
+            <p>15.7 Transport Information | | |</p> 
+           </div>
+          </div>(background-color:yellow;)15.8 Popping of Top Route Header </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: yellow;border-width: 1px;">
+           <div class="panelContent" style="background-color: yellow;"> 
+            <p>15.9 Examples | | |</p> 
+           </div>
+          </div>(background-color:yellow;)15.9.1 Example with Two Applications </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: yellow;border-width: 1px;">
+           <div class="panelContent" style="background-color: yellow;"> 
+            <p>15.9.2 Simple call with no modifications of requests | | |</p> 
+           </div>
+          </div>(background-color:yellow;)15.9.3 Modification of Headers </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: yellow;border-width: 1px;">
+           <div class="panelContent" style="background-color: yellow;"> 
+            <p>15.9.4 Reversing the Direction of the Call | | |</p> 
+           </div>
+          </div>(background-color:yellow;)15.9.5 Initiating a New Request </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: yellow;border-width: 1px;">
+           <div class="panelContent" style="background-color: yellow;"> 
+            <p>15.10 Loop Detection | | |</p> 
+           </div>
+          </div>(background-color:yellow;)15.11 Encode URI and Session Targeting </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: yellow;border-width: 1px;">
+           <div class="panelContent" style="background-color: yellow;"> 
+            <p>15.11.1 The Encode URI mechanism | | |</p> 
+           </div>
+          </div>(background-color:yellow;)15.11.2 Session Key Based Targeting Mechanism </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 16 Mapping Requests To Servlets </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 16.1 Multiple Servlets </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 16.2 Servlet Selection </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 16.2.1 Compatibility with v1.0 Specification </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: yellow;border-width: 1px;">
+           <div class="panelContent" style="background-color: yellow;"> 
+            <p>17 Security | | |</p> 
+           </div>
+          </div>(background-color:yellow;)17.1 Introduction </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: yellow;border-width: 1px;">
+           <div class="panelContent" style="background-color: yellow;"> 
+            <p>17.2 Declarative Security | | |</p> 
+           </div>
+          </div>(background-color:yellow;)17.3 Programmatic Security </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: yellow;border-width: 1px;">
+           <div class="panelContent" style="background-color: yellow;"> 
+            <p>17.4 Roles | | |</p> 
+           </div>
+          </div>(background-color:yellow;)17.5 Authentication </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: yellow;border-width: 1px;">
+           <div class="panelContent" style="background-color: yellow;"> 
+            <p>17.6 Server Tracking of Authentication Information | | |</p> 
+           </div>
+          </div>(background-color:yellow;)17.7 Propagation of Security Identity in EJBTM Calls </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: yellow;border-width: 1px;">
+           <div class="panelContent" style="background-color: yellow;"> 
+            <p>17.8 Specifying Security Constraints | | |</p> 
+           </div>
+          </div>(background-color:yellow;)17.9 Default Policies </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: yellow;border-width: 1px;">
+           <div class="panelContent" style="background-color: yellow;"> 
+            <p>17.10 Authentication of Servlet Initiated Requests | | |</p> 
+           </div>
+          </div>(background-color:yellow;)17.10.1 Description of the Procedure </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: yellow;border-width: 1px;">
+           <div class="panelContent" style="background-color: yellow;"> 
+            <p>18 Java Enterprise Edition 5 Container | | |</p> 
+           </div>
+          </div>(background-color:yellow;)18.1 Java 5 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: yellow;border-width: 1px;">
+           <div class="panelContent" style="background-color: yellow;"> 
+            <p>18.2 Annotations and Resource Injection | | |</p> 
+           </div>
+          </div>(background-color:yellow;)18.2.1 Servlet 2.5 alignment </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: yellow;border-width: 1px;">
+           <div class="panelContent" style="background-color: yellow;"> 
+            <p>18.2.2 @PreDestroy Annotation | | |</p> 
+           </div>
+          </div>(background-color:yellow;)18.2.3 @SipServlet Annotation </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: yellow;border-width: 1px;">
+           <div class="panelContent" style="background-color: yellow;"> 
+            <p>18.2.3.1 Servlet methods | | |</p> 
+           </div>
+          </div>(background-color:yellow;)18.2.4 @SipApplication Annotation </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: yellow;border-width: 1px;">
+           <div class="panelContent" style="background-color: yellow;"> 
+            <p>18.2.5 @SipApplicationSessionListener Annotation | | |</p> 
+           </div>
+          </div>(background-color:yellow;)18.2.6 @SipSessionListener Annotation </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: yellow;border-width: 1px;">
+           <div class="panelContent" style="background-color: yellow;"> 
+            <p>18.2.7 @SipSessionAttributeListener Annotation | | |</p> 
+           </div>
+          </div>(background-color:yellow;)18.2.8 @SipErrorListener Annotation </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: yellow;border-width: 1px;">
+           <div class="panelContent" style="background-color: yellow;"> 
+            <p>18.2.9 @SipServletListener Annotation | | |</p> 
+           </div>
+          </div>(background-color:yellow;)18.2.10 @SipTimerListener Annotation </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: yellow;border-width: 1px;">
+           <div class="panelContent" style="background-color: yellow;"> 
+            <p>18.2.11 @SipApplicationKey Annotation | | |</p> 
+           </div>
+          </div>(background-color:yellow;)18.2.12 Annotation for SipFactory injection </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: yellow;border-width: 1px;">
+           <div class="panelContent" style="background-color: yellow;"> 
+            <p>18.2.13 Annotation for SipSessionsUtil | | |</p> 
+           </div>
+          </div>(background-color:yellow;)18.2.14 Examples </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: yellow;border-width: 1px;">
+           <div class="panelContent" style="background-color: yellow;"> 
+            <p>19 Deployment Descriptor | | |</p> 
+           </div>
+          </div>(background-color:yellow;)19.1 Differences from the HTTP Servlet Deployment Descriptor </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: yellow;border-width: 1px;">
+           <div class="panelContent" style="background-color: yellow;"> 
+            <p>19.2 Converged SIP and HTTP Applications | | |</p> 
+           </div>
+          </div>(background-color:yellow;)19.3 Deployment Descriptor Elements </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: yellow;border-width: 1px;">
+           <div class="panelContent" style="background-color: yellow;"> 
+            <p>19.4 Rules for Processing the Deployment Descriptor | | |</p> 
+           </div>
+          </div>(background-color:yellow;)19.5 The SIP Servlet XSD </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>%%<br> %%</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 08, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : PlanForGlassFish3.1</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="PlanForGlassFish3.1-GlassFishServerOpenSourceEdition3.1"></a>GlassFish Server Open Source Edition 3.1</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#PlanForGlassFish3.1-GlassFishServerOpenSourceEdition3.1">GlassFish Server Open Source Edition 3.1</a></li> 
+       <ul> 
+        <li><a href="#PlanForGlassFish3.1-ReleaseScope%2FGoals">Release Scope / Goals</a></li> 
+        <ul> 
+         <li><a href="#PlanForGlassFish3.1-Roadmap">Roadmap</a></li> 
+        </ul> 
+        <li><a href="#PlanForGlassFish3.1-Engineering">Engineering</a></li> 
+        <ul> 
+         <li><a href="#PlanForGlassFish3.1-Overview">Overview</a></li> 
+         <li><a href="#PlanForGlassFish3.1-DesignDocuments">Design Documents</a></li> 
+         <li><a href="#PlanForGlassFish3.1-Copyright">Copyright</a></li> 
+        </ul> 
+        <li><a href="#PlanForGlassFish3.1-Builds%2FDownloads">Builds / Downloads</a></li> 
+        <li><a href="#PlanForGlassFish3.1-QualityEngineering">Quality Engineering</a></li> 
+        <ul> 
+         <li><a href="#PlanForGlassFish3.1-Bugs%2FIssues">Bugs / Issues</a></li> 
+         <li><a href="#PlanForGlassFish3.1-DevTests">Dev Tests</a></li> 
+        </ul> 
+        <li><a href="#PlanForGlassFish3.1-Documentation">Documentation</a></li> 
+        <ul> 
+         <li><a href="#PlanForGlassFish3.1-References">References</a></li> 
+        </ul> 
+        <li><a href="#PlanForGlassFish3.1-Planning">Planning</a></li> 
+        <li><a href="#PlanForGlassFish3.1-Schedule">Schedule</a></li> 
+        <li><a href="#PlanForGlassFish3.1-Feedback">Feedback</a></li> 
+        <li><a href="#PlanForGlassFish3.1-SubProjects">Sub Projects</a></li> 
+        <ul> 
+         <li><a href="#PlanForGlassFish3.1-DeveloperandTooling">Developer and Tooling</a></li> 
+         <li><a href="#PlanForGlassFish3.1-TechnologyRefreshandIntegration">Technology Refresh and Integration</a></li> 
+        </ul> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="PlanForGlassFish3.1-ReleaseScope%2FGoals"></a>Release Scope / Goals</h2> <p>Building on the modular, Java EE 6 based <a href="PlanForGlassFishV3.html" title="PlanForGlassFishV3">GlassFish Server Open Source Edition 3.0</a>, version 3.1 is the next major release of GlassFish Server Open Source Edition. This release is currently under development and will focus on the following features:</p> 
+     <ul> 
+      <li>Clustering and Centralized Administration</li> 
+      <li>High Availability</li> 
+     </ul> <h4><a name="PlanForGlassFish3.1-Roadmap"></a>Roadmap</h3> <p>Refer to <a href="http://glassfish.org/roadmap">roadmap</a> slides and <a href="http://blogs.oracle.com/theaquarium/entry/replays_for_glassfish_roadmap_now">this blog</a> for more details on GlassFish Server Open Source Edition roadmap.</p> <h4><a name="PlanForGlassFish3.1-Engineering"></a>Engineering</h2> <h4><a name="PlanForGlassFish3.1-Overview"></a>Overview</h3> 
+     <ul> 
+      <li>See the <a href="V3.1Clustering.html" title="V3.1Clustering">clustering design specification</a> to learn about the clustering design and architecture.</li> 
+      <li><a href="3.1Performance.html" title="3.1Performance">Startup performance analysis</a></li> 
+      <li><a href="3.1EngMeeting.html" title="3.1EngMeeting">Engineering Meeting Information</a></li> 
+      <li><a href="AdminIteam.html" title="AdminIteam">Admin iTeam Meeting Information</a></li> 
+      <li><a href="3.1FeatureTracking.html" title="3.1FeatureTracking">Features tracked via Issue Tracker</a></li> 
+      <li><a href="3.1ChangeControl.html" title="3.1ChangeControl">Change Control Process</a></li> 
+     </ul> <h4><a name="PlanForGlassFish3.1-DesignDocuments"></a>Design Documents</h3> 
+     <ul> 
+      <li>Functional Specifications for 3.1 - <a href="V3FunctionalSpecs.html" title="V3FunctionalSpecs">One Pagers </a></li> 
+      <li>List of <a href="GlassFish Server 3.1 asadmin Subcommands.html" title="GlassFish Server 3.1 asadmin Subcommands">GlassFish Server 3.1 asadmin Subcommands</a></li> 
+      <li><a href="AsadminCommands.html" title="AsadminCommands">General information about asasmin subcommands</a></li> 
+     </ul> <h4><a name="PlanForGlassFish3.1-Copyright"></a>Copyright</h3> 
+     <ul> 
+      <li><a href="./Copyrights.html">Copyright and License HOWTO</a></li> 
+     </ul> <h4><a name="PlanForGlassFish3.1-Builds%2FDownloads"></a>Builds / Downloads</h2> 
+     <ul> 
+      <li><a href="3.1BuildSchedule.html" title="3.1BuildSchedule">Build Schedule</a></li> 
+      <li><a href="CheckInBestPractice.html" title="CheckInBestPractice">Check in Best Practices</a></li> 
+      <li>GlassFish community <a href="https://glassfish.java.net/public/downloadsindex.html">download</a> page</li> 
+      <li><a href="FullBuildInstructions.html" title="FullBuildInstructions">FullBuildInstructions</a> for instructions how to fully rebuild everything in v3 from scratch.</li> 
+      <li><a href="V3BuildTests.html" title="V3BuildTests">v3 Build/Tests Guidelines</a></li> 
+      <li>How to <a href="DevelopmentInstructions.html" title="DevelopmentInstructions">build from source</a>.</li> 
+      <li>Notification - Build promotions are announced via e-mail at dev@glassfish.java.net. Please subscribe to the community alias if you would like to be notified</li> 
+      <li>GlassFish Server Open Source Edition 3.0 <a href="PlanForGlassFishV3.html#PlanForGlassFishV3-sectionPlanForGlassFishV3BuildRelated">build</a> and <a href="PlanForGlassFishV3.html#PlanForGlassFishV3-sectionPlanForGlassFishV3Packaging">packaging</a> related information</li> 
+      <li>Build <a href="ProposedBuildImprovments.html" title="ProposedBuildImprovments">Improvements </a></li> 
+      <li><a href="3.1 Branch Info.html" title="3.1 Branch Info">3.1 Branch Information</a></li> 
+     </ul> <h4><a name="PlanForGlassFish3.1-QualityEngineering"></a>Quality Engineering</h2> <h4><a name="PlanForGlassFish3.1-Bugs%2FIssues"></a>Bugs / Issues</h3> 
+     <ul> 
+      <li><a href="3.1BugSwat.html" title="3.1BugSwat">Bug Swat</a></li> 
+      <li><a href="Bug Scrubbing Process.html" title="Bug Scrubbing Process">Bug Scrubbing Process</a></li> 
+      <li>GlassFish Project - <a href="http://java.net/jira/secure/IssueNavigator.jspa?mode=hide&amp;requestId=10122">Open P1-P3 Defects</a></li> 
+      <li>GlassFish Project - <a href="http://java.net/jira/secure/IssueNavigator.jspa?mode=hide&amp;requestId=10121">Open P1-P3 Defects</a> (without Docs)</li> 
+      <li><a href="JIRA Migration.html" title="JIRA Migration">JIRA Migration</a></li> 
+     </ul> <h4><a name="PlanForGlassFish3.1-DevTests"></a>Dev Tests</h3> 
+     <ul> 
+      <li><a href="DeveloperTestDashboard.html" title="DeveloperTestDashboard">GlassFish 3.x Developer Tests </a></li> 
+     </ul> <h4><a name="PlanForGlassFish3.1-Documentation"></a>Documentation</h2> 
+     <ul> 
+      <li><a href="GlassFishV3.1DocPlan.html" title="GlassFishV3.1DocPlan">Documentation Plan</a></li> 
+      <li><a href="iddocissues.html" title="iddocissues">How to identify doc issues to the technical writers</a></li> 
+     </ul> <h4><a name="PlanForGlassFish3.1-References"></a>References</h3> 
+     <ul> 
+      <li>Oracle GlassFish Server <a href="http://docs.sun.com/coll/1343.11">v2.1.1 Docs</a>** Oracle GlassFish Server <a href="http://docs.sun.com/doc/821-0179/6nl8hchmr?l=en&amp;a=expand">v2.1.1 CLI Commands</a></li> 
+      <li>Oracle GlassFish Server <a href="http://docs.sun.com/coll/1343.9">v3 Docs</a>** Oracle GlassFish Server <a href="http://docs.sun.com/doc/820-7701/6nium5vqn?l=en&amp;a=expand">v3 CLI Commands</a></li> 
+     </ul> <h4><a name="PlanForGlassFish3.1-Planning"></a>Planning</h2> 
+     <ul> 
+      <li><a href="GlassFishv3.1.html" title="GlassFishv3.1">GlassFish Server Open Source Edition 3.1 Feature List</a></li> 
+      <li><a href="GlassFishV3Requirements.html" title="GlassFishV3Requirements">GlassFish Server Open Source Edition v3 Requirements</a></li> 
+     </ul> <h4><a name="PlanForGlassFish3.1-Schedule"></a>Schedule</h2> 
+     <ul> 
+      <li>Draft Engineering <a href="GlassFishV3Schedule.html#GlassFishV3Schedule-sectionGlassFishV3ScheduleGlassFishServerOpenS...">Schedule</a></li> 
+     </ul> <h4><a name="PlanForGlassFish3.1-Feedback"></a>Feedback</h2> <p>Please send us your feedback to <a href="mailto:dev@glassfish.java.net">GlassFish developer alias</a>.</p> <h4><a name="PlanForGlassFish3.1-SubProjects"></a>Sub Projects</h2> <p>Here are the list of sub-projects for GlassFish 3.1 release.</p> <p>Sub-project page acts as a landing page for a specific module/area for GlassFish Server Open Source Edition 3.1 release. Each sub-project maintains detailed information about the project. For example,</p> 
+     <ul> 
+      <li>Introduction</li> 
+      <li>Scope / Features - Requirements being addressed and their priorities</li> 
+      <li>Feature Overview - High level overview of the features</li> 
+      <li>Design Document - Link to one-pager, high level technical details, etc.</li> 
+      <li>Milestone Schedule - Features per milestone</li> 
+      <li>Task List - Task list per milestone</li> 
+      <li>Quality - Link to test plan, etc.</li> 
+      <li>Documentation - Link to documentation, etc.</li> 
+      <li>Dev Tests - Information about developer tests</li> 
+      <li>References - Key links</li> 
+      <li>Email Alias - Where discussions are taking place</li> 
+      <li>etc.</li> 
+     </ul> 
+     <div class="panel" style="border-width: 1px;"></div> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Area </th> 
+         <th class="confluenceTh"> Project Name </th> 
+         <th class="confluenceTh"> Team Members </th> 
+         <th class="confluenceTh"> Project Link </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Clustering Infrastructure </td> 
+         <td class="confluenceTd"> Basic Clustering </td> 
+         <td class="confluenceTd"> Tom Mueller, Byron Nevins, Jennifer Chou, Bhakti Mehta </td> 
+         <td class="confluenceTd"> <a href="3.1BasicClustering.html" title="3.1BasicClustering">Project </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Clustering Infrastructure </td> 
+         <td class="confluenceTd"> Config </td> 
+         <td class="confluenceTd"> Tom Mueller, Byron Nevins, Jennifer Chou, Bhakti Mehta, Jerome Dochez </td> 
+         <td class="confluenceTd"> <a href="3.1Config.html" title="3.1Config">Project </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Clustering Infrastructure </td> 
+         <td class="confluenceTd"> Synchronization </td> 
+         <td class="confluenceTd"> Bill Shannon, Tom Mueller, Bhakti Mehta </td> 
+         <td class="confluenceTd"> <a href="3.1Synchronization.html" title="3.1Synchronization">Project </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Clustering Infrastructure </td> 
+         <td class="confluenceTd"> Dynamic Reconfiguration </td> 
+         <td class="confluenceTd"> Vijay Ramachandran, Jerome Dochez </td> 
+         <td class="confluenceTd"> <a href="ClusterDynamicReconfig.html" title="ClusterDynamicReconfig">Project </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Clustering Infrastructure </td> 
+         <td class="confluenceTd"> Deployment </td> 
+         <td class="confluenceTd"> Hong Zhang, Tim Quinn, Jerome Dochez </td> 
+         <td class="confluenceTd"> <a href="V3.1Deployment.html" title="V3.1Deployment">Project </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Clustering Infrastructure </td> 
+         <td class="confluenceTd"> ACC </td> 
+         <td class="confluenceTd"> Tim Quinn </td> 
+         <td class="confluenceTd"> <a href="AppClientContainer3.1.html" title="AppClientContainer3.1">Project </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Clustering Infrastructure </td> 
+         <td class="confluenceTd"> Connectors, Pooling, Resources, JDBC </td> 
+         <td class="confluenceTd"> Jagadish Ramu, Shalini Muthukrishnan </td> 
+         <td class="confluenceTd"> <a href="V3.1_Connectors_Pooling_Resources_JDBC.html" title="V3.1_Connectors_Pooling_Resources_JDBC">Project </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Clustering Infrastructure </td> 
+         <td class="confluenceTd"> Security </td> 
+         <td class="confluenceTd"> V B Kumar Jayanti, Nithya Subramanian, Tim Quinn </td> 
+         <td class="confluenceTd"> <a href="V3.1Security.html" title="V3.1Security">Project </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Clustering Infrastructure </td> 
+         <td class="confluenceTd"> SSH Provisioning </td> 
+         <td class="confluenceTd"> Joe Di Pol, Carla Mott, Rajiv Mordani </td> 
+         <td class="confluenceTd"> <a href="3.1SSHProvisioning.html" title="3.1SSHProvisioning">Project </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Clustering Infrastructure </td> 
+         <td class="confluenceTd"> Transaction Recovery </td> 
+         <td class="confluenceTd"> Marina Vatkina, Cheng Fang </td> 
+         <td class="confluenceTd"> <a href="3.1Transaction.html" title="3.1Transaction">Project </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Management API/Tools </td> 
+         <td class="confluenceTd"> RESTful API </td> 
+         <td class="confluenceTd"> Jason Lee, Ludovic Champenois, Mitesh Meswani </td> 
+         <td class="confluenceTd"> <a href="3.1RestApi.html" title="3.1RestApi">Project </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Management API/Tools </td> 
+         <td class="confluenceTd"> JMX Support </td> 
+         <td class="confluenceTd"> Prasad Subramanian </td> 
+         <td class="confluenceTd"> <a href="3.1JMX.html" title="3.1JMX">Project </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Management API/Tools </td> 
+         <td class="confluenceTd"> Management Console </td> 
+         <td class="confluenceTd"> Anissa Lam, Siraj Ghaffar, Ken Paulsen, Suma Sri Uppala, Srinivas Krishnan, Jason Lee </td> 
+         <td class="confluenceTd"> <a href="GlassFish3.1AdminConsole.html" title="GlassFish3.1AdminConsole">Project </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Serviceability </td> 
+         <td class="confluenceTd"> Logging &amp; Diagnostics </td> 
+         <td class="confluenceTd"> Naman Mehta </td> 
+         <td class="confluenceTd"> <a href="3.1Logging.html" title="3.1Logging">Project </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Serviceability </td> 
+         <td class="confluenceTd"> DAS Recovery </td> 
+         <td class="confluenceTd"> Chris Kasso, Yamini K B, Srinivas Krishnan, Carla Mott </td> 
+         <td class="confluenceTd"> <a href="3.1DASRecovery.html" title="3.1DASRecovery">Project </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Product Delivery </td> 
+         <td class="confluenceTd"> Installer </td> 
+         <td class="confluenceTd"> Sathyan Catari </td> 
+         <td class="confluenceTd"> <a href="3.1Installer.html" title="3.1Installer">Project </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Product Delivery </td> 
+         <td class="confluenceTd"> Packaging </td> 
+         <td class="confluenceTd"> Snjezana Sevo-Zenzerovic </td> 
+         <td class="confluenceTd"> <a href="GlassFishv3.1Packaging.html" title="GlassFishv3.1Packaging">Project </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Product Delivery </td> 
+         <td class="confluenceTd"> Upgrade </td> 
+         <td class="confluenceTd"> Bobby Bissett </td> 
+         <td class="confluenceTd"> <a href="GlassFishv3.1Upgrade.html" title="GlassFishv3.1Upgrade">Project </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Product Delivery </td> 
+         <td class="confluenceTd"> Build </td> 
+         <td class="confluenceTd"> Jane Young, Jill Nakata </td> 
+         <td class="confluenceTd"> <a href="3.1Build.html" title="3.1Build">Project </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Clustering &amp; Availability </td> 
+         <td class="confluenceTd"> In-memory Replication (Shoal BackingStore) </td> 
+         <td class="confluenceTd"> Mahesh Kannan, Joe Fialli, Stephen Dimilla </td> 
+         <td class="confluenceTd"> <a href="GlassFishv3.1HA.html" title="GlassFishv3.1HA">Project </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Clustering &amp; Availability </td> 
+         <td class="confluenceTd"> Runtime Clustering support (Shoal GMS) </td> 
+         <td class="confluenceTd"> Joe Fialli, Bobby Bissett, Stephen Dimilla </td> 
+         <td class="confluenceTd"> <a href="GlassFishv3.1GMS.html" title="GlassFishv3.1GMS">Project </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Clustering &amp; Availability </td> 
+         <td class="confluenceTd"> Web Tier </td> 
+         <td class="confluenceTd"> Rajiv Mordani, Shing-Wai Chan, Kin-Man Chung, Amelia Roh </td> 
+         <td class="confluenceTd"> <a href="WebTierv3.1.html" title="WebTierv3.1">Project </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Clustering &amp; Availability </td> 
+         <td class="confluenceTd"> EJB Tier </td> 
+         <td class="confluenceTd"> Marina Vatkina, Cheng Fang, Mahesh Kannan </td> 
+         <td class="confluenceTd"> <a href="GlassFishv3.1EJB.html" title="GlassFishv3.1EJB">Project </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Clustering &amp; Availability </td> 
+         <td class="confluenceTd"> IIOP Clustering </td> 
+         <td class="confluenceTd"> Ken Cavanaugh </td> 
+         <td class="confluenceTd"> <a href="http://kenai.com/projects/gf-corba-v3-mirror/pages/TableVersion">Project </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Clustering &amp; Availability </td> 
+         <td class="confluenceTd"> JMS Clustering and HA </td> 
+         <td class="confluenceTd"> Satish Kumar, Amy Kang, Nigel Deakin </td> 
+         <td class="confluenceTd"> <a href="3.1JMS.html" title="3.1JMS">Project </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Clustering &amp; Availability </td> 
+         <td class="confluenceTd"> Metro </td> 
+         <td class="confluenceTd"> Marek Potociar, Jiandong Guo, Harold Carr </td> 
+         <td class="confluenceTd"> <a href="3.1Metro.html" title="3.1Metro">Project </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Clustering &amp; Availability </td> 
+         <td class="confluenceTd"> Loadbalancer </td> 
+         <td class="confluenceTd"> Kshi tiz Saxena, Yamini K B </td> 
+         <td class="confluenceTd"> <a href="3.1Loadbalancer.html" title="3.1Loadbalancer">Project </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Globalization </td> 
+         <td class="confluenceTd"> Globalization </td> 
+         <td class="confluenceTd"> Georges Murr </td> 
+         <td class="confluenceTd"> <a href="globalization.html" title="globalization">Project </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Documentation </td> 
+         <td class="confluenceTd"> Documentation </td> 
+         <td class="confluenceTd"> Paul Davies </td> 
+         <td class="confluenceTd"> <a href="GlassFishV3.1DocPlan.html" title="GlassFishV3.1DocPlan">Documentation Plan </a> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="PlanForGlassFish3.1-DeveloperandTooling"></a>Developer and Tooling</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Area </th> 
+         <th class="confluenceTh"> Project Name </th> 
+         <th class="confluenceTh"> Team Members </th> 
+         <th class="confluenceTh"> Project Link </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Developer Tooling </td> 
+         <td class="confluenceTd"> NetBeans </td> 
+         <td class="confluenceTd"> Vince Kraemer, Ludovic Champenois </td> 
+         <td class="confluenceTd"> <a href="3.1DevToolingNB.html" title="3.1DevToolingNB">Project </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Developer Tooling </td> 
+         <td class="confluenceTd"> Eclipse WTP </td> 
+         <td class="confluenceTd"> Ludovic Champenois, Vince Kraemer </td> 
+         <td class="confluenceTd"> <a href="3.1DevToolingWTP.html" title="3.1DevToolingWTP">Project </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Embedded </td> 
+         <td class="confluenceTd"> Embedded GlassFish </td> 
+         <td class="confluenceTd"> Bhavanishankara Sapaliga </td> 
+         <td class="confluenceTd"> <a href="GlassFish3.1Embedded.html" title="GlassFish3.1Embedded">Project </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Developer Test </td> 
+         <td class="confluenceTd"> Dev Test Framework </td> 
+         <td class="confluenceTd"> Harshad Vilekar, Mathirajan Manoharan </td> 
+         <td class="confluenceTd"> <a href="3.1DevTest.html" title="3.1DevTest">Project </a> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="PlanForGlassFish3.1-TechnologyRefreshandIntegration"></a>Technology Refresh and Integration</h3> <p>We are considering to refresh and integrate updated versions in various technology areas.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Area </th> 
+         <th class="confluenceTh"> Project Name </th> 
+         <th class="confluenceTh"> Team Members </th> 
+         <th class="confluenceTh"> Project Link </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Technology Updates/Integration </td> 
+         <td class="confluenceTd"> JavaServer Faces (JSF) </td> 
+         <td class="confluenceTd"> Edward Burns, Roger Kitain, Sheetal Vartak </td> 
+         <td class="confluenceTd"> <a href="3.1JSF.html" title="3.1JSF">Project </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Technology Updates/Integration </td> 
+         <td class="confluenceTd"> Grizzly </td> 
+         <td class="confluenceTd"> Oleksiy Stashok, Justin Lee, Ryan Lubke </td> 
+         <td class="confluenceTd"> <a href="3.1Grizzly.html" title="3.1Grizzly">Project </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Technology Updates/Integration </td> 
+         <td class="confluenceTd"> OSGi </td> 
+         <td class="confluenceTd"> Sanjeeb Sahoo, Richard Hall </td> 
+         <td class="confluenceTd"> <a href="3.1OSGi.html" title="3.1OSGi">Project </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Technology Updates/Integration </td> 
+         <td class="confluenceTd"> Persistence (JPA) </td> 
+         <td class="confluenceTd"> Mitesh Meswani </td> 
+         <td class="confluenceTd"> <a href="3.1Persistence.html" title="3.1Persistence">Project </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Technology Updates/Integration </td> 
+         <td class="confluenceTd"> Jersey </td> 
+         <td class="confluenceTd"> Paul Sandoz, Jakub Podlesak, Pavel Bucek </td> 
+         <td class="confluenceTd"> <a href="3.1Jersey.html" title="3.1Jersey">Project </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Technology Updates/Integration </td> 
+         <td class="confluenceTd"> Contexts and Dependency Injection (JSR 299) </td> 
+         <td class="confluenceTd"> Sivakumar Thyagarajan </td> 
+         <td class="confluenceTd"> <a href="3.1CDI.html" title="3.1CDI">Project </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Technology Updates/Integration </td> 
+         <td class="confluenceTd"> Bean Validation (JSR 303) </td> 
+         <td class="confluenceTd"> Edward Burns </td> 
+         <td class="confluenceTd"> <a href="3.1BeanValidation.html" title="3.1BeanValidation">Project </a> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Mar 14, 2012 by 
+<font color="#0050B2">10189</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

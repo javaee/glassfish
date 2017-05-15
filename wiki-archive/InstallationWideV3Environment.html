@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : InstallationWideV3Environment</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="InstallationWideV3Environment-HowitwasintheOldDays%28preV3%29"></a>How it was in the Old Days (pre-V3)</h1> <p>We needed a way to be able to specify special directories and booleans that applied to the entire installation. E.g. where are Ant files? Where is the JDK? A complicated procedure was worked out.</p> <h4><a name="InstallationWideV3Environment-asenv.batandasenv.conf"></a>asenv.bat and asenv.conf</h2> 
+     <ul> 
+      <li>asadmin would always run a script from within the asadmin script before starting its JVM. These scripts were named asenv.bat or asenv.conf depending on the platform and lived in the install-root/config directory.</li> 
+      <li>The asenv script contained platform-dependent commands to set environmental variables.</li> 
+      <li>These environmental variables were mainly for specifying paths to interesting components. There was one variable that had a true or false value (AS_NATIVE).</li> 
+     </ul> <h4><a name="InstallationWideV3Environment-Howwasitused%3F"></a>How was it used?</h2> 
+     <ul> 
+      <li>The asadmin script ran the asenv script itself in order to get some required values for use in the JVM invocation line.</li> 
+      <li>Meantime the server and runtime CLI would <b>not</b> use these environmental variables. Instead it went through the painful process of parsing and coaxing the values out of the 2 types of platform-specific asenv scripts.</li> 
+      <li>Then a laborious mapping was maintained between names of environmental variables and the names of the corresponding System Properties. E.g. AS_INSTALL – com.sun.aas.installDir. At runtime the values of the System Properties were set from the environmental variables. THough they aren't really environmental variables – just strings parsed out of the asenv script.</li> 
+     </ul> <h4><a name="InstallationWideV3Environment-Sowhat%27swrongwiththisprocedure%3F"></a>So what's wrong with this procedure?</h2> 
+     <ul> 
+      <li>System Properties suck! They are the most thread-hostile common data source that I know of. Our goal should be to rarely, if ever, use them. Let the JVM work with its System Properties, and we'll work with our own thread-safe internal data structures!</li> 
+      <li>Clients and Servers have different (and partially duplicated) ways of working with the same information in the script.</li> 
+      <li>Environmental variables are supported but are not part of Java. They are part of operating systems. They are undesirable for the purpose of organizing installation-wide configuration data, but are handy for other uses. E.g. they are quite handy at runtime for running special code or diagnostics.</li> 
+      <li>Full paths are wired into asenv files. There is no support for relative paths. Also we ended up with ugly embarassing paths like this: <b>c:\jdk\jre/../bin</b>. It also makes the installation totally non-relocatable.</li> 
+      <li>The installation directory has to be specified inside the asenv file as an environmentl variable.</li> 
+      <li>An installer was required in order to set the directory where the JVM lives.</li> 
+     </ul> <h4><a name="InstallationWideV3Environment-HowarewechangingitinV3%3F"></a>How are we changing it in V3?</h2> 
+     <ul> 
+      <li>asenv is not a script but rather a <b>pure</b> configuration file with the standard Properties File format. 
+       <ul> 
+        <li><b>All</b> V3 apps, sub-apps, servers, clients are Java. Thus they can all access the configuration information in the file via well-known classes.</li> 
+        <li>The install directory and, thus, the location of asenv can <em>always</em> be calculated very very early simply by figuring out the path to the jar containing the class that is executing.</li> 
+        <li>An asenv manager class will be developed that will be the one and only source of this configuration information at runtime. Zero bootstrapping information or parameters are required.</li> 
+       </ul> </li> 
+      <li>Since environmental variables are not used the syntax is simple:</li> 
+     </ul> <p>runtime-prop-name=some-value</p> <p>The value can be:</p> 
+     <ul> 
+      <li>An absolute path e.g. <b><em>C:/glassfish/domains</em></b></li> 
+      <li>An absolute path with annoying dots e.g. <b><em>c:/glassfish/modules/../lib/../../glassfish/domains</em></b></li> 
+      <li>A relative path e.g. <b><em>./../domains</em></b></li> 
+      <li>A string e.g. <b><em>true</em></b></li> 
+      <li>A string with tokens <b><em>%MY_DOMAINS_DIR%</em></b> or <b><em>~UWC_TOKEN_START~1278579877561~UWC_TOKEN_END{MY_DOMAINS_DIR}</em></b></li> 
+      <li>A string with multiple tokens e.g. <b><em>~UWC_TOKEN_START~1278579877562~UWC_TOKEN_END{MY_ROOT}/ant/~UWC_TOKEN_START~1278579877563~UWC_TOKEN_END{LIB}</em></b></li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 08, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

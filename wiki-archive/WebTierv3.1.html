@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : WebTierv3.1</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="WebTierv3.1-GlassFishServerOpenSourceEdition3.1Webtier"></a>GlassFish Server Open Source Edition 3.1 - Webtier</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#WebTierv3.1-GlassFishServerOpenSourceEdition3.1Webtier">GlassFish Server Open Source Edition 3.1 - Webtier</a></li> 
+       <ul> 
+        <li><a href="#WebTierv3.1-Keydates">Key dates</a></li> 
+        <li><a href="#WebTierv3.1-Glassfishv3.1toplevelfeatures">Glassfish v3.1 top level features</a></li> 
+        <li><a href="#WebTierv3.1-ScopeoftheProject">Scope of the Project</a></li> 
+        <li><a href="#WebTierv3.1-MilestoneSchedule">Milestone Schedule</a></li> 
+        <li><a href="#WebTierv3.1-TaskList">Task List</a></li> 
+        <li><a href="#WebTierv3.1-Grizzlytasks">Grizzly tasks</a></li> 
+        <li><a href="#WebTierv3.1-JSFtasks">JSF tasks</a></li> 
+        <li><a href="#WebTierv3.1-Onepager">One pager</a></li> 
+        <li><a href="#WebTierv3.1-DevTests">Dev Tests</a></li> 
+        <li><a href="#WebTierv3.1-Quality">Quality</a></li> 
+        <li><a href="#WebTierv3.1-Documentation">Documentation</a></li> 
+        <li><a href="#WebTierv3.1-References%2FLinks">References / Links</a></li> 
+        <li><a href="#WebTierv3.1-EmailAlias">Email Alias</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="WebTierv3.1-Keydates"></a>Key dates</h2> <p>[ dates | <a href="./GlassFishV3Schedule.html">https://wikis.sun.com/display/glassfish/GlassFishV3Schedule</a>]</p> <h4><a name="WebTierv3.1-Glassfishv3.1toplevelfeatures"></a>Glassfish v3.1 top level features</h2> <p><a href="GlassFishv3.1.html" title="GlassFishv3.1">feature set</a></p> <h4><a name="WebTierv3.1-ScopeoftheProject"></a>Scope of the Project</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Feature ID </th> 
+         <th class="confluenceTh"> Priority </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> Eng Response </th> 
+         <th class="confluenceTh"> Owner(s) </th> 
+         <th class="confluenceTh"> Estimate (Man Days) </th> 
+         <th class="confluenceTh"> Source of Requirement </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> WEB-1 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Web Container one pager </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Rajiv Mordani </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> WEB-2 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Support WebLogic specific deployment descriptors </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Shing Wai / Kinman working with Hong </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Support <a href="http://download.oracle.com/docs/cd/E15523_01/web.1111/e13712/weblogic_xml.htm#i1019569">weblogic.xml </a> see mapping at <a href="SupportWLDDInContainers.html" title="SupportWLDDInContainers">WLS DD Mapping </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> WEB-3 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Integration of HA container SPI </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Rajiv Mordani / Shing Wai </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Feature parity </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> WEB-4 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Implement -target option for existing 3.0 commands </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Amy Roh </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Feature parity </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> WEB-5 </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> Web Embedded </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Amy Roh </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Formalize the APIs and finish remaining work </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> WEB-6 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Servlet spec related changes based on MR </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Rajiv / Shing Wai </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> WEB-7 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Security related Tomcat bug fixes porting </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Shing Wai </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Amy will forward security@tomcat.apache.org emails to individuals </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> WEB-8 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Other Tomcat bug fixes porting </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Shing Wai / Amy / Kinman </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> WEB-9 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Web container bug fixes </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Amy / Shing Wai </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> WEB-10 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Coherence Web Support </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Shing Wai / Rajiv </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> WEB-11 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Rename sun-web.xml to glassfish-web.xml </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Shing Wai </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JSP-1 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Bug Fixes </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Kinman </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JSTL-1 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Bug Fixes </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Kinman </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> EL-1 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Bug Fixes </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Kinman </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="WebTierv3.1-MilestoneSchedule"></a>Milestone Schedule</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> Milestone 2 </td> 
+         <td class="confluenceTd"> WEB-1 </td> 
+         <td class="confluenceTd"> Web Container one pager </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> The one pager will be reviewed by asarch by milestone 2 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd"> Milestone 4 - ongoing see task list for details </td> 
+         <td class="confluenceTd"> WEB-2 </td> 
+         <td class="confluenceTd"> Support WebLogic specific deployment descriptors </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Support weblogic.xml </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3 </td> 
+         <td class="confluenceTd"> Milestone 3 - ongoing see task list for details </td> 
+         <td class="confluenceTd"> WEB-3 </td> 
+         <td class="confluenceTd"> Integration of HA container SPI </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Would like to have this in MS3 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4 </td> 
+         <td class="confluenceTd"> Milestone 3 - ongoing see task list </td> 
+         <td class="confluenceTd"> WEB-4 </td> 
+         <td class="confluenceTd"> Implement -target option for existing 3.0 commands </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Feature parity - co-ordinate with clustering team; would like to have this in MS3 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5 </td> 
+         <td class="confluenceTd"> Milestone 5 </td> 
+         <td class="confluenceTd"> WEB-5 </td> 
+         <td class="confluenceTd"> Web Embedded </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Formalize the APIs and finish remaining work </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6 </td> 
+         <td class="confluenceTd"> Milestone 5 </td> 
+         <td class="confluenceTd"> WEB-6 </td> 
+         <td class="confluenceTd"> Servlet spec related changes based on MR </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 7 </td> 
+         <td class="confluenceTd"> Milestone 5 - ongoing </td> 
+         <td class="confluenceTd"> WEB-7 </td> 
+         <td class="confluenceTd"> Security related Tomcat bug fixes porting </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 8 </td> 
+         <td class="confluenceTd"> Milestone 5 - ongoing </td> 
+         <td class="confluenceTd"> WEB-8 </td> 
+         <td class="confluenceTd"> Other Tomcat bug fixes porting </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 9 </td> 
+         <td class="confluenceTd"> Milestone 5 - ongoing </td> 
+         <td class="confluenceTd"> WEB-9 </td> 
+         <td class="confluenceTd"> Web container bug fixes </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 10 </td> 
+         <td class="confluenceTd"> Milestone 5 - ongoing </td> 
+         <td class="confluenceTd"> WEB-10 </td> 
+         <td class="confluenceTd"> Coherence Web Support </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 11 </td> 
+         <td class="confluenceTd"> Milestone 1 </td> 
+         <td class="confluenceTd"> WEB-11 </td> 
+         <td class="confluenceTd"> Rename sun-web.xml to glassfish-web.xml </td> 
+         <td class="confluenceTd"> Yes </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 11 </td> 
+         <td class="confluenceTd"> Milestone 5 - ongoing </td> 
+         <td class="confluenceTd"> JSP-1 </td> 
+         <td class="confluenceTd"> Bug Fixes </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 12 </td> 
+         <td class="confluenceTd"> Milestone 5 - ongoing </td> 
+         <td class="confluenceTd"> JSTL-1 </td> 
+         <td class="confluenceTd"> Bug Fixes </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 13 </td> 
+         <td class="confluenceTd"> Milestone 5 - ongoing </td> 
+         <td class="confluenceTd"> EL-1 </td> 
+         <td class="confluenceTd"> Bug Fixes </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="WebTierv3.1-TaskList"></a>Task List</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task </th> 
+         <th class="confluenceTh"> Target Milestone </th> 
+         <th class="confluenceTh"> Start </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Owner(s) </th> 
+         <th class="confluenceTh"> Feature ID </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> Milestone 2 </td> 
+         <td class="confluenceTd"> 05/05/2010 </td> 
+         <td class="confluenceTd"> 05/13/2010 </td> 
+         <td class="confluenceTd"> Rajiv Mordani </td> 
+         <td class="confluenceTd"> WEB-1 </td> 
+         <td class="confluenceTd"> One pager for webtier / grizzly - </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1.1 </td> 
+         <td class="confluenceTd"> Milestone 1 </td> 
+         <td class="confluenceTd"> 05/05/2010 </td> 
+         <td class="confluenceTd"> 05/13/2010 </td> 
+         <td class="confluenceTd"> Rajiv Mordani </td> 
+         <td class="confluenceTd"> WEB-1 </td> 
+         <td class="confluenceTd"> Draft for webtier team to review <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1.2 </td> 
+         <td class="confluenceTd"> Milestone 1 </td> 
+         <td class="confluenceTd"> 05/05/2010 </td> 
+         <td class="confluenceTd"> 05/14/2010 </td> 
+         <td class="confluenceTd"> Rajiv Mordani </td> 
+         <td class="confluenceTd"> WEB-1 </td> 
+         <td class="confluenceTd"> Draft for community <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1.3 </td> 
+         <td class="confluenceTd"> Milestone 2 </td> 
+         <td class="confluenceTd"> 05/05/2010 </td> 
+         <td class="confluenceTd"> 05/26/2010 </td> 
+         <td class="confluenceTd"> Rajiv Mordani </td> 
+         <td class="confluenceTd"> WEB-1 </td> 
+         <td class="confluenceTd"> ASARCH review ready <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd"> Milestone 4 </td> 
+         <td class="confluenceTd"> 05/13/2010 </td> 
+         <td class="confluenceTd"> 08/16/2010 </td> 
+         <td class="confluenceTd"> Shing Wai / Kinman </td> 
+         <td class="confluenceTd"> WEB-2 </td> 
+         <td class="confluenceTd"> <a href="http://download.oracle.com/docs/cd/E15523_01/web.1111/e13712/weblogic_xml.htm#i1019569">weblogic.xml </a> is the WebLogic-equivalent of sun-web.xml. See <a href="SupportWLDDInContainers.html" title="SupportWLDDInContainers">WLS DD Mapping </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2.1 </td> 
+         <td class="confluenceTd"> Milestone 1 </td> 
+         <td class="confluenceTd"> 05/13/2010 </td> 
+         <td class="confluenceTd"> 05/20/2010 </td> 
+         <td class="confluenceTd"> Shing Wai / Kinman </td> 
+         <td class="confluenceTd"> WEB-2 </td> 
+         <td class="confluenceTd"> Identify the list of elements we are going to support. <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2.2 </td> 
+         <td class="confluenceTd"> Milestone 3 </td> 
+         <td class="confluenceTd"> 05/24/2010 </td> 
+         <td class="confluenceTd"> 07/19/2010 </td> 
+         <td class="confluenceTd"> Kinman </td> 
+         <td class="confluenceTd"> WEB-2 </td> 
+         <td class="confluenceTd"> JSP Elements <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2.3 </td> 
+         <td class="confluenceTd"> Milestone 3 </td> 
+         <td class="confluenceTd"> 06/01/2010 </td> 
+         <td class="confluenceTd"> 07/19/2010 </td> 
+         <td class="confluenceTd"> Shing Wai </td> 
+         <td class="confluenceTd"> WEB-2 </td> 
+         <td class="confluenceTd"> Session related elements <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2.4 </td> 
+         <td class="confluenceTd"> Milestone 3 </td> 
+         <td class="confluenceTd"> 06/01/2010 </td> 
+         <td class="confluenceTd"> 07/19/2010 </td> 
+         <td class="confluenceTd"> Shing Wai </td> 
+         <td class="confluenceTd"> WEB-2 </td> 
+         <td class="confluenceTd"> servlets and web app elements <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2.5 </td> 
+         <td class="confluenceTd"> Milestone 4 </td> 
+         <td class="confluenceTd"> 07/01/2010 </td> 
+         <td class="confluenceTd"> 08/16/2010 </td> 
+         <td class="confluenceTd"> Shing Wai, part of them depends on security team </td> 
+         <td class="confluenceTd"> WEB-2 </td> 
+         <td class="confluenceTd"> Security related dependencies for some of the elements <b><a href="https://github.com/javaee/glassfish/issues/13035">IT 13035</a></b></td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2.6 </td> 
+         <td class="confluenceTd"> Milestone 5 </td> 
+         <td class="confluenceTd"> 08/26/2010 </td> 
+         <td class="confluenceTd"> 09/13/2010 </td> 
+         <td class="confluenceTd"> Shing Wai </td> 
+         <td class="confluenceTd"> WEB-2 </td> 
+         <td class="confluenceTd"> resource/-env/ejb description elements <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2.7 </td> 
+         <td class="confluenceTd"> Milestone 5 </td> 
+         <td class="confluenceTd"> 08/26/2010 </td> 
+         <td class="confluenceTd"> 09/13/2010 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> WEB-2 </td> 
+         <td class="confluenceTd"> web-service description element </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Rajiv Mordani / Shing Wai </td> 
+         <td class="confluenceTd"> WEB-3 </td> 
+         <td class="confluenceTd"> Integration of HA container SPI </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3.1 </td> 
+         <td class="confluenceTd"> Milestone 3 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Rajiv Mordani / Shing Wai </td> 
+         <td class="confluenceTd"> WEB-3 </td> 
+         <td class="confluenceTd"> Port code from v2.1 and make new module <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3.2 </td> 
+         <td class="confluenceTd"> Milestone 3 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Rajiv Mordani / Shing Wai </td> 
+         <td class="confluenceTd"> WEB-3 </td> 
+         <td class="confluenceTd"> Integrate with actual BackingStore implementation <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3.3 </td> 
+         <td class="confluenceTd"> Milestone 3 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Rajiv Mordani / Shing Wai </td> 
+         <td class="confluenceTd"> WEB-3 </td> 
+         <td class="confluenceTd"> Full Session Replication <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3.4 </td> 
+         <td class="confluenceTd"> Milestone 3 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Rajiv Mordani / Shing Wai </td> 
+         <td class="confluenceTd"> WEB-3 </td> 
+         <td class="confluenceTd"> Serialize EJBs in HTTP Session <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3.5 </td> 
+         <td class="confluenceTd"> Milestone 4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Rajiv Mordani / Shing Wai </td> 
+         <td class="confluenceTd"> WEB-3 </td> 
+         <td class="confluenceTd"> Modified attribute in HTTP Session <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3.6 </td> 
+         <td class="confluenceTd"> Milestone 4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Rajiv Mordani / Shing Wai </td> 
+         <td class="confluenceTd"> WEB-3 </td> 
+         <td class="confluenceTd"> Integrate with LB </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3.7 </td> 
+         <td class="confluenceTd"> Milestone 5 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Shing Wai / Rajiv Mordani </td> 
+         <td class="confluenceTd"> WEB-3 </td> 
+         <td class="confluenceTd"> SSO support <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4 </td> 
+         <td class="confluenceTd"> Milestone 3 </td> 
+         <td class="confluenceTd"> 05/05/2010 </td> 
+         <td class="confluenceTd"> 8/16/2010 </td> 
+         <td class="confluenceTd"> Amy Roh </td> 
+         <td class="confluenceTd"> WEB-4 </td> 
+         <td class="confluenceTd"> Implement --target option for existing 3.0 commands – create-threadpool, delete-threadpool, list-threadpools, create-ssl, delete-ssl, create-virtual-server, delete-virtual-server, list-virtual-servers, create-http, delete-http, create-http-listener, delete-http-listener, list-http-listeners, create-protocol, delete-protocol, list-protocols, create-protocol-filter, delete-protocol-filter, create-protocol-finder, delete-protocol-finder, create-transport, delete-transport, list-transports, create-network-listener, delete-network-listener, list-network-listeners <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.1 </td> 
+         <td class="confluenceTd"> Milestone 1 </td> 
+         <td class="confluenceTd"> 05/05/2010 </td> 
+         <td class="confluenceTd"> 05/24/2010 </td> 
+         <td class="confluenceTd"> Amy Roh </td> 
+         <td class="confluenceTd"> WEB-4 </td> 
+         <td class="confluenceTd"> Identify the list of --target option commands that need to be supported - <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.2 </td> 
+         <td class="confluenceTd"> Milestone 2 </td> 
+         <td class="confluenceTd"> 05/24/2010 </td> 
+         <td class="confluenceTd"> 06/04/2010 </td> 
+         <td class="confluenceTd"> Amy Roh </td> 
+         <td class="confluenceTd"> WEB-4 </td> 
+         <td class="confluenceTd"> Implement --target option for create-virtual-server, delete-virtual-server, list-virtual-servers <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.3 </td> 
+         <td class="confluenceTd"> Milestone 2 </td> 
+         <td class="confluenceTd"> 06/07/2010 </td> 
+         <td class="confluenceTd"> 06/21/2010 </td> 
+         <td class="confluenceTd"> Amy Roh </td> 
+         <td class="confluenceTd"> WEB-4 </td> 
+         <td class="confluenceTd"> Implement --target option for create-http, delete-http, create-http-listener, delete-http-listener, list-http-listeners, create-protocol, delete-protocol, list-protocols, create-protocol-filter, delete-protocol-filter, create-protocol-finder, delete-protocol-finder, create-transport, delete-transport, list-transports, create-network-listener, delete-network-listener, list-network-listeners create-protocol-filter, delete-protocol-filter, create-protocol-finder, delete-protocol-finder, create-transport, delete-transport, list-transports <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.4 </td> 
+         <td class="confluenceTd"> Milestone 3 </td> 
+         <td class="confluenceTd"> 06/21/2010 </td> 
+         <td class="confluenceTd"> 06/31/2010 </td> 
+         <td class="confluenceTd"> Amy Roh </td> 
+         <td class="confluenceTd"> WEB-4 </td> 
+         <td class="confluenceTd"> Implement --target option for create-threadpool, delete-threadpool, list-threadpools <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.5 </td> 
+         <td class="confluenceTd"> Milestone 3 </td> 
+         <td class="confluenceTd"> 07/07/2010 </td> 
+         <td class="confluenceTd"> 07/19/2010 </td> 
+         <td class="confluenceTd"> Amy Roh </td> 
+         <td class="confluenceTd"> WEB-4 </td> 
+         <td class="confluenceTd"> Implement --target option for create-ssl, delete-ssl <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5 </td> 
+         <td class="confluenceTd"> Milestone 5 </td> 
+         <td class="confluenceTd"> 05/05/2010 </td> 
+         <td class="confluenceTd"> 8/16/2010 </td> 
+         <td class="confluenceTd"> Amy Roh </td> 
+         <td class="confluenceTd"> WEB-5 </td> 
+         <td class="confluenceTd"> Embedded - Formalize the APIs Finish the remaining work </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5.1 </td> 
+         <td class="confluenceTd"> Milestone 1 </td> 
+         <td class="confluenceTd"> 05/05/2010 </td> 
+         <td class="confluenceTd"> 5/24/2010 </td> 
+         <td class="confluenceTd"> Amy Roh </td> 
+         <td class="confluenceTd"> WEB-5 </td> 
+         <td class="confluenceTd"> Modify web dev tests to run in embedded mode (manually) - <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5.2 </td> 
+         <td class="confluenceTd"> Milestone 2 </td> 
+         <td class="confluenceTd"> 05/25/2010 </td> 
+         <td class="confluenceTd"> 6/21/2010 </td> 
+         <td class="confluenceTd"> Amy Roh </td> 
+         <td class="confluenceTd"> WEB-5 </td> 
+         <td class="confluenceTd"> Automate web dev tests, fix most issues in running tests -<b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5.3 </td> 
+         <td class="confluenceTd"> Milestone 5 </td> 
+         <td class="confluenceTd"> 06/22/2010 </td> 
+         <td class="confluenceTd"> 8/16/2010 </td> 
+         <td class="confluenceTd"> Amy Roh </td> 
+         <td class="confluenceTd"> WEB-5 </td> 
+         <td class="confluenceTd"> Provide Embedded use cases and fix remaining issues </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6 </td> 
+         <td class="confluenceTd"> Milestone 5 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Rajiv / Shing Wai </td> 
+         <td class="confluenceTd"> WEB-6 </td> 
+         <td class="confluenceTd"> Servlet spec related changes based on MR </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6.1 </td> 
+         <td class="confluenceTd"> Milestone 5 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Rajiv </td> 
+         <td class="confluenceTd"> WEB-6 </td> 
+         <td class="confluenceTd"> Have MR written up and handed off to JCP to start the MR </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6.2 </td> 
+         <td class="confluenceTd"> Milestone 5 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Shing Wai </td> 
+         <td class="confluenceTd"> WEB-6 </td> 
+         <td class="confluenceTd"> Implementation changes </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 7 </td> 
+         <td class="confluenceTd"> Milestone 5 </td> 
+         <td class="confluenceTd"> 07/01/2010 </td> 
+         <td class="confluenceTd"> 09/13/2010 </td> 
+         <td class="confluenceTd"> Shing Wai </td> 
+         <td class="confluenceTd"> WEB-7 </td> 
+         <td class="confluenceTd"> Security related Tomcat bug fixes porting </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 8 </td> 
+         <td class="confluenceTd"> Milestone 5 </td> 
+         <td class="confluenceTd"> 06/01/2010 </td> 
+         <td class="confluenceTd"> 8/16/2010 </td> 
+         <td class="confluenceTd"> Shing Wai / Amy / Kinman </td> 
+         <td class="confluenceTd"> WEB-8 </td> 
+         <td class="confluenceTd"> Other Tomcat bug fixes porting </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 9 </td> 
+         <td class="confluenceTd"> Milestone 5 </td> 
+         <td class="confluenceTd"> 06/01/2010 </td> 
+         <td class="confluenceTd"> 8/16/2010 </td> 
+         <td class="confluenceTd"> Shing Wai / Amy / Kinman </td> 
+         <td class="confluenceTd"> WEB-9 </td> 
+         <td class="confluenceTd"> Web container bug fixes </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 10 </td> 
+         <td class="confluenceTd"> Milestone 5 </td> 
+         <td class="confluenceTd"> 05/31/2010 </td> 
+         <td class="confluenceTd"> 09/13/2010 </td> 
+         <td class="confluenceTd"> Shing Wai / Rajiv </td> 
+         <td class="confluenceTd"> WEB-10 </td> 
+         <td class="confluenceTd"> Coherence Web Support </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 11 </td> 
+         <td class="confluenceTd"> Milestone 1 </td> 
+         <td class="confluenceTd"> 05/10/2010 </td> 
+         <td class="confluenceTd"> 5/21/2010 </td> 
+         <td class="confluenceTd"> Shing Wai </td> 
+         <td class="confluenceTd"> WEB-11 </td> 
+         <td class="confluenceTd"> Rename sun-web.xml to glassfish-web.xml <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 12 </td> 
+         <td class="confluenceTd"> Milestone 5 </td> 
+         <td class="confluenceTd"> 05/05/2010 </td> 
+         <td class="confluenceTd"> 09/13/2010 </td> 
+         <td class="confluenceTd"> Kinman </td> 
+         <td class="confluenceTd"> JSP-1 </td> 
+         <td class="confluenceTd"> Bug fixes </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 13 </td> 
+         <td class="confluenceTd"> Milestone 5 </td> 
+         <td class="confluenceTd"> 05/05/2010 </td> 
+         <td class="confluenceTd"> 09/13/2010 </td> 
+         <td class="confluenceTd"> Kinman </td> 
+         <td class="confluenceTd"> EL-1 </td> 
+         <td class="confluenceTd"> Bug fixes </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 14 </td> 
+         <td class="confluenceTd"> Milestone 5 </td> 
+         <td class="confluenceTd"> 05/05/2010 </td> 
+         <td class="confluenceTd"> 09/13/2010 </td> 
+         <td class="confluenceTd"> Kinman </td> 
+         <td class="confluenceTd"> JSTL-1 </td> 
+         <td class="confluenceTd"> Bug fixes </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="WebTierv3.1-Grizzlytasks"></a>Grizzly tasks</h2> 
+     <ul> 
+      <li>Refer to Grizzly <a href="3.1Grizzly.html#3.1Grizzly-section3.1GrizzlyTaskList">sub-project</a></li> 
+     </ul> <h4><a name="WebTierv3.1-JSFtasks"></a>JSF tasks</h2> 
+     <ul> 
+      <li><a href="http://wiki.jcp.org/wiki/index.php?page=JSF2.0RevAChangeLog">JSF 2.0 Rev a Maintenance Review</a></li> 
+      <li><a href="http://wiki.jcp.org/wiki/index.php?page=JSF2.1ChangeLog">JSF 2.1 Maintenance Review</a></li> 
+      <li>Refer to JSF <a href="3.1JSF.html#3.1JSF-section3.1JSFTaskList">sub-project</a></li> 
+     </ul> <h4><a name="WebTierv3.1-Onepager"></a>One pager</h2> <p><a href="WebTier.html" title="WebTier">One pager </a></p> <h4><a name="WebTierv3.1-DevTests"></a>Dev Tests </h2> 
+     <ul> 
+      <li>Refer to information on Webtier <a href="DeveloperTestDashboard.html" title="DeveloperTestDashboard">Dev Tests</a></li> 
+     </ul> <h4><a name="WebTierv3.1-Quality"></a>Quality</h2> 
+     <ul> 
+      <li>Link to Test Plans</li> 
+     </ul> <h4><a name="WebTierv3.1-Documentation"></a>Documentation</h2> 
+     <ul> 
+      <li>Link to Documentation</li> 
+     </ul> <h4><a name="WebTierv3.1-References%2FLinks"></a>References / Links</h2> 
+     <ul> 
+      <li>Coming soon</li> 
+     </ul> <h4><a name="WebTierv3.1-EmailAlias"></a>Email Alias</h2> 
+     <ul> 
+      <li>Please contact us at <a href="mailto:webtier@glassfish.java.net">webtier@glassfish.java.net</a></li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Aug 31, 2010 by 
+<font color="#0050B2">shingwai</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

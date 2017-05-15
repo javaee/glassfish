@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : DefaultConfig</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;config dynamic-reconfiguration-enabled="true" name="default-config"&gt;
+  &lt;http-service&gt;
+    &lt;access-log format="%client.name% %auth-user-name% %datetime% %request% %status% %response.length%" rotation-enabled="true" rotation-interval-in-minutes="15" rotation-policy="time" rotation-suffix="yyyy-MM-dd"/&gt;
+    &lt;http-listener acceptor-threads="1" address="0.0.0.0" default-virtual-server="server" enabled="true" id="http-listener-1" port="${HTTP_LISTENER_PORT}" security-enabled="false" server-name="" xpowered-by="true"&gt;
+&lt;property name="proxiedProtocols" value="ws/tcp"/&gt;
+&lt;/http-listener&gt;
+    &lt;http-listener acceptor-threads="1" address="0.0.0.0" default-virtual-server="server" enabled="true" id="http-listener-2" port="${HTTP_SSL_LISTENER_PORT}" security-enabled="true" server-name="" xpowered-by="true"&gt;
+&lt;ssl cert-nickname="s1as"/&gt;
+&lt;/http-listener&gt;
+    &lt;virtual-server hosts="${com.sun.aas.hostName}" http-listeners="http-listener-1,http-listener-2" id="server" state="on"&gt;
+      &lt;property name="docroot" value="${com.sun.aas.instanceRoot}/docroot"/&gt;
+      &lt;property name="accesslog" value="${com.sun.aas.instanceRoot}/logs/access"/&gt;
+      &lt;property name="default-web-xml" value="${com.sun.aas.instanceRoot}/config/default-web.xml"/&gt;
+    &lt;property name="sso-enabled" value="false"/&gt;
+&lt;/virtual-server&gt;
+    &lt;request-processing header-buffer-length-in-bytes="8192" initial-thread-count="2" request-timeout-in-seconds="30" thread-count="5" thread-increment="1"/&gt;
+    &lt;keep-alive max-connections="250" thread-count="1" timeout-in-seconds="30"/&gt;
+    &lt;connection-pool max-pending-count="4096" queue-size-in-bytes="4096" receive-buffer-size-in-bytes="4096" send-buffer-size-in-bytes="8192"/&gt;
+    &lt;http-protocol dns-lookup-enabled="false"/&gt;
+     &lt;http-file-cache file-caching-enabled="true" globally-enabled="true" max-age-in-seconds="30" max-files-count="1024" medium-file-size-limit-in-bytes="537600" medium-file-space-in-bytes="10485760" small-file-size-limit-in-bytes="2048" small-file-space-in-bytes="1048576"/&gt;
+  &lt;property name="accessLoggingEnabled" value="false"/&gt;
+&lt;/http-service&gt;
+  &lt;iiop-service client-authentication-required="false"&gt;
+    &lt;orb max-connections="1024" message-fragment-size="1024" use-thread-pool-ids="thread-pool-1"/&gt;
+
+    &lt;iiop-listener address="0.0.0.0" enabled="true" id="orb-listener-1" port="${IIOP_LISTENER_PORT}"/&gt;
+    &lt;iiop-listener address="0.0.0.0" enabled="true" id="SSL" port="${IIOP_SSL_LISTENER_PORT}" security-enabled="true"&gt;
+      &lt;ssl cert-nickname="s1as"/&gt;
+    &lt;/iiop-listener&gt;
+    &lt;iiop-listener address="0.0.0.0" enabled="true" id="SSL_MUTUALAUTH" port="${IIOP_SSL_MUTUALAUTH_PORT}" security-enabled="true"&gt;
+      &lt;ssl cert-nickname="s1as" client-auth-enabled="true"/&gt;
+    &lt;/iiop-listener&gt;
+  &lt;/iiop-service&gt;
+  &lt;admin-service system-jmx-connector-name="system" type="server"&gt;
+    &lt;!-- JSR 160  "system-jmx-connector" --&gt;
+    &lt;jmx-connector accept-all="false" address="0.0.0.0" auth-realm-name="admin-realm" name="system" port="${JMX_SYSTEM_CONNECTOR_PORT}" protocol="rmi_jrmp" security-enabled="false"&gt;
+&lt;ssl cert-nickname="s1as"/&gt;
+&lt;property name="client-hostname" value="moonbeam"/&gt;
+&lt;/jmx-connector&gt;
+    &lt;!-- JSR 160  "system-jmx-connector" --&gt;
+    &lt;das-config autodeploy-dir="${com.sun.aas.instanceRoot}/autodeploy" autodeploy-enabled="true" autodeploy-jsp-precompilation-enabled="false" autodeploy-polling-interval-in-seconds="2" autodeploy-verifier-enabled="false" deploy-xml-validation="full" dynamic-reload-enabled="true" dynamic-reload-poll-interval-in-seconds="2"/&gt;
+  &lt;/admin-service&gt;
+  &lt;web-container&gt;
+      &lt;session-config&gt;
+          &lt;session-manager&gt;
+              &lt;manager-properties/&gt;
+              &lt;store-properties/&gt;
+           &lt;/session-manager&gt;
+           &lt;session-properties/&gt;
+      &lt;/session-config&gt;
+  &lt;/web-container&gt;
+  &lt;ejb-container cache-idle-timeout-in-seconds="600" cache-resize-quantity="32" commit-option="B" max-cache-size="512" max-pool-size="32" pool-idle-timeout-in-seconds="600" pool-resize-quantity="8" removal-timeout-in-seconds="5400" session-store="${com.sun.aas.instanceRoot}/session-store" steady-pool-size="0" victim-selection-policy="nru"&gt;
+    &lt;ejb-timer-service/&gt;
+  &lt;/ejb-container&gt;
+  &lt;mdb-container idle-timeout-in-seconds="600" max-pool-size="32" pool-resize-quantity="8" steady-pool-size="0"/&gt;
+  &lt;jms-service addresslist-behavior="priority" addresslist-iterations="3" default-jms-host="default_JMS_host" init-timeout-in-seconds="60" reconnect-attempts="3" reconnect-enabled="true" reconnect-interval-in-seconds="5" type="LOCAL"&gt;
+    &lt;jms-host admin-password="admin" admin-user-name="admin" host="moonbeam" name="default_JMS_host" port="${JMS_PROVIDER_PORT}"/&gt;
+  &lt;/jms-service&gt;
+  &lt;log-service alarms="false" file="${com.sun.aas.instanceRoot}/logs/server.log" log-rotation-limit-in-bytes="2000000" log-to-console="false" use-system-logging="false"&gt;
+    &lt;module-log-levels admin="INFO" classloader="INFO" cmp="INFO" cmp-container="INFO" configuration="INFO" connector="INFO" corba="INFO" deployment="INFO" ejb-container="INFO" javamail="INFO" jaxr="INFO" jaxrpc="INFO" jdo="INFO" jms="INFO" jta="INFO" jts="INFO" mdb-container="INFO" naming="INFO" resource-adapter="INFO" root="INFO" saaj="INFO" security="INFO" server="INFO" verifier="INFO" web-container="INFO"/&gt;
+  &lt;/log-service&gt;
+  &lt;security-service audit-enabled="false" audit-modules="default" default-realm="file" jacc="default"&gt;
+    &lt;!-- All administrative tasks within any server instance use this admin-realm by default. --&gt;
+    &lt;auth-realm classname="com.sun.enterprise.security.auth.realm.file.FileRealm" name="admin-realm"&gt;
+     &lt;property name="file" value="${com.sun.aas.instanceRoot}/config/admin-keyfile"/&gt;
+     &lt;property name="jaas-context" value="fileRealm"/&gt;
+    &lt;/auth-realm&gt;
+    &lt;!-- All administrative tasks within any server instance use this admin-realm by default. --&gt;
+    &lt;auth-realm classname="com.sun.enterprise.security.auth.realm.file.FileRealm" name="file"&gt;
+      &lt;property name="file" value="${com.sun.aas.instanceRoot}/config/keyfile"/&gt;
+      &lt;property name="jaas-context" value="fileRealm"/&gt;
+    &lt;/auth-realm&gt;
+    &lt;auth-realm classname="com.sun.enterprise.security.auth.realm.certificate.CertificateRealm" name="certificate"&gt;
+    &lt;/auth-realm&gt;
+    &lt;jacc-provider name="default" policy-configuration-factory-provider="com.sun.enterprise.security.provider.PolicyConfigurationFactoryImpl" policy-provider="com.sun.enterprise.security.provider.PolicyWrapper"&gt;
+      &lt;property name="repository" value="${com.sun.aas.instanceRoot}/generated/policy"/&gt;
+    &lt;/jacc-provider&gt;
+    &lt;audit-module classname="com.sun.enterprise.security.Audit" name="default"&gt;
+      &lt;property name="auditOn" value="false"/&gt;
+    &lt;/audit-module&gt;
+    &lt;message-security-config auth-layer="SOAP"&gt;
+      &lt;!-- turned off by default --&gt;
+      &lt;provider-config class-name="com.sun.xml.wss.provider.ClientSecurityAuthModule" provider-id="XWS_ClientProvider" provider-type="client"&gt;
+        &lt;request-policy auth-source="content"/&gt;
+        &lt;response-policy auth-source="content"/&gt;
+        &lt;property name="encryption.key.alias" value="s1as"/&gt;
+        &lt;property name="signature.key.alias" value="s1as"/&gt;
+        &lt;property name="dynamic.username.password" value="false"/&gt;
+        &lt;property name="debug" value="false"/&gt;
+      &lt;/provider-config&gt;
+      &lt;provider-config class-name="com.sun.xml.wss.provider.ClientSecurityAuthModule" provider-id="ClientProvider" provider-type="client"&gt;
+        &lt;request-policy auth-source="content"/&gt;
+        &lt;response-policy auth-source="content"/&gt;
+        &lt;property name="encryption.key.alias" value="s1as"/&gt;
+        &lt;property name="signature.key.alias" value="s1as"/&gt;
+        &lt;property name="dynamic.username.password" value="false"/&gt;
+        &lt;property name="debug" value="false"/&gt;
+        &lt;property name="security.config" value="${com.sun.aas.instanceRoot}/config/wss-server-config-1.0.xml"/&gt;
+      &lt;/provider-config&gt;
+      &lt;provider-config class-name="com.sun.xml.wss.provider.ServerSecurityAuthModule" provider-id="XWS_ServerProvider" provider-type="server"&gt;
+        &lt;request-policy auth-source="content"/&gt;
+        &lt;response-policy auth-source="content"/&gt;
+        &lt;property name="encryption.key.alias" value="s1as"/&gt;
+        &lt;property name="signature.key.alias" value="s1as"/&gt;
+        &lt;property name="debug" value="false"/&gt;
+      &lt;/provider-config&gt;
+      &lt;provider-config class-name="com.sun.xml.wss.provider.ServerSecurityAuthModule" provider-id="ServerProvider" provider-type="server"&gt;
+        &lt;request-policy auth-source="content"/&gt;
+        &lt;response-policy auth-source="content"/&gt;
+        &lt;property name="encryption.key.alias" value="s1as"/&gt;
+        &lt;property name="signature.key.alias" value="s1as"/&gt;
+        &lt;property name="debug" value="false"/&gt;
+        &lt;property name="security.config" value="${com.sun.aas.instanceRoot}/config/wss-server-config-1.0.xml"/&gt;
+      &lt;/provider-config&gt;
+    &lt;/message-security-config&gt; 
+  &lt;/security-service&gt;
+  &lt;transaction-service automatic-recovery="true" heuristic-decision="rollback" keypoint-interval="65536" retry-timeout-in-seconds="600" timeout-in-seconds="0" tx-log-dir="${com.sun.aas.instanceRoot}/logs"/&gt;
+  &lt;monitoring-service&gt;
+    &lt;module-monitoring-levels connector-connection-pool="OFF" ejb-container="OFF" http-service="OFF" jdbc-connection-pool="OFF" orb="OFF" thread-pool="OFF" transaction-service="OFF" web-container="OFF"/&gt;
+  &lt;/monitoring-service&gt;
+  &lt;diagnostic-service capture-app-dd="true" capture-hadb-info="true" capture-install-log="true" capture-system-info="true" compute-checksum="true" max-log-entries="500" min-log-level="INFO" verify-config="true"/&gt;
+  &lt;java-config classpath-suffix="" debug-enabled="false" debug-options="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=9009" env-classpath-ignored="true" java-home="${com.sun.aas.javaRoot}" javac-options="-g" rmic-options="-iiop -poa -alwaysgenerate -keepgenerated -g" system-classpath=""&gt;
+&lt;jvm-options&gt;-XX:MaxPermSize=192m&lt;/jvm-options&gt;
+&lt;jvm-options&gt;-Djavax.management.builder.initial=com.sun.enterprise.ee.admin.AppServerMBeanServerBuilder&lt;/jvm-options&gt;
+&lt;jvm-options&gt;-Dcom.sun.appserv.pluggable.features=com.sun.enterprise.ee.server.pluggable.EEPluggableFeatureImpl&lt;/jvm-options&gt;
+&lt;jvm-options&gt;-Djava.endorsed.dirs=${com.sun.aas.installRoot}/lib/endorsed&lt;/jvm-options&gt;
+&lt;jvm-options&gt;-Djava.security.policy=${com.sun.aas.instanceRoot}/config/server.policy&lt;/jvm-options&gt;
+&lt;jvm-options&gt;-Djava.security.auth.login.config=${com.sun.aas.instanceRoot}/config/login.conf&lt;/jvm-options&gt;
+&lt;jvm-options&gt;-Dsun.rmi.dgc.server.gcInterval=3600000&lt;/jvm-options&gt;
+&lt;jvm-options&gt;-Dsun.rmi.dgc.client.gcInterval=3600000&lt;/jvm-options&gt;
+&lt;jvm-options&gt;-Xmx512m&lt;/jvm-options&gt;
+&lt;jvm-options&gt;-client&lt;/jvm-options&gt;
+&lt;jvm-options&gt;-Djava.ext.dirs=${com.sun.aas.javaRoot}/lib/ext${path.separator}${com.sun.aas.javaRoot}/jre/lib/ext${path.separator}${com.sun.aas.instanceRoot}/lib/ext${path.separator}${com.sun.aas.derbyRoot}/lib${path.separator}${com.sun.aas.installRoot}/lib/jdbcdrivers&lt;/jvm-options&gt;
+&lt;jvm-options&gt;-Djdbc.drivers=org.apache.derby.jdbc.ClientDriver&lt;/jvm-options&gt;
+&lt;jvm-options&gt;-Dcom.sun.enterprise.config.config_environment_factory_class=com.sun.enterprise.config.serverbeans.AppserverConfigEnvironmentFactory&lt;/jvm-options&gt;
+&lt;jvm-options&gt;-Dcom.sun.enterprise.taglibs=appserv-jstl.jar,jsf-impl.jar&lt;/jvm-options&gt;
+&lt;jvm-options&gt;-Dcom.sun.enterprise.taglisteners=jsf-impl.jar&lt;/jvm-options&gt;
+&lt;jvm-options&gt;-XX:NewRatio=2&lt;/jvm-options&gt;
+&lt;jvm-options&gt;-Djavax.net.ssl.keyStore=${com.sun.aas.instanceRoot}/config/keystore.jks&lt;/jvm-options&gt;
+&lt;jvm-options&gt;-Djavax.net.ssl.trustStore=${com.sun.aas.instanceRoot}/config/cacerts.jks&lt;/jvm-options&gt;
+&lt;/java-config&gt;
+  &lt;availability-service availability-enabled="true"&gt;
+    &lt;web-container-availability availability-enabled="true" http-session-store-pool-name="jdbc/hastore" persistence-frequency="web-method" persistence-scope="session" persistence-store-health-check-enabled="false" persistence-type="replicated" sso-failover-enabled="false"/&gt;
+    &lt;ejb-container-availability availability-enabled="true" sfsb-ha-persistence-type="replicated" sfsb-persistence-type="file" sfsb-store-pool-name="jdbc/hastore"/&gt;
+    &lt;jms-availability availability-enabled="false"/&gt;
+  &lt;/availability-service&gt;
+  &lt;thread-pools&gt;
+    &lt;thread-pool idle-thread-timeout-in-seconds="120" max-thread-pool-size="200" min-thread-pool-size="0" num-work-queues="1" thread-pool-id="thread-pool-1"/&gt;
+
+  &lt;/thread-pools&gt;
+  &lt;group-management-service fd-protocol-max-tries="3" fd-protocol-timeout-in-millis="2000" merge-protocol-max-interval-in-millis="10000" merge-protocol-min-interval-in-millis="5000" ping-protocol-timeout-in-millis="5000" vs-protocol-timeout-in-millis="1500"/&gt;
+  &lt;management-rules enabled="true"/&gt;
+  &lt;system-property name="HTTP_LISTENER_PORT" value="38080"/&gt;
+  &lt;system-property name="HTTP_SSL_LISTENER_PORT" value="38181"/&gt;
+  &lt;system-property name="JMS_PROVIDER_PORT" value="37676"/&gt;
+  &lt;system-property name="IIOP_LISTENER_PORT" value="33700"/&gt;
+  &lt;system-property name="IIOP_SSL_LISTENER_PORT" value="33820"/&gt;
+  &lt;system-property name="IIOP_SSL_MUTUALAUTH_PORT" value="33920"/&gt;
+  &lt;system-property name="JMX_SYSTEM_CONNECTOR_PORT" value="38686"/&gt;
+&lt;/config&gt;</pre> 
+       </div> 
+      </div>
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 02, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:43.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

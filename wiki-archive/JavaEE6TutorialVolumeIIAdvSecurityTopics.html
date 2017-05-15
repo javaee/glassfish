@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : JavaEE6TutorialVolumeIIAdvSecurityTopics</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>&lt;H1&gt;Topics for Java EE Tutorial&lt;/H1&gt;<br> &lt;B&gt;Advanced Topics in Security (Volume 2)&lt;/B&gt;</p> <p>&lt;I&gt;This<br> section (Security) describes topics not described in Volume 1, so, in<br> effect, more advanced topics or topics that discuss ways to secure<br> applications that don't mesh with the way we want them to secure<br> applications (e.g., deployment descriptor only).&lt;/I&gt;</p> <p>&lt;P&gt;Refer to the security chapters in the <a href="http://java.sun.com/javaee/5/docs/tutorial/doc/">Java EE 5 Tutorial</a> for information on existing content.</p> <p>&lt;P&gt;The outline for Vol. 1 (basic security) can be viewed <a href="./JavaEE6TutorialVolume1DocPlanSecurity.html">here</a>.</p> <p>&lt;H2&gt;Chapter: Advanced Topics in Security<br> for Java EE&lt;/H2&gt;</p> <p>&lt;OL&gt;<br> &lt;LI&gt;Introduce Topics Discussed in this<br> Chapter<br> &lt;LI&gt;Deployment Descriptors<br> &lt;OL&gt;<br> &lt;LI&gt; Application Deployment<br> Descriptor<br> &lt;LI&gt; Runtime Deployment Descriptor<br> &lt;/OL&gt;</p> <p>&lt;/OL&gt;</p> <p>&lt;H2&gt;Chapter: Securing Enterprise<br> Applications: Advanced Topics&lt;/H2&gt;</p> <p>&lt;OL&gt;<br> &lt;LI&gt;Securing Enterprise Beans Using<br> Deployment Descriptors<br> &lt;OL&gt;<br> &lt;LI&gt;Configuring security in<br> ejb-jar.xml<br> &lt;OL TYPE=a&gt;<br> &lt;LI&gt;Defining a Security View<br> &lt;LI&gt;Declaring Security Roles using<br> security-role-ref element<br> &lt;LI&gt; Defining Security roles with<br> security-role and role-name<br> &lt;LI&gt;Linking Security role references<br> to security roles using role-link<br> &lt;LI&gt;Specifying Method Permissions<br> using method-permission element<br> &lt;LI&gt;Propagating Security Identity<br> using run-as </p> <p> &lt;/OL&gt;<br> &lt;LI&gt;Configuring security in<br> sun-ejb-jar.xml <br> &lt;OL TYPE=a&gt;<br> &lt;LI&gt; Specifying an authentication<br> mechanism by configuring the IOR using login-config<br> &lt;LI&gt;Mapping Security Roles to App<br> Server Groups using security-role-mapping<br> &lt;/OL&gt;<br> &lt;LI&gt; Configuring IOR security in<br> sun-ejb-jar.xml<br> &lt;OL TYPE=a&gt;<br> &lt;LI&gt;transport-config<br> &lt;UL&gt;<br> &lt;LI&gt;SSL<br> &lt;LI&gt; ...<br> &lt;/UL&gt;<br> &lt;LI&gt;as-context<br> &lt;LI&gt;sas-context<br> &lt;/OL&gt;<br> &lt;LI&gt;Deploying Secure Enterprise Beans<br> &lt;LI&gt;Example Applications using EJBs<br> and deployment descriptors<br> &lt;/OL&gt;<br> &lt;LI&gt;Securing EIS Applications<br> &lt;OL&gt;<br> &lt;LI&gt;Container-managed sign-on </p> <p> &lt;LI&gt; Component-managed sign-on with </p> <p> &lt;LI&gt;Configuring Resource Adapter<br> Security<br> &lt;LI&gt; Mapping an Application Principal<br> to EIS Principals<br> &lt;/OL&gt;<br> &lt;LI&gt;Example Applications that ship<br> with GlassFish<br> &lt;LI&gt;Links<br> &lt;/OL&gt;</p> <p>&lt;H2&gt;Chapter: Using Deployment Descriptors<br> with Web Applications&lt;/H2&gt;</p> <p>&lt;OL&gt;<br> &lt;LI&gt;Working<br> with Roles<br> &lt;OL&gt;<br> &lt;LI&gt;Declaring<br> Security Roles<br> &lt;LI&gt;Specifying<br> Security Roles<br> &lt;LI&gt;Mapping<br> Security Roles to GlassFish Groups<br> &lt;LI&gt;Checking<br> Caller Identity Programmatically (remind from basic book)<br> &lt;OL TYPE=a&gt;<br> &lt;LI&gt;getRemoteUser<br> &lt;LI&gt;isUserInRole<br> &lt;LI&gt;getUserPrincipal<br> &lt;/OL&gt;<br> &lt;LI&gt;Declaring<br> and Linking Role References<br> &lt;OL TYPE=a&gt;<br> &lt;LI&gt;Declaring<br> Roles<br> &lt;/OL&gt;<br> &lt;/OL&gt;<br> &lt;LI&gt;Declaring<br> Security Requirements Using Depl. Descr. Elements instead of<br> Annotations<br> &lt;OL&gt;<br> &lt;LI&gt; Why<br> would you do this?<br> &lt;LI&gt; Security<br> elements in web.xml </p> <p> &lt;OL TYPE=a&gt;<br> &lt;LI&gt;security-role-ref<br> &lt;LI&gt;security-role<br> &lt;LI&gt;security-constraint<br> &lt;UL&gt;<br> &lt;LI&gt;web-resource-collection<br> &lt;LI&gt;auth-constraint<br> &lt;LI&gt;user-data-constraint<br> &lt;UL&gt;<br> &lt;LI&gt;transport-guarantee<br> &lt;/UL&gt;<br> &lt;LI&gt;Specifying<br> Security Constraints or Different Resources<br> &lt;/UL&gt;<br> &lt;LI&gt;login-config<br> &lt;UL&gt;<br> &lt;LI&gt;auth-method<br> (ref to next section for descriptions)<br> &lt;LI&gt; ...<br> &lt;/UL&gt;</p> <p> &lt;LI&gt; Security<br> elements in sun-web.xml</p> <p> &lt;/OL&gt;<br> &lt;/OL&gt;<br> &lt;/OL&gt;</p> <p>&lt;H2&gt;Chapter: Examples Demonstrating<br> Advanced Concepts&lt;/H2&gt;</p> <p>&lt;OL&gt;<br> &lt;LI&gt;Some of the examples from Volume<br> 1, just with deployment descriptors instead of annotations?<br> &lt;LI&gt;Securing a RESTful web service<br> &lt;LI&gt;Proposed: End-to-End Security<br> Application<br> &lt;OL&gt;<br> &lt;LI&gt; Java SE Security<br> (<a href="http://java.sun.com/javase/6/docs/technotes/guides/security/">http://java.sun.com/javase/6/docs/technotes/guides/security/</a>)<br> &lt;OL TYPE=a&gt;<br> &lt;LI&gt;policy permissions<br> &lt;LI&gt;JCA<br> &lt;LI&gt;security managers<br> &lt;/OL&gt;<br> &lt;LI&gt; Developer Security (from GF Dev<br> Guide)<br> &lt;LI&gt; Transport Security </p> <p> &lt;LI&gt; Java EE Security (annotations<br> and deployment descriptor)<br> &lt;LI&gt; GlassFish Security (from GF<br> Admin Guide)<br> &lt;LI&gt; Any Other Layers/Pieces???<br> &lt;/OL&gt;<br> &lt;/OL&gt;</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:49.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

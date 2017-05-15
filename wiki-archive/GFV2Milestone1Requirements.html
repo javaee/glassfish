@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GFV2Milestone1Requirements</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GFV2Milestone1Requirements-Milestone1"></a>Milestone 1</h2> 
+     <ul> 
+      <li>List of all features in GF v2 Milestone 1</li> 
+      <li>GF v2 M1 exposes EE features (clustering, distributed administration, etc) 
+       <ul> 
+        <li>This list includes only the incremental EE features that are not in 8.2 EE</li> 
+       </ul> </li> 
+     </ul> <p>See <b><a href="NewAndNoteworthyForGFV2M1.html" title="NewAndNoteworthyForGFV2M1">Release Highlights</a></b> for a user-friendly overview of the release.</p> <h4><a name="GFV2Milestone1Requirements-ACTION%3APleaseaddtothislist."></a>ACTION: Please add to this list. </h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <td class="confluenceTd"> *Area* </td> 
+         <td class="confluenceTd"> *Deliverables* </td> 
+         <td class="confluenceTd"> *Owner* </td> 
+         <td class="confluenceTd"> *Status* </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Overall </td> 
+         <td class="confluenceTd"> All Functional specs and one pagers written. Seek Community Feedback </td> 
+         <td class="confluenceTd"> Dhiru </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Security </td> 
+         <td class="confluenceTd"> Integrate message level security with jaxws-rearch; JDBC realm; Realm assign-groups </td> 
+         <td class="confluenceTd"> Shing Wai Chan </td> 
+         <td class="confluenceTd"> Done. See blogs: <a href="http:--blogs.oracle.com-roller-page-swchan?entry=jdbcrealm_in_glassfish">JDBCRealm </a>, <a href="http://blogs.oracle.com/roller/page/swchan?entry=assign_groups">assign-groups </a>. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Web container </td> 
+         <td class="confluenceTd"> SSL over NIO </td> 
+         <td class="confluenceTd"> Jeanfrancois </td> 
+         <td class="confluenceTd"> The feature is ready and heavily tested, but not yet enabled. Will be after M1 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Web container </td> 
+         <td class="confluenceTd"> Make it possible for Jasper to leverage JDT compiler from Eclipse </td> 
+         <td class="confluenceTd"> Jan </td> 
+         <td class="confluenceTd"> Done. See <a href="http:--blogs.oracle.com-roller-page-jluehe?entry=how_to_enable_eclipse_s">blog </a> and <a href="https://blogs.oracle.com/theaquarium/entry/using_eclipse_s_jdt_compiler">blog@TA </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Web container </td> 
+         <td class="confluenceTd"> Add support for JSR199 from Mustang to speed up JSP compilations </td> 
+         <td class="confluenceTd"> Kin-Man </td> 
+         <td class="confluenceTd"> Done. See <a href="https://blogs.oracle.com/theaquarium/entry/even_faster_jsp_compilation_with">blog@TA </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Deployment </td> 
+         <td class="confluenceTd"> Deployment support for package/deploy JavaEE service units as part of composite application </td> 
+         <td class="confluenceTd"> Hong Zhang </td> 
+         <td class="confluenceTd"> delayed (dependency on admin changes which won't be available for M1) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Synchronization </td> 
+         <td class="confluenceTd"> Performance improvements (~40%) in synchronization. Refer to RFE 6438864 for more details. </td> 
+         <td class="confluenceTd"> Nazrul,Satish Viswanatham </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Web Services </td> 
+         <td class="confluenceTd"> Integration of jaxws-rearch and corresponding jaxb into app server; Changes to 109 implementation to work with this new, highly performant jaxws-rearch. </td> 
+         <td class="confluenceTd"> Vijay Ramachandran </td> 
+         <td class="confluenceTd"> Implementation almost done; bug fixing under progress; 100% CTS pass may not happen before M1; Between M1 and M2, "old jaxws" and "jaxws-rearch" will be available and developer can switch between the two with a switch in domain.xml </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Admin GUI </td> 
+         <td class="confluenceTd"> EE: - Load Balancer support during Cluster creation; - Load Balancer creation and configuration; - Add new attribute 'Weight' for standalone and clustered instance; - Generate Diagnostic Report includes cluster,instance,node agent option; JSF version of Admin GUI: - Mash head (top frame) - PE tree basic layout; - right frame tab navigation; - Complete conversion of Application Server node; </td> 
+         <td class="confluenceTd"> Anissa </td> 
+         <td class="confluenceTd"> EE features listed : DONE JSF version is in progress. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Transactions </td> 
+         <td class="confluenceTd"> Forward porting of 8.2 bug fixes </td> 
+         <td class="confluenceTd"> Sankara Rao Bhogi </td> 
+         <td class="confluenceTd"> On going </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Self Management </td> 
+         <td class="confluenceTd"> Templates for Self Management Rules </td> 
+         <td class="confluenceTd"> Sankara Rao Bhogi </td> 
+         <td class="confluenceTd"> On going </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ORB </td> 
+         <td class="confluenceTd"> grizzlyV2 </td> 
+         <td class="confluenceTd"> Harsha Godugu </td> 
+         <td class="confluenceTd"> Ongoing </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> HTTP Load Balancer </td> 
+         <td class="confluenceTd"> Core Enhancement - Support for weighted round robin load balancing - User Defined load balancing policy Administration Enhancement - Push of LB configuration from DAS to LB - LB monitoring data using CLI and GUI </td> 
+         <td class="confluenceTd"> Pankaj Jairath, Satish Viswanatham </td> 
+         <td class="confluenceTd">Completed </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 09, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : M2GRun</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="M2GRun-InvokingtheMigrationTool"></a>Invoking the Migration Tool</h1> <p>You can run the Migration Tool in GUI or command-line mode.</p> <h4><a name="M2GRun-InvokingtheMigrationToolonSolarisandLinux"></a>Invoking the Migration Tool on Solaris and Linux</h2> <p>To start the Migration Tool on Solaris and Linux:</p> 
+     <ul> 
+      <li>From the shell prompt, issue the following command to start the Migration Tool in GUI mode:</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">% &lt;INSTALL_DIR&gt;/bin/asmigrate.sh -u</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>To start the tool in command-line mode:</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">% &lt;INSTALL_DIR&gt;/bin/asmigrate.sh -c -S sourceserver -t targetdirectory -T targetserver &lt;OPERAND&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p> or</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">% &lt;INSTALL_DIR&gt;/bin/asmigrate.sh -c -S sourceserver -s sourcedirectory-t targetdirectory -T targetserver</pre> 
+       </div> 
+      </div>
+     </div> <p> The Migration Tool Command-Line Options section provides additional information about parameters that you must use when you are using Migration Tool from the command-line.</p> <h4><a name="M2GRun-InvokingtheMigrationToolonWindows"></a>Invoking the Migration Tool on Windows</h2> <p>To start the Migration Tool on Windows:<br> Open a DOS command window.<br> Change to the directory where you installed the application server. Then change to the <tt>bin</tt> directory.<br> To start the Migration Tool in GUI mode, issue the following command at the DOS prompt:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">C:&gt; asmigrate.cmd -u</pre> 
+       </div> 
+      </div>
+     </div> <p> Or, to start the Migration Tool in command-line mode:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">C:&gt; asmigrate.cmd -S sourceserver -t targetdirectory -T targetserver &lt;OPERAND&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p> or</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">C:&gt; asmigrate.cmd -c -S sourceserver -s sourcedirectory-t targetdirectory -T targetserver</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="M2GRun-MigrationToolCommandLineOptions"></a>Migration Tool Command-Line Options</h2> <p>The complete <tt>asmigrate</tt> command syntax is as follows:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">asmigrate required_parameter [optional_parameters] [operand]</pre> 
+       </div> 
+      </div>
+     </div> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">asmigrate 
+  [-h | --help ] 
+  [-v | --version ] 
+  ( (-c | --commandline) | (-u | --ui) )
+  [-q | --quiet ] 
+  [-d | --debug ]
+  [-s | --sourcedirectory source_directory] 
+  [-S | --sourceserversource_application_server] 
+  [-t | --targetdirectory target_directory] 
+  [-T | --targetserver target_application_server] 
+  [-n | --scan-native-apis-only ] 
+  [-p | --scan-packages package_list]
+  [-j | --java2db create-tables=true, drop-tables=true, db-vendor-name=dbVendorName] 
+  [-m | --migrate-cmp comment-pk-modifiers=true, overwriteconflicting-accessors=true] 
+  [-f | --file-filter all-files=true, html-files=true, java-files=true, jsp-files=true, xml-files=true, archive-files=true] 
+  [-a | --append-logs ]
+  [operands]</pre> 
+       </div> 
+      </div>
+     </div> <p>where: <br> <tt>required_parameter</tt> must be one of the following:</p> 
+     <ul> 
+      <li><em><tt><del>u|</del>-ui</tt></em><br> invokes the Migration Tool in graphical user interface (GUI) mode. No additional parameters may be specified.</li> 
+      <li><em><tt><del>c|</del>-commandline</tt></em><br> invokes the Migration Tool in command-line mode. Requires the following additional parameters:</li> 
+      <li><em><tt><del>S|</del>-sourceserver</tt></em><br> identifes the source application server of the applications to be migrated. Possible servers include:</li> 
+      <li><tt>wl51</tt>: WebLogic Application Server 5.1</li> 
+      <li><tt>wl60</tt>: WebLogic Application Server 6.0</li> 
+      <li><tt>wl61</tt>: WebLogic Application Server 6.1</li> 
+      <li>wl81: Weblogic Application Server 8.1</li> 
+      <li><tt>as65</tt>: Sun ONE Application Server 6.5</li> 
+      <li><tt>as70</tt>: Sun ONE Application Server 7.0</li> 
+      <li><tt>ws40</tt>: WebSphere Application Server 4.0</li> 
+      <li>ws50: Websphere Application Server 5.1</li> 
+      <li><tt>ri13</tt>: JavaTMÖ 2 Platform Enterprise Edition 1.3</li> 
+      <li><tt>ri14</tt>: JavaTMÖ 2 Platform Enterprise Edition 1.4</li> 
+      <li><tt>jb30</tt>: JBoss Application Server 3.0</li> 
+      <li><tt>tc41</tt>: Tomcat Application Server 4.1</li> 
+      <li><em><tt><del>t|</del>-targetdirectory</tt></em><br> identifies the target or output directory where the migrated application should be placed.</li> 
+      <li><em><tt><del>T|</del>-targetserver</tt></em><br> identifies the target application server to which the application is to be migrated. Required target server is <tt><b>TARGETSERVER_DESIGNATOR</b></tt>, Sun Java System Application Server.<br> ((optional_parameters)) can be one or more of the following:</li> 
+      <li><em><tt><del>h|</del>-help</tt></em><br> displays the arguments for launching the Migration Tool.</li> 
+      <li><em><tt><del>v|</del>-version</tt></em><br> displays the version of the Migration Tool.</li> 
+      <li><em><tt><del>q|</del>-quiet</tt></em><br> launches the Migration Tool in quiet mode.</li> 
+      <li><em><tt><del>d|</del>-debug</tt></em><br> launches the Migration Tool in debug mode.</li> 
+      <li><em><tt><del>s|</del>-sourcedirectory</tt></em><br> identifes the directory where the source code to migrate or scan is present.</li> 
+      <li><em><tt><del>n|</del>-scan-native-apis-only</tt></em><br> scans the source code only for the presence of application server-specific proprietary APIs.</li> 
+      <li><em><tt><del>p|</del>-scan-packages</tt></em><br> comma-separated list of Java packages to scan.</li> 
+      <li><em><tt><del>j|</del>-java2db</tt></em><br> bypasses the creation of the <tt>sun-cmp-mapping.xml</tt> file. Instead, introduces the option argument into the <tt>sun-ejb-jar.xml</tt> file. Optional arguments are:</li> 
+      <li><tt>create-tables</tt>: if set to true (default), creates tables at deployment time. If set to false tables are not created.</li> 
+      <li><tt>drop-tables</tt>: if set to true (default), tables are dropped at undeployment time. If set to false tables are not dropped.</li> 
+      <li><tt>db-vendor-name</tt>: name of the database vendor for the application to be migrated. Supported vendor names include: Oracle, Sybase, DB2, Generic SQL92, JavaDB, and MSSQL.</li> 
+     </ul> 
+     <ul> 
+      <li><em><tt><del>m|</del>-migrate-cmp</tt></em><br> migrates 1.1-compliant CMPs, if any, to 2.0. Optional arguments are:</li> 
+      <li><tt>overwrite-conflicting-accessors</tt>: if set to true (default), conflicting accessors are overwritten. If set to false, conflicting accessors are not overwritten.</li> 
+      <li><tt>comment-pk-modifiers</tt>: if set to true (default), setters of primary key are commented. If set to false, setters of primary key are not commented.</li> 
+     </ul> 
+     <ul> 
+      <li><em><tt><del>f|</del>-file-filter</tt></em><br> &gt;selects the type of files to migrate. Optional arguments are:</li> 
+      <li><tt>all-files</tt>: if specified and set to true (default), migrates all types of files.</li> 
+      <li><tt>html-files</tt>: if specified and set to true (default), migrates HTML files.</li> 
+      <li><tt>java-files</tt>: if specified and set to true (default), migrates Java files.</li> 
+      <li><tt>jsp-files</tt>: if specified and set to true (default), migrates JSP type files.</li> 
+      <li><tt>archive-files</tt>: if specified and set to true (default), migrates JAR/EAR/WAR/RAR file types.</li> 
+      <li><em><tt><del>a|</del>-append-logs</tt></em><br> if specified, appends the logging to the existing or previous logs without overwriting them. If not specified, previous logs are overwritten.</li> 
+      <li><em><tt>operand</tt></em><br> identifes the archive file (JAR/EAR/WAR/RAR) to be migrated.</li> 
+     </ul> <h4><a name="M2GRun-CommandLineExamples"></a>Command-Line Examples</h3> <p>The command that follows migrates a Java EE archive (an EAR file). Note that a source directory was not specified and the pathname to the archive was the operand.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">asmigrate.sh -c --sourceserver as65
+--targetdirectory /d4/ias6.5/out
+--targetserver __TARGETSERVER_DESIGNATOR_CMD__ /d2/apps/HelloWorld.ear</pre> 
+       </div> 
+      </div>
+     </div> <p>The command that follows migrates the source code of a Java EE application. Note that the source directory was specified but an operand filename was not.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">asmigrate.cmd -c --sourcedirectory
+/d2/apps/helloWorld/src
+--sourceserver as65 --targetdirectory /d4/ias6.5/out --targetserver
+__TARGETSERVER_DESIGNATOR_CMD__</pre> 
+       </div> 
+      </div>
+     </div> <p><a href="M2GPreRun.html" title="M2GPreRun">Previous</a> <a href="M2GMigrateApp.html" title="M2GMigrateApp">Next</a> </p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

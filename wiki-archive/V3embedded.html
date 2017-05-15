@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : V3embedded</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="V3embedded-GlassFishV3Embedded%3ARequirements"></a>GlassFish V3 Embedded: Requirements</h1> <p>GlassFish V3 will be the next major release of the GlassFish application server. The focus of the release is modularization, enablement of non Java EE containers, and embed-ability. This page is exploring the embedded requirements for V3, that will make applications more easily testable, and enable as a component in the grid infrastructure (like Caroline).</p> <h4><a name="V3embedded-Problemstatement"></a>Problem statement</h2> <p>GlassFish V3 is a pure Java application, written in a modular and extensible way (HK2 and OSGI). It will become important to make it embeddable in a bigger Java Application, like an IDE (NetBeans or Eclipse), or like a software appliance. This will impose some requirements on how V3 is written so that it can run as a standalone Java Application, or within the context of another application.</p> <h4><a name="V3embedded-Generalrequirements"></a>General requirements</h3> 
+     <ul> 
+      <li>A user-written Java program needs to be be able to start GFv3 in the same JVM.</li> 
+      <li>Multiple GFv3 must be able to co-exist in the same JVM.</li> 
+      <li>V3 needs to be able to run without requiring certain VM launch options. If this forces GFv3 to disable some features, that is OK.</li> 
+      <li>Need Java APIs to start/stop the V3 runtime from within a Java Application</li> 
+      <li>Need Java APIs to change critical params from existing config domain.xml like: portNumber.</li> 
+      <li>A V3 embedded system should rely on the minimum set of system properties (ideally 0), since system properties are like global variables.</li> 
+      <li>Need well defined set of system properties needed (if the target of 0 cannot be achieve) by a V3 runtime</li> 
+      <li>Need a way to define a V3 specific logger so that the V3 runtime log messages can be separated from the embedding application</li> 
+      <li>The Start/Run/Stop cycles of a V3 runtimes should be able to be performed multiple times without side effects (memory leaks, resource/jar locking,...)</li> 
+      <li>The V3 runtime Security Manager should be aware of possible other security manager from the embedding application, and adapt itself to either reuse a security manager, modify it.</li> 
+      <li>The V3 runtime should list/know all the JVM global resources it needs (security manager, xml parsing service, logging service, etc: 
+       <ul> 
+        <li>java.util.logging.config.file</li> 
+        <li>security manager</li> 
+        <li>...</li> 
+       </ul> </li> 
+      <li>Need for a GlassFish V3 distro constructor that would create the minimal set of GF V3 modules for running a specific web application. For example, if the Hudson web application needs to bundles a minimal runtime as an execution environment, the distro constructor should allows to pick and choose what is needed (hk2 core, servlet container, no JSP, no JSF, no AMX, etc).</li> 
+      <li>Need for an execution environment that does not requires the 'domain' concept on disk. It should be possible to create a domain only in memory (based on a template) that can be used as an execution environment of a single web application.</li> 
+     </ul> <h4><a name="V3embedded-NetBeans%3A"></a>NetBeans:</h3> <p>Some initial testing has been done with running a V3 runtime inside the NetBeans 6.1 beta IDE. </p> <p>Here is the snippet of code:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">public void run() {
+        ClassLoader origClassLoader = Thread.currentThread().getContextClassLoader();
+        ExtendedClassLoader loader = null;
+        //    origClassLoader = (ClassLoader) Lookup.getDefault().lookup (ClassLoader.class);
+        fireStartProgressEvent(StateType.RUNNING, createProgressMessage("MSG_START_SERVER_IN_PROGRESS"));
+            String hk2Home = ip.getProperty(Hk2PluginProperties.PROPERTY_HK2_HOME);
+       try {
+         File logging = new File(hk2Home + "/domains/domain1/config/logging.properties");
+        System.setProperty("java.util.logging.config.file", logging.getAbsolutePath());
+
+            loader = new ExtendedClassLoader(Hk2Embedded.class.getClassLoader());
+ 
+            String jarLocation = hk2Home + "/" + GFV3_MODULES_DIR_NAME + "/" + GFV3_SNAPSHOT_JAR_NAME;
+            File fi = new File(jarLocation);
+            System.out.println("fi="+fi+fi.exists());
+            loader.addURL(fi);
+            //    System.setProperty("hk2.port", "8888");
+            if (loader != null) {
+
+                Thread.currentThread().setContextClassLoader(loader);
+                try {
+
+                    Class realhk2MainClass = loader.loadClass("com.sun.enterprise.glassfish.bootstrap.ASMain");
+                    String arg[]={};
+                    Method startMethod = realhk2MainClass.getMethod("main", new Class[]{arg.getClass()});//NOI18N
+                    startMethod.invoke(realhk2MainClass, new Object[]{arg});
+
+                    fireStartProgressEvent(StateType.COMPLETED, createProgressMessage("MSG_SERVER_STARTED")); // NOI18N
+
+                    try {
+                        Thread.sleep(3000);
+                    } catch (InterruptedException ex) {
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    fireStartProgressEvent(StateType.FAILED, createProgressMessage("MSG_START_SERVER_FAILED"));
+
+                }
+
+
+            }
+        } catch (Throwable ex) {
+            //Suppressing exception while trying to obtain admin host port value
+            fireStartProgressEvent(StateType.FAILED, createProgressMessage("MSG_START_SERVER_FAILED"));
+            ex.printStackTrace();
+        } finally {
+            Thread.currentThread().setContextClassLoader(origClassLoader);
+
+        }
+    }</pre> 
+       </div> 
+      </div>
+     </div> <p>Currently, the latest GF V3 securityManager managenment handles correctly the existence of the Nb security Manager. Still some samll issues regarding some policies enforced by NetBeans as warning regarding loading resources from a root dir in an archive:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">INFO [org.netbeans.ProxyClassLoader]
+java.lang.IllegalStateException: You are trying to access file: skip-annotation-class-list from the default package. Please see http://www.netbeans.org/download/dev/javadoc/org-openide-modules/org/openide/modules/doc-files/classpath.html#default_package
+	at org.netbeans.ProxyClassLoader.printDefaultPackageWarning(ProxyClassLoader.java:524)
+	at org.netbeans.ProxyClassLoader.getResource(ProxyClassLoader.java:297)
+	at java.lang.ClassLoader.getResource(ClassLoader.java:1027)
+	at java.lang.ClassLoader.getResource(ClassLoader.java:1027)
+	at java.lang.ClassLoader.getResource(ClassLoader.java:1027)
+	at java.lang.ClassLoader.getResource(ClassLoader.java:1027)
+	at com.sun.enterprise.module.impl.ModuleClassLoader.getResource(ModuleClassLoader.java:98)</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="V3embedded-EclipseOSGI"></a>Eclipse OSGI</h3> <p>The lastest current GlassFish V3 code supports both HK2 mode and OSGI mode. The officially supported OSGI runtime is Felix, but it is not possible to run the entire GlassFish V3 embedded in an Eclipse 3.3 and 3.4 IDE, using a bundle wrapper that loads the critical GlassFish bundles dynamically.<br> More work needs to happen on the V3 side regarding JARs not available as OSGI modules (jmx-remote, tiger-types, and xml support jar (available in JDK 1.6 only and not 1.5).</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 09, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFishV3ErrorMessageReference</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GlassFishV3ErrorMessageReference-GlassFishv3ErrorMessageReference"></a>GlassFish v3 Error Message Reference</h1> <p>The GlassFish v3 Error Message Reference describes error messages that you might encounter when using GlassFish v3 (Sun GlassFish Enterprise Server v3).</p> <p>Error messages provide information about events that occur during GlassFish v3 operation, such as configuration errors, security failures, or server malfunction. These messages often include diagnostic and troubleshooting information.</p> <p>The GlassFish v3 Error Message Reference is also available in <a href="http://docs.sun.com/doc/820-7700">HTML</a> and <a href="http://dlc.sun.com/pdf/820-7700/820-7700.pdf">PDF</a> formats. This wiki version is intended to be an interactive, editable version of the guide. It is also intended to be an <em>expanded</em> version. You and other members of the GlassFish community are asked to add information and make this resource as complete and useful as possible. More about that in <a href="#GlassFishV3ErrorMessageReference-HowToContribute">How to Contribute</a>. </p> <p>Error messages can also be viewed in the <tt>server.log</tt> file and in the Administration Console Log Viewer. For more information, see<br> <a href="http://docs.sun.com/doc/820-7692/ghmdy?a=view">Viewing Log Information</a> in the ''[Sun GlassFish Enterprise Server v3 Administration <br> Guide|http://docs.sun.com/doc/820-7692]<em>. For additional troubleshooting information, see the</em>[Sun GlassFish Enterprise Server v3 Troubleshooting <br> Guide|http://docs.sun.com/doc/820-7699]''.</p> <p>For complete GlassFish v3 documentation, see the <a href="http://docs.sun.com/coll/1343.9">GlassFish v3 documentation collection</a>.</p> <h4><a name="GlassFishV3ErrorMessageReference-HowThisGuideisOrganized"></a>How This Guide is Organized</h2> <p>Error messages are listed in alphabetic and numeric order by message ID. The text is as it appears in the actual error message. Each message ID includes a prefix that represents a subsystem within the software. Error messages for the following prefixes are provided:</p> 
+     <ul> 
+      <li><a href="GlassFishV3ErrorMessageReferenceACC.html" title="GlassFishV3ErrorMessageReferenceACC">ACC</a></li> 
+      <li><a href="GlassFishV3ErrorMessageReferenceACDEPL.html" title="GlassFishV3ErrorMessageReferenceACDEPL">ACDEPL</a></li> 
+      <li><a href="GlassFishV3ErrorMessageReferenceACT.html" title="GlassFishV3ErrorMessageReferenceACT">ACT</a></li> 
+      <li><a href="GlassFishV3ErrorMessageReferenceADM.html" title="GlassFishV3ErrorMessageReferenceADM">ADM</a></li> 
+      <li><a href="GlassFishV3ErrorMessageReferenceCMNUTL.html" title="GlassFishV3ErrorMessageReferenceCMNUTL">CMNUTL</a></li> 
+      <li><a href="GlassFishV3ErrorMessageReferenceCORE.html" title="GlassFishV3ErrorMessageReferenceCORE">CORE</a></li> 
+      <li><a href="GlassFishV3ErrorMessageReferenceDIAG.html" title="GlassFishV3ErrorMessageReferenceDIAG">DIAG</a></li> 
+      <li><a href="GlassFishV3ErrorMessageReferenceDPL.html" title="GlassFishV3ErrorMessageReferenceDPL">DPL</a></li> 
+      <li><a href="GlassFishV3ErrorMessageReferenceDTX.html" title="GlassFishV3ErrorMessageReferenceDTX">DTX</a></li> 
+      <li><a href="GlassFishV3ErrorMessageReferenceEJB.html" title="GlassFishV3ErrorMessageReferenceEJB">EJB</a></li> 
+      <li><a href="GlassFishV3ErrorMessageReferenceIOP.html" title="GlassFishV3ErrorMessageReferenceIOP">IOP</a></li> 
+      <li><a href="GlassFishV3ErrorMessageReferenceJBISE.html" title="GlassFishV3ErrorMessageReferenceJBISE">JBISE</a></li> 
+      <li><a href="GlassFishV3ErrorMessageReferenceJDO.html" title="GlassFishV3ErrorMessageReferenceJDO">JDO</a></li> 
+      <li><a href="GlassFishV3ErrorMessageReferenceJML.html" title="GlassFishV3ErrorMessageReferenceJML">JML</a></li> 
+      <li><a href="GlassFishV3ErrorMessageReferenceJMS.html" title="GlassFishV3ErrorMessageReferenceJMS">JMS</a></li> 
+      <li><a href="GlassFishV3ErrorMessageReferenceJTS.html" title="GlassFishV3ErrorMessageReferenceJTS">JTS</a></li> 
+      <li><a href="GlassFishV3ErrorMessageReferenceLCM.html" title="GlassFishV3ErrorMessageReferenceLCM">LCM</a></li> 
+      <li><a href="GlassFishV3ErrorMessageReferenceLDR.html" title="GlassFishV3ErrorMessageReferenceLDR">LDR</a></li> 
+      <li><a href="GlassFishV3ErrorMessageReferenceMDB.html" title="GlassFishV3ErrorMessageReferenceMDB">MDB</a></li> 
+      <li><a href="GlassFishV3ErrorMessageReferenceMNTG.html" title="GlassFishV3ErrorMessageReferenceMNTG">MNTG</a></li> 
+      <li><a href="GlassFishV3ErrorMessageReferenceNAM.html" title="GlassFishV3ErrorMessageReferenceNAM">NAM</a></li> 
+      <li><a href="GlassFishV3ErrorMessageReferenceRAR.html" title="GlassFishV3ErrorMessageReferenceRAR">RAR</a></li> 
+      <li><a href="GlassFishV3ErrorMessageReferenceSEC.html" title="GlassFishV3ErrorMessageReferenceSEC">SEC</a></li> 
+      <li><a href="GlassFishV3ErrorMessageReferenceSERVER.html" title="GlassFishV3ErrorMessageReferenceSERVER">SERVER</a></li> 
+      <li><a href="GlassFishV3ErrorMessageReferenceSGMT.html" title="GlassFishV3ErrorMessageReferenceSGMT">SGMT</a></li> 
+      <li><a href="GlassFishV3ErrorMessageReferenceSGTM.html" title="GlassFishV3ErrorMessageReferenceSGTM">SGTM</a></li> 
+      <li><a href="GlassFishV3ErrorMessageReferenceSMGT.html" title="GlassFishV3ErrorMessageReferenceSMGT">SMGT</a></li> 
+      <li><a href="GlassFishV3ErrorMessageReferenceTLS.html" title="GlassFishV3ErrorMessageReferenceTLS">TLS</a></li> 
+      <li><a href="GlassFishV3ErrorMessageReferenceUTIL.html" title="GlassFishV3ErrorMessageReferenceUTIL">UTIL</a></li> 
+      <li><a href="GlassFishV3ErrorMessageReferenceWEB.html" title="GlassFishV3ErrorMessageReferenceWEB">WEB</a></li> 
+      <li><a href="GlassFishV3ErrorMessageReferenceWS.html" title="GlassFishV3ErrorMessageReferenceWS">WS</a></li> 
+     </ul> <h4><a name="GlassFishV3ErrorMessageReference-HowtoContribute"></a>How to Contribute </h2> <p>Error messages in this guide include <b>Cause</b> and <b>Solution</b> sections, which describe possible causes of a problem and possible solutions. </p> <p>You'll also see many entries with <b>TBD</b>, which indicates that the Cause and Solution information for a particular error message has not yet been provided in the GlassFish code, and thus is not available in this guide (<em>this guide is derived from what's in the code</em>). If you have that information, please add it to the wiki page! <em>The fix should also be made (information added) in the code</em>.</p> <p>Please also enhance this guide in other ways, such as adding error messages that aren't listed, adding new wiki pages for prefixes that aren't included, and so on. This is meant to be a dynamic, community-driven resource, revised and updated by all for the greater good. For more information about editing these pages and adding content, see How do I edit a wiki page? Contributions are governed by the GlassFish wiki <a href="TermsOfUse.html" title="TermsOfUse">terms of use</a>.</p> <p>Questions about any of this? Contact the documentation team at <span class="error">[docs@glassfish.java.net]</span>. You can also post a comment on the Error Message Reference <a href="ErrorMessageReferenceComments.html" title="ErrorMessageReferenceComments">comments page</a>.</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 02, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

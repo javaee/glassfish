@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : TSG_CommonProblems</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p><a href="TroubleshootingGuide.html" title="TroubleshootingGuide">Main</a> <a href="TSG_Overview.html" title="TSG_Overview">Previous</a> <a href="TSG_HADBProblems.html" title="TSG_HADBProblems">Next</a></p> <h4><a name="TSG_CommonProblems-CommonProblems"></a>Common Problems</h1> <p>This section covers the most common problems you may encounter when using the Application Server.</p> <style type="text/css">/*<![CDATA[*/
+div.rbtoc1278812980149 {margin-left: 1.5em;padding: 0px;}
+div.rbtoc1278812980149 ul {list-style: disc;margin-left: 0px;}
+div.rbtoc1278812980149 li {margin-left: 0px;padding-left: 0px;}
+
+/*]] >*/</style>
+     <div class="rbtoc1278812980149"> 
+      <ul> 
+       <li><a href="#TSG_CommonProblems-CommonProblems">Common Problems</a></li> 
+       <ul> 
+        <li><a href="#TSG_CommonProblems-%7B%7Basadminstartdomain%7D%7DCommandFails"> <tt>asadmin start-domain</tt> Command Fails</a></li> 
+        <ul> 
+         <li><a href="#TSG_CommonProblems-Error%3ACLI143Thereismorethanonedomain...">Error: CLI143 There is more than one domain...</a></li> 
+         <li><a href="#TSG_CommonProblems-Error%3ACouldNotStartDomain">Error: Could Not Start Domain</a></li> 
+        </ul> 
+        <li><a href="#TSG_CommonProblems-AutomaticallyRestartingaDomainorNodeAgentonReboot">Automatically Restarting a Domain or Node Agent on Reboot</a></li> 
+        <ul> 
+         <li><a href="#TSG_CommonProblems-RestartingAutomaticallyonUNIXPlatforms">Restarting Automatically on UNIX Platforms</a></li> 
+         <li><a href="#TSG_CommonProblems-RestartingAutomaticallyontheMicrosoftWindowsPlatform">Restarting Automatically on the Microsoft Windows Platform</a></li> 
+        </ul> 
+        <li><a href="#TSG_CommonProblems-CannotFindLogFiles">Cannot Find Log Files</a></li> 
+        <li><a href="#TSG_CommonProblems-TwoServerInstancesBindtoSamePortonWindows">Two Server Instances Bind to Same Port on Windows</a></li> 
+        <li><a href="#TSG_CommonProblems-Error%3ASystemcannotfindthepathspecified">Error: System cannot find the path specified</a></li> 
+        <li><a href="#TSG_CommonProblems-CannotProduceaJVMThreadDumpAfterServerCrash">Cannot Produce a JVM Thread Dump After Server Crash</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="TSG_CommonProblems-%7B%7Basadminstartdomain%7D%7DCommandFails"></a><tt>asadmin start-domain</tt> Command Fails</h2> <p>The command asadmin start-domain fails with one of the following errors:</p> 
+     <ul> 
+      <li>Error: CLI143 There is more than one domain...</li> 
+      <li>Error: Could Not Start Domain</li> 
+     </ul> <h4><a name="TSG_CommonProblems-Error%3ACLI143Thereismorethanonedomain..."></a>Error: CLI143 There is more than one domain...</h3> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li>Description*<br> \When issued with no arguments, the command <tt>asadmin start-domain</tt> fails with the error:\\\\\~UWC_TOKEN_START~1278691906858~UWC_TOKEN_END<br> \This error occurs when there is more than one domain in the domains directory, none of them is named <tt>domain1</tt>, and no domain is specified with the <tt>start-domain</tt> command.</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li>Solution*<br> \Specify the domain when issuing the <tt>start-domain</tt> command:\ 
+         <div class="code panel" style="border-width: 1px;">
+          <div class="codeContent panelContent"> 
+           <div id="root"> 
+            <pre class="theme: Confluence; brush: java; gutter: false">asadmin start-domain domain1</pre> 
+           </div> 
+          </div>
+         </div></li> 
+       </ul> </li> 
+     </ul> <h4><a name="TSG_CommonProblems-Error%3ACouldNotStartDomain"></a>Error: Could Not Start Domain</h3> 
+     <ul> 
+      <li><b>Description</b><br> \This message comes from Application Server 8. The full message looks like either:\\\\\~UWC_TOKEN_START~1278691906860~UWC_TOKEN_END\\\\\_or_\\\\\~UWC_TOKEN_START~1278691906861~UWC_TOKEN_END<br> \This error occurs when Application Server 8 is installed on the same system, and its <tt>asadmin</tt> command (at <tt>/usr/sbin</tt>) is found on the <tt>PATH</tt> before the <tt>asadmin</tt> command for Application Server 8 at <tt>install_dir/bin</tt>. The situation is especially likely to occur on Solaris/Linux systems when <tt>.</tt> is not specified as part of the <tt>PATH</tt> variable. Without <tt>.</tt> in the <tt>PATH</tt>, the <tt>asadmin</tt> command in <tt>/usr/sbin</tt> is found first, even when the current directory is <tt>install_dir/bin</tt>.</li> 
+     </ul> 
+     <ul> 
+      <li><b>Solution</b><br> \Make sure <tt>install_dir/bin</tt> is in the <tt>PATH</tt> ahead of <tt>/usr/sbin</tt>, or that <tt>.</tt> is in the <tt>PATH</tt> ahead of <tt>/usr/sbin</tt> if you access <tt>asadmin</tt> by changing directories to <tt>install_dir/bin</tt>. Alternatively, if you do change to <tt>install_dir/bin</tt> to run <tt>asadmin</tt>, be sure to include <tt>./</tt> in the command name; for example:\ 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">cd install_dir/bin
+./asadmin</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ul> 
+     <hr> <p><sup><a href="./TSG_CommonProblems.html">Top of Page</a></sup></p> <h4><a name="TSG_CommonProblems-AutomaticallyRestartingaDomainorNodeAgentonReboot"></a>Automatically Restarting a Domain or Node Agent on Reboot</h2> <p>If your domain or node agent is stopped unexpectedly (for example, if you need to restart your machine), you can configure your system to automatically restart the domain or node agent on reboot.</p> 
+     <ul> 
+      <li>Restarting Automatically on UNIX Platforms</li> 
+      <li>Restarting Automatically on the Microsoft Windows Platform</li> 
+     </ul> <h4><a name="TSG_CommonProblems-RestartingAutomaticallyonUNIXPlatforms"></a>Restarting Automatically on UNIX Platforms</h3> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li>Restarting a Domain*<br> \To restart your domain on a UNIX platform, add a line containing the appropriate <tt>asadmin start-domain</tt> command to your <tt>/etc/inittab</tt> file. If you use <tt>/etc/rc.local</tt>, or your system's equivalent, place a the desired <tt>asadmin</tt> command in <tt>/etc/rc.local</tt>.<br> \ For example, to restart <tt>domain1</tt> for an Admin Server installed in the <tt>/opt/SUNWappserver</tt> directory, using a password file called <tt>password.txt</tt>, add the following line to <tt>/etc/inittab</tt> or <tt>/etc/rc.local</tt>:\\\\\~UWC_TOKEN_START~1278691906863~UWC_TOKEN_END<br> \Be sure to put the text on one line. The first three letters are a unique designator for the process and can be altered.</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li><b>Restarting a Node Agent</b><br> \To restart a node agent, the syntax is similar. For example, to restart <tt>agent1</tt> for an Application Server installed in the <tt>/opt/SUNWappserver</tt> directory using a password file called <tt>password.txt</tt>, add the following line to <tt>/etc/inittab</tt> or{{/etc/rc.local}}:\ 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">das:3:respawn:/opt/SUNWappserver/bin/asadmin start-node-agent --user admin 
+--passwordfile /opt/SUNWappserver/password.txt agent1</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ul> <h4><a name="TSG_CommonProblems-RestartingAutomaticallyontheMicrosoftWindowsPlatform"></a>Restarting Automatically on the Microsoft Windows Platform</h3> <p>To restart automatically on Microsoft Windows, create a Windows Service. Use the <tt>appservService.exe</tt> and <tt>appserverAgentService.exe</tt> executables shipped with Sun Java System Application Server in conjunction with the Service Control command (<tt>sc.exe</tt>) provided by Microsoft.</p> 
+     <ul> 
+      <li>The <tt>sc.exe</tt> command comes with Windows XP and is either located in the <tt>C:\windows\system32</tt> directory or <tt>C:\winnt\system32</tt> directory.</li> 
+     </ul> 
+     <ul> 
+      <li>As of this writing, the Windows 2000 <tt>sc.exe</tt> is available for download at: <a href="ftp://ftp.microsoft.com/reskit/win2000/sc.zip">ftp://ftp.microsoft.com/reskit/win2000/sc.zip</a>. For more information on using <tt>sc.exe</tt>, see:\\\\\[http://msdn.microsoft.com/library/default.asp?url=/library/en-us/dndllpro/html/msdn_scmslite.asp|http://msdn.microsoft.com/library/default.asp?url=/library/en-us/dndllpro/html/msdn_scmslite.asp].<br> \Use <tt>appservService.exe</tt> and <tt>appservAgentService.exe</tt> as follows:\ 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">C:\winnt\system32\sc.exe create service_name binPath="fully_qualified_path_to_appservService.exe "fully_qualified_path_to_asadmin.bat start_command" "fully_qualified_path_to_asadmin.bat stop_command"" start=auto DisplayName="display_name"</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ul> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li>Starting and Stopping a Domain*<br> \To create a service called <tt>SunJavaSystemAppServer DOMAIN1</tt> that starts and stops <tt>domain1</tt> using password file <tt>C:\Sun\AppServer\password.txt</tt>, run the following command:\ 
+         <div class="code panel" style="border-width: 1px;">
+          <div class="codeContent panelContent"> 
+           <div id="root"> 
+            <pre class="theme: Confluence; brush: java; gutter: false">C:\windows\system32\sc.exe create domain1 binPath="C:\Sun\AppServer\lib\appservService.exe "C:\Sun\AppServer\bin\asadmin.bat start-domain --user admin --passwordfile C:\Sun\AppServer\password.txt domain1" "C:\Sun\AppServer\bin\asadmin.bat stop-domain domain1"" start=auto DisplayName="SunJavaSystemAppServer DOMAIN1"</pre> 
+           </div> 
+          </div>
+         </div></li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li>Starting and Stopping a Node Agent*<br> \To create a service that starts and stops the node agent <tt>agent1</tt>, run the following command:\\\\\~UWC_TOKEN_START~1278691906867~UWC_TOKEN_END<br> *Note:* The <tt>start</tt> and <tt>stop</tt> commands entered as part of the <tt>binPath=</tt> parameter must have the correct syntax. To test, run the commands from the command prompt. If the commands do not properly start or stop the domain or node agent, the service will not work correctly.<br> \Also, do not use a mixture of <tt>asadmin start</tt> and <tt>stop</tt> commands and <tt>service start</tt> and <tt>stop}}s. Mixing the two can cause the server status to be out of sync. For example, the service might not show that the component has started even though the component is not running. To avoid this situation, always use the {{sc.exe</tt> command to start and stop the component when using services.</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li>Security for Automatic Restarts*<br> \Handle the password and master password required when starting in one of the following ways:\</li> 
+        <li>On Microsoft Windows, configure the service to ask the user for the password.<br> \ 
+         <ul> 
+          <li>In the Services Control Panel, double-click the service you created.<br> \</li> 
+          <li>In the Properties window, click the Log On tab.<br> \</li> 
+          <li>Check "Allow service to interact with desktop" to prompt for the required passwords when starting the component.<br> \You have to log in to see the prompts, and entries are not echoed back as you type them. This method is the most secure way to use the services option, but user interaction is required before the service becomes available.<br> \If the "interact with desktop" option is not set, the service stays in a "start-pending" state and appears to hang. Kill the service process to recover from this state.<br> \</li> 
+         </ul> </li> 
+        <li>On Windows or UNIX, create a domain using the <tt>-<del>savemasterpassword=true</del></tt> option and create a password file to store the admin password. When starting the component, use the <tt><del>passwordfile</del></tt> option to point to the file that contains the password. The admin password can also be added by using the <tt>-password</tt> option with the <tt>asadmin start</tt> command. Be aware that this method is less secure because the admin password is stored in clear text.<br> \For example:\ 
+         <ul> 
+          <li>Create a domain with a saved master password. Using this syntax, you are prompted for the admin password and master password:\\\\\~UWC_TOKEN_START~1278691906868~UWC_TOKEN_END<br> \</li> 
+          <li>On Windows, create a service using a password file to populate the <tt>admin</tt> password:\\\\\~UWC_TOKEN_START~1278691906869~UWC_TOKEN_END<br> \The path to the password file <tt>password.txt</tt> is <tt>C:\Sun\AppServer\password.txt</tt>. It contains the password in the following format:\\\\\~UWC_TOKEN_START~1278691906870~UWC_TOKEN_END<br> \For example, for a password <tt>adminadmin</tt>:\\\\\~UWC_TOKEN_START~1278691906871~UWC_TOKEN_END<br> \</li> 
+          <li>On UNIX, use the <tt>--passwordfile</tt> option in the line you add to the <tt>inittab</tt> <a href="file:\\\\\~UWC_TOKEN_START~1278691906872~UWC_TOKEN_END">file:\\\\\~UWC_TOKEN_START~1278691906872~UWC_TOKEN_END</a><br> \The path to the password file <tt>password.txt</tt> is <tt>/opt/SUNWappserver/password.txt</tt>. It contains the password in the following format:\\\\\~UWC_TOKEN_START~1278691906873~UWC_TOKEN_END<br> \For example, for a password <tt>adminadmin</tt>:\\\\\~UWC_TOKEN_START~1278691906874~UWC_TOKEN_END<br> \</li> 
+         </ul> </li> 
+        <li>Creating a service using a password that is populated from a command line option:\ 
+         <div class="code panel" style="border-width: 1px;">
+          <div class="codeContent panelContent"> 
+           <div id="root"> 
+            <pre class="theme: Confluence; brush: java; gutter: false">C:\windows\system32\sc.exe create domain1 binPath="C:\Sun\AppServer\lib\appservService.exe" C:\Sun\AppServer\bin\asadmin.bat start-domain --user admin --password adminadmin domain1" "C:\Sun\AppServer\bin\asadmin.bat stop-domain domain1"" start=auto DisplayName="SJESAS_PE8.1 DOMAIN1"</pre> 
+           </div> 
+          </div>
+         </div></li> 
+       </ul> </li> 
+     </ul> 
+     <hr> <p><sup><a href="./TSG_CommonProblems.html">Top of Page</a></sup></p> <h4><a name="TSG_CommonProblems-CannotFindLogFiles"></a>Cannot Find Log Files</h2> <p>The following Application Server logs are useful for troubleshooting installation problems:</p> 
+     <ul> 
+      <li>*Server log <a href="file:*">file:*</a> For troubleshooting server configuration and deployment problems</li> 
+     </ul> 
+     <ul> 
+      <li><b>HTTP server access logs:</b> For troubleshooting HTTP server problems, and for tracing the activity of HTTP requests entering the Application Server instances<br> \Both the installation and uninstallation programs create log files and log all installation and uninstallation events to these files. The primary purpose of these log files is to provide troubleshooting information.<br> \In addition to installation program messages and log files, operating system utilities such as <tt>pkginfo</tt> and <tt>showrev</tt> on Solaris and <tt>rpm</tt> on Linux can be used to gather system information.</li> 
+     </ul> <p>Log file entries include information about the attempted action, the outcome of the action, and, if applicable, the cause of failure. The log files contain the followingtypes of message entries:</p> 
+     <ul> 
+      <li><b>INFO:</b> These messages mark normal completion of a particular installation tasks.</li> 
+     </ul> 
+     <ul> 
+      <li><b>WARNING:</b> These messages mark non-critical failures. Warning messages generally contain information about the cause and the nature of the failure, and also provide possible remedies.</li> 
+     </ul> 
+     <ul> 
+      <li><b>ERROR:</b> These messages mark critical failures that cause installation or uninstallation status to be reported as Failed. Error messages generally provide detailed information about the nature and the cause of the problem that occurred.</li> 
+     </ul> <p>The domain-specific logs are located in <tt>install_dir/domains/domain1/logs/</tt>. Log files for the server installation in general are located as follows:</p> 
+     <ul> 
+      <li><b>Solaris, root user installation/uninstallation:</b><br> {code}/var/sadm/install/logs
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">* *Solaris, non-root installation/uninstallation:*
+\{code}/var/tmp</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ul> 
+     <ul> 
+      <li><b>Linux installation/uninstallation:</b><br> {code}/var/tmp
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">----
+^[Top of Page|http://wiki.glassfish.java.net/Wiki.jsp?page=TSG_CommonProblems]^
+h2. Accessing Local Server Fails (http://localhost:8080)
+
+Things to check for this error include the following:
+
+* Did the Server Start?
+* Was the Server Started at the Expected Port?
+
+h3. Did the Server Start?
+
+* *Description*
+\If the console window is still open, the expected message is:\\\\\~UWC_TOKEN_START~1278691906879~UWC_TOKEN_END
+\where domain is the name of the default domain. This indicates that the default domain was started successfully.
+\If the console window is already closed, check for messages in the log file:\\\\\~UWC_TOKEN_START~1278691906880~UWC_TOKEN_END
+\If startup was successful, the expected message is similar to that on the console, and appears at the end of the log file:\</pre> 
+         </div> 
+        </div>
+       </div>INFO<span class="error">[...]</span><span class="error">[..]</span>date&amp;timeApplication server startup complete .
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">h3. Was the Server Started at the Expected Port?
+
+* *Description*
+\The server might be running at a different port number than expected, either because it was intentionally installed there, or because another server was already running on the default port when the server was installed.
+\
+** *To determine which port number the server is actually using*
+\
+## Examine the server's configuration file:\\\\\~UWC_TOKEN_START~1278691906882~UWC_TOKEN_END
+\
+## Find the {{http-listener}} element.
+\
+## Inspect the value of the {{port}} attribute.
+\Be sure to enter the correct port number when invoking the server.
+\*Note:* The server's default port number is {{8080}}, however, there are a number of ways in which the expected value can change:\
+*** A different port number was specified during installation.
+\
+*** A previous installation exists.
+\
+*** If the specified port number is already taken by another application when the server is started, the port number rolls forward to the next available number. For example, if a server is already running on the default {{8080}} port, the new Application Server instance uses port number {{8081}}. If two servers are running, the port number rolls to {{8082}}, and so on.
+
+----
+^[Top of Page|http://wiki.glassfish.java.net/Wiki.jsp?page=TSG_CommonProblems]^
+h2. Accessing Remote Server Fails
+
+When attempting to open the start page of the Application Server, the initial screen does not appear.
+
+Things to check include the following:
+
+* Is the Server Available Locally?
+* Is the Proxy Setting Causing a Problem?
+
+h3. Is the Server Available Locally?
+
+* *Description*
+\If the server cannot be accessed from the web, but it is running locally, then the server is actually running.
+
+* *Solution*
+\Verify that the server is running locally.
+\
+** *To verify that the server is running locally*
+\
+## Log on to the machine where the server is running.
+\
+## Go to the local web page. For example, if 8080 is the default port, go to:\\\\\~UWC_TOKEN_START~1278691906883~UWC_TOKEN_END
+\If the start page does appear, there is a problem with the Web connection that prevents accessing the server remotely. If the start page does not appear, see Did the Server Start?
+
+h3. Is the Proxy Setting Causing a Problem?
+
+* *Description*
+\The server should be accessible directly from the host on which it is running (localhost); for example, using the default port, {{8080}}:\</pre> 
+         </div> 
+        </div>
+       </div>http://localhost:8080/
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">* *Solution*
+\A server instance running on localhost may not be accessible if the server host machine is connected to the web through a proxy. To solve this problem, do one of the following:\
+** Set the browser to bypass the proxy server when accessing localhost. Refer to the browser's help system for information on how to do this.
+\
+** Use the fully-qualified host name or IP address of your system; for example:\\\\\~UWC_TOKEN_START~1278691906885~UWC_TOKEN_END
+\*Note:* To find the host name and domain for the localhost machine:\
+*** *On Microsoft Windows:* On the desktop, right-click _My Computer_ and select _Properties_ from the pop-up menu. A System Properties dialog is displayed. Click _Network Identification_ to see the computer name.
+\
+*** *On Solaris or Linux:* Type {{hostname}} at the command prompt.
+
+----
+^[Top of Page|http://wiki.glassfish.java.net/Wiki.jsp?page=TSG_CommonProblems]^
+h2. Cannot Access the Administration Console
+
+The Administration Console provides an interface for administrative functions. If the Administration Console is not accessible, it might be for one of several reasons.
+
+* Is the Application Server Running?
+* Is the Administration Console Running on the Expected Port?
+* Is the Security Manager Disabled?
+
+h3. Is the Application Server Running?
+
+* *Description*
+\The server must be running before the Administration Console can be accessed.
+
+* *Solution*
+\Review the information in [Did the Server Start?|http://wiki.glassfish.java.net/Wiki.jsp?page=TSG_CommonProblems#section-TSG_CommonProblems-DidTheServerStart] to determine if the server is running.
+
+h3. Is the Administration Console Running on the Expected Port?
+
+* *Description*
+\The default port number for the EE and SE Administration Console is {{4849}}; for the PE Administration Console it is {{4848}}. Also note that the URL for the EE and SE console requires secure HTTP (https://servername:4849.), whereas the PE console uses standard HTTP (http://servername:4848). However, it could be running on a different port number than expected, either because it was intentionally installed there, or because that port was taken when the server was started.
+
+* *Solution*
+\Refer to [Was the Server Started at the Expected Port?|http://wiki.glassfish.java.net/Wiki.jsp?page=TSG_CommonProblems#section-TSG_CommonProblems-WasTheServerStartedAtTheExpectedPort] for guidelines on verifying the port on which the Administration Console is running, and be sure to enter the correct port number and HTTP protocol when invoking the Administration Console.
+
+h3. Is the Security Manager Disabled?
+
+* *Description*
+\According to the J2EE 1.4 Specification, the Security Manager is not optional; it must be enabled in the Application Server. Since there is no configuration interface in the Application Server for disabling the Security Manager, it can only be disabled by directly modifying the {{domain.xml}} configuration file in such a way that the following line is removed:\</pre> 
+         </div> 
+        </div>
+       </div>&lt;jvm-option\&gt;-Djava.security.policy=yourPolicy&lt;/jvm-option\&gt;
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">* *Solution*
+\The {{-Djava.security.policy=yourPolicy}} option must be present in the {{domain.xml}} file to access the Administration Console.
+
+----
+^[Top of Page|http://wiki.glassfish.java.net/Wiki.jsp?page=TSG_CommonProblems]^
+h2. Cannot Access a Server Application
+
+If a particular application cannot be accessed through the Application Server, some things to check include the following:
+
+* Is the Application Server Running?
+* Was Application Deployment Successful?
+* Invalid User or Password When Using Don't Prompt Option
+* Administrator User Name or Password Not Known
+
+h3. Is the Application Server Running?
+
+* *Description*
+\If the Application Server is not running, applications will not be accessible.
+
+* *Solution*
+\Review the information in [Did the Server Start?|http://wiki.glassfish.java.net/Wiki.jsp?page=TSG_CommonProblems#section-TSG_CommonProblems-DidTheServerStart] to determine if the server is running. The server must be running before a server application can be accessed.
+
+h3. Was Application Deployment Successful?
+
+* *Description*
+\An application must be successfully deployed before it can be accessed.
+
+* *Solution*
+\Check the server's log file:\</pre> 
+         </div> 
+        </div>
+       </div>install_dir/domains/domain1/server.log
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">h3. Invalid User or Password When Using Don't Prompt Option
+
+You are getting the error, Invalid user or password, but you installed the system with the Don't Prompt option, so the password should be supplied automatically.
+
+* *Description*
+\The correct password may not have been specified during installation, or it may not be passed when the domain is started.
+
+* *Solution*
+\Check the password in the {{.asadminprefs}} file. On UNIX/Linux systems, it is in the home directory for the user under which the server was installed. On Windows, it is in {{C:\Documents and Settings\}}_username_. The contents look something like this:\</pre> 
+         </div> 
+        </div>
+       </div>AS_ADMIN_USER=admin<br> AS_ADMIN_PASSWORD=administrator
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">h3. Administrator User Name or Password Not Known
+
+If you have forgotten the administrator user name, you can find it by inspecting the {{.adminprefs}} file, as described in the section above, or by inspecting the {{install_dir/domains/domain1/config/keyfile}}, where {{domain1}} is the default domain. For a different domain, substitute its name in the path.
+
+If you have forgotten the administrator password, you will need to create a new user name-password pair by removing the user name and password, creating new ones, and restarting the server. (You will not be able to read the password, because it is encrypted in the keyfile.)
+
+** To remove the user name and password completely*
+\
+# Stop the server, if it is currently running.
+\
+# Change to the appropriate {{WEB-INF}} directory; for example:\\\\\~UWC_TOKEN_START~1278691906889~UWC_TOKEN_END
+\
+# Comment out the entire</pre> 
+         </div> 
+        </div>
+       </div>&lt;security-constraint\&gt;
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">element in the {{web.xml}} file.
+\Do not delete the element, as you will be reenabling it later. This action disables security for command-line operations.
+\*Note:* The commands will still expect a value for {{--username}} (or {{-u}}) and {{--password}} (or {{-w}}). But these can be dummy values, since the server side does not impose any security.
+\
+# Start the server.
+\At this point, the server does not have command-line security.
+\
+# Run the following command:\\\\\~UWC_TOKEN_START~1278691906891~UWC_TOKEN_END
+\This command creates the following new entry:\\\\\~UWC_TOKEN_START~1278691906892~UWC_TOKEN_END
+\
+# Uncomment the</pre> 
+         </div> 
+        </div>
+       </div>&lt;security-constraint\&gt;
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">element in {{web.xml}} file.
+\
+# Restart the server for the new user name-password to take effect.
+\*Note:* When the server is started, any remote command-line operations will need {{new_user_id}} and {{new_secret}} as user name and password.
+
+----
+^[Top of Page|http://wiki.glassfish.java.net/Wiki.jsp?page=TSG_CommonProblems]^
+
+h2. Server Will Not Start on Windows (Port Conflict)
+
+If a message similar to the following is displayed when starting the Application Server on Microsoft Windows, a server port conflict has occurred:\\\\\~UWC_TOKEN_START~1278691906894~UWC_TOKEN_END
+\This error occurs when another application is running on the Application Server port (default 8080), or because a previous instance of the Application Server did not shut down cleanly.
+
+Other things to check include the following:
+
+* Is Another Application Running on the Server's Port?
+* Has an Ungraceful Shutdown Occurred on a Previously Running Server?
+
+h3. Is Another Application Running on the Server's Port?
+
+If another application is using the server's port, stop the other application, then restart the Application Server.
+\*Note:* The installer attempts to avoid port conflicts by choosing the next available port when the default port is in use, but that only works if application using the default port was running when the Application Server was installed.
+
+h3. Has an Ungraceful Shutdown Occurred on a Previously Running Server?
+
+Use the {{asadmin stop-domain}} command to stop the server, or explicitly kill the Java process and then restart the Application Server.
+
+----
+^[Top of Page|http://wiki.glassfish.java.net/Wiki.jsp?page=TSG_CommonProblems]^
+h2. Port Conflicts Debugging Multiple Instances on the Same Server
+
+* *Description*
+\Port conflict errors can occur when debugging multiple instances on the same server that are part of the same cluster.
+
+* *Solution*
+\Modify the {{domain.xml}} file to remove the address attribute from the {{-Xrunjdwp}} option in the {{java-config}} element for the cluster. This results in the JVM choosing a random debug port for the instance. The port number chosen for the instance is displayed in the server log when it is started; for example:\
+** _Before:_\\\\\~UWC_TOKEN_START~1278691906895~UWC_TOKEN_END
+\
+** _After:_
+\{code}debug-options="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,
+suspend=n"</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ul> 
+     <hr> <p><sup><a href="./TSG_CommonProblems.html">Top of Page</a></sup></p> <h4><a name="TSG_CommonProblems-TwoServerInstancesBindtoSamePortonWindows"></a>Two Server Instances Bind to Same Port on Windows</h2> 
+     <ul> 
+      <li><b>Description</b><br> \This problem only occurs on Windows 2000/XP systems with the Application Server software, and is due to a known Windows security flaw rather than a problem with the Application Server itself.<br> \The problem occurs when two or more instances of the Application Server are created using the same port number for the instanceport option; for example:\\\\\~UWC_TOKEN_START~1278691906897~UWC_TOKEN_END<br> \When the two domains are started on a UNIX/Linux system, a port conflict error is thrown and the second instance fails to start. However, when the two domains are started on Windows 2000/XP, no error is thrown, both server instances start, but only the first instance is accessible at the specified port. When that first server instance is subsequently shut down, the second instance then becomes accessible. Moreover, when both instance are running, the Windows <tt>netstat</tt> command shows the duplicate listeners as active, but only the first listener can respond to requests.</li> 
+     </ul> 
+     <ul> 
+      <li><b>Solution</b><br> \Be sure to use unique port numbers for all server instances on Windows systems.</li> 
+     </ul> 
+     <hr> <p><sup><a href="./TSG_CommonProblems.html">Top of Page</a></sup></p> <h4><a name="TSG_CommonProblems-Error%3ASystemcannotfindthepathspecified"></a>Error: System cannot find the path specified</h2> 
+     <ul> 
+      <li><b>Description</b><br> \This error message occurs when attempting to start the server after deleting the J2SE directory that was specified during installation. This situation generally occurs after being informed during the install that the J2SE platform needs an upgrade, and the upgrade takes place after the Application Server installation.</li> 
+     </ul> 
+     <ul> 
+      <li><b>Solution 1</b><br> \To use the new J2SE for all domains, change the <tt>AS_JAVA</tt> variable in <tt>asenv.conf</tt> (Solaris/Linux), or <tt>asenv.bat</tt> (Windows).</li> 
+     </ul> 
+     <ul> 
+      <li><b>Solution 2</b><br> \The J2SE version can be changed on a per-domain basis by modifying the <tt>java-home</tt> attribute for the <tt>java-config</tt> element in the domain's <tt>domain.xml</tt> file.<br> {code}&lt;java-config ...<br> java-home="path"<br> ...\&gt;
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">* *Solution 3*
+\A more time-intensive solution is to uninstall and then reinstall the server.
+
+----
+^[Top of Page|http://wiki.glassfish.java.net/Wiki.jsp?page=TSG_CommonProblems]^
+h2. Application Generates Error {{persistence.support.JDODataStoreException}}
+
+* *Description*
+\A {{com.sun.jdo.api.persistence.support.JDODataStoreException}} is generated by an application, with a nested {{java.sql.SQLException}} indicating a duplicate primary key.
+\Even if the application is checking for a {{CreateException}}, it does not see one. The Enterprise JavaBeans specification requires a {{CreateException}} to be thrown only if two beans with the same primary key are created in the same transaction, so a {{CreateException}} is not thrown on transaction rollback if two entity beans with duplicate primary keys are created.
+
+* *Solution*
+\If an application creates an entity bean with a duplicate primary key, check to see if the primary key exists by calling {{findByPrimaryKey}} before calling {{create}}.
+
+----
+^[Top of Page|http://wiki.glassfish.java.net/Wiki.jsp?page=TSG_CommonProblems]^
+h2. Using {{asadmin set}} Command May Produce Unexpected Results
+
+* *Description*
+\Unexpected results are returned when setting variables in a command, such as:\\\\\{code}asadmin set name={$a-b{code}}
+\In this case, {{name}} is set to {{b}}, not</pre> 
+         </div> 
+        </div>
+       </div>{$a-b{code}} because the shell syntax {{$}}
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">{a=b{code}} is interpreted as "if the variable {{a}} is unset, substitute the value {{b}}, otherwise substitute the value of {{a}}." This is standard shell behavior. For example, consider the following:\\\\\{code}asadmin set default-config.http-service.http-listener.http-listener-1.port=${http-listener-1-port{code}}
+\In this case, {{default-config.http-service.http-listener.http-listener-1.port}} is set to {{listener-1-port}}, which is invalid.
+
+----
+^[Top of Page|http://wiki.glassfish.java.net/Wiki.jsp?page=TSG_CommonProblems]^
+h2. Cannot Undeploy Or Redeploy Application With Open Streams to Jar Files (Windows Only)
+
+* *Description*
+\On Windows systems, after running an application, subsequent attempts to undeploy it or redeploy it throw exceptions about the server being unable to delete a file or rename a directory.
+\On Windows systems, an application may use {{getClass().getResource}} or {{getResourceAsStream}} methods to locate a resource inside the application, particularly in jar files that are in the application or accessible to it. If the streams remain open, subsequent attempts to redeploy or undeploy the application can fail. In addition, the Java runtime by default caches streams to jar files for performance reasons.
+
+* *Solution*
+\Be sure to close streams opened by your applications. Also, if an application needs to be redeployed or undeployed repeatedly, and also needs to obtain a resource from a jar file using {{getResource}} or {{getResourceAsStream}}, consider using {{getClass().getResource}} which returns a URL object, then invoke the {{url.setUseCaches}} method to turn off caching for that jar file, and then use {{url.getInputStream()}} to obtain the stream.
+\Although turning off caching for accesses to the jar file can slow down performance, this approach does allow the application to be undeployed or redeployed. Note also that if the {{getClass().getResourceAsStream}} method is used instead, then the jar file in which the resource is located will be cached (this is the default Java runtime setting) and remain open until the server is stopped.
+
+----
+^[Top of Page|http://wiki.glassfish.java.net/Wiki.jsp?page=TSG_CommonProblems]^
+h2. Cannot Reinstall Application Server After Manual Deletion of Directories
+
+* *Description*
+\If the Application Server directories are deleted manually rather than by means of the included uninstall the program, subsequent attempts to reinstall the Application Server in the same directory fail. This is because the installation directory information stored in the {{/tmp/productregistry}} file remains even though the program directories have been removed.
+
+* *Solution 1*
+\Remove Application Server directory information from the &lt;location\&gt; property entries in the /tmp/productregistry file; for example, change:\\\\\~UWC_TOKEN_START~1278691906903~UWC_TOKEN_END\\\\\to
+\{code}&lt;location\&gt;&lt;/location\&gt;</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ul> 
+     <ul> 
+      <li><b>Solution 2</b><br> \Reinstall the Application Server in a different directory.</li> 
+     </ul> 
+     <hr> <p><sup><a href="./TSG_CommonProblems.html">Top of Page</a></sup></p> <h4><a name="TSG_CommonProblems-CannotProduceaJVMThreadDumpAfterServerCrash"></a>Cannot Produce a JVM Thread Dump After Server Crash</h2> 
+     <ul> 
+      <li><b>Description</b><br> \If the Application Server crashes, the server dumps a core file and, by default, restarts with the <tt>-Xrs</tt> flag, which prevents the dump of a JVM thread dump.</li> 
+     </ul> 
+     <ul> 
+      <li><b>Solution</b><br> \ 
+       <ul> 
+        <li><b>To enable a JVM thread dump</b><br> \</li> 
+       </ul> 
+       <ol> 
+        <li>Comment out the -Xrs flag in the server.xml file for the Application Server.<br> \</li> 
+        <li>Kill the server process (kill -3 on UNIX; Ctrl+Break on Windows).<br> \</li> 
+       </ol> </li> 
+     </ul> 
+     <hr> <p><a href="TroubleshootingGuide.html" title="TroubleshootingGuide">Main</a> <a href="TSG_Overview.html" title="TSG_Overview">Previous</a> <a href="TSG_HADBProblems.html" title="TSG_HADBProblems">Next</a></p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 10, 2010 by 
+<font color="#0050B2">wombat</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

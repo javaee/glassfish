@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GettingStartedGuide</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GettingStartedGuide-GettingStartedUsingJRubyontheGlassFish%3Csup%3ETM%3C%2Fsup%3EApplicationServer"></a>Getting Started Using JRuby on the GlassFish&lt;sup&gt;TM&lt;/sup&gt; Application Server</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#GettingStartedGuide-GettingStartedUsingJRubyontheGlassFish%3Csup%3ETM%3C%2Fsup%3EApplicationServer">Getting Started Using JRuby on the GlassFish&lt;sup&gt;TM&lt;/sup&gt; Application Server</a></li> 
+       <ul> 
+        <li><a href="#GettingStartedGuide-Introduction">Introduction</a></li> 
+        <li><a href="#GettingStartedGuide-InstallingJRubyandRails">Installing JRuby and Rails</a></li> 
+        <li><a href="#GettingStartedGuide-CreatingaHelloWorldApplication">Creating a Hello World Application</a></li> 
+        <ul> 
+         <li><a href="#GettingStartedGuide-Createatemplateapplicationbyrunningthefollowingcommand%3A">Create a template application by running the following command:</a></li> 
+         <li><a href="#GettingStartedGuide-Createacontrollerandviewbyperformingthefollowingsteps%3A">Create a controller and view by performing the following steps:</a></li> 
+         <li><a href="#GettingStartedGuide-Createavariableinthecontrollerbydoingthefollowing%3A">Create a variable in the controller by doing the following:</a></li> 
+         <li><a href="#GettingStartedGuide-Retrievethevalueof@hellostringintheviewbydoingthefollowing%3A">Retrieve the value of @hello_string in the view by doing the following:</a></li> 
+         <li><a href="#GettingStartedGuide-ConfigureaDatabaseifUsingRails2.1.0">Configure a Database if Using Rails 2.1.0</a></li> 
+        </ul> 
+        <li><a href="#GettingStartedGuide-DeployandrunRailsonGlassFishgemDeployandrunRailsonGlassFishgem"> Deploy and run Rails on GlassFish gem</a></li> 
+        <li><a href="#GettingStartedGuide-DeployandrunRailsonGlassFishv3DeployandrunRailsonGlassFishv3"> Deploy and run Rails on GlassFish v3</a></li> 
+        <li><a href="#GettingStartedGuide-DeployandrunRailsonGlassfishv2"> <span class="nobr">Deploy and run Rails on Glassfish v2 <sup><img border="0" alt="" align="absmiddle" width="7" height="7" src="images/icons/linkext7.gif" class="rendericon"></sup></span></a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="GettingStartedGuide-Introduction"></a>Introduction</h2> <p>The GlassFish application server provides excellent deployment solutions for JRuby on Rails applications. From this guide you can learn how to create a simple Rails application using JRuby and deploy it on the GlassFish application server.</p> <h4><a name="GettingStartedGuide-InstallingJRubyandRails"></a>Installing JRuby and Rails</h2> <p>To get started creating JRuby on Rails applications, you need to install JRuby and Rails by performing the following steps. Be sure to use the latest versions of JRuby and Rails so that you benefit from the newest features and bug fixes.</p> 
+     <ol> 
+      <li>Install JRuby by following the instructions in the <a href="http://kenai.com/projects/jruby/pages/GettingStarted">JRuby Getting Started Guide</a>.</li> 
+      <li>Install Rails on your JRuby installation by following the instructions in <a href="http://wiki.jruby.org/wiki/JRuby_on_Rails">Rails setup on JRuby</a>.</li> 
+     </ol> <h4><a name="GettingStartedGuide-CreatingaHelloWorldApplication"></a>Creating a Hello World Application</h2> <h4><a name="GettingStartedGuide-Createatemplateapplicationbyrunningthefollowingcommand%3A"></a>Create a template application by running the following command:</h3> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">jruby -S rails hello</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="GettingStartedGuide-Createacontrollerandviewbyperformingthefollowingsteps%3A"></a>Create a controller and view by performing the following steps:</h3> <p>1. Go to the hello directory:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">cd hello</pre> 
+       </div> 
+      </div>
+     </div> <p>2. Enter the following command to generate a controller and default view for the hello application:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">jruby script/generate controller say hello</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="GettingStartedGuide-Createavariableinthecontrollerbydoingthefollowing%3A"></a>Create a variable in the controller by doing the following:</h3> <p>1. Open the controller, say_controller.rb, in a text editor, such as vi:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">vi app/controllers/say_controller.rb</pre> 
+       </div> 
+      </div>
+     </div> <p>2. Add the following string to the controller's hello helper method:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@hello_string = "v3 Gem is getting polished!"</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="GettingStartedGuide-Retrievethevalueof@hellostringintheviewbydoingthefollowing%3A"></a>Retrieve the value of @hello_string in the view by doing the following:</h3> <p>1. Open the view in a text editor:</p> 
+     <ul> 
+      <li>For Rails 2.1.0, open hello.html.erb in a text editor, such as vi:</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">vi app/views/say/hello.html.erb</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>For Rails 1.2.6, open app/views/say/hello.rhtml in a text editor, such as vi:</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">vi app/views/say/hello.rhtml</pre> 
+       </div> 
+      </div>
+     </div> <p>2. Add the following string at the bottom of the view:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;%= @hello_string %&gt;</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="GettingStartedGuide-ConfigureaDatabaseifUsingRails2.1.0"></a>Configure a Database if Using Rails 2.1.0</h3> <p>Perform the steps in this section only if you are using Rails 2.1.0. If you are running earlier versions of Rails, such as version 1.2.6, skip this section.</p> <p>In the hello sample, you do not need a database, so you should do <b>one</b> of the following two things: </p> 
+     <ul> 
+      <li>Configure Rails to disable the database:</li> 
+     </ul> 
+     <ol> 
+      <li>Open the hello/config/environment.rb file in a text editor.</li> 
+      <li>Remove the hash mark (#) from the beginning of line 21 so that it looks like this:</li> 
+     </ol> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">config.frameworks -= [ :active_record, :active_resource, :action_mailer ]</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>Create a database</li> 
+     </ul> <p>Even though you don't have a model in the hello sample, Rails 2.1.0 expects you to create a database, which you do by running the following command after you have created the scaffold: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">jruby -S rake db:create</pre> 
+       </div> 
+      </div>
+     </div> <p>This command creates the database, hello_development.</p> <h4><a name="GettingStartedGuide-DeployandrunRailsonGlassFishgemDeployandrunRailsonGlassFishgem"></a><a href="DeployAndRunRailsOnGlassFishGem.html" title="DeployAndRunRailsOnGlassFishGem">Deploy and run Rails on GlassFish gem</a></h2> <p>The fastest and easiest way to deploy and run your Rails applications is to do so on the GlassFish gem. The GlassFish gem consists of only the GlassFish v3 kernel, Grizzly, and some utilities, thereby resulting in a smaller size a and faster startup time. You only need perform a one-time installation of the GlassFish gem to deploy and run applications on it.</p> <h4><a name="GettingStartedGuide-DeployandrunRailsonGlassFishv3DeployandrunRailsonGlassFishv3"></a><a href="DeployAndRunRailsOnGlassFishV3.html" title="DeployAndRunRailsOnGlassFishV3">Deploy and run Rails on GlassFish v3</a></h2> <p>While the GlassFish gem offers a robust and easy-to-use deployment environment, sometimes you need to use Java&lt;sup&gt;TM&lt;/sup&gt; EE features from inside your Rails application and for this you need to deploy the application to the GlassFish v3 server.</p> <h4><a name="GettingStartedGuide-DeployandrunRailsonGlassfishv2"></a><a href="http://wiki.glassfish.java.net/?page=DeployAndRunRailsApplicationOnGlassfishV2">Deploy and run Rails on Glassfish v2</a></h2> <p>You can deploy a Rails application on the GlassFish v2 application server by packaging it as a web archive (WAR) file. You perform this packaging using <a href="http://wiki.jruby.org/wiki/Goldspike">Goldspike</a>, which is available with the JRuby on Rails GlassFish v2 UC module.</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 02, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:44.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

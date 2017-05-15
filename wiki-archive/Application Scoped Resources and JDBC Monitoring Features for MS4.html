@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : Application Scoped Resources and JDBC Monitoring Features for MS4</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="ApplicationScopedResourcesandJDBCMonitoringFeaturesforMS4-Demo%3AApplicationScopedResourcesandJDBCMonitoring"></a>Demo : Application Scoped Resources and JDBC Monitoring </h2> <h4><a name="ApplicationScopedResourcesandJDBCMonitoringFeaturesforMS4-Team"></a>Team</h3> <p>Jagadish Ramu, Shalini Muthukrishnan</p> <h4><a name="ApplicationScopedResourcesandJDBCMonitoringFeaturesforMS4-Demo"></a>Demo</h3> <p>This includes demonstration of </p> 
+     <ul> 
+      <li><a href="./Gfv31ConnectorsJDBC#Gfv31ConnectorsJDBC-4.1.3Applicationscopedresources.html">Application Scoped Resources</a></li> 
+      <li><a href="./Gfv31ConnectorsJDBC#Gfv31ConnectorsJDBC-4.1.5MonitoringsupportforvariousConnectionPoolandJDBCartifacts.html">New JDBC Monitoring features</a> 
+       <ul> 
+        <li>Statement cache monitoring</li> 
+        <li>Sql Trace monitoring</li> 
+        <li>Statement leak trace monitoring</li> 
+        <li>Monitoring <em>numconnacquired</em> and <em>numconnreleased</em> statistics of connection-pool, grouped by applications.</li> 
+       </ul> </li> 
+     </ul> <h4><a name="ApplicationScopedResourcesandJDBCMonitoringFeaturesforMS4-ApplicationScopedResources"></a>Application-Scoped-Resources</h3> 
+     <ul> 
+      <li>Setup :<br> 1. Install <a href="http://javaweb.sfbay.sun.com/java/re/glassfish/3.1/promoted/b16/archive/bundles/latest-glassfish.zip">GF 3.1 MS4 promoted build</a><br> NOTE : For <em>preserveAppScopedResources</em> flag of application-scoped-resources to work, use <br class="atl-forced-newline"> <a href="http://javaweb.sfbay/java/re/glassfish/3.1/nightly/bundles/glassfish-3.1-b16-08_23_2010.zip">latest nightly build 23-Aug-10 onwards</a> <br class="atl-forced-newline"> or <br class="atl-forced-newline"> <a href="http://gf-hudson.sfbay/hudson/job/gf-trunk-build-continuous/lastSuccessfulBuild/artifact/bundles/glassfish.zip">latest gf-hudson build</a><br> 2. unzip glassfish.zip<br> 3. export S1AS_HOME="glassfish-installation-directory" (i.e. <tt>/space/glassfish31b16/glassfish</tt>)<br> 4. svn checkout -N <a href="https://svn.java.net/svn/glassfish-svn/trunk/v2/appserv-tests">https://svn.java.net/svn/glassfish-svn/trunk/v2/appserv-tests</a><br> 5. cd appserv-tests<br> 6. export APS_HOME="appserv-tests directory"<br> 7. edit config.properties and change "admin.password=adminadmin" property to be "admin.password="<br> 8. svn checkout <a href="https://svn.java.net/svn/glassfish-svn/trunk/v2/appserv-tests/config">https://svn.java.net/svn/glassfish-svn/trunk/v2/appserv-tests/config</a><br> 8a. svn checkout <a href="https://svn.java.net/svn/glassfish-svn/trunk/v2/appserv-tests/lib">https://svn.java.net/svn/glassfish-svn/trunk/v2/appserv-tests/lib</a><br> 9. mkdir -p devtests<br> 10. cd devtests<br> 11. svn checkout -N <a href="https://svn.java.net/svn/glassfish-svn/trunk/v2/appserv-tests/devtests/connector">https://svn.java.net/svn/glassfish-svn/trunk/v2/appserv-tests/devtests/connector</a><br> 12. cd connector<br> 13. svn checkout <a href="https://svn.java.net/svn/glassfish-svn/trunk/v2/appserv-tests/devtests/connector/config">https://svn.java.net/svn/glassfish-svn/trunk/v2/appserv-tests/devtests/connector/config</a><br> 14. mkdir v3<br> 15. cd v3<br> 16. svn checkout <a href="https://svn.java.net/svn/glassfish-svn/trunk/v2/appserv-tests/devtests/connector/v3/app-scoped-resources-ms4-demo">https://svn.java.net/svn/glassfish-svn/trunk/v2/appserv-tests/devtests/connector/v3/app-scoped-resources-ms4-demo</a><br> 17. cd app-scoped-resources-ms4-demo<br> 18. $S1AS_HOME/bin/asadmin start-domain domain1<br> 19. $S1AS_HOME/bin/asadmin start-database<br> 20. Build and setup the dev-test :<br> <b>ant enable-monitoring init-common build setup setup-map</b><br> 21. List the applications deployed in the server. 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">$S1AS_HOME/bin/asadmin list-applications
+generic-ra &lt;connector&gt;
+app-scoped-resourcesApp &lt;ear, ejb, web&gt;</pre> 
+         </div> 
+        </div>
+       </div> <p>22. Use the new flag <b>"--resources"</b> to list application scoped resources (with prefix "java:app") per application as follows</p> 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">$S1AS_HOME/bin/asadmin list-applications --resources
+generic-ra &lt;connector&gt;
+  java:app/generic-ra-groups-map	&lt;WorkSecurityMap&gt;
+  java:app/generic-ra-principals-map	&lt;WorkSecurityMap&gt;
+app-scoped-resourcesApp &lt;ear, ejb, web&gt;
+  java:app/jdbc/app-level-ds	&lt;JdbcResource&gt;
+  java:app/jdbc/XAPointbase	&lt;JdbcResource&gt;
+  java:app/jdbc/app-level-pool	&lt;JdbcConnectionPool&gt;
+  java:app/jdbc-pointbase-pool1	&lt;JdbcConnectionPool&gt;</pre> 
+         </div> 
+        </div>
+       </div> <p>23. Use the new flag <b>"--subcomponents"</b> to list sub-components in each application</p> 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">$S1AS_HOME/bin/asadmin list-applications --subcomponents
+generic-ra &lt;connector&gt;
+app-scoped-resourcesApp &lt;ear, ejb, web&gt;
+  app-scoped-resources-ejb.jar &lt;EJBModule&gt;
+  app-scoped-resources-web.war &lt;WebModule&gt;</pre> 
+         </div> 
+        </div>
+       </div> <p>24. Use both the new flags <b>"--resources"</b> and <b>"--subcomponents"</b> to list subcomponents and resources at application level as well module level (with prefix "java:module")</p> 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">$S1AS_HOME/bin/asadmin list-applications --resources --subcomponents
+generic-ra &lt;connector&gt;
+  java:app/generic-ra-groups-map	&lt;WorkSecurityMap&gt;
+  java:app/generic-ra-principals-map	&lt;WorkSecurityMap&gt;
+app-scoped-resourcesApp &lt;ear, ejb, web&gt;
+  java:app/jdbc/app-level-ds	&lt;JdbcResource&gt;
+  java:app/jdbc/XAPointbase	&lt;JdbcResource&gt;
+  java:app/jdbc/app-level-pool	&lt;JdbcConnectionPool&gt;
+  java:app/jdbc-pointbase-pool1	&lt;JdbcConnectionPool&gt;
+  app-scoped-resources-ejb.jar &lt;EJBModule&gt;
+    java:module/jdbc/ejb-level-ds	&lt;JdbcResource&gt;
+    java:module/jdbc/monitoring-ds	&lt;JdbcResource&gt;
+    java:module/eis/testAdmin	&lt;AdminObjectResource&gt;
+    java:module/jdbc/ejb-level-pool	&lt;JdbcConnectionPool&gt;
+    java:module/jdbc/monitoring-pool	&lt;JdbcConnectionPool&gt;
+  app-scoped-resources-web.war &lt;WebModule&gt;
+    java:module/jdbc/monitoring-ds	&lt;JdbcResource&gt;
+    java:module/jdbc/web-level-ds	&lt;JdbcResource&gt;
+    java:module/jdbc/web-level-pool	&lt;JdbcConnectionPool&gt;
+    java:module/jdbc/monitoring-pool	&lt;JdbcConnectionPool&gt;</pre> 
+         </div> 
+        </div>
+       </div> <p>25. Make sure that the pool configuration of "java:module/jdbc/monitoring-pool of "ejb-module" and "web-module" are valid by doing "ping-connection-pool" with new flags to specify <b>"appname"</b> and <b>"modulename"</b></p> 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">$S1AS_HOME/bin/asadmin ping-connection-pool --appname app-scoped-resourcesApp --modulename app-scoped-resources-ejb.jar java:module/jdbc/monitoring-pool
+
+Command ping-connection-pool executed successfully.</pre> 
+         </div> 
+        </div>
+       </div> 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">$S1AS_HOME/bin/asadmin ping-connection-pool --appname app-scoped-resourcesApp --modulename app-scoped-resources-web.war java:module/jdbc/monitoring-pool
+
+Command ping-connection-pool executed successfully.</pre> 
+         </div> 
+        </div>
+       </div> <p>26. To execute the test case :<br> <b>ant runtest</b><br> 27. Once the test is executed, connection pools will be initialized and used.<br> Use the new monitoring hierarchy to check the <b>monitoring information</b> for connection pools of "ejb-module" and "web-module"</p> 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">$S1AS_HOME/bin/asadmin get --monitor=true server.applications.app-scoped-resourcesApp.* | grep -i "monitoring-pool" | grep -i "\-count" 
+server.applications.app-scoped-resourcesApp.app-scoped-resources-ejb.jar.resources.java:module.jdbc.monitoring-pool.averageconnwaittime-count = 3
+server.applications.app-scoped-resourcesApp.app-scoped-resources-ejb.jar.resources.java:module.jdbc.monitoring-pool.numconnacquired-count = 5
+server.applications.app-scoped-resourcesApp.app-scoped-resources-ejb.jar.resources.java:module.jdbc.monitoring-pool.numconncreated-count = 8
+server.applications.app-scoped-resourcesApp.app-scoped-resources-ejb.jar.resources.java:module.jdbc.monitoring-pool.numconndestroyed-count = 0
+server.applications.app-scoped-resourcesApp.app-scoped-resources-ejb.jar.resources.java:module.jdbc.monitoring-pool.numconnfailedvalidation-count = 0
+server.applications.app-scoped-resourcesApp.app-scoped-resources-ejb.jar.resources.java:module.jdbc.monitoring-pool.numconnnotsuccessfullymatched-count = 0
+server.applications.app-scoped-resourcesApp.app-scoped-resources-ejb.jar.resources.java:module.jdbc.monitoring-pool.numconnreleased-count = 5
+server.applications.app-scoped-resourcesApp.app-scoped-resources-ejb.jar.resources.java:module.jdbc.monitoring-pool.numconnsuccessfullymatched-count = 0
+server.applications.app-scoped-resourcesApp.app-scoped-resources-ejb.jar.resources.java:module.jdbc.monitoring-pool.numconntimedout-count = 0
+server.applications.app-scoped-resourcesApp.app-scoped-resources-ejb.jar.resources.java:module.jdbc.monitoring-pool.numpotentialconnleak-count = 0
+server.applications.app-scoped-resourcesApp.app-scoped-resources-ejb.jar.resources.java:module.jdbc.monitoring-pool.waitqueuelength-count = 0
+
+server.applications.app-scoped-resourcesApp.app-scoped-resources-web.war.resources.java:module.jdbc.monitoring-pool.averageconnwaittime-count = 1
+server.applications.app-scoped-resourcesApp.app-scoped-resources-web.war.resources.java:module.jdbc.monitoring-pool.numconnacquired-count = 10
+server.applications.app-scoped-resourcesApp.app-scoped-resources-web.war.resources.java:module.jdbc.monitoring-pool.numconncreated-count = 10
+server.applications.app-scoped-resourcesApp.app-scoped-resources-web.war.resources.java:module.jdbc.monitoring-pool.numconndestroyed-count = 0
+server.applications.app-scoped-resourcesApp.app-scoped-resources-web.war.resources.java:module.jdbc.monitoring-pool.numconnfailedvalidation-count = 0
+server.applications.app-scoped-resourcesApp.app-scoped-resources-web.war.resources.java:module.jdbc.monitoring-pool.numconnnotsuccessfullymatched-count = 0
+server.applications.app-scoped-resourcesApp.app-scoped-resources-web.war.resources.java:module.jdbc.monitoring-pool.numconnreleased-count = 10
+server.applications.app-scoped-resourcesApp.app-scoped-resources-web.war.resources.java:module.jdbc.monitoring-pool.numconnsuccessfullymatched-count = 0
+server.applications.app-scoped-resourcesApp.app-scoped-resources-web.war.resources.java:module.jdbc.monitoring-pool.numconntimedout-count = 0
+server.applications.app-scoped-resourcesApp.app-scoped-resources-web.war.resources.java:module.jdbc.monitoring-pool.numpotentialconnleak-count = 0
+server.applications.app-scoped-resourcesApp.app-scoped-resources-web.war.resources.java:module.jdbc.monitoring-pool.waitqueuelength-count = 0</pre> 
+         </div> 
+        </div>
+       </div> <p>28. In order to flush the existing connections in the pool, use the command "flush-connection-pool" and new flags <b>"appname"</b> and <b>"modulename"</b></p> 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">$S1AS_HOME/bin/asadmin flush-connection-pool --appname app-scoped-resourcesApp --modulename app-scoped-resources-web.war java:module/jdbc/monitoring-pool
+
+Command flush-connection-pool executed successfully.</pre> 
+         </div> 
+        </div>
+       </div> 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">$S1AS_HOME/bin/asadmin flush-connection-pool --appname app-scoped-resourcesApp --modulename app-scoped-resources-ejb.jar java:module/jdbc/monitoring-pool
+
+Command flush-connection-pool executed successfully.</pre> 
+         </div> 
+        </div>
+       </div> <p>29. To disable the application :<br> <b>ant disable-app</b><br> This will disable the application and unregister the application-scoped and module-scoped resources and connection-pools of the application.<br> 30. ping-connection-pool and flush-connection-pool will fail indicating that the application is disabled.</p> 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">$S1AS_HOME/bin/asadmin ping-connection-pool --appname app-scoped-resourcesApp --modulename app-scoped-resources-web.war java:module/jdbc/monitoring-pool
+remote failure: Application [ app-scoped-resourcesApp ] in which the pool [java:module/jdbc/monitoring-pool ] is defined, is not enabled.
+
+Command ping-connection-pool failed.</pre> 
+         </div> 
+        </div>
+       </div> 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">$S1AS_HOME/bin/asadmin flush-connection-pool --appname app-scoped-resourcesApp --modulename app-scoped-resources-ejb.jar java:module/jdbc/monitoring-pool
+remote failure: Application [ app-scoped-resourcesApp ] in which the pool [java:module/jdbc/monitoring-pool ] is defined, is not enabled.
+
+Command flush-connection-pool failed.</pre> 
+         </div> 
+        </div>
+       </div> <p>31. To enable the application :<br> <b>ant enable-app</b><br> 32. Resources or Pools configuration can be obtained using dotted-names-get</p> 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">$S1AS_HOME/bin/asadmin get applications.application.app-scoped-resourcesApp.resources.jdbc-connection-pool.java:app/jdbc/app-level-pool.max-pool-size
+applications.application.app-scoped-resourcesApp.resources.jdbc-connection-pool.java:app/jdbc/app-level-pool.max-pool-size=32</pre> 
+         </div> 
+        </div>
+       </div> <p>33. Set the max-pool-size of one of the pools to 500 :</p> 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">$S1AS_HOME/bin/asadmin set applications.application.app-scoped-resourcesApp.resources.jdbc-connection-pool.java:app/jdbc/app-level-pool.max-pool-size=500
+applications.application.app-scoped-resourcesApp.resources.jdbc-connection-pool.java:app/jdbc/app-level-pool.max-pool-size=500
+
+Command set executed successfully.</pre> 
+         </div> 
+        </div>
+       </div> <p>34. In production environments, it is possible that the resource or pool configuration would have been tuned according to the application's usage.<br> During application re-deploy (binary updates), it is possible to preserve the tuned resources configuration by using the new property <b>"preserveAppScopedResources=true"</b>.</p> 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">$S1AS_HOME/bin/asadmin deploy --force=true --properties preserveAppScopedResources=true $APS_HOME/build/module/archive/app-scoped-resourcesApp.ear
+Application deployed successfully with name app-scoped-resourcesApp.</pre> 
+         </div> 
+        </div>
+       </div> <p>35. Check whether the old pool configuration is preserved after application re-deploy as :</p> 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">$S1AS_HOME/bin/asadmin get applications.application.app-scoped-resourcesApp.resources.jdbc-connection-pool.java:app/jdbc/app-level-pool.max-pool-size
+applications.application.app-scoped-resourcesApp.resources.jdbc-connection-pool.java:app/jdbc/app-level-pool.max-pool-size=500</pre> 
+         </div> 
+        </div>
+       </div> <p>36. To undeploy the application :<br> <b>ant unset unset-map</b><br> 37. Stop the server and database :<br> $S1AS_HOME/bin/asadmin stop-domain domain1<br> $S1AS_HOME/bin/asadmin stop-database</p></li> 
+     </ul> <h4><a name="ApplicationScopedResourcesandJDBCMonitoringFeaturesforMS4-JDBCMonitoringfeatures"></a>JDBC Monitoring features</h3> <p>1. Install GF 3.1 MS4 promoted build<br> <a href="http://javaweb.sfbay.sun.com/java/re/glassfish/3.1/promoted/b16/archive/bundles/latest-glassfish.zip">http://javaweb.sfbay.sun.com/java/re/glassfish/3.1/promoted/b16/archive/bundles/latest-glassfish.zip</a><br> NOTE : For <em>preserveAppScopedResources</em> of application-scoped-resources to work, use <a href="http://dlc.sun.com.edgesuite.net/glassfish/v3.1/nightly">latest nightly build 23-Aug-10 onwards</a> <br class="atl-forced-newline"> or <br class="atl-forced-newline"> latest gf-hudson build <a href="http://gf-hudson.sfbay/hudson/job/gf-trunk-build-continuous/lastSuccessfulBuild/artifact/bundles/glassfish.zip">http://gf-hudson.sfbay/hudson/job/gf-trunk-build-continuous/lastSuccessfulBuild/artifact/bundles/glassfish.zip</a><br> 1a. unzip glassfish.zip<br> 2. Start domain <br> glassfishv3/glassfish/bin/start-domain domain1<br> 3. Start up database <br> glassfishv3/glassfish/bin/start-database <br> 4. export APS_HOME=&lt;appserv-tests&gt; <br> 5. export S1AS_HOME=glassfishv3/glassfish<br> 6. export ANT_HOME=&lt;ant home&gt;<br> 7. export PATH=$ANT_HOME/bin:$S1AS_HOME/bin:$PATH</p> <h4><a name="ApplicationScopedResourcesandJDBCMonitoringFeaturesforMS4-Statementcachehit%2Fmissmonitoring%3A"></a>Statement cache hit/miss monitoring :</h3> <p>Demo of the number of statement cache hits and misses observed for the jdbc connection pool. The statement cache hit and miss scenario is simulated by the following testcase : </p> <p>9. Checkout the following : </p> 
+     <ul> 
+      <li>svn co <a href="https://svn.java.net/svn/glassfish-svn/trunk/v2/appserv-tests/devtests/jdbc/stmtCaching_hit_miss.monitoring">https://svn.java.net/svn/glassfish-svn/trunk/v2/appserv-tests/devtests/jdbc/stmtCaching_hit_miss.monitoring</a></li> 
+      <li>svn co <a href="https://svn.java.net/svn/glassfish-svn/trunk/v2/appserv-tests/config">https://svn.java.net/svn/glassfish-svn/trunk/v2/appserv-tests/config</a></li> 
+      <li>svn co -N <a href="https://svn.java.net/svn/glassfish-svn/trunk/v2/appserv-tests">https://svn.java.net/svn/glassfish-svn/trunk/v2/appserv-tests</a> (config.properties file needed here).</li> 
+      <li>svn co -N <a href="https://svn.java.net/svn/glassfish-svn/trunk/v2/appserv-tests/lib">https://svn.java.net/svn/glassfish-svn/trunk/v2/appserv-tests/lib</a> (reporter.jar needed here)</li> 
+     </ul> <p>The test case does the following : <br> a) Creates a jdbc connection pool and jdbc resource. Sets the value of statement-cache-size attribute to 5<br> b) Sets server.monitoring-service.module-monitoring-levels.jdbc-connection-pool=HIGH<br> c) Deploys an application that gets a connection and prepares 6 statements out of which the first and last have the same SQL query. Similarly a series of tests are executed for hits and misses to the statement cache. </p> <p>The number of hits after executing the application is 8 and number of misses is 17. </p> <p>10. APS_HOME/devtests/jdbc/stmtCaching_hit_miss.monitoring/ant build deploy run -&gt; executes the test case. <br> 11. The monitoring statistics <b>numstatementcachehit</b> and <b>numstatementcachemiss</b> can be observed by executing </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">asadmin get -m server.resources.jdbc-stmtcaching_hit_miss-pool.numstatementcachehit-count
+server.resources.jdbc-stmtcaching_hit_miss-pool.numstatementcachehit-count = 8</pre> 
+       </div> 
+      </div>
+     </div> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">asadmin get -m server.resources.jdbc-stmtcaching_hit_miss-pool.numstatementcachemiss-count
+server.resources.jdbc-stmtcaching_hit_miss-pool.numstatementcachemiss-count = 17</pre> 
+       </div> 
+      </div>
+     </div> <p>12. APS_HOME/devtests/jdbc/stmtCaching_hit_miss.monitoring/ant undeploy -&gt; Undeploy the test case. </p> <h4><a name="ApplicationScopedResourcesandJDBCMonitoringFeaturesforMS4-Statementleaktracemonitoring"></a>Statement leak trace monitoring </h3> <p>Monitoring the number of statement leaks (number of statements not closed by applications before the statement leak timeout) for the specified jdbc connection pool. <b>statement-leak-timeout-in-seconds</b> attribute of a jdbc connection pool is to be set to a non-zero value, say 10. </p> <p>When applications using the jdbc connection pool fail to close the statement objects within 10 seconds, the statement is classified as a leaked object. </p> <p>13. Checkout the following : </p> 
+     <ul> 
+      <li>svn co <a href="https://svn.java.net/svn/glassfish-svn/trunk/v2/appserv-tests/devtests/jdbc/statementleakdetection">https://svn.java.net/svn/glassfish-svn/trunk/v2/appserv-tests/devtests/jdbc/statementleakdetection</a></li> 
+     </ul> <p>The test case does the following : <br> a) Creates a jdbc connection pool and jdbc resource. Sets the value of statement-leak-timeout-in-seconds attribute to 3<br> b) Sets server.monitoring-service.module-monitoring-levels.jdbc-connection-pool=HIGH<br> c) Deploys an application that gets a statement and forgets to close this statement. This is done for Statement/PS/CS objects. 2 statements are got for each type and hence the total leaks observed would be 6.</p> <p>14. APS_HOME/devtests/jdbc/statementleakdetection/ant build deploy run -&gt; executes the test case. </p> <p>15. Monitoring statistic <b>numpotentialstatementleak</b> can be observed by executing</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">asadmin get -m server.resources.ql-jdbc-pool.numpotentialstatementleak-count
+server.resources.ql-jdbc-pool.numpotentialstatementleak-count = 6</pre> 
+       </div> 
+      </div>
+     </div> <p>16. APS_HOME/devtests/jdbc/statementleakdetection/ant undeploy -&gt; Undeploy the test case. </p> <h4><a name="ApplicationScopedResourcesandJDBCMonitoringFeaturesforMS4-Othernewfeatures%28nondemo%29"></a>Other new features (non-demo)</h3> <h4><a name="ApplicationScopedResourcesandJDBCMonitoringFeaturesforMS4-SqlTraceMonitoring%3A"></a>Sql Trace Monitoring :</h3> <p>To list the top n queries that are frequently used by applications for a specific jdbc connection pool in a specific time window.</p> <p>a) Properties <b>number-of-top-queries-to-report</b> and <b>time-to-keep-queries-in-minutes</b> can be set on a jdbc connection pool to configure.<br> b) Default values of these properties are 10 and 5 minutes. </p> <p>As per the default values, the top 10 queries used by applications in the last 5 minutes are got using the monitoring statistic : <b>frequsedsqlqueries</b>. </p> <p>Monitoring Statistic can be observed by executing : </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">asadmin get -m server.resources.ql-jdbc-pool.frequsedsqlqueries-current</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="ApplicationScopedResourcesandJDBCMonitoringFeaturesforMS4-Monitoringgroupedbyapplications"></a>Monitoring grouped by applications</h3> <p>Monitoring statistics numconnused, numconnacquired and numconnreleased can be observed grouped by applications. </p> <p>a) Application1 and Application2 using the same jdbc/connector connection pool could get different number of connections from the pool.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">asadmin get -m server.resources.testPool.application1.numconnused-current
+asadmin get -m server.resources.testPool.application1.numconnreleased-count
+asadmin get -m server.resources.testPool.application2.numconnreleased-count
+asadmin get -m server.resources.testPool.application1.numconnacquired-count
+asadmin get -m server.resources.testPool.application2.numconnacquired-count</pre> 
+       </div> 
+      </div>
+     </div> <p> asadmin get -m server.resources.testPool.numconnreleased-count -&gt; Total number of connections released to the pool.</p> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Aug 28, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

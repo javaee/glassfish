@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : ToolingForNetBeansTestSpec</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="ToolingForNetBeansTestSpec-TestPlanforSIPpluginforNetbeans"></a>Test Plan for SIP plugin for Netbeans</h1> <p>Versions:<br> NetBeans 6.0 Beta2<br> Sailfin builds, use cluster and not cluster profiles.</p> <h4><a name="ToolingForNetBeansTestSpec-Installation%2FUninstallation"></a>Installation/Uninstallation</h2> 
+     <ol> 
+      <li>Install Sip enabled Glassfish distribution. Add this AS under NB Runtime/Servers.</li> 
+      <li>Start/Stop AS through NB.</li> 
+      <li>Install Sip Application Development Support Plugin nbm (i.e. org-netbeans-modules-sun-sip.nbm) through the Update Center globally and locally.</li> 
+      <li>Uninstall Sip nbm through Module manager.</li> 
+      <li>Test the installations/uninstalations at least on one Solaris, one Linux, one Windows machines (rotate the OS versions).</li> 
+      <li>Upgrade 
+       <ol> 
+        <li>start NB with a clean user directory.</li> 
+        <li>install a "previous" version of the sip app dev module.</li> 
+        <li>install the current version of the sip app dev module.</li> 
+       </ol> </li> 
+     </ol> <h4><a name="ToolingForNetBeansTestSpec-Create%2FExecutewebprojectsthatwerecreatedwith%22ConvergedSipApplicationFramework%22"></a>Create/Execute web projects that were created with "Converged Sip Application Framework"</h2> 
+     <ol> 
+      <li>Create a new web application using "Converged Sip Application Framework"</li> 
+      <li>Add a Sip Servlet. sip.xml is created but it is not populated automatically after a Sip Servlet is added. Populate sip.xml manually in NB editor, for example:
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">&lt;servlet&gt;
+      &lt;servlet-name&gt;Sip1Servlet&lt;/servlet-name&gt;
+       &lt;servlet-class&gt;sipservlet.Sip1Servlet&lt;/servlet-class&gt;
+      &lt;/servlet&gt;</pre> 
+         </div> 
+        </div>
+       </div><br> (This step will be changed later: "the user will be creating JSR289 applications, that are annotation based", so far not implemented)</li> 
+      <li>Add a listener, using sip listener template.</li> 
+      <li>Build the project.</li> 
+      <li>Deploy this "empty " SIP project to SailFin build. 
+       <ol> 
+        <li>Check that this SIP application is seen under SIP item at Services tab Servers/AS/Applications</li> 
+        <li>Open the correspondent project URL in the browser.</li> 
+       </ol> </li> 
+      <li>Execute for the project: 
+       <ol> 
+        <li>Deploy/Undeploy</li> 
+        <li>Run (a browser has to be opened with a correct URL).</li> 
+        <li>Debug, debug window has to be started.</li> 
+        <li>Profile</li> 
+       </ol> </li> 
+      <li>Undeoploy SIP sample from AS in Services tab</li> 
+      <li>Open as project in NB samples. Build , deploy to AS and execute them. 
+       <ul> 
+        <li>CallSetup sample</li> 
+        <li>ClickToDial sample (or any other samples)</li> 
+       </ul> </li> 
+      <li>Create a new project using Converged Sip Application Framework. Add to this project the source code of the workable SIP application. Build, deploy, run such project.</li> 
+      <li>Check NB Help, I believe that during sip nbm installation has to be added SIP information to the NB Help.</li> 
+     </ol> <h4><a name="ToolingForNetBeansTestSpec-SIPTestAgent"></a>SIP Test Agent</h2> 
+     <ol> 
+      <li>Install SIP Test agent, check that there were no errors during the installation.</li> 
+      <li>Open "Request" window and send all default requests. Check, using Sailfin log file, that requests were really sent.</li> 
+      <li>Deploy to Sailfin a SIP application that works as UAS. Make in Sailfin FINEST Sip Container loggin level. Generate a sequence of the requests that imitates a normal UAC session, for example: REGISTER, INVITE, ACK, MESSAGE, BYE. Check, based on the Sailfin log file, that all requests generated correct responses from Sailfin. Compare this UAC-UAS dialog with UAC-UAS dialog where as UAC was used not a SIP Test Agent, but the real tool, for example Windows Messenger, if to Sailfin was deployed an echo sample: <a href="http://www.javaworld.com/javaworld/jw-06-2006/jw-0619-sip.html">http://www.javaworld.com/javaworld/jw-06-2006/jw-0619-sip.html</a></li> 
+      <li>Open Request window and in Headers panel 
+       <ol> 
+        <li>Add and Remove headers</li> 
+        <li>Change the values of the headers</li> 
+       </ol> </li> 
+      <li>Open Response window and in Headers panel 
+       <ol> 
+        <li>Add and Remove headers</li> 
+        <li>Change the values of the headers</li> 
+       </ol> </li> 
+      <li>Check in Request and Response panels that OK and CANCEL buttons work properly.</li> 
+      <li>Open SIP Test Agent Window and check that buttons on the right side: ACK, BYE, CANCEL, Request, 200 OK, Response, Copy Message generate adequate responses.</li> 
+      <li>Open Response Window and send one by one all responses. Check, using Sailfin log file, that responses were really sent.</li> 
+      <li>Monitor NB log and a terminal window, where NB was started. Check that there were no SIP Test Agent related errors or warnings.</li> 
+     </ol> <h4><a name="ToolingForNetBeansTestSpec-Documentation"></a>Documentation</h2> 
+     <ol> 
+      <li>Check all available documents: 
+       <ul> 
+        <li><a href="./ToolingFunctionalSpecForNetBeans.html">http://wiki.glassfish.java.net/Wiki.jsp?page=ToolingFunctionalSpecForNetBeans</a></li> 
+       </ul> </li> 
+     </ol> <h4><a name="ToolingForNetBeansTestSpec-Miscellaneous"></a>Miscellaneous</h2> 
+     <ol> 
+      <li>File bugs at <a href="https://sailfin.java.net/issues/">https://sailfin.java.net/issues/</a></li> 
+      <li>Log files have to be monitored 
+       <ul> 
+        <li>Always monitor NB messages log file.</li> 
+        <li>AS server.log file</li> 
+       </ul> </li> 
+     </ol> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:49.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

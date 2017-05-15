@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : templating</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>This page describe the expectations the GlassFish DAS will have on a virtual machine instance template.</p> 
+     <ul> 
+      <li>To get instructions to create load-balancer template, refer to <a href="./LBTemplating.html">LBTemplating</a>.</li> 
+      <li>Pre-built JeOS images at Ubuntu site are very old. To create JeOS image using vmbuilder, refer to <a href="./VMBuilder.html">VMBuilder</a>.</li> 
+     </ul> <h4><a name="templating-1.Getinstallableimage%28jeos%29."></a>1. Get installable image (jeos).</h2> <h4><a name="templating-1.1Ubuntujeos"></a>1.1 Ubuntu jeos</h3> <p>Download the jeos CD image from </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">wget http://cdimage.ubuntu.com/cdimage/jeos/releases/8.04.3/release/jeos-8.04.3-jeos-i386.iso</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="templating-2.Createthevirtualmachine."></a>2. Create the virtual machine.</h2> <h4><a name="templating-2.1KVMVirtualMachineinstallation"></a>2.1 KVM Virtual Machine installation</h3> 
+     <ol> 
+      <li>Start the Virtual Machine Manager (Applications-&gt;System Tools-&gt;Virtual Machine Manager)</li> 
+      <li>Add a Connection (File-&gt;Add Connection) to the Local QEMU/KVM hypervisor</li> 
+      <li>Right click on localhost(QEMU) node and select "New..."</li> 
+     </ol> 
+     <ol> 
+      <li>Select Name</li> 
+      <li>Select the ISO file you downloaded as well as OS Type.<br> <span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20876197/21365691.png" style="border: 0px solid black"></span></li> 
+      <li>Select Memory and Process allocation</li> 
+      <li>Create storage for the virtual machine (this is the disk used to install the underlying operating systems). Here I just allocated 1Gb.<br> <span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20876197/21365692.png" style="border: 0px solid black"></span></li> 
+      <li>Select the bridged network interface (br0)<br> <span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20876197/21365690.png" style="border: 0px solid black"></span></li> 
+      <li>Now your virtual machine should boot for the first time, install Ubuntu<br> <span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20876197/21365693.png" style="border: 0px solid black"></span></li> 
+     </ol> <h4><a name="templating-2.2Installtheoperatingsystem."></a>2.2 Install the operating system.</h3> <p>Normal Operating system installation steps within the newly created virtual machine.</p> <h4><a name="templating-3.Customizetheimage."></a>3. Customize the image.</h2> <p>To customize the image, you can download the customization script from your glassfish DAS instance.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">wget http://DAS_IP:8080/ubuntu/configure-master.sh</pre> 
+       </div> 
+      </div>
+     </div> <p>Run the script (NOT AS ROOT) :</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">configure-master.sh &lt;DAS_ADDRESS&gt; [DAS_PORT] [DOMAIN]</pre> 
+       </div> 
+      </div>
+     </div> <p>DAS port and domain are optional.<br> The script will require that you enter the virtual machine sudo password.</p> <p>Alternatively you can do it by hand following the suggested steps below.</p> <h4><a name="templating-3.1Updatetheimage"></a>3.1 Update the image</h3> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">sudo apt-get -y -q update
+sudo apt-get -y -q upgrade
+sudo apt-get clean</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="templating-3.2Installrequiredpackages."></a>3.2 Install required packages.</h3> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">sudo apt-get -y -q install wget
+sudo apt-get -y -q install sun-java6-jdk
+sudo apt-get -y -q install unzip
+sudo apt-get -y -q install openssh-server</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="templating-3.3InstallGlassfishandtools."></a>3.3 Install Glassfish and tools.</h3> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">echo "Installing GlassFish"
+cd /opt
+sudo mkdir glassfishvm
+sudo chmod a+rwx glassfishvm
+cd glassfishvm
+wget http://$das_address:$das_port/glassfish.zip
+unzip glassfish.zip
+rm glassfish.zip</pre> 
+       </div> 
+      </div>
+     </div> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">echo "Installing vitualization code"
+wget http://$das_address:$das_port/vmcluster.jar
+mv vmcluster.jar glassfish3/glassfish/modules</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="templating-3.4Installstartupscript."></a>3.4 Install startup script.</h3> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">echo "Installing GlassFish as a startup service"
+cd /etc/init.d
+#sudo wget http://$das_address:$das_port/ubuntu/glassfish
+sudo wget http://$das_address:$das_port/ubuntu/initial-setup.sh
+sudo mv initial-setup.sh glassfish
+sudo chmod a+x glassfish
+sudo update-rc.d glassfish defaults</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="templating-4.Templateextraction."></a>4. Template extraction.</h2> <p>To register a template in GlassFish, you need 2 files :<br> *The image file you created above<br> *The libvirt xml description of the virtual machine (which will be customized at each virtual machine creation).</p> <h4><a name="templating-4.1ExampleKVMconfigurationfile."></a>4.1 Example KVM configuration file.</h3> <p>The example below is a KVM virtual machine XML description file :</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;domain type='kvm' id='3'&gt;
+  &lt;name&gt;ubuntu&lt;/name&gt;
+  &lt;uuid&gt;15e982eb-f2f5-f91f-bee6-bef448e8a887&lt;/uuid&gt;
+  &lt;memory&gt;2097152&lt;/memory&gt;
+  &lt;currentMemory&gt;2097152&lt;/currentMemory&gt;
+  &lt;vcpu&gt;1&lt;/vcpu&gt;
+  &lt;os&gt;
+    &lt;type arch='x86_64' machine='pc-0.12'&gt;hvm&lt;/type&gt;
+    &lt;boot dev='hd'/&gt;
+  &lt;/os&gt;
+  &lt;features&gt;
+    &lt;acpi/&gt;
+    &lt;apic/&gt;
+    &lt;pae/&gt;
+  &lt;/features&gt;
+  &lt;clock offset='utc'/&gt;
+  &lt;on_poweroff&gt;destroy&lt;/on_poweroff&gt;
+  &lt;on_reboot&gt;restart&lt;/on_reboot&gt;
+  &lt;on_crash&gt;restart&lt;/on_crash&gt;
+  &lt;devices&gt;
+    &lt;emulator&gt;/usr/bin/kvm&lt;/emulator&gt;
+    &lt;disk type='file' device='disk'&gt;
+      &lt;driver name='qemu' type='raw'/&gt;
+      &lt;source file='/var/lib/libvirt/images/ubuntu.img'/&gt;
+      &lt;target dev='hda' bus='ide'/&gt;
+      &lt;alias name='ide0-0-0'/&gt;
+      &lt;address type='drive' controller='0' bus='0' unit='0'/&gt;
+    &lt;/disk&gt;
+    &lt;disk type='block' device='cdrom'&gt;
+      &lt;driver name='qemu' type='raw'/&gt;
+      &lt;target dev='hdc' bus='ide'/&gt;
+      &lt;readonly/&gt;
+      &lt;alias name='ide0-1-0'/&gt;
+      &lt;address type='drive' controller='0' bus='1' unit='0'/&gt;
+    &lt;/disk&gt;
+    &lt;controller type='ide' index='0'&gt;
+      &lt;alias name='ide0'/&gt;
+      &lt;address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x1'/&gt;
+    &lt;/controller&gt;
+    &lt;interface type='bridge'&gt;
+      &lt;mac address='52:54:00:74:f6:21'/&gt;
+      &lt;source bridge='br0'/&gt;
+      &lt;target dev='vnet0'/&gt;
+      &lt;model type='virtio'/&gt;
+      &lt;alias name='net0'/&gt;
+      &lt;address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/&gt;
+    &lt;/interface&gt;
+    &lt;serial type='pty'&gt;
+      &lt;source path='/dev/pts/0'/&gt;
+      &lt;target port='0'/&gt;
+      &lt;alias name='serial0'/&gt;
+    &lt;/serial&gt;
+    &lt;console type='pty' tty='/dev/pts/0'&gt;
+      &lt;source path='/dev/pts/0'/&gt;
+      &lt;target type='serial' port='0'/&gt;
+      &lt;alias name='serial0'/&gt;
+    &lt;/console&gt;
+    &lt;input type='mouse' bus='ps2'/&gt;
+    &lt;graphics type='vnc' port='5900' autoport='yes'/&gt;
+    &lt;sound model='ac97'&gt;
+      &lt;alias name='sound0'/&gt;
+      &lt;address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/&gt;
+    &lt;/sound&gt;
+    &lt;video&gt;
+      &lt;model type='cirrus' vram='9216' heads='1'/&gt;
+      &lt;alias name='video0'/&gt;
+      &lt;address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/&gt;
+    &lt;/video&gt;
+    &lt;memballoon model='virtio'&gt;
+      &lt;alias name='balloon0'/&gt;
+      &lt;address type='pci' domain='0x0000' bus='0x00' slot='0x05' function='0x0'/&gt;
+    &lt;/memballoon&gt;
+  &lt;/devices&gt;
+  &lt;seclabel type='dynamic' model='apparmor'&gt;
+    &lt;label&gt;libvirt-15e982eb-f2f5-f91f-bee6-bef448e8a887&lt;/label&gt;
+    &lt;imagelabel&gt;libvirt-15e982eb-f2f5-f91f-bee6-bef448e8a887&lt;/imagelabel&gt;
+  &lt;/seclabel&gt;
+&lt;/domain&gt;</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="templating-4.2ExampleXenconfigurationfile"></a>4.2 Example Xen configuration file </h3> <p>The example below is a Xen virtual machine configuration file </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;domain type='xen' id='1'&gt;
+  &lt;name&gt;master&lt;/name&gt;
+  &lt;uuid&gt;91d6bdbb-2f78-d137-abb8-3b58c60494a4&lt;/uuid&gt;
+  &lt;memory&gt;1048576&lt;/memory&gt;
+  &lt;currentMemory&gt;524288&lt;/currentMemory&gt;
+  &lt;vcpu&gt;1&lt;/vcpu&gt;
+  &lt;os&gt;
+    &lt;type&gt;hvm&lt;/type&gt;
+    &lt;loader&gt;/usr/lib/xen/boot/hvmloader&lt;/loader&gt;
+    &lt;boot dev='hd'/&gt;
+  &lt;/os&gt;
+  &lt;features&gt;
+    &lt;acpi/&gt;
+    &lt;apic/&gt;
+    &lt;pae/&gt;
+  &lt;/features&gt;
+  &lt;clock offset='utc'/&gt;
+  &lt;on_poweroff&gt;destroy&lt;/on_poweroff&gt;
+  &lt;on_reboot&gt;restart&lt;/on_reboot&gt;
+  &lt;on_crash&gt;restart&lt;/on_crash&gt;
+  &lt;devices&gt;
+    &lt;emulator&gt;/usr/lib64/xen/bin/qemu-dm&lt;/emulator&gt;
+    &lt;disk type='file' device='disk'&gt;
+      &lt;driver name='file'/&gt;
+      &lt;source file='/var/lib/xen/images/master.img'/&gt;
+      &lt;target dev='hda' bus='ide'/&gt;
+    &lt;/disk&gt;
+    &lt;disk type='file' device='cdrom'&gt;
+      &lt;target dev='hdc' bus='ide'/&gt;
+      &lt;readonly/&gt;
+    &lt;/disk&gt;
+    &lt;interface type='bridge'&gt;
+      &lt;mac address='00:16:36:3c:2b:82'/&gt;
+      &lt;source bridge='xenbr0'/&gt;
+      &lt;script path='vif-bridge'/&gt;
+      &lt;target dev='vif1.0'/&gt;
+    &lt;/interface&gt;
+    &lt;serial type='pty'&gt;
+      &lt;source path='/dev/pts/1'/&gt;
+      &lt;target port='0'/&gt;
+    &lt;/serial&gt;
+    &lt;console type='pty' tty='/dev/pts/1'&gt;
+      &lt;source path='/dev/pts/1'/&gt;
+      &lt;target port='0'/&gt;
+    &lt;/console&gt;
+    &lt;input type='mouse' bus='ps2'/&gt;
+    &lt;graphics type='vnc' port='5901' autoport='yes' keymap='en-us'/&gt;
+  &lt;/devices&gt;
+&lt;/domain&gt;</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="templating-4.3Obtainingaconfigurationfile"></a>4.3 Obtaining a configuration file </h3> <h5><a name="templating-4.3.1Connecttothehypervisor"></a>4.3.1 Connect to the hypervisor</h5> <p>Depending if you are connecting to a local or remote machine, you will need to use the right connection string : </p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Hypervisor</th> 
+         <th class="confluenceTh"> local </th> 
+         <th class="confluenceTh"> remote </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">KVM</td> 
+         <td class="confluenceTd"> qemu:///system </td> 
+         <td class="confluenceTd"> qemu+ssh://user@host/system</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">Xen</td> 
+         <td class="confluenceTd"> xen:/// </td> 
+         <td class="confluenceTd"> xen+ssh://user@host</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>For complete reference : <a href="http://libvirt.org/uri.html">http://libvirt.org/uri.html</a></p> <p>Remember that if you connect to a remote machine, you must have installed your SSH public key on that machine.</p> <p>For instance I connect to one of my machine :<br> virsh -c qemu+ssh://cloud@10.132.181.57/system</p> <p>If your connection is successful, you will get a # prompt</p> <h5><a name="templating-4.3.2Gettheconfigurationfile."></a>4.3.2 Get the configuration file. </h5> <p>Once connected, ensuring your virtual machine is started (let's call it "master"), just do </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">dumpxml master</pre> 
+       </div> 
+      </div>
+     </div> <p>and it should dump the current virtual machine configuration to the screen, save it to a xml file. </p> <h4><a name="templating-4.4Registeringthetemplate."></a>4.4 Registering the template.</h3> <p>The template files (.img and .xml) must now be installed in the DAS by issuing an administrative command :</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">asadmin add-template --location &lt;image_file&gt; --xml &lt;xml_file&gt; --virtName libvirt ubuntu</pre> 
+       </div> 
+      </div>
+     </div> <p>bug note : you must specify the absolute path to both the image and the xml files.</p> <p>libvirt is to specify that this template is to be used with libvirt virtualization only.</p> <h4><a name="templating-4.5Templateuser"></a>4.5 Template user</h3> <p>The template will be used to run an entire operating system in the VM (equivalent to a GlassFish node). The template has been built with a particular user that will run the glassfish instances within that VM. Therefore, user information must be added to the template configuration that will be use by the DAS to ssh into the node.</p> <p>To create the template user information :</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">sadmin create-template-user --templateName ubuntu --virtName libvirt --userId &lt;unix-user-id&gt; --groupId &lt;unix-group-id&gt; unix-name</pre> 
+       </div> 
+      </div>
+     </div> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876197/21365691.png">create1.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876197/21365692.png">create2.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876197/21365690.png">create3.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876197/21365693.png">create4.png</a> (image/png) 
+      <br> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jan 30, 2012 by 
+<font color="#0050B2">16320</font>. Exported from wikis.oracle.com on May 27, 2015 20:49.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

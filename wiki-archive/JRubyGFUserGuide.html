@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : JRubyGFUserGuide</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="JRubyGFUserGuide-JRubyonGlassfishUserGuide"></a>JRuby on Glassfish - User Guide</h1> <p>The goal of the document is to capture all the common information relevant to JRuby and GlassFish.</p> 
+     <div> 
+      <ul> 
+       <li><a href="#JRubyGFUserGuide-JRubyonGlassfishUserGuide">JRuby on Glassfish - User Guide</a></li> 
+       <ul> 
+        <li><a href="#JRubyGFUserGuide-Setup">Setup</a></li> 
+        <li><a href="#JRubyGFUserGuide-DatabaseConnectionPooling">Database Connection Pooling</a></li> 
+        <li><a href="#JRubyGFUserGuide-UsingJPAwithRailsonGlassFish">Using JPA with Rails on GlassFish</a></li> 
+        <ul> 
+         <li><a href="#JRubyGFUserGuide-SetupGlassFishv2">Setup GlassFish v2</a></li> 
+         <li><a href="#JRubyGFUserGuide-CreateJavaEntityBeanswithMySQL">Create Java Entity Beans with MySQL</a></li> 
+        </ul> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="JRubyGFUserGuide-Setup"></a>Setup</h2> <p>Refer to the <a href="GettingStartedGuide.html" title="GettingStartedGuide">Getting Starting Guide </a> for detailed information of setting up JRuby and GlassFish. In case you want to use the JRuby bits checked out from the trunk use the following commands :<br> &lt;pre&gt;<br> svn checkout svn://svn.codehaus.org/jruby/trunk/jruby<br> cd jruby<br> ant jruby jruby-complete test<br> &lt;/pre&gt;</p> <p>Set the environment variable JRUBY_HOME to point to the "jruby" directory that has been checked out earlier. Also ensure that you have added the $JRUBY_HOME/bin to the PATH environment variable.<br> Once the jruby code has been successfully installed then install the gems that are required to get going :<br> &lt;pre&gt;<br> To install Rails 2.x :<br> gem install rails --no-rdoc --no-ri --include-dependencies&lt;br&gt;<br> In case you would like to work with Rails 1.2.6 then ensure that you have provided the -v option :<br> gem install rails -v=1.2.6 --no-rdoc --no-ri --include-dependencies<br> &lt;/pre&gt;</p> <h4><a name="JRubyGFUserGuide-DatabaseConnectionPooling"></a>Database Connection Pooling</h2> <p>A sample on how to use GlassFish database connection pooling with a JRuby on Rails application. In Rails the database configuration would be specified in the config/database.yml file. Lets use an example to further explain the steps. <br> &lt;pre&gt;<br> production:<br> adapter: mysql<br> database: jndi_rails_production<br> username: mysqluser<br> password: mysqlpwd<br> host: localhost<br> &lt;/pre&gt;<br> The Rails application in the "production" mode is connecting to a MySQL database which is present on the same machine. To be able to make use of GlassFish database connection pooling we need to do the following 3 steps :</p> 
+     <ol> 
+      <li>Define a connection pool pointing to the MySQL database</li> 
+      <li>Define a jndi name associated to the connection pool</li> 
+      <li>Change the application database.yml to use the connection pool</li> 
+     </ol> <p>This can be achieved by issuing these commands :<br> &lt;pre&gt;<br> asadmin create-jdbc-connection-pool <br> --datasourceclassname com.mysql.jdbc.jdbc2.optional.MysqlConnectionPoolDataSource <br> --restype javax.sql.DataSource <br> --property User=mysqluser:Password=mysqlpwd:URL=jdbc\:mysql\://localhost/jndi_rails_production<br> jdbc/jndi_rails_pool&lt;br&gt;<br> asadmin create-jdbc-resource --connectionpoolid jdbc/jndi_rails_pool jdbc/jndi_rails&lt;br&gt;<br> &lt;/pre&gt;<br> Edit the application database.yml to reflect :<br> &lt;pre&gt;<br> production:<br> adapter: jdbc<br> jndi: jdbc/jndi_rails<br> driver: com.mysql.jdbc.Driver<br> &lt;/pre&gt;</p> <h4><a name="JRubyGFUserGuide-UsingJPAwithRailsonGlassFish"></a>Using JPA with Rails on GlassFish</h2> <p>Rails by default uses ActiveRecords for Object Relational Mapping purposes or ORM. JPA is another ORM technique in JavaEE. Model class and database migration in Rails is what Entity class and persistence provider does for you in Java. Essentially in Java you just provide the Entity class and on the Rails side, you would provide the Model corresponding to the Entity class to do CRUD operations and that is pretty much it. The JPA provider does the rest. Here is how you can use JPA(an Entity bean) with your Rails application on GlassFish using MySQL database. </p> <h4><a name="JRubyGFUserGuide-SetupGlassFishv2"></a>Setup GlassFish v2</h3> 
+     <ol> 
+      <li>Install NetBeans 6.1 Beata with Web and Java EE profile.</li> 
+      <li>Follow these directions to install and setup JRuby on GlassFish v2.</li> 
+      <li>Setup JRuby jars as shared libraries on Glassfish</li> 
+     </ol> <p>&lt;pre&gt;<br> cd $GLASSFISH_HOME/jruby<br> $ant -f install.xml setup-shared-env<br> &lt;/pre&gt;</p> 
+     <ol> 
+      <li>Copy MySQL driver from your NetBeans installation:</li> 
+     </ol> <p>&lt;pre&gt;<br> cp "C:\Program Files\NetBeans 6.1 Beta\ide9\modules\ext\mysql-connector-java-5.1.5-bin.jar" c:/tools/glassfish/lib<br> &lt;/pre&gt;<br> or from <a href="http://dev.mysql.com/downloads/connector/j/5.1.html">here</a> to $GLASSFISH_HOME/lib.<br> 5. Start MySQL server and create test database if not already there<br> &lt;pre&gt;<br> mysqladmin -u root create test;<br> &lt;/pre&gt;</p> <h4><a name="JRubyGFUserGuide-CreateJavaEntityBeanswithMySQL"></a>Create Java Entity Beans with MySQL</h3> <p>First we create an entity class and a persistence unit.</p> 
+     <ol> 
+      <li>Create a new Java Application named <b>Post</b>. There's no need for a Main Class.</li> 
+      <li>Create a new Persistence Unit. Select <b>jdbc:mysql://localhost:3306/test root on Default Schema</b> as the database connection and the persistence unit name as <b>PostPU</b>, then click Finish. This will generate <b>src/META-INF/persistence.xml</b></li> 
+      <li>Create a new Entity Class named <b>Posts</b>. Set the package name to <b>entity</b>.</li> 
+      <li>Add fields and accessors for title and body. Your completed class should look as follows:</li> 
+     </ol> <p>&lt;pre&gt;<br> package entity;</p> <p>import java.io.Serializable;<br> import javax.persistence.Entity;<br> import javax.persistence.GeneratedValue;<br> import javax.persistence.GenerationType;<br> import javax.persistence.Id;</p> <p>/**<br> *</p> 
+     <ul> 
+      <li>@author vivek<br> */<br> @Entity<br> public class Posts implements Serializable {<br> private static final long serialVersionUID = 1L;<br> private Long id;<br> private String title;<br> private String body;</li> 
+     </ul> <p> public void setId(Long id) </p> 
+     <div class="error">
+      <span class="error">Unknown macro: { this.id = id; }</span> 
+     </div> <p> @Id<br> @GeneratedValue(strategy = GenerationType.AUTO)<br> public Long getId() </p> 
+     <div class="error">
+      <span class="error">Unknown macro: { return id; }</span> 
+     </div> <p> @Override<br> public int hashCode() </p> 
+     <div class="error">
+      <span class="error">Unknown macro: { int hash = 0; hash += (id != null ? id.hashCode() }</span> 
+     </div> <p> @Override<br> public boolean equals(Object object) {<br> // TODO: Warning - this method won't work in the case the id fields are not set<br> if (!(object instanceof Posts)) </p> 
+     <div class="error">
+      <span class="error">Unknown macro: { return false; }</span> 
+      <p> Posts other = (Posts) object;<br> if ((this.id == null &amp;&amp; other.id != null) || (this.id != null &amp;&amp; !this.id.equals(other.id))) </p>
+     </div> <p> return true;<br> }</p> <p> @Override<br> public String toString() </p> 
+     <div class="error">
+      <span class="error">Unknown macro: { return "entity.Post[id=" + id + "|id="id"]"; }</span> 
+     </div> <p> public String getTitle() </p> 
+     <div class="error">
+      <span class="error">Unknown macro: { return title; }</span> 
+     </div> <p> public void setTitle(String title) </p> 
+     <div class="error">
+      <span class="error">Unknown macro: { this.title = title; }</span> 
+     </div> <p> public String getBody() </p> 
+     <div class="error">
+      <span class="error">Unknown macro: { return body; }</span> 
+     </div> <p> public void setBody(String body) </p> 
+     <div class="error">
+      <span class="error">Unknown macro: { this.body = body; }</span> 
+     </div> <p>}<br> &lt;/pre&gt;</p> 
+     <ol> 
+      <li>Create Post.jar by clicking Build-&gt;Clean and Build Main Project or Shift+F11. This will create dist/Post.jar inside your project.</li> 
+      <li>Copy Post.jar to $GLASSFISH_HOME/lib directory. $GLASSFISH_HOME is where you installed GlassFish.</li> 
+     </ol> <p>&lt;pre&gt;<br> cp dist/Post.jar c:/tools/glassfish/lib<br> &lt;/pre&gt;</p> <p>//TODO </p> <p><b>Note</b> &lt;br&gt;<br> To get GlassFish to connect to MySQL database you would have to download the <a href="http://dev.mysql.com/downloads/connector/j/5.0.html">MySQL JConnector</a> and copy it to the GlassFish lib directory.</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:48.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

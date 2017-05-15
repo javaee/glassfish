@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : JMS using GlassFish MQ Bootcamp</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="JMSusingGlassFishMQBootcamp-Intro"></a>Intro</h1> <p><a href="http://openmq.java.net">OpenMQ</a> is one of the subprojects of GlassFish and servers as both the <a href="http://docs.oracle.com/javaee/6/tutorial/doc/bncdr.html">JMS</a> reference implementation as well as a production-quality implementation fully integrated with GlassFish. It is also usable in standalone mode (check the <a href="http://docs.oracle.com/cd/E18930_01/html/821-2443/index.html">Message Queue 4.5 Technical Overview</a> for details).</p> <p>This page contains material from the GlassFish MQ bootcamp to get your feet wet and hands on the technology. It covers the following topics :</p> 
+     <ol> 
+      <li>OpenMQ basics</li> 
+      <li>Compile simple java applications to send and receive messages via the JMS API</li> 
+      <li>Compile and package a simple MDB application which receives a message from a JMS destination and sends a message to another JMS destination</li> 
+      <li>How to configure a GlassFish instance</li> 
+      <li>How to configure a GlassFish cluster</li> 
+     </ol> <p>Raw material is available from <a href="http://java.net/projects/glassfish/downloads/download/GlassFish%20bootcamp%202011/GlassFish3.1-Bootcamp-JMS-Material.zip">this link</a>.</p> <p>If you have questions about OpenMQ, GlassFish or this material, please consider using the <a href="http://www.java.net/forums/glassfish/glassfish">GlassFish Forum</a> or <a href="mailto:users@glassfish.java.net">USERS mailing list</a>.</p> <h4><a name="JMSusingGlassFishMQBootcamp-JMSBootcampslides"></a>JMS Bootcamp slides</h2> <p>(click to open PDF)<br> <a href="http://download.java.net/glassfish/wiki-archive/attachments/27394758/27754500.pdf"><span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/27394758/27754499.png" style="border: 0px solid black"></span></a></p> <h4><a name="JMSusingGlassFishMQBootcamp-JMSBootcamphandsonlab"></a>JMS Bootcamp hands-on-lab</h2> 
+     <ul> 
+      <li><a href="http://download.java.net/glassfish/wiki-archive/attachments/27394758/27754501.pdf">List of commands</a> to be used for both labs (you can follow these, or read the instructions following)</li> 
+     </ul> <h4><a name="JMSusingGlassFishMQBootcamp-Setup"></a>Setup</h3> 
+     <ul> 
+      <li>Install GlassFish Server. Download latest GlassFish 3.x bundle from <a href="http://glassfish.java.net/public/downloadsindex.htm">http://glassfish.java.net/public/downloadsindex.htm</a>.</li> 
+      <li>Compile the applications and place the binaries in the test directory OR Download the above mentioned test bundle, "test.zip" and unzip it in the test directory</li> 
+     </ul> <h4><a name="JMSusingGlassFishMQBootcamp-LinktotheApplicationsusedintheDemo"></a>Link to the Applications used in the Demo</h3> 
+     <ul> 
+      <li>Message-Driven Bean : <a href="http://glassfish.java.net/public/JMSBootCamp/source/GenericMDB.java"><tt>GenericMDB.java</tt></a></li> 
+      <li>JMS Sender : <a href="http://glassfish.java.net/public/JMSBootCamp/source/Sender.java"><tt>Sender.java</tt></a></li> 
+      <li>JMS Receiver : <a href="http://glassfish.java.net/public/JMSBootCamp/source/Receiver.java"><tt>Receiver.java</tt></a></li> 
+      <li>test.zip : <a href="http://glassfish.java.net/public/JMSBootCamp/source/test.zip"><tt>test.zip</tt></a> Archive Containing the Source Code and Binary for the MDB and the JMS Clients. Use the test.zip if you don't want to compile the applications yourself.</li> 
+     </ul> <h4><a name="JMSusingGlassFishMQBootcamp-InstructionstoCompiletheApplications"></a>Instructions to Compile the Applications</h3> 
+     <ul> 
+      <li>set CLASSPATH to <tt>$GLASSFISH_HOME/lib/javaee.jar:$MQ_HOME/lib/imq.jar:$MQ_HOME/lib/jms.jar:.</tt></li> 
+     </ul> <h4><a name="JMSusingGlassFishMQBootcamp-CompileMDB"></a>Compile MDB</h4> 
+     <ol> 
+      <li><tt>javac GenericMDB.java</tt></li> 
+      <li><tt>jar cvf ejb-jar-ic.jar GenericMDB.class</tt></li> 
+      <li><tt>jar cvf simplemdb.ear ejb-jar-ic.jar</tt></li> 
+     </ol> <h4><a name="JMSusingGlassFishMQBootcamp-CompileJMSSender%2FReceiver"></a>Compile JMS Sender/Receiver</h4> 
+     <ol> 
+      <li><tt>javac Sender.java Receiver.java</tt></li> 
+      <li>Copy the <tt>simplemdb.ear</tt>, <tt>Sender.class</tt> and <tt>Receiver.class</tt> to the test directory.</li> 
+     </ol> <h4><a name="JMSusingGlassFishMQBootcamp-InstructionsforRunningtheDemo"></a>Instructions for Running the Demo</h3> <h4><a name="JMSusingGlassFishMQBootcamp-Inclasslabs"></a>In class labs</h4> 
+     <ul> 
+      <li><a href="http://glassfish.java.net/public/JMSBootCamp/inst-files/instructions_embedded_singlebkr.txt">GlassFish Single Instance</a> (with MQ Broker in the Default Embedded Mode) 
+       <ul> 
+        <li><a href="http://glassfish.java.net/public/JMSBootCamp/inst-files/gf31-mq45-demo.html">GlassFish Instance</a> (Same lab, but instructions for setup via GlassFish Admin GUI)</li> 
+        <li><a href="http://glassfish.java.net/public/JMSBootCamp/nb-projs/netbeans.htm">GlassFish Instance</a> (Same lab, but instructions for setup via NetBeans)</li> 
+       </ul> </li> 
+      <li><a href="http://glassfish.java.net/public/JMSBootCamp/inst-files/instructions_conventional_gfcluster.txt">GlassFish Conventional Cluster</a> (MQ Broker in Default Embedded Mode) – You can try this <a href="http://glassfish.java.net/public/JMSBootCamp/source/gf-mq-clust-demo.bash">BASH script</a>, but make sure to edit it and change the gf_home: gf_home=/cygdrive/c/glassfish3 
+       <ul> 
+        <li><a href="http://glassfish.java.net/public/JMSBootCamp/inst-files/GUI%20Setup%20Guide.txt">Abbreviated Outline</a> for configuration using the GlassFish Admin GUI</li> 
+       </ul> </li> 
+     </ul> <h4><a name="JMSusingGlassFishMQBootcamp-Labsforlater"></a>Labs for later</h4> 
+     <ul> 
+      <li><a href="http://glassfish.java.net/public/JMSBootCamp/inst-files/instructions_local_singlebkr.txt">GlassFish Single Instance</a> (with MQ Broker in LOCAL Mode) 
+       <ul> 
+        <li><a href="http://glassfish.java.net/public/JMSBootCamp/inst-files/gf31-mq45-hacluster-demo.html">GlassFish Instance</a> (Same lab, but instructions for setup with GlassFish Admin GUI)</li> 
+       </ul> </li> 
+      <li><a href="http://glassfish.java.net/public/JMSBootCamp/inst-files/instructions_local_habroker.txt">GlassFish HA Cluster</a> (with MQ Brokers in LOCAL Mode)</li> 
+      <li><a href="http://glassfish.java.net/public/JMSBootCamp/inst-files/glassfish-mq-remote-ha-cluster.html">GlassFish Instance</a> (with Remote MQ HA Cluster with Derby/JavaDB as the jdbcstore, as the JMS Provider)</li> 
+     </ul> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/27394758/28147713.png">JMSBootCampSlides.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/27394758/27754499.png">JMSBootCampSlides.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/27394758/27754500.pdf">JMSBootCampSlides.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/27394758/27754501.pdf">gf-jms-boot-camp.pdf</a> (application/pdf) 
+      <br> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Dec 23, 2011 by 
+<font color="#0050B2">10011</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

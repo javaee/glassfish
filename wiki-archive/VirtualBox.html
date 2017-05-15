@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : VirtualBox</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="VirtualBox-VirtualBoxinstallation"></a>VirtualBox installation</h3> <p>Download and install VirtualBox from <a href="https://www.virtualbox.org/wiki/Downloads">https://www.virtualbox.org/wiki/Downloads</a> My testing has been on version 4.1.8 (4.1.10 is the latest).</p> <h4><a name="VirtualBox-Webservicesetup"></a>Web service setup</h3> <p>On Linux systems, VirtualBox creates the init script <b>/etc/init.d/vboxweb-service</b> when it is installed. This can be used to start and stop vboxwebsrv. In order to start vboxwebsrv, the file <b>/etc/default/virtualbox</b> must exist with correct settings. If this file does not exist on your system, create it as follows:</p> 
+     <div class="preformatted panel" style="border-width: 1px;">
+      <div class="preformattedContent panelContent"> 
+       <pre>$ cat /etc/default/virtualbox 
+VBOXWEB_USER=yamini
+</pre> 
+      </div>
+     </div> <p>VBOXWEB_USER should be set to the user that runs VirtualBox virtual machines on your system.</p> <h4><a name="VirtualBox-Startwebservice"></a>Start web service</h3> 
+     <div class="preformatted panel" style="border-width: 1px;">
+      <div class="preformattedContent panelContent"> 
+       <pre>$ sudo /etc/init.d/vboxweb-service start
+ * Starting VirtualBox web service                                                                                                                                              *  done.         
+$ netstat -an|grep 18083
+tcp        0      0 127.0.0.1:18083         0.0.0.0:*               LISTEN    
+</pre> 
+      </div>
+     </div> <h4><a name="VirtualBox-Turnofauthentication"></a>Turn of authentication</h3> 
+     <div class="preformatted panel" style="border-width: 1px;">
+      <div class="preformattedContent panelContent"> 
+       <pre>$ vboxmanage setproperty websrvauthlibrary null
+</pre> 
+      </div>
+     </div> <h4><a name="VirtualBox-Networkbridgesetup"></a>Network bridge setup</h3> 
+     <ul> 
+      <li>Disable wireless, and log out of VPN if logged in. Turning on multiple interfaces causes unpredictable behaviour.</li> 
+      <li>Create the following entries in <b>/etc/network/interfaces</b></li> 
+     </ul> 
+     <div class="preformatted panel" style="border-width: 1px;">
+      <div class="preformattedContent panelContent"> 
+       <pre>$ cat /etc/network/interfaces
+# The loopback network interface
+
+auto lo
+iface lo inet loopback
+
+auto eth0
+iface eth0 inet manual
+
+auto br0
+iface br0 inet dhcp
+        bridge_ports eth0
+        bridge_stp off
+        bridge_fd 0
+        bridge_maxwait 0
+</pre> 
+      </div>
+     </div> 
+     <ul> 
+      <li>Setup proper permissions for devices for the bridge to work correctly</li> 
+     </ul> 
+     <div class="preformatted panel" style="border-width: 1px;">
+      <div class="preformattedContent panelContent"> 
+       <pre>$ sudo chown :vboxusers /dev/net/tun
+$ sudo chmod 0660 /dev/net/tun
+</pre> 
+      </div>
+     </div> 
+     <ul> 
+      <li>Restart network service 
+       <div class="preformatted panel" style="border-width: 1px;">
+        <div class="preformattedContent panelContent"> 
+         <pre>$ sudo /etc/init.d/networking restart
+ * Running /etc/init.d/networking restart is deprecated because it may not enable again some interfaces
+ * Reconfiguring network interfaces...
+ssh stop/waiting
+ssh start/running, process 5297
+ssh stop/waiting
+ssh start/running, process 5404
+                                                                                                                                                                          [ OK ]
+$ ifconfig
+br0       Link encap:Ethernet  HWaddr 5c:26:0a:83:61:67  
+          inet addr:192.168.1.13  Bcast:192.168.1.255  Mask:255.255.255.0
+          inet6 addr: fe80::5e26:aff:fe83:6167/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:24 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:88 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:0 
+          RX bytes:3166 (3.1 KB)  TX bytes:39532 (39.5 KB)
+
+eth0      Link encap:Ethernet  HWaddr 5c:26:0a:83:61:67  
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:66676 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:93294 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:53021155 (53.0 MB)  TX bytes:22929009 (22.9 MB)
+          Interrupt:20 Memory:e2e00000-e2e20000 
+
+lo        Link encap:Local Loopback  
+          inet addr:127.0.0.1  Mask:255.0.0.0
+          inet6 addr: ::1/128 Scope:Host
+          UP LOOPBACK RUNNING  MTU:16436  Metric:1
+          RX packets:60263 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:60263 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:0 
+          RX bytes:30297269 (30.2 MB)  TX bytes:30297269 (30.2 MB)
+
+virbr0    Link encap:Ethernet  HWaddr d6:25:fd:9d:c2:a1  
+          inet addr:192.168.122.1  Bcast:192.168.122.255  Mask:255.255.255.0
+          UP BROADCAST MULTICAST  MTU:1500  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:0 
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+</pre> 
+        </div>
+       </div></li> 
+     </ul> <p>For Ubuntu,see <a href="https://help.ubuntu.com/community/VirtualBox/Networking">https://help.ubuntu.com/community/VirtualBox/Networking</a> for more info on networking.</p> <h4><a name="VirtualBox-ConfigureIMSonDAS"></a>Configure IMS on DAS</h3> <p>Set GF_HOME to point to installation. Copy over virtualbox.jar into $GF_HOME/modules directory. </p> <p>Copy paste the following commands in a file (change the VDI location and the user name) and run the script.</p> 
+     <div class="preformatted panel" style="border-width: 1px;">
+      <div class="preformattedContent panelContent"> 
+       <pre>rm -rf ~/virt/templates/*
+rm -rf ~/virt/disks/*
+ 
+$GF_HOME/bin/asadmin start-domain --debug
+$GF_HOME/bin/asadmin create-ims-config-virtualbox --emulatorpath /usr/lib/virtualbox virtualbox
+
+$GF_HOME/bin/asadmin create-server-pool --virtualization virtualbox --subnet 192.168.1.0/24 --portName "br0" cloud
+
+$GF_HOME/bin/asadmin create-template --virtualization virtualbox --files /space/vbox/glassfish/glassfish.vdi --indexes ServiceType=JavaEE,VirtualizationType=virtualbox glassfish
+$GF_HOME/bin/asadmin create-template-user --virtualization virtualbox --template glassfish cloud
+
+$GF_HOME/bin/asadmin create-machine --serverPool cloud --networkName localhost local
+$GF_HOME/bin/asadmin create-machine-user --serverPool cloud --machine local yamini
+
+#copying of the template (~1GB) into ~/virt/templates takes about a min.
+echo "Copying of template into ~/virt/templates in progress..."
+sleep 60
+ls -l ~/virt/templates/glassfish
+
+$GF_HOME/bin/asadmin stop-domain
+
+</pre> 
+      </div>
+     </div> <p>As you can see above you should have the preconfigured templates ready.</p> <h4><a name="VirtualBox-StartDAS"></a>Start DAS</h3> 
+     <div class="preformatted panel" style="border-width: 1px;">
+      <div class="preformattedContent panelContent"> 
+       <pre>$ asadmin start-domain
+Waiting for domain1 to start .........
+Successfully started the domain : domain1
+domain  Location: /space/bg/main/appserver/distributions/glassfish/target/stage/glassfish3/glassfish/domains/domain1
+Log File: /space/bg/main/appserver/distributions/glassfish/target/stage/glassfish3/glassfish/domains/domain1/logs/server.log
+Admin Port: 4848
+Command start-domain executed successfully.
+</pre> 
+      </div>
+     </div> <h4><a name="VirtualBox-DeploythePaaSapp"></a>Deploy the PaaS app</h3> 
+     <div class="preformatted panel" style="border-width: 1px;">
+      <div class="preformattedContent panelContent"> 
+       <pre>$ asadmin deploy /tmp/helloworld.war 
+Application deployed with name helloworld.
+Command deploy executed successfully.
+</pre> 
+      </div>
+     </div> <p>The moment the VMs are created and launched, you can see the console widows automatically opening up in VirtualBox.</p> 
+     <div class="preformatted panel" style="border-width: 1px;">
+      <div class="preformattedContent panelContent"> 
+       <pre>$ asadmin list-instances
+cloud_local_helloworld1Instance   running  
+cloud_local_helloworld2Instance   running  
+Command list-instances executed successfully.
+</pre> 
+      </div>
+     </div> <h4><a name="VirtualBox-Undeploytheapp"></a>Undeploy the app</h3> 
+     <div class="preformatted panel" style="border-width: 1px;">
+      <div class="preformattedContent panelContent"> 
+       <pre>$ asadmin undeploy helloworld
+Command undeploy executed successfully.
+</pre> 
+      </div>
+     </div> <h4><a name="VirtualBox-TroubleshootingTips"></a>Troubleshooting Tips</h4> 
+     <ol> 
+      <li>Sometimes web service may fail to start. So vbox kernel modules need to be rebuilt. This is also expected when OS updates happen. 
+       <div class="preformatted panel" style="border-width: 1px;">
+        <div class="preformattedContent panelContent"> 
+         <pre>$ sudo /etc/init.d/vboxweb-service start
+ * Starting VirtualBox web service                                                                                                                                               
+ * VirtualBox kernel module not loaded!
+</pre> 
+        </div>
+       </div></li> 
+     </ol> <p>Run the following script to compile VirtualBox kernel</p> 
+     <div class="preformatted panel" style="border-width: 1px;">
+      <div class="preformattedContent panelContent"> 
+       <pre>$ sudo sh /etc/init.d/vboxdrv setup
+ * Stopping VirtualBox kernel modules                                                                                                                                    [ OK ] 
+ * Uninstalling old VirtualBox DKMS kernel modules                                                                                                                       [ OK ] 
+ * Removing old VirtualBox pci kernel module                                                                                                                             [ OK ] 
+ * Removing old VirtualBox netadp kernel module                                                                                                                          [ OK ] 
+ * Removing old VirtualBox netflt kernel module                                                                                                                          [ OK ] 
+ * Removing old VirtualBox kernel module                                                                                                                                 [ OK ] 
+ * Trying to register the VirtualBox kernel modules using DKMS                                                                                                                  
+ * Failed, trying without DKMS
+ * Recompiling VirtualBox kernel modules                                                                                                                                 [ OK ] 
+ * Starting VirtualBox kernel modules                                      
+$ sudo /etc/init.d/vboxweb-service start
+ * Starting VirtualBox web service
+ * done.
+</pre> 
+      </div>
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Mar 20, 2012 by 
+<font color="#0050B2">16320</font>. Exported from wikis.oracle.com on May 27, 2015 20:49.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

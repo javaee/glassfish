@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GfinNB70TaskList</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GfinNB70TaskList-TaskList"></a>Task List</h1> <h4><a name="GfinNB70TaskList-whythisdocument"></a>why this document</h3> <p>this is the primary coordination document for tasks that need to happen to support GlassFish in NetBeans. The list isn't tied to a release, so this can grow.</p> <p>I want this to be fairly light weight and still useful as a reference for communication.</p> <p>Since I want to keep this list as a reference point for discussions, I want to make sure that edits happen in a way that preserve the identifiers across updates.</p> <h4><a name="GfinNB70TaskList-EditingRules"></a>Editing Rules</h3> <p>There are a couple simple rules that folks need to follow to make this possible:</p> 
+     <ol> 
+      <li>Add items at the 'end' of list or sub-list... not in the middle. So, if you add a 'top level item' do it at the end of the document. The same holds true for adding a sub-item... Adding sublists is an easy way to avoid breaking this rule...</li> 
+      <li>No items are to be deleted. If you need to delete an item use the <a href="http://www.jspwiki.org/wiki/JSPWikiStyles">strikethrough ccs directive</a>. And put a note about why the item is struck through... There is an exception to this rule... you can delete an item from the list if it does not affect the numbering of items that follow it. This basically means the last item in a list or sub-list.</li> 
+      <li>Use the ccs directive to color text as <font color="green">green</font> when you consider the item to be done/ready for testing by QA. %<sub>%(color: green<img class="emoticon" src="images/icons/emoticons/wink.gif" height="20" width="20" align="absmiddle" alt="" border="0"> text that needs to be colored%</sub>% Please add a link to any 'cross reference' that makes sense for an item when you mark it as completed. An obvious cross reference would be a link to the commit/commits that you think 'close' this item.</li> 
+      <li>I expect folks to edit this list to communicate the work that they are doing or think they will be doing to support Glassfish in NB. If you are working on a task and think of subtasks that aren't called out, take the minute to add them to the document. That way folks can get a feel for the status by comparing green to black elements in the list. By the end of milestone three, we want to have a list that is 'mostly' green.</li> 
+     </ol> <h4><a name="GfinNB70TaskList-TheList"></a>The List</h2> 
+     <ol> 
+      <li>extend v3 integration to support remote domains<br> Vince 
+       <ol> 
+        <li>change the registration wizard 
+         <ol> 
+          <li>UI design <a href="GfinNB70v3RegWizardUI.html" title="GfinNB70v3RegWizardUI">design document</a></li> 
+         </ol> </li> 
+        <li><font color="green">enable archive deployment with POST</font></li> 
+       </ol> </li> 
+      <li><font color="green">support only v3 'final'<br> Vince</font> <a href="http://hg.netbeans.org/main/rev/197a4a8cca5c">the commit</a>%% 
+       <ol> 
+        <li><font color="green">remove Prelude from user visible labels</font></li> 
+        <li><font color="green">switch the 'source' of the bits that get used by 'Download v3 Now' button</font></li> 
+        <li><font color="green">ping RE to shift to using v3 promoted bits</font></li> 
+       </ol> </li> 
+      <li>extend v3 with settable deployment timeout 
+       <ol> 
+        <li>UI design for server properties panels</li> 
+       </ol> </li> 
+      <li><font color="green">remove enable/disable functionality from 'deployed apps' under v2 domain (bug fix) <a href="http://www.netbeans.org/issues/show_bug.cgi-135393">issue</a></font></li> 
+      <li><font color="green">make sure starting v3 can trigger the start of Java DB (or other registered DB like MySQL)</font> Jav db only at this point%% 
+       <ol> 
+        <li><font color="green">include user control to disable automatic start-up of the DB (on server properties page)</font></li> 
+        <li>base start-up processing on better 'trigger', like presence of a jdbc resource in the app or on the server that is being started.</li> 
+       </ol> </li> 
+      <li>user and password properties for v3 domains 
+       <ol> 
+        <li>use to create authenticated admin requests</li> 
+        <li>UI design for registration wizard</li> 
+        <li>UI design for server properties</li> 
+       </ol> </li> 
+      <li>allow user to change the ports for a server on the properties page 
+       <ol> 
+        <li><a href="GFinNB70JavaPlatformPropsUI.html" title="GFinNB70JavaPlatformPropsUI">UI design for server properties</a></li> 
+       </ol> </li> 
+      <li><font color="green">allow user to specify the transport details for debugging (shmem vs </font>strike host/port 
+       <div class="panel" style="border-width: 1px;">
+        <div class="panelContent"> 
+         <p>)</p> 
+         <hr> 
+         <p>Jspwiki style: socket</p> 
+        </div>
+       </div> 
+       <ol> 
+        <li><a href="GFinNB70JavaPlatformPropsUI.html" title="GFinNB70JavaPlatformPropsUI">UI design for server properties</a></li> 
+       </ol> </li> 
+      <li><font color="green">allow user to change the java </font>strike platform 
+       <div class="panel" style="border-width: 1px;">
+        <div class="panelContent"> 
+         <p>used to start v3</p> 
+         <hr> 
+         <p>Jspwiki style: executable</p> 
+        </div>
+       </div> 
+       <ol> 
+        <li><a href="GFinNB70JavaPlatformPropsUI.html" title="GFinNB70JavaPlatformPropsUI">UI design for server properties</a></li> 
+       </ol> </li> 
+      <li><font color="green">allow user to control whether the server uses the IDE's proxy settings when started from the IDE</font> 
+       <ol> 
+        <li><a href="GFinNB70JavaPlatformPropsUI.html" title="GFinNB70JavaPlatformPropsUI">UI design for server properties</a></li> 
+       </ol> </li> 
+      <li>extend personal domain processing to allow user to define ports and auth info 
+       <ol> 
+        <li>-ports</li> 
+        <li>username and password-</li> 
+        <li>UI design for registration wizard</li> 
+       </ol> </li> 
+      <li>allow user to associate username and password with a domain at registration time 
+       <ol> 
+        <li>UI design for registration wizard</li> 
+       </ol> </li> 
+      <li><font color="green">prep javadb when v3 is registered<br> Nitya</font> 
+       <ol> 
+        <li><font color="green">create databases that have the data to support samples</font></li> 
+        <li><font color="green">register connections with the IDE</font></li> 
+        <li><font color="green">add jdbc resource/connection pool info to v3 domain</font></li> 
+       </ol> </li> 
+      <li>extend v3's download now button to be more tweakable and informative but with decent defaults</li> 
+      <li>add menu item to edit domain.xml in xml editor</li> 
+      <li>extend runtime tree<br> Nitya 
+       <ol> 
+        <li>partition module types</li> 
+        <li>allow user to view/edit properties of deployed modules</li> 
+        <li><font color="green">expose API to extend the v3 run-time tree</font></li> 
+        <li><font color="green">partition JDBC resources</font></li> 
+        <li><font color="green">add nodes and folders for resources that are 'new in v3' (compared to v3 Prelude)</font></li> 
+        <li><font color="green">Currently Connector Resource are added. Other resources will be added as commands become available in v3</font></li> 
+        <li>UI to edit domain properties... that ends up in</li> 
+       </ol> </li> 
+      <li>ejb jar project deployment 
+       <ol> 
+        <li><font color="green"> directory</font></li> 
+        <li>archive – for remote domains</li> 
+       </ol> </li> 
+      <li>ear project deployment 
+       <ol> 
+        <li>directory</li> 
+        <li>archive – for remote domains</li> 
+       </ol> </li> 
+      <li>web app deployment 
+       <ol> 
+        <li><font color="green"> directory</font></li> 
+        <li>archive – for remote deployment</li> 
+       </ol> </li> 
+      <li>Support 'Use database'<br> Nitya 
+       <ol> 
+        <li>fix issues for servlet</li> 
+        <li>fix issues related to ejbs 
+         <ol> 
+          <li>in ejb jar project</li> 
+          <li>in web app project</li> 
+         </ol> </li> 
+       </ol> </li> 
+      <li>Support 'Call EJB' 
+       <ol> 
+        <li>web-app code calling ejb from ejb-jar project</li> 
+        <li>web app code calling ejb from inside the web app project 
+         <ol> 
+          <li>servlet</li> 
+          <li>ejb</li> 
+         </ol> </li> 
+        <li>ejb-jar code call ejb from ejb-jar project</li> 
+       </ol> </li> 
+      <li>Support 'Send Mail'<br> Nitya 
+       <ol> 
+        <li>this depends on the IDE</li> 
+        <li>api's nned to be added</li> 
+       </ol> </li> 
+      <li>Support 'Use JMS'<br> Nitya</li> 
+      <li><font color="green">register xml schemas and dtds<br> Rochelle</font> 
+       <ol> 
+        <li><a href="http://hg.netbeans.org/web-main/rev/a11c7f685438">commit1</a></li> 
+        <li><a href="http://hg.netbeans.org/web-main/rev/cbc8b1c38d0c">commit2</a></li> 
+        <li><a href="http://hg.netbeans.org/main-golden/rev/68fd13fb202f">commit3</a></li> 
+        <li><a href="http://hg.netbeans.org/main-golden/rev/9adc860c2d97">commit4</a></li> 
+        <li><a href="http://hg.netbeans.org/main-golden/rev/34837699efa7">commit5</a></li> 
+        <li><a href="http://mailfinder.central.sun.com/message/6931232">internal link to test instructions</a></li> 
+       </ol> </li> 
+      <li>Resource wizards<br> Nitya 
+       <ol> 
+        <li>fix bugs</li> 
+       </ol> </li> 
+      <li>extend v3 plugin to deal with complex tasks better 
+       <ol> 
+        <li>http monitor bug fixes</li> 
+        <li><font color="green">jdbc driver deployment fixes</font></li> 
+        <li>profiler and start issues</li> 
+       </ol> </li> 
+      <li>j2eeserver api changes to support Java EE 6 development 
+       <ol> 
+        <li>need way to identify which features are available from a server</li> 
+        <li>need way to identify which features are used by a project</li> 
+       </ol> </li> 
+      <li>app client project deployment 
+       <ol> 
+        <li><font color="green">archive – local</font></li> 
+        <li>archive – remote</li> 
+       </ol> </li> 
+      <li><font color="green">support v3 Prelude in main </font> 
+       <ol> 
+        <li><font color="green">roll-back changes that implemented item 2 in 'main' </font></li> 
+        <li><font color="green">refactor code to create two plugins one for v3 and one for v3 Prelude </font></li> 
+       </ol> </li> 
+      <li>read/write AS_JAVA into asenv.conf and asenv.bat or domain.xml for v3</li> 
+      <li>migration issues 
+       <ol> 
+        <li><font color="green">users turn off v3 support</font></li> 
+        <li>users turn off v3 Prelude support</li> 
+       </ol> </li> 
+     </ol> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 08, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:44.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

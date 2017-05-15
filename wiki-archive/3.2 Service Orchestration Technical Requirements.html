@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : 3.2 Service Orchestration Technical Requirements</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="3.2ServiceOrchestrationTechnicalRequirements-GlassFish3.2ServiceOrchestrationTechnicalRequirements"></a>GlassFish 3.2 Service Orchestration Technical Requirements</h1> <h4><a name="3.2ServiceOrchestrationTechnicalRequirements-FeatureOverview"></a>Feature Overview</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Id <br class="atl-forced-newline"> </th> 
+         <th class="confluenceTh"> Priority <br class="atl-forced-newline"> </th> 
+         <th class="confluenceTh"> Name <br class="atl-forced-newline"> </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> Dependencies </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 0 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Feature Overview </td> 
+         <td class="confluenceTd"> Single-click application provisioning and deployment of a PaaS application through service dependency discovery, service provisioning and service association. All the technical requirements listed below are an expansion of this single feature </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.2ServiceOrchestrationTechnicalRequirements-ServiceDefinitionandMetadata"></a>Service Definition and Metadata</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Id <br class="atl-forced-newline"> </th> 
+         <th class="confluenceTh"> Priority <br class="atl-forced-newline"> </th> 
+         <th class="confluenceTh"> Name <br class="atl-forced-newline"> </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> Dependencies </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1.1 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Support association to different types of Services </td> 
+         <td class="confluenceTd"> The Orchestrator must support binding of an application to the following types of Services: 
+          <ul> 
+           <li>External services(these are not provisioned by the orchestrator, but created and managed by an external user. Their lifecycle is not tied to an application and is not managed by the orchestrator. This is useful in scenarios where a user has existing DB/MoM investments and they want to reuse their existing setup for their application.)</li> 
+           <li>Global/shared services (Services that are created by a DAS administrator that are provisioned and managed by the orchestrator. These services can be shared by multiple applications in the domain and the service lifecycle is not tied to a single application. This type of service is useful, for example, when multiple applications in a domain want to share the same database.)</li> 
+           <li>application-scoped services (These are services that are automatically provisioned by the orchestrator during PaaS-style deployment of the application, and their life-cycle is tied to the application's lifecycle.)</li> 
+          </ul> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1.2.a </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Service Meta-data <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Define a mechanism to specify deployment-time cloud meta-data (cloud.xml or any other appropriate name as we decide) that includes service definitions and service references of an application. The service reference could be a reference to an application-scoped service or global/shared service or external service (see requirement #1.1) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1.2.b </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Vendor specific Service Meta-data <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Define glassfish-cloud.xml schema for glassfish specific defaults and extensions for cloud-meta-data. This could also be used by the Orchestrator to map generic service meta-data specified in cloud.xml to a Service Template in an IMS template catalog. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.2ServiceOrchestrationTechnicalRequirements-ServiceProvisioning"></a>Service Provisioning</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Id <br class="atl-forced-newline"> </th> 
+         <th class="confluenceTh"> Priority <br class="atl-forced-newline"> </th> 
+         <th class="confluenceTh"> Name <br class="atl-forced-newline"> </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> Dependencies </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2.1 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Extensible Service provisioning and association </td> 
+         <td class="confluenceTd"> The Orchestrator component runs in DAS, and is responsible for reading Service Metadata, provisioning of Services and association of Provisioned Services to the application. The orchestrator must not assume a fixed set of ServiceTypes and a limited set of Service Providers per ServiceType. A plugin architecture (Service Provider) must allow extending the orchestrator to support provisioning and association of new ServiceTypes and Service Providers for a ServiceType. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2.2 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Service Provider Pluggability </td> 
+         <td class="confluenceTd"> Define SPIs to be able to add/remove the Plugins into the Orchestrator. The SPI will also define contracts for service life-cycle related activities viz., create, start, stop, destroy. <br class="atl-forced-newline"> <br class="atl-forced-newline"> For this release, these SPIs will be private to GlassFish. </td> 
+         <td class="confluenceTd"> The various Service integration teams would deliver the plugins. For instance, the MQ integration team delivers the OpenMQ plugin, the JDBC team delivers the JavaDB and MySQL plugins and the LB team delivers the various load balancer plugins. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2.3 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Automatically provision services during application deployment <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Provision all the required dependent services during deployment of a Java EE application. The application could come up with full/partial/no cloud meta-data. <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> The Orchestrator would use the IaaS APIs to provision and manage the lifecycle of a Provisioned Service. The Orchestrator must be Service VM Host/Guest OS agnostic. In other words, the Orchestrator must not have any additional dependencies/restrictions on Host/Guest OS of a Service VM Image as we expect the IaaS API and implementation to handle these. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2.4 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Service Provider Matching (Template matching rules) </td> 
+         <td class="confluenceTd"> Using the service meta-data bundled with or discovered from the application, the Orchestrator must match the service requirements of the application to a Service Template. This template would then be used to provision and realize the Service. These matching rules are still a work in progress. <br class="atl-forced-newline"> One simple rule that has been identified is: If the application requires a RDBMS service and the service definition is not specified in the cloud meta-data or the service definition does not explicit point to a particular Service Provider(say MySQL), then by default the Orchestrator will select a "default" template (e.g: Derby service template). </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2.5.a <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Atomic provisioning&nbsp; <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Provisioning of the dependent services of an application must be atomic (ALL or NONE). <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2.5.b </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Failure handling </td> 
+         <td class="confluenceTd"> If a subset of dependent services cannot be provisioned, the deployment must fail and the state of the system must roll-back to the state prior to the current deployment. [Atomic deployment] </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2.5.c <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Ambiguity during provider matching </td> 
+         <td class="confluenceTd"> When multiple plugins can handle particular service requirement and a particular service provider can not be matched then deployment must fail. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2.6.a </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Automatically provisioning services for vanilla Java EE archives <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Provision all the required services during the deployment of a vanilla Java EE archive that is cloud unaware (i.e., doesn't contain any cloud meta-data). <br class="atl-forced-newline"> Requirements 2.5.a, 2.5.b, 2.5.c are related to this. <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2.6.b <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> State restrictions(if any) for PaaS application deployments </td> 
+         <td class="confluenceTd"> For example, if there is a physical JNDI name based resource lookup without explicit service reference in the cloud meta-data, then the orchestrator may not be able to perform service provisioning for such physical resource references. <br class="atl-forced-newline"> Also, in some cases Orchestrator might not be able to discover/provision all the services required for the application to run. In these cases, the deployment of such archive will fail. <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.2ServiceOrchestrationTechnicalRequirements-ServiceAssociation"></a>Service Association</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Id <br class="atl-forced-newline"> </th> 
+         <th class="confluenceTh"> Priority <br class="atl-forced-newline"> </th> 
+         <th class="confluenceTh"> Name <br class="atl-forced-newline"> </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> Dependencies </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3.1 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Service Association/Binding </td> 
+         <td class="confluenceTd"> Automatically perform necessary actions(create the necessary pools/resources etc) in the application server to bind an application to the services provisioned for the application </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.2ServiceOrchestrationTechnicalRequirements-PaaSDeploymentscenarios"></a>PaaS Deployment scenarios</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Id <br class="atl-forced-newline"> </th> 
+         <th class="confluenceTh"> Priority <br class="atl-forced-newline"> </th> 
+         <th class="confluenceTh"> Name <br class="atl-forced-newline"> </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> Dependencies </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.1 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Supported list of ServiceTypes and Service Providers </td> 
+         <td class="confluenceTd"> List of services/plugins supported for this release are RDBMS(JavaDB, MySQL), HTTPLoadBalancer (potentially 3 plugins: Native LB, Java LB, Apache mod_jk - exact set of supported LB configurations is TBD), JMS(OpenMQ). <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.2 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Deployment plan <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Allow a user to specify the cloud meta-data external to the application, via deployment plan </td> 
+         <td class="confluenceTd"> Deployment module must not ignore the cloud meta-data specified via deployment plan </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.3 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> P1 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Automatic Service Decommissioning </td> 
+         <td class="confluenceTd"> Automatically decommission all the application-scoped provisioned services of an application during application undeployment. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.4 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Pause/Stop Provisioned Services </td> 
+         <td class="confluenceTd"> Pause/Stop all the application-scoped provisioned services when an application is disabled. Similarly, start all the provisioned services when the application is enabled. The Orchestrator will invoke the Plugin to pause/stop the service. So it is the Plugin's responsibility to stop the service. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.5 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Provisioning during redeployment </td> 
+         <td class="confluenceTd"> Support redeployment of the application. <br class="atl-forced-newline"> Possibly with a "--retain" redeployment option to re-use the previously provisioned services instead of re-provisioning again. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.6 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> P3 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Support application versioning </td> 
+         <td class="confluenceTd"> Only one version of the application will be active at a time. Each version of the application will have its own provisioned service(s) scoped to that particular version of the application. When a particular version of the application is disabled, all its associated application-scoped services are stopped. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.7 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Service decommissioning during domain deletion </td> 
+         <td class="confluenceTd"> Decommission all the provisioned services (application scoped and global/shared) during domain deletion. <br class="atl-forced-newline"> Should we also decommission shared services as they are used only within the domain ? <br class="atl-forced-newline"> The Orchestrator will invoke all the related plugins to decommission the services. </td> 
+         <td class="confluenceTd"> Admin infrastructure - delete-domain callback to the Orchestrator </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.8 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Track provisioned services </td> 
+         <td class="confluenceTd"> Orchestrator must keep track of all the services provisioned via the Orchestrator. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.2ServiceOrchestrationTechnicalRequirements-Management%2FAdministrationinterfaces"></a>Management/Administration interfaces</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Id <br class="atl-forced-newline"> </th> 
+         <th class="confluenceTh"> Priority <br class="atl-forced-newline"> </th> 
+         <th class="confluenceTh"> Name <br class="atl-forced-newline"> </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> Dependencies </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5.1 </td> 
+         <td class="confluenceTd"> P1 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Admin command interception for managed services/resources </td> 
+         <td class="confluenceTd"> All the administration operations/commands on a managed entity(such as a cluster provisioned by the orchestrator) must be intercepted by the Orchestrator. The orchestrator will decide whether to allow or disallow these operations. (For example, orchestrator might not allow 'asadmin stop-cluster' on a managed cluster). Moreover, orchestrator might need to perform some additional tasks (eg: for book-keeping purposes) during the command execution on a managed object. </td> 
+         <td class="confluenceTd"> Admin Infrastructure must wrap all the commands on the managed object to go to Orchestrator first. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5.2 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> P1 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Additional asadmin commands </td> 
+         <td class="confluenceTd"> Implement admin commands for create/delete/list global services in a domain. The command implementation will internally invoke the plugin to do the needful. Plugin might internally use IaaS APIs, various existing glassfish commands to perform the task. Implement admin command to import/provision an external service into a domain. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5.3.a </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> CLI/GUI to show all provisioned/shared services for a particular deployed application </td> 
+         <td class="confluenceTd"> Orchestrator, with the help of plugins can determine implicit service requirements or use default service requirements or use shared services in order to satisfy an application's various service requirements. There needs to be an administrative interface (eg: CLI) to show the list of all services used by a particular application. eg: The State of the service(started/stopped/stopping/starting) can also be shown. In case of partial undeployments, some services might be in deleted state. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5.3.b </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> CLI/GUI to show the list of managed applications that share a particular service </td> 
+         <td class="confluenceTd"> A CLI command to list all applications that use or is bound to a global/shared service or an external service. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5.4 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Logging Orchestrator actions to aid troubleshooting </td> 
+         <td class="confluenceTd"> <br class="atl-forced-newline"> Since a PaaS-style deployment would entail a lot of Orchestrator operations (such as Template Matching, Service Provisioning, Service Assocation), it is imperative that the Orchestrator logs all its actions to enable offline troubleshooting. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5.5 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> Monitoring probes </td> 
+         <td class="confluenceTd"> Expose monitoring probes for various Orchestrator functionalities&nbsp; <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5.6 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> Health check - service </td> 
+         <td class="confluenceTd"> Ability to perform a health-check on a particular Service (eg: ping) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5.7 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> GUI (admin console) requirements <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> We expect GUI team to come up with GUI requirements. For example, a GUI option for PaaS style deployments, creating and registering Service Templates are suggested requirements on the admin console. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.2ServiceOrchestrationTechnicalRequirements-DomainsManagerandTemplaterequirements"></a>Domains Manager and Template requirements</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Id <br class="atl-forced-newline"> </th> 
+         <th class="confluenceTh"> Priority <br class="atl-forced-newline"> </th> 
+         <th class="confluenceTh"> Name <br class="atl-forced-newline"> </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> Dependencies </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6.2 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Pre-built Service Templates </td> 
+         <td class="confluenceTd"> GlassFish 3.2 would come with standard pre-built templates for the supported service providers (see requirement #4.1). The orchestrator matches the service requirements of an application to a service template(either pre-built or user-provided) through its cloud metadata(see requirement #2.3). The orchestrator/service plugin must not assume that the pre-built service template is the only template that could be provisioned. In other words, the orchestrator/plugin must support user-defined service templates. </td> 
+         <td class="confluenceTd"> The team that would build these pre-built templates is TBD. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.2ServiceOrchestrationTechnicalRequirements-NonRequirements%2FOutOfScope"></a>Non Requirements/Out-Of-Scope</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Id </th> 
+         <th class="confluenceTh"> Name </th> 
+         <th class="confluenceTh"> Description </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> Orchestrator has no active role in Domains Manager/clustered-instance/standalone-instance </td> 
+         <td class="confluenceTd"> Domains Manager will invoke the appropriate remote command on each domain to configure the external service. <br class="atl-forced-newline"> So, Orchestrator functionality is available only in the DAS. <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd"> Advanced redeployment scenarios <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Update and Upgrade of Service References <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3 </td> 
+         <td class="confluenceTd"> Lazy initialization of Provisioned Services </td> 
+         <td class="confluenceTd"> Shared/Global Provisioned Services could be lazily started when the first application using it is deployed. Similarly when the last application using a Shared provisioned Service is undeployed/disabled, the Service could be paused/shutdown to conserve resources. This is currently not planned for this release. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4 </td> 
+         <td class="confluenceTd"> Extensible Service Provider mechanism </td> 
+         <td class="confluenceTd"> Making the Service Provider SPI public, to allow third party services to be plugged into the Orchestrator is not planned for this release. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5 </td> 
+         <td class="confluenceTd"> Elastic scaling of Services </td> 
+         <td class="confluenceTd"> The current elasticity requirements center around GF cluster scaling (EL-2.0.6 in the Elasticity Requirements page) and so there is no auto-scaling of the provisioned service planned in this release. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6 </td> 
+         <td class="confluenceTd"> Allow a Provisioned Service's lifecycle to be managed by a PaaS System Adminstrator </td> 
+         <td class="confluenceTd"> Allow a PaaS sysadmin to start/stop a Service that has been provisioned by the Orchestrator is not supported in this release. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 7 </td> 
+         <td class="confluenceTd"> Support mapping to external PaaS Service Offerings (for instance Amazon RDS) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 8 </td> 
+         <td class="confluenceTd"> Support for other ServiceTypes (Mail, Queueing, NoSQL) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 9 </td> 
+         <td class="confluenceTd"> Advanced Service Matching Heuristics </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 10 </td> 
+         <td class="confluenceTd"> No support for Orchestrator in Ad-hoc clusters </td> 
+         <td class="confluenceTd"> Ad-hoc clusters (aka head-less c lusters) are primarily aimed at the Amazon Elastic BeanStalk scenario and in that case Services are provisioned and associated either by the Elastic BeanStack infrastructure or our HostManager SPI implementation and so there is no support planned for Orchestrator in Ad-hoc clusters. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 11 </td> 
+         <td class="confluenceTd"> Stacks/Assemblies of Services </td> 
+         <td class="confluenceTd"> Support for an assembly/stacks of Services to be managed/provisioned as a whole (<a href="http://steamcannon.org/documentation/0.2.0/what-is.html#d0e61">SteamCannon</a> and Nuviaq refers to this as Platform) is beyond the scope of this release. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 12</td> 
+         <td class="confluenceTd"> External services at the domain manager level </td> 
+         <td class="confluenceTd"> Allow definition of external services at domains manager level (across domains). Not doing this as Domains Manager is not planned to part of GlassFish 3.2. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.2ServiceOrchestrationTechnicalRequirements-References%3A"></a>References:</h2> 
+     <ul> 
+      <li>Service Metadata, Provisioning and Association writeup</li> 
+      <li><a href="./3.2CloudDeployment.html">PaaS Deployment proposed design</a></li> 
+     </ul> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Apr 26, 2011 by 
+<font color="#0050B2">sivakumar_thyagarajan</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

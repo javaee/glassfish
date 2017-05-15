@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : AdminCommandSPI</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="AdminCommandSPI-AdministrativecommandinfrastructureinV3"></a>Administrative command infrastructure in V3</h1> <p>The proliferation of containers and independent packaging and loading of such containers requires a new administrative command infrastructure to support the following features : </p> 
+     <ul> 
+      <li>location independence : admin commands should be loadable from any module known to GlassFish</li> 
+      <li>extensible : there should not be be a preset list of commands known to GlassFish, they should be discovered on demand</li> 
+      <li>HK2 components : commands should be able to use injection to express their dependencies and extraction to provide results to the community.</li> 
+     </ul> <h4><a name="AdminCommandSPI-AdminCommand"></a>AdminCommand</h2> <p>AdminCommand implementations represent the implementation of one admin command. Each implementation should be annotated with @Service to be eligible for resource injection/extraction.</p> <p>A context object is provided which is used to access the command parameters (although this is not the prefered way, see below @Param) (note : we might remove this parameters access). The context also provide the ActionReport implementation which is an abstraction of a reporting tool (for text or html reports for instance). </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">/**
+ * This is an admin command interface, command implementation have to be 
+ * stateless.
+ *
+ * @author Jerome Dochez
+ */
+@Contract
+public interface AdminCommand {       
+    
+    /**
+     * Executes the command with the command parameters passed as Properties 
+     * where the keys are the paramter names and the values the parameter values
+     * @param context information 
+     */
+    public void execute(AdminCommandContext context);
+
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>AdminCommand implementations are services therefore their implementation is location independent as long as the module containing them is known to the GlassFish runtime. </p> <h4><a name="AdminCommandSPI-AdminCommandContext"></a>AdminCommandContext</h3> <p>Bag of utility services access :</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">/**
+ * Useful services for Deployer service implementation
+ *
+ * @author Jerome Dochez
+ */
+public class AdminCommandContext implements ExecutionContext {
+    
+    public final ActionReport report;
+    public final Properties params;
+    public final Logger logger;
+    
+    public AdminCommandContext(Logger logger, ActionReport report, Properties params) {
+        this.logger = logger;
+        this.report = report;
+        this.params = params;
+    }
+    /**
+     * Returns the Reporter for this action
+     * @return ActionReport implementation suitable for the client
+     */
+    public ActionReport getActionReport() {
+        return report;
+    }
+    
+    /**
+     * Returns the DeployCommand parameters 
+     * @return the command parameters
+     */
+    public Properties getCommandParameters() {
+        return params;
+    }
+
+    /**
+     * Returns the Logger
+     * @return the logger
+     */
+    public Logger getLogger() {
+        return logger;
+    }
+}</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="AdminCommandSPI-Param"></a>Param</h3> <p>The param annotation is used by AdminCommand implementations to identify the parameters to the command. This is used by the GlassFish runtime to do the following task : </p> 
+     <ul> 
+      <li>parameter validation : all non optional parameters must be provided before the command is executed</li> 
+      <li>i18n : using the optional i18n, the system can automatically get the local resource associated with a command and display to the user.</li> 
+      <li>reflection : the system can use reflection to find the list of parameters to a command and generate appropriate help message generically.</li> 
+      <li>injection : all parameters are injected in the annotated field/method before the command is executed.</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">/**
+ * Param is a parameter to a command. This annotation can be placed on a field or
+ * setter method to identify the parameters of a command and have those parameters
+ * injected by the system before the command is executed.
+ *
+ * The system will check that all non optional parameters are satisfied before invoking
+ * the command.
+ *
+ * @author Jerome Dochez
+ */
+@Retention(RUNTIME)
+@Target({METHOD,FIELD})
+public @interface Param {
+
+    /**
+     * Retuns the name of the parameter as it has be specified by the client when invoking
+     * the command. By default the name is deducted from the name of the annotated element.
+     * If the annotated element is a field, it is the filed name.
+     * If the annoated element is a mehod, it is the JavaBeans property name from the setter
+     * method name
+     *
+     * @return the parameter name.
+     */
+    public String name() default "";
+
+    /**
+     * Returns a list of comma separated acceptable values for this parameter. The system
+     * will check that one of the value is used before invoking the command.
+     *
+     * @return the list of comma separated acceptable values
+     */
+    public String acceptableValues() default "";
+
+    /**
+     * Returns true if the parameter is optional to the successful invocation of the command
+     * @return true if the parameter is optional
+     */
+    public boolean optional() default false;
+
+    /**
+     * Returns the short name associated with the parameter so that the user can specify
+     * -p as well as -password when invoking the command.
+     *
+     * @return the parameter short name
+     */
+    public String shortName() default "";
+
+    /**
+     * Returns true if this is the primary parameter for the command which mean that the
+     * client does not have to pass the parameter name but just the value to the command.
+     *
+     * @return true if this is the primary command parameter.
+     */
+    public boolean primary() default false;
+
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>We should add maven plugins to generate HTML pages with the reflective information gathered from AdminCommand @Param annotations, much like javadoc is doing.</p> <h4><a name="AdminCommandSPI-Internationalization"></a>Internationalization</h3> <p>Each parameter or admin command can be annotated with the i18n annotation to identify the localstring key associated with the command or parameter. By default the system will use the following mapping </p> <p>{command name}.command for the command key<br> {command name}.command.&lt;param name&gt; for the parameter key </p> <p>these default mapping can be overridden using the @i18n annotation.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">/**
+ * Identify an I18n resource associated with the annotated element. The value() holds the name
+ * of the resource as it stored in the LocalStrings.properties and can be used by the runtime
+ * to generate appropriate localized meta-data.
+ *
+ * @author Jerome Dochez
+ */
+@Retention(RUNTIME)
+@Target({TYPE,METHOD,FIELD})
+public @interface I18n {
+
+    /**
+     * Returns the string identify the i18n resource from the resource bundle associated with
+     * the class containing the annotation.
+     *
+     * @return a string identifying the resource in the bundle
+     */
+    public String value();
+}</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="AdminCommandSPI-Example%3A"></a>Example :</h2> <p>Here is an example of a "cool" command that takes 2 parameters, one is optional and also uses injection.</p> <p>usage would be : asadmin coo --foo XXX --bar YYY</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">package com.foo.mycontainer;
+
+/**
+ * Sample command
+ */
+@Service(name="cool")
+public Class MyCommand implements AdminCommand {
+
+    @Inject
+    Domain domain;
+
+    @Param
+    String foo;
+
+    @Param(name="bar", optional=true)
+    @I18n("myoldname")
+    String renamedTooManyTimes
+
+    /**
+     * Executes the command with the command parameters passed as Properties 
+     * where the keys are the paramter names and the values the parameter values
+     * @param context information 
+     */
+    public void execute(AdminCommandContext context) {
+        // domain and foo are not null
+        // renamedTooManyTimes can be null.
+    }
+}
+
+LocalStrings : 
+
+cool.command=Does something really cool
+cool.command.foo=The foo parameter 
+cool.command.myoldname=The other parameter explanation</pre> 
+       </div> 
+      </div>
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:42.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

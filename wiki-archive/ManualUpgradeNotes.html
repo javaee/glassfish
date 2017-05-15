@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : ManualUpgradeNotes</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="ManualUpgradeNotes-Livestatusofmanualupgrade"></a>Live status of manual upgrade</h2> <p>I'm keeping my notes here while attempting to run upgrade and manually make changes in domain.xml as needed for implementation service code that isn't functional yet. The goal is to discover the steps that are needed to run v3 with an empty v2 domain. Then the next goal is to make sure that list goes to zero steps as everything is implemented.</p> <p>For background, see <a href="https://github.com/javaee/glassfish/issues/9127">issue 9127</a></p> <p>Am running v3 with the following command where v2domain1 is a domain copied into the glassfish v3 domains directory:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">java -jar modules/glassfish.jar -upgrade true -domain v2domain1</pre> 
+       </div> 
+      </div>
+     </div> 
+     <hr> <h4><a name="ManualUpgradeNotes-Revision30674"></a>Revision 30674</h3> <h4><a name="ManualUpgradeNotes-Iteration0"></a>Iteration 0</h3> <p><b>No changes to v2 domain</b></p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">hostname% java -jar modules/glassfish.jar -upgrade true -domain v2domain1
+Aug 21, 2009 11:17:01 AM com.sun.enterprise.glassfish.bootstrap.ASMain main
+INFO: Launching GlassFish on Felix platform
+
+Welcome to Felix.
+=================
+
+Aug 21, 2009 11:17:13 AM OSGiModuleImpl start
+INFO: Started bundle org.glassfish.common.glassfish-mbeanserver [152]
+Aug 21, 2009 11:17:13 AM OSGiModuleImpl start
+INFO: Started bundle org.glassfish.core.kernel [54]
+Aug 21, 2009 11:17:13 AM OSGiModuleImpl start
+INFO: Started bundle org.glassfish.common.util [67]
+Aug 21, 2009 11:17:13 AM OSGiModuleImpl start
+INFO: Started bundle com.sun.enterprise.config [168]
+ERROR: Error starting reference:file:/Users/bobby/servers/glassfishv3/glassfish/modules/osgi-main.jar (org.osgi.framework.BundleException: Activator start error in bundle com.sun.enterprise.osgi-adapter [129].)
+java.lang.RuntimeException: Failed to parse file:/Users/bobby/servers/glassfishv3/glassfish/domains/v2domain1/config/domain.xml
+	at org.glassfish.config.support.DomainXml.parseDomainXml(DomainXml.java:155)
+	at org.glassfish.config.support.DomainXml.run(DomainXml.java:100)
+	at com.sun.enterprise.module.common_impl.AbstractModulesRegistryImpl.populateConfig(AbstractModulesRegistryImpl.java:157)
+	at com.sun.enterprise.module.common_impl.AbstractModulesRegistryImpl.createHabitat(AbstractModulesRegistryImpl.java:142)
+	at com.sun.enterprise.module.bootstrap.Main.createHabitat(Main.java:421)
+	at org.jvnet.hk2.osgiadapter.HK2Main.start(HK2Main.java:118)
+	at org.apache.felix.framework.util.SecureAction.startActivator(SecureAction.java:589)
+	at org.apache.felix.framework.Felix.startBundle(Felix.java:1461)
+	at org.apache.felix.framework.BundleImpl.start(BundleImpl.java:779)
+	at org.jvnet.hk2.osgimain.Main.start(Main.java:117)
+	at org.apache.felix.framework.util.SecureAction.startActivator(SecureAction.java:589)
+	at org.apache.felix.framework.Felix.startBundle(Felix.java:1461)
+	at org.apache.felix.framework.Felix.setActiveStartLevel(Felix.java:984)
+	at org.apache.felix.framework.StartLevelImpl.run(StartLevelImpl.java:263)
+	at java.lang.Thread.run(Thread.java:637)
+Caused by: javax.xml.stream.XMLStreamException: ParseError at [row,col]:[3,1]
+Message: found: DTD, expected START_ELEMENT or END_ELEMENT
+	at com.sun.org.apache.xerces.internal.impl.XMLStreamReaderImpl.nextTag(XMLStreamReaderImpl.java:1231)
+	at javax.xml.stream.util.StreamReaderDelegate.nextTag(StreamReaderDelegate.java:66)
+	at org.glassfish.config.support.XMLStreamReaderFilter.nextTag(XMLStreamReaderFilter.java:66)
+	at org.jvnet.hk2.config.ConfigParser.parse(ConfigParser.java:85)
+	at org.glassfish.config.support.DomainXml.parseDomainXml(DomainXml.java:149)
+	... 14 more</pre> 
+       </div> 
+      </div>
+     </div> <p>Note: process hangs at this point. Killed server with ctrl-c.</p> 
+     <hr> <h4><a name="ManualUpgradeNotes-Iteration1"></a>Iteration 1</h3> <p><b>Removed DTD</b></p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">hostname% java -jar modules/glassfish.jar -upgrade true -domain v2domain1
+Aug 21, 2009 11:20:08 AM com.sun.enterprise.glassfish.bootstrap.ASMain main
+INFO: Launching GlassFish on Felix platform
+
+Welcome to Felix.
+=================
+
+Aug 21, 2009 11:20:11 AM OSGiModuleImpl start
+INFO: Started bundle org.glassfish.common.glassfish-mbeanserver [152]
+Aug 21, 2009 11:20:11 AM OSGiModuleImpl start
+INFO: Started bundle org.glassfish.core.kernel [54]
+Aug 21, 2009 11:20:11 AM OSGiModuleImpl start
+INFO: Started bundle org.glassfish.common.util [67]
+Aug 21, 2009 11:20:11 AM OSGiModuleImpl start
+INFO: Started bundle com.sun.enterprise.config [168]
+Aug 21, 2009 11:20:11 AM org.jvnet.hk2.config.ConfigParser handleElement
+SEVERE: Ignoring unrecognized element j2ee-application at Line number = 10
+Column number = 271
+System Id = file:/Users/bobby/servers/glassfishv3/glassfish/domains/v2domain1/config/domain.xml
+Public Id = null
+Location Uri= file:/Users/bobby/servers/glassfishv3/glassfish/domains/v2domain1/config/domain.xml
+CharacterOffset = 688
+ignoring
+Aug 21, 2009 11:20:11 AM org.jvnet.hk2.config.ConfigParser handleElement
+SEVERE: Ignoring unrecognized element j2ee-application at Line number = 12
+Column number = 235
+System Id = file:/Users/bobby/servers/glassfishv3/glassfish/domains/v2domain1/config/domain.xml
+Public Id = null
+Location Uri= file:/Users/bobby/servers/glassfishv3/glassfish/domains/v2domain1/config/domain.xml
+CharacterOffset = 1174
+ignoring
+ERROR: Error starting reference:file:/Users/bobby/servers/glassfishv3/glassfish/modules/osgi-main.jar (org.osgi.framework.BundleException: Activator start error in bundle com.sun.enterprise.osgi-adapter [129].)
+java.lang.RuntimeException: No &lt;config&gt; seen for name=null
+	at org.glassfish.config.support.DomainXml.parseDomainXml(DomainXml.java:152)
+	at org.glassfish.config.support.DomainXml.run(DomainXml.java:100)
+	at com.sun.enterprise.module.common_impl.AbstractModulesRegistryImpl.populateConfig(AbstractModulesRegistryImpl.java:157)
+	at com.sun.enterprise.module.common_impl.AbstractModulesRegistryImpl.createHabitat(AbstractModulesRegistryImpl.java:142)
+	at com.sun.enterprise.module.bootstrap.Main.createHabitat(Main.java:421)
+	at org.jvnet.hk2.osgiadapter.HK2Main.start(HK2Main.java:118)
+	at org.apache.felix.framework.util.SecureAction.startActivator(SecureAction.java:589)
+	at org.apache.felix.framework.Felix.startBundle(Felix.java:1461)
+	at org.apache.felix.framework.BundleImpl.start(BundleImpl.java:779)
+	at org.jvnet.hk2.osgimain.Main.start(Main.java:117)
+	at org.apache.felix.framework.util.SecureAction.startActivator(SecureAction.java:589)
+	at org.apache.felix.framework.Felix.startBundle(Felix.java:1461)
+	at org.apache.felix.framework.Felix.setActiveStartLevel(Felix.java:984)
+	at org.apache.felix.framework.StartLevelImpl.run(StartLevelImpl.java:263)
+	at java.lang.Thread.run(Thread.java:637)</pre> 
+       </div> 
+      </div>
+     </div> <p>Will look into the first error and compare v2/v3 domain.xml files:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">SEVERE: Ignoring unrecognized element j2ee-application at Line number = 10
+Column number = 271</pre> 
+       </div> 
+      </div>
+     </div> 
+     <hr> <p>A v3 domain.xml starts off with no internal applications deployed so the domain/applications element of domain.xml is empty. Edited domain.xml to remove these elements.</p> <h4><a name="ManualUpgradeNotes-Iteration2"></a>Iteration 2</h3> 
+     <ul> 
+      <li>Removed domain/applications/**</li> 
+     </ul> <p>This resulted in some class not found errors. Top of stack is here (causes omitted since the cause is obvious):</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">SEVERE: java.lang.ExceptionInInitializerError
+Aug 21, 2009 12:10:22 PM  
+SEVERE: 	at org.glassfish.admin.monitor.MonitoringBootstrap.setStatsProviderManagerDelegate(MonitoringBootstrap.java:116)
+Aug 21, 2009 12:10:22 PM  
+SEVERE: 	at org.glassfish.admin.monitor.MonitoringBootstrap.postConstruct(MonitoringBootstrap.java:101)
+Aug 21, 2009 12:10:22 PM  
+SEVERE: 	at com.sun.hk2.component.AbstractWombImpl.inject(AbstractWombImpl.java:174)
+Aug 21, 2009 12:10:22 PM  
+SEVERE: 	at com.sun.hk2.component.ConstructorWomb$1.run(ConstructorWomb.java:89)
+Aug 21, 2009 12:10:22 PM  
+SEVERE: 	at java.security.AccessController.doPrivileged(Native Method)
+Aug 21, 2009 12:10:22 PM  
+SEVERE: 	at com.sun.hk2.component.ConstructorWomb.initialize(ConstructorWomb.java:86)
+Aug 21, 2009 12:10:22 PM  
+SEVERE: 	at com.sun.hk2.component.AbstractWombImpl.get(AbstractWombImpl.java:77)
+Aug 21, 2009 12:10:22 PM  
+SEVERE: 	at com.sun.hk2.component.SingletonInhabitant.get(SingletonInhabitant.java:58)
+Aug 21, 2009 12:10:22 PM  
+SEVERE: 	at com.sun.hk2.component.LazyInhabitant.get(LazyInhabitant.java:107)
+Aug 21, 2009 12:10:22 PM  
+SEVERE: 	at com.sun.hk2.component.AbstractInhabitantImpl.get(AbstractInhabitantImpl.java:60)
+Aug 21, 2009 12:10:22 PM  
+SEVERE: 	at com.sun.enterprise.v3.server.AppServerStartup.run(AppServerStartup.java:206)
+Aug 21, 2009 12:10:22 PM  
+SEVERE: 	at com.sun.enterprise.v3.server.AppServerStartup.start(AppServerStartup.java:129)
+Aug 21, 2009 12:10:22 PM  
+SEVERE: 	at com.sun.enterprise.v3.server.UpgradeStartup.start(UpgradeStartup.java:143)
+Aug 21, 2009 12:10:22 PM  
+SEVERE: 	at com.sun.enterprise.module.bootstrap.Main.launch(Main.java:460)
+...</pre> 
+       </div> 
+      </div>
+     </div> <p>Class not found was com.sun.enterprise.admin.server.core.jmx.AppServerMBeanServerBuilder from this JVM option:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;jvm-options&gt;-Djavax.management.builder.initial=com.sun.enterprise.admin.server.core.jmx.AppServerMBeanServerBuilder&lt;/jvm-options&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>Will compare the jvm options between v2 and v3. Elements are in /domain/configs/config[@name='server-config']/java-config. Will also check that the attributes of the element make sense.</p> 
+     <hr> <h4><a name="ManualUpgradeNotes-Iteration3"></a>Iteration 3</h3> <p><b>Hacking java-config element</b></p> <p>Summary: remove the following jvm-option element.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;jvm-options&gt;-Djavax.management.builder.initial=com.sun.enterprise.admin.server.core.jmx.AppServerMBeanServerBuilder&lt;/jvm-options&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>More detailed information now. The following elements are common to v2 and v3 domain:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;jvm-options&gt;-XX:MaxPermSize=192m&lt;/jvm-options&gt;
+&lt;jvm-options&gt;-client&lt;/jvm-options&gt;
+&lt;jvm-options&gt;-Djava.endorsed.dirs=${com.sun.aas.installRoot}/lib/endorsed&lt;/jvm-options&gt;
+&lt;jvm-options&gt;-Djava.security.policy=${com.sun.aas.instanceRoot}/config/server.policy&lt;/jvm-options&gt;
+&lt;jvm-options&gt;-Djava.security.auth.login.config=${com.sun.aas.instanceRoot}/config/login.conf&lt;/jvm-options&gt;
+&lt;jvm-options&gt;-Xmx512m&lt;/jvm-options&gt;
+&lt;jvm-options&gt;-Djavax.net.ssl.keyStore=${com.sun.aas.instanceRoot}/config/keystore.jks&lt;/jvm-options&gt;
+&lt;jvm-options&gt;-Djavax.net.ssl.trustStore=${com.sun.aas.instanceRoot}/config/cacerts.jks&lt;/jvm-options&gt;
+&lt;jvm-options&gt;-Djava.ext.dirs=${com.sun.aas.javaRoot}/lib/ext${path.separator}${com.sun.aas.javaRoot}/jre/lib/ext${path.separator}${com.sun.aas.instanceRoot}/lib/ext${path.separator}${com.sun.aas.derbyRoot}/lib&lt;/jvm-options&gt;
+&lt;jvm-options&gt;-Djdbc.drivers=org.apache.derby.jdbc.ClientDriver&lt;/jvm-options&gt;
+&lt;jvm-options&gt;-Dcom.sun.enterprise.config.config_environment_factory_class=com.sun.enterprise.config.serverbeans.AppserverConfigEnvironmentFactory&lt;/jvm-options&gt;
+&lt;jvm-options&gt;-XX:NewRatio=2&lt;/jvm-options&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>These elements are not present in v3, but may not be causing any problems. Will email dev@gf and give them a look.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;jvm-options&gt;-Dsun.rmi.dgc.server.gcInterval=3600000&lt;/jvm-options&gt;
+&lt;jvm-options&gt;-Dsun.rmi.dgc.client.gcInterval=3600000&lt;/jvm-options&gt;
+&lt;jvm-options&gt;-Dcom.sun.enterprise.taglibs=appserv-jstl.jar,jsf-impl.jar&lt;/jvm-options&gt;
+&lt;jvm-options&gt;-Dcom.sun.enterprise.taglisteners=jsf-impl.jar&lt;/jvm-options&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>Re-running the server, we fail again, but we're making progress. At this point the upgrade service can start, see that there is a failure, and shut itself down properly.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">hostname% java -jar modules/glassfish.jar -upgrade true -domain v2domain1
+Aug 21, 2009 1:39:10 PM com.sun.enterprise.glassfish.bootstrap.ASMain main
+INFO: Launching GlassFish on Felix platform
+
+Welcome to Felix.
+=================
+
+Aug 21, 2009 1:39:12 PM OSGiModuleImpl start
+INFO: Started bundle org.glassfish.common.glassfish-mbeanserver [152]
+Aug 21, 2009 1:39:12 PM OSGiModuleImpl start
+INFO: Started bundle org.glassfish.core.kernel [54]
+Aug 21, 2009 1:39:12 PM OSGiModuleImpl start
+INFO: Started bundle org.glassfish.common.util [67]
+Aug 21, 2009 1:39:12 PM OSGiModuleImpl start
+INFO: Started bundle com.sun.enterprise.config [168]
+Aug 21, 2009 1:39:12 PM org.glassfish.config.support.DomainXml$DomainXmlReader parse2ndTime
+INFO: Forced to parse file:/Users/bobby/servers/glassfishv3/glassfish/domains/v2domain1/config/domain.xml twice because we didn't see &lt;server&gt; before &lt;config&gt;
+Aug 21, 2009 1:39:12 PM OSGiModuleImpl start
+INFO: Started bundle org.glassfish.transaction.jta [65]
+Aug 21, 2009 1:39:12 PM OSGiModuleImpl start
+INFO: Started bundle org.glassfish.admin.config-api [94]
+Aug 21, 2009 1:39:13 PM OSGiModuleImpl start
+INFO: Started bundle org.glassfish.orb.connector [141]
+Aug 21, 2009 1:39:13 PM OSGiModuleImpl start
+INFO: Started bundle org.glassfish.connectors.admin [178]
+Aug 21, 2009 1:39:13 PM OSGiModuleImpl start
+INFO: Started bundle org.glassfish.jdbc.admin [181]
+Aug 21, 2009 1:39:13 PM OSGiModuleImpl start
+INFO: Started bundle org.glassfish.ejb.ejb-container [43]
+Aug 21, 2009 1:39:13 PM OSGiModuleImpl start
+INFO: Started bundle org.glassfish.jms.admin [179]
+Aug 21, 2009 1:39:13 PM OSGiModuleImpl start
+INFO: Started bundle org.glassfish.admin.monitoring-core [155]
+Aug 21, 2009 1:39:13 PM OSGiModuleImpl start
+INFO: Started bundle org.glassfish.web.cli [96]
+Aug 21, 2009 1:39:13 PM org.hibernate.validation.util.Version &lt;clinit&gt;
+INFO: Hibernate Validator null
+Aug 21, 2009 1:39:13 PM org.hibernate.validation.engine.resolver.DefaultTraversableResolver detectJPA
+INFO: Instantiated an instance of org.hibernate.validation.engine.resolver.JPATraversableResolver.
+Aug 21, 2009 1:39:13 PM OSGiModuleImpl start
+INFO: Started bundle com.sun.grizzly.grizzly-config [136]
+Aug 21, 2009 1:39:13 PM OSGiModuleImpl start
+INFO: Started bundle org.glassfish.admin.server-mgmt [191]
+Aug 21, 2009 1:39:14 PM OSGiModuleImpl start
+INFO: Started bundle org.glassfish.branding [180]
+Aug 21, 2009 1:39:14 PM OSGiModuleImpl start
+INFO: Started bundle org.glassfish.deployment.common [50]
+Aug 21, 2009 1:39:14 PM com.sun.enterprise.v3.server.UpgradeStartup start
+INFO: app adminapp is false resulting in false
+Aug 21, 2009 1:39:14 PM com.sun.enterprise.v3.server.UpgradeStartup start
+INFO: app admingui is false resulting in false
+Aug 21, 2009 1:39:14 PM com.sun.enterprise.v3.server.UpgradeStartup start
+INFO: app JBIFramework is false resulting in false
+Aug 21, 2009 1:39:14 PM com.sun.enterprise.v3.server.UpgradeStartup start
+INFO: app WSTXServices is false resulting in false
+Aug 21, 2009 1:39:14 PM com.sun.enterprise.v3.server.UpgradeStartup start
+INFO: app WSTCPConnectorLCModule is false resulting in false
+Aug 21, 2009 1:39:14 PM com.sun.enterprise.v3.server.UpgradeStartup start
+INFO: app __ejb_container_timer_app is false resulting in false
+Aug 21, 2009 1:39:14 PM com.sun.enterprise.v3.server.UpgradeStartup start
+INFO: app __JWSappclients is false resulting in false
+Aug 21, 2009 1:39:14 PM com.sun.enterprise.v3.server.UpgradeStartup start
+INFO: app MEjbApp is false resulting in false
+Aug 21, 2009 1:39:14 PM com.sun.enterprise.v3.server.UpgradeStartup start
+INFO: app VaadinGFTest is false resulting in false
+Aug 21, 2009 1:39:14 PM com.sun.enterprise.v3.server.UpgradeStartup start
+INFO: app VaadinTest is false resulting in false
+Aug 21, 2009 1:39:14 PM OSGiModuleImpl start
+INFO: Started bundle org.glassfish.common.internal-api [198]
+Aug 21, 2009 1:39:14 PM  
+INFO: com.sun.enterprise.naming.util.NamingActivator@76f56093 called
+Aug 21, 2009 1:39:14 PM OSGiModuleImpl start
+INFO: Started bundle org.glassfish.common.glassfish-naming [87]
+Aug 21, 2009 1:39:14 PM OSGiModuleImpl start
+INFO: Started bundle org.glassfish.common.glassfish-api [79]
+Aug 21, 2009 1:39:14 PM OSGiModuleImpl start
+INFO: Started bundle org.glassfish.flashlight.framework [176]
+Aug 21, 2009 1:39:14 PM OSGiModuleImpl start
+INFO: Started bundle org.glassfish.registration.glassfish-registration [166]
+Aug 21, 2009 1:39:14 PM OSGiModuleImpl start
+INFO: Started bundle org.glassfish.jms.core [15]
+Aug 21, 2009 1:39:15 PM OSGiModuleImpl start
+INFO: Started bundle org.glassfish.common.container-common [17]
+Aug 21, 2009 1:39:15 PM org.glassfish.admin.mbeanserver.JMXStartupService$JMXConnectorsStarterThread run
+INFO: JMXStartupService: JMX authenticator is com.sun.enterprise.container.common.GenericAdminAuthenticator@5846b1c9
+Aug 21, 2009 1:39:15 PM OSGiModuleImpl start
+INFO: Started bundle org.glassfish.web.osgi-web-container [159]
+Aug 21, 2009 1:39:15 PM WebExtender run
+INFO: Waiting for Server to start
+Aug 21, 2009 1:39:15 PM OSGiModuleImpl start
+INFO: Started bundle org.glassfish.admin.rest-service [186]
+Aug 21, 2009 1:39:15 PM com.sun.enterprise.v3.services.impl.GrizzlyService postConstruct
+SEVERE: Unable to start v3. Closing all ports
+java.lang.NullPointerException
+	at com.sun.grizzly.config.dom.NetworkListener$Duck.findThreadPool(NetworkListener.java:191)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at org.jvnet.hk2.config.Dom.invokeDuckMethod(Dom.java:825)
+	at org.jvnet.hk2.config.Dom.invoke(Dom.java:778)
+	at org.glassfish.config.support.TranslatedConfigView.invoke(TranslatedConfigView.java:83)
+	at $Proxy54.findThreadPool(Unknown Source)
+	at com.sun.grizzly.config.GrizzlyEmbeddedHttp.configure(GrizzlyEmbeddedHttp.java:248)
+	at com.sun.grizzly.config.GrizzlyServiceListener.initializeListener(GrizzlyServiceListener.java:88)
+	at com.sun.grizzly.config.GrizzlyServiceListener.configure(GrizzlyServiceListener.java:77)
+	at com.sun.enterprise.v3.services.impl.GrizzlyListener.configure(GrizzlyListener.java:65)
+	at com.sun.enterprise.v3.services.impl.GrizzlyProxy.configureGrizzly(GrizzlyProxy.java:120)
+	at com.sun.enterprise.v3.services.impl.GrizzlyProxy.&lt;init&gt;(GrizzlyProxy.java:111)
+	at com.sun.enterprise.v3.services.impl.GrizzlyService.createNetworkProxy(GrizzlyService.java:349)
+	at com.sun.enterprise.v3.services.impl.GrizzlyService.postConstruct(GrizzlyService.java:271)
+	at com.sun.hk2.component.AbstractWombImpl.inject(AbstractWombImpl.java:174)
+	at com.sun.hk2.component.ConstructorWomb$1.run(ConstructorWomb.java:89)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at com.sun.hk2.component.ConstructorWomb.initialize(ConstructorWomb.java:86)
+	at com.sun.hk2.component.AbstractWombImpl.get(AbstractWombImpl.java:77)
+	at com.sun.hk2.component.SingletonInhabitant.get(SingletonInhabitant.java:58)
+	at com.sun.hk2.component.LazyInhabitant.get(LazyInhabitant.java:107)
+	at com.sun.hk2.component.AbstractInhabitantImpl.get(AbstractInhabitantImpl.java:60)
+	at com.sun.enterprise.v3.server.AppServerStartup.run(AppServerStartup.java:236)
+	at com.sun.enterprise.v3.server.AppServerStartup.start(AppServerStartup.java:129)
+	at com.sun.enterprise.v3.server.UpgradeStartup.start(UpgradeStartup.java:143)
+	at com.sun.enterprise.module.bootstrap.Main.launch(Main.java:460)
+	at com.sun.enterprise.module.bootstrap.Main.launch(Main.java:404)
+	at org.jvnet.hk2.osgiadapter.HK2Main.start(HK2Main.java:121)
+	at org.apache.felix.framework.util.SecureAction.startActivator(SecureAction.java:589)
+	at org.apache.felix.framework.Felix.startBundle(Felix.java:1461)
+	at org.apache.felix.framework.BundleImpl.start(BundleImpl.java:779)
+	at org.jvnet.hk2.osgimain.Main.start(Main.java:117)
+	at org.apache.felix.framework.util.SecureAction.startActivator(SecureAction.java:589)
+	at org.apache.felix.framework.Felix.startBundle(Felix.java:1461)
+	at org.apache.felix.framework.Felix.setActiveStartLevel(Felix.java:984)
+	at org.apache.felix.framework.StartLevelImpl.run(StartLevelImpl.java:263)
+	at java.lang.Thread.run(Thread.java:637)
+Aug 21, 2009 1:39:15 PM  
+SEVERE: java.lang.NullPointerException
+Aug 21, 2009 1:39:15 PM  
+SEVERE: 	at com.sun.grizzly.config.dom.NetworkListener$Duck.findThreadPool(NetworkListener.java:191)
+Aug 21, 2009 1:39:15 PM  
+SEVERE: 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+Aug 21, 2009 1:39:15 PM  
+SEVERE: 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+Aug 21, 2009 1:39:15 PM  
+SEVERE: 	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+Aug 21, 2009 1:39:15 PM  
+SEVERE: 	at java.lang.reflect.Method.invoke(Method.java:597)
+Aug 21, 2009 1:39:15 PM  
+SEVERE: 	at org.jvnet.hk2.config.Dom.invokeDuckMethod(Dom.java:825)
+Aug 21, 2009 1:39:15 PM  
+SEVERE: 	at org.jvnet.hk2.config.Dom.invoke(Dom.java:778)
+Aug 21, 2009 1:39:15 PM  
+SEVERE: 	at org.glassfish.config.support.TranslatedConfigView.invoke(TranslatedConfigView.java:83)
+Aug 21, 2009 1:39:15 PM  
+SEVERE: 	at $Proxy54.findThreadPool(Unknown Source)
+Aug 21, 2009 1:39:15 PM  
+SEVERE: 	at com.sun.grizzly.config.GrizzlyEmbeddedHttp.configure(GrizzlyEmbeddedHttp.java:248)
+Aug 21, 2009 1:39:15 PM  
+SEVERE: 	at com.sun.grizzly.config.GrizzlyServiceListener.initializeListener(GrizzlyServiceListener.java:88)
+Aug 21, 2009 1:39:15 PM  
+SEVERE: 	at com.sun.grizzly.config.GrizzlyServiceListener.configure(GrizzlyServiceListener.java:77)
+Aug 21, 2009 1:39:15 PM  
+SEVERE: 	at com.sun.enterprise.v3.services.impl.GrizzlyListener.configure(GrizzlyListener.java:65)
+Aug 21, 2009 1:39:15 PM  
+SEVERE: 	at com.sun.enterprise.v3.services.impl.GrizzlyProxy.configureGrizzly(GrizzlyProxy.java:120)
+Aug 21, 2009 1:39:15 PM  
+SEVERE: 	at com.sun.enterprise.v3.services.impl.GrizzlyProxy.&lt;init&gt;(GrizzlyProxy.java:111)
+Aug 21, 2009 1:39:15 PM  
+SEVERE: 	at com.sun.enterprise.v3.services.impl.GrizzlyService.createNetworkProxy(GrizzlyService.java:349)
+Aug 21, 2009 1:39:15 PM  
+SEVERE: 	at com.sun.enterprise.v3.services.impl.GrizzlyService.postConstruct(GrizzlyService.java:271)
+Aug 21, 2009 1:39:15 PM  
+SEVERE: 	at com.sun.hk2.component.AbstractWombImpl.inject(AbstractWombImpl.java:174)
+Aug 21, 2009 1:39:15 PM  
+SEVERE: 	at com.sun.hk2.component.ConstructorWomb$1.run(ConstructorWomb.java:89)
+Aug 21, 2009 1:39:15 PM  
+SEVERE: 	at java.security.AccessController.doPrivileged(Native Method)
+Aug 21, 2009 1:39:15 PM  
+SEVERE: 	at com.sun.hk2.component.ConstructorWomb.initialize(ConstructorWomb.java:86)
+Aug 21, 2009 1:39:15 PM OSGiModuleImpl start
+INFO: Started bundle org.glassfish.deployment.autodeploy [134]
+Aug 21, 2009 1:39:15 PM  
+SEVERE: 	at com.sun.hk2.component.AbstractWombImpl.get(AbstractWombImpl.java:77)
+Aug 21, 2009 1:39:15 PM  
+SEVERE: 	at com.sun.hk2.component.SingletonInhabitant.get(SingletonInhabitant.java:58)
+Aug 21, 2009 1:39:15 PM  
+SEVERE: 	at com.sun.hk2.component.LazyInhabitant.get(LazyInhabitant.java:107)
+Aug 21, 2009 1:39:15 PM  
+SEVERE: 	at com.sun.hk2.component.AbstractInhabitantImpl.get(AbstractInhabitantImpl.java:60)
+Aug 21, 2009 1:39:15 PM  
+SEVERE: 	at com.sun.enterprise.v3.server.AppServerStartup.run(AppServerStartup.java:236)
+Aug 21, 2009 1:39:15 PM  
+SEVERE: 	at com.sun.enterprise.v3.server.AppServerStartup.start(AppServerStartup.java:129)
+Aug 21, 2009 1:39:15 PM  
+SEVERE: 	at com.sun.enterprise.v3.server.UpgradeStartup.start(UpgradeStartup.java:143)
+Aug 21, 2009 1:39:15 PM  
+SEVERE: 	at com.sun.enterprise.module.bootstrap.Main.launch(Main.java:460)
+Aug 21, 2009 1:39:15 PM  
+SEVERE: 	at com.sun.enterprise.module.bootstrap.Main.launch(Main.java:404)
+Aug 21, 2009 1:39:15 PM  
+SEVERE: 	at org.jvnet.hk2.osgiadapter.HK2Main.start(HK2Main.java:121)
+Aug 21, 2009 1:39:15 PM  
+SEVERE: 	at org.apache.felix.framework.util.SecureAction.startActivator(SecureAction.java:589)
+Aug 21, 2009 1:39:15 PM  
+SEVERE: 	at org.apache.felix.framework.Felix.startBundle(Felix.java:1461)
+Aug 21, 2009 1:39:15 PM  
+SEVERE: 	at org.apache.felix.framework.BundleImpl.start(BundleImpl.java:779)
+Aug 21, 2009 1:39:15 PM  
+SEVERE: 	at org.jvnet.hk2.osgimain.Main.start(Main.java:117)
+Aug 21, 2009 1:39:15 PM  
+SEVERE: 	at org.apache.felix.framework.util.SecureAction.startActivator(SecureAction.java:589)
+Aug 21, 2009 1:39:15 PM  
+SEVERE: 	at org.apache.felix.framework.Felix.startBundle(Felix.java:1461)
+Aug 21, 2009 1:39:15 PM  
+SEVERE: 	at org.apache.felix.framework.Felix.setActiveStartLevel(Felix.java:984)
+Aug 21, 2009 1:39:15 PM  
+SEVERE: 	at org.apache.felix.framework.StartLevelImpl.run(StartLevelImpl.java:263)
+Aug 21, 2009 1:39:15 PM  
+SEVERE: 	at java.lang.Thread.run(Thread.java:637)
+Aug 21, 2009 1:39:15 PM com.sun.enterprise.v3.server.AppServerStartup run
+INFO: Startup service failed to start : null
+Aug 21, 2009 1:39:15 PM OSGiModuleImpl start
+INFO: Started bundle org.glassfish.transaction.jts [72]
+Aug 21, 2009 1:39:15 PM org.glassfish.admin.mbeanserver.JMXStartupService$JMXConnectorsStarterThread startConnector
+INFO: JMXStartupService: Started JMXConnector, JMXService URL = service:jmx:rmi://dhcp-ubur02-71-236.East.Sun.COM:49474/jndi/rmi://dhcp-ubur02-71-236.East.Sun.COM:49474/jmxrmi
+Aug 21, 2009 1:39:15 PM com.sun.enterprise.v3.server.AppServerStartup run
+INFO: GlassFish v3  startup time : Felix(3880ms) startup services(1791ms) total(5671ms)
+Aug 21, 2009 1:39:15 PM WebExtender event
+INFO: Received Server Started Event
+Aug 21, 2009 1:39:15 PM AppServerStartup run
+INFO: [Thread[GlassFish Kernel Main Thread,5,main]] started
+Aug 21, 2009 1:39:15 PM com.sun.enterprise.v3.server.UpgradeStartup start
+INFO: Exiting after upgrade
+Aug 21, 2009 1:39:18 PM com.sun.enterprise.v3.admin.StopDomainCommand execute
+INFO: Server shutdown initiated
+Aug 21, 2009 1:39:18 PM org.glassfish.admin.mbeanserver.JMXStartupService shutdown
+INFO: JMXStartupService: shutting down AMX and JMX
+Aug 21, 2009 1:39:19 PM org.glassfish.admin.mbeanserver.JMXStartupService$JMXConnectorsStarterThread shutdown
+INFO: JMXStartupService: Stopped JMXConnectorServer: service:jmx:rmi://dhcp-ubur02-71-236.East.Sun.COM:49474/jndi/rmi://dhcp-ubur02-71-236.East.Sun.COM:49474/jmxrmi
+Aug 21, 2009 1:39:19 PM AppServerStartup run
+INFO: [Thread[GlassFish Kernel Main Thread,5,main]] exiting
+Aug 21, 2009 1:39:19 PM  
+INFO: felix.fileinstall.poll  (ms)   5000
+Aug 21, 2009 1:39:19 PM  
+INFO: felix.fileinstall.dir            /Users/bobby/servers/glassfishv3/glassfish/domains/v2domain1/autodeploy-bundles
+Aug 21, 2009 1:39:19 PM OSGiModuleImpl detach
+INFO: Stopped bundle = [removed all the stopped bundle messages]</pre> 
+       </div> 
+      </div>
+     </div> <p>Will investigate the NPE in grizzly code and will also check to make sure those 4 exta jvm-option elements aren't causing an issue. I've removed them and get the same result. Will go that route for now.</p> 
+     <hr> <p><b>Note:</b> At this point we have enough of a workaround so that the upgrade service is actually being called. I'm going to summarize these steps on the main upgrade dashboard page and send a link out to the module owners. Then we can start with individual modules that are hitting trouble, starting with the grizzly npe above.</p> 
+     <hr> <p><b>Followup:</b> Justin may have a simple fix for getting around the NPE. Could just be a thread pool missing in domain.xml, so he's giving it a look and we may have one more item for the manual workaround list.</p> 
+     <hr> <p>While Justin is looking at it, I'm looking at other differences between the v2 and v3 domains. There are some jvm-options in v3 that are not present in v2. Am capturing them here for reference and will test a v2 upgrade with/without them.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;jvm-options&gt;-XX:+UnlockDiagnosticVMOptions&lt;/jvm-options&gt;
+&lt;jvm-options&gt;-XX:+LogVMOutput&lt;/jvm-options&gt;
+&lt;jvm-options&gt;-XX:LogFile=${com.sun.aas.instanceRoot}/logs/jvm.log&lt;/jvm-options&gt;
+&lt;jvm-options&gt;-DANTLR_USE_DIRECT_CLASS_LOADING=true&lt;/jvm-options&gt;</pre> 
+       </div> 
+      </div>
+     </div> 
+     <hr> <p><b>Now at revision 30710</b></p> <p>Same results. Just checking.</p> 
+     <hr> <p><b>Revision 30744</b></p> <p>Am removing the following elements from /domain/servers/server[@name='server']</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;application-ref ref="adminapp" virtual-servers="__asadmin" /&gt;
+&lt;application-ref ref="admingui" virtual-servers="__asadmin" /&gt;
+&lt;application-ref ref="JBIFramework" /&gt;
+&lt;application-ref ref="WSTXServices" /&gt;
+&lt;application-ref ref="WSTCPConnectorLCModule" /&gt;
+&lt;application-ref ref="__ejb_container_timer_app" virtual-servers="server" /&gt;
+&lt;application-ref ref="__JWSappclients" virtual-servers="server" /&gt;
+&lt;application-ref ref="MEjbApp" virtual-servers="server" /&gt;
+&lt;resource-ref ref="jdbc/__CallFlowPool" /&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>Leaving only these two resource references, matching the v3 default:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;resource-ref ref="jdbc/__TimerPool" /&gt;
+&lt;resource-ref ref="jdbc/__default" /&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>Since running the server overwrites domain.xml and I lose comments, here's more scratch pad. Am changing this:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;thread-pools&gt;
+        &lt;thread-pool max-thread-pool-size="200" min-thread-pool-size="0" /&gt;
+        &lt;thread-pool name="http-thread-pool" max-queue-size="4096" /&gt;
+      &lt;/thread-pools&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>to this:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;thread-pools&gt;
+          &lt;thread-pool name="http-thread-pool" max-queue-size="4096"&gt;&lt;/thread-pool&gt;
+          &lt;thread-pool name="thread-pool-1" max-thread-pool-size="200"/&gt;
+      &lt;/thread-pools&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p><b>Update:</b> This at least gets to a new error. Getting closer:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Aug 24, 2009 5:18:47 PM OSGiModuleImpl start
+INFO: Started bundle org.glassfish.web.osgi-web-container [160]
+Aug 24, 2009 5:18:47 PM OSGiModuleImpl start
+INFO: Started bundle org.glassfish.admin.rest-service [186]
+Aug 24, 2009 5:18:47 PM OSGiModuleImpl start
+INFO: Started bundle org.glassfish.deployment.autodeploy [135]
+Aug 24, 2009 5:18:47 PM OSGiModuleImpl start
+INFO: Started bundle org.glassfish.transaction.jts [73]
+Aug 24, 2009 5:18:47 PM org.glassfish.admin.mbeanserver.JMXStartupService$JMXConnectorsStarterThread startConnector
+INFO: JMXStartupService: Started JMXConnector, JMXService URL = service:jmx:rmi://dhcp-ubur02-71-236.East.Sun.COM:8686/jndi/rmi://dhcp-ubur02-71-236.East.Sun.COM:8686/jmxrmi
+Aug 24, 2009 5:18:48 PM com.sun.enterprise.v3.services.impl.GrizzlyProxy start
+INFO: Listening on port 8080
+Aug 24, 2009 5:18:48 PM com.sun.grizzly.config.GrizzlyEmbeddedHttps configureSSL
+WARNING: pewebcontainer.all_ssl_ciphers_disabled
+Aug 24, 2009 5:18:48 PM com.sun.grizzly.Controller start
+INFO: Starting Grizzly Framework 1.9.18-M1 - Mon Aug 24 17:18:48 EDT 2009
+Aug 24, 2009 5:18:49 PM com.sun.enterprise.v3.services.impl.GrizzlyProxy start
+INFO: Listening on port 8181
+Aug 24, 2009 5:18:49 PM com.sun.grizzly.Controller start
+INFO: Starting Grizzly Framework 1.9.18-M1 - Mon Aug 24 17:18:49 EDT 2009
+Aug 24, 2009 5:18:49 PM com.sun.enterprise.v3.services.impl.GrizzlyProxy start
+INFO: Listening on port 4848
+Aug 24, 2009 5:18:49 PM com.sun.grizzly.Controller start
+INFO: Starting Grizzly Framework 1.9.18-M1 - Mon Aug 24 17:18:49 EDT 2009
+Aug 24, 2009 5:18:50 PM com.sun.enterprise.v3.services.impl.GrizzlyService postConstruct
+SEVERE: Unable to start v3. Closing all ports
+java.lang.NullPointerException
+	at com.sun.enterprise.v3.admin.adapter.AdminConsoleAdapter.init(AdminConsoleAdapter.java:425)
+	at com.sun.enterprise.v3.admin.adapter.AdminConsoleAdapter.postConstruct(AdminConsoleAdapter.java:386)
+	at com.sun.hk2.component.AbstractWombImpl.inject(AbstractWombImpl.java:174)
+	at com.sun.hk2.component.ConstructorWomb$1.run(ConstructorWomb.java:89)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at com.sun.hk2.component.ConstructorWomb.initialize(ConstructorWomb.java:86)
+	at com.sun.hk2.component.AbstractWombImpl.get(AbstractWombImpl.java:77)
+	at com.sun.hk2.component.SingletonInhabitant.get(SingletonInhabitant.java:58)
+	at com.sun.hk2.component.LazyInhabitant.get(LazyInhabitant.java:107)
+	at com.sun.hk2.component.AbstractInhabitantImpl.get(AbstractInhabitantImpl.java:60)
+	at org.jvnet.hk2.component.Habitat$1.get(Habitat.java:275)
+	at java.util.AbstractList$Itr.next(AbstractList.java:345)
+	at com.sun.enterprise.v3.services.impl.GrizzlyService.registerNetworkProxy(GrizzlyService.java:399)
+	at com.sun.enterprise.v3.services.impl.GrizzlyService.registerNetworkProxy(GrizzlyService.java:391)
+	at com.sun.enterprise.v3.services.impl.GrizzlyService.postConstruct(GrizzlyService.java:310)
+	at com.sun.hk2.component.AbstractWombImpl.inject(AbstractWombImpl.java:174)
+	at com.sun.hk2.component.ConstructorWomb$1.run(ConstructorWomb.java:89)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at com.sun.hk2.component.ConstructorWomb.initialize(ConstructorWomb.java:86)
+	at com.sun.hk2.component.AbstractWombImpl.get(AbstractWombImpl.java:77)
+	at com.sun.hk2.component.SingletonInhabitant.get(SingletonInhabitant.java:58)
+	at com.sun.hk2.component.LazyInhabitant.get(LazyInhabitant.java:107)
+	at com.sun.hk2.component.AbstractInhabitantImpl.get(AbstractInhabitantImpl.java:60)
+	at com.sun.enterprise.v3.server.AppServerStartup.run(AppServerStartup.java:236)
+	at com.sun.enterprise.v3.server.AppServerStartup.start(AppServerStartup.java:129)
+	at com.sun.enterprise.v3.server.UpgradeStartup.start(UpgradeStartup.java:143)
+	at com.sun.enterprise.module.bootstrap.Main.launch(Main.java:460)
+	at com.sun.enterprise.module.bootstrap.Main.launch(Main.java:404)
+	at org.jvnet.hk2.osgiadapter.HK2Main.start(HK2Main.java:121)
+	at org.apache.felix.framework.util.SecureAction.startActivator(SecureAction.java:589)
+	at org.apache.felix.framework.Felix.startBundle(Felix.java:1461)
+	at org.apache.felix.framework.BundleImpl.start(BundleImpl.java:779)
+	at org.jvnet.hk2.osgimain.Main.start(Main.java:117)
+	at org.apache.felix.framework.util.SecureAction.startActivator(SecureAction.java:589)
+	at org.apache.felix.framework.Felix.startBundle(Felix.java:1461)
+	at org.apache.felix.framework.Felix.setActiveStartLevel(Felix.java:984)
+	at org.apache.felix.framework.StartLevelImpl.run(StartLevelImpl.java:263)
+	at java.lang.Thread.run(Thread.java:637)
+Aug 24, 2009 5:18:50 PM</pre> 
+       </div> 
+      </div>
+     </div> <p>Have sent updated stack trace and domain.xml to Justin. Will also look through it in the debugger tomorrow.</p> 
+     <hr> <p><b>Revision 30785</b></p> <p>Have updated main page's instructions to add the thread pool information. Am attaching the domain.xml I have at this point to avoid making the changes again. <a href="http://wiki.glassfish.java.net/attach/ManualUpgradeNotes/domain.xml_rev_30785">domain.xml_rev_30785</a></p> <p>Earlier today I was seeing an error in logging code when starting up: logging.properties not found and the server exited. Am no longer seeing that, so it must have been something I did to clobber the file even though I don't think I touched that dir. Need to start with a fresh domain again and check.... Yep, one is being created for me. Am hitting the thread pool failure again, so I have the thread-pool info incorrect.</p> <p>Fixed thread pool notes on dashboard page and fixed attachment. Am now getting a new error, so some work must be going on in the grizzly module:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">[...]
+Aug 25, 2009 3:42:48 PM OSGiModuleImpl start
+INFO: Started bundle org.glassfish.common.container-common [18]
+Aug 25, 2009 3:42:48 PM org.glassfish.admin.mbeanserver.JMXStartupService$JMXConnectorsStarterThread run
+INFO: JMXStartupService: JMX authenticator is com.sun.enterprise.container.common.GenericAdminAuthenticator@39662993
+Aug 25, 2009 3:42:48 PM WebExtender run
+INFO: Waiting for Server to start
+Aug 25, 2009 3:42:48 PM OSGiModuleImpl start
+INFO: Started bundle org.glassfish.web.osgi-web-container [161]
+Aug 25, 2009 3:42:48 PM OSGiModuleImpl start
+INFO: Started bundle org.glassfish.admin.rest-service [188]
+Aug 25, 2009 3:42:48 PM OSGiModuleImpl start
+INFO: Started bundle org.glassfish.deployment.autodeploy [136]
+Aug 25, 2009 3:42:49 PM com.sun.enterprise.v3.services.impl.GrizzlyProxy start
+INFO: Listening on port 8080
+Aug 25, 2009 3:42:49 PM com.sun.enterprise.v3.services.impl.GrizzlyService postConstruct
+SEVERE: Unable to start v3. Closing all ports
+java.lang.ClassCastException: $Proxy32 cannot be cast to com.sun.grizzly.config.dom.Protocol
+	at com.sun.grizzly.config.GrizzlyEmbeddedHttps.configureSSL(GrizzlyEmbeddedHttps.java:180)
+	at com.sun.grizzly.config.GrizzlyEmbeddedHttps.configureProtocol(GrizzlyEmbeddedHttps.java:95)
+	at com.sun.grizzly.config.GrizzlyEmbeddedHttp.configure(GrizzlyEmbeddedHttp.java:266)
+	at com.sun.grizzly.config.GrizzlyServiceListener.initializeListener(GrizzlyServiceListener.java:88)
+	at com.sun.grizzly.config.GrizzlyServiceListener.configure(GrizzlyServiceListener.java:77)
+	at com.sun.enterprise.v3.services.impl.GrizzlyListener.configure(GrizzlyListener.java:65)
+	at com.sun.enterprise.v3.services.impl.GrizzlyProxy.configureGrizzly(GrizzlyProxy.java:120)
+	at com.sun.enterprise.v3.services.impl.GrizzlyProxy.&lt;init&gt;(GrizzlyProxy.java:111)
+	at com.sun.enterprise.v3.services.impl.GrizzlyService.createNetworkProxy(GrizzlyService.java:349)
+	at com.sun.enterprise.v3.services.impl.GrizzlyService.postConstruct(GrizzlyService.java:271)
+	at com.sun.hk2.component.AbstractWombImpl.inject(AbstractWombImpl.java:174)
+	at com.sun.hk2.component.ConstructorWomb$1.run(ConstructorWomb.java:89)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at com.sun.hk2.component.ConstructorWomb.initialize(ConstructorWomb.java:86)
+	at com.sun.hk2.component.AbstractWombImpl.get(AbstractWombImpl.java:77)
+	at com.sun.hk2.component.SingletonInhabitant.get(SingletonInhabitant.java:58)
+	at com.sun.hk2.component.LazyInhabitant.get(LazyInhabitant.java:107)
+	at com.sun.hk2.component.AbstractInhabitantImpl.get(AbstractInhabitantImpl.java:60)
+	at com.sun.enterprise.v3.server.AppServerStartup.run(AppServerStartup.java:236)
+	at com.sun.enterprise.v3.server.AppServerStartup.start(AppServerStartup.java:129)
+	at com.sun.enterprise.v3.server.UpgradeStartup.start(UpgradeStartup.java:144)
+	at com.sun.enterprise.module.bootstrap.Main.launch(Main.java:460)
+	at com.sun.enterprise.module.bootstrap.Main.launch(Main.java:404)
+	at org.jvnet.hk2.osgiadapter.HK2Main.start(HK2Main.java:121)
+	at org.apache.felix.framework.util.SecureAction.startActivator(SecureAction.java:589)
+	at org.apache.felix.framework.Felix.startBundle(Felix.java:1461)
+	at org.apache.felix.framework.BundleImpl.start(BundleImpl.java:779)
+	at org.jvnet.hk2.osgimain.Main.start(Main.java:117)
+	at org.apache.felix.framework.util.SecureAction.startActivator(SecureAction.java:589)
+	at org.apache.felix.framework.Felix.startBundle(Felix.java:1461)
+	at org.apache.felix.framework.Felix.setActiveStartLevel(Felix.java:984)
+	at org.apache.felix.framework.StartLevelImpl.run(StartLevelImpl.java:263)
+	at java.lang.Thread.run(Thread.java:637)</pre> 
+       </div> 
+      </div>
+     </div> <p>Will check with Justin.</p> 
+     <hr> <p><b>Now on revision 30836</b></p> <p>No longer getting the ClassCast exception, so something is changing. Now back to null pointer exception in init() method. Haven't head any email back yet. Trying to debug.</p> <p>Debugging, I see there are properties missing in domain.xml that the upgrade service is counting on (though in some cases a default could be implied). Am adding under /domain/configs/config[@name='server-config']/admin-service (still a work in progress):</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;property name="adminConsoleDownloadLocation" value="${com.sun.aas.installRoot}/lib/install/applications/admingui.war" /&gt;
+&lt;property name="ipsRoot" value="${com.sun.aas.installRoot}/.." /&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>Hey, it works. Time for a beer. The current domain.xml file with all the changes is <a href="http://wiki.glassfish.java.net/attach/ManualUpgradeNotes/domain.xml_rev_30836">domain.xml_rev_30836</a>. I'll add information to the dashboard page and send an email out to the module leads and maybe dev@gf too?</p> 
+     <hr> <p><b>Rev 30873</b></p> <p>Am rebuilding to test. Two questions that need to get resolved about <a href="https://github.com/javaee/glassfish/issues/9127">issue 9127</a></p> 
+     <ol> 
+      <li>Where will the domain.xml transforming code actually live. Ideally, some part of the upgrade service inside GlassFish since the upgrade tool's job is just gathering information and the server does the rest.</li> 
+      <li>Part of the workaround is to remove the elements under /domain/applications – for existing apps, the elements should be transformed so that domain.xml can still be parsed. Will get some more information about this and update the issue.</li> 
+     </ol> 
+     <hr> <p>Was seeing unexpected hang of server with last revision. Trying <b>30881</b> now.</p> <p>Building...building...building...</p> 
+     <hr> <p><b>Fixing the workaround</b></p> <p>Here is the original workaround for issue 9127 and more. Am putting it here for easy reference as we resolve the issues on the main Upgrade wiki page.</p> <p>More information can be found with <a href="https://github.com/javaee/glassfish/issues/9127">issue 9127</a>, but if you are attempting to do an upgrade starting with a v2 domain, here are changes you need to make manually in </p>
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">domain.xml</pre> 
+       </div> 
+      </div>
+     </div> before proceeding. Or use the one <a href="http://wiki.glassfish.java.net/attach/ManualUpgradeNotes/domain.xml_rev_30836">I'm currently trying</a>. The rev number is the revision of the code I've tested with.<p></p> 
+     <ul> 
+      <li>Remove the DTD from the beginning of the file.</li> 
+      <li>Remove all the elements under /domain/applications (except any applications you have explicitly deployed). Also remove the corresponding resource-ref elements under /domain/servers/server[@name='server']. The resource-ref elements that should remain by default are:</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;resource-ref ref="jdbc/__TimerPool" /&gt;
+&lt;resource-ref ref="jdbc/__default" /&gt;</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>In the //domain/configs/config[@name='server-config']/java-config element, remove the following &lt;jvm-options&gt; elements: 
+       <ul> 
+        <li>-Djavax.management.builder.initial=com.sun.enterprise.admin.server.core.jmx.AppServerMBeanServerBuilder</li> 
+        <li>-Dsun.rmi.dgc.server.gcInterval=3600000</li> 
+        <li>-Dsun.rmi.dgc.client.gcInterval=3600000</li> 
+        <li>-Dcom.sun.enterprise.taglibs=appserv-jstl.jar,jsf-impl.jar</li> 
+        <li>-Dcom.sun.enterprise.taglisteners=jsf-impl.jar</li> 
+       </ul> </li> 
+      <li>The following jvm-options should also be added:</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;jvm-options&gt;-XX:+UnlockDiagnosticVMOptions&lt;/jvm-options&gt;
+&lt;jvm-options&gt;-XX:+LogVMOutput&lt;/jvm-options&gt;
+&lt;jvm-options&gt;-XX:LogFile=${com.sun.aas.instanceRoot}/logs/jvm.log&lt;/jvm-options&gt;
+&lt;jvm-options&gt;-DANTLR_USE_DIRECT_CLASS_LOADING=true&lt;/jvm-options&gt;</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>Remove the elements under thread-pools (unless you have created some explicitly) and add:</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;thread-pool name="http-thread-pool" max-queue-size="4096"&gt;&lt;/thread-pool&gt;
+&lt;thread-pool name="thread-pool-1" max-thread-pool-size="200"/&gt;</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>Add the following under /domain/configs/config[@name='server-config']/admin-service:</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;property name="adminConsoleDownloadLocation" value="${com.sun.aas.installRoot}/lib/install/applications/admingui.war" /&gt;
+&lt;property name="ipsRoot" value="${com.sun.aas.installRoot}/.." /&gt;</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>At this point you can run the service. The command I'm currently using is here. If your v2 domain isn't in the v3 domains dir, copy it there or use the -domaindir option with either of the following:</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">java -jar modules/glassfish.jar -upgrade true -domain &lt;v2domain&gt;
+asadmin start-domain -v --upgrade &lt;v2domain&gt;</pre> 
+       </div> 
+      </div>
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Dec 01, 2011 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

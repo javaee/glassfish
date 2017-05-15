@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GfinNB70v3RegWizardUI</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GfinNB70v3RegWizardUI-registrationWizard"></a>registration Wizard</h1> <h4><a name="GfinNB70v3RegWizardUI-DesignforNB6.5"></a>Design for NB 6.5</h2> <h4><a name="GfinNB70v3RegWizardUI-Page1"></a>Page 1</h3> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Glassfish v3 Installation Location:
+_____________________________________[browse]
+[Download v3 Now] [] i have read the license
+-- status message area --
+[back][next][finish][cancel]</pre> 
+       </div> 
+      </div>
+     </div> <p>the user is expected to enter the name of a directory in the install location field.</p> <p>if the location contains the v3 bits, the next button is enabled. the finish button may be enabled, if there is a registerable domain in the domains directory.</p> <p>if the location DOES NOT contain v3 bits, the user can check the box and press the download now button to install the v3 bits from java.net...</p> <p>Once the bits are downloaded successfully, the next and finish button are enabled.</p> <h4><a name="GfinNB70v3RegWizardUI-Page2"></a>Page 2</h3> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Domain: ____________v
+ -- instructions --
+[back][next][finish][cancel]</pre> 
+       </div> 
+      </div>
+     </div> <p>This page allows the user to select the domain to be registered...</p> <p>The domain field is an editable combobox. The box is populated by the registerable domains embedded in the installation directory. If there are no registerable domains the field is blank and the finish button is disabled.</p> <p>the user can select any of the domains listed and click finish. The domain will be registered in the IDE.</p> <p>if the user enters a new name and clicks finish, a new domain is created in the domains directory. The ports are calculated to be across a random 'swath' of values, to prevent port overlap.</p> <p>If the user enters a directory path and clicks finish, an existing domain will be registered or a new domain will be created in that location.</p> <h4><a name="GfinNB70v3RegWizardUI-NewFeaturesfor7.0"></a>New Features for 7.0</h2> 
+     <ol> 
+      <li>allow users to register remote domains<br> there are situations where the IDE user wants to test an app on a different machine. Users can deploy an app onto a remote server using asadmin deploy, but it would be useful to deploy the apps directly from the IDE. To be able to do this, the user needs to be able to register the server.</li> 
+      <li>allow the user to associate a username and password with a registration.<br> in the Prelude/6.5 time frame, the default domain in v3 was an anonymous domain. If the user registered a domain that was not anonymous, the user was asked to authenticate when they accessed the server. as v3 moves from a development server to a production server role, this can be a bit more clumsy. the user name and password would be used to pre-authenticate requests.</li> 
+      <li>allow users to set the ports associated with a personal domain.<br> Currently users are not allowed to specify the ports used to create a personal domain. This 'works' much of the time, but there are situations where the ability to select the ports is critical.</li> 
+     </ol> <h4><a name="GfinNB70v3RegWizardUI-Page1"></a>Page 1</h3> <p>Installation info</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Glassfish v3 Installation Location:
+_____________________________________[browse]
+[Download v3 Now] [] i have read the license
+-- status message area --
+[back][next][finish][cancel]</pre> 
+       </div> 
+      </div>
+     </div> <p>This page behaves like it does in 6.5. Clicking finish means: register the first registerable domain in $INSTALL/glassfish/domains with no authentication information.<br> Clicking next allows the user to select the domain to register/create.</p> <h4><a name="GfinNB70v3RegWizardUI-Page2"></a>Page 2</h3> <p>domain type and location</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">() Local Domain:______________________v
+() Remote Domain Host: _______________
+                 Port: ______
+-- instructions --
+[back][next][finish][cancel]</pre> 
+       </div> 
+      </div>
+     </div> <p>The default value of the radio button is 'Local Domain'</p> <p>This page behaves in a manner similar to the page 2 of the registration wizard of 6.5, for the domain field.</p> <p>If the user selects the remote domain radio button, the user needs to enter host and port info.</p> <p>clicking finish when the Local Domain choice is selected will:<br> a) register the selected existing domain with no authentication information.<br> b) create a personal domain, with anonymous authentication on a set of randomly selected ports.</p> <h4><a name="GfinNB70v3RegWizardUI-Page3"></a>Page 3</h3> <p>Authentication information</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">username: ______
+password: ______
+[] save authentication info in registration properties
+[back][finish][cancel]</pre> 
+       </div> 
+      </div>
+     </div> <p>If the user is creating a domain, the default value of the save authentication checkbox is unselected. The user must enter a user name. if the username is not anonymous, the user must also enter a password.</p> <p>If the user is registering a normal domain, the 'save authentication...' checkbox is selected. The checkbox is also disabled, so follks cannot change the state.</p> <p>clicking finish means that the domain will be registered with the authentication data provided.</p> <p>clicking finish when the user is creating a domain means that the domain will use authentication and be based on a set of randomly selected ports. The authentication information might be saved into the registration 'database', depending on whether the state of the 'save auth...' checkbox</p> <h4><a name="GfinNB70v3RegWizardUI-Page4"></a>Page 4</h3> <p>Port selection/display page</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">admin port:____
+http port:____
+https port: ___
+ .
+ .
+ .
+[back][finish][cancel]</pre> 
+       </div> 
+      </div>
+     </div> <p>this page is read-only if the user is registering an existing domain. It just displays the port values that are embedded into the domain.xml. undetermined ports are left blank.</p> <p>This page is pre-populated with semi-random values if the user is creating a personal domain. the user can edit any of the port values that are displayed....</p> <p>blank values are not allowed, if the fields are editable. </p> <p><font color="blue">One open issue.... what do we do with ports that don't make sense. For example, say the user creates a domain with the 'web' profile of the server. Do we send the create-domain property values for the ports that are not used in the web profile? What does create-domain do in those situations?<br> ----</font>(color:purple;)Old URL (read-only): <a href="" title="GfinNB70v3RegWizardUI">GfinNB70v3RegWizardUI</a>%%<br> </p></td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 08, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:44.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

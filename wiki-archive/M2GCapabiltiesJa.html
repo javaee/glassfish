@@ -1,0 +1,1427 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : M2GCapabiltiesJa</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="M2GCapabiltiesJa-%E3%83%9E%E3%82%A4%E3%82%B0%E3%83%AC%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%83%84%E3%83%BC%E3%83%AB%E3%81%A7%E5%8F%AF%E8%83%BD%E3%81%AA%E3%81%93%E3%81%A8"></a>マイグレーションツールで可能なこと</h1> <p>本ページでは Project GlassFish のマイグレーションツールで可能なことを解説します。</p> 
+     <ul> 
+      <li>設定パラメタの移行</li> 
+      <li>配備記述子 (DD) の移行</li> 
+      <li>カスタム JSP タグの実装</li> 
+      <li>プロプライエタリ API の実装</li> 
+      <li>IDE との統合</li> 
+      <li>ビルドスクリプトの生成</li> 
+      <li>ログ</li> 
+     </ul> <h4><a name="M2GCapabiltiesJa-%E8%A8%AD%E5%AE%9A%E3%83%91%E3%83%A9%E3%83%A1%E3%82%BF%E3%81%AE%E7%A7%BB%E8%A1%8C"></a>設定パラメタの移行</h2> <p>設計ガイドラインより、マイグレーションツールは JDBC データソースのみを移行します。アプリケーションサーバインストールの設定パラメタを上書きすることはありません。この設計により、アプリケーションサーバのシステム管理者がおこなった設定を守っています。したがって、もととなるアプリケーションサーバの設定パラメタを下記の移行方法に分類しています。</p> 
+     <ul> 
+      <li>アプリケーションサーバに移行されるパラメタ。(Migrated)</li> 
+      <li>アプリケーションサーバに相当するパラメタがないため移行できないパラメタ。(Cannot Be Migrated)</li> 
+      <li>アプリケーションサーバに移行されるべきでないパラメタ。マイグレーションツールは、システム管理者の判断を塗り替えるべきではありません。(Should Not Be Migrated)</li> 
+      <li>製品特有 (WL_HOME, インストールディレクトリ、など) のため、アプリケーションサーバに移行する必要のないパラメタ。(Need Not Be Migrated)</li> 
+      <li>アプリケーションサーバに移行されないパラメタ。(Cannot Be Migrated)</li> 
+     </ul> <p>以下の表に、もととなる各アプリケーションサーバでのマイグレーションツールの対応状況を一覧します。</p> <p>Table&nbsp;6-1 WAS 4.0 設定パラメタの移行</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Category </th> 
+         <th class="confluenceTh">Item Description </th> 
+         <th class="confluenceTh">File </th> 
+         <th class="confluenceTh">Migration Resolution </th> 
+         <th class="confluenceTh">&nbsp;</th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;virtualHosts&gt; </td> 
+         <td class="confluenceTd"> Application server installation and application directory information </td> 
+         <td class="confluenceTd"> <tt>server-cfg.xml</tt> </td> 
+         <td class="confluenceTd"> Need Not Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;factories&gt; </td> 
+         <td class="confluenceTd"> JDBC Datasource/Connection pool </td> 
+         <td class="confluenceTd"> <tt>server-cfg.xml</tt> </td> 
+         <td class="confluenceTd"> Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;resourceProviders xmi:type="resources:JDBCDriver"&gt; </td> 
+         <td class="confluenceTd"> JDBC Driver </td> 
+         <td class="confluenceTd"> <tt>server-cfg.xml</tt> </td> 
+         <td class="confluenceTd"> Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;resourceProviders xmi:type="resources:URLProvider"&gt; </td> 
+         <td class="confluenceTd"> URL provider settings </td> 
+         <td class="confluenceTd"> <tt>server-cfg.xml</tt> </td> 
+         <td class="confluenceTd"> Cannot Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;resourceProviders xmi:type="resources:MailProvider"&gt; </td> 
+         <td class="confluenceTd"> Mail provider settings </td> 
+         <td class="confluenceTd"> <tt>server-cfg.xml</tt> </td> 
+         <td class="confluenceTd"> Cannot Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;defaultMimeEntries xmi:id="resources:MimeEntry&gt; </td> 
+         <td class="confluenceTd"> MIME types </td> 
+         <td class="confluenceTd"> <tt>server-cfg.xml</tt> </td> 
+         <td class="confluenceTd"> Need Not Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;threadPool xmi:id="ThreadPool" </td> 
+         <td class="confluenceTd"> Parameters for thread connection. </td> 
+         <td class="confluenceTd"> <tt>server-cfg.xml</tt> </td> 
+         <td class="confluenceTd"> Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;ejbContainer xmi:id="EJBContainer" </td> 
+         <td class="confluenceTd"> EJB component parameters </td> 
+         <td class="confluenceTd"> <tt>server-cfg.xml</tt> </td> 
+         <td class="confluenceTd"> Need Not Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;transactionService xmi:id="TransactionService"&gt; </td> 
+         <td class="confluenceTd"> Parameters for Transaction Manager logs </td> 
+         <td class="confluenceTd"> <tt>server-cfg.xml</tt> </td> 
+         <td class="confluenceTd"> Need Not Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;traceService xmi:id="TraceServiceConfig"&gt; </td> 
+         <td class="confluenceTd"> Trace service </td> 
+         <td class="confluenceTd"> <tt>server-cfg.xml</tt> </td> 
+         <td class="confluenceTd"> Cannot Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;namingServiceSettings xmi:id="NamingServiceProvider"&gt; </td> 
+         <td class="confluenceTd"> Name service settings </td> 
+         <td class="confluenceTd"> <tt>server-cfg.xml</tt> </td> 
+         <td class="confluenceTd"> Need Not Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;security xmi:id="Security"&gt; </td> 
+         <td class="confluenceTd"> Security </td> 
+         <td class="confluenceTd"> <tt>server-cfg.xml</tt> </td> 
+         <td class="confluenceTd"> Should Not Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;jvmSettings&gt; </td> 
+         <td class="confluenceTd"> JVM settings </td> 
+         <td class="confluenceTd"> <tt>server-cfg.xml</tt> </td> 
+         <td class="confluenceTd"> Need Not Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;performanceMonitoring&gt; </td> 
+         <td class="confluenceTd"> Performance settings </td> 
+         <td class="confluenceTd"> <tt>server-cfg.xml</tt> </td> 
+         <td class="confluenceTd"> Should Not Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;objectLevelTraceSettings&gt; </td> 
+         <td class="confluenceTd"> Object level tracing </td> 
+         <td class="confluenceTd"> <tt>server-cfg.xml</tt> </td> 
+         <td class="confluenceTd"> Need Not Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;sessionManager&gt; </td> 
+         <td class="confluenceTd"> Session management </td> 
+         <td class="confluenceTd"> <tt>server-cfg.xml</tt> </td> 
+         <td class="confluenceTd"> Should Not Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;tuningParams&gt; </td> 
+         <td class="confluenceTd"> Tuning settings </td> 
+         <td class="confluenceTd"> <tt>server-cfg.xml</tt> </td> 
+         <td class="confluenceTd"> Should Not Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;installedApps&gt; </td> 
+         <td class="confluenceTd"> Installed applications on the application server </td> 
+         <td class="confluenceTd"> <tt>server-cfg.xml</tt> </td> 
+         <td class="confluenceTd"> Need Not Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>logging.properties</tt> file </td> 
+         <td class="confluenceTd"> Logging Parameters </td> 
+         <td class="confluenceTd"> <tt>logging.properties</tt> </td> 
+         <td class="confluenceTd"> Need Not Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;entries symbolicName="APP_INSTALL"&gt; </td> 
+         <td class="confluenceTd"> Application server root directory </td> 
+         <td class="confluenceTd"> <tt>server-cfg.xml</tt> </td> 
+         <td class="confluenceTd"> Need Not Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;entries symbolicName="LOG_ROOT"&gt; </td> 
+         <td class="confluenceTd"> Log file root directory </td> 
+         <td class="confluenceTd"> <tt>server-cfg.xml</tt> </td> 
+         <td class="confluenceTd"> Need Not Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;entries symbolicName="TRANLOG_ROOT"&gt; </td> 
+         <td class="confluenceTd"> Transaction root directory </td> 
+         <td class="confluenceTd"> <tt>server-cfg.xml</tt> </td> 
+         <td class="confluenceTd"> Need Not Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;entries symbolicName="WAS_ROOT"&gt; </td> 
+         <td class="confluenceTd"> Server root </td> 
+         <td class="confluenceTd"> <tt>server-cfg.xml</tt> </td> 
+         <td class="confluenceTd"> Need Not Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;entries symbolicName="JAVA_HOME"&gt; </td> 
+         <td class="confluenceTd"> Java Home </td> 
+         <td class="confluenceTd"> <tt>server-cfg.xml</tt> </td> 
+         <td class="confluenceTd"> Need Not Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;Log name=""&gt; </td> 
+         <td class="confluenceTd"> Log File Name </td> 
+         <td class="confluenceTd"> <tt>plugin-cfg.xml</tt> </td> 
+         <td class="confluenceTd"> Cannot Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;Transport&gt; </td> 
+         <td class="confluenceTd"> ServerGroup </td> 
+         <td class="confluenceTd"> <tt>plugin-cfg.xml</tt> </td> 
+         <td class="confluenceTd"> Cannot Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;VirtualHostGroup&gt; </td> 
+         <td class="confluenceTd"> Virtual Host group </td> 
+         <td class="confluenceTd"> <tt>plugin-cfg.xml</tt> </td> 
+         <td class="confluenceTd"> Cannot Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;UriGroup&gt; </td> 
+         <td class="confluenceTd"> URI Group </td> 
+         <td class="confluenceTd"> <tt>plugin-cfg.xml</tt> </td> 
+         <td class="confluenceTd"> Cannot Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;Route&gt; </td> 
+         <td class="confluenceTd"> Route </td> 
+         <td class="confluenceTd"> <tt>plugin-cfg.xml</tt> </td> 
+         <td class="confluenceTd"> Cannot Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>Table&nbsp;6-2 WLS 5.1 設定パラメタの移行</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Parameter Name </th> 
+         <th class="confluenceTh">Item Description </th> 
+         <th class="confluenceTh">File </th> 
+         <th class="confluenceTh">Migration Resolution </th> 
+         <th class="confluenceTh">&nbsp;</th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> weblogic.password.system </td> 
+         <td class="confluenceTd"> System user ID and password </td> 
+         <td class="confluenceTd"> <tt>weblogic.properties</tt> </td> 
+         <td class="confluenceTd"> Need Not Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> weblogic.httpd.enable =booleanValue </td> 
+         <td class="confluenceTd"> To enable HTTP Server </td> 
+         <td class="confluenceTd"> <tt>weblogic.properties</tt> </td> 
+         <td class="confluenceTd"> Cannot Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> weblogic.cluster.ClusterRelatedProperties </td> 
+         <td class="confluenceTd"> Configuring a cluster </td> 
+         <td class="confluenceTd"> <tt>weblogic.properties</tt> </td> 
+         <td class="confluenceTd"> Should Not Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> weblogic.home =WebLogic installation directory </td> 
+         <td class="confluenceTd"> WebLogic home </td> 
+         <td class="confluenceTd"> <tt>weblogic.properties</tt> </td> 
+         <td class="confluenceTd"> Need Not Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> weblogic.password.username =password weblogic.security.group.groupname =usernames </td> 
+         <td class="confluenceTd"> Setting up users and groups </td> 
+         <td class="confluenceTd"> <tt>weblogic.properties</tt> </td> 
+         <td class="confluenceTd"> Should Not Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> weblogic.system.listenPort =integer </td> 
+         <td class="confluenceTd"> Setting up WebLogic's listen port </td> 
+         <td class="confluenceTd"> <tt>weblogic.properties</tt> </td> 
+         <td class="confluenceTd"> Need Not Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> weblogic.system.bindAddr =IPaddress or hostnameÂ </td> 
+         <td class="confluenceTd"> Setting up multihoming </td> 
+         <td class="confluenceTd"> <tt>weblogic.properties</tt> </td> 
+         <td class="confluenceTd"> Cannot Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> weblogic.system.maxLogFileSize =sizeOfFileInKÂ </td> 
+         <td class="confluenceTd"> Configuring the log file </td> 
+         <td class="confluenceTd"> <tt>weblogic.properties</tt> </td> 
+         <td class="confluenceTd"> Cannot Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> weblogic.administrator.ContactDetails </td> 
+         <td class="confluenceTd"> Identifying the administrator </td> 
+         <td class="confluenceTd"> <tt>weblogic.properties</tt> </td> 
+         <td class="confluenceTd"> Cannot Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> weblogic.system.executeThreadCount =integer </td> 
+         <td class="confluenceTd"> Performance-related properties </td> 
+         <td class="confluenceTd"> <tt>weblogic.properties</tt> </td> 
+         <td class="confluenceTd"> Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> weblogic.system.startupClass(shutdownClass). virtualName =fullPackageName </td> 
+         <td class="confluenceTd"> Registering startup and shutdown classes </td> 
+         <td class="confluenceTd"> <tt>weblogic.properties</tt> </td> 
+         <td class="confluenceTd"> Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> weblogic.system.disableWeblogicClassPath =boolean </td> 
+         <td class="confluenceTd"> Disabling dynamic classloading </td> 
+         <td class="confluenceTd"> <tt>weblogic.properties</tt> </td> 
+         <td class="confluenceTd"> Cannot Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> weblogic.httpd.webApp.context =WebAppLocation </td> 
+         <td class="confluenceTd"> Deploying web applications on WebLogic - Support via Ant build script generation </td> 
+         <td class="confluenceTd"> <tt>weblogic.properties</tt> </td> 
+         <td class="confluenceTd"> Indirect Migration </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> weblogic.httpd.enableLogFile =boolean </td> 
+         <td class="confluenceTd"> Enabling the access log </td> 
+         <td class="confluenceTd"> <tt>weblogic.properties</tt> </td> 
+         <td class="confluenceTd"> Need Not Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> weblogic.httpd.enableEvents =boolean </td> 
+         <td class="confluenceTd"> Tracking HTTPD requests with events </td> 
+         <td class="confluenceTd"> <tt>weblogic.properties</tt> </td> 
+         <td class="confluenceTd"> Cannot Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> weblogic.httpd.register.virtualName =fullPackageName </td> 
+         <td class="confluenceTd"> Registering the WebLogic Servlets </td> 
+         <td class="confluenceTd"> <tt>weblogic.properties</tt> </td> 
+         <td class="confluenceTd"> Cannot Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> weblogic.httpd.documentRoot =path to directory </td> 
+         <td class="confluenceTd"> Setting up the document root </td> 
+         <td class="confluenceTd"> <tt>weblogic.properties</tt> </td> 
+         <td class="confluenceTd"> Need Not Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> weblogic.httpd.mimeType.standardMIMEType =extension </td> 
+         <td class="confluenceTd"> Setting up standard MIME types </td> 
+         <td class="confluenceTd"> <tt>weblogic.properties</tt> </td> 
+         <td class="confluenceTd"> Cannot Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> weblogic.httpd.register.virtualName =fullPackageName </td> 
+         <td class="confluenceTd"> Registering user-written Servlets </td> 
+         <td class="confluenceTd"> <tt>weblogic.properties</tt> </td> 
+         <td class="confluenceTd"> Cannot Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> weblogic.httpd.initargs.virtualName =nameValuePairs </td> 
+         <td class="confluenceTd"> Setting initialization arguments for user-written Servlets </td> 
+         <td class="confluenceTd"> <tt>weblogic.properties</tt> </td> 
+         <td class="confluenceTd"> Cannot Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> weblogic.httpd.postTimeoutSecs =integer </td> 
+         <td class="confluenceTd"> Setting the timeout value for reading HTTP POST data </td> 
+         <td class="confluenceTd"> <tt>weblogic.properties</tt> </td> 
+         <td class="confluenceTd"> Cannot Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> weblogic.httpd.errorPage.number =URL </td> 
+         <td class="confluenceTd"> Configuring HTTP error pages </td> 
+         <td class="confluenceTd"> <tt>weblogic.properties</tt> </td> 
+         <td class="confluenceTd"> Cannot Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> weblogic.httpd.servlet.lowercaseExtension </td> 
+         <td class="confluenceTd"> Controlling Case Sensitivity </td> 
+         <td class="confluenceTd"> <tt>weblogic.properties</tt> </td> 
+         <td class="confluenceTd"> Cannot Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> weblogic.httpd.register.*.jhtml =args </td> 
+         <td class="confluenceTd"> Setting up WebLogic JHTML </td> 
+         <td class="confluenceTd"> <tt>weblogic.properties</tt> </td> 
+         <td class="confluenceTd"> Cannot Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> weblogic.httpd.register.*.jsp =args </td> 
+         <td class="confluenceTd"> Setting up WebLogic JSP </td> 
+         <td class="confluenceTd"> <tt>weblogic.properties</tt> </td> 
+         <td class="confluenceTd"> Cannot Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> weblogic.httpd.register.cgi-bin </td> 
+         <td class="confluenceTd"> Setting up CGI </td> 
+         <td class="confluenceTd"> <tt>weblogic.properties</tt> </td> 
+         <td class="confluenceTd"> Cannot Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> weblogic.httpd.session. SessionRelatedProperties </td> 
+         <td class="confluenceTd"> HTTP session tracking (WebLogic HTTP Servlets) </td> 
+         <td class="confluenceTd"> <tt>weblogic.properties</tt> </td> 
+         <td class="confluenceTd"> Cannot Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> weblogic.httpd.defaultServlets =virtualName </td> 
+         <td class="confluenceTd"> Setting a default Servlets </td> 
+         <td class="confluenceTd"> <tt>weblogic.properties</tt> </td> 
+         <td class="confluenceTd"> Cannot Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> weblogic.httpd.authRealmName =string </td> 
+         <td class="confluenceTd"> Setting an authentication realm name </td> 
+         <td class="confluenceTd"> <tt>weblogic.properties</tt> </td> 
+         <td class="confluenceTd"> Cannot Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> weblogic.httpd.register.proxy </td> 
+         <td class="confluenceTd"> Setting up WebLogic to proxy requests </td> 
+         <td class="confluenceTd"> <tt>weblogic.properties</tt> </td> 
+         <td class="confluenceTd"> Cannot Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> weblogic.httpd.servlet.classpath =path </td> 
+         <td class="confluenceTd"> Using the Servlets classpath </td> 
+         <td class="confluenceTd"> <tt>weblogic.properties</tt> </td> 
+         <td class="confluenceTd"> Cannot Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> weblogic.httpd.http.keepAliveSecs =integer </td> 
+         <td class="confluenceTd"> Configuring persistent HTTP connections </td> 
+         <td class="confluenceTd"> <tt>weblogic.properties</tt> </td> 
+         <td class="confluenceTd"> Cannot Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> weblogic.httpd.tunneling.TunnelingProperties =integer </td> 
+         <td class="confluenceTd"> HTTP Tunneling properties </td> 
+         <td class="confluenceTd"> <tt>weblogic.properties</tt> </td> 
+         <td class="confluenceTd"> Cannot Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> weblogic.system.enableReverseDNSLookups =boolean </td> 
+         <td class="confluenceTd"> Tracking client use with WebLogic Events </td> 
+         <td class="confluenceTd"> <tt>weblogic.properties</tt> </td> 
+         <td class="confluenceTd"> Need Not Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> weblogic.login.readTimeoutMillis =integer </td> 
+         <td class="confluenceTd"> Setting client timeout </td> 
+         <td class="confluenceTd"> <tt>weblogic.properties</tt> </td> 
+         <td class="confluenceTd"> Cannot Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> weblogic.io.fileSystem.virtualName =fullpath </td> 
+         <td class="confluenceTd"> Client read/write access (WebLogic File services) </td> 
+         <td class="confluenceTd"> <tt>weblogic.properties</tt> </td> 
+         <td class="confluenceTd"> Cannot Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> weblogic.jms.connectionPool =args </td> 
+         <td class="confluenceTd"> WebLogic JMS </td> 
+         <td class="confluenceTd"> <tt>weblogic.properties</tt> </td> 
+         <td class="confluenceTd"> Need Not Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> weblogic.jndi.transportableObjectFactories </td> 
+         <td class="confluenceTd"> WebLogic JNDI </td> 
+         <td class="confluenceTd"> <tt>weblogic.properties</tt> </td> 
+         <td class="confluenceTd"> Need Not Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> weblogic.system.startupClass.name =packageName </td> 
+         <td class="confluenceTd"> Remote invocation (WebLogic RMI services) </td> 
+         <td class="confluenceTd"> <tt>weblogic.properties</tt> </td> 
+         <td class="confluenceTd"> Need Not Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> weblogic.iiop.user =userIdentity </td> 
+         <td class="confluenceTd"> RMI over IIOP (WebLogic RMI over IIOP services) </td> 
+         <td class="confluenceTd"> <tt>weblogic.properties</tt> </td> 
+         <td class="confluenceTd"> Need Not Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> weblogic.allow.permission.ACLname </td> 
+         <td class="confluenceTd"> ACLs in the default WebLogic realm (WebLogic ACLs) </td> 
+         <td class="confluenceTd"> <tt>weblogic.properties</tt> </td> 
+         <td class="confluenceTd"> Cannot Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> weblogic.security.urlAclFile =userlist </td> 
+         <td class="confluenceTd"> Setting ACLs on URLs </td> 
+         <td class="confluenceTd"> <tt>weblogic.properties</tt> </td> 
+         <td class="confluenceTd"> Cannot Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> weblogic.security.SSLRelatedProperties </td> 
+         <td class="confluenceTd"> Secure communications via SSL (WebLogic SSL) </td> 
+         <td class="confluenceTd"> <tt>weblogic.properties</tt> </td> 
+         <td class="confluenceTd"> Cannot Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> weblogic.jdbc.JDBCRelatedProperties </td> 
+         <td class="confluenceTd"> Logging JDBC messages (WebLogic/JDBC) </td> 
+         <td class="confluenceTd"> <tt>weblogic.properties</tt> </td> 
+         <td class="confluenceTd"> Cannot Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> weblogic.jdbc.connectionPool.virtualName =args </td> 
+         <td class="confluenceTd"> JDBC connection pools (WebLogic/JDBC) </td> 
+         <td class="confluenceTd"> <tt>weblogic.properties</tt> </td> 
+         <td class="confluenceTd"> Migrated. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> weblogic.jdbc.DataSource.jdbc.virtualName =poolName </td> 
+         <td class="confluenceTd"> JDBC Datasource </td> 
+         <td class="confluenceTd"> <tt>weblogic.properties</tt> </td> 
+         <td class="confluenceTd"> Migrated. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> weblogic.ejb.deploy =fullPathName </td> 
+         <td class="confluenceTd"> Enterprise JavaBeans (WebLogic EJB) </td> 
+         <td class="confluenceTd"> <tt>weblogic.properties</tt> </td> 
+         <td class="confluenceTd"> Need Not Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> weblogic.zac.ZACRelatedProperties </td> 
+         <td class="confluenceTd"> Zero Administration Client (ZAC) </td> 
+         <td class="confluenceTd"> <tt>weblogic.properties</tt> </td> 
+         <td class="confluenceTd"> Cannot Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> PATHS </td> 
+         <td class="confluenceTd"> Setting ClasspathÂ </td> 
+         <td class="confluenceTd"> <tt>setEnv.sh</tt> </td> 
+         <td class="confluenceTd"> Need Not Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> PATHS </td> 
+         <td class="confluenceTd"> Setting Application Server home directory </td> 
+         <td class="confluenceTd"> <tt>setEnv.sh</tt> </td> 
+         <td class="confluenceTd"> Need Not Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> PATHS </td> 
+         <td class="confluenceTd"> Setting Java Home </td> 
+         <td class="confluenceTd"> <tt>startWeblogic.sh</tt> </td> 
+         <td class="confluenceTd"> Need Not Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> PATHS </td> 
+         <td class="confluenceTd"> Setting classpath </td> 
+         <td class="confluenceTd"> <tt>startWeblogic.sh</tt> </td> 
+         <td class="confluenceTd"> Need Not Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> PATHS </td> 
+         <td class="confluenceTd"> Setting and starting JRE </td> 
+         <td class="confluenceTd"> <tt>startWeblogic.sh</tt> </td> 
+         <td class="confluenceTd"> Need Not Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>Table&nbsp;6-3 WLS 6.0/6.1 設定パラメタの移行</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Parameter Name </th> 
+         <th class="confluenceTh">Item Description </th> 
+         <th class="confluenceTh">File </th> 
+         <th class="confluenceTh">Migration Resolution </th> 
+         <th class="confluenceTh">&nbsp;</th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Server </td> 
+         <td class="confluenceTd"> System-specific information </td> 
+         <td class="confluenceTd"> <tt>config.xml</tt> </td> 
+         <td class="confluenceTd"> Need Not Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> CustomRealm </td> 
+         <td class="confluenceTd"> Setting an custom realm </td> 
+         <td class="confluenceTd"> <tt>config.xml</tt> </td> 
+         <td class="confluenceTd"> Cannot Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JDBCDataSource </td> 
+         <td class="confluenceTd"> JDBC DataSource </td> 
+         <td class="confluenceTd"> <tt>config.xml</tt> </td> 
+         <td class="confluenceTd"> Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> StartupClass </td> 
+         <td class="confluenceTd"> Registering startup classes </td> 
+         <td class="confluenceTd"> <tt>config.xml</tt> </td> 
+         <td class="confluenceTd"> Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ShutdownClass </td> 
+         <td class="confluenceTd"> Registering shutdown classes </td> 
+         <td class="confluenceTd"> <tt>config.xml</tt> </td> 
+         <td class="confluenceTd"> Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JDBCConnectionPool </td> 
+         <td class="confluenceTd"> JDBC connection pools (WebLogic/JDBC) </td> 
+         <td class="confluenceTd"> <tt>config.xml</tt> </td> 
+         <td class="confluenceTd"> Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> SNMPAgent </td> 
+         <td class="confluenceTd"> Configuring SNMP settings </td> 
+         <td class="confluenceTd"> <tt>config.xml</tt> </td> 
+         <td class="confluenceTd"> Cannot Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Application </td> 
+         <td class="confluenceTd"> Specific application (EAR, WAR) settings </td> 
+         <td class="confluenceTd"> <tt>config.xml</tt> </td> 
+         <td class="confluenceTd"> Cannot Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>Table&nbsp;6-4 Jboss 3.0 設定パラメタの移行</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Parameter Name </th> 
+         <th class="confluenceTh">Item Description </th> 
+         <th class="confluenceTh">File </th> 
+         <th class="confluenceTh">Migration Resolution </th> 
+         <th class="confluenceTh">&nbsp;</th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JDBCDataSource </td> 
+         <td class="confluenceTd"> JDBC DataSource </td> 
+         <td class="confluenceTd"> <tt>*-service.xml</tt> </td> 
+         <td class="confluenceTd"> Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JDBCConnectionPool </td> 
+         <td class="confluenceTd"> JDBC connection pools </td> 
+         <td class="confluenceTd"> <tt>*-service.xml</tt> </td> 
+         <td class="confluenceTd"> Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> DriverType </td> 
+         <td class="confluenceTd"> Database Driver Names with associated class and classpath </td> 
+         <td class="confluenceTd"> <tt>*-service.xml</tt> </td> 
+         <td class="confluenceTd"> Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> BootstrapEditors </td> 
+         <td class="confluenceTd"> Property Editors </td> 
+         <td class="confluenceTd"> <tt>*-service.xml</tt> </td> 
+         <td class="confluenceTd"> Cannot Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Properties </td> 
+         <td class="confluenceTd"> System Properties </td> 
+         <td class="confluenceTd"> <tt>*-service.xml</tt> </td> 
+         <td class="confluenceTd"> Cannot Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ConfigurationURL </td> 
+         <td class="confluenceTd"> Log4j Initialization </td> 
+         <td class="confluenceTd"> <tt>*-service.xml</tt> </td> 
+         <td class="confluenceTd"> Cannot Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> DownloadServerClasses </td> 
+         <td class="confluenceTd"> Class Loading </td> 
+         <td class="confluenceTd"> <tt>*-service.xml</tt> </td> 
+         <td class="confluenceTd"> Cannot Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>Table&nbsp;6-5 Sun ONE Application Server 6.x 設定パラメタの移行</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Parameter Name </th> 
+         <th class="confluenceTh">Item Description </th> 
+         <th class="confluenceTh">File </th> 
+         <th class="confluenceTh">Migration Resolution </th> 
+         <th class="confluenceTh">&nbsp;</th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Admin </td> 
+         <td class="confluenceTd"> System specific Information </td> 
+         <td class="confluenceTd"> Registry </td> 
+         <td class="confluenceTd"> Need Not Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> DataSource </td> 
+         <td class="confluenceTd"> JDBC DataSource </td> 
+         <td class="confluenceTd"> Registry </td> 
+         <td class="confluenceTd"> Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> CCS0 </td> 
+         <td class="confluenceTd"> Various configuration settings </td> 
+         <td class="confluenceTd"> Registry </td> 
+         <td class="confluenceTd"> Cannot Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> IASAT </td> 
+         <td class="confluenceTd"> Setting Sun ONE Application Server Administration Tool settings </td> 
+         <td class="confluenceTd"> Registry </td> 
+         <td class="confluenceTd"> Cannot Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> LOGGING </td> 
+         <td class="confluenceTd"> Configuring authentication settings </td> 
+         <td class="confluenceTd"> Registry </td> 
+         <td class="confluenceTd"> Cannot Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Deployment </td> 
+         <td class="confluenceTd"> Setting JAR path </td> 
+         <td class="confluenceTd"> Registry </td> 
+         <td class="confluenceTd"> Need Not Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> J2EE-Module </td> 
+         <td class="confluenceTd"> Setting custom settings </td> 
+         <td class="confluenceTd"> Registry </td> 
+         <td class="confluenceTd"> Cannot Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> J2EE-Application </td> 
+         <td class="confluenceTd"> Specific application (EAR, WAR) settings </td> 
+         <td class="confluenceTd"> Registry </td> 
+         <td class="confluenceTd"> Cannot Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>Table&nbsp;6-6 J2EE Reference Implementation 1.3 設定パラメタの移行</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Parameter Name </th> 
+         <th class="confluenceTh">Item Description </th> 
+         <th class="confluenceTh">File </th> 
+         <th class="confluenceTh">Migration Resolution </th> 
+         <th class="confluenceTh">&nbsp;</th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jdbcDataSource </td> 
+         <td class="confluenceTd"> JDBC DataSource </td> 
+         <td class="confluenceTd"> <tt>resource.properties</tt> </td> 
+         <td class="confluenceTd"> Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jdbcXADataSource </td> 
+         <td class="confluenceTd"> XA (Transaction Managed) DataSource </td> 
+         <td class="confluenceTd"> <tt>resource.properties</tt> </td> 
+         <td class="confluenceTd"> Cannot Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jmsCnxFactory </td> 
+         <td class="confluenceTd"> JMS settings </td> 
+         <td class="confluenceTd"> <tt>resource.properties</tt> </td> 
+         <td class="confluenceTd"> Cannot Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jmsDestination </td> 
+         <td class="confluenceTd"> JMS settings </td> 
+         <td class="confluenceTd"> <tt>resource.properties</tt> </td> 
+         <td class="confluenceTd"> Cannot Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>Table&nbsp;6-7 J2EE Reference Implementation 1.4 Beta 1 設定パラメタの移行</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Parameter Name </th> 
+         <th class="confluenceTh">Item Description </th> 
+         <th class="confluenceTh">File </th> 
+         <th class="confluenceTh">Migration Resolution </th> 
+         <th class="confluenceTh">&nbsp;</th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jdbc-resource </td> 
+         <td class="confluenceTd"> JDBC DataSource </td> 
+         <td class="confluenceTd"> <tt>server-config.xml</tt> </td> 
+         <td class="confluenceTd"> Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jms-resource </td> 
+         <td class="confluenceTd"> JMS settings </td> 
+         <td class="confluenceTd"> <tt>server-config.xml</tt> </td> 
+         <td class="confluenceTd"> Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jdbc-connection-pool </td> 
+         <td class="confluenceTd"> JDBC connection pools </td> 
+         <td class="confluenceTd"> <tt>server-config.xml</tt> </td> 
+         <td class="confluenceTd"> Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> connector-resource </td> 
+         <td class="confluenceTd"> Connector Resources </td> 
+         <td class="confluenceTd"> <tt>server-config.xml</tt> </td> 
+         <td class="confluenceTd"> Cannot Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> applications </td> 
+         <td class="confluenceTd"> Specific application (EAR, WAR) settings </td> 
+         <td class="confluenceTd"> <tt>server-config.xml</tt> </td> 
+         <td class="confluenceTd"> Cannot Be Migrated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="M2GCapabiltiesJa-%E9%85%8D%E5%82%99%E8%A8%98%E8%BF%B0%E5%AD%90%28DD%29%E3%81%AE%E7%A7%BB%E8%A1%8C"></a>配備記述子 (DD) の移行</h2> <p>マイグレーションツールはアプリケーションサーバ固有の配備記述子をもとのサーバから移行します。</p> <h4><a name="M2GCapabiltiesJa-WAS4.0%E3%81%8B%E3%82%89%E3%81%AE%E9%85%8D%E5%82%99%E8%A8%98%E8%BF%B0%E5%AD%90%E3%81%AE%E7%A7%BB%E8%A1%8C"></a>WAS 4.0 からの配備記述子の移行</h3> <p>下記 WebSphere 固有の配備記述子ファイルがサポートされます:</p> 
+     <ul> 
+      <li><tt>ejb-jar.xml</tt> (server-independent DD, required for converting other WebSphere-specific DDs)</li> 
+      <li><tt>ibm-ejb-jar-bnd.xmi</tt> (contains JNDI bindings of EJB components)</li> 
+      <li><tt>ibm-ejb-jar-ext.xmi</tt> (server-specific information about the EJB components such as session timeout)</li> 
+      <li><tt>Map.mapxmi</tt> (if CMP EJB components contain mappings of CMP fields to Database columns)</li> 
+      <li><tt>Schema.dbxmi</tt> (if CMP EJB components contain mappings of database schema)</li> 
+      <li><tt>web.xml</tt> (server-independent DD, required for converting other WebSphere specific DDs)</li> 
+      <li><tt>ibm-web-bnd.xmi</tt> (used for binding JNDI names to the Environment Naming Context of Servlets/JSPs declared in the <tt>web.xml</tt> file</li> 
+      <li><tt>ibm-web-ext.xmi</tt> (contains the error message to be displayed to the user in case a component of the web application fails.)<br> アプリケーションサーバ固有の配備記述子を生成するために、上記ファイルの関連する情報を利用します:</li> 
+      <li><tt>ejb-jar.xml</tt> (remains the same for the Application Server)</li> 
+      <li><tt>sun-ejb-jar.xml</tt></li> 
+      <li><tt>sun-cmp-mappings.xml</tt> (contains information about CMP entity beans; its name is specified in <tt>sun-ejb-jar.xml</tt>)</li> 
+      <li><tt>web.xml</tt> (remains the same for the Application Server)</li> 
+      <li><tt>sun-web.xml</tt></li> 
+     </ul> <h4><a name="M2GCapabiltiesJa-WLS5.1%E3%81%8B%E3%82%89%E3%81%AE%E9%85%8D%E5%82%99%E8%A8%98%E8%BF%B0%E5%AD%90%E3%81%AE%E7%A7%BB%E8%A1%8C"></a>WLS 5.1 からの配備記述子の移行</h3> <p>下記 WebLogic 固有の配備記述子ファイルがサポートされます:</p> 
+     <ul> 
+      <li><tt>ejb-jar.xml</tt> (server-independent DD, required for converting other WebLogic-specific DDs)</li> 
+      <li><tt>weblogic-ejb-jar.xml</tt> (mapping of the properties declared in the <tt>ejb-jar.xml</tt> to the server specific properties)</li> 
+      <li><tt>weblogic-rdbms-persistence.xml</tt> (contains information about CMP entity beans; its name is specified in <tt>weblogic-ejb-jar.xml</tt>)</li> 
+      <li><tt>web.xml</tt> (server-independent DD, required for converting to other WebLogic-specific DDs)</li> 
+      <li><tt>weblogic.xml</tt> (mapping to the server-specific of properties declared in the <tt>web.xml</tt> DD)<br> アプリケーションサーバ固有の配備記述子を生成するために、上記ファイルの関連する情報を利用します:</li> 
+      <li><tt>ejb-jar.xml</tt> (remains the same for the application server)</li> 
+      <li><tt>sun-ejb-jar.xml</tt></li> 
+      <li><tt>sun-cmp-mappings.xml</tt> (contains information about CMP entity beans; its name is specified in <tt>sun-ejb-jar.xml</tt>)</li> 
+      <li><tt>web.xml</tt> (remains the same for the application server)</li> 
+      <li><tt>sun-web.xml</tt></li> 
+     </ul> <h4><a name="M2GCapabiltiesJa-WLS6.0%2F6.1%E3%81%8B%E3%82%89%E3%81%AE%E9%85%8D%E5%82%99%E8%A8%98%E8%BF%B0%E5%AD%90%E3%81%AE%E7%A7%BB%E8%A1%8C"></a>WLS 6.0/6.1 からの配備記述子の移行</h3> <p>下記 WebLogic 固有の配備記述子ファイルがサポートされます:</p> 
+     <ul> 
+      <li><tt>ejb-jar.xml</tt> (server-independent DD, required for converting other WebLogic-specific DDs)</li> 
+      <li><tt>weblogic-ejb-jar.xml</tt> (mapping of the properties declared in the <tt>ejb-jar.xml</tt> to the server specific properties)</li> 
+      <li><tt>weblogic-rdbms-persistence.xml</tt> (contains information about CMP entity beans; its name is specified in <tt>weblogic-ejb-jar.xml</tt>)</li> 
+      <li><tt>web.xml</tt> (server-independent DD, required for converting to other WebLogic-specific DDs)</li> 
+      <li><tt>weblogic.xml</tt> (mapping to the server-specific of properties declared in the <tt>web.xml</tt> DD)<br> アプリケーションサーバ固有の配備記述子を生成するために、上記ファイルの関連する情報を利用します:</li> 
+      <li><tt>ejb-jar.xml</tt> (remains the same for the Application Server)</li> 
+      <li><tt>sun-ejb-jar.xml</tt></li> 
+      <li><tt>sun-cmp-mappings.xml</tt> (contains information about CMP entity beans; its name is specified in <tt>sun-ejb-jar.xml</tt>)</li> 
+      <li><tt>web.xml</tt> (remains the same for the Application Server)</li> 
+      <li><tt>sun-web.xml</tt></li> 
+     </ul> <h4><a name="M2GCapabiltiesJa-J2EEReferenceImplementation%28RI%291.3%E3%81%8B%E3%82%89%E3%81%AE%E9%85%8D%E5%82%99%E8%A8%98%E8%BF%B0%E5%AD%90%E3%81%AE%E7%A7%BB%E8%A1%8C"></a>J2EE Reference Implementation (RI) 1.3 からの配備記述子の移行</h3> <p>下記 RI 固有の配備記述子ファイルがサポートされます:</p> 
+     <ul> 
+      <li><tt>ejb-jar.xml</tt> (server-independent DD, required for converting other RI specific DDs)</li> 
+      <li><tt>sun-j2ee-ri.xml</tt> (mapping of the properties declared in the <tt>ejb-jar.xml</tt> to the server specific properties)</li> 
+      <li><tt>web.xml</tt> (server-independent DD, required for converting to other RI specific DDs)<br> アプリケーションサーバ固有の配備記述子を生成するために、上記ファイルの関連する情報を利用します:</li> 
+      <li><tt>ejb-jar.xml</tt> (remains the same for the Application Server)</li> 
+      <li><tt>sun-ejb-jar.xml</tt></li> 
+      <li><tt>sun-cmp-mappings.xml</tt> (contains information about CMP entity beans; its name is specified in <tt>sun-ejb-jar.xml</tt>)</li> 
+      <li><tt>web.xml</tt> (remains the same for the application server)</li> 
+      <li><tt>sun-web.xml</tt></li> 
+     </ul> <h4><a name="M2GCapabiltiesJa-J2EEReferenceImplementation%28RI%291.4Beta1%E3%81%8B%E3%82%89%E3%81%AE%E9%85%8D%E5%82%99%E8%A8%98%E8%BF%B0%E5%AD%90%E3%81%AE%E7%A7%BB%E8%A1%8C"></a>J2EE Reference Implementation (RI) 1.4 Beta 1 からの配備記述子の移行</h3> <p>下記 RI 固有の配備記述子ファイルがサポートされます:</p> 
+     <ul> 
+      <li><tt>ejb-jar.xml</tt> (server-independent DD, required for converting other RI specific DDs)</li> 
+      <li><tt>sun-j2ee-ri.xml</tt> (mapping of the properties declared in the <tt>ejb-jar.xml</tt> to the server specific properties)</li> 
+      <li><tt>web.xml</tt> (server-independent DD, required for converting to other RI specific DDs)</li> 
+      <li><tt>application.xml</tt> (server-independent DD, required for converting to other RI specific DDs)<br> アプリケーションサーバ固有の配備記述子を生成するために、上記ファイルの関連する情報を利用します:</li> 
+      <li><tt>ejb-jar.xml</tt> (remains the same for the Application Server)</li> 
+      <li><tt>sun-ejb-jar.xml</tt></li> 
+      <li><tt>sun-cmp-mappings.xml</tt> (contains information about CMP entity beans; its name is specified in <tt>sun-ejb-jar.xml</tt>)</li> 
+      <li><tt>web.xml</tt> (remains the same for the Application Server)</li> 
+      <li><tt>sun-web.xml</tt></li> 
+      <li><tt>application.xml</tt> (remains the same for the Application Server)</li> 
+      <li><tt>sun-application.xml</tt></li> 
+     </ul> <h4><a name="M2GCapabiltiesJa-JBoss3.0%E3%81%8B%E3%82%89%E3%81%AE%E9%85%8D%E5%82%99%E8%A8%98%E8%BF%B0%E5%AD%90%E3%81%AE%E7%A7%BB%E8%A1%8C"></a>JBoss 3.0 からの配備記述子の移行</h3> <p>下記 JBoss 固有の配備記述子ファイルがサポートされます:</p> 
+     <ul> 
+      <li><tt>ejb-jar.xml</tt> (server-independent DD, required for converting other JBoss specific DDs)</li> 
+      <li><tt>jboss.xml</tt> (mapping of the properties declared in the <tt>ejb-jar.xml</tt> to the server specific properties)</li> 
+      <li><tt>jbosscmp-jdbc.xml</tt> (contains information about CMP entity beans)</li> 
+      <li><tt>web.xml</tt> (server-independent DD, required for converting to other JBoss specific DDs)</li> 
+      <li><tt>jboss-web.xml</tt> (mapping of the properties declared in the <tt>web.xml</tt> DD)<br> アプリケーションサーバ固有の配備記述子を生成するために、上記ファイルの関連する情報を利用します:</li> 
+      <li><tt>ejb-jar.xml</tt> (remains the same for the Application Server)</li> 
+      <li><tt>sun-ejb-jar.xml</tt></li> 
+      <li><tt>sun-cmp-mappings.xml</tt> (contains information about CMP entity beans; its name is specified in <tt>sun-ejb-jar.xml</tt>)</li> 
+      <li><tt>web.xml</tt> (remains the same for the Application Server)</li> 
+      <li>{{sun-web.xml}}Note -<br> マイグレーションツールがもとの配備記述子の移行処理中、移行先の配備記述子ファイルに必要な情報がないことがあります。この様な場合には、移行先配備記述子ファイル中には「REPLACEME」を出力し、<br> &lt;ASMT_HOME&gt;/log/ASMTUser.log に報告します。</li> 
+     </ul> <h4><a name="M2GCapabiltiesJa-%E3%82%AB%E3%82%B9%E3%82%BF%E3%83%A0JSP%E3%82%BF%E3%82%B0%E3%81%AE%E5%AE%9F%E8%A3%85"></a>カスタム JSP タグの実装</h2> <p>サポートされる JSP カスタムタグを以下にリストします:</p> <h4><a name="M2GCapabiltiesJa-WAS4.0%E3%81%AE%E3%82%B5%E3%83%9D%E3%83%BC%E3%83%88%E3%81%95%E3%82%8C%E3%82%8B%E3%82%AB%E3%82%B9%E3%82%BF%E3%83%A0JSP%E3%82%BF%E3%82%B0"></a>WAS 4.0 のサポートされるカスタム JSP タグ</h3> <p>WAS 4.0 にバンドルされる全てのカスタム JSP タグはサポートされています。ただし、&lt;tsx:getProperty&gt; はデータベース操作に関してサポートされますが、Bean 操作に関してはサポートされません。</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Extension Category </th> 
+         <th class="confluenceTh">Custom JSP Tag </th> 
+         <th class="confluenceTh">Coverage </th> 
+         <th class="confluenceTh">&nbsp;</th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Tags for Database access </td> 
+         <td class="confluenceTd"> &lt;tsx:dbconnect&gt; </td> 
+         <td class="confluenceTd"> Supported </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Tags for Database access </td> 
+         <td class="confluenceTd"> &lt;tsx:passwd&gt; </td> 
+         <td class="confluenceTd"> Supported </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Tags for Database access </td> 
+         <td class="confluenceTd"> &lt;tsx:dbquery&gt; </td> 
+         <td class="confluenceTd"> Supported </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Tags for Database access </td> 
+         <td class="confluenceTd"> &lt;tsx:dbmodify&gt; </td> 
+         <td class="confluenceTd"> Supported </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Tags for Database access </td> 
+         <td class="confluenceTd"> &lt;tsx:userid&gt; </td> 
+         <td class="confluenceTd"> Supported </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Tags for variable data </td> 
+         <td class="confluenceTd"> &lt;tsx:repeat&gt; </td> 
+         <td class="confluenceTd"> Supported </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Tags for variable data </td> 
+         <td class="confluenceTd"> &lt;tsx:getProperty&gt; </td> 
+         <td class="confluenceTd"> Partially supported, database operations supported, beans operations unsupported </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="M2GCapabiltiesJa-WLS5.1%E3%81%AE%E3%82%B5%E3%83%9D%E3%83%BC%E3%83%88%E3%81%95%E3%82%8C%E3%82%8B%E3%82%AB%E3%82%B9%E3%82%BF%E3%83%A0JSP%E3%82%BF%E3%82%B0"></a>WLS 5.1 のサポートされるカスタム JSP タグ</h3> <p>WLS 5.1 にバンドルされる全てのカスタム JSP タグはサポートされています。ただし、&lt;wl:cache&gt; は no-op として実装されており、サポートされません。</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Extension Category </th> 
+         <th class="confluenceTh">Custom JSP Tag </th> 
+         <th class="confluenceTh">Coverage </th> 
+         <th class="confluenceTh">&nbsp;</th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Caching JSP output </td> 
+         <td class="confluenceTd"> &lt;wl:cache&gt; </td> 
+         <td class="confluenceTd"> Partially supported, implements a no-operation </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Parameter based flow control </td> 
+         <td class="confluenceTd"> &lt;wl:process&gt; </td> 
+         <td class="confluenceTd"> Supported </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Loop construct </td> 
+         <td class="confluenceTd"> &lt;wl:repeat&gt; </td> 
+         <td class="confluenceTd"> Supported </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="M2GCapabiltiesJa-SunONEApplicationServer6.5%E3%81%AE%E3%82%B5%E3%83%9D%E3%83%BC%E3%83%88%E3%81%95%E3%82%8C%E3%82%8B%E3%82%AB%E3%82%B9%E3%82%BF%E3%83%A0JSP%E3%82%BF%E3%82%B0"></a>Sun ONE Application Server 6.5 のサポートされるカスタム JSP タグ</h3> <p>Sun ONE Application Server 6.5 にバンドルされる全てのカスタム JSP タグはサポートされています。</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Extension Category </th> 
+         <th class="confluenceTh">Custom JSP Tag </th> 
+         <th class="confluenceTh">Coverage </th> 
+         <th class="confluenceTh">&nbsp;</th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Parameter </td> 
+         <td class="confluenceTd"> &lt;ias65:getParameter&gt; </td> 
+         <td class="confluenceTd"> Supported </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Parameter </td> 
+         <td class="confluenceTd"> &lt;ias65:set&gt; </td> 
+         <td class="confluenceTd"> Supported </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Parameter </td> 
+         <td class="confluenceTd"> &lt;ias65:get&gt; </td> 
+         <td class="confluenceTd"> Supported </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="M2GCapabiltiesJa-WLS6.0%2F6.1%E3%81%AE%E3%82%B5%E3%83%9D%E3%83%BC%E3%83%88%E3%81%95%E3%82%8C%E3%82%8B%E3%82%AB%E3%82%B9%E3%82%BF%E3%83%A0JSP%E3%82%BF%E3%82%B0"></a>WLS 6.0/6.1 のサポートされるカスタム JSP タグ</h3> <p>WLS 6.1 にバンドルされる全てのカスタム JSP タグはサポートされています。 ただし、 &lt;wl:prefetch&gt; と &lt;wl:beanparam&gt; はサポートされません。</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Extension Category </th> 
+         <th class="confluenceTh">Custom JSP Tag </th> 
+         <th class="confluenceTh">Coverage </th> 
+         <th class="confluenceTh">&nbsp;</th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Caching JSP output </td> 
+         <td class="confluenceTd"> &lt;wl:cache&gt; </td> 
+         <td class="confluenceTd"> Partially Supported, does not implement cluster scope and administration of cache. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Tag for input validation </td> 
+         <td class="confluenceTd"> &lt;wl:summary&gt; </td> 
+         <td class="confluenceTd"> Supported </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Tag for input validation </td> 
+         <td class="confluenceTd"> &lt;wl:form&gt; </td> 
+         <td class="confluenceTd"> Supported </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Tag for input validation </td> 
+         <td class="confluenceTd"> &lt;wl:validator&gt; </td> 
+         <td class="confluenceTd"> Supported </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Tag for database </td> 
+         <td class="confluenceTd"> &lt;wl:query&gt; </td> 
+         <td class="confluenceTd"> Supported </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Encode tag </td> 
+         <td class="confluenceTd"> &lt;wl:encode&gt; </td> 
+         <td class="confluenceTd"> Supported </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Anchor tag </td> 
+         <td class="confluenceTd"> &lt;wl:formanchor&gt; </td> 
+         <td class="confluenceTd"> Supported </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> No output tag </td> 
+         <td class="confluenceTd"> &lt;wl:nooutput&gt; </td> 
+         <td class="confluenceTd"> Supported </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Include tag </td> 
+         <td class="confluenceTd"> &lt;wl:include&gt; </td> 
+         <td class="confluenceTd"> Supported </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="M2GCapabiltiesJa-%E3%83%97%E3%83%AD%E3%83%97%E3%83%A9%E3%82%A4%E3%82%A8%E3%82%BF%E3%83%AAAPI%E3%81%AE%E5%AE%9F%E8%A3%85"></a>プロプライエタリ API の実装</h2> <p>マイグレーションツールの本バージョンは、一部のプロプライエタリな API のみサポートします。</p> <p>Table&nbsp;6-8 サポートされる WAS 4.0 プロプライエタリ API</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Package </th> 
+         <th class="confluenceTh">Coverage </th> 
+         <th class="confluenceTh">&nbsp;</th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> com.ibm.websphere.advanced.cm.factory </td> 
+         <td class="confluenceTd"> Supported </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> com.ibm.websphere.servlet.session </td> 
+         <td class="confluenceTd"> Supported </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> com.ibm.websphere.servlet.filter </td> 
+         <td class="confluenceTd"> Supported </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> com.ibm.websphere.servlet.cache </td> 
+         <td class="confluenceTd"> Supported, except for two interfaces CacheEntry and ServletsCacheRequest </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> com.ibm.websphere.servlet.error </td> 
+         <td class="confluenceTd"> Supported </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> com.ibm.websphere.servlet.response </td> 
+         <td class="confluenceTd"> Supported </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> com.ibm.websphere.servlet.request </td> 
+         <td class="confluenceTd"> Supported </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> com.ibm.websphere.exception </td> 
+         <td class="confluenceTd"> Supported </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>Table&nbsp;6-9 サポートされる WLS 5.1 プロプライエタリ API</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Package </th> 
+         <th class="confluenceTh">Coverage </th> 
+         <th class="confluenceTh">&nbsp;</th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> weblogic.common (t3 services) </td> 
+         <td class="confluenceTd"> Only Timer and Scheduler services supported </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> weblogic.time.common </td> 
+         <td class="confluenceTd"> Supported </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> weblogic.db.jdbc.oracle </td> 
+         <td class="confluenceTd"> Supported </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> weblogic.rmi </td> 
+         <td class="confluenceTd"> Supported </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> weblogic.rmi.dgc </td> 
+         <td class="confluenceTd"> Supported </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> weblogic.rmi.registry </td> 
+         <td class="confluenceTd"> Supported </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> weblogic.rmi.Remote </td> 
+         <td class="confluenceTd"> Supported </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> weblogic.rmi.server </td> 
+         <td class="confluenceTd"> Supported </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> weblogic.db.jdbc </td> 
+         <td class="confluenceTd"> Supported, except for EventFulRecord and EventFulTableDataSet classes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> weblogic.jndi </td> 
+         <td class="confluenceTd"> Only WLInitialContextFactory supported for supporting Times and Scheduler Services </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>Table&nbsp;6-10 サポートされる WLS 6.0/6.1 プロプライエタリ API</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Package </th> 
+         <th class="confluenceTh">Coverage </th> 
+         <th class="confluenceTh">&nbsp;</th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> weblogic.common (t3 services) </td> 
+         <td class="confluenceTd"> Only Timer and Scheduler services supported </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> weblogic.rmi </td> 
+         <td class="confluenceTd"> Supported </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> weblogic.rmi.dgc </td> 
+         <td class="confluenceTd"> Supported </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> weblogic.rmi.registry </td> 
+         <td class="confluenceTd"> Supported </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> weblogic.rmi.Remote </td> 
+         <td class="confluenceTd"> Supported </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> weblogic.rmi.server </td> 
+         <td class="confluenceTd"> Supported </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> weblogic.db.jdbc </td> 
+         <td class="confluenceTd"> Supported, except for Column, DataSet, QueryDataSet, Schema, TableDataSet, EventFulRecord and EventFulTableDataSet classes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> weblogic.jndi </td> 
+         <td class="confluenceTd"> Only WLInitialContextFactory supported for supporting Times and Scheduler Services </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>上記アプリケーションサーバの現在サポートされていないAPI についても、サポートするようマイグレーションツールを拡張する事が可能です。</p> <h4><a name="M2GCapabiltiesJa-IDE%E3%81%A8%E3%81%AE%E7%B5%B1%E5%90%88"></a>IDE との統合</h2> <p>マイグレーションツールの本バージョンは下記 IDE との統合をサポートします:</p> 
+     <ul> 
+      <li>Sun ONE Studio Enterprise/Community Edition 3.0 / 4.0</li> 
+      <li>Borland JBuilder IDE, Version 6.0</li> 
+     </ul> <h4><a name="M2GCapabiltiesJa-%E3%83%93%E3%83%AB%E3%83%89%E3%82%B9%E3%82%AF%E3%83%AA%E3%83%97%E3%83%88%E3%81%AE%E7%94%9F%E6%88%90"></a>ビルドスクリプトの生成</h2> <p>移行するアプリケーションをコンパイル、パッケージするのに利用する Ant ベースのスクリプトを、マイグレーションツールは自動で生成します。Ant はクロスプラットフォームソフトウェア開発を単純化するために多くの企業で利用されているオープンソース Java プロジェクトです。マイグレーションツールは Solaris と Windows 向けに 3 タイプのスクリプトを生成します。</p> 
+     <ul> 
+      <li><tt>build_jar.sh</tt> / <tt>build_jar.cmd</tt></li> 
+      <li><tt>build_war.sh</tt> / <tt>build_war.cmd</tt></li> 
+      <li><tt>build_ear.sh</tt> / <tt>build_ear.cmd</tt><br> これらヘルパースクリプトは対応する XML (<tt>build_jar.xml</tt>, <tt>build_war.xml</tt>, <tt>build_ear.xml</tt>) ビルドスクリプトで Ant を起動します。<br> これら Ant スクリプトは以下の想定のもと生成されます:</li> 
+      <li><tt>build_jar</tt> スクリプトは実行されると EJB とその他リソース (ヘルパークラスなど) をパッケージした、配備可能な jar を生成します。このスクリプトは以下を実行します:</li> 
+     </ul> <p> <tt>javac</tt> で全クラスをコンパイルします。 <br> Ant <tt>jar</tt> タスクで、全クラスと EJB に含まれる XML DD を含む JAR を生成します。,</p> 
+     <ul> 
+      <li><tt>build_war</tt> は実行されると、サーブレット、JSP その他リソースを含む配備可能な WAR を生成します。そのために、スクリプトは次の処理をおこないます:</li> 
+     </ul> <p> <tt>javac</tt> で WAR に含まれる全クラスをコンパイルします。 <br> Ant <tt>war</tt> タスクで, WAR に必要な全リソースと XML DD を含む WAR を生成します。,</p> 
+     <ul> 
+      <li><tt>build_ear</tt> スクリプトは実行されると前のステップで生成された JAR と WAR を含む EAR を生成します。</li> 
+     </ul> <h4><a name="M2GCapabiltiesJa-%E3%82%AF%E3%83%A9%E3%82%B9%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB%E3%81%AE%E3%83%90%E3%83%B3%E3%83%89%E3%83%AB"></a>クラスファイルのバンドル</h3> <p>入力のアプリケーションが .class ファイルのみを含む場合、生成されたビルドスクリプトはコンパイルはせずに、移行された配備記述子と共にクラスファイルをパッケージします。<br> 入力アプリケーションがクラスファイルと共に Java ソースファイルも含む場合は、生成されたビルドスクリプトは <tt>javac</tt> Ant ターゲットを利用し、オリジナルのクラスではなく、コンパイルされたクラスをパッケージします。この点については、 <a href="M2GLimitations.html" title="M2GLimitations">制限事項</a> セクションで詳細に解説しています。</p> <h4><a name="M2GCapabiltiesJa-%E3%83%AD%E3%82%B0"></a>ログ</h2> <p>マイグレーションツールはデバッグおよびユーザログ情報を生成します。これらのログは<br> <tt>&lt;INSTALL_DIR&gt;\asmt\logs</tt> ディレクトリにあり、<tt>ASMTDebug.log</tt>, <tt>ASMTUser.log</tt> という名前のファイルです。<br> <tt>ASMTDebug.log</tt> はマイグレーション中に生成されるデバッグ情報を含みます。このログはエラーや予期しない挙動をトレースできるようにするためのものなので、開発者がマイグレーションの流れを追跡するのにこの情報が役立つでしょう。ユーザにこのログは理解されないかも知れませんが、バグや予期しない挙動を報告する際にこのログを添付することは重要です。<br> <tt>ASMTUser.log</tt> は <tt>ASMTDebug.log</tt> にかなりフィルターをかけたものです。マイグレーションに固有の、ユーザが興味をもつ情報を含むこのログは、マイグレーション中に何がおこなわれたかを示します。例えば、配備記述子を移行する際、マイグレーションツールが、ある配備記述子がその DTD に合っていないことを見つけるとします。この様な場合には、マイグレーションツールは配備記述子を必要に応じて更新しつつ、<tt>ASMTUser.log</tt> ファイルを使ってファイルを更新したことをユーザに通知します。この通知の他、ログファイルは、ビルドスクリプトの生成、ビルドプロセスの自動生成、例外の短い説明、などの情報を含んでいます。バグや、予期しない挙動を報告する際には、このログを提供して下さい。</p> <p><a href="M2GPostRunJa.html" title="M2GPostRunJa">戻る</a> <a href="M2GLimitationsJa.html" title="M2GLimitationsJa">進む</a></p> 
+     <hr> <p>日本語翻訳: <a href="http://blogs.oracle.com/ogino">ogino</a></p> <p><a href="M2GCapabilties.html" title="M2GCapabilties">英文 </a> (翻訳したバージョン: 4)</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 09, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

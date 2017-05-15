@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : V3.1Hk2</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="V3.1Hk2-Hk2FeaturesproposalsforV3.1"></a>Hk2 Features proposals for V3.1</h1> <p>This is the design specification for the Hk2 features in the GlassFish 3.1 release.</p> 
+     <ul> 
+      <li>Jerome Dochez (dochez@dev.java.net)</li> 
+     </ul> 
+     <div> 
+      <ul> 
+       <li><a href="#V3.1Hk2-Hk2FeaturesproposalsforV3.1">Hk2 Features proposals for V3.1</a></li> 
+       <li><a href="#V3.1Hk2-ProgressTrackingSummary">Progress Tracking Summary</a></li> 
+       <li><a href="#V3.1Hk2-Instantiationenhancements.">Instantiation enhancements.</a></li> 
+       <ul> 
+        <li><a href="#V3.1Hk2-CompanionBeans">Companion Beans</a></li> 
+        <li><a href="#V3.1Hk2-ServiceListener">Service Listener</a></li> 
+        <ul> 
+         <li><a href="#V3.1Hk2-Fieldinjection">Field injection</a></li> 
+         <li><a href="#V3.1Hk2-Methodinjection">Method injection</a></li> 
+        </ul> 
+        <li><a href="#V3.1Hk2-Configurationeventsenhancements.">Configuration events enhancements.</a></li> 
+        <li><a href="#V3.1Hk2-ConfigurationchangesandDependentbeans.">Configuration changes and Dependent beans.</a></li> 
+        <li><a href="#V3.1Hk2-Registrationindirection.">Registration indirection.</a></li> 
+        <ul> 
+         <li><a href="#V3.1Hk2-SimpleVersion">Simple Version</a></li> 
+         <li><a href="#V3.1Hk2-Genericimplementation">Generic implementation</a></li> 
+         <li><a href="#V3.1Hk2-DependentOfandKeyProvider">DependentOf and KeyProvider</a></li> 
+        </ul> 
+        <li><a href="#V3.1Hk2-Selectorimprovements">Selector improvements</a></li> 
+       </ul> 
+       <li><a href="#V3.1Hk2-Contract%2FServicesenhancements.">Contract/Services enhancements.</a></li> 
+       <ul> 
+        <li><a href="#V3.1Hk2-Priority">Priority</a></li> 
+        <ul> 
+         <li><a href="#V3.1Hk2-Loggerexample.">Logger example.</a></li> 
+         <li><a href="#V3.1Hk2-Ordering">Ordering</a></li> 
+        </ul> 
+        <li><a href="#V3.1Hk2-Recorder">Recorder</a></li> 
+       </ul> 
+       <li><a href="#V3.1Hk2-Startupenhancements">Startup enhancements</a></li> 
+       <ul> 
+        <li><a href="#V3.1Hk2-RunLevel">RunLevel</a></li> 
+        <ul> 
+         <li><a href="#V3.1Hk2-WebLogicStates">WebLogic States</a></li> 
+         <li><a href="#V3.1Hk2-GlassFishRunLevels">GlassFish RunLevels</a></li> 
+        </ul> 
+        <li><a href="#V3.1Hk2-Otherenvironment">Other environment</a></li> 
+        <li><a href="#V3.1Hk2-Multienvironmentservices">Multi-environment services</a></li> 
+        <li><a href="#V3.1Hk2-Startupcode">Startup code</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="V3.1Hk2-ProgressTrackingSummary"></a>Progress Tracking Summary</h1> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Status </th> 
+         <th class="confluenceTh"> FS Section </th> 
+         <td class="confluenceTd"> Requirement </td> 
+         <td class="confluenceTd"> Hk2 Solution </td> 
+         <td class="confluenceTd"> AnnoDriver Solution </td> 
+         <td class="confluenceTd"> Comments </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Completed </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Basic Service Description </td> 
+         <td class="confluenceTd"> @Service, @Contract </td> 
+         <td class="confluenceTd"> @Service, @Contract </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Discussed </td> 
+         <td class="confluenceTd"> 4.1.1 </td> 
+         <td class="confluenceTd"> Active Code Instancing </td> 
+         <td class="confluenceTd"> @DependentOf </td> 
+         <td class="confluenceTd"> @OnePerBean </td> 
+         <td class="confluenceTd"> 1. Lifecycle dependent upon underlying bean; 2. Suggestion to rename to @DependsOn </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Completed </td> 
+         <td class="confluenceTd"> 4.1.3 </td> 
+         <td class="confluenceTd"> Bean Injection </td> 
+         <td class="confluenceTd"> @Inject </td> 
+         <td class="confluenceTd"> @Inject @Bean </td> 
+         <td class="confluenceTd"> Agreed to use ctor style injection and ignore field level (re-)injection or annotations for beans. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Discussed </td> 
+         <td class="confluenceTd"> 4.1.6 </td> 
+         <td class="confluenceTd"> 2PC, Active Code Creation </td> 
+         <td class="confluenceTd"> PostConstruct iface </td> 
+         <td class="confluenceTd"> @Prepare method / no iface </td> 
+         <td class="confluenceTd"> 1. Performed during activate, after any bean ctor injection; 2. active code must support rejection / rollback behavior. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Not Discussed </td> 
+         <td class="confluenceTd"> 4.1.6 </td> 
+         <td class="confluenceTd"> 2PC, Active Code Modification </td> 
+         <td class="confluenceTd"> @Prepare (or iface)? </td> 
+         <td class="confluenceTd"> @DynamicUpdate method / no iface </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Not Discussed </td> 
+         <td class="confluenceTd"> 4.1.6 </td> 
+         <td class="confluenceTd"> 2PC, Active Code Removal </td> 
+         <td class="confluenceTd"> PreDestroy iface </td> 
+         <td class="confluenceTd"> @PreDestroy method / no iface </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Discussed </td> 
+         <td class="confluenceTd"> 4.1.2, 4.1.4 </td> 
+         <td class="confluenceTd"> Active Code Injection </td> 
+         <td class="confluenceTd"> @Inject </td> 
+         <td class="confluenceTd"> @Inject </td> 
+         <td class="confluenceTd"> Discussed dynamic and optional cases, and the need to (re-)injection via annotated @Inject setter methods for complex locking conditions. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Discussed </td> 
+         <td class="confluenceTd"> 4.1.2, 4.1.4 </td> 
+         <td class="confluenceTd"> Complex Injection Key Matching </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> @Inject (@WithKey) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Discussed </td> 
+         <td class="confluenceTd"> 4.1.2, 4.1.4 </td> 
+         <td class="confluenceTd"> Aggregate Injection (with optional key matching) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> @Inject (@WithKey) Collection </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Completed </td> 
+         <td class="confluenceTd"> 4.1.2, 4.1.4 </td> 
+         <td class="confluenceTd"> Complex Advertisement Keys </td> 
+         <td class="confluenceTd"> KeyProvider &amp; Key iface </td> 
+         <td class="confluenceTd"> @AdvertisementKeys </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Completed </td> 
+         <td class="confluenceTd"> 4.1.7 </td> 
+         <td class="confluenceTd"> Selecting Implementation </td> 
+         <td class="confluenceTd"> @FactoryFor </td> 
+         <td class="confluenceTd"> @Factory </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Discussed </td> 
+         <td class="confluenceTd"> 4.1.5 </td> 
+         <td class="confluenceTd"> Orderly / Timely Shutdown </td> 
+         <td class="confluenceTd"> GC based </td> 
+         <td class="confluenceTd"> Reverse Dependency Ordering </td> 
+         <td class="confluenceTd"> See attachments. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Not Discussed </td> 
+         <td class="confluenceTd"> 4.1.5 </td> 
+         <td class="confluenceTd"> Destruction type notification </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> @PreDestroy method takes an optional boolean </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Near Completion </td> 
+         <td class="confluenceTd"> 4.3 </td> 
+         <td class="confluenceTd"> Phased Booting </td> 
+         <td class="confluenceTd"> RunLevelService API &amp; @State </td> 
+         <td class="confluenceTd"> @State and @Gate </td> 
+         <td class="confluenceTd"> Wiki missing latest API modifications but completed otherwise </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Near Completion </td> 
+         <td class="confluenceTd"> 4.3 </td> 
+         <td class="confluenceTd"> Phased Booting Exception Handling </td> 
+         <td class="confluenceTd"> RunLevelService API </td> 
+         <td class="confluenceTd"> Wiki missing latest API modifications but completed otherwise </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Discussed </td> 
+         <td class="confluenceTd"> 4.4 </td> 
+         <td class="confluenceTd"> Bean Aggregation </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> @ConfigurationBean </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Not Discussed </td> 
+         <td class="confluenceTd"> 4.4 </td> 
+         <td class="confluenceTd"> Bean (Tree) Integration </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> @ConfigurationBean w/ "ripper" </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Discussed </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> OSGi </td> 
+         <td class="confluenceTd"> Runs on OSGi; importing into habitat one-time early </td> 
+         <td class="confluenceTd"> Runs on OSGi SR </td> 
+         <td class="confluenceTd"> Open vs Closed module implications discussed. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Discussed </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Lazy vs Eager </td> 
+         <td class="confluenceTd"> Lazy </td> 
+         <td class="confluenceTd"> Eager </td> 
+         <td class="confluenceTd"> Would like the final model to be either depending on annotations and/or environment </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="V3.1Hk2-Instantiationenhancements."></a>Instantiation enhancements.</h1> <h4><a name="V3.1Hk2-CompanionBeans"></a>Companion Beans</h2> <p>Any Bean entering the habitat can already trigger the instantiation of a second bean called a dependent bean (in fact multiple dependent beans are possible). </p> <p>For instance the following Bean : </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Service
+public class LeadBean implements SomeContract {
+...
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>has the following Dependent</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@DependentOf(LeadBean.class) 
+public class CompanionBean implements SomethingElse {
+...
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>The lifecycle of the dependent bean is entirely linked to the lifecycle of its parent bean (the one that triggered the instantiation). There is a need for WebLogic to have a two phase instantiation of the dependent bean when the parent bean is a configuration bean (@Configured in hk2 terms). The first phase should make the parent bean available but no other injection or services availability should have happened. The first phase should have the ability to raise exceptions. The second phase should have the normal injection performed as well as activation. </p> <p>I propose we map the first phase to the constructor of this dependent bean and the parent bean should be passed as the sole parameter to the constructor. The normal injection will happen after that using the @Inject annotations on fields or methods. The activation phase should naturally map to the postConstruct method. </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Dependent(LeadBean.class)
+public class CompanionBean implements PostConstruct, SomethingElse {
+
+    @Inject
+    RandomService random;
+
+    final LeadBean parent;
+
+    public CompanionBean(LeadBean parent) {
+        this.parent = parent;
+        // random is not available.
+        // this is the 1st phase, exceptions can be thrown, 
+        // rollbacking the configuration transaction.
+    }
+
+    public void postConstruct() {
+        // second phase, exceptions still possible.
+        // random and parent are available
+    }
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>For the dependent beans that do not want to have the two phase activation required by WebLogic, the current mechanism will remain unchanged. </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Dependent(LeadBean.class)
+public class CompanionBean implements SomethingElse {
+
+    @Inject
+    RandomService random;
+    
+    @Lead (we should rename this)
+    LeadBean parent;
+
+}</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="V3.1Hk2-ServiceListener"></a>Service Listener </h2> <p>I should be possible to be notified when services implementation are swapped in the registry. </p> <h4><a name="V3.1Hk2-Fieldinjection"></a>Field injection</h3> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Service
+public RandomService implements RandomContract {
+
+    @Inject(dynamic=true)
+    Holder&lt;RandomContract&gt; myContract;
+
+    public void foo() {
+        myContract.do(); // will always invoke do() on the currently registered service.
+    }
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>if RandomContract is an interface, we can use Java SE proxies and therefore replace the injection declaration with </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Inject(dynamic=true)
+RandomContract myContract;</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="V3.1Hk2-Methodinjection"></a>Method injection</h3> <p>With method injection, no holder or proxying is necessary as the injection method will be called each time the service is changed in the registry </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Service
+public RandomService implements RandomContract {
+
+    
+    RandomContract myContract;
+
+    @Inject(dynamic=true)
+    public void setRandomContract(RandomContract contract) {
+        // will be invoked one on construction, and each time the contract is changed 
+        // in the registry.
+    }
+}</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="V3.1Hk2-Configurationeventsenhancements."></a>Configuration events enhancements.</h2> <p>Today we have the ability to automatically listen to injected configuration beans changes. In order to get notified of configuration changes, one can just do today :</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Service
+public RandomService implements RandomContract, ConfigListener {
+    
+   @Inject
+   SomeConfig myConfig 
+
+   public PropertyChangeEvents[] changed(List&lt;PropertyChangeEvent&gt; events) { 
+        // events represent the list of all applied changes, after the transaction 
+        // is committed. 
+        // myConfig is ONE of the bean changed, and already points to the new values.
+   }</pre> 
+       </div> 
+      </div>
+     </div> <p>In order to simplify the sorting of changes per bean, I propose a more type safe approach, coupled with three new annotations (@Prepare, @Commit, @Rollback). </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Service
+public RandomService implements RandomContract {
+
+    @Inject
+    SomeConfig myConfig;
+
+    @Prepare
+    public void prepare(@Inject SomeConfig newConfig) {
+	// compare myConfig with newConfig)
+    }
+
+    @Commit
+    public PropertyChangeEvent[] commit(SomeConfig newConfig) {
+	// called after each update
+    }
+
+    @Rollback 
+    public void rollback() {
+	// called after prepare if failure
+    }</pre> 
+       </div> 
+      </div>
+     </div> <p>This obviously can get to code a bit too complicated : </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Service
+public RandomService implements RandomContract {
+
+    @Inject SomeConfig myConfig;
+    @Inject OtherConfig otherConfig;
+
+    @Prepare
+    public void prepare(@Inject SomeConfig newConfig) {
+	// compare myConfig with newConfig)
+    }
+
+    @Prepare
+    public void prepare(@Inject OtherConfig newConfig) throws TransactionFailure {
+	// compare otherConfig with newConfig)
+        // throw a transaction failure to abort the configuration change
+    }
+
+    @Commit
+    public PropertyChangeEvent[] commit(SomeConfig newConfig) {
+	// called after each successful transaction
+        // cannot throw an exception ,cannot rollback the transaction
+        // return the list of unprocessed changes (requiring a restart)
+    }
+
+    @Commit
+    public PropertyChangeEvent[] commit(OtherConfig newConfig) {
+	// called after each transaction success
+    }
+
+    @Rollback 
+    public void rollback() {
+	// if prepare was called and did not throw an exception, 
+        // will be called if the transaction is a failure
+    }</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="V3.1Hk2-ConfigurationchangesandDependentbeans."></a>Configuration changes and Dependent beans. </h2> <p>When coupling the @DependentOf annotation with configuration changes (we may need a @DependentOfConfig annotation to restrict the dependency on a configuration type) we should support the following :</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@DependentOfConfig(Cluster.class)
+public class ClusterService implements PostConstruct, PreDestroy {
+
+	@Inject
+	RandomService someService;
+
+	final Cluster myConfig;
+	DynamicService myDynService;
+	
+	public ClusterService(Cluster config) {
+             // 1st phase
+             myConfig = config;
+	}
+	
+	public void postConstruct() {
+            // 2nd phase : mySevice are myDynService are available
+	}
+
+	public void preDestroy() {
+		// myConfig is removed
+       }
+
+	@Inject(name="foo", dynamic=true)
+	public void setDynService(DynamicService dynService) {
+		// called once between constructor and postConstruct)
+		// and each time "foo" DynamicService is changed in the ServiceRegistry
+		myDynService = dynService;	
+	} 
+	
+	
+	@Prepare
+	public void prepare(@Inject Cluster newConfig) {
+		// compare myConfig with newConfig)
+	}
+
+	@Commit
+	public PropertyChangeEvent[] commit() {
+		// called  after constructor (once !) and after each update
+	}
+
+	@Rollback 
+	public void rollback() {
+		// called after constructor or each prepare if the transaction is aborted 
+	}
+
+}</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="V3.1Hk2-Registrationindirection."></a>Registration indirection. </h2> <p>There is a proposal to provide a level of indirection to @Named semantics, for instance : </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@AdvertisementKeys(keys="$getName()")
+@Service
+public FooImpl {
+
+    public String getName() {
+      ....
+    }
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>will use fooImpl instance getName() method as a @Named value</p> <h4><a name="V3.1Hk2-SimpleVersion"></a>Simple Version</h3> <p>I think we should use a more type safe approach, something like for the simple non reusable case : </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">/**
+ * Interface that define the notion of a key provider. Keys
+ * will be used to register services in the service registry 
+ * aka the habitat
+ */
+public interface KeysProvider&lt;T&gt;() {
+
+    List&lt;String&gt; for(T instance);
+
+}</pre> 
+       </div> 
+      </div>
+     </div> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Service(name="random")
+public class FooImpl implements KeyProvider&lt;FooImpl&gt; {
+     List&lt;String&gt; for(FooImpl instance) {
+        assert this==instance;
+        List&lt;String&gt; keys = new ArrayList&lt;String&gt;();
+        keys.add(instance.getName());
+        return keys;
+     }
+}</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="V3.1Hk2-Genericimplementation"></a>Generic implementation</h3> <p>When the KeyProvider should be reusable among different services, the following patter should be followed.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">public interface Named {
+    String getName();
+}
+
+@Configured
+public interface ClusterConfig extends Named {
+   .. some cluster related config methods ...
+}
+
+@Configured
+public interface ServerConfig extends Named {
+   .. some server related config methods ...
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>Now one can provide a generic KeyProvider&lt;Named&gt; implementation : </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">public class NamedKeysProvider implements KeyProvider&lt;Named&gt; {
+     public List&lt;String&gt; for(Named instance) {
+        return instance.getName();
+     }
+}
+{{{
+
+Now we need an annotation to qualify who can use this generic provider : 
+
+/**
+ * Annotation to qualify a service registration keys provider
+ */
+public @interface Keys {
+
+    /**
+     * @return the key provider implementation class
+     */
+    Class&lt;? extends KeysProvider&gt; value();
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>Taking back the example above : </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Service
+@Keys(NamedKeysProvider.class);
+public class FooImpl implements Named {
+
+    public String getName() {
+        .. do something really complicated...
+        return it;
+    }
+
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>yes it's more work but it's worth the trouble for type safety, and if we were to change the API for(T instance) to return String rather than List&lt;String&gt;, it would simplify the code a lot. </p> <h4><a name="V3.1Hk2-DependentOfandKeyProvider"></a>DependentOf and KeyProvider </h3> <p>Sometimes, the keys provider needs the lead object that created this instance : </p> <p>Therefore we might need to modify the @DependentOf annotation</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">public @interface DependentOf {
+
+   /**
+    * @return the type this service is dependent of.
+    */
+   Class value();
+ 
+   /**
+     * @return the key provider implementation class
+     */
+    Class&lt;? extends KeysProvider&gt; keys();
+}
+
+The service implementation can then become : 
+
+@Service
+@DependentOf(ClusterConfig.class, keys = ClusterService.KeyProvider.class)
+public class ClusterService { 
+    @Inject ClusterConfig config;
+
+    // can be called before an instance of ClusterService is even created.
+    public final static ClusterService.KeyProvider implements KeyProvider&lt;ClusterConfig&gt;() {
+        List&lt;String&gt; for(ClusterConfig config) {
+            List&lt;String&gt; keys = new ArrayList&lt;String&gt;();
+            // calculate the keys based on the configuration object and 
+            // the receiving type : ClusterService
+            keys.add(config.getXXX());
+            return keys;
+        }
+    }
+}</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="V3.1Hk2-Selectorimprovements"></a>Selector improvements</h2> <p>TBD. there is a need to register complex keys and have some sort of Selector to look up in the registry.</p> <h4><a name="V3.1Hk2-Contract%2FServicesenhancements."></a>Contract/Services enhancements.</h1> <h4><a name="V3.1Hk2-Priority"></a>Priority</h2> <p>Independent services of the same kind (Contract) may still need to be prioritized. Although it may seem to the casual reader that independent services should be instantiated in parallel or in any order, there are cases where existing code, jdk semantics get in the way of expressing all dependencies. </p> <h4><a name="V3.1Hk2-Loggerexample."></a>Logger example.</h3> <p>A logger service (LoggerService) for instance is responsible for setting up the Logging subsystem, install filter, output to particular files and set levels. This should be done early enough so that any startup sequence logging happens correctly, yet startup sequence do not necessarily depend on the LoggerService. There is 2 existing solution to the problem : </p> 
+     <ol> 
+      <li>make all services dependent on LoggerService. This is incorrect, each services only require the Logger instances, not the LoggerService.</li> 
+      <li>have a FactoryFor(Logger.class) registered to intercept all loggers instantiation when Loggers are injected. The factory can ensure the LoggerService is properly set up. Although this is the correct solution, it is difficult to enforce, with existing code, or with distracted programmers that may use JDK APIs to get a Logger directly rather than rely on injection. Such usage would bypass the factory and therefore the dependency would be un-met.</li> 
+     </ol> <h4><a name="V3.1Hk2-Ordering"></a>Ordering </h3> <p>To work around the type of issue described above, I propose to introduce a new set of annotations and types </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">public @interface OrderedBy {
+
+    public Class&lt;? extends Sorter&gt; value();
+
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>so far, Sorter is pretty simple, could be extended if necessary : </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">public interface Sorter&lt;T extends Annotation&gt; {
+
+    public void sort(List&lt;T&gt; elements);
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>Any @Contract annotated interface with @OrderedBy will have the services returned ordered by the Sorter implementation as opposed as undefined as it is today. </p> <p>TBD: The above seems to pertain to ServiceRanking, and we would propose using something like ServiceTrackers that handle this case already.</p> <h4><a name="V3.1Hk2-Recorder"></a>Recorder</h2> <p>A recorder allows you to record the instantiation order of a set of Contract implementation. </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">public interface InstantiationRecorder&lt;T&gt; {
+    /**
+     * returns a (double?) linked list of T services in the order
+     * T instances were instantiated.
+     */
+    public LinkedList&lt;T&gt; records();
+
+    /**
+     * records a new instance creation
+     */
+    public void record(T instance);
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>You set a recorder implementation using the @Recorder annotation on a @Contract interface definition (anything else should be an error).</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">public @interface Recorder {
+    public Class&lt;? extends InstantiationRecorder&gt; value();
+
+}
+{{{
+
+The class value() of the @Recorder will be looked up in the habitat by its type and no name, therefore it must be a singleton object and serve a unique contract.
+
+Here is an simple example : 
+
+/**
+ * Startup interface is a markup interface for all startup services
+ * Startup services are run on startup. 
+ */
+@Recorder(StartupRecorder.class) 
+@Contract
+public interface Startup {
+}</pre> 
+       </div> 
+      </div>
+     </div> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Service
+public class StartupRecoder implements Recorder&lt;Startup&gt; {
+    LinkedList&lt;Startup&gt; getRecords();
+    // should it be a LinkedList&lt;Inhabitant&lt;Startup&gt;&gt; instead ? 
+}</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="V3.1Hk2-Startupenhancements"></a>Startup enhancements</h1> <h4><a name="V3.1Hk2-RunLevel"></a>RunLevel</h2> <p>We need to have the ability to define Run Levels that allow to start a set of dependent services in stages. <br> However, the run-levels or states of the application server can differ : </p> 
+     <ul> 
+      <li>by application type (WebLogic wants more States than GlassFish)</li> 
+      <li>by environment (the client jar may require different run-levels than the application server)</li> 
+      <li>by definition (WebLogic team want to chain their conceptually and relatively, while GlassFish would like to use a simple static number ordering scheme).</li> 
+     </ul> <p>Therefore there is a need to define what a RunLevel type is :</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">/**
+ * meta-annotation to denote a RunLevel type which can be used 
+ * by the HK2 startup sequence to look up the annotated 
+ * startup services annotated with the annotation annotated
+ * by a @RunLevelType. 
+ */ 
+public @interface RunLevelType {
+
+    /**
+     * defines the environment this run-level-type should 
+     * apply to
+     */
+    String value() default "default";
+}</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="V3.1Hk2-WebLogicStates"></a>WebLogic States</h3> <p>In WebLogic which requires a static chaining of States, they would define the run-level-type as follow : </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@RunLevelType
+@OrderedBy(ChainedState.ChainedLevelSorter.class)
+public @interface ChainedState {
+
+    Class previous() default Void.class;
+
+    public static class ChainedLevelSorter implements Sorter {
+        @Override
+        public void sort(List&lt;AnnotatedElement&gt; elements) {
+            // simple insertion sort based on previous...
+        }
+    }
+
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>Then the chain for states can be defined as :</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">// first in the chain
+@ChainedState()
+public @interface WLSAdmin {
+}</pre> 
+       </div> 
+      </div>
+     </div> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@ChainedState(previous=WLSAdmin.class)
+public @interface WLSResuming {
+}</pre> 
+       </div> 
+      </div>
+     </div> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@ChainedState(previous=WLSResuming.class)
+public @interface WLSRunning {
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>After that, startup services can be annotated with the proper State. </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@WLSAdmin
+public class WLSStartup {
+}
+
+@WLSAdmin
+public class WLSStartup2 {
+}
+
+@WLSRunning
+public class WLSRandomService {
+}</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="V3.1Hk2-GlassFishRunLevels"></a>GlassFish RunLevels</h3> <p>In GlassFish, the situation will be similar, this is our definition of a RunLevel : </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@RunLevelType()
+@OrderedBy(RunLevel.RunLevelSorter.class)
+public @interface RunLevel {
+    
+    int value() default 0;
+
+    public Class&lt;? extends Sorter&gt; sorter() default RunLevelSorter.class;
+
+    public static class RunLevelSorter implements Sorter {
+
+        @Override
+        public void sort(List&lt;AnnotatedElement&gt; elements) {
+            // ... sort elements based on value...//
+        }
+
+    }    
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>Since we like to sort our services within one runlevel, our runlevels can become :</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@RunLevel(10)
+@OrderedBy(AdminLevel.ALSorter.class)
+public @interface AdminLevel {
+
+    int priority() default 50;
+
+    public final class ALSorter implements Sorter {
+        @Override
+        public void sort(List&lt;AnnotatedElement&gt; elements) {
+            // ... sort AdminLevel services based on priority ... //
+        }
+    }
+}</pre> 
+       </div> 
+      </div>
+     </div> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@RunLevelType("default")
+@OrderedBy(RunLevel.RunLevelSorter.class)
+public @interface RunLevel {
+    
+    int value() default 0;
+
+    public Class&lt;? extends Sorter&gt; sorter() default RunLevelSorter.class;
+
+    public static class RunLevelSorter implements Sorter {
+
+        @Override
+        public void sort(List&lt;AnnotatedElement&gt; elements) {
+            // ... sort elements based on value...//
+        }
+
+    }    
+}</pre> 
+       </div> 
+      </div>
+     </div> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Retention(RetentionPolicy.RUNTIME)
+@OrderedBy(RunLevel.RunLevelSorter.class)
+public @interface RunningLevel {
+
+    int value();
+
+    public static class RunLevelSorter implements Sorter&lt;RunLevel&gt; {
+
+        @Override
+        public void sort(List&lt;RunLevel&gt; elements) {
+            // ... sort elements based on value...//
+        }
+
+    }
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>Note that the fact value() is an int is for discussion purposes at this point. We might decide to have a different representation of a RunLevel. </p> <p>In the previous examples, all annotated Services with the @AdminLevel annotation can also optionally provide a priority to further sort out the desired order of instantiation. </p> <p>A simpler version that consider all services in a particular Level to be equal could be represented : </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@RunLevel(10)
+public @interface RunningLevel {
+    // running level, does not have priority and all services are considered equals...
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>Our startup services become :</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@AdminLevel
+public class SomeStartupService {
+}
+
+@AdminLevel(priority=10)
+public class SomeOtherStartup {
+}
+
+@RunningLevel
+public class YetAnotherStartup {
+}</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="V3.1Hk2-Otherenvironment"></a>Other environment</h2> <p>Whether States or RunLevels are considered, it should be possible to to define run levels for different execution environment like embedded or an application client. </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">/**
+ * defines the notion of a run-level when the 
+ * hk2 is starting in an "embedded" mode
+@RunLevelType("embedded")
+public @interface EmbeddedRunLevel {
+}</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="V3.1Hk2-Multienvironmentservices"></a>Multi-environment services </h2> <p>Of course, nothing prevent services to be eligible for startup in various execution environment </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@AdminLevel(30)
+@Embedded(20)
+@JMSClient
+public class JMSStartupService {
+}</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="V3.1Hk2-Startupcode"></a>Startup code </h2> <p>TBD : we need to decide the relationship between RunLevel's and Startup services in Hk2.</p> <p>TBD : we need to decide what creates "demand" between Configuration Beans and Run Levels.</p> <p>TBD : we need a way to capture which @RunLevelType should be used to lookup States definition in this execution environment, default being "default" in the examples above.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Contract
+@Singleton
+public interface RunLevelService&lt;T&gt; {
+  RunLevel currentLevel();
+
+  /**
+   * Moves up or down to a particular run level
+   **/
+  RunLevelWorker proceedTo(RunLevel level, RunLevelServiceListener listener);
+}</pre> 
+       </div> 
+      </div>
+     </div> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Contract
+public interface RunLevelWorker {
+
+  void cancel();   // cancel the job (i.e., stop dead in the tracks). This may leave the system in an ambiguous state that will require either a recover to last checkpoint, or a subsequent proceedTo() call issued.
+
+  boolean isCompleted(); // indicated the work has completed (or the cancel is completed if cancel was called)
+
+}</pre> 
+       </div> 
+      </div>
+     </div> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Contract
+public interface RunLevelServiceListener {
+
+  boolean onError(Exception error); // called when error encountered, caller should return true to continue and false to cancel/abort
+
+  void onProgress(RunLevel level); // called when proceedTo()  is called with multiple level "jumps" involved
+
+  void onCompleted(); // used to notify that isCompleted() has been set to true
+
+}</pre> 
+       </div> 
+      </div>
+     </div> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">public void mainCode() {
+        ...
+        goToLevel(AdminLevel.class);
+        ...
+        goToLevel(RunningLevel.class);
+    }</pre> 
+       </div> 
+      </div>
+     </div> <p>Our proposal is to put all the new annotations in the existing annotation package:<br> org.jvnet.hk2.annotations</p> <p>Our proposal is to put the new startup interfaces into package:<br> org.jvnet.hk2.startup</p> 
+     <hr> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875374/21365161.pdf">ShutdownOrder3.pdf</a> (application/pdf) 
+      <br> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : Monitoring</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="Monitoring-MonitoringRequirementforv3.1"></a>Monitoring Requirement for v3.1</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <td class="confluenceTd"> MON01 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd">Monitoring at Cluster level with drill-down capabaility to point to the real issue </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> MON02 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd">Good UI for the monitoring value-adds </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> MON03 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd">Fix performance issues </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> MON04 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd">Improve number of probes </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="Monitoring-MonitoringRequirementforV3"></a>Monitoring Requirement for V3</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <td class="confluenceTd"> AdminConsole-008 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Provide a 'dashboard' view of application clusters and/or instances. </td> 
+         <td class="confluenceTd"> With one quick view an administrator should be able to see the status of an installation. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> AdminConsole-016 </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> Live update of monitoring statistics from within admin UI </td> 
+         <td class="confluenceTd"> (Community Request). </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> EU7 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Improved monitoring support. </td> 
+         <td class="confluenceTd">Instead of dumping the raw data, it is better to interpret and provide the analysed data Root cause analysis coupled with self-management. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> INT </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Improved monitoring UI with overall system health </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> INT </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Root Cause Analysis </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> INT </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Resources Monitoring </td> 
+         <td class="confluenceTd"> <a href="http://appserver.sfbay.sun.com/attach/V3Requirements%2Fgfv3requirements_iec.sxi">Refer to IEC slides </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> INT </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> MQ Monitoring </td> 
+         <td class="confluenceTd"> <a href="http://appserver.sfbay.sun.com/attach/V3Requirements%2Fgfv3requirements_iec.sxi">Refer to IEC slides </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> INT </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> JDBC Monitoring </td> 
+         <td class="confluenceTd">Improve presentation from numbers to charts, snapshots. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> INT </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> JVM Monitoring </td> 
+         <td class="confluenceTd">Integrate JConsole type of monitoring through admin-console </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> INT </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Applications Monitoring </td> 
+         <td class="confluenceTd">Active Sessions, Performance, Processing Time, Call Flow </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> INT </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Resources Monitoring </td> 
+         <td class="confluenceTd">JDBC Connection Pool/Datasource Call Flow Monitoring </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> INT </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Log Statistics Monitoring </td> 
+         <td class="confluenceTd">Display Graphs Based on Message Filtering, show messages, and possible root cause analysis </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> INT </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> Transactions UI </td> 
+         <td class="confluenceTd">Need to see whether we have is sufficient </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> INT </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Intance/Cluster Monitoring </td> 
+         <td class="confluenceTd">Color coded status to show the health of an instance/cluster, Diagnose information to display threshold limitations of memory, cpu usage etc. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> INT </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Third party monitoring framework </td> 
+         <td class="confluenceTd">Evaluate existing monitoring framework like QUEST, WILEY etc. tightly integrate the popular ones with GF V3 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> HS </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Allow setting of alerts and bounds per application </td> 
+         <td class="confluenceTd"> For e.g " set maximum time for response for application A as 30 ms". If App A goes over 30 ms about x% time send an alert to the administrator </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> HS </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Classify application zones/support level </td> 
+         <td class="confluenceTd"> E.g Application A, B, C. A is in Platinum zone, B is in Gold zone and C is in Silver. If there is a resource crunch, application A gets serviced over B and C. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> HS </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> SMS alerts </td> 
+         <td class="confluenceTd"> if server crashes Should help administrators in mission critical sites </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> INT </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Tivoli's support for JMX </td> 
+         <td class="confluenceTd"> We may be able to get help from ISV engineering here </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> INT </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> Netcool's support for JMX </td> 
+         <td class="confluenceTd"> Explore </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 02, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

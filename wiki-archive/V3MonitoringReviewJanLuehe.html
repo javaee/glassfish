@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : V3MonitoringReviewJanLuehe</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p><b>4.1.1.1 Probe Provider Factory</b></p> 
+     <ul> 
+      <li>&lt;code&gt;ProbeProviderFactory&lt;/code&gt; defined as interface, but it is a real class. &lt;code&gt;createInstance&lt;/code&gt; should be &lt;code&gt;createProvider&lt;/code&gt;.</li> 
+     </ul> 
+     <ul> 
+      <li>When you say <em>The method returns a class that implements this interface</em>, explain how.</li> 
+     </ul> <p><b>4.1.1.2 Probe Providers</b></p> 
+     <ul> 
+      <li>Should the &lt;code&gt;TxManager&lt;/code&gt; interface not be annotated with &lt;code&gt;@ProbeProvider&lt;/code&gt;?</li> 
+     </ul> 
+     <ul> 
+      <li>When you say that <em>the return value from this method will be a class that implements the TxManager interface</em>, you might want to explain how the impl is created, and what the impl looks like initially (i.e., zero-overhead methods).</li> 
+     </ul> <p><b>4.1.1.5 Emitting probe events</b></p> 
+     <ul> 
+      <li>Minor typo in code snippet: &lt;code&gt;txProvider&lt;/code&gt; should be &lt;code&gt;txMgr&lt;/code&gt;, or the other way round</li> 
+     </ul> <p><b>4.1.1.6 ProviderRegistry</b></p> 
+     <ul> 
+      <li>Can you explain the meaning of the pattern components in &lt;code&gt;:::&lt;/code&gt;. I think it's as follows: &lt;code&gt;moduleId:providerName:appName:probeName&lt;/code&gt;. What are the naming conventions for &lt;code&gt;moduleId&lt;/code&gt; and &lt;code&gt;appName&lt;/code&gt;?</li> 
+     </ul> <p><b>4.1.1.12 Registering clients</b></p> 
+     <ul> 
+      <li>Definition of &lt;code&gt;ProbeProviderInfo&lt;/code&gt; from 4.1.1.7 repeated and probably out-of-scope here</li> 
+     </ul> 
+     <ul> 
+      <li>The terms &lt;code&gt;Client&lt;/code&gt; and &lt;code&gt;Listener&lt;/code&gt; seem to be used interchangeably. Should we use &lt;code&gt;Listener&lt;/code&gt; consistently in the API, i.e., change &lt;code&gt;Client&lt;/code&gt; to &lt;/code&gt;Listener&lt;/code&gt; in &lt;code&gt;ProbeClientMediator&lt;/code&gt; and &lt;code&gt;registerClient&lt;/code&gt;?</li> 
+     </ul> 
+     <ul> 
+      <li>Should &lt;code&gt;ProbeClientMediator&lt;/code&gt; also define a method for unregistering a listener/client?</li> 
+     </ul> <p><b>4.1.1.13 Note about gfProbe clients</b></p> 
+     <ul> 
+      <li>A client that does not have any of its methods annotated with &lt;code&gt;ProbeListener&lt;/code&gt; will never receive any probe events and will be ignored by the framework, right?</li> 
+     </ul> <p><b>4.1.1.14 ProbeContainer</b></p> 
+     <ul> 
+      <li>So the plan is to be able to deploy probe listeners: 
+       <ul> 
+        <li>Packaged in standalone JAR files</li> 
+        <li>Packaged in WAR- and EAR-bundled JAR files</li> 
+        <li>As part of a WAR file's WEB-INF/classes (would they not inherit the permissions granted to the WAR file's other classes, which would make it difficult for the security system to enforce the restriction that probe listeners must not be able to open server sockets or create threads?)</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li>Will the probe listeners be automatically unregistered from the ProbeClientMediator during undeployment?</li> 
+     </ul> <p><b>4.1.2.3.1 Probe Listener</b></p> 
+     <ul> 
+      <li><em>listeners for a provider will be registered or unregistered based on the lifecycle event from the provider (when provider is coming up or going down)</em>:<br class="atl-forced-newline">Do providers implement some kind of state machine? When a provider is created using &lt;code&gt;ProbeProviderFactory.createProvider&lt;/code&gt;, will it automatically be put in &lt;code&gt;STARTED&lt;/code&gt;?</li> 
+     </ul> <p><b>4.1.2.3.3 OVH</b></p> 
+     <ul> 
+      <li><em>It consists of interfaces for the Telemetry objects to register/unregister themselves as the tree nodes.</em>:<br class="atl-forced-newline">Not sure I completely understand, but does this mean that in addition to registering itself by calling &lt;code&gt;ProbeClientMediator.registerClient&lt;/code&gt;, a client must also register with the OVH? How does it do that, and under what name? Is this interface the same as the &lt;code&gt;TreeNodeFactory&lt;/code&gt; in 4.1.2.6?</li> 
+     </ul> 
+     <ul> 
+      <li>What does the term &lt;code&gt;client&lt;/code&gt; mean here? In earlier sections, client meant &lt;code&gt;ProbeListener&lt;/code&gt;, but in the context of the OVH, it also refers to REST and CLI (<em>once part of the tree, they are exposed to any client</em>).</li> 
+     </ul> <p><b>4.1.2.4 Custom ProbeListeners or Scripts</b></p> 
+     <ul> 
+      <li>What is the difference between &lt;code&gt;ProbeClient&lt;/code&gt; and &lt;code&gt;ProbeListener&lt;/code&gt;? How can a &lt;code&gt;ProbeClient&lt;/code&gt; be turned into a script?</li> 
+     </ul> <p><b>4.1.2.6 Framework Utilities</b></p> 
+     <ul> 
+      <li>Code snippet: What happens to &lt;code&gt;TreeNode child&lt;/code&gt;? Is it ever used?</li> 
+     </ul> <p><b>4.5.1.2 gfProbes Infrastructure Exported Interfaces</b></p> 
+     <ul> 
+      <li>&lt;code&gt;ProbeProviderFactory&lt;/code&gt;: Is it &lt;code&gt;createProvider&lt;/code&gt; or &lt;code&gt;createInstance&lt;/code&gt;? Is &lt;code&gt;ProbeProviderFactory&lt;/code&gt; really an interface? How do you acquire an instance of it?</li> 
+     </ul> 
+     <ul> 
+      <li>&lt;code&gt;ProbeProvider&lt;/code&gt;, &lt;code&gt;ProbeProviderInfo&lt;/code&gt;, &lt;code&gt;ProbeProviderRegistry&lt;/code&gt; missing?</li> 
+     </ul> <p><b>4.5.1.3 Utility Framework Classes</b></p> 
+     <ul> 
+      <li>Why does &lt;code&gt;FlashlightMonitoringRegistry&lt;/code&gt; have &lt;code&gt;Flashlight&lt;/code&gt; in its name, when none of the other classes (e.g., &lt;code&gt;TreeNodeFactory&lt;/code&gt;) do?</li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 09, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:48.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

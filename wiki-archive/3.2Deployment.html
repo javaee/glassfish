@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : 3.2Deployment</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="3.2Deployment-GlassFish3.2Deployment"></a>GlassFish 3.2 - Deployment</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#3.2Deployment-GlassFish3.2Deployment">GlassFish 3.2 - Deployment</a></li> 
+       <ul> 
+        <li><a href="#3.2Deployment-Scope">Scope</a></li> 
+        <li><a href="#3.2Deployment-MilestoneSchedule">Milestone Schedule</a></li> 
+        <li><a href="#3.2Deployment-OnePager">One Pager</a></li> 
+        <li><a href="#3.2Deployment-Demos">Demos</a></li> 
+        <li><a href="#3.2Deployment-SubProjects">Sub Projects</a></li> 
+        <li><a href="#3.2Deployment-DevTests3.2DeploymentDevTests"> Dev Tests</a></li> 
+        <li><a href="#3.2Deployment-EmailAlias">Email Alias</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="3.2Deployment-Scope"></a>Scope</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Priority </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> Eng Response</th> 
+         <th class="confluenceTh">RFEs </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> DPLY-001 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Support deployment in cloud environment</td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/16423">GLASSFISH-16423 </a>, <a href="https://github.com/javaee/glassfish/issues/16424">GLASSFISH-16424 </a>, <a href="https://github.com/javaee/glassfish/issues/16425">GLASSFISH-16425 </a>, <a href="https://github.com/javaee/glassfish/issues/16426">GLASSFISH-16426 </a>, <a href="https://github.com/javaee/glassfish/issues/16427">GLASSFISH-16427 </a>, <a href="https://github.com/javaee/glassfish/issues/16428">GLASSFISH-16428 </a> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> DPLY-002 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Deploy support for Ad Hoc cluster</td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/16445">GLASSFISH-16445</a>, <a href="https://github.com/javaee/glassfish/issues/16483">GLASSFISH-16483</a>, <a href="https://github.com/javaee/glassfish/issues/16484">GLASSFISH-16484</a>, <a href="https://github.com/javaee/glassfish/issues/16485">GLASSFISH-16485</a> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> DPLY-003 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Deployment infrastructure support for other teams</td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> DPLY-004 </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> Redeployment performance optimization</td> 
+         <td class="confluenceTd"> Maybe </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/16548">GLASSFISH-16548</a>, <a href="https://github.com/javaee/glassfish/issues/16549">GLASSFISH-16549</a></td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.2Deployment-MilestoneSchedule"></a>Milestone Schedule</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1. </td> 
+         <td class="confluenceTd"> Milestone 1 (04/04) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Feature planning </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2. </td> 
+         <td class="confluenceTd"> Milestone 2 (04/26) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Deployment one pager ready for review, features filed as JIRA issues </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Yes </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3. </td> 
+         <td class="confluenceTd"> Milestone 3 (05/23) </td> 
+         <td class="confluenceTd"> DPLY-001 </td> 
+         <td class="confluenceTd">PaaS deployment support for deploy/undeploy </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> end-to-end feature delivery will depend on orchestrator</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4. </td> 
+         <td class="confluenceTd"> Milestone 4 (06/20) </td> 
+         <td class="confluenceTd"> DPLY-001 </td> 
+         <td class="confluenceTd">PaaS deployment support for other basic scenarios (enable/disable) </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> end-to-end feature delivery will depend on orchestrator</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5. </td> 
+         <td class="confluenceTd"> Milestone 4 (06/20) </td> 
+         <td class="confluenceTd"> DPLY-002 </td> 
+         <td class="confluenceTd"> Ad Hoc cluster deployment support for deploy/undeploy</td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> dependency on Ad Hoc cluster management </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6. </td> 
+         <td class="confluenceTd"> Milestone 4 (06/20) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">Deployment one pager reviewed </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 7. </td> 
+         <td class="confluenceTd"> Milestone 5 (07/18) </td> 
+         <td class="confluenceTd"> DPLY-001 </td> 
+         <td class="confluenceTd"> Paas deployment support for redeploy </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd">end-to-end feature delivery will depend on orchestrator</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 8. </td> 
+         <td class="confluenceTd"> Milestone 5 (07/18) </td> 
+         <td class="confluenceTd"> DPLY-002 </td> 
+         <td class="confluenceTd"> Ad Hoc cluster deployment support for redeploy</td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> dependency on Ad Hoc cluster management </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 9. </td> 
+         <td class="confluenceTd"> Milestone 6 (08/15) </td> 
+         <td class="confluenceTd"> DPLY-001 </td> 
+         <td class="confluenceTd"> Paas deployment support for asynchronous mode</td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 10. </td> 
+         <td class="confluenceTd"> Milestone 6 (08/15) </td> 
+         <td class="confluenceTd"> DPLY-002 </td> 
+         <td class="confluenceTd"> Ad Hoc cluster deployment support for multiple applications</td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> dependency on Ad Hoc cluster management </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 11. </td> 
+         <td class="confluenceTd"> Milestone 6 (08/15) </td> 
+         <td class="confluenceTd"> DPLY-003 </td> 
+         <td class="confluenceTd"> Deployment infrastructure support for other teams </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 12. </td> 
+         <td class="confluenceTd"> Milestone 7 (10/03) </td> 
+         <td class="confluenceTd"> DPLY-004 </td> 
+         <td class="confluenceTd"> Redeployment performance optimization </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 13. </td> 
+         <td class="confluenceTd"> Milestone 7 (10/03) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Fix P1-P3 bugs </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.2Deployment-OnePager"></a>One Pager</h2> <p><a href="3.2DeploymentOnePager.html" title="3.2DeploymentOnePager">3.2 Deployment One Pager</a></p> <h4><a name="3.2Deployment-Demos"></a>Demos</h2> <h4><a name="3.2Deployment-SubProjects"></a>Sub Projects</h2> 
+     <ul> 
+      <li><a href="3.2CloudDeployment.html" title="3.2CloudDeployment">Cloud Deployment - P1</a></li> 
+     </ul> <h4><a name="3.2Deployment-DevTests3.2DeploymentDevTests"></a><a href="3.2DeploymentDevTests.html" title="3.2DeploymentDevTests">Dev Tests </a></h2> <h4><a name="3.2Deployment-EmailAlias"></a>Email Alias</h2> 
+     <ul> 
+      <li>Please contact us at <a href="mailto:dev@glassfish.java.net">dev@glassfish.java.net</a></li> 
+     </ul> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on May 04, 2011 by 
+<font color="#0050B2">vsunk2</font>. Exported from wikis.oracle.com on May 27, 2015 20:43.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

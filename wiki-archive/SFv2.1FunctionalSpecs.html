@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : SFv2.1FunctionalSpecs</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="SFv2.1FunctionalSpecs-OnePagersforNew%2FEnhancedFunctionalityinSailFinv2.1"></a>One Pagers for New / Enhanced Functionality in SailFin v2.1</h2> <h4><a name="SFv2.1FunctionalSpecs-OnePagers"></a>One Pagers</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Document </th> 
+         <th class="confluenceTh"> Authors</th> 
+         <th class="confluenceTh"> Status </th> 
+         <th class="confluenceTh"> Reviewer(s)</th> 
+         <th class="confluenceTh"> Slides/Links </th> 
+         <th class="confluenceTh"> Testing owner</th> 
+         <th class="confluenceTh"> Test Spec </th> 
+         <th class="confluenceTh"> Doc. Owner</th> 
+         <th class="confluenceTh"> Arch Review </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Delegated Admin </td> 
+         <td class="confluenceTd"> Yamini </td> 
+         <td class="confluenceTd"> In-Progress </td> 
+         <td class="confluenceTd"> Sreeram/Prasad </td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd"> Jagadesh </td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd"> Mike </td> 
+         <td class="confluenceTd"> - </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://wiki.glassfish.java.net/attach/SFv2.1FunctionalSpecs/sf-v2.1-health-check.html">AS Health Check </a> </td> 
+         <td class="confluenceTd"> Ramesh Parthasarathy </td> 
+         <td class="confluenceTd"> In-Progress </td> 
+         <td class="confluenceTd"> Sreeram/Prasad </td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd"> Jagadesh </td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd"> Mike </td> 
+         <td class="confluenceTd"> - </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>------</p> <h4><a name="SFv2.1FunctionalSpecs-GuidelinesforAuthors"></a>Guidelines for Authors</h2> 
+     <ul> 
+      <li>The one pager is meant for consumption by ARCs, Docs, QE/QA, SEs and other developers who may need to understand the high level workings and interfaces. Please use the standard templates given below 
+       <ul> 
+        <li><a href="SFOnePagerTemplate.html" title="SFOnePagerTemplate">Wiki </a> or <a href="http://wiki.glassfish.java.net/attach/SFv2FunctionalSpecs/sf-v2-one-pager-template.html">HTML</a></li> 
+       </ul> </li> 
+      <li>The one pager is not a substitute for design document. Please keep one pagers reasonably brief.</li> 
+      <li>When the initial draft of a document is ready, please link it to the table above and change the state to <em>Draft</em></li> 
+      <li>When the document is ready for review: 
+       <ul> 
+        <li>Please contact designated reviewers and request for feedback.</li> 
+        <li>Please solicit community feedback/comments about the new feature by providing a link to the relevant one pager and a link to this wiki page. Please send a mail to dev@sailfin.java.net and tas-dev-ext@sun.com separately.</li> 
+        <li>The subject of the thread should say something about the new feature.</li> 
+        <li>Ask for feedback on the new feature in the body and include the link to the relevant one pager in it. Please also include a link to this wiki page.</li> 
+        <li>Indicate in the initial (email ) thread that the review period is 1 week. Comments received after that will not be considered for this release.</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li>At the end of this period: 
+       <ul> 
+        <li>Incorporate any feedback that is useful and relevant for this release into the one pager and update it on this page.</li> 
+        <li>Change the status to <em>Review Completed</em></li> 
+       </ul> </li> 
+     </ul> <h4><a name="SFv2.1FunctionalSpecs-GuidelinesforReviewers"></a>Guidelines for Reviewers</h2> 
+     <ul> 
+      <li>Please use the format from <a href="SFv2ReviewTemplate.html" title="SFv2ReviewTemplate">review template</a> to provide feedback.</li> 
+      <li>Please update this page and add a link to your reviews in the Review column.</li> 
+      <li>Notify the author(s) that the review comments are available.</li> 
+     </ul> <h4><a name="SFv2.1FunctionalSpecs-ReviewProcess"></a>Review Process</h2> 
+     <ul> 
+      <li>The author of the one pager for the feature will post the one pager on this wiki and start a new thread soliciting feedback/comments on the new feature.</li> 
+      <li>All documents posted will allow a minimum of 1 week for the community to provide feedback.</li> 
+      <li>During this period, author is expected to respond to feedback/comments posted by others .</li> 
+      <li>At the end of this period the author will update the one pager with all relevant feedback/comments received during this period.</li> 
+      <li>Any feedback/comments received after this period will not be considered for this release.</li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Dec 02, 2011 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

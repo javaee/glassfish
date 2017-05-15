@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : WebTier3.2JSF</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>This page is the management dashboard that covers JSF development for delivery in GlassFish 3.2. &nbsp;It covers both the specification work for JSR-344 JSF 2.2, and the accompanying source code in Mojarra trunk, which will serve as the RI.</p> 
+     <div> 
+      <ul> 
+       <li><a href="#WebTier3.2JSF-JSR344JSF2.2SpecificationWork">JSR-344 JSF 2.2 Specification Work</a></li> 
+       <ul> 
+        <li><a href="#WebTier3.2JSF-MetadataforthisWork">Metadata for this Work</a></li> 
+        <li><a href="#WebTier3.2JSF-TasksforthisWork"> <b>Tasks for this Work</b></a></li> 
+        <ul> 
+         <ul> 
+          <li>60% of the tasks completed</li> 
+         </ul> 
+         <li><a href="#WebTier3.2JSF-IssueBuckets">Issue Buckets</a></li> 
+        </ul> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="WebTier3.2JSF-JSR344JSF2.2SpecificationWork"></a>JSR-344 JSF 2.2 Specification Work</h1> <p>The JSF 2.2 specification was filed along with EE 7 specs, but it is slated for completion along with GlassFish 3.2, currently planned by end of CY2011. &nbsp;It's main goals are: Ease of Development, Portlet Integration, New Features, and Fixes. &nbsp;An unstated, and secondary goal, is to refactor JSF apis for use in other specs, most notably JSR-339 JAX-RS, JSR-303 Bean Validation, and any potential State Management standard.</p> <h4><a name="WebTier3.2JSF-MetadataforthisWork"></a>Metadata for this Work</h2> 
+     <ul> 
+      <li><a href="http://jcp.org/en/jsr/proposalDetails-344">JSR-344 proposal</a></li> 
+      <li><a href="http://jsf-spec.java.net/">Main home page for this work (publically viewable)</a></li> 
+      <li><a href="http://java.net/jira/secure/IssueNavigator.jspa?mode=hide&amp;requestId=10268">Issue tracker of record (publically view and writable)</a></li> 
+      <li>Source code repositories 
+       <ul> 
+        <li><a href="https://svn.java.net/svn/javaserverfaces-spec-eg~svn/trunk/spec/frame">SVN Repository for Frame Maker source files (private to javaserverfaces-spec-eg-project)</a></li> 
+        <li>The jsf-api directory within the Mojarra SVN repository (see below)</li> 
+       </ul> </li> 
+     </ul> <h4><a name="WebTier3.2JSF-TasksforthisWork"></a><b>Tasks for this Work</b></h2> 
+     <div style="background-color: #f9f9f9; border: 1px solid #c0c0c0; width: 40em;"> 
+      <h4> </h2> 
+      <h6>60% of the tasks completed</h6> 
+      <table border="0" style="border-collapse: collapse; width: 100%;"> 
+       <tbody> 
+        <tr> 
+         <td style="border-top: 1px solid #cbcbcb; width: 10%;"><input type="checkbox" disabled></td> 
+         <td style="border-top: 1px solid #cbcbcb; width: 70%">Form Expert Group</td> 
+         <td style="border-top: 1px solid #cbcbcb; width: 20%; text-align: right;"> Medium </td> 
+        </tr> 
+        <tr> 
+         <td style="border-top: 1px solid #cbcbcb; width: 10%;"><input type="checkbox" checked disabled></td> 
+         <td style="border-top: 1px solid #cbcbcb; width: 70%">Identify project planning tool - JIRA</td> 
+         <td style="border-top: 1px solid #cbcbcb; width: 20%; text-align: right;"> Medium </td> 
+        </tr> 
+        <tr> 
+         <td style="border-top: 1px solid #cbcbcb; width: 10%;"><input type="checkbox" disabled></td> 
+         <td style="border-top: 1px solid #cbcbcb; width: 70%">Organize Issues</td> 
+         <td style="border-top: 1px solid #cbcbcb; width: 20%; text-align: right;"> Medium </td> 
+        </tr> 
+        <tr> 
+         <td style="border-top: 1px solid #cbcbcb; width: 10%;"><input type="checkbox" checked disabled></td> 
+         <td style="border-top: 1px solid #cbcbcb; width: 70%">--Identify issue buckets</td> 
+         <td style="border-top: 1px solid #cbcbcb; width: 20%; text-align: right;"> Medium </td> 
+        </tr> 
+        <tr> 
+         <td style="border-top: 1px solid #cbcbcb; width: 10%;"><input type="checkbox" checked disabled></td> 
+         <td style="border-top: 1px solid #cbcbcb; width: 70%">Revise public homepage for 2.2 effort</td> 
+         <td style="border-top: 1px solid #cbcbcb; width: 20%; text-align: right;"> Medium </td> 
+        </tr> 
+       </tbody> 
+      </table> 
+     </div> <p><b>Issue Organization</b></p> <p>A key task of the specification work is organizing the issues so the work can be scheduled to be completed over time. &nbsp;The approach we have been using over the past few iterations of the spec is to define issue buckets and assign issue captains to each bucket from the EG.</p> <h4><a name="WebTier3.2JSF-IssueBuckets"></a>Issue Buckets</h3> 
+     <ul> 
+      <li>Grouped by circumstance 
+       <ul> 
+        <li>Previously marked WONTFIX</li> 
+        <li>Dropped on the floor by previous iterations of the spec</li> 
+       </ul> </li> 
+      <li>Grouped by customer</li> 
+      <li>Grouped by sub-component as listed in issuetracker</li> 
+      <li>Grouped by JSR bucket: Ease of Development, Portlet Integration, New Features, Fixes</li> 
+     </ul> <p><b>Mojarra 2.2 Implementation Work</b></p> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Apr 06, 2011 by 
+<font color="#0050B2">edburns00</font>. Exported from wikis.oracle.com on May 27, 2015 20:48.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

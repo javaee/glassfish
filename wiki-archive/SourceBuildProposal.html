@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : SourceBuildProposal</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="SourceBuildProposal-GFv3SourceIntegration"></a>GFv3 Source Integration</h1> <h4><a name="SourceBuildProposal-Objective"></a>Objective</h2> <p>The objective of the source integration is to gather all the dependencies and to be able to build GlassFish v3 from scratch.</p> <h4><a name="SourceBuildProposal-Limitations"></a>Limitations</h2> <p>The source integration will only include dependencies that are used to build and run GFv3. And this includes source from both internal java.net projects as well as third-party external projects.</p> <h4><a name="SourceBuildProposal-Proposal"></a>Proposal</h2> <h4><a name="SourceBuildProposal-Requirements"></a>Requirements</h3> <p>Tools that are used to checkout and build GFv3 and external sources should be installed on the system that is building the source integration. Since GFv3 uses Maven version 2.0.9, JDK 1.6 and SVN, these tools must be installed and set in the path. The same local maven repository is used for all GFv3 and external artifacts.</p> <h4><a name="SourceBuildProposal-ExternalDependencies"></a>External Dependencies</h3> 
+     <ul> 
+      <li>Third-Party Dependencies 
+       <ul> 
+        <li>Port third-party sources to the GlassFish svn repository:</li> 
+       </ul> </li> 
+     </ul> <p> <a href="https://svn.java.net/svn/glassfish~svn/trunk/external/modules">https://svn.java.net/svn/glassfish~svn/trunk/external/modules</a><br> See <a href="./CompleteInstructionsOnCommittingThirdPartySource">complete instructions on committing third-party source</a>.<br> Only port the external sources that are not in a Sun controlled SCM repository (e.g. java.net, kenai).</p> 
+     <ul> 
+      <li>External dependencies in GFv3 workspace should be non-Snapshot versions and the source to check out is from a tagged workspace.</li> 
+     </ul> <h4><a name="SourceBuildProposal-BootstrapAntScripts"></a>Bootstrap Ant Scripts</h3> <p>The bootstrap ant build scripts check-out and build the external module and it's dependencies. It also publish the module's artifacts to the local maven repository. The build script is for each module and it is named <tt><em>module-name</em></tt><tt>.xml</tt>. The default location for the source to check-out is <tt>base.dir/external</tt>. A build.properties file defines the scm location of the external modules. A top level build.xml script invokes each module's build script in the order of it's dependencies. The local maven repository defaults to $</p> 
+     <div class="error">
+      <span class="error">Unknown macro: {user.home}</span> 
+     </div> <p>/.m2/repository, but can be altered with the environment variable, <tt>maven.repo.local</tt>. When all the external modules are built, then proceed with building GFv3 using the same local maven repository.<br> The build scripts are located in <a href="https://svn.java.net/svn/glassfish~svn/trunk/external/source-build/">https://svn.java.net/svn/glassfish~svn/trunk/external/source-build/</a>. The module owners are responsible for the module build scripts and keeping the version and scm location up-to-date in the build.properties file.</p> 
+     <ul> 
+      <li>Examples: 
+       <ul> 
+        <li>External Module with no dependencies</li> 
+       </ul> </li> 
+     </ul> <p>In <a href="https://svn.java.net/svn/glassfish~svn/trunk/external/source-build/">https://svn.java.net/svn/glassfish~svn/trunk/external/source-build/</a>, there are build scripts for hk2, jsp, uel, grizzly and others. Respectively, the scripts are named as: hk2.xml, jsp.xml, uel.xml, grizzly.xml.<br> In the script for jsp module, <a href="https://svn.java.net/svn/glassfish~svn/trunk/external/source-build/jsp.xml">https://svn.java.net/svn/glassfish~svn/trunk/external/source-build/jsp.xml</a>, there are two goals: <tt>jsp.checkout</tt> and <tt>jsp.build</tt>. The goal, <tt>jsp.build</tt> checks out, build and publish the jps artifact to the maven local repository. This is the goal that the top level build.xml invokes. Please take a look at: <a href="https://svn.java.net/svn/glassfish~svn/trunk/external/source-build/build.xml">https://svn.java.net/svn/glassfish~svn/trunk/external/source-build/build.xml</a>. The build.properties file contain scm location of all the external modules: <a href="https://svn.java.net/svn/glassfish~svn/trunk/external/source-build/build.properties">https://svn.java.net/svn/glassfish~svn/trunk/external/source-build/build.properties</a>. This properties file must be updated if new revision of the external module is added to the GFv3 workspace.</p> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li>External Module with dependencies</li> 
+       </ul> </li> 
+     </ul> <p>In the weld module, there is a slf4j dependency. The sources for slfrj are committed to the internal glassfish-svn. Ant targets are created to check-out and build the dependency and lastly publish the artifact to the the local maven repository. The dependency must be built before building weld artifacts. Please see: <a href="https://svn.java.net/svn/glassfish~svn/trunk/external/source-build/weld.xml">https://svn.java.net/svn/glassfish~svn/trunk/external/source-build/weld.xml</a>.</p> <h4><a name="SourceBuildProposal-FileLayout"></a>File Layout</h3> <p><tt>* external/</tt><br> <tt>*** hk2/</tt><br> <tt>*** corba/</tt><br> <tt>*** grizzly/</tt><br> <tt>*** wsit/</tt><br> <tt>*** asm/</tt><br> <tt>*** bean-validator/</tt><br> <tt>*** weld/</tt><br> {{*** ... }}<br> <tt>* build.xml</tt><br> <tt>* build.properties</tt><br> <tt>* hk2.xml</tt><br> <tt>* corba.xml</tt><br> <tt>* grizzly.xml</tt><br> <tt>* wsit.xml</tt><br> <tt>* asm.xml</tt><br> <tt>* bean-validator.xml</tt><br> <tt>* weld.xml</tt><br> <tt>* ,,,</tt></p> <h4><a name="SourceBuildProposal-FlowChart"></a>Flow Chart</h3> <p><span class="error">Cannot resolve external resource into attachment.</span></p> <h4><a name="SourceBuildProposal-BuildingExternalSourceandGFv3"></a>Building External Source and GFv3</h3> <p>A Hudson job will be created to execute the top level build.xml file. The artifacts from building the external module are published to a local maven repository. The same local maven repository is used to build GFv3.</p> <h4><a name="SourceBuildProposal-Status"></a>Status</h2> <p>List of v3 external modules is <a href="ExternalDependencies.html" title="ExternalDependencies">here</a>.<br> Remaining <a href="SourceBuildRemainingTasks.html" title="SourceBuildRemainingTasks">Tasks </a>.<br> <a href="SourceBuidPhases.html" title="SourceBuidPhases">Phases </a>.</p> <h4><a name="SourceBuildProposal-StepsforRE%3A"></a>Steps for RE:</h2> 
+     <ol> 
+      <li>svn checkout <a href="https://svn.java.net/svn/glassfish~svn/trunk/external/source-build">https://svn.java.net/svn/glassfish~svn/trunk/external/source-build</a></li> 
+      <li>svn checkout <a href="https://svn.java.net/svn/glassfish~svn/trunk/v3">https://svn.java.net/svn/glassfish~svn/trunk/v3</a></li> 
+      <li>ant -Dmaven.repo.local=&lt;local-maven-repo&gt;</li> 
+      <li>cd v3</li> 
+      <li>mvn -Dmaven.repo.local=&lt;local-maven-repo&gt; -Prelease-phase1 clean install</li> 
+      <li>mvn -Dmaven.repo.local=&lt;local-maven.repo&gt; clean install</li> 
+     </ol> <p>Note that &lt;local-maven-repo&gt; must reference the same local maven repository.<br> Also see instructions on building v3 <a href="FullBuildInstructions.html" title="FullBuildInstructions">here</a>.</p> <h4><a name="SourceBuildProposal-FAQ"></a>FAQ</h3> <p><tt>Q:</tt> My external module has dependencies on 10 other external source, do I need to port all the source to the internal glassfish SVN repo?<br> <tt>A:</tt> If the external source is not in a Sun controlled SCM repository, then yes, you'll need to port all the 10 dependencies and be able to build and publish it to the local maven repository.<br> <tt>Q:</tt> I could not find the SCM repository for the external module source. The source is a zip file from sourceforge.org. Do I still need to port it to glassfish internal svn?<br> <tt>A:</tt> It's preferably that the source is coming from a tagged SCM repository. It's possible that the source is no longer in any open source SCM repository. In that case, we will have to port the source from the zip to GlassFish repo. Please document where the source is coming from in a README file when committing the source in SCM.<br> <tt>Q:</tt> The external source do not use Maven 2.0 to build. How do I publish the artifact to the local maven repository?<br> <tt>A:</tt> You can use "mvn install-file...". Please see example in weld.xml <a href="https://svn.java.net/svn/glassfish~svn/trunk/external/source-build/weld.xml">https://svn.java.net/svn/glassfish~svn/trunk/external/source-build/weld.xml</a><br> <tt>Q:</tt> The external source requires an older version of JDK to compile. How do I build from ant if rest of the external module is using JDK 1.6?<br> <tt>A:</tt> You can use ant's exec task and specify the JAVA_HOME environment. You'll also need to specify the location of JDK in build.properties file. Please inform RE and Build Engg with the JDK requirement so the the machine that is setup to build source will have the version of JDK installed.<br> <tt>Q:</tt> The external source is in native C/C++. Do I need to build it on all the platforms supported by GFv3?<br> <tt>A:</tt> If possible, please avoid using native code. But if native code is a must, then you'll need provide the instructions to build the native code in all the platforms supported by GFv3. Please document the build instructions clearly and identify the tools required to build the native code.<br> <tt>Q:</tt> The external source uses Maven 1.0. How do I build and publish to a Maven 2.0 repository?<br> <tt>A:</tt> You can use Maven One Convert plugin <a href="http://maven.apache.org/plugins/maven-one-plugin/convert-mojo.html">http://maven.apache.org/plugins/maven-one-plugin/convert-mojo.html</a> to convert Maven 1.0 project.xml to Maven 2.0 pom.xml. Please see example of this in weld.xml <a href="https://svn.java.net/svn/glassfish~svn/trunk/external/source-build/weld.xml">https://svn.java.net/svn/glassfish~svn/trunk/external/source-build/weld.xml</a></p> <h4><a name="SourceBuildProposal-KnownIssues"></a>Known Issues</h3> 
+     <ul> 
+      <li>Circular dependencies:</li> 
+     </ul> <p>If the external module (A) depends on a GFv3 module (B) and another GFv3 module (C) depends on (A). How do we determine the build order?</p> <p><b>For any further questions, please contact:</b> <tt><b>jane.young@sun.com</b></tt></p> 
+     <hr> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875158/21364960.jpg">SourceIntegrationFlowChart.jpg</a> (image/pjpeg) 
+      <br> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Mar 19, 2012 by 
+<font color="#0050B2">14718</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

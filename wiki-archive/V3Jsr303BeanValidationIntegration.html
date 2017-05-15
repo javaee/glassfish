@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : V3Jsr303BeanValidationIntegration</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>&lt;!-- NOTE: The &lt; &gt; delimiters around urls are intentional. I don't want them to be clickable, I want them to stand out, but be included literally, in the text --&gt;</p> <h4><a name="V3Jsr303BeanValidationIntegration-WhoisResponsibleforIntegratingJSR303intoGlassfish%3F"></a>Who is Responsible for Integrating JSR-303 into Glassfish?</h1> <p>Oracle employee Jane Young</p> <h4><a name="V3Jsr303BeanValidationIntegration-MostRecentlyIntegratedVersionofJSR303Implementation"></a>Most Recently Integrated Version of JSR-303 Implementation</h1> <p>The binary manifestation of JSR-303 for Glassfish V3 is a single OSGi module jar, the maven repository information for which is listed below.</p> <p>As of 20111117, Glassfish svn trunk has 1.0.0.GA of the JSR-303 API, which corresponds to 4_2_0_Final of the JSR-303 RI. The corresponding svn urls follow.</p> 
+     <ul> 
+      <li>JSR-303 API &lt;&nbsp;<a href="http://anonsvn.jboss.org/repos/hibernate/beanvalidation/api/tags/v1_0_0_GA">http://anonsvn.jboss.org/repos/hibernate/beanvalidation/api/tags/v1_0_0_GA</a> &gt;</li> 
+      <li>JSR-303 RI &lt;&nbsp;<a href="http://anonsvn.jboss.org/repos/hibernate/validator/tags/v4_1_0_Final">http://anonsvn.jboss.org/repos/hibernate/validator/tags/v4_1_0_Final</a> &gt;</li> 
+     </ul> <h4><a name="V3Jsr303BeanValidationIntegration-MavenArtifactInformation"></a>Maven Artifact Information</h3> <p>Bean Validator artifact consists of Validation API (JSR 303), Hibernate Validator and it's dependencies repackaged as OSGi bundle. The artifact is assembled in the <a href="https://hk2.java.net/svn/hk2/trunk/hk2/external/bean-validator">HK2 workspace</a> and promoted along with HK2 release. The artifact is published to the <a href="http://download.java.net/maven/glassfish/org/glassfish/hk2/external/bean-validator/">GlassFish Maven repository</a>. The Maven GAV is as:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;dependency&gt;
+  &lt;groupId&gt;org.glassfish.hk2.external&lt;/groupId&gt;
+  &lt;artifactId&gt;bean-validator&lt;/artifactId&gt;
+  &lt;version&gt; ... &lt;/version&gt;
+  &lt;scope&gt;provided&lt;/scope&gt;
+&lt;/dependency&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>The corresponding binary artifacts from JBoss, the source code for which we use to build the preceding artifact follow. First is the API, second the RI, third the TCK, which we do not use at all for GlassFish integration.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;dependency&gt;
+  &lt;groupId&gt;javax.validation&lt;groupId&gt;
+  &lt;artifactId&gt;validation-api&lt;/artifactId&gt;
+  &lt;version&gt;1.0.0.GA&lt;/version&gt;
+&lt;/dependency&gt;
+
+&lt;dependency&gt;
+  &lt;groupId&gt;org.hibernate&lt;groupId&gt;
+  &lt;artifactId&gt;hibernate-validator&lt;/artifactId&gt;
+  &lt;version&gt;4.2.0.Final&lt;/version&gt;
+&lt;/dependency&gt;
+
+&lt;dependency&gt;
+  &lt;groupId&gt;org.hibernate.jsr303.tck&lt;groupId&gt;
+  &lt;artifactId&gt;jsr303-tck&lt;/artifactId&gt;
+  &lt;version&gt;1.0.6.GA&lt;/version&gt;
+&lt;/dependency&gt;</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="V3Jsr303BeanValidationIntegration-IntegrationProcess"></a>Integration Process</h1> <p>There is a multi stage integration process. Stage 1 loosely consists of the following steps.</p> 
+     <ul> 
+      <li>take the svn tag from JBoss and export the sources to the <a href="https://svn.java.net/svn/glassfish~svn/trunk/external/source-build">GlassFish external source repository</a>. <br class="atl-forced-newline"> NOTE: export hibernate-validator to the <a href="https://glassfish-svn.java.net/svn/glassfish-svn/trunk/external/modules/bean-validator/hibernate-validator">perspective subdirectory</a> and likewise for validation-api.</li> 
+      <li>the instruction to export third party sources is <a href="./CompleteInstructionsOnCommittingThirdPartySource.html">here</a>.</li> 
+      <li>checkout third-party build scripts: <a href="https://svn.java.net/svn/glassfish~svn/trunk/external/source-build">https://svn.java.net/svn/glassfish~svn/trunk/external/source-build</a></li> 
+      <li>update build script <a href="https://svn.java.net/svn/glassfish~svn/trunk/external/source-build/bean-validator.xml">bean-validator.xml</a> and <a href="https://svn.java.net/svn/glassfish~svn/trunk/external/source-build/build.properties">build.properties</a>.</li> 
+      <li>execute build script: 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">ant -f bean-validator.xml</pre> 
+         </div> 
+        </div>
+       </div> and verify that artifacts are built successfully and installed on local Maven repository.</li> 
+      <li>promote artifacts to GlasFish Maven repository. Please contact <a href="mailto:jane.young@oracle.com">Jane Young </a> for this step.</li> 
+      <li>Wait for the jars to appear before doing the next stage</li> 
+     </ul> <p>Stage 2 loosely consists of the following steps</p> 
+     <ul> 
+      <li>checkout hk2 HEAD from &lt;<a href="https://hk2.java.net/svn/hk2/trunk&amp;gt">https://hk2.java.net/svn/hk2/trunk&amp;gt</a>;</li> 
+      <li>edit hk2/external/bean-validator/pom.xml to make the bean-validator dependencies point to the versions just pushed to the repo in the previous stage</li> 
+      <li>cd hk2 and do mvn clean install</li> 
+      <li>Manually follow the integration steps, this time with the new bean-validator.jar in the glassfish modules directory, to make sure everything still works.</li> 
+      <li>Visit the internal RE Hudson job at &lt;<a href="http://gf-hudson.sfbay.sun.com/hudson/job/promote-hk2/&amp;gt">http://gf-hudson.sfbay.sun.com/hudson/job/promote-hk2/&amp;gt</a>; and cause a promotion of hk2 to happen. This ends up running a shell script &lt;hk2/release.sh&gt; <b>on the hudson build machine</b>, that does a bunch of stuff. Executing the job automatically increments the hk2 version number from what it was the last time. Also, wait for the jars to appears in the maven repo at &lt;<a href="http://maven.glassfish.org/content/groups/glassfish&amp;gt">http://maven.glassfish.org/content/groups/glassfish&amp;gt</a>; and have the expected version number.</li> 
+     </ul> <p>Stage 3 loosely consists of the following steps</p> 
+     <ul> 
+      <li>check out and build glassfish v3 HEAD from &lt;<a href="https://svn.java.net/glassfish-svn/trunk/v3&amp;gt">https://svn.java.net/glassfish-svn/trunk/v3&amp;gt</a>;.</li> 
+      <li>edit the top level pom.xml and increment the version number in &lt;hk2.version&gt; and &lt;hk2.plugin.version&gt; to match the published hk2 version in the previous stage.</li> 
+      <li>mvn clean</li> 
+      <li>move aside your local maven repository so the glassfish build must pull all of its dependencies from the network.</li> 
+      <li>mvn install</li> 
+      <li>If the build is successful, check it in and send mail to dev@glassfish.java.net saying the upgrade has been performed.</li> 
+     </ul> <h4><a name="V3Jsr303BeanValidationIntegration-IntegrationTesting"></a>Integration Testing</h1> <p>Integration testing is currently a manual process and involves manually running the Quicklook tests, with SecurityManager enabled and without the SecurityManager enabled, as well as manually running the JSF 2.0 bean validator whose source code is at &lt;<a href="https://mojarra.java.net/svn/mojarra/trunk/jsf-demo/bean-validator">https://mojarra.java.net/svn/mojarra/trunk/jsf-demo/bean-validator</a>;&gt;.</p> <p>Work is progressing on a more robust integration testing solution. First step is to discover exactly how Bean Validation is used in the Glassfish codebase. This find command will show all usages:find . -name .svn -prune -o -name "*.java" -exec grep javax.validation {} \; -print</p> <h4><a name="V3Jsr303BeanValidationIntegration-QuicklookTesting"></a>Quicklook Testing</h1> <p>The Quicklook coverege of Bean Validator consists of the following</p> 
+     <ul> 
+      <li>A Simple Servlet that uses Bean Validation directly. Source code at &lt;<a href="https://svn.java.net/svn/glassfish-svn/trunk/v3/tests/quicklook/bean-validator/simple-bv-servlet&amp;gt">https://svn.java.net/svn/glassfish-svn/trunk/v3/tests/quicklook/bean-validator/simple-bv-servlet&amp;gt</a>;</li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jun 05, 2012 by 
+<font color="#0050B2">11415</font>. Exported from wikis.oracle.com on May 27, 2015 20:48.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

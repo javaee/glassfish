@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFishV3ErrorMessageReferenceACC</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p><a href="GlassFishV3ErrorMessageReference.html" title="GlassFishV3ErrorMessageReference">GlassFish v3 Error Message Reference</a><br> \</p> <h4><a name="GlassFishV3ErrorMessageReferenceACC-ACC"></a>ACC</h1> <p>This page lists error messages with the <b>ACC</b> prefix. </p> <p>See <a href="GlassFishV3ErrorMessageReference.html#GlassFishV3ErrorMessageReference-HowToContribute">How to Contribute</a> for more information about adding to and enhancing the information on this page. </p> <p>----<tt>ACC001 Using the only client {1} with main class {2} in {0} even though it does not match the specified main class name {3} or client name {4</tt>}</p> <h4><a name="GlassFishV3ErrorMessageReferenceACC-Cause"></a>Cause</h3> <p>The command line specified a main class or a client name different from the main class and name of the only client found.</p> <h4><a name="GlassFishV3ErrorMessageReferenceACC-Solution"></a>Solution</h3> <p>The error message lists the main classes and client names for the clients in the JAR. Make sure the command line specifies one of those.</p> <p>----<tt>ACC002 The application contains multiple app clients; please choose one using -mainclass {0} or -name {1</tt>}</p> <h4><a name="GlassFishV3ErrorMessageReferenceACC-Cause"></a>Cause</h3> <p>The command line did not specify a main class or a client name to run, and the JAR contains more than one client.</p> <h4><a name="GlassFishV3ErrorMessageReferenceACC-Solution"></a>Solution</h3> <p>Specify either -mainclass your-main-class-name or -name your-client-name on the appclient command.</p> <p>----<tt>ACC003 No app client in the app client group {0} matches the main class name "{1}" or the app client name "{2}";\nPlease choose one using -mainclass {3} or -name {4</tt>}</p> <h4><a name="GlassFishV3ErrorMessageReferenceACC-Cause"></a>Cause</h3> <p>The JAR file contains multiple app clients and none matches the -mainclass value or the -name value that was specified on the appclient command.</p> <h4><a name="GlassFishV3ErrorMessageReferenceACC-Solution"></a>Solution</h3> <p>Review the list of main classes and names in the original error message and make sure the appclient command specifies a main class or a name listed.</p> <p>----<tt>ACC004 No app clients are listed in the app client group {0</tt>}</p> <h4><a name="GlassFishV3ErrorMessageReferenceACC-Cause"></a>Cause</h3> <p>The deployment which generated the downloaded JAR file might have failed partially.</p> <h4><a name="GlassFishV3ErrorMessageReferenceACC-Solution"></a>Solution</h3> <p>Check the server.log file on the server for any deployment errors.</p> <p>----<tt>ACC005 The main method is either not public or not static</tt></p> <h4><a name="GlassFishV3ErrorMessageReferenceACC-Cause"></a>Cause</h3> <p>The main method for the app client is not declared as "public."</p> <h4><a name="GlassFishV3ErrorMessageReferenceACC-Cause"></a>Cause</h3> <p>The main method for the app client is not declared as "static."</p> <h4><a name="GlassFishV3ErrorMessageReferenceACC-Solution"></a>Solution</h3> <p>Declare the main method as "public."</p> <h4><a name="GlassFishV3ErrorMessageReferenceACC-Solution"></a>Solution</h3> <p>Declare the main method as "static."</p> <p>----<tt>ACC006 The main method's return type is not void</tt></p> <h4><a name="GlassFishV3ErrorMessageReferenceACC-Cause"></a>Cause</h3> <p>The main method does not have a return type of "void."</p> <h4><a name="GlassFishV3ErrorMessageReferenceACC-Solution"></a>Solution</h3> <p>Declare the main method so its return type is "void."</p> <p>----{{ACC007 The app client </p> 
+     <div class="error">
+      <span class="error">Unknown macro: {0,choice,0#file|1#directory}</span> 
+     </div> <p> {1} does not contain a manifest; the app client container cannot process it.}}</p> <h4><a name="GlassFishV3ErrorMessageReferenceACC-Cause"></a>Cause</h3> <p>The file might not be a valid app client JAR or undeployed EAR. It might be another kind of file or have become corrupted.</p> <h4><a name="GlassFishV3ErrorMessageReferenceACC-Solution"></a>Solution</h3> <p>Make sure to specify a valid app client JAR file or an EAR which contains at least one app client.</p> <p>----<tt>ACC008 The manifest in the app client facade {0} does not contain the expected entry for {1} or it is invalid; the app client container cannot process it.</tt></p> <h4><a name="GlassFishV3ErrorMessageReferenceACC-Cause"></a>Cause</h3> <p>The app client facade JAR file might have generated incorrectly.</p> <h4><a name="GlassFishV3ErrorMessageReferenceACC-Cause"></a>Cause</h3> <p>The app client facade JAR file might have become corrupted.</p> <h4><a name="GlassFishV3ErrorMessageReferenceACC-Solution"></a>Solution</h3> <p>Check the server's server.log file for any errors during deployment of the application.</p> <h4><a name="GlassFishV3ErrorMessageReferenceACC-Solution"></a>Solution</h3> <p>Use the get-client-stubs command to retrieve the generated JAR files for the application again.</p> <p>----<tt>ACC009 \nThe credentials you provided (username and password) were not valid or do not\nallow access to the application. Please try again with a valid username and \npassword. If you are certain the username and password are correct please\ncontact your system administrator. The following information might be helpful:\n\n{0</tt>}</p> <h4><a name="GlassFishV3ErrorMessageReferenceACC-Cause"></a>Cause</h3> <p>The user supplied a username and password combination that are not valid.</p> <h4><a name="GlassFishV3ErrorMessageReferenceACC-Cause"></a>Cause</h3> <p>The user supplied a valid username and password but they are not authorized for access to the server-side resource requested.</p> <h4><a name="GlassFishV3ErrorMessageReferenceACC-Solution"></a>Solution</h3> <p>Make sure the username and password are correct.</p> <h4><a name="GlassFishV3ErrorMessageReferenceACC-Solution"></a>Solution</h3> <p>Make sure the username and password grant the desired access to the requested server-side resource.</p> <p>----<tt>ACC010 The user cancelled authentication.</tt></p> <h4><a name="GlassFishV3ErrorMessageReferenceACC-Cause"></a>Cause</h3> <p>TBD</p> <h4><a name="GlassFishV3ErrorMessageReferenceACC-Solution"></a>Solution</h3> <p>TBD</p> <p>----<tt>ACC011 The expected client file {0} is missing. The deployment of the application or retrieval of the app client might have failed.</tt></p> <h4><a name="GlassFishV3ErrorMessageReferenceACC-Cause"></a>Cause</h3> <p>The manifest of the generated facade JAR file refers to the specified app client JAR file but that file does not seem to exist.</p> <h4><a name="GlassFishV3ErrorMessageReferenceACC-Solution"></a>Solution</h3> <p>Make sure the deployment of the application succeeded and that the download of the app client files (using either "deploy --retrieve" or "get-client-stubs" succeeded.</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 02, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFish 3.2 Open Source Edition - Elasticity Module One Pager</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-ElasticityModuleOnePager"></a>Elasticity Module One Pager</h1> <p>(template version 1.92)</p> 
+     <div> 
+      <ul> 
+       <li><a href="#GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-ElasticityModuleOnePager">Elasticity Module One Pager</a></li> 
+       <li><a href="#GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-1.Introduction">1. Introduction</a></li> 
+       <ul> 
+        <li><a href="#GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-1.1.Project%2FComponentWorkingName%3A">1.1. Project/Component Working Name:</a></li> 
+        <li><a href="#GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-1.2.Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier%3A">1.2. Name(s) and e-mail address of Document Author(s)/Supplier:</a></li> 
+        <li><a href="#GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-1.3.DateofThisDocument%3A">1.3. Date of This Document:</a></li> 
+       </ul> 
+       <li><a href="#GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-2.ProjectSummary">2. Project Summary</a></li> 
+       <ul> 
+        <li><a href="#GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-2.1.ProjectDescription%3A">2.1. Project Description:</a></li> 
+        <li><a href="#GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-2.2.RisksandAssumptions%3A">2.2. Risks and Assumptions:</a></li> 
+       </ul> 
+       <li><a href="#GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-3.ProblemSummary">3. Problem Summary</a></li> 
+       <ul> 
+        <li><a href="#GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-3.1.ProblemArea%3A">3.1. Problem Area:</a></li> 
+        <li><a href="#GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-3.2.Justification%3A">3.2. Justification:</a></li> 
+       </ul> 
+       <li><a href="#GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-4.TechnicalDescription%3A">4. Technical Description:</a></li> 
+       <ul> 
+        <li><a href="#GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-4.1.Details%3A">4.1. Details:</a></li> 
+        <li><a href="#GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-4.1.1MetricsGatherer">4.1.1 Metrics Gatherer</a></li> 
+        <li><a href="#GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-4.1.2RuleEngine">4.1.2 Rule Engine</a></li> 
+        <li><a href="#GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-4.1.3ActionsEngine">4.1.3 Actions Engine</a></li> 
+        <ul> 
+         <li><a href="#GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-4.1.3.1startinstanceAction">4.1.3.1 start-instance Action</a></li> 
+        </ul> 
+        <li><a href="#GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-4.1.4Timebasedalerts">4.1.4 Time based alerts</a></li> 
+        <li><a href="#GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-4.1.5Elasticityinadhocclusters">4.1.5 Elasticity in ad-hoc clusters</a></li> 
+        <li><a href="#GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-4.2.Bug%2FRFENumber%28s%29%3A">4.2. Bug/RFE Number(s):</a></li> 
+        <li><a href="#GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-4.3.InScope%3A">4.3. In Scope:</a></li> 
+        <li><a href="#GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-4.4.OutofScope%3A">4.4. Out of Scope:</a></li> 
+        <li><a href="#GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-4.5.Interfaces%3A">4.5. Interfaces:</a></li> 
+        <ul> 
+         <li><a href="#GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-4.5.1PublicInterfaces">4.5.1 Public Interfaces</a></li> 
+         <li><a href="#GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-4.5.2PrivateInterfaces%28Workinprogress%29">4.5.2 Private Interfaces (Work in progress)</a></li> 
+         <li><a href="#GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-4.5.3Deprecated%2FRemovedInterfaces%3A">4.5.3 Deprecated/Removed Interfaces:</a></li> 
+        </ul> 
+        <li><a href="#GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-4.6.DocImpact%3A">4.6. Doc Impact:</a></li> 
+        <li><a href="#GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-4.7.Admin%2FConfigImpact%3A">4.7. Admin/Config Impact:</a></li> 
+        <li><a href="#GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-4.8.HAImpact%3A">4.8. HA Impact:</a></li> 
+        <li><a href="#GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-4.9.I18N%2FL10NImpact%3A">4.9. I18N/L10N Impact:</a></li> 
+        <li><a href="#GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-4.10.Packaging%2CDelivery%26Upgrade%3A">4.10. Packaging, Delivery &amp; Upgrade:</a></li> 
+        <ul> 
+         <li><a href="#GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-4.10.1.Packaging">4.10.1. Packaging</a></li> 
+         <li><a href="#GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-4.10.2.Delivery">4.10.2. Delivery</a></li> 
+         <li><a href="#GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-4.10.3.UpgradeandMigration%3A">4.10.3. Upgrade and Migration:</a></li> 
+        </ul> 
+        <li><a href="#GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-4.11.SecurityImpact%3A">4.11. Security Impact:</a></li> 
+        <li><a href="#GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-4.12.CompatibilityImpact">4.12. Compatibility Impact</a></li> 
+        <li><a href="#GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-4.13.Dependencies%3A">4.13. Dependencies:</a></li> 
+        <ul> 
+         <li><a href="#GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-4.13.1InternalDependencies">4.13.1 Internal Dependencies</a></li> 
+         <li><a href="#GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-4.13.2ExternalDependencies">4.13.2 External Dependencies</a></li> 
+        </ul> 
+        <li><a href="#GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-4.14.TestingImpact%3A">4.14. Testing Impact:</a></li> 
+       </ul> 
+       <li><a href="#GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-5.ReferenceDocuments%3A">5. Reference Documents:</a></li> 
+       <li><a href="#GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-6.Schedule%3A">6. Schedule:</a></li> 
+       <ul> 
+        <li><a href="#GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-6.1.ProjectedAvailability%3A">6.1. Projected Availability:</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-1.Introduction"></a>1. Introduction</h1> <h4><a name="GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-1.1.Project%2FComponentWorkingName%3A"></a>1.1. Project/Component Working Name:</h2> <p>Elasticity Module in GlassFish 3.2</p> <h4><a name="GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-1.2.Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier%3A"></a>1.2. Name(s) and e-mail address of Document Author(s)/Supplier:</h2> <p><a href="mailto:Mahesh.Kannan@Oracle.Com">Mahesh Kannan</a>,<br> <a href="mailto:santiago.pericasgeertsen@oracle.com">Santiago Pericassgeertsen</a>,<br> <a href="mailto:Carla.Mott.Oracle.Com">Carla Mott</a></p> <h4><a name="GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-1.3.DateofThisDocument%3A"></a>1.3. Date of This Document:</h2> <p>Apr-12-2011</p> <h4><a name="GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-2.ProjectSummary"></a>2. Project Summary</h1> <h4><a name="GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-2.1.ProjectDescription%3A"></a>2.1. Project Description:</h2> <p>A system is elastic if it can be easily resized to accommodate fluctuations in demand. Resizing in this context means growing or shrinking. A system provides auto-scaling if it can automatically resize based on fluctuations in demand.</p> <p>GlassFish 3.2 should offer both elasticity and auto-scaling of clusters.</p> <p>See below for a longer, more detailed technical description.</p> <h4><a name="GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-2.2.RisksandAssumptions%3A"></a>2.2. Risks and Assumptions:</h2> <p>It is assumed that there will be only one GlassFish instance running in each VM.</p> <p>The metrics gatherer will accumulate data for each GlassFish instance in memory. It is assumed that there are enough system resources. See CLUST-3 Scalable Clusters in PRD.</p> <p>The elasticity module will store metrics data for two hours for each GlassFish instance.</p> <p>The elasticity module does not persist the metric data so if DAS crashes, data collection and rule comparisons starts over.</p> <p>It is assumed that the metrics that are needed to perform auto-scaling can be gathered on all the virtualized environment on which GlassFish runs.</p> <p>The elasticity module will use the interface / abstraction provided by the IMS layer to gather metrics.</p> <p>The elasticity module will contact the GlassFish instances for JVM level metrics.</p> <p>It is assumed that the metrics needed by the elasticity module can be collected from IMS layer with no major / significant overhead.</p> <p>It is assumed that the metrics needed by the elasticity module can be collected from the GlassFish instances with no major / significant overhead.</p> <p>Calculating CPU usage on a multicore virtualized environment can be quite complicated. Incorrectly determining the CPU metric could make the entire cluster / pool of systems unstable.</p> <p>Orchestrator will start or stop the GlassFish instances and the elasticity module will be notified when the instances are ready or have been stopped.</p> <h4><a name="GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-3.ProblemSummary"></a>3. Problem Summary</h1> <h4><a name="GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-3.1.ProblemArea%3A"></a>3.1. Problem Area:</h2> <p>The elasticity module will allow GlassFish cluster to scale up / down dynamically depending on the value of some of the key system metrics like CPU, Memory and Response time.</p> <h4><a name="GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-3.2.Justification%3A"></a>3.2. Justification:</h2> <h4><a name="GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-4.TechnicalDescription%3A"></a>4. Technical Description:</h1> <h4><a name="GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-4.1.Details%3A"></a>4.1. Details:</h2> <p>Elasticity module in GlassFish 3.2 will rely on alerts to perform auto-scaling feature. An alert is used to monitor a specific metric and perform one or more actions when the metric value reaches a certain threshold. The actual metric to use, the function (like avg, min, max) to be applied to the metric and the threshold are configurable using asadmin commands or admin GUI. The metric function is applied to the metric data collected from each GlassFish instance so that each instance has a statistic value. Because a GlassFish cluster consists of multiple instances, the alert applies another function (called cluster-aggregator) to the individual statistic values. The result of aggregator function is then compared with the threshold using the comparison operator. If the result is true then the alert is in 'alarm' state. Else it is in 'ok' state.</p> <p>An alert can be configured to take one or more actions for each of the states it can be in.</p> <p>Alerts can be used to perform non auto-scaling operations such as sending an email or logging information about current state of the system.</p> <p>There are three sub-modules in elasticity: Metrics Gatherer, Rule Engine and Actions Engine.</p> <h4><a name="GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-4.1.1MetricsGatherer"></a>4.1.1 Metrics Gatherer</h2> <p>The Metrics Gatherer collects raw data from each of the instances (VM or GlassFish) in the cluster and stores those values for some period of time measured in hours. Raw data would be the actual value returned from IaaS Management Service (IMS) layer or the GlassFish instance. The rate at which the data is collected is not specified. Each data entry has a timestamp. There is one metrics gatherer for each type of metric (CPU, memory and response time). The Metrics Gatherer is a singleton and the data collected is used by all alert instances.</p> <p>There is also a set of statistics objects to manipulate the data. The statistics object will retrieve all the data for the time period specified by the sample-interval for each instance. Then for each instance it applies the transformation specified by the function option in the command. The possible functions that can be applied to the data are: average, minimum, maximum, geometric mean, harmonic mean, and summation. This is done each time the alert is run.</p> <h4><a name="GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-4.1.2RuleEngine"></a>4.1.2 Rule Engine</h2> <p> The Rule Engine runs the alerts at a rate that is specified by schedule option. The rule looks at the set of data (one value per instance) from the statistics objects. It then applies another transformation specified by the cluster aggregator function. To determine the state of the cluster, it then compares the value calculated to the threshold value using the comparison operator.</p> <h4><a name="GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-4.1.3ActionsEngine"></a>4.1.3 Actions Engine</h2> <p> An alert can be configured to execute zero or more actions for each state. Actions Engine looks up the action to be taken, if any, based on the state of the cluster and executes that action.</p> <p> There are two pre-defined actions in the system. They are start-instance and stop-instance.</p> <p> We have seen that the Rule Engine runs the alert at a rate specified by the schedule option. After the rule is run, the Action Engine executes the actions associated with that state (even if the state has not changed between the last time the rule was run).</p> <h4><a name="GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-4.1.3.1startinstanceAction"></a>4.1.3.1 start-instance Action</h3> <p> When start-instance action is called, the auto-scaling engine calls ElasticInstanceManager.startInstance() to start a GlassFish instance. The return value from that method is a Future object that can be used to determine when the operation completes.</p> <p> When the start-instance operation completes, the auto-scaling engine will notify the Metrics gatherer engine to start collecting metrics from the newly started instance.</p> <p> It is possible that two alerts (say) cpu1 and cpu2 execute and fire two 'start-instance' action. The start-instance action is responsible for interacting with ElasticInstanceManager (see below) to start an instance. When start-instance calls StartInstance.startInstance(), it marks the auto-scaling engine in a 'reconfigure' state and then calls ElasticInstanceManager.startInstance(). After an instance is started the engine enters the 'wramup' period. Any requests for start-instance will be ignored by the StartInstance during the reconfigure and warmup periods.</p> <p> When ElasticInstanceManager.startInstance() is called, elasticity engine will pass a set of GlassFish instance names. These are the instances that are in 'alarm' state. Orchestrator may use this data and may avoid starting another GlassFish instance in the same machine (in which these GlassFish instances are running).</p> <h4><a name="GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-4.1.4Timebasedalerts"></a>4.1.4 Time based alerts</h2> <p>Administrators can create time based alerts that can be used to perform actions at specific times (irrespective of system load). Time based alerts are associated with a time pattern that decides when they need o be executed. They are either in 'ok' state or in 'alarm' state. A time based alarm is in 'alarm' state when the current time matches the time pattern associated with it. Time based alerts can be configured to execute a set of actions on each of their states.</p> <p>We will reuse the create-schedule asadmin sub-command that allows definition of a specific date and time. The syntax is</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">asadmin create-schedule [--second s] [-- minute m] [--hour h] [--day-of-month [1,31]/Last] [--month 1-12/Jan-Dec] [--day-of-week [0,7]/Sun-Sat] [--year YYYY] schedule-name</pre> 
+       </div> 
+      </div>
+     </div> <p>Once a schedule is created, the create-time-based-alert command can be used to create a time base alert<br> (see Section 4.5 below for details on the commands).</p> <h4><a name="GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-4.1.5Elasticityinadhocclusters"></a>4.1.5 Elasticity in ad-hoc clusters</h2> <p>If ad-hoc cluster support is only for bean stalk, then elasticity module do not have to do anything. If ad-hoc cluster is supported for non bean stalk environment also, then the following requirements must be satisfied:<br> 1. domain.xml must be available on all instances.<br> 2. every instance must be able to run the IMS apis to collect VM level metrics<br> 3. Orchestrator service must be available on all instance (to stop / start instances)</p> <p>In an ad-hoc cluster, the Metrics gatherer, the Alert engine as well as the Action engine will all be run on the GMS (Group Management Service) elected group leader. Whenever GMS elects a new leader, the Metrics gatherer, Action engine and alert engines will be run on the newly elected leader. </p> <h4><a name="GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-4.2.Bug%2FRFENumber%28s%29%3A"></a>4.2. Bug/RFE Number(s):</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> RFE # </th> 
+         <th class="confluenceTh"> Priority </th> 
+         <th class="confluenceTh"> Summary </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 16432 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> This is the umbrella issue for the elasticity feature to be supported in GlassFish 3.2 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 16433 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Elasticity module must allow adminstrators to create time-based alerts. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 16434 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Elasticity module should allow creation of alerts based on CPU utilization. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 16435 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Elasticity module should allow creation of alerts based on memory usage. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 16436 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Elasticity module should allow creation of alerts based on application's response times. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-4.3.InScope%3A"></a>4.3. In Scope:</h2> <p>The tables below list the requirements that are within the scope of this module. Each requirement as an associated priority.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Feature # </th> 
+         <th class="confluenceTh"> Priority </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> EL-2.0.1 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> No programming skills shall be required from administrators to create new alarms </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> EL-2.0.2 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Administrators shall be able to create or delete alarm instances without a restart </td> 
+         <td class="confluenceTd"> Provide CLI or GUI to create alarm instances or specify actions without requiring a restart of any instance OR system OR VM </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> EL-2.0.3 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Administrators shall be allowed to create custom alarm instances </td> 
+         <td class="confluenceTd"> Setting threshold values, duration </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> EL-2.0.4 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Administrators shall be able to easily create alarm instances that execute periodically OR at specific time </td> 
+         <td class="confluenceTd"> Provide UI to specify the periodicity / specific time (similar to cron). See DAS backup and recovery module </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> EL-2.0.5 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Administrators shall be able to specify the minimum and maximum number of instances in an auto-scaling cluster </td> 
+         <td class="confluenceTd"> Need to react to a change in min and max cluster size dynamically </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> EL-2.0.6 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Auto-scaling must be supported for EE services </td> 
+         <td class="confluenceTd"> Only scaling GlassFish instances </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> EL-2.0.7 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Auto-scaling runtime performance shall not have a significant impact on performance </td> 
+         <td class="confluenceTd"> Exact benchmark and overhead accepted TBD </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> EL-2.0.8 </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> Auto-scaling module must function properly even if DAS is unavailable </td> 
+         <td class="confluenceTd"> It is not clear if we are moving towards ad-hoc cluster. Depending on the decision about ad-hoc cluster we will prioritize this feature. Note dependent on IMS and Orchestrator services </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> EL-2.0.9 </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> It shall be possible to easily extend the auto-scaling system to support extensible alarms </td> 
+         <td class="confluenceTd"> Scripting could be a value-add in future releases </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> EL-2.0.10 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Auto-scaling module shall provide customizable alarms for JVM CPU utilization, JVM memory and response time </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> EL-2.0.11 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Auto-scaling module shall provide customizable alarms for machine CPU utilization, machine memory </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> EL-2.0.12 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Administrators shall be allowed to modify alarm instances </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> EL-2.0.13 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Auto-scaling shall be supported only on virtualized environments </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> EL-2.0.14 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Unit of auto-scaling is a GlassFish cluster </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>Metrics that will be collected by elasticity module:</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Feature # </th> 
+         <th class="confluenceTh"> Priority </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> EL-3.0.1 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Support for monitoring CPU at VM level </td> 
+         <td class="confluenceTd"> CPU Utilization - The percentage of allocated compute units that are currently in use by the VM instance. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> EL-3.0.2 </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> Support for monitoring CPU at machine level </td> 
+         <td class="confluenceTd"> Machine CPU Utilization - The percentage of allocated compute units that are currently in use on the machine. (Internal purposes only, no alarms set on this) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> EL-3.0.3 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Support for monitoring Memory at VM level </td> 
+         <td class="confluenceTd"> The percentage of allocated memory units that are currently in use by the VM instance. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> EL-3.0.4 </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> Support for monitoring Memory at machine level </td> 
+         <td class="confluenceTd"> The percentage of allocated memory units that are currently in use by the machine instance.(Internal purposes only, no alarms set on this) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> EL-3.0.5 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Support for monitoring JVM Memory at GlassFish instance level </td> 
+         <td class="confluenceTd"> JVM memory heap size </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> EL-3.0.6 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Support for monitoring Response times of a particular administrator specified URL </td> 
+         <td class="confluenceTd"> Administrators will be able to create Alarm instances that monitor the response times of the specified URL. The URL can be as a 'ping' URL or a request that accesses the most common path of the app </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> EL-3.0.7 </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> Support for monitoring Network Input at the VM level </td> 
+         <td class="confluenceTd"> The number of bytes received on all network interfaces by the VM instance. This metric identifies the volume of incoming network traffic to an application on a single instance. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> EL-3.0.8 </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> Support for monitoring Network Output at the VM level </td> 
+         <td class="confluenceTd"> The number of bytes sent out on all network interfaces by the VM instance. This metric identifies the volume of outgoing network traffic to an application on a single instance. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> EL-3.0.9 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Support for monitoring Disk Reads at the VM level </td> 
+         <td class="confluenceTd"> Bytes read from all disks available to the instance. This metric is used to determine the volume of the data the application reads from the hard disk of the instance. This can be used to determine the speed of the application. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> EL-3.0.10 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Support for monitoring Disk Writes at the VM level </td> 
+         <td class="confluenceTd"> Bytes written to all disks available to the instance. This metric is used to determine the volume of the data the application writes onto the hard disk of the instance. This can be used to determine the speed of the application. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> EL-3.0.11 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Total number of cores on the machine </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> EL-3.0.12 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Total number of VMs running on the machine </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> EL-3.0.13 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Support for monitoring CPU at JVM level </td> 
+         <td class="confluenceTd"> CPU Utilization - The percentage of allocated compute units that are currently in use by the JVM instance. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-4.4.OutofScope%3A"></a>4.4. Out of Scope:</h2> <p>Even though the Alert instances will survive DAS restart, the metrics collected by the Metrics modules will not survive restart.</p> <p>The following table list requirements that are not within the scope of this module.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> # </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> EL-2.1.1 </td> 
+         <td class="confluenceTd"> The set of alarms shall be extensible either by writing new rules or by combining existing alarms into one alarm </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> EL-2.1.2 </td> 
+         <td class="confluenceTd"> The set of metrics available for auto-scaling shall be extensible </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> EL-2.1.3 </td> 
+         <td class="confluenceTd"> Auto-scaling shall be supported for services such as load balancing, databases, etc. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> EL-2.1.4 </td> 
+         <td class="confluenceTd"> Auto-scaling shall be supported in a non-virtualized environment </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-4.5.Interfaces%3A"></a>4.5. Interfaces:</h2> <p>The following commands will be added for auto-scaling feature:</p> <p>enable-auto-scaling, disable-auto-scaling, create-cpu-alert, create-memory-alert, create-response-time-alert, delete-alert, list-alerts, add-alert-action, delete-alert-action, enable-alert, disable-alert, create-email-action, create-log-action</p> <p>Note:<br> If elasticity engine is off, then the above commands will emit a warning saying that elasticity engine must be turned on for the alerts to be in effect. The alert's configurations are, however, saved in domain.xml.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">enable-auto-scaling
+cluster-name
+
+disable-auto-scaling
+cluster-name
+
+create-cpu-alert
+--function (average, minimum, maximum, sum, geometric-mean, harmonic-mean)
+--sample-interval (1, 5, 15, 20, 30) measured in minutes
+--schedule schedule-name
+--threshold threshold-number
+--comparison-operator (less-than, greater-than, less-than-or-equal, greater-than-or-equal, equal)
+--cluster-aggregator (average, minimum, maximum, sum, geometric-mean, harmonic-mean)
+--cluster cluster-name
+alert-name
+
+create-memory-alert
+--function (average, minimum, maximum, sum, geometric-mean, harmonic-mean)
+--sample-interval (1, 5, 15, 20, 30) measured in minutes
+--schedule schedule-name
+--threshold threshold-number
+--comparison-operator (less-than, greater-than, less-than-or-equal, greater-than-or-equal, equal)
+--cluster-aggregator (average, minimum, maximum, sum, geometric-mean, harmonic-mean)
+--cluster cluster-name
+alert-name
+
+create-response-time-alert
+--function (average, minimum, maximum, sum, geometric-mean, harmonic-mean)
+--sample-interval (1, 5, 15, 20, 30) measured in minutes
+--schedule schedule-name
+--threshold threshold-number
+--comparison-operator (less-than, greater-than, less-than-or-equal, greater-than-or-equal, equal)
+--cluster-aggregator (average, minimum, maximum, sum, geometric-mean, harmonic-mean)
+--cluster cluster-name
+--URL url
+alert-name
+
+create-time-based-alert
+--schedule schedule-name
+--cluster cluster-name
+alert-name
+
+delete-alert
+--cluster cluster-name
+alert-name
+
+list-alerts
+--cluster cluster-name
+--alert-type  (cpu, memory, response-time, time-based)
+--state (ok, alarm)
+
+enable-alert
+--cluster cluster-name
+alert-name
+
+disable-alert
+--cluster cluster-name
+alert-name
+
+create-email-action
+--cluster cluster-name
+--to-address address
+action-name
+
+create-log-action
+--cluster cluster-name
+--log-level  (INFO, SEVERE, WARNING)
+action-name
+
+delete-alert-action
+--cluster cluster-name
+--alert-name alert-name
+action-name
+
+add-alert-action
+--cluster cluster-name
+--alert-name alert-name
+--state (ok, alarm)
+action-name
+
+delete-action
+--cluster cluster-name
+action-name</pre> 
+       </div> 
+      </div>
+     </div> <p>There will be default configuration elements for actions start-instance and stop-instances so the administrator can refer to those elements. These are provided since there are no parameters required for either action.</p> <p>The following scenario details the asadmin commands the administrator must enter to create a CPU alarm that runs every 10 minutes and emails the administrator and starts an instance if the threshold value is above 60% for all the instances in the cluster. The sample interval tells the static object to request the last 15 minutes of data and the schedule tells the rule how often to run (every 10 minutes). In this example, the predefined schedule of 10 minutes 'ten-minutes' is used as well as the predefined action 'start-instance'.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">asadmin create-cpu-alert --function average --sample-interval 15 --threshold 60 --schedule ten-minutes --comparison-operator greater-than --cluster-aggregator min --cluster c1  myAlert
+
+asadmin create-email-action  --to-address me@oracle.com email1
+
+asadmin add-alert-action --cluster c1 --state alarm --alert myAlert   email1
+
+asadmin add-alert-action --cluster c1 --state alarm --alert myAlert   start-instance</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-4.5.1PublicInterfaces"></a>4.5.1 Public Interfaces</h3> <p>List new, public interfaces this project exports.</p> 
+     <ul> 
+      <li>Interface:</li> 
+      <li>Comment:</li> 
+     </ul> <h4><a name="GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-4.5.2PrivateInterfaces%28Workinprogress%29"></a>4.5.2 Private Interfaces (Work in progress)</h3> <p>The Elasticity engine exposes the following interface that can be consumed by other modules.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Contract
+public interface ElasticityEngine {
+
+    public boolean isEnabled();
+
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>asadmin start-instance and asadmin stop-instance commmands will check if elasticity engine is running or not by calling engine.isEnabled(). If it is running these commands will emit a warning asking the user to turn elasticity off. Elasticity engine can be turned on / off by executing: asadmin enable-auto-scaling cluster-name OR asadmin disable-auto-scaling cluster-name</p> <p>The elasticity engine defines a hk2 contract called ElasticityInstanceManager that defines a set of methods to start / stop GlassFish instances. It is assumed that some module in GlassFish (most likely the Orchestrator) will implement this contract.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Contract
+public interface ElasticInstanceManager {
+
+   /**
+    * @param excludeInstances the set of instances that are heavily loaded. Orchestrator is
+    *   advised not to start another instance on the machines where these instances are running.
+    *
+    * @returns the name of the instance that was started
+    */
+   Future&lt;String&gt; startInstance(Set&lt;String&gt; excludeInstances);
+
+   /**
+    * @param instances the set of instances from which the Orchestrator can choose to stop one.
+    *
+    * @returns the name of the instance that was stopped
+    */
+   Future&lt;String&gt; stopInstance(Set&lt;String&gt; instances);
+
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>The orchestrator may decide to start a new instance on a system that doesn't host any of the instances specified in the above set.</p> <p>The Future object can be used by the elasticity engine to track when the operation completes. The Elasticity engine enters into a quiet period during this time (and most likely for a additional 'warm up' time after future.isDone() returns true).</p> <h4><a name="GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-4.5.3Deprecated%2FRemovedInterfaces%3A"></a>4.5.3 Deprecated/Removed Interfaces:</h3> <p>NA</p> <h4><a name="GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-4.6.DocImpact%3A"></a>4.6. Doc Impact:</h2> <p>List any Documentation (man pages, manuals, service guides...) that will be impacted by this proposal.<br> All CLI commands will have to be documented.</p> <h4><a name="GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-4.7.Admin%2FConfigImpact%3A"></a>4.7. Admin/Config Impact:</h2> <p>How will this change impact the administration of the product?</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;schedules&gt; &lt;!-- TBD: Not sure is this is where schedules appear in domain.xml. will update once I confirm this with Chris--&gt;
+ &lt;schedule name="ten-minutes" second="0" minute="10" hour="0" day-of-month="*" month="*" day-of-week="*" year="*"/&gt;
+ &lt;schedule name="weekly" second="0" minute="0" hour="0" day-of-month="*" month="*" day-of-week="2" year="*"/&gt;
+&lt;/schedules&gt;
+&lt;cluster&gt;
+ &lt;alerts&gt;
+    &lt;alert name="alert-name1" type="CPU" threshold=30 schedule="ten-minutes" operator="greater-than" function="average" sample-interval=5 cluster-aggregator="max" enabled="true"&gt;
+       &lt;alert-actions&gt;
+         &lt;alert-action action-state="ok-state" action-ref="log1"/&gt;
+       &lt;/alert-actions&gt;
+    &lt;/alert&gt;
+    &lt;alert name="alert-name2" type="response-time" threshold=30 schedule="ten-minutes" operator="greater-than"  function="average" sample-interval=5 cluster-aggregator="max" enabled="true"&gt;
+        &lt;response-url url="some url"/&gt;
+        &lt;alert-actions&gt;
+         &lt;alert-action action-state="ok-state" action-ref="log1"/&gt;
+         &lt;alert-action action-state="alarm-state" action-ref="start-instance"/&gt;
+       &lt;/alert-actions&gt;
+    &lt;/alert&gt;
+    &lt;alert name="alert-name3"  type="time-based" schedule="weekly"&gt;
+        &lt;alert-actions&gt;
+         &lt;alert-action action-state="alarm-state" action-ref="start-instance"/&gt;
+        &lt;/alert-actions&gt;
+    &lt;/alert&gt;
+    &lt;actions&gt;
+       &lt;log-action action-name="log1" log-level=INFO"/&gt;
+       &lt;email-action action-name="email1" to-address="some address"/&gt; 
+       &lt;start-instance-action action-name="start-instance"/&gt;
+       &lt;stop-instance-action action-name="stop-instance"/&gt;
+    &lt;/actions&gt;
+ &lt;/alerts&gt;
+&lt;/cluster&gt;</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-4.8.HAImpact%3A"></a>4.8. HA Impact:</h2> <p>The Metric gatherers will be running in DAS. This means that when DAS stops / crashes all the collected metrics are lost. When it restarts, all the metric gatherers will start all over again.</p> <h4><a name="GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-4.9.I18N%2FL10NImpact%3A"></a>4.9. I18N/L10N Impact:</h2> <p>Does this proposal impact internationalization or localization?</p> <h4><a name="GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-4.10.Packaging%2CDelivery%26Upgrade%3A"></a>4.10. Packaging, Delivery &amp; Upgrade:</h2> <h4><a name="GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-4.10.1.Packaging"></a>4.10.1. Packaging</h3> <p>The alerts and their associated asadmin sub-commands will be packed as an OSGi module.</p> <p>Since the alerts are part of the open source distribution, we do not expect any IPS / pkg(5) to be created for these.</p> <h4><a name="GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-4.10.2.Delivery"></a>4.10.2. Delivery</h3> <p>No impact on product installation.</p> <h4><a name="GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-4.10.3.UpgradeandMigration%3A"></a>4.10.3. Upgrade and Migration:</h3> <p>This is a brand new feature and hence we do not expect any upgrade or migration issues.</p> <h4><a name="GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-4.11.SecurityImpact%3A"></a>4.11. Security Impact:</h2> <h4><a name="GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-4.12.CompatibilityImpact"></a>4.12. Compatibility Impact</h2> <p>NA (Elasticity is a new feature in 3.2)</p> <p>List any requirements on upgrade tool and migration tool.</p> <h4><a name="GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-4.13.Dependencies%3A"></a>4.13. Dependencies:</h2> <h4><a name="GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-4.13.1InternalDependencies"></a>4.13.1 Internal Dependencies</h3> <p>Elasticity depend on other HK2 services like Orchestrator to perform actions. The interaction between elasticity engine and Orchestrator will be clearly defined.</p> <p>Elasticity module also defines some metrics gatherers that could depend on IMS API.</p> <p>Collecting metrics from individual GF instances will performed by making REST calls. So, the metrics gatherers might have to use some Jersey APIs.</p> <h4><a name="GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-4.13.2ExternalDependencies"></a>4.13.2 External Dependencies</h3> <p>None</p> <h4><a name="GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-4.14.TestingImpact%3A"></a>4.14. Testing Impact:</h2> <p>How will the new feature(s) introduced by this project be tested?</p> <p>One approach is to write test application that will (say) consume a large amount of CPU cycles. Then a set of alerts can be created that monitors cpu usage and takes various actions like sending emails, starting an instance etc. Then the application can be deployed to see if the actions were taken or not.</p> <p>Do tests exist from prior releases (e.g. v2) that can be reused?</p> <p>NA</p> <p>Will new tests need to be written? Can they be automated?</p> <p>Yes new tests will be written and automated either by simple ant scripts or through hudson jobs.</p> <p>How will it impact existing devtests or SQE tests?</p> <p>This is new functionality and there for no dev tests or SQE tests exist.</p> <h4><a name="GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-5.ReferenceDocuments%3A"></a>5. Reference Documents:</h1> <h4><a name="GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-6.Schedule%3A"></a>6. Schedule:</h1> <h4><a name="GlassFish3.2OpenSourceEdition-ElasticityModuleOnePager-6.1.ProjectedAvailability%3A"></a>6.1. Projected Availability:</h2> <p>Indicate which milestones from the current schedule the project<br> will be:</p> 
+     <ul> 
+      <li>Initially integrated (may not be feature complete)</li> 
+      <li>Feature complete (ready for handoff to QA)</li> 
+      <li>At production quality level</li> 
+     </ul> 
+     <hr> 
+     <div class="tabletitle"> 
+      <a name="comments"> <h4>Comments:</h2> </a> 
+     </div> 
+     <table border="0" width="100%"> 
+      <tbody>
+       <tr> 
+        <td> <a name="comment-20882343"></a> <font class="smallfont">
+          <ol> 
+           <li>Instead of create-cpu-alert, create-memory-alert, etc, why not a generic "create-alert --type" to simplify the interface and user experience?&nbsp; Thought is extensibility for future alerts without complicating asadmin interface &amp; user experience.</li> 
+           <li>Can we leverage a common "create-alert" command (memory/CPU), with common options (and differentiated options via properties)? Thought is extensibility for future commands without complicating asadmin interface &amp; user experience.</li> 
+           <li>Can we leverage a common "create-schedule" command and share with domain backup and recovery, or are they semantically different?</li> 
+          </ol> </font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by johnclingan at Apr 28, 2011 18:24 
+         </div> </td> 
+       </tr> 
+      </tbody>
+     </table> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on May 12, 2011 by 
+<font color="#0050B2">carlavmott</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

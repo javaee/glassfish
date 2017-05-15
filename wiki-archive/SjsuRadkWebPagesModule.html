@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : SjsuRadkWebPagesModule</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p><a href="./SjsuRadkProjectsummary.html">RADK Project</a></p> 
+     <hr> 
+     <div> 
+      <ul> 
+       <li><a href="#SjsuRadkWebPagesModule-RadkWebUIGenerator">Radk WebUI Generator</a></li> 
+       <ul> 
+        <li><a href="#SjsuRadkWebPagesModule-WebUIGeneratordescription">WebUI Generator description</a></li> 
+        <ul> 
+         <li><a href="#SjsuRadkWebPagesModule-Creatingthedirectorystructuretosavethefiles.">Creating the directory structure to save the files.</a></li> 
+         <li><a href="#SjsuRadkWebPagesModule-GeneratingcodeforCRUDoperationsforeachtable.">Generating code for CRUD operations for each table.</a></li> 
+         <li><a href="#SjsuRadkWebPagesModule-Savingthegeneratedcodeintothefilesandfilesintothedirectories.">Saving the generated code into the files and files into the directories.</a></li> 
+        </ul> 
+        <li><a href="#SjsuRadkWebPagesModule-WebUIGeneratedcodedescription">WebUI Generated code description</a></li> 
+       </ul> 
+      </ul>
+     </div> 
+     <hr> <h4><a name="SjsuRadkWebPagesModule-RadkWebUIGenerator"></a>Radk WebUI Generator</h1> 
+     <hr> <p>The client side is the one that consumes the Restful web services and allows user to perform the CURD (Create, Read, Update, and Delete) operations. The client side gives the user interface that allows user to perform operation. The interfaces are shown in the form of JSP pages. The client side used for this project is AJAX (Asynchronous JavaScript and XML) enabled that is the user can perform the operation without a page refresh. The user will get and send the data without the page refresh. The web pages are simple JSP pages, which contains the HTML, CSS, and JavaScript code. The description of this module is divided into two parts, one which is used to describe the generation of the code and the other which is used to describe the generated code.</p> <p>--------------------------</p> <h4><a name="SjsuRadkWebPagesModule-WebUIGeneratordescription"></a>WebUI Generator description</h2> <p>The name of the tables that are needed for the WebUI generator are read from the Parameters class, then the necessary table columns' attributes are read to create the necessary variables. Then, for each table, the code is generated and saved in the Directory Structure created to deploy the WebUI module. Finally, the code is saved in a file with the help of a StringBuilder variable (buffer), which will store every line of code before saving it to the file. The procedure to generate the code is as follows: # Creating the directory structure to save the files. # Generating code for CRUD operations for each table. # Saving the generated code into the files and files into the directories.</p> <p>--------------------------</p> <h4><a name="SjsuRadkWebPagesModule-Creatingthedirectorystructuretosavethefiles."></a>Creating the directory structure to save the files.</h3> <p>In order to build the WebUI application, and to allow the user to open the project with NetBeans, a folder structure similar to the NetBeans IDE is created in the Project Folder directory with the following folders: build, dist, nbproject, src, test, and web. From these folders, the web folder will be used to save the generated code for the WebUI module, and afterward the war file will be generated in the dist folder and deployed in the GlassFish server. The web folder also consists of other project specific folders such as CSS folder, JavaScript folder, and image folder. The structure of the web folder is shown in the below figure: <span class="error">Cannot resolve external resource into attachment.</span></p> <p>--------------------------</p> <h4><a name="SjsuRadkWebPagesModule-GeneratingcodeforCRUDoperationsforeachtable."></a>Generating code for CRUD operations for each table.</h3> <p>Depending on the selection of number of tables the code for Jsp files and JavaScript files are generated. The following are the methods to do it:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">public boolean generateCode() {
+
+        generateWebUIFolderStrucure();
+        OperationPageGenerator.generateOperationPage();
+        CreatePageGenerator.generateCreatePage();
+        FindPageGenerator.generateFindPage();
+        UpdatePageGenerator.generateUpdatePage();
+        DeletePageGenerator.generateDeletePage();
+        FindJavaScriptGenerator.generateFindJavaScript();
+        FindAllJavaScriptGenerator.generateFindAllJavaScript();
+        FindToUpdateJavaScriptGenerator.generateFindToUpdateGenerator();
+        DeleteJavaScriptGenerator.generateDeleteJavaScript();
+        IndexGenerator.generateIndexPage();
+        ProjectNameHeaderJspfGenerator.generateHeaderJspf();
+
+
+        return true;
+    }</pre> 
+       </div> 
+      </div>
+     </div> <p>To give an overview of how these methods works, below is the code snippet that describes the generation of code for Find JSP page using FindPageGenerator.generateFindPage() method. This method generates the code, which gives user a web page (Find.jsp) to perform one of the CRUD operations, which is finding a record.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">private static StringBuilder generateCode(String table, String primaryKey, String projectname) {
+        Table = capitalizeName(table);
+        ProjectName = capitalizeName(projectname);
+        buffer = new StringBuilder();
+        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        Date date = new Date();
+        buffer.append("&lt;!--\n");
+        buffer.append("*" + "Find" + Table + "\t" + dateFormat.format(date) + " \n");
+        buffer.append("*\n");
+        buffer.append("* Copyright 2009 Sun Microsystems, Inc. and RADK team All rights reserved.\n");
+        buffer.append("* SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.\n");
+        buffer.append("--&gt;\n\n");
+        buffer.append("&lt;!--\n");
+        buffer.append("* Autogenerated code\n");
+        buffer.append("* The following code was generated by RADKProject.\n");
+        buffer.append("* An Open Source GlassFish project\n");
+        buffer.append("* This is a Find page of the web client for a particular table.\n");
+        buffer.append("* This page allows user to perform Find operation.\n");
+        buffer.append("--&gt;\n\n");
+        buffer.append("&lt;%@page contentType=" + "\"" + "text/html" + "\"" + " " + "pageEncoding=" + "\"" + "UTF-8" + "\"" + "%&gt;\n");
+        buffer.append("&lt;!DOCTYPE HTML PUBLIC" + " " + "\"" + "-//W3C//DTD HTML 4.01 Transitional//EN" + "\"\n");
+        buffer.append("\"" + "http://www.w3.org/TR/html4/loose.dtd" + "\"" + "&gt;\n\n");
+        buffer.append("&lt;html&gt;\n");
+        buffer.append("\t&lt;head&gt;\n");
+        buffer.append("\t\t&lt;meta http-equiv=" + "\"" + "Content-Type" + "\"" + " " + "content=" + "\"" + "text/html; charset=UTF-8" + "\"" + "&gt;\n");
+        buffer.append("\t\t&lt;title&gt;Find" + " " + Table + " " + "Record&lt;/title&gt;\n");
+        buffer.append("\t\t&lt;script type=" + "\"" + "text/javascript" + "\"" + " " + "src=" + "\"" + "./JavaScript/json.js" + "\"" + "&gt;&lt;/script&gt;\n");
+        buffer.append("\t\t&lt;script type=" + "\"" + "text/javascript" + "\"" + " " + "src=" + "\"" + "./JavaScript/find" + table + ".js" + "\"" + "&gt;&lt;/script&gt;\n");
+        buffer.append("\t\t&lt;script type=" + "\"" + "text/javascript" + "\"" + " " + "src=" + "\"" + "./JavaScript/findAll" + table + ".js" + "\"" + "&gt;&lt;/script&gt;\n");
+        buffer.append("\t\t&lt;link rel=" + "\"" + "stylesheet" + "\"" + " " + "type=" + "\"" + "text/css" + "\"" + " " + "href=" + "\"" + "./CSS/radk.css" + "\"" + " " + "media=" + "\"" + "screen" + "\"" + " " + "/&gt;\n");
+        buffer.append("\t&lt;head&gt;\n");
+        buffer.append("\t&lt;body class=" + "\"" + "body" + "\"" + "&gt;\n");
+        buffer.append("\t\t&lt;div id=\"" + "MainContainer" + "\"" + " " + "style=\"" + "height:auto" + "\"" + "&gt;\n");
+        buffer.append("\t\t\t&lt;jsp:include page=\"" + "./WEB-INF/jspf/" + ProjectName + "Header.jspf" + "\"" + "&gt;");
+        buffer.append("&lt;/jsp:include&gt;\n");
+        buffer.append("&amp;nbsp;\n");
+        buffer.append("\t\t&lt;p class=" + "\"" + "description" + "\"" + "&gt;" + "The following are the operations that can be performed on the"+" "+Table+".&lt;/p&gt;\n");
+        buffer.append("\t\t&lt;div id=\"" + "SubContainer" + "\"" + "&gt;\n");
+        buffer.append("\t\t&lt;p class=" + "\"" + "description" + "\"" + " " + "style=" + "\"" + "text-align:center" + "\"" + "&gt;" + "Select the desired operation you want to perform:" + "&lt;/p&gt;\n\n");
+        buffer.append("\t\t&lt;a class=" + "\"" + "link" + "\"" + " " + "href=" + "\"" + "Find" + Table + ".jsp" + "\"" + "&gt;" + "Read&lt;/a&gt;\n");
+        buffer.append("\t\t&amp;nbsp;&amp;nbsp;&lt;a class=" + "\"" + "link" + "\"" + " " + "href=" + "\"" + "Delete" + Table + ".jsp" + "\"" + "&gt;" + "Delete&lt;/a&gt;\n");
+        buffer.append("\t\t&amp;nbsp;&amp;nbsp;&lt;a class=" + "\"" + "link" + "\"" + " " + "href=" + "\"" + "Create" + Table + ".jsp" + "\"" + "&gt;" + "Create&lt;/a&gt;\n");
+        buffer.append("\t\t&amp;nbsp;&amp;nbsp;&lt;a class=" + "\"" + "link" + "\"" + " " + "href=" + "\"" + "Update" + Table + ".jsp" + "\"" + "&gt;" + "Update&lt;/a&gt;\n");
+        buffer.append("\t\t&amp;nbsp;&amp;nbsp;&lt;a class=" + "\"" + "link" + "\"" + " " + "href=" + "\"" + "index.jsp" + "\"" + "&gt;" + "Select new item&lt;/a&gt;\n");
+        buffer.append("\t\t\t&lt;/div&gt;\n");
+        buffer.append("\t\t&lt;h4&gt;Find Record&lt;/h4&gt;\n");
+        buffer.append("\t\t&lt;p style=" + "\"" + "margin-left:16px" + "\"" + "&gt;" + "This page helps you to Find an item by specifing the primary (unique) key 'ID' of the desired item." + "&lt;/p&gt;\n");
+        buffer.append("\t\t&lt;p style=" + "\"" + "margin-left:16px" + "\"" + "&gt;" + "When you click on the Find button it will display the item specified with the primary key entered in the text box." + "&lt;/p&gt;\n");
+        buffer.append("\t\t&lt;p style=" + "\"" + "margin-left:16px" + "\"" + "&gt;" + "When you click FindAll button it will display all the items associated with your selection on the home page." + "&lt;/p&gt;\n\n");
+
+        List&lt;Column&gt; list = Parameters.columnDetailsOfTable.get(table);
+        for (Column c : list) {
+
+            if (c.getColumnKey().equals("PRI") &amp;&amp; c.getColumnType().equals("date")) {
+                buffer.append("\t\t&lt;label class=" + "\"" + "description" + "\"" + "&gt;" + primaryKey + ":&lt;/label&gt;\n");
+                buffer.append("\t\t&lt;input type=" + "\"" + "text" + "\"" + " " + "id=" + "\"" + "inputbox" + "\"" + " " + "style=" + "\"" + "margin-left:16px" + "\"" + "/&gt;yyyy-mm-dd\n\n");
+            } else if (c.getColumnKey().equals("PRI") &amp;&amp; c.getColumnType().equals("datetime")) {
+                buffer.append("\t\t&lt;label class=" + "\"" + "description" + "\"" + "&gt;" + primaryKey + ":&lt;/label&gt;\n");
+                buffer.append("\t\t&lt;input type=" + "\"" + "text" + "\"" + " " + "id=" + "\"" + "inputbox" + "\"" + " " + "style=" + "\"" + "margin-left:16px" + "\"" + "/&gt;yyyy-mm-dd hh:mm:ss\n\n");
+            } else if (c.getColumnKey().equals("PRI") &amp;&amp; c.getColumnType().equals("timestamp")) {
+                buffer.append("\t\t&lt;label class=" + "\"" + "description" + "\"" + "&gt;" + primaryKey + ":&lt;/label&gt;\n");
+                buffer.append("\t\t&lt;input type=" + "\"" + "text" + "\"" + " " + "id=" + "\"" + "inputbox" + "\"" + " " + "style=" + "\"" + "margin-left:16px" + "\"" + "/&gt;yyyy-mm-dd hh:mm:ss\n\n");
+            } else if (c.getColumnKey().equals("PRI") &amp;&amp; c.getColumnType().equals("time")) {
+                buffer.append("\t\t&lt;label class=" + "\"" + "description" + "\"" + "&gt;" + primaryKey + ":&lt;/label&gt;\n");
+                buffer.append("\t\t&lt;input type=" + "\"" + "text" + "\"" + " " + "id=" + "\"" + "inputbox" + "\"" + " " + "style=" + "\"" + "margin-left:16px" + "\"" + "/&gt;hh:mm:ss\n\n");
+            } else if (c.getColumnKey().equals("PRI")) {
+                buffer.append("\t\t&lt;label class=" + "\"" + "description" + "\"" + "&gt;" + primaryKey + ":&lt;/label&gt;\n");
+                buffer.append("\t\t&lt;input type=" + "\"" + "text" + "\"" + " " + "id=" + "\"" + "inputbox" + "\"" + " " + "style=" + "\"" + "margin-left:16px" + "\"" + "/&gt;\n\n");
+            }
+        }
+
+        buffer.append("\t\t&lt;p&gt;\n");
+        buffer.append("\t\t\t&lt;input type=" + "\"" + "button" + "\"" + " " + "name=" + "\"" + "submit" + "\"" + " " + "value=" + "\"" + "Find" + "\"" + " " + "onclick=" + "\"" + "find" + table + "()" + "\"" + "/&gt;\n");
+        buffer.append("\t\t\t&lt;input type=" + "\"" + "button" + "\"" + " " + "name=" + "\"" + "submit" + "\"" + " " + "value=" + "\"" + "FindAll" + "\"" + " " + "onclick=" + "\"" + "findAll" + table + "()" + "\"" + "/&gt;\n");
+        buffer.append("\t\t&lt;/p&gt;\n\n");
+        buffer.append("\t\t&lt;div id=" + "\"" + "display" + "\"" + " " + "class=" + "\"" + "div_table" + "\"" + "&gt;&lt;/div&gt;\n");
+        buffer.append("\t\t&lt;/div&gt;\n");
+        buffer.append("\t\t\t&lt;jsp:include page=\"" + "./WEB-INF/jspf/Footer.jspf" + "\"" + "&gt;&lt;/jsp:include&gt;\n");
+        buffer.append("\t&lt;/body&gt;\n");
+        buffer.append("&lt;/html&gt;\n");
+
+        return buffer;
+    }</pre> 
+       </div> 
+      </div>
+     </div> <p>--------------------------</p> <h4><a name="SjsuRadkWebPagesModule-Savingthegeneratedcodeintothefilesandfilesintothedirectories."></a>Saving the generated code into the files and files into the directories.</h3> <p>The directories are created using the createFolder method of the file manager. The following are the methods that are used to create the directory structure for the WebUI module:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">private void generateWebUIFolderStrucure() {
+
+        FileManager.createFolder(Parameters.webUiFolder + "/" + "build");
+        FileManager.createFolder(Parameters.webUiFolder + "/" + "dist");
+        FileManager.createFolder(Parameters.webUiFolder + "/" + "nbproject" + "/" + "private");
+        FileManager.createFolder(Parameters.webUiFolder + "/" + "src" + "/" + "conf");
+        FileManager.createFolder(Parameters.webUiFolder + "/" + "test");
+        FileManager.createFolder(Parameters.webUiFolder + "/" + "web" + "/" + "CSS");
+        FileManager.createFolder(Parameters.webUiFolder + "/" + "web" + "/" + "JavaScript");
+        FileManager.createFolder(Parameters.webUiFolder + "/" + "web" + "/" + "images");
+        FileManager.createFolder(Parameters.webUiFolder + "/" + "web" + "/" + "WEB-INF" + "/" + "jspf");
+
+
+
+    }</pre> 
+       </div> 
+      </div>
+     </div> <p>The following code snippet shows how to save the generated code to the file and place that file to an appropriate directory:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">private static void generateWebUICode() {
+        StringBuilder b = new StringBuilder();
+        File jspFileNamePath;
+        for (Table t : Parameters.selectedTableNames) {
+            b.delete(0, b.length());
+
+            List&lt;Column&gt; list = Parameters.columnDetailsOfTable.get(t.getTableName());
+            for (Column c : list) {
+                if (c.getColumnKey().equals("PRI")) {
+                    primaryKey = c.getColumnName();
+                }
+            }
+
+            b.append(generateCode(t.getTableName(), primaryKey, Parameters.projectName));
+            jspFileNamePath = new File(Parameters.webUiFolder + "/web/" + "Find" + capitalizeName(t.getTableName()) + ".jsp");
+
+            FileManager.writeFile(jspFileNamePath, b.toString());
+
+
+        }</pre> 
+       </div> 
+      </div>
+     </div> <p>--------------------------</p> <h4><a name="SjsuRadkWebPagesModule-WebUIGeneratedcodedescription"></a>WebUI Generated code description</h2> <p>This module generates the JSP and JavaScript code. The web pages are cross browser compatible but they may cause some CSS (presentation) problem in some browsers. These are well tested with Mozilla browser, therefore, Mozilla is recommended for this project. The main part of the client side is the AJAX action. It is nothing but a JavaScript code that creates an invisible connection with the server when an action occurs like clicking a button, link or when an action is invoked. AJAX means the transfer of data between the server and the client takes place asynchronously. The term asynchronously here means that the server can send or receive data without waiting for other request. The data that is used to send between the server and client is JSON (JavaScript Object Notation) based. There are four types of requests (methods) used between the server and the client. These four methods are POST, PUT, GET, and DELETE to perform the CRUD operation respectively.</p> <p>Now the main question is how the request and response are handled between client and server. The answer is using AJAX. Next question comes in mind is how AJAX works. AJAX is a concept that consists of JavaScript statements and it works through a series of steps that involves execution of JavaScript code. When a user performs an action the JavaScript code is loaded into the browser and the user request is send to the server. Server on receiving the request processes the request and sends the data in a particular type that is received by the client side code and displayed on the browser. The type of data that client receives depends on the server side. It can be XML, JSON, or a string. In this project, the data type sent by the server is JSON that is received by client side and formatted in order to display as required. This complete process is described below with the help of code snippets.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.	 function getXMLHttpRequestObject()
+2.	 {
+3.	 // initially set the object to false
+4.	 var XMLHttpRequestObject = false;
+5.	 if (window.XMLHttpRequest)
+6.	 {
+7.	 // check for Safari, Mozilla, Opera
+8.	 XMLHttpRequestObject = new XMLHttpRequest();
+9.	 }
+10.	 else if (window.ActiveXObject)
+11.	 {
+12.	 // check for Internet Explorer
+13.	 XMLHttpRequestObject = new ActiveXObject("Microsoft.XMLHTTP");
+14.	 }</pre> 
+       </div> 
+      </div>
+     </div> <p>This is a JavaScript code snippet to show how AJAX is implemented. A request object variable "var XMLHttpRequestObject" is initially declared as false. This will store the Http request. It is very important for a client to be cross browser compatible for this reason the code should be written such that it will handle all most all the possible browsers. At line 5 the code checks for the browsers which supports "XMLHttpRequest" like Safari, Mozilla, and Opera. In addition, at line 10 it checks for "ActiveXObject("Microsoft.XMLHTTP")" for Internet Explorer. Finally, at line 15 the code checks that if the browser does not support the "XMLHttpRequestObject" object then it will display that "the browser does not support AJAX.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">15.	 if (!XMLHttpRequestObject)
+16.	 {
+17.	 alert("Your browser does not support Ajax.");
+18.	 // return false in case of failure
+19.	 return false;
+20.	 }
+21.	 // return the object in case of success
+22.	 return XMLHttpRequestObject;
+23.	 }
+24.	 // get the XMLHttpRequestObject and store it in a variable
+25.	 var ajaxObj = getXMLHttpRequestObject();</pre> 
+       </div> 
+      </div>
+     </div> <p>The function "function getXMLHttpRequestObject()" in the end returns the "XMLHttpRequestObject" object that is stored in a variable "ajaxObj".</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">26.	 // function called when Find button is pressed
+27.	 function findstudent()
+28.	 {
+29.	 // continue if the ajaxObj object exists
+30.	 if(ajaxObj)
+31.	 {
+32.	 // continue if the object is idle
+33.	 if (ajaxObj.readyState == 4 || ajaxObj.readyState == 0)
+34.	 {
+35.	 // refer to the input text field
+36.	 var inputObject = document.getElementById('inputbox');
+37.	 // build the "GET" request URL
+38.	 var URL = "http://localhost:8080/WebRestfulTests/RestStudent/student/" +           inputObject.value + "/json/";
+39.	 // open connection and send "GET" request to server
+40.	 ajaxObj.open("GET", URL, true);
+41.	 // set the function to be called on a change in ajaxObj state
+42.	 ajaxObj.onreadystatechange = handleFindResponse;
+43.	 // set additional parameters (to be sent to server) to null
+44.	 ajaxObj.send(null);
+45.	 }
+46.	 }
+47.	 }</pre> 
+       </div> 
+      </div>
+     </div> <p>The function "findstudent" is called when the "find" button is clicked in the HTML page. Once this function is called, it will check for "ajaxObj" object. This object has several types of properties; one of them is "ready State" which holds the state of the request. The ready State property can have values from 0 to 4. This codes checks for the value 4 (Complete) or 0 (uninitialized). If the object has any one of the two values, the code proceeds further. The "open" method is used by the object to open the connection between the client and server. This is used to send an invisible request to the server. This method can have 5 different arguments but in our case there are only three arguments passed to this method. First, the type of method (GET, PUT, POST, and DELETE) used to send the data to server. Second, the URL that points to the resource that will handle the clients request on the server side. This URL can point to a file or can point to a particular resource as in our case of RESTful Web Services it points to a particular resource. For example:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">var URL = "http://localhost:8080/WebRestfulTests/RestStudent/student/" +           inputObject.value + "/json/";</pre> 
+       </div> 
+      </div>
+     </div> <p>Here "http://localhost:8080" points to the local server where the RESTful Web Services are deployed. Where "WebRestfulTests" is the project name, "RestStudent" is the file and "student" is the resource for which the client is making a request. This URL also consists of an extra parameter "inputObject.value" that is required in case of GET method to specify the exact resource the user/client wants to access. ""/json/" defines that the data coming from the server side is in the JSON format. This is a particular case for this project; it is not necessarily required to append this parameter at the end of URL but is recommended so that one can easily understand the type of data at the receiver end. Third argument is the Boolean value true or false. This value determines whether the data to be sent is asynchronous or not. In our case, this value is true which indicates that the data is sent asynchronously. This is what mainly AJAX is. "Asynchronously" means one or more requests can be made simultaneously or in parallel. This way the client side can receive the data without the page refresh. This "Open" method also has fourth and fifth arguments as "username" and "password" but that are not required in this project. These fourth and fifth arguments are generally required when the file is username and password protected.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">var inputObject = document.getElementById('inputbox');</pre> 
+       </div> 
+      </div>
+     </div> <p>"document.getElementById" is a DOM method that gives the value of the id specified as an argument to this method. This value is assigned to a variable "inputObject" whose value is appended at the end of URL. Next, the code will check for the change in the state of the object, if there is any change it will call the function that will handle the response.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">ajaxObj.onreadystatechange = handleFindResponse;</pre> 
+       </div> 
+      </div>
+     </div> <p>"onreadystatechange" is another property of the XMLHttpRequest object. When the state change between 0 to 4 this property will call the function assigned. Then comes the:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">ajaxObj.send(null);</pre> 
+       </div> 
+      </div>
+     </div> <p>Since in our case we are using the GET method we do not need to send any extra parameter to the server to process that is why "ajaxObj.send" has the value null. However, in other case like PUT or POST you will need to send an extra data that can be sent in this method. For example for PUT it will be like:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">ajaxObj.send("student_id="+student_idObject.value +"&amp;"+"name="+nameObject.value +"&amp;"+"address="+addressObject.value);</pre> 
+       </div> 
+      </div>
+     </div> <p>However, for POST a simple HTML form tag is used to perform the create operation instead of using the above method. Actually, this is done for allowing user to see the different types of data that we are handling.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">48.	 // function called when there is a change ajaxObj state
+49.	 function handleFindResponse()
+50.	 {
+51.	 // check if the request is complete
+52.	 if (ajaxObj.readyState == 4)
+53.	 {
+54.	 // continue if the response is healthy
+55.	 if (ajaxObj.status == 200)
+56.	 {
+57.	 // store the server's text response
+58.	 var textResponse = ajaxObj.responseText;
+59.	 myObject = JSON.parse(textResponse);
+60.	 var x = myObject.student.student_id; 	// It should be always a primary  key.(while writing java code).
+61.	 if(x!=null)
+62.	 {
+63.	 // clear the 'display' div before displaying a new data
+64.	 document.getElementById('display').innerHTML = "";
+65.	 // get control of the 'display' div
+66.	 var root=document.getElementById('display');
+67.	 var tab=document.createElement('table');
+68.	 tab.setAttribute("cellpadding", 0);
+69.	 tab.setAttribute("cellspacing", 0);
+70.	 tab.setAttribute("width", "20%");
+71.	 tab.setAttribute("height", "20%");</pre> 
+       </div> 
+      </div>
+     </div> <p>The function "function handleFindResponse()" is called when there is change in the state of "ajaxObj". If the ready state is 4 and the Http status is 200 (that is successful) then store the response from the server into a variable and process it according to the need. In our case "responseText" is the data from server that is stored in a variable "textResponse". Here we are using the JSON parser as the data from the server is in the JSON format. The JSON library should already be imported into the code. The sample below shows how the JSON data is retrieved. Sample JSON data from server:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">var myObject = {"student": [
+   	{"student_id": "1", "name": "Swapnil Merchant", "address": San Jose"},
+  	{" student_id ": "2", "name": "Sadeesh kumar", "address": "CA"},
+        {" student_id ": "3", "name": "Edison Lascano", "address": "USA"}
+    ]
+};</pre> 
+       </div> 
+      </div>
+     </div> <p>Way to retrieve the above data:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Var x = myObject.student[0].name;		//returns Swapnil Merchant
+Var x = myObject.student[1].name;		//returns Sadeesh Kumar
+Var x = myObject.student[2].name;		//returns Edison Lascano</pre> 
+       </div> 
+      </div>
+     </div> <p>This is how the JSON works. After getting the value from the variable, the code uses the DOM methods to create few elements like table, row, column, etc and populates the data into the table as shown in the code below. It also displays the appropriate messages depending on the success or failure of the operation.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">72.	 	tab.setAttribute("border", 2);
+73.	 	tab.className="mytable";
+74.	  	var tbo=document.createElement('tbody');
+75.	  	var row, cell, myObject, x;
+76.	 	row=document.createElement('tr');
+77.	 	cell=document.createElement('td');
+78.	 	cell.setAttribute("style", "padding-left:5px;");
+1.	       79.  	x ="student_id";
+80.  	cell.innerHTML = x.bold();
+81.  	row.appendChild(cell);
+82.	 	cell=document.createElement('td');
+83.	 	cell.setAttribute("style", "padding-left:5px;");
+84.	 	x ="name";
+85.	 	cell.innerHTML = x.bold();
+86.	 	row.appendChild(cell);
+87.	 	cell=document.createElement('td');
+88.	 	cell.setAttribute("style", "padding-left:5px;");
+89.	 	x ="address";
+90.	 	cell.innerHTML = x.bold();
+91.	 	row.appendChild(cell);
+92.	 	tbo.appendChild(row);
+93.	 	row=document.createElement('tr');</pre> 
+       </div> 
+      </div>
+     </div> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">94.	 	cell=document.createElement('td');
+95.	 	cell.setAttribute("style", "padding-left:5px;");
+96.	  	myObject = JSON.parse(textResponse);
+97.	  	//window.alert(myObject);
+98.	  	x = myObject.student.student_id;
+99.	  	//window.alert(x);
+100.	cell.innerHTML = x;
+101.	row.appendChild(cell);
+102.	cell=document.createElement('td');
+103.	cell.setAttribute("style", "padding-left:5px;");
+104.	myObject = JSON.parse(textResponse);
+105.	x = myObject.student.name;
+106.	cell.innerHTML = x;
+107.	row.appendChild(cell);
+108.	cell=document.createElement('td');
+109.	cell.setAttribute("style", "padding-left:5px;");
+110.	myObject = JSON.parse(textResponse);
+111.	x = myObject.student.address;
+112.	cell.innerHTML = x;
+113.	row.appendChild(cell);
+114.	tbo.appendChild(row);
+115.	tab.appendChild(tbo);
+116.	root.appendChild(tab);
+117.	}
+118.	else{
+119.	window.alert("Record not found\nPlease enter a valid Primary Key.");
+120.	}
+121.	}
+122.	}
+123.	}</pre> 
+       </div> 
+      </div>
+     </div> 
+     <hr> <p><a href="./SjsuRadkProjectsummary.html">RADK Project</a></p> 
+     <hr> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876015/21365357.jpg">FolderStructure.jpg</a> (image/pjpeg) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876015/21364861.jpg">FolderStructure.jpg</a> (image/pjpeg) 
+      <br> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

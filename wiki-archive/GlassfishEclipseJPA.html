@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassfishEclipseJPA</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GlassfishEclipseJPA-SimpleJPAProjectinEclipsewithGlassFish"></a>Simple JPA Project in Eclipse with GlassFish</h1> 
+     <hr> <p>This document covers creation of a simple JPA project using GlassFish v3 Prelude and its built in EclipseLink implementation.</p> <p>If you have the GlassFish for Eclipse bundle, skip to <a href="#GlassfishEclipseJPA-ConfigurePreferences">Configure Preferences</a></p> 
+     <div> 
+      <ul> 
+       <li><a href="#GlassfishEclipseJPA-SimpleJPAProjectinEclipsewithGlassFish">Simple JPA Project in Eclipse with GlassFish</a></li> 
+       <ul> 
+        <li><a href="#GlassfishEclipseJPA-Prerequisites">Prerequisites</a></li> 
+        <li><a href="#GlassfishEclipseJPA-ConfigurePreferences">Configure Preferences</a></li> 
+        <li><a href="#GlassfishEclipseJPA-StarttheGlassFishServer">Start the GlassFish Server</a></li> 
+        <li><a href="#GlassfishEclipseJPA-ConfigureDataSource">Configure DataSource</a></li> 
+        <li><a href="#GlassfishEclipseJPA-CreateaNewJPAProject">Create a New JPA Project</a></li> 
+        <li><a href="#GlassfishEclipseJPA-CreateaNewEntityClass">Create a New Entity Class</a></li> 
+        <li><a href="#GlassfishEclipseJPA-GenerateDDL">Generate DDL</a></li> 
+        <li><a href="#GlassfishEclipseJPA-VerifyCreationofNewTable">Verify Creation of New Table</a></li> 
+        <li><a href="#GlassfishEclipseJPA-Troubleshooting">Troubleshooting</a></li> 
+        <li><a href="#GlassfishEclipseJPA-InstructionsforGlassFishv2">Instructions for GlassFish v2</a></li> 
+        <li><a href="#GlassfishEclipseJPA-OtherJPA%2CEclipseLink%2CandDaliArticles">Other JPA, EclipseLink, and Dali Articles</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="GlassfishEclipseJPA-Prerequisites"></a>Prerequisites</h2> <p><em>If you have the GlassFish for Eclipse bundle, skip this step</em></p> 
+     <ul> 
+      <li>Download and Install Eclipse IDE <a href="http://www.eclipse.org/downloads">http://www.eclipse.org/downloads</a></li> 
+      <li>Install the GlassFish Plugin for Eclipse from within the Servers view using the New-&gt;Server menu. Details and troubleshooting for this step available at <a href="https://glassfishplugins.java.net/eclipse34/index.html#getting">https://glassfishplugins.java.net/eclipse34/index.html#getting</a></li> 
+      <li>Download the GlassFish v3 Prelude Server from within the New Servers wizard registration. Basic details available at <span class="error">Cannot resolve external resource into attachment.</span></li> 
+     </ul> <h4><a name="GlassfishEclipseJPA-ConfigurePreferences"></a>Configure Preferences</h2> 
+     <ul> 
+      <li>Open the preferences dialog and set the <em>Start the JavaDB database process when Starting GlassFish Server</em> to true. Details available at <a href="https://glassfishplugins.java.net/eclipse34/index.html#4">https://glassfishplugins.java.net/eclipse34/index.html#4</a></li> 
+     </ul> <h4><a name="GlassfishEclipseJPA-StarttheGlassFishServer"></a>Start the GlassFish Server</h2> 
+     <ul> 
+      <li>In the Servers View, right-click on the new GlassFish v3 Prelude entry and choose Start. This will Start the GlassFish server and the database as well.</li> 
+     </ul> <h4><a name="GlassfishEclipseJPA-ConfigureDataSource"></a>Configure DataSource</h2> <p><em>If you have the GlassFish for Eclipse bundle, skip this step</em></p> 
+     <ul> 
+      <li>Register the preconfigured GlasFish v3 Prelude DerbyPool as a Data Source for use within Eclipse. Details available at <a href="https://glassfishplugins.java.net/eclipse34/index.html#12">https://glassfishplugins.java.net/eclipse34/index.html#12</a>.</li> 
+      <li>Be sure your jdbc connection info in the wizard contains these values: 
+       <ul> 
+        <li> 
+         <ul> 
+          <li>URL:* jdbc:derby://localhost:1527/sun-appserv-samples;create=true</li> 
+          <li>Database Name:* sun-appserv-samples</li> 
+          <li>Password:* APP</li> 
+          <li>User ID:* APP</li> 
+         </ul> </li> 
+       </ul> </li> 
+     </ul> <h4><a name="GlassfishEclipseJPA-CreateaNewJPAProject"></a>Create a New JPA Project</h2> 
+     <ul> 
+      <li>From the Main Menu, choose File-&gt;New-&gt;Other...</li> 
+      <li>In the popup wizard, choose JPA-&gt;JPA Project</li> 
+      <li>Choose a name and target the GlassFish v3 Prelude Server <span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20876092/21364875.png" style="border: 0px solid black"></span></li> 
+      <li>On Page 2 in the wizard 
+       <ul> 
+        <li>Choose EclipseLink as the Platform and the DB connection you defined above</li> 
+        <li>Use JPA implementation provided by the server runtime (you can ignore the warning about no EJB 3)</li> 
+        <li>Leave the default of Annotated classes must be listed in persistence.xml <span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20876092/21364876.png" style="border: 0px solid black"></span></li> 
+       </ul> </li> 
+      <li>Finish the wizard - you can say yes to the question of whether it is ok to switch to the JPA perspective</li> 
+     </ul> <h4><a name="GlassfishEclipseJPA-CreateaNewEntityClass"></a>Create a New Entity Class</h2> 
+     <ul> 
+      <li>From the Main Menu, choose File-&gt;New-&gt;Other...</li> 
+      <li>In the popup wizard, choose JPA-&gt;Entity</li> 
+      <li>Enter a name and package name</li> 
+      <li>On page 2, add 2 fields, one of which is a key field <span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20876092/21364878.png" style="border: 0px solid black"></span></li> 
+      <li>Finish the wizard</li> 
+     </ul> <h4><a name="GlassfishEclipseJPA-GenerateDDL"></a>Generate DDL</h2> 
+     <ul> 
+      <li>Right click on project node, choose JPA Tools-&gt;Generate DDL...</li> 
+      <li>Say ok to the warning that you are about to create new tables</li> 
+     </ul> <h4><a name="GlassfishEclipseJPA-VerifyCreationofNewTable"></a>Verify Creation of New Table</h2> 
+     <ul> 
+      <li>Expand the node in the data source explorer and see the new table <span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20876092/21364877.png" style="border: 0px solid black"></span></li> 
+     </ul> <h4><a name="GlassfishEclipseJPA-Troubleshooting"></a>Troubleshooting</h2> 
+     <ul> 
+      <li>Make sure your GlassFish server is running. If it is not, you will see lots of exceptions in the generation process, but it may not be apparent that the failure is due to the fact that the server is not running.</li> 
+      <li>Make sure your JavaDB database server is running. If it is not, you will see lots of connection exceptions or password exceptions, but you may not realize that it is because the server is not running.</li> 
+      <li>Specification of classes in the persistence.xml is required. If they are not specified there, generation will go through without errors, but no tables will be generated. <em>(EclipseLink team is looking at improving this)</em></li> 
+      <li>Specification of other generation properties in persistence.xml is mostly ignored when doing generation in this way <em>(From EclipseLink team - Once we have a wizard for DDL Generation, this can be made more clear. Text could also be added to the Persistence XML Editor Schema Generation tab.)</em></li> 
+      <li>Populating the provider in persistence.xml with the EclipseLink values when a user chooses that platform in Eclipse does not happen today <em>(EclipseLink team will work on improving this)</em></li> 
+      <li>As of today, there is no comparable integration for TopLink Essentials with these generation tools as there is only the Generic Platform and the EclipseLink Platform</li> 
+      <li>As of today, the EclipseLink jars must be provided by the user (or in our case, by the GlassFish server). Even though EclipseLink Platform is built into Eclipse, the runtime for that platform must be supplied separately. <em>(From EclipseLink team: We looked at doing this in our upcoming 2.1 release, but it turned out to be a non-trivial effort, so will probably be done for our next major release in June.)</em></li> 
+     </ul> <h4><a name="GlassfishEclipseJPA-InstructionsforGlassFishv2"></a>Instructions for GlassFish v2</h2> 
+     <ul> 
+      <li>You can follow these instructions for v2 as well, but you must first 
+       <ul> 
+        <li>Download <a href="https://glassfish.java.net/public/downloadsindex.html">GlassFish v2</a> (the Install Server button is not present in Eclipse for v2)</li> 
+        <li>Download <a href="http://www.eclipse.org/eclipselink/downloads">EclipseLink</a>, then install it into your GlassFish server's lib directory, then restart your GlassFish server</li> 
+       </ul> </li> 
+     </ul> <h4><a name="GlassfishEclipseJPA-OtherJPA%2CEclipseLink%2CandDaliArticles"></a>Other JPA, EclipseLink, and Dali Articles</h2> 
+     <ul> 
+      <li><a href="http://wiki.eclipse.org/EclipseLink/Examples/JPA/GlassFishV2_Web_Tutorial">EclipseLink JPA Deployed on GlassFish 2.1 using Eclipse WTP</a></li> 
+      <li><a href="http://wiki.eclipse.org/EclipseLink/Examples/JPA/GlassFishV3_Web_Tutorial">EclipseLink JPA Deployed on GlassFish 3 using Eclipse WTP</a></li> 
+      <li><a href="http://java.sun.com/developer/technicalArticles/J2SE/Desktop/persistenceapi/">Using the Java Persistence API in Desktop Applications</a></li> 
+      <li><a href="http://www.eclipse.org/dali/docs/tutorial/jsf/dali_jsf_tutorial.htm">Dali Object-Relational Mapping Tool</a></li> 
+     </ul> 
+     <hr> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876092/21364762.png">NewJPAProjectPage2.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876092/21364763.png">NewJPAProject.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876092/21364764.png">InstallServer.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876092/21364761.png">DBExplorer.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876092/21364765.png">NewEntity.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876092/21364874.png">InstallServer.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876092/21364876.png">NewJPAProjectPage2.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876092/21364877.png">DBExplorer.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876092/21364875.png">NewJPAProject.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876092/21364878.png">NewEntity.png</a> (image/png) 
+      <br> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 09, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:44.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : V3PackagingReviewSahoo</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="V3PackagingReviewSahoo-GlassFishv3PreludeFileLayoutandPackagingReview"></a>GlassFish v3 Prelude File Layout and Packaging Review</h1> <h4><a name="V3PackagingReviewSahoo-Document%3A"></a>Document: <a href="http://wiki.glassfish.java.net/attach/V3FunctionalSpecs/V3PreludePackagingFileLayout.txt?version=5">http://wiki.glassfish.java.net/attach/V3FunctionalSpecs/V3PreludePackagingFileLayout.txt?version=5</a></h3> <h4><a name="V3PackagingReviewSahoo-Reviewer%3ASahoo@sun.com"></a>Reviewer: Sahoo@sun.com</h3> <h4><a name="V3PackagingReviewSahoo-Reviewdate%3A16July2008"></a>Review date: 16 July 2008</h3> <h4><a name="V3PackagingReviewSahoo-Responsedate%3A28July2008"></a>Response date: 28 July 2008</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item </th> 
+         <th class="confluenceTh"> Type </th> 
+         <th class="confluenceTh"> Comment </th> 
+         <th class="confluenceTh"> Response </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.5.1.2 </td> 
+         <td class="confluenceTd"> Clarification </td> 
+         <td class="confluenceTd"> What about files that are not OSGi bundles? e.g., scripts, docs, etc? How are they mapped to IPS packages? </td> 
+         <td class="confluenceTd">Complete package manifests will be provided as separate document, one pager intends to provide only high level overview of package/functionality mapping. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3.1 </td> 
+         <td class="confluenceTd"> Clarification / Enhancement </td> 
+         <td class="confluenceTd"> On Ubuntu, when certain packages are not installed, are users told what package to install when they run the missing commands? e.g., let's say, webservice package is not installed, but it is available in repository. When user runs wscompile, what is the response? Is it "command not found, " or something like "this package is not installed yet, please run sudo apt-get glassfish-ws-pkg." </td> 
+         <td class="confluenceTd">Ubuntu distribution is now outside of the scope of one-pager since it will be post-Prelude deliverable. However, providing stub scripts would be good feature to have. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.5.1.1 </td> 
+         <td class="confluenceTd"> Clarification </td> 
+         <td class="confluenceTd"> Why do we need a bin dir under &lt;install-dir&gt;? </td> 
+         <td class="confluenceTd">Main purpose of this unified bin directory is to enable user to add only one single location to their PATH and have access to all commonly used utilities for any </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.5.1.1 </td> 
+         <td class="confluenceTd"> Clarification </td> 
+         <td class="confluenceTd"> On what basis do we decide what goes in &lt;install-dir&gt;/bin? </td> 
+         <td class="confluenceTd">Guideline is to add any utility which is expected to be commonly invoked by end user there. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.5.1.1 </td> 
+         <td class="confluenceTd"> Clarification </td> 
+         <td class="confluenceTd"> Why can't we retain backward compatibility by having j2ee.jar, javaee.jar and appserv-ext.jar in &lt;install-dir&gt;/glassfish/lib dir? Not having them will cause major compatibility issues for existing build scripts including our QA scripts. </td> 
+         <td class="confluenceTd">Accepted, we'll add stub jar files in the lib directory. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.5.1.1 </td> 
+         <td class="confluenceTd"> Clarification </td> 
+         <td class="confluenceTd"> Why do we not create directories like &lt;domain-dir&gt;/lib/ext, &lt;domain-dir&gt;/classes? </td> 
+         <td class="confluenceTd">Accepted, domain file layout updated accordingly. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.5.1.2 </td> 
+         <td class="confluenceTd"> Clarification </td> 
+         <td class="confluenceTd"> Did you mean only web distribution when you said GlassFish v3 build? GlassFish v3 build also produces a full distribution, a.k.a. glassfish bundle. </td> 
+         <td class="confluenceTd">For Prelude release full glassfish bundle will not be externaly available. GF packager module will produce all the packages listed in one-pager and some of them will be shipped as part of initial distribution(s) while others will be made available only through update center. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.5.1.2 </td> 
+         <td class="confluenceTd"> Correction </td> 
+         <td class="confluenceTd"> Before finalising the package to bundles mapping, every module owners must be asked to submit their bundle list. This will go a long way in success of our product. We should not use the current bundle list for finalising the package list. </td> 
+         <td class="confluenceTd">Accepted. It is now noted that bundle list is snapshot and up-to-date mapping will be provided and maintaned separately in product manifest documents. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.5.1.2 </td> 
+         <td class="confluenceTd"> Clarification </td> 
+         <td class="confluenceTd"> Can we divide "Common utilities and components" package to two packages, viz: "Common utilities" and "Common components?" </td> 
+         <td class="confluenceTd">glassfish-common package is now separated into multiple functional areas which should implicitly address this. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.5.1.2 </td> 
+         <td class="confluenceTd"> Correction </td> 
+         <td class="confluenceTd"> org.glassfish.connectors should be moved to their own package called JCA </td> 
+         <td class="confluenceTd">Accepted, glassfish-jca package has been defined. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.5.1.2 </td> 
+         <td class="confluenceTd"> Comments </td> 
+         <td class="confluenceTd"> I think we have too many packages right now, at least in very early stage of the product. Since packages are public interfaces of the product, it will be difficult to remove any later. Should we have fewer, coarse-grained packages, each organised as per functional area to begin with? Then later on, we can divide them into smaller ones if we like? e.g., I would like to see something like this: glassfish-nucleus, glassfish-admin, glassfish-web-support, glassfish-ejb-support, glassfish-jdbc, glassfish-jca, glassfish-javaee, glassfish-docs </td> 
+         <td class="confluenceTd">Care was taken to define packages which will not have to be removed later although it is possible to further split some of them. Current package boundaries are designed to accomodate multi-tier installations once we introduce clustered environment and to accomodate proposed product distributions. We can always define package groups or wrapper packages to provide better user experience in Update center UI, so that would mitigate concerns about package number. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 09, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:48.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

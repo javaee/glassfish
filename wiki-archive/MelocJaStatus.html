@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : MelocJaStatus</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>&lt;font size="+1"&gt; <a href="OverviewMelocJa.html" title="OverviewMelocJa">Overview Meloc</a> &lt;/font&gt;</p> <p><b>&lt;font size="+2"&gt;</b></p>
+     <div class="panel" style="background-color: #E6E6FA;border-width: 1px;">
+      <div class="panelContent" style="background-color: #E6E6FA;">
+       <b> <p><font color="#ff9900">metro.java.net 上の翻訳対象ドキュメント</font></p> </b>
+      </div>
+     </div><b>&lt;/font&gt;</b><br> &lt;font size="+1"&gt;優先度が高いと思われる物から順に並べています。<br> 第一期マイルストーン分*<font color="#ff0000">（完了 2009 年 5 月 27 日）</font>*<p></p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">&lt;font size="+1"&gt; Page &lt;/font&gt;</th> 
+         <th class="confluenceTh">&lt;font size="+1"&gt; Translater &lt;/font&gt;</th> 
+         <th class="confluenceTh">&lt;font size="+1"&gt; Status (dd/mm/yy) &lt;/font&gt; </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-index.html?rev=506">トップ </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; Captain Jack Sparrow &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; <b><font color="#ff0000">Update to the revision 506 in progress 27/05/2009</font></b> &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-discover-index.html?rev=473">Metro とは ? </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; takaya &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https://metro.java.net/ja/discover/">07/03/2009 </a> &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="http:--wikis.glassfish.org-metro-Wiki.jsp?page=Roadmap">Metro ロードマップ </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; ogino &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="http://wikis.glassfish.org/metro/Wiki.jsp?page=RoadmapJa">23/03/2009 </a> &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-discover-screencasts.html?rev=222">スクリーンキャスト </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; ogino &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https://metro.java.net/ja/discover/screencasts.html">19/03/2009 </a> &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-use-index.html?rev=370">Metro を使う。 </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; Captain Jack Sparrow &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https://metro.java.net/ja/use/">14/03/2009 </a> &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-use-issue-tracker.html?rev=183">課題トラッカー </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; Captain Jack Sparrow &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https://metro.java.net/ja/use/issue-tracker.html?version=2">02/04/2009 </a> &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-getting-started-index.html?rev=122">Metro ではじめよう </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; takaya &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https://metro.java.net/ja/getting-started/">14/03/2009 </a> &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-getting-started-intro.html?rev=195">Metro による Web サービスの作成 </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; takaya &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https://metro.java.net/ja/getting-started/intro.html">21/04/2009 </a> &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-getting-started-basic.html?rev=125">Metro ではじめよう Metro の環境での JAX-WS アプリケーションのビルド </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; stera &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt;<a href="https://metro.java.net/ja/getting-started/basic.html">02/04/2009 </a>&lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-getting-started-build.html?rev=99">Metro のビルド </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; stera &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https://metro.java.net/ja/getting-started/build.html">08/04/2009 </a> &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-getting-started-WSIT_Download_Build_Install.html?rev=99">Metro ではじめよう Metro のインストール </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; takaya &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https://metro.java.net/ja/getting-started/WSIT_Download_Build_Install.html">27/05/2009 </a> &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-getting-started-WSIT_Enabled_Example.html">Metro ではじめよう Web サービスアプリケーションで使える拡張機能 </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; Captain Jack Sparrow &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https://metro.java.net/ja/getting-started/WSIT_Enabled_Example.html">27/05/2009 </a> &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-getting-started-WSIT_Not_Enabled_Example.html?rev=99">Metro ではじめよう Metro の環境での JAX-WS アプリケーションのビルド </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; Captain Jack Sparrow &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https://metro.java.net/ja/getting-started/WSIT_Not_Enabled_Example.html">20/04/2009 </a> &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-getting-started-advanced.html?rev=125">Metro ではじめよう Web サービスアプリケーションで使える拡張機能 </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; stera &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt;<a href="https://metro.java.net/ja/getting-started/advanced.html">27/05/2009 </a>&lt;/font&gt; </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>第二期マイルストーン分　「 Metro ユーザーズガイド」（完了目標 2009 年 9 月末）<br> <b><font color="#ff0000">※ Build in progress</font></b></p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">&lt;font size="+1"&gt; Page &lt;/font&gt;</th> 
+         <th class="confluenceTh">&lt;font size="+1"&gt; Translater &lt;/font&gt;</th> 
+         <th class="confluenceTh">&lt;font size="+1"&gt; Status (dd/mm/yy) &lt;/font&gt; </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-index.html?rev=501">目次 </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; Captain Jack Sparrow &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; Translate in progress 16/01/2009 &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <b><font color="#ff9900">1. Metro 入門</font></b> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-Required_Software.html?rev=501">1.1. 必須のソフトウェア </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; stera &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; Review in progress <span class="error">[13/04/2009 |^Required_Software.html]</span> &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-What_is_WSIT_.html?rev=501">1.2. WSIT とは ? </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; stera &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; Review in progress <span class="error">[22/04/2009 |^What_is_WSIT_.html]</span> &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-How_Metro_Relates_to*NET_Windows_Communication_Foundation*WCF_.html?rev=501">1.3. Metro と .NET Windows 通信基盤 (WCF) との連携方法 </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; takaya &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; started 21/05/2009 &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-Metro_Specifications.html?rev=501">1.4. Metro 仕様 </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-How_the_Metro_Technologies_Work.html?rev=501">1.5. Metro テクノロジーは、どのように作用するか </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <b><font color="#ff9900">2. Metro の利用</font></b> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-Metro_Tools.html?rev=501">2.1. Metro ツール </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-Using_JAX_WS_from_Maven.html?rev=501">2.2. Maven から JAX-WS を使用 </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-Developing_with_NetBeans.html?rev=501">2.3. NetBeans での開発 </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-Developing_with_Eclipse.html?rev=501">2.4. Eclipse での開発 </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-Developing_with_IDEA.html?rev=501">2.5. IDEA での開発 </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-Useful_tools_for_your_toolbox.html?rev=501">2.6. あなたのツールボックス向けの、有効なツール類 </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-Logging.html?rev=501">2.7. ロギング </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-Using_JAX_WS_2_1_with_JavaSE6.html?rev=501">2.8. JavaSE6 による JAX-WS 2.1 の使用 </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-Deploying_Metro_endpoint.html?rev=501">2.9. Metro エンドポイントの配備 </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-Handlers_and_MessageContext.html?rev=501">2.10. ハンドラーとメッセージコンテキスト </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-Deploying_JAX_WS_with**.html?rev=501">2.11. さまざまなアプリケーションサーバーへの、 JAX-WS の配備 </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-Developing_client_application_with_locally_packaged_WSDL.html?rev=501">2.12. WSDL を局所的に包含された、クライアントアプリケーションの配備 </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-How_to_invoke_and_endpoint_by_overriding_endpoint_address_in_the_WSDL.html?rev=501">2.13. WSDL にあるエンドポイントアドレスの継承と呼び出しの方法 </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-Maintaining_State_in_Web_Services.html?rev=501">2.14. Web サービスにおける状態の維持 </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-FastInfoset.html?rev=501">2.15. Fastinfoset </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <b><font color="#ff9900">3.WSDL のコンパイル</font></b> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-Compiling_multiple_WSDLs_that_share_a_common_schema.html?rev=501">3.1. 共通のスキーマを共有している複数の WSDL コンパイル </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-Dealing_with_schemas_that_are_not_referenced.html?rev=501">3.2. 参照されていないスキーマの処理 </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-Customizing_XML_Schema_binding.html?rev=501">3.3.XML スキーマバインディングのカスタマイズ </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-Generating_Javadocs_from_WSDL_documentation.html?rev=501">3.4.WSDL ドキュメントからの JavaDoc 生成 </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-Passing_Java_Compiler_options_to_Wsimport.html?rev=501">3.5.Java コンパイルオプションの Wsimport への送信 </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <b><font color="#ff9900">4. SOAP</font></b> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-SOAP_headers.html?rev=501">4.1. SOAP ヘッダー </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-Schema_Validation.html?rev=501">4.2. スキーマの妥当性検証 </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <b><font color="#ff9900">5. HTTP</font></b> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-HTTP_headers.html?rev=501">5.1. HTTP ヘッダー </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-HTTP_compression.html?rev=501">5.2. HTTP の圧縮 </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-HTTP_cookies.html?rev=501">5.3. HTTP クッキー </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-HTTP_client_streaming_support.html?rev=501">5.4. HTTP クライアントストリーミングのサポート </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-Access_HTTP_headers_in_a_Handler.html?rev=501">5.5. ハンドラーによる HTTP ヘッダーへのアクセス </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-HTTP_Timeouts.html?rev=501">5.6. HTTP タイムアウト </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-HTTP_Persistent_Connections__keep_alive_.html?rev=501">5.7. HTTP 接続の永続性 (keep-alive) </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-HTTPS_HostnameVerifier.html?rev=501">5.8. HTTPS ホスト認証 </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-HTTPS_SSLSocketFactory.html?rev=501">5.9. HTTPS SSL ソケットファクトリー </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-HTTP_address_in_soap_address_and_import_locations.html?rev=501">5.10. soap における HTTP アドレス : アドレスとロケーションのインポート </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <b><font color="#ff9900">6.0 サイズが大きいデータの処理</font></b> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-Receiving_large_SOAP_requests.html?rev=501">6.1. サイズが大きい SOAP リクエスト </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-Binary_Attachments__MTOM_.html?rev=501">6.2. バイナリーファイルの添付 (MTOM) </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-Large_Attachments.html?rev=501">6.3. サイズが大きいファイルの添付 </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <b><font color="#ff9900">7. Web コンテナーと NetBeans IDE での Metro 使用例</font></b> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-Registering_GlassFish_with_the_IDE.html?rev=501">7.1. IDE での GlassFish の登録 </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-Creating_a_Web_Service.html?rev=501">7.2. Web サービスの作成 </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-Configuring_Metro_s_WSIT_Features_in_the_Web_Service.html?rev=501">7.3. Web サービスにおける Metro WSIT 機能の設定 </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-Deploying_and_Testing_a_Web_Service.html?rev=501">7.4. Web サービスの配備とテスト </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-Creating_a_Client_to_Consume_a_WSIT_Enabled_Web_Service.html?rev=501">7.5. Web サービスで利用可能な WSIT を取り込む為のクライアントの作成 </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <b><font color="#ff9900">8. 起動と設定</font></b> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-What_is_a_Server_Side_Endpoint_.html?rev=501">8.1. サーバーサイドエンドポイントとは ? </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-Creating_a_Client_from_WSDL.html?rev=501">8.2. WSDL からのクライアントの作成 </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-Client_From_WSDL_Examples.html?rev=501">8.3. WSDL からのクライアント例 </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <b><font color="#ff9900">9. メッセージ最適化</font></b> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-Creating_a_MTOM_Web_Service.html?rev=501">9.1. MTOM Web サービスの作成 </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-Configuring_Message_Optimization_in_a_Web_Service.html?rev=501">9.2. Web サービスにおけるメッセージ最適化の設定 </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-Deploying_and_Testing_a_Web_Service_with_Message_Optimization_Enabled.html?rev=501">9.3. メッセージ最適化が可能にされた Web サービスの配備とテスト </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-Creating_a_Client_to_Consume_a_Message_Optimization_enabled_Web_Service.html?rev=501">9.4. メッセージ最適化が可能にされた Web サービスを取り込む為のクライアントの作成 </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-Message_Optimization_and_Secure_Conversation.html?rev=501">9.5. メッセージの最適化と安全な対話 </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <b><font color="#ff9900">10. SOAP/TCP Web サービストランスポート</font></b> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-What_is_SOAP_TCP_.html?rev=501">10.1 SOAP/TCP とは ? </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-Creating_a_SOAP_TCP_enabled_Web_Service.html?rev=501">10.2. Web サービスを利用可能にされた SOAP/TCP の作成 </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-Configuring_Web_Service_to_be_able_to_operate_over_SOAP_TCP_transport.html?rev=501">10.3. SOAP/TCP トランスポート上での操作を可能にする Web サービスの設定 </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-Deploying_and_Testing_a_Web_Service_with_SOAP_TCP_Transport_Enabled.html?rev=501">10.4. SOAP/TCP トランスポートによって利用可能な Web サービスの配備とテスト </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-Creating_a_Client_to_Consume_a_SOAP_TCP_enabled_Web_Service.html?rev=501">10.5. SOAP/TCP で利用可能な Web サービスを取り込むためのクライアントの作成 </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-Configuring_Web_Service_client_to_operate_over_SOAP_TCP_transport.html?rev=501">10.6. SOAP/TCP トランスポート上で操作するための、 Web サービスクライアントの設定 </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <b><font color="#ff9900">11. 信頼性のあるメッセージングの使用</font></b> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-Introduction_to_Reliable_Messaging.html?rev=501">11.1. 信頼性のあるメッセージング入門 </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-Configuring_Web_Service_Endpoint.html?rev=501">11.2. Web サービスエンドポイントの設定 </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-Configuring_Web_Service_Client.html?rev=501">11.3. Web サービスクライアントの設定 </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-Creating_Web_Service_Providers_and_Clients_that_use_Reliable_Messaging.html?rev=501">11.4. 信頼性のあるメッセージングを使用した、 Web サービスプロバイダーとクライアントの作成 </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-Using_Secure_Conversation_With_Reliable_Messaging.html?rev=501">11.5. 信頼性のあるメッセージングによる安全な対話の使用 </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <b><font color="#ff9900">12. WSIT セキュリティの使用</font></b> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-Configuring_Security_Using_NetBeans_IDE.html?rev=501">12.1. NetBeans IDE 使用によるセキュリティの設定 </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-Summary_of_Configuration_Requirements.html?rev=501">12.2. 設定必要条件における要点 </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-Security_Mechanisms.html?rev=501">12.3. セキュリティの機構 </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-Configuring_SSL_and_Authorized_Users.html?rev=501">12.4. SSL 権限ユーザーの設定 </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-Configuring_Keystores_and_Truststores.html?rev=501">12.5. キーストアとトラストストアの設定 </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-_Configuring_Kerberos_for_Glassfish_and_Tomcat.html?rev=501">12.6. Glassfish 及び Tomcat 向け Kerberos の設定 </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-Securing_Operations_and_Messages.html?rev=501">12.7. 操作とメッセージの安全性 </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-Configuring_A_Secure_Token_Service__STS_.html?rev=501">12.8. セキュアトークンサービス (STS) の設定 </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-Example_Applications.html?rev=501">12.9. アプリケーション事例 </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <b><font color="#ff9900">13. WSIT セキュリティ機能 : 先進的なトピック</font></b> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-Using_Security_Mechanisms.html?rev=501">13.1. セキュリティ機構の使用 </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-Understanding_WSIT_Configuration_Files.html?rev=501">13.2. WSIT 設定ファイルを理解する </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-Security_Mechanism_Configuration_Options.html?rev=501">13.3. セキュリティ機構設定のオプション </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <b><font color="#ff9900">14. NetBeans IDE を利用せずに、 Web コンテナーを使用している WSIT の事例 </font></b> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-Environment_Configuration_Settings.html?rev=501">14.1. 環境構成の設定 </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-WSIT_Configuration_and_WS_Policy_Assertions.html?rev=501">14.2. WSIT 設定と WS ポリシーのアサーション </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-Creating_a_Web_Service_without_NetBeans.html?rev=501">14.3. NetBeans なしの Web サービスの作成 </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-Building_and_Deploying_the_Web_Service.html?rev=501">14.4. Web サービスのビルドと配備 </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-Creating_a_Web_Service_Client.html?rev=501">14.5. Web サービスクライアントの作成 </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-Building_and_Deploying_a_Client.html?rev=501">14.6. クライアントのビルドと配備 </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-Running_a_Web_Service_Client.html?rev=501">14.7. Web サービスクライアントの実行 </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-Undeploying_a_Web_Service.html?rev=501">14.8. Web サービスの配備取消し </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <b><font color="#ff9900">15. WCF クライアントの利用による Metro サービスへのアクセス</font></b> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-Creating_a_WCF_Client.html?rev=501">15.1. WCF クライアントの作成 </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <b><font color="#ff9900">16. データの規約</font></b> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-Web_Service___Start_from_Java.html?rev=501">16.1. Java から Web サービスを始める </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-Web_Service___Start_from_WSDL.html?rev=501">16.2. WSDL から Web サービスを始める </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-Customizations_for_WCF_Service_WSDL.html?rev=501">16.3. WCF サービス WSDL 向けのカスタマイズ </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-Developing_a_Microsoft__NET_Client.html?rev=501">16.4. Microsoft .NET クライアントの開発 </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-BP_1_1_Conformance.html?rev=501">16.5. BP 1.1 の適応性 </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <b><font color="#ff9900">17. 不可分なトランザクションの使用</font></b> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-About_the_basicWSTX_Example.html?rev=501">17.1. WSTX の基本的な例について </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-Building__Deploying_and_Running_the_basicWSTX_Example.html?rev=501">17.2. WSTX 基本的な例のビルド、配備及び、実行 </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <b><font color="#ff9900">18. ポリシーの管理</font></b> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-Managing_Policies.html?rev=501">18.1. ポリシーの管理 </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <b><font color="#ff9900">19. Spring での Metro の利用</font></b> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-Spring_Introduction.html?rev=501">19.1. Spring 入門 </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-Using_Metro_With_Spring_and_NetBeans_6_1.html?rev=501">19.2. Spring と NetBeans 6.1 での Metro の利用 </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-Using_Metro_With_Spring_and_NetBeans_6_5.html?rev=501">19.3. Spring と NetBeans 6.5 での Metro の利用 </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-Using_WSIT_Functionality_With_Spring.html?rev=501">19.4. Spring での WSIT 機能性の利用 </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <b><font color="#ff9900">20. 追加情報</font></b> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; <a href="https:--metro.java.net-source-browse-*checkout*-metro-trunk-www-guide-Links_to_more_information.html?rev=501">20.1. 更に追加された情報へのリンク </a> &lt;/font&gt; </td> 
+         <td class="confluenceTd"> &lt;font size="+1"&gt; &lt;/font&gt; </td> 
+         <td class="confluenceTd">&lt;font size="+1"&gt; &lt;/font&gt; </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>第三期マイルストーン分（完了目標 2009 年 12 月末）<br> <b><font color="#ff0000">※進捗表は、マイルストーン毎に追加して行きます。</font></b>&lt;/font&gt;</p> 
+     <hr> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875920/21364837.gif">bootstrappingConfiguration_ja.gif</a> (image/gif) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875920/21364836.gif">WSITwebServicesFeatures_ja.gif</a> (image/gif) 
+      <br> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 08, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

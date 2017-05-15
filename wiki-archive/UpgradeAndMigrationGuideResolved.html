@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : UpgradeAndMigrationGuideResolved</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="UpgradeAndMigrationGuideResolved-ResolvedCommentsfortheUpgradeandMigrationGuide"></a>Resolved Comments for the Upgrade and Migration Guide</h2> <p>The following table lists comments that have been resolved for the v3 <a href="UpgradeAndMigrationGuide.html" title="UpgradeAndMigrationGuide">Upgrade and Migration Guide</a>.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Comment ID </th> 
+         <th class="confluenceTh"> Date </th> 
+         <th class="confluenceTh"> Version </th> 
+         <th class="confluenceTh"> Section, Page Number/URL </th> 
+         <th class="confluenceTh"> Comment </th> 
+         <th class="confluenceTh">&nbsp;</th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> tjquinn-001 </td> 
+         <td class="confluenceTd"> 24-Nov-2009 </td> 
+         <td class="confluenceTd"> v3 </td> 
+         <td class="confluenceTd"> p. 13, last paragraph </td> 
+         <td class="confluenceTd"> Not only should users retrieve the stubs again after upgrading the server, they should also upgrade the GlassFish system files on their client. They can use the ''package-appclient' script which creates a JAR file which users can then expand on their remote systems. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> tjquinn-002 </td> 
+         <td class="confluenceTd"> 24-Nov-2009 </td> 
+         <td class="confluenceTd"> v3 </td> 
+         <td class="confluenceTd"> p. 14, reviewer remark 1-2: </td> 
+         <td class="confluenceTd"> The two paragraphs which follow can remain. We still do not support cross-version interop. with the RMI-IIOP protocol as far as I know. But the question is really moot because of tjquinn-001 - users need the v3 runtime system files on their remote clients anyway, and they include the v3 RMI-IIOP bits. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>The following table lists comments that have been resolved for earlier releases of the <a href="UpgradeAndMigrationGuide.html" title="UpgradeAndMigrationGuide">Upgrade and Migration Guide</a>.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Comment ID </th> 
+         <th class="confluenceTh"> Section, Page Number/URL </th> 
+         <th class="confluenceTh"> Comment </th> 
+         <th class="confluenceTh">Status – (<font color="lime">RESOLVED</font>/<font color="red">UNRESOLVED</font>) </th> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> 1 </th> 
+         <th class="confluenceTh"> Table 2-2, page 32 </th> 
+         <th class="confluenceTh"> change "-V" to "-V or -v" ; support for -v option was added - one of the issues in <a href="http://bt2ws.central.sun.com/CrPrint-6568819">http://bt2ws.central.sun.com/CrPrint-6568819</a> <p> </p></th> 
+         <th class="confluenceTh"> RESOLVED </th> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> 2 </th> 
+         <th class="confluenceTh"> Table 2-2, page 32 </th> 
+         <th class="confluenceTh"> remove <del>w/</del><del>adminpassword entry. This option is deprecated. Use -f/</del>-passwordfile instead. </th> 
+         <th class="confluenceTh"> RESOLVED </th> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> 3 </th> 
+         <th class="confluenceTh"> Table 2-2, page 32 </th> 
+         <th class="confluenceTh"> remove <del>m/</del><del>masterpassword. This option is deprecated. Use -f/</del>-passwordfile instead. </th> 
+         <th class="confluenceTh"> RESOLVED </th> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> 4 </th> 
+         <th class="confluenceTh"> Table 2-2, page 32 </th> 
+         <th class="confluenceTh"> Add <del>f/</del>-passwordfile entry. This option is currently missing. </th> 
+         <th class="confluenceTh"> RESOLVED </th> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> 5 </th> 
+         <th class="confluenceTh"> Table 2-2, page 32 </th> 
+         <th class="confluenceTh"> Remove entries -d, -n, -e, -j and -p . These options are related to certificate migration which is not supported. </th> 
+         <th class="confluenceTh"> RESOLVED </th> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> 6 </th> 
+         <th class="confluenceTh"> Table 2-2, page 32 </th> 
+         <th class="confluenceTh"> Remove <del>i/</del>-clinstances. Only present in 7.x but 7.x -&gt; 9.1 upgrade not supported </th> 
+         <th class="confluenceTh"> RESOLVED </th> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> 7 </th> 
+         <th class="confluenceTh"> Upgrade Tool Interfaces, page 28 </th> 
+         <th class="confluenceTh"> Add -c option must be the first option on command line to use asupgrade's CLI </th> 
+         <th class="confluenceTh"> RESOLVED </th> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> 8 </th> 
+         <th class="confluenceTh"> Upgrade Rollback, page 30 </th> 
+         <th class="confluenceTh"> How does one cancel an upgrade in CLI mode ? Might have to document that it only applies when GUI is used. </th> 
+         <th class="confluenceTh"> RESOLVED </th> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> 9 </th> 
+         <th class="confluenceTh"> To Upgrade from the Command Line, page 31 </th> 
+         <th class="confluenceTh"> Remove options from command line(no longer used): --domain, --adminpassword, --masterpassword, --targetnsspwdfile, --nsspwdfile, --jkspwdfile, --capwdfile, --clinstancefiles </th> 
+         <th class="confluenceTh"> RESOLVED </th> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> 10 </th> 
+         <th class="confluenceTh"> To Upgrade from the Command Line, page 32 </th> 
+         <th class="confluenceTh"> After table 2-2 (or somewhere) add text to note about detailed usage summary. </th> 
+         <th class="confluenceTh"> RESOLVED </th> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> 11 </th> 
+         <th class="confluenceTh"> Example 2, page 33 </th> 
+         <th class="confluenceTh"> Remove/modify example since options are unsupported. </th> 
+         <th class="confluenceTh"> RESOLVED </th> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> 12 </th> 
+         <th class="confluenceTh"> To Upgrade using the Upgrade Tool Wizard, page 33 </th> 
+         <th class="confluenceTh"> This entire section needs to be modified to match the corresponding help window. Many of steps have been removed. </th> 
+         <th class="confluenceTh"> RESOLVED </th> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> 13 </th> 
+         <th class="confluenceTh"> To Upgrade a Cluster, page 34 </th> 
+         <th class="confluenceTh"> cliinstance.conf applies to 7.X which is not supported for upgrading. So much of this section needs to be removed. </th> 
+         <th class="confluenceTh"> RESOLVED </th> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> 14 </th> 
+         <th class="confluenceTh"> Upgrade Terminology, page 29 </th> 
+         <th class="confluenceTh"> On Windows, AS_DEF_DOMAINS is defined in asenv.bat (there is no asconf.env). Show file name for each OS. </th> 
+         <th class="confluenceTh"> RESOLVED </th> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>Return to <a href="GlassFishDocs.html" title="GlassFishDocs">main comments page</a></p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 02, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

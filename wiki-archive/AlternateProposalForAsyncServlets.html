@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : AlternateProposalForAsyncServlets</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="AlternateProposalForAsyncServlets-Alternateproposal"></a>Alternate proposal</h2> 
+     <ul> 
+      <li>The <tt>@WebServlet</tt> and <tt>@ServletFilter</tt> annotations would have additional attributes - <tt>supportsAsync</tt> that is a <tt>boolean</tt> with a default value of <tt>false</tt> and a <tt>timeout</tt> will also be on the <tt>@WebServlet</tt> 
+       <ul> 
+        <li>When <tt>supportsAsync</tt> is set to true the application can start async processing in a separate thread by calling <tt>startAsync</tt> (see below) passing it a reference to the request and response objects and then exit from the container on the original thread. This means that the response will traverse (in reverse order) the same filters (or filter chain) that were traversed on the way in. This will be the filters' <b>only</b> shot at modifying the response (e.g., by adding response headers). The container MUST ensure that no other thread can read from the request or write to the response till the original thread has completed processing. If the request / response is being wrapped, the wrapper MUST ensure the requirement of concurrent access as defined above. This will ensure that no two threads are reading from the request or writing to the response stream at the same time. If the new thread that the application creates, tries to read from the request or write to the response the operation will block till the original thread has completed processing. The response isn't committed till <tt>doneAsync</tt> (see below) is called on request. (Should we block all methods that reflect properties that can change? I think so. What do others think?).</li> 
+        <li>It is illegal to dispatch from a Servlet with <tt>supportsAsync=false</tt> to one in which <tt>supportsAsync</tt> is set to true. However dispatching from a servlet that has <tt>supportsAsync=true</tt> to one where <tt>supportsAsync</tt> is set to <tt>false</tt> is allowed.</li> 
+        <li>From the new thread that the application created you could write directly to the response, on a different thread than the one that was used for the initial request. This thread knows nothing about any filters. If a filter wanted to manipulate the response in the new thread, it would have to wrap the response when it was processing the initial request "on the way in", and passed the wrapped response to the next filter in the chain, and eventually to the servlet. So if the response was wrapped (possibly multiple times, once per filter), and you process the request and write directly to the response, you are really writing to the response wrapper(s), i.e., any output added to the response will still be processed by the response wrapper(s). When you read from a request in a separate thread, and add output to the response, you really read from the request wrapper(s), and write to the response wrapper(s), so any input and/or output manipulation intended by the wrapper(s) will continue to occur.</li> 
+        <li>Alternately if the application chooses to do so it can use the <tt>AsyncDispatcher</tt> to forward the request from the new thread to a resource in the container. This would enable using content generation technologies like JSP etc within the scope of the container.</li> 
+        <li><tt>timeout</tt> which if specified will be the time before which the connection is closed and the Request and Response objects can then be recycled. (We need to add more details on how timeout can be handled).</li> 
+       </ul> </li> 
+     </ul> <p>In addition to the annotation attributes we will have the following methods / classes added</p> 
+     <ul> 
+      <li><tt>ServletRequest</tt> 
+       <ul> 
+        <li>add <tt>public void startAsync()</tt>. This would ensure that the response isn't commited when you exit out of the service method. This could be used for example when you don't need any contextual information in the async thread and you write to the response from the async thread. It can also be used to just notify that the response is not closed and committed.</li> 
+        <li>add <tt>public void startAsync(Runnable r)</tt> - We need this for the following reasons -In the case where you just have a Thread that the user creates within the container then if the container is implemented in such a way that the context information is stored in <tt>ThreadLocal</tt> and is implemented as an <tt>InheritableThreadLocal</tt> all the contextual information should be available to the new thread. However in the case when the context information isn't included as <tt>ThreadLocal</tt> or if the <tt>ThreadLocal</tt> isn't of type <tt>InheritableThreadLocal</tt> then to setup the contextual information you would need to pass this in to the container and the container would initialize the context appropriately. We will also take into consideration how this works with the Workmanager when we have something available from the work manager JSR.</li> 
+        <li><tt>public AsyncDispatcher getAsyncDispatcher(String path)</tt>; - returns an instance of the <tt>AsyncDispatcher</tt> that you can use to <tt>forward</tt> the request back to the container to continue processing in the context of the container after having waited for an event to occur in the async thread. See description of the <tt>AsyncDispatcher</tt> below.</li> 
+        <li><tt>public void doneAsync()</tt> - If you called <tt>request.startAsync()</tt> then this method MUST be called to complete the async processing(commit the response etc) unless the servlet that you dispatch to has <tt>supportsAsync=false</tt>.</li> 
+        <li><tt>public boolean isAsyncSupported()</tt> - returns whether a request supports async or not.</li> 
+        <li><tt>public boolean isAsyncStarted()</tt> - returns if async processing has started on a request or not.</li> 
+        <li><tt>public void addAsyncListener(asyncListener, req)</tt> - registers a listener for notifications of timeout and doneAsync. The request is passed so that you get back the exact same request that you want via the event. This could be a wrapped request or not.</li> 
+       </ul> </li> 
+      <li><tt>AsyncDispatcher</tt> - that can be used to call forward and return to the calling async thread so that the async thread could be recycled appropriately. The <tt>AsyncDispatcher</tt> would only allow a <tt>forward</tt> and not an include and the semantics (including the filters) would be that of <tt>RequestDispatcher.forward(req, res)</tt>. Once you call <tt>AsyncDispatcher.forward(req, res)</tt>, control over the request/response objects is handed over to the target resource, as is already the case with <tt>RequestDispatcher.forward(req, res)</tt>.</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">public interface AsyncListener extends EventListener {
+
+   public void onTimeout(AsyncEvent event);
+   public void onDoneAsync(AsyncEvent event);
+
+}</pre> 
+       </div> 
+      </div>
+     </div> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">public class AsyncEvent extends EventObject {
+
+
+   public ServletRequest getRequest() {
+
+       return request;
+
+   }
+
+   public ServletResponse getResponse() {
+
+       return response;
+
+   }
+
+}</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>Dispatching from a synchronous servlet to an asynchronous would be illegal. However we can postpone the decision of throwing an <tt>IllegalStateException</tt> (or whatever exception we decide) to the point when the application calls <tt>startAsync</tt>. This would allow a servlet to either function as a synchronous or an asynchronous servlet. Also this would have to be supported in any case to enable the situation that you dispatch from a servlet that is async to a servlet that is synchronous in a completely different context.</li> 
+     </ul> 
+     <ul> 
+      <li>Suspend in JSP would not be supported by default as it is used for content generation and async processing would have to be done before you are ready to do content generation. Once you have done all the async activities and are ready to generate content using things like JSP then you would dispatch to the JSP page using the <tt>AsyncDispatcher</tt> for generating content.</li> 
+      <li>Any attempt from the async thread to write to the response blocks for as long as the original thread was still holding on to the request/response objects. This locking semantics would only be enabled when you have <tt>supportsAsync</tt> attribute set to true. This is needed to support the case where if there was a servlet today that was creating a <tt>Thread</tt> to do some activity and was waiting for that to finish before continuing processing. We would like to avoid breaking existing solutions as far as possible.</li> 
+     </ul> <p>Below are some samples -</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@WebServlet (supportsAsync=true, urlPattern="/foo")
+public class CometdServlet extends Httpervlet {
+ 
+
+    public void doPost(HttpServletRequest req, HttpServletResponse res) {
+
+        // Do initial processing
+
+        // Schedule the Comet processor.
+        
+        request.startAsync(new CometProcessor(req));
+
+    }
+
+}</pre> 
+       </div> 
+      </div>
+     </div> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">public class CometProcessor extends Thread {
+
+    public CometProcessor(HttServletRequest req) {
+
+        //...
+
+    }
+
+    public void run() {
+       HttpServletResponse res = req.getResponse();
+       //...
+
+       req.doneAsync(); 
+    }  
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>Alternately in the <tt>CometProcesor</tt> you could do a <tt>AsyncDispatcher.forward</tt> to another resource, for example a JSP page to render the output.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">public class CometProcessor extends Thread {
+
+    public CometProcessor(HttServletRequest req) {
+
+        //...
+
+    }
+
+    public void run() {
+       HttpServletResponse res = req.getResponse();
+       //...
+
+       AsyncDispatcher dispatcher = req.getAsyncDispatcher("/my.jsp");
+       
+       // Since a dispatch is being done to a JSP which by default does not support async you don't
+       // need to explicitly call req.doneAsync() in the JSP.
+       dispatcher.forward(req, res);
+    }  
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>Below is also some code for the Chat room demo (a simple version that doesn't capture all the chat room scenarios however the intent is to highlight more the usage of the APIs as opposed to the functionality of the chatroom). I have written it in two styles - one where all the chat room activities are handled by async threads that are short lived (ChatServlet / ChatHandler) and one in which you are ust using the servlet to do all the chat functionality using the APIs (NewChatServlet). Please review and provide feedback.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">package samples.async.chat;
+
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import javax.servlet.http.HttpServletRequest;
+import java.util.concurrent.ConcurrentHashMap;
+import javax.servlet.AsyncDispatcher;
+import javax.servlet.ServletResponse;
+
+
+
+public class ChatHandler implements Runnable {
+
+    private ConcurrentHashMap&lt;String, HttpServletRequest&gt; clients;
+    private HttpServletRequest req;
+    private static final String BEGIN_SCRIPT_TAG = "&lt;script type='text/javascript'&gt;\n";
+
+    private static final String END_SCRIPT_TAG = "&lt;/script&gt;\n";
+
+
+    public ChatHandler(ConcurrentHashMap cients, HttpServletRequest req) {
+	this.clients = clients;
+	this.req = req;
+    }
+
+    public void run() {
+        try {
+            req.setCharacterEncoding("UTF-8");
+        } catch (UnsupportedEncodingException ex) {
+            ex.printStackTrace();
+        }
+        String action = req.getParameter("action");
+        String name = req.getParameter("name");
+        if ("join".equals(action)) {
+
+	    // Not doing error checking for simplicity if
+	    // someone with the same name exists in the chat room
+	    // already. Not relevant to demonstrate how the startAsync
+	    // etc works.
+
+	    clients.put(name,req);
+	    notify(BEGIN_SCRIPT_TAG + toJsonp(name, "Joined") + END_SCRIPT_TAG);
+        } else if ("send".equals(action)) {
+            String message = req.getParameter("message");
+            notify(BEGIN_SCRIPT_TAG + toJsonp(name, message) + END_SCRIPT_TAG);
+	    // Need to do this cos there is already an open connection to
+	    // the client.
+            req.doneAsync();
+            
+        } else if ("disconnect".equals(action)) {
+		notify(BEGIN_SCRIPT_TAG + toJsonp(name, "Leaving") + 
+		       END_SCRIPT_TAG);
+		HttpServletRequest disconnectReq = clients.get(name);
+		disconnectReq.doneAsync();
+		clients.remove(name);
+                req.doneAsync();
+	}else {
+            try {
+                req.getServletResponse().getWriter().write("Unknown action");
+                req.doneAsync();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+
+    public void notify(String message) {
+   	//Notify all the clients of the messages
+	// Here you could simply write to the outputstream and never
+	// need to go back to the container. However in the case below
+	// we will demonstrate how to go back to the container and
+	// render output from some other servlet
+        synchronized(clients) {
+	    for(HttpServletRequest clientReq : clients.values()) {
+	        clientReq.setAttribute("com.sun.servlet.async", message);
+	        AsyncDispatcher dispatcher = clientReq.getAsyncDispatcher("/renderResponse");
+                dispatcher.forward(clientReq, clientReq.getServletResponse());
+            
+	    }
+        }
+    }
+        
+
+    private String escape(String orig) {
+     	// Encode the jsonp string appropriately for browser. For now just
+	// returning the original string
+        return orig;
+    }
+
+    private String toJsonp(String name, String message) {
+        return "window.parent.app.update({ name: \"" + escape(name) + "\", message: \"" + escape(message) + "\" });\n";
+    }
+}</pre> 
+       </div> 
+      </div>
+     </div> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">package samples.async.chat;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.concurrent.ConcurrentHashMap;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+/**
+ *
+ * @author mode
+ */
+@WebServlet(urlPatterns="/foo", supportsAsync=true)
+public class ChatServlet extends HttpServlet {
+
+    private ConcurrentHashMap&lt;String, HttpServletRequest&gt; clients;
+
+    @Override
+    public void init(ServletConfig config) throws ServletException {
+	// For simplicity we are just assuming one chat room. We could
+	// have a map of maps that represents a chat server with a
+	// map of rooms and each room in turn has a map of the clients
+    	clients = new ConcurrentHashMap();
+    }
+
+    @Override
+    public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+        res.setContentType("text/html");
+        res.setHeader("Cache-Control", "private");
+        res.setHeader("Pragma", "no-cache");
+        
+        PrintWriter writer = res.getWriter();
+        // for IE
+        writer.println("&lt;!-- Comet is a programming technique that enables web servers to send data to the client without having any need for the client to request it. --&gt;\n");
+        writer.flush();
+    }
+
+    @Override
+    public void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+        res.setContentType("text/plain");
+        res.setHeader("Cache-Control", "private");
+        res.setHeader("Pragma", "no-cache");
+
+	ChatHandler handler = new ChatHandler(clients, req);
+	req.startAsync(handler);
+    }
+    @Override
+    public void destroy() {
+        synchronized(clients) {
+            for(String name : clients.keySet()) {
+                clients.get(name).doneAsync();
+                clients.remove(name);
+            }
+        }
+    }
+}</pre> 
+       </div> 
+      </div>
+     </div> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">package samples.async.chat;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.util.concurrent.ConcurrentHashMap;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletResponse;
+import javax.servlet.AsyncDispatcher;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+/**
+ *
+
+ * @author mode
+ */
+@WebServlet(urlPatterns="/foo", supportsAsync=true)
+public class NewChatServlet extends HttpServlet {
+
+    private static final String BEGIN_SCRIPT_TAG = "&lt;script type='text/javascript'&gt;\n";
+
+    private static final String END_SCRIPT_TAG = "&lt;/script&gt;\n";
+
+    private ConcurrentHashMap&lt;String, HttpServletRequest&gt; clients;
+
+    @Override
+    public void init(ServletConfig config) throws ServletException {
+	// For simplicity we are just assuming one chat room. We could
+	// have a map of maps that represents a chat server with a
+	// map of rooms and each room in turn has a map of the clients
+    	clients = new ConcurrentHashMap();
+    }
+
+    @Override
+    public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+        res.setContentType("text/html");
+        res.setHeader("Cache-Control", "private");
+        res.setHeader("Pragma", "no-cache");
+        
+        PrintWriter writer = res.getWriter();
+        // for IE
+        writer.println("&lt;!-- Comet is a programming technique that enables web servers to send data to the client without having any need for the client to request it. --&gt;\n");
+        writer.flush();
+    }
+
+    @Override
+    public void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+        res.setContentType("text/plain");
+        res.setHeader("Cache-Control", "private");
+        res.setHeader("Pragma", "no-cache");
+                try {
+            req.setCharacterEncoding("UTF-8");
+        } catch (UnsupportedEncodingException ex) {
+            ex.printStackTrace();
+        }
+        String action = req.getParameter("action");
+        String name = req.getParameter("name");
+        if ("join".equals(action)) {
+            req.startAsync();
+
+	    // Not doing error checking for simplicity if
+	    // someone with the same name exists in the chat room
+	    // already. Not relevant to demonstrate how the startAsync
+	    // etc works.
+
+	    clients.put(name,req);
+	    notify(BEGIN_SCRIPT_TAG + toJsonp(name, "Joined") + END_SCRIPT_TAG);
+        } else if ("send".equals(action)) {
+            String message = req.getParameter("message");
+            notify(BEGIN_SCRIPT_TAG + toJsonp(name, message) + END_SCRIPT_TAG);
+            
+        } else if ("disconnect".equals(action)) {
+		notify(BEGIN_SCRIPT_TAG + toJsonp(name, "Leaving") + 
+		       END_SCRIPT_TAG);
+		HttpServletRequest disconnectReq = clients.get(name);
+		disconnectReq.doneAsync();
+		clients.remove(name);
+	}else {
+            try {
+                req.getServletResponse().getWriter().write("Unknown action");
+                req.doneAsync();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+
+    public void notify(String message) {
+   	//Notify all the clients of the messages
+	// Here you could simply write to the outputstream and never
+	// need to do a async dispatch.
+        synchronized(clients) {
+	    for(HttpServletRequest clientReq : clients.values()) {
+	        clientReq.setAttribute("com.sun.servlet.async", message);
+	        AsyncDispatcher dispatcher = clientReq.getAsyncDispatcher("/renderResponse");
+                dispatcher.forward(clientReq, clientReq.getServletResponse());
+            
+	    }
+        }
+    }
+        
+
+    private String escape(String orig) {
+        //Encode the message appropriately. For now just returning the
+	//original string
+	return orig;
+    }
+
+    private String toJsonp(String name, String message) {
+        return "window.parent.app.update({ name: \"" + escape(name) + "\", message: \"" + escape(message) + "\" });\n";
+    }
+    @Override
+    public void destroy() {
+        synchronized(clients) {
+            for(String name : clients.keySet()) {
+                clients.get(name).doneAsync();
+                clients.remove(name);
+            }
+        }
+    }
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>Invoking a web service</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@WebServlet(supportsAsync=true, urlPattern="/foo")
+public class JAXWSServlet extends HttpServlet {
+
+    public void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException {
+        ...   
+        req.startAsync((new MyHandler(req));
+    }
+}</pre> 
+       </div> 
+      </div>
+     </div> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">public class MyHandler implements Runnable {
+    HttpServletRequest req;
+
+    MyHandler(HttpSevletRequest req) {
+       this.req = req; 
+    }
+
+    public void run() {
+        //invoke web service and get return value
+        req.getAsyncDispatcher("/renderResponse).forward(req, req.getServletResponse());
+    }
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>Another example of an Async webservice request is below - </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@WebServlet(supportsAsync=true, urlPattern="/foo")
+public class JAXWSServlet extends HttpServlet {
+
+    public void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException {
+        req.startAsync();
+        StreamSource reqSource = new StreamSource(req.getInputStream());
+        Callback cbak = new Callback(req);
+        asyncProvider.invoke(reqSource, cbak, ...);
+    }
+
+}</pre> 
+       </div> 
+      </div>
+     </div> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">public class Callback implements AsyncProviderCallback {
+    HttpServletRequest servletRequest;
+        
+    // will be executed in non-servlet container's thread
+    void send(Source source) {
+       OuputStream os = servletRequest.getServletResponse().getOutputStream();
+       // write source to os 
+       servletRequest.doneAsync();
+    }
+}</pre> 
+       </div> 
+      </div>
+     </div> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@WebServiceProvider
+public class AsyncService extends AsyncProvider&lt;Source&gt; {
+
+    public void invoke(Source req, AsyncProviderCallback cbak, WebServiceContext ctxt) {
+         // Handle the request in some other system(like JBI). The
+         // request processing takes awhile, so no point in hanging
+         // to servlet's thread.
+         // For simplicity, showing the JBI system as a new thread
+         new Thread(new RequestHandler(...)).start();
+         // Servlet Container's request thread is done
+    }
+
+
+}</pre> 
+       </div> 
+      </div>
+     </div> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">public class RequestHandler implements Runnable {
+    Source req;
+    AsyncProviderCallback cbak;
+
+    RequestHandler(Source req, AsyncProviderCallback cbak) {
+        this.req = req;
+    }
+
+    public void run() {
+        // Do request processing - reads data from HttpServletRequest's
+        // InputStream
+        Source response = ...;
+        cbak.send(response);
+    }
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>Below is an example of using wrappers and cleaning up resources when you have async processing.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">import java.io.*;
+import java.util.*;
+import javax.servlet.*;
+import javax.servlet.http.*;
+
+/**
+ * Servlet response wrapper that logs any call to setHeader() to a log
+ * file.
+ */
+public class MyResponseWrapper extends HttpServletResponseWrapper {
+
+    // The writer to the log file
+    private Writer writer;
+
+    public MyResponseWrapper(HttpServletResponse response) {
+        super(response);
+    }
+
+    void setWriter(Writer writer) {
+        this.writer = writer;
+    }
+
+    public void setHeader(String name, String value) {
+        super.setHeader(name, value);
+        try {
+            if (writer != null) {
+                writer.write("Header: name=" + name + ", value=" + value);
+            }
+        } catch (IOException ioe) {
+            // log warning
+        }
+    }
+
+    public void doneAsync() {
+        try {
+            super.doneAsync();
+        } finally {
+            try {
+                if (writer != null) {
+                    writer.close();
+                }
+            } catch (IOException ioe) {
+                // log warning
+            }
+        }
+    }
+}</pre> 
+       </div> 
+      </div>
+     </div> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">import java.io.*;
+import java.util.*;
+import java.text.*;
+import javax.servlet.*;
+import javax.servlet.http.*;
+
+/**
+ * Servlet filter that wraps the response such that any calls to setHeader()
+ * will be logged.
+ */
+public class MyFilter implements Filter {
+
+    private TimeZone tz;
+
+    public void init(FilterConfig filterConfig) throws ServletException {
+        tz = TimeZone.getDefault();
+    }
+	
+    public void doFilter(ServletRequest request, ServletResponse response,
+                         FilterChain chain )
+            throws IOException, ServletException {
+
+        // Create log file writer based on current system time
+        SimpleDateFormat dateFormatter =
+            new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS");
+        dateFormatter.setTimeZone(tz);
+        Writer writer = new BufferedWriter(new FileWriter(
+            dateFormatter.format(new Date(System.currentTimeMillis()))));
+
+        // Wrap response and initialize the wrapped response with log writer
+        MyResponseWrapper responseWrapper =
+            new MyResponseWrapper((HttpServletResponse) response);
+        responseWrapper.setWriter(writer);
+        
+        // Invoke next filter in the chain
+        try {
+            chain.doFilter(request, responseWrapper);
+        } finally {
+            if (!request.isAsyncStarted()) {
+                writer.close();
+            }
+        }
+    }
+
+    public void destroy() {
+        // Do nothing
+    }
+}</pre> 
+       </div> 
+      </div>
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:48.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

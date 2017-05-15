@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : AsyncRequirementsDiscussion</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="AsyncRequirementsDiscussion-JSR315Servlet3.0"></a>JSR 315 - Servlet 3.0</h1> <h4><a name="AsyncRequirementsDiscussion-AsynchronousServletDiscussion"></a>Asynchronous Servlet Discussion</h1> 
+     <hr> <h4><a name="AsyncRequirementsDiscussion-Abstract"></a>Abstract</h1> <p>This document contains a discussion regarding the requirements to<br> extend the Servlet API as defined by JSR 154 with asynchronous<br> concerns to meet the goals of JSR 315. </p> 
+     <hr> <h4><a name="AsyncRequirementsDiscussion-Introduction"></a>Introduction</h1> 
+     <hr> <h4><a name="AsyncRequirementsDiscussion-JSR315Targetedfeatures"></a>JSR 315 Targeted features </h1> <p>JSR 315 nominates "Async and<br> Comet Support" as a targeted feature, described as:</p> <h4><a name="AsyncRequirementsDiscussion-Nonblockinginput"></a>Non-blocking input</h2> <p>The ability to receive data from a<br> client without blocking if the data is slow arriving. </p> <h4><a name="AsyncRequirementsDiscussion-Nonblockingoutput"></a>Non-blocking output</h2> <p>The ability to send data to a client<br> without blocking if the client or network is slow. </p> <h4><a name="AsyncRequirementsDiscussion-Delayrequesthandling"></a>Delay request handling</h2> <p>The comet style of Ajax web<br> application can require that a request handling is delayed until<br> either a timeout or an event has occurred. Delaying request handling<br> is also useful if a remote/slow resource must be obtained before<br> servicing the request or if access to a specific resource needs to be<br> throttled to prevent too many simultaneous accesses. </p> <h4><a name="AsyncRequirementsDiscussion-Delayresponseclose"></a>Delay response close</h2> <p>The comet style of Ajax web<br> application can require that a response is held open to allow<br> additional data to be sent when asynchronous events occur. </p> <h4><a name="AsyncRequirementsDiscussion-Blocking%2FNonblockingnotification"></a>Blocking/Non-blocking notification</h2> <p>The ability to notify push blocking<br> or non-blocking events. Channels concept - The ability to subscribe<br> to a channel and get asynchronous events from that channel. This<br> implies being able to create, subscribe, unsubscribe and also apply<br> some security restriction on who can join and who<br> cannot. </p> <h4><a name="AsyncRequirementsDiscussion-AdditionalRequirements"></a>Additional Requirements</h1> <p>The following additional requirements<br> have been used to guide the design of this proposal. These<br> requirements are only from the experience of the author and should<br> themselves be subject to review and discussion:</p> <h4><a name="AsyncRequirementsDiscussion-Servicemethod"></a>Service method</h2> <p>All substantive<br> handling of asynchronous requests and generation of asynchronous<br> responses should take place within the existing calling chain through<br> <tt>Filter.doFilter(..)</tt><br> to {{Servlet.service(...).}}It is only within this calling chain<br> that we have a well defined environment for authentication,<br> authorization, JNDI, and access to other Java EE services. The creation<br> of additional request handling or response generating methods will<br> require substantial redefinition of the servlet environment and will<br> impede frame work compatibility. </p> <h4><a name="AsyncRequirementsDiscussion-FirstClassServlet"></a>First Class Servlet</h2> <p>An asynchronous servlet should be a<br> first class servlet and not limited in any significant way. To this<br> effect an asynchronous servlet should be able to:</p> 
+     <ul> 
+      <li>Be filtered by name or URL path.</li> 
+      <li>Be secured by standard security mechanisms</li> 
+      <li>The initiator or target of a RequestDispatchers</li> 
+     </ul> <h4><a name="AsyncRequirementsDiscussion-Frameworkcompatibility"></a>Framework compatibility</h2> <p>Handling of asynchronous requests and<br> responses should be able to be done by existing frameworks with<br> little or no modification. For example, JSP and/or JSF should be able<br> to be used to handle a comet request and to generate the comet<br> response.</p> <h4><a name="AsyncRequirementsDiscussion-ContainerIOempowerment"></a>Container IO empowerment</h2> <p>The servlet container should be empowered to handle common or difficult IO tasks<br> that are currently handled by the servlet developer. With 2.5<br> servlets, the only content-type that is automatically handed by the<br> container is "<tt>application/x-www-form-urlencoded</tt>".<br> The servlet developer (or framework) must handle common tasks such<br> as:</p> 
+     <ul> 
+      <li>Parsing multi-part mime</li> 
+      <li>Parsing XML to DOM from request input streams</li> 
+      <li>Writing DOM to response output streams</li> 
+      <li>Moving data from requests to Files or Files to responses.</li> 
+     </ul> <p>It is exceedingly difficult, if not impossible to design an API that would allow these tasks to be handled by user extensible code in the most efficient mechanism available to the container. Simple decisions such as choice of buffer type in the API (eg byte array or NIO Buffer) can greatly affect the efficiency, portability and lifespan of the API<br> and handlers based on it. </p> <p>Even with an API, it is a complex and bug-prone task to write asynchronous content<br> handlers for every servlet application and/or framework. To remove this source of <br> errors and duplicated effort, the servlet<br> container should instead be empowered to implement common IO tasks on<br> behalf of the servlet developer. The container could then be free to<br> use efficient asynchronous techniques (or even native optimizations)<br> to perform IO on behalf of the servlet developer.</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 08, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:43.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

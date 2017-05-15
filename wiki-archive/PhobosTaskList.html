@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : PhobosTaskList</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>borelmondeld<br> ractazellin<br> </p>
+     <div class="panel" style="border-width: 1px;">
+      <div class="panelContent"> 
+       <hr> 
+       <p>Jspwiki style: tabbedSection</p> 
+      </div>
+     </div>tab-ToDo<p></p> <h4><a name="PhobosTaskList-PhobosToDoforthe0.7Release"></a>Phobos To-Do for the 0.7 Release</h1> <p>Updated on 01/31/2006<br> Draft Version</p> 
+     <ul> 
+      <li>improvements in persistence</li> 
+     </ul> 
+     <ul> 
+      <li>comet support, including a sample</li> 
+     </ul> 
+     <ul> 
+      <li>more doc and samples</li> 
+     </ul> 
+     <ul> 
+      <li>NetBeans plugin features 
+       <ul> 
+        <li>export into NetBeans web project: for R2</li> 
+        <li>runtime context based code completion: not R2</li> 
+        <li>debugger: watches, tooltips, expression evaluation: for R2 (almost done)</li> 
+        <li>start using NetBeans 6.0 editors (ejs, palette): on track for R2. Not sure if R2 will target or not 6.0.The paln of record is 5.5.1</li> 
+        <li>navigator view: not for R2</li> 
+        <li>sync up standalone phobos project with a web project: maybe for R2 if resources are available</li> 
+        <li>editor popup menus (js and EJS)to generate to extra code (methods, etc): not for R2</li> 
+        <li>doc generation?</li> 
+        <li>Eclipse support? Not for R2</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li>RSS reader</li> 
+     </ul> 
+     <ul> 
+      <li>testing framework R2? not sure.</li> 
+     </ul> <p>%%</p> <p>%%tab-Schedule</p> <h4><a name="PhobosTaskList-PhobosScheduleandDeliverables"></a>Phobos Schedule and Deliverables</h1> <p>Updated on 11/16/2006<br> Committed Version</p> <p>================</p> <h4><a name="PhobosTaskList-Milestone2%28Nov.27%2C2006%29"></a>Milestone 2 (Nov. 27, 2006)</h3> 
+     <ul> 
+      <li>NetBeans debugger plugin (JavaScript &amp; ejs) for Phobos (Ludo, Jennifer, Elena) 
+       <ul> 
+        <li>Elena will test the plugins</li> 
+        <li>Removing the following task b/c John Jullion, Ludo, Ian, and I agreed that Ken (the new NB writer) should do this documentation when he joins the project next week: Jennifer will work on the documentation for the plugin with screencast</li> 
+        <li>The NetBeans plugins will be available on <a href="http://phobos.java.net">http://phobos.java.net</a> before 11/27</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li>Phobos sample app using JRuby (Ashish) 
+       <ul> 
+        <li>Ashish will make the Calculator app available in the Phobos cvs respository</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li>Phobos sample app using Java Persistence API (Pramod) 
+       <ul> 
+        <li>a javascript controller script that would get hold of an EntityManager from the persistence library</li> 
+        <li>make JPA calls to fetch data for a very simple entity</li> 
+        <li>loop through the result set and write them out on the browser using simple html syntax.</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li>XmlHttpProxy from jMaki available to phobos application (Q^2) 
+       <ul> 
+        <li>Done. (Sample application checked in under phobos/apps/geocoder in cvs)</li> 
+       </ul> </li> 
+     </ul> <h4><a name="PhobosTaskList-FeatureFreeze%28Dec.18%2C2006%29"></a>Feature Freeze (Dec. 18, 2006)</h3> 
+     <ul> 
+      <li>Javadoc generation tool (Roberto)</li> 
+     </ul> 
+     <ul> 
+      <li>Phobos sample CRUD application working end to end (Pramod) 
+       <ul> 
+        <li>ensure that the persistence library covers the 90% JPA scenario for a user</li> 
+        <li>get the UI part done in dojo/jMaki for which I am working with Greg. (RISK: dependency on Greg M.)</li> 
+        <li>documentation of the persistence library</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li>More complex usage of Ruby scripts working in Phobos (Ashish)</li> 
+     </ul> 
+     <ul> 
+      <li>RoR (in war format) working on Glassfish (Ashish)</li> 
+     </ul> 
+     <ul> 
+      <li>Phobos tutorial (Jennifer) 
+       <ul> 
+        <li>details??</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li>Not Yet Committed Items (under evaluation) 
+       <ul> 
+        <li>client/server event handling (Q^2)</li> 
+        <li>more demos/samples 
+         <ul> 
+          <li>how to use dojo on server side (??)</li> 
+         </ul> </li> 
+       </ul> </li> 
+     </ul> <p>%%</p> 
+     <div class="panel" style="border-width: 1px;">
+      <div class="panelContent"> 
+       <p>-TaskList</p> 
+       <h4><a name="PhobosTaskList-PhobosTaskList"></a>Phobos Task List</h1> 
+       <p>Note: items marked with <img class="emoticon" src="images/icons/emoticons/help_16.gif" height="16" width="16" align="absmiddle" alt="" border="0"> are tentative</p> 
+       <p>Updated on 9/25/06<br> Draft version</p> 
+       <p>================</p> 
+       <h4><a name="PhobosTaskList-MVC%28Owner%3AQ2%2CRC%29"></a>MVC (Owner: Q2, RC)</h3> 
+       <ul> 
+        <li>more controller methods (e.g. selecting layouts, view types)</li> 
+        <li>declaring the type of a view inline <img class="emoticon" src="images/icons/emoticons/help_16.gif" height="16" width="16" align="absmiddle" alt="" border="0"></li> 
+       </ul> 
+       <h4><a name="PhobosTaskList-RUNTIME%28Owner%3AToolsteam%2CRC%29"></a>RUNTIME (Owner: Tools team, RC)</h3> 
+       <ul> 
+        <li>complete stack traces for JavaScript <img class="emoticon" src="images/icons/emoticons/help_16.gif" height="16" width="16" align="absmiddle" alt="" border="0"> 
+         <ul> 
+          <li>Debugger APIs</li> 
+         </ul> </li> 
+       </ul> 
+       <h4><a name="PhobosTaskList-AJAX%28Owner%3AQ2%29"></a>AJAX (Owner: Q2)</h3> 
+       <ul> 
+        <li>XmlHttpProxy (2 weeks) 
+         <ul> 
+          <li>Write in JavaScript</li> 
+         </ul> </li> 
+        <li>simpler way to hook up server logic (3 weeks)</li> 
+        <li>eventing/notifications <img class="emoticon" src="images/icons/emoticons/help_16.gif" height="16" width="16" align="absmiddle" alt="" border="0"> 
+         <ul> 
+          <li>Investigate this. Leverage on Client side eventing in jMaki.</li> 
+         </ul> </li> 
+        <li>simple client-side controller <img class="emoticon" src="images/icons/emoticons/help_16.gif" height="16" width="16" align="absmiddle" alt="" border="0"></li> 
+        <li>Ongoing jMaki integration</li> 
+       </ul> 
+       <h4><a name="PhobosTaskList-REST%28Owner%3ATBD.RCfornow%29"></a>REST (Owner: TBD. RC for now)</h3> 
+       <ul> 
+        <li>more server functionality (double-check it with a different example) 
+         <ul> 
+          <li>like Amazon web service</li> 
+         </ul> </li> 
+        <li>client library (validate it with Atom Publishing Protocol) 
+         <ul> 
+          <li>Python has a good library</li> 
+         </ul> </li> 
+        <li>Atom Publishing Protocol server sample app 
+         <ul> 
+          <li>Needs to be polished</li> 
+         </ul> </li> 
+       </ul> 
+       <h4><a name="PhobosTaskList-TOOLS"></a>TOOLS</h3> 
+       <ul> 
+        <li>plugin with full development cycle support</li> 
+        <li>packaging war files</li> 
+        <li>deployment to app server</li> 
+        <li>javascript debugger 
+         <ul> 
+          <li>Need hooks</li> 
+         </ul> </li> 
+        <li>javadoc-like tool <img class="emoticon" src="images/icons/emoticons/help_16.gif" height="16" width="16" align="absmiddle" alt="" border="0"></li> 
+        <li>.ejs-aware editor <img class="emoticon" src="images/icons/emoticons/help_16.gif" height="16" width="16" align="absmiddle" alt="" border="0"></li> 
+       </ul> 
+       <h4><a name="PhobosTaskList-PERSISTENCE%28Owner%3APramod%29"></a>PERSISTENCE (Owner: Pramod)</h3> 
+       <ul> 
+        <li>integrate generator with latest phobos CVS</li> 
+        <li>some improvements (e.g. fewer modules, handy "persistence" library)</li> 
+       </ul> 
+       <h4><a name="PhobosTaskList-JSF%28Owner%3AEd%29"></a>JSF (Owner: Ed)</h3> 
+       <ul> 
+        <li>using JSF/facelets as views</li> 
+        <li>using scripting to write JSF artifacts (strictly not a Phobos task)</li> 
+       </ul> 
+       <h4><a name="PhobosTaskList-TANGO%28Owner%3ATBD%29"></a>TANGO (Owner: TBD)</h3> 
+       <ul> 
+        <li>a prototype <img class="emoticon" src="images/icons/emoticons/help_16.gif" height="16" width="16" align="absmiddle" alt="" border="0"></li> 
+       </ul> 
+       <h4><a name="PhobosTaskList-JRUBY%28Owner%3ATBD%29"></a>JRUBY (Owner: TBD)</h3> 
+       <ul> 
+        <li>bidirectional connectivity between the Rhino and JRuby engines</li> 
+       </ul> 
+       <h4><a name="PhobosTaskList-OTHER%28Owner%3ATBD%29"></a>OTHER (Owner: TBD)</h3> 
+       <ul> 
+        <li>accessing EE resources (JNDI-like lookups, security, txn, ejbs, etc)</li> 
+        <li>unit test library <img class="emoticon" src="images/icons/emoticons/help_16.gif" height="16" width="16" align="absmiddle" alt="" border="0"></li> 
+        <li>I18N <img class="emoticon" src="images/icons/emoticons/help_16.gif" height="16" width="16" align="absmiddle" alt="" border="0"></li> 
+       </ul> 
+       <h4><a name="PhobosTaskList-DOCS%28Owner%3AJennifer%29"></a>DOCS (Owner: Jennifer)</h3> 
+       <h4><a name="PhobosTaskList-SAMPLEAPP%28Owner%3ATBD%29"></a>SAMPLE APP (Owner: TBD)</h3> 
+       <hr> 
+       <p>Jspwiki style: tab</p> 
+      </div>
+     </div> <p></p>
+     <div class="panel" style="border-width: 1px;">
+      <div class="panelContent"> 
+       <p>-BinaryDependencies</p> 
+       <h4><a name="PhobosTaskList-PhobosBinaryDependencies%26ApprovalTracking"></a>Phobos Binary Dependencies &amp; Approval Tracking</h1> 
+       <p>As of 11/27/2006</p> 
+       <div class="table-wrap"> 
+        <table class="confluenceTable">
+         <tbody> 
+          <tr> 
+           <th class="confluenceTh"> Components </th> 
+           <th class="confluenceTh"> Jar File(s)</th> 
+           <th class="confluenceTh"> Version </th> 
+           <th class="confluenceTh"> Version Approved </th> 
+           <th class="confluenceTh"> Expedited Review Needed </th> 
+           <th class="confluenceTh"> Final Approval Done </th> 
+           <th class="confluenceTh"> Comments </th> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> BCEL (Apache) </td> 
+           <td class="confluenceTd"> bcel.jar </td> 
+           <td class="confluenceTd"> 5.1 </td> 
+           <td class="confluenceTd"> Y </td> 
+           <td class="confluenceTd"> Y </td> 
+           <td class="confluenceTd"> N </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> Commons Logging (Apache) </td> 
+           <td class="confluenceTd"> commons-logging.jar commons-logging-api.jar </td> 
+           <td class="confluenceTd"> 1.04 </td> 
+           <td class="confluenceTd"> Y </td> 
+           <td class="confluenceTd"> Y </td> 
+           <td class="confluenceTd"> N </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> Derby (Apache) </td> 
+           <td class="confluenceTd"> derby.jar derbyclient.jar </td> 
+           <td class="confluenceTd"> 10.1.2.1 / 10.1.2000001.330608 </td> 
+           <td class="confluenceTd"> N </td> 
+           <td class="confluenceTd"> Y </td> 
+           <td class="confluenceTd"> N </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> JDOM </td> 
+           <td class="confluenceTd"> jdom.jar </td> 
+           <td class="confluenceTd"> 1.0 </td> 
+           <td class="confluenceTd"> Y </td> 
+           <td class="confluenceTd"> Y </td> 
+           <td class="confluenceTd"> N </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> JRuby </td> 
+           <td class="confluenceTd"> jruby.jar </td> 
+           <td class="confluenceTd"> 0.8.3/0.9.0/0.9.1 </td> 
+           <td class="confluenceTd"> Y/Y/N </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd"> Y/Y/N (4510/4767/?) </td> 
+           <td class="confluenceTd"> <font color="#ff6600">Phobos Needs 0.9.1</font> </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> Mozilla Rhino </td> 
+           <td class="confluenceTd"> js.jar </td> 
+           <td class="confluenceTd"> 1.6R2/1.6R4? </td> 
+           <td class="confluenceTd"> Y/N </td> 
+           <td class="confluenceTd"> -/Y </td> 
+           <td class="confluenceTd"> Y/N </td> 
+           <td class="confluenceTd"> <font color="#ff6600">Phobos Needs 1.6R4</font> </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> JSR 173 : Streaming API for XML </td> 
+           <td class="confluenceTd"> jsr173_1.0_api.jar </td> 
+           <td class="confluenceTd"> 1.0 </td> 
+           <td class="confluenceTd"> Y </td> 
+           <td class="confluenceTd"> ? </td> 
+           <td class="confluenceTd"> ? (3092) </td> 
+           <td class="confluenceTd"> Expedited approval? </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> JSR 223: Scripting for the Java 
+            <hr> <p>Jspwiki style: tab</p></td> 
+          </tr> 
+         </tbody>
+        </table> 
+       </div> 
+      </div>
+     </div>sup TM
+     <div class="panel" style="border-width: 1px;">
+      <div class="panelContent"> 
+       <div class="table-wrap"> 
+        <table class="confluenceTable">
+         <tbody> 
+          <tr> 
+           <td class="confluenceTd"> jsr223-api.jar </td> 
+           <td class="confluenceTd"> 1.0 </td> 
+           <td class="confluenceTd"> N </td> 
+           <td class="confluenceTd"> Y </td> 
+           <td class="confluenceTd"> N </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> Resolver (Apache) </td> 
+           <td class="confluenceTd"> resolver.jar </td> 
+           <td class="confluenceTd"> 1.1 </td> 
+           <td class="confluenceTd"> Y </td> 
+           <td class="confluenceTd"> Y </td> 
+           <td class="confluenceTd"> N </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> Rome </td> 
+           <td class="confluenceTd"> rome.jar </td> 
+           <td class="confluenceTd"> 0.8 </td> 
+           <td class="confluenceTd"> Y </td> 
+           <td class="confluenceTd"> Y </td> 
+           <td class="confluenceTd"> N </td> 
+           <td class="confluenceTd"> java.net ASF license </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> Grizzly </td> 
+           <td class="confluenceTd"> grizzly-1.0.4.jar </td> 
+           <td class="confluenceTd"> 1.0.4 </td> 
+           <td class="confluenceTd"> N </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd"> N </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> Maven Ant tasks </td> 
+           <td class="confluenceTd"> maven-artifact-ant-2.0.4-dep.jar </td> 
+           <td class="confluenceTd"> 2.0.4 </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd"> N </td> 
+           <td class="confluenceTd"> <font color="#33cc00">Build dependency only</font> </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> Servlet API </td> 
+           <td class="confluenceTd"> servlet-api.jar </td> 
+           <td class="confluenceTd"> 2.5 </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd"> N </td> 
+           <td class="confluenceTd"> <font color="#33cc00">Build dependency only</font> </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> Sun HTTP Server for JDK 1.5 </td> 
+           <td class="confluenceTd"> http.jar </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd"> N </td> 
+           <td class="confluenceTd"> Y </td> 
+           <td class="confluenceTd"> N </td> 
+           <td class="confluenceTd"> <font color="#33cc00">Build dependencies only</font> </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> FreeMarker </td> 
+           <td class="confluenceTd"> freemarker.jar </td> 
+           <td class="confluenceTd"> 2.3.6 </td> 
+           <td class="confluenceTd"> Y </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd"> Y (4511) </td> 
+           <td class="confluenceTd"> BSD style license </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> XMLBeans (Apache) </td> 
+           <td class="confluenceTd"> xbean.jar xbean_xpath.jar </td> 
+           <td class="confluenceTd"> 2.1.0 (-r330131?) </td> 
+           <td class="confluenceTd"> Y (v 2.1.0 v348005) </td> 
+           <td class="confluenceTd">
+            <ul class="alternate" type="square"> 
+             <li></li> 
+            </ul> </td> 
+           <td class="confluenceTd"> Y (4559) </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+          </tr> 
+         </tbody>
+        </table> 
+       </div> 
+       <h4><a name="PhobosTaskList-Questions%3A"></a>Questions:</h3> 
+       <ul> 
+        <li>Do we need approval for grizzly? (yes)</li> 
+        <li>Do we need approval for jsf-* components? (no, because all of them are under CDDL) 
+         <hr> <p>Jspwiki style: Platform</p></li> 
+       </ul> 
+      </div>
+     </div><br> %%<p></p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:49.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

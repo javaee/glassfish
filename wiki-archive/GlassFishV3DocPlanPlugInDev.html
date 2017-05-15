@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFishV3DocPlanPlugInDev</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>&lt;h1&gt;GlassFish v3 <em>Add-On Component Development Guide</em> Document Plan&lt;/h1&gt;</p> 
+     <div> 
+      <ul> 
+       <li><a href="#GlassFishV3DocPlanPlugInDev-PeopleandRoles">People and Roles</a></li> 
+       <li><a href="#GlassFishV3DocPlanPlugInDev-Audience">Audience</a></li> 
+       <li><a href="#GlassFishV3DocPlanPlugInDev-PurposeandDescription">Purpose and Description</a></li> 
+       <li><a href="#GlassFishV3DocPlanPlugInDev-StatementofWork">Statement of Work</a></li> 
+       <ul> 
+        <li><a href="#GlassFishV3DocPlanPlugInDev-v3PreludeStatementofWork">v3 Prelude Statement of Work</a></li> 
+        <li><a href="#GlassFishV3DocPlanPlugInDev-FCSStatementofWork">FCS Statement of Work</a></li> 
+       </ul> 
+       <li><a href="#GlassFishV3DocPlanPlugInDev-OverallContentOutline">Overall Content Outline</a></li> 
+       <ul> 
+        <ul> 
+         <li><a href="#GlassFishV3DocPlanPlugInDev-Chapter1IntroductiontotheDevelopementEnvironmentforEnterpriseServerAddOnComponents">Chapter 1 Introduction to the Developement Environment for Enterprise Server Add-On Components</a></li> 
+         <li><a href="#GlassFishV3DocPlanPlugInDev-Chapter2WritingHK2Services">Chapter 2 Writing HK2 Services</a></li> 
+         <li><a href="#GlassFishV3DocPlanPlugInDev-Chapter3ExtendingtheAdministrationConsole">Chapter 3 Extending the Administration Console</a></li> 
+         <li><a href="#GlassFishV3DocPlanPlugInDev-Chapter4Extendingthe%7B%7Basadmin%7D%7DUtility">Chapter 4 Extending the <tt>asadmin</tt> Utility</a></li> 
+         <li><a href="#GlassFishV3DocPlanPlugInDev-Chapter5AddingMonitoringCapabilities">Chapter 5 Adding Monitoring Capabilities</a></li> 
+         <li><a href="#GlassFishV3DocPlanPlugInDev-Chapter6AddingContainerCapabilities">Chapter 6 Adding Container Capabilities</a></li> 
+         <li><a href="#GlassFishV3DocPlanPlugInDev-Chapter7PackagingandDeliveringanAddOnComponent">Chapter 7 Packaging and Delivering an Add-On Component</a></li> 
+         <li><a href="#GlassFishV3DocPlanPlugInDev-AppendixAIntegrationPointReference">Appendix A Integration Point Reference</a></li> 
+         <li><a href="#GlassFishV3DocPlanPlugInDev-AppendixBTemplateReference">Appendix B Template Reference</a></li> 
+         <li><a href="#GlassFishV3DocPlanPlugInDev-Index">Index</a></li> 
+        </ul> 
+       </ul> 
+       <li><a href="#GlassFishV3DocPlanPlugInDev-Reviewers">Reviewers</a></li> 
+       <li><a href="#GlassFishV3DocPlanPlugInDev-DeliveryMethods">Delivery Methods</a></li> 
+       <li><a href="#GlassFishV3DocPlanPlugInDev-RelatedInformation">Related Information</a></li> 
+       <li><a href="#GlassFishV3DocPlanPlugInDev-Emailaliases%3A">Email aliases:</a></li> 
+      </ul>
+     </div> <h4><a name="GlassFishV3DocPlanPlugInDev-PeopleandRoles"></a>People and Roles</h1> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Name </th> 
+         <th class="confluenceTh">Role </th> 
+         <th class="confluenceTh">Location </th> 
+         <th class="confluenceTh">Time Zone</th> 
+         <th class="confluenceTh">Email </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Paul Davies </td> 
+         <td class="confluenceTd"> Document Owner </td> 
+         <td class="confluenceTd"> Santa Clara, CA, USA </td> 
+         <td class="confluenceTd"> US/Pacific </td> 
+         <td class="confluenceTd"><tt>pauldavies@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Ian Evans </td> 
+         <td class="confluenceTd"> Additional Writer </td> 
+         <td class="confluenceTd"> Santa Clara, CA, USA </td> 
+         <td class="confluenceTd"> US/Pacific </td> 
+         <td class="confluenceTd"><tt>ievans@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Kim Haase </td> 
+         <td class="confluenceTd"> Additional Writer </td> 
+         <td class="confluenceTd"> Burlington, MA, USA </td> 
+         <td class="confluenceTd"> US/Eastern </td> 
+         <td class="confluenceTd"><tt>chaase3@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Julie Bettis </td> 
+         <td class="confluenceTd"> Editor </td> 
+         <td class="confluenceTd"> Broomfield, CO, USA </td> 
+         <td class="confluenceTd"> US/Mountain </td> 
+         <td class="confluenceTd">- </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Prashanth Abbagani </td> 
+         <td class="confluenceTd"> Software Engineer </td> 
+         <td class="confluenceTd"> Santa Clara, CA, USA </td> 
+         <td class="confluenceTd"> US/Pacific </td> 
+         <td class="confluenceTd"><tt>abbagani@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Ana Caballero </td> 
+         <td class="confluenceTd"> Software Engineer </td> 
+         <td class="confluenceTd"> Santa Clara, CA, USA </td> 
+         <td class="confluenceTd"> US/Pacific </td> 
+         <td class="confluenceTd"><tt>anac@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Jennifer Chou </td> 
+         <td class="confluenceTd"> Software Engineer </td> 
+         <td class="confluenceTd"> Santa Clara, CA, USA </td> 
+         <td class="confluenceTd"> US/Pacific </td> 
+         <td class="confluenceTd"><em>java.netID</em><tt>@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Jerome Dochez </td> 
+         <td class="confluenceTd"> Software Engineer </td> 
+         <td class="confluenceTd"> Santa Clara, CA, USA </td> 
+         <td class="confluenceTd"> US/Pacific </td> 
+         <td class="confluenceTd"><tt>dochez@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Mahesh Kannan </td> 
+         <td class="confluenceTd"> Software Engineer </td> 
+         <td class="confluenceTd"> Santa Clara, CA, USA </td> 
+         <td class="confluenceTd"> US/Pacific </td> 
+         <td class="confluenceTd"><em>java.netID</em><tt>@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Anissa Lam </td> 
+         <td class="confluenceTd"> Software Engineer </td> 
+         <td class="confluenceTd"> Santa Clara, CA, USA </td> 
+         <td class="confluenceTd"> US/Pacific </td> 
+         <td class="confluenceTd"><tt>anilam@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Jason Lee </td> 
+         <td class="confluenceTd"> Software Engineer </td> 
+         <td class="confluenceTd"> Oklahoma City, OK, USA </td> 
+         <td class="confluenceTd"> US/Central </td> 
+         <td class="confluenceTd"><tt>jdlee@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Kedar Mhaswade </td> 
+         <td class="confluenceTd"> Software Engineer </td> 
+         <td class="confluenceTd"> Santa Clara, CA, USA </td> 
+         <td class="confluenceTd"> US/Pacific </td> 
+         <td class="confluenceTd"><tt>km@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Sreenivas Munnangi </td> 
+         <td class="confluenceTd"> Software Engineer </td> 
+         <td class="confluenceTd"> Santa Clara, CA, USA </td> 
+         <td class="confluenceTd"> US/Pacific </td> 
+         <td class="confluenceTd"><tt>msreddy@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Ken Paulsen </td> 
+         <td class="confluenceTd"> Software Engineer </td> 
+         <td class="confluenceTd"> Santa Clara, CA, USA </td> 
+         <td class="confluenceTd"> US/Pacific </td> 
+         <td class="confluenceTd"><tt>kenpaulsen@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Sahoo </td> 
+         <td class="confluenceTd"> Software Engineer </td> 
+         <td class="confluenceTd"> Bangalore, India </td> 
+         <td class="confluenceTd"> India (GMT+5.30) </td> 
+         <td class="confluenceTd"><em>java.netID</em><tt>@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Hong Zhang </td> 
+         <td class="confluenceTd"> Software Engineer </td> 
+         <td class="confluenceTd"> Burlington, MA, USA </td> 
+         <td class="confluenceTd"> US/Eastern </td> 
+         <td class="confluenceTd"><em>java.netID</em><tt>@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Tim Quinn </td> 
+         <td class="confluenceTd"> Software Engineer </td> 
+         <td class="confluenceTd"> Itasca, IL, USA </td> 
+         <td class="confluenceTd"> US/Central </td> 
+         <td class="confluenceTd"><tt>tquinn@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Yifeng Luo </td> 
+         <td class="confluenceTd"> QA Engineer </td> 
+         <td class="confluenceTd"> Santa Clara, CA, USA </td> 
+         <td class="confluenceTd"> US/Pacific </td> 
+         <td class="confluenceTd"><tt>yifeng1@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Lidia Marchioni </td> 
+         <td class="confluenceTd"> QA Engineer </td> 
+         <td class="confluenceTd"> Santa Clara, CA, USA </td> 
+         <td class="confluenceTd"> US/Pacific </td> 
+         <td class="confluenceTd"><em>java.netID</em><tt>@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Sankar Neelakandan </td> 
+         <td class="confluenceTd"> QA Engineer </td> 
+         <td class="confluenceTd"> Santa Clara, CA, USA </td> 
+         <td class="confluenceTd"> US/Pacific </td> 
+         <td class="confluenceTd"><em>java.netID</em><tt>@dev.java.net</tt> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3DocPlanPlugInDev-Audience"></a>Audience</h1> <p>This document is for software developers who are developing add-on components for GlassFish v3. This document assumes that the developers are working with a GlassFish distribution, not the GlassFish source code. Familiarity with the Java language is also assumed. </p> <h4><a name="GlassFishV3DocPlanPlugInDev-PurposeandDescription"></a>Purpose and Description</h1> <p>The purpose of this document is to explain how to <a href="GlassFishv3UserTaskAnalysisPluggability.html" title="GlassFishv3UserTaskAnalysisPluggability">use GlassFish v3 interfaces for pluggability</a> to develop add-on components for GlassFish. This document explains how to perform <b>only</b> those tasks that ensure that the add-on component is suitable for GlassFish.</p> <h4><a name="GlassFishV3DocPlanPlugInDev-StatementofWork"></a>Statement of Work</h1> <p>This section describes in detail for each milestone the work that is needed on the document, such as changes, addition of new material, relocation of existing material, and removal of existing material. Work might result from new features, changes to existing features, bug fixes, RFEs, and editorial enhancements.</p> <p>Documentation Impact:</p> 
+     <ul> 
+      <li>None</li> 
+      <li>Minor</li> 
+      <li>Moderate</li> 
+      <li>Major</li> 
+      <li>New</li> 
+     </ul> <h4><a name="GlassFishV3DocPlanPlugInDev-v3PreludeStatementofWork"></a>v3 Prelude Statement of Work</h2> <p>For v3 Prelude, the scope of work is to write all of the sections that are identified in the overall content outline.</p> <h4><a name="GlassFishV3DocPlanPlugInDev-FCSStatementofWork"></a>FCS Statement of Work</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Section</th> 
+         <th class="confluenceTh">Documentation Impact</th> 
+         <th class="confluenceTh">Description of Change </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3DocPlanPlugInDev-OverallContentOutline"></a>Overall Content Outline</h1> <h4><a name="GlassFishV3DocPlanPlugInDev-Chapter1IntroductiontotheDevelopementEnvironmentforEnterpriseServerAddOnComponents"></a>Chapter 1 Introduction to the Developement Environment for Enterprise Server Add-On Components</h3> <p>Source material for this chapter is available in <a href="GFV3PluggabilityOnePager.html" title="GFV3PluggabilityOnePager">GlassFish v3 Pluggability One-Pager</a>, <a href="V3EngineersGuide.html" title="V3EngineersGuide">Glassfish v3 Engineer's Guide</a>, <a href="http://wiki.glassfish.java.net/attach/V3FunctionalSpecs/GFv3Prelude-OSGi-onepager-v0.2.txt">OSGi One-Pager</a>, <a href="https://hk2.java.net/modules.html">hk2 Modules Subsystem</a>, <a href="https://hk2.java.net/components.html">hk2 Component Model</a></p> <p>This chapter contains the following topics:</p> 
+     <ul> 
+      <li>Enterprise Server Modular Architecture</li> 
+      <li>OSGi</li> 
+      <li>hk2 Modules Subsystem</li> 
+      <li>hk2 Component Model</li> 
+      <li>Overview of the Development Process for Add-On Components</li> 
+     </ul> <h4><a name="GlassFishV3DocPlanPlugInDev-Chapter2WritingHK2Services"></a>Chapter 2 Writing HK2 Services</h3> <h4><a name="GlassFishV3DocPlanPlugInDev-Chapter3ExtendingtheAdministrationConsole"></a>Chapter 3 Extending the Administration Console</h3> <p>Source material for this chapter is available in <a href="V3SampleIpProject.html" title="V3SampleIpProject">Sample Project that shows all the Integration Points </a>, <a href="V3GUIBuildInstructions.html" title="V3GUIBuildInstructions">How to checkout/build/debug GlassFish v3 Prelude Admin Console </a>, <a href="V3GuiAccessURL.html" title="V3GuiAccessURL">What URL to use for GlassFish v3 Prelude Admin Console </a>, and <span class="error">[GUI pluggability (.odp) |GlassFishV3AdminConsole^v3-gui-pluggability2.odp]</span>. </p> <p>This chapter contains the following topics:</p> 
+     <ul> 
+      <li>Administration Console Architecture<br> Mention that the Administration Console is a web application that is composed of OSGi bundles</li> 
+      <li>About Administration Console Templates</li> 
+      <li>About Integration Points</li> 
+      <li>Specifying the ID of an Add-On Component</li> 
+      <li>Adding Functionality to Existing Pages 
+       <ul> 
+        <li>Adding a Tab to a Page</li> 
+        <li>Adding a Page to the Administration Console</li> 
+        <li>Add a Node to the Navigation Tree</li> 
+        <li>Add a Task to the Common Tasks page</li> 
+        <li>Adding Elements to a Page</li> 
+       </ul> </li> 
+      <li>Adding Internationalization Support</li> 
+      <li>Replace the Content of an Existing Application With new Content</li> 
+      <li>Removing or Changing Existing Content</li> 
+      <li>Changing the Theme or Brand of the Administration Console</li> 
+      <li>Adding an Integration Point</li> 
+     </ul> 
+     <hr> <p><b>Note -</b> Adding online help is omitted, as this release provides no mechanism for integrating online help for an add-on component with the online help that is supplied with the Administration Console.</p> 
+     <hr> <h4><a name="GlassFishV3DocPlanPlugInDev-Chapter4Extendingthe%7B%7Basadmin%7D%7DUtility"></a>Chapter 4 Extending the <tt>asadmin</tt> Utility</h3> <p>Source material for this chapter is available in <a href="AdminCommandSPI.html" title="AdminCommandSPI">Administrative command infrastructure in V3</a>.</p> <p>This chapter contains the following topics:</p> 
+     <ul> 
+      <li>About the Client-Server Protocol for the <tt>asadmin</tt> Utility</li> 
+      <li>Identifying a Class as an Implementation of an <tt>asadmin</tt> Command</li> 
+      <li>Setting the Context of an <tt>asadmin</tt> Command</li> 
+      <li>Identifying the Parameters of an <tt>asadmin</tt> Command</li> 
+      <li>Adding Internationalization Support to an <tt>asadmin</tt> Command</li> 
+      <li>Changing the theme or brand of the of <tt>asadmin</tt> CLI</li> 
+     </ul> <h4><a name="GlassFishV3DocPlanPlugInDev-Chapter5AddingMonitoringCapabilities"></a>Chapter 5 Adding Monitoring Capabilities</h3> <p>Source material for this chapter is available in <a href="GFV3PluggabilityOnePager.html" title="GFV3PluggabilityOnePager">GlassFish v3 Pluggability One-Pager</a> and <a href="GFV3MonitoringOnePager.html" title="GFV3MonitoringOnePager">GlassFish v3 Monitoring One-Pager</a>.</p> <h4><a name="GlassFishV3DocPlanPlugInDev-Chapter6AddingContainerCapabilities"></a>Chapter 6 Adding Container Capabilities</h3> <p>Source material for this chapter is available in <a href="ContainerSPI.html" title="ContainerSPI">Container SPI</a>.</p> <p>This chapter contains the following topics:</p> 
+     <ul> 
+      <li>Implementing a Container</li> 
+      <li>Implementing Connector Interfaces</li> 
+      <li>Adding an Archive Type</li> 
+      <li>Adding an annotation processor</li> 
+      <li>Adding a Class Loader Implementation</li> 
+      <li>(Optional)Implementing Pluggable Configuration</li> 
+      <li>(Optional)Adding AMX Configuration</li> 
+      <li>(Optional)Defining New Commands for Configuration</li> 
+     </ul> <h4><a name="GlassFishV3DocPlanPlugInDev-Chapter7PackagingandDeliveringanAddOnComponent"></a>Chapter 7 Packaging and Delivering an Add-On Component</h3> <h4><a name="GlassFishV3DocPlanPlugInDev-AppendixAIntegrationPointReference"></a>Appendix A Integration Point Reference</h3> <p>Source material for this appendix is available in <a href="V3IntegrationPoint.html" title="V3IntegrationPoint">Integration points</a>.</p> <p>This appendix provides a description of each integration point.</p> <h4><a name="GlassFishV3DocPlanPlugInDev-AppendixBTemplateReference"></a>Appendix B Template Reference</h3> <p>Source material for this appendix is available in <a href="V3AdminGuiTemplates.html" title="V3AdminGuiTemplates">Admin GUI templates for use by plugins</a>.</p> <p>This appendix provides a description of each template.</p> 
+     <hr> <p><b>Note -</b> This Appendix will be provided <b>only</b> if these templates are available to users of a GlassFish distribution. If the templates are available only in the source code, this Appndix will be omitted.</p> 
+     <hr> <h4><a name="GlassFishV3DocPlanPlugInDev-Index"></a>Index</h3> <h4><a name="GlassFishV3DocPlanPlugInDev-Reviewers"></a>Reviewers</h1> <p>The review schedule for this document is provided in the following table.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Review Milestone </th> 
+         <th class="confluenceTh">Start Date</th> 
+         <th class="confluenceTh">End Date</th> 
+         <th class="confluenceTh">Duration </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> v3 Prelude Draft </td> 
+         <td class="confluenceTd"> October 20. 2008 </td> 
+         <td class="confluenceTd"> October 22. 2008 </td> 
+         <td class="confluenceTd">3 days </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Final Version </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>The reviewers of this document are listed in he following table.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Chapter or Appendix </th> 
+         <th class="confluenceTh">Writer</th> 
+         <th class="confluenceTh">Reviewers </th> 
+         <th class="confluenceTh">Prelude Done</th> 
+         <th class="confluenceTh">Beta Done</th> 
+         <th class="confluenceTh">Final Done </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 1 Introduction </td> 
+         <td class="confluenceTd"> Paul </td> 
+         <td class="confluenceTd"> Jerome Dochez, Engineering </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Sahoo, Engineering </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Kim, Peer </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 2 Writing HK2 Services </td> 
+         <td class="confluenceTd"> Ian </td> 
+         <td class="confluenceTd"> Jerome Dochez, Engineering </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Paul, Peer </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 3 Extending the Administration Console </td> 
+         <td class="confluenceTd"> Kim </td> 
+         <td class="confluenceTd"> Ken Paulsen, Engineering </td> 
+         <td class="confluenceTd"> October 22. 2008 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Jason Lee, Engineering </td> 
+         <td class="confluenceTd"> October 22. 2008 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Anissa Lam, Engineering </td> 
+         <td class="confluenceTd"> October 22. 2008 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Yifeng Luo, QA </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Paul, Peer </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 4 Extending the <tt>asadmin</tt> Utility </td> 
+         <td class="confluenceTd"> Paul </td> 
+         <td class="confluenceTd"> Sreenivas Munnangi, Engineering </td> 
+         <td class="confluenceTd"> October 22. 2008 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Kedar Mhaswade, Engineering </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Sankar Neelakandan, QA </td> 
+         <td class="confluenceTd"> October 22. 2008 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Kim, Peer </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 5 Adding Monitoring Capabilities </td> 
+         <td class="confluenceTd"> Paul </td> 
+         <td class="confluenceTd"> Prashanth Abbagani, Engineering </td> 
+         <td class="confluenceTd"> October 22. 2008 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Jennifer Chou, Engineering </td> 
+         <td class="confluenceTd"> October 22. 2008 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Mahesh Kannan, Engineering </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Sreenivas Munnangi, Engineering </td> 
+         <td class="confluenceTd"> October 22. 2008 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Kim, Peer </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 6 Adding Container Capabilities </td> 
+         <td class="confluenceTd"> Ian </td> 
+         <td class="confluenceTd"> Jerome Dochez, Engineering </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Tim Quinn, Engineering </td> 
+         <td class="confluenceTd"> October 22. 2008 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Hong Zhang, Engineering </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Kim, Peer </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 7 Packaging and Delivering an Add-On Component </td> 
+         <td class="confluenceTd"> Ian </td> 
+         <td class="confluenceTd"> Jerome Dochez, Engineering </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Paul, Peer </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Appendix A Integration Point Reference </td> 
+         <td class="confluenceTd"> Kim </td> 
+         <td class="confluenceTd"> Ken Paulsen, Engineering </td> 
+         <td class="confluenceTd"> October 22. 2008 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Anissa Lam, Engineering </td> 
+         <td class="confluenceTd"> October 22. 2008 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Yifeng Luo, QA </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Paul, Peer </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Appendix B Template Reference </td> 
+         <td class="confluenceTd"> Kim </td> 
+         <td class="confluenceTd"> Ken Paulsen, Engineering </td> 
+         <td class="confluenceTd"> October 22. 2008 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Jason Lee, Engineering </td> 
+         <td class="confluenceTd"> October 22. 2008 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Anissa Lam, Engineering </td> 
+         <td class="confluenceTd"> October 22. 2008 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Yifeng Luo, QA </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Paul, Peer </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3DocPlanPlugInDev-DeliveryMethods"></a>Delivery Methods</h1> <p>This document will be published on the docs.sun.com^SM^ site and delivered in the GlassFish v3 documentation IPS package.</p> <h4><a name="GlassFishV3DocPlanPlugInDev-RelatedInformation"></a>Related Information</h1> 
+     <ul> 
+      <li><a href="GlassFishv3UserTaskAnalysisPluggability.html" title="GlassFishv3UserTaskAnalysisPluggability">User task analysis</a></li> 
+      <li><a href="GFV3PluggabilityOnePager.html" title="GFV3PluggabilityOnePager">GlassFish v3 Pluggability One-Pager</a></li> 
+      <li><a href="V3IntegrationPoint.html" title="V3IntegrationPoint">Integration points</a></li> 
+      <li><a href="V3SampleIpProject.html" title="V3SampleIpProject">Sample Project that shows all the Integration Points </a></li> 
+      <li><a href="V3AdminGuiTemplates.html" title="V3AdminGuiTemplates">Admin GUI templates for use by plugins</a></li> 
+      <li><a href="V3GUIBuildInstructions.html" title="V3GUIBuildInstructions">How to checkout/build/debug GlassFish v3 Prelude Admin Console </a></li> 
+      <li><a href="V3GuiAccessURL.html" title="V3GuiAccessURL">What URL to use for GlassFish v3 Prelude Admin Console </a></li> 
+      <li><span class="error">[GUI pluggability (.odp)|GlassFishV3AdminConsole^v3-gui-pluggability2.odp]</span></li> 
+      <li><a href="AdminCommandSPI.html" title="AdminCommandSPI">Administrative command infrastructure in V3</a></li> 
+      <li><a href="ContainerSPI.html" title="ContainerSPI">Container SPI</a></li> 
+      <li><a href="GFV3MonitoringOnePager.html" title="GFV3MonitoringOnePager">GlassFish v3 Monitoring One-Pager</a></li> 
+      <li><a href="V3EngineersGuide.html" title="V3EngineersGuide">Glassfish v3 Engineer's Guide</a></li> 
+      <li><a href="http://wiki.glassfish.java.net/attach/V3FunctionalSpecs/GFv3Prelude-OSGi-onepager-v0.2.txt">OSGi One-Pager</a></li> 
+      <li><a href="https://hk2.java.net/modules.html">hk2 Modules Subsystem</a></li> 
+      <li><a href="https://hk2.java.net/components.html">hk2 Component Model</a></li> 
+     </ul> <h4><a name="GlassFishV3DocPlanPlugInDev-Emailaliases%3A"></a>Email aliases:</h1> 
+     <ul> 
+      <li><span class="error">[admin@glassfish.java.net]</span></li> 
+      <li><span class="error">[users@glassfish.java.net]</span></li> 
+      <li><span class="error">[dev@glassfish.java.net]</span></li> 
+      <li><span class="error">[docs@glassfish.java.net]</span></li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 08, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

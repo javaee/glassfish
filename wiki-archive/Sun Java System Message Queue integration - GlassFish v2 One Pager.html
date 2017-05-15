@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : Sun Java System Message Queue integration - GlassFish v2 One Pager</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>01234567890123456789012345678901234567890123456789012345678901234567890123456789<br> 1. Introduction<br> 1.1. Project/Component Working Name:<br> Sun Java System Message Queue integration</p> <p> 1.2. Name(s) and e-mail address of Document Author(s)/Supplier:<br> Sivakumar Thyagarajan <span class="error">[sivakumart@dev.java.net, sivakumart@Sun.COM]</span><br> with inputs from Binod PG, Ramesh Parthasarathy.</p> <p> 1.3. Date of This Document:<br> v0.8 - Aug/11/06<br> v0.9 - Aug/28/06 (Clarified DIRECT mode and 4.1.iii)<br> v1.0 - Nov/08/06 (Clarified updates from asarch and added section<br> on ConfigurableTransactionSupport SPI)</p> <p>2. Project Summary<br> 2.1. Project Description:<br> To outline the new features in the application server to enable<br> tighter integration of Sun Java System Message Queue 4.1,<br> especially in the areas of improving MDB/JMS performance and<br> HA AS/MQ clusters.</p> <p> 2.2. Risks and Assumptions:<br> The integration depends on timely deliverables of binaries from<br> the MQ team.</p> <p>3. Problem Summary<br> 3.1. Problem Area:<br> Enteprises increasingly require a performant and highly available<br> JMS/MDB path for their loosely coupled JMS/Java EE applications.<br> To address these requirements the key goals of the next generation<br> Sun Java System Message Queue, based on Project Open Message Queue<br> <a href="https://mq.java.net">https://mq.java.net</a> are around providing enhanced performance<br> by closely integrating with the application server's runtime [when<br> housed within the appserver] and providing a new Highly Available<br> cluster type. This project aims to integrate this version of the<br> Message Queue project with the application server.</p> <p> 3.2. Justification:<br> Enhanced performance in the MDB/JMS path, out-of-the-box easy<br> configuration of AS/MQ clusters.</p> <p>4. Technical Description:<br> 4.1. Details:<br> i. "DIRECT" AS/MQ integration mode<br> One of the optimizations planned is to bypass the networking stack<br> for JMS operations when the application server and the<br> JMS broker is co-located in the same VM. This would enable all JMS<br> operations within a co-located setup to not incur the overhead of<br> inter-socket communication and would result in a much more performant<br> system for low-end deployments. To support this form of integration,<br> the current EMBEDDED mode would be modified to act as the new DIRECT<br> mode. (A system property to revert to non-DIRECT mode would also be<br> provided for backward compatability reasons)</p> <p> PE and EE DAS would continue to have EMBEDDED as the default. Clustered<br> and standalone server instances by default would be LOCAL. EMBEDDED<br> would be available as an option for clustered and standalone server<br> instances but would not be tested as a primary configuration.</p> <p> ii. HA cluster support in AS EE<br> The "Highly Available" cluster type to be available in SJSMQ 4.1 would<br> provide a peer-to-peer broker cluster topology with a shared persistent<br> data store offering "Data Availability". The "HA-Cluster" mode also does<br> away with the master broker topology supported in SJSMQ 3.6. In this<br> release we would allow "auto-clustering" feature as explained in<br> "4.1.1.4 SJSMQ high availability cluster support in SJSAS9.0" of the AS<br> 9.0 "Connectors and JMS" functional specification when the administrator<br> chooses to have a HA AS/MQ cluster. A table showing all possible<br> AS/MQ integration options, and their pros/cons is available at<br> <a href="./AppserverMqIntegrationOptions.html">http://www.glassfishwiki.org/gfwiki/Wiki.jsp?page=AppserverMqIntegrationOptions</a></p> <p> iii. "Auto-clustering" for non-HA AS/MQ clusters<br> In SJSAS 8.x, non-HA MQ clusters [traditional master broker styled MQ<br> clusters] had to be setup separately from the AS cluster by the<br> administrator. Since the common use-case is to have a MQ cluster<br> associated with an AS cluster, this release would automatically create a<br> LOCAL (co-located) non-HA cluster while a user creates an AS cluster<br> by default.</p> <p> Therefore when an adminstrator creates an AS cluster with 3 AS<br> instances, each AS instance would be configured to work with a LOCAL<br> broker, and the result 3 MQ broker instances would be made to form a<br> MQ cluster transparently. The first AS instance's MQ broker would be<br> set to be the master broker. The user has to use MQ's tools to migrate the<br> master broker should they choose to delete the first cluster instance<br> (instance that hosts the master broker). See discussion at<br> <a href="./NonHA_ASMQ_Clustering.html">http://www.glassfishwiki.org/gfwiki/Wiki.jsp?page=NonHA_ASMQ_Clustering</a><br> for more information.</p> <p> iv. ConfigurableTransactionSupport SPI<br> To support MQ RA and other resource adapters to understand the current<br> transactional context in which a ManagedConnectionFactory is used, a new<br> appserver SPI interface<br> com.sun.appserv.connectors.spi.ConfigurableTransactionSupport would be<br> provided. Please see<br> <a href="./ManagedConnectionFactoryContext.html">http://www.glassfishwiki.org/gfwiki/Wiki.jsp?page=ManagedConnectionFactoryContext</a><br> for more details.</p> <p> 4.2. Bug/RFE Number(s):<br> None</p> <p> 4.3. In Scope:</p> <p> 4.4. Out of Scope:</p> <p> 4.5. Interfaces:</p> <p> 4.5.1 Exported Interfaces</p> <p> 4.5.2 Imported interfaces<br> This integration depends on the interfaces exposed by the Sun Java<br> System Message Queue Resource Adapter for broker lifecycle control,<br> MQ "HA-cluster" integration.</p> <p> 4.5.3 Other interfaces (Optional)</p> <p> 4.6. Doc Impact:<br> Application Server's Developer's Guide and Administration Guide.</p> <p> 4.7. Admin/Config Impact:<br> Changes to the admin GUI to indicate</p> 
+     <ul class="alternate" type="square"> 
+      <li>new integration mode</li> 
+      <li>HA related changes</li> 
+     </ul> <p> 4.8. HA Impact:<br> Enhanced HA. See also the last note on 4.1.iii</p> <p> 4.9. I18N/L10N Impact:<br> None</p> <p> 4.10. Packaging &amp; Delivery:<br> None</p> <p> 4.11. Security Impact:<br> None</p> <p> 4.12. Compatibility Impact<br> None</p> <p> 4.13. Dependencies:<br> Dependent on Sun Java System Message Queue 4.1</p> <p>5. Reference Documents:<br> Sun Java System Application Server 9.0 "Connectors and JMS" Functional<br> Specification</p> <p>6. Schedule:<br> 6.1. Projected Availability:<br> Aligns with GlassFish V2/Sun Java System Application Server<br> 9.1 schedule</p> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Nov 08, 2011 by 
+<font color="#0050B2">sivakumar_thyagarajan</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

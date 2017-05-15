@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : V3FinalWebtierFunctionalSpec</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="V3FinalWebtierFunctionalSpec-WebtierOnePagerforv3Final"></a>Webtier One Pager for v3 Final</h1> <p>[</p> 
+     <div class="error">
+      <span class="error">Unknown macro: {TableOfContents title='Webtier '}</span> 
+     </div> <p>|(TableOfContentstitle='Webtier')]</p> <h4><a name="V3FinalWebtierFunctionalSpec-1.Introduction"></a>1. Introduction</h1> <h4><a name="V3FinalWebtierFunctionalSpec-1.1.Project%2FComponentWorkingName%3A"></a>1.1. Project/Component Working Name: </h2> <p>GlassFish Webtier </p> <h4><a name="V3FinalWebtierFunctionalSpec-1.2.Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier%3A"></a>1.2. Name(s) and e-mail address of Document Author(s)/Supplier:</h2> <p>The individual who are wrote this document</p> <p>Webtier team (webtier@glassfish.java.net)<br> Rajiv Mordani (Rajiv.Mordani@sun.com)</p> <h4><a name="V3FinalWebtierFunctionalSpec-1.3.DateofThisDocument%3A"></a>1.3. Date of This Document:</h2> <p>01/23/08</p> <h4><a name="V3FinalWebtierFunctionalSpec-2.ProjectSummary"></a>2. Project Summary</h1> <h4><a name="V3FinalWebtierFunctionalSpec-2.1.ProjectDescription%3A"></a>2.1. Project Description:</h2> <p>The webtier for GlassFish v3 is based on a subset of the Java EE 6<br> specifications namely Servlet 3.0, JSP 2.2, JSTL 1.1, EL 1.1 and JSF<br> 2.0. In addition to the main specifications the implementation will also<br> provide support for new web 2.0 features like Comet and AJAX.</p> <p>See below for a longer, more detailed technical description.</p> <h4><a name="V3FinalWebtierFunctionalSpec-2.2.RisksandAssumptions%3A"></a>2.2. Risks and Assumptions:</h2> 
+     <ul> 
+      <li>Risks related to Grizzly config is specified in the Grizzly config one pager.</li> 
+     </ul> <h4><a name="V3FinalWebtierFunctionalSpec-3.ProblemSummary"></a>3. Problem Summary</h1> <h4><a name="V3FinalWebtierFunctionalSpec-3.1.ProblemArea%3A"></a>3.1. Problem Area:</h2> <p>In order to have a Java EE 6 compliant implementation and the Java EE 6 web profile implementation, every implementation MUST provide a web container and it's associated pieces. In addition to the Java EE 6 requirements, the container needs to be competitive with some of the other light weight containers like Tomcat and Jetty. Also the support for scripting languages that help build web applications using these languages on top of GlassFish / Java VM are gaining popularity and need to be supported.In addition to this, we also need to support running the web container in embedded mode in GlassFish.</p> <h4><a name="V3FinalWebtierFunctionalSpec-3.2.Justification%3A"></a>3.2. Justification:</h2> <p>The webtier projects provide the core web container of Java EE 6 and support for web 2.0 style of programming.</p> <h4><a name="V3FinalWebtierFunctionalSpec-4.TechnicalDescription%3A"></a>4. Technical Description:</h1> <h4><a name="V3FinalWebtierFunctionalSpec-4.1.Details%3A"></a>4.1. Details:</h2> 
+     <ul> 
+      <li>Servlet 3.0 is introducing new features like pluggability, asynchronous support, security enhancements, ease of development (see the servlet specification for more details at the <a href="http://jcp.org/en/jsr/detail-315">JCP site</a>. The v3 web container will be the reference implementation for the specification.</li> 
+      <li>JSF 2.0 is a major new feature release including support for ajax, composite components, scripting, and many other improvements to ease of use (see the JSF specification for more details at the <a href="http://jcp.org/en/jsr/detail-314">JCP site</a>. Mojarra, the reference implementation for JSF, will be included in GlassFish v3.</li> 
+      <li>Maintenance releases of JSP (JSP 2.2) and the unified expression language (EL 1.1) (both available now at <a href="http://jcp.org/en/jsr/detail-245">http://jcp.org/en/jsr/detail-245</a> will also be implemented as part of the web container in GlassFish v3. The EL now includes direct support for method invocation.</li> 
+     </ul> 
+     <ul> 
+      <li>Features that were deferred from the v3 Prelude release will also be included in the v3 release corresponding to Java EE 6 - 
+       <ul> 
+        <li>Dynamic reconfiguration for http-listener and virtual-server prior to WAR deployment <a href="https://github.com/javaee/glassfish/issues/6213">6213</a></li> 
+        <li>Port unification at least for the web container is a goal. Ideally with the grizzly config changes we should be able to achieve this over time for all of v3 and the goal should be to be down to two ports - one for admin gui and one for everything else.</li> 
+        <li>Bugs that were excluded for the prelude release will be addressed in this release. 
+         <ul> 
+          <li><a href="https://glassfish.java.net/issues/buglist.cgi?issue_type=DEFECT&amp;issue_type=TASK&amp;component=glassfish&amp;subcomponent=web_container&amp;issue_status=UNCONFIRMED&amp;issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED&amp;version=V3&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=gfv3-prelude-excluded&amp;status_whiteboard_type=fulltext&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=&amp;cmdtype=doit&amp;newqueryname=&amp;order=Reusesamesortaslasttime&amp;Submitquery=Submitquery">gfv3-prelude-excluded bug query</a></li> 
+         </ul> </li> 
+       </ul> </li> 
+      <li>Fix all P1-P3 bugs for this release. 
+       <ul> 
+        <li><a href="https://glassfish.java.net/issues/buglist.cgi?Submitquery=Submitquery&amp;issue_type=DEFECT&amp;component=glassfish&amp;subcomponent=web_container&amp;issue_status=UNCONFIRMED&amp;issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED&amp;priority=P1&amp;priority=P2&amp;priority=P3&amp;version=V3&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=fulltext&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=&amp;cmdtype=doit&amp;newqueryname=&amp;order=Reusesamesortaslasttime">v3 p1-p3 bugs</a></li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li>Tomcat alignment 
+       <ul> 
+        <li>More complete support for context.xml 
+         <ul> 
+          <li>WatchedResource</li> 
+          <li>context.xml packaged outside of WAR <a href="https://github.com/javaee/glassfish/issues/4996">4996</a></li> 
+          <li>Application Management support</li> 
+         </ul> </li> 
+        <li>Porting of bug fixes from Tomcat</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li>Grizzly integration 
+       <ul> 
+        <li>Upgrade to Grizzly 1.9.x</li> 
+        <li>Re-use Grizzly OSGi bundle instead of repackaging</li> 
+        <li>openESB async support</li> 
+        <li>Ongoing support for scripting extensions (Jruby/Grails)</li> 
+        <li>Remove CoyoteRequest/GrizzlyRequest code duplication</li> 
+       </ul> </li> 
+      <li>Atmosphere 
+       <ul> 
+        <li>Version 0.1</li> 
+        <li>V3 Update Center Integration</li> 
+       </ul> </li> 
+      <li>Bayeux/Cometd</li> 
+      <li>Embeddable web container</li> 
+      <li>OSGi HTTP service impl</li> 
+      <li>Changes for Grizzly config. See [ Grizzly config |GrizzlyConfigOnePager] one pager.</li> 
+     </ul> 
+     <ul> 
+      <li>JSF 2.0 will be integrated into v3.</li> 
+     </ul> 
+     <ul> 
+      <li>For scripting support see the <a href="http://wiki.glassfish.java.net/attach/V3FunctionalSpecs/scripting-onepager.html">Scripting one pager</a></li> 
+     </ul> 
+     <ul> 
+      <li>Performance optimizations including - 
+       <ul> 
+        <li>Hybrid (blocking / non-blocking)</li> 
+        <li>Classloader optimizations</li> 
+        <li>Reducing the number of stack frames</li> 
+        <li>Async Http Write</li> 
+        <li>Expose OS Socket property</li> 
+        <li>Static Resource serviced by Grizzly directly (only if no filters or security constraints)</li> 
+       </ul> </li> 
+     </ul> <h4><a name="V3FinalWebtierFunctionalSpec-4.2.Bug%2FRFENumber%28s%29%3A"></a>4.2. Bug/RFE Number(s):</h2> <h4><a name="V3FinalWebtierFunctionalSpec-4.3.InScope%3A"></a>4.3. In Scope:</h2> <h4><a name="V3FinalWebtierFunctionalSpec-4.4.OutofScope%3A"></a>4.4. Out of Scope:</h2> <p>Any features related to clustering, for example, session management, cluster support for async feature from servlet 3.0</p> <h4><a name="V3FinalWebtierFunctionalSpec-4.5.Interfaces%3A"></a>4.5. Interfaces:</h2> <h4><a name="V3FinalWebtierFunctionalSpec-4.5.1ExportedInterfaces"></a>4.5.1 Exported Interfaces</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Interface </th> 
+         <th class="confluenceTh"> Stability </th> 
+         <th class="confluenceTh"> Former Stability (if changing) </th> 
+         <th class="confluenceTh"> Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Servlet 3.0 </td> 
+         <td class="confluenceTd"> Standard </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JSF 2.0 </td> 
+         <td class="confluenceTd"> Standard </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JSP 2.2 </td> 
+         <td class="confluenceTd"> Standard </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> EL 1.2 </td> 
+         <td class="confluenceTd"> Standard </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Tomcat and GlassFish valves </td> 
+         <td class="confluenceTd"> Stable </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> WebContainer Embedded APIs </td> 
+         <td class="confluenceTd"> Evolving </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Alternate docroots </td> 
+         <td class="confluenceTd"> stable </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Atmosphere </td> 
+         <td class="confluenceTd"> unstable </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Grizzly config </td> 
+         <td class="confluenceTd"> stable </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="V3FinalWebtierFunctionalSpec-4.5.2Importedinterfaces"></a>4.5.2 Imported interfaces</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Interface </th> 
+         <th class="confluenceTh"> Stability </th> 
+         <th class="confluenceTh"> Exporting Project </th> 
+         <th class="confluenceTh"> Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Flashlite </td> 
+         <td class="confluenceTd"> Stable </td> 
+         <td class="confluenceTd"> GlassFish </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> hk2 </td> 
+         <td class="confluenceTd"> Stable </td> 
+         <td class="confluenceTd"> hk2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="V3FinalWebtierFunctionalSpec-4.5.3Otherinterfaces%28Optional%29"></a>4.5.3 Other interfaces (Optional)</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Interface </th> 
+         <th class="confluenceTh"> Stability </th> 
+         <th class="confluenceTh"> Exporting Project </th> 
+         <th class="confluenceTh"> Comments </th> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="V3FinalWebtierFunctionalSpec-4.6.DocImpact%3A"></a>4.6. Doc Impact:</h2> <p>In addition to documenting standard features that are part of the Java EE specification, the documentation should also cover AJAX via jMaki and JSF, Comet features, use of mod_jk, WebDAV, SSI and CGI features that will be available in the v3 release.</p> <h4><a name="V3FinalWebtierFunctionalSpec-4.7.Admin%2FConfigImpact%3A"></a>4.7. Admin/Config Impact:</h2> <p>How will this change impact the administration of the product?</p> 
+     <ul> 
+      <li>Dynamic reconfiguration support via admin console. Already planned. Please see the admin one pager.</li> 
+      <li>Grizzly config changes for CLI and GUI.</li> 
+     </ul> <h4><a name="V3FinalWebtierFunctionalSpec-4.8.HAImpact%3A"></a>4.8. HA Impact:</h2> <p>What new requirements does this proposal place on the High Availability or Clustering aspects of the component?</p> <h4><a name="V3FinalWebtierFunctionalSpec-4.9.I18N%2FL10NImpact%3A"></a>4.9. I18N/L10N Impact:</h2> <p>Does this proposal impact internationalization or localization?</p> <h4><a name="V3FinalWebtierFunctionalSpec-4.10.Packaging%26Delivery%3A"></a>4.10. Packaging &amp; Delivery:</h2> <p>What packages, clusters or metaclusters does this proposal impact? What is its impact on install/upgrade?</p> <h4><a name="V3FinalWebtierFunctionalSpec-4.11.SecurityImpact%3A"></a>4.11. Security Impact:</h2> <p>How does this proposal interact with security-related APIs or interfaces? Does it rely on any Java policy or platform user/permissions implication? If the feature exposes any new ports, Or any similar communication points which may have security implications, note these here.</p> <h4><a name="V3FinalWebtierFunctionalSpec-4.12.CompatibilityImpact"></a>4.12. Compatibility Impact</h2> 
+     <ul> 
+      <li>Grizzly configuration, which is new, is replacing some of the properties that existed in GlassFish v2. The new elements in Grizzly configuration will be the recommended way.</li> 
+     </ul> <h4><a name="V3FinalWebtierFunctionalSpec-4.13.Dependencies%3A"></a>4.13. Dependencies:</h2> 
+     <ul> 
+      <li>Admin for dynamic reconfiguration and new commands for grizzly config</li> 
+     </ul> <h4><a name="V3FinalWebtierFunctionalSpec-5.ReferenceDocuments%3A"></a>5. Reference Documents:</h1> <p>List of related documents, if any (BugID's, RFP's, papers).</p> <p>Explain how/where to obtain the documents, and what each contains, not just their titles. </p> <h4><a name="V3FinalWebtierFunctionalSpec-6.Schedule%3A"></a>6. Schedule:</h1> <h4><a name="V3FinalWebtierFunctionalSpec-6.1.ProjectedAvailability%3A"></a>6.1. Projected Availability:</h2> <p>Aligned with the GlassFish v3 release.</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 08, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

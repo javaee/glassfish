@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : 09mar2010</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="09mar2010-March09%2C2010"></a>March 09, 2010</h3> 
+     <ul> 
+      <li>Attendees: Dies, Anissa, Jennifer, Ken, Nazrul, Bill, Byron, Paul, Tom, ???</li> 
+      <li>Today's meeting was a continuance of last week's cluster support discussion.<br> The following will be the same between GF V2 and V3 clustering:</li> 
+     </ul> 
+     <ul class="alternate" type="square"> 
+      <li>The DAS manages all the data of all nodes.</li> 
+      <li>It sends out this data to the instances using some synchronization<br> mechanism.<br> What will be different in GF V3.1 is:</li> 
+      <li>There will be no Node Agent at first. The main functionality of the<br> node agent was to start and stop remote instances. This can be done by<br> the OS's facilities.<br> Some of the reasons of the changes are:</li> 
+      <li>The node agent was basically duplicating the OS's services functionality.</li> 
+      <li>The were scalability issues in GFv2.x where the DAS was suffering when<br> many nodes started to synchronise.</li> 
+      <li>A rewrite of the related code is required anyway because the way the<br> domain.xml information is handled has changed radically in GF V3 anyway.</li> 
+      <li>There were also issues because the code that was running in the<br> cluster and non-cluster cases was different.<br> One thing that needs to be investigated (tried out) is whether and how<br> much optimizations are required for the synchronization process between<br> nodes and DAS. For example, Ericsson used 40 instances on different<br> machines.<br> How to do the synchronization is still being considered. Using a<br> database or SVN repository is a bad idea because of performance issues<br> and SVN is not Java-only. Mature rsync implementations in Java do not<br> seem available.<br> There will be two timings of synchronization:<br> 1.<br> When an instance starts. This could even be done just before the<br> instance starts (from the asadmin command that starts the instance, as<br> it has all the infrastructure to connect to the DAS anyway), instead of<br> from the VM process of the starting instance.<br> 2.<br> When operations are done on the DAS, which need to be propagated to the<br> instances. The DAS could have a global unique incrementing number<br> counting its state changes, so this number can be compared with the<br> remote instances's numbers to quickly see if they are up to date.<br> (Currently the plan is to use the timestamp of the DAS's domain.xml for<br> this).<br> In case of an instance restart, 1. could be skipped. The window of the<br> restart is short, so no need to sync everything again?<br> Two things that need to be taken care with is:</li> 
+      <li>What should happen if a user tries to run an asadmin command on the<br> DAS while the DAS is sync'ing its state with remote nodes? Queue the<br> command? Does that mean the command won't come back until the command is<br> completed? What if the synchronization brings down the DAS, how will the<br> user know whether the command has been executed or not?</li> 
+      <li>The DAS will propagate state changes to the remote instance. What if<br> an instance is starting but not yet ready to accept the DAS's commands?<br> How does the DAS know?<br> -&gt; Maybe we can make use of GMS here.</li> 
+     </ul> 
+     <ul> 
+      <li>Second topic was about the issue Markus recently brought up.<br> Our understanding is that according to Markus (external contributor),<br> "real" Windows applications don't use batch files. Starting GlassFish<br> from the Start Menu makes a command prompt come up briefly, which looks<br> very clunky.<br> See: <a href="https://github.com/javaee/glassfish/issues/6784">https://github.com/javaee/glassfish/issues/6784</a><br> There are other OSS that use batch files (like Maven), but that is no<br> excuse for GlassFish if that is not the proper way.<br> More importantly, when starting GlassFish from the Start Menu it should<br> pop up a window. Depending on the functionality the GlassFish installer<br> offers, we should try using a Short-Cut that uses 'javaw.exe' to start<br> GlassFish to prevent the window popping up.<br> On Windows 7 there might be other issues (privileges on executables).<br> Furthermore, depending on Windows' (standard) ability of executing jar<br> files (as they're mapped to java -jar) would lead to complaints from<br> people who have mapped jar files to their zip utility. 
+       <hr> </li>
+     </ul> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:42.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

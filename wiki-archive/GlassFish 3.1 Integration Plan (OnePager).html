@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFish 3.1 Integration Plan (OnePager)</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p><b>GF 3.1 JMS Integration one-pager</b></p> <p><b>Table of Contents</b></p> 
+     <div> 
+      <ul> 
+       <li><a href="#GlassFish3.1IntegrationPlan%28OnePager%29-1.%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3BIntroduction">1. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Introduction</a></li> 
+       <ul> 
+        <li><a href="#GlassFish3.1IntegrationPlan%28OnePager%29-1.1.%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3BProject%2FComponentWorkingName">1.1. &nbsp;&nbsp;&nbsp;&nbsp; Project/Component Working Name</a></li> 
+        <li><a href="#GlassFish3.1IntegrationPlan%28OnePager%29-1.2.%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3BName%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier">1.2. &nbsp;&nbsp;&nbsp;&nbsp; Name(s) and e-mail address of Document Author(s)/Supplier</a></li> 
+        <li><a href="#GlassFish3.1IntegrationPlan%28OnePager%29-1.3.%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3BDateofThisDocument">1.3. &nbsp;&nbsp;&nbsp;&nbsp; Date of This Document</a></li> 
+       </ul> 
+       <li><a href="#GlassFish3.1IntegrationPlan%28OnePager%29-2.%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3BProjectSummary">2. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Project Summary</a></li> 
+       <ul> 
+        <li><a href="#GlassFish3.1IntegrationPlan%28OnePager%29-2.2.%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3BRisksandAssumptions">2.2. &nbsp;&nbsp;&nbsp;&nbsp; Risks and Assumptions</a></li> 
+       </ul> 
+       <li><a href="#GlassFish3.1IntegrationPlan%28OnePager%29-3.%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3BProblemSummary">3. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Problem Summary</a></li> 
+       <ul> 
+        <li><a href="#GlassFish3.1IntegrationPlan%28OnePager%29-3.1.%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3BProblemArea">3.1. &nbsp;&nbsp;&nbsp;&nbsp; Problem Area</a></li> 
+        <li><a href="#GlassFish3.1IntegrationPlan%28OnePager%29-3.2.%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3BJustification">3.2. &nbsp;&nbsp;&nbsp;&nbsp; Justification</a></li> 
+       </ul> 
+       <li><a href="#GlassFish3.1IntegrationPlan%28OnePager%29-4.%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3BTechnicalDescription">4. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Technical Description</a></li> 
+       <ul> 
+        <ul> 
+         <li><a href="#GlassFish3.1IntegrationPlan%28OnePager%29-4.1.1%26nbsp%3B%26nbsp%3B%26nbsp%3BAutoclustering">4.1.1&nbsp;&nbsp;&nbsp; Auto-clustering</a></li> 
+         <li><a href="#GlassFish3.1IntegrationPlan%28OnePager%29-4.1.2SupportforMQclustersinREMOTEmode">4.1.2 Support for MQ clusters in REMOTE mode</a></li> 
+         <li><a href="#GlassFish3.1IntegrationPlan%28OnePager%29-4.1.3%26nbsp%3B%26nbsp%3B%26nbsp%3BSupportforHAclusters">4.1.3&nbsp;&nbsp;&nbsp; Support for HA clusters</a></li> 
+         <li><a href="#GlassFish3.1IntegrationPlan%28OnePager%29-4.1.4%26nbsp%3B%26nbsp%3B%26nbsp%3BDependenceonMasterbroker">4.1.4&nbsp;&nbsp;&nbsp; Dependence on Master broker</a></li> 
+         <li><a href="#GlassFish3.1IntegrationPlan%28OnePager%29-4.1.6%26nbsp%3B%26nbsp%3B%26nbsp%3BIntegratingMQmonitoringstatisticswithGFmonitoringframework">4.1.6&nbsp;&nbsp;&nbsp; Integrating MQ monitoring statistics with GF monitoring framework</a></li> 
+         <li><a href="#GlassFish3.1IntegrationPlan%28OnePager%29-4.1.7%26nbsp%3B%26nbsp%3B%26nbsp%3BJMSsupportforEmbeddedGF">4.1.7&nbsp;&nbsp;&nbsp; JMS support for Embedded GF</a></li> 
+        </ul> 
+        <li><a href="#GlassFish3.1IntegrationPlan%28OnePager%29-4.2.%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3BBug%2FRFENumber%28s%29">4.2. &nbsp;&nbsp;&nbsp;&nbsp; Bug/RFE Number(s)</a></li> 
+        <li><a href="#GlassFish3.1IntegrationPlan%28OnePager%29-4.3.%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3BInScope%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3B">4.3. &nbsp;&nbsp;&nbsp;&nbsp; In Scope&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a></li> 
+        <li><a href="#GlassFish3.1IntegrationPlan%28OnePager%29-4.4.%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3BOutofScope">4.4. &nbsp;&nbsp;&nbsp;&nbsp; Out of Scope</a></li> 
+        <li><a href="#GlassFish3.1IntegrationPlan%28OnePager%29-4.5.%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3BInterfaces">4.5. &nbsp;&nbsp;&nbsp;&nbsp; Interfaces</a></li> 
+        <ul> 
+         <li><a href="#GlassFish3.1IntegrationPlan%28OnePager%29-4.5.1%26nbsp%3B%26nbsp%3BPublicInterfaces">4.5.1 &nbsp;&nbsp; Public Interfaces</a></li> 
+         <li><a href="#GlassFish3.1IntegrationPlan%28OnePager%29-4.5.2%26nbsp%3B%26nbsp%3BPrivateinterfaces">4.5.2 &nbsp;&nbsp; Private interfaces</a></li> 
+         <li><a href="#GlassFish3.1IntegrationPlan%28OnePager%29-4.5.3%26nbsp%3B%26nbsp%3BDeprecated%2FRemovedInterfaces">4.5.3 &nbsp;&nbsp; Deprecated/Removed Interfaces</a></li> 
+        </ul> 
+        <li><a href="#GlassFish3.1IntegrationPlan%28OnePager%29-4.6.DocImpactApplicationServerDeveloper%27sGuide%2CAdministrationGuideandHAguide.">4.6. Doc Impact Application Server Developer's Guide, Administration Guide and HA guide.</a></li> 
+        <li><a href="#GlassFish3.1IntegrationPlan%28OnePager%29-4.7.Admin%2FConfigImpact">4.7. Admin/Config Impact</a></li> 
+        <li><a href="#GlassFish3.1IntegrationPlan%28OnePager%29-4.8.%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3BHAImpact">4.8.&nbsp;&nbsp;&nbsp;&nbsp; HA Impact</a></li> 
+        <li><a href="#GlassFish3.1IntegrationPlan%28OnePager%29-4.9.I18N%2FL10NImpacts">4.9. I18N/L10N Impacts</a></li> 
+        <li><a href="#GlassFish3.1IntegrationPlan%28OnePager%29-4.10.%26nbsp%3B%26nbsp%3BPackaging%2CDelivery%26Upgrade">4.10. &nbsp;&nbsp; Packaging, Delivery &amp; Upgrade</a></li> 
+        <ul> 
+         <li><a href="#GlassFish3.1IntegrationPlan%28OnePager%29-4.10.1Packaging">4.10.1 Packaging</a></li> 
+         <li><a href="#GlassFish3.1IntegrationPlan%28OnePager%29-4.10.2%26nbsp%3BDelivery">4.10.2&nbsp; Delivery</a></li> 
+         <li><a href="#GlassFish3.1IntegrationPlan%28OnePager%29-4.10.3%26nbsp%3BUpgradeandMigration">4.10.3&nbsp; Upgrade and Migration</a></li> 
+        </ul> 
+        <li><a href="#GlassFish3.1IntegrationPlan%28OnePager%29-4.11.%26nbsp%3B%26nbsp%3BSecurityImpact">4.11.&nbsp; &nbsp; Security Impact</a></li> 
+        <li><a href="#GlassFish3.1IntegrationPlan%28OnePager%29-4.12.%26nbsp%3B%26nbsp%3BCompatibilityImpact">4.12.&nbsp;&nbsp; Compatibility Impact</a></li> 
+        <li><a href="#GlassFish3.1IntegrationPlan%28OnePager%29-4.13.%26nbsp%3B%26nbsp%3BDependencies">4.13.&nbsp;&nbsp; Dependencies</a></li> 
+        <ul> 
+         <li><a href="#GlassFish3.1IntegrationPlan%28OnePager%29-4.13.1%26nbsp%3BInternalDependencies">4.13.1&nbsp; Internal Dependencies</a></li> 
+        </ul> 
+        <li><a href="#GlassFish3.1IntegrationPlan%28OnePager%29-4.14.%26nbsp%3B%26nbsp%3BTestingImpact">4.14.&nbsp; &nbsp; Testing Impact</a></li> 
+       </ul> 
+       <li><a href="#GlassFish3.1IntegrationPlan%28OnePager%29-5.%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3BReferenceDocuments">5.&nbsp;&nbsp;&nbsp;&nbsp; &nbsp; Reference Documents</a></li> 
+       <li><a href="#GlassFish3.1IntegrationPlan%28OnePager%29-6.%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3BSchedule">6.&nbsp;&nbsp;&nbsp;&nbsp; &nbsp; Schedule</a></li> 
+       <ul> 
+        <li><a href="#GlassFish3.1IntegrationPlan%28OnePager%29-6.1.%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3BProjectedAvailability">6.1.&nbsp;&nbsp; &nbsp;&nbsp; Projected Availability</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="GlassFish3.1IntegrationPlan%28OnePager%29-1.%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3BIntroduction"></a>1. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Introduction</h1> <h4><a name="GlassFish3.1IntegrationPlan%28OnePager%29-1.1.%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3BProject%2FComponentWorkingName"></a>1.1. &nbsp;&nbsp;&nbsp;&nbsp; Project/Component Working Name</h2> <p>GlassFish JMS integration changes for GF 3.1</p> <h4><a name="GlassFish3.1IntegrationPlan%28OnePager%29-1.2.%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3BName%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier"></a>1.2. &nbsp;&nbsp;&nbsp;&nbsp; Name(s) and e-mail address of Document Author(s)/Supplier</h2> <p>Satish Kumar</p> <p>Satish.Kumar@SUN.COM</p> <h4><a name="GlassFish3.1IntegrationPlan%28OnePager%29-1.3.%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3BDateofThisDocument"></a>1.3. &nbsp;&nbsp;&nbsp;&nbsp; Date of This Document</h2> <p>19 May 2010</p> <h4><a name="GlassFish3.1IntegrationPlan%28OnePager%29-2.%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3BProjectSummary"></a>2. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Project Summary</h1> <h4><a name="GlassFish3.1IntegrationPlan%28OnePager%29-2.1.%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3BProjectDescription%5C%5C"></a>2.1. &nbsp;&nbsp;&nbsp;&nbsp; Project Description<br class="atl-forced-newline"></h2> <p>The key focus of this release is to reinstate support for clustering of MQ brokers in GlassFish. This is essentially a continuation of a feature that has been available in GF 2.x release. However, the following enhancements are planned with this release:</p> 
+     <ul> 
+      <li>Support for auto-clustering of MQ brokers in Embedded mode. The previous releases only supported auto-clustering in the LOCAL mode.</li> 
+      <li>Remove dependence on master broker for non-HA clusters</li> 
+      <li>Support for dynamic cluster changes</li> 
+     </ul> <p>Other important features include:</p> 
+     <ul> 
+      <li>Integrating existing MQ broker metrics with GF monitoring framework</li> 
+      <li>JMS support for embedded GF API</li> 
+     </ul> <p>This document primarily focuses on the GlassFish JMS module related changes. The MQ changes are documented as separate one-pagers. The list of features and links to the respective one-pagers are given in the table below.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <td class="confluenceTd"> <b>Feature</b> </td> 
+         <td class="confluenceTd"> <b>One-pager link</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Dynamically Synchronize Broker List in MQ Conventional Cluster with GlassFish Cluster </td> 
+         <td class="confluenceTd"> <a href="http://mq.java.net/4.5-content/sync-brokerlist-in-glassfish.txt">http://mq.java.net/4.5-content/sync-brokerlist-in-glassfish.txt</a><br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Support for conventional clustering of MQ brokers in Embedded mode (Broker Embedded) </td> 
+         <td class="confluenceTd"> <a href="http://mq.java.net/4.5-content/embeddedBrokersInConventionalClusters-one-pager.html">http://mq.java.net/4.5-content/embeddedBrokersInConventionalClusters-one-pager.html</a><br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Improve MQ conventional clustering with master broker </td> 
+         <td class="confluenceTd"> <a href="http://mq.java.net/4.5-content/cluster-improvemaster.txt">http://mq.java.net/4.5-content/cluster-improvemaster.txt</a><br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> MQ conventional clustering without master broker in GlassFish EMBEDED/LOCAL Mode (Broker Embedded or Broker Local) </td> 
+         <td class="confluenceTd"> <a href="http://mq.java.net/4.5-content/cluster-nomaster-db.txt">http://mq.java.net/4.5-content/cluster-nomaster-db.txt</a><br class="atl-forced-newline"> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFish3.1IntegrationPlan%28OnePager%29-2.2.%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3BRisksandAssumptions"></a>2.2. &nbsp;&nbsp;&nbsp;&nbsp; Risks and Assumptions</h2> <p>The JMS clustering feature depends on the timely delivery of the GF clustering changes and MQ 4.5.</p> <h4><a name="GlassFish3.1IntegrationPlan%28OnePager%29-3.%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3BProblemSummary"></a>3. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Problem Summary</h1> <h4><a name="GlassFish3.1IntegrationPlan%28OnePager%29-3.1.%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3BProblemArea"></a>3.1. &nbsp;&nbsp;&nbsp;&nbsp; Problem Area</h2> <p><b><em>Support for MQ clusters:</em></b><br class="atl-forced-newline"></p> <p>In order to maintain feature parity with v2.1 and re-enabling clustering, this is a key release driver for 3.1. Earlier releases had supported clustering of MQ broker (in HA and non-HA clusters) for Local and Remote modes of MQ integration. However, the following limitations existed:</p> 
+     <ul> 
+      <li>Auto-clustering of MQ brokers was only supported in LOCAL mode</li> 
+      <li>Dynamic changes to the cluster topology were not recognized without restarting the entire cluster</li> 
+      <li>Clustering is a key release driver for the 3.1 release</li> 
+      <li>Clustering of embedded brokers – Both the GF instance and broker instance run on the same VM</li> 
+      <li>Dynamic clustering - the MQ cluster would reshape itself based on changes to the GF cluster hence ensures a closer synergy with GF.</li> 
+      <li>Removing the dependence on master broker – to have a closer synergy with GF's symmetric clusters.</li> 
+     </ul> <h4><a name="GlassFish3.1IntegrationPlan%28OnePager%29-3.2.%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3BJustification"></a>3.2. &nbsp;&nbsp;&nbsp;&nbsp; Justification</h2> <h4><a name="GlassFish3.1IntegrationPlan%28OnePager%29-4.%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3BTechnicalDescription"></a>4. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Technical Description</h1> <h4><a name="GlassFish3.1IntegrationPlan%28OnePager%29-4.1%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3BSupportforMQclusters%5C%5C"></a>4.1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Support for MQ clusters<br class="atl-forced-newline"></h2> <p>GlassFish Message Queue has in-built clustering capacities. It supports two modes of clustering:</p> 
+     <ul> 
+      <li>Conventional Clusters with service HA&nbsp;</li> 
+      <li>Enhanced Clusters with data HA<br class="atl-forced-newline"></li> 
+     </ul> <p>The most common use case is to have GF and MQ clusters to interoperate with each other seamlessly. However, there are differences in the clustering architectures of GF and MQ. A key difference is that while GF clusters are homogenous, MQ conventional clusters require one instance to be designated as a master broker. The master broker is required for certain admin related operations like creation/update/deletion of durable subscription and physical destination and is required to be running all the time. MQ broker instances need to rendezvous with the master broker at start-up for them to operate correctly. However, it is important to note that designating a master broker is only required for conventional clusters. Enhanced clusters use a shared database to store configuration information.<br class="atl-forced-newline"></p> <p>There are three possible modes for integrating GF clusters with MQ clusters. The modes are:</p> 
+     <ul> 
+      <li>Embedded – The MQ broker instance runs in the same process as the GF instance.</li> 
+      <li>Local – GF instance and MQ broker instance are co-located on the same machine but run as independent processes</li> 
+      <li>Remote – GF and MQ are configured independently but interact through a configured JMS hosts list. <br class="atl-forced-newline"></li> 
+     </ul> <h4><a name="GlassFish3.1IntegrationPlan%28OnePager%29-4.1.1%26nbsp%3B%26nbsp%3B%26nbsp%3BAutoclustering"></a>4.1.1&nbsp;&nbsp;&nbsp; Auto-clustering</h3> <p>Typically, setting up a joint GF and MQ cluster would require the user to configure a GF cluster and MQ cluster independently and link the two with additional configuration in GF through an addresslist that the RA can then use to communicate with the MQ cluster.&nbsp; Auto-clustering is a feature by which a MQ cluster is auto-created when a GF cluster is configured by the user. The process is entirely transparent to the user since there is no additional configuration that will be required to get this to work. This feature was also supported in v2.1 but the default mode for auto-clustering was LOCAL.&nbsp; The key highlights of auto-clustering are:</p> 
+     <ul> 
+      <li>One MQ instance is configured per GF instance</li> 
+      <li>The host and port information of the various GF nodes are accessed through the 'node' element of domain.xml.</li> 
+      <li>The addresslist for each instance is created in such a way as to ensure that each GF instance uses its local MQ instance by default.</li> 
+      <li>In case of conventional clusters, the MQ instance associated with the first GF instance as configured in the domain.xml is designated as the master broker.</li> 
+      <li>An important enhancement in GF 3.1 is the support for auto-clustering of EMBEDDED brokers where the GF process and the broker process run on the same Java VM.</li> 
+      <li>Embedded now becomes the default mode for auto-clustering.</li> 
+      <li>While the Embedded mode for stand-alone (non-clustered) GF servers with MQ use a direct in-process communication with the MQ broker, clustered instances will need to use TCP. The communication mode will be selected automatically and will not need to be configured by the user. Direct mode communication uses API calls and completely bypasses the network stack. As a consequence, there is a significant speed-up. This cannot be used in the case of clustered instances since when running in a cluster these need to be able to handle broker or connection failure by failing over to another broker. For full details see the one-pager <a href="http://mq.java.net/4.5-content/embeddedBrokersInConventionalClusters-one-pager.html">http://mq.java.net/4.5-content/embeddedBrokersInConventionalClusters-one-pager.html</a></li> 
+      <li>The MQ broker lifecycles in both the EMBEDDED and LOCAL modes are managed by GF.</li> 
+      <li>The MQ changes to support Embedded broker in conventional (non-HA) clusters is covered in the following one-pager: <a href="http://mq.java.net/4.5-content/embeddedBrokersInConventionalClusters-one-pager.html">http://mq.java.net/4.5-content/embeddedBrokersInConventionalClusters-one-pager.html</a><br class="atl-forced-newline"></li> 
+     </ul> <h4><a name="GlassFish3.1IntegrationPlan%28OnePager%29-4.1.2SupportforMQclustersinREMOTEmode"></a>4.1.2 Support for MQ clusters in REMOTE mode</h3> <p>GF will continue to support this feature by which it can connect to an existing, user-created MQ cluster without the auto-clustering and lifecycle management capabilities.&nbsp; The JMS Host information will need to be manually configured by the user.</p> <h4><a name="GlassFish3.1IntegrationPlan%28OnePager%29-4.1.3%26nbsp%3B%26nbsp%3B%26nbsp%3BSupportforHAclusters"></a>4.1.3&nbsp;&nbsp;&nbsp; Support for HA clusters</h3> <p>MQ's Enhanced Clusters (HA clusters) provides a peer-to-peer broker topology with a shared persistent data store offering data-availability. This mode does away with the master broker requirement. In v2.1, this mode was only supported in the 'Enterprise profile' with HADB. MQ would share the HADB data source that is configured under availability-services of domain.xml with GF.<br class="atl-forced-newline"></p> <p>GF 3.1 no longer bundles HADB and the asadmin command (configure-ha-cluster) to configure a HA service has been discontinued. Hence, the user will need to manually configure a HA database. The corresponding HA data source information will need to be configured manually in MQ's cluster.properties file.&nbsp;<br class="atl-forced-newline"></p> <p>The default support will continue to be for non-HA clusters. Auto-clustering of HA clusters will be supported but only in the LOCAL mode.<br class="atl-forced-newline"></p> <p>There will be no support for MQ in EMBEDDED mode for HA clusters due to limitations around restarting of the MQ broker (required in certain failure scenarios) without stopping GF when they share the same JVM.<br class="atl-forced-newline"></p> <p>REMOTE mode will be supported for HA clusters but without auto-clustering and life-cycle management capabilities.</p> <h4><a name="GlassFish3.1IntegrationPlan%28OnePager%29-4.1.4%26nbsp%3B%26nbsp%3B%26nbsp%3BDependenceonMasterbroker"></a>4.1.4&nbsp;&nbsp;&nbsp; Dependence on Master broker</h3> <p>Non-HA clusters in MQ have traditionally required configuring a master broker for certain admin related operations like create/update/delete of durable subscription and physical destination. MQ broker instances also require to rendezvous with the master broker at start-up. This imposes the requirement for the master broker to be started before the remaining broker instances can start and function correctly. They have been several complaints from users running into "master broker not started" errors if there are delays in the start-up of the master broker. To address issue, the following changes are proposed.<br class="atl-forced-newline"></p> <p>MQ is proposing to introduce a new broker property 'imq.cluster. nowaitForMasterBrokerTimeoutInSeconds&nbsp; that can be configured through GF (as a property in the jms-host element of domain.xml) and passed on to the MQ broker through the RA at start-up. This property will define the timeout interval before the exceptions are reported. The MQ changes are documented here -</p> <p><a href="http://mq.java.net/4.5-content/cluster-improvemaster.txt">http://mq.java.net/4.5-content/cluster-improvemaster.txt.</a> <br class="atl-forced-newline"></p> <p>MQ 4.5 also proposes to provide an option to entirely switch off the need for a master broker and instead use a database. The one pager for this feature is available here – <a href="http://mq.java.net/4.5-content/cluster-nomaster-db.txt">http://mq.java.net/4.5-content/cluster-nomaster-db.txt</a></p> <p>However, by default, GF will continue to configure a master broker for non-HA clusters. As in v2.1, the first broker in the server-list will be designated as the master broker.&nbsp; To configure the DB data source, the user will need to manually configure the properties in MQ's cluster.properties file.<br class="atl-forced-newline"> <br class="atl-forced-newline"></p> <p><b>4.1.5&nbsp;&nbsp;&nbsp; Support for Dynamic Cluster changes</b></p> <p>In v2.1, the MQ broker address-list was populated only during start-up. As a consequence, any changes to the cluster at run-time were not reflected. Changes to the cluster required a restart of the entire cluster. As an enhancement in v3.1, it is proposed to support dynamic changes in cluster topologies. GF JMS module will now listen for cluster change events. These changes will be propagated to the MQ broker instance through the RA. Every MQ broker instance in the cluster will receive these notifications.<br class="atl-forced-newline"></p> <p>The master broker or DB need not be running when these dynamic cluster change requests come-in. However, when running with the master broker option, any changes to master broker (except changing the port-mapper port) will result in an exception. The master broker can only be deleted and replaced with a new master broker by following the MQ backup/restore procedures documented in the MQ admin guide -<br> <a href="http://docs.sun.com/app/docs/doc/821-0027/aeoih?l=en&amp;a=view">http://docs.sun.com/app/docs/doc/821-0027/aeoih?l=en&amp;a=view</a>. This requires a shutdown of all the MQ brokers instances in the cluster. Then, the master broker change records need to be backed-up and restored to the new master broker. The imq.cluster.masterbroker property for all the broker instances needs to be updated before restarting the cluster.<br class="atl-forced-newline"></p> <p>MQ changes to support this feature are covered in the following one-pager:</p> <p><a href="http://mq.java.net/4.5-content/sync-brokerlist-in-glassfish.txt">http://mq.java.net/4.5-content/sync-brokerlist-in-glassfish.txt</a> <br class="atl-forced-newline"></p> <h4><a name="GlassFish3.1IntegrationPlan%28OnePager%29-4.1.6%26nbsp%3B%26nbsp%3B%26nbsp%3BIntegratingMQmonitoringstatisticswithGFmonitoringframework"></a>4.1.6&nbsp;&nbsp;&nbsp; Integrating MQ monitoring statistics with GF monitoring framework</h3> <p>The MQ broker provides a rich set of monitoring statistics that are currently not accessible through GF. A majority of these stats are implemented as JMX MBeans while a smaller number of them are only accessible through the MQ command line.&nbsp; In this release, we plan to provide access to these MQ monitoring statistics through the GF monitoring framework. The GF JMS module will implement the StatsProvider interface and will act as a proxy for these JMX MBeans. The primary focus will be on providing accessibility to the JMX enabled stats. Access to the non-JMX metrics will require code changes from MQ by either making these available through JMX or providing an alternative interface.&nbsp;<br class="atl-forced-newline"></p> <p>This approach offers the following advantages:</p> 
+     <ul> 
+      <li>Leveraging existing metrics without any code changes to MQ</li> 
+      <li>No requirement for MQ to be repackaged as an OSGi module</li> 
+      <li>Since this approach is based on JMX, this approach will work in all three integration modes – Embedded, Local and Remote.</li> 
+     </ul> <h4><a name="GlassFish3.1IntegrationPlan%28OnePager%29-4.1.7%26nbsp%3B%26nbsp%3B%26nbsp%3BJMSsupportforEmbeddedGF"></a>4.1.7&nbsp;&nbsp;&nbsp; JMS support for Embedded GF</h3> <p>In this release, we plan to introduce JMS support for Embedded GF.&nbsp; EMBEDDED and REMOTE modes of MQ integration will be supported. However, local mode of integration will not be supported. The JMSRA and MQ jars need to be bundled with glassfish-embedded-all.jar in order to support EMBEDDED mode. &nbsp;</p> <h4><a name="GlassFish3.1IntegrationPlan%28OnePager%29-4.2.%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3BBug%2FRFENumber%28s%29"></a>4.2. &nbsp;&nbsp;&nbsp;&nbsp; Bug/RFE Number(s)</h2> <p>There are no existing bugs or RFEs for these proposed changes.</p> <h4><a name="GlassFish3.1IntegrationPlan%28OnePager%29-4.3.%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3BInScope%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3B"></a>4.3. &nbsp;&nbsp;&nbsp;&nbsp; In Scope&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</h2> <p>This document covers only the proposed GF JMS module related changes.</p> <h4><a name="GlassFish3.1IntegrationPlan%28OnePager%29-4.4.%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3BOutofScope"></a>4.4. &nbsp;&nbsp;&nbsp;&nbsp; Out of Scope</h2> <p>The MQ related changes are covered in other one-pagers. Please see the table above for details and links.</p> <h4><a name="GlassFish3.1IntegrationPlan%28OnePager%29-4.5.%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3BInterfaces"></a>4.5. &nbsp;&nbsp;&nbsp;&nbsp; Interfaces</h2> <h4><a name="GlassFish3.1IntegrationPlan%28OnePager%29-4.5.1%26nbsp%3B%26nbsp%3BPublicInterfaces"></a>4.5.1 &nbsp;&nbsp; Public Interfaces</h3> <p>This work does not modify or introduce new public interfaces.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <td class="confluenceTd"> Interface </td> 
+         <td class="confluenceTd"> Comments </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> <br class="atl-forced-newline"> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFish3.1IntegrationPlan%28OnePager%29-4.5.2%26nbsp%3B%26nbsp%3BPrivateinterfaces"></a>4.5.2 &nbsp;&nbsp; Private interfaces</h3> <p>This work does not modify or introduce new private interfaces.</p> <h4><a name="GlassFish3.1IntegrationPlan%28OnePager%29-4.5.3%26nbsp%3B%26nbsp%3BDeprecated%2FRemovedInterfaces"></a>4.5.3 &nbsp;&nbsp; Deprecated/Removed Interfaces</h3> <p>This work does not deprecate or remove any existing public interfaces.</p> <h4><a name="GlassFish3.1IntegrationPlan%28OnePager%29-4.6.DocImpactApplicationServerDeveloper%27sGuide%2CAdministrationGuideandHAguide."></a>4.6. Doc Impact Application Server Developer's Guide, Administration Guide and HA guide.</h2> <p>There will be no changes to the core JMS functionality but the guides will need to document the proposed enhancement to the clustering architecture.</p> <h4><a name="GlassFish3.1IntegrationPlan%28OnePager%29-4.7.Admin%2FConfigImpact"></a>4.7. Admin/Config Impact</h2> <p>The JMS related admin command will need to change to support clusters. The following CLI commands will be impacted:create-jms-host<br> *delete-jms-host<br> *list-jms-hosts<br> *create-jms-resource<br> *delete-jms-resource<br> *list-jms-resources<br> *create-jmsdest<br> *delete-jmsdest<br> *list-jmsdest<br> *flush-jmsdest<br> *jms-ping <br class="atl-forced-newline"></p> <h4><a name="GlassFish3.1IntegrationPlan%28OnePager%29-4.8.%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3BHAImpact"></a>4.8.&nbsp;&nbsp;&nbsp;&nbsp; HA Impact</h2> <p>Discussed in section 4.1.5</p> <h4><a name="GlassFish3.1IntegrationPlan%28OnePager%29-4.9.I18N%2FL10NImpacts"></a>4.9. I18N/L10N Impacts</h2> <p> None.</p> <h4><a name="GlassFish3.1IntegrationPlan%28OnePager%29-4.10.%26nbsp%3B%26nbsp%3BPackaging%2CDelivery%26Upgrade"></a>4.10. &nbsp;&nbsp; Packaging, Delivery &amp; Upgrade</h2> <h4><a name="GlassFish3.1IntegrationPlan%28OnePager%29-4.10.1Packaging"></a>4.10.1 Packaging</h3> <p>JMS support for Embedded GF introduces the need for the MQ binaries to be included in the Embedded GF jar. Hence, jmara.rar will need to be added to glassfish-embedded-all.jar.</p> <h4><a name="GlassFish3.1IntegrationPlan%28OnePager%29-4.10.2%26nbsp%3BDelivery"></a>4.10.2&nbsp; Delivery</h3> <p>No installer changes proposed.</p> <h4><a name="GlassFish3.1IntegrationPlan%28OnePager%29-4.10.3%26nbsp%3BUpgradeandMigration"></a>4.10.3&nbsp; Upgrade and Migration</h3> <p>It should be possible to upgrade an existing GF 2.1 cluster installation to GF 3.1. The important assumptions here are:</p> 
+     <ul> 
+      <li>An existing installation of MQ clusters in LOCAL mode will be upgraded to LOCAL mode only</li> 
+      <li>Non-HA clusters with a master broker will be upgraded to a cluster with a master broker.&nbsp;</li> 
+     </ul> <h4><a name="GlassFish3.1IntegrationPlan%28OnePager%29-4.11.%26nbsp%3B%26nbsp%3BSecurityImpact"></a>4.11.&nbsp; &nbsp; Security Impact</h2> <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No security impact</p> <h4><a name="GlassFish3.1IntegrationPlan%28OnePager%29-4.12.%26nbsp%3B%26nbsp%3BCompatibilityImpact"></a>4.12.&nbsp;&nbsp; Compatibility Impact</h2> <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp; It is proposed to change the default mode for non-HA clusters from LOCAL to &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; EMBEDDED.</p> <h4><a name="GlassFish3.1IntegrationPlan%28OnePager%29-4.13.%26nbsp%3B%26nbsp%3BDependencies"></a>4.13.&nbsp;&nbsp; Dependencies</h2> <h4><a name="GlassFish3.1IntegrationPlan%28OnePager%29-4.13.1%26nbsp%3BInternalDependencies"></a>4.13.1&nbsp; Internal Dependencies</h3> <p>The work described in this document depends on the GF clustering infrastructure, the related admin changes and changes in MQ 4.5 as described in the MQ 4.5 one-pagers.</p> <p><b>4</b>.13.2&nbsp;&nbsp; External Dependencies</p> <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No external dependencies.</p> <h4><a name="GlassFish3.1IntegrationPlan%28OnePager%29-4.14.%26nbsp%3B%26nbsp%3BTestingImpact"></a>4.14.&nbsp; &nbsp; Testing Impact</h2> <p>Existing system tests should suffice for testing non-HA and HA clusters. However, new tests are required to cover the enhancements to the cluster architecture as described above.</p> <h4><a name="GlassFish3.1IntegrationPlan%28OnePager%29-5.%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3BReferenceDocuments"></a>5.&nbsp;&nbsp;&nbsp;&nbsp; &nbsp; Reference Documents</h1> <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; The list of MQ one-pagers listed on the table above.</p> <h4><a name="GlassFish3.1IntegrationPlan%28OnePager%29-6.%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3BSchedule"></a>6.&nbsp;&nbsp;&nbsp;&nbsp; &nbsp; Schedule</h1> <h4><a name="GlassFish3.1IntegrationPlan%28OnePager%29-6.1.%26nbsp%3B%26nbsp%3B%26nbsp%3B%26nbsp%3BProjectedAvailability"></a>6.1.&nbsp;&nbsp; &nbsp;&nbsp; Projected Availability</h2> <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp; The detailed milestone schedule is available <a href="./3.1JMS#section-3.1JMS-TaskList.html">here</a>.</p> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Nov 08, 2011 by 
+<font color="#0050B2">edbratt</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

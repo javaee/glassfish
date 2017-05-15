@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : 3.2DeploymentOnePager</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   
+     <div> 
+      <ul> 
+       <li><a href="#3.2DeploymentOnePager-1.Introduction">1. Introduction</a></li> 
+       <ul> 
+        <li><a href="#3.2DeploymentOnePager-1.1.Project%2FComponentWorkingName%3A">1.1. Project/Component Working Name:</a></li> 
+        <li><a href="#3.2DeploymentOnePager-1.2.Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier%3A">1.2. Name(s) and e-mail address of Document Author(s)/Supplier:</a></li> 
+        <li><a href="#3.2DeploymentOnePager-1.3.DateofThisDocument%3A">1.3. Date of This Document:</a></li> 
+       </ul> 
+       <li><a href="#3.2DeploymentOnePager-2.ProjectSummary">2. Project Summary</a></li> 
+       <ul> 
+        <li><a href="#3.2DeploymentOnePager-2.1.ProjectDescription%3A">2.1. Project Description:</a></li> 
+        <li><a href="#3.2DeploymentOnePager-2.2.RisksandAssumptions%3A">2.2. Risks and Assumptions:</a></li> 
+       </ul> 
+       <li><a href="#3.2DeploymentOnePager-3.ProblemSummary">3. Problem Summary</a></li> 
+       <ul> 
+        <li><a href="#3.2DeploymentOnePager-3.1.ProblemArea%3A">3.1. Problem Area:</a></li> 
+        <ul> 
+         <li><a href="#3.2DeploymentOnePager-PaaSdeployment">PaaS deployment</a></li> 
+         <li><a href="#3.2DeploymentOnePager-Usermanagedclusterdeployment">User-managed cluster deployment</a></li> 
+        </ul> 
+        <li><a href="#3.2DeploymentOnePager-3.2.Justification%3A">3.2. Justification:</a></li> 
+        <ul> 
+         <li><a href="#3.2DeploymentOnePager-PaaSdeployment">PaaS deployment</a></li> 
+         <li><a href="#3.2DeploymentOnePager-Usermanagedclusterdeployment">User-managed cluster deployment</a></li> 
+        </ul> 
+       </ul> 
+       <li><a href="#3.2DeploymentOnePager-4.TechnicalDescription%3A">4. Technical Description:</a></li> 
+       <ul> 
+        <li><a href="#3.2DeploymentOnePager-4.1.Details%3A">4.1. Details:</a></li> 
+        <ul> 
+         <li><a href="#3.2DeploymentOnePager-PaaSdeployment">PaaS deployment</a></li> 
+         <li><a href="#3.2DeploymentOnePager-Usermanagedclusterdeployment">User-managed cluster deployment</a></li> 
+        </ul> 
+        <li><a href="#3.2DeploymentOnePager-4.2.Bug%2FRFENumber%28s%29%3A">4.2. Bug/RFE Number(s):</a></li> 
+        <ul> 
+         <li><a href="#3.2DeploymentOnePager-PaaSdeployment%3A">PaaS deployment:</a></li> 
+         <li><a href="#3.2DeploymentOnePager-Usermanagedclusterdeployment%3A">User-managed cluster deployment:</a></li> 
+        </ul> 
+        <li><a href="#3.2DeploymentOnePager-4.3.InScope%3A">4.3. In Scope:</a></li> 
+        <ul> 
+         <li><a href="#3.2DeploymentOnePager-Usermanagedclusterdeployment">User-managed cluster deployment</a></li> 
+        </ul> 
+        <li><a href="#3.2DeploymentOnePager-4.4.OutofScope%3A">4.4. Out of Scope:</a></li> 
+        <li><a href="#3.2DeploymentOnePager-4.5.Interfaces%3A">4.5. Interfaces:</a></li> 
+        <ul> 
+         <li><a href="#3.2DeploymentOnePager-4.5.1PublicInterfaces">4.5.1 Public Interfaces</a></li> 
+         <li><a href="#3.2DeploymentOnePager-4.5.2PrivateInterfaces">4.5.2 Private Interfaces</a></li> 
+         <li><a href="#3.2DeploymentOnePager-4.5.3Deprecated%2FRemovedInterfaces%3A">4.5.3 Deprecated/Removed Interfaces:</a></li> 
+        </ul> 
+        <li><a href="#3.2DeploymentOnePager-4.6.DocImpact%3A">4.6. Doc Impact:</a></li> 
+        <li><a href="#3.2DeploymentOnePager-4.7.Admin%2FConfigImpact%3A">4.7. Admin/Config Impact:</a></li> 
+        <ul> 
+         <li><a href="#3.2DeploymentOnePager-CLI">CLI</a></li> 
+         <li><a href="#3.2DeploymentOnePager-GUI">GUI</a></li> 
+        </ul> 
+        <li><a href="#3.2DeploymentOnePager-4.8.HAImpact%3A">4.8. HA Impact:</a></li> 
+        <li><a href="#3.2DeploymentOnePager-4.9.I18N%2FL10NImpact%3A">4.9. I18N/L10N Impact:</a></li> 
+        <li><a href="#3.2DeploymentOnePager-4.10.Packaging%2CDelivery%26Upgrade%3A">4.10. Packaging, Delivery &amp; Upgrade:</a></li> 
+        <ul> 
+         <li><a href="#3.2DeploymentOnePager-4.10.1.Packaging">4.10.1. Packaging</a></li> 
+         <li><a href="#3.2DeploymentOnePager-4.10.2.Delivery">4.10.2. Delivery</a></li> 
+         <li><a href="#3.2DeploymentOnePager-4.10.3.UpgradeandMigration%3A">4.10.3. Upgrade and Migration:</a></li> 
+        </ul> 
+        <li><a href="#3.2DeploymentOnePager-4.11.SecurityImpact%3A">4.11. Security Impact:</a></li> 
+        <li><a href="#3.2DeploymentOnePager-4.12.CompatibilityImpact">4.12. Compatibility Impact</a></li> 
+        <li><a href="#3.2DeploymentOnePager-4.13.Dependencies%3A">4.13. Dependencies:</a></li> 
+        <ul> 
+         <li><a href="#3.2DeploymentOnePager-4.13.1InternalDependencies">4.13.1 Internal Dependencies</a></li> 
+         <li><a href="#3.2DeploymentOnePager-4.13.2ExternalDependencies">4.13.2 External Dependencies</a></li> 
+        </ul> 
+        <li><a href="#3.2DeploymentOnePager-4.14.TestingImpact%3A">4.14. Testing Impact:</a></li> 
+        <ul> 
+         <li><a href="#3.2DeploymentOnePager-PaaSdeployment">PaaS deployment</a></li> 
+         <li><a href="#3.2DeploymentOnePager-Usermanagedclusterdeployment">User-managed cluster deployment</a></li> 
+        </ul> 
+       </ul> 
+       <li><a href="#3.2DeploymentOnePager-5.ReferenceDocuments%3A">5. Reference Documents:</a></li> 
+       <li><a href="#3.2DeploymentOnePager-6.Schedule%3A">6. Schedule:</a></li> 
+       <ul> 
+        <li><a href="#3.2DeploymentOnePager-6.1.ProjectedAvailability%3A">6.1. Projected Availability:</a></li> 
+        <ul> 
+         <li><a href="#3.2DeploymentOnePager-PaaSdeployment">PaaS deployment</a></li> 
+         <li><a href="#3.2DeploymentOnePager-Usermanagedclusterdeployment">User-managed cluster deployment</a></li> 
+        </ul> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="3.2DeploymentOnePager-1.Introduction"></a>1. Introduction</h1> <h4><a name="3.2DeploymentOnePager-1.1.Project%2FComponentWorkingName%3A"></a>1.1. Project/Component Working Name:</h2> <p>Deployment</p> <h4><a name="3.2DeploymentOnePager-1.2.Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier%3A"></a>1.2. Name(s) and e-mail address of Document Author(s)/Supplier:</h2> <p>Hong Zhang : hong.hz.zhang@oracle.com<br> Tim Quinn : tim.quinn@oracle.com</p> <h4><a name="3.2DeploymentOnePager-1.3.DateofThisDocument%3A"></a>1.3. Date of This Document:</h2> <p>04/25/2011</p> <h4><a name="3.2DeploymentOnePager-2.ProjectSummary"></a>2. Project Summary</h1> <h4><a name="3.2DeploymentOnePager-2.1.ProjectDescription%3A"></a>2.1. Project Description:</h2> 
+     <ul> 
+      <li>PaaS deployment, support deployment in the cloud environment</li> 
+      <li>User-managed cluster deployment support, support deployment on user-managed clusters.</li> 
+     </ul> <h4><a name="3.2DeploymentOnePager-2.2.RisksandAssumptions%3A"></a>2.2. Risks and Assumptions:</h2> <p>The end-to-end PaaS deployment feature depends on the service orchestration. Any delay in the delivery of the depended features will affect the delivery of the end-to-end PaaS deployment feature.</p> <p>The user-managed cluster deployment feature depends on the admin infrastructure for user-managed cluster management. Any delay in the delivery of the depended features will affect the delivery of the user-managed cluster deployment feature.</p> <h4><a name="3.2DeploymentOnePager-3.ProblemSummary"></a>3. Problem Summary</h1> <h4><a name="3.2DeploymentOnePager-3.1.ProblemArea%3A"></a>3.1. Problem Area:</h2> <h4><a name="3.2DeploymentOnePager-PaaSdeployment"></a>PaaS deployment</h3> <p>User should be able to deploy applications in a cloud environment, specifying additional cloud metadata or using the default. The requested services (virtual cluster, JDBC resource etc) should be provisioned to the application as part of the deployment.</p> <h4><a name="3.2DeploymentOnePager-Usermanagedclusterdeployment"></a>User-managed cluster deployment</h3> <p>User should be able to deploy the applications to user-managed cluster.</p> <h4><a name="3.2DeploymentOnePager-3.2.Justification%3A"></a>3.2. Justification:</h2> <h4><a name="3.2DeploymentOnePager-PaaSdeployment"></a>PaaS deployment</h3> <p>We need to catch up with the industry trend of providing functionalities in the cloud environment.</p> <h4><a name="3.2DeploymentOnePager-Usermanagedclusterdeployment"></a>User-managed cluster deployment</h3> <p>User-managed cluster allows integration of GlassFish clustering features with other products, and we need to provide deployment functionality in that environment.</p> <h4><a name="3.2DeploymentOnePager-4.TechnicalDescription%3A"></a>4. Technical Description:</h1> <h4><a name="3.2DeploymentOnePager-4.1.Details%3A"></a>4.1. Details:</h2> <h4><a name="3.2DeploymentOnePager-PaaSdeployment"></a>PaaS deployment</h3> <p>We will support deployment in the cloud environment. User should be able to deploy applications in a cloud environment, specifying additional cloud metadata or using the default. The requested services (virtual cluster, JDBC resource etc) should be provisioned to the application as part of the deployment.</p> <p>Deployment will know if it is in a cloud environment by detecting the presence of virtualization configuration. </p> <p>In a non-cloud environment, Deployment behaves as in 3.1. If the user omits the <tt>--target</tt> option then deployment uses the default "server" value. If the user specifies the target then the target must already exist and that target will be used.</p> <p>In a cloud environment, we preserve most of the above behavior with one exception: for initial deployment, user could also specify a non-existent target name and a virtual cluster will be created for the user with that name. This allows us to support the cloud deployment with minimal changes to the existing user interfaces.</p> <p>Users can add <tt>glassfish-services.xml</tt> to their applications to convey cloud-related metadata. This file <tt>/META-INF/glassfish-services.xml</tt> can appear in the main application archive (EAR, WAR, etc.). It can also appear at the top level (<tt>/glassfish-services.xml</tt>) in a deployment plan, consistent with the placement of other descriptors in the deployment plan. As with all files in a deployment plan, if the user provides the same file in the original archive and in the deployment plan, the one in the deployment plan overrides the one from the archive. Specifically the orchestrator's <tt>Sniffer</tt> and <tt>Deployer</tt> implementations will see only the deployment plan copy of <tt>glassfish-services.xml</tt>.</p> <p>We will support the same set of operations to manipulate the application lifecycle in the cloud environment: deploy, redeploy, undeploy, enable, disable.</p> <p>As the deploy command can be a long running command in the cloud environment, an <tt>--async</tt> option will be added to run the deploy command in the asynchronous mode.</p> <p>Please see this <a href="./3.2CloudDeployment.html">page </a> for more technical details.</p> <h4><a name="3.2DeploymentOnePager-Usermanagedclusterdeployment"></a>User-managed cluster deployment</h3> <p>User-managed cluster allows the integration of GlassFish clustering features with other products, and we need to provide deployment functionality in this environment.<br> Please see the <a href="./User-Managed+Clusters.html">User-Managed Clusters One Pager </a> for details.</p> <h4><a name="3.2DeploymentOnePager-4.2.Bug%2FRFENumber%28s%29%3A"></a>4.2. Bug/RFE Number(s):</h2> <h4><a name="3.2DeploymentOnePager-PaaSdeployment%3A"></a>PaaS deployment:</h3> <p><a href="https://github.com/javaee/glassfish/issues/16423">GLASSFISH-16423 </a><br> <a href="https://github.com/javaee/glassfish/issues/16424">GLASSFISH-16424 </a><br> <a href="https://github.com/javaee/glassfish/issues/16425">GLASSFISH-16425 </a><br> <a href="https://github.com/javaee/glassfish/issues/16426">GLASSFISH-16426 </a><br> <a href="https://github.com/javaee/glassfish/issues/16427">GLASSFISH-16427 </a><br> <a href="https://github.com/javaee/glassfish/issues/16428">GLASSFISH-16428 </a></p> <h4><a name="3.2DeploymentOnePager-Usermanagedclusterdeployment%3A"></a>User-managed cluster deployment:</h3> <p><a href="https://github.com/javaee/glassfish/issues/16445">GLASSFISH-16445</a><br> <a href="https://github.com/javaee/glassfish/issues/16483">GLASSFISH-16483</a><br> <a href="https://github.com/javaee/glassfish/issues/16484">GLASSFISH-16484</a><br> <a href="https://github.com/javaee/glassfish/issues/16485">GLASSFISH-16485</a></p> <h4><a name="3.2DeploymentOnePager-4.3.InScope%3A"></a>4.3. In Scope:</h2> <h4><a name="3.2DeploymentOnePager-Usermanagedclusterdeployment"></a>User-managed cluster deployment</h3> <p>Support the operations that are necessary for integration with other products.</p> <h4><a name="3.2DeploymentOnePager-4.4.OutofScope%3A"></a>4.4. Out of Scope:</h2> <h4><a name="3.2DeploymentOnePager-4.5.Interfaces%3A"></a>4.5. Interfaces:</h2> <h4><a name="3.2DeploymentOnePager-4.5.1PublicInterfaces"></a>4.5.1 Public Interfaces</h3> 
+     <ul> 
+      <li>Interface: glassfish-services.xml</li> 
+      <li>Comment: users can add <tt>/META-INF/glassfish-services.xml</tt> to their applications to convey cloud-related metadata. The files can appear in the main application archive (EAR, WAR, etc.). They can also appear at the top level <tt>/glassfish-services.xml</tt>) in a deployment plan, consistent with the placement of other descriptors in the deployment plan.</li> 
+     </ul> 
+     <ul> 
+      <li>Interface: deploy</li> 
+      <li>Comment: user could specify an non-existent target in the cloud environment, and a virtual cluster will be created with that target name for the user.</li> 
+     </ul> 
+     <ul> 
+      <li>Interface: deploy</li> 
+      <li>Comment: add an optional <tt>--async</tt> option to indicate whether this deployment will be asynchronous.</li> 
+     </ul> <h4><a name="3.2DeploymentOnePager-4.5.2PrivateInterfaces"></a>4.5.2 Private Interfaces</h3> <p>Private interface <tt>SmartSniffer</tt> will be added with an additional handles method which takes a <tt>DeploymentContext</tt> argument. Orchestrator sniffer implementation will implement this additional interface so it could find out about the value of the target option from the <tt>DeploymentContext</tt> to decide if it should return true.<br> This new interface needs to be added as we could not change the public <tt>Sniffer</tt> interface in the dot release. This will be cleaned up (interface removed and API moved to public <tt>Sniffer</tt> interface) in v4.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Contract
+public interface SmartSniffer {
+
+    /**
+     * Returns true if the passed file or directory is recognized by this
+     * smart sniffer.
+     * @param context deployment context
+     * @return true if the location is recognized by this sniffer
+     */
+    public boolean handles(DeploymentContext context);
+}</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="3.2DeploymentOnePager-4.5.3Deprecated%2FRemovedInterfaces%3A"></a>4.5.3 Deprecated/Removed Interfaces:</h3> <p>N/A</p> <h4><a name="3.2DeploymentOnePager-4.6.DocImpact%3A"></a>4.6. Doc Impact:</h2> <p>Update man pages for the new/modified CLI commands</p> <p>Application Deployment Guide/Developer Guide for new features</p> <h4><a name="3.2DeploymentOnePager-4.7.Admin%2FConfigImpact%3A"></a>4.7. Admin/Config Impact:</h2> <h4><a name="3.2DeploymentOnePager-CLI"></a>CLI</h3> <p>The optional <tt>--async</tt> option is added to the deploy command to indicate whether this deployment will be asynchronous.</p> <h4><a name="3.2DeploymentOnePager-GUI"></a>GUI</h3> <p>PaaS deployment would be exposed in the admin GUI (for equivalent of CLI functionalities).</p> <h4><a name="3.2DeploymentOnePager-4.8.HAImpact%3A"></a>4.8. HA Impact:</h2> <p>No impact.</p> <h4><a name="3.2DeploymentOnePager-4.9.I18N%2FL10NImpact%3A"></a>4.9. I18N/L10N Impact:</h2> <p>No impact.</p> <h4><a name="3.2DeploymentOnePager-4.10.Packaging%2CDelivery%26Upgrade%3A"></a>4.10. Packaging, Delivery &amp; Upgrade:</h2> <h4><a name="3.2DeploymentOnePager-4.10.1.Packaging"></a>4.10.1. Packaging</h3> <p>No impact.</p> <h4><a name="3.2DeploymentOnePager-4.10.2.Delivery"></a>4.10.2. Delivery</h3> <p>No impact.</p> <h4><a name="3.2DeploymentOnePager-4.10.3.UpgradeandMigration%3A"></a>4.10.3. Upgrade and Migration:</h3> <p>No impact.</p> <h4><a name="3.2DeploymentOnePager-4.11.SecurityImpact%3A"></a>4.11. Security Impact:</h2> <p>No impact.</p> <h4><a name="3.2DeploymentOnePager-4.12.CompatibilityImpact"></a>4.12. Compatibility Impact</h2> <p>No compatibility impact.</p> <p>No new requirement on upgrade or migration tool.</p> <h4><a name="3.2DeploymentOnePager-4.13.Dependencies%3A"></a>4.13. Dependencies:</h2> <h4><a name="3.2DeploymentOnePager-4.13.1InternalDependencies"></a>4.13.1 Internal Dependencies</h3> <p>Service Orchestration</p> <p>User-Managed Cluster Management</p> <p>Admin Command Progress Status</p> <h4><a name="3.2DeploymentOnePager-4.13.2ExternalDependencies"></a>4.13.2 External Dependencies</h3> <p>None</p> <h4><a name="3.2DeploymentOnePager-4.14.TestingImpact%3A"></a>4.14. Testing Impact:</h2> <h4><a name="3.2DeploymentOnePager-PaaSdeployment"></a>PaaS deployment</h3> <p>Add new tests to test this feature. The tests might live outside of the deployment dev tests and put together with other PaaS related tests to share the same test environment.</p> <h4><a name="3.2DeploymentOnePager-Usermanagedclusterdeployment"></a>User-managed cluster deployment</h3> <p>Add new tests to test this feature. The tests might live outside of the deployment dev tests and put together with other user-managed cluster related tests to share the same test environment.</p> <h4><a name="3.2DeploymentOnePager-5.ReferenceDocuments%3A"></a>5. Reference Documents:</h1> <p><a href="./3.2CloudDeployment.html">PaaS deployment Wiki Page </a><br> <a href="./3.2+Service+Orchestration+One+Pager.html">Service Orchestration One Pager </a><br> <a href="./User-Managed+Clusters.html">User-Managed Clusters One Pager </a><br> <a href="./3.2AdminCommandProgress.html">Admin Command Progress Status One Pager </a></p> <h4><a name="3.2DeploymentOnePager-6.Schedule%3A"></a>6. Schedule:</h1> <h4><a name="3.2DeploymentOnePager-6.1.ProjectedAvailability%3A"></a>6.1. Projected Availability:</h2> <h4><a name="3.2DeploymentOnePager-PaaSdeployment"></a>PaaS deployment</h3> 
+     <ul> 
+      <li>Initially integrated (may not be feature complete) - Milestone 5</li> 
+      <li>Feature complete (ready for handoff to QA) - Milestone 6</li> 
+      <li>At production quality level - Milestone 7</li> 
+     </ul> <h4><a name="3.2DeploymentOnePager-Usermanagedclusterdeployment"></a>User-managed cluster deployment</h3> 
+     <ul> 
+      <li>Initially integrated (may not be feature complete) - Milestone 5</li> 
+      <li>Feature complete (ready for handoff to QA) - Milestone 6</li> 
+      <li>At production quality level - Milestone 7</li> 
+     </ul> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on May 20, 2011 by 
+<font color="#0050B2">hong.zhang</font>. Exported from wikis.oracle.com on May 27, 2015 20:43.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : Sip</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="Sip-AshortintroductiontoSIP."></a>A short introduction to SIP.</h3> <p>SIP stands for Session Initiation Protocol and is an application level signaling protocol.<br> It is designed to create, modify and terminate sessions between one or more participants. <br> Typical SIP sessions can be telephone calls, multimedia distribution and conference participations. </p> <p>The base SIP specification is defined by <a href="http://www.ietf.org/rfc/rfc3261.txt">IETF rfc3261</a>. </p> <h4><a name="Sip-SIPcontainer%2FSipServletAPI%28SSA%29."></a>SIP container/Sip Servlet API (SSA).</h3> <p>The Sip Servlet API (SSA) is an extension of the HTTP Servlet Specification. Some important aspects of <br> the SSA :</p> 
+     <ul> 
+      <li>For developing SIP enabled applications. Supporting UAC, UAS, Proxy and B2BUA.</li> 
+     </ul> 
+     <ul> 
+      <li>Aligned with HTTP Servlet API for development of converged applications (originating HTTP,</li> 
+     </ul> <p> sending SIP request, bridging HTTP and SIP Session) spawning multiple protocols and media types.</p> 
+     <ul> 
+      <li>Separating the developer and the deployer roles by deployment descriptors</li> 
+     </ul> 
+     <ul> 
+      <li>Several applications may execute on the same incoming or outgoing messages,</li> 
+     </ul> <p> which allows application composition. Every application processes the message <br> independently from one another.</p> 
+     <ul> 
+      <li>Application data can be stored in sessions and application context.</li> 
+     </ul> <p>There are two versions of SSA, 1.0 and 1.1:</p> 
+     <ul> 
+      <li>SSA 1.0 is defined in <a href="http://jcp.org/en/jsr/detail-116">JSR 116</a>, which have reached final status (released).</li> 
+     </ul> 
+     <ul> 
+      <li>SSA 1.1 is defined in <a href="http://jcp.org/en/jsr/detail-289">JSR 289</a>, which is still on early stage (under development).</li> 
+     </ul> <p>The SIP container is under development, towards SSA 1.1 (JSR 289).<br> SSA 1.0 Test Compatibility Kit (TCK) tests towards the SIP container passes with the exception <br> of two failures :</p> 
+     <ul> 
+      <li>test_context. This test case, among other, checks that the information in context is Servlet related. But some extra information is stored there by the application server which causes this to fail. This is not a violation of the SSA 1.0 and can be counted as not critical.</li> 
+     </ul> 
+     <ul> 
+      <li>test_proxy_gen2xx. This tests the ability of a proxy to generate its own 2XX responses, to act as an UAS. This functionality is not implemented in current version, but there is ongoing effort to add this.</li> 
+     </ul> <h4><a name="Sip-TheSipStack"></a>The Sip Stack</h3> <p>The Sip Servlet implementation requires a Sip stack to control the signaling operations.<br> The Sip Stack is provided by <a href="http://www.ericsson.com/products/hp/Ericsson_IMS*IP_Multimedia_Subsystem*pa.shtml">Ericsson Inc</a>, and is currently used for Ericsson IMS products.<br> The Sip Container and Stack were developed at Ericsson R&amp;D sites in <a href="http://www.stockholmtown.com/Default.aspx?epslanguage=EN">Stockholm, Sweden</a>.</p> <p>Some characteristics of the Sip Stack implementation :</p> 
+     <ul> 
+      <li>Lazy Parsing</li> 
+     </ul> 
+     <ul> 
+      <li>Low footprint</li> 
+     </ul> 
+     <ul> 
+      <li>Efficient</li> 
+     </ul> <h4><a name="Sip-Sailfin%3AOpenSourceSIPServletsTechnologyforGlassFish."></a>Sailfin: Open Source SIP Servlets Technology for GlassFish.</h3> <p>The <a href="https://sailfin.java.net/">Sailfin</a> project, adds SIP Servlets technology extension to <a href="https://glassfish.java.net/">Glassfish</a>, providing high availability, clustering features and integrating with the existing services. Sailfin is a joint effort, working towards to achieve JSR-289 compatibility and will be the source of all SIP related development for Glassfish.</p> <h4><a name="Sip-Codeexamples%3A"></a>Code examples:</h3> 
+     <ul> 
+      <li><a href="./SipServletProxyExample.html">A simple proxy servlet.</a></li> 
+     </ul> <h4><a name="Sip-Listofterms"></a>List of terms</h3> <p>A terminology list can be found <a href="./SipServletTerminologyList.html">here.</a>.</p> <h4><a name="Sip-KnownLimitations"></a>Known Limitations</h3> <p>A list of known limitations and problems can be found <a href="./SipServletKnownIssues.html">here</a></p> <h4><a name="Sip-Linkspage"></a>Links page</h3> <p>Useful Sip Container related links can be found <a href="./SipServletLinks.html">here.</a></p> <p><span class="error">Cannot resolve external resource into attachment.</span></p> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Nov 18, 2011 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:49.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

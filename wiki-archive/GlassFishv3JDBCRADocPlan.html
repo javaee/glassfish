@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFishv3JDBCRADocPlan</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GlassFishv3JDBCRADocPlan-JDBCandConnectorsGlassFishv3DocumentationPlan"></a>JDBC and Connectors GlassFish v3 Documentation Plan</h1> <h4><a name="GlassFishv3JDBCRADocPlan-PeopleandRoles"></a>People and Roles</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Name </th> 
+         <th class="confluenceTh">Role </th> 
+         <th class="confluenceTh">Location </th> 
+         <th class="confluenceTh">Time Zone </th> 
+         <th class="confluenceTh">Email </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chinmayee Srivathsa </td> 
+         <td class="confluenceTd"> Documentation Feature Owner </td> 
+         <td class="confluenceTd"> Bangalore, India </td> 
+         <td class="confluenceTd"> IST </td> 
+         <td class="confluenceTd"><tt>chinmayee.srivathsa@sun.com</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> TBD </td> 
+         <td class="confluenceTd"> Additional Writers </td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd">- </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Jagadish Ramu </td> 
+         <td class="confluenceTd"> Engineer </td> 
+         <td class="confluenceTd"> Bangalore, India </td> 
+         <td class="confluenceTd"> IST </td> 
+         <td class="confluenceTd"><tt>jagadish.ramu@sun.com</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Shalini Muthukrishnan </td> 
+         <td class="confluenceTd"> Engineer </td> 
+         <td class="confluenceTd"> Bangalore, India </td> 
+         <td class="confluenceTd"> IST </td> 
+         <td class="confluenceTd"><tt>shalini.muthukrishnan@sun.com</tt> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishv3JDBCRADocPlan-Audience"></a>Audience </h2> 
+     <ul> 
+      <li>Developers use JDBC resources and connection pools to connect to databases from their applications.</li> 
+      <li>Administrators configure/change the settings of JDBC resources, connector resources, connection pools, and the connector service to improve performance</li> 
+      <li>Developers create and deploy standalone connector modules and embedded resource adapters.</li> 
+     </ul> <h4><a name="GlassFishv3JDBCRADocPlan-SummaryoftheFeature"></a>Summary of the Feature</h2> <p>Changes to JDBC and Connectors are visible to the user through the Admin Console, CLI commands, and through the domain.xml file.</p> <p>Users would use the JDBC and Connector Resources for:</p> 
+     <ul> 
+      <li>Setting up Database Access (involves creating and configuring JDBC resources and connection pools, setting up database drivers)</li> 
+      <li>Deploying a Standalone Connector Module (involves creating and configuring connector resources, connection pools, and administered objects)</li> 
+      <li>Deploying an Embedded Resource Adapter (involves creating and configuring connector resources and connection pools)</li> 
+      <li>Configuring Resources and Connection Pools</li> 
+      <li>Tuning Resources and Connection Pools</li> 
+      <li>Creating and Configuring JDBC Realms for Web and EJB applications</li> 
+     </ul> <h4><a name="GlassFishv3JDBCRADocPlan-Availability"></a>Availability</h2> <p>This feature is part of the all GlassFish v3 distributions.</p> <h4><a name="GlassFishv3JDBCRADocPlan-StatementofWork"></a>Statement of Work</h1> <p>This section describes in detail for each document the work that is required by the introduction of the feature, such as changes, addition of new material, relocation of existing material, and removal of existing material.</p> <p>Documentation Impact:</p> 
+     <ul> 
+      <li>None</li> 
+      <li>Minor</li> 
+      <li>Moderate</li> 
+      <li>Major</li> 
+      <li>New</li> 
+     </ul> 
+     <hr> <p><b>Note -</b> If a document is task based (as opposed to reference), the changes should be determined from the user task analysis for the feature.</p> 
+     <hr> <h4><a name="GlassFishv3JDBCRADocPlan-ChangestoBooks"></a>Changes to Books</h2> <p>Support for generating resource definitions in NetBeans and Eclipse should be documented in the NetBeans and Eclipse plugin docs.</p> <h4><a name="GlassFishv3JDBCRADocPlan-AdministrationGuideChanges"></a><em>Administration Guide</em> Changes</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Section</th> 
+         <th class="confluenceTh">Doc Impact</th> 
+         <th class="confluenceTh">Writer</th> 
+         <th class="confluenceTh">Reviewers</th> 
+         <th class="confluenceTh">Description of Change </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Setting up the Database </td> 
+         <td class="confluenceTd"> None </td> 
+         <td class="confluenceTd"> Dixie Pine </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Shaline </td> 
+         <td class="confluenceTd">No change. Retain the v3 Prelude content as is. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Creating/Deleting a Connector Resource </td> 
+         <td class="confluenceTd"> None </td> 
+         <td class="confluenceTd"> Dixie Pine </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Shaline </td> 
+         <td class="confluenceTd">No change </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Editing a Connector Resource </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Dixie Pine </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Shaline </td> 
+         <td class="confluenceTd"> Add list of connector resource attributes that can be modified . Specify if any of these changes require a restart. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Creating/Deleting a Connector Connection Pool </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Dixie Pine </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Shaline </td> 
+         <td class="confluenceTd">The connection pool will be automatically tested for valid connectivity when it is created, by setting a new attribute ping to true. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Editing a Connector Connection Pool </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Dixie Pine </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Shaline </td> 
+         <td class="confluenceTd">Add new attributes and changes to attributes, if any. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Creating/Deleting an Administered Resource Object </td> 
+         <td class="confluenceTd"> None </td> 
+         <td class="confluenceTd"> Dixie Pine </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Shaline </td> 
+         <td class="confluenceTd">None </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Editing an Administered Resource Object </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Dixie Pine </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Shaline </td> 
+         <td class="confluenceTd">Add list of administered resource object attributes </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Configuring the Connector Service </td> 
+         <td class="confluenceTd"> NEW </td> 
+         <td class="confluenceTd"> Dixie Pine </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Shaline </td> 
+         <td class="confluenceTd">Add link to MQ documenation </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Creating/Deleting a JDBC Resource </td> 
+         <td class="confluenceTd"> NEW </td> 
+         <td class="confluenceTd"> Dixie Pine </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Shaline </td> 
+         <td class="confluenceTd"> For content for this topic, refer the Admin Console online help, create-jdbc-resource man page, and <a href="http://blogs.oracle.com/JagadishPrasath/entry/creating_jdbc_connection_pool_resource">this blog entry by Jagadish </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Editing a JDBC Resource </td> 
+         <td class="confluenceTd"> NEW </td> 
+         <td class="confluenceTd"> Dixie Pine </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Shaline </td> 
+         <td class="confluenceTd"> For content for this topic, refer the Admin Console online help, create-jdbc-resource man page, and <a href="http://blogs.oracle.com/JagadishPrasath/entry/creating_jdbc_connection_pool_resource">this blog entry by Jagadish </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Creating/Deleting a JDBC Connection Pool </td> 
+         <td class="confluenceTd"> None </td> 
+         <td class="confluenceTd"> Dixie Pine </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Shaline </td> 
+         <td class="confluenceTd">No change </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Editing a JDBC Connection Pool </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Dixie Pine </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Shaline </td> 
+         <td class="confluenceTd">Add new attributes and changes to attributes: statement-cache-size, connection-validation-method, init-sql, sql-trace-listeners, associate-with-thread-connections-count, switch-off-pooling, ping. Certain tasks listed in the user task analysis page, such as Enabling Statement Caching, are covered within this topic. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Supported JDBC Drivers </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Dixie Pine </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Shaline </td> 
+         <td class="confluenceTd"> Update the list of JDBC drivers </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> How JDBC Resources and Connection Pools Work Together </td> 
+         <td class="confluenceTd"> None </td> 
+         <td class="confluenceTd"> Dixie Pine </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Shaline </td> 
+         <td class="confluenceTd">No change </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Setting Up Database Access </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Dixie Pine </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Shaline </td> 
+         <td class="confluenceTd">Add links for each step (creating, configuring JDBC resources) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Testing and Flushing the Connection Pool </td> 
+         <td class="confluenceTd"> NEW </td> 
+         <td class="confluenceTd"> Dixie Pine </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Shaline </td> 
+         <td class="confluenceTd">New attribute called ping and new asadmin command called flush-connection-pool </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Monitoring the JDBC Connection Pool </td> 
+         <td class="confluenceTd"> NEW </td> 
+         <td class="confluenceTd"> Dixie Pine </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Shaline </td> 
+         <td class="confluenceTd"> Uses the new <a href="http://wiki.glassfish.java.net/attach/V3FunctionalSpecs/Monitoring%20V3%20one-pager.html">GFProbes framework </a>. ] </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Monitoring Application-Scoped Resources </td> 
+         <td class="confluenceTd"> NEW </td> 
+         <td class="confluenceTd"> Dixie Pine </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Shaline </td> 
+         <td class="confluenceTd"> Application scoped resources is a new concept being introduced in v3. See one-pager for more details. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Dotted Names </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Dixie Pine </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Shaline </td> 
+         <td class="confluenceTd">List the dotted names of the new elements (for example. the dotted name for connector work-security-map) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> How GlassFish v3 automatically detects newly installed JDBC drivers </td> 
+         <td class="confluenceTd"> NEW </td> 
+         <td class="confluenceTd"> Dixie Pine </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Shaline </td> 
+         <td class="confluenceTd">New feature in v3. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> How JDBC resources and Connection pools work together </td> 
+         <td class="confluenceTd"> None </td> 
+         <td class="confluenceTd"> Dixie Pine </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Shaline </td> 
+         <td class="confluenceTd">No change </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Concepts::JDBC Resources, Connector Resources, JDBC Connection Pools, Connector Connection Pool </td> 
+         <td class="confluenceTd"> None </td> 
+         <td class="confluenceTd"> Dixie Pine </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Shaline </td> 
+         <td class="confluenceTd">No change </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Connector Security Map, Connector Work Context Security Maps , Application Scoped Resources </td> 
+         <td class="confluenceTd"> NEW </td> 
+         <td class="confluenceTd"> Dixie Pine </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Shaline </td> 
+         <td class="confluenceTd">Descriptions for these new features. Connector Security Map is an old feature but has no description in the docs. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>Note: All JDBC-related topics to be grouped under the Administering Database Connectivity chapter that has been created in the GFv3 Prelude Admin guide. All Connector-related topics to be grouped under another chapter (called Administering Connectors?). </p> <h4><a name="GlassFishv3JDBCRADocPlan-ApplicationDeploymentGuideChanges"></a><em>Application Deployment Guide</em> Changes</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Section</th> 
+         <th class="confluenceTh">Doc Impact</th> 
+         <th class="confluenceTh">Writer</th> 
+         <th class="confluenceTh">Reviewers</th> 
+         <th class="confluenceTh">Description of Change </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Deploying a Java EE CA Connector Module (move from Developer's guide) </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Dixie Pine </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Shaline </td> 
+         <td class="confluenceTd"> - Move deployment-related content from Developer's guide - Add links to configuration tasks in Administration Guide </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Redeploying a Connector Module (move from Developer's guide) </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Dixie Pine </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Shaline </td> 
+         <td class="confluenceTd"> Mention new option called --cascade-resources </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Deploying and Configuring an Embedded Resource Adapter (move from Developer's guide) </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Dixie Pine </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Shaline </td> 
+         <td class="confluenceTd">Need to expand this topic. More information required before we can improve this topic </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Application Scoped Resources </td> 
+         <td class="confluenceTd"> NEW </td> 
+         <td class="confluenceTd"> Dixie Pine </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Shaline </td> 
+         <td class="confluenceTd"> See one-pager </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Viewing Application Scoped Resources </td> 
+         <td class="confluenceTd"> NEW </td> 
+         <td class="confluenceTd"> Dixie Pine </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Shaline </td> 
+         <td class="confluenceTd"> list-resources or list-XXX-resources commands with the --appname option </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Creating and Removing Application Scoped Resources during Deployment </td> 
+         <td class="confluenceTd"> NEW </td> 
+         <td class="confluenceTd"> Dixie Pine </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Shaline </td> 
+         <td class="confluenceTd">deploy command with the new --cascade-resources option </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> sun-resources.xml file </td> 
+         <td class="confluenceTd"> NEW </td> 
+         <td class="confluenceTd"> June Parks </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Shaline </td> 
+         <td class="confluenceTd">New deployment descriptor for application scoped resources </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishv3JDBCRADocPlan-ApplicationDevelopmentGuideChanges"></a><em>Application Development Guide</em> Changes</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Section</th> 
+         <th class="confluenceTh">Doc Impact</th> 
+         <th class="confluenceTh">Writer</th> 
+         <th class="confluenceTh">Reviewers</th> 
+         <th class="confluenceTh">Description of Change </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Developing Connectors </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> June Parks </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Shaline </td> 
+         <td class="confluenceTd">- Update link to Java EE tutorial - Mention the latest Connector 1.6 spec </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Developing Connectors &gt; Connector Support in Enterprise Server </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> June Parks </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Shaline </td> 
+         <td class="confluenceTd"> Connector 1.6 support in GF v3 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Developing Connectors &gt; Advanced Connector Configuration Options </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> June Parks </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Shaline </td> 
+         <td class="confluenceTd"> Connector Work Security Maps associate-with-thread attribute flush-connection-pool ping attribute invalid connections changes disabling pooling application-scoped connectors </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Developing Connectors &gt; Advanced Connector Configuration Options &gt; Creating a Resource Adapter Config </td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd">Move to Application Deployment Guide </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Developing Connectors &gt; Deploying and Configuring a Stand-Alone Connector Module </td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd">Move to Application Deployment Guide </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Developing Connectors &gt; Deploying and Configuring an Embedded Resource Adapter </td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd">Move to Application Deployment Guide </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Inbound Communication Support </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> June Parks </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Shaline </td> 
+         <td class="confluenceTd"> TBD </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Outbound Communication Support </td> 
+         <td class="confluenceTd"> NEW </td> 
+         <td class="confluenceTd"> June Parks </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Shaline </td> 
+         <td class="confluenceTd"> TBD </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Resource Adapters for Inbound and Outbound Communication Support </td> 
+         <td class="confluenceTd"> NEW </td> 
+         <td class="confluenceTd"> June Parks </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Shaline </td> 
+         <td class="confluenceTd"> TBD </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Configuring a Message-Driven Bean to use a Resource Adapter </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> June Parks </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Shaline </td> 
+         <td class="confluenceTd"> TBD </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Built-In Custom Resource Factories </td> 
+         <td class="confluenceTd"> NEW </td> 
+         <td class="confluenceTd"> June Parks </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Shaline </td> 
+         <td class="confluenceTd">Use built-in factories to create custom resources </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Using the JDBC API for Database Access </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> June Parks </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Shaline </td> 
+         <td class="confluenceTd"> (Refer June's Doc plan for the Dev guide) - Statements - Connections - Transactions </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishv3JDBCRADocPlan-DomainFileFormatReferenceChanges"></a><em>Domain File Format Reference</em> Changes</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Section</th> 
+         <th class="confluenceTh">Doc Impact</th> 
+         <th class="confluenceTh">Writer</th> 
+         <th class="confluenceTh">Reviewers</th> 
+         <th class="confluenceTh">Description of Change </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jdbc-resource </td> 
+         <td class="confluenceTd"> None </td> 
+         <td class="confluenceTd"> June Parks </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Shaline </td> 
+         <td class="confluenceTd">No change. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> connector-resource </td> 
+         <td class="confluenceTd"> None </td> 
+         <td class="confluenceTd"> June Parks </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Shaline </td> 
+         <td class="confluenceTd">No change. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> admin-object-resource </td> 
+         <td class="confluenceTd"> None </td> 
+         <td class="confluenceTd"> June Parks </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Shaline </td> 
+         <td class="confluenceTd">No change. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> connector-service </td> 
+         <td class="confluenceTd"> None </td> 
+         <td class="confluenceTd"> June Parks </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Shaline </td> 
+         <td class="confluenceTd">No change. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jdbc-resource </td> 
+         <td class="confluenceTd"> None </td> 
+         <td class="confluenceTd"> June Parks </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Shaline </td> 
+         <td class="confluenceTd">No change. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> connector-connection-pool </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> June Parks </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Shaline </td> 
+         <td class="confluenceTd"> Changes to this element are listed here </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jdbc-connection-pool </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> June Parks </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Shaline </td> 
+         <td class="confluenceTd"> Changes to this element are listed <a href="GFV3JDBCOnePager_DTDChanges.html" title="GFV3JDBCOnePager_DTDChanges">here </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> work-security-map </td> 
+         <td class="confluenceTd"> NEW </td> 
+         <td class="confluenceTd"> June Parks </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Shaline </td> 
+         <td class="confluenceTd"> New element under the connector-module element. See here </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishv3JDBCRADocPlan-UpgradeGuideChanges"></a><em>Upgrade Guide</em> Changes</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Section</th> 
+         <th class="confluenceTh">Doc Impact</th> 
+         <th class="confluenceTh">Writer</th> 
+         <th class="confluenceTh">Reviewers</th> 
+         <th class="confluenceTh">Description of Change </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Compatibility Impact </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Chinmayee </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Shaline </td> 
+         <td class="confluenceTd">Default values for a few attributes have changed. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishv3JDBCRADocPlan-PerformanceTuningGuideChanges"></a><em>Performance Tuning Guide</em> Changes</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Section</th> 
+         <th class="confluenceTh">DocImpact</th> 
+         <th class="confluenceTh">Writer</th> 
+         <th class="confluenceTh">Reviewers</th> 
+         <th class="confluenceTh">Description of Change </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Tuning the Server &gt; Resources &gt; </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Shaline </td> 
+         <td class="confluenceTd">More information about maxpoolsize? </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishv3JDBCRADocPlan-ChangestoOnlineHelp"></a>Changes to Online Help</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Topic Title</th> 
+         <th class="confluenceTh">Doc Impact</th> 
+         <th class="confluenceTh">Writer</th> 
+         <th class="confluenceTh">Reviewers</th> 
+         <th class="confluenceTh">Description of Change </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Clearing the JDBC Connection Pool </td> 
+         <td class="confluenceTd"> NEW </td> 
+         <td class="confluenceTd"> Kim Haase </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Shaline </td> 
+         <td class="confluenceTd">New button called "flush" in the GUI, in the JDBC Connection Pool page. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Creating the Connector Work Security Map </td> 
+         <td class="confluenceTd"> NEW </td> 
+         <td class="confluenceTd"> Kim Haase </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Shaline </td> 
+         <td class="confluenceTd">New page or tab for creating the work security map, under the connector connection pool page </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Automatic detection of JDBC drivers </td> 
+         <td class="confluenceTd"> NEW </td> 
+         <td class="confluenceTd"> Kim Haase </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Shaline </td> 
+         <td class="confluenceTd">A drop-down list of JDBC drivers will automatically include newly installed JDBC drivers. Mention this point in the JDBC Resources page. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Monitoring JDBC Connection Pools </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Kim Haase </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Shaline </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Monitoring Application-Scoped Resources </td> 
+         <td class="confluenceTd"> NEW </td> 
+         <td class="confluenceTd"> Kim Haase </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Shaline </td> 
+         <td class="confluenceTd"> Application scoped resources is a new concept being introduced in v3. See one-pager for more details. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Editing JDBC Connection Pool </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Kim Haase </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Shaline </td> 
+         <td class="confluenceTd"> Mention the new attributes and changes to default values. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Editing Connection Connection Pool </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Kim Haase </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Shaline </td> 
+         <td class="confluenceTd"> Mention the new attributes and changes to default values. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishv3JDBCRADocPlan-ChangestoManPages"></a>Changes to Man Pages</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Man Page Name and Section</th> 
+         <th class="confluenceTh">Doc Impact</th> 
+         <th class="confluenceTh">Writer</th> 
+         <th class="confluenceTh">Reviewers</th> 
+         <th class="confluenceTh">Description of Change </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> flush-connection-pool </td> 
+         <td class="confluenceTd"> NEW </td> 
+         <td class="confluenceTd"> Paul Davies </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Shaline </td> 
+         <td class="confluenceTd">New command for clearing the connection pool. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-connector-connection-pool </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Paul Davies </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Shaline </td> 
+         <td class="confluenceTd">Mention the new options for the new attributes and changes to default values. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-jdbc-connection-pool </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Paul Davies </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Shaline </td> 
+         <td class="confluenceTd">Mention the new options for the new attributes and changes to default values. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-jdbc-resource </td> 
+         <td class="confluenceTd"> None </td> 
+         <td class="confluenceTd"> Paul Davies </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Shaline </td> 
+         <td class="confluenceTd">No change. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-connector-resource </td> 
+         <td class="confluenceTd"> None </td> 
+         <td class="confluenceTd"> Paul Davies </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Shaline </td> 
+         <td class="confluenceTd">No change </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-connector-security-map </td> 
+         <td class="confluenceTd"> None </td> 
+         <td class="confluenceTd"> Paul Davies </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Shaline </td> 
+         <td class="confluenceTd">No change </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-connector-work-security-map </td> 
+         <td class="confluenceTd"> NEW </td> 
+         <td class="confluenceTd"> Paul Davies </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Shaline </td> 
+         <td class="confluenceTd">New asadmin command </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> delete-connector-work-security-map </td> 
+         <td class="confluenceTd"> NEW </td> 
+         <td class="confluenceTd"> Paul Davies </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Shaline </td> 
+         <td class="confluenceTd">New asadmin command </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-connector-work-security-maps </td> 
+         <td class="confluenceTd"> NEW </td> 
+         <td class="confluenceTd"> Paul Davies </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Shaline </td> 
+         <td class="confluenceTd">New asadmin command </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> update-connector-work-security-map </td> 
+         <td class="confluenceTd"> NEW </td> 
+         <td class="confluenceTd"> Paul Davies </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Shaline </td> 
+         <td class="confluenceTd">New asadmin command </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> set </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Paul Davies </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Shaline </td> 
+         <td class="confluenceTd">Add sample commands to change connector-service attributes. There is no CLI command for configuring connector-service attributes. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> deploy </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Paul Davies </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Shaline </td> 
+         <td class="confluenceTd">When the deploy command, is used for reploying (with --force=true), you can use a new option called --cascade-resources. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-jdbc-resources </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Paul Davies </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Shaline </td> 
+         <td class="confluenceTd">New option called --appname </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-connector-resources </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Paul Davies </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Shaline </td> 
+         <td class="confluenceTd">New option called --appname. This option applies to list-XXX-resources. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Other man pages </td> 
+         <td class="confluenceTd"> None </td> 
+         <td class="confluenceTd"> Paul Davies </td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd">No changes </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishv3JDBCRADocPlan-ReviewSchedule"></a>Review Schedule</h1> <p>The review schedule for the documentation items that are affected by this feature is provided in the following table.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Item</th> 
+         <th class="confluenceTh">First Draft Start Date</th> 
+         <th class="confluenceTh">First Draft End Date</th> 
+         <th class="confluenceTh">Second Draft Start Date</th> 
+         <th class="confluenceTh">Second Draft End Date</th> 
+         <th class="confluenceTh">Final Version End Date</th> 
+         <th class="confluenceTh">Final Version End Date </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>Reviewers are listed in the <em>Statement of Work</em>.</p> <h4><a name="GlassFishv3JDBCRADocPlan-RelatedInformation"></a>Related Information</h1> 
+     <ul> 
+      <li><a href="GFV3JDBCOnePager.html" title="GFV3JDBCOnePager">1-pager</a></li> 
+      <li><a href="GlassFishv3UserTaskAnalysisJDBCRA.html" title="GlassFishv3UserTaskAnalysisJDBCRA">User task analysis</a></li> 
+     </ul> <p>Email aliases:</p> 
+     <ul> 
+      <li><span class="error">[admin@glassfish.java.net]</span></li> 
+      <li><span class="error">[users@glassfish.java.net]</span></li> 
+      <li><span class="error">[docs@glassfish.java.net]</span></li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Aug 15, 2011 by 
+<font color="#0050B2">sb_2011</font>. Exported from wikis.oracle.com on May 27, 2015 20:44.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : Tp2_29jan08</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="Tp2_29jan08-GlassFishV3RuntimeManagementTP2Tasks"></a>GlassFish V3 - Runtime Management TP2 Tasks</h2> <p><b>Common for all Tasks:</b></p> 
+     <ul> 
+      <li>For TP2, the supported target is th default server.</li> 
+      <li>All the commands are dependenct on Config. Additional dependencies are specified per command.</li> 
+     </ul> <p><b>Need Clarification:</b></p> 
+     <ul> 
+      <li>Do we access config directly or thru AMX ?</li> 
+      <li>Do all the CLI commands have to be exposed thru AMX also ?</li> 
+     </ul> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <td class="confluenceTd"> ID </td> 
+         <td class="confluenceTd"> Task </td> 
+         <td class="confluenceTd"> Owner </td> 
+         <td class="confluenceTd"> Date </td> 
+         <td class="confluenceTd"> Done ? </td> 
+         <td class="confluenceTd">Dependencies/Comments </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> A13 </td> 
+         <td class="confluenceTd"> Reinstate Runtime MBean Infrastructure </td> 
+         <td class="confluenceTd"> Sreeni </td> 
+         <td class="confluenceTd"> 28mar08 </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd">HK2 - @companinon objects Infrastructure - config. variables Application Management - JSR77 mBeans Resources - JSR77 mBeans GUI - OEM Pluggable Interface </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> RT-CLI-04 </td> 
+         <td class="confluenceTd"> Implementation for create/delete/list-jdbc-connection-pool </td> 
+         <td class="confluenceTd"> Jennifer </td> 
+         <td class="confluenceTd"> 29feb08 </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> RT-CLI-05 </td> 
+         <td class="confluenceTd"> Implementation for create/delete/list-jdbc-resource </td> 
+         <td class="confluenceTd"> Jennifer </td> 
+         <td class="confluenceTd"> 29feb08 </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd">JDBC back end support, Options supported ? </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> RT-CLI-08 </td> 
+         <td class="confluenceTd"> Implementation for create/delete/list-system-properties </td> 
+         <td class="confluenceTd"> Harpreet </td> 
+         <td class="confluenceTd"> 29feb08 </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd">Since we wont have cluster or multi-instance support, Do we need this for TP2 ? </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> RT-CLI-03 </td> 
+         <td class="confluenceTd"> create/delete/list-javamail-resource(NTH) </td> 
+         <td class="confluenceTd"> Harpreet </td> 
+         <td class="confluenceTd"> 29feb08 </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd">Java Mail back end support, Options Supported ? </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> RT-CLI-02 </td> 
+         <td class="confluenceTd"> Implementation for create/delete/list-http-listener </td> 
+         <td class="confluenceTd"> Rajeshwar </td> 
+         <td class="confluenceTd"> 29feb08 </td> 
+         <td class="confluenceTd">No </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> RT-CLI-09 </td> 
+         <td class="confluenceTd"> create/delete/list-virtual-server </td> 
+         <td class="confluenceTd"> Rajeshwar </td> 
+         <td class="confluenceTd"> 29feb08 </td> 
+         <td class="confluenceTd">No </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> RT-CLI-12 </td> 
+         <td class="confluenceTd"> ping-connection-pool </td> 
+         <td class="confluenceTd"> Sreeni </td> 
+         <td class="confluenceTd"> 29feb08 </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd">JDBC Resource </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> RT-CLI-06 </td> 
+         <td class="confluenceTd"> create/delete/list-jvm-options </td> 
+         <td class="confluenceTd"> Sreeni </td> 
+         <td class="confluenceTd"> 29feb08 </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd">Does it make sense for TP2 ? </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> RT-CLI-10 </td> 
+         <td class="confluenceTd"> generate-jvm-report </td> 
+         <td class="confluenceTd"> Sreeni </td> 
+         <td class="confluenceTd"> 29feb08 </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd">Do we need this for TP2, Talk to Kedar/Jane </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> RT-CLI-01 </td> 
+         <td class="confluenceTd"> add-resources </td> 
+         <td class="confluenceTd"> Prashant </td> 
+         <td class="confluenceTd"> 29feb08 </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd">Need proper validation and error reporting for this command. Isolating the scope of resources (Tieing them to a particular app) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> RT-CLI-07 </td> 
+         <td class="confluenceTd"> create/delete/list-profiler </td> 
+         <td class="confluenceTd"> Prashant </td> 
+         <td class="confluenceTd"> 29feb08 </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd">Does it make sense for TP2 ? </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> RT-CLI-11 </td> 
+         <td class="confluenceTd"> monitor (NTH) </td> 
+         <td class="confluenceTd"> Prashant </td> 
+         <td class="confluenceTd"> 29feb08 </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd">may NOT do it, since we are trying to do monitoring in a better way, we might have a different output here </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:49.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

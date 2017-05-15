@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : AdminOrConfigCompatibilityPage</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   
+     <div> 
+      <ul> 
+       <li><a href="#AdminOrConfigCompatibilityPage-CompatibilityofAdmin%2FConfigurationInterfacesinV3withV2%2CV1">Compatibility of Admin/Configuration Interfaces in V3 with V2, V1</a></li> 
+       <ul> 
+        <li><a href="#AdminOrConfigCompatibilityPage-Incompatibilitytablefordomain%27sconfiguration">Incompatibility table for domain's configuration</a></li> 
+        <li><a href="#AdminOrConfigCompatibilityPage-Incompatibilitytableforasadmin">Incompatibility table for asadmin</a></li> 
+        <li><a href="#AdminOrConfigCompatibilityPage-IncompatibilitytableforAMX">Incompatibility table for AMX</a></li> 
+        <li><a href="#AdminOrConfigCompatibilityPage-Incompatibilitytableforotherstaticfiles">Incompatibility table for other static files</a></li> 
+        <li><a href="#AdminOrConfigCompatibilityPage-MeetingCoordinates">Meeting Co-ordinates</a></li> 
+       </ul> 
+      </ul>
+     </div> <p><a href="GlassFishV3AdministrationStartingPoint.html" title="GlassFishV3AdministrationStartingPoint">Back to Admin Starting Point</a></p> <p><b>Scope: GlassFish V3</b><br> <b>Status: Work in Progress</b></p> <h4><a name="AdminOrConfigCompatibilityPage-CompatibilityofAdmin%2FConfigurationInterfacesinV3withV2%2CV1"></a>Compatibility of Admin/Configuration Interfaces in V3 with V2, V1</h1> <p>A product's new release is either compatible or not with its previous releases. It's <em>that</em> binary, as someone taught me a while ago, when I was trying to understand the meaning of compatibility. Now that we are making changes to server's internal architecture, giving a thought to GlassFish V3's compatibility with earlier releases is important. It's a prudent approach not to be stuck on being compatible, but we should know that we have knowingly accepted some incompatibilities. We all agree on benefits of doing this.</p> <p>This document does <b>not</b> discuss the product's incompatibilities w.r.t. Java EE and other specifications. It discusses/lists the incompatibilities from the public interface standpoint. This includes configuration files, templates, scripts, syntax of administrative commands, semantics of syntactically identical commands etc. Discussions about this should happen at <a href="mailto:dev@glassfish.java.net">dev@glassfish.java.net</a>.</p> <p>In the following table, all the incompatible items are listed. ACCEPTED status on an item means that community has accepted to live with the incompatibility on that item. REJECTED means the previous release interface must be reinstated so that we are compatible as far as that item is concerned. Default value of status is PENDING <img class="emoticon" src="images/icons/emoticons/smile.gif" height="20" width="20" align="absmiddle" alt="" border="0">. DEFER means we are deferring an item for now and CCC should decide what to do. </p> <h4><a name="AdminOrConfigCompatibilityPage-Incompatibilitytablefordomain%27sconfiguration"></a>Incompatibility table for domain's configuration</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">ID </th> 
+         <th class="confluenceTh"> Impact </th> 
+         <th class="confluenceTh"> Description of incompatibility, Possible work-around </th> 
+         <th class="confluenceTh"> Contact </th> 
+         <th class="confluenceTh"> Community/Stakeholder Decision(<b>ACCEPTED/REJECTED/PENDING</b>) </th> 
+         <th class="confluenceTh"> Action Items </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GENINC-0 </td> 
+         <td class="confluenceTd"> High </td> 
+         <td class="confluenceTd"> It's unclear what happens to the class-loading and various URL's we introduced in V1. The impact of various java-config attributes (e.g. classpath-prefix, system-classpath) needs to be found out. </td> 
+         <td class="confluenceTd"> Jerome (dochez@dev.java.net) Sivakumar Thyagarajan </td> 
+         <td class="confluenceTd"> *PENDING* </td> 
+         <td class="confluenceTd">Jerome to check with various uses of app server (e.g. Java ES products from Sun). We need to do more research. Jerome to send the diagram for class-loaders to June. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">ID </th> 
+         <th class="confluenceTh"> Impact </th> 
+         <th class="confluenceTh"> Description of incompatibility, Possible work-around </th> 
+         <th class="confluenceTh"> Contact </th> 
+         <th class="confluenceTh"> Community/Stakeholder Decision(<b>ACCEPTED/REJECTED/PENDING</b>) </th> 
+         <th class="confluenceTh"> Action Items </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> DOMINC-0 </td> 
+         <td class="confluenceTd"> High? </td> 
+         <td class="confluenceTd"> There is no DTD for domain's configuration file, domain.xml. This means that there is no schema that backs up domain.xml. </td> 
+         <td class="confluenceTd"> Kedar (km@dev.java.net) </td> 
+         <td class="confluenceTd"> *ACCEPTED* </td> 
+         <td class="confluenceTd"> Kedar to introduce a <em>version</em> attribute on <em>domain</em> element. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> DOMINC-1 </td> 
+         <td class="confluenceTd"> Medium/Low </td> 
+         <td class="confluenceTd"> The RMI Connector is turned off by default. Thus, the JConsole connectivity is not enabled by default. The plan for TP-2 is that the user would use standard RMI properties (rather user-unfriendly). </td> 
+         <td class="confluenceTd"> Nandini (ne110415@dev.java.net) </td> 
+         <td class="confluenceTd"> *PENDING* </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> DOMINC-2 </td> 
+         <td class="confluenceTd"> Medium </td> 
+         <td class="confluenceTd"> Use the generic "application" element to register application information in domain.xml. <a href="https://github.com/javaee/glassfish/issues/4413">Issue 4413 </a> </td> 
+         <td class="confluenceTd"> Hong (hzhang_jn@dev.java.net) </td> 
+         <td class="confluenceTd"> *PENDING* </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="AdminOrConfigCompatibilityPage-Incompatibilitytableforasadmin"></a>Incompatibility table for asadmin</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">ID </th> 
+         <th class="confluenceTh"> Impact </th> 
+         <th class="confluenceTh"> Description of incompatibility, Possible work-around </th> 
+         <th class="confluenceTh"> Contact </th> 
+         <th class="confluenceTh"> Community/Stakeholder Decision(<b>ACCEPTED/REJECTED/PENDING</b>) </th> 
+         <th class="confluenceTh">Action Items </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ASADMININC-0 </td> 
+         <td class="confluenceTd"> High </td> 
+         <td class="confluenceTd"> The value of --force on asadmin is now <b>false</b>. This means a user will need to specify --deploy=true in order to force a redeployment. </td> 
+         <td class="confluenceTd"> Jerome (dochez@dev.java.net) </td> 
+         <td class="confluenceTd"> *PENDING* </td> 
+         <td class="confluenceTd"> Jerome to go and do some research (talk to some people, blog or otherwise, get some input). Kedar suggested AS_ADMIN_FORCE=true. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ASADMININC-1 </td> 
+         <td class="confluenceTd"> Medium </td> 
+         <td class="confluenceTd"> The database (Java DB) will now be started by server. Thus <b>asadmin start/stop-database</b> commands will need that admin-server is running. </td> 
+         <td class="confluenceTd"> Jennifer (129909@dev.java.net) </td> 
+         <td class="confluenceTd"> *DEFER* </td> 
+         <td class="confluenceTd"> We are using the local commands for TP-2 and then we will provide a way so that server manages the life cycle of the database. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <del>ASADMININC-2</del> </td> 
+         <td class="confluenceTd"> <del>Medium</del> </td> 
+         <td class="confluenceTd"> <del>It's unclear what happens to the --libraries option on deploy command. Are we carrying forward the V2-semantics for it?</del> </td> 
+         <td class="confluenceTd"> <del>Hong Zhang (hzhang_jn@dev.java.net)</del> </td> 
+         <td class="confluenceTd"> <del><b>PENDING</b></del> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="AdminOrConfigCompatibilityPage-IncompatibilitytableforAMX"></a>Incompatibility table for AMX</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">ID </th> 
+         <th class="confluenceTh"> Impact </th> 
+         <th class="confluenceTh"> Description of incompatibility, Possible work-around </th> 
+         <th class="confluenceTh"> Contact </th> 
+         <th class="confluenceTh"> Community/Stakeholder Decision&lt;br&gt;(<b>ACCEPTED/REJECTED/PENDING</b>) </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> AMX-1 </td> 
+         <td class="confluenceTd"> Low </td> 
+         <td class="confluenceTd"> MBeanLogLevel Attribute type changed from java.util.logging.Level to String. Affects all AMX MBeans. Incompatible change, but likely no clients use this functionality. </td> 
+         <td class="confluenceTd"> lloyd.chambers@sun.com </td> 
+         <td class="confluenceTd"> *PENDING* </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> AMX-2 </td> 
+         <td class="confluenceTd"> High </td> 
+         <td class="confluenceTd"> Config MBeans create()/remove() methods will all be changed to use some kind of generic approach so that arbitrary modules can be supported, and no special-case code is needed. This means that all createAbc() and removeAbc() methods seen in V2 MBeans will be removed. Highly incompatible change requiring client code revision. </td> 
+         <td class="confluenceTd"> lloyd.chambers@sun.com </td> 
+         <td class="confluenceTd"> *PENDING* </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> AMX-3 </td> 
+         <td class="confluenceTd"> Low </td> 
+         <td class="confluenceTd"> Properties and system properties will exist as MBeans (Containees). Existing MBeans with properties and/or system properties will be become AMX 'Container's. Existing PropertiesAccess and SystemPropertiesAccess APIs are retained for backward compatibility. Only apps making dubious assumptions would be affected by this change, so its highly compatible. </td> 
+         <td class="confluenceTd"> lloyd.chambers@sun.com </td> 
+         <td class="confluenceTd"> *PENDING* </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> AMX-4 </td> 
+         <td class="confluenceTd"> High </td> 
+         <td class="confluenceTd"> DOMINC-1 (absence of RMI connector) means that no remote connectivity exists for AMX! </td> 
+         <td class="confluenceTd"> lloyd.chambers@sun.com </td> 
+         <td class="confluenceTd"> *PENDING* </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="AdminOrConfigCompatibilityPage-Incompatibilitytableforotherstaticfiles"></a>Incompatibility table for other static files</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">ID </th> 
+         <th class="confluenceTh"> Impact </th> 
+         <th class="confluenceTh"> Description of incompatibility, Possible work-around </th> 
+         <th class="confluenceTh"> Contact </th> 
+         <th class="confluenceTh"> Community/Stakeholder Decision(<b>ACCEPTED/REJECTED/PENDING</b>) </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> OTHER-0 </td> 
+         <td class="confluenceTd"> Low </td> 
+         <td class="confluenceTd"> Remove the j2ee-modules/j2ee-apps subdirectories from applications repository file layout. <a href="https://github.com/javaee/glassfish/issues/4383">Issue 4383 </a> </td> 
+         <td class="confluenceTd"> Hong (hzhang_jn@dev.java.net) </td> 
+         <td class="confluenceTd"> *ACCEPTED* </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> OTHER-1 </td> 
+         <td class="confluenceTd"> Low </td> 
+         <td class="confluenceTd"> Don't support the native launcher. Motivation: We have addressed all the reasons for its existence by using Java launcher. Also, nobody seems to use it. </td> 
+         <td class="confluenceTd"> Byron (bnevins@dev.java.net) </td> 
+         <td class="confluenceTd"> *PENDING* </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Other-2 </td> 
+         <td class="confluenceTd"> Medium </td> 
+         <td class="confluenceTd"> Support platform-agnostic format for asenv.conf.bat file and rename it to asenv.properties </td> 
+         <td class="confluenceTd"> Byron (bnevins@dev.java.net) Kedar(km@dev.java.net) </td> 
+         <td class="confluenceTd"> *PENDING* </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="AdminOrConfigCompatibilityPage-MeetingCoordinates"></a>Meeting Co-ordinates</h2> <p>CCC meets every Wednesday. We might need to move to a more globe-friendly time, but till then, it is every Wednesdays at 3.00 PM Pacific.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">*Toll Free Dial In Number: *(866)545-5223
+*Int'l Access/Caller Paid Dial In Number: *(865)673-9887
+*ACCESS CODE: *5789900</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>Meeting 1 - 12 Mar 2008</li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 17, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:48.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

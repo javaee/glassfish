@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFishV3SecurityDocPlan</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>&lt;h1&gt;Security Documentation Plan&lt;/h1&gt;</p> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li> 
+         <ul> 
+          <li> 
+           <ul> 
+            <li> 
+             <ul> 
+              <li> 
+               <ul> 
+                <li>DRAFT ***** WORK IN PROGRESS ********</li> 
+               </ul> </li> 
+             </ul> </li> 
+           </ul> </li> 
+         </ul> </li> 
+       </ul> </li> 
+     </ul> 
+     <div> 
+      <ul> 
+       <li><a href="#GlassFishV3SecurityDocPlan-PeopleandRoles">People and Roles</a></li> 
+       <li><a href="#GlassFishV3SecurityDocPlan-Audience">Audience</a></li> 
+       <li><a href="#GlassFishV3SecurityDocPlan-SummaryoftheFeatureFromaUser%27sPerspective">Summary of the Feature From a User's Perspective</a></li> 
+       <li><a href="#GlassFishV3SecurityDocPlan-Availability">Availability</a></li> 
+       <li><a href="#GlassFishV3SecurityDocPlan-StatementofWork">Statement of Work</a></li> 
+       <ul> 
+        <li><a href="#GlassFishV3SecurityDocPlan-ChangestoBooks">Changes to Books</a></li> 
+        <ul> 
+         <li><a href="#GlassFishV3SecurityDocPlan-GlassFishv3AdministrationGuideChanges"> <em>GlassFish v3 Administration Guide</em> Changes</a></li> 
+         <li><a href="#GlassFishV3SecurityDocPlan-GlassFishv3Developer%27sGuideChanges"> <em>GlassFish v3 Developer's Guide</em> Changes</a></li> 
+         <li><a href="#GlassFishV3SecurityDocPlan-JavaEETutorialChanges"> <em>Java EE Tutorial</em> Changes</a></li> 
+         <li><a href="#GlassFishV3SecurityDocPlan-MetroUser%27sGuideChanges"> <em>Metro User's Guide</em> Changes</a></li> 
+        </ul> 
+        <li><a href="#GlassFishV3SecurityDocPlan-ChangestoOnlineHelp">Changes to Online Help</a></li> 
+        <ul> 
+         <li><a href="#GlassFishV3SecurityDocPlan-OnlineHelpSetNameChanges"> <em>Online Help Set Name</em> Changes</a></li> 
+        </ul> 
+        <li><a href="#GlassFishV3SecurityDocPlan-ChangestoManPages">Changes to Man Pages</a></li> 
+       </ul> 
+       <li><a href="#GlassFishV3SecurityDocPlan-ReviewSchedule">Review Schedule</a></li> 
+       <li><a href="#GlassFishV3SecurityDocPlan-RelatedInformation">Related Information</a></li> 
+      </ul>
+     </div> <h4><a name="GlassFishV3SecurityDocPlan-PeopleandRoles"></a>People and Roles</h1> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Name</th> 
+         <th class="confluenceTh">Role </th> 
+         <th class="confluenceTh">Location</th> 
+         <th class="confluenceTh">Time Zone</th> 
+         <th class="confluenceTh">Email </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Debbie Carson </td> 
+         <td class="confluenceTd"> Santa Clara, CA </td> 
+         <td class="confluenceTd"> PST </td> 
+         <td class="confluenceTd">carson{{@dev.java.net}} </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Dixie Pine, June Parks </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"><em>java.netID</em><tt>@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Editor </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"><em>java.netID</em><tt>@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Kumar Jayanti </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"><em>java.netID</em><tt>@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> QA Engineer </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"><em>java.netID</em><tt>@dev.java.net</tt> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3SecurityDocPlan-Audience"></a>Audience</h1> <p>The security features described herein may be used by Java EE developers, GlassFish developers, or by GlassFish administrators.</p> <h4><a name="GlassFishV3SecurityDocPlan-SummaryoftheFeatureFromaUser%27sPerspective"></a>Summary of the Feature From a User's Perspective</h1> <p>The features described herein are proposed enhancements to security service in GlassFish v3. </p> <h4><a name="GlassFishV3SecurityDocPlan-Availability"></a>Availability</h1> <p>The enhanced security features will be available in GlassFish v3.</p> <h4><a name="GlassFishV3SecurityDocPlan-StatementofWork"></a>Statement of Work</h1> <p>Most of the enhanced security features will need to be documented in the GlassFish v3 Administration Guide. Some of the features will need to be documented in the GlassFish v3 Developer's Guide, and a few of the features will need to be documented in the Java EE tutorial. Some of the features will need to be documented in the Metro/WSIT User's Guide, which is out of the scope of this document, but which will be listed here for completeness.</p> <p>Documentation Impact:</p> 
+     <ul> 
+      <li>None</li> 
+      <li>Minor</li> 
+      <li>Moderate</li> 
+      <li>Major</li> 
+      <li>New</li> 
+     </ul> 
+     <hr> <p><b>Note -</b> If a document is task based (as opposed to reference), the changes should be determined from the user task analysis for the feature.</p> 
+     <hr> <h4><a name="GlassFishV3SecurityDocPlan-ChangestoBooks"></a>Changes to Books</h2> <h4><a name="GlassFishV3SecurityDocPlan-GlassFishv3AdministrationGuideChanges"></a><em>GlassFish v3 Administration Guide</em> Changes</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Section</th> 
+         <th class="confluenceTh">Documentation Impact</th> 
+         <th class="confluenceTh">Writer</th> 
+         <th class="confluenceTh">Reviewers</th> 
+         <th class="confluenceTh">Description of Change </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> About Enterprise Server Security: Java Authorization Contract for Containers </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Dixie Pine </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">JSR 196 allows you to develop pluggins at different layers. You can dfine plugins that change the way new authentication mechanims are configured, (i.e., AuthConfigProvider and AuthConfigFactory), and you can define new authentication mechanisms (ServerAuthModule, and ClientAuthModule). Suggest creating another section below JACC describing this type of plugin. See blog at <a href="http://blogs.oracle.com/enterprisetechtips/entry/adding_authentication_mechanisms_to_the">http://blogs.oracle.com/enterprisetechtips/entry/adding_authentication_mechanisms_to_the</a> for more info </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Administering System Security </td> 
+         <td class="confluenceTd"> New section on configuring a server authentication module </td> 
+         <td class="confluenceTd"> Dixie Pine </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">Steps for configuring a server authentication module in the Admin Console can be found here: <a href="http://blogs.oracle.com/enterprisetechtips/entry/adding_authentication_mechanisms_to_the">http://blogs.oracle.com/enterprisetechtips/entry/adding_authentication_mechanisms_to_the</a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Authentication </td> 
+         <td class="confluenceTd"> New type of authentication needs to be mentioned: Digest </td> 
+         <td class="confluenceTd"> Dixie Pine </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">Add Digest Authentication to list of types of authentication and add a brief description. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Java Authorization Contract for Containers </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Dixie Pine </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> There will now be an alternate JACC Provider which can be selected from the Admin Console. This should be documented. Here is info from the Security One-Pager: Glassfish V3 would support an alternative InMemory implementation of the JSR 115 Provider. This would be available to glassfish users as an alternate provider that can be easily configured as the default via the Admin GUI. When configured this provider would be used for all deployed applications. The advantage of this provider is that it would not generate static policy files like the current (default) provider in GlassFish V2. Instead it would process the security constraint information of an application at load time and create in memory policy. This would provide simplifications in a clustered scenario where synchronization of static policy files is used currently in GlassFish V2. The downside ofcourse is the need to digest the web.xml security constraints everytime the application is loaded. This JACC Provider would also provide a way to plugin an application sepcific RoleMapper which has been a requirement from some of the users. V3-Prelude already includes this provider as a configurable provider in domain.xml. However the Admin GUI support is incomplete, this provider has also not been used to test CTS and TCK compliance of GlassFish V3, these are planned for the V3 Final Release. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Authentication Realms </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Dixie Pine </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">Security One-Pager indicates that custom realms can be loaded without requiring a restart of the App Server. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Administering Authentication Realms </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Dixie Pine </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">According to security one-pager, Admin Console is being enhanced to allow user management of any realm, not just file realm. Need to add info on adding users to various realms. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3SecurityDocPlan-GlassFishv3Developer%27sGuideChanges"></a><em>GlassFish v3 Developer's Guide</em> Changes</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Section</th> 
+         <th class="confluenceTh">Documentation Impact</th> 
+         <th class="confluenceTh">Writer</th> 
+         <th class="confluenceTh">Reviewers</th> 
+         <th class="confluenceTh">Description of Change </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Securing Application </td> 
+         <td class="confluenceTd"> Add section showing how to write, configure, and bind a server authentication module to your application. </td> 
+         <td class="confluenceTd"> June Parks </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">JSR 196: Ron Monzillo is requesting that we describe how to use JSR-196 in the web tier to facilitate the injection of pluggable authentication modules within the servlet constraint processing engine. He gives code, etc., at his blog: <a href="http://blogs.oracle.com/enterprisetechtips/entry/adding_authentication_mechanisms_to_the">http://blogs.oracle.com/enterprisetechtips/entry/adding_authentication_mechanisms_to_the</a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Supported Realms </td> 
+         <td class="confluenceTd"> Include info on Digest Authentication with enhanced JDBC realm </td> 
+         <td class="confluenceTd"> June Parks </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">Already contained in doc. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Creating a Custom Realms </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> June Parks </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">Security One-Pager indicates that custom realms can be loaded without requiring a restart of the App Server. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3SecurityDocPlan-JavaEETutorialChanges"></a><em>Java EE Tutorial</em> Changes</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Section</th> 
+         <th class="confluenceTh">Documentation Impact</th> 
+         <th class="confluenceTh">Writer</th> 
+         <th class="confluenceTh">Reviewers</th> 
+         <th class="confluenceTh">Description of Change </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Debbie Carson </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">Support for Annotations @RolesAllowed, @PermitAll and @DenyAll on Servlet WebServices: This feature would allow the use of annotations to define fine-grained access control ( authorization rules) for a web service. These annotations have been accepted as additional annotations to the Servlet 3.0 Specification. A blog by Shing Wai Chan ( <a href="http://blogs.oracle.com/swchan/entry/servlet_3_0_security_annotations">http://blogs.oracle.com/swchan/entry/servlet_3_0_security_annotations</a> <p>) that describes these annotations and shows how to use them has been published. Debbie Carson will describe these annotations and show how to use them with Servlets in the appropriate security chapter in the tutorial. There is no other GF doc impact. </p></td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Securing Web Applications </td> 
+         <td class="confluenceTd"> Add Digest Authentication to types of authentication supported </td> 
+         <td class="confluenceTd"> Debbie Carson </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">Wherever the types of authentication are mentioned, add Digest authentication. Create an example that uses Digest authentication. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3SecurityDocPlan-MetroUser%27sGuideChanges"></a><em>Metro User's Guide</em> Changes</h3> <p>Eric Jendrock is writing the Metro Doc Plan, this is excerpted from his analysis of Metro:</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Section</th> 
+         <th class="confluenceTh">Documentation Impact</th> 
+         <th class="confluenceTh">Writer</th> 
+         <th class="confluenceTh">Reviewers</th> 
+         <th class="confluenceTh">Description of Change </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Issued Token Caching and Sharing, SSO among services: This is the one of most asked for features by the STS and WS-Trust implementation Metro user base. It extends the current use cases and is valuable for building large scale secured and trusted Web services solutions with Metro. Jiandong Guo specified that the Metro user guide should be updated for this feature and samples should be added to it. STS and WS-Trust are not currently mentioned in the Admin Guide nor the Dev Guide. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> WS-Trust Renewing and Cancellation protocols: Token validation and token sharing among multiple services is already supported by Metro v1.x. This feature extends user control to the life cycles of issued tokens with STS. Jiandong Guo specified that the Metro user guide should be updated for this feature and samples should be added to it. STS and WS-Trust are not currently mentioned in the Admin Guide nor the Dev Guide. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Support for WS-Trust 1.4, WS-SecureConversation 1.4 and WS-SecurityPolicy 1.3: The Metro security developers need to make Metro compliant with WS-Trust 1.4, WS-SecureConversation 1.4, and WS-SecurityPolicy 1.3. The only doc impact is to update the versions of these three technologies where versions are called out - in the Metro User's Guide. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Support for Password Derived Keys: This feature, which is supported by the WS-SecurityPolicy specification but not by Metro v1.x, provides a way for a client with just a valid username and password to send a message that is both integrity and confidentiality-protected. Kumar Jyanti recommends that the Metro User's Guide be updated and samples that show how to use this feature be provided and explained in an associated blog. NetBeans tooling changes would be required and their associated documentation and OLH would need to be updated to reflect this feature. There is no direct doc impact to us. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">Minor Security Features: Several relatively minor security enhancements that relate to a wide range of areas need to be implemented to provide adequate interoperability with Microsoft's .NET software, fix known bugs, improve logging and diagnostic messages, consolidate code, enforce best practices, propose what needs to be monitored by JMX management and monitoring, convert pipes to tubes, etc. The Metro User's Guide would need to be updated as each minor feature was implemented. No other GlassFish documentation impact. Additional samples may be required and all explanations to accompany these would be provided through blogs created by the Metro developers. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3SecurityDocPlan-ChangestoOnlineHelp"></a>Changes to Online Help</h2> <h4><a name="GlassFishV3SecurityDocPlan-OnlineHelpSetNameChanges"></a><em>Online Help Set Name</em> Changes</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Topic Title</th> 
+         <th class="confluenceTh">Documentation Impact</th> 
+         <th class="confluenceTh">Writer</th> 
+         <th class="confluenceTh">Reviewers</th> 
+         <th class="confluenceTh">Description of Change </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3SecurityDocPlan-ChangestoManPages"></a>Changes to Man Pages</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Man Page Name and Section</th> 
+         <th class="confluenceTh">Documentation Impact</th> 
+         <th class="confluenceTh">Writer</th> 
+         <th class="confluenceTh">Reviewers</th> 
+         <th class="confluenceTh">Description of Change </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3SecurityDocPlan-ReviewSchedule"></a>Review Schedule</h1> <p>The review schedule for the documentation items that are affected by this feature is provided in the following table.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Item</th> 
+         <th class="confluenceTh">First Draft Start Date</th> 
+         <th class="confluenceTh">First Draft End Date</th> 
+         <th class="confluenceTh">Second Draft Start Date</th> 
+         <th class="confluenceTh">Second Draft End Date</th> 
+         <th class="confluenceTh">Final Version End Date</th> 
+         <th class="confluenceTh">Final Version End Date </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>Reviewers are listed in the <em>Statement of Work</em>.</p> <h4><a name="GlassFishV3SecurityDocPlan-RelatedInformation"></a>Related Information</h1> 
+     <ul> 
+      <li>1-pager</li> 
+      <li>User task analysis</li> 
+      <li>Design document</li> 
+     </ul> <p>Email aliases:</p> 
+     <ul> 
+      <li><span class="error">[admin@glassfish.java.net]</span></li> 
+      <li><span class="error">[users@glassfish.java.net]</span></li> 
+      <li><span class="error">[docs@glassfish.java.net]</span></li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 02, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : Metro2.1PolicyAlternatives</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="Metro2.1PolicyAlternatives-SupportForPolicyAlternativesinMetro2.1forGlassFish3.1OWSMInterop"></a>Support For Policy-Alternatives in Metro2.1 for GlassFish 3.1 OWSM Interop</h1> <p>This page will describe the design for Policy-Alternatives support in Metro in order to achieve GlassFish 3.1 &lt;-&gt; OWSM interoperability.</p> 
+     <ul> 
+      <li>Kumar Jayanti</li> 
+     </ul> 
+     <div> 
+      <ul> 
+       <li><a href="#Metro2.1PolicyAlternatives-SupportForPolicyAlternativesinMetro2.1forGlassFish3.1OWSMInterop">Support For Policy-Alternatives in Metro2.1 for GlassFish 3.1 OWSM Interop</a></li> 
+       <li><a href="#Metro2.1PolicyAlternatives-1.Introduction">1. Introduction</a></li> 
+       <li><a href="#Metro2.1PolicyAlternatives-2.Risk">2. Risk</a></li> 
+       <li><a href="#Metro2.1PolicyAlternatives-3.SupportforPolicyAlternatives">3. Support for Policy Alternatives</a></li> 
+       <ul> 
+        <li><a href="#Metro2.1PolicyAlternatives-ServerSideSupportforPolicyAlternatives">Server Side Support for Policy Alternatives</a></li> 
+        <li><a href="#Metro2.1PolicyAlternatives-ClientSideSupportforPolicyAlternatives">Client Side Support for Policy Alternatives</a></li> 
+        <li><a href="#Metro2.1PolicyAlternatives-UpdatingMetroWSSecurityImplementationtohandleAlternatives">Updating Metro WS-Security Implementation to handle Alternatives</a></li> 
+        <li><a href="#Metro2.1PolicyAlternatives-PolicyofOneofthetwoInteropScenariosthatrequireAlternativesSupport">Policy of One of the two Interop Scenarios that require Alternatives Support</a></li> 
+       </ul> 
+      </ul>
+     </div> 
+     <hr> <h4><a name="Metro2.1PolicyAlternatives-1.Introduction"></a>1. Introduction</h1> <p>Product Management has defined several interop-scenarios between Metro 2.0.1/2.1 WebServices and OWSM (Oracle WebServices Manager). The detailed set of interop scenarios can be accessed <a href="http://appserver.sfbay.sun.com/Wiki.jsp?page=3.1OWSM">here</a> </p> <h4><a name="Metro2.1PolicyAlternatives-2.Risk"></a>2. Risk</h1> <p> Oracle (OWSM) has support for Policy Alternatives and a few of the interop scenarios require support for Policy Alternatives in the most generic sense within Metro 2.1. Metro has never supported Policy Alternatives (though the WS-Policy implementation/design is capable of dealing with alternatives). The primary reason given by the Metro WS-Policy team is that one can easily have an incoming message that matches several distinct policy alternatives and one has no way of determining which of the matching policy alternatives to apply in that case.</p> <h4><a name="Metro2.1PolicyAlternatives-3.SupportforPolicyAlternatives"></a>3. Support for Policy Alternatives</h1> <h4><a name="Metro2.1PolicyAlternatives-ServerSideSupportforPolicyAlternatives"></a>Server Side Support for Policy Alternatives</h2> <p>The PolicyAssertionValidators already run on the server side, so the WS-SecurityPolicy implementation in Metro has to be updated to implement the Validation/Selection logic.</p> <h4><a name="Metro2.1PolicyAlternatives-ClientSideSupportforPolicyAlternatives"></a>Client Side Support for Policy Alternatives</h2> <p>In practice we have two possible scenarios for the client side :</p> <p>1. Metro client supports all alternatives, so it doesn't matter which one it picks.<br> 2. Metro client supports only some alternatives and happens to pick an unsupported one. That should not actually happen because we compute a score for each alternative based on whether the policy assertions in the alternative are known and supported. The alternative with the best score (i.e. ideally all assertions are known and supported) is<br> picked.</p> <p>So the current thinking is that for the client, we could use the already existing PolicyAssertionValidator API. The relevant class to look at is com.sun.xml.ws.security.policy.SecurityAssertionValidator and its uses in the WSIT workspace. That could be used to assign the highest fitness to the alternative we want to choose. The validator is invoked once for every single top-level assertion of an alternative.</p> <h4><a name="Metro2.1PolicyAlternatives-UpdatingMetroWSSecurityImplementationtohandleAlternatives"></a>Updating Metro WS-Security Implementation to handle Alternatives</h2> <p>Once we have information on Alternatives on the Client Side, the Metro Runtime would pick one of them and pass it over to the WS-Security implementation Layer in Metro. So there is no additional work in the WS-Security runtime.</p> <p>On the Server side, the Metro WS-Security implementation would have to be upgraded (especially the code that does policy verification) the PolicyResolver and PolicyVerifier interfaces to handle alternatives. </p> <p>The Algorithm for doing PolicyVerification currently assumes no Alternatives and hence has to rewritten.</p> <h4><a name="Metro2.1PolicyAlternatives-PolicyofOneofthetwoInteropScenariosthatrequireAlternativesSupport"></a>Policy of One of the two Interop Scenarios that require Alternatives Support</h2> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;wsp:Policy xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:orawsp="http://schemas.oracle.com/ws/2006/01/policy" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" orawsp:provides="{http://schemas.oracle.com/ws/2006/01/policy}token.x509, {http://docs.oasis-open.org/ns/opencsa/sca/200903}authentication, {http://docs.oasis-open.org/ns/opencsa/sca/200903}clientAuthentication, {http://docs.oasis-open.org/ns/opencsa/sca/200903}clientAuthentication.message, {http://docs.oasis-open.org/ns/opencsa/sca/200903}integrity, {http://docs.oasis-open.org/ns/opencsa/sca/200903}integrity.message, {http://docs.oasis-open.org/ns/opencsa/sca/200903}confidentiality, {http://docs.oasis-open.org/ns/opencsa/sca/200903}confidentiality.message, {http://schemas.oracle.com/ws/2006/01/policy}messageProtection" wsu:Id="wss11_saml_or_username_token_with_message_protection_service_policy"&gt;
+		&lt;wsp:ExactlyOne&gt;
+			&lt;wsp:All&gt;
+				&lt;sp:SymmetricBinding xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy"&gt;
+					&lt;wsp:Policy&gt;
+						&lt;sp:ProtectionToken&gt;
+							&lt;wsp:Policy&gt;
+								&lt;sp:X509Token sp:IncludeToken="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy/IncludeToken/Never"&gt;
+									&lt;wsp:Policy&gt;
+										&lt;sp:RequireThumbprintReference/&gt;
+										&lt;sp:WssX509V3Token11/&gt;
+									&lt;/wsp:Policy&gt;
+								&lt;/sp:X509Token&gt;
+							&lt;/wsp:Policy&gt;
+						&lt;/sp:ProtectionToken&gt;
+						&lt;sp:AlgorithmSuite&gt;
+							&lt;wsp:Policy&gt;
+								&lt;sp:Basic128/&gt;
+							&lt;/wsp:Policy&gt;
+						&lt;/sp:AlgorithmSuite&gt;
+						&lt;sp:Layout&gt;
+							&lt;wsp:Policy&gt;
+								&lt;sp:Lax/&gt;
+							&lt;/wsp:Policy&gt;
+						&lt;/sp:Layout&gt;
+						&lt;sp:IncludeTimestamp/&gt;
+						&lt;sp:ProtectTokens/&gt;
+						&lt;sp:OnlySignEntireHeadersAndBody/&gt;
+					&lt;/wsp:Policy&gt;
+				&lt;/sp:SymmetricBinding&gt;
+				&lt;sp:SignedSupportingTokens xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy"&gt;
+					&lt;wsp:Policy&gt;
+						&lt;sp:SamlToken sp:IncludeToken="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy/IncludeToken/AlwaysToRecipient"&gt;
+							&lt;wsp:Policy&gt;
+								&lt;sp:WssSamlV11Token11/&gt;
+							&lt;/wsp:Policy&gt;
+						&lt;/sp:SamlToken&gt;
+					&lt;/wsp:Policy&gt;
+				&lt;/sp:SignedSupportingTokens&gt;
+				&lt;sp:EndorsingSupportingTokens xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy"&gt;
+					&lt;wsp:Policy&gt;
+						&lt;sp:X509Token sp:IncludeToken="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy/IncludeToken/AlwaysToRecipient"&gt;
+							&lt;wsp:Policy&gt;
+								&lt;sp:WssX509V3Token11/&gt;
+							&lt;/wsp:Policy&gt;
+						&lt;/sp:X509Token&gt;
+					&lt;/wsp:Policy&gt;
+				&lt;/sp:EndorsingSupportingTokens&gt;
+				&lt;sp:Wss11 xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy"&gt;
+					&lt;wsp:Policy&gt;
+						&lt;sp:RequireSignatureConfirmation/&gt;
+						&lt;sp:MustSupportRefEncryptedKey/&gt;
+					&lt;/wsp:Policy&gt;
+				&lt;/sp:Wss11&gt;
+			&lt;/wsp:All&gt;
+			&lt;wsp:All&gt;
+				&lt;sp:SymmetricBinding xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy"&gt;
+					&lt;wsp:Policy&gt;
+						&lt;sp:ProtectionToken&gt;
+							&lt;wsp:Policy&gt;
+								&lt;sp:X509Token sp:IncludeToken="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy/IncludeToken/Never"&gt;
+									&lt;wsp:Policy&gt;
+										&lt;sp:RequireThumbprintReference/&gt;
+										&lt;sp:WssX509V3Token11/&gt;
+									&lt;/wsp:Policy&gt;
+								&lt;/sp:X509Token&gt;
+							&lt;/wsp:Policy&gt;
+						&lt;/sp:ProtectionToken&gt;
+						&lt;sp:AlgorithmSuite&gt;
+							&lt;wsp:Policy&gt;
+								&lt;sp:Basic128/&gt;
+							&lt;/wsp:Policy&gt;
+						&lt;/sp:AlgorithmSuite&gt;
+						&lt;sp:Layout&gt;
+							&lt;wsp:Policy&gt;
+								&lt;sp:Lax/&gt;
+							&lt;/wsp:Policy&gt;
+						&lt;/sp:Layout&gt;
+						&lt;sp:IncludeTimestamp/&gt;
+						&lt;sp:OnlySignEntireHeadersAndBody/&gt;
+					&lt;/wsp:Policy&gt;
+				&lt;/sp:SymmetricBinding&gt;
+				&lt;sp:SignedSupportingTokens xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy"&gt;
+					&lt;wsp:Policy&gt;
+						&lt;sp:UsernameToken sp:IncludeToken="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy/IncludeToken/AlwaysToRecipient"&gt;
+							&lt;wsp:Policy&gt;
+								&lt;sp:WssUsernameToken10/&gt;
+							&lt;/wsp:Policy&gt;
+						&lt;/sp:UsernameToken&gt;
+					&lt;/wsp:Policy&gt;
+				&lt;/sp:SignedSupportingTokens&gt;
+				&lt;sp:Wss11 xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy"&gt;
+					&lt;wsp:Policy&gt;
+						&lt;sp:RequireSignatureConfirmation/&gt;
+						&lt;sp:MustSupportRefEncryptedKey/&gt;
+					&lt;/wsp:Policy&gt;
+				&lt;/sp:Wss11&gt;
+			&lt;/wsp:All&gt;
+		&lt;/wsp:ExactlyOne&gt;
+	&lt;/wsp:Policy&gt;</pre> 
+       </div> 
+      </div>
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 02, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GF3.1MS1</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GF3.1MS1-GlassFishServerOpenSourceEdition3.1Milestone1%28Enddate05%2F24%2F10%29"></a>GlassFish Server Open Source Edition 3.1 Milestone 1 (End date 05/24/10)</h2> 
+     <div> 
+      <ul> 
+       <li><a href="#GF3.1MS1-GlassFishServerOpenSourceEdition3.1Milestone1%28Enddate05%2F24%2F10%29">GlassFish Server Open Source Edition 3.1 Milestone 1 (End date 05/24/10)</a></li> 
+       <li><a href="#GF3.1MS1-Demo%28on5%2F27%29">Demo (on 5/27)</a></li> 
+       <ul> 
+        <li><a href="#GF3.1MS1-BasicClustering">Basic Clustering</a></li> 
+        <li><a href="#GF3.1MS1-Configuration">Configuration</a></li> 
+        <li><a href="#GF3.1MS1-Synchronization">Synchronization</a></li> 
+        <li><a href="#GF3.1MS1-DynamicReconfiguration">Dynamic Reconfiguration</a></li> 
+        <li><a href="#GF3.1MS1-Deployment">Deployment</a></li> 
+        <li><a href="#GF3.1MS1-AppClientContainer">App Client Container</a></li> 
+        <li><a href="#GF3.1MS1-Connectors%2CPooling%2CResources%2CJDBC">Connectors, Pooling, Resources, JDBC</a></li> 
+        <li><a href="#GF3.1MS1-Security">Security</a></li> 
+        <li><a href="#GF3.1MS1-SSHProvisioning">SSH Provisioning</a></li> 
+        <li><a href="#GF3.1MS1-TransactionRecovery">Transaction Recovery</a></li> 
+        <li><a href="#GF3.1MS1-RESTfulAdministrationAPI">RESTful Administration API</a></li> 
+        <li><a href="#GF3.1MS1-JMX">JMX</a></li> 
+        <li><a href="#GF3.1MS1-AdministrationConsole">Administration Console</a></li> 
+        <li><a href="#GF3.1MS1-Logging%26Diagnostics">Logging &amp; Diagnostics</a></li> 
+        <li><a href="#GF3.1MS1-DASRecovery">DAS Recovery</a></li> 
+        <li><a href="#GF3.1MS1-Installer">Installer</a></li> 
+        <li><a href="#GF3.1MS1-Packaging">Packaging</a></li> 
+        <li><a href="#GF3.1MS1-Upgrade">Upgrade</a></li> 
+        <li><a href="#GF3.1MS1-Build">Build</a></li> 
+        <li><a href="#GF3.1MS1-InmemorySessionReplication%3AHighAvailability">In-memory Session Replication: High Availability</a></li> 
+        <li><a href="#GF3.1MS1-ShoalGroupManagementService%28GMS%29forRuntimeClusteringServices">Shoal Group Management Service (GMS) for Runtime Clustering Services</a></li> 
+        <li><a href="#GF3.1MS1-Webtier">Webtier</a></li> 
+        <li><a href="#GF3.1MS1-EJB">EJB</a></li> 
+        <li><a href="#GF3.1MS1-IIOPClustering">IIOP Clustering</a></li> 
+        <li><a href="#GF3.1MS1-JMSandMessageQueue">JMS and Message Queue</a></li> 
+        <li><a href="#GF3.1MS1-Metro">Metro</a></li> 
+        <li><a href="#GF3.1MS1-Loadbalancer">Loadbalancer</a></li> 
+        <li><a href="#GF3.1MS1-DeveloperToolingwithNetBeans">Developer Tooling with NetBeans</a></li> 
+        <li><a href="#GF3.1MS1-EclipseWTP">Eclipse WTP</a></li> 
+        <li><a href="#GF3.1MS1-Embedded">Embedded</a></li> 
+        <li><a href="#GF3.1MS1-DevTestFramework">Dev Test Framework</a></li> 
+        <li><a href="#GF3.1MS1-JSF">JSF</a></li> 
+        <li><a href="#GF3.1MS1-Grizzly">Grizzly</a></li> 
+        <li><a href="#GF3.1MS1-OSGi">OSGi</a></li> 
+        <li><a href="#GF3.1MS1-Persistence">Persistence</a></li> 
+        <li><a href="#GF3.1MS1-Jersey">Jersey</a></li> 
+        <li><a href="#GF3.1MS1-CDI">CDI</a></li> 
+        <li><a href="#GF3.1MS1-BeanValidation">Bean Validation</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="GF3.1MS1-Demo%28on5%2F27%29"></a>Demo (on 5/27)</h2> 
+     <ul> 
+      <li>Ability to create a multi-node cluster with few remote server instances and start them 
+       <ul> 
+        <li>Demo: create-cluster, create-local-instance, start-instance, synchronization</li> 
+       </ul> </li> 
+      <li>Dynamic reconfiguration infrastructure demo using createJDBCResource, createJDBCConnectionPool</li> 
+      <li>Deployment versioning</li> 
+     </ul> <h4><a name="GF3.1MS1-BasicClustering"></a>Basic Clustering</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item #</th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 01. </td> 
+         <td class="confluenceTd"> MS1 (5/24) </td> 
+         <td class="confluenceTd"> INFRA-005 </td> 
+         <td class="confluenceTd"> create/delete/list-cluster </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> FINISHED </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 02. </td> 
+         <td class="confluenceTd"> MS1 (5/24) </td> 
+         <td class="confluenceTd"> INFRA-002A, INFRA-002C, INFRA-002B, INFRA-002D </td> 
+         <td class="confluenceTd"> create/delete/list-instance </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> create-local-instance: Basic function completed; create-instance: domain.xml entry completed; list: FINISHED </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 03. </td> 
+         <td class="confluenceTd"> MS1 (5/24) </td> 
+         <td class="confluenceTd"> INFRA-003A, INFRA-003B </td> 
+         <td class="confluenceTd"> start/stop-instance </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> FINISHED </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 03X. </td> 
+         <td class="confluenceTd"> MS1 (5/24) </td> 
+         <td class="confluenceTd"> INFRA-003A1 </td> 
+         <td class="confluenceTd"> Perfect Xml Parsing for Instances </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> TESTING NOW </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS1-Configuration"></a>Configuration</h3> <p>No deliverables planned for MS 1</p> <h4><a name="GF3.1MS1-Synchronization"></a>Synchronization</h3> <p>Didn't have MS1 items in MS schedule - had the following tasks for MS1</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task </th> 
+         <th class="confluenceTh"> Target Milestone </th> 
+         <th class="confluenceTh"> Start Date </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Owner(s) </th> 
+         <th class="confluenceTh"> Feature ID </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Synchronization backend </td> 
+         <td class="confluenceTd"> MS1 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 5/24 </td> 
+         <td class="confluenceTd"> Bill </td> 
+         <td class="confluenceTd"> SYNC-001 </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Integrate with GlassFish </td> 
+         <td class="confluenceTd"> MS1 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 5/24 </td> 
+         <td class="confluenceTd"> Bill </td> 
+         <td class="confluenceTd"> SYNC-001 </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Clean up stale files </td> 
+         <td class="confluenceTd"> MS1 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 5/24 </td> 
+         <td class="confluenceTd"> Bill </td> 
+         <td class="confluenceTd"> SYNC-002 </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> DAS scaling - perf test </td> 
+         <td class="confluenceTd"> MS1 </td> 
+         <td class="confluenceTd"> 5/6 </td> 
+         <td class="confluenceTd"> 5/14 </td> 
+         <td class="confluenceTd"> Bill, Tom </td> 
+         <td class="confluenceTd"> SYNC-005 </td> 
+         <td class="confluenceTd">Completed </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS1-DynamicReconfiguration"></a>Dynamic Reconfiguration</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh">Date/Milestone</th> 
+         <th class="confluenceTh">Feature ID</th> 
+         <th class="confluenceTh">Description</th> 
+         <th class="confluenceTh">QA/Docs Handover</th> 
+         <th class="confluenceTh">Status</th> 
+         <th class="confluenceTh">Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 01. </td> 
+         <td class="confluenceTd"> MS1 </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> Detailed investigation and impl spec </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Completed </td> 
+         <td class="confluenceTd">Impl details ready; Review completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 02. </td> 
+         <td class="confluenceTd"> MS1 </td> 
+         <td class="confluenceTd"> DYREC-001 </td> 
+         <td class="confluenceTd"> Provide infrastructure to apply configuration changes dynamically (--target option in CLI) across a cluster </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Completed </td> 
+         <td class="confluenceTd">Will enable basic command replication; Completes 40-50% of DYREC-001; Partial support for Supplemental commands to enable deployment team make progress; Will not support features like undoable commands etc </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 03. </td> 
+         <td class="confluenceTd"> MS1 </td> 
+         <td class="confluenceTd"> DYREC-005 </td> 
+         <td class="confluenceTd"> Provide --target support for <a href="GlassFishv3.1.html" title="GlassFishv3.1">infrastructure related CLIs </a> </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Completed </td> 
+         <td class="confluenceTd">Will enable basic command replication; We will select 2 commands (createJDBCResource, createJDBCConnectionPool) and show it getting replicated end to end </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 04. </td> 
+         <td class="confluenceTd"> MS1 </td> 
+         <td class="confluenceTd"> DYREC-004 </td> 
+         <td class="confluenceTd"> Clearly show status at the end of each operations. For all server instances where dynamic reconfiguration failed, please identify the server instances and suggest next steps to users to recover from this error (example, restart the server instances) </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Completed </td> 
+         <td class="confluenceTd">Will have some amount of consolidated results; Completes 30-40% of DYREC-004 </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS1-Deployment"></a>Deployment</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID</th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1. </td> 
+         <td class="confluenceTd"> Milestone 1 (05/24) </td> 
+         <td class="confluenceTd"> DPLY-001 </td> 
+         <td class="confluenceTd"> Synchronization related work </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2. </td> 
+         <td class="confluenceTd"> Milestone 1 (05/24) </td> 
+         <td class="confluenceTd"> DPLY-004 </td> 
+         <td class="confluenceTd"> Basic deployment framework level support for plugging in the processing of weblogic deployment descriptors to allow other subteams to starting working on their areas </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3. </td> 
+         <td class="confluenceTd"> Milestone 1 (05/24) </td> 
+         <td class="confluenceTd"> DPLY-005 </td> 
+         <td class="confluenceTd"> Deployment framework level support to rename the sun specific deployment descriptor </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4. </td> 
+         <td class="confluenceTd"> Milestone 1 (05/24) </td> 
+         <td class="confluenceTd"> DPLY-007 </td> 
+         <td class="confluenceTd"> Support versioning for the basic application commands (deploy/undeploy/enable/disable) </td> 
+         <td class="confluenceTd"> Yes (No QA coverage for P3 feature?) </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS1-AppClientContainer"></a>App Client Container</h3> <p>Didn't have MS1 items in MS schedule - had the following task for MS1</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task </th> 
+         <th class="confluenceTh"> Target Milestone </th> 
+         <th class="confluenceTh"> Start Date</th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Owner(s) </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Clarify indexing support in JWS. </td> 
+         <td class="confluenceTd"> MS 1 (05/24) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 05/24 </td> 
+         <td class="confluenceTd"> Tim </td> 
+         <td class="confluenceTd"> RC-2 </td> 
+         <td class="confluenceTd"> No response from JWS team. We could build an index of all the client and GF JARs into the generated facade JAR which is the main JAR. Definitely a nice-to-have at this point; it never was a release driver. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS1-Connectors%2CPooling%2CResources%2CJDBC"></a>Connectors, Pooling, Resources, JDBC</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item #</th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-12 </td> 
+         <td class="confluenceTd"> MS1 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Making RW-Lock based data-structure as default pool data-structure </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Better performance over existing Array List based data-structure. This is done in r37109. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-13 </td> 
+         <td class="confluenceTd"> MS1 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Use Connector annotations for JDBC resource-adapters </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Done in r37110. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS1-Security"></a>Security</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item #</th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 01. </td> 
+         <td class="confluenceTd"> MS1 (5/24) </td> 
+         <td class="confluenceTd"> SEC-006 </td> 
+         <td class="confluenceTd"> see Scope table above </td> 
+         <td class="confluenceTd"> Yes will do QA/Docs handover with proper Dev Tests </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 02. </td> 
+         <td class="confluenceTd"> MS1 (5/24) </td> 
+         <td class="confluenceTd"> SEC-007 </td> 
+         <td class="confluenceTd"> ditto </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 03. </td> 
+         <td class="confluenceTd"> MS1 (5/24) </td> 
+         <td class="confluenceTd"> SEC-018 </td> 
+         <td class="confluenceTd"> ditto </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> was not able to check into MS1 - will go into MS 2 (no impact to MS2) </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS1-SSHProvisioning"></a>SSH Provisioning </h3> <p>Didn't have MS1 items in MS schedule - had the following tasks for MS1</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Task</th> 
+         <th class="confluenceTh">Target Milestone</th> 
+         <th class="confluenceTh">Start Date</th> 
+         <th class="confluenceTh">End Date</th> 
+         <th class="confluenceTh">Owner(s)</th> 
+         <th class="confluenceTh">Feature ID</th> 
+         <th class="confluenceTh">Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Verify Trilead-ssh2 legal </td> 
+         <td class="confluenceTd"> MS1 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 5/21 </td> 
+         <td class="confluenceTd"> joe </td> 
+         <td class="confluenceTd"> SSHPRO-001 </td> 
+         <td class="confluenceTd">Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Specify domain.xml config changes/additions. Review at asarc. </td> 
+         <td class="confluenceTd"> MS1 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 5/21 </td> 
+         <td class="confluenceTd"> joe </td> 
+         <td class="confluenceTd"> SSHPRO-001 </td> 
+         <td class="confluenceTd">Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Specify CLI interfaces. Ensure basic clustering is implementing needed local versions of commands. Review at asarc </td> 
+         <td class="confluenceTd"> MS1 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 5/21 </td> 
+         <td class="confluenceTd"> carla </td> 
+         <td class="confluenceTd"> SSHPRO-002-5 </td> 
+         <td class="confluenceTd">Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Specify remote admin command module API </td> 
+         <td class="confluenceTd"> MS1 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 5/21 </td> 
+         <td class="confluenceTd"> rajiv </td> 
+         <td class="confluenceTd"> SSHPRO-001 </td> 
+         <td class="confluenceTd">Done </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS1-TransactionRecovery"></a>Transaction Recovery </h3> <p>One pager - Done - ready for review</p> <h4><a name="GF3.1MS1-RESTfulAdministrationAPI"></a>RESTful Administration API</h3> <p>Didn't have MS1 items in MS schedule - had the following task for MS1</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task </th> 
+         <th class="confluenceTh"> Target Milestone </th> 
+         <th class="confluenceTh"> Start Date</th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Owner(s) </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Help develop Console REST-based prototype </td> 
+         <td class="confluenceTd"> M1 </td> 
+         <td class="confluenceTd"> 2010-05-10 </td> 
+         <td class="confluenceTd"> 2010-05-24 </td> 
+         <td class="confluenceTd"> Jason </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS1-JMX"></a>JMX</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> One pager </td> 
+         <td class="confluenceTd"> Milestone 1 </td> 
+         <td class="confluenceTd"> All </td> 
+         <td class="confluenceTd"> One pager with the scope definition of the work </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd">Partially done </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS1-AdministrationConsole"></a>Administration Console</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> #1 </td> 
+         <td class="confluenceTd"> MS1 (5/24) </td> 
+         <td class="confluenceTd"> GUI-001 </td> 
+         <td class="confluenceTd"> REST Prototype done, at least 2 pages convereted to user REST </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd">Done </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS1-Logging%26Diagnostics"></a>Logging &amp; Diagnostics </h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments / Dependencies </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 01. </td> 
+         <td class="confluenceTd"> MS1 </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> Detailed investigation and impl spec </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Started - Review Pending </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS1-DASRecovery"></a>DAS Recovery</h3> <p>No deliverables planned for MS 1</p> <h4><a name="GF3.1MS1-Installer"></a>Installer</h3> <p>Didn't have MS1 items in MS schedule - had the following tasks for MS1</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task </th> 
+         <th class="confluenceTh"> Target Milestone </th> 
+         <th class="confluenceTh"> Start </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Owner(s) </th> 
+         <th class="confluenceTh"> Feature ID </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Draft initial installer spec </td> 
+         <td class="confluenceTd"> MS1 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Sathyan Catari </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd">Done - ready for review </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Analysis and selection of framework </td> 
+         <td class="confluenceTd"> MS1 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Sathyan Catari </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd">Using Open Installer </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS1-Packaging"></a>Packaging</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> Milestone 1 (5/24) </td> 
+         <td class="confluenceTd"> PKG-001 </td> 
+         <td class="confluenceTd"> Create IPS packages for clustering features </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd">Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd"> Milestone 1 (5/24) </td> 
+         <td class="confluenceTd"> PKG-002 </td> 
+         <td class="confluenceTd"> Web profile clustering does not require full profile packages </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd">Done </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS1-Upgrade"></a>Upgrade</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1. </td> 
+         <td class="confluenceTd"> M1 </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> Get concrete requirements to all module leads </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2. </td> 
+         <td class="confluenceTd"> M1 </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> Wiki page for coordinating module status </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS1-Build"></a>Build</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 01. </td> 
+         <td class="confluenceTd"> MS1 </td> 
+         <td class="confluenceTd"> Build-001 </td> 
+         <td class="confluenceTd"> Weekly promoted build </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 02. </td> 
+         <td class="confluenceTd"> MS1 </td> 
+         <td class="confluenceTd"> Build-002 </td> 
+         <td class="confluenceTd"> Nightly build </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS1-InmemorySessionReplication%3AHighAvailability"></a>In-memory Session Replication: High Availability</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> HA-1 </td> 
+         <td class="confluenceTd"> Session Persistence BackingStore SPI port from v2 to 3.1 workspace </td> 
+         <td class="confluenceTd"> ?? </td> 
+         <td class="confluenceTd"> Milestone 1 </td> 
+         <td class="confluenceTd"> DONE. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> HA-6 </td> 
+         <td class="confluenceTd"> Implement a No-Op HA BackingStore SPI </td> 
+         <td class="confluenceTd"> ?? </td> 
+         <td class="confluenceTd"> Milestone 1 </td> 
+         <td class="confluenceTd"> DONE </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS1-ShoalGroupManagementService%28GMS%29forRuntimeClusteringServices"></a>Shoal Group Management Service (GMS) for Runtime Clustering Services </h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 01 </td> 
+         <td class="confluenceTd"> DONE </td> 
+         <td class="confluenceTd"> GMS-01 </td> 
+         <td class="confluenceTd"> GMS over Grizzly </td> 
+         <td class="confluenceTd"> QA handover done, no doc handover needed </td> 
+         <td class="confluenceTd"> Initial distributed unit level testing done. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 11 </td> 
+         <td class="confluenceTd"> DONE - in review </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> GMS one-pager </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Identifying dependencies and new methods being added. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS1-Webtier"></a>Webtier</h3> <p>Didn't have MS1 items in MS schedule - had the following tasks for MS1</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task </th> 
+         <th class="confluenceTh"> Target Milestone </th> 
+         <th class="confluenceTh"> Start </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Owner(s) </th> 
+         <th class="confluenceTh"> Feature ID </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1.1 </td> 
+         <td class="confluenceTd"> Milestone 1 </td> 
+         <td class="confluenceTd"> 05/05/2010 </td> 
+         <td class="confluenceTd"> 05/13/2010 </td> 
+         <td class="confluenceTd"> Rajiv Mordani </td> 
+         <td class="confluenceTd"> WEB-1 </td> 
+         <td class="confluenceTd"> Draft for webtier team to review - Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1.2 </td> 
+         <td class="confluenceTd"> Milestone 1 </td> 
+         <td class="confluenceTd"> 05/05/2010 </td> 
+         <td class="confluenceTd"> 05/14/2010 </td> 
+         <td class="confluenceTd"> Rajiv Mordani </td> 
+         <td class="confluenceTd"> WEB-1 </td> 
+         <td class="confluenceTd"> Draft for community - Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2.1 </td> 
+         <td class="confluenceTd"> Milestone 1 </td> 
+         <td class="confluenceTd"> 05/13/2010 </td> 
+         <td class="confluenceTd"> 05/20/2010 </td> 
+         <td class="confluenceTd"> Shing Wai / Kinman </td> 
+         <td class="confluenceTd"> WEB-2 </td> 
+         <td class="confluenceTd"> Identify the list of elements we are going to support - Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.1 </td> 
+         <td class="confluenceTd"> Milestone 1 </td> 
+         <td class="confluenceTd"> 05/05/2010 </td> 
+         <td class="confluenceTd"> 05/24/2010 </td> 
+         <td class="confluenceTd"> Amy Roh </td> 
+         <td class="confluenceTd"> WEB-4 </td> 
+         <td class="confluenceTd"> Identify the list of --target option commands that need to be supported - Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5.1 </td> 
+         <td class="confluenceTd"> Milestone 1 </td> 
+         <td class="confluenceTd"> 05/05/2010 </td> 
+         <td class="confluenceTd"> 5/24/2010 </td> 
+         <td class="confluenceTd"> Amy Roh </td> 
+         <td class="confluenceTd"> WEB-5 </td> 
+         <td class="confluenceTd"> Modify web dev tests to run in embedded mode (manually) - Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 11 </td> 
+         <td class="confluenceTd"> Milestone 1 </td> 
+         <td class="confluenceTd"> 05/10/2010 </td> 
+         <td class="confluenceTd"> 5/21/2010 </td> 
+         <td class="confluenceTd"> Shing Wai </td> 
+         <td class="confluenceTd"> WEB-11 </td> 
+         <td class="confluenceTd"> Rename sun-web.xml to glassfish-web.xml - Done </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS1-EJB"></a>EJB</h3> <p>Onepager - Done - ready for review</p> <h4><a name="GF3.1MS1-IIOPClustering"></a>IIOP Clustering</h3> <p>Onepager - Done - ready for review</p> <h4><a name="GF3.1MS1-JMSandMessageQueue"></a>JMS and Message Queue </h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 01 </td> 
+         <td class="confluenceTd"> M1 </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> All specs completed </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Done - ready for review </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS1-Metro"></a>Metro</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> MS1 (5/24) </td> 
+         <td class="confluenceTd"> Metro-003 </td> 
+         <td class="confluenceTd"> complete the feature </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> DONE </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS1-Loadbalancer"></a>Loadbalancer</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> MS1 </td> 
+         <td class="confluenceTd"> N.A. </td> 
+         <td class="confluenceTd"> Load-balancer one pager describing features and implementation details </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd">Done - ready for review </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS1-DeveloperToolingwithNetBeans"></a>Developer Tooling with NetBeans</h3> <p>One pager - Done - ready for review</p> <h4><a name="GF3.1MS1-EclipseWTP"></a>Eclipse WTP</h3> <p>One pager - Draft not done</p> <h4><a name="GF3.1MS1-Embedded"></a>Embedded</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> MS1 </td> 
+         <td class="confluenceTd"> EMB-4 </td> 
+         <td class="confluenceTd"> Initial support for ant tasks </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS1-DevTestFramework"></a>Dev Test Framework</h3> <p>No deliverables planned for MS 1</p> <h4><a name="GF3.1MS1-JSF"></a>JSF</h3> <p>Onepager - Done - ready for review</p> <h4><a name="GF3.1MS1-Grizzly"></a>Grizzly</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> Milestone 1 </td> 
+         <td class="confluenceTd"> Grizzly-1 </td> 
+         <td class="confluenceTd"> WebSocket support </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd"> Milestone 1 </td> 
+         <td class="confluenceTd"> Grizzly-6 </td> 
+         <td class="confluenceTd"> LZMA support </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 8 </td> 
+         <td class="confluenceTd"> Milestone 1 </td> 
+         <td class="confluenceTd"> Grizzly-8 </td> 
+         <td class="confluenceTd"> Threadpool optimization and performance </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS1-OSGi"></a>OSGi</h3> <p>One pager - Draft not done<br> No other deliverables planned for MS 1</p> <h4><a name="GF3.1MS1-Persistence"></a>Persistence</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> M1 (05/24) </td> 
+         <td class="confluenceTd"> PER-002 </td> 
+         <td class="confluenceTd"> Better alignment with Embedded </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd">Support for Scattered Archive completed. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS1-Jersey"></a>Jersey</h3> <p>One pager - Draft ready for review<br> No other deliverables planned for MS 1</p> <h4><a name="GF3.1MS1-CDI"></a>CDI</h3> <p>One pager - Draft ready for review<br> No other deliverables planned for MS 1</p> <h4><a name="GF3.1MS1-BeanValidation"></a>Bean Validation</h3> <p>No deliverables planned for MS 1</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 09, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

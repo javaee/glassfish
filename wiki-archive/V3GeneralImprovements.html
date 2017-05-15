@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : V3GeneralImprovements</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="V3GeneralImprovements-GlassFishV3GeneralImprovements"></a>GlassFish V3 General Improvements</h1> <p>Note, in some cases this was used to catch requirements that may eventually land a different section.<br> %%sortable</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Desired Improvement </th> 
+         <th class="confluenceTh"> Priority </th> 
+         <th class="confluenceTh"> Comments </th> 
+         <th class="confluenceTh"> Issue Link </th> 
+         <th class="confluenceTh"> Eng Response </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Gen-001 </td> 
+         <td class="confluenceTd"> Reduce startup time </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Reduce the amount of time it takes to start the application server relative to GlassFish V2. Example: Lazily load the containers to service deployed applications. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Yes </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Gen-002 </td> 
+         <td class="confluenceTd"> Reduce memory consumption </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Reduce the amount of RAM required during development and runtime relative to GlassFish V2. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Yes </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Gen-003 </td> 
+         <td class="confluenceTd"> All P1 - P3 bugs must be resolved by FCS </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Continue high quality </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Yes </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Gen-004 </td> 
+         <td class="confluenceTd"> All Requests for Enhacement (RFEs) should be evaluated and handled appropriately </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> All outstand RFE's should either be addressed in GlassFish V3, pushed to V3.next if a valid RFE, or close if RFE does not align with GlassFish goals. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Gen-005 </td> 
+         <td class="confluenceTd"> Built in scheduler with tasks/jobs implemented as EJB components, monitor status of tasks </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> Ease-of-use (<a href="http:--www.nabble.com-Re%3A-GlassFish-V3-planning---What-do-*you*-want-in-GlassFish-V3--p13687024.html">Community request </a>. Lack of a use case and functional details drives this to a P3. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> No </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Gen-006 </td> 
+         <td class="confluenceTd"> Backwards compatibility with GlassFish V2 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Applications deployed to GlassFish V2 should continue to work, unmodified, with GlassFish V3 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Yes </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Gen-007 </td> 
+         <td class="confluenceTd"> Highly available Singleton Service </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> A service should be able to run on only one instance in a cluster. If that instance fails, another instance in the clusters continues servicing requests as the new singleton. (<a href="http:--www.nabble.com-Re%3A-GlassFish-V3-planning---What-do-*you*-want-in-GlassFish-V3--p13584246.html">Community Request </a>). Singleton EJBs are required (P1) in <a href="V3JavaEE6Improvements.html" title="V3JavaEE6Improvements">Java EE 6 with EJB 3.1 support </a>. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> No </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Gen-008 </td> 
+         <td class="confluenceTd"> GlassFish V3 should be able to connect to one or more, including 3rd party, update centers. </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> This should be configurable. Important for OEMs to be able to define their update center. Also useful for IT development teams to manage corporate-standard packages in one central location with easy access/setup for developers. Sailfin requirement. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Yes. Using IPS based update center. Changed priority to P1 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Gen-009 </td> 
+         <td class="confluenceTd"> Resource prioritization and scheduling </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Resource prioritization so higher-priority applications or higher priority threads (users/external apps) have higher priority access to resources. Competitive parity. </td> 
+         <td class="confluenceTd"> <a href="https:--glassfish.java.net-issues-show_bug.cgi-4147">RFE4147 </a>, <a href="https:--glassfish.java.net-issues-show_bug.cgi-3205">RFE3205 </a> </td> 
+         <td class="confluenceTd"> Partial, Leverage implementation in Grizzly </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Gen-010 </td> 
+         <td class="confluenceTd"> SOA Profile </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Include JBI and relevant components. Request from <a href="http:--open-esb.java.net">Open ESB </a> community. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Partial. Enable creation of such a Profile. SOA community should take on creation of the profile </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Gen-011 </td> 
+         <td class="confluenceTd"> Update center support </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Ability to perform a live update of JBI components while system is "live". Current Update Center leverages add-on contract, which runs early in domain startup before the JBI runtime is available. Requested by <a href="http:--open-esb.java.net">Open ESB </a> community. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Need more information </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Gen-012 </td> 
+         <td class="confluenceTd"> GlassFish V3 "brand" naming </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Replaces SJSAS 9.1 branding with GlassFish V3 logo &amp; name, on CLI &amp; admin UI, for GlassFish distributions </td> 
+         <td class="confluenceTd"> <a href="https:--glassfish.java.net-issues-show_bug.cgi-4176">4176 </a> </td> 
+         <td class="confluenceTd"> Yes </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Gen-013 </td> 
+         <td class="confluenceTd"> Support for the Connector.Next specification </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> At a minimum bi-directional security context propagation. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Yes, Move to Java EE 6 section </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Gen-014 </td> 
+         <td class="confluenceTd"> Support for <a href="http:--www.osgi.org-">OSGi </a> modules </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Support OSGi as a means for 3rd parties to extend the functionality of the application server </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Yes </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Gen-015 </td> 
+         <td class="confluenceTd"> Move more towards tasked-based documentation </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Task-based documentation will help </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Yes </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>%%</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 08, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

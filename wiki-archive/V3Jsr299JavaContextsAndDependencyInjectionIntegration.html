@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : V3Jsr299JavaContextsAndDependencyInjectionIntegration</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="V3Jsr299JavaContextsAndDependencyInjectionIntegration-WhoisResponsibleforIntegratingJSR299intoGlassfish%3F"></a>Who is Responsible for Integrating JSR-299 into Glassfish?</h3> <p>Oracle Employees: JJ Snyder, Sivakumar Thyagarajan, Kshitiz Saxena</p> <h4><a name="V3Jsr299JavaContextsAndDependencyInjectionIntegration-Overview"></a>Overview</h3> <p><a href="http://glassfish.org">GlassFish</a> integrates the CDI reference implementation, <a href="http://seamframework.org/Weld">Project Weld</a>, for the CDI functionality. The latest introduction to Weld and technical documentation on CDI is <a href="http://docs.jboss.org/weld/reference/latest/en-US/">here</a>.</p> <h4><a name="V3Jsr299JavaContextsAndDependencyInjectionIntegration-MostRecentlyIntegratedVersionofJSR299Implementation"></a>Most Recently Integrated Version of JSR-299 Implementation</h3> <p>The binary integration artifacts of JSR-299 for Glassfish V3 consists of two OSGi module jars:</p> 
+     <ul> 
+      <li>weld-osgi-bundle.jar (Weld Implementation classes)</li> 
+      <li>weld-integration.jar (Classes that implement and support the Weld SPI for GlassFish)</li> 
+     </ul> <p>The most recently integrated version in GlassFish trunk and 3.1.2 is <a href="http://in.relation.to/Bloggers/ANewSpecializesWeld114FinalRelease">Weld 1.1.4.Final</a>.</p> <p><ins>Note</ins>: If we fork weld to create a temporary GlassFish branch of Weld, we use the branch/tag naming pattern "1.1.0-X-glassfish" for the following reasons:</p> 
+     <ul> 
+      <li>ensure that 1.1.0-01-glassfish &lt; 1.1.0-Beta1.</li> 
+      <li>Similarly if we want to create a branch from 1.1.0-Beta1 (for some reason in the future) just before Beta2 comes out, it could be called 1.1.0-Beta2-01-glassfish and this would satisfy<br> 1.1.0-Beta1 &lt; 1.1.0-Beta2-01-glassfish &lt; 1.1.0-Beta2</li> 
+     </ul> <h4><a name="V3Jsr299JavaContextsAndDependencyInjectionIntegration-IntegrationInformation"></a>Integration Information</h3> <p>The Weld 1.1 maven artifacts are located in the JBoss nexus repository <a href="http://repository.jboss.org/nexus/content/groups/public/">http://repository.jboss.org/nexus/content/groups/public/</a>. The old Weld 1.0.x artifacts are avaialable at <a href="http://repo2.maven.org/maven2/org/jboss/weld/">http://repo2.maven.org/maven2/org/jboss/weld/</a></p> <p>The Weld build includes a pom.xml used to produce weld-osgi-bundle.jar and it has the following maven dependencies:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;dependencies&gt;
+      &lt;dependency&gt;
+         &lt;groupId&gt;javax.enterprise&lt;/groupId&gt;
+         &lt;artifactId&gt;cdi-api&lt;/artifactId&gt;
+      &lt;/dependency&gt;
+      &lt;dependency&gt;
+         &lt;groupId&gt;org.jboss.weld&lt;/groupId&gt;
+         &lt;artifactId&gt;weld-api&lt;/artifactId&gt;
+      &lt;/dependency&gt;
+      &lt;dependency&gt;
+         &lt;groupId&gt;org.jboss.weld&lt;/groupId&gt;
+         &lt;artifactId&gt;weld-core&lt;/artifactId&gt;
+      &lt;/dependency&gt;
+      &lt;dependency&gt;
+         &lt;groupId&gt;org.jboss.weld&lt;/groupId&gt;
+         &lt;artifactId&gt;weld-spi&lt;/artifactId&gt;
+      &lt;/dependency&gt;
+      &lt;dependency&gt;
+         &lt;groupId&gt;javassist&lt;/groupId&gt;
+         &lt;artifactId&gt;javassist&lt;/artifactId&gt;
+      &lt;/dependency&gt;
+      &lt;dependency&gt;
+         &lt;groupId&gt;com.google.collections&lt;/groupId&gt;
+         &lt;artifactId&gt;google-collections&lt;/artifactId&gt;
+      &lt;/dependency&gt;
+      &lt;dependency&gt;
+         &lt;groupId&gt;javax.inject&lt;/groupId&gt;
+         &lt;artifactId&gt;javax.inject&lt;/artifactId&gt;
+      &lt;/dependency&gt;
+      &lt;dependency&gt;
+         &lt;groupId&gt;org.jboss.interceptor&lt;/groupId&gt;
+         &lt;artifactId&gt;jboss-interceptor&lt;/artifactId&gt;
+      &lt;/dependency&gt;
+      &lt;dependency&gt;
+         &lt;groupId&gt;org.slf4j&lt;/groupId&gt;
+         &lt;artifactId&gt;slf4j-jdk14&lt;/artifactId&gt;
+         &lt;scope&gt;provided&lt;/scope&gt;
+      &lt;/dependency&gt;
+   &lt;/dependencies&gt;</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="V3Jsr299JavaContextsAndDependencyInjectionIntegration-IntegrationSteps"></a>Integration Steps</h3> <h5><a name="V3Jsr299JavaContextsAndDependencyInjectionIntegration-Ensurethattheweldintegrationtagiscorrect"></a>Ensure that the weld integration tag is correct</h5> 
+     <ul> 
+      <li>Checkout the tag to be integrated. Ensure that there are no snapshot versions in it. Ensure it is buildable</li> 
+     </ul> <h5><a name="V3Jsr299JavaContextsAndDependencyInjectionIntegration-VerifyWeldReleaseWorksInGlassFish%28AssumefortheseinstructionstheversionofWeldis1.1.4.Final%29"></a>Verify Weld Release Works In GlassFish (Assume for these instructions the version of Weld is 1.1.4.Final)</h5> 
+     <ul> 
+      <li>svn update GlassFish v3 source; Build GlassFish v3 source</li> 
+      <li>Check out Weld source. Project Weld uses github to host sources <a href="https://github.com/weld">https://github.com/weld</a>, so the corresponding sources for a particular tag would be a " git checkout 1.1.4.Final" away. The relevant github repositories are parent, api and core. 
+       <ul> 
+        <li>For older version of weld, JBoss used subversion repository. For example: pre-Weld 1.0 checkout URL would look like<a href="http://svn.jboss.org/repos/weld/core/tags/1.0.1-SP1">http://svn.jboss.org/repos/weld/core/tags/1.0.1-SP1</a>.</li> 
+       </ul> </li> 
+      <li>Build the Weld source: mvn -U clean install. Build the weld-osgi-bundle: cd core/bundles/osgi; mvn -U clean install</li> 
+      <li>Update the weld-version in top level GlassFish v3 pom.xml file to be 1.1.4.Final</li> 
+      <li>Build v3/v3/web/weld-integration module</li> 
+      <li>You may have to update the v3/v3/web/weld-integration-fragment module.&nbsp; This fragment extends the weld osgi bundle to export additional packages from the weld-osgi-bundle as they are used in Weld generated proxies. Ideally you don't need to update this unless Weld proxies start using new packages (apart from the ones already exported in weld-integration-fragment's pom.xml.&nbsp; If necessary modify the "Export-Package" tag in the maven-jar-plugin</li> 
+      <li>Install Weld and Weld Integration modules in GlassFish: Copy the weld-osgi-bundle jar from weld/core workspace(core/bundles/osgi/target/weld-osgi-bundle-1.1.4.Final.jar) to glassfish/modules/weld-osgi-bundle.jar; Copy v3/web/weld-integration/target/weld-integration.jar to glassfish/modules (and v4/web/weld-integration-fragment/target/weld-integration-fragment.jar to glassfish/modules if necessary.)</li> 
+      <li><ins>Important</ins> :We have a quicklook test that verifies the exported packages in an installed and running Weld osgi bundle against expected exported packages specified in a properties file or the test. If any exported packages have changed in the Weld osgi pom.xml file, you will need to update a properties file for a Weld osgi quicklook test (unfortunately this is a manual process): 
+       <ul> 
+        <li>Determine the exported packages in the new Weld osgi bundle as it is running in GlassFish (you can use bnd tool or osgi command line)</li> 
+        <li>Update the <tt>exports</tt> property in tests/quicklook/weld/osgiweld/metadata/weld-osgi.properties to reference the new exported package information.</li> 
+       </ul> </li> 
+      <li>Run Weld quicklook tests (under v3/tests/quicklook/weld)</li> 
+      <li>Checkout, build, deploy and run the Weld examples numberguess, translator applications (github url: <a href="https://github.com/weld/core/tree/master/examples">https://github.com/weld/core/tree/master/examples</a>), other dev tests, etc.</li> 
+      <li>Run CDI developer tests (PE/EE/Embedded mode) and CDI TCK</li> 
+      <li>Follow the instructions at: <a href="CompleteInstructionsOnCommittingThirdPartySource.html" title="CompleteInstructionsOnCommittingThirdPartySource">CompleteInstructionsOnCommittingThirdPartySource</a> for committing the Weld source to the GlassFish internal svn repository. There is already a <a href="https://svn.java.net/svn/glassfish~svn/trunk/external/modules/weld/">https://svn.java.net/svn/glassfish~svn/trunk/external/modules/weld/</a> there, so it is just a matter of exporting the new Weld release. Make sure you modify build.properties under <a href="https://svn.java.net/svn/glassfish~svn/trunk/external/source-build/">https://svn.java.net/svn/glassfish~svn/trunk/external/source-build/</a> to reference the new Weld release (change <tt>weld-core.svn.url</tt> and <tt>weld.version</tt> properties). Ensure that any new changes to the dependencies of Weld (such as javassist) are also added. These changes can be determined for any bom/pom.xml changes to the dependency element in weld-api and weld-core projects.</li> 
+     </ul> <h5><a name="V3Jsr299JavaContextsAndDependencyInjectionIntegration-Testthesourcebuild%3A"></a>Test the source build:</h5> 
+     <ul> 
+      <li>Under <a href="https://svn.java.net/svn/glassfish~svn/trunk/external/source-build/">https://svn.java.net/svn/glassfish~svn/trunk/external/source-build/</a>&nbsp; run : <tt>ant -f weld.xml</tt></li> 
+     </ul> <h5><a name="V3Jsr299JavaContextsAndDependencyInjectionIntegration-Ensureweldapiandcoremavenartifactsarepublished"></a>Ensure weld api and core maven artifacts are published</h5> 
+     <ul> 
+      <li>If the tag that is being integrated is not a promoted build of Weld(for instance a private branch for GlassFish), it is likely that the maven artifacts are not published in the JBoss nexus repo. In that case, after the sources are imported into the glassfish source repo, request Jane (RE) to publish the weld api and core maven artifacts into the glassfish repo.</li> 
+     </ul> <h5><a name="V3Jsr299JavaContextsAndDependencyInjectionIntegration-Getpom.xmlchangesreviewed"></a>Get pom.xml changes reviewed</h5> <p>Send modified GlassFish v3 pom.xml file out for review to GlassFish developer alias. Check it in after getting approval.</p> <h5><a name="V3Jsr299JavaContextsAndDependencyInjectionIntegration-Propagatechanges%28ifany%29toweldtrunk"></a>Propagate changes(if any) to weld trunk</h5> <p>Make sure that any modifications to the Weld Osgi pom.xml file get propagated back into the JBoss Weld repository (most likely their trunk) so it can be picked up for the next Weld release from JBoss. Coordinate with JBoss when doing this.</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on May 07, 2012 by 
+<font color="#0050B2">19259</font>. Exported from wikis.oracle.com on May 27, 2015 20:48.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

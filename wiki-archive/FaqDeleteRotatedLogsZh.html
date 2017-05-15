@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : FaqDeleteRotatedLogsZh</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="FaqDeleteRotatedLogsZh-%E5%A6%82%E4%BD%95%E9%85%8D%E7%BD%AEGlassFish%E4%BB%A5%E5%88%A0%E9%99%A4%E8%BD%AE%E8%BD%AC%E6%97%A5%E5%BF%97%E6%96%87%E4%BB%B6%EF%BC%9F"></a>如何配置 GlassFish 以删除轮转日志文件？</h2> <p>由 users@glassfish 邮件列表改述：</p> <p>*问：*有没有一种方法可将 GlassFish 配置为只保留一定数量的轮转日志文件，或配置为在日志文件达到特定寿命后将其删除？我发现可以根据文件大小和寿命来配置轮转，但日志文件目录仍会无限制增大。（很可惜，在我的平台上，无法选择记录到 unix syslog 工具。正在寻找其他办法。）</p> <p><a href="https://github.com/javaee/glassfish/issues/3874">https://github.com/javaee/glassfish/issues/3874</a></p> <p><b>答：</b> <em>Jan Luehe</em>：请尝试设置以下系统属性：</p> <p><tt>com.sun.enterprise.server.logging.max_history_files</tt></p> <p>它指定要保留的访问日志文件的最大数量（从最新的日志文件开始算起）。GlassFish 已经从一个为客户开发的修补程序继承了此系统属性。最好是此属性已定义为 <tt>domain.xml</tt> 中的 &lt;<tt>access-log property</tt>&gt;，但是根据控制 <tt>domain.xml</tt> 的 DTD，<tt>&lt;access-log&gt;</tt> 元素当前不支持 &lt;<tt>property</tt>&gt; 子元素。</p> <p><tt>com.sun.enterprise.server.logging.max_history_files</tt> 系统属性可限制访问日志记录和服务器日志的轮转日志文件的数量。（这意味着，如果要使该属性在 <tt>domain.xml</tt> 中可配置，应该将它作为属性在 &lt;<tt>access-log</tt>&gt; 和 &lt;<tt>log-service</tt>&gt; 上公开，并可以为二者指定不同的值。）<br> 如果使用管理控制台，则应该访问需要设置此系统属性的相应 "config/server"。</p> <p>对于 <b>asadmin</b>，请尝试使用 <em>create-jvm-options</em> 命令。</p> 
+     <hr> <p><a href="FaqDeleteRotatedLogs.html" title="FaqDeleteRotatedLogs">英文 </a></p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 03, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:44.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

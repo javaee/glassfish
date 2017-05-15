@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : FaqRunAsWindowsService</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="FaqRunAsWindowsService-HowdoIrunGlassFishasaWindowsservice%3F"></a>How do I run GlassFish as a Windows service?</h2> <p><em>Written by Ryan de Laplante</em></p> <p>Glassfish comes with a Windows executable called appservService.exe which communicates with the Windows service controller. It works similarly to programs such as <a href="http://wrapper.tanukisoftware.org/doc/english/introduction.html">Java Service Wrapper</a>. The Windows service you create for Glassfish starts appservService.exe with several parameters that tell it which asadmin commands to execute when starting and stopping.</p> <p>Glassfish does not come with a tool to easily create a Windows service for appservService.exe, however the installer for Sun Java Application Server 9.x has an "Install as a Windows service" checkbox. If you want to create a Windows service for Glassfish, the <a href="http://docs.sun.com/app/docs/doc/819-3671/ablwz">instructions</a> show a rather large command to run from the command prompt. If your Glassfish installation path contains spaces such as C:\Program Files\Sun\GlassfishV2\, then finding the correct way to escape the escape characters becomes complicated rather quickly.</p> <h4><a name="FaqRunAsWindowsService-GlassfishSvc.jar"></a>GlassfishSvc.jar</h2> <p><a href="http://www.ryandelaplante.com">Ryan de Laplante</a> has contributed a simple command line tool that makes the creation of a Windows service effortless. <a href="http://wiki.glassfish.java.net/attach/FaqRunAsWindowsService/GlassfishSvc.jar">Download GlassfishSvc.jar</a> <a href="http://wiki.glassfish.java.net/attach/FaqRunAsWindowsService/GlassfishSvc.java">(source)</a> and copy it into your Glassfish installation path (such as C:\Program Files\Sun\GlassfishV2), then run the following command from the command line:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">C:\Program Files\Sun\GlassfishV2&gt;java -jar GlassfishSvc.jar -i 
+
+glassfishsvc v1.0 (Aug 19 2007) 
+
+Service name : GlassfishAppServer 
+Glassfish installation path : C:\Program Files\Sun\GlassfishV2
+Glassfish domain : domain1 
+Glassfish admin username : admin 
+
+Installing service... Done.</pre> 
+       </div> 
+      </div>
+     </div> <p>The -i argument will install the service with default options. A complete listing of the command line arguments follows:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">glassfishsvc v1.0 (Aug 19 2007)
+
+DESCRIPTION:
+    Installs and uninstalls a Windows service for Glassfish
+
+USAGE:
+    java -jar glassfishsvc.jar [-i | -u] [OPTIONS]
+
+    -i        Installs a Windows service for Glassfish.
+    -u        Uninstalls a Windows service for Glassfish.
+    -n name   Name for the Windows service. Use double quotes around names
+              that contain spaces.  Defaults to GlassfishAppServer.
+    -d path   Directory where Glassfish is installed. Use double
+              quotes around paths with spaces, and escape back slashes.
+              Defaults to current directory.
+    -m domain Name of the Glassfish domain to start and stop. Defaults to
+              domain1.
+    -a user   Glassfish admin user name.  Defaults to admin.
+    -p pwd    Glassfish admin password.  A password.txt file will be created
+              in the Glassfish install directory containing the password in
+              plain text, and the Windows service will be configured to read
+              from it. This is usually not necessary. If no password is passed
+              in, the password.txt file will not be created.
+
+EXAMPLES:
+    java -jar glassfishsvc.jar -i
+    java -jar glassfishsvc.jar -i -p adminadmin
+    java -jar glassfishsvc.jar -i -n MyServiceName -d "C:\\Program Files\\Sun\\Glassfish" -m myDomain -a admin5 -p secretpwd
+    java -jar glassfishsvc.jar -u
+    java -jar glassfishsvc.jar -u -n MyServiceName
+
+AUTHOR:
+    Ryan de Laplante &lt;ryan at gmail dot com&gt;</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="FaqRunAsWindowsService-ClusterProfile"></a>Cluster Profile</h2> <p>If you installed the Glassfish cluster profile then Glassfish will ask for the admin password as the service starts. To get around this use the -p option when installing the service. A password.txt file will be created in Glassfish's root directory containing the password in plain text. The Windows service will be configured to use this file so that it can start unattended. You should make sure to configure appropriate NTFS security on this file after it is created so that unauthorized users do not have read or write access to it.</p> <h4><a name="FaqRunAsWindowsService-WindowsUserLogout"></a>Windows User Log-out</h2> <p>By default the JVM catches signals from Windows that indicate the OS is shutting down, or a user is logging out, and shuts itself down cleanly. This means that the Glassfish service will be shut down any time a user logs out of Windows. This defeats the purpose of having a Windows service so we need to turn off this JVM feature by using the <a href="http://java.sun.com/j2se/1.3/docs/tooldocs/solaris/java.html#Xrs">-Xrs JVM option</a>. </p> <p>Open the &lt;GF_HOME&gt;\domains\domain1\config\domain.xml file and locate the section that has a lot of &lt;jvm-options&gt;some JVM option&lt;/jvm-options&gt; lines. Add the following line in that section:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;jvm-options&gt;-Xrs&lt;/jvm-options&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>Save and close domain.xml. If the Glassfish service is already running, restart it for the change to take effect.</p> <p><b><em>Note:</em></b> There have been reports that adding the -Xrs jvm-option to domain.xml does not solve this problem on some Windows 2003 Server installations. The reported solution is to add the jvm option to &lt;GF_HOME&gt;\lib\processLauncher.xml:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;process name="as9-server"&gt;
+   ...
+   &lt;sysproperty key="-Xrs"/&gt;
+   ...</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="FaqRunAsWindowsService-Resources"></a>Resources</h2> <p><a href="http://www.ryandelaplante.com/rdelaplante/entry/creating_a_windows_service_for">Ryan de Laplante's blog entry</a><br> <a href="http://docs.sun.com/app/docs/doc/819-3658/ablwx">Sun Java System Application Server Platform Edition 9 Administration Guide - Chapter 20</a><br> <a href="http://blogs.oracle.com/theaquarium/entry/windows_services_support_in_sjs">The Aquarium - Windows Services Support in SJS AS (and GlassFish)</a><br> <a href="http://forums.java.net/jive/thread.jspa?messageID=243041">java.net forum post on processLauncher.xml</a></p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Dec 01, 2011 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:44.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

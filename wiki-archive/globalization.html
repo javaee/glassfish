@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : globalization</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="globalization-GlassFishServerOpenSourceEdition3.1Globalization"></a>GlassFish Server Open Source Edition 3.1 - Globalization</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#globalization-GlassFishServerOpenSourceEdition3.1Globalization">GlassFish Server Open Source Edition 3.1 - Globalization</a></li> 
+       <ul> 
+        <li><a href="#globalization-TranslationScope">Translation Scope</a></li> 
+        <ul> 
+         <li><a href="#globalization-Languages%3A">Languages:</a></li> 
+         <li><a href="#globalization-Modulestobetranslated%3A">Modules to be translated:</a></li> 
+         <li><a href="#globalization-Nottobetranslated%3A">Not to be translated:</a></li> 
+        </ul> 
+        <li><a href="#globalization-MilestoneSchedule">Milestone Schedule</a></li> 
+        <li><a href="#globalization-TaskList">Task List</a></li> 
+        <li><a href="#globalization-TestPlan">Test Plan</a></li> 
+        <ul> 
+         <li><a href="#globalization-OverallStrategy">Overall Strategy</a></li> 
+         <ul> 
+          <li><a href="#globalization-FullTesting">Full Testing</a></li> 
+          <li><a href="#globalization-SanityTesting">Sanity Testing</a></li> 
+          <li><a href="#globalization-Installation%2Funinstallationtesting">Installation/uninstallation testing</a></li> 
+          <li><a href="#globalization-UpgradeTesting">Upgrade Testing</a></li> 
+          <li><a href="#globalization-PseudoTesting">Pseudo Testing</a></li> 
+          <li><a href="#globalization-APIspecificTesting">API specific Testing</a></li> 
+         </ul> 
+         <li><a href="#globalization-Testexecution">Test execution</a></li> 
+         <ul> 
+          <li><a href="#globalization-PseudoTesting%289%2F159%2F30%29">Pseudo Testing (9/15 - 9/30)</a></li> 
+          <li><a href="#globalization-MLbuild1%2810%2F1011%2F22%29">ML build1(10/10 - 11/22)</a></li> 
+          <li><a href="#globalization-MLbuild2%2811%2F2912%2F14%29">ML build2(11/29 - 12/14)</a></li> 
+         </ul> 
+         <li><a href="#globalization-BugManagement">Bug Management</a></li> 
+         <li><a href="#globalization-InternalInformation">Internal Information</a></li> 
+         <li><a href="#globalization-Areawewon%27tcover">Area we won't cover</a></li> 
+         <li><a href="#globalization-Risk">Risk</a></li> 
+         <li><a href="#globalization-ExitCriteria">Exit Criteria</a></li> 
+         <li><a href="#globalization-References">References</a></li> 
+        </ul> 
+        <li><a href="#globalization-EmailAlias">Email Alias</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="globalization-TranslationScope"></a>Translation Scope</h2> 
+     <ul> 
+      <li><h4><a name="globalization-Languages%3A"></a>Languages:</h4> <p>Glassfish 3.1 will be translated into 8 languages: fr (French), de (German), es (Spanish), pt_BR (Brazilian Portuguese), ko (Korean), ja (Japanese), zh_CN (Simplified Chinese), zh_TW (Traditional Chinese). (Plan to add Italian)</p></li> 
+      <li><h4><a name="globalization-Modulestobetranslated%3A"></a>Modules to be translated:</h4> <p>Admin GUI, OLH, CLI (including cli man pages), Installer, Upgrade tool.</p></li> 
+      <li><h4><a name="globalization-Nottobetranslated%3A"></a>Not to be translated:</h4> <p>Docs, log messages</p></li> 
+     </ul> <h4><a name="globalization-MilestoneSchedule"></a>Milestone Schedule</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1. </td> 
+         <td class="confluenceTd"> Milestone 5 (09/13) </td> 
+         <td class="confluenceTd"> First Translation Handoff </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2. </td> 
+         <td class="confluenceTd"> build 22 (10/10) </td> 
+         <td class="confluenceTd"> ML build 1 </td> 
+         <td class="confluenceTd"> If necessary, we will provide additional builds depending on bugs </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3. </td> 
+         <td class="confluenceTd"> Milestone 6 (11/22) </td> 
+         <td class="confluenceTd"> Second Translation Handoff </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4. </td> 
+         <td class="confluenceTd"> (RC1) 11/29 </td> 
+         <td class="confluenceTd"> ML build 2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5. </td> 
+         <td class="confluenceTd"> 1/22/11 </td> 
+         <td class="confluenceTd"> ML build 3 </td> 
+         <td class="confluenceTd"> Integrate all languages translations </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6. </td> 
+         <td class="confluenceTd"> 1/28/11 </td> 
+         <td class="confluenceTd"> ML build 4 </td> 
+         <td class="confluenceTd"> Fix and integrate final l10n packages<br class="atl-forced-newline"> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="globalization-TaskList"></a>Task List</h2> 
+     <div class="panel" style="border-width: 1px;"></div> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task </th> 
+         <th class="confluenceTh"> Date/Target Milestone </th> 
+         <th class="confluenceTh"> Start Date </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Owner(s) </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Generate first translation kit </td> 
+         <td class="confluenceTd"> 09/13 - MS5 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 09/13 </td> 
+         <td class="confluenceTd"> Georges </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> build and publish l10n packages for ML build 1 </td> 
+         <td class="confluenceTd"> 10/10 - build 22 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 10/10 </td> 
+         <td class="confluenceTd"> Georges </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Test ML build 1 </td> 
+         <td class="confluenceTd"> 10/10 - ML build 1 </td> 
+         <td class="confluenceTd"> 10/10 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Rui </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Generate second translation kit </td> 
+         <td class="confluenceTd"> 11/22 - MS6 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 11/22 </td> 
+         <td class="confluenceTd"> Georges </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> build and publish l10n packages for ML build 2 </td> 
+         <td class="confluenceTd"> 11/29 - RC1 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 11/29 </td> 
+         <td class="confluenceTd"> Georges </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Test ML build 2 </td> 
+         <td class="confluenceTd"> 11/29 - ML build 2 </td> 
+         <td class="confluenceTd"> 11/29 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Rui </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Test ML build 3 </td> 
+         <td class="confluenceTd"> 1/24/11 - ML build 3 </td> 
+         <td class="confluenceTd"> 1/24/11 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Sunny </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Test ML build 4 </td> 
+         <td class="confluenceTd"> 1/31/11 - ML build 4 </td> 
+         <td class="confluenceTd"> 1/31/11 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Sunny </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="globalization-TestPlan"></a>Test Plan</h2> <h4><a name="globalization-OverallStrategy"></a>Overall Strategy</h4> <p>We will run 5 types of testing for 3.1 l10n testing:</p> 
+     <ul> 
+      <li><h5><a name="globalization-FullTesting"></a>Full Testing</h5> <p>Run all manul and automated testcases on 5 tier 1 platforms</p></li> 
+      <li><h5><a name="globalization-SanityTesting"></a>Sanity Testing</h5> <p>Testing installation/uninstallation, new function(Clustering and Centeralized adminstration, High Availability) plus some sanity checking on 10 tier 2 platforms.</p></li> 
+      <li><h5><a name="globalization-Installation%2Funinstallationtesting"></a>Installation/uninstallation testing</h5> <p>This type of testing will be run 9 tier 3 platforms.</p></li> 
+      <li><h5><a name="globalization-UpgradeTesting"></a>Upgrade Testing</h5> <p>We will cover upgrade testing on all tier 1 platforms.</p></li> 
+      <li><h5><a name="globalization-PseudoTesting"></a>Pseudo Testing</h5> <p>We will run an ealier pseudo testing to find i18n bugs ealier. This pseudo testing will be only run on one plaform</p></li> 
+      <li><h5><a name="globalization-APIspecificTesting"></a>API specific Testing</h5> <p>API specific testcase should be in workspace and it should be run by product team for each release. JavaEE Compatiability Test Suite already make sure JavaEE API is in compliance with to JavaEE standard. Here we just have sanity testing for this.</p></li> 
+     </ul> <h4><a name="globalization-Testexecution"></a>Test execution</h4> 
+     <ul> 
+      <li><h5><a name="globalization-PseudoTesting%289%2F159%2F30%29"></a>Pseudo Testing (9/15 - 9/30)</h5> <p>We will make all testcases ready after Pseduo testing done. Function and upgrade testing will be run on Solaris 10 x86</p></li> 
+     </ul> 
+     <ul> 
+      <li><h5><a name="globalization-MLbuild1%2810%2F1011%2F22%29"></a>ML build1(10/10 - 11/22)</h5></li> 
+     </ul> <p>GlassFish Test Matrix</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Locale </th> 
+         <th class="confluenceTh"> OS </th> 
+         <th class="confluenceTh"> JDK </th> 
+         <th class="confluenceTh"> Bundle </th> 
+         <th class="confluenceTh"> Test Style </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> zh </td> 
+         <td class="confluenceTd"> Solaris 10 x86 </td> 
+         <td class="confluenceTd"> JDK6.0 </td> 
+         <td class="confluenceTd"> ogs-3.1-web-ml-bxx.zip </td> 
+         <td class="confluenceTd"> Full </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> zh </td> 
+         <td class="confluenceTd"> Windows 2008 </td> 
+         <td class="confluenceTd"> JDK6.0 </td> 
+         <td class="confluenceTd"> ogs-3.1-web-ml-bxx.exe </td> 
+         <td class="confluenceTd"> Installation </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ko </td> 
+         <td class="confluenceTd"> Oracle Enterprise Linux 5 </td> 
+         <td class="confluenceTd"> 64bit JDK </td> 
+         <td class="confluenceTd"> glassfish-3.1-ml-bxx.zip </td> 
+         <td class="confluenceTd"> Full </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ja </td> 
+         <td class="confluenceTd"> Windows XP </td> 
+         <td class="confluenceTd"> JDK6.0 </td> 
+         <td class="confluenceTd"> glassfish-3.1-web-ml-bxx.exe </td> 
+         <td class="confluenceTd"> Installation </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ja </td> 
+         <td class="confluenceTd"> Oracle Enterprise Linux 4 </td> 
+         <td class="confluenceTd"> JRockit </td> 
+         <td class="confluenceTd"> glassfish-3.1-web-ml-bxx.zip </td> 
+         <td class="confluenceTd"> Full </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> it </td> 
+         <td class="confluenceTd"> Windows 2008 </td> 
+         <td class="confluenceTd"> JDK6.0 </td> 
+         <td class="confluenceTd"> ogs-3.1-ml-bxx.exe </td> 
+         <td class="confluenceTd"> Full </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ja </td> 
+         <td class="confluenceTd"> Mac </td> 
+         <td class="confluenceTd"> JDK6.0 </td> 
+         <td class="confluenceTd"> ogs-3.1-ml-bxx.zip </td> 
+         <td class="confluenceTd"> Installation </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> fr </td> 
+         <td class="confluenceTd"> Windows 7 </td> 
+         <td class="confluenceTd"> 64bit JDK6.0 </td> 
+         <td class="confluenceTd"> glassfish-3.1-ml-bxx.exe </td> 
+         <td class="confluenceTd"> Full </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> pt </td> 
+         <td class="confluenceTd"> Redhat Linux 5 </td> 
+         <td class="confluenceTd"> 64bit JDK6.0 </td> 
+         <td class="confluenceTd"> glassfish-3.1-ml-bxx.sh </td> 
+         <td class="confluenceTd"> Full </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> de </td> 
+         <td class="confluenceTd"> SuSe 11 </td> 
+         <td class="confluenceTd"> 64bit JDK6.0 </td> 
+         <td class="confluenceTd"> glassfish-3.1-web-ml-bxx.sh </td> 
+         <td class="confluenceTd"> Full </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> es </td> 
+         <td class="confluenceTd"> SuSe 11 </td> 
+         <td class="confluenceTd"> JRockit </td> 
+         <td class="confluenceTd"> ogs-3.1-web-ml-bxx.sh </td> 
+         <td class="confluenceTd"> Full </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>GlassFish Upgrade Matrix</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Locale </th> 
+         <th class="confluenceTh"> OS </th> 
+         <th class="confluenceTh"> Previous version </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> zh </td> 
+         <td class="confluenceTd"> Windows 2008 </td> 
+         <td class="confluenceTd"> 3.0.x </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ja </td> 
+         <td class="confluenceTd"> Oracle Enterprise Linux 5 </td> 
+         <td class="confluenceTd"> 3.0.x </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> fr </td> 
+         <td class="confluenceTd"> Suse 11 </td> 
+         <td class="confluenceTd"> 2.1.1 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> pt </td> 
+         <td class="confluenceTd"> RedHat Linux 5 </td> 
+         <td class="confluenceTd"> 2.1.1 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> it </td> 
+         <td class="confluenceTd"> RedHat Linux 5 </td> 
+         <td class="confluenceTd"> 2.1.1 </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>JavaEE 6 U2 Matrix</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Locale </th> 
+         <th class="confluenceTh"> OS </th> 
+         <th class="confluenceTh"> JDK </th> 
+         <th class="confluenceTh"> Bundle </th> 
+         <th class="confluenceTh"> Test Style </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> zh_tw </td> 
+         <td class="confluenceTd"> Windows 2008 </td> 
+         <td class="confluenceTd"> JDK6 </td> 
+         <td class="confluenceTd"> java_ee_sdk-6u2-xx-unix-ml.sh </td> 
+         <td class="confluenceTd"> Sanity </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ko </td> 
+         <td class="confluenceTd"> Oracle Enterprise Linux 5 </td> 
+         <td class="confluenceTd"> 64bit JDK </td> 
+         <td class="confluenceTd"> java_ee_sdk-6u2-xx-windows-ml.exe </td> 
+         <td class="confluenceTd"> Sanity </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> es </td> 
+         <td class="confluenceTd"> Solaris 10 X86 </td> 
+         <td class="confluenceTd"> JDK6.0 </td> 
+         <td class="confluenceTd"> java_ee_sdk-6u2-web-xx-unix-ml.sh </td> 
+         <td class="confluenceTd"> Sanity </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> de </td> 
+         <td class="confluenceTd"> Windows Vista </td> 
+         <td class="confluenceTd"> JDK6.0 </td> 
+         <td class="confluenceTd"> java_ee_sdk-6u2-web-xx-windows-ml.exe </td> 
+         <td class="confluenceTd"> Sanity </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> it </td> 
+         <td class="confluenceTd"> Solaris 10 X86 </td> 
+         <td class="confluenceTd"> JDK6.0 </td> 
+         <td class="confluenceTd"> java_ee_sdk-6u2-web-xx-unix-ml.sh </td> 
+         <td class="confluenceTd"> Sanity </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <ul> 
+      <li><h5><a name="globalization-MLbuild2%2811%2F2912%2F14%29"></a>ML build2(11/29 - 12/14)</h5></li> 
+     </ul> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Locale </th> 
+         <th class="confluenceTh"> OS </th> 
+         <th class="confluenceTh"> JDK </th> 
+         <th class="confluenceTh"> Bundle </th> 
+         <th class="confluenceTh"> Test Style </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> zh </td> 
+         <td class="confluenceTd"> Oracle Enterprise Linux 4 </td> 
+         <td class="confluenceTd"> JDK6.0 </td> 
+         <td class="confluenceTd"> glassfish-3.1-web-ml-bxx.zip </td> 
+         <td class="confluenceTd"> Installation </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> zh </td> 
+         <td class="confluenceTd"> Windows 2008 </td> 
+         <td class="confluenceTd"> JDK6.0 </td> 
+         <td class="confluenceTd"> ogs-3.1-ml-bxx.exe </td> 
+         <td class="confluenceTd"> Sanity </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> zh_tw </td> 
+         <td class="confluenceTd"> Solaris 10 sparc </td> 
+         <td class="confluenceTd"> JDK6.0 </td> 
+         <td class="confluenceTd"> ogs-3.1-ml-bxx.zip </td> 
+         <td class="confluenceTd"> Sanity </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ko </td> 
+         <td class="confluenceTd"> Windows 7 </td> 
+         <td class="confluenceTd"> JDK6.0 </td> 
+         <td class="confluenceTd"> glassfish-3.1-ml-bxx.exe </td> 
+         <td class="confluenceTd"> Sanity </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ja </td> 
+         <td class="confluenceTd"> Windows Vista </td> 
+         <td class="confluenceTd"> JDK6.0 </td> 
+         <td class="confluenceTd"> ogs-3.1-ml-bxx.exe </td> 
+         <td class="confluenceTd"> Installation </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ja </td> 
+         <td class="confluenceTd"> Oracle Enterprise Linux 5 </td> 
+         <td class="confluenceTd"> 64bit JRockit </td> 
+         <td class="confluenceTd"> glassfish-3.1-ml-bxx.zip </td> 
+         <td class="confluenceTd"> Sanity </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> it </td> 
+         <td class="confluenceTd"> Windows XP </td> 
+         <td class="confluenceTd"> JDK6.0 </td> 
+         <td class="confluenceTd"> glassfish-3.1-web-ml-bxx.exe </td> 
+         <td class="confluenceTd"> Sanity </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> fr </td> 
+         <td class="confluenceTd"> Redhat Linux 5 </td> 
+         <td class="confluenceTd"> JDK6.0 </td> 
+         <td class="confluenceTd"> glassfish-3.1-ml-bxx.sh </td> 
+         <td class="confluenceTd"> Sanity </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> pt </td> 
+         <td class="confluenceTd"> SuSe 10 </td> 
+         <td class="confluenceTd"> JDK6.0 </td> 
+         <td class="confluenceTd"> glassfish-3.1-web-ml-bxx.sh </td> 
+         <td class="confluenceTd"> Sanity </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> de </td> 
+         <td class="confluenceTd"> SuSe 11 </td> 
+         <td class="confluenceTd"> 64bit JRockit </td> 
+         <td class="confluenceTd"> ogs-3.1-web-ml-bxx.sh </td> 
+         <td class="confluenceTd"> Sanity </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> es </td> 
+         <td class="confluenceTd"> Solaris 10 x86 </td> 
+         <td class="confluenceTd"> JDK6.0 </td> 
+         <td class="confluenceTd"> ogs-3.1-web-ml-bxx.zip </td> 
+         <td class="confluenceTd"> Sanity </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>GlassFish Upgrade Matrix</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Locale </th> 
+         <th class="confluenceTh"> OS </th> 
+         <th class="confluenceTh"> Previous version </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> zh_tw </td> 
+         <td class="confluenceTd"> Windows 2008 </td> 
+         <td class="confluenceTd"> 3.0.x </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> pt </td> 
+         <td class="confluenceTd"> Oracle Enterprise Linux 5 </td> 
+         <td class="confluenceTd"> 3.0.x </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> de </td> 
+         <td class="confluenceTd"> Suse 11 </td> 
+         <td class="confluenceTd"> 2.1.1 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> es </td> 
+         <td class="confluenceTd"> Solaris 10 x86 </td> 
+         <td class="confluenceTd"> 2.1.1 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> it </td> 
+         <td class="confluenceTd"> Suse 11 </td> 
+         <td class="confluenceTd"> 2.1.1 </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>JavaEE 6 U2 Matrix</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Locale </th> 
+         <th class="confluenceTh"> OS </th> 
+         <th class="confluenceTh"> JDK </th> 
+         <th class="confluenceTh"> Bundle </th> 
+         <th class="confluenceTh"> Test Style </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> zh </td> 
+         <td class="confluenceTd"> Oracle Enterprise Linux 4 </td> 
+         <td class="confluenceTd"> JDK6.0 </td> 
+         <td class="confluenceTd"> java_ee_sdk-6u2-xx-unix-ml.sh </td> 
+         <td class="confluenceTd"> Sanity </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ja </td> 
+         <td class="confluenceTd"> Windows XP </td> 
+         <td class="confluenceTd"> JDK6.0 </td> 
+         <td class="confluenceTd"> java_ee_sdk-6u2-xx-windows-ml.exe </td> 
+         <td class="confluenceTd"> Sanity </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> fr </td> 
+         <td class="confluenceTd"> Redhat Linux 5 </td> 
+         <td class="confluenceTd"> JDK6.0 </td> 
+         <td class="confluenceTd"> java_ee_sdk-6u2-web-xx-unix-ml.sh </td> 
+         <td class="confluenceTd"> Sanity </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> pt </td> 
+         <td class="confluenceTd"> Windows 2008 </td> 
+         <td class="confluenceTd"> JDK6.0 </td> 
+         <td class="confluenceTd"> java_ee_sdk-6u2-web-xx-windows-ml.exe </td> 
+         <td class="confluenceTd"> Sanity </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> it </td> 
+         <td class="confluenceTd"> Mac </td> 
+         <td class="confluenceTd"> JDK6.0 </td> 
+         <td class="confluenceTd"> java_ee_sdk-6u2-xx-unix-ml.sh </td> 
+         <td class="confluenceTd"> Sanity </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="globalization-BugManagement"></a>Bug Management</h4> <p>Unsolved bug:</p> 
+     <ul class="alternate" type="square"> 
+      <li><a href="https://glassfish.java.net/issues/buglist.cgi?Submit+query=Submit+query&amp;component=glassfish&amp;subcomponent=i18n&amp;issue_status=UNCONFIRMED&amp;issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=fulltext&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=&amp;cmdtype=doit&amp;order=Reuse+same+sort+as+last+time">i18n bugs </a></li> 
+      <li><a href="https://glassfish.java.net/issues/buglist.cgi?Submit+query=Submit+query&amp;component=glassfish&amp;subcomponent=l10n&amp;issue_status=UNCONFIRMED&amp;issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=fulltext&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=&amp;cmdtype=doit&amp;order=Reuse+same+sort+as+last+time">l10n bugs </a></li> 
+      <li>installer bugs<br> <a href="http://bt2ws.central.sun.com/CrPrint-6704238">6704238</a></li> 
+     </ul> <p>Bug need be verified:</p> 
+     <ul class="alternate" type="square"> 
+      <li><a href="https://glassfish.java.net/issues/buglist.cgi?Submit+query=Submit+query&amp;component=glassfish&amp;subcomponent=i18n&amp;issue_status=RESOLVED&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=fulltext&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=&amp;cmdtype=doit&amp;order=Reuse+same+sort+as+last+time">i18n bugs </a></li> 
+      <li><a href="https://glassfish.java.net/issues/buglist.cgi?Submit+query=Submit+query&amp;component=glassfish&amp;subcomponent=l10n&amp;issue_status=RESOLVED&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=fulltext&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=&amp;cmdtype=doit&amp;order=Reuse+same+sort+as+last+time">l10n bugs </a></li> 
+     </ul> <h4><a name="globalization-InternalInformation"></a>Internal Information</h4> <p><a href="http://ice.prc.sun.com/JSPWiki/Wiki.jsp?page=Glassfishv3.1">Internel Specific </a></p> <h4><a name="globalization-Areawewon%27tcover"></a>Area we won't cover</h4> 
+     <ul class="alternate" type="square"> 
+      <li>Stress testing - Product team should cover</li> 
+      <li>Section 508 Accessibility compliance - Product team should cover</li> 
+      <li>Security Checklist Report - Product team should cover</li> 
+      <li>InterOp testing - Product team should cover</li> 
+      <li>Database Drivers - We mainly focus and user interface. Product team should make sure it work</li> 
+     </ul> <h4><a name="globalization-Risk"></a>Risk</h4> 
+     <ul class="alternate" type="square"> 
+      <li>Engineer won't have full knowledge for all supported languages, some language specific issue maybe miss during testing.</li> 
+      <li>Less Resource and we may couldn't cover all</li> 
+     </ul> <h4><a name="globalization-ExitCriteria"></a>Exit Criteria</h4> 
+     <ul class="alternate" type="square"> 
+      <li>All testing finished</li> 
+      <li>Zero P1, P2 and P3 bugs</li> 
+     </ul> <h4><a name="globalization-References"></a>References</h4> 
+     <ul class="alternate" type="square"> 
+      <li><a href="http://agni-1.sfbay.sun.com/JSPWiki/attach?page=GFv31SQECoverage%2FOGSV31_TP.pdf">Glassfish v3.1 Test plan</a></li> 
+      <li><a href="http://agni-1.sfbay.sun.com/JSPWiki/attach?page=GFv31SQECoverage%2FUpgradeOnePager.html">One Pager: GF 3.1 Upgrade/Update</a></li> 
+      <li><a href="./V3FunctionalSpecs.html">V3.1 Function specific</a></li> 
+      <li><a href="./GlassFishV3Schedule#section-GlassF%20ishV3Schedule-GlassFishServerOpenSourceEdition3.1.html">GlassFish v3.1 Schedule </a></li> 
+     </ul> <h4><a name="globalization-EmailAlias"></a>Email Alias</h2> 
+     <ul> 
+      <li>Please use <a href="mailto:dev@glassfish.java.net">dev@glassfish.java.net</a></li> 
+     </ul> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Aug 12, 2011 by 
+<font color="#0050B2">sjsasubuntu</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : JavaEE6TutorialVolume1DocPlan</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="JavaEE6TutorialVolume1DocPlan-JavaEE6Tutorial%2CVolumeIDocumentationPlan"></a>Java EE 6 Tutorial, Volume I Documentation Plan</h1> <p>The Java EE6 Tutorial, Volume I will consist of nine parts:</p> 
+     <ul> 
+      <li>Part I, Introduction</li> 
+      <li>Part II, Web Tier</li> 
+      <li>Part III, Web Services</li> 
+      <li>Part IV, Enterprise Beans</li> 
+      <li>Part V, Contexts and Dependency Injection for the Java EE Platform</li> 
+      <li>Part VI, Persistence</li> 
+      <li>Part VII, Security</li> 
+      <li>Part VIII, Java EE Supporting Technologies</li> 
+      <li>Part IX, Case Study</li> 
+     </ul> <p>See also the plan for <a href="JavaEE6TutorialVolumeIIDocPlan.html" title="JavaEE6TutorialVolumeIIDocPlan">Volume II</a>.</p> <p>The <a href="EE6TutorialsNetBeansRequirements.html" title="EE6TutorialsNetBeansRequirements">NetBeans Requirements</a> page lists Java EE 6 features that we would like to see NetBeans IDE support for the Java EE 6 Tutorial and First Cup.</p> <h4><a name="JavaEE6TutorialVolume1DocPlan-ContentOutline"></a>Content Outline</h2> <h4><a name="JavaEE6TutorialVolume1DocPlan-PartI%2CIntroduction"></a>Part I, Introduction</h3> 
+     <ul> 
+      <li><em>Overview</em> (Eric) - Describe profile-based architecture and new platform features</li> 
+      <li><em>Using the Tutorial Examples</em> (Eric) - Describe software requirements, setup, and configuration required to run the tutorial examples, including GlassFish, Ant, NetBeans IDE, and database (Java SE-provided and MySQL 5.1)</li> 
+     </ul> <h4><a name="JavaEE6TutorialVolume1DocPlan-PartII%2CWebTier"></a>Part II, Web Tier</h3> 
+     <ul> 
+      <li><em>Intro to Web Tier</em> (Eric) - Defines a web application, explains web tier infrastructure, introduces components that make up a web application, and provides information basic to all web applications, including creating, building, deploying, and testing from Ant script and command line. Shows how to create a basic web application using NetBeans IDE (possible link to NB docs).</li> 
+      <li><em>Servlet 3.0 and Comet</em> (Eric) - Update and describe new features including Web framework pluggability, ease of development (EOD) (by means of annotations, no configuration web apps, and generics), support for asynchronous communications and Comet, security (ability to log in/log out, self registration), better alignment with RESTful web services and JSF 2.0, etc.</li> 
+      <li><em>JavaServer Faces 2.0</em> (Devika) - Update and describe new features including Ease of development features such as Zero configuration and Component Aggregation, Ajax awareness, Bookmarkable JSF pages, adoption features such as accessibility via RESTful web services</li> 
+      <li><em>Facelets</em> (Devika &amp; Jennifer) - Overview of Facelets technology, creating Facelets applications, example Facelets code''</li> 
+      <li><em>JavaServer Pages</em> (Eric) - Rename and refresh basic bookstore examples; move more advanced examples to Volume II; update expression language (EL), as needed</li> 
+      <li><em>JSTL</em> (Eric) - Update as needed</li> 
+     </ul> <h4><a name="JavaEE6TutorialVolume1DocPlan-PartIII%2CWebServices"></a>Part III, Web Services</h3> 
+     <ul> 
+      <li><em>Intro to Web Services</em> (Debbie) - Defines what web services are, introduces the technologies, and when you'd use each. Link to NetBeans tutorials that describe creating web services.</li> 
+      <li><em>JAX-WS</em> (Ian) - Creating SOAP/WSDL web services using JAX-WS</li> 
+      <li><em><a href="JavaEE6TutorialJAXRS.html" title="JavaEE6TutorialJAXRS">JAX-RS</a></em> (Debbie) - Creating RESTful web services using JAX-RS and its reference implementation, Jersey. Link to NetBeans tutorials for creating from scratch.</li> 
+     </ul> <h4><a name="JavaEE6TutorialVolume1DocPlan-PartIV%2CEnterpriseBeansJavaEE6TutorialEnterpriseBeans%28Ian%29"></a>Part IV, <a href="JavaEE6TutorialEnterpriseBeans.html" title="JavaEE6TutorialEnterpriseBeans">Enterprise Beans</a> (Ian)</h3> 
+     <ul> 
+      <li><em>Enterprise Beans</em> - Overview of different types of EJBs and their uses. Major sections: 
+       <ul> 
+        <li>What Is an Enterprise Bean?</li> 
+        <li>What Is a Session Bean?</li> 
+        <li>What Is a Message Driven Bean?</li> 
+        <li>Accessing Enterprise Beans from Clients</li> 
+        <li>Packaging Enterprise Beans</li> 
+        <li>Naming Conventions for Enterprise Beans</li> 
+        <li>The Lifecycles of Enterprise Beans</li> 
+        <li>Handling Exceptions</li> 
+       </ul> </li> 
+      <li><em>Getting Started with Enterprise Beans</em> - Steps to create and deploy a simple local, no-interface stateless session bean. Major sections: 
+       <ul> 
+        <li>Creating the Enterprise Bean</li> 
+        <li>Creating the <tt>converter</tt> Web Client</li> 
+        <li>Deploying and Running <tt>converter</tt></li> 
+        <li>Modifying the Application</li> 
+       </ul> </li> 
+      <li><em>Running the Enterprise Bean Examples</em> - Explanation of and steps to deploy and run stateful session beans, singleton beans, enterprise beans that use timers (manual and automatic), and remote enterprise beans. Major sections: 
+       <ul> 
+        <li>The <tt>cart</tt> Stateful Session Bean Example</li> 
+        <li>A Singleton Session Bean Example</li> 
+        <li>Using the Timer Service</li> 
+       </ul> </li> 
+     </ul> <h4><a name="JavaEE6TutorialVolume1DocPlan-PartV%2CContextsandDependencyInjectionfortheJavaEEPlatformJavaEE6TutorialCDI%28Kim%29"></a>Part V, <a href="JavaEE6TutorialCDI.html" title="JavaEE6TutorialCDI">Contexts and Dependency Injection for the Java EE Platform</a> (Kim)</h3> 
+     <ul> 
+      <li><em>Introduction to Contexts and Dependency Injection for the Java EE Platform</em> - Description of new technology for state management and dependency injection for Java EE components</li> 
+      <li><em>Running the Basic Contexts and Dependency Injection Example</em> - Tasks for running basic Contexts and Dependency Injection example</li> 
+     </ul> <h4><a name="JavaEE6TutorialVolume1DocPlan-PartVI%2CPersistenceJavaEE6TutorialPersistence%28Ian%29"></a>Part VI, <a href="JavaEE6TutorialPersistence.html" title="JavaEE6TutorialPersistence">Persistence</a> (Ian)</h3> 
+     <ul> 
+      <li><em>Introduction to Persistence</em> - Combination of the introductory persistence chapter and the chapter on persistence in the web tier 
+       <ul> 
+        <li><em>Writing Type-Safe Queries with the Criteria API</em> - new section on the JPA 2.0 Criteria API, with examples.</li> 
+        <li>Updated section on collections, including <tt>Map</tt> collections</li> 
+        <li>Updated section on mixed-use of field/property access, including <tt>@Access</tt> annotation</li> 
+        <li>New section on orphan removal</li> 
+       </ul> </li> 
+      <li><em>Running the Persistence Examples</em> - Add persistence examples and describe how to run them</li> 
+      <li><em>The Java Persistence API Query Language</em> - Update this chapter as needed</li> 
+     </ul> <h4><a name="JavaEE6TutorialVolume1DocPlan-PartVII%2CSecurityJavaEE6TutorialVolume1DocPlanSecurity%28Debbie%29"></a>Part VII, <a href="JavaEE6TutorialVolume1DocPlanSecurity.html" title="JavaEE6TutorialVolume1DocPlanSecurity">Security </a> (Debbie)</h3> <p><em>(Outline for Vol 2 (advanced topics) can be viewed <a href="JavaEE6TutorialVolumeIIAdvSecurityTopics.html" title="JavaEE6TutorialVolumeIIAdvSecurityTopics">here</a>.)</em></p> 
+     <ul> 
+      <li><em>Introduction to Java EE Security</em> - Basic introduction to basic security for web applications and enterprise applications. Introduces security concepts.</li> 
+      <li><em>Introduction to Annotations Used in Security</em> - List and briefly describe and give an example for each of the annotations to be discussed in future chapters</li> 
+      <li><em>Securing Web Apps and Web Svcs</em> - Description of using security annotations with web applications and deployment descriptors only when the same functionality cannot be accomplished with annotations.</li> 
+      <li><em>Securing Java EE Apps</em> - Description of the annotations and the deployment descriptors (only when same functionality cannot be accomplished using annotations) used to secure enterprise apps. D</li> 
+      <li><em>Running the Basic Security Examples</em> - Demonstrate adding basic security to some of the other examples provided in the book. Hope to demonstrate securing each of the technologies introduced in the book, but may group some similar technologies into one example.</li> 
+     </ul> <h4><a name="JavaEE6TutorialVolume1DocPlan-PartVIII%2CJavaEESupportingTechnologies"></a>Part VIII, Java EE Supporting Technologies</h3> 
+     <ul> 
+      <li><em>Introduction to Java EE Supporting Technologies</em> (Ian or Chinmayee) - Brief introductions to transactions, resources, connectors, and JMS.</li> 
+      <li><em>Transactions in Web Components</em> (Ian) - Overview of JTA and examples, including information on user-managed transaction demarkation.</li> 
+      <li><em><a href="JavaEE6TutorialDocPlanResConn.html" title="JavaEE6TutorialDocPlanResConn">Resource Connections </a></em> (Chinmayee) - Explanation of resources, JNDI naming, etc.</li> 
+     </ul> <h4><a name="JavaEE6TutorialVolume1DocPlan-PartIX%2CCaseStudy"></a>Part IX, Case Study</h3> 
+     <ul> 
+      <li><em>Duke's Conference Application</em> (deferred until FCS) - Describe multi-technology web example and provide steps for running it</li> 
+     </ul> <h4><a name="JavaEE6TutorialVolume1DocPlan-BuildingtheIPSPackage"></a>Building the IPS Package</h2> <p>Follow these steps to create the Java EE 6 Tutorial IPS package.</p> <h4><a name="JavaEE6TutorialVolume1DocPlan-ConverttheBooktoHTMLandPDF"></a>Convert the Book to HTML and PDF</h3> 
+     <ol> 
+      <li>Use the Solbook tools to convert the tutorial sources to HTML and PDF.</li> 
+      <li>Copy the HTML and PDF to the <tt>javaeetutorial/doc</tt> directory of the javaeetutorial Subversion repository.</li> 
+      <li>Commit the changes to <tt>javaeetutorial/doc</tt>.</li> 
+     </ol> <h4><a name="JavaEE6TutorialVolume1DocPlan-ModifytheIPSPackageConfigurationFiles"></a>Modify the IPS Package Configuration Files</h3> 
+     <ol> 
+      <li>In your updated javaeetutorial Subversion workspace, open <tt>javaeetutorial/bundle/build.properties</tt> in a text editor.</li> 
+      <li>Increment the <tt>pkg.version.release</tt> property. For example: <tt>pkg.version.release=5</tt></li> 
+      <li>Set the <tt>pkg.version.build.major</tt> and <tt>pkg.version.build.minor</tt> properties to <tt>1</tt>.</li> 
+      <li>Each time you rebuild the IPS package, increment <tt>pkg.version.build.minor</tt>.</li> 
+      <li>Ensure the <tt>pkg.description</tt> property is accurate for this release, then save <tt>build.properties</tt>.</li> 
+      <li>Ensure <tt>javaeetutorial/bundle/license.txt</tt> has the correct license and copyright year.</li> 
+     </ol> <h4><a name="JavaEE6TutorialVolume1DocPlan-CreatethePackageintheTestRepository"></a>Create the Package in the Test Repository</h3> 
+     <ol> 
+      <li>In a terminal navigate to <tt>javaeetutorial/bundle</tt>.</li> 
+      <li>Create the package by entering the following command:</li> 
+     </ol> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">ant package</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="JavaEE6TutorialVolume1DocPlan-TestthePackage"></a>Test the Package</h3> 
+     <ol> 
+      <li>Start the Update Center application.</li> 
+      <li>Click New Image.</li> 
+      <li>Enter <tt>Test</tt> under Image Name, set Image Directory to a new, empty directory on your system, then click Add under Software Sources.</li> 
+      <li>Enter <tt>Test</tt> under Publisher Name, <tt><a href="http://eflat.sfbay:60000">http://eflat.sfbay:60000</a></tt> under Repository URL, and click OK.</li> 
+      <li>Click OK to create the new <tt>Test</tt> image, and then expand <tt>Test</tt> under Application Images.</li> 
+      <li>Select Available Add-Ons, check Java EE 6 Tutorial in the Component list, and click Install.</li> 
+      <li>Click Accept when the license is displayed.</li> 
+      <li>Navigate to the Image Directory, then to <tt>glassfish/docs/javaee-tutorial</tt>. Check that the HTML, PDF, and examples are correct.</li> 
+      <li>Once you've checked the package is correct, let Snjezana in release engineering know that the javaee-tutorial package in the eflat.sfbay:60000 repository is ready to be moved to the external repository. Be sure to include the package version, visible in the Update Center in the <tt>Test</tt> image.</li> 
+     </ol> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 02, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

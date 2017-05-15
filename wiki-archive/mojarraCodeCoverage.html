@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : mojarraCodeCoverage</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="mojarraCodeCoverage-HowdoIgeneratecodecoverageinformationfortheMojarrasourcecode%3F"></a>How do I generate code coverage information for the Mojarra source code?</h1> <p>These instructions show how to use the <a href="http://cobertura.sourceforge.net/">Cobertura</a> code coverage tool with the JSF source code.&nbsp; These instructions are tailored for Unix/Linux environment, but scripts are available for Windows.</p> <p>1. Obtain a GlassFish zip bundle.</p> <p>2. Set COBERTURA_PATH environment variable to point to top level Cobertura install directory.&nbsp; For example: <em>/Home/cobertura-1.9.4.1</em></p> <p>3. Instrument the jsf-api.jar and jsf-impl.jar files for the code coverage tool using the <span class="error">[^instrument.sh]</span>&nbsp; script:</p> 
+     <ul> 
+      <li>&nbsp;&nbsp;&nbsp; ./instrument.sh glassfish.zip&nbsp;</li> 
+     </ul> <p>This will create <em>instrumented-glassfish.zip</em>&nbsp; file&nbsp; that contains the instrumented jsf-api.jar and jsf-impl.jar files</p> <p>4. Unzip the <em>instrumented-glassfish.zip</em> file.&nbsp; You will see a <em>glassfish3</em> directory.</p> <p>5. Start up the instrumented GlassFish:&nbsp; ./glassfish3/glassfish/bin/asadmin start-domain --verbose=true</p> <p>6. Set up JSF tests to run in no cluster mode against the instrumented GlassFish instance:</p> 
+     <ul> 
+      <li>In build.properties, make sure this setting is there:&nbsp; <em>container.name=glassfishV3.1_no_cluster</em></li> 
+      <li>In build.properties, make sure the tests are set up to run against the instrumented GlassFish instance:&nbsp; <em>container.home=&lt;instrumented GlassFish instance&gt;</em></li> 
+     </ul> <p><em>7.</em> Run the JSF tests from the top level:</p> 
+     <ul> 
+      <li><em>ant test</em></li> 
+     </ul> <p><em>8.</em> When the tests complete, shut down the server gracefully - <em>asadmin stop-domain</em>;&nbsp; <b>Do not kill the server.&nbsp;</b> Look for <em>cobertura.ser</em> data files.&nbsp; These files are the data files containing coverage information and they are used to generate the report.&nbsp; You will usually find two of them.&nbsp; You can check by going to the directory where the glassfish3 instrumented GlassFish directory is.&nbsp; For example, if you have the following:</p> <p>/home/glassfish3</p> <p>cd home;&nbsp; find . -name *.ser</p> <p>You will usually find one in the directory containing the glassfish3 subdirectory (in this case under home), and the other one will be under:</p> <p>glassfish3/glassfish/domains/domain1/config/</p> <p>9. Merge the datafiles (cobertura.ser files) into one using the Cobertura merge tool under the top level Cobertura install directory:</p> <p>./cobertura-merge.sh --datafile &lt;merged datafile&gt; &lt;datafile1&gt; &lt;datafile2&gt;..</p> <p>For example:</p> <p>./cobertura-merge.sh --datafile /Home/instrumented/jsf-cobertura.ser /Home/cobertura.ser /Home/glassfish3/glassfish/domains/domain1/config/cobertura.ser</p> <p>10. Create the report files from the merged datafile:</p> <p>./cobertura-report.sh --format html --datafile /Home/instrumented/jsf-cobertura.ser --destination /Home/reports --basdir /Home/mojarra/trunk/jsf-api/src/main/java /Home/mojarra/trunk/jsf-ri/src/main/java</p> <p>The <em>destination</em> specifies where you want the report files to go.&nbsp; The <em>basdir</em> specifies the top level source directory locations that will enable you to view source files from the reports.</p> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Mar 25, 2011 by 
+<font color="#0050B2">rogerk</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

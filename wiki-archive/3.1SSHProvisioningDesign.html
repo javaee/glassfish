@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : 3.1SSHProvisioningDesign</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p><em>1.6</em></p> <h4><a name="3.1SSHProvisioningDesign-GlassFishServerOpenSourceEdition3.1"></a>GlassFish Server Open Source Edition 3.1</h1> <h4><a name="3.1SSHProvisioningDesign-SSHProvisioningDesignSpecification"></a>SSH Provisioning Design Specification</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#3.1SSHProvisioningDesign-GlassFishServerOpenSourceEdition3.1">GlassFish Server Open Source Edition 3.1</a></li> 
+       <li><a href="#3.1SSHProvisioningDesign-SSHProvisioningDesignSpecification">SSH Provisioning Design Specification</a></li> 
+       <ul> 
+        <li><a href="#3.1SSHProvisioningDesign-1.0Overview">1.0 Overview</a></li> 
+        <ul> 
+         <li><a href="#3.1SSHProvisioningDesign-GlassFishv2FeaturesNotSupportBySSHProvisioning">GlassFish v2 Features Not Support By SSH Provisioning</a></li> 
+         <li><a href="#3.1SSHProvisioningDesign-GlassFish3.1FeaturesOnlyAvailableifSSHisAvailable">GlassFish 3.1 Features Only Available if SSH is Available</a></li> 
+        </ul> 
+        <li><a href="#3.1SSHProvisioningDesign-2.0SSHClientLibrary">2.0 SSH Client Library</a></li> 
+        <li><a href="#3.1SSHProvisioningDesign-3.0ConfiguringSSH">3.0 Configuring SSH</a></li> 
+        <li><a href="#3.1SSHProvisioningDesign-4.0SSHAuthentication">4.0 SSH Authentication</a></li> 
+        <li><a href="#3.1SSHProvisioningDesign-5.0GlassFishasadminAuthentication">5.0 GlassFish asadmin Authentication</a></li> 
+        <li><a href="#3.1SSHProvisioningDesign-6.0LocatingRemoteSystems">6.0 Locating Remote Systems</a></li> 
+        <li><a href="#3.1SSHProvisioningDesign-7.0Nodes">7.0 Nodes</a></li> 
+        <li><a href="#3.1SSHProvisioningDesign-8.0CLI">8.0 CLI</a></li> 
+        <ul> 
+         <li><a href="#3.1SSHProvisioningDesign-createnodessh">create-node-ssh</a></li> 
+         <li><a href="#3.1SSHProvisioningDesign-updatenodessh">update-node-ssh</a></li> 
+         <li><a href="#3.1SSHProvisioningDesign-createnodeconfig">create-node-config</a></li> 
+         <li><a href="#3.1SSHProvisioningDesign-updatenodeconfig">update-node-config</a></li> 
+         <li><a href="#3.1SSHProvisioningDesign-deletenodessh">delete-node-ssh</a></li> 
+         <li><a href="#3.1SSHProvisioningDesign-deletenodeconfig">delete-node-config</a></li> 
+         <li><a href="#3.1SSHProvisioningDesign-listnodes">list-nodes</a></li> 
+         <li><a href="#3.1SSHProvisioningDesign-createinstance">create-instance</a></li> 
+         <li><a href="#3.1SSHProvisioningDesign-deleteinstance">delete-instance</a></li> 
+         <li><a href="#3.1SSHProvisioningDesign-startinstance">start-instance</a></li> 
+         <li><a href="#3.1SSHProvisioningDesign-stopinstance">stop-instance</a></li> 
+         <li><a href="#3.1SSHProvisioningDesign-startcluster">start-cluster</a></li> 
+         <li><a href="#3.1SSHProvisioningDesign-stopcluster">stop-cluster</a></li> 
+        </ul> 
+        <li><a href="#3.1SSHProvisioningDesign-9.0Configuration">9.0 Configuration</a></li> 
+        <li><a href="#3.1SSHProvisioningDesign-10.0domain.xmlUpgrade">10.0 domain.xml Upgrade</a></li> 
+        <li><a href="#3.1SSHProvisioningDesign-11.0CLICompatibilitywithv2">11.0 CLI Compatibility with v2</a></li> 
+        <ul> 
+         <li><a href="#3.1SSHProvisioningDesign-createinstance">create-instance</a></li> 
+         <li><a href="#3.1SSHProvisioningDesign-createnodeagentconfig">create-node-agent-config</a></li> 
+         <li><a href="#3.1SSHProvisioningDesign-deletenodeagentconfig">delete-node-agent-config</a></li> 
+         <li><a href="#3.1SSHProvisioningDesign-createnodeagent">create-node-agent</a></li> 
+         <li><a href="#3.1SSHProvisioningDesign-deletenodeagent">delete-node-agent</a></li> 
+         <li><a href="#3.1SSHProvisioningDesign-startnodeagent">start-node-agent</a></li> 
+         <li><a href="#3.1SSHProvisioningDesign-stopnodeagent">stop-node-agent</a></li> 
+         <li><a href="#3.1SSHProvisioningDesign-listnodeagents">list-node-agents</a></li> 
+        </ul> 
+        <li><a href="#3.1SSHProvisioningDesign-12UsageScenarios">12 Usage Scenarios</a></li> 
+        <li><a href="#3.1SSHProvisioningDesign-13.0Reference">13.0 Reference</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="3.1SSHProvisioningDesign-1.0Overview"></a>1.0 Overview</h2> <p>SSH Provisioning attempts to accomplish two things:</p> 
+     <ol> 
+      <li>Support the provisioning of a remote system (node) so that the user can use that system to host server instances for a cluster.</li> 
+      <li>Support the remote execution of cluster and instance lifecycle asadmin commands on provisioned nodes.</li> 
+     </ol> <p>In simple terms SSH Provisioning attempts to provide some of the capability that was provided by the node agent in GF v2. The provisioning of a system is somewhat analagous to creating a node agent on a system. Once a system is provisioned it can participate in a cluster.</p> <p>In the long term we would like the operation of provisioning a system to include the capability of installing GlassFish on the system (<a href="https://github.com/javaee/glassfish/issues/4372">rfe 4372</a>). But for 3.1 we will likely require users to install GlassFish on remote systems directly and the provisioning step will simply make the remote system known to the DAS. See the create-node command below for details.</p> <p>From a technical standpoint the approach we are taking is to use SSH as a mechanism to execute local admin commands on remote nodes. So instead of the user logging into the remote node and executing the local command, we let them execute the remote vesion of the command command via the DAS. Using the target of the command we can determine what node the target is running on and execute the command on the remote system using SSH.</p> <p>This means that all the heavy lifting for these commands is performed by the local version of the command that is run (locally) on the remote system. Since SSH is an optional capability the user must always have the capability of running the remote command against the DAS, and if SSH is not operational subsequently run the local version of the command manually on the remote system.</p> <h4><a name="3.1SSHProvisioningDesign-GlassFishv2FeaturesNotSupportBySSHProvisioning"></a>GlassFish v2 Features Not Support By SSH Provisioning</h3> <p>As stated above the SSH capability in 3.1 is not a direct feature replacement for the nodeagent feature in v2. Specifically the following capabilities will not be supported by the SSH based solution in the 3.1 timeframe:</p> 
+     <ol> 
+      <li>Watchdog restart of failed server instances. Note that this capability can be achieved in many cases through the use of the GlassFish native service integration (create-service).</li> 
+      <li>Viewing of failed server log files. Note that the <a href="http://wiki.glassfish.java.net/attach/V3FunctionalSpecs/GFv3.1Logging-onepager.html">Logging subproject</a> is considering a feature to collect remote instance log files for analysis if the SSH transport is available.</li> 
+     </ol> <h4><a name="3.1SSHProvisioningDesign-GlassFish3.1FeaturesOnlyAvailableifSSHisAvailable"></a>GlassFish 3.1 Features Only Available if SSH is Available</h3> <p>The following is the list of features that will be available if a GlassFish 3.1 deployment is configured to use SSH. Conversely if an administrator does not configure SSH then the following features will not be available:</p> 
+     <ol> 
+      <li>start-cluster for clusters consisting of instances remote to the DAS. 
+       <ul> 
+        <li>The non-SSH alternative is to run start-local-instance manually on each instance system – or rely on the native service integration to control the instance life cycle.</li> 
+       </ul> </li> 
+      <li>start-instance for instances remote to the DAS. 
+       <ul> 
+        <li>The non-SSH alternative is to run start-local-instance manually on the instance system – or rely on the native service integration to control the instance life cycle.</li> 
+       </ul> </li> 
+      <li>create-instance for instances remote to the DAS 
+       <ul> 
+        <li>The non-SSH alternative is to run create-local-instance manually on the instance system.</li> 
+       </ul> </li> 
+     </ol> <h4><a name="3.1SSHProvisioningDesign-2.0SSHClientLibrary"></a>2.0 SSH Client Library</h2> <p>In order to use SSH in GlassFish we need a Java SSH client library. The core SSH client support will be provided by the Trilead-ssh2 library. Specifically the version from the Hudson branch:</p> <p><a href="http://github.com/hudson/trilead-ssh2">http://github.com/hudson/trilead-ssh2</a></p> <p>The Trilead-ssh2 library implements SSH Protocol Version 2. It supports SSH sessions (remote command execution and shell access), local and remote port forwarding, local stream forwarding, X11 forwarding, SCP and SFTP. According to the Hudson project the trilead-ssh2 implementation has been very solid. The trilead-ssh2 library will be downloaded as a binary from the hudson branch. Trilead-ssh2 is available under the BSD license.</p> <p>On top of the trilead-ssh2 library we may need a thin API to provide convenience methods and isolate the trilead-ssh2 dependencies from the rest of GlassFish. This API would provide a way to conveniently invoke remote commands and get progress and status from them. It also would provide a method to determine if SSH is available for use so that the CLI and Console can provide appropriate user feedback and error messages when SSH is not available/configured.</p> <h4><a name="3.1SSHProvisioningDesign-3.0ConfiguringSSH"></a>3.0 Configuring SSH</h2> <p>SSH must be configure by the user before attempting to configure a cluster. GlassFish will not provide any tools for assisting the user in configuring SSH.</p> <p>If SSH is not configured then the ability to remotely provision a node and create/control remote server instances (including start-cluster/stop-cluster) will not be available. The user will need to perform these operations manually on the remote systems.</p> <h4><a name="3.1SSHProvisioningDesign-4.0SSHAuthentication"></a>4.0 SSH Authentication</h2> <p>When using SSH to execute GlassFish commands on a remote system the DAS must authenicate to SSHD on that remote system. SSH supports a couple of authentication schemes. At a minimum we plan on supporting SSH public key authentication with un-encrypted key files. If time permits we will add support for encrypted key files as well as username/password authentication.</p> <p>In order to authenticate to SSHD the following needs to be passed to the SSL client library:</p> 
+     <ol> 
+      <li>username</li> 
+      <li>key file location if using key authentication</li> 
+      <li>key file passphrase if key file is encrypted with a passphrase</li> 
+      <li>user's SSH password if using password authentication</li> 
+     </ol> <p>Supporting simple public key authentication is fairly straightforward. After the user has set up SSH, generated their key pair (with no passphrase protection), and installed their public key on the servers they specify the username and keyfile location when they create the Node objects that represent the servers (see create-node-ssh below). This information is stored in domain.xml and can then be used by the DAS to authenticate to the SSH service.</p> <p>For encrypted key files the DAS needs access to the passphrase that was used when the SSH key was generated. This key needs to be in the clear when passed to the SSH client library. The plan is to leverage the GlassFish keystore and password aliases. Basically the user must create a password alias for the keyfile passphrase, and provide that alias when the node is created. The DAS can then retrieve the passphrase from its keystore.</p> <p>To support password authentication a similar approach would be used. The user creates a password alias for their SSH password and provides this alias when the node is created. The DAS can then retrieve the SSH password from its keystore whe<br> n it needs to authenticate to SSH on that node.</p> <p>We do not plan on supporting interactive prompting of the user's password when an asadmin command is run.</p> <h4><a name="3.1SSHProvisioningDesign-5.0GlassFishasadminAuthentication"></a>5.0 GlassFish asadmin Authentication</h2> <p>After authenticating to SSH we will be executing asadmin commands on the node. The assumption is that we will only need to execute "local only" commands on the node such as _create-local-filesystem and the start-local-instance. Since these are local only commands they do not require admin authentication, therefore the assumption is that we do not need to pass admin credentials to these invocations of asadmin.</p> <p>If it turns out this assumption is wrong, then we would likely use the asadmin <tt>--passwordfile</tt> option to pass admin credentials to the asadmin command executed on the node. In order to do that we need to know the admin user and admin password in clear text. Currently the DAS does not have this information. The <a href="ClusterDynamicReconfig.html" title="ClusterDynamicReconfig">Dynamic Reconfiguration</a> subproject has a similar requirement and is working on a solution. The hope is, if needed, we could use their solution.</p> <h4><a name="3.1SSHProvisioningDesign-6.0LocatingRemoteSystems"></a>6.0 Locating Remote Systems</h2> <p>In addition to authentication information we need the following whenever we want to execute a command on a remote system using SSH:</p> 
+     <ul> 
+      <li>The host to execute the command on</li> 
+      <li>The GlassFish install location to execute the command from</li> 
+     </ul> <p>This information will be provided by the user when they provision the system using <tt>create-node</tt> and remembered in the domain configuration for each node. Since each server instance is associated with a node when the instance is created, we can always determine this info if we know the instance name.</p> <h4><a name="3.1SSHProvisioningDesign-7.0Nodes"></a>7.0 Nodes</h2> <p>In GlassFish v2 there was a concept of a node agent, and all server instances were created as a child of a node agent.</p> <p>In 3.1 the concept of a node agent has been generalized to that of a "node". A node represent a host + glassfish installation. A node can be accessed via a connector. In 3.1 we will support one connector: the ssh connector. The ssh node also supports a degenerate case for a "local node" – that is the same node that the DAS is running on. In this case the ssh connector is not used as commands can be run locally by the DAS.</p> <h4><a name="3.1SSHProvisioningDesign-8.0CLI"></a>8.0 CLI</h2> <p>SSH support impacts a number of CLI operations. For now I've included both the impacted commands, and other related lifecycle management commands here, but this section of the spec should&nbsp; be incorporated into the to the <a href="V3.1Clustering.html" title="V3.1Clustering">Basic Clustering</a> spec.</p> <h4><a name="3.1SSHProvisioningDesign-createnodessh"></a>create-node-ssh</h3> <p>This command is somewhat analogous to create-node-agent in v2. It provisions a system for use in a cluster that can be accessed using SSH. For 3.1 that provisioning is essentially creating a node entry&nbsp; in the DAS config. In the future the provisioning could include installing the GlassFish software, and creating a legacy style node agent if those are supported.</p> <p>By leaving off the ssh options and indicating that the nodehost is localhost this command can be used to create a node that is assumed to be co-located on the same host as the DAS and therefore SSH would not be required since commands could be executed locally.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">create-node-ssh
+    --nodehost remote_host_name
+    --installdir glassfish_home_path
+    [--nodedir path_to_node_directory_on_nodehost]
+    [--sshnodehost ssh_host_name]
+    [--sshport port_number_for_ssh_on_nodehost]
+    [--sshuser ssh_username ]
+    [--sshkeyfile ssh_key_file_path]
+    [--sshpassphrase passphrase_alias ]
+    [--sshpassword password_alias ]
+    [--force={true|false}]
+    node_name
+
+--nodehost      Host name where instances will reside.
+
+--installdir    Location of GlassFish installation on nodehost. 
+                This is the upper glassfish installation directory.
+                For example: /export/home/glassfish3
+
+--nodedir      Path to a directory to contain the server instances that are
+               created on the node. Defaults to install_dir/nodes. If a
+               relative path is given it is considered relative to install_dir.
+
+--sshport       Port number to connect to ssh server on. Defaults to 22.
+                Ignored if nodehost is "localhost".
+
+--sshuser       SSH username to use to access nodehost.
+                Defaults to the user that the DAS process is running as and
+                it is recommended that this is the same as the user running
+                the DAS process.
+                Ignored if nodehost is "localhost".
+
+--sshkeyfile    SSH private key file for username.
+                Defaults to ${user.home}/.ssh/id_[rd]sa
+                (or appropriate location depending on platform).
+                The path specified must be absolute and reachable by the DAS.
+                The path may contain Java properties of the form ${prop.name}.
+                The key file must be readable by the DAS. For this reason it
+               &nbsp;usually works best if the DAS is running as the same users as
+                that specified via "--sshuser".
+
+--sshpassphrase The alias for the passphrase that was used to protect the
+                user's key file. This is only required if the key file is
+                protected with a passphrase. This alias must be created
+                first using the "asadmin create-password-alias" command.
+                This command let's the user save the actual SSH passphrase
+                in the DAS keystore and give it an alias name that is used
+                here.
+
+--sshpassword   The alias for the user's SSH password if password authentication
+                will be used. This alias must be created first using the
+                "asadmin create-password-alias" command. This command let's
+                the user save the actual SSH password in the DAS keystore
+                and give it an alias name that is used here.
+
+--force         If true force the creation of the node even if nodehost can't
+                be accessed via SSH using the parameters provided. Usually if
+                the host can't be contacted via SSH the command will fail with
+                an error.
+
+node_name       Name of node. Must be unique in domain. No other node, cluster
+                or instance may use this name.</pre> 
+       </div> 
+      </div>
+     </div> <p>This will create a node in domain.xml that can be referenced by subsequent create-instance commands and can be accessed via SSH.</p> <p>If the nodehost can't be accessed via SSH using the parameters supplied then the command will fail with a helpful error message. If --force=true then the command will give a warning and create the node instead of failing.</p> <p>--sshpassphrase and --sshpassword will only be supported as time allows. Note that the SSH client will attempt all forms of authentication before failing a connection.. XXX Is this true?</p> <p>Examples:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">create-node-ssh mynode</pre> 
+       </div> 
+      </div>
+     </div> <p>This creates a local node – one that represents the same host and GlassFish installation used by the DAS. In this case SSH will not be required nor used since all commands can be performed locally.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">create-node-ssh
+    --nodehost glassfish1.sfbay.sun.com
+    --installdir /export/apps/glassfish3
+    glassfish1</pre> 
+       </div> 
+      </div>
+     </div> <p>Creates a node named "glassfish1". The host for this node is glassfish1.sun.com and glassfish is installed in /export/apps/gf on that host. SSH will be used to communicate with glassfish1.sun.com using the username of the user that is running the DAS and using key authentication using the key in ~username/.ssh/id_[rd]sa. If glassfish1.sfbay.sun.com cannot be contacted by the DAS using SSH then the command will fail with a helpful error message.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">create-node-ssh
+    --nodehost host-1.glassfish.org 
+    --sshuser otheruser 
+    --sshkeyfile ~/.ssh/id_dsa 
+    --installdir /scratch/otheruser/gf/glassfish3 
+    newHost</pre> 
+       </div> 
+      </div>
+     </div> <p>Creates a node named "newHost" on the remote system host-1.glassfish.org on which you use the username "otheruser" to connect using ssh. You need to specify --sshkeyfile; otherwise GlassFish will try to find the key file under the directory for otheruser which might not exist on the current system where you execute the create-node-ssh command.</p> <h4><a name="3.1SSHProvisioningDesign-updatenodessh"></a>update-node-ssh</h3> <p>Updates a config node to an SSH node, or updates the values in an SSH node. Usage is the same as create-node-ssh except that --nodehost and --installdir are optional. If any server instances have been created on the node then you can not update installdir or nodedir.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">update-node-ssh
+    [--nodehost remote_host_name]
+    [--installdir glassfish_home_path]
+    [--nodedir path_to_node_directory_on_nodehost]
+    [--sshnodehost ssh_host_name]
+    [--sshport port_number_for_ssh_on_nodehost]
+    [--sshuser ssh_username ]
+    [--sshkeyfile ssh_key_file_path]
+    [--sshpassphrase passphrase_alias ]
+    [--sshpassword password_alias ]
+    [--force={true|false}]
+    node_name</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="3.1SSHProvisioningDesign-createnodeconfig"></a>create-node-config</h3> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">create-node-config
+    [--nodehost remote_host_name]
+    [--installdir glassfish_home_path]
+    [--nodedir path_to_node_directory_on_nodehost]
+    node_name</pre> 
+       </div> 
+      </div>
+     </div> <p>Creates a node placeholder in the DAS for use by create-instance. It is assumed that the user will subsquently run create-local-instance directly on the node which will complete the population of the node with the appropriate nodehost and installdir values. This is for cases where the user chooses not have make SSH available to communicate to remote nodes.</p> <p>Does not depend on SSH.</p> <h4><a name="3.1SSHProvisioningDesign-updatenodeconfig"></a>update-node-config</h3> <p>Updates the values in a config node, or updates an SSH node to be a basic config node. Usage is the same as create-node-config. If any server instances have been created on the node then you can not update installdir or nodedir.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">update-node-config
+    [--nodehost remote_host_name]
+    [--installdir glassfish_home_path]
+    [--nodedir path_to_node_directory_on_nodehost]
+    node_name</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="3.1SSHProvisioningDesign-deletenodessh"></a>delete-node-ssh</h3> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">delete-node-ssh
+    node_name</pre> 
+       </div> 
+      </div>
+     </div> <p>Removes node from domain.xml. Requires that no server instances exist that reference this node (i.e. you must remove the server instances first before using delete-node).</p> <p>Does not depend on SSH.</p> <h4><a name="3.1SSHProvisioningDesign-deletenodeconfig"></a>delete-node-config</h3> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">delete-node-config
+    node_name</pre> 
+       </div> 
+      </div>
+     </div> <p>Removes node from domain.xml. Requires that no server instances exist that reference this node (i.e. you must remove the server instances first before using delete-node).</p> <p>Does not depend on SSH.</p> <h4><a name="3.1SSHProvisioningDesign-listnodes"></a>list-nodes</h3> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">list-nodes [--verbose] [target]
+
+--verbose      Provide more detailed human readable output</pre> 
+       </div> 
+      </div>
+     </div> <p>Where target is one of:</p> 
+     <ul> 
+      <li>domain: Lists all nodes in the domain. This is the default.</li> 
+      <li>cluster_name: Lists all nodes associated with the cluster</li> 
+      <li>instance_name: Lists node associated with the instance</li> 
+      <li>node_name: Lists the named node</li> 
+     </ul> <p>Does not depend on SSH.</p> <p>XXX Output is TBD. Need to look at list-instances for target usage and verbose output format.</p> <p>XXX Should alias to list-nodes-ssh?</p> <h4><a name="3.1SSHProvisioningDesign-createinstance"></a>create-instance</h3> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">create-instance
+   --node node_name | --nodeagent node_name
+   [--config confg_name | --cluster cluster_name]
+   instance_name</pre> 
+       </div> 
+      </div>
+     </div> <p>Creates server entry in the DAS. If the node is localhost or if SSH is operational also executes _create-instance-filesystem on the node specified by "node_name".</p> <p>If SSH is not operational and the node is remote only the local DAS configuration will be updated and the command will inform the user that they must execute the create-local-instance command on the remote system manually (giving them the full text of the command to execute and the system to execute it on).</p> <p>instance_name must be unique within the domain and may not be used by any other instance or cluster or node.</p> <p>For backwards compatibility with v2&nbsp; --nodeagent will be supported as an alias for -node.</p> <p>Command called on node via SSH: _create-instance-filesystem</p> <h4><a name="3.1SSHProvisioningDesign-deleteinstance"></a>delete-instance</h3> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">delete-instance
+   instance_name</pre> 
+       </div> 
+      </div>
+     </div> <p>Removes server instance config from the DAS and if SSH is operational (or node is local to the DAS) it removes the local server instance on the node by executing _delete-instance-filesystem on the node.</p> <p>If the node is remote and SSH is not operational only the local DAS configuration will be updated and the command will inform the user that they must execute the local delete-local-instance command on the remote system (giving them the full text of the command to execute).</p> <p>Command called on node via SSH: _delete-instance-filesystem</p> <h4><a name="3.1SSHProvisioningDesign-startinstance"></a>start-instance</h3> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">start-instance
+   instance_name</pre> 
+       </div> 
+      </div>
+     </div> <p>Performs no modification to the DAS config. Looks up coordinates of instance (via the instance's associated node) and if node is remote uses ssh to run start-local-instance on the remote node. If node is local uses Runtime.exec().</p> <p>If SSH is not operational and node is remote the command will inform the user that they must execute the start-local-instance command on the remote system (giving them the full text of the command to execute).</p> <p>Command called on node via SSH: start-local-instance</p> <h4><a name="3.1SSHProvisioningDesign-stopinstance"></a>stop-instance</h3> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">stop-instance
+   instance_name</pre> 
+       </div> 
+      </div>
+     </div> <p>Does not use SSH.</p> <h4><a name="3.1SSHProvisioningDesign-startcluster"></a>start-cluster</h3> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">start-cluster
+    cluster_name</pre> 
+       </div> 
+      </div>
+     </div> <p>Execute start-instance on each instance of the cluster. This depends on SSH via the use of start-instance. Returns clear status from each start-instance execution.</p> <h4><a name="3.1SSHProvisioningDesign-stopcluster"></a>stop-cluster</h3> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">stop-cluster
+    cluster_name</pre> 
+       </div> 
+      </div>
+     </div> <p>Does not use SSH.</p> <h4><a name="3.1SSHProvisioningDesign-9.0Configuration"></a>9.0 Configuration</h2> <p>We need this information to access a node via SSH:</p> 
+     <ul> 
+      <li>node_name</li> 
+      <li>host_name</li> 
+      <li>ssh_port</li> 
+      <li>ssh_username</li> 
+      <li>ssh_keyfile</li> 
+      <li>glassfish_home_path</li> 
+     </ul> <p>The proposal is to create a new element, the generic "node". A node can have zero or more connectors. In 3.1 we would support zero connectors or an ssh connector. In the future other connectors (like one to support legacy style node agents) could be supported.</p> <p>Here is a domain.xml snippet</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;server . . . name="myinstance1"  node-ref="ssh_node"&gt;
+. . .
+&lt;/server&gt;
+
+&lt;nodes&gt;
+
+  &lt;!-- An SSH node --&gt;
+  &lt;node name="ssh_node" node-host="gf1.sfbay.sun.com" install-dir="/export/gf"&gt;
+    &lt;ssh-connector port="22"&gt;
+      &lt;ssh-auth type="key" username="${user.name} keyfile="${user.home}/.ssh/id_dsa" /&gt;
+    &lt;/ssh-connector&gt;
+  &lt;/node&gt;
+
+  &lt;!-- A localhost node. No connector needed. --&gt;
+  &lt;node name="localhost" node-host="localhost" install-dir="${com.sun.aas.installRoot}"&gt;
+  &lt;/node&gt;
+
+  &lt;!-- A localhost node from a different install location and agentdir. --&gt;
+  &lt;node name="mylocalnode2" node-host="localhost" install-dir="/export/apps/gf" node-dir="/export/myagentdir"&gt;
+  &lt;/node&gt;
+
+  &lt;!-- Placeholder node after create-node-config --&gt;
+  &lt;node name="myconfignode" node-host="" install-dir=""&gt;
+  &lt;/node&gt;
+
+  &lt;!-- Node after create-local-instance run directly on node --&gt;
+  &lt;node name="mynode3" node-host="gf1.sfbay.sun.com" install-dir="/export/gf1"&gt;
+  &lt;/node&gt;
+
+  &lt;!-- Node converted from v2 node-agent node --&gt;
+  &lt;node name="v2node" node-host="gf2.sfbay.sun.com" install-dir="${com.sun.aas.installRoot}"&gt;
+    &lt;ssh-connector port="22"&gt;
+      &lt;ssh-auth type="key" username="${user.name}" /&gt;
+    &lt;/ssh-connector&gt;  &lt;/node&gt;
+
+&lt;/nodes&gt;</pre> 
+       </div> 
+      </div>
+     </div> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Attribute </th> 
+         <th class="confluenceTh"> Required/Optional </th> 
+         <th class="confluenceTh"> Default </th> 
+         <th class="confluenceTh"> Comment </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> node.name </td> 
+         <td class="confluenceTd"> Required </td> 
+         <td class="confluenceTd"> -- </td> 
+         <td class="confluenceTd"> Name of node </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> node.host </td> 
+         <td class="confluenceTd"> Required </td> 
+         <td class="confluenceTd"> -- </td> 
+         <td class="confluenceTd"> Node's host. If empty string then node is a placeholder </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> node.installdir </td> 
+         <td class="confluenceTd"> Optional </td> 
+         <td class="confluenceTd"> -- </td> 
+         <td class="confluenceTd"> GlassFish install location on node. This is the upper glassfish isntallation directory like /export/home/glassfish3. Needed for ssh nodes. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ssh-connector </td> 
+         <td class="confluenceTd"> Optional </td> 
+         <td class="confluenceTd"> -- </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ssh-connector.port </td> 
+         <td class="confluenceTd"> Optional </td> 
+         <td class="confluenceTd"> 22 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ssh-connector.ssh-auth.type </td> 
+         <td class="confluenceTd"> Required </td> 
+         <td class="confluenceTd"> -- </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ssh-connector.ssh-auth.username </td> 
+         <td class="confluenceTd"> Optional </td> 
+         <td class="confluenceTd"> user the DAS process is running as </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ssh-connector.ssh-auth.keyfile </td> 
+         <td class="confluenceTd"> Optional </td> 
+         <td class="confluenceTd"> ~username/.ssh/id_[rd]sa </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.1SSHProvisioningDesign-10.0domain.xmlUpgrade"></a>10.0 domain.xml Upgrade</h2> <p>When upgrading a v2 domain.xml the following transformations take place:</p> 
+     <ul> 
+      <li>node-agent-ref on server instance becomes node-ref</li> 
+      <li>node-agents becomes nodes</li> 
+      <li>node-agent becomes node 
+       <ul> 
+        <li>name is kept</li> 
+        <li>client-hostname property on jmx-connector becomes nodehost attribute on node</li> 
+        <li>install-dir attribute on node is set to com.sun.aas.installRoot. I.e. the same install location as the DAS uses.</li> 
+        <li>agent-dir becomes node-dir.</li> 
+        <li>If the client-hostname is the same host as the DAS host then the node is a normal config node, otherwise the nodeagent was remote and the ssh-connector element is added with standard default SSH values.</li> 
+        <li>all other node-agent attributes and sub-elements are discarded</li> 
+       </ul> </li> 
+     </ul> <p>This transforms a v2 node agent to a node of the form:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;node name="v2node" node-host="gf2.sfbay.sun.com" install-dir="${com.sun.aas.installRoot}"&gt;
+    &lt;ssh-connector port="22"&gt;
+      &lt;ssh-auth username="${user.name}" /&gt;
+    &lt;/ssh-connector&gt;
+  &lt;/node&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>So we attempt to have a functioning SSH node. If these values are not correct then they will need to update them with update-node-ssh.</p> <h4><a name="3.1SSHProvisioningDesign-11.0CLICompatibilitywithv2"></a>11.0 CLI Compatibility with v2</h2> <h4><a name="3.1SSHProvisioningDesign-createinstance"></a>create-instance</h3> <p>The 3.1 create-instance will accept "-<del>nodagent" as an alias for "</del>-node"</p> <h4><a name="3.1SSHProvisioningDesign-createnodeagentconfig"></a>create-node-agent-config</h3> <p>Mapped to "create-node-config"</p> <h4><a name="3.1SSHProvisioningDesign-deletenodeagentconfig"></a>delete-node-agent-config</h3> <p>Mapped to "delete-node-config"</p> <h4><a name="3.1SSHProvisioningDesign-createnodeagent"></a>create-node-agent</h3> <p>This command will fail as no longer supported.</p> <h4><a name="3.1SSHProvisioningDesign-deletenodeagent"></a>delete-node-agent</h3> <p>This command will fail as no longer supported.</p> <h4><a name="3.1SSHProvisioningDesign-startnodeagent"></a>start-node-agent</h3> <p>This command will fail as no longer supported.</p> <h4><a name="3.1SSHProvisioningDesign-stopnodeagent"></a>stop-node-agent</h3> <p>This command will fail as no longer supported.</p> <h4><a name="3.1SSHProvisioningDesign-listnodeagents"></a>list-node-agents</h3> <p>This command will fail as no longer supported.</p> <h4><a name="3.1SSHProvisioningDesign-12UsageScenarios"></a>12 Usage Scenarios</h2> <p><a href="3.1SSHScenarios.html" title="3.1SSHScenarios">3.1 SSH Scenarios</a> describes some CLI usage scenarios.</p> <p><a href="3.1SSHAuthentication.html" title="3.1SSHAuthentication">3.1 SSH Authentication Options </a> describes some CLI scenarios for the different authentication options.</p> <h4><a name="3.1SSHProvisioningDesign-13.0Reference"></a>13.0 Reference</h2> <p>Hudson Project: <a href="http://hudson-ci.org/">http://hudson-ci.org/</a></p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Nov 29, 2010 by 
+<font color="#0050B2">dipol</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

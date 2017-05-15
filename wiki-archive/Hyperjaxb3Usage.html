@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : Hyperjaxb3Usage</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p><a href="Hyperjaxb3.html" title="Hyperjaxb3">Documentation</a> | <a href="Hyperjaxb3Reference.html" title="Hyperjaxb3Reference">Reference</a> | <a href="Hyperjaxb3Configuration.html" title="Hyperjaxb3Configuration">Configuration</a></p> <h4><a name="Hyperjaxb3Usage-UsingHyperjaxb3inbuilds"></a>Using Hyperjaxb3 in builds</h1> <p>Essentially, Hyperjaxb3 is a code generator. It provides a JAXB 2 plugin which participates in JAXB's code generation - and produces all necessary JPA annotations (as well as the supporting code, where necessary).</p> <p>Apart from that, Hyperjaxb3 also provides utility code which will be used in the runtime.</p> <p>So "using Hyperjaxb3" actually means:</p> 
+     <ul> 
+      <li>Use Hyperjaxb3 JAXB 2 plugin during the code generation.</li> 
+      <li>Use Hyperjaxb3 runtime libraries when compiling and running the generated code.</li> 
+     </ul> <p>In the next sections we'll demonstrate how to use Hyperjaxb3 with Maven2 or Ant. We also provide "just add water" project samples - just put your schemas where they belong and you're ready to build!</p> <p>However, this document does not cover the configuration of Hyperjaxb3 - please consult the <a href="Hyperjaxb3Configuration.html" title="Hyperjaxb3Configuration">configuration guide</a> for the configuration reference.</p> <h4><a name="Hyperjaxb3Usage-JAXB2.1APIunderJava1.6"></a>JAXB 2.1 API under Java 1.6</h2> <p>If you'r using Java 1.6, you need to put the JAXB 2.1 API JAR into the lib/endorsed library of your JRE. This is either <tt>&lt;JDK_HOME&gt;/jre/lib/endorsed</tt> or <tt>&lt;JRE_HOME&gt;/lib/endorsed</tt> depending on if you're using full JDK or only JRE.</p> <p>The reason is that Java 1.6 is bundled JAXB 2.0 API by default. Hyperjaxb3 is, however based on XJC 2.1.x and subsequently requires JAXB 2.1 API. In order to override system libraries (which contain JAXB 2.0 API) with the required JAXB 2.1 API, you must use the <a href="http://java.sun.com/javase/6/docs/technotes/guides/standards/">endorsed mechanism</a> as shown above.</p> <p>Here's a <a href="http://download.java.net/maven/1/javax.xml.bind/jars/jaxb-api-2.1.jar">direct link</a> to JAXB 2.1 API JAR.</p> <h4><a name="Hyperjaxb3Usage-Hyperjaxb3withMaven2"></a>Hyperjaxb3 with Maven2</h1> <h4><a name="Hyperjaxb3Usage-Quickstartwithasampleproject"></a>Quickstart with a sample project</h2> <p>The easiest way to try out Hyperjaxb3 is to start with a sample project. Below are the stems to go:</p> 
+     <ol> 
+      <li>Download the <a href="http://download.java.net/maven/2/org/jvnet/hyperjaxb3/hyperjaxb3-ejb-samples-po-initial/0.3/hyperjaxb3-ejb-samples-po-initial-0.3-maven-src.zip">project archive</a>.</li> 
+      <li>Unpack it to the target folder.</li> 
+      <li>Put your schema files into the <tt>src/main/resources</tt>. Schemas should have the <tt>*.xsd</tt> extensions.</li> 
+      <li>Put your binding files into the same directory (<tt>src/main/resources</tt>). Binding files should have the <tt>*.xjb</tt> extensions.</li> 
+      <li>Put your sample XML (<tt>*.xml</tt>) into the <tt>src/test/samples</tt> directory. These samples will be used for the automatic roundtrip testing.</li> 
+      <li>Run <tt>mvn clean install</tt>.</li> 
+     </ol> <p>When sample project is build, the following happens:</p> 
+     <ul> 
+      <li>JAXB 2 together with Hyperjaxb3 plugin generate the code into the <tt>target/generated-sources/xjc</tt>. Hyperjaxb3 plugin additionally generates a roundtrip test</li> 
+      <li>The code is compiled.</li> 
+      <li>During the test phase, the roundtrip test class is used to test the generated annotations. The roundtrip test iterates over all the <tt>*.xml</tt> samples in <tt>src/test/samples</tt> and does the following: 
+       <ul> 
+        <li>The sample is unmarshalled using JAXB.</li> 
+        <li>Unmarshalled object structure is saved into the test database using the JPA interfaces. (Don't worry about the database, sample project uses the embedded HSQLDB for testing - you don't need to install or configure any RDBMS to run it.)</li> 
+        <li>Afterwards this structure is loaded back from the database via JPA.</li> 
+        <li>The loaded structure is compared to the original and marshalled with JAXB. If samples are not corrupted after the database roundtrip, this more or less guarantees that generated annotations work fine.</li> 
+       </ul> </li> 
+     </ul> <p>You may also use the <a href="https://hyperjaxb3.java.net/source/browse/*checkout*/hyperjaxb3/ejb/samples/po-initial/project-pom.xml">pom.xml</a> from the sample project as an example.</p> <h4><a name="Hyperjaxb3Usage-UsingHyperjaxb3inyourMaven2build"></a>Using Hyperjaxb3 in your Maven2 build</h2> <h4><a name="Hyperjaxb3Usage-Configurerepositories"></a>Configure repositories</h3> <p>Hyperjaxb3 and some of its dependencies are distributed via the dev.java.net's <a href="https://maven-repository.java.net/">Maven1</a> and <a href="https://maven2-repository.java.net/">Maven2 repositories</a>, so in order for Hyperjaxb3 to function in your Maven2 build, you have to include them into <tt>repositories</tt> and <tt>pluginRepositories</tt>. In case you intend to use Hibernate Entity Manager as a JPA implementation, you'll also need to configure the JBoss Maven2 repo as well:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;repositories&gt;
+	&lt;repository&gt;
+		&lt;id&gt;maven2-repository.java.net&lt;/id&gt;
+		&lt;url&gt;http://download.java.net/maven/2&lt;/url&gt;
+	&lt;/repository&gt;
+	&lt;repository&gt;
+		&lt;id&gt;maven-repository.java.net&lt;/id&gt;
+		&lt;url&gt;http://download.java.net/maven/1&lt;/url&gt;
+		&lt;layout&gt;legacy&lt;/layout&gt;
+	&lt;/repository&gt;
+	&lt;repository&gt;
+		&lt;id&gt;maven2-repository.jboss.com&lt;/id&gt;
+		&lt;url&gt;http://repository.jboss.com/maven2&lt;/url&gt;
+	&lt;/repository&gt;
+	&lt;repository&gt;
+		&lt;id&gt;jfrog.org&lt;/id&gt;
+		&lt;url&gt;http://www.jfrog.org/artifactory/plugins-releases@repo&lt;/url&gt;
+	&lt;/repository&gt;
+&lt;/repositories&gt;
+&lt;pluginRepositories&gt;
+	&lt;pluginRepository&gt;
+		&lt;id&gt;maven2-repository.java.net&lt;/id&gt;
+		&lt;url&gt;http://download.java.net/maven/2&lt;/url&gt;
+	&lt;/pluginRepository&gt;
+	&lt;pluginRepository&gt;
+		&lt;id&gt;maven-repository.java.net&lt;/id&gt;
+		&lt;url&gt;http://download.java.net/maven/1&lt;/url&gt;
+		&lt;layout&gt;legacy&lt;/layout&gt;
+	&lt;/pluginRepository&gt;
+&lt;/pluginRepositories&gt;</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="Hyperjaxb3Usage-Configuredependencies"></a>Configure dependencies</h3> <p>The code that you generate with Hyperjaxb3 naturally depends on the JAXB implementation as well as Hyperjaxb3 runtime libraries. So you have to add the appropriate artifacts to the dependencies:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;dependencies&gt;
+	&lt;dependency&gt;
+		&lt;groupId&gt;com.sun.xml.bind&lt;/groupId&gt;
+		&lt;artifactId&gt;jaxb-impl&lt;/artifactId&gt;
+		&lt;version&gt;2.1.6&lt;/version&gt;
+	&lt;/dependency&gt;
+	&lt;dependency&gt;
+		&lt;groupId&gt;org.jvnet.hyperjaxb3&lt;/groupId&gt;
+		&lt;artifactId&gt;hyperjaxb3-ejb-runtime&lt;/artifactId&gt;
+		&lt;version&gt;0.3&lt;/version&gt;
+	&lt;/dependency&gt;
+	&lt;!-- ... --&gt;
+&lt;/dependencies&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>Note that there are no dependencies on any specific EJB3 implementation. However, if you actually want to test the generated code with the roundtrip test, you'll need to include few more things - the roundtrip package, target EJB3 implementation libraries as well as JDBC driver of the target database. Assuming the "default" constellation of Hibernate3/HSQLDB, these dependencies look as follows:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;dependencies&gt;
+	&lt;!-- ... --&gt;
+
+	&lt;!-- Roundtrip package--&gt;
+	&lt;dependency&gt;
+		&lt;groupId&gt;org.jvnet.hyperjaxb3&lt;/groupId&gt;
+		&lt;artifactId&gt;hyperjaxb3-ejb-roundtrip&lt;/artifactId&gt;
+		&lt;version&gt;0.3&lt;/version&gt;
+	&lt;/dependency&gt;
+	&lt;!-- Hibernate --&gt;
+	&lt;dependency&gt;
+		&lt;groupId&gt;org.hibernate&lt;/groupId&gt;
+		&lt;artifactId&gt;hibernate-entitymanager&lt;/artifactId&gt;
+		&lt;version&gt;3.3.1.ga&lt;/version&gt;
+		&lt;scope&gt;test&lt;/scope&gt;
+	&lt;/dependency&gt;
+	&lt;!-- HSQLDB --&gt;
+	&lt;dependency&gt;
+		&lt;groupId&gt;hsqldb&lt;/groupId&gt;
+		&lt;artifactId&gt;hsqldb&lt;/artifactId&gt;
+		&lt;version&gt;1.8.0.7&lt;/version&gt;
+		&lt;scope&gt;test&lt;/scope&gt;
+	&lt;/dependency&gt;
+&lt;/dependencies&gt;</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="Hyperjaxb3Usage-AddHyperjaxb3Maven2plugintothe%7B%7Bbuild%7D%7Dsection"></a>Add Hyperjaxb3 Maven2 plugin to the <tt>build</tt> section</h3> <p>Now you have to instruct Maven that Hyperjaxb3 will participate in code generation. The simplest way to achieve this is to use the Hyperjaxb3 Maven2 plugin. This plugin will initialize JAXB schema compiler (XJC), pass the appropriate configuration options, turn on the required JAXB plugins and so on. All you have to do is to add the Hyperjaxb3 Maven plugin into the <tt>build/plugins</tt> of your project POM:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;build&gt;
+	&lt;defaultGoal&gt;install&lt;/defaultGoal&gt;
+	&lt;plugins&gt;
+		&lt;plugin&gt;
+			&lt;groupId&gt;org.jvnet.hyperjaxb3&lt;/groupId&gt;
+			&lt;artifactId&gt;maven-hyperjaxb3-plugin&lt;/artifactId&gt;
+			&lt;executions&gt;
+				&lt;execution&gt;
+					&lt;goals&gt;
+						&lt;goal&gt;generate&lt;/goal&gt;
+					&lt;/goals&gt;
+				&lt;/execution&gt;
+			&lt;/executions&gt;
+			&lt;configuration&gt;
+				&lt;extension&gt;true&lt;/extension&gt;
+				&lt;roundtripTestClassName&gt;RoundtripTest&lt;/roundtripTestClassName&gt;
+			&lt;/configuration&gt;
+		&lt;/plugin&gt;
+		&lt;plugin&gt;
+			&lt;inherited&gt;true&lt;/inherited&gt;
+			&lt;artifactId&gt;maven-compiler-plugin&lt;/artifactId&gt;
+			&lt;configuration&gt;
+				&lt;source&gt;1.5&lt;/source&gt;
+				&lt;target&gt;1.5&lt;/target&gt;
+			&lt;/configuration&gt;
+		&lt;/plugin&gt;
+	&lt;/plugins&gt;
+&lt;/build&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>The <tt>roundTripTestClassName</tt> element of the plugin configuration instructs Hyperjaxb3 to generate a roundtrip test class which will be executed during the <tt>test</tt> phase.</p> <p>You may also have mentioned the reconfigured Maven compiler plugin. Since JAXB 2 produces Java 1.5 compatible code, we also need to set <tt>source</tt> and <tt>target</tt> compatibility levels of the Maven compiler to <tt>1.5</tt>.</p> <h4><a name="Hyperjaxb3Usage-UsingHyperjaxb3withaJAXB2Maven2plugin"></a>Using Hyperjaxb3 with a JAXB2 Maven2 plugin</h2> <p>If for some reason you do not want to use the Hyperjaxb3 Maven2 plugin, you can still invoke Hyperjaxb3 from the "standard" JAXB2 Maven2 plugin. In this case you will need to configure Hyperjaxb3 as JAXB2 plugin and pass the appropriate arguments to XJC.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;build&gt;
+	&lt;defaultGoal&gt;install&lt;/defaultGoal&gt;
+	&lt;resources&gt;
+		&lt;resource&gt;
+			&lt;directory&gt;src/main/resources&lt;/directory&gt;
+			&lt;excludes&gt;
+				&lt;exclude&gt;**/*.java&lt;/exclude&gt;
+			&lt;/excludes&gt;
+		&lt;/resource&gt;
+		&lt;resource&gt;
+			&lt;directory&gt;target/generated-sources/xjc&lt;/directory&gt;
+			&lt;excludes&gt;
+				&lt;exclude&gt;**/*.java&lt;/exclude&gt;
+			&lt;/excludes&gt;
+		&lt;/resource&gt;
+	&lt;/resources&gt;
+	&lt;plugins&gt;
+		&lt;plugin&gt;
+			&lt;groupId&gt;org.jvnet.jaxb2.maven2&lt;/groupId&gt;
+			&lt;artifactId&gt;maven-jaxb2-plugin&lt;/artifactId&gt;
+			&lt;version&gt;0.5&lt;/version&gt;
+			&lt;executions&gt;
+				&lt;execution&gt;
+					&lt;goals&gt;
+						&lt;goal&gt;generate&lt;/goal&gt;
+					&lt;/goals&gt;
+				&lt;/execution&gt;
+			&lt;/executions&gt;
+			&lt;configuration&gt;
+				&lt;extension&gt;true&lt;/extension&gt;
+				&lt;plugins&gt;
+					&lt;plugin&gt;
+						&lt;groupId&gt;org.jvnet.hyperjaxb3&lt;/groupId&gt;
+						&lt;artifactId&gt;hyperjaxb3-ejb-plugin&lt;/artifactId&gt;
+						&lt;version&gt;0.3&lt;/version&gt;
+					&lt;/plugin&gt;
+				&lt;/plugins&gt;
+				&lt;args&gt;
+					&lt;arg&gt;-Xequals&lt;/arg&gt;
+					&lt;arg&gt;-XhashCode&lt;/arg&gt;
+					&lt;arg&gt;-Xhyperjaxb3-ejb&lt;/arg&gt;
+				&lt;/args&gt;
+			&lt;/configuration&gt;
+		&lt;/plugin&gt;
+		&lt;!-- ... --&gt;
+	&lt;/plugins&gt;
+&lt;/build&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>Note the additional <tt>resources</tt> element where we add our target generation directory as a resource directory. This is required since Hyperjaxb3 also generates the <tt>META-INF/persistence.xml</tt> - and Maven must be instructed to add this file as a resource.</p> <p>Another thing is that if you generate the roundtrip test class, you have to configure Maven's surefire plugin to run this test.</p> <p>Actually, you can avoid all of the configuration overhead above if you simply use the Hyperjaxb3 Maven2 plugin.</p> <h4><a name="Hyperjaxb3Usage-Hyperjaxb3withAnt"></a>Hyperjaxb3 with Ant</h1> <p>Using Hyperjaxb3 with Ant is a a bit more complex than with Maven since you have to take care of all the dependency management yourself. Still, it's not that hard - especially with the prepared sample project.</p> <h4><a name="Hyperjaxb3Usage-Quickstartwithasampleproject"></a>Quickstart with a sample project</h2> <p>To help Ant users get started with Hyperjaxb3, we've prepared a sample ant project. This is 1:1 clone of the Maven2 project with the difference that you have Ant's <tt>build.xml</tt> instead of Maven's <tt>pom.xml</tt>. This project is also in a pure "just add water" style:</p> 
+     <ol> 
+      <li>Download the <a href="http://download.java.net/maven/2/org/jvnet/hyperjaxb3/hyperjaxb3-ejb-samples-po-initial/0.3/hyperjaxb3-ejb-samples-po-initial-0.3-ant-src.zip">project archive</a>.</li> 
+      <li>Unpack it to the target folder. Note the <tt>lib</tt> folder which contains all the required libraries.</li> 
+      <li>Put your schema files into the <tt>src/main/resources</tt>. Schemas should have the <tt>*.xsd</tt> extensions.</li> 
+      <li>Put your binding files into the same directory (<tt>src/main/resources</tt>). Binding files should have the <tt>*.xjb</tt> extensions.</li> 
+      <li>Put your sample XML (<tt>*.xml</tt>) into the <tt>src/test/samples</tt> directory. These samples will be used for the automatic roundtrip testing.</li> 
+      <li>Run <tt>ant clean install</tt>.</li> 
+     </ol> <p>The magic that happens after that is exactly the same as in the case of the Maven project sample.</p> <p>You may also use the <a href="https://hyperjaxb3.java.net/source/browse/*checkout*/hyperjaxb3/ejb/samples/po-initial/project-build.xml">build.xml</a> from the sample project as an example when you'll write your own builds.</p> <h4><a name="Hyperjaxb3Usage-UsingHyperjaxb3inyourAntbuild"></a>Using Hyperjaxb3 in your Ant build</h2> <p>If you want to use Hyperjaxb3 to generate sources in the frame of an existing Ant build, you essentially need a correctly configured XJC task. Below is an example from the <a href="https://hyperjaxb3.java.net/source/browse/*checkout*/hyperjaxb3/ejb/samples/po-initial/project-build.xml">sample <tt>build.xml</tt></a>:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;taskdef name="xjc" classname="com.sun.tools.xjc.XJCTask"&gt;
+	&lt;classpath&gt;
+		&lt;fileset dir="${basedir}/lib"&gt;
+			&lt;include name="*.jar"/&gt;
+		&lt;/fileset&gt;
+	&lt;/classpath&gt;
+&lt;/taskdef&gt;
+&lt;mkdir dir="${basedir}/target/generated-sources/xjc"/&gt;
+&lt;xjc destdir="${basedir}/target/generated-sources/xjc" extension="true"&gt;
+	&lt;arg line="
+		-Xequals
+		-XhashCode
+		-XtoString
+		-Xhyperjaxb3-ejb
+		-Xhyperjaxb3-ejb-roundtripTestClassName=RoundtripTest"/&gt;
+	&lt;binding dir="${basedir}/src/main/resources"&gt;
+	 	&lt;include name="**/*.xjb"/&gt;
+	&lt;/binding&gt;
+	&lt;schema dir="${basedir}/src/main/resources"&gt;
+	 	&lt;include name="**/*.xsd"/&gt;
+	&lt;/schema&gt;
+&lt;/xjc&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>The trickiest part here is configuring the right dependencies for the XJC task definition. If you miss some of the required dependencies, the task will fail. As the matter of fact, most of the problems Hyperjaxb users ever reported were due to the erroneous dependency configurations. Our best advice is to copy the dependencies from <a href="http://download.java.net/maven/2/org/jvnet/hyperjaxb3/hyperjaxb3-ejb-samples-po-initial/0.3/hyperjaxb3-ejb-samples-po-initial-0.3-ant-src.zip">the sample project</a>. </p> <p>In any case, if you are getting "class not found" or "unrecognized parameter" error messages, include the <tt>-Dcom.sun.tools.xjc.Options.findServices=true</tt> option to your <tt>ANT_OPTS</tt> and run <tt>ant</tt> with <tt>-d -v</tt>. This will force XJC to output the diagnostic information and you may get some further clues on what's missing.</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

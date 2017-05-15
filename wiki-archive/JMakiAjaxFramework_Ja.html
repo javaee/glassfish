@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : JMakiAjaxFramework_Ja</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="JMakiAjaxFramework_Ja-jMaki%EF%BC%9AAJAX%E3%83%95%E3%83%AC%E3%83%BC%E3%83%A0%E3%83%AF%E3%83%BC%E3%82%AF"></a>jMaki： AJAX フレームワーク</h1> <p>前回の<a href="http://blogs.oracle.com/arungupta/entry/what_is_ajax">ブログ</a>では AJAX についてお話ししました。 また、<a href="http://java.sun.com//developer/technicalArticles/J2EE/AJAX/DesignStrategies/">AJAXのデザイン戦略</a>をお読みいただけば、Ajax の利点と欠点、そしてどんな場面で利用できるのかといった事柄をご理解いただけることでしょう。<br> 今回のブログでは、 <a href="http://ajax.java.net/">jMaki</a> をご紹介したいと思います。</p> <p>そもそも jMaki は、JSP ページや JSF のコンポーネントから JavaScript のウィジェットにアクセスする既存の <a href="http://en.wikipedia.org/wiki/Ajax_framework">AJAX フレームワーク</a>のラッパーとして誕生しました。 <br> jMaki の "j" は JavaScript 、そして <a href="http://en.wikipedia.org/wiki/Maki">"maki"</a> は "wrap" を意味する日本語の言葉 （巻）から取ったものです。まさに言い得て妙ですね。</p> <p><span class="error">Cannot resolve external resource into attachment.</span><br> さらに、 jMaki のロゴは、草書体で書かれた "wrapper" を意味する漢字（巻） のヒゲの部分に "j" の文字をあしらったものになっていますが、これも jMaki の性質を上手くあらわしています。</p> <p>jMaki を使うと、 <a href="http://dojotoolkit.org/">Dojo</a> や <a href="http://script.aculo.us/">Scriptaculous</a> 、<a href="http://code.google.com/webtoolkit/">Google Web Toolkit</a> 、<a href="http://developer.yahoo.com/yui/">Yahoo UI Library</a> といった既存の AJAX フレームワークで作られたウィジェットにアクセスすることができます。<br> さまざまなフレームワークで作られたコンポーネントに対する jMaki のラッパーは、こちらの<a href="http://developer.yahoo.com/yui/">ウィジェットギャラリー</a>でご覧いただけます。また、フレームワークごとに分類されたより完成度の高い Widget コレクションが <a href="http://javaserver.org/jmaki/">こちら</a>にもあります。</p> <p>この数週間で、jMaki プロジェクトは完全な AJAX フレームワークへと変身を遂げました。 jMaki は Java (Java Server Pages および Java Server Faces) PHP 5.x, それに Phobos (Sun によるもうひとつの Web 2.0 ...詳細は後ほど) による Web アプリケーションに JavaScript を中心とした Ajax 対応 Web アプリケーション作成のための軽量なモデルを提供します。</p> <p><a href="https://ajax.java.net/about.html">jMaki フレームワーク</a>は、<a href="http://blogs.oracle.com/arungupta/entry/what_is_ajax">以前にも述べたように</a>、<a href="https://ajax.java.net/widget-developer.html">ウィジェット・モデル</a>、クライアント・サービス、<a href="https://ajax.java.net/source/browse/*checkout*/ajax/ws/lib/css/index.html">レイアウト</a>、およびプレゼンテーション層上の<a href="https://ajax.java.net/jsdocs/Jmaki.html">クライアント・ランタイム</a>（またの名をクライアントサイド・コンポーネント）、サーバサイド・ランタイム、そしてデータ層上の XmlHttpProxy （またの名をサーバサイド・コンポーネント）を利用してプレゼンテーション層のロジックとその下層のデータとを分離します。AJAX フレームワークのためのラッパーからスタートした jMaki は、いまでは <a href="https://ajax.java.net/widget-developer.html">Widget Model</a> として知られるようになったというわけです。</p> <p>　さて、 jMakiについての詳細をお読み頂いたところで、そろそろコードを書いてみることにしましょう。その前に、まずは<a href="https://ajax.java.net/screencast/jMakiDemo/jMakiDemo.html">こちらのスクリーンキャスト</a>をご覧になることをお勧めします。このスクリーンキャストでは、 jMaki の概要、そして <a href="http://netbeans.org/">NetBeans</a> 上で <a href="https://ajax.java.net/jmaki-plugin.html">jMaki プラグイン</a>を使って Web アプリケーションを開発する手順が紹介されています。スクリーンキャストに従い、以下の手順で作業を行ってください：</p> <p>1. <a href="http://www.netbeans.info/downloads/index.php">NetBeans 5.5</a> をダウンロードします。<br> 2. NetBeans の <a href="https://ajax.java.net/files/documents/3115/45044/org-netbeans-modules-sun-ajax-updatecenter.nbm">Ajax Update Center Module</a> をダウンロードします。 個人的には、 jMaki プラグインの NBM ファイル（ NetBeans モジュール）よりアップデートセンター・モジュールの方が好みです。こちらを使えば、関連する良いアイテム（ Phobos プラグインとか）も一緒にダウンロードすることができますからね。<br> 3. <span class="error">Cannot resolve external resource into attachment.</span><br> 4. スクリーンキャストの手順に従い、 Web アプリケーションを作成します。<br> 5. NetBeans 5.5 には Apache Tomcat 5.5.17 があらかじめ同梱されています。 NetBeans IDE の "Runtime" タブを開き( デフォルトの ショートカット・キーは Ctrl + 5)、 "Bundled Tomcat (5.5.17)" を選択して、 右クリックメニューから "Start" でTomcatを起動します。<br> 6. ちょっとしたお遊びで、<a href="http://en.wikipedia.org/wiki/SuDoku">SuDoKu Widget</a> を追加してみました。<br> 7. アプリケーションの配備が完了すれば（手順 4 ）、<a href="http://localhost:8084/WebApplication1">http://localhost:8084/WebApplication1</a> にアクセスしてアプリケーションを表示することができます（デフォルトポートは 8084 、 アプリケーションのコンテキスト・ルートは WebApplication1 です）<br> たったこれだけで、あっという間に<a href="http://en.wikipedia.org/wiki/Rich_internet_application">リッチ・インターネット・アプリケーション</a>を開発できてしまいましたね。一度設定を行っておけば、一分もかからずに既存の jMaki ウィジェットを Web アプリケーションに追加することが可能となるのです。<br> 一旦 Web アプリケーションを配備してしまえば、あとは改めて余分な配備手順を踏むことなくドラッグ・アンド・ドロップ、保存、再読み込みでウィジェットの追加を行えます。これがJavaScript のいいところですね。</p> <p><a href="http://javapassion.com/">JavaPassion.com</a> で有名な <a href="http://www.javapassion.com/">Sang Shin</a> は、 jMaki ウィジェットの使い方を紹介する素晴らしいハンズオン・ラボを作りました。スクラッチから jMaki ウィジェットを作成し、既存のツールキットに含まれるウィジェットをラップする方法については、後日このブログにてご紹介したいと思います。</p> 
+     <hr> <p>日本語翻訳: <a href="http://apercu-j.blogspot.com/">Kana. Kotake</a></p> <p><a href="http://blogs.oracle.com/arungupta/entry/jmaki_ajax_framework">原文</a> </p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 09, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : MQApprovedIssues</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>&lt;PRE&gt;<br> &lt;FONT FACE="monospace"&gt;1 4.1p1 &lt;A HREF="http://bugs.sun.com/view_bug.do?bug_id=6573862"&gt;6573862&lt;/A&gt; jms_ra 3 3 25W fde JMSServiceException on send when sending the received message directly in DIRECT mode &lt;/FONT&gt;<br> &lt;FONT FACE="monospace"&gt;2 4.1p1 &lt;A HREF="http://bugs.sun.com/view_bug.do?bug_id=6579719"&gt;6579719&lt;/A&gt;-M broker 3 3 22W fde Broker does not delivers messages to the clients after some rollbacks &lt;/FONT&gt;<br> &lt;FONT FACE="monospace"&gt;3 4.1p1 &lt;A HREF="http://bugs.sun.com/view_bug.do?bug_id=6580902"&gt;6580902&lt;/A&gt; broker 4 5 22W fde JESMF WARNING in broker log file when domain is started/stopped &lt;/FONT&gt;<br> &lt;FONT FACE="monospace"&gt;4 4.1p1 &lt;A HREF="http://bugs.sun.com/view_bug.do?bug_id=2151299"&gt;6584433&lt;/A&gt;-M broker 3 3 20W fde Any use of message selector will perturb the MQ receive order of the non selector receiver &lt;/FONT&gt;<br> &lt;FONT FACE="monospace"&gt;5 4.1p1 &lt;A HREF="http://bugs.sun.com/view_bug.do?bug_id=6585449"&gt;6585449&lt;/A&gt; broker 4 4 20W fde 'notify commit txn failed' warning logged if imq.txn.reapLimit low &amp; &gt; 1 remote msg commit in 1 txn &lt;/FONT&gt;<br> &lt;FONT FACE="monospace"&gt;6 4.1p1 &lt;A HREF="http://bugs.sun.com/view_bug.do?bug_id=6590909"&gt;6590909&lt;/A&gt; jms_ra 3 2 18W fde Direct mode MDB does not connect to remote broker when addresslist is overridden &lt;/FONT&gt;<br> &lt;FONT FACE="monospace"&gt;7 4.1p1 &lt;A HREF="http://bugs.sun.com/view_bug.do?bug_id=2152261"&gt;6590969&lt;/A&gt;-M broker 3 3 15W clo The SUN message queue broker should be able to cope with user names in dn format uid=tomr,ou=People &lt;/FONT&gt;<br> &lt;FONT FACE="monospace"&gt;8 4.1p1 &lt;A HREF="http://bugs.sun.com/view_bug.do?bug_id=6592902"&gt;6592902&lt;/A&gt; c_api 4 4 18W clo README for the C samples should be improved &lt;/FONT&gt;<br> &lt;FONT FACE="monospace"&gt;9 4.1p1 &lt;A HREF="http://bugs.sun.com/view_bug.do?bug_id=6593458"&gt;6593458&lt;/A&gt; installation 4 4 17W fde legal files should be placed in a legal sub-directory &lt;/FONT&gt;<br> &lt;FONT FACE="monospace"&gt;10 4.1p1 &lt;A HREF="http://bugs.sun.com/view_bug.do?bug_id=2152240"&gt;6598971&lt;/A&gt;-M broker 2 3 15W fde Broker failed to restart after a crashed and transaction logging is enabled &lt;/FONT&gt;<br> &lt;FONT FACE="monospace"&gt;11 4.1p1 &lt;A HREF="http://bugs.sun.com/view_bug.do?bug_id=6606718"&gt;6606718&lt;/A&gt; broker 3 3 12W fde init RC start up script doesn't work with chkconfig on linux &lt;/FONT&gt;<br> &lt;FONT FACE="monospace"&gt;12 4.1p1 &lt;A HREF="http://bugs.sun.com/view_bug.do?bug_id=6611867"&gt;6611867&lt;/A&gt; broker 3 4 11W clo need null check in detatch consumer to avoid NullPointerException in case msg expired after delivery &lt;/FONT&gt;<br> &lt;FONT FACE="monospace"&gt;13 4.1p1 &lt;A HREF="http://bugs.sun.com/view_bug.do?bug_id=6615741"&gt;6615741&lt;/A&gt;-M broker 3 1 9W fde msg not redelivered to new consumer on Session.rollback if old consumer was closed before rollback &lt;/FONT&gt;<br> &lt;FONT FACE="monospace"&gt;14 4.1p1 &lt;A HREF="http://bugs.sun.com/view_bug.do?bug_id=6625731"&gt;6625731&lt;/A&gt;-M broker 2 3 6W clo priority head updated wrong in addAllToFront incase dups causes 1000 iteration test Bug6440581 fail &lt;/FONT&gt;&lt;/PRE&gt;&lt;P STYLE="margin-bottom: 0in"&gt;<br> &lt;BR&gt;<br> &lt;/P&gt;</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 08, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

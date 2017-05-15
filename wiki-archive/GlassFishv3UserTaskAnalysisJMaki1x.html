@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFishv3UserTaskAnalysisJMaki1x</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>&lt;h1&gt;GlassFish v3 User Task Analysis for jMaki&lt;/h1&gt;</p> <p>Back to <a href="GlassFishV3UserTaskAnalyses.html" title="GlassFishV3UserTaskAnalyses">GlassFish v3 User Task Analyses</a></p> 
+     <div> 
+      <ul> 
+       <li><a href="#GlassFishv3UserTaskAnalysisJMaki1x-Scope">Scope</a></li> 
+       <li><a href="#GlassFishv3UserTaskAnalysisJMaki1x-RelatedInformation">Related Information</a></li> 
+       <li><a href="#GlassFishv3UserTaskAnalysisJMaki1x-ListofTasks">List of Tasks</a></li> 
+       <li><a href="#GlassFishv3UserTaskAnalysisJMaki1x-AssociatedConcepts">Associated Concepts</a></li> 
+      </ul>
+     </div> <h4><a name="GlassFishv3UserTaskAnalysisJMaki1x-Scope"></a>Scope</h1> <p>To identify the tasks that an application developer must perform to develop and deploy a typical jMaki application. An application developer primarily uses widgets rather than develops widgets.</p> <h4><a name="GlassFishv3UserTaskAnalysisJMaki1x-RelatedInformation"></a>Related Information</h1> 
+     <ul> 
+      <li><a href="http://ajax.java.net">The jMaki project</a></li> 
+     </ul> <h4><a name="GlassFishv3UserTaskAnalysisJMaki1x-ListofTasks"></a>List of Tasks</h1> <p>{1} = Priority 1: Must document for V3<br> {2} = Priority 2: Might document for V3<br> {3} = Priority 3: Will defer to later or get a volunteer to document it</p> 
+     <ul> 
+      <li><a href="http://docs.sun.com/app/docs/doc/820-4868/ggqhd?a=view">Download jMaki</a>{1}</li> 
+      <li><a href="http://docs.sun.com/app/docs/doc/820-4868/ggqhd?a=view">Install jMaki</a>{1}</li> 
+      <li>Integrating jMaki with my framework of choice {2} 
+       <ul> 
+        <li>Subtasks?</li> 
+       </ul> </li> 
+      <li><a href="http://docs.sun.com/app/docs/doc/820-4868/ggpge?a=view">Adding jMaki to a NetBeans project</a>{1}</li> 
+      <li>Adding jMaki to an Eclipse project {3}</li> 
+      <li>Updating jMaki pallette in Netbeans {2}</li> 
+      <li>Creating pages with JSP, JSF, PHP, JRuby {1}</li> 
+      <li><a href="http://docs.sun.com/app/docs/doc/820-4868/ggplo?a=view">AddIng an existing widget to a page</a>{1} 
+       <ul> 
+        <li>Selecting a widget</li> 
+        <li>Add a tag</li> 
+        <li>Add a library</li> 
+        <li>Add library dependencies</li> 
+        <li>By using NetBeans or Eclipse these three things happen automatically</li> 
+       </ul> </li> 
+      <li>Initialize a widget {1} 
+       <ul> 
+        <li>Subtasks?</li> 
+       </ul> </li> 
+      <li><a href="http://docs.sun.com/app/docs/doc/820-4868/ggpkn?a=view">Manage widget data</a>{1} 
+       <ul> 
+        <li>Through value attributes {1} 
+         <ul> 
+          <li>Through reference to a JavaScript variable</li> 
+          <li>Binding to JavaBean component</li> 
+         </ul> </li> 
+        <li>Through service attributes {1}</li> 
+        <li>Selecting the right widget to represent your data {1}</li> 
+        <li>Setting data using Ajax {1} 
+         <ul> 
+          <li>Subtasks?</li> 
+         </ul> </li> 
+        <li>Formatting data using JSON {1} 
+         <ul> 
+          <li>Subtasks?</li> 
+         </ul> </li> 
+        <li>Processing form data {2} 
+         <ul> 
+          <li>Adding rows</li> 
+          <li>Deleting rows</li> 
+          <li>Selecting rows</li> 
+         </ul> </li> 
+       </ul> </li> 
+     </ul> <p><a href="http://docs.sun.com/app/docs/doc/820-4868/ggpiu?a=view">Enabling widgets to communicate with each other</a> {1}</p> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li>Using actions (declarative events) to allow widgets to communicate {1}</li> 
+        <li>Using the getWidget function to get a handle on a widget instance. {1}</li> 
+        <li>Using pub/sub (programmatic events) to get widgets to communicate {1} 
+         <ul> 
+          <li>Subtasks?</li> 
+         </ul> </li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li><a href="http://docs.sun.com/app/docs/doc/820-4868/ggpiu?a=view">Enabling widgets to communicate with the server</a>{1} 
+       <ul> 
+        <li><a href="http://docs.sun.com/app/docs/doc/820-4868/ggpiu?a=view">Making XMLHttpRequest calls with the doAjax function</a>{1} 
+         <ul> 
+          <li>Subtasks?</li> 
+         </ul> </li> 
+        <li>Using glue code and the subscribe function to get and set data on a widget (other common use cases for subscribe function and glue code?) {1} 
+         <ul> 
+          <li>Subtasks?</li> 
+         </ul> </li> 
+        <li>Giving different publish events to widgets {1} 
+         <ul> 
+          <li>Subtasks?</li> 
+         </ul> </li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li><a href="http://docs.sun.com/app/docs/doc/820-4868/ggpgc?a=view">Accessing external services through XML/HTTP proxy</a>{1} 
+       <ul> 
+        <li>Accessing a service through the xhp property {1} 
+         <ul> 
+          <li>Subtasks?</li> 
+         </ul> </li> 
+        <li>Accessing an rss feed {1}</li> 
+        <li>Accessing an atom feed {2}</li> 
+        <li>Using a stylesheet to convert incoming data to the proper format {2} 
+         <ul> 
+          <li>Subtasks?</li> 
+         </ul> </li> 
+        <li><a href="http://docs.sun.com/app/docs/doc/820-4868/ggpgc?a=view">Using doAjax to access standard service (such as yahoo geocoder)</a>{1} 
+         <ul> 
+          <li>Subtasks?</li> 
+         </ul> </li> 
+        <li>Registering your own service {2} 
+         <ul> 
+          <li>Subtasks?</li> 
+         </ul> </li> 
+        <li>Accessing your own service. {2} 
+         <ul> 
+          <li>Subtasks?</li> 
+         </ul> </li> 
+        <li>Updating proxy files {2}</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li>Customizing a widget {1} 
+       <ul> 
+        <li>Styling a widget {1}</li> 
+        <li>Applying versioning to a widget {2}</li> 
+        <li>Getting a handle on a widget {1}</li> 
+        <li>Configuring a widget {2}</li> 
+        <li>Creating a widget {3} 
+         <ul> 
+          <li>Subtasks?</li> 
+         </ul> </li> 
+        <li>Enabling a widget to work with a service {1} 
+         <ul> 
+          <li>Subtasks?</li> 
+         </ul> </li> 
+        <li>Wrapping a widget {2} 
+         <ul> 
+          <li>Subtasks?</li> 
+         </ul> </li> 
+        <li>Putting a widget in a widget {1} 
+         <ul> 
+          <li>Subtasks?</li> 
+         </ul> </li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li>Deployment 
+       <ul> 
+        <li>Switching deployment defaults {2} 
+         <ul> 
+          <li>Subtasks?</li> 
+         </ul> </li> 
+       </ul> </li> 
+     </ul> <h4><a name="GlassFishv3UserTaskAnalysisJMaki1x-AssociatedConcepts"></a>Associated Concepts</h1> 
+     <ul> 
+      <li>Pagination</li> 
+      <li>Extend jMaki</li> 
+      <li>Minimum requirements for a jMaki widget</li> 
+      <li>Widget composition</li> 
+      <li>Event types</li> 
+      <li>Outbound events vs inbound events (commands)</li> 
+      <li>Topics</li> 
+      <li>Publish and Subscribe</li> 
+      <li>Package widget (don't know what this means)</li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 09, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:44.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

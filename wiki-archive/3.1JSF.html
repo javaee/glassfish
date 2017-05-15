@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : 3.1JSF</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="3.1JSF-GlassFishServerOpenSourceEdition3.1JSF"></a>GlassFish Server Open Source Edition 3.1 - JSF</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#3.1JSF-GlassFishServerOpenSourceEdition3.1JSF">GlassFish Server Open Source Edition 3.1 - JSF</a></li> 
+       <ul> 
+        <li><a href="#3.1JSF-Introduction">Introduction</a></li> 
+        <li><a href="#3.1JSF-Scope">Scope</a></li> 
+        <li><a href="#3.1JSF-FeatureOverview">Feature Overview</a></li> 
+        <li><a href="#3.1JSF-DesignDocument">Design Document</a></li> 
+        <li><a href="#3.1JSF-MilestoneSchedule">Milestone Schedule</a></li> 
+        <li><a href="#3.1JSF-TaskList">Task List</a></li> 
+        <li><a href="#3.1JSF-DevTests">Dev Tests</a></li> 
+        <li><a href="#3.1JSF-References">References</a></li> 
+        <li><a href="#3.1JSF-QueriesbyGlassFishmilestones">Queries by GlassFish milestones</a></li> 
+       </ul> 
+       <li><a href="#3.1JSF-Teamwidequeries">Team-wide queries</a></li> 
+       <li><a href="#3.1JSF-edburnsrelatedqueries">edburns related queries</a></li> 
+       <li><a href="#3.1JSF-rogerkrelatedqueries"> <b>rogerk related queries</b></a></li> 
+       <li><a href="#3.1JSF-sheetalvrelatedqueries">sheetalv related queries</a></li> 
+      </ul>
+     </div> <h4><a name="3.1JSF-Introduction"></a>Introduction</h2> <p>JavaServer Faces technology simplifies building user interfaces for JavaServer applications. Developers can build web applications by assembling reuseable UI components in a page; connecting these components to an application data source; and wiring client-generated events to server-side event handlers. This project provides information on the continued development of the JavaServer Faces specification. More information on JSF can be found at <a href="http://javaserverfaces.org/">http://javaserverfaces.org/</a>.</p> <p>This page hosts status information taken from the official page of the JSF spec effort, <a href="https://javaserverfaces-spec-public.java.net/">https://javaserverfaces-spec-public.java.net/</a>, and the official page of Oracle's Mojarra implementation project, <a href="https://javaserverfaces.java.net/">https://javaserverfaces.java.net/</a>. The information on <b>this</b> page is culled from those pages, and therefore may be stale.</p> <h4><a name="3.1JSF-Scope"></a>Scope</h2> <p>As of 23 June 2010, there were <a href="https://javaserverfaces.java.net/issues/buglist.cgi?component=javaserverfaces&amp;issue_status=UNCONFIRMED&amp;issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=fulltext&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=status_whiteboard&amp;type0-0-0=substring&amp;value0-0-0=size_&amp;field0-0-1=status_whiteboard&amp;type0-0-1=substring&amp;value0-0-1=importance_&amp;cmdtype=doit&amp;namedcmd=mystuff&amp;newqueryname=&amp;order=Reusesamesortaslasttime&amp;Submitquery=Submitquery">91 triaged issues in the Mojarra issue tracker</a> and <a href="https://javaserverfaces-spec-public.java.net/issues/buglist.cgi?component=javaserverfaces-spec-public&amp;issue_status=UNCONFIRMED&amp;issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=fulltext&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=status_whiteboard&amp;type0-0-0=casesubstring&amp;value0-0-0=size_&amp;field0-0-1=status_whiteboard&amp;type0-0-1=casesubstring&amp;value0-0-1=importance_&amp;cmdtype=doit&amp;namedcmd=IssuesResolvedEDRtoPR&amp;newqueryname=&amp;order=Reusesamesortaslasttime&amp;Submitquery=Submitquery">225 triaged issues in the Spec issue tracker</a> for a total of 316 triaged issues.</p> <p>As of 23 June 2010, there were <a href="https://javaserverfaces.java.net/issues/buglist.cgi?component=javaserverfaces&amp;issue_status=UNCONFIRMED&amp;issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED&amp;target_milestone=2.0&amp;target_milestone=2.0-b01&amp;target_milestone=2.0-b02&amp;target_milestone=2.0-b03&amp;target_milestone=2.0.0&amp;target_milestone=2.0.0b01&amp;target_milestone=2.0.0-b02&amp;target_milestone=2.0.0-b03&amp;target_milestone=2.0.0-b04&amp;target_milestone=2.0.0-b05&amp;target_milestone=2.0.0-b06&amp;target_milestone=2.0.0-b07&amp;target_milestone=2.0.0-b08&amp;target_milestone=2.0.0-b09&amp;target_milestone=2.0.0-b10&amp;target_milestone=2.0.0-b11&amp;target_milestone=2.0.0-b12&amp;target_milestone=2.0.0-b13&amp;target_milestone=2.0.0-b14&amp;target_milestone=2.0.0-b15&amp;target_milestone=2.0.0-b16&amp;target_milestone=2.0.0-b17&amp;target_milestone=2.0.0-b18&amp;target_milestone=2.0.0-b19&amp;target_milestone=2.0.0-b20&amp;target_milestone=2.0.0-b21&amp;target_milestone=2.0.0-b22&amp;target_milestone=2.0.0-b23&amp;target_milestone=2.0.0-BETA1&amp;target_milestone=2.0.0-BETA2&amp;target_milestone=2.0.0-FCS&amp;target_milestone=2.0.0-RC1&amp;target_milestone=2.0.1-b01&amp;target_milestone=2.0.2-b01&amp;target_milestone=2.0.2-b02&amp;target_milestone=2.0.2-b03&amp;target_milestone=2.0.2-b04&amp;target_milestone=2.0.2-b05&amp;target_milestone=2.0.2-b06&amp;target_milestone=2.0.2-b07&amp;target_milestone=2.0.2-b08&amp;target_milestone=2.0.3&amp;target_milestone=2.0.3-b01&amp;target_milestone=2.0.3-b02&amp;target_milestone=2.0.3-b03&amp;target_milestone=2.0.next&amp;target_milestone=2.1&amp;target_milestone=TBD&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=fulltext&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=status_whiteboard&amp;type0-0-0=notsubstring&amp;value0-0-0=size_&amp;field0-1-0=status_whiteboard&amp;type0-1-0=notsubstring&amp;value0-1-0=importance_&amp;cmdtype=doit&amp;namedcmd=mystuff&amp;newqueryname=&amp;order=Reusesamesortaslasttime&amp;Submitquery=Submitquery">176 un-triaged issues in the Mojarra issue tracker</a> and <a href="https://javaserverfaces-spec-public.java.net/issues/buglist.cgi?component=javaserverfaces-spec-public&amp;issue_status=UNCONFIRMED&amp;issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED&amp;target_milestone=unscheduled&amp;target_milestone=2.0Reva&amp;target_milestone=2.0Revb&amp;target_milestone=2.0Revc&amp;target_milestone=2.1&amp;target_milestone=2.1Reva&amp;target_milestone=2.1Revb&amp;target_milestone=2.2&amp;target_milestone=2.3&amp;target_milestone=2.4&amp;target_milestone=3.0&amp;target_milestone=2.0&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=fulltext&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=status_whiteboard&amp;type0-0-0=notsubstring&amp;value0-0-0=size_&amp;field0-1-0=status_whiteboard&amp;type0-1-0=notsubstring&amp;value0-1-0=importance_&amp;cmdtype=doit&amp;namedcmd=IssuesResolvedEDRtoPR&amp;newqueryname=&amp;order=Reusesamesortaslasttime&amp;Submitquery=Submitquery">35 untriaged issues in the Spec issue tracker</a> for a total of 211 untriaged issues.</p> <p><a href="https://javaserverfaces-spec-public.java.net/issues/buglist.cgi?component=javaserverfaces-spec-public&amp;issue_status=UNCONFIRMED&amp;issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=fulltext&amp;keywords=adf&amp;keywords_type=notokens&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=&amp;field0-0-1=status_whiteboard&amp;type0-0-1=casesubstring&amp;value0-0-1=importance_large&amp;cmdtype=doit&amp;namedcmd=IssuesResolvedEDRtoPR&amp;newqueryname=&amp;order=Reusesamesortaslasttime&amp;Submitquery=Submitquery">This query shows spec issues that have been triaged as importance_large that are not already covered by an ADF request</a>.</p> <p><a href="https://javaserverfaces.java.net/issues/buglist.cgi?component=javaserverfaces&amp;issue_status=UNCONFIRMED&amp;issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=fulltext&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=keywords&amp;type0-0-0=notsubstring&amp;value0-0-0=adf&amp;field0-1-0=status_whiteboard&amp;type0-1-0=substring&amp;value0-1-0=importance_large&amp;cmdtype=doit&amp;namedcmd=mystuff&amp;newqueryname=&amp;order=Reusesamesortaslasttime&amp;Submitquery=Submitquery">This query shows Mojarra issues that have been triaged as importance_large that are not already covered by an ADF request</a></p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Feature ID </th> 
+         <th class="confluenceTh"> Priority </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> Eng Response </th> 
+         <th class="confluenceTh"> Owner(s) </th> 
+         <th class="confluenceTh"> Estimate (Man Days) </th> 
+         <th class="confluenceTh"> Source of Requirement </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JSF-001 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Performance porting from 1.2 </td> 
+         <td class="confluenceTd"> yes </td> 
+         <td class="confluenceTd"> sheetalv, edburns </td> 
+         <td class="confluenceTd"> 3 weeks </td> 
+         <td class="confluenceTd"> WLS Perf team </td> 
+         <td class="confluenceTd"> Ongoing </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JSF-002 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> <a href="https://javaserverfaces.java.net/issues/buglist.cgi?component=javaserverfaces&amp;issue_status=UNCONFIRMED&amp;issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=fulltext&amp;keywords=performance&amp;keywords_type=anytokens&amp;field0-0-0=status_whiteboard&amp;type0-0-0=substring&amp;value0-0-0=size_&amp;field0-0-1=status_whiteboard&amp;type0-0-1=substring&amp;value0-0-1=importance_&amp;cmdtype=doit&amp;namedcmd=mystuff&amp;newqueryname=&amp;order=Reusesamesortaslasttime&amp;Submitquery=Submitquery">Performance Enhancements (24 issues) </a> </td> 
+         <td class="confluenceTd"> yes </td> 
+         <td class="confluenceTd"> edburns </td> 
+         <td class="confluenceTd"> 64 </td> 
+         <td class="confluenceTd"> ADF </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JSF-003 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> High Priority ADF Requests (<a href="https://javaserverfaces.java.net/issues/buglist.cgi?component=javaserverfaces&amp;issue_status=UNCONFIRMED&amp;issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=fulltext&amp;keywords=performance&amp;keywords_type=notokens&amp;field0-0-0=status_whiteboard&amp;type0-0-0=substring&amp;value0-0-0=size_&amp;field0-0-1=status_whiteboard&amp;type0-0-1=substring&amp;value0-0-1=importance_&amp;field0-1-0=keywords&amp;type0-1-0=substring&amp;value0-1-0=adf_high&amp;field0-2-0=noop&amp;type0-2-0=noop&amp;value0-2-0=&amp;cmdtype=doit&amp;namedcmd=mystuff&amp;newqueryname=&amp;order=Reusesamesortaslasttime&amp;Submitquery=Submitquery">7 Mojarra issues </a> <a href="https://javaserverfaces-spec-public.java.net/issues/buglist.cgi?component=javaserverfaces-spec-public&amp;issue_status=UNCONFIRMED&amp;issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=fulltext&amp;keywords=adf_high&amp;keywords_type=anytokens&amp;field0-0-0=status_whiteboard&amp;type0-0-0=casesubstring&amp;value0-0-0=size_&amp;field0-0-1=status_whiteboard&amp;type0-0-1=casesubstring&amp;value0-0-1=importance_&amp;cmdtype=doit&amp;namedcmd=IssuesResolvedEDRtoPR&amp;newqueryname=&amp;order=Reusesamesortaslasttime&amp;Submitquery=Submitquery">3 Spec Issues </a>) </td> 
+         <td class="confluenceTd"> yes </td> 
+         <td class="confluenceTd"> rkitain,edburns </td> 
+         <td class="confluenceTd"> 30 </td> 
+         <td class="confluenceTd"> ADF </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JSF-004 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Community Enhancements/Bug Fixes </td> 
+         <td class="confluenceTd"> yes </td> 
+         <td class="confluenceTd"> edburns, rkitain, sheetal </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> EG, Community </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JSF-005 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Security issues (<a href="https://javaserverfaces.java.net/issues/buglist.cgi?component=javaserverfaces&amp;issue_status=UNCONFIRMED&amp;issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED&amp;issue_status=RESOLVED&amp;issue_status=VERIFIED&amp;issue_status=CLOSED&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=fulltext&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=status_whiteboard&amp;type0-0-0=substring&amp;value0-0-0=cat3&amp;cmdtype=doit&amp;namedcmd=mystuff&amp;newqueryname=&amp;order=Reusesamesortaslasttime&amp;Submitquery=Submitquery">4 Mojarra issues </a>, <a href="https://javaserverfaces-spec-public.java.net/issues/buglist.cgi?component=javaserverfaces-spec-public&amp;issue_status=UNCONFIRMED&amp;issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED&amp;issue_status=RESOLVED&amp;issue_status=VERIFIED&amp;issue_status=CLOSED&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=fulltext&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=status_whiteboard&amp;type0-0-0=substring&amp;value0-0-0=cat3&amp;cmdtype=doit&amp;namedcmd=IssuesResolvedEDRtoPR&amp;newqueryname=&amp;order=Reusesamesortaslasttime&amp;Submitquery=Submitquery">1 Spec Issue </a>, One Internal Issue) </td> 
+         <td class="confluenceTd"> yes </td> 
+         <td class="confluenceTd"> edburns, rkitain </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Community, Security Conference </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.1JSF-FeatureOverview"></a>Feature Overview</h2> 
+     <ul> 
+      <li>Coming soon</li> 
+     </ul> <h4><a name="3.1JSF-DesignDocument"></a>Design Document</h2> <p><a href="V3.1JsfHalfPager.html" title="V3.1JsfHalfPager">JSF 2.1 Half Pager</a></p> <h4><a name="3.1JSF-MilestoneSchedule"></a>Milestone Schedule</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> 7/19 M3 </td> 
+         <td class="confluenceTd"> JSF-005 </td> 
+         <td class="confluenceTd"> Security issues </td> 
+         <td class="confluenceTd"> no </td> 
+         <td class="confluenceTd"> Sheetal : fixes for RI issues 1452,1655 and spec issues 733,786 will not make it into MS3 build since my laptop crashed. But the fixes will be in the Glassfish nightly in the same week after 7/19. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd"> 7/19 M3 </td> 
+         <td class="confluenceTd"> JSF-001 </td> 
+         <td class="confluenceTd"> Performance porting </td> 
+         <td class="confluenceTd"> yes </td> 
+         <td class="confluenceTd"> Done. Handing off to ADF team to verify </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3 </td> 
+         <td class="confluenceTd"> 8/16 M4 </td> 
+         <td class="confluenceTd"> JSF-002 </td> 
+         <td class="confluenceTd"> Performance enhancements </td> 
+         <td class="confluenceTd"> no </td> 
+         <td class="confluenceTd"> Done. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4 </td> 
+         <td class="confluenceTd"> 8/16 M4 </td> 
+         <td class="confluenceTd"> JSF-003 </td> 
+         <td class="confluenceTd"> High priority ADF issues </td> 
+         <td class="confluenceTd"> no </td> 
+         <td class="confluenceTd"> Done.&nbsp; Also, QA will not be adding any new tests.&nbsp; Documentation will be updating tutorial content only. <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5 </td> 
+         <td class="confluenceTd"> 9/13 M5 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Spec &amp; RI feature complete </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> in progress </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6 </td> 
+         <td class="confluenceTd"> 9/13 M5 </td> 
+         <td class="confluenceTd"> JSF-004 </td> 
+         <td class="confluenceTd"> Community Enhancements/Bug Fixes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 7 </td> 
+         <td class="confluenceTd"> 9/13 M5 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Change log ready for handoff to JCP </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 8 </td> 
+         <td class="confluenceTd"> 11/22 M6 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Final Spec/Implementation </td> 
+         <td class="confluenceTd"> TCK Handoff </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.1JSF-TaskList"></a>Task List</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task </th> 
+         <th class="confluenceTh"> Target Milestone </th> 
+         <th class="confluenceTh"> Start </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Owner(s) </th> 
+         <th class="confluenceTh"> Feature ID </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> 9/13 M5 </td> 
+         <td class="confluenceTd"> 9/13 </td> 
+         <td class="confluenceTd"> 11/05 </td> 
+         <td class="confluenceTd"> edburns, rogerk </td> 
+         <td class="confluenceTd"> JSF-002 </td> 
+         <td class="confluenceTd"> Hand off to EG </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.1JSF-DevTests"></a>Dev Tests</h2> 
+     <ul> 
+      <li>Coming soon</li> 
+     </ul> <h4><a name="3.1JSF-References"></a>References</h2> 
+     <ul> 
+      <li><a href="GlassFishV3Schedule.html#GlassFishV3Schedule-sectionGlassFishV3SchedulesectionGlassFishV3Sc...">Glassfish 3.1 Milestone Schedule</a></li> 
+      <li><a href="http://docs.sun.com/app/docs/doc/821-0179/6nl8hchmr?l=en&amp;a=expand">GlassFish v2.x CLI Commands</a></li> 
+      <li><a href="GlassFishV2Architecture.html" title="GlassFishV2Architecture">GlassFish v2 Cluster Architecture </a></li> 
+      <li><a href="V4Jsr314JavaServerFacesIntegration.html" title="V4Jsr314JavaServerFacesIntegration">Page describing how to integrate Mojarra JSF 2.1 into GlassFish 3.1</a></li> 
+     </ul> <h4><a name="3.1JSF-QueriesbyGlassFishmilestones"></a>Queries by GlassFish milestones</h2> <p>Fixes delivered by GlassFish milestones.</p> 
+     <ul> 
+      <li>M3 fixes 
+       <ul> 
+        <li><a href="https://javaserverfaces.java.net/issues/buglist.cgi?Submit+query=Submit+query&amp;component=javaserverfaces&amp;target_milestone=2.1_gf31_m3&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=fulltext&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=&amp;cmdtype=doit&amp;namedcmd=mystuff&amp;newqueryname=&amp;order=Reuse+same+sort+as+last+time">Mojarra issues</a></li> 
+        <li><a href="https://javaserverfaces-spec-public.java.net/issues/buglist.cgi?Submit+query=Submit+query&amp;component=javaserverfaces-spec-public&amp;target_milestone=2.1_gf31_m3&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=fulltext&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=target_milestone&amp;type0-0-0=substring&amp;value0-0-0=2.1&amp;cmdtype=doit&amp;namedcmd=IssuesResolvedEDRtoPR&amp;newqueryname=&amp;order=Reuse+same+sort+as+last+time">Spec issues</a></li> 
+       </ul> </li> 
+      <li>M4 fixes 
+       <ul> 
+        <li><a href="https://javaserverfaces.java.net/issues/buglist.cgi?Submit+query=Submit+query&amp;component=javaserverfaces&amp;target_milestone=2.1_gf31_m4&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=fulltext&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=&amp;cmdtype=doit&amp;namedcmd=mystuff&amp;newqueryname=&amp;order=Reuse+same+sort+as+last+time">Mojarra issues</a></li> 
+        <li><a href="https://javaserverfaces-spec-public.java.net/issues/buglist.cgi?Submit+query=Submit+query&amp;component=javaserverfaces-spec-public&amp;target_milestone=2.1_gf31_m4&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=fulltext&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=target_milestone&amp;type0-0-0=substring&amp;value0-0-0=2.1&amp;cmdtype=doit&amp;namedcmd=IssuesResolvedEDRtoPR&amp;newqueryname=&amp;order=Reuse+same+sort+as+last+time">Spec issues</a></li> 
+       </ul> </li> 
+      <li>M5 fixes 
+       <ul> 
+        <li><a href="https://javaserverfaces.java.net/issues/buglist.cgi?resort=1&amp;component=javaserverfaces;target_milestone=2.1_gf31_m5;email1=;emailtype1=exact;emailassigned_to1=1;email2=;emailtype2=exact;emailreporter2=1;issueidtype=include;issue_id=;changedin=;votes=;chfieldfrom=;chfieldto=Now;chfieldvalue=;short_desc=;short_desc_type=fulltext;long_desc=;long_desc_type=fulltext;issue_file_loc=;issue_file_loc_type=fulltext;status_whiteboard=;status_whiteboard_type=fulltext;keywords=;keywords_type=anytokens;field0-0-0=target_milestone;type0-0-0=substring;value0-0-0=2.1;newqueryname=;Submit%20query=Submit%20query&amp;order=map_assigned_to.userid,%20issues.target_milestone,%20issues.priority,%20issues.issue_id">Mojarra issues</a></li> 
+        <li><a href="https://javaserverfaces-spec-public.java.net/issues/buglist.cgi?Submitquery=Submitquery&amp;target_milestone=2.1_gf31_m5&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=fulltext&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=target_milestone&amp;type0-0-0=substring&amp;value0-0-0=2.1&amp;cmdtype=doit&amp;order=Reusesamesortaslasttime">Spec issues</a></li> 
+       </ul> </li> 
+      <li>M6 fixes 
+       <ul> 
+        <li><a href="https://javaserverfaces.java.net/issues/buglist.cgi?component=javaserverfaces&amp;target_milestone=2.1_gf31_m6&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=fulltext&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=&amp;cmdtype=doit&amp;namedcmd=mystuff&amp;newqueryname=&amp;order=Reuse+same+sort+as+last+time&amp;Submit+query=Submit+query">Mojarra issues</a></li> 
+        <li><a href="https://javaserverfaces-spec-public.java.net/issues/buglist.cgi?Submit+query=Submit+query&amp;component=javaserverfaces-spec-public&amp;target_milestone=2.1_gf31_m6&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=fulltext&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=&amp;cmdtype=doit&amp;namedcmd=IssuesResolvedEDRtoPR&amp;newqueryname=&amp;order=Reuse+same+sort+as+last+time">Spec issues</a></li> 
+       </ul> </li> 
+     </ul> <h4><a name="3.1JSF-Teamwidequeries"></a>Team-wide queries</h1> 
+     <ul> 
+      <li><a href="https://javaserverfaces.java.net/issues/buglist.cgi?resort=1&amp;component=javaserverfaces;issue_status=UNCONFIRMED;issue_status=NEW;issue_status=STARTED;issue_status=REOPENED;email1=;emailtype1=exact;emailassigned_to1=1;email2=;emailtype2=exact;emailreporter2=1;issueidtype=include;issue_id=;changedin=;votes=;chfieldfrom=;chfieldto=Now;chfieldvalue=;short_desc=;short_desc_type=fulltext;long_desc=;long_desc_type=fulltext;issue_file_loc=;issue_file_loc_type=fulltext;status_whiteboard=;status_whiteboard_type=fulltext;keywords=;keywords_type=anytokens;field0-0-0=target_milestone;type0-0-0=substring;value0-0-0=2.1;namedcmd=mystuff;newqueryname=;Submit%20query=Submit%20query&amp;order=map_assigned_to.userid,%20issues.target_milestone,%20issues.priority,%20issues.issue_id">All Mojarra issues the team intends to fix for JSF 2.1 in GlassFish 3.1</a>.</li> 
+      <li><a href="https://javaserverfaces-spec-public.java.net/issues/buglist.cgi?component=javaserverfaces-spec-public&amp;issue_status=UNCONFIRMED&amp;issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=fulltext&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=target_milestone&amp;type0-0-0=substring&amp;value0-0-0=2.1&amp;cmdtype=doit&amp;namedcmd=IssuesResolvedEDRtoPR&amp;newqueryname=&amp;order=Reusesamesortaslasttime&amp;Submitquery=Submitquery">All spec issues the team intends to fix for JSF 2.1 in GlassFish 3.1</a></li> 
+     </ul> <h4><a name="3.1JSF-edburnsrelatedqueries"></a>edburns related queries</h1> 
+     <ul> 
+      <li><a href="https://javaserverfaces.java.net/issues/buglist.cgi?component=javaserverfaces&amp;issue_status=UNCONFIRMED&amp;issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED&amp;email1=edburns&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=fulltext&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=target_milestone&amp;type0-0-0=substring&amp;value0-0-0=2.1&amp;cmdtype=doit&amp;namedcmd=mystuff&amp;newqueryname=&amp;order=Reuse+same+sort+as+last+time&amp;Submit+query=Submit+query">Open Mojarra issues owned by edburns with 2.1 in the target milestone</a></li> 
+      <li><a href="https://javaserverfaces-spec-public.java.net/issues/buglist.cgi?component=javaserverfaces-spec-public&amp;issue_status=UNCONFIRMED&amp;issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED&amp;email1=edburns&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=fulltext&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=target_milestone&amp;type0-0-0=substring&amp;value0-0-0=2.1&amp;cmdtype=doit&amp;namedcmd=IssuesResolvedEDRtoPR&amp;newqueryname=&amp;order=Reuse+same+sort+as+last+time&amp;Submit+query=Submit+query">Open spec issues owned by edburns with 2.1 in the target milestone</a></li> 
+      <li><a href="https://javaserverfaces.java.net/issues/buglist.cgi?resort=1&amp;Submit%20query=Submit%20query;component=javaserverfaces;subcomponent=ajax;subcomponent=build;subcomponent=compatibility;subcomponent=event%20processing;subcomponent=facelets;subcomponent=managed%20bean;subcomponent=rendering;subcomponent=resources;subcomponent=view%20handling;issue_status=UNCONFIRMED;issue_status=NEW;issue_status=STARTED;issue_status=REOPENED;email1=;emailtype1=exact;emailassigned_to1=1;email2=;emailtype2=exact;emailreporter2=1;issueidtype=include;issue_id=;changedin=;votes=;chfieldfrom=;chfieldto=Now;chfieldvalue=;short_desc=;short_desc_type=fulltext;long_desc=;long_desc_type=fulltext;issue_file_loc=;issue_file_loc_type=fulltext;status_whiteboard=;status_whiteboard_type=fulltext;keywords=;keywords_type=anytokens;field0-0-0=noop;type0-0-0=noop;value0-0-0=;namedcmd=mystuff;newqueryname=&amp;order=issues.target_milestone,%20map_assigned_to.userid,%20map_assigned_to.userid,%20issues.keywords,%20issues.subcomponent,%20issues.target_milestone,%20issues.status_whiteboard,%20issues.status_whiteboard,%20map_assigned_to.userid,%20issues.priority,%20issues.issue_id">All open Mojarra issues in edburns's subcomponents</a></li> 
+      <li><a href="https://javaserverfaces-spec-public.java.net/issues/buglist.cgi?Submitquery=Submitquery&amp;component=javaserverfaces-spec-public&amp;subcomponent=Documentation:Javadoc,TLDDoc,RenderkitDoc,PDF&amp;subcomponent=Facelets/VDL&amp;subcomponent=ManagedBeans&amp;subcomponent=PlatformIntegrationexceptforBeanValidator&amp;subcomponent=Resources&amp;subcomponent=Schema&amp;subcomponent=Uncategorized&amp;issue_status=UNCONFIRMED&amp;issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=fulltext&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=&amp;cmdtype=doit&amp;namedcmd=IssuesResolvedEDRtoPR&amp;newqueryname=&amp;order=Reusesamesortaslasttime">All open spec issues in edburns's subcomponents</a></li> 
+      <li><a href="https://javaserverfaces.java.net/issues/buglist.cgi?Submitquery=Submitquery&amp;component=javaserverfaces&amp;subcomponent=api&amp;subcomponent=build&amp;subcomponent=compatibility&amp;subcomponent=eventprocessing&amp;subcomponent=facelets&amp;subcomponent=managedbean&amp;subcomponent=rendering&amp;subcomponent=resources&amp;subcomponent=viewhandling&amp;issue_status=UNCONFIRMED&amp;issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=fulltext&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=status_whiteboard&amp;type0-0-0=notsubstring&amp;value0-0-0=size_&amp;field0-1-0=status_whiteboard&amp;type0-1-0=notsubstring&amp;value0-1-0=importance_&amp;cmdtype=doit&amp;order=Reusesamesortaslasttime">Untriaged open Mojarra issues in edburns's subcomponents</a></li> 
+      <li><a href="https://javaserverfaces-spec-public.java.net/issues/buglist.cgi?component=javaserverfaces-spec-public&amp;subcomponent=Documentation:Javadoc,TLDDoc,RenderkitDoc,PDF&amp;subcomponent=Facelets/VDL&amp;subcomponent=ManagedBeans&amp;subcomponent=PlatformIntegrationexceptforBeanValidator&amp;subcomponent=Resources&amp;subcomponent=Schema&amp;subcomponent=Uncategorized&amp;issue_status=UNCONFIRMED&amp;issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=fulltext&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=status_whiteboard&amp;type0-0-0=notsubstring&amp;value0-0-0=size_&amp;field0-1-0=status_whiteboard&amp;type0-1-0=notsubstring&amp;value0-1-0=importance_&amp;cmdtype=doit&amp;namedcmd=IssuesResolvedEDRtoPR&amp;newqueryname=&amp;order=Reusesamesortaslasttime&amp;Submitquery=Submitquery">Untriaged open spec issues in edburns's subcomponents</a></li> 
+      <li><a href="https://glassfish.java.net/issues/buglist.cgi?component=glassfish&amp;subcomponent=jsf&amp;issue_status=UNCONFIRMED&amp;issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=fulltext&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=status_whiteboard&amp;type0-0-0=notsubstring&amp;value0-0-0=size_&amp;field0-1-0=status_whiteboard&amp;type0-1-0=notsubstring&amp;value0-1-0=importance_&amp;cmdtype=doit&amp;newqueryname=&amp;order=Reuse+same+sort+as+last+time&amp;Submit+query=Submit+query">Untriaged open issues in the jsf subcomponent of the GlassFish issuetracker</a></li> 
+     </ul> <h4><a name="3.1JSF-rogerkrelatedqueries"></a><b>rogerk related queries</b></h1> 
+     <ul> 
+      <li><a href="https://javaserverfaces.java.net/issues/buglist.cgi?Submitquery=Submitquery&amp;component=javaserverfaces&amp;subcomponent=ajax&amp;subcomponent=configuration&amp;subcomponent=expressionlanguage&amp;subcomponent=implementation&amp;subcomponent=JSP&amp;subcomponent=navigation&amp;subcomponent=portlet&amp;subcomponent=statesaving&amp;subcomponent=www&amp;issue_status=UNCONFIRMED&amp;issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=fulltext&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=&amp;cmdtype=doit&amp;namedcmd=mystuff&amp;newqueryname=&amp;order=Reusesamesortaslasttime">All open Mojarra issues in rogerk's subcomponents</a></li> 
+      <li><a href="https://javaserverfaces-spec-public.java.net/issues/buglist.cgi?Submitquery=Submitquery&amp;component=javaserverfaces-spec-public&amp;subcomponent=Ajax/JavaScript&amp;subcomponent=Components/Renderers&amp;subcomponent=EL&amp;subcomponent=Navigation&amp;subcomponent=Portlet&amp;subcomponent=Security&amp;subcomponent=www&amp;issue_status=UNCONFIRMED&amp;issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=fulltext&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=&amp;cmdtype=doit&amp;namedcmd=IssuesResolvedEDRtoPR&amp;newqueryname=&amp;order=Reusesamesortaslasttime">All open spec issues in rogerk's subcomponents</a></li> 
+      <li><a href="https://javaserverfaces.java.net/issues/buglist.cgi?component=javaserverfaces&amp;subcomponent=ajax&amp;subcomponent=configuration&amp;subcomponent=expressionlanguage&amp;subcomponent=implementation&amp;subcomponent=JSP&amp;subcomponent=navigation&amp;subcomponent=portlet&amp;subcomponent=statesaving&amp;subcomponent=www&amp;issue_status=UNCONFIRMED&amp;issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=fulltext&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=status_whiteboard&amp;type0-0-0=notsubstring&amp;value0-0-0=size_&amp;field0-1-0=status_whiteboard&amp;type0-1-0=notsubstring&amp;value0-1-0=importance_&amp;cmdtype=doit&amp;namedcmd=mystuff&amp;newqueryname=&amp;order=Reusesamesortaslasttime&amp;Submitquery=Submitquery">Untriaged open Mojarra issues in rogerk's subcomponents</a></li> 
+      <li><a href="https://javaserverfaces-spec-public.java.net/issues/buglist.cgi?component=javaserverfaces-spec-public&amp;subcomponent=Ajax/JavaScript&amp;subcomponent=Components/Renderers&amp;subcomponent=EL&amp;subcomponent=Navigation&amp;subcomponent=Portlet&amp;subcomponent=Security&amp;subcomponent=www&amp;issue_status=UNCONFIRMED&amp;issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=fulltext&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=status_whiteboard&amp;type0-0-0=notsubstring&amp;value0-0-0=size_&amp;field0-1-0=status_whiteboard&amp;type0-1-0=notsubstring&amp;value0-1-0=importance_&amp;cmdtype=doit&amp;namedcmd=IssuesResolvedEDRtoPR&amp;newqueryname=&amp;order=Reusesamesortaslasttime&amp;Submitquery=Submitquery">Untriaged open spec issues in rogerk's subcomponents</a></li> 
+      <li><a href="https://javaserverfaces.java.net/issues/buglist.cgi?Submitquery=Submitquery&amp;component=javaserverfaces&amp;issue_status=UNCONFIRMED&amp;issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED&amp;target_milestone=2.1&amp;target_milestone=2.1_gf31_m3&amp;target_milestone=2.1_gf31_m4&amp;target_milestone=2.1_gf31_m5&amp;target_milestone=2.1_gf31_m6&amp;email1=rogerk&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=importance_large&amp;status_whiteboard_type=substring&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=&amp;cmdtype=doit&amp;newqueryname=&amp;order=Reusesamesortaslasttime">Mojarra issues rogerk has committed to fix for JSF 2.1</a></li> 
+      <li><a href="https://javaserverfaces-spec-public.java.net/issues/buglist.cgi?Submitquery=Submitquery&amp;component=javaserverfaces-spec-public&amp;issue_status=UNCONFIRMED&amp;issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED&amp;target_milestone=2.1&amp;target_milestone=2.1Reva&amp;target_milestone=2.1_gf31_m3&amp;target_milestone=2.1_gf31_m4&amp;target_milestone=2.1_gf31_m5&amp;target_milestone=2.1_gf31_m6&amp;target_milestone=2.1Revb&amp;email1=rogerk&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=importance_large&amp;status_whiteboard_type=substring&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=&amp;cmdtype=doit&amp;newqueryname=&amp;order=Reusesamesortaslasttime">Spec issues rogerk has committed to fix for JSF 2.1</a></li> 
+     </ul> <h4><a name="3.1JSF-sheetalvrelatedqueries"></a>sheetalv related queries</h1> 
+     <ul> 
+      <li><a href="https://javaserverfaces.java.net/issues/buglist.cgi?Submitquery=Submitquery&amp;component=javaserverfaces&amp;subcomponent=conversion/validation&amp;subcomponent=demo&amp;subcomponent=groovy&amp;subcomponent=lifecycle&amp;subcomponent=logging&amp;subcomponent=sandbox&amp;subcomponent=test&amp;subcomponent=tools&amp;issue_status=UNCONFIRMED&amp;issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=fulltext&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=&amp;cmdtype=doit&amp;namedcmd=mystuff&amp;newqueryname=&amp;order=Reusesamesortaslasttime">All open Mojarra issues in sheetalv's subcomponents</a></li> 
+      <li><a href="https://javaserverfaces-spec-public.java.net/issues/buglist.cgi?Submitquery=Submitquery&amp;component=javaserverfaces-spec-public&amp;subcomponent=Lifecycle&amp;subcomponent=Validation/Conversion&amp;issue_status=UNCONFIRMED&amp;issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=fulltext&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=&amp;cmdtype=doit&amp;namedcmd=IssuesResolvedEDRtoPR&amp;newqueryname=&amp;order=Reusesamesortaslasttime">All open spec issues in sheetalv's subcomponents</a></li> 
+      <li><a href="https://javaserverfaces.java.net/issues/buglist.cgi?component=javaserverfaces&amp;subcomponent=conversion/validation&amp;subcomponent=demo&amp;subcomponent=groovy&amp;subcomponent=lifecycle&amp;subcomponent=logging&amp;subcomponent=sandbox&amp;subcomponent=test&amp;subcomponent=tools&amp;issue_status=UNCONFIRMED&amp;issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=fulltext&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=status_whiteboard&amp;type0-0-0=notsubstring&amp;value0-0-0=size_&amp;field0-1-0=status_whiteboard&amp;type0-1-0=notsubstring&amp;value0-1-0=importance_&amp;cmdtype=doit&amp;namedcmd=mystuff&amp;newqueryname=&amp;order=Reusesamesortaslasttime&amp;Submitquery=Submitquery">Untriaged open Mojarra issues in sheetalv's subcomponents</a></li> 
+      <li><a href="https://javaserverfaces-spec-public.java.net/issues/buglist.cgi?component=javaserverfaces-spec-public&amp;subcomponent=Lifecycle&amp;subcomponent=Validation/Conversion&amp;issue_status=UNCONFIRMED&amp;issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;st">Untriaged open spec issues in sheetalv's subcomponents</a></li> 
+     </ul> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Nov 17, 2010 by 
+<font color="#0050B2">rogerk9</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

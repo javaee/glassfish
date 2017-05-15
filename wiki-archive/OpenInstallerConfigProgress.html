@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : OpenInstallerConfigProgress</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="OpenInstallerConfigProgress-openInstaller%3ADuringconfiguration%2CCorrectupdateprogressshouldbeshownoninstallerscreen."></a>openInstaller: During configuration , Correct update progress should be shown on installer screen.</h2> 
+     <hr> <h4><a name="OpenInstallerConfigProgress-ProjectDescription%3A"></a>Project Description: </h1> <p>OpenInstaller should show the correct update progress to the user.The Installer should show the messages on screen ,about the task configurator is doing, e.g Starting the server, stopping the server etc.Installer should log configuration related messages too.</p> 
+     <hr> <h4><a name="OpenInstallerConfigProgress-UseCases%3A"></a>Use Cases:</h1> <p><b>UC-001</b></p> <p>1. User start the installer.<br> 2. User see the correct update progress during configuration.<br> 3. User see the messages from configurator, about the task, is doing during configuration.<br> 4. All the configuration messages are logged.</p> 
+     <hr> <h4><a name="OpenInstallerConfigProgress-Requirements%3A"></a>Requirements:</h1> 
+     <ul> 
+      <li>Scenario where configurator takes more than 15 min and so,user sometime feels that installer</li> 
+     </ul> <p> is hung and she abort the installer in mid.So user must be presented with correct update progress<br> during configuration.(Must requirement for portal)</p> 
+     <ul> 
+      <li>During configuration update progress,the messages related to configuration activities should</li> 
+     </ul> <p> be shown on screen,e.g. configurator is starting server , stopping server etc.</p> 
+     <ul> 
+      <li>Proper configuration log messages should be logged.</li> 
+     </ul> <p> Currently we log the messages in installer log.</p> 
+     <ul> 
+      <li>Loosely coupled configurator- This requirement need to be discussed with James.</li> 
+     </ul> <h4><a name="OpenInstallerConfigProgress-Firstroughdesigndraft"></a>First rough design draft</h1> 
+     <ul> 
+      <li>OI will be using the JMX for updating the progress bar for configuration.OI will be implementing the Mbeans</li> 
+     </ul> <p> for notification.Mbean will be having the methods to updates the attributes for messages on screen and for<br> progress on screen.Mbean provides the operation that will be invoked by component configurator to update its<br> progress,Once the attributes for message, progress are modified , these beans will be emitting the notifications<br> that can be captured by OI to show the accurate update progress.</p> 
+     <ul> 
+      <li>Mbeans will be created with defined interfaces and will be registered with object name in Mbean server in OI JVM.Once Mbeans are</li> 
+     </ul> <p> created and registered in OI JVM, through RMI connector it will be available to remote clients.<br> So in OI side Mbean need to create and register in Mbean server, Also OI need to create the connector server,<br> So remote client can invoke operation on Mbeans.</p> 
+     <ul> 
+      <li>Component configurator can invoke the operation on Mbeans by creating a connector, once they are connected to Mbean server</li> 
+     </ul> <p> they can invoke operation on Mbeans using Mbean's objectname.Component team dont need any OI jar to compile their configurator.</p> 
+     <ul> 
+      <li>OI is using RMI for connector server, So it need to run rmiregistry on some port known to client.</li> 
+     </ul> <p> Here as port is available for connection ,that may cause security hacks.JMX provides way to secure the connection, that OI<br> will be using when it creates and start the connector server.</p> <p> The above is first draft, there may be changes.</p> <h4><a name="OpenInstallerConfigProgress-Designillustration"></a>Design illustration</h1> <p><span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20873880/21365400.png" style="border: 0px solid black"></span></p> <h4><a name="OpenInstallerConfigProgress-Discussion"></a>Discussion</h1> 
+     <ul> 
+      <li>20th JULY 2007 with James Falkner.Two issue came up<br> 1. Do component team need to have OI jars to compile their</li> 
+     </ul> <p> java configurators.<br> 2. What about the security when ports are open for any connection.<br> Both issues are addresed in design doc.</p> <h4><a name="OpenInstallerConfigProgress-ProjectCompletionDate"></a>Project Completion Date</h1> 
+     <ul> 
+      <li>27th July 2007</li> 
+     </ul> <p>But We need to dig JMX more to implement the design , that may require 7 more days from the scheduled date ,to complete this project (03-08-2007).</p> <h4><a name="OpenInstallerConfigProgress-ProjectTeam"></a>Project Team</h1> 
+     <ul> 
+      <li>Lead: Sandeep</li> 
+      <li>Team: James</li> 
+     </ul> <h4><a name="OpenInstallerConfigProgress-ProjectStatus"></a>Project Status</h1> 
+     <ul> 
+      <li>Completed</li> 
+     </ul> <h4><a name="OpenInstallerConfigProgress-HowToUse"></a>How To Use</h1> <p>To use this you need to write JMX client code , that you can invoke it from init-config script.</p> <p>OI provides three new ENV variable available to init-config , that you should pass to JMX client code.</p> <p>These variables you need, to connect to OI JMX server and send progress.<br> <b>INIT_CONFIG_PROGRESS_PASSWORD</b><br> <b>INIT_CONFIG_PROGRESS_RMIPORT</b></p> <p><b>INIT_CONFIG_PROGRESS_OBJECTNAME</b></p> <p>Below is the Sample <b>init-config</b> script , This is template for Solaris or Linux, For Windows you need to write VBS/BAT script to achieve same functionality.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">#init-config script
+MYDIR=`dirname $0` 
+cd ${MYDIR}
+#This is the java that is being used in the main installer, so we
+#can re-use it when we call our java-based wrapper.
+JAVA_HOME=${INIT_CONFIG_JAVA_HOME}
+#This classpath includes the necessary paths to allow our wrapper to
+#find helper classes such as WrapperHelper and the application wrapper
+#itself.
+JAVA_CLASSPATH=${CLASSPATH}:${INIT_CONFIG_JAVA_CLASSPATH}:${MYDIR}
+${JAVA_HOME}/bin/java -cp ${JAVA_CLASSPATH} Client ${INIT_CONFIG_PROGRESS_PASSWORD} ${INIT_CONFIG_PROGRESS_RMIPORT}  ${INIT_CONFIG_PROGRESS_OBJECTNAME} $*</pre> 
+       </div> 
+      </div>
+     </div> <p>Below is the <b>Client</b> code that is invoked by <b>init-config</b> script to update progress.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">import java.util.HashMap;
+  import javax.management.Attribute;
+  import javax.management.MBeanServerConnection;
+  import javax.management.MBeanServerInvocationHandler;
+  import javax.management.ObjectName;
+  import javax.management.remote.JMXConnector;
+  import javax.management.remote.JMXConnectorFactory;
+  import javax.management.remote.JMXServiceURL;
+ 
+  public class Client {
+   
+    public static void main(String[] aArgs) {
+      try {
+      /* Create an RMI connector client and
+         connect it to the RMI connector server */
+//Step 1:  Getting the passwd from init-config
+        String thePassword = aArgs[0];
+
+// Step 2: Getting RMI port
+        String thePort = aArgs[1];
+
+//Step 3: Getting the OI Progress object
+        String theObjectName = aArgs[2];
+
+//Step 4: Create a hashmap and store the password obtained in Step 1 .
+        HashMap&lt;String, String&gt; theEnv = new HashMap&lt;String, String&gt;();
+        theEnv.put("jmx.remote.credentials", thePassword);
+
+//Step 5 : Create a JMX service URL , port you have to use that you got in Step 2.
+        JMXServiceURL theUrl = new JMXServiceURL(
+         "service:jmx:rmi:///jndi/rmi://localhost:"+thePort+"/server");
+
+//Step 6: Create a JMX connector by passing url (obtained in step 5) and theEnv ( obtained in step 4)
+        JMXConnector jmxc = JMXConnectorFactory.connect(theUrl, theEnv);
+       
+        /* Get an MBeanServerConnection */
+// Step 7 : Create an MBeanServerConnection from JMXConnector instance obtained in step 6.
+        MBeanServerConnection mbsc = jmxc.getMBeanServerConnection();
+
+//Step 8: create a objectname using theObjectName
+        ObjectName mbeanName = new ObjectName(theObjectName);
+        for (int i=1;i&lt;=100;i++){
+
+// Step 9: Send the progress( from 1 to 100) and messages to OI Screen , To send the progress and message to OI you need to call the invoke method of MBeanServerConnection instance.Following is an example.
+// i is progress of configurator , and second argument "Test_Configurator_Messages" is the message set by configurator on OI screen.
+//Every time you execute some step , you need to update the third argument of invoke with progress and configurator message.
+          mbsc.invoke(mbeanName,"configProgress",new Object[]{i,"Test_Configurator_Messages"},new String[]{"int","java.lang.String"});
+// Do some config operation and call invoke (mbeanName,"configProgress",new Object[]{progress,"Some Configurator message "},new String[]{"int","java.lang.String"});
+        }
+       
+        /* Close MBeanServer connection*/
+// Step 10: Close the connection
+        jmxc.close();
+// Step 11: Finally send the Result report to OI .
+        printResultReport("SUCCESS",null,null,null,"NO Next STEP");
+      } catch (Exception theEx) {
+        theEx.printStackTrace();
+      }
+    }
+   
+    public static void printResultReport(final String aConfigStatus, final String aPlatformError,
+     final String aProductError, final String aDocReference, final String aNextSteps) {
+      System.err.print("&lt;?xml version=\"1.0\" encoding=\"UTF-8\"?&gt;");
+      System.err.print("&lt;resultReport xmlns=\'http://openinstaller.org/config/resultreport/V1\'&gt;");
+      System.err.print("&lt;configStatus&gt;" + aConfigStatus + "&lt;/configStatus&gt;");
+      System.err.print("&lt;platformError&gt;" + aPlatformError + "&lt;/platformError&gt;");
+      System.err.print("&lt;productError&gt;" + aProductError + "&lt;/productError&gt;");
+      System.err.print("&lt;docReference&gt;" + aDocReference + "&lt;/docReference&gt;");
+      System.err.print("&lt;nextSteps&gt;" + aNextSteps + "&lt;/nextSteps&gt;");
+      System.err.print("&lt;/resultReport&gt;");
+    }
+  }</pre> 
+       </div> 
+      </div>
+     </div> 
+     <hr> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20873880/21365400.png">conf-1.png</a> (image/png) 
+      <br> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:49.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

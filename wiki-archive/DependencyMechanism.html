@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : DependencyMechanism</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>&lt;!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"&gt;<br> &lt;html&gt;<br> &lt;head&gt;<br> &lt;/head&gt;<br> &lt;body&gt;<br> &lt;h2&gt;&lt;span style="font-weight: bold;"&gt;Proposal&lt;/span&gt;&lt;/h2&gt;<br> &lt;p&gt;With the GF v3 module system, the module system is already<br> responsible for instantiating many classes that constitute the<br> application server functionality.<br> &lt;/p&gt;<br> &lt;p&gt;The proposal is to further enhance the module system so that<br> not only have it create objects, but also have it configure such<br> objects by:<br> &lt;/p&gt;<br> &lt;ol&gt;<br> &lt;li&gt;injecting other objects that are needed by a newly<br> instanciated object.<br> &lt;/li&gt;<br> &lt;li&gt;injecting configuration information needed for that object.<br> &lt;/li&gt;<br> &lt;li&gt;making newly created objects available, so that it can be<br> then injected to other objects that need it.<br> &lt;/li&gt;<br> &lt;/ol&gt;<br> &lt;p&gt;&lt;br&gt;<br> This additional service can be implemented on top of existing &lt;tt&gt;Lookup&lt;/tt&gt;<br> abstraction, by using &lt;tt&gt;Lookup&lt;/tt&gt; as a place to keep<br> the information.<br> &lt;/p&gt;<br> &lt;h3&gt;Resource Injection&lt;/h3&gt;<br> &lt;p&gt;With this enhancement, the above code would be written as<br> follows:<br> &lt;/p&gt;<br> &lt;pre class="code"&gt;@Requires&lt;br&gt;public GrizzlyAdapter adapter;&lt;br&gt;@Requires&lt;br&gt;public AdminAdapter adminAdapter;&lt;br&gt;public void start() </p> 
+     <div class="error">
+      <span class="error">Unknown macro: {&lt;br&gt;adapter.registerEndpoint(adminAdapter.PREFIX_URI, adminAdapter);&lt;br&gt;// see later dicussion about where the command registration went&lt;br&gt;}</span> 
+     </div> <p>&lt;br&gt;&lt;/pre&gt;<br> &lt;p&gt;<br> The &lt;tt&gt;Resource&lt;/tt&gt; annotation indicates the field to be<br> injected by the module system. The type of the field and the context in<br> which the instanciation happens is used to determine the instance to be<br> injected.<br> &lt;/p&gt;<br> &lt;h3&gt;Resource Extraction&lt;/h3&gt;<br> &lt;p&gt;Once services have executed, they usually provide instances of objects<br> to other parts of the system. Such instances are usually made available<br> through a lookup system or jndi type environments. By using the<br> @Provides, a service indicates that the resource should be extracted<br> once the service execution has returned successfully. <br> &lt;/p&gt;<br> &lt;pre class="code"&gt;<br> @Service<br> public class ConfigService {&lt;br&gt;<br> &nbsp;&nbsp;&nbsp; @Provides<br> &nbsp;&nbsp;&nbsp; Domain domainInfo;<br> &lt;br&gt;<br> &nbsp;&nbsp;&nbsp; public void start() </p> 
+     <div class="error">
+      <span class="error">Unknown macro: {&lt;br&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;domainInfo = ....&lt;br&gt;&nbsp;&nbsp;&nbsp; }</span> 
+     </div> <p>&lt;br&gt;}<br> &lt;/pre&gt;<br> Domain instance will be extracted and stored in the lookup service.<br> or it can alternatively publish the service itself&lt;br&gt;<br> &lt;pre class="code"&gt;<br> @Service<br> @Provides<br> public class FooBar {&lt;br&gt;<br> &nbsp;&nbsp;&nbsp; @Requires<br> &nbsp;&nbsp;&nbsp; Domain domainInfo;&lt;br&gt;<br> &nbsp;&nbsp;&nbsp; public void start() </p> 
+     <div class="error">
+      <span class="error">Unknown macro: {...}</span> 
+      <p>&lt;br&gt;<br> }<br> &lt;/pre&gt;<br> The FooBar service instance will be stored in the lookup for access by other services.</p> 
+      <p>&lt;h3&gt;Scope of instances&lt;/h3&gt;<br> &lt;p&gt;<br> In the above example both resources are "singleton" resources. That is<br> to say, there's only one instance of it per the whole GF instance. But<br> some objects have a different scope. For example, some objects in GF is<br> scoped to the current thread (such as EJB &lt;tt&gt;InvocationContext&lt;/tt&gt;,<br> or security tokens), while others are scoped to the deployed<br> application (servlet contexts, web services), yet still others are<br> meant to be created and disposed for each use (&lt;tt&gt;ListApplicationCommand&lt;/tt&gt;<br> for example.)<br> &lt;/p&gt;<br> &lt;p&gt;Marking classes with the scoping annotation enables the module<br> system to inject the proper instance, for example:<br> &lt;/p&gt;<br> &lt;pre class="code"&gt;&lt;emp&gt;@Component(scope=THREAD)&lt;/emp&gt;&lt;br&gt;class InvocationContext </p> 
+      <div class="error">
+       <span class="error">Unknown macro: { ... }</span> 
+       <p>&lt;br&gt;&lt;emp&gt;@Service(scope=SINGLETON)&lt;/emp&gt;&lt;br&gt;class CommandRegistry </p>
+      </div> 
+      <p>&lt;br&gt;&lt;emp&gt;@Service(scope=APPLICATION)&lt;/emp&gt;&lt;br&gt;class NewWebServiceContextImpl </p> 
+      <div class="error">
+       <span class="error">Unknown macro: { ... }</span> 
+       <p>&lt;br&gt;&lt;emp&gt;@Service(scope=ONETIME)&lt;/emp&gt;&lt;br&gt;class ListApplicationCommand </p>
+      </div> 
+      <p>&lt;br&gt;&lt;/pre&gt;<br> &lt;h3&gt;Contract/implementation split&lt;/h3&gt;<br> &lt;p&gt;<br> It is a common practice to split the contract interface and its<br> implementation. The GF v3 module system encourages this design by<br> separating the public class loader from the private class loader. We<br> can take it one step further so that the actual implementations can be<br> injected where contract is asked.<br> Doing this requires the module system to understand what interfaces are<br> contracts, so this calls for another annotation.<br> &lt;/p&gt;<br> &lt;pre class="code"&gt;&lt;emp&gt;@Contract&lt;/emp&gt;&lt;br&gt;interface Startup </p> 
+      <div class="error">
+       <span class="error">Unknown macro: { ... }</span> 
+       <p>&lt;br&gt;&lt;br&gt;@Service class AdminService implements Startup </p>
+      </div> 
+      <p>&lt;br&gt;@Service class ConfigService implements Startup </p> 
+      <div class="error">
+       <span class="error">Unknown macro: { ... }</span> 
+      </div> 
+      <p>&lt;br&gt;&lt;br&gt;class AppServerStartup </p> 
+      <div class="error">
+       <span class="error">Unknown macro: {&lt;br&gt;@Resource&lt;br&gt;public List&lt;Startup&gt; startupServices;&lt;br&gt;...&lt;br&gt;}</span> 
+      </div> 
+      <p>&lt;br&gt;&lt;/pre&gt;<br> &lt;p&gt;<br> This allows the module system to recognize that &lt;tt&gt;AdminService&lt;/tt&gt;<br> and &lt;tt&gt;ConfigService&lt;/tt&gt; are &lt;tt&gt;Startup&lt;/tt&gt;s,<br> and allow them to be injected into &lt;tt&gt;AppServerStartup.startupServices&lt;/tt&gt;.<br> &lt;/p&gt;<br> &lt;p&gt;An APT plugin was developed to automatically create a META-INF/service file for each <br> @Service class implementing interfaces annotated with the @Contract. <br> Consider the following service implementation :<br> &lt;/p&gt;<br> &lt;pre class="code"&gt;<br> package com.sun.v3.annotations;<br> @Contract <br> public interface Startup </p>
+     </div> <p>&lt;br&gt;<br> package com.wombat;<br> @Contract<br> public interface RandomContract </p> 
+     <div class="error">
+      <span class="error">Unknown macro: {...}</span> 
+     </div> <p>&lt;br&gt;<br> package com.sun.v3;<br> @Service<br> public class MyService implements Startup, RandomContract, PropertyChangeListener {<br> ...<br> }<br> &lt;/pre&gt;<br> will generate the following META-INF/services files : <br> &lt;pre class="text"&gt;<br> com.sun.v3.annotations.Startup<br> com.wombat.RandomContract<br> &lt;/pre&gt;<br> with the com.sun.v3.MyService content</p> <p>&lt;p&gt;Also see the discussions that follow for the additional<br> benefits of contract/implementation separation.<br> &lt;/p&gt;<br> &lt;h3&gt;Named components&lt;/h3&gt;<br> &lt;p&gt;<br> As with the case of &lt;tt&gt;Startup&lt;/tt&gt;, sometimes different<br> implementations of a contract are meant to be all used together. In<br> other cases, components have identifiers that distinguish them among<br> other implementations of the same contract (for example like &lt;tt&gt;Command&lt;/tt&gt;,<br> identified by the command name.)<br> &lt;/p&gt;<br> &lt;p&gt;While in theory such "identifier" is quite open-ended, in<br> practice, a string identifier seems to be working just fine with most<br> existing IoC containers. So we allow components to have names, like<br> this:<br> &lt;/p&gt;<br> &lt;pre class="code"&gt;@Contract interface Command </p> 
+     <div class="error">
+      <span class="error">Unknown macro: { ... }</span> 
+      <p>&lt;br&gt;&lt;emp&gt;@Service(name="stop-domain")&lt;/emp&gt;&lt;br&gt;class StopDomainCommand </p>
+     </div> <p>&lt;br&gt;&lt;emp&gt;@Service(name="list-applications")&lt;/emp&gt;&lt;br&gt;class ListApplicationsCommand </p> 
+     <div class="error">
+      <span class="error">Unknown macro: { ... }</span> 
+     </div> <p>&lt;br&gt;&lt;/pre&gt;<br> &lt;p&gt;<br> The exact meaning of the name depends on the contract for which the<br> class is exposed. In the above example the intention is that the name<br> is used as the command name.<br> &lt;/p&gt;<br> &lt;p&gt;Named components are often used for manually looking up<br> resources, as opposed to automatic injection via &lt;tt&gt;@Resource&lt;/tt&gt;,<br> since often the name is only available after some computation. The<br> example is shown below:<br> &lt;/p&gt;<br> &lt;pre class="code"&gt;class AdminAdapter {&lt;br&gt;@Requires&lt;br&gt;Lookup lookup;&lt;br&gt;...&lt;br&gt;public void service(Request req, Response res) </p> 
+     <div class="error">
+      <span class="error">Unknown macro: {&lt;br&gt;...&lt;br&gt;String commandName = ...;&lt;br&gt;Command cmd = lookup.lookup(Command.class,commandName);&lt;br&gt;cmd.execute(...);&lt;br&gt;}</span> 
+     </div> <p>&lt;br&gt;}&lt;br&gt;&lt;/pre&gt;<br> &lt;h3&gt;Service Ordering&lt;/h3&gt;<br> The combination of @Requires and @Provides annotations provide an<br> ability to calculate the order of services initialization by looking at<br> the list of resources required and provided by each service and arrange<br> the services initialization automtically. This is calculated at runtime<br> since the services implementation are implemented in different modules<br> and can be added dynamically to the V3 repositories.<br> &lt;h3&gt;Lazy injection&lt;/h3&gt;<br> &lt;p&gt;<br> Another possible useful service on top of this abstraction is to inject<br> a smart &lt;tt&gt;List&lt;/tt&gt; that defers the actual injection.<br> For example, we can inject all &lt;tt&gt;Startup&lt;/tt&gt;s lazily<br> when it's accessed for the first time. This makes the code simpler by<br> avoiding the separation between initialization and storage:<br> &lt;/p&gt;<br> &lt;pre class="code"&gt;class MyCode {&lt;br&gt;&lt;emp&gt;@Lazy&lt;/emp&gt; @Resource&lt;br&gt;public List&lt;Startup&gt; startups;&lt;br&gt;...&lt;br&gt;void f() </p> 
+     <div class="error">
+      <span class="error">Unknown macro: {&lt;br&gt;for( Startup s }</span> 
+     </div> <p>&lt;br&gt;}&lt;br&gt;&lt;/pre&gt;<br> &lt;p&gt;<br> Or a smart &lt;tt&gt;Map&lt;/tt&gt; could be used and have named :<br> &lt;/p&gt;<br> &lt;pre class="code"&gt;class MyCode {&lt;br&gt;&lt;emp&gt;@Lazy&lt;/emp&gt; @Resource&lt;br&gt;public Map&lt;String,Command&gt; commands;&lt;br&gt;...&lt;br&gt;void f() </p> 
+     <div class="error">
+      <span class="error">Unknown macro: {&lt;br&gt;Command c = commands.get("list-domains"); // this will instanciate a properly configured ListDomainsCommand&lt;br&gt;}</span> 
+     </div> <p>&lt;br&gt;}&lt;br&gt;&lt;/pre&gt;<br> &lt;h3&gt;Half-baked: Configuration injection&lt;/h3&gt;<br> &lt;p&gt;<br> The other thing we should inject is the configuration information. I'm<br> not too familiar about the kind of configurations GF has, but for<br> example, perhaps something like this for system property:<br> &lt;/p&gt;<br> &lt;pre class="code"&gt;class PhobosContainer </p> 
+     <div class="error">
+      <span class="error">Unknown macro: {&lt;br&gt;@Resource(&lt;emp&gt;"phobos.home"&lt;/emp&gt;)&lt;br&gt;public File home;&lt;br&gt;}</span> 
+     </div> <p>&lt;br&gt;&lt;/pre&gt;<br> ... and perhaps something like this for the configuration in domain.xml<br> &lt;pre class="code"&gt;class GrizzlyService </p> 
+     <div class="error">
+      <span class="error">Unknown macro: {&lt;br&gt;// some kind of path expression over JavaBeans&lt;br&gt;@Resource(&lt;emp&gt;"domain.config.httpService.httpListner.port"&lt;/emp&gt;)&lt;br&gt;public int port;&lt;br&gt;}</span> 
+     </div> <p>&lt;br&gt;&lt;/pre&gt;<br> &lt;p&gt;<br> It's not clear if we should reuse &lt;tt&gt;@Resource&lt;/tt&gt; or<br> create a new annotation, or it's not clear if we need a single symbol<br> space for all configurations or different annotations for each distinct<br> configuration space. This needs more discussion.<br> &lt;!-- ==================================================================================================== --&gt;&lt;/p&gt;<br> &lt;/body&gt;<br> &lt;/html&gt;</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:48.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : 0904MeetingMinutes</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>The discussion mainly focussed around a list of design decisions.<br> Most of these decisions have an impact on the requirements.</p> 
+     <ul> 
+      <li>SS/SAS replication configuration per application</li> 
+     </ul> <p>The replication of the Sip Session and the Sip Applicaiton Session is done per application based on the deployment descriptor.<br> Changing the replication parameters is only possible by re-deploying the application.</p> 
+     <ul> 
+      <li>DS/DF replication configuration for the container</li> 
+     </ul> <p>The replication of the DialogueSet and DialogueFragment is done per container. Probably as a part of the domain.xml.</p> 
+     <ul> 
+      <li>Replication scope: 'modified-session' or 'session'</li> 
+     </ul> <p>The scope of the SS/SAS/DF/DS is based on either the modified-session or session scope.<br> The advantage of session scope instead over the modified-session scope, is that it will also replicate the modified attributes in the session even if the application did not explicitly invoke the setAttribute.</p> <p>2007-06-09: However, well written application should not rely on this functionality. In general the modified-session is prefered for performance reasons. Both options will be provided and tested. <em>Should we not just pick one option only? This would also simplify the testing</em>.</p> 
+     <ul> 
+      <li>Replication frequency: sip-transaction</li> 
+     </ul> <p>The sip-transaction is similar to the web-method frequency, i.e., replication is driven by the requests (incoming or outgoing). </p> 
+     <ul> 
+      <li>Consistency HTTP and SS/SAS replication</li> 
+     </ul> <p>The scope and frequency of the HTTP and SS/SAS replication must be the same.</p> 
+     <ul> 
+      <li>Consistency of DS/DF and SS/SAS replication</li> 
+     </ul> <p>Applications deployed on a container for which replication is not enabled will either fail, or will revert to non-replicating mode with a warning.<br> Dynamically changing the replication parameters of the container should not affect any already deployed applications.<br> E.g., disabling replication for the container (DF/DS) is not allowed when there are applications that have replication enabled (SS/SAS).</p> <p>We should consider to dynamically determine whether the DF/DS should be replicated based on the fact if there are any applications associated with the chain for which replication is active. If none of the applications associated with a DF have replication enabled, it is a waste of resources to replicate the DF/DS.</p> <p>If this is optimised, then allocating and initialising the JXTA resources can be delayed until the first application with replication enabled is deployed, increasing startup times.</p> <p><em>EVDV: Still I think that it might be useful to always enable replication for the container by default or at least have a default replication configuration. Explicit configuration of the container configuration might not be needed if replication can be fully driven by the applications on top.</em></p> 
+     <ul> 
+      <li>sync and async replication</li> 
+     </ul> <p>Both Async and synchronous replication are supported.</p> <p>It must be noted that the synchronous replication does actually not do a full roundtrip handshake.<br> Synchronous replication will block until the message is delivered to the TCP transport. This is not a guarantee that it is received and stored by the buddy.<br> Asychronous replication will not return when the message is put in the JXTA queue.<br> Effectively, this means that synchronous replication does not eliminate the possibility to get out-of-sync with the buddy, but it does decrease the 'window of vunerability'.</p> <p>There is code present for a full synchronous solution, but this has never been system tested. It also will perform worse than the current synchronous replication (it would require a response message).</p> <p>Before the sailfin release the replication framework will use a new version of JXTA that will offer various performance improvements. The queueing will be removed from the JXTA part and only the TCP queue will remain.<br> The difference between async and sync replication will probably become less.</p> <p>AP EVDV + Johan: it should be evaluated whether the current synchronous replication is acceptable</p> <p>20070906: The fully synchronous solution might suffer from hanging threads after a crash of the buddy. The GMS notifications indicating a buddy down will not unblock these threads. However, since the assumption is that a fully synchronous solution is not needed, this is not a problem.</p> 
+     <ul> 
+      <li>lazy reactivation after failure</li> 
+     </ul> <p>After a failure we will not try to eagerly re-active the sessions. The mean time between failures in combination with the mean time for reactivation (driven by either a timeout on the SAS or by a message on the session) will ensure that the chance of session loss at a second failure is neglible.</p> <p>AP EVDV + Johan: check that the assumptions made by the model regarding mean time between failure and reactivation are acceptable. E.g., in practice the standard deviation of the failures might not be so high (e.g., more failures under high load situation).</p> 
+     <ul> 
+      <li>activation by timeouts in replica</li> 
+     </ul> <p>We will monitor the timers in the replica for timer expiry. When a replica's timer expires, the replica will be activated.<br> The timeout time indicated in the replica will be the timeout time in the replica plus a additional delta to avoid false positives.</p> <p>There will be at least one timer per SAS. This might prove a problem for the replica. After a failure of the primary instance, the replica might have to scan a million timers (300K sessions each with 3 or more timers).</p> <p>In general, the amount of objects is an issue. In a normal situation (no @SAK or encoded URI, only one application involved in the call) there will be four objects per sip session; one SS, one SAS, one CF and one CS (akthough the latter might be modelled as one replicated object). When stating 300K sessions per instance, is this assuming all of these are present?</p> <p>AP EVDV + Johan: make clear how many of each object should be present in the performance requirements of 300K sessions.<br> AP EVDV: explore the possibility of doing lazy SAS creation and examine the impact of this on the cleanup of the SSes.</p> <p>It has to be investigated where the replica is activated on the timeout.<br> It would be most beneficial if the replica could be activated on the instance where the traffic will also be directed by the LB. This could mean that the BEKey might have to be stored in the SAS. If we do this then we also should model the timers as embedded in the SAS and we should have the deserialised timeout value on the SAS level.</p> <p>AP EVDV + Joel: check if activating the timer on the correct instance is possible.</p> <p>If it is not possible to do the reactivation on the correct instance, then it could still be beneficial to spread the reactivations over the cluster. The chances of being activated on the 'right' instance is the same, but at least the load will not be concentrated on the replica of the failed instance.</p> <p>20070906: The indications it would indeed be possible to activate on the correct instance . The BEKey is already stored as part of the SAS and the LBmanager is accessible from the sipsessionmanager. The LBManager would implement the consistent hashing algorithm. The same mechanism as the reverse repair could be used to trigger the loading of the session on the correct instance. It merely be one session id in the list instead of multiple session ids. <em>The main question is how does the replica get the BEKey. Maybe it should then also be stored in deserialised form? Or we make this a two step approach. First activate the replica on the buddy, then peek inside, then trigger the migration to the correct instance?</em></p> 
+     <ul> 
+      <li>peek mechanism</li> 
+     </ul> <p>For the timer based activation the replica must be able to check if the re-activated copy is the most recent version in the cluster (since there is no version number in the timeout). For this a peek functionality is needed, similar to the current load mechanism, but only reporting the version instead of the complete replica.</p> 
+     <ul> 
+      <li>there will be a variant of load request that returns and deletes both active and replicas.</li> 
+     </ul> <p>Migration of active sessions is needed in a UC based LB strategy (and in other situations). To support this there must be a variant of the load request that removes the active version. It is recommended that also all replica versions are removed. This should only be done when the re-activation or migration is completed.</p> <p>We have to be careful with making a destructive load; the code should be very careful to only call the load request once. <em>EVDV: I still do not completely get this. If the load request is done twice, then the second one will not result in a broadcast since the correct version is already present. If both load requests occur on the same instance from different threads, then I see a potential problem similar to the locking problem. If the requests come from different instances then we are back to the locking problem. Not sure that if we solve the locking problem this will not also be automatically solved</em>.</p> 
+     <ul> 
+      <li>sipSessionsUtil does not cause migration</li> 
+     </ul> <p>SipSessionsUtil.getApplicationSession(id) will only return the version of the SAS that is available on the local instance. If the SAS is not present on the local instance it will return null.<br> It will not cause the migration of the SAS from another instance. </p> <p>It is a nice-to-have to also cover the migration, with a loss of performance.</p> 
+     <ul> 
+      <li>After shutdown lazy reactivation</li> 
+     </ul> <p>Shutdown will be handled similar to failure. We will not actively re-activate sessions.</p> <p>There might be a queiscing, probably only based on message level. This means that the LB will not quiesce, but the operator will still wait for a while until all the traffic in the instance has terminated.</p> <p>There is no support for doing the actual shutdown based on the presence of traffic. This is purely a human decision and typically based on time instead of on counters.</p> 
+     <ul> 
+      <li>After restart (after shutdown) or recovery (after failure) we do an eager reactivation (reverse-repair)</li> 
+     </ul> <p>After a restart or recovery a repair-under-load and a reverse-repair is done.<br> The repair-under-load will ensure the the replica cache of the restarted/recovered instance is in sync with its neighbor.<br> The reverse-repair will ensure that the activate cache of the restarted/recovered instace is in sync with its buddy.</p> <p>Reverse repair needs information about the origin of the data.<br> It will probably be implemented thus:</p> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li>the buddy sends a list of session ids to the restored instance.</li> 
+        <li>the restored instance will do a 'normal' load request for all of them.</li> 
+       </ul> </li> 
+     </ul> <p>We could optimise the latter by only loading from the buddy, but this would expose us to the risk of multiple active copies (e.g, in race conditions).</p> 
+     <ul> 
+      <li>replicate objects separately and no transactions</li> 
+     </ul> <p>The objects (SS/SAS/DS/DF and possibly timers) are replicated separately.<br> Some of the actions might influence multiple objects (e.g., creating a new SS in a SAS).<br> The replications associated with these actions are not done inside one transaction.<br> This means that it can happen that one replication succeeds, but the associated replication does not. In such cases there might be an inconsistency in the replica.<br> We will try to avoid such situations on a best-effort basis, but they can never be avoided entirely without an (expensive and error-prone) transaction mechanism.</p> 
+     <ul> 
+      <li>no integrity guarantee</li> 
+     </ul> <p>Like stated above the replicas can become inconsistent. However, each object (or better artifact) also contains a version number. These version numbers not really be used for checking the consistency between artifacts since versioned references between objects lead to every object in a tree being updated for every replication of a part. This means that there in addition to the chance of getting inconsistent replicas, these inconsistent replicas can also not be detected.</p> 
+     <ul> 
+      <li>CSeq for staleness check (DOS and no guarantee)</li> 
+     </ul> <p>The version numbers are used in the HTTP situation to request to check for staleness of the active session and to request the correct version of the session in case the active session is stale.</p> <p>In SIP there is no compatible cookie mechanism that can be used to transport the latest version of the session. In SIP the CSeq can be used for similar purposes, but has a lot of limitation. This means it can be used for a sort of staleness check, but that it should be taken more as a hint of a potential stale session in stead of a guarantee of a stale session. I.e., there may be gaps in the CSeq number range.</p> <p>This opens up the possibility of DOS attack. An malicious or badly written client that skips CSeq numbers will cause unnecessary load requests.</p> 
+     <ul> 
+      <li>replication suspended during upgrade</li> 
+     </ul> <p>During upgrade the replication is suspended.<br> Suppose that S2 is being upgraded. During the time S2 is unavailable S1 would not replicate to S3 and also no repair-under-load of S1 to S3 is being done.</p> <p>The latter was an assumption made by me (Erik) which has to be validated if this actually occurs in normal failure situation. In addition to a lazy re-activation there might also be a lazy re-replication mechanism at work, where the FSD assumed an active re-replication mechanism (repair-under-load) for both the failure and the restore/restart case.</p> <p>AP: Jan, check with Larry if we do lazy re-replication or repair-under-load.</p> 
+     <ul> 
+      <li>no replication of ServletContext</li> 
+     </ul> <p>The servlet context will not be replicated.<br> Correctly written applications should not use this functionality.<br> PGM needs this to associate their own keys to a SAS.</p> <p>The JSR 289 proposed way to do this is to allow the application to add additional keys to a SAS (called linkSession now in sailfin, but likely something like addKey() in the final version of JSR289).</p> <p>It might complicate the design if the application can lookup a SAS by its secondary key. The replication framework has to be aware of the secondary keys. Possibily the secondary index can be created on the fly?</p> 
+     <ul> 
+      <li>The handling of memory full is handled by the load regulation and max nr of session settings.</li> 
+     </ul> <p>There are two ways of ensuring that the number of sessions and the related memory is kept in check. The overload protection mechanism from EAS 4.1 <img class="emoticon" src="images/icons/emoticons/help_16.gif" height="16" width="16" align="absmiddle" alt="" border="0"> implements checks on the memory for throttling. At the first limit all new sessions will be rejected, but subsequent requests are still allowed. At the second limit, both will be rejected.</p> <p>In addition the active cache has a setting that controls the maximum number of active sessions. Together with an estimated session size this should give some protection as well</p> 
+     <ul> 
+      <li>? do we also support migration of active sessions that are locked?</li> 
+     </ul> <p>Discussion still ongoing; proposal is to reject requests for migrating a locked active session.</p> 
+     <ul> 
+      <li>? do we do anything during network segmentation?</li> 
+     </ul> <p>There was a proposal from /// to do a reconciliation. This would remove all the duplicates and stale replicas from the cluster after a merge.<br> This might also be useful before or after a reverse-repair. It could be a cheaper then issuing a separate load request for each re-activated replica, instead simple copy from the buddy would suffice.</p> 
+     <ul> 
+      <li>We do not migrate, reactivate the complete tree (SAS, SSes, DFs, DSes?)</li> 
+     </ul> <p>Just like replication is based on single artifacts, so will migration and re-activation be.<br> It is not trivial to deduct the complete connected graph from the information stored in the replica (i.e. in deserialised version). So collecting the correct information togher is not easy. </p> 
+     <ul> 
+      <li>We quiesce on message level.</li> 
+     </ul> <p>The LB will not do any queiescing before shutdown. It will handle this similar to failure. However, the instance is not shutdown until it has hasd the time to handle the ongoing requests. This could be based on some counter of the nu mumber of ongoing requests, but this will not be automated.</p> 
+     <ul> 
+      <li>Dual ethernet</li> 
+     </ul> <p>We will use a dual/redundant ethernet setup.<br> The Session Replication framework can work with this, if the cluster is configured correctly.<br> The failover (and/or loadsharing) of both connections is even transparent to the java code</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:48.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

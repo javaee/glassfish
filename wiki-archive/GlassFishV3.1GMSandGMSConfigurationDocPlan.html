@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFishV3.1GMSandGMSConfigurationDocPlan</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GlassFishV3.1GMSandGMSConfigurationDocPlan-GMSRuntimeClusteringandGMSConfigurationDocumentationPlanforGlassFishServerOpenSourceEdition3.1"></a><em>GMS Runtime Clustering</em> and <em>GMS Configuration</em> Documentation Plan for GlassFish Server Open Source Edition 3.1</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#GlassFishV3.1GMSandGMSConfigurationDocPlan-GMSRuntimeClusteringandGMSConfigurationDocumentationPlanforGlassFishServerOpenSourceEdition3.1"> <em>GMS Runtime Clustering</em> and <em>GMS Configuration</em> Documentation Plan for GlassFish Server Open Source Edition 3.1</a></li> 
+       <ul> 
+        <li><a href="#GlassFishV3.1GMSandGMSConfigurationDocPlan-PeopleandRoles">People and Roles</a></li> 
+        <li><a href="#GlassFishV3.1GMSandGMSConfigurationDocPlan-Audience">Audience</a></li> 
+        <li><a href="#GlassFishV3.1GMSandGMSConfigurationDocPlan-SummaryoftheFeatureFromaUser%27sPerspective">Summary of the Feature From a User's Perspective</a></li> 
+        <li><a href="#GlassFishV3.1GMSandGMSConfigurationDocPlan-Availability">Availability</a></li> 
+        <li><a href="#GlassFishV3.1GMSandGMSConfigurationDocPlan-StatementofWork">Statement of Work</a></li> 
+        <ul> 
+         <li><a href="#GlassFishV3.1GMSandGMSConfigurationDocPlan-ChangestoBooks">Changes to Books</a></li> 
+         <ul> 
+          <li><a href="#GlassFishV3.1GMSandGMSConfigurationDocPlan-AdministrationGuideChanges"> <em>Administration Guide</em> Changes</a></li> 
+          <li><a href="#GlassFishV3.1GMSandGMSConfigurationDocPlan-HighAvailabilityAdministrationGuideChanges"> <em>High Availability Administration Guide</em> Changes</a></li> 
+          <li><a href="#GlassFishV3.1GMSandGMSConfigurationDocPlan-UpgradeGuideChanges"> <em>Upgrade Guide</em> Changes</a></li> 
+          <li><a href="#GlassFishV3.1GMSandGMSConfigurationDocPlan-DomainFileFormatReferenceChanges"> <em>Domain File Format Reference</em> Changes</a></li> 
+         </ul> 
+         <li><a href="#GlassFishV3.1GMSandGMSConfigurationDocPlan-ChangestoOnlineHelp">Changes to Online Help</a></li> 
+         <li><a href="#GlassFishV3.1GMSandGMSConfigurationDocPlan-ChangestoManPages">Changes to Man Pages</a></li> 
+        </ul> 
+        <li><a href="#GlassFishV3.1GMSandGMSConfigurationDocPlan-ReviewSchedule">Review Schedule</a></li> 
+        <li><a href="#GlassFishV3.1GMSandGMSConfigurationDocPlan-RelatedInformation">Related Information</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="GlassFishV3.1GMSandGMSConfigurationDocPlan-PeopleandRoles"></a>People and Roles</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Name </th> 
+         <th class="confluenceTh"> Role </th> 
+         <th class="confluenceTh"> Location </th> 
+         <th class="confluenceTh"> Time Zone </th> 
+         <th class="confluenceTh"> Email </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Paul Davies </td> 
+         <td class="confluenceTd"> Documentation Feature Owner </td> 
+         <td class="confluenceTd"> Santa Clara, CA, USA </td> 
+         <td class="confluenceTd"> US/Pacific </td> 
+         <td class="confluenceTd"> <tt>pauldavies@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Joe Fialli <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Software Engineer </td> 
+         <td class="confluenceTd"> Burlington, MA, USA <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> US/Eastern </td> 
+         <td class="confluenceTd"> <tt>jfialli@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Bobby Bissett <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Software Engineer </td> 
+         <td class="confluenceTd"> Burlington, MA, USA </td> 
+         <td class="confluenceTd"> US/Eastern </td> 
+         <td class="confluenceTd"> <tt>bbissett@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Kazem Ardekanian </td> 
+         <td class="confluenceTd"> QA Engineer </td> 
+         <td class="confluenceTd"> Menlo Park, CA, USA <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> US/Pacific </td> 
+         <td class="confluenceTd"> <tt>ka99118@dev.java.net</tt> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3.1GMSandGMSConfigurationDocPlan-Audience"></a>Audience</h2> <p>The Group Management System (GMS) Runtime Clustering feature and the GMS Configuration feature are aimed at system administrators.</p> <h4><a name="GlassFishV3.1GMSandGMSConfigurationDocPlan-SummaryoftheFeatureFromaUser%27sPerspective"></a>Summary of the Feature From a User's Perspective</h2> <p>The GMS Runtime Clustering feature enables GlassFish Server instances to participate in a cluster.</p> <p>The GMS Configuration feature enables GMS configuration data to to be stored.</p> <h4><a name="GlassFishV3.1GMSandGMSConfigurationDocPlan-Availability"></a>Availability</h2> <p>The GMS Runtime Clustering feature and the GMS Configuration feature are available in the Web Profile distribution and the Full Platform distribution.</p> <h4><a name="GlassFishV3.1GMSandGMSConfigurationDocPlan-StatementofWork"></a>Statement of Work</h2> <p>This section describes in detail for each document the work that is required by the introduction of the feature, such as changes, addition of new material, relocation of existing material, and removal of existing material.</p> <p>Documentation Impact:</p> 
+     <ul> 
+      <li>None</li> 
+      <li>Minor</li> 
+      <li>Moderate</li> 
+      <li>Major</li> 
+      <li>New</li> 
+     </ul> 
+     <hr> <p><b>Note -</b> If a document is task based (as opposed to reference), the changes should be determined from the user task analysis for the feature.</p> 
+     <hr> <h4><a name="GlassFishV3.1GMSandGMSConfigurationDocPlan-ChangestoBooks"></a>Changes to Books</h3> <h4><a name="GlassFishV3.1GMSandGMSConfigurationDocPlan-AdministrationGuideChanges"></a><em>Administration Guide</em> Changes</h4> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Section </th> 
+         <th class="confluenceTh"> Documentation Impact </th> 
+         <th class="confluenceTh"> Writer </th> 
+         <th class="confluenceTh"> Reviewers </th> 
+         <th class="confluenceTh"> Description of Change </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS Statistics in Chpater 8, Administering the Monitoring Service </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Paul </td> 
+         <td class="confluenceTd"> Joe Fialli <br class="atl-forced-newline"> Bobby Bissett <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> DEFERRED TO 3.2 <br class="atl-forced-newline"> <br class="atl-forced-newline"> Add a description of the following statistics: 
+          <ul> 
+           <li>message throughput</li> 
+           <li>thread utilitization</li> 
+           <li>number of detect SUSPECTED</li> 
+           <li>number of FAILURES</li> 
+          </ul> </td> 
+        </tr> 
+        <tr> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3.1GMSandGMSConfigurationDocPlan-HighAvailabilityAdministrationGuideChanges"></a><em>High Availability Administration Guide</em> Changes</h4> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Section </th> 
+         <th class="confluenceTh"> Documentation Impact </th> 
+         <th class="confluenceTh"> Writer </th> 
+         <th class="confluenceTh"> Reviewers </th> 
+         <th class="confluenceTh"> Description of Change </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Configuring GMS <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Paul </td> 
+         <td class="confluenceTd"> Joe Fialli <br class="atl-forced-newline"> Bobby Bissett <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Reinstate the <em>GMS Failure Detection Settings</em> section from the v2.1.1 documentation and update the attribute or property names to their new attribute names for release 3.1. <br class="atl-forced-newline"> <br class="atl-forced-newline"> Add a description of the <tt>verify-failure-connect-timeout-in-millis</tt> attribute, which is absent from the v2.1.1 documentation. <br class="atl-forced-newline"> <br class="atl-forced-newline"> Explain how to use the CLI to perform the following tasks: 
+          <ul> 
+           <li>Set the multicast address and port for a group</li> 
+           <li>Set the IP address of the network interface on a multihome machine</li> 
+           <li>Enable GMS</li> 
+           <li>Disable GMS</li> 
+           <li>Configure failure detection settings</li> 
+           <li>Configure GMS cluster settings using <tt>create-cluster</tt></li> 
+           <li>Determine the operational state of a cluster using <tt>get-health</tt></li> 
+           <li>Determine if multicast is enabled for a cluster using <tt>validate-multicast</tt></li> 
+          </ul> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3.1GMSandGMSConfigurationDocPlan-UpgradeGuideChanges"></a><em>Upgrade Guide</em> Changes</h4> <p>Scenario numbers refer to <a href="3.1SSHScenarios.html" title="3.1SSHScenarios">Instance Lifecycle Scenarios</a>.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Section </th> 
+         <th class="confluenceTh"> Documentation Impact </th> 
+         <th class="confluenceTh"> Writer </th> 
+         <th class="confluenceTh"> Reviewers </th> 
+         <th class="confluenceTh"> Description of Change </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 1. GlassFish Server Compatibility Issues </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Paul <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Joe Fiallil <br class="atl-forced-newline"> Bobby Bissett </td> 
+         <td class="confluenceTd"> Add a description of the transformations of cluster, group-management-service, and related elements in domain.xml after an upgrade from GlassFish v2. <br class="atl-forced-newline"> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3.1GMSandGMSConfigurationDocPlan-DomainFileFormatReferenceChanges"></a><em>Domain File Format Reference</em> Changes</h4> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Section </th> 
+         <th class="confluenceTh"> Documentation Impact </th> 
+         <th class="confluenceTh"> Writer </th> 
+         <th class="confluenceTh"> Reviewers </th> 
+         <th class="confluenceTh"> Description of Change </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Element Hierarchy </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Paul </td> 
+         <td class="confluenceTd"> Joe Fialli <br class="atl-forced-newline"> Bobby Bissett </td> 
+         <td class="confluenceTd"> Reinstate group-management-service. <br class="atl-forced-newline"> <br class="atl-forced-newline"> Add failure-detection subelement. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> cluster </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Paul </td> 
+         <td class="confluenceTd"> Joe Fialli <br class="atl-forced-newline"> Bobby Bissett </td> 
+         <td class="confluenceTd"> Move gms-bind-interface-address property to Attributes section. <br class="atl-forced-newline"> <br class="atl-forced-newline"> Change cluster attribute names as follows: <br class="atl-forced-newline"> 
+          <ul> 
+           <li>heartbeat-enabled changed to gms-enabled</li> 
+           <li>heartbeat-address changed to gms-multicast-address</li> 
+           <li>heartbeat-port changed to gms-multicast-port</li> 
+          </ul> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> config </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Paul </td> 
+         <td class="confluenceTd"> Joe Fialli <br class="atl-forced-newline"> Bobby Bissett </td> 
+         <td class="confluenceTd"> Add group-management-service to the list of subelements. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> failure-detection </td> 
+         <td class="confluenceTd"> New <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Paul </td> 
+         <td class="confluenceTd"> Joe Fialli <br class="atl-forced-newline"> Bobby Bissett </td> 
+         <td class="confluenceTd"> Add a description of the failure-detection element. Most group-management-service attributes and properties are moving here. <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> group-management-service </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Paul </td> 
+         <td class="confluenceTd"> Joe Fialli <br class="atl-forced-newline"> Bobby Bissett </td> 
+         <td class="confluenceTd"> Reinstate from the v2.1.1documentation. <br class="atl-forced-newline"> <br class="atl-forced-newline"> Add failure-detection to the list of subelements. <br class="atl-forced-newline"> <br class="atl-forced-newline"> Change the failure-detection-tcp-retransmit-timeout property to the failure-detection attribute verify-failure-connect-timeout-in-millis. <br class="atl-forced-newline"> <br class="atl-forced-newline"> Change the following attributes: <br class="atl-forced-newline"> 
+          <ul> 
+           <li>ping-protocol-timeout-in-millis changed to group-discovery-timeout-in-millis, default changed to 5000</li> 
+           <li>fd-protocol-max-tries changed to max-missed-heartbeats and moved to failure-detection</li> 
+           <li>fd-protocol-timeout-in-millis changed to heartbeat-frequency-in-millis and moved to failure-detection</li> 
+           <li>vs-protocol-timeout-in-millis changed to verify-failure-waittime-in-millis and moved to failure-detection</li> 
+          </ul> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> module-log-levels </td> 
+         <td class="confluenceTd"> New <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Paul </td> 
+         <td class="confluenceTd"> Joe Fialli <br class="atl-forced-newline"> Bobby Bissett </td> 
+         <td class="confluenceTd"> Reinstate the description of the group-management-service attribute. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3.1GMSandGMSConfigurationDocPlan-ChangestoOnlineHelp"></a>Changes to Online Help</h3> <p>All changes to online help, including those arising from the GMS Runtime Clustering and GMS Configuration features, are detailed in <em><a href="GlassFishV3.1AdminConsoleDocPlan.html" title="GlassFishV3.1AdminConsoleDocPlan">Administration Console Documentation Plan</a></em>.</p> <h4><a name="GlassFishV3.1GMSandGMSConfigurationDocPlan-ChangestoManPages"></a>Changes to Man Pages</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Man Page Name and Section </th> 
+         <th class="confluenceTh"> Documentation Impact </th> 
+         <th class="confluenceTh"> Writer </th> 
+         <th class="confluenceTh"> Reviewers </th> 
+         <th class="confluenceTh"> Description of Change </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> get-health(1) <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Paul </td> 
+         <td class="confluenceTd"> Joe Fialli <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Reinstate this man page from the v2.1.1 documentation. <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> validate-multicast(1) </td> 
+         <td class="confluenceTd"> New <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Paul <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Bobby Bissett <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Write the man page for this subcommand, which determines whether multicast is enabled for a cluster. <br class="atl-forced-newline"> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3.1GMSandGMSConfigurationDocPlan-ReviewSchedule"></a>Review Schedule</h2> <p>The review schedule for the documentation items that are affected by this feature is provided in the following table.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item </th> 
+         <th class="confluenceTh"> Review Start Date </th> 
+         <th class="confluenceTh"> Review End Date </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <em>Administration Guide</em> changes</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <em>High Availability Administration Guide</em> changes</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <em>Upgrade Guide</em> changes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"><em>Domain File Format Reference</em> changes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">Online help changes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">Man page changes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>Reviewers are listed in the <em>Statement of Work</em>.</p> <h4><a name="GlassFishV3.1GMSandGMSConfigurationDocPlan-RelatedInformation"></a>Related Information</h2> 
+     <ul> 
+      <li>1-pagers: 
+       <ul> 
+        <li><a href="http://wikis.sun.com/download/attachments/209654762/gms_gfv3_1_onepager.txt">GSM Runtime Clustering (Text)</a></li> 
+        <li><a href="http://wiki.glassfish.java.net/attach/GlassFishv3GMS/gmsconfig.rtf">GMS Configuration (RTF) </a></li> 
+       </ul> </li> 
+      <li>User task analysis</li> 
+      <li>Design document</li> 
+      <li><a href="GlassFishv3.1GMS.html" title="GlassFishv3.1GMS">Project page</a></li> 
+      <li><a href="GlassFishV3.1GMSDocReview.html" title="GlassFishV3.1GMSDocReview">GMS Doc Review</a></li> 
+     </ul> <p>Email aliases:</p> 
+     <ul> 
+      <li><a href="mailto:admin@glassfish.java.net">admin@glassfish.java.net</a></li> 
+      <li><a href="mailto:users@glassfish.java.net">users@glassfish.java.net</a></li> 
+      <li><a href="mailto:docs@glassfish.java.net">docs@glassfish.java.net</a></li> 
+     </ul> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Nov 03, 2010 by 
+<font color="#0050B2">rebeccaparks</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

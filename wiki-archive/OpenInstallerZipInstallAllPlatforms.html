@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : OpenInstallerZipInstallAllPlatforms</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="OpenInstallerZipInstallAllPlatforms-OpenInstaller%3AZipInstallOnAllPlatforms"></a>OpenInstaller:ZipInstallOnAllPlatforms</h2> 
+     <hr> <h4><a name="OpenInstallerZipInstallAllPlatforms-PROJECTDESCRIPTION%3A"></a>PROJECT DESCRIPTION:</h1> <p> To support zip based installation on all platforms using Open Installer</p> 
+     <hr> <h4><a name="OpenInstallerZipInstallAllPlatforms-USECASES"></a>USE CASES</h1> <h4><a name="OpenInstallerZipInstallAllPlatforms-UC001%3A"></a><b>UC001:</b></h1> <p>1. User declares the package format to be used in solaris for example "zip" in the dependency descriptor</p> <p>2. User runs the installer</p> <p>3. The zip files in the payload should get installed in the installhome selected by the user</p> <p>4. The user runs the uninstaller and the installed files are properly removed</p> <h4><a name="OpenInstallerZipInstallAllPlatforms-UC002%3A"></a><b>UC002:</b></h1> <p>1. User declares the package format to be used in Linux for example "zip" in the dependency descriptor</p> <p>2. User runs the installer</p> <p>3. The zip files in the payload should get installed in the installhome selected by the user</p> <p>4. The user runs the uninstaller and the installed files are properly removed</p> 
+     <hr> <h4><a name="OpenInstallerZipInstallAllPlatforms-Requirements"></a>Requirements</h1> <p>1) all platforms support zipfiles.<br> 2) mixing zip files and native packages in an install application is not permitted<br> 3) only 1 native pkg format is supported per platform.<br> 4) Platforms should support the following:</p> 
+     <ul> 
+      <li>solaris, svr4 and zip.</li> 
+     </ul> 
+     <ul> 
+      <li>Linux, rpm and zip</li> 
+     </ul> 
+     <ul> 
+      <li>Windows, zip only</li> 
+     </ul> 
+     <ul> 
+      <li>Mac osx, zip file only</li> 
+     </ul> <p>5)The sims work done for windows should be transferable to the other plats.</p> 
+     <hr> <h4><a name="OpenInstallerZipInstallAllPlatforms-DESIGN"></a>DESIGN</h1> 
+     <ul> 
+      <li>The Design aims mainly at giving the user the simplest of ways to specify the</li> 
+     </ul> <p> Pkg format under which the installation should run.</p> 
+     <ul> 
+      <li>Incase If the user doesnot specify</li> 
+     </ul> <p> the pkg format then the OpenInstaller will pick <br> the Default Package Format to run the installer for that particular OS.<br> For example:svr4 for Solaris,rpm for Linux etc</p> 
+     <hr> <h4><a name="OpenInstallerZipInstallAllPlatforms-SAMPLEUSAGE"></a>SAMPLE USAGE</h1> <p>The user has to keep in mind three things while running zip based installation</p> <p>1)The option to be specified when running the installer</p> <p>"-p Pkg-Format=zip" is the option with which the installer should be run.</p> <p>Pls note: the package format value should be all in lowercase.<br> In the above example "zip" is the value for Package format <br> and you should note that it is all in lowercase.</p> <p>Sample usage is </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">engine-wrapper.sh -j /opt/java -p Pkg-Format=zip</pre> 
+       </div> 
+      </div>
+     </div> <p>2)The Dependency Descriptor(the xml files in </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;media dir&gt;/dependency</pre> 
+       </div> 
+      </div>
+     </div> <p> directory)<br> contents for each components should contain zip based InstallableUnits for <br> zip based installation</p> <p>The Installable Unit section should look like this</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;InstallableUnit&gt;ZipProductA.zip&lt;/InstallableUnit&gt;
+                 ---------------
+&lt;InstallableUnit&gt;ZipProductUninstall.zip&lt;/InstallableUnit&gt;
+                 -----------------------</pre> 
+       </div> 
+      </div>
+     </div> <p>Also remember the InstallableUnit section should be homogeneous<br> The below description is an example for wrong usage</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;InstallableUnit&gt;ZipProductA.rpm&lt;/InstallableUnit&gt;
+                 ----------------
+&lt;InstallableUnit&gt;ZipProductUninstall.zip&lt;/InstallableUnit&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>To put it simple,the InstallableUnit section should contain the description of packages only with the format with which the installation is planned to run.<br> i.e For ex: ZipProductA.zip for zip based installation.</p> <p>The sample usage is here below:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;Realization version="1.0.0.0"&gt;
+        &lt;OS&gt;
+          &lt;Type&gt;unix&lt;/Type&gt;
+          &lt;Name&gt;SunOS&lt;/Name&gt;
+          &lt;Arch&gt;sparc&lt;/Arch&gt;
+          &lt;OtherArch&gt;sparcv9&lt;/OtherArch&gt;
+
+          &lt;VersionCertified&gt;&lt;VersionBaseline&gt;5.9&lt;/VersionBaseline&gt;&lt;/VersionCertified&gt;
+           &lt;RequirementsRealization&gt;
+            &lt;Item type="installation_req_patch"&gt;116103-08&lt;/Item&gt;
+            &lt;Item type="execution_req_patch"&gt;116103-08&lt;/Item&gt;
+             &lt;Item type="disk"&gt;30Mb&lt;/Item&gt;
+             &lt;Item type="ram"&gt;1Gb&lt;/Item&gt;
+             &lt;Item type="swap"&gt;2Gb&lt;/Item&gt;
+            &lt;Item type="speed"&gt;800MHz&lt;/Item&gt;
+          &lt;/RequirementsRealization&gt;
+
+        &lt;/OS&gt;
+        &lt;InstallableUnit&gt;ZipProductA.zip&lt;/InstallableUnit&gt;
+        --------------------------------------------------
+        &lt;InstallableUnit&gt;ZipProductUninstall.zip&lt;/InstallableUnit&gt;
+        ----------------------------------------------------------
+      &lt;/Realization&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>3)The Engine.xml must be copied from </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">/install/lib/resources/dependency</pre> 
+       </div> 
+      </div>
+     </div> <p> to </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;media dir&gt;/dependency</pre> 
+       </div> 
+      </div>
+     </div> <p> and it should be edited to have the following contents</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+
+
+&lt;Component xmlns="http://openinstaller.org/dependency/V1"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://openinstaller.org/dependency/V1 ../schemas/Component.xsd"&gt;
+
+  &lt;Identity&gt;
+    &lt;Identifier feature="false"&gt;Engine&lt;/Identifier&gt;
+    &lt;Description&gt;Sun Installation and Uninstallation software&lt;/Description&gt;
+    &lt;IdentityVersion&gt;
+      &lt;VersionBaseline&gt;1.0&lt;/VersionBaseline&gt;
+    &lt;/IdentityVersion&gt;
+    &lt;Vendor&gt;Sun Microsystems, Inc.&lt;/Vendor&gt;
+  &lt;/Identity&gt;
+
+  &lt;Payload&gt;
+    &lt;CompositeUnit&gt;
+      &lt;Name&gt;core&lt;/Name&gt;
+      &lt;Realization&gt;
+        &lt;OS&gt;
+          &lt;Type&gt;unix&lt;/Type&gt;
+          &lt;Name&gt;SunOS&lt;/Name&gt;
+          &lt;Arch&gt;sparc&lt;/Arch&gt;
+          &lt;OtherArch&gt;sparcv9&lt;/OtherArch&gt;
+          &lt;VersionCertified&gt;
+            &lt;VersionBaseline&gt;5.9&lt;/VersionBaseline&gt;
+          &lt;/VersionCertified&gt;
+        &lt;/OS&gt;
+        &lt;InstallableUnit&gt;Engine.zip&lt;/InstallableUnit&gt;
+        ---------------------------------------------
+        &lt;InstallableUnit&gt;Resources.zip&lt;/InstallableUnit&gt;
+        ------------------------------------------------
+      &lt;/Realization&gt;
+
+      &lt;Realization&gt;
+        &lt;OS&gt;
+          &lt;Type&gt;unix&lt;/Type&gt;
+          &lt;Name&gt;SunOS&lt;/Name&gt;
+          &lt;Arch&gt;i386&lt;/Arch&gt;
+          &lt;OtherArch&gt;x86_64&lt;/OtherArch&gt;
+          &lt;VersionCertified&gt;
+            &lt;VersionBaseline&gt;5.9&lt;/VersionBaseline&gt;
+          &lt;/VersionCertified&gt;
+        &lt;/OS&gt;
+        &lt;InstallableUnit&gt;Engine.zip&lt;/InstallableUnit&gt;
+        ----------------------------------------------
+        &lt;InstallableUnit&gt;Resources.zip&lt;/InstallableUnit&gt;
+        ------------------------------------------------
+      &lt;/Realization&gt;
+
+      &lt;Realization&gt;
+        &lt;OS&gt;
+          &lt;Type&gt;unix&lt;/Type&gt;
+          &lt;Name&gt;Linux&lt;/Name&gt;
+          &lt;Arch&gt;i386&lt;/Arch&gt;
+          &lt;OtherArch&gt;x86_64&lt;/OtherArch&gt;
+          &lt;VersionCertified&gt;
+            &lt;VersionBaseline&gt;2.4&lt;/VersionBaseline&gt;
+          &lt;/VersionCertified&gt;
+        &lt;/OS&gt;
+        &lt;InstallableUnit&gt;Engine.zip&lt;/InstallableUnit&gt;
+        ---------------------------------------------
+        &lt;InstallableUnit&gt;Resources.zip&lt;/InstallableUnit&gt;
+        ------------------------------------------------
+      &lt;/Realization&gt;
+
+      &lt;Realization&gt;
+        &lt;OS&gt;
+          &lt;Type&gt;windows&lt;/Type&gt;
+          &lt;Name&gt;Windows XP&lt;/Name&gt;
+          &lt;OtherName&gt;Windows 2000&lt;/OtherName&gt;
+          &lt;OtherName&gt;Windows 2003&lt;/OtherName&gt;
+          &lt;OtherName&gt;UNDEFINED&lt;/OtherName&gt;
+          &lt;Arch&gt;i386&lt;/Arch&gt;
+          &lt;OtherArch&gt;x86_64&lt;/OtherArch&gt;
+          &lt;VersionCertified&gt;
+            &lt;VersionBaseline&gt;5.1&lt;/VersionBaseline&gt;
+          &lt;/VersionCertified&gt;
+          &lt;RequirementsRealization&gt;
+            &lt;Item type="disk"&gt;3Mb&lt;/Item&gt;
+          &lt;/RequirementsRealization&gt;
+        &lt;/OS&gt;
+        &lt;InstallableUnit&gt;Engine.zip&lt;/InstallableUnit&gt;
+        ---------------------------------------------
+        &lt;InstallableUnit&gt;Resources.zip&lt;/InstallableUnit&gt;
+        ------------------------------------------------
+      &lt;/Realization&gt;
+    &lt;/CompositeUnit&gt;
+  &lt;/Payload&gt;
+&lt;/Component&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>The difference between the actual Engine.xml and the changes done to the copy is underlined in the above example.<br> It is simple.<br> The actual Engine.xml contains default packages as InstallableUnits based on the OS.<br> i.e it contains svr4 package corresponding to Engine and Resources in its <br> InstallableUnit section for solaris and the corresponding rpms for Linux section.</p> <p>But as mentioned in point 2),the dependency descriptor should contain .zip packages if we are to do zip based installation.And hence the above changes are required.<br> Pls note:The above change should be made only to Engine.xml that is there in </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;media dir&gt;/dependency</pre> 
+       </div> 
+      </div>
+     </div> <p>(the copy of Engine.xml that we initially copied from </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">install/lib/resources/dependency</pre> 
+       </div> 
+      </div>
+     </div> <p>) and the actual Engine.xml should not be edited.</p> <p>The above mentioned change(maintaining a copy of Engine.xml and making changes to them<br> as mentioned above) is due to a bug which will be resolved in near future.</p> <p>These are the three things that the user must do to perform <br> zip based installation on all OS.</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

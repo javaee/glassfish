@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : CheckLockTag</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>Checks the existence of a page lock. A page lock is created when an user starts editing a page. You can use this tag to warn the user, prevent the page from being modified (by removing the editor text area, for example), etc.</p> 
+     <hr> <h4><a name="CheckLockTag-Usage"></a>Usage</h3> <p>&lt;wiki:CheckLock mode="locked|unlocked|owned" id="&lt;variable&gt;"&gt;<br> ;:<em>content</em><br> &lt;/wiki:CheckLock&gt;</p> <h4><a name="CheckLockTag-Parameters"></a>Parameters</h3> 
+     <ul> 
+      <li><em><b>mode</b></em><br> If set to "locked", will include the content if the page has been locked. If set to "o<br> wned", will include only if the page is locked by the current user. Value "unlocked" includes if<br> the page is not locked.</li> 
+      <li><em><b>id</b></em><br> The JSP variable named in this parameter will be set to an instance of ~PageLock class.</li> 
+     </ul> <h4><a name="CheckLockTag-Example"></a>Example</h3> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;wiki:CheckLock mode="locked" id="lock"&gt;
+         &lt;P CLASS="locknote"&gt;User '&lt;%=lock.getLocker()%&gt;' has started to edit this page, but has not yet
+         saved.  I won't stop you from editing this page anyway, BUT be aware that
+         the other person might be quite annoyed.  It would be courteous to wait for his lock
+         to expire or until he stops editing the page.  The lock expires in
+         &lt;%=lock.getTimeLeft()%&gt; minutes.
+         &lt;/P&gt;
+      &lt;/wiki:CheckLock&gt;</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="CheckLockTag-ThePageLockclass"></a>The ~PageLock class</h3> <p>The ~PageLock class has the following methods you can use:</p> 
+     <ul> 
+      <li><em><b>public WikiPage getPage()</b></em><br> Returns the current page.</li> 
+     </ul> 
+     <ul> 
+      <li><em><b>public java.lang.String getLocker()</b></em><br> Returns the user name as a string.</li> 
+     </ul> 
+     <ul> 
+      <li><em><b>public java.util.Date getAcquisitionTime()</b></em><br> Returns the timestamp when this lock was acquired (i.e. the user started to edit the page.</li> 
+     </ul> 
+     <ul> 
+      <li><em><b>public java.util.Date getExpiryTime()</b></em><br> Returns the timestamp when this lock expires (if the user has not saved or clicked "cancel")</li> 
+     </ul> 
+     <ul> 
+      <li><em><b>public long getTimeLeft()</b></em><br> A convinience method, which returns the remaining time to expiry in minutes.</li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

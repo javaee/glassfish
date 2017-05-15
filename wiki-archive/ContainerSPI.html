@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : ContainerSPI</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="ContainerSPI-ContainerSPIforGlassFishv3."></a>Container SPI for GlassFish v3.</h1> <h4><a name="ContainerSPI-Features"></a>Features</h2> <p>Adding container to GlassFish v3 should be relatively easy task with clear steps taken by the runtime to identify, install, load the container to final deploy and run applications in it. </p> <p>These are the high level features needed :</p> 
+     <ol> 
+      <li>No container repackaging. Foreign containers (such as the ones we do not ship by default with GlassFish) should not require a special file layout or even existence in specific directories in order to be pluggable in V3.</li> 
+      <li>Container classes should not be loaded until an application making use of that container is deployed.</li> 
+      <li>Containers may need other container to work successfully, forming a hierarchy of containers. It should be possible for containers to query the Glassfish v3 runtime to get information about installed containers.</li> 
+      <li>Deployment or server startup code should be mainly the same and differ only with a few identified steps.</li> 
+     </ol> <h4><a name="ContainerSPI-ContainerStartup"></a>Container Startup</h2> <h4><a name="ContainerSPI-Archive"></a>Archive</h3> <p>An archive type is an abstraction of the archive file format. An archive type can be implemented as a plain jar file or as a directory for instance. So far, GlassFish recognize only 2 types of archives, jar based and directory based. There are two sub intefaces to the Archive interface called the ReadableArchive and the WritableArchive. Implementations of the Archive interface are likely to no exist as it defines only the common protocol between ReadableArchive and WritableArchive. Providers of new archive type should write implementations of the ReadableArchive and the WritableArchive or an implementation that implements both interfaces.</p> <h4><a name="ContainerSPI-AchiveHandler"></a>AchiveHandler</h3> <p>An archive handler is responsible for handling a particular layout of an archive. Java EE defines a set of layout of archives like WAR, JAR or RAR for instance. Each layout should have one handler associated with it. There is no extension point supported at this level, the handler responsibility is to give access to the classes and resources packaged in the archive and should not contain any container specific code. The ClassLoader returned by the handler will be used by all the containers in which the application will eventually end up being deployed.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">package org.jvnet.glassfish.api.deployment.archive;
+
+import org.jvnet.glassfish.api.deployment.DeploymentContext;
+import org.jvnet.hk2.annotations.Contract;
+
+import java.io.IOException;
+
+/**
+ * ArchiveHandlers are handling certain archive type. An archive has a unique type which usually
+ * defines how classes and resources are loaded from the archive.
+ *
+ * ArchiveHandler should be stateless objects although the implementations of this contract can
+ * control that using the scope element of the @Service annotation.
+ * 
+ * @author Jerome Dochez
+ */
+@Contract
+public interface ArchiveHandler {
+
+    /**
+     * Returns the identification for an archive. This could be the archive filename
+     * suffix for instance.
+     *
+     * @return the archive type as a string.
+     */
+    public String getArchiveType();
+
+    /**
+     * Returns the default name by which the specified archive can be 
+     * identified.
+     * &lt;p&gt;
+     * The default name is used, for example, during deployment if no name
+     * was specified explicitly as part of the deployment request.  
+     * @param archive the archive for which to provide the default name
+     * @return the default name for identifying the specified archive
+     */
+    public String getDefaultApplicationName(ReadableArchive archive);
+
+    /**
+     * Returns true if this archive handler is capable of handling the type of
+     * passed archive.
+     * Handling an archive means for an archive handler instance to be able
+     * of creating a ClassLoader instance capable of loading classes from the archive
+     * as well as expanding the archive into a representation which may be more
+     * efficient for the classloader.
+     *
+     * @param archive archive abstraction for the underlying archive
+     * @return true if this instance can handle such an archive.
+     */
+    public boolean handles(ReadableArchive archive);
+
+    /**
+     * Prepare a class loader capable of loading any type of classes from the
+     * archive passed in the deployment context. It is a good habit for such
+     * ClassLoader instances to be able to load classes from the scratch dir
+     * used by deployers (as stubs can be generated there).  Scratch dir is
+     * identified from {@link org.jvnet.glassfish.api.deployment.DeploymentContext#getScratchDir()}
+     *
+     * @param context deployment context
+     * @return ClassLoader 
+     */
+    public ClassLoader getClassLoader(DeploymentContext context);
+    
+    /**
+     * Prepares the jar file to a format the ApplicationContainer is
+     * expecting. This could be just a pure unzipping of the jar or
+     * nothing at all.
+     * @param source of the expanding
+     * @param target of the expanding
+     */
+    public void expand(ReadableArchive source, WritableArchive target) throws IOException;
+}</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="ContainerSPI-Sniffer"></a>Sniffer</h3> <p>Containers do not necessarily need to be "installed" on the local machine for the GlassFish v3 to recognize the container's application type. GlassFish v3 uses a Snifferconcept to study deployment request's artifacts and elect the associated container that handle the application type the user is trying to deploy. </p> <p>Such sniffer code can be as simple as looking for a specific file in the application's archive (presence of WEB-INF/web.xml), or as complicated as running some annotation scanner to determine an XML-less archive (@EJB annotations in a .jar file). Sniffer code must be as small as possible and must not load any of the container's runtime classes. </p> <p>Sniffer code can be installed in the glassfish v3 lib directory and since they implement the @Contract Sniffer interface, they will be automatically discovered by GlassFish v3. Hence there is no need to provide GlassFish v3 with a list of sniffers. Sniffers can be installed while GlassFish v3 is running and will be picked up at the next deployment request. </p> <p>In a future build of V3, we might consider a "special" remote repository that Sun would maintain on dev.java.net for instance where the runtime could go and download new Sniffers automatically (or through an administrative request)</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">/**
+ * A sniffer implementation is responsbile for identifying an particular
+ * application type and/or a particular file type.
+ *
+ * @author Jerome Dochez
+ */
+
+@Contract
+public interface Sniffer {
+
+    /**
+     * Returns true if the passed file or directory is recognized by this
+     * sniffer.
+     * @param source the file or directory abstracted as an archive
+     * @param loader if the class loader capable of loading classes and
+     * resources from the source archive.
+     * @return true if the location is recognized by this sniffer
+     */
+    public boolean handles(ReadableArchive source, ClassLoader loader);
+
+    /**
+     * Returns the list of annotations types that this sniffer is interested in.
+     * If an application bundle contains at least one class annotated with
+     * one of the returned annotations, the deployment process will not
+     * call the handles method but will invoke the containers deployers as if
+     * the handles method had been called and returned true.
+     *
+     * @return list of annotations this sniffer is interested in or an empty array
+     */
+    public Class&lt;? extends Annotation&gt;[] getAnnotationTypes();
+
+    /**
+     * Returns the pattern to apply against the request URL
+     * If the pattern matches the URL, the service method of the associated
+     * container will be invoked
+     * @return pattern instance
+     */
+    public Pattern getURLPattern();
+
+    /**
+     * Returns the module type associated with this sniffer
+     * @return the container name
+     */
+    public String getModuleType();
+
+   /**
+     * Sets up the container libraries so that any imported bundle from the
+     * connector jar file will now be known to the module subsystem
+     * @param containerHome is where the container implementation resides
+     * @param logger the logger to use
+     * @throws java.io.IOException exception if something goes sour
+     */
+    public void setup(String containerHome, Logger logger) throws IOException;
+
+   /**
+     * Tears down a container, remove all imported libraries from the module
+     * subsystem.
+     *
+     */
+    public void tearDown();       
+
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>The simplest version of the Sniffers will just implement meaningfully the handles() method to check the existence of a file in the archive which denotes the application type (like WEB-INF/web.xml denotes a web application). </p> <p>Once a Sniffer has elected that it owns the deployment request artifact, the setUp method is called. The setup method is responsible for setting up the container which can be one to many of the following items :</p> 
+     <ul> 
+      <li>Download the container's runtime (1st time only)</li> 
+      <li>Install the container's runtime (1st time only)</li> 
+      <li>Set up 1 to many Repository to access the runtime's classes.</li> 
+      <li>Return the name of the module containing the @Container annotated classes (connector module)</li> 
+     </ul> <h4><a name="ContainerSPI-Connectormodule"></a>Connector module</h3> <p>For the simple case the name of the connector module will follow the pattern "gf-ContainerX-connector" and will be looked inside the lib/connectors directory of the application server. Those connectors usually imports classes from GlassFish (like the HK2 module management) and from the container itself. Since the container is not necessarily installed locally until the Sniffer.setUp() has been called, it is important that such modules are not loaded/resolved by HK2 until the setUp() has successfully finished.</p> <p>Connector modules are normal HK2 modules, they can have an ImportPolicy, LifecyclePolicy implementations to manage their list of imports and be notified when they are being loaded/stopped. They must however provide a least one HK2 component, annotated with the @Container annotation. </p> <p>This class is the container interface class, it does not implement a particular interface or subclass anything it is just a normal HK2 component : </p> 
+     <ul> 
+      <li>It can use @Requires and @Provides since it will be injected and extracted.</li> 
+      <li>It can implement the PostConstruct and PreDestroy interfaces to attach behaviours its lifecycle</li> 
+      <li>It must be annotated with @Container.</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">/**
+ * Contract identifying a container implementation.
+ *
+ * Usually the names of the container should be specific enough to ensure uniqueness.
+ * In most cases, it is recommended to use the full class name as the @Service name
+ * attribute to ensure that two containers do no collide.
+ *
+ * @author Jerome Dochez
+ */
+@Contract
+public interface Container {
+
+    /**
+     * Returns the Deployer implementation capable of deploying applications to this
+     * container.
+     *
+     * @return the Deployer implementation
+     */
+    public Class&lt;? extends Deployer&gt; getDeployer();
+
+    /**
+     * Returns a human redeable name for this container, this name is not used for
+     * identifying the container but can be used to display messages belonging to
+     * the container.
+     * 
+     * @return a human readable name for this container.
+     */
+    public String getName();</pre> 
+       </div> 
+      </div>
+     </div> <p>Once GlassFish V3 has found one @Container annotated class when the module type is equals to the Sniffer module type, the class is passed to the HK2 runtime for instantiation, injection and module management. </p> <p>Usually containers implementation will implement the PostConstruct interface to attach containr startup code to the postConstruct() method. They usually mirror this with the PreDestroy/preDestroy(). </p> <p>Once the container interface instance is returned from the HK2 subsystem, the @Container deployerImpl() name is used to find the deployer instance for such module. </p> <h4><a name="ContainerSPI-DeploymentContext"></a>DeploymentContext</h3> <p>The DeploymentContext is the usual context object passed arround deployer instances during deployment. </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">/**
+     * Application bits, at the raw level. Deployer's should avoid
+     * using such low level access as it binds the deployer to a particular directory
+     * layout. Instead Deployers should use the class loader obtained via the getClassLoader() API
+     *
+     * @return Abstraction to the application's source archive.
+     */
+    public ReadableArchive getSource();
+    
+    /**
+     * Returns the DeployCommand parameters 
+     * @return the command parameters
+     */
+    public Properties getCommandParameters();
+
+    /**
+     * Returns the class loader associated to this deployment request.
+     * ClassLoader instances are usually obtained by the getClassLoader API on
+     * the associated ArchiveHandler for the archive type being deployed.
+     *
+     * This can return null and the container should allocate a ClassLoader
+     * while loading the application.
+     *
+     * @link {org.jvnet.glassfish.apu.deployment.archive.ArchiveHandler.getClassLoader()}
+     *
+     * @return a class loader capable of loading classes and resources from the
+     * source
+     */
+    public ClassLoader getClassLoader();
+
+    /**
+     * Returns a scratch directory that can be used to store things in.
+     * The scratch directory will be persisted accross server restart but not 
+     * accross redeployment of the same application
+     *
+     * @param subDirName the sub directory name of the scratch dir
+     * @return the specific scratch subdirectory for this application based on 
+     *         passed in subDirName. Returns the root scratch dir if the 
+     *         passed in value is null.      
+     */
+    public File getScratchDir(String subDirName);
+    
+    /**
+     * Returns the directory where the original applications bits should be 
+     * stored. This is useful when users deploy an archive file that need to 
+     * be unzipped somewhere for the container to work with. 
+     * 
+     * @return the source directory for this application
+     */
+    public File getSourceDir();
+
+    /**
+     * Stores a descriptor for the module in the context so other deployer's
+     * can have access to it. Module meta-data is usual not persistent which
+     * mean that any modification to it will not be available at the next
+     * server restart and will need to be reset.
+     *
+     * @param metaData the meta data itself
+     */
+    public void addModuleMetaData(Object metaData);
+
+    /**
+     * Returns the meta data associated with a module type.
+     *
+     * @param metadataType type of the meta date.
+     * @return
+     */
+    public &lt;T&gt; T getModuleMetaData(Class&lt;T&gt; metadataType);
+
+    /**
+     * Returns the properties that will be persisted as a key value pair at
+     * then end of deployment. That allows individual Deployers implementation
+     * to store some information that should be available upon server restart.
+     *
+     * @return the application's properties.
+     */
+    public Properties getProps();
+
+    /**
+     * Add a new ClassFileTransformer to the context. Once all the deployers potentially
+     * invalidating the application class loader (as indicated by the
+     * @link {MetaData.invalidatesClassLoader()})
+     * the deployment backend will recreate the application's class loader registering
+     * all the ClassTransformers added by the deployers to this context.
+     *
+     * @param transformer the new class file transformer to register to the new application
+     * class loader
+     * @throws UnsupportedOperationException if the class loader we use does not support the
+     * registration of a ClassFileTransformer. In such case, the deployer should either fail
+     * deployment or revert to a mode without the byteocode enhancement feature.
+     */
+    public void addTransformer(ClassFileTransformer transformer);
+
+    /**
+     * Add a new ModuleDefinition to the public APIs of this application. This can be done before
+     * the load phase or it will generate an UnsupportedOpertationException
+     *
+     * @param def module definition to be added to the list of imports for that application
+     */
+    public void addPublicAPI(ModuleDefinition def) throws UnsupportedOperationException;</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="ContainerSPI-Deployer"></a>Deployer </h3> <p>The Deployer interface is the last invocation point in the container enablement sequence. At that point the target container should be started, the GlassFish v3 system will now invoke the stateless Deployer implementation. </p> <p>All available deployer instances will be passed the deployment context for all deployment requests. It is the responsibility of the deployer instance to find from the DeploymentContext if the passed application contains any bits that are relevant to itself. <br> This is how new deployers can leverage existing infrastructure or provides a convergence model where different types of components can be packaged and deployed using a single archive and a singe deployment command.</p> <p>Deployer instance are HK2 components therefore they can use <input type="text" name="variableValues.Requires," size="12" onkeyup="updateOthers(this)">&nbsp;<span class="templateparameter">(Requires,)</span>Provides, PostConstruct, PreDestroy. </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">/**
+ * A deployer is capable of deploying one type of applications.
+ *
+ * Deployers shoud use the ArchiveHandler to get a ClassLoader capable of loading classes
+ * and resources from the archive type that his being deployed.
+ *
+ * In all cases the ApplicationContainer subclass must return the class loader associated
+ * with the application. In case the application is deployed to more than one container
+ * the class loader can be shared and therefore should be retrieved from the ArchiveHandler 
+ *
+ * @param T is the container type associated with this deployer
+ * @param U is the ApplicationContainer implementation for this deployer
+ * @author Jerome Dochez
+ */
+public interface Deployer&lt;T extends Container, U extends ApplicationContainer&gt; {
+
+
+    /**
+     * Returns the meta data assocated with this Deployer
+     *
+     * @return the meta data for this Deployer
+     */
+    public MetaData getMetaData();
+
+    /**
+     * Loads the meta date associated with the application.
+     *
+     * @parameters type type of metadata that this deployer has declared providing.
+     */
+    public &lt;V&gt; V loadMetaData(Class&lt;V&gt; type, DeploymentContext context);
+
+    /**
+     * Prepares the application bits for running in the application server. 
+     * For certain cases, this is generating non portable artifacts and
+     * other application specific tasks. 
+     * Failure to prepare should throw an exception which will cause the overall
+     * deployment to fail.
+     *
+     * @param context of the deployment
+     * @return true if the prepare phase executed successfully
+     */
+    public boolean prepare(DeploymentContext context);
+    
+    /**
+     * Loads a previously prepared application in its execution environment and 
+     * return a ContractProvider instance that will identify this environment in
+     * future communications with the application's container runtime.
+     * @param container in which the application will reside
+     * @param context of the deployment
+     * @return an ApplicationContainer instance identifying the running application
+     */
+    public U load(T container, DeploymentContext context);
+    
+    /** 
+     * Unload or stop a previously running application identified with the 
+     * ContractProvider instance. The container will be stop upon return from this
+     * method. 
+     * @param appContainer instance to be stopped
+     * @param context of the undeployment
+     */
+    public void unload(U appContainer, DeploymentContext context);
+    
+    /**
+     * Clean any files and artifacts that were created during the execution 
+     * of the prepare method. 
+     * @param context deployment context
+     */
+    public void clean(DeploymentContext context);</pre> 
+       </div> 
+      </div>
+     </div> <p>The Deployer's metada is declared as follow but will soon evolve to add the capability for a Deployer <br> to specify its dependency on other deployer's execution before it is invoked (for instance the web services <br> deployer would be dependent on the web or ejb deployer(s) execution.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">/**
+ * MetaData associated with a Deployer. This is used by the deployment layers
+ * to identify the special requirements of the Deployer.
+ *
+ * Supported Requirements :
+ *      invalidatesClassLoader  Deployer can load classes that need to be reloaded
+ *                              for the application to run successfully hence requiring
+ *                              the class loader to be flushed and reinitialized between
+ *                              the prepare and load phase.
+ *      componentAPIs           Components can use APIs that are defined outside of the
+ *                              component's bundle. These component's APIs (eg. Java EE
+ *                              APIs) must be imported by the application class loader
+ *                              before any application code is loaded.
+ */
+public class MetaData {
+
+    final static Class[] empty = new Class[0];
+
+    private final boolean invalidatesCL;
+    private final ModuleDefinition[] componentAPIs;
+    private final Class[] requires;
+    private final Class[] provides;
+
+    /**
+     * Constructor for the Deployer's metadata
+     *
+     * @param invalidatesClassLoader If true, invalidates the class loader used during
+     * the deployment's prepare phase
+     * @param componentAPIs is an array of module definition that should be added to the
+     * deployable artifact list of imported modules.
+     *
+     */
+    public MetaData(boolean invalidatesClassLoader, ModuleDefinition[] componentAPIs, Class[] provides, Class[] requires) {
+        this.invalidatesCL = invalidatesClassLoader;
+        this.componentAPIs = componentAPIs;
+        this.provides = provides;
+        this.requires = requires;
+    }
+
+    /**
+     * Returns whether or not the class loader is invalidated by the Deployer's propare
+     * phase.
+     * 
+     * @return true if the class loader is invalid after the Deployer's prepare phase
+     * call.
+     */
+    public boolean invalidatesClassLoader() {
+        return invalidatesCL;
+    }
+
+    /**
+     * Returns the array of module definition containing the public APIs of applications
+     * supported by this deployer.
+     *
+     * @return the public APIs fo the associated container as an array of module definitions
+     */
+    public ModuleDefinition[] getPublicAPIs() {
+        return componentAPIs;
+    }
+
+    /**
+     * Returns the list of types of metadata this deployer will provide to the deployement
+     * context upon the successful completion of the prepare method.
+     *
+     * @return list of metadata type;
+     */
+    public Class[] provides() {
+        if (provides==null) {
+            return empty;
+        }
+        return provides;
+    };                 
+
+    /**
+     * Returns the list of types of metadata this deployer will require to run successfully
+     * the prepare method.
+     *
+     * @return list of metadata required type;
+     */
+    public Class[] requires() {
+        if (requires==null) {
+            return empty;
+        }
+        return requires;
+    }</pre> 
+       </div> 
+      </div>
+     </div> <p>Deployer.prepare() will only be called once during Deployment of an application. Subsequent server startups will not call prepare(). </p> <p>ApplicationContainer subclasses as provided by the implementation of the load() method is the interface to start/stop individual applications. Sub subclasses can also implement to Adapter interface to be automatically bound to the grizzly runtime for incoming web request. They can alternatively manage their binding to grizzly or to any other network interface layer. </p> <h4><a name="ContainerSPI-Subsequentdeployment"></a>Subsequent deployment</h2> <p>When other request for deployment are received by the GlassFish runtime, a simpler version of the container enablement is ran by GlassFish v3. </p> 
+     <ol> 
+      <li>The sniffer implementations are used to determine to module type</li> 
+      <li>Once a module type is obtained, GlassFish v3 will look for a running container with that module type. If not found, we switch to Container Enablement as explained earlier. If found the Sniffer setUp() is not called, instead GlassFish v3, will obtain the deployer directly from the running instance (the one annotated with @Container).</li> 
+      <li>The Deployer interface is used to prepare and load the implementation.</li> 
+     </ol> <h4><a name="ContainerSPI-Undeployment"></a>Undeployment</h2> <p>Undeployment is a rather simple operation, GlassFish v3 will retrieve the ApplicationContainer and Deployer instances used to deploy the artifact and do the following operations :</p> 
+     <ol> 
+      <li>If the ApplicationContainer implements the Adapter interface, GlassFish will unregister this adapter from the Grizzly runtime.</li> 
+      <li>ApplicationContainer.stop() will be called</li> 
+      <li>Deployer.unload() and Deployer.clean() will be then called</li> 
+     </ol> <p>The main difference between ApplicationContainer.stop() and Deployer.unload() is that stop should only stop the application which mean unregisters it from any Client discoverable mechanisms and remove any instances of components (e.g. EJB instances) in the system. Deployer.unload() should also flush associated resources like the ClassLoader instance used to load the application and such.</p> <p>Once the number of application deployed in a container drops to zero, the container becomes elligible for shutdown. </p> <h4><a name="ContainerSPI-Containershutdown"></a>Container shutdown</h2> <p>Once a container is identified for shutdown, GlassFish v3 will invoke the following operations in order.</p> 
+     <ul> 
+      <li>Deployer and @Container instances will be destroyed (preDestroy called if PreDestroy is implemented).</li> 
+      <li>Connector module is being stopped by the system (and if LifecyclePolicy is implemented, stop() will be called on the module's LifecyclePolicy).</li> 
+      <li>Sniffer.tearDown() is called which should result in removing Repository instances from the system ModuleRegistry.</li> 
+     </ul> <p>At that point, the garbage collection will remove all container's classes.</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

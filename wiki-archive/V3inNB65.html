@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : V3inNB65</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="V3inNB65-IntegrationofGlassFishServersandNetBeans6.5"></a>Integration of GlassFish Servers and NetBeans 6.5</h1> 
+     <hr> <h4><a name="V3inNB65-Background"></a>Background</h3> <p>NetBeans currently supports Java EE 5 development against GF V2. That support will be maintained. There are no enhancements planned for the v2 plugin. </p> <p>GF V3 will support Java EE 6. The changes to app development between Java EE 5 and Java EE 6 will be as big or even bigger than the changes between J2EE 1.4 and Java EE 5, for developers (and development tool makers).</p> <p>According to the current plan, many of the changes necessary to fully support Java EE 6 development will not be implemented in the NetBeans 6.5 time frame.</p> <p>Users will expect feature parity between the V2 integration and the V3 integration. That parity is reasonable to expect when v3 has entered beta <a href="GlassFishV3Schedule.html" title="GlassFishV3Schedule">(see the schedule)</a>.</p> <p>There is a large amount of code that may need to be refactored to support feature parity between the V2 plugin feature set and the v3 plugin feature set. Some of that refactoring will need to take place in the 6.5 time frame. This refactoring effort will need to be supported by extensive testing. Large portions of the test suite necessary to support the refactoring will need to be automated as unit and/or qa-functional tests, to prevent large numbers of undetected regressions from making it into the v2 plugin.</p> <p>Some enhancements and features may become part of the v2 plugin, as a side effect of the improvements to the user experience of a feature between the V2/6.1 HCI and the V3/6.5 HCI. </p> <p>V3 and Java EE 6 will be far from finished by the time NetBeans 6.5 is ready to ship, so the "plan" for this team should be to find and focus on developer productivity wins that do not require huge amounts of changes in the IDE. We will need to be active in reviewing the plans of the larger Java EE team regarding how they intend to evolve the current Java EE 5 support into Java EE 6 support.</p> <p>The current TP2 release of the V3 support has some significant architectural changes compared to the V2 plugin. Many of these changes are significant improvements. We need to evaluate changes in the integration plugin and the server to make sure that we do not sacrifice these improvements for the sake of completing the prototype of a feature. </p> <h4><a name="V3inNB65-Stakeholders"></a>Stakeholders</h3> 
+     <ul> 
+      <li>Java EE Modules</li> 
+      <li>Friends of the V2 plugin</li> 
+      <li>Dynamic Language Modules</li> 
+     </ul> <h4><a name="V3inNB65-Users"></a>Users</h3> 
+     <ul> 
+      <li>Java EE 5 developers<br> Want to see quality improvement in the server integration. If an IDE feature needs support from the plugin, that will have to happen. It may need to be staffed by folks outside the integration plugin team.</li> 
+      <li>Java EE 6 early adopters<br> Want to be able to experiment with Java EE 6 in the IDE. May not expect "support". Will not accept "blockers".</li> 
+      <li>Dynamic Language developers that are experimenting with GF V3<br> need list of languages that will be supported by v3 AND 6.5.</li> 
+     </ul> <h4><a name="V3inNB65-Risks"></a>Risks</h3> 
+     <ul> 
+      <li>refactoring causing a v2 plugin regression.</li> 
+      <li>urgent interrupts on development team's time.</li> 
+      <li>poorly designed features integrated because they were easy or flashy.</li> 
+      <li>poorly communicated expectations from other teams in the NB org.</li> 
+      <li>dependence on v3 features that end up not getting implemented in the 6.5 time frame.</li> 
+     </ul> <h4><a name="V3inNB65-Assumptions"></a>Assumptions</h3> 
+     <ul> 
+      <li>V2 plugin must maintain a fairly high quality level.</li> 
+      <li>V3 plugin does not need to have feature parity with V2 plugin in the 6.5 time frame.<br> Development efforts should concentrate on the features that an early adopter of V3 would benefit from the most.</li> 
+      <li>V3 plugin is not expected to be FCS quality.<br> It should not be riddled with bugs though.</li> 
+     </ul> <h4><a name="V3inNB65-Vision"></a>Vision </h2> <p>In the 6.5 time frame we want to create an environment that allows users to leverage the features of V3 that will be "ready". The Java EE 6 features are supposed to be ready. The ability to support dynamic languages is going to be "ready". The support for the module system in v3 will be more baked...</p> <p>We will need to extend the dev modules to support Java EE 6 development.</p> <p>We also need to make sure that users targeting Java EE 5 and V2 have a stable environment to use for their continuing production development effort. We need to fix high priority issue in the v2 plugin where possible. The V2 plugin will not get enhanced for the sake of enhancing the v2 plugin.</p> <h4><a name="V3inNB65-Features"></a>Features</h3> <p><b>Defining Features</b></p> <p>NB 6.5 must include these features</p> 
+     <ul> 
+      <li>Leverage v3 container features</li> 
+      <li>support for ejb module project deployment (if supported by v3) 
+       <ul> 
+        <li>directory based</li> 
+       </ul> </li> 
+      <li>support for app client project deployment (if supported by v3) 
+       <ul> 
+        <li>archive based?</li> 
+       </ul> </li> 
+      <li>support for ear project deployment (if supported by v3) 
+       <ul> 
+        <li>directory based</li> 
+       </ul> </li> 
+      <li>v3 dd support – xml only – if there is any difference between v2 and v3 dtds</li> 
+      <li>JDBC driver deployment</li> 
+      <li>resource registration 
+       <ul> 
+        <li>completion</li> 
+       </ul> </li> 
+      <li>http monitor support</li> 
+     </ul> <p><b>Supporting Features</b></p> <p>These are features that need to be in NB 6.5, that belongs outside the V2 and V3 plugin code...</p> 
+     <ul> 
+      <li>extend j2eeserver's plugins api to allow for richer server descriptions... 
+       <ul> 
+        <li>finer grained than J2EE_14 constants and the like</li> 
+       </ul> </li> 
+      <li>extend j2eeserver devmodules api to allow dev modules to describe the features they require to deploy/run successfully. 
+       <ul> 
+        <li>a project may need a component/API from the Java EE spec... not dependence on the spec.</li> 
+       </ul> </li> 
+     </ul> <p><b>Target Features</b></p> <p>NB 6.5 would be a better product if these features were available.</p> 
+     <ul> 
+      <li>EJB wizard in Web project</li> 
+      <li>Call EJB support for web packaged EJBs inside the web project...</li> 
+      <li>extend web app with an action that can create an ejb jar file for the embedded ejbs</li> 
+      <li>Wizard/action to create a v3 module from a regular java project</li> 
+     </ul> <p><b>Non features</b></p> <p>These features will not be considered for implementation in the NB 6.5 time frame.</p> 
+     <ul> 
+      <li>new Java EE 6 dd support (unless absolutely necessary)</li> 
+      <li>multiple registration types for v3 domains.<br> the user can register the local default domain.</li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 09, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

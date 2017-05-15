@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : NSS upgrade instructions</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>This information is now currently in the <a href="http://download.oracle.com/docs/cd/E18930_01/html/821-2437/index.html">upgrade guide</a>.</p> 
+     <div> 
+      <ul> 
+       <li><a href="#NSSupgradeinstructions-Manualstepstobecarriedoutbeforeupgrade%28aftercopyingtheV2.XEEdomainintoGFV3.1%29">Manual steps to be carried out before upgrade (after copying the V2.XEE domain into GF V3.1)</a></li> 
+       <li><a href="#NSSupgradeinstructions-ManualStepstobeCarriedoutafterupgrade">Manual Steps to be Carried out after upgrade</a></li> 
+       <li><a href="#NSSupgradeinstructions-HardwarePKCS%2311tokensconfiguredviaNSS">Hardware PKCS#11 tokens configured via NSS</a></li> 
+      </ul>
+     </div> <p>GlassFish V2.X EE(Enterprise Edition) uses NSS as a cryptographic software token. GlassFish V3.1 does not support NSS. So when doing an upgrade from V2.X EE to V3.1 the following steps need to be followed to perform a manual upgrade. A script that can automate these manual steps may be provided in future via Update Center.</p> <p><b>0.</b> Copy the V2.XEE domain into GF V3.1 domains/ directory.</p> <p>(<b>Note from Bobby:</b> these instructions assume the upgrade was performed by copying the domain to the 3.1 server and then running 'asadmin start-domain --upgrade'. You can still use the upgrade tool for testing, however. Just copy the v2.X domain to some other location before performing the steps below so that you don't affect your original v2.X installation. Then use this copy of domain1 as the source. You can even copy the domain to the 3.1 domains directory and the upgrade tool will do the right thing.)</p> <h4><a name="NSSupgradeinstructions-Manualstepstobecarriedoutbeforeupgrade%28aftercopyingtheV2.XEEdomainintoGFV3.1%29"></a>Manual steps to be carried out before upgrade (after copying the V2.XEE domain into GF V3.1)</h3> <p><b>1.</b> Copy the server.policy,keystore.jks, cacerts.jks from original V3.1 domain to the to-be-upgraded domain/config directory. Note that this will overwrite the master password for the domain with the one in the v3.1 installation.</p> <p><b>2.</b> Modify the domain.xml of the to-be-upgraded domain to</p> <p>a. add the following jvm-options in server-config and default-config:</p> <p><em>-Djavax.net.ssl.keyStore=${com.sun.aas.instanceRoot}/config/keystore.jks</em><br> <em>-Djavax.net.ssl.trustStore=${com.sun.aas.instanceRoot}/config/cacerts.jks</em></p> <p>b. remove the following &lt;jvm-option&gt;in server-config and default-config:</p> <p><em>-Dcom.sun.appserv.nss.db=${com.sun.aas.instanceRoot}/config</em></p> <p>Now perform the upgrade.</p> <h4><a name="NSSupgradeinstructions-ManualStepstobeCarriedoutafterupgrade"></a>Manual Steps to be Carried out after upgrade</h3> <p><b>1.</b> Start the server and access the admin page : https://&lt;hostname&gt;:4848</p> <p><b>2.</b> The default keystore with a default self-signed key-certificate pair with alias s1as and keystore password changeit has been copied into this domain before running upgrade. If your default server alias in the NSS V2 domain is not s1as then you can delete this entry using the following command :</p> <p><em>keytool -delete -keystore keystore.jks -storepass changeit -alias s1as</em><br> <em>keytool -delete -keystore cacerts.jks -storepass changeit -alias s1as</em></p> <p><b>3.</b> If the masterpassword of the V2 domain being upgraded is not the default password "changeit" then you need to change the keystore password to match the master password</p> <p><em>keytool -storepasswd -new &lt;masterpassword of v2 domain&gt; -keystore keystore.jks -storepass changeit</em><br> <em>keytool -storepasswd -new &lt;masterpassword of v2 domain&gt; -keystore cacerts.jks -storepass changeit</em></p> <p><b>4.</b> Make a note of all the KeyEntries that exist in your NSS DB . They need to be migrated to the keystore.jks in the V3.1 domain. The following command can be used to list all the KeyEntries in the NSS DB.</p> <p><em>certutil -L -d $AS_NSS_DB</em></p> <p>here AS_NSS_DB should point to ${com.sun.aas.instanceRoot}/config of the V3.1 instance where the V2.X domain was copied. The listing with attribute combinations u,u,u are the KeyEntries.</p> <p>Example : CertUtil output</p> <p>s1as u,u,u</p> <p>Note : to run certutil you need to set the LD_LIBRARY_PATH to point to the directory containing NSS library/dll's.</p> <p><b>5.</b> For each PrivateKey-Certificate Pair (KeyEntry) that exists in the NSS Database (as determined in step 5) of the V2 Domain execute the following commands to export them from the NSS DB and import them into the newly created keystore.jks. Make sure you use the same alias when importing the KeyEntry into the JKS keystore. For example if s1as is the only alias present in the NSS DB the following command can be used.</p> <p>&gt; pk12util -o /tmp/s1as_pk.p12 -n s1as -d $AS_NSS_DB</p> <p>&gt;keytool -importkeystore -srckeystore /tmp/s1as_pk.p12 -destkeystore ${com.sun.aas.instanceRoot}/config/keystore.jks -srcstoretype PKCS12 -deststoretype JKS -srcstorepass &lt;masterpassword of V2 domain&gt; -deststorepass &lt;masterpassword of new V3 domain&gt; -srcalias s1as -destalias s1as -srckeypass &lt;masterpassword of V2 domain&gt; -destkeypass &lt;masterpassword of new V3 domain&gt;</p> <p>Note: the reference to &lt;masterpassword of new V3 domain&gt; above could actually be the same as &lt;masterpassword of V2 domain&gt; if you intend to retain the same masterpassword for the V3 domain post upgrade from V2. Refer to step 3 above where we originally set the password for keystore.jks to be the &lt;masterpassword of V2 domain&gt;</p> <p>If the Alias s1as represents a KeyEntry with a Self-Signed Certificate (generally true only during development and is not expected to be the case for a V2 instance in production) the an additional step of copying the self-signed certificate to the truststore needs to be executed.</p> <p>&gt;certutil -L -n s1as -r -d $AS_NSS_DB &gt; /tmp/s1as.der<br> &gt;keytool -import -keystore cacerts.jks -storepass &lt;masterpassword of new V3 domain&gt; -file /tmp/s1as.der -alias s1as</p> <p><b>6.</b> The default truststore has been copied into the domain before upgrade as mentioned in the steps above. The default truststore is actually a copy of the cacerts file that exists in JDK1.6 jre/lib/security and hence will contain most of the CA's that are widely used in realworld. There is a rare chance that the NSS DB of the V2.X domain had some CA (Certificate Authority) certificates which are absent in the default created truststore. In such cases again a certutil listing of the NSS DB can be compared with the keytool listing of the truststore. All such aliases which are missing in the truststore (cacerts.jks) need to collected.</p> <p><em>certutil -L -d $AS_NSS_DB</em></p> <p>Example : certutil output<br> verisignc1g1 T,c,c<br> verisignc1g2 T,c,c<br> verisignc1g3 T,c,c</p> <p><em>keytool -list -keystore cacerts.jks -storepass &lt;masterpassword of new V3 domain&gt;</em></p> <p>Example : keytool list output<br> godaddyclass2ca, Jan 20, 2005, trustedCertEntry,<br> Certificate fingerprint (MD5): 91:DE:06:25:AB:DA:FD:32:17:0C:BB:25:17:2A:84:67<br> verisignclass1g3ca, Mar 26, 2004, trustedCertEntry,<br> Certificate fingerprint (MD5): B1:47:BC:18:57<img class="emoticon" src="images/icons/emoticons/biggrin.gif" height="20" width="20" align="absmiddle" alt="" border="0"> 1:18:A0:78:2D:EC:71:E8:2A:95:73<br> secomevrootca1, May 1, 2008, trustedCertEntry,<br> Certificate fingerprint (MD5): 22:2D:A6:01:EA:7C:0A:F7:F0:6C:56:43:3F:77:76<img class="emoticon" src="images/icons/emoticons/biggrin.gif" height="20" width="20" align="absmiddle" alt="" border="0"> 3</p> <p><b>7.</b> For each of the aliases from the certutil output in step 7 above that you think are needed and missing in the truststore listing (keytool output) in step 7 above, execute the following commands to export and import them into the V3.1 domains truststore.</p> <p>Example : missing alias verisignc1g1</p> <p>&gt;certutil -L -n verisignc1g1 -r -d $AS_NSS_DB &gt; /tmp/verisignc1g1.der<br> &gt;keytool -import -keystore cacerts.jks -storepass &lt;masterpassword of new V3 domain&gt; -file /tmp/verisignc1g1.der -alias verisignc1g1</p> <p>Note: Sometimes it is just the alias names that are used in NSS DB are different and really the same certificate would be present in the V3.1 default truststore.</p> <h4><a name="NSSupgradeinstructions-HardwarePKCS%2311tokensconfiguredviaNSS"></a>Hardware PKCS#11 tokens configured via NSS</h3> <p>If you are using GlassFishV2.X Enterprise Edition with Hardware Tokens (eg. FIPS-140 compliant Sun Cryptographic Accelerator 6000 or other Sun Cryptographic Accelerator(s) <a href="http://www.sun.com/products/networking/sslaccel/">http://www.sun.com/products/networking/sslaccel/</a>.) configured Via NSS-PKCS11 <a href="http://developers.sun.com/appserver/reference/techart/keymgmt.html#2">http://developers.sun.com/appserver/reference/techart/keymgmt.html#2</a> , then the V2.X EE to V3.1 upgrade solution is to directly configure the Hardware Token as a PKCS11 token using the JDK-JSSE supported mechanisms for configuring PKCS#11 tokens.</p> <p><a href="http://download-llnw.oracle.com/javase/7/docs/technotes/guides/security/p11guide.html#JSSE">http://download-llnw.oracle.com/javase/7/docs/technotes/guides/security/p11guide.html#JSSE</a></p> <p>The following additional steps need to be carried out on the GlassFish instance:</p> <p><b>1.</b> Set the javax.net.ssl.keyStoreType &lt;jvm-options&gt; in GlassFish to PKCS11.</p> <p>&lt;jvm-options&gt;-Djavax.net.ssl.keyStoreType=PKCS11&lt;/jvm-options&gt;</p> <p><b>2.</b> The javax.net.ssl.keyStore url should be set to NONE since this is a hardware token.</p> <p>&lt;jvm-options&gt;-Djavax.net.ssl.keyStore=NONE&lt;/jvm-options&gt;</p> <p><b>3.</b> The default truststore (cacerts.jks) for the migrated domain has already been copied into this domain as in the steps above. The password for the truststore is "changeit" by default. You should change the password for the truststore and also the GlassFish MasterPassword to match the PIN of your HardwareToken.</p> <p><b>4.</b> The default keystore (keystore.jks)with a default s1as key-pair for the migrated domain has already been copied into this domain as in the steps above . Since you are using a Hardware Token you may just delete this keystore.jks</p> <p><b>5.</b> Ensure the token-alias of the hardware token (private key) that you intend to use as the Server's Key for SSL is mentioned at every place in domain.xml (eg cert-nickname attribute of the &lt;ssl/&gt; element of protocol config). Note : this should already be the case since we are migrating a working V2.X EE domain to V3.</p> <p><b>6.</b> If the Hardware Token is to act as a TrustStore as well then remove the cacerts.jks file from domains/domainx/config. Ensure that the following two jvm-options are set in domain.xml</p> <p>&lt;jvm-options&gt;-Djavax.net.ssl.trustStore=NONE&lt;/jvm-options&gt;<br> &lt;jvm-options&gt;-Djavax.net.ssl.trustStoreType=PKCS11&lt;/jvm-options&gt;</p> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Nov 08, 2011 by 
+<font color="#0050B2">bbissett</font>. Exported from wikis.oracle.com on May 27, 2015 20:49.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

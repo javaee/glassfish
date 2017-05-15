@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : 3.2SecureAdmin</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="3.2SecureAdmin-SecureAdminOnePager"></a>Secure Admin One Pager</h1> <p>(template version 1.92)</p> 
+     <div> 
+      <ul> 
+       <li><a href="#3.2SecureAdmin-SecureAdminOnePager">Secure Admin One Pager</a></li> 
+       <li><a href="#3.2SecureAdmin-1.Introduction">1. Introduction</a></li> 
+       <ul> 
+        <li><a href="#3.2SecureAdmin-1.1.Project%2FComponentWorkingName%3A">1.1. Project/Component Working Name:</a></li> 
+        <li><a href="#3.2SecureAdmin-1.2.Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier%3A">1.2. Name(s) and e-mail address of Document Author(s)/Supplier:</a></li> 
+        <li><a href="#3.2SecureAdmin-1.3.DateofThisDocument%3A">1.3. Date of This Document:</a></li> 
+       </ul> 
+       <li><a href="#3.2SecureAdmin-2.ProjectSummary">2. Project Summary</a></li> 
+       <ul> 
+        <li><a href="#3.2SecureAdmin-2.1.ProjectDescription%3A">2.1. Project Description:</a></li> 
+        <li><a href="#3.2SecureAdmin-2.2.RisksandAssumptions%3A">2.2. Risks and Assumptions:</a></li> 
+       </ul> 
+       <li><a href="#3.2SecureAdmin-3.ProblemSummary">3. Problem Summary</a></li> 
+       <ul> 
+        <li><a href="#3.2SecureAdmin-3.1.ProblemArea%3A">3.1. Problem Area:</a></li> 
+        <ul> 
+         <li><a href="#3.2SecureAdmin-Improvecertbasedadminauthenticationandauthorization">Improve cert-based admin authentication and authorization</a></li> 
+         <li><a href="#3.2SecureAdmin-Improveverificationthatadminrequestsfromotherserverscomefromserversinthesamedomain">Improve verification that admin requests from other servers come from servers in the same domain</a></li> 
+         <li><a href="#3.2SecureAdmin-Improveusercontroloverhowadminlistenersidentifythemselvesusingcerts">Improve user control over how admin listeners identify themselves using certs</a></li> 
+         <li><a href="#3.2SecureAdmin-Supportusernameandpasswordaliasadminauthenticationamongservers">Support username and password alias admin authentication among servers</a></li> 
+         <li><a href="#3.2SecureAdmin-AllowuserstocontrolremoteadminandSSLinterservertrafficseparately">Allow users to control remote admin and SSL inter-server traffic separately</a></li> 
+        </ul> 
+        <li><a href="#3.2SecureAdmin-Justification%3A">Justification:</a></li> 
+       </ul> 
+       <li><a href="#3.2SecureAdmin-4.TechnicalDescription%3A">4. Technical Description:</a></li> 
+       <ul> 
+        <li><a href="#3.2SecureAdmin-4.1.Details%3A">4.1. Details:</a></li> 
+        <ul> 
+         <li><a href="#3.2SecureAdmin-Recordingremote%2FSSLsecureadminstate">Recording remote/SSL secure admin state</a></li> 
+         <li><a href="#3.2SecureAdmin-Recordingenabledadmincerts%3A%7B%7B%3Cadmincert%3E%7D%7D">Recording enabled admin certs: <tt>&lt;admin-cert&gt;</tt></a></li> 
+         <li><a href="#3.2SecureAdmin-Recordingenabledinternaladminusers%3A%7B%7B%3Cadmininternaluser%7D%7D">Recording enabled internal admin users: <tt>&lt;admin-internal-user</tt></a></li> 
+         <li><a href="#3.2SecureAdmin-Internaluseofthesecureadminuserandpasswordalias">Internal use of the secure admin user and password alias</a></li> 
+         <li><a href="#3.2SecureAdmin-Changestoadminauthorizationlogic">Changes to admin authorization logic</a></li> 
+         <li><a href="#3.2SecureAdmin-Guardingagainstcrossdomainadmintrafficusingthenewunique%22domainID%22">Guarding against cross-domain admin traffic using the new unique "domain ID"</a></li> 
+         <li><a href="#3.2SecureAdmin-Handlingperhostcerts%3AExplicitsettingof%7B%7Bnetworklistener%2Fssl@certnickname%7D%7D">Handling per-host certs: Explicit setting of <tt>network-listener/ssl@cert-nickname</tt></a></li> 
+         <li><a href="#3.2SecureAdmin-Revisedsecureadminlogic">Revised secure admin logic</a></li> 
+         <ul> 
+          <li><a href="#3.2SecureAdmin-Adminauthenticationpseudocode">Admin authentication pseudo-code</a></li> 
+          <li><a href="#3.2SecureAdmin-Pseudocodeforsubmittinginternaladminrequests">Pseudo-code for submitting internal admin requests</a></li> 
+         </ul> 
+        </ul> 
+        <li><a href="#3.2SecureAdmin-4.2.Bug%2FRFENumber%28s%29%3A">4.2. Bug/RFE Number(s):</a></li> 
+        <li><a href="#3.2SecureAdmin-4.3.InScope%3A">4.3. In Scope:</a></li> 
+        <li><a href="#3.2SecureAdmin-4.4.OutofScope%3A">4.4. Out of Scope:</a></li> 
+        <li><a href="#3.2SecureAdmin-4.5.Interfaces%3A">4.5. Interfaces:</a></li> 
+        <ul> 
+         <li><a href="#3.2SecureAdmin-4.5.1PublicInterfaces">4.5.1 Public Interfaces</a></li> 
+         <li><a href="#3.2SecureAdmin-4.5.2PrivateInterfaces">4.5.2 Private Interfaces</a></li> 
+         <li><a href="#3.2SecureAdmin-4.5.3Deprecated%2FRemovedInterfaces%3A">4.5.3 Deprecated/Removed Interfaces:</a></li> 
+        </ul> 
+        <li><a href="#3.2SecureAdmin-4.6.DocImpact%3A">4.6. Doc Impact:</a></li> 
+        <li><a href="#3.2SecureAdmin-4.7.Admin%2FConfigImpact%3A">4.7. Admin/Config Impact:</a></li> 
+        <li><a href="#3.2SecureAdmin-4.8.HAImpact%3A">4.8. HA Impact:</a></li> 
+        <li><a href="#3.2SecureAdmin-4.9.I18N%2FL10NImpact%3A">4.9. I18N/L10N Impact:</a></li> 
+        <li><a href="#3.2SecureAdmin-4.10.Packaging%2CDelivery%26Upgrade%3A">4.10. Packaging, Delivery &amp; Upgrade:</a></li> 
+        <ul> 
+         <li><a href="#3.2SecureAdmin-4.10.1.Packaging">4.10.1. Packaging</a></li> 
+         <li><a href="#3.2SecureAdmin-4.10.2.Delivery">4.10.2. Delivery</a></li> 
+         <li><a href="#3.2SecureAdmin-4.10.3.UpgradeandMigration%3A">4.10.3. Upgrade and Migration:</a></li> 
+        </ul> 
+        <li><a href="#3.2SecureAdmin-4.11.SecurityImpact%3A">4.11. Security Impact:</a></li> 
+        <li><a href="#3.2SecureAdmin-4.12.CompatibilityImpact">4.12. Compatibility Impact</a></li> 
+        <li><a href="#3.2SecureAdmin-4.13.Dependencies%3A">4.13. Dependencies:</a></li> 
+        <ul> 
+         <li><a href="#3.2SecureAdmin-4.13.1InternalDependencies">4.13.1 Internal Dependencies</a></li> 
+         <li><a href="#3.2SecureAdmin-4.13.2ExternalDependencies">4.13.2 External Dependencies</a></li> 
+        </ul> 
+        <li><a href="#3.2SecureAdmin-4.14.TestingImpact%3A">4.14. Testing Impact:</a></li> 
+       </ul> 
+       <li><a href="#3.2SecureAdmin-5.ReferenceDocuments%3A">5. Reference Documents:</a></li> 
+       <li><a href="#3.2SecureAdmin-6.Schedule%3A">6. Schedule:</a></li> 
+       <ul> 
+        <li><a href="#3.2SecureAdmin-6.1.ProjectedAvailability%3A">6.1. Projected Availability:</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="3.2SecureAdmin-1.Introduction"></a>1. Introduction</h1> <p>The changes in secure admin for GlassFish focus on allowing users more flexibility in setting up secure admin. Specifically GlassFish will include these enhancements:</p> 
+     <ol> 
+      <li>The administrator can specify multiple SSL certificates (rather than only one as in 3.1) to be allowed to submit admin requests.</li> 
+      <li>The administrator no longer needs to import into the GlassFish truststore a certificate that has a chain to a certificate authority. (Adding such trusted certs to a truststore is considered a security risk.) Self-signed certs must still be imported into the truststore if they are to be trusted.</li> 
+      <li>The administrator can configure secure admin to use a username and a password alias, in addition to SSL certs. GlassFish will then use the username and password instead of SSL client certs for authenticating admin traffic among GlassFish servers.</li> 
+     </ol> <p>These changes, while driven by experience and feedback from 3.1, will also support some possible new requirements from other areas of GlassFish.</p> <p>Note that the changed described here are planned for GlassFish 3.1.1 as well as 3.next.</p> <h4><a name="3.2SecureAdmin-1.1.Project%2FComponentWorkingName%3A"></a>1.1. Project/Component Working Name:</h2> <p>Secure Admin</p> <h4><a name="3.2SecureAdmin-1.2.Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier%3A"></a>1.2. Name(s) and e-mail address of Document Author(s)/Supplier:</h2> <p>Tim Quinn: tim.quinn@oracle.com</p> <h4><a name="3.2SecureAdmin-1.3.DateofThisDocument%3A"></a>1.3. Date of This Document:</h2> <p>04/25/11<br> 05/09/11 - revised<br> 05/31/11 - revised</p> <h4><a name="3.2SecureAdmin-2.ProjectSummary"></a>2. Project Summary</h1> <h4><a name="3.2SecureAdmin-2.1.ProjectDescription%3A"></a>2.1. Project Description:</h2> <p>Allowing users to keep tight control over administrative access to GlassFish, especially regarding remote administration and the authentication and authorization of admin clients using SSL certificates.</p> <h4><a name="3.2SecureAdmin-2.2.RisksandAssumptions%3A"></a>2.2. Risks and Assumptions:</h2> <p>Some other areas of GlassFish might impose some additional requirements on secure admin, for example possible instance-to-instance admin communication. The changes proposed in the one-pager accommodate the possible changes we know about. Others could come up as further details emerge from other teams.</p> <h4><a name="3.2SecureAdmin-3.ProblemSummary"></a>3. Problem Summary</h1> <h4><a name="3.2SecureAdmin-3.1.ProblemArea%3A"></a>3.1. Problem Area:</h2> <p>GlassFish will address secure admin in several areas.</p> <h4><a name="3.2SecureAdmin-Improvecertbasedadminauthenticationandauthorization"></a>Improve cert-based admin authentication and authorization</h3> <p>In 3.1 and 3.1.1 secure admin and application security share the same truststore. Secure admin in 3.1 used the shared truststore for two purposes:</p> 
+     <ol> 
+      <li><em>authenticating</em> admin connections that offer client SSL certs, to establish the client's identity, and</li> 
+      <li><em>authorizing</em> such connections to perform admin operations, checking that the alias under which the client's cert was stored in the truststore was the same alias as configured in the <tt>secure-admin</tt> element in <tt>domain.xml</tt> as set by the <tt>enable-secure-admin</tt> command.</li> 
+     </ol> <p>Using the truststore this way worked for the default secure admin configuration which uses self-signed certs for the DAS and for the instances, and it worked fairly well for other simple use cases. But even slightly more complicated scenarios were difficult or impossible to handle, for example trusting multiple certs for admin access or configuring GlassFish to accept a trusted cert for admin access. (Because the truststore was used for admin authorization, the administrator had to import the authorizing cert into the truststore. If the cert had a chain to a certificate authority this would introduce a security risk.)</p> <p>GlassFish will continue to use a single truststore for cert-based <em>authentication</em> of admin (and other) clients, but it will handle <em>authorization</em> using certs differently from 3.1. The administrator will tell GlassFish the distinguished names (DNs) of each cert to be trusted as an administrator. When an admin submitter sends an SSL client cert, GlassFish will make sure the DN in that cert matches one of the ones the administrator has configured.</p> <p>Users will run several new commands to manage the list of authorized DNs:</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> <b>Command</b> </th> 
+         <th class="confluenceTh"> <b>Result</b> </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>enable-secure-admin-cert</tt> <br class="atl-forced-newline"> &nbsp;[&nbsp; <tt>--alias</tt> <tt><em>alias-name</em></tt> <tt>|</tt> <br class="atl-forced-newline"> &nbsp;&nbsp; <tt><em>distinguished-name</em></tt> ] </td> 
+         <td class="confluenceTd"> GlassFish stores the DN as authorized for submitting admin operations. If the user specifies <tt>--alias</tt> then GlassFish looks up a cert in the truststore using that alias and, if found, stores the corresponding DN as a valid admin DN. If the user specifies the DN then GlassFish stores that DN. <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>disable-secure-admin-cert</tt> <br class="atl-forced-newline"> &nbsp; [<tt>&nbsp; --alias</tt> <tt><em>alias-name</em></tt> <tt>|</tt> <br class="atl-forced-newline"> &nbsp;&nbsp; <tt><em>distinguished-name</em></tt> ] </td> 
+         <td class="confluenceTd"> GlassFish removes the specified DN as a valid admin DN. If the user specifies <tt>--alias</tt> then GlassFish looks up a cert in the truststore using that alias and, if found, removes the corresponding DN as a valid admin DN. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>list-secure-admin-certs</tt> </td> 
+         <td class="confluenceTd"> GlassFish displays the currently-enabled admin cert DNs. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>Note that by choosing the verbs <tt>enable</tt> and <tt>disable</tt> rather than <tt>add</tt> and <tt>remove</tt> we emphasize that the commands do not themselves add certs to the truststore or remove them from it.</p> <p>If specified for <tt>enable-secure-admin-cert</tt> or <tt>disable-secure-admin-cert</tt> the <tt><em>alias-name</em></tt> must be an alias associated with a cert currently in the truststore and so typically is useful only for self-signed certs. If the user gives the DN instead of the alias on the command then the truststore does not need to contain a cert with that DN, although it can.</p> <p>For ease-of-use and for compatibility with GlassFish 3.1, users can continue to run <tt>enable-secure-admin</tt> without having to run <tt>enable-secure-admin-cert</tt>. As part of the <tt>enable-secure-admin</tt> processing if no DNs are enabled GlassFish will automatically enable for admin access the DNs associated with the two generated, self-signed certs: the one for the DAS (alias <tt>s1as</tt>) and the one for the instances (alias <tt>glassfish-instance</tt>). This preserves the existing 3.1 behavior.</p> <h4><a name="3.2SecureAdmin-Improveverificationthatadminrequestsfromotherserverscomefromserversinthesamedomain"></a>Improve verification that admin requests from other servers come from servers in the same domain</h3> <p>In 3.1 with secure admin enabled remote instances accept admin traffic from the DAS using cert-based authentication and authorization. By default GlassFish uses the self-signed cert generated when the domain is created to authenticate the DAS to remote instances. Because each DAS has its own self-signed cert the remote instance could be confident it was receiving admin traffic from the DAS in the proper domain.</p> <p>Some users have their own certs and want to use them differently. For example, if a user assigns a separate certificate to each host and runs more than one DAS on a system then all DAS processes on that host would use the same cert. Remote instances in the different domains cannot use the DAS's cert to make sure the traffic originates from the correct DAS.</p> <p>GlassFish will include a unique, generated "domain ID" which servers will use to help make sure that admin requests from other GlassFish servers originate from the correct domain. (See <a href="https://github.com/javaee/glassfish/issues/16439">https://github.com/javaee/glassfish/issues/16439</a>)</p> <h4><a name="3.2SecureAdmin-Improveusercontroloverhowadminlistenersidentifythemselvesusingcerts"></a>Improve user control over how admin listeners identify themselves using certs</h3> <p>In 3.1, when enabling secure admin the user could specify <tt>--adminalias</tt> (defaulted to <tt>s1as</tt>) and <tt>--instancealias</tt> (defaulted to <tt>glassfish-instance</tt>) to specify which cert the <em>receiver</em> of the message would accept as a valid admin cert. That is, instances would trust incoming admin messages with the cert specified by the <tt>--adminalias</tt> value and the DAS would trust incoming messages with the cert specified by the <tt>--instancealias</tt> value.</p> <p>Going forward these options will actually affect two settings in a way that is consistent with the 3.1 behavior but is more flexible. First, GlassFish will add the cert(s) specified by the options as valid admin certs (essentially running <tt>enable-secure-admin-cert</tt> for the specified alias automatically). Second, GlassFish will use the user-specified (or defaulted) alias to set the cert nickname in the Grizzly settings for that server's admin listener. Existing Grizzly logic uses that nickname in identifying the listener to incoming SSL client connections. In GlassFish 3.1 users who wanted this level of control had to use <tt>asadmin set</tt> to assign this alias in the <tt>&lt;ssl&gt;</tt> config element for the listener.</p> <p>As in 3.1, GlassFish will continue to use this alias in choosing which cert to use in identifying itself when sending outbound admin requests to other GlassFish processes.</p> <h4><a name="3.2SecureAdmin-Supportusernameandpasswordaliasadminauthenticationamongservers"></a>Support username and password alias admin authentication among servers</h3> <p>With secure admin enabled, GlassFish 3.1 supported only SSL cert-based authentication and authorization of the DAS to other servers in the domain. Going forward GlassFish will allow administrators to configure GlassFish to use an admin username and a password alias instead. </p> <p>Users will have new commands:</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> <b>Command</b> </th> 
+         <th class="confluenceTh"> <b>Effect</b> </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>enable-secure-admin-internal-user</tt> <tt>--passwordalias</tt> <tt><em>password-alias</em></tt> <tt><em>admin-username</em></tt> </td> 
+         <td class="confluenceTd"> Records the specified admin username and the specified password alias which GlassFish servers should use for internally authenticating and authorizing themselves to other GlassFish components. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>disable-secure-admin-internal-user</tt> <tt><em>admin-username</em></tt> </td> 
+         <td class="confluenceTd"> Discontinues internal authentication and authorizing using the specified admin username. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>list-secure-admin-internal-users</tt> </td> 
+         <td class="confluenceTd"> Lists the usernames and password aliases currently enabled.</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>To enable a secure admin user the user must already have configured <em>admin-username</em> in the admin realm, made that username a member of the admin group, and have already set up <em>password-alias</em> to map to the password for the <em>admin-username</em>.</p> <p>If the user enables both a secure admin user and one or more secure admin certs, GlassFish will use the username/password mechanisms to secure internal GlassFish-to-GlassFish admin traffic.</p> <p>Once the user has set up an admin username and password alias for internal use, he or she can remove it using the <tt>disable-secure-admin-internal-user</tt> command. </p> <p>Users will not normally need to enable multiple admin usernames for internal use, but GlassFish will permit it. GlassFish will prefer username-based internal authentication over SSL-based internal authentication. That is, if GlassFish finds at least one admin user enabled for secure admin then it will choose one of them for inter-server authentication. If no admin users have been enabled for secure admin internal use and secure admin itself is enabled, then GlassFish will use SSL authentication between servers. Users who enable multiple internal admin users should not assume anything about which one GlassFish might choose to use.</p> <p>Note that the documentation and on-line help should make very clear that users need to run <tt>enable-secure-admin-internal-user</tt> <b>only</b> to have GlassFish use that user for its own internal communication. <b>Any</b> valid admin user can submit admin requests, whether or not the user has run <tt>enable-secure-admin-internal-user</tt> for those admin accounts. The commands are somewhat long with "internal" in them, but these commands will probably be used rarely and the names are less confusing this way.</p> <h4><a name="3.2SecureAdmin-AllowuserstocontrolremoteadminandSSLinterservertrafficseparately"></a>Allow users to control remote admin and SSL inter-server traffic separately</h3> <p>In GlassFish 3.1 running <tt>enable-secure-admin</tt> both enables remote admin and also sets up GlassFish to use SSL cert authentication among GlassFish servers. In GlassFish 3.1.1 users will be able to control these independently thanks to two new options on the <tt>enable-secure-admin</tt> and <tt>disable-secure-admin</tt> commands.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> <b>New Option</b> </th> 
+         <th class="confluenceTh"> <b>Purpose</b> </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"><tt>--ssl[=true/false]</tt> </td> 
+         <td class="confluenceTd"> Enables or disables only the inter-server SSL behavior. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"><tt>--remote[=true/false]</tt> </td> 
+         <td class="confluenceTd"> Enables or disables whether the DAS will accept remote admin requests. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>If the user omits both options then both remote admin and inter-server SSL behavior are affected. If the user specifies only one of the options then only that aspect of secure admin is enabled or disabled. If the user specifies both options, then both aspects are enabled or disabled. </p> <p>The intent is that users would not specify "true" or "false" but use the presence of the option to indicate they want to enable or disable that type of secure admin behavior. So</p> <p><tt>enable-secure-admin --remote</tt></p> <p>would enable remote admin without affecting SSL behavior. Similarly, </p> <p><tt>enable-secure-admin --ssl</tt></p> <p>would enable SSL admin traffic among the servers without affecting the current remote setting.</p> <p>This approach allows users to be more selective about what aspect they control while also preserving the 3.1 behavior without creating incompatibilities in the semantics of <tt>enable-secure-admin</tt> between 3.1 and 3.1.1.</p> <h4><a name="3.2SecureAdmin-Justification%3A"></a>Justification:</h2> <p>These changes address RFEs that reflect user requirements and use cases as well as new situations that are likely to arise due to new features in GlassFish.</p> <h4><a name="3.2SecureAdmin-4.TechnicalDescription%3A"></a>4. Technical Description:</h1> <h4><a name="3.2SecureAdmin-4.1.Details%3A"></a>4.1. Details:</h2> <h4><a name="3.2SecureAdmin-Recordingremote%2FSSLsecureadminstate"></a>Recording remote/SSL secure admin state</h3> <p>The existing <tt>&lt;secure-admin&gt;</tt> element below <tt>&lt;domain&gt;</tt> will have two new optional attributes which replace the existing "enabled" attribute:</p> <p><tt>&lt;secure-admin remote="true/false} ssl="true/false"/&gt;</tt></p> <p>The default values are "true" for both attributes.</p> <h4><a name="3.2SecureAdmin-Recordingenabledadmincerts%3A%7B%7B%3Cadmincert%3E%7D%7D"></a>Recording enabled admin certs: <tt>&lt;admin-cert&gt;</tt></h3> <p>The existing <tt>&lt;secure-admin&gt;</tt> element (child of the <tt>&lt;domain&gt;</tt> element) will contain one <tt>&lt;admin-cert DN="dn-value"/&gt;</tt> child element for each enabled cert. The "key" for the element is the <tt>DN</tt> attribute. Even if the user enabled the cert using the <tt>--alias</tt> option GlassFish records only the corresponding DN, not the alias, in the configuration.</p> <p>During domain creation GlassFish will continue to generate the self-signed certs as in 3.1, one for the DAS and one for all instances. As in 3.1 domain creation will add both certs to the truststore that is bootstrapped to instances when they are created and copied to them during synchronization. </p> <h4><a name="3.2SecureAdmin-Recordingenabledinternaladminusers%3A%7B%7B%3Cadmininternaluser%7D%7D"></a>Recording enabled internal admin users: <tt>&lt;admin-internal-user</tt></h3> <p>The existing <tt>&lt;secure-admin</tt> element will contain one <tt>&lt;admin-internal-user username="username-value" password-alias="alias-value"/&gt;</tt> child element for each enabled internal secure admin user. The "key" for the element is the <tt>username</tt> attribute.</p> <h4><a name="3.2SecureAdmin-Internaluseofthesecureadminuserandpasswordalias"></a>Internal use of the secure admin user and password alias</h3> <p>With secure admin enabled and with at least one secure admin internal username and password alias configured, whenever a GlassFish server sends an admin request it will add a Basic Auth. HTTP header to the admin request. The header will contain the admin user and password from one of the <tt>&lt;admin-internal-user&gt;</tt> elements.</p> <p>Note that if the administrator configures a secure admin user and password alias, GlassFish will <b>not</b> also authenticate itself using an SSL client certificate.</p> <p>If the user runs <tt>enable-secure-admin-internal-user</tt> the command will create a <tt>&lt;secure-admin-internal-user</tt> if none exists and change the <tt>password-alias</tt> value if the element already exists for the specified user. When the user runs <tt>disable-secure-admin-internal-user</tt> the corresponding <tt>&lt;secure-admin-internal-user</tt> element will be deleted.</p> <h4><a name="3.2SecureAdmin-Changestoadminauthorizationlogic"></a>Changes to admin authorization logic</h3> <p>In 3.1 GlassFish-to-GlassFish admin authorization in the instances made sure that the alias recorded in the <tt>&lt;secure-admin adminalias="..."&gt;</tt> attribute corresponded to a cert in the truststore matching the client cert presented with the incoming admin request.</p> <p>Now GlassFish will make sure that any cert presented with the request contains a DN which appears in one of the <tt>&lt;admin-cert&gt;</tt> child elements of <tt>&lt;secure-admin&gt;</tt> instead. This removes the awkward coupling between the authorization logic and the alias used to store the cert, and it also allows multiple certs to authorize the client to perform administrative operations.</p> <h4><a name="3.2SecureAdmin-Guardingagainstcrossdomainadmintrafficusingthenewunique%22domainID%22"></a>Guarding against cross-domain admin traffic using the new unique "domain ID"</h3> <p>Any GlassFish server which sends an admin request to another server will include its domain ID in an HTTP header. The receiving server will compare its own domain ID to the sender's and will accept the admin request only if the domain IDs match.</p> <p>This is not foolproof nor is it intended to be. It is a low-cost, low-overhead way to help avoid user configuration errors that might send admin traffic from a server in one domain to a server in another domain.</p> <p>Human-oriented admin clients (IDEs, browsers using the REST interface, the asadmin utility, and the admin console) might not have access to the domain ID and, if not, will not include the domain ID header in their requests. So receiving servers will not insist that incoming requests have this header. But if a request has the domain ID header, it must match the receiver's.</p> <h4><a name="3.2SecureAdmin-Handlingperhostcerts%3AExplicitsettingof%7B%7Bnetworklistener%2Fssl@certnickname%7D%7D"></a>Handling per-host certs: Explicit setting of <tt>network-listener/ssl@cert-nickname</tt></h3> <p>When the user enables secure admin, GlassFish will use the DAS alias value (user-specified via the <tt>--adminalias</tt> option on <tt>enable-secure-admin</tt>, defaulted to <tt>s1as</tt>) to set the <tt>network-listener/ssl@cert-nickname</tt> attribute, thus controlling which cert the DAS will use to identify itself when secure clients connect. Similarly GlassFish will assign the instance alias value (user-specified via the <tt>--instancealias</tt> option on <tt>enable-secure-admin</tt>, defaulted to <tt>glassfish-instance</tt>) to set this attribute for the admin network listeners for remote instances.</p> <p>This gives the user easier control over how the admin listeners identify themselves to secure clients.</p> <p>The goal is for GlassFish to use a token for the cert nickname attribute value in the configuration and to create a <tt>&lt;system-property&gt;</tt> element to assign the correct value. As part of <tt>enable-secure-admin</tt> processing GlassFish will set the property to the <tt>--adminalias</tt> value for <tt>&lt;server-config&gt;</tt> and to the <tt>--instancealias</tt> value for other configurations. This preserves the 3.1 behavior by default. </p> <p>Users who want to use different aliases on different instances can use <tt>asadmin create-system-properties</tt> to assign a different value to the property in each of the instances' <tt>&lt;server&gt;</tt> elements. Such users can also specify the token instead of an actual value when using <tt>enable-secure-admin --instancealias</tt>.</p> <p><b>Open question:</b> Does our command syntax allow a user to specify a token name, presumably using <tt>${token-name</tt>}, without substitution happening as the command is processed?</p> <h4><a name="3.2SecureAdmin-Revisedsecureadminlogic"></a>Revised secure admin logic</h3> <h4><a name="3.2SecureAdmin-Adminauthenticationpseudocode"></a>Admin authentication pseudo-code</h4> <p>Here is how the revised admin authentication and authorization logic will work:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeHeader panelHeader" style="border-bottom-width: 1px;">
+       <b>AdminAdapter authentication and authorization logic</b>
+      </div>
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">/*
+ * Grizzly provides the client SSL cert Principal if SSL is on and 
+ * if the client submits a cert and if the cert is trusted, either 
+ * because it has a chain to a CA or it is self-signed and has been
+ * added to the GlassFish truststore.  
+ *
+ * If the client sent a limited-use authentication token then there
+ * will be an HTTP header for that (not a Basic Auth header; a 
+ * GF-specific one).  
+ *
+ * If the client is another GlassFish process and the user has 
+ * configured secure admin to use an internal admin username and 
+ * password alias then there will be an HTTP Basic Auth header.
+ *
+ * If the client is another GlassFish process then there will be
+ * an HTTP header conveying the domain ID.
+ */
+
+if (domain ID header is present) {
+    if (domain ID in header != domain ID of current process) {
+        reject request with 403 - Forbidden;
+        return;
+    }
+}
+
+if (a limited-use token is present) {
+    if (token is valid) {
+        consume token and grant access; // token could be extended, as in 3.1
+        return;
+    }
+    reject request with 401 - Unauthorized;
+    return;
+}
+
+if (request is remote &amp;&amp; ! secureAdmin.getRemote()) {
+    reject request with 403 - Forbidden;
+    return;
+}
+
+if (a Basic Auth header is present) {
+    if (password is the locally-provisioned local password) {
+        grant access;
+        return;
+    }
+
+    // Next "if" handles both normal client auth. as well as new internal user/pw auth
+
+    if (username and password authenticate and authorize as a valid admin user) {
+        grant access;
+        return;
+     }
+     reject request with 401 - Unauthorized;
+     return;
+}
+
+if ( ! secureAdmin.ssl()) {
+     reject request with 401 - Unauthorized;
+     return;
+}
+
+if (request has an SSL Principal) {
+    if (req.getUserPrincipal().getName() matches the DN in 
+           one of the &lt;secure-admin&gt;&lt;admin-cert&gt; elements) {
+        grant access;
+        return;
+    }
+    reject request with 401 - Unauthorized;
+    return;
+}</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="3.2SecureAdmin-Pseudocodeforsubmittinginternaladminrequests"></a>Pseudo-code for submitting internal admin requests</h4> <p>This example does not cover the locally-provisioned password case which is unchanged from 3.1.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeHeader panelHeader" style="border-bottom-width: 1px;">
+       <b>Send internal admin request</b>
+      </div>
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">add HTTP header with unique domain ID;
+if (secureAdmin.getSecureAdminInternalUser() is non-empty) {
+    prepare HTTP Basic Auth header with the username 
+      from secureAdminInternalUser.getUsername() and the
+      password with alias matching secureAdminInternalUser.getPasswordAlias();
+    // Request is encrypted but not authenticated using SSL
+    send request;
+    return;
+}
+if (current process is DAS) {
+    connect to https authenticating using alias secureAdmin.getAdminAlias();
+} else {
+    connect to https authenticating using alias secureAdmin.getInstanceAlias();
+}</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="3.2SecureAdmin-4.2.Bug%2FRFENumber%28s%29%3A"></a>4.2. Bug/RFE Number(s):</h2> <p><a href="https://github.com/javaee/glassfish/issues/16437">https://github.com/javaee/glassfish/issues/16437</a> Accept multiple certs for admin authentication<br> <a href="http://java.net/jira/browse /GLASSFISH-16438">http://java.net/jira/browse /GLASSFISH-16438</a> Ensure that admin traffic from other servers is in fact from the same domain<br> <a href="https://github.com/javaee/glassfish/issues/16545">https://github.com/javaee/glassfish/issues/16545</a> Allow secure admin to use username and password alias for inter-server authentication and authorization</p> <h4><a name="3.2SecureAdmin-4.3.InScope%3A"></a>4.3. In Scope:</h2> <p>Automatic configuration of the simple cases in which the DAS has one cert and all instances share a second cert.</p> <h4><a name="3.2SecureAdmin-4.4.OutofScope%3A"></a>4.4. Out of Scope:</h2> <p>Support in the <tt>enable-secure-admin</tt> command for configuring separate cert aliases for each instance. Users can use <tt>asadmin set</tt> to do this (with suitable documentation).</p> <p>Direct admin support for adding certs to truststores. Users will continue to use <tt>keytool</tt> to do this.</p> <p>Direct admin support for per-host certs. Users can define properties in the configuration and use <tt>asadmin set</tt> to refer to those properties so each instance can use a different for SSL client authentication.</p> <h4><a name="3.2SecureAdmin-4.5.Interfaces%3A"></a>4.5. Interfaces:</h2> <h4><a name="3.2SecureAdmin-4.5.1PublicInterfaces"></a>4.5.1 Public Interfaces</h3> <p>List new, public interfaces this project exports.</p> <p>New <tt>enable-secure-admin</tt> options <tt>--remote</tt> and <tt>--ssl</tt>.</p> <p>New <tt>enable-/disable-secure-admin-internal_user</tt> commands. </p> <p>New <tt>enable-/disable-secure-admin-cert</tt> command.</p> <p>In <tt>domain.xml</tt> GlassFish will use existing features of Grizzly listener configuration and property token and value substitution to control what alias the network listener uses to identify itself.</p> <h4><a name="3.2SecureAdmin-4.5.2PrivateInterfaces"></a>4.5.2 Private Interfaces</h3> <p>List private interfaces which are externally observable.<br> none</p> <h4><a name="3.2SecureAdmin-4.5.3Deprecated%2FRemovedInterfaces%3A"></a>4.5.3 Deprecated/Removed Interfaces:</h3> <p>none</p> <h4><a name="3.2SecureAdmin-4.6.DocImpact%3A"></a>4.6. Doc Impact:</h2> 
+     <ol> 
+      <li>Expansion of the existing discussion of <tt>enable-secure-admin</tt>. The internal usage of the two alias-related options is slightly different. To users the options still identify the credentials to be associated with the DAS, and the credentials to be associated with the instances, using aliases. The difference is that they will indicate how a secure admin network listeners identifies <b>itself</b> to incoming client connections. In 3.1 they indicated which <b>other</b> incoming client connections to trust. Add explanation of the new <tt>--remote</tt> and <tt>--ssl</tt> options.</li> 
+      <li>Add discussion of the new commands <tt>enable-/disable-secure-admin-internal-user</tt> commands.</li> 
+      <li>Discussion of the new <tt>enable-/disable-secure-admin-cert</tt> and <tt>list-secure-admin-certs</tt> commands.</li> 
+      <li>Discussion (blog?) about setting up per-host cert environments. This could be fairly rare and might not warrant treatment in the formal documentation.</li> 
+     </ol> <h4><a name="3.2SecureAdmin-4.7.Admin%2FConfigImpact%3A"></a>4.7. Admin/Config Impact:</h2> <p>How will this change impact the administration of the product?</p> <p>(see technical details section earlier)</p> <h4><a name="3.2SecureAdmin-4.8.HAImpact%3A"></a>4.8. HA Impact:</h2> <p>none</p> <h4><a name="3.2SecureAdmin-4.9.I18N%2FL10NImpact%3A"></a>4.9. I18N/L10N Impact:</h2> <p>none</p> <h4><a name="3.2SecureAdmin-4.10.Packaging%2CDelivery%26Upgrade%3A"></a>4.10. Packaging, Delivery &amp; Upgrade:</h2> <h4><a name="3.2SecureAdmin-4.10.1.Packaging"></a>4.10.1. Packaging</h3> <p>No impact.</p> <h4><a name="3.2SecureAdmin-4.10.2.Delivery"></a>4.10.2. Delivery</h3> <p>No impact.</p> <h4><a name="3.2SecureAdmin-4.10.3.UpgradeandMigration%3A"></a>4.10.3. Upgrade and Migration:</h3> <p>If secure admin is enabled in a 3.1 installation, then upgrade will need to:</p> 
+     <ul> 
+      <li>Add as an admin cert the cert indicated or implied by the <tt>instancealias</tt> value.</li> 
+      <li>Add as an admin cert the cert indicated or implied by the <tt>adminalias</tt> value.</li> 
+     </ul> <h4><a name="3.2SecureAdmin-4.11.SecurityImpact%3A"></a>4.11. Security Impact:</h2> <p>As described already</p> <h4><a name="3.2SecureAdmin-4.12.CompatibilityImpact"></a>4.12. Compatibility Impact</h2> <p>No incompatible changes to interfaces</p> <h4><a name="3.2SecureAdmin-4.13.Dependencies%3A"></a>4.13. Dependencies:</h2> <h4><a name="3.2SecureAdmin-4.13.1InternalDependencies"></a>4.13.1 Internal Dependencies</h3> 
+     <ul> 
+      <li>Admin enhancement to provide a unique domain ID and record it in domain.xml<a href="https://github.com/javaee/glassfish/issues/16439">https://github.com/javaee/glassfish/issues/16439</a></li> 
+     </ul> <h4><a name="3.2SecureAdmin-4.13.2ExternalDependencies"></a>4.13.2 External Dependencies</h3> <p>none</p> <h4><a name="3.2SecureAdmin-4.14.TestingImpact%3A"></a>4.14. Testing Impact:</h2> <p>Need to add admin devtests to make sure the new truststores are used correctly and that the cert-nickname values are used correctly.</p> <h4><a name="3.2SecureAdmin-5.ReferenceDocuments%3A"></a>5. Reference Documents:</h1> <p>See bug/RFE numbers section.</p> <h4><a name="3.2SecureAdmin-6.Schedule%3A"></a>6. Schedule:</h1> <h4><a name="3.2SecureAdmin-6.1.ProjectedAvailability%3A"></a>6.1. Projected Availability:</h2> <p>Indicate which milestones from the current schedule the project<br> will be:</p> 
+     <ul> 
+      <li>Initially integrated (may not be feature complete): MS 4</li> 
+      <li>Feature complete (ready for handoff to QA) MS 5</li> 
+      <li>At production quality level: MS 5</li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jun 03, 2011 by 
+<font color="#0050B2">timq</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

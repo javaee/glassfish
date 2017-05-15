@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : V3.1RESTfulApiOnePager</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="V3.1RESTfulApiOnePager-GlassFishServerOpenSourceEdition3.1RESTfulAPIOnePager"></a>GlassFish Server Open Source Edition 3.1 - RESTful API One Pager</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#V3.1RESTfulApiOnePager-GlassFishServerOpenSourceEdition3.1RESTfulAPIOnePager">GlassFish Server Open Source Edition 3.1 - RESTful API One Pager</a></li> 
+       <li><a href="#V3.1RESTfulApiOnePager-1.Introduction">1. Introduction</a></li> 
+       <ul> 
+        <li><a href="#V3.1RESTfulApiOnePager-1.1.Project%2FComponentWorkingName%3A">1.1. Project/Component Working Name:</a></li> 
+        <li><a href="#V3.1RESTfulApiOnePager-1.2.Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier%3A">1.2. Name(s) and e-mail address of Document Author(s)/Supplier:</a></li> 
+        <li><a href="#V3.1RESTfulApiOnePager-1.3.DateofThisDocument%3A">1.3. Date of This Document:</a></li> 
+       </ul> 
+       <li><a href="#V3.1RESTfulApiOnePager-2.ProjectSummary">2. Project Summary</a></li> 
+       <ul> 
+        <li><a href="#V3.1RESTfulApiOnePager-2.1.ProjectDescription%3A">2.1. Project Description:</a></li> 
+        <li><a href="#V3.1RESTfulApiOnePager-2.2.RisksandAssumptions%3A">2.2. Risks and Assumptions:</a></li> 
+       </ul> 
+       <li><a href="#V3.1RESTfulApiOnePager-3.ProblemSummary">3. Problem Summary</a></li> 
+       <ul> 
+        <li><a href="#V3.1RESTfulApiOnePager-3.1.ProblemArea%3A">3.1. Problem Area:</a></li> 
+        <li><a href="#V3.1RESTfulApiOnePager-3.2.Justification%3A">3.2. Justification:</a></li> 
+       </ul> 
+       <li><a href="#V3.1RESTfulApiOnePager-4.TechnicalDescription%3A">4. Technical Description:</a></li> 
+       <ul> 
+        <li><a href="#V3.1RESTfulApiOnePager-4.0.Details%3A">4.0. Details:</a></li> 
+        <ul> 
+         <li><a href="#V3.1RESTfulApiOnePager-4.0.1Clustersupport">4.0.1 Cluster support</a></li> 
+         <li><a href="#V3.1RESTfulApiOnePager-4.0.2JMSSupport">4.0.2 JMS Support</a></li> 
+         <li><a href="#V3.1RESTfulApiOnePager-4.0.3DynamicRESTResourceGeneration">4.0.3 Dynamic REST Resource Generation</a></li> 
+         <li><a href="#V3.1RESTfulApiOnePager-4.0.4Authenticationtokens">4.0.4 Authentication tokens</a></li> 
+         <li><a href="#V3.1RESTfulApiOnePager-4.0.5MixandMatchofServerBeansandCLIParams.">4.0.5 Mix and Match of ServerBeans and CLI Params.</a></li> 
+        </ul> 
+        <li><a href="#V3.1RESTfulApiOnePager-4.1.AdvancedDetails%3A">4.1. Advanced Details:</a></li> 
+        <ul> 
+         <li><a href="#V3.1RESTfulApiOnePager-4.1.1IntroductiontoRESTFulHTTPAPI">4.1.1 Introduction to RESTFul HTTP API</a></li> 
+         <li><a href="#V3.1RESTfulApiOnePager-4.1.2OutputFormats">4.1.2 Output Formats</a></li> 
+         <li><a href="#V3.1RESTfulApiOnePager-4.1.3LogViewerResource">4.1.3 Log Viewer Resource</a></li> 
+         <li><a href="#V3.1RESTfulApiOnePager-4.1.4SecuritySupport">4.1.4 Security Support</a></li> 
+         <li><a href="#V3.1RESTfulApiOnePager-4.1.5WADLrepresentation">4.1.5 WADL representation</a></li> 
+         <li><a href="#V3.1RESTfulApiOnePager-4.1.7ClusterDAS%2CandInstancesSupport">4.1.7 Cluster DAS, and Instances Support</a></li> 
+         <li><a href="#V3.1RESTfulApiOnePager-4.1.8JerseyOptimizationforlocalaccessofRESTresources">4.1.8 Jersey Optimization for local access of REST resources</a></li> 
+         <li><a href="#V3.1RESTfulApiOnePager-4.1.8MonitoringSupport">4.1.8 Monitoring Support</a></li> 
+        </ul> 
+        <li><a href="#V3.1RESTfulApiOnePager-4.2.Bug%2FRFENumber%28s%29%3A">4.2. Bug/RFE Number(s):</a></li> 
+        <li><a href="#V3.1RESTfulApiOnePager-4.3.InScope%3A">4.3. In Scope:</a></li> 
+        <li><a href="#V3.1RESTfulApiOnePager-4.4.OutofScope%3A">4.4. Out of Scope:</a></li> 
+        <li><a href="#V3.1RESTfulApiOnePager-4.5.Interfaces%3A">4.5. Interfaces:</a></li> 
+        <ul> 
+         <li><a href="#V3.1RESTfulApiOnePager-4.5.1PublicInterfaces">4.5.1 Public Interfaces</a></li> 
+         <li><a href="#V3.1RESTfulApiOnePager-4.5.2PrivateInterfaces">4.5.2 Private Interfaces</a></li> 
+         <li><a href="#V3.1RESTfulApiOnePager-4.5.3Deprecated%2FRemovedInterfaces%3A">4.5.3 Deprecated/Removed Interfaces:</a></li> 
+        </ul> 
+        <li><a href="#V3.1RESTfulApiOnePager-4.6.DocImpact%3A">4.6. Doc Impact:</a></li> 
+        <li><a href="#V3.1RESTfulApiOnePager-4.7.Admin%2FConfigImpact%3A">4.7. Admin/Config Impact:</a></li> 
+        <li><a href="#V3.1RESTfulApiOnePager-4.8.HAImpact%3A">4.8. HA Impact:</a></li> 
+        <li><a href="#V3.1RESTfulApiOnePager-4.9.I18N%2FL10NImpact%3A">4.9. I18N/L10N Impact:</a></li> 
+        <li><a href="#V3.1RESTfulApiOnePager-4.10.Packaging%2CDelivery%26Upgrade%3A">4.10. Packaging, Delivery &amp; Upgrade:</a></li> 
+        <ul> 
+         <li><a href="#V3.1RESTfulApiOnePager-4.10.1.Packaging">4.10.1. Packaging</a></li> 
+         <li><a href="#V3.1RESTfulApiOnePager-4.10.2.Delivery">4.10.2. Delivery</a></li> 
+         <li><a href="#V3.1RESTfulApiOnePager-4.10.3.UpgradeandMigration%3A">4.10.3. Upgrade and Migration:</a></li> 
+        </ul> 
+        <li><a href="#V3.1RESTfulApiOnePager-4.11.SecurityImpact%3A">4.11. Security Impact:</a></li> 
+        <li><a href="#V3.1RESTfulApiOnePager-4.12.CompatibilityImpact">4.12. Compatibility Impact</a></li> 
+        <li><a href="#V3.1RESTfulApiOnePager-4.13.Dependencies%3A">4.13. Dependencies:</a></li> 
+        <ul> 
+         <li><a href="#V3.1RESTfulApiOnePager-4.13.1InternalDependencies">4.13.1 Internal Dependencies</a></li> 
+         <li><a href="#V3.1RESTfulApiOnePager-4.13.2ExternalDependencies">4.13.2 External Dependencies</a></li> 
+        </ul> 
+        <li><a href="#V3.1RESTfulApiOnePager-4.14.TestingImpact%3A">4.14. Testing Impact:</a></li> 
+       </ul> 
+       <li><a href="#V3.1RESTfulApiOnePager-5.ReferenceDocuments%3A">5. Reference Documents:</a></li> 
+       <li><a href="#V3.1RESTfulApiOnePager-6.Schedule%3A">6. Schedule:</a></li> 
+       <ul> 
+        <li><a href="#V3.1RESTfulApiOnePager-6.1.ProjectedAvailability%3A">6.1. Projected Availability:</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="V3.1RESTfulApiOnePager-1.Introduction"></a>1. Introduction</h1> <h4><a name="V3.1RESTfulApiOnePager-1.1.Project%2FComponentWorkingName%3A"></a>1.1. Project/Component Working Name: </h2> <p>GlassFish Server Open Source Edition 3.1 RESTful API</p> <h4><a name="V3.1RESTfulApiOnePager-1.2.Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier%3A"></a>1.2. Name(s) and e-mail address of Document Author(s)/Supplier:</h2> 
+     <ul> 
+      <li>Ludovic Champenois: ludovic.champenois@oracle.com</li> 
+      <li>Jason Lee: jason.d.lee@oracle.com</li> 
+     </ul> <h4><a name="V3.1RESTfulApiOnePager-1.3.DateofThisDocument%3A"></a>1.3. Date of This Document:</h2> <p>06/30/2010</p> <h4><a name="V3.1RESTfulApiOnePager-2.ProjectSummary"></a>2. Project Summary</h1> <h4><a name="V3.1RESTfulApiOnePager-2.1.ProjectDescription%3A"></a>2.1. Project Description:</h2> <p>This project provides a comprehensive, RESTful API for administration a GlassFish installation. The HTTP interface proposed by this one-pager will enable GlassFish management by clients technologies such as browsers (JavaScript), JavaFX, PERL, Ruby etc., in addition to the Java clients it currently supports. This project will expose some GlassFish Admin Commands, as well as GlassFish management and monitoring APIs as HTTP REST urls.</p> <h4><a name="V3.1RESTfulApiOnePager-2.2.RisksandAssumptions%3A"></a>2.2. Risks and Assumptions:</h2> <p>In order to provide complete end to end support of the new Admin GUI using the REST APIS, we will have to possibly change some features in key areas like config serverbeans, CLI framework and HK2. Most of the work was done in GlassFish v3, but not that GlassFish 3.1 Admin gui will rely on REST access, we need to track and implement some missing features are we find them for GlassFish 3.1.</p> <h4><a name="V3.1RESTfulApiOnePager-3.ProblemSummary"></a>3. Problem Summary</h1> <h4><a name="V3.1RESTfulApiOnePager-3.1.ProblemArea%3A"></a>3.1. Problem Area:</h2> <p>The REST API provides a lightweight, language-agnostic means for the programmatic configuration of the application server. Management and monitoring of GlassFish will no longer be limited to just Java or any particular Java API. This will integrate more cleanly with a GlassFish cloud story where web-centric APIs are available to configure, manage, monitor and administer a running GlassFish cluster environment.</p> <h4><a name="V3.1RESTfulApiOnePager-3.2.Justification%3A"></a>3.2. Justification:</h2> <p>Certain classes of applications, including GlassFish's Admin Console, need a way to make administrative changes to the server. Earlier versions of the application server used AMX, a JMX-based (and, thus, Java-centric) solution. This made it difficult at best for non-Java clients to talk to the server. Furthermore, support and continued development of AMX has been halted, so a viable alternative must take its place.</p> <h4><a name="V3.1RESTfulApiOnePager-4.TechnicalDescription%3A"></a>4. Technical Description:</h1> <h4><a name="V3.1RESTfulApiOnePager-4.0.Details%3A"></a>4.0. Details:</h2> <h4><a name="V3.1RESTfulApiOnePager-4.0.1Clustersupport"></a>4.0.1 Cluster support</h3> <p>Since one of the major features of 3.1 is clustering support, the REST API must fully support the new commands and ConfigBeans added to the server to implement clustering.</p> <h4><a name="V3.1RESTfulApiOnePager-4.0.2JMSSupport"></a>4.0.2 JMS Support</h3> <p>The support for JMS in the REST API is currently very limited when compared to the CLI support. This must be expanded to support the CLI commands currently supported in v3. Comprehensive support for all of the MQ broker commands (e.g., tuning, advanced configuration, etc) is not planned for this release. </p> <h4><a name="V3.1RESTfulApiOnePager-4.0.3DynamicRESTResourceGeneration"></a>4.0.3 Dynamic REST Resource Generation</h3> <p>Currently, all REST resources are generated during development by interrogating the HK2 DOM object that represents domain.xml. These resources are then compiled and deployed with REST module. For 3.1, it is desired to move this development-time generation to a run-time discovery and generation, which will allow modules to be added to and removed from the server and still allow REST resources to be available with no additional work from the module developer. For example, the JRuby container is defined in a different java.net project and defines some configbeans for its configuration. This module could be added/removed dynamically in an existing GlassFish installation. Having dynamic resources created at runtime will allow for dynamic exposure of the corresponding REST resources.<br> The three approaches currently on the table are</p> 
+     <ol> 
+      <li>Use ASM to generate the classes</li> 
+      <li>Generate the source code as we currently do (though at run-time) and use the JDK Compiler APIs to compile the classes</li> 
+      <li>Leverage internal/"private" Jersey APIs to dynamically register REST endpoints with the container, pointing these endpoints to hard-coded class/methods that will determine the correct behavior based on the request data</li> 
+     </ol> <p>The current thinking now is to use ASM, as the generated resources are now extremely minimal and all the behavior is encapsulated in common classes, making the ASM generator easy to maintain if needed.</p> <h4><a name="V3.1RESTfulApiOnePager-4.0.4Authenticationtokens"></a>4.0.4 Authentication tokens</h3> <p>The Admin Console will make numerous REST calls on behalf of a user authenticated in the web app. It will be necessary, however, to authenticate each REST call. It is undesirable to store the username and pass in the web app and pass these with each request. The Admin Console team has requested a means by which they can authenticate once, then pass a token with each request to associate it with a previous, successful authentication. See section <a href="#V3.1RESTfulApiOnePager-sectionV3.1RESTfulApiOnePager4.1.4SecuritySupport">4.1.4</a> for more details.</p> <h4><a name="V3.1RESTfulApiOnePager-4.0.5MixandMatchofServerBeansandCLIParams."></a>4.0.5 Mix and Match of ServerBeans and CLI Params.</h3> <p>Complete read/write access to all the server configuration is critical. This can be done in many ways :</p> 
+     <ul> 
+      <li>pure CRUD layer on top of all the serverbeans</li> 
+      <li>Mapping of createXXX and deleteXXX CLI commands to REST POST/DELETE verbs</li> 
+      <li>exposing some DuckType methods via REST</li> 
+     </ul> <p>This would require to return either in JSON or XML format a lot of data (usually a collection of Key, Value pairs) that has to be mapped to either serverbeans Attribute Names or CLI @Param parameters.</p> <h4><a name="V3.1RESTfulApiOnePager-4.1.AdvancedDetails%3A"></a>4.1. Advanced Details:</h2> <h4><a name="V3.1RESTfulApiOnePager-4.1.1IntroductiontoRESTFulHTTPAPI"></a>4.1.1 Introduction to RESTFul HTTP API</h3> <p>More sophisticated clients, such as Admin UI, may need fine grained access to configuration. To satisfy the need of such clients, this API will provide direct access to the whole configuration tree. All the backend config beans will be exposed as JAX-RS resources enabling access to their attributes and parent-child relationships.</p> <p>A RESTful web service is based on the following principles:</p> 
+     <ul> 
+      <li>Resources and representations. Instead of providing just one endpoint for a particular web service and having that endpoint perform various operations, you provide access to resources. A resource is a single piece of a web application that is made accessible to clients.</li> 
+      <li>Addressability and connectedness. Resources have their representations, but providing representations of resources would be useless if you could not address them. In REST, every resource must have at least one address, that is, one URI. To address the resource, you simply specify the URI. This concept is called "addressability". By publishing a web application, you introduce many different URIs that are connected to each other. Because of that connectedness, the only URI you need to give to your clients is one URI called the "bootstrap URI".</li> 
+      <li>Uniform interface. Even if you make resources available through URIs and representations to exchange between the client and server, it still does not allow you to establish communication. You need a communication protocol/interface to use. In a REST architecture, such an interface must be uniform. It means that whatever URI you access, the interface should be the same. For instance, on the World Wide Web no matter what URI (resource address) you enter, your web browser simply uses an HTTP GET method to retrieve a corresponding web page (resource representation) and displays it.</li> 
+      <li>Statelessness. Statelessness means that a web application is not responsible for keeping any information about the state of its clients. REST does not encompass the concept of HTTP sessions. The client is responsible for tracking its own actions (if it needs to). The service maintains its resources and provides a uniform interface to the clients.</li> 
+     </ul> <p>REST operates by leveraging the HTTP verbs specified in the W3C specification, two of which are likely familiar to web developers: GET and POST. Some others verbs used by REST are PUT, PATCH, DELETE, and OPTIONS. GET is usually used for read-only operations, and POST is usually reserved for create operations. The DELETE verb is used to delete a resource, and OPTIONS can be used to interrogate a resource for supported methods, attributes, etc. Updates are a bit trickier, as there two verbs dedicated to this function, PUT and PATCH. While a complete discussion of the beyond the scope of this document, their use can summarized as follows: PUT should be used for updating an entire entity (i.e., the entity is replaced by the one submitted from the client) and PATCH should be used to update a subset of an entity. Discussions on how to handle these verbs is still ongoing. </p> <p>The RESTFul architecture applies well to expose access to the generic @Configured ConfigBeans layer described in HK2 (GlassfishV3Final_hk2_overview#section-GlassfishV3Final_hk2_overview-4.1.4ConfigurationSupport).</p> <p>HK2 Configured objects represent configuration that will be used by the server, it is usually stored in an xml file (like the domain.xml in GlassFish). Such configuration is described using interface definitions that are binding interfaces (like JAXB interfaces) using annotations in the Config module. An interface is annotated with the @Configured annotation, and XML attributes can be described using the @Attribute annotation while XML sub elements are defined with a @Element annotation. @Element can return a single object or a List of objects.</p> <p>Example :</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Configured
+public interface SomeConfig extends ConfigBeanProxy {
+    @Attribute
+    String getAttributeName();
+    @Element
+    SubConfig getSub();
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>GlassFish 3.x backend configuration is mostly described in the admin/config-api module (and for Grizzly configuration, in the Grizzly component). The root of all the ConfigBeans is the "Domain" object that holds a reference to all the configbeans available in the system. </p> <p>What is proposed here is to provide access to RESTFul resources that are mapped to the ConfigBeans so that the content of these ConfigBeans can be accessed, modified, created or deleted using the RESTful concepts. The Jersey implementation (<a href="https://jsr311.java.net/">https://jsr311.java.net/</a>) which is available now in the Java EE 6 specification is used via a special Grizzly connector to avoid a dependency to the GlassFish Web container. Having minimal dependencies to GlassFish modules permits one, for example, to be able to manage via REST containers like the Jruby/Rails scripting container without our Web Server. The mapping is as follows:</p> <p>Each @Configured configuration will have a REST resource that exposes the list of @Attribute of this configuration (HTTP GET). Navigation rules using JAX-RS sub-path will be available to navigate from one configuration resource to a child configuration resource or to a List of children. HTTP methods (POST, PUT (and possibly PATCH), and DELETE) on these resources will create, update or delete the corresponding ConfigBeans. An optional redirect to actual AdminCommand is possible to implement these POST, PUT/PATCH, DELETE methods to guarantee the behavior of the actions. DELETE is exposed only on specific resources. For example, the Domain resource should not have a DELETE operation for obvious reasons (catastrophic results will happen).</p> <p>The top level URL for accessing the entire resources is </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">http://machinename:adminport/management</pre> 
+       </div> 
+      </div>
+     </div> <p>For example, to get the list of Attributes and child Elements of the Domain ConfigBeans, the following URL will be used: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">http://localhost:4848/management/domain</pre> 
+       </div> 
+      </div>
+     </div> <p>This is the main entry point to access to all the sub configurations.</p> <p>The output will always be as HTML by default (on Safari, Chrome, IE and Firefox). The HTML view has some convenient content to allow for navigation to child resources as well as Create, Update or Delete Forms when possible.<br> Via the browser, one can also specify easily the type of the representation by adding the .xml or .json or .html extension.<br> For example:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">http://localhost:4848/management/domain.html
+http://localhost:4848/management/domain.json
+http://localhost:4848/management/domain.xml</pre> 
+       </div> 
+      </div>
+     </div> <p>will return the appropriate media representation of the resource. Of course, after this extension, one can add the optional parameters if needed.</p> <p>When the child Element is a List of other ConfigBeans, a corresponding resource will be exposed for this collection. To select one element among N inside this Collection, one must specifies the value of a Key attribute (@Attribute annotation supports the definition of a Key). The value of the Key is passed as a sub-path</p> <p>What if the key contains the "/" char? For such resources, we have enabled a property on the Grizzly Adapter to allow encoding of special characters in the URL. For example, the collection of JDBC-RESOURCES can be accessed via:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">http://localhost:4848/management/domain/resources/jdbc-resource</pre> 
+       </div> 
+      </div>
+     </div> <p>There are 2 jdbc-resource children, called "jdbc/*TimerPool" "jdbc/*default" that contain the "/" character in their name which is the unique key field to identify them. To access the "jdbc/__TimerPool" resource, you can use:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">http://localhost:4848/management/domain/resources/jdbc-resource/jdbc%2F__TimerPool</pre> 
+       </div> 
+      </div>
+     </div> <p>It is also possible to add some child resources to a given configbean REST resource, but attaching a GlassFish Command to it. For example the ConfigBean "Domain" is associated to the REST resource "/management/domain" and we can add the 3 CLI commands (uptime, stop, restart) to some corresponding child resource:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">http://localhost:4848/management/domain/uptime
+http://localhost:4848/management/domain/stop
+http://localhost:4848/management/domain/restart</pre> 
+       </div> 
+      </div>
+     </div> <p>Our generator allows us to specify the type of HTTP method for each of these added commands. It is expected that for CLI commands that do not modify the backend (like for example the "uptime" command), a simple GET can return the result of the command. For CLI commands that modify the state of the backend (as stop or restart do), a POST has to be used to execute the command. The payload of these resources can be in XML, JSON, or APPLICATION_FORM_URLENCODED and should contain all the Command parameters necessary to execute this command on the server side. The returned document from these CLI resources is derived from the corresponding ActionReporter class of the CLI backend. We are currently modifying it so that commands that return structured data (for example, a List&lt;Tuple&lt;String,String&gt;&gt;) will have a parsable XML and JSON output without the need to do command output parsing on the client side.</p> <p>The combination of full access to the GlassFish configbeans and the CLIs that implement transactional, and authoritative complex business logic on the admin backend will provide the necessary set of APIs for a comprehensive server management via HTTP(s) REST access.</p> <h4><a name="V3.1RESTfulApiOnePager-4.1.2OutputFormats"></a>4.1.2 Output Formats</h3> <p>RESTFul configuration APIs will leverage existing support for XML, HTML and JSON representations. Additional representations can be plugged-in, if there is a requirement. For the supported representations, the output format will be as defined below.</p> <p>As you can see in the following examples, the Domain ConfigBean has log-root, application-root and version as attributes. We can see the values. Default values will be also be shown. The Domain also has children resources: applications, resources, servers, configs and property. Navigating between parent-children resources is very natural using URL sub-paths.</p> <p>JSON format</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">{"entity":{attributes}, "methods" :[method-metadata] , "resources":[values]}</pre> 
+       </div> 
+      </div>
+     </div> <p>Where:</p> 
+     <ul> 
+      <li>attributes: one or more Attribute value pairs separated by comma(,)</li> 
+      <li>method-metadata: one or more HTTP method with the list of messageParameters each describing the possible field name, default value, type, field key, and wether the field is optional or not.</li> 
+      <li>values: one or more child resource urls separated by comma(,).</li> 
+     </ul> <p>Having the list of child resources is useful for auto-discovering on the client side the potential sub resources. This also could achieve via the WADL application.wadl file (see section 4.1.5 below), or calling each resource with the HTTP OPTIONS method that would return only the meta-data portion of the resource.</p> <p>Example of a complete resource, the "domain" resource:</p> <p><a href="http://localhost:4848/management/domain.json">http://localhost:4848/management/domain.json</a></p> <p>JSON Output:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">{
+  "entity":{
+         "logRoot":"${com.sun.aas.instanceRoot}/logs", 
+         "applicationRoot":"${com.sun.aas.instanceRoot}/applications", 
+         "locale":"", 
+         "version":"ludo-private"
+          },
+
+  "methods":{
+    "method":{
+      "name":"POST",
+      "messageParameters":{
+        "applicationRoot":{"optional":"true", "type":"string", "key":"false"},
+        "locale":{"optional":"true", "type":"string", "key":"false"},
+        "logRoot":{"optional":"true", "type":"string", "key":"false"},
+        "version":{"optional":"true", "type":"string", "key":"false"}
+      }
+    },
+    "method":{
+      "name":"GET"
+    }
+  },
+
+  "childResources":[
+    "http://localhost:4848/management/domain/configs",
+    "http://localhost:4848/management/domain/resources",
+    "http://localhost:4848/management/domain/clusters",
+    "http://localhost:4848/management/domain/nodes",
+    "http://localhost:4848/management/domain/servers",
+    "http://localhost:4848/management/domain/property",
+    "http://localhost:4848/management/domain/applications",
+    "http://localhost:4848/management/domain/system-applications",
+    "http://localhost:4848/management/domain/create-instance",
+    "http://localhost:4848/management/domain/delete-instance",
+    "http://localhost:4848/management/domain/start-instance",
+    "http://localhost:4848/management/domain/stop-instance",
+    "http://localhost:4848/management/domain/host-port",
+    "http://localhost:4848/management/domain/list-logger-levels",
+    "http://localhost:4848/management/domain/list-instances",
+    "http://localhost:4848/management/domain/restart",
+    "http://localhost:4848/management/domain/rotate-log",
+    "http://localhost:4848/management/domain/set-log-level",
+    "http://localhost:4848/management/domain/stop",
+    "http://localhost:4848/management/domain/uptime",
+    "http://localhost:4848/management/domain/version"
+  ]
+
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>XML format</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;entity attributes&gt;
+    &lt;methods&gt;
+           &lt;method name="POST  or PUT or DELETE or PATCH or GET"&gt; 
+                &lt;messageParameters&gt;
+                      ...n of them
+                &lt;messageParameters&gt;
+          &lt;/methods&gt;
+
+    &lt;/methods&gt;
+    &lt;childResources&gt;
+         &lt;childResource&gt;resource url&lt;/childResource&gt;
+           ...
+    &lt;childResources&gt;
+&lt;/entity&gt;</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>attributes: name-value pairs separated by space(blank)</li> 
+      <li>method-metadata: one or more HTTP method with the list of messageParameters each describing the possible field name, default value, type, field key, and wether the field is optional or not.</li> 
+      <li>resource url: url of the sub-resource</li> 
+     </ul> <p>Example <a href="http://localhost:4848/management/domain.xml">http://localhost:4848/management/domain.xml</a></p> <p>Output:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;entity 
+   logRoot="${com.sun.aas.instanceRoot}/logs" 
+   applicationRoot="${com.sun.aas.instanceRoot}/applications" 
+   locale="" 
+   version="ludo-private"&gt; 
+ 
+  &lt;methods&gt; 
+    &lt;method name="POST"&gt; 
+      &lt;messageParameters&gt; 
+        &lt;applicationRoot optional="true" type="string" key="false"/&gt; 
+        &lt;locale optional="true" type="string" key="false"/&gt; 
+        &lt;logRoot optional="true" type="string" key="false"/&gt; 
+        &lt;version optional="true" type="string" key="false"/&gt; 
+      &lt;/messageParameters&gt; 
+    &lt;/method&gt; 
+    &lt;method name="GET"&gt; 
+    &lt;/method&gt; 
+  &lt;/methods&gt; 
+ 
+  &lt;childResources&gt; 
+    &lt;childResource&gt;http://localhost:4848/management/domain/configs&lt;/childResource&gt; 
+    &lt;childResource&gt;http://localhost:4848/management/domain/resources&lt;/childResource&gt; 
+    &lt;childResource&gt;http://localhost:4848/management/domain/clusters&lt;/childResource&gt; 
+    &lt;childResource&gt;http://localhost:4848/management/domain/nodes&lt;/childResource&gt; 
+    &lt;childResource&gt;http://localhost:4848/management/domain/servers&lt;/childResource&gt; 
+    &lt;childResource&gt;http://localhost:4848/management/domain/property&lt;/childResource&gt; 
+    &lt;childResource&gt;http://localhost:4848/management/domain/applications&lt;/childResource&gt; 
+    &lt;childResource&gt;http://localhost:4848/management/domain/system-applications&lt;/childResource&gt; 
+    &lt;childResource&gt;http://localhost:4848/management/domain/create-instance&lt;/childResource&gt; 
+    &lt;childResource&gt;http://localhost:4848/management/domain/delete-instance&lt;/childResource&gt; 
+    &lt;childResource&gt;http://localhost:4848/management/domain/start-instance&lt;/childResource&gt; 
+    &lt;childResource&gt;http://localhost:4848/management/domain/stop-instance&lt;/childResource&gt; 
+    &lt;childResource&gt;http://localhost:4848/management/domain/host-port&lt;/childResource&gt; 
+    &lt;childResource&gt;http://localhost:4848/management/domain/list-logger-levels&lt;/childResource&gt; 
+    &lt;childResource&gt;http://localhost:4848/management/domain/list-instances&lt;/childResource&gt; 
+    &lt;childResource&gt;http://localhost:4848/management/domain/restart&lt;/childResource&gt; 
+    &lt;childResource&gt;http://localhost:4848/management/domain/rotate-log&lt;/childResource&gt; 
+    &lt;childResource&gt;http://localhost:4848/management/domain/set-log-level&lt;/childResource&gt; 
+    &lt;childResource&gt;http://localhost:4848/management/domain/stop&lt;/childResource&gt; 
+    &lt;childResource&gt;http://localhost:4848/management/domain/uptime&lt;/childResource&gt; 
+    &lt;childResource&gt;http://localhost:4848/management/domain/version&lt;/childResource&gt; 
+  &lt;/childResources&gt; 
+ 
+&lt;/entity&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>HTML format</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;html&gt;&lt;body&gt;
+&lt;h1&gt;type&lt;/h1&gt;&lt;hr&gt;
+    &lt;h2&gt;attribute: value&lt;/h2&gt;
+    ...
+&lt;h1&gt;resources&lt;/h1&gt;&lt;hr&gt;
+    &lt;h2&gt;resource url&lt;/h2&gt;
+    ...
+&lt;/body&gt;&lt;/html&gt;</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>type: type of the resource</li> 
+      <li>attribute: name of the attribute</li> 
+      <li>value: value of the attribute</li> 
+      <li>resource url: url of the sub-resource</li> 
+     </ul> <h4><a name="V3.1RESTfulApiOnePager-4.1.3LogViewerResource"></a>4.1.3 Log Viewer Resource</h3> <p>The server.log of an instance is not managed by a ConfigBean, and is not accessible via CLI, so we have created a specific set of REST resources for viewing its content. The first resource is accessible under </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">http://localhost:4848/management/domain/view-log</pre> 
+       </div> 
+      </div>
+     </div> <p>It returns in text the content of the log file (gzipped if the client supports it) until the end od the file. It also returns an HTTP header called "X-Text-Append-Next" which when defined contains the entire URL to call via GET to get the delta content of the log file from the last call. So if you use a client thread looping every 3 seconds and testing the value of the header called </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">"X-Text-Append-Next"</pre> 
+       </div> 
+      </div>
+     </div> <p>you can get all the new log entries since the last 3 seconds.<br> An optional start param </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">http://localhost:4848/management/domain/view-log?start=10000</pre> 
+       </div> 
+      </div>
+     </div> <p>allows to specify the characters number you want to skip from the start of the file. (If it is larger than the file size, 0 is assumed.</p> <p>Another REST resource returns in JSON or XML format (Only JSON as of today) a structured view of the log file (the same way AMX used to return the log content to the admin gui). The resource is at</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">http://localhost:4848/management/domain/view-log/details</pre> 
+       </div> 
+      </div>
+     </div> <p>The JSON output is like:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">{
+"records": [{
+"recordNumber":145,
+"loggedDateTimeInMS":1277905336097,
+"loggedLevel":"INFO",
+"productName":"glassfish3.1",
+"loggerName":"null",
+"nameValuePairs":"_ThreadID=27;_ThreadName=Thread-1;",
+"messageID":"",
+"Message":"The Admin Console application is loaded."}
+,
+{
+"recordNumber":144,
+"loggedDateTimeInMS":1277905336097,
+"loggedLevel":"INFO",
+"productName":"glassfish3.1",
+"loggerName":"null",
+"nameValuePairs":"_ThreadID=27;_ThreadName=Thread-1;",
+"messageID":"",
+"Message":"Loading __admingui Application done is 8523 ms"}
+,
+{
+"recordNumber":143,
+"loggedDateTimeInMS":1277905336095,
+"loggedLevel":"INFO",
+"productName":"glassfish3.1",
+"loggerName":"javax.enterprise.system.container.web.com.sun.enterprise.web",
+"nameValuePairs":"_ThreadID=68;_ThreadName=Thread-1;",
+"messageID":"WEB0671",
+"Message":" Loading application [__admingui] at [/]"}
+,
+{...</pre> 
+       </div> 
+      </div>
+     </div> <p>This is an array of log entries, each entry having the following attributes: "recordNumber","loggedDateTimeInMS","loggedLevel","productName","loggerName","nameValuePairs","messageID","Message".<br> It is possible to refine the query for this array with the following HTTP params (similar again to what AMX log viewer APIs defined):</p> 
+     <ul> 
+      <li>"logFileName" with default value of "${com.sun.aas.instanceRoot}/logs/server.log")</li> 
+      <li>"startIndex" with default value of "-1"</li> 
+      <li>"searchForward" with default value of "false"</li> 
+      <li>"maximumNumberOfResults" with default value of "40"</li> 
+      <li>"fromTime" with default value of "-1" a long value in milliseconds</li> 
+      <li>"toTime" with default value of "-1" a long value in milliseconds</li> 
+      <li>"logLevel" with default value of "INFO"</li> 
+     </ul> <p>Admin GUI should be able to use this resource as it maps exactly in terms of APIs to the corresponding AMX api used for the log viewer in Admin GUI 3.0.</p> <h4><a name="V3.1RESTfulApiOnePager-4.1.4SecuritySupport"></a>4.1.4 Security Support</h3> 
+     <ul> 
+      <li>The REST resources are protected by HTTP <b>Basic Auth</b>. Using Basic Auth should be sufficient if HTTPS is used at transport layer. However, it requires REST client to cache credentials so that it can be passed with each request.</li> 
+      <li>If it is not acceptable for a REST client to cache credentials, it can use <b>Session Token</b> mechanism. The mechanism works as follows: 
+       <ul> 
+        <li>Client requests a session token using GET on <a href="http://localhost:4848/management/sessions">http://localhost:4848/management/sessions</a>. Basic auth is used to authenticate the client. A session token is generated and passed to the client</li> 
+        <li>The client can use this token to authenticate for subsequent requests. The token needs to be sent as a value of cookie named "gfresttoken" for the subsequent requests.</li> 
+        <li>The client retires the token by using DELETE on <a href="http://localhost:4848/management/sessions/\">http://localhost:4848/management/sessions/\</a>{tokenvalue}</li> 
+        <li>If a client does not explicitly retire a token, it gets retired after inactivity of 30 mins.</li> 
+       </ul> </li> 
+      <li>Investigation is underway to see if we can use <b>HTTP Digest</b> mechanism to authenticate. If we decide to use it, work needs to be done on Jersey Client side for this.</li> 
+     </ul> <h4><a name="V3.1RESTfulApiOnePager-4.1.5WADLrepresentation"></a>4.1.5 WADL representation</h3> <p>Since the GlassFish REST admin backend is a JAX-RS application, the application.wadl Web Application Definition Language file is avaialable at the standard location: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">http://localhost:4848/management/application.wadl</pre> 
+       </div> 
+      </div>
+     </div> <p>It contains the complete meta-data information in XML for all the resources that are available and the resource paths, as well as all the HTTP methods available on each resource. Here is a subset of our current WADL file as generated by the JAX-RS backend for our REST application:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;application xmlns="http://research.sun.com/wadl/2006/10"&gt; 
+    &lt;doc xmlns:jersey="http://jersey.java.net/" jersey:generatedBy="Jersey: 1.1.5 01/20/2010 04:04 PM"/&gt; 
+    &lt;resources base="http://localhost:4848/management/"&gt; 
+        &lt;resource path="/sessions"&gt; 
+            &lt;method id="create" name="POST"&gt; 
+                &lt;response&gt; 
+                    &lt;representation mediaType="*/*"/&gt; 
+                &lt;/response&gt; 
+            &lt;/method&gt; 
+            &lt;resource path="{sessionId}/"&gt; 
+                &lt;param xmlns:xs="http://www.w3.org/2001/XMLSchema" name="sessionId" style="template" type="xs:string"/&gt; 
+                &lt;method id="delete" name="DELETE"&gt; 
+                    &lt;response&gt; 
+                        &lt;representation mediaType="*/*"/&gt; 
+                    &lt;/response&gt; 
+                &lt;/method&gt; 
+            &lt;/resource&gt; 
+        &lt;/resource&gt; 
+        &lt;resource path="/domain/"&gt; 
+            &lt;method id="get" name="GET"&gt; 
+                &lt;request&gt; 
+                    &lt;param xmlns:xs="http://www.w3.org/2001/XMLSchema" name="expandLevel" style="query" type="xs:int" default="1"/&gt; 
+                &lt;/request&gt; 
+                &lt;response&gt; 
+                    &lt;representation mediaType="text/html;qs=2"/&gt; 
+                    &lt;representation mediaType="application/json"/&gt; 
+                    &lt;representation mediaType="application/xml"/&gt; 
+                    &lt;representation mediaType="application/x-www-form-urlencoded"/&gt; 
+                &lt;/response&gt; 
+            &lt;/method&gt; 
+            &lt;method id="delete" name="DELETE"&gt; 
+                &lt;request&gt; 
+                    &lt;representation mediaType="application/json"/&gt; 
+                    &lt;representation mediaType="application/xml"/&gt; 
+                    &lt;representation mediaType="application/x-www-form-urlencoded"/&gt; 
+                    &lt;representation mediaType="application/octet-stream"/&gt; 
+                &lt;/request&gt; 
+                &lt;response&gt; 
+                    &lt;representation mediaType="*/*"/&gt; 
+                &lt;/response&gt; 
+            &lt;/method&gt; 
+            &lt;method id="options" name="OPTIONS"&gt; 
+                &lt;response&gt; 
+                    &lt;representation mediaType="application/json"/&gt; 
+                    &lt;representation mediaType="text/html;qs=2"/&gt; 
+                    &lt;representation mediaType="application/xml"/&gt; 
+                &lt;/response&gt; 
+            &lt;/method&gt; 
+            &lt;method id="updateEntity" name="POST"&gt; 
+                &lt;request&gt; 
+                    &lt;representation mediaType="application/json"/&gt; 
+                    &lt;representation mediaType="application/xml"/&gt; 
+                    &lt;representation mediaType="application/x-www-form-urlencoded"/&gt; 
+                &lt;/request&gt; 
+                &lt;response&gt; 
+                    &lt;representation mediaType="text/html;qs=2"/&gt; 
+                    &lt;representation mediaType="application/json"/&gt; 
+                    &lt;representation mediaType="application/xml"/&gt; 
+                &lt;/response&gt; 
+            &lt;/method&gt; 
+...</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="V3.1RESTfulApiOnePager-4.1.7ClusterDAS%2CandInstancesSupport"></a>4.1.7 Cluster DAS, and Instances Support</h3> <p>While running in a cluster, the REST management adapter will only be available the Domain Administration Server (DAS). Some security changes will have to be implemented at the REST Grizzly adapter. TBD. We need to decide whether the monitoring adapter will be available on all instances or only on DAS. TBD.</p> <h4><a name="V3.1RESTfulApiOnePager-4.1.8JerseyOptimizationforlocalaccessofRESTresources"></a>4.1.8 Jersey Optimization for local access of REST resources</h3> <p>The current main client for the REST admin back end is the GlassFish JSF Admin GUI. Currently, this application is running in the same process as the GlassFish process and the REST application. If performance of Admin GUI accessing the REST resources is an issue, we can implement a layer between the JAX-RS Jersey Client and the Server side to by pass the HTTP traffic in local mode. There are ways with our Jersey implementation to implement that in a transparent way.</p> <h4><a name="V3.1RESTfulApiOnePager-4.1.8MonitoringSupport"></a>4.1.8 Monitoring Support</h3> <p>Monitoring HTTP API enables monitoring of GlassFish through HTTP urls. This support enable GlassFish monitoring through new tools and technologies. For example, using these API's cloud computing provider can charge customers based on number of sessions, number of requests etc. This API essentially exposes telemetry objects as HTTP urls. This RESTFul API will provide direct access to the whole monitoring tree.</p> <p>Monitoring Output Formats:</p> <p>Monitoring API supports following output formats XML, HTML and JSON. Additional representations can be plugged-in/provided, if there is a requirement.<br> For the supported representations the output format will be same as defined for config objects Using this, the output format for specific data types will be:</p> <p>Example 1 Output for Statistic object</p> <p>in JSON format:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">{"{statistic}":{
+"name"="xyz", 
+"unit"="xyz", 
+"description"="xyz", 
+"start-time"=xyz, 
+"last-sample-time"=xyz}}</pre> 
+       </div> 
+      </div>
+     </div> <p>in XML format:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;statistic name="xyz" 
+unit="xyz" description="xyz" 
+start-time="xyz" 
+last-sample-time="xyz"&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>in HTML format.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;html&gt;&lt;body&gt;
+&lt;h1&gt;statistic&lt;/h1&gt;
+&lt;hr&gt;
+&lt;h2&gt;name: xyz&lt;/h2&gt;
+&lt;h2&gt;unit: xyz&lt;/h2&gt;
+&lt;h2&gt;description: xyz&lt;/h2&gt;
+&lt;h2&gt;start-time: xyz&lt;/h2&gt;
+&lt;h2&gt;last-sample-time: xyz&lt;/h2&gt;
+&lt;/body&gt;&lt;/html&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>Example 2 Output for Range Statistic object<br> JSON</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">{"range-statistic":
+{"high-water-mark"=xyz, 
+"low-water-mark"=xyz, 
+"current"=xyz, 
+"name"="xyz", 
+"unit"="xyz", 
+"description"="xyz", 
+"start-time"=xyz, 
+"last-sample-time"=xyz}}</pre> 
+       </div> 
+      </div>
+     </div> <p>XML</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;range-statistic high-water-mark="xyz" 
+low-water-mark="xyz" current="xyz" 
+name="xyz" unit="xyz" 
+description="xyz" 
+start-time="xyz" 
+last-sample-time="xyz"&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>HTML</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;html&gt;&lt;body&gt;
+&lt;h1&gt;range-statistic&lt;/h1&gt;
+&lt;hr&gt;
+&lt;h2&gt;high-water-mark: xyz&lt;/h2&gt;
+&lt;h2&gt;low-water-mark: xyz&lt;/h2&gt;
+&lt;h2&gt;current: xyz&lt;/h2&gt;
+&lt;h2&gt;name: xyz&lt;/h2&gt;
+&lt;h2&gt;unit: xyz&lt;/h2&gt;
+&lt;h2&gt;description: xyz&lt;/h2&gt;
+&lt;h2&gt;start-time: xyz&lt;/h2&gt;
+&lt;h2&gt;last-sample-time: xyz&lt;/h2&gt;
+&lt;/body&gt;&lt;/html&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>Monitoring URL Format:</p> <p>The monitoring URLs can have the following format</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">http://host:port/monitoring/path</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>host: server host</li> 
+      <li>port: administration port</li> 
+      <li>path: identifies the resource</li> 
+     </ul> <p>Monitoring Methods:</p> <p>Monitoring API will support get and options HTTP methods.</p> <p>GET /monitoring/{path} HTTP/1.1</p> <p> Get the given object</p> <p>OPTIONS /monitoring/{path} HTTP/1.1</p> <p> Get meta-data of the resource</p> <h4><a name="V3.1RESTfulApiOnePager-4.2.Bug%2FRFENumber%28s%29%3A"></a>4.2. Bug/RFE Number(s):</h2> <h4><a name="V3.1RESTfulApiOnePager-4.3.InScope%3A"></a>4.3. In Scope:</h2> 
+     <ul> 
+      <li>Full support for the new cluster administration commands under development for 3.1</li> 
+      <li>Limited support for JMS administration</li> 
+     </ul> <h4><a name="V3.1RESTfulApiOnePager-4.4.OutofScope%3A"></a>4.4. Out of Scope:</h2> 
+     <ul> 
+      <li>Comprehensive OpenMQ support</li> 
+     </ul> <h4><a name="V3.1RESTfulApiOnePager-4.5.Interfaces%3A"></a>4.5. Interfaces:</h2> <h4><a name="V3.1RESTfulApiOnePager-4.5.1PublicInterfaces"></a>4.5.1 Public Interfaces</h3> 
+     <ul> 
+      <li>the management URL: <a href="http://servername:PortNumber/management/">http://servername:PortNumber/management/</a> 
+       <ul> 
+        <li>the set of resources under this url is by nature dynamic, depending on the GlassFish configuration (set of modules installed).</li> 
+        <li>the output for each ConfigBean resource is depending on the corresponding ConfigBean structure and attributes (defined via the @Attribute HK2 annotation)</li> 
+        <li>the ouptut of each CLI command resource depends on the list of params of this CLI. The XML and JSON output relies on the corresponding ActionReporter and how the command defines its output via the reporter</li> 
+       </ul> </li> 
+      <li>the monitoring URL <a href="http://servername:PortNumber/monitoring/">http://servername:PortNumber/monitoring/</a></li> 
+      <li>We are considering unifying both management and monitoring REST services under single context root. Apart from being more natural, this will allow us to handle authentication at single place. Thus we will have <a href="http://servername:PortNumber/rest/management/">http://servername:PortNumber/rest/management/</a> and <a href="http://servername:PortNumber/rest/monitoring/">http://servername:PortNumber/rest/monitoring/</a> as the base URLs for management and monitoring respectively.</li> 
+     </ul> <h4><a name="V3.1RESTfulApiOnePager-4.5.2PrivateInterfaces"></a>4.5.2 Private Interfaces</h3> <p>None identified at this time</p> <h4><a name="V3.1RESTfulApiOnePager-4.5.3Deprecated%2FRemovedInterfaces%3A"></a>4.5.3 Deprecated/Removed Interfaces:</h3> <p>None identified at this time</p> <h4><a name="V3.1RESTfulApiOnePager-4.6.DocImpact%3A"></a>4.6. Doc Impact:</h2> <p>Since the REST API will be the official means by which third parties can administer the server, documentation must be generated detailing how to use the API.</p> <h4><a name="V3.1RESTfulApiOnePager-4.7.Admin%2FConfigImpact%3A"></a>4.7. Admin/Config Impact:</h2> <p>The Admin Console will have to be modified to support changes in the REST API.</p> <h4><a name="V3.1RESTfulApiOnePager-4.8.HAImpact%3A"></a>4.8. HA Impact:</h2> <p>Cluster support is a planned feature of the module.</p> <h4><a name="V3.1RESTfulApiOnePager-4.9.I18N%2FL10NImpact%3A"></a>4.9. I18N/L10N Impact:</h2> <p>None anticipated</p> <h4><a name="V3.1RESTfulApiOnePager-4.10.Packaging%2CDelivery%26Upgrade%3A"></a>4.10. Packaging, Delivery &amp; Upgrade:</h2> <h4><a name="V3.1RESTfulApiOnePager-4.10.1.Packaging"></a>4.10.1. Packaging</h3> <p>This proposal will affect only the rest-services.jar already shipped with the server.</p> <h4><a name="V3.1RESTfulApiOnePager-4.10.2.Delivery"></a>4.10.2. Delivery</h3> <p>No impact on delivery. The module is already included in the distribution.</p> <h4><a name="V3.1RESTfulApiOnePager-4.10.3.UpgradeandMigration%3A"></a>4.10.3. Upgrade and Migration:</h3> <p>This should not affect any existing instances or clients, as there are no known clients of the API at this point in time.</p> <h4><a name="V3.1RESTfulApiOnePager-4.11.SecurityImpact%3A"></a>4.11. Security Impact:</h2> <p>The REST API is secured using the same admin realm as the console. Discussions are underway to determine if additional authentication mechanisms need to be added to allow for a more secure Admin Console.</p> <h4><a name="V3.1RESTfulApiOnePager-4.12.CompatibilityImpact"></a>4.12. Compatibility Impact</h2> <p>None anticipated.</p> <h4><a name="V3.1RESTfulApiOnePager-4.13.Dependencies%3A"></a>4.13. Dependencies:</h2> <h4><a name="V3.1RESTfulApiOnePager-4.13.1InternalDependencies"></a>4.13.1 Internal Dependencies</h3> 
+     <ul> 
+      <li><a href="V3.1ClusteringInfraOnePager.html" title="V3.1ClusteringInfraOnePager">Clustering Infrastructure</a></li> 
+     </ul> <h4><a name="V3.1RESTfulApiOnePager-4.13.2ExternalDependencies"></a>4.13.2 External Dependencies</h3> 
+     <ul> 
+      <li><a href="https://jersey.java.net">Jersey</a></li> 
+     </ul> <h4><a name="V3.1RESTfulApiOnePager-4.14.TestingImpact%3A"></a>4.14. Testing Impact:</h2> <p>The existing REST infrastructure has no existing tests. Devtests will be created as part of this effort.</p> <h4><a name="V3.1RESTfulApiOnePager-5.ReferenceDocuments%3A"></a>5. Reference Documents:</h1> 
+     <ul> 
+      <li><a href="3.1RestApi.html" title="3.1RestApi">Project Page</a></li> 
+     </ul> <h4><a name="V3.1RESTfulApiOnePager-6.Schedule%3A"></a>6. Schedule:</h1> <h4><a name="V3.1RESTfulApiOnePager-6.1.ProjectedAvailability%3A"></a>6.1. Projected Availability:</h2> <p>See Project Page (linked above)</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 09, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

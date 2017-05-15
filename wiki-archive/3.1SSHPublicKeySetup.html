@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : 3.1SSHPublicKeySetup</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="3.1SSHPublicKeySetup-SSHpublickeyauthenticationinGlassFishv3.1"></a>SSH public key authentication in GlassFish v3.1</h1> <h4><a name="3.1SSHPublicKeySetup-Overview"></a>Overview</h3> <p>SSH setup is a pre-requisite for setting up GlassFish clusters across multiple machines. SSH provides confidentiality and security for data exchanged between DAS and remote host(s) through the use of public key cryptography. One of the authentication mechanisms in SSH is the public key authentication which allows for password-less login from DAS to instance host(s). The main benefits of public key authentication are:</p> 
+     <ul> 
+      <li>Public keys cannot be easily brute forced</li> 
+      <li>The same private key (with passphrase) can be used to access multiple systems: no need to remember many passwords</li> 
+     </ul> <p>Setting up public key access requires certain manual steps. However, this short coming can be overcome in GlassFish 3.1 by using the <em>setup-ssh</em> command. The primary goal of the SSH key setup command is to provide a simple and quick way to setup SSH connectivity between DAS and instance hosts. The key features of the command <em>setup-ssh</em> are:</p> 
+     <ul> 
+      <li>Automatic key pair generation</li> 
+      <li>Automatic key distribution to remote node(s)</li> 
+      <li>Silent mode setup</li> 
+      <li>Platform independent</li> 
+     </ul> <p>Distributing the public key means installing the public key in $HOME/.ssh/authorized_keys file on the remote host. The key is installed on the remote host (one time) where it is used for subsequent remote access by the holder of the private key (i.e DAS user)</p> <h4><a name="3.1SSHPublicKeySetup-CommandUsage"></a>Command Usage</h3> <p>SSH setup doesn't store any configuration information in domain.xml. It is a local command with the following usage:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Usage: asadmin [asadmin-utility-options] setup-ssh [--sshuser &lt;sshuser&gt;]
+	[--sshport &lt;sshport(default:22)&gt;] [--sshkeyfile &lt;sshkeyfile&gt;]
+	[--sshpublickeyfile &lt;sshpublickeyfile&gt;]
+	[--generatekey[=&lt;generatekey(default:false)&gt;]]
+	[-?|--help[=&lt;help(default:false)&gt;]] hosts ...
+
+where  is the username to use for the remote login (default: user id of asadmin user)
+ is the port of the sshd server on remote node (default: 22)
+ is the location of the private key file (default: $HOME/.ssh/id_rsa)
+ is the location of the public key file (default: $HOME/.ssh/id_rsa.pub)</pre> 
+       </div> 
+      </div>
+     </div> <p>Apart from accepting the above mentioned SSH credentials, the command accepts multiple operands to setup SSH hosts in one go. User also needs to provide the SSH password to login for distributing the key. So, if public key authentication isn't setup, password authentication is used to distribute the public key to the remote host. Passwords are accepted either by prompting or from a password file.</p> <p>In case where key pair needs to be generated, the user is first prompted for confirmation. User also has an option to generate key with passphrase for tighter security.</p> <p>In silent mode, user is not prompted for any information. SSH password needs to be passed though password file and empty key passphrase is used to generate the key. This would help in performing SSH setup through scripts.</p> <h4><a name="3.1SSHPublicKeySetup-SSHkeypairgeneration%3A"></a>SSH key pair generation:</h3> <p>Public-key authentication uses two keys, a private key that is kept in a secure place on the local (DAS) machine and protected with a passphrase. And the public key, which is placed on all the remote hosts that DAS communicates with.</p> <p>Generally, users generate the public, private key pair using the standard <em>ssh-keygen</em> utility and then install the public on the remote host. However, to make the this setup task easier for the user, the <em>setup-ssh</em> utility will automatically generate the key pair and distribute it to remote host(s). The automatic generation includes generation of a passphrase protected key for a more secure key.</p> <p>The <em>setup-ssh</em> command will attempt to locate <em>ssh-keygen</em> in default locations if not found in PATH environment variable. In case of Windows, the assumption is that SSH package for cygwin is installed.</p> <h4><a name="3.1SSHPublicKeySetup-setupsshusecases%3A"></a>setup-ssh use cases:</h3> <p><b>Case 1:</b> If public key access is already configured, command fails:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin setup-ssh --sshuser yamini1 sunone172.india.sun.com
+SSH public key authentication is already configured for yamini1@sunone172.india.sun.com
+Command setup-ssh failed.</pre> 
+       </div> 
+      </div>
+     </div> <p><b>Case 2:</b> If public key is present (under $HOME/.ssh or in specified location), prompt for SSH password and copy the public key to remote host. Verify connectivity and exit.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin setup-ssh --sshuser yamini1 sunone172.india.sun.com
+Enter SSH password&gt;
+Copied keyfile /home/yamini/.ssh/id_rsa.pub to yamini1@sunone172.india.sun.com
+Checking connection...
+Successfully connected to yamini1@sunone172.india.sun.com using keyfile /home/yamini/.ssh/id_rsa
+Command setup-ssh executed successfully.</pre> 
+       </div> 
+      </div>
+     </div> <p><b>Case 3:</b> If --sshpublickeyfile option is specified but file is not found, exit with error.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin setup-ssh --sshuser yamini1 --sshpublickeyfile /tmp/foo sunone172.india.sun.com
+Specified key file /tmp/foo does not exist.
+Command setup-ssh failed.</pre> 
+       </div> 
+      </div>
+     </div> <p><b>Case 4:</b> If --sshpublickeyfile is not specified, and key file is not present under $HOME/.ssh, ask user if key pair needs to be generated. If user says 'n', exit with a message stating SSH key setup failed.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin setup-ssh --sshuser yamini1 sunone172.india.sun.com
+SSH key not found for user yamini1
+Would you like to generate SSH key pair for yamini1 to access sunone172.india.sun.com? y/n: n
+SSH key setup failed: SSH key pair not present. Please generate a key pair manually or specify an existing one and re-run the command.
+Command setup-ssh failed.</pre> 
+       </div> 
+      </div>
+     </div> <p><b>Case 5:</b> If key doesn't exist and user answers 'y' for key pair generation, locate <em>ssh-keygen</em>. Run <em>ssh-keygen</em> to generate key pair with/without passphrase, copy the public key to remote host, verify connectivity and exit.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin setup-ssh --sshuser yamini1 sunone172.india.sun.com
+SSH key not found for user yamini1
+Would you like to generate SSH key pair for yamini1 to access sunone172.india.sun.com? y/n: j
+SSH key not found for user yamini1
+Would you like to generate SSH key pair for yamini1 to access sunone172.india.sun.com? y/n: y
+Enter SSH key passphrase (empty for no passphrase)&gt;
+Enter SSH password&gt;
+Generating public/private rsa key pair.
+Created directory '/home/yamini/.ssh'.
+Your identification has been saved in /home/yamini/.ssh/id_rsa.
+Your public key has been saved in /home/yamini/.ssh/id_rsa.pub.
+The key fingerprint is:
+61:ca:40:a4:68:0f:71:7a:39:13:0e:b2:36:0e:cd:ac yamini@onyx
+The key's randomart image is:
+-[ RSA 2048]---
+.o +o
+.**oo
++=. o
+=.= oo o .
+E. . o S
+-----------------
+ssh-keygen exit status: 0
+Copied keyfile /home/yamini/.ssh/id_rsa.pub to yamini1@sunone172.india.sun.com
+Checking connection...
+Successfully connected to yamini1@sunone172.india.sun.com using keyfile /home/yamini/.ssh/id_rsa
+Command setup-ssh executed successfully.</pre> 
+       </div> 
+      </div>
+     </div> <p><b>ase 6:</b> If ssh-keygen is not found or fails for some reason, ask user to generate <em>ssh-keygen</em> manually and re-run the command to distribute the key.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin setup-ssh --sshuser yamini1 sunone172.india.sun.com
+SSH key not found for user yamini1
+Would you like to generate SSH key pair for yamini1 to access sunone172.india.sun.com? y/n: y
+Enter SSH key passphrase (empty for no passphrase)&gt;
+Enter SSH password&gt;
+SSH key pair generation failed. Please generate key manually.
+Command setup-ssh failed.</pre> 
+       </div> 
+      </div>
+     </div> <p><b>Case 7:</b> Allow non-interactive mode for setup-ssh i.e allow for reading SSH password from password file and assume default 'n' for key pair generation. <em>--interactive</em> is part of asadmin common options.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">$ echo "AS_ADMIN_SSH_PASSWORD=xxxxx" &gt;/tmp/passwd
+$ asadmin --passwordfile /tmp/passwd --interactive=false setup-ssh --sshuser yamini1 --generatekey=true sunone172.india.sun.com
+Generating public/private rsa key pair.
+Created directory '/home/yamini/.ssh'.
+Your identification has been saved in /home/yamini/.ssh/id_rsa.
+Your public key has been saved in /home/yamini/.ssh/id_rsa.pub.
+The key fingerprint is:
+2c:77:7c:9c:77:55:ae:a7:c7:f0:7d:15:2c:10:3b:8b yamini@onyx
+The key's randomart image is:
+-[ RSA 2048]---
+o. .
+o ...
+o . oo
+. ...o...o
+. SEo.+ + +
+o . . . Bo
+. *
+..
+-----------------
+ssh-keygen exit status: 0
+Copied keyfile /home/yamini/.ssh/id_rsa.pub to yamini1@sunone172.india.sun.com
+Checking connection...
+Successfully connected to yamini1@sunone172.india.sun.com using keyfile /home/yamini/.ssh/id_rsa
+Command setup-ssh executed successfully.</pre> 
+       </div> 
+      </div>
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Sep 30, 2010 by 
+<font color="#0050B2">xyamini</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

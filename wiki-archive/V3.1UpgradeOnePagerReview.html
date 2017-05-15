@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : V3.1UpgradeOnePagerReview</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="V3.1UpgradeOnePagerReview-UpgradeReview"></a>Upgrade Review</h1> <h4><a name="V3.1UpgradeOnePagerReview-Document%3AUpgradeOnePagerV3.1UpgradeOnePager"></a>Document: <a href="V3.1UpgradeOnePager.html" title="V3.1UpgradeOnePager">Upgrade One Pager</a></h3> <p>Bobby's note: Since wiki page links don't show up as links in a table currently, I've added "(link<img class="emoticon" src="images/icons/emoticons/smile.gif" height="20" width="20" align="absmiddle" alt="" border="0">" in front of them below.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item </th> 
+         <th class="confluenceTh"> Section </th> 
+         <th class="confluenceTh"> Comment </th> 
+         <th class="confluenceTh"> Response </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> kasso-01 </td> 
+         <td class="confluenceTd"> 2.2.1 </td> 
+         <td class="confluenceTd"> I am concerned about the dependency on parsing asadmin output. This seems very dangerous. What happens if asadmin output changes? Does asupgrade fail? </td> 
+         <td class="confluenceTd"> The upgrade process is separate from whatever the tool is doing – the tool calls asadmin in a Runtime#exec call. So the only problem would be that the tool doesn't notice that there was some possible error output. Right now it checks for the string "SEVERE" in the output (actually it uses Level.SEVERE#getLocalizedName), which can report false positives, but that's better than the other way around. I'll change it to look for SEVERE or WARNING instead (<a href="https://github.com/javaee/glassfish/issues/12146">feature issue filed </a> – let me know if you want to keep it checking for SEVERE only). In either case, the tool can only alert the user to check the logs for details. The tool always checks the exit code of the asadmin process as well. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> kasso-02 </td> 
+         <td class="confluenceTd"> 2.2.1 </td> 
+         <td class="confluenceTd"> If asadmin is sensitive to asadmin output changes what measures have been taken to ensure changes made to asadmin output are communicated to this team? </td> 
+         <td class="confluenceTd"> It's basically just been Bill and I talking. In the past, this has only been an issue once, at which point I simplified the parsing to look just for the level info and ignore the format of the log entry. One note: the asadmin client output doesn't go to the server.log file, so I need to capture it and put it in the upgrade log for users to check. <a href="https://github.com/javaee/glassfish/issues/11924">Issue filed here </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> kasso-03 </td> 
+         <td class="confluenceTd"> 2.2.3 </td> 
+         <td class="confluenceTd"> What is being done to ensure desired upgrade tasks which do not fall under an existing module are handled? (possibly via documentation) I think this same issue is also mentioned as a TBD in section 4.3. </td> 
+         <td class="confluenceTd"> It's on the (link<img class="emoticon" src="images/icons/emoticons/smile.gif" height="20" width="20" align="absmiddle" alt="" border="0"> <a href="V3.1UpgradeDashboard.html" title="V3.1UpgradeDashboard">upgrade dashboard page </a> along with all the other modules. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> kasso-04 </td> 
+         <td class="confluenceTd"> 2.2.6 </td> 
+         <td class="confluenceTd"> Why can't upgrade be supported from v2? (instead of the v2 -&gt; 2.1 -&gt; 3.1)? </td> 
+         <td class="confluenceTd"> Good catch. v2 "should" work, but I think we started with 2.1 to simplify the support matrix. I don't think 2-&gt;2.1 is considered an upgrade, and 2-&gt;3 worked so 2-&gt;3.1 should also work. I've made the change that anything before GFv2 must be upgraded to 2.1 first. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> kasso-05 </td> 
+         <td class="confluenceTd"> 4.1 </td> 
+         <td class="confluenceTd"> The spec states: "Modules should also log any changes made in the configuration when making them." What logging level should the module owners use? </td> 
+         <td class="confluenceTd"> Added text that they should be INFO level. That may be a bit verbose, but an upgrade generally happens once on a domain. (link<img class="emoticon" src="images/icons/emoticons/smile.gif" height="20" width="20" align="absmiddle" alt="" border="0"> <a href="V3.1UpgradeOnePager.html#V3.1UpgradeOnePager-sectionV3.1UpgradeOnePager4.1.Details">Change is here </a> (hmm, anchors don't seem to work in these links). </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> kasso-06 </td> 
+         <td class="confluenceTd"> general </td> 
+         <td class="confluenceTd"> It appears that asupgrade is misnamed. It really is a migration assistant in that it copies material from an old version of GF to a new version of GF. It then relies on the new version of GF to perform the upgrade of the configuration. The asupgrade tool does not appear to perform an actual upgrade. I'm not recommending we rename the tool at this point though. </td> 
+         <td class="confluenceTd">We could still get rid of it (heh). Back in "the day," the tool did all the work, but that didn't scale. We also used to use "migration" to mean a tool that moved configuration information from another app server to GF, so it's a semantic fun house. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> kasso-07 </td> 
+         <td class="confluenceTd"> general </td> 
+         <td class="confluenceTd"> Does asadmin return error codes based on success or failure? </td> 
+         <td class="confluenceTd">I don't know every case that results in a non-zero exit code, but the tool checks for it. If there is an error at the asadmin client level, e.g. a wrong master password, then it exits with a 1 and this is communicated to the user. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> kasso-08 </td> 
+         <td class="confluenceTd"> general </td> 
+         <td class="confluenceTd"> There is definite overlap here with asadmin backup-domain and asadmin restore-domain commands. It seems like one could use these existing tools to migrate the domain from an older version of GF to a new install and then rely on asadmin start-domain --upgrade. </td> 
+         <td class="confluenceTd"> At least in v3 I get this from the backup-domain command: "CLI194 Previously supported command: backup-domain is not supported for this release." </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> kasso-09 </td> 
+         <td class="confluenceTd"> general </td> 
+         <td class="confluenceTd"> It is not clear where upgrade-in-place via UpdateCenter details are being captured (e.g. Will the v3 repos be updated with 3.1 pkgs or will new 3.1 repos be required?) - This is more an FYI as I'm looking into this gap. </td> 
+         <td class="confluenceTd">Thanks – we may have talked about this in a few other places, but as far as the actual upgrade code is concerned, it doesn't know if this is a new installation or an in-place updated installation. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

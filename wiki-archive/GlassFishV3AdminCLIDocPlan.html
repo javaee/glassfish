@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFishV3AdminCLIDocPlan</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>&lt;h1&gt;<em>Administration CLI</em> Documentation Plan&lt;/h1&gt;</p> 
+     <div> 
+      <ul> 
+       <li><a href="#GlassFishV3AdminCLIDocPlan-PeopleandRoles">People and Roles</a></li> 
+       <li><a href="#GlassFishV3AdminCLIDocPlan-Audience">Audience</a></li> 
+       <li><a href="#GlassFishV3AdminCLIDocPlan-SummaryoftheFeatureFromaUser%27sPerspective">Summary of the Feature From a User's Perspective</a></li> 
+       <li><a href="#GlassFishV3AdminCLIDocPlan-Availability">Availability</a></li> 
+       <li><a href="#GlassFishV3AdminCLIDocPlan-StatementofWork">Statement of Work</a></li> 
+       <ul> 
+        <li><a href="#GlassFishV3AdminCLIDocPlan-ChangestoBooks">Changes to Books</a></li> 
+        <ul> 
+         <li><a href="#GlassFishV3AdminCLIDocPlan-AdministrationGuideChanges"> <em>Administration Guide</em> Changes</a></li> 
+         <li><a href="#GlassFishV3AdminCLIDocPlan-ReferenceManualChanges"> <em>Reference Manual</em> Changes</a></li> 
+        </ul> 
+        <li><a href="#GlassFishV3AdminCLIDocPlan-ChangestoOnlineHelp">Changes to Online Help</a></li> 
+        <li><a href="#GlassFishV3AdminCLIDocPlan-ChangestoManPages">Changes to Man Pages</a></li> 
+       </ul> 
+       <li><a href="#GlassFishV3AdminCLIDocPlan-ReviewSchedule">Review Schedule</a></li> 
+       <li><a href="#GlassFishV3AdminCLIDocPlan-RelatedInformation">Related Information</a></li> 
+      </ul>
+     </div> <h4><a name="GlassFishV3AdminCLIDocPlan-PeopleandRoles"></a>People and Roles</h1> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Name </th> 
+         <th class="confluenceTh"> Role </th> 
+         <th class="confluenceTh"> Location </th> 
+         <th class="confluenceTh"> Time Zone </th> 
+         <th class="confluenceTh"> Email </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Paul Davies </td> 
+         <td class="confluenceTd"> Documentation Feature Owner </td> 
+         <td class="confluenceTd"> Santa Clara, CA, USA </td> 
+         <td class="confluenceTd"> US/Pacific </td> 
+         <td class="confluenceTd"> <tt>pauldavies@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Documentation Team </td> 
+         <td class="confluenceTd"> Additional Writers </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> <tt>docs@glassfish.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Julie Bettis </td> 
+         <td class="confluenceTd"> Editor </td> 
+         <td class="confluenceTd"> Broomfield, CO, USA </td> 
+         <td class="confluenceTd"> US/Mountain </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Kedar Mhaswade </td> 
+         <td class="confluenceTd"> Software Engineer </td> 
+         <td class="confluenceTd"> Santa Clara, CA, USA </td> 
+         <td class="confluenceTd"> US/Pacific </td> 
+         <td class="confluenceTd"> <tt>km@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Lloyd Chambers </td> 
+         <td class="confluenceTd"> Software Engineer </td> 
+         <td class="confluenceTd"> Santa Clara, CA, USA </td> 
+         <td class="confluenceTd"> US/Pacific </td> 
+         <td class="confluenceTd"> <tt>@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Bill Shannon </td> 
+         <td class="confluenceTd"> Software Engineer </td> 
+         <td class="confluenceTd"> Santa Clara, CA, USA </td> 
+         <td class="confluenceTd"> US/Pacific </td> 
+         <td class="confluenceTd"> <tt>@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Sankar Neelakandan </td> 
+         <td class="confluenceTd"> QA Engineer </td> 
+         <td class="confluenceTd"> Santa Clara, CA, USA </td> 
+         <td class="confluenceTd"> US/Pacific </td> 
+         <td class="confluenceTd"> <tt>sankarpn@dev.java.net</tt> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3AdminCLIDocPlan-Audience"></a>Audience</h1> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li>Primary:* System administrators who are setting up or maintaining GlassFish Application Server.</li> 
+        <li>Secondary:* Software application developers who are using GlassFish Application Server for testing applications under development.</li> 
+       </ul> </li> 
+     </ul> <h4><a name="GlassFishV3AdminCLIDocPlan-SummaryoftheFeatureFromaUser%27sPerspective"></a>Summary of the Feature From a User's Perspective</h1> <p>This feature affects how users will administer GlassFish Application Server from the command line.</p> <h4><a name="GlassFishV3AdminCLIDocPlan-Availability"></a>Availability</h1> <p>This feature is available all distributions of GlassFish Application Server.</p> <h4><a name="GlassFishV3AdminCLIDocPlan-StatementofWork"></a>Statement of Work</h1> <p>This section describes in detail for each document the work that is required by the introduction of the feature, such as changes, addition of new material, relocation of existing material, and removal of existing material.</p> <p>Documentation Impact:</p> 
+     <ul> 
+      <li>None</li> 
+      <li>Minor</li> 
+      <li>Moderate</li> 
+      <li>Major</li> 
+      <li>New</li> 
+     </ul> 
+     <hr> <p><b>Note -</b> If a document is task based (as opposed to reference), the changes should be determined from the user task analysis for the feature.</p> 
+     <hr> <h4><a name="GlassFishV3AdminCLIDocPlan-ChangestoBooks"></a>Changes to Books</h2> <h4><a name="GlassFishV3AdminCLIDocPlan-AdministrationGuideChanges"></a><em>Administration Guide</em> Changes</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Section </th> 
+         <th class="confluenceTh"> Documentation Impact </th> 
+         <th class="confluenceTh"> Writer </th> 
+         <th class="confluenceTh"> Reviewers </th> 
+         <th class="confluenceTh"> Description of Change </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://docs.sun.com-doc-820-7692-gcocs">Command-Line Utility for Administration (asadmin) </a>. </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Paul </td> 
+         <td class="confluenceTd"> Kedar Mhasawade <br class="atl-forced-newline"> Lloyd Chambers <br class="atl-forced-newline"> Bill Shannon <br class="atl-forced-newline"> Sankar Neelakandan </td> 
+         <td class="confluenceTd"> Add these subsections: <br class="atl-forced-newline"> 
+          <ul> 
+           <li><b>Format of</b><tt>asadmin</tt> <b>Commands</b> <br class="atl-forced-newline"> Explain that the general format of <tt>asadmin</tt> commands is: <tt>asadmin</tt> <em>asadmin-utility-options subcommand subcommand-options operands</em> <br class="atl-forced-newline"> Cross-refer to the <a href="http:--docs.sun.com-doc-820-7701-asadmin-1m">asadmin(1M) </a> man page for the full syntax. <br class="atl-forced-newline"></li> 
+           <li><b>Subcommands of the</b><tt>asadmin</tt><b>Utility</b> <br class="atl-forced-newline"> Explain that subcommand specifies the operation or task that the user is performing. <br class="atl-forced-newline"> Cross-refer to the <a href="http://docs.sun.com/doc/820-7701">Reference Manual </a> for the full list of <tt>asadmin</tt> utility subcommands. <br class="atl-forced-newline"></li> 
+           <li><b>Options of the</b><tt>asadmin</tt><b>Utility</b> <br class="atl-forced-newline"> Explain that: <br class="atl-forced-newline"> 
+            <ul> 
+             <li>These options control the behavior of the <tt>asadmin</tt> utility, not the subcommand. <br class="atl-forced-newline"></li> 
+             <li>These options must precede the subcommand. <br class="atl-forced-newline"></li> 
+             <li>For compatibility with earlier releases, these options are permitted after the subcommand, but such syntax is deprecated. <br class="atl-forced-newline"></li> 
+            </ul> </li> 
+           <li><b>Options of</b> <tt>asadmin</tt> <b>Subcommands</b> <br class="atl-forced-newline"> Explan that: <br class="atl-forced-newline"> 
+            <ul> 
+             <li>Subcommand options control the behavior of the the subcommand, not the <tt>asadmin</tt> utility. <br class="atl-forced-newline"></li> 
+             <li>Subcommand options must follow the subcommand. <br class="atl-forced-newline"></li> 
+             <li>A subcommand option may have the same name as an <tt>asadmin</tt> utility option, but the effect of the two options are different. <br class="atl-forced-newline"></li> 
+            </ul> </li> 
+           <li><b>Operands of</b> <tt>asadmin</tt> <b>Subcommands</b> <br class="atl-forced-newline"> Explain that: <br class="atl-forced-newline"> 
+            <ul> 
+             <li>Operands specify the objects on which the subcommand is to act. <br class="atl-forced-newline"></li> 
+             <li>Operands must follow the subcommand options.</li> 
+            </ul> </li> 
+          </ul> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> All examples </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Dixie </td> 
+         <td class="confluenceTd"> See <a href="GlassFishV3DocPlanManPages.html" title="GlassFishV3DocPlanManPages">Man Pages Document Plan </a>. </td> 
+         <td class="confluenceTd"> Rewrite in multimode. <br class="atl-forced-newline"> Remove all <tt>asadmin</tt> utility options. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3AdminCLIDocPlan-ReferenceManualChanges"></a><em>Reference Manual</em> Changes</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Section </th> 
+         <th class="confluenceTh"> Documentation Impact </th> 
+         <th class="confluenceTh"> Writer </th> 
+         <th class="confluenceTh"> Reviewers </th> 
+         <th class="confluenceTh"> Description of Change </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://docs.sun.com-doc-820-7701-6nium5vqm?a=expand">Section 1: Administration Commands </a> </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Paul </td> 
+         <td class="confluenceTd"> Kedar Mhasawade Lloyd Chambers Bill Shannon Sankar Neelakandan </td> 
+         <td class="confluenceTd"> Change the title of this section to: <b>Section 1: asadmin Utility Subcommands</b> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3AdminCLIDocPlan-ChangestoOnlineHelp"></a>Changes to Online Help</h2> <p>None. The Administration Console is not affected by this feature.</p> <h4><a name="GlassFishV3AdminCLIDocPlan-ChangestoManPages"></a>Changes to Man Pages</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Man Page Name and Section </th> 
+         <th class="confluenceTh"> Documentation Impact </th> 
+         <th class="confluenceTh"> Writer </th> 
+         <th class="confluenceTh"> Reviewers </th> 
+         <th class="confluenceTh"> Description of Change </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://docs.sun.com-doc-820-7701-asadmin-1m">asadmin(1M) </a> </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Paul </td> 
+         <td class="confluenceTd"> Kedar Mhasawade <br class="atl-forced-newline"> Lloyd Chambers <br class="atl-forced-newline"> Bill Shannon <br class="atl-forced-newline"> Sankar Neelakandan </td> 
+         <td class="confluenceTd">Update or add the following sections:<br class="atl-forced-newline"> 
+          <ul> 
+           <li><b>Synopsis</b> <br class="atl-forced-newline"> 
+            <ul> 
+             <li>List all <tt>asadmin utility</tt> options before <em>subcommand</em>. <br class="atl-forced-newline"></li> 
+             <li>Reword option placeholders to emphasize that they apply to the subcommand. <br class="atl-forced-newline"></li> 
+            </ul> </li> 
+           <li><b>Description</b> <br class="atl-forced-newline"> 
+            <ul> 
+             <li>Change Options for the <tt>asadmin</tt> Utility to <tt>asadmin</tt> Utility Options and Subcommand Options.</li> 
+             <li>Explain the differences between <tt>asadmin</tt> utility options and subcommand options. <br class="atl-forced-newline"></li> 
+             <li>Change Operands of the <tt>asadmin</tt> Utility to Operands of <tt>asadmin</tt> Subcommands. <br class="atl-forced-newline"></li> 
+             <li>Remove the entire subsection Required Options for Remote asadmin Subcommands. <br class="atl-forced-newline"></li> 
+             <li>Move the content of Password File Options to a description of the <tt>--passwordfile</tt> option in the <b>Options</b> section. <br class="atl-forced-newline"></li> 
+            </ul> </li> 
+           <li><b>Options</b> <br class="atl-forced-newline"> Add this section, which is to contain an explanation of each <tt>asadmin</tt> utility option. <br class="atl-forced-newline"></li> 
+           <li><b>Examples</b> <br class="atl-forced-newline"> Add examples that show how to specify <tt>asadmin</tt> utility options. </li> 
+          </ul> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://docs.sun.com-doc-820-7701-6nium5vqm?a=expand">All administration man pages </a> </td> 
+         <td class="confluenceTd"> Major </td> 
+         <td class="confluenceTd"> See <a href="GlassFishV3DocPlanManPages.html" title="GlassFishV3DocPlanManPages">Man Pages Document Plan </a> </td> 
+         <td class="confluenceTd"> See <a href="GlassFishV3DocPlanManPages.html" title="GlassFishV3DocPlanManPages">Man Pages Document Plan </a> </td> 
+         <td class="confluenceTd">Update or add the following sections:<br class="atl-forced-newline"> 
+          <ul> 
+           <li><b>Header text</b> <br class="atl-forced-newline"> 
+            <ul> 
+             <li>Change Administration Commands to asadmin Utility Subcommands. <br class="atl-forced-newline"></li> 
+             <li>Update the last updated date and, if necessary, the copyright year. <br class="atl-forced-newline"></li> 
+            </ul> </li> 
+           <li><b>Synopsis</b> <br class="atl-forced-newline"> Remove all <tt>asadmin</tt> utility options. <br class="atl-forced-newline"></li> 
+           <li><b>Options</b> <br class="atl-forced-newline"> Remove all <tt>asadmin</tt> utility options. <br class="atl-forced-newline"></li> 
+           <li><b>Examples</b> <br class="atl-forced-newline"> Remove all <tt>asadmin</tt> utility options. <br class="atl-forced-newline"> Editorial enhancement: Change title to something more descriptive than "Using the <em>command</em> command". </li> 
+          </ul> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p><a href="http://download.java.net/glassfish/wiki-archive/attachments/20875382/21365008.pdf">Sample changed man page (PDF)</a></p> <p>The <tt>asadmin</tt> utility options are as follows:</p> 
+     <ul> 
+      <li><tt>--host</tt> <tt>-h</tt></li> 
+      <li><tt>--port</tt> <tt>-p</tt></li> 
+      <li><tt>--user</tt> <tt>-u</tt></li> 
+      <li><tt>--passwordfile</tt> <tt>-W</tt></li> 
+      <li><tt>--secure</tt> <tt>-s</tt></li> 
+      <li><tt>--interactive</tt> <tt>-D</tt></li> 
+      <li><tt>--terse</tt> <tt>-t</tt></li> 
+      <li><tt>--echo</tt> <tt>-e</tt></li> 
+     </ul> <h4><a name="GlassFishV3AdminCLIDocPlan-ReviewSchedule"></a>Review Schedule</h1> <p>The review schedule for the documentation items that are affected by this feature is provided in the following table.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item </th> 
+         <th class="confluenceTh"> First Draft Start Date </th> 
+         <th class="confluenceTh"> First Draft End Date </th> 
+         <th class="confluenceTh"> Second Draft Start Date </th> 
+         <th class="confluenceTh"> Second Draft End Date </th> 
+         <th class="confluenceTh"> Final Version End Date </th> 
+         <th class="confluenceTh"> Final Version End Date </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Command-Line Utility for Administration (asadmin) </td> 
+         <td class="confluenceTd"> 28 July, 2009 </td> 
+         <td class="confluenceTd"> 7 August, 2009 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>asadmin</tt>(1M) man page </td> 
+         <td class="confluenceTd"> 28 July, 2009 </td> 
+         <td class="confluenceTd"> 7 August, 2009 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>Reviewers are listed in the <em>Statement of Work</em>.</p> <h4><a name="GlassFishV3AdminCLIDocPlan-RelatedInformation"></a>Related Information</h1> 
+     <ul> 
+      <li><a href="https://glassfish.java.net/nonav/v3/admin/planning/j109/admin-cli.html">Functional Specification</a></li> 
+      <li><a href="GlassFishV3DocPlanManPages.html" title="GlassFishV3DocPlanManPages">Man Pages Document Plan</a></li> 
+      <li>User task analysis</li> 
+     </ul> <p>Email aliases:</p> 
+     <ul> 
+      <li>[]</li> 
+      <li>[]</li> 
+      <li>[]</li> 
+     </ul> 
+     <hr> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875382/21365008.pdf">create-javamail-resource.1.pdf</a> (application/pdf) 
+      <br> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jun 22, 2011 by 
+<font color="#0050B2">pauldavies</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : 3.1DeploymentOnePagerReview</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="3.1DeploymentOnePagerReview-GlassFish3.1DeploymentReviewPage"></a>GlassFish 3.1 Deployment Review Page</h1> <h4><a name="3.1DeploymentOnePagerReview-Document%3A3.1DeploymentOnePager"></a>Document: <a href="3.1DeploymentOnePager.html" title="3.1DeploymentOnePager">3.1DeploymentOnePager</a></h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item </th> 
+         <th class="confluenceTh"> Section </th> 
+         <th class="confluenceTh"> Comment </th> 
+         <th class="confluenceTh"> Response </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> KS1 </td> 
+         <td class="confluenceTd"> Rolling upgrade </td> 
+         <td class="confluenceTd"> Rolling upgrade choreography need to be mentioned somewhere. I assume best page to cover that is <a href="V3.1RollingUpgrade.html" title="V3.1RollingUpgrade">Rolling Upgrade </a> page </td> 
+         <td class="confluenceTd"> We are not sure who will be the overall owner yet. Right now, we will just refer to the v2.1 doc for the overall choreography. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> KS2 </td> 
+         <td class="confluenceTd"> Rolling upgrade </td> 
+         <td class="confluenceTd"> With multiple versions of application supported, there is no need for rolling upgrade for applications. It is only needed for instance/system upgrade. Right? </td> 
+         <td class="confluenceTd"> No, it's still needed. The application versioning we have for this release is just the basic application versioning where only one version of the application will be enabled at one time in the runtime. So switching between versions will still cause loss of the service for that period of time. In the future, when we have the runtime versioning (where more than one versions could be enabled at the same time in the runtime), it can probably replace the current application rolling upgrade. <b>KSHITIZ</b> - Will load-balancer be involved in application upgrade? I mean will application be disabled by setting lb-enabled attribute to false, then when upgrade is complete setting it back to true. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> KS3 </td> 
+         <td class="confluenceTd"> Versioning </td> 
+         <td class="confluenceTd"> What will happen during period when a new version of application is enabled? During this period, will requests for that application be blocked or some error response is send back? Does LB need to play any role during this period? </td> 
+         <td class="confluenceTd"> We might try to do something in the grizzly layer to block/queue the request till the upgrade is finished, but not sure if it can be accomplished in this release. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

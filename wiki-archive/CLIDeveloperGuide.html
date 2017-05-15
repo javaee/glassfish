@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : CLIDeveloperGuide</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="CLIDeveloperGuide-GlassFishServerOpenSourceEdition3.1HowtomakeCLIsclusteraware"></a>GlassFish Server Open Source Edition 3.1 - How to make CLIs cluster aware</h1> <p>This wiki page details how a CLI owner / developer can make use of the command replication framework.</p> 
+     <ul> 
+      <li>Contact tmueller@java.net for more information (original author was vijaysr@dev.java.net)</li> 
+     </ul> 
+     <div> 
+      <ul> 
+       <li><a href="#CLIDeveloperGuide-GlassFishServerOpenSourceEdition3.1HowtomakeCLIsclusteraware">GlassFish Server Open Source Edition 3.1 - How to make CLIs cluster aware</a></li> 
+       <li><a href="#CLIDeveloperGuide-Introduction">Introduction</a></li> 
+       <li><a href="#CLIDeveloperGuide-Overview">Overview</a></li> 
+       <ul> 
+        <li><a href="#CLIDeveloperGuide-Targetutilityhttps%3A%2F%2Ffisheye4.atlassian.com%2Fbrowse%2Fbr%3Dtrunk%2Fglassfishsvn%2Ftrunk%2Fv3%2Fcommon%2Finternalapi%2Fsrc%2Fmain%2Fjava%2Forg%2Fglassfish%2Finternal%2Fapi%2FTarget.java%3Fhb%3Dtrue">Target utility</a></li> 
+        <li><a href="#CLIDeveloperGuide-Enforcingtargettypesallowedforcommands">Enforcing target types allowed for commands</a></li> 
+        <li><a href="#CLIDeveloperGuide-Enablingoperationsoninstance%28s%29thatarepartofcluster">Enabling operations on instance(s) that are part of cluster</a></li> 
+        <li><a href="#CLIDeveloperGuide-CLIimplementorsresponsibilities">CLI implementors responsibilities</a></li> 
+       </ul> 
+       <li><a href="#CLIDeveloperGuide-Replicatingcommands">Replicating commands</a></li> 
+       <ul> 
+        <li><a href="#CLIDeveloperGuide-Annotation">Annotation</a></li> 
+        <li><a href="#CLIDeveloperGuide-ExistingCLI">Existing CLI</a></li> 
+        <li><a href="#CLIDeveloperGuide-NewCLI">New CLI</a></li> 
+       </ul> 
+       <li><a href="#CLIDeveloperGuide-Avoidingreplication">Avoiding replication</a></li> 
+       <li><a href="#CLIDeveloperGuide-Specifyingfailureoptions">Specifying failure options</a></li> 
+       <ul> 
+        <li><a href="#CLIDeveloperGuide-ifFailure">ifFailure</a></li> 
+        <li><a href="#CLIDeveloperGuide-ifOffline">ifOffline</a></li> 
+       </ul> 
+       <li><a href="#CLIDeveloperGuide-Doingpre%2Fpostprocessingforacommand">Doing pre/post processing for a command</a></li> 
+       <ul> 
+        <li><a href="#CLIDeveloperGuide-SpecifyingfailureoptionsforSupplementalcommands">Specifying failure options for Supplemental commands</a></li> 
+        <li><a href="#CLIDeveloperGuide-ifFailure">ifFailure</a></li> 
+        <li><a href="#CLIDeveloperGuide-TimingtheexecutionofSupplementalCommand">Timing the execution of SupplementalCommand</a></li> 
+        <li><a href="#CLIDeveloperGuide-SpecifyingwheretoexecutetheSupplementalCommand">Specifying where to execute the SupplementalCommand</a></li> 
+       </ul> 
+       <li><a href="#CLIDeveloperGuide-Utilities">Utilities</a></li> 
+       <ul> 
+        <li><a href="#CLIDeveloperGuide-ParameterMapExtractor">ParameterMapExtractor</a></li> 
+       </ul> 
+       <li><a href="#CLIDeveloperGuide-Contact">Contact</a></li> 
+       <li><a href="#CLIDeveloperGuide-FAQs">FAQs</a></li> 
+       <ul> 
+        <li><a href="#CLIDeveloperGuide-Isthereadescriptionofthesemanticsofusing%5Ctarget%3F">Is there a description of the semantics of using --target?</a></li> 
+        <li><a href="#CLIDeveloperGuide-HowdoIpassinformationbetweenmainandsupplementalcommandimplementations">How do I pass information between main and supplemental command implementations</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="CLIDeveloperGuide-Introduction"></a>Introduction</h1> <p>This document describes what a Glassfish CLI owner / developer should do to make his/her CLI cluster-aware using the command replication framework in 3.1.</p> <h4><a name="CLIDeveloperGuide-Overview"></a>Overview</h1> <p>The command replication framework has been designed to ensure that the effort involved to make existing CLIs cluster-aware is minimum. All existing CLIs are automatically replicated on all target instances unless otherwise specified (through the use of a simple annotation). Refer to <a href="ClusterDynamicReconfig.html" title="ClusterDynamicReconfig">this document</a> for more information on the feature and the implementation details. Listed below are some steps a CLI owner may want to follow to ensure that their CLIs behave as expected in a clustered environment.</p> <h4><a name="CLIDeveloperGuide-Supportforoption"></a>Support for 
+      <div class="code panel" style="border-width: 1px;">
+       <div class="codeContent panelContent"> 
+        <div id="root"> 
+         <pre class="theme: Confluence; brush: java; gutter: false">--target</pre> 
+        </div> 
+       </div>
+      </div> option</h1> <p>The first step is to ensure that the CLI implementation supports the </p>
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">--target</pre> 
+       </div> 
+      </div>
+     </div> parameter that was specified by the user. The targets can be of the following types :<p></p> 
+     <ul> 
+      <li>"domain"</li> 
+      <li>"server" &lt;- the default which represents the DAS</li> 
+      <li>config</li> 
+      <li>stand-alone-server instance</li> 
+      <li>cluster</li> 
+      <li>clustered instance</li> 
+     </ul> <p>The details of what types of targets should be supported by each command for its </p>
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">--target</pre> 
+       </div> 
+      </div>
+     </div> option has been documented in detail <a href="http://docs.sun.com/app/docs/doc/821-0179/6nl8hchmr?l=en&amp;a=expand#A">here</a>. For example, the <a href="http://docs.sun.com/app/docs/doc/821-0179/create-custom-resource-1?l=en&amp;a=view">create-custom-resource command</a>, supports "server" / "domain" / cluster / instance types as part of its 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">--target</pre> 
+       </div> 
+      </div>
+     </div> option. This information is for v2 and you have to support the same for v3. The CommandRunner framework will inject this parameter into CLI implementation through the 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Param</pre> 
+       </div> 
+      </div>
+     </div> facility and the CLI implementation is expected to do its job as per the target type. To avoid code duplication, the CLi can use the following :<p></p> <h4><a name="CLIDeveloperGuide-Targetutilityhttps%3A%2F%2Ffisheye4.atlassian.com%2Fbrowse%2Fbr%3Dtrunk%2Fglassfishsvn%2Ftrunk%2Fv3%2Fcommon%2Finternalapi%2Fsrc%2Fmain%2Fjava%2Forg%2Fglassfish%2Finternal%2Fapi%2FTarget.java%3Fhb%3Dtrue"></a><a href="https://fisheye4.atlassian.com/browse/~br=trunk/glassfish-svn/trunk/v3/common/internal-api/src/main/java/org/glassfish/internal/api/Target.java?hb=true">Target utility</a></h2> <p>This is a service, present in the <b>internal-api</b>&nbsp;module, <b>org.glassfish.internal.api</b> package, which a command implementation can get by using</p>
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Inject Target targetUtil;</pre> 
+       </div> 
+      </div>
+     </div>The CLI developer can use this to avoid "boiler plate code" (like getting list of server instances for a cluster, checking if a target is cluster or not, getting the cluster&nbsp;element given a name etc). The method names should be self explanatory and we are still in the process of adding more "services" that will help others avoid repeating same code. Here is an example of using the utility to obtain the Config for a target:
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Config c = targetUtil.getConfig(target);</pre> 
+       </div> 
+      </div>
+     </div> Elements for Cluster, Server etc have updated with some DuckTyped method which will also be useful for developers to avoid boiler plate code. <b>If you have a specific requirement, please let us know and we will take care of it ASAP</b><p></p> <h4><a name="CLIDeveloperGuide-Enforcingtargettypesallowedforcommands"></a>Enforcing target types allowed for commands</h2> <p>Different commands allow different target types. As already mentioned, the <a href="http://docs.sun.com/app/docs/doc/821-0179/create-custom-resource-1?l=en&amp;a=view">create-custom-resource command</a>, supports "server" / "domain" / cluster / instance types as part of its </p>
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">--target</pre> 
+       </div> 
+      </div>
+     </div> option. But the <a href="http://docs.sun.com/app/docs/doc/821-0179/create-http-lb-1?l=en&amp;a=view">create-http-lb</a> command supports only a server instance or a cluster type as part of its 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">--target</pre> 
+       </div> 
+      </div>
+     </div> option. To ensure that the the user has specified only the valid target types for a command and to help avoid all CLI implementation do this check everywhere, the framework will enforce the target type rule specified by the CLI through 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@TargetType</pre> 
+       </div> 
+      </div>
+     </div> annotation that was specified in the CLI implementation.<p></p> <p>You can specify any combination of the following as part of the </p>
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@TargetType</pre> 
+       </div> 
+      </div>
+     </div> annotation.<p></p> 
+     <ul> 
+      <li>
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">CommandTarget.DOMAIN</pre> 
+         </div> 
+        </div>
+       </div> &lt;- represents the target "domain"</li> 
+      <li>
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">CommandTarget.DAS</pre> 
+         </div> 
+        </div>
+       </div> &lt;- represents the target "server"</li> 
+      <li>
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">CommandTarget.STANDALONE_SERVER</pre> 
+         </div> 
+        </div>
+       </div> &lt;- represents a stand alone server instance type</li> 
+      <li>
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">CommandTarget.CLUSTER</pre> 
+         </div> 
+        </div>
+       </div> &lt;- represents a cluster type</li> 
+      <li>
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">CommandTarget.CONFIG</pre> 
+         </div> 
+        </div>
+       </div> &lt;- represents a config type</li> 
+      <li>
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">CommandTarget.CLUSTERED_INSTANCE</pre> 
+         </div> 
+        </div>
+       </div> &lt;- represents an instance that is part of a cluster</li> 
+     </ul> <p>Since a vast majority of the commands support config type, "server", stand alone server and cluster types, by default the framework will check to ensure that the target specified by the user is one of </p>
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">CommandTarget.DAS</pre> 
+       </div> 
+      </div>
+     </div>, 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">CommandTarget.STANDALONE_SERVER</pre> 
+       </div> 
+      </div>
+     </div>, 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">CommandTarget.CLUSTER</pre> 
+       </div> 
+      </div>
+     </div>, 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">CommandTarget.CONFIG</pre> 
+       </div> 
+      </div>
+     </div>. If not, the command fails and is not executed at all. So in effect, the absence of 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@TargetType</pre> 
+       </div> 
+      </div>
+     </div> annotation in the CLI implementation is equivalent to 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@TargetType(CommandTarget.DAS,CommandTarget.STANDALONE_SERVER,CommandTarget.CLUSTER,CommandTarget.CONFIG</pre> 
+       </div> 
+      </div>
+     </div>. For those commands that support other combinations of target will have to specify the list of types they support using the 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@TargetType</pre> 
+       </div> 
+      </div>
+     </div> annotation. For example, the <a href="http://docs.sun.com/app/docs/doc/821-0179/create-http-lb-1?l=en&amp;a=view">create-http-lb</a> command which supports only stand alone server or cluster as type will have to look like :<p></p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">...
+...
+@TargetType(CommandTarget.STANDALONE_SERVER, CommandTarget.CLUSTER)
+@ExecuteOn(.....)
+@Service(..)
+public class ....... {
+}</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="CLIDeveloperGuide-Enablingoperationsoninstance%28s%29thatarepartofcluster"></a>Enabling operations on instance(s) that are part of cluster</h2> <p>By default, all commands on a server instance that is already part of a cluster will be disallowed. For example, if you have a cluster with instances in1, in2 and a stand-alone-server in3 and you want to deploy an application. The framework will allow </p>
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">deploy</pre> 
+       </div> 
+      </div>
+     </div> command with 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">--target</pre> 
+       </div> 
+      </div>
+     </div> c1 or in3 but not in1 or in2 (as shown below). This behavior is to ensure that all instances that are part of a cluster will remain in sync.<p></p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin deploy --target c1 ~/servletonly.war
+Application deployed successfully with name servletonly.
+Command _deploy executed successfully on server instance in1
+Command _deploy executed successfully on server instance in2
+Command deploy executed successfully on server instance in1
+Command deploy executed successfully on server instance in2
+
+Command deploy executed successfully.
+
+$ asadmin deploy --target in1 ~/servletonly.war
+remote failure: The deploy command is not allowed on target in1 because it is part of cluster c1
+
+Command deploy failed.</pre> 
+       </div> 
+      </div>
+     </div> <p>The above mentioned default behavior will work for a vast majority of the commands. But there are a handful of commands which require operations to be allowed on instance(s) that are already part of a cluster. These few commands that plan to allow operations on a clustered instance will have to ensure that the command implementation code has </p>
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@TargetType</pre> 
+       </div> 
+      </div>
+     </div> with 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">CommandTarget.CLUSTERED_INSTANCE</pre> 
+       </div> 
+      </div>
+     </div> along with other supported types. One example will be the <a href="http://docs.sun.com/app/docs/doc/821-0179/enable-1?l=en&amp;a=view">enable</a> command which should allow user to enable an application that is already on a clustered instance. To let such commands override the default behavior of framework, the implementation of 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">enable</pre> 
+       </div> 
+      </div>
+     </div> command has to specify 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@TargetType</pre> 
+       </div> 
+      </div>
+     </div> annotation as listed below :<p></p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Service(name="enable")
+@I18n("enable.command")
+@TargetType(CommandTarget.DAS, CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTER, CommandTarget.CLUSTERED_INSTANCE)
+@ExecuteOn(value={RuntimeType.DAS, RuntimeType.INSTANCE})
+@Scoped(PerLookup.class)
+public class EnableCommand extends StateCommandParameters implements AdminCommand {
+...
+...
+}</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="CLIDeveloperGuide-CLIimplementorsresponsibilities"></a>CLI implementors responsibilities</h2> <p>As discussed above, the framework takes care of most of the common code that are required for all commands. So when the CLI implementation's </p>
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">execute</pre> 
+       </div> 
+      </div>
+     </div> method is called, the implementor can assume that<p></p> 
+     <ul> 
+      <li>the parameters, including the 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">--target</pre> 
+         </div> 
+        </div>
+       </div>, have been validated (and help message displayed in case of wrong / missing operands)</li> 
+      <li>the target type enforcements have been done</li> 
+      <li>all parameters have been injected into the CLI implementation as long as the implementation uses the 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">@Param</pre> 
+         </div> 
+        </div>
+       </div> annotation facility appropriately. (Note that the target name specified in the command line is also injected into the CLI implementation if there is 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">@Param String targetName</pre> 
+         </div> 
+        </div>
+       </div> present)</li> 
+     </ul> <p>The rest of the work required to effect the required changes (like changing config objects or password files or LB config) should be done by the CLi implementation. The </p>
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Target</pre> 
+       </div> 
+      </div>
+     </div> service may be useful to get access to various config elements but the actual updates to be done is the implementor's responsibility. Because the same command gets replicated on DAS and instances, if the CLI effects different changes on DAS and instance (this is rare), then it is the implementor's responsibility to take care of that also. The implementations for <a href="http://fisheye4.atlassian.com/browse/glassfish-svn/trunk/v3/web/admin/src/main/java/org/glassfish/web/admin/cli/CreateHttpListener.java?r=HEAD">create-http-listener</a> and <a href="http://fisheye4.atlassian.com/browse/glassfish-svn/trunk/v3/web/admin/src/main/java/org/glassfish/web/admin/cli/CreateVirtualServer.java?r=HEAD">create-virtual-server</a> may be good references.<p></p> <h4><a name="CLIDeveloperGuide-Replicatingcommands"></a>Replicating commands</h1> <h4><a name="CLIDeveloperGuide-Annotation"></a>Annotation</h2> <p>To ensure that your CLI implementation is replicated on all target instances, the CLI implementation of </p>
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">AdminCommand</pre> 
+       </div> 
+      </div>
+     </div> should be annotated with 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@ExecuteOn</pre> 
+       </div> 
+      </div>
+     </div>. Here is an example :<p></p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@ExecuteOn({RuntimeType.DAS, RuntimeType.INSTANCE})
+@Service("create-jdbc-resource")
+public class CreateJdbcResource implements AdminCommand {
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>The presence of the </p>
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@ExecuteOn</pre> 
+       </div> 
+      </div>
+     </div> annotation in the CLI implementation class will indicate to the command replication framework that this CLI has to be replicated on all applicable instances as specified in the 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">--target</pre> 
+       </div> 
+      </div>
+     </div> option.<p></p> <h4><a name="CLIDeveloperGuide-ExistingCLI"></a>Existing CLI</h2> <p>Since a majority of existing CLIs need replication, the command replication framework will replicate the command on all instances by default (i.e. if there is no </p>
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@ExecuteOn</pre> 
+       </div> 
+      </div>
+     </div> specified in the CLI implementation class). For example, look at source code for <a href="http://fisheye4.atlassian.com/browse/glassfish-svn/trunk/v3/jdbc/admin/src/main/java/org/glassfish/jdbc/admin/cli/CreateJdbcConnectionPool.java?r=HEAD">CreateJdbcConnectionPool</a> and <a href="http://fisheye4.atlassian.com/browse/glassfish-svn/trunk/v3/jdbc/admin/src/main/java/org/glassfish/jdbc/admin/cli/DeleteJdbcConnectionPool.java?r=HEAD">DeleteJdbcConnectionPool</a> commands. You will not see any @ExecuteOn annotation and these commands get replicated without any other changes.<p></p> <h4><a name="CLIDeveloperGuide-NewCLI"></a>New CLI</h2> <p>If a new CLI is being added to 3.1 and that CLI needs replication, then the developer can choose either to use the default behavior or specify the </p>
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@ExecuteOn</pre> 
+       </div> 
+      </div>
+     </div> annotation as shown in the sample code above.<p></p> <h4><a name="CLIDeveloperGuide-Avoidingreplication"></a>Avoiding replication</h1> <p>Since the default behavior is to replicate the command on DAS and all applicable instances, if you want your CLI to be executed only on DAS or only on Instances, then you would use </p>
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@ExecuteOn</pre> 
+       </div> 
+      </div>
+     </div> with the 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">RuntimeType</pre> 
+       </div> 
+      </div>
+     </div> set as required. For example, the 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">stop-domain</pre> 
+       </div> 
+      </div>
+     </div> command should be run only on DAS, not on the instances. Another example will be 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">list-*</pre> 
+       </div> 
+      </div>
+     </div> commands which can get all information from DAS itself and hence need not be replicated. The code for CLI that implements 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">stop-domain</pre> 
+       </div> 
+      </div>
+     </div>, the <a href="http://fisheye4.atlassian.com/browse/glassfish-svn/trunk/v3/core/kernel/src/main/java/com/sun/enterprise/v3/admin/StopDomainCommand.java?r=HEAD">StopDomainCommand</a> class, will look like this :<p></p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Service(name="stop-domain")
+@Async
+@I18n("stop.domain.command")
+@ExecuteOn(RuntimeType.DAS)
+public class StopDomainCommand implements AdminCommand {
+}</pre> 
+       </div> 
+      </div>
+     </div> <p><a href="http://fisheye4.atlassian.com/browse/glassfish-svn/trunk/v3/core/kernel/src/main/java/com/sun/enterprise/v3/admin/StopDomainCommand.java?r1=37131&amp;r2=36821">This fisheye link</a> shows that actual change that has been done to make the command </p>
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">stop-domain</pre> 
+       </div> 
+      </div>
+     </div> run on DAS only. Note that specifying 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@ExecuteOn(RuntimeType.Instance)</pre> 
+       </div> 
+      </div>
+     </div>, will result in the execution of the command only on the instances.<p></p> <h4><a name="CLIDeveloperGuide-Specifyingfailureoptions"></a>Specifying failure options</h1> <p>In addition to&nbsp;RuntimeType, you can specify the following additional attributes with the @ExecuteOn annotation</p> <h4><a name="CLIDeveloperGuide-ifFailure"></a>ifFailure</h2> <p>By default, if there are errors during the execution of a command on an instance, the whole command execution is deemed to have failed and further execution is stopped. However, the CLI developer can change this default behavior and choose to ignore the failure or warn the user rather than stopping further command execution by specifying the ifFailure attribute and setting it to FailurePolicy.Ignore or FailurePolicy.Warn. For example:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@ExecuteOn(value={RuntimeType.DAS}, ifFailure=FailurePolicy.Warn)</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="CLIDeveloperGuide-ifOffline"></a>ifOffline</h2> <p>By default, if an instance is found to be offline during the command replication process, the whole command execution is deemed to have failed. However, the CLI developer can change this default behavior and choose to ignore the failure or warn the user rather than stopping further command execution by specifying ifFailure attribute and setting it to FailurePolicy.Ignore or FailurePolicy.Warn. For example:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@ExecuteOn(value={RuntimeType.DAS}, ifOffline=FailurePolicy.Ignore)</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="CLIDeveloperGuide-Doingpre%2Fpostprocessingforacommand"></a>Doing pre/post processing for a command</h1> <p>Some commands may require some pre/post processing. For example, when an application gets deployed, references have to be created in all applicable instances and the instances have to be forced to sync up with the DAS. Another example, will be that MQ or LB settings/properties may have to be reconfigured whenever an instance is added to a cluster. For such use cases, the command replication framework has introduced the @Supplemental annotation. An implementation must use the value() attribute of the @Supplemental annotation to express the supplemented command. Its value is the name of the command as defined by the supplemented command's @Service annotation. Take for example, the post-processing required for deployment command. The deployment command implementation looks like this :</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Service(name="deploy")
+@ExecuteOn(RuntimeType.DAS)
+public DeployCommand implements AdminCommand {
+//Do Actual Deployment
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>Now a supplemental command, that wants to be executed everytime after a successful deployment will look like this :</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Service(name="DeploymentSupplementalCommand")
+@Supplemental("deploy")
+@ExecuteOn(RuntimeType.INSTANCE)
+public DeploymentSupplementalCommand implements AdminCommand {
+//Do logic that happens after deployment has been done
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>Note that the supplemental command implementation implements </p>
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">AdminCommand</pre> 
+       </div> 
+      </div>
+     </div>. Hence it can use @Param facility and expect the corresponding parameters specified in CLI to be injected at runtime. The parameter values available for injection are the same ones that were provided for the main, original command with which the supplemental command is associated. So, for example, the DeploymentSupplementalCommand will have access to the parameter values that were available to the DeployCommand invocation.<p></p> <p>Let us look at one more example, that of changing MQ/LB properties when an instances is added to a cluster. The source for CreateLocalInstanceCommand class may look like this :</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Service(name = "create-local-instance")
+@Scoped(PerLookup.class)
+public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesystemCommand {
+//Do local instance creation
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>And a supplemental command that wants to do some action after the successful completion of a local instance creation will look like this:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Service(name="CreateLocalInstanceSupplementalCommand")
+@Supplemental("create-local-instance")
+public CreateLocalInstanceSupplementalCommand implements AdminCommand {
+//Change MQ/LB properties here
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>Note that a CLI command can be supplemented with multiple supplemental commands. In such a case, all supplemental commands will be executed after the completion of the main command but without any guarantee on the order in which the supplemental commands are run.</p> <h4><a name="CLIDeveloperGuide-SpecifyingfailureoptionsforSupplementalcommands"></a>Specifying failure options for Supplemental commands</h2> <h4><a name="CLIDeveloperGuide-ifFailure"></a>ifFailure</h2> <p>By default, if there are errors during the execution of a supplemental command, the whole command execution is deemed to have failed. However, the CLI developer can change this default behavior and choose to ignore / warn the user rather than stopping further command execution by specifying </p>
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">ifFailure</pre> 
+       </div> 
+      </div>
+     </div> attribute and setting it to 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">FailurePolicy.Ignore</pre> 
+       </div> 
+      </div>
+     </div> or 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">FailurePolicy.Warn</pre> 
+       </div> 
+      </div>
+     </div><p></p> <h4><a name="CLIDeveloperGuide-TimingtheexecutionofSupplementalCommand"></a>Timing the execution of SupplementalCommand</h2> <p>By default, a supplemental command that is registered for a "main" command, will be called for execution after the "main" command execution is completed. However, the CLI developer can force the supplemental command to be executed before the execution of the main command by using the attribute setting </p>
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">on</pre> 
+       </div> 
+      </div>
+     </div> attribute of 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Supplemental</pre> 
+       </div> 
+      </div>
+     </div> to 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Supplemental.Timing.Before</pre> 
+       </div> 
+      </div>
+     </div>.<p></p> <h4><a name="CLIDeveloperGuide-SpecifyingwheretoexecutetheSupplementalCommand"></a>Specifying where to execute the SupplementalCommand</h2> <p>By default, the supplemental commands are executed on DAS and all applicable instances. There may be scenarios (like the deployment supplemental command mentioned above) where a CLI developer wants the supplemental command to be executed only on DAS or only on instances. For this the developer will annotate the supplemental command implementation class with </p>
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@ExecuteOn(RuntimeType.{DAS|INSTANCE})</pre> 
+       </div> 
+      </div>
+     </div> as the case may be.<p></p> <h4><a name="CLIDeveloperGuide-Utilities"></a>Utilities</h1> <h4><a name="CLIDeveloperGuide-ParameterMapExtractor"></a><a href="http://fisheye4.atlassian.com/browse/glassfish-svn/trunk/v3/common/common-util/src/main/java/org/glassfish/common/util/admin/ParameterMapExtractor.java?r=HEAD">ParameterMapExtractor</a></h2> <p>A command or supplemental command might need to invoke another command (for example, code running on the DAS might need to trigger a different command on one or more instances). Such invocations might use the </p>
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">ClusterExecutor</pre> 
+       </div> 
+      </div>
+     </div> which accepts a ParameterMap to pass parameters and their values to the command. The 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">ParameterMapExtractor</pre> 
+       </div> 
+      </div>
+     </div> creates a new ParameterMap populated using the parameters and values of a given other 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">AdminCommand</pre> 
+       </div> 
+      </div>
+     </div> which has already been injected. You can pass an optional 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Set&lt;String&gt;</pre> 
+       </div> 
+      </div>
+     </div> listing the parameter names from the specified command you want excluded from the new 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">ParameterMap</pre> 
+       </div> 
+      </div>
+     </div>.<p></p> <h4><a name="CLIDeveloperGuide-Contact"></a>Contact</h1> <p>For more help, suggestion for improvements etc contact []</p> <h4><a name="CLIDeveloperGuide-FAQs"></a>FAQs</h1> <h4><a name="CLIDeveloperGuide-Isthereadescriptionofthesemanticsofusing%5Ctarget%3F"></a>Is there a description of the semantics of using --target?</h2> <p>The semantics is the same as v2. Basically you can specify <b>one</b> target - that target can be a cluster/stand alone instance/domain/config. Different commands accept all or few of these 4 values. Which command can take what "type" of target is documented<a href="http://docs.sun.com/app/docs/doc/821-0179/6nl8hchmr?l=en&amp;a=expand#A">here</a>. For example, if you take, <a href="http://docs.sun.com/app/docs/doc/821-0179/create-custom-resource-1?l=en&amp;a=view">create-custom-resource command</a>, the doc says that the --target option can take server / domain / cluster / instance types.</p> <h4><a name="CLIDeveloperGuide-HowdoIpassinformationbetweenmainandsupplementalcommandimplementations"></a>How do I pass information between main and supplemental command implementations</h2> <p>There may be scenarios where you want to exchange some information between supplemental and main commands. For example, deploy command has to pass information on generated directory, application name etc to its supplemental command. This is done by :</p> 
+     <ul> 
+      <li>Having class to hold the information to be passed (Refer to <a href="http://fisheye4.atlassian.com/browse/glassfish-svn/trunk/v3/deployment/admin/src/main/java/org/glassfish/deployment/admin/DeployCommandSupplementalInfo.java?r=HEAD">DeploymentCommandSupplementalInfo</a>)</li> 
+      <li>Setting an instance of this in the 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">ActionReport</pre> 
+         </div> 
+        </div>
+       </div> and populating it with require info (Refer to <a href="http://fisheye4.atlassian.com/browse/glassfish-svn/trunk/v3/deployment/admin/src/main/java/org/glassfish/deployment/admin/DeployCommand.java?r=HEAD">Deploycommand</a>)</li> 
+      <li>Retrieving it in supplemental command (Refer to <a href="http://fisheye4.atlassian.com/browse/glassfish-svn/trunk/v3/deployment/admin/src/main/java/org/glassfish/deployment/admin/PostDeployCommand.java?r=HEAD">PostDeployCommand</a>)</li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Aug 28, 2012 by 
+<font color="#0050B2">10193</font>. Exported from wikis.oracle.com on May 27, 2015 20:43.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

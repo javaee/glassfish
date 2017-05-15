@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : VMBuilder</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="VMBuilder-BuildingJeOSimagesfromscratchonUbuntu"></a>Building JeOS images from scratch on Ubuntu</h1> <p>Creating VM templates from scratch is pretty simple. There is no need to download a JeOS ISO anymore since we can use vmbuilder to build a pre-configured JeOS image ourself. Moreover the the last available JeOS image is that of Hardy (8.04LTS).</p> <p>Just a single command does the job (yes, its as simple as that). I ran this on my laptop running Ubuntu 11.10:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">sudo vmbuilder kvm ubuntu --verbose --dest /srv/kvm/yamini/images --suite oneiric --flavour virtual --arch i386 -o --libvirt qemu:///system --hostname glassfish --part vmbuilder.partition --user cloud --name Cloud --pass cloud123 --addpkg wget --addpkg openssh-server --addpkg unzip --addpkg unattended-upgrades --addpkg acpid 
+
+vmbuilder.partition:
+root 1024</pre> 
+       </div> 
+      </div>
+     </div> <p>It takes about 20+ minutes to create a qow image. Sample output:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">$ sh ubuntu.sh 
+2012-01-19 21:16:19,309 INFO    : Calling hook: preflight_check
+2012-01-19 21:16:19,380 INFO    : Calling hook: set_defaults
+2012-01-19 21:16:19,381 INFO    : Calling hook: bootstrap
+2012-01-19 21:29:58,681 INFO    : Calling hook: configure_os
+2012-01-19 21:33:32,313 INFO    : Updating certificates in /etc/ssl/certs... WARNING: Skipping duplicate certificate cert_igca_rsa.pem
+2012-01-19 21:33:32,317 INFO    : WARNING: Skipping duplicate certificate cert_igca_rsa.pem
+2012-01-19 21:33:32,629 INFO    : 156 added, 0 removed; done.
+2012-01-19 21:33:32,631 INFO    : Running hooks in /etc/ca-certificates/update.d....done.
+2012-01-19 21:33:33,240 INFO    : invoke-rc.d: policy-rc.d denied execution of start.
+2012-01-19 21:33:33,766 INFO    : Creating SSH2 RSA key; this may take some time ...
+2012-01-19 21:33:36,392 INFO    : Creating SSH2 DSA key; this may take some time ...
+2012-01-19 21:33:36,399 INFO    : Creating SSH2 ECDSA key; this may take some time ...
+2012-01-19 21:33:36,550 INFO    : invoke-rc.d: policy-rc.d denied execution of stop.
+2012-01-19 21:33:36,552 INFO    : 
+2012-01-19 21:33:36,553 INFO    : Warning: Fake initctl called, doing nothing
+2012-01-19 21:33:36,555 INFO    : 
+2012-01-19 21:33:36,556 INFO    : Warning: Fake initctl called, doing nothing
+2012-01-19 21:33:36,781 INFO    : update-rc.d: warning: unattended-upgrades start runlevel arguments (2 3 4 5) do not match LSB Default-Start values (none)
+2012-01-19 21:33:36,781 INFO    : update-rc.d: warning: unattended-upgrades stop runlevel arguments (0 1 6) do not match LSB Default-Stop values (0 6)
+2012-01-19 21:33:36,793 INFO    : invoke-rc.d: policy-rc.d denied execution of start.
+2012-01-19 21:33:38,661 INFO    : 
+2012-01-19 21:33:38,662 INFO    : Current default time zone: 'Etc/UTC'
+2012-01-19 21:33:38,664 INFO    : Local time is now:      Thu Jan 19 16:03:38 UTC 2012.
+2012-01-19 21:33:38,665 INFO    : Universal Time is now:  Thu Jan 19 16:03:38 UTC 2012.
+2012-01-19 21:33:38,665 INFO    : 
+2012-01-19 21:34:06,682 INFO    : 
+2012-01-19 21:34:06,683 INFO    : Current default time zone: 'Etc/UTC'
+2012-01-19 21:34:06,685 INFO    : Local time is now:      Thu Jan 19 16:04:06 UTC 2012.
+2012-01-19 21:34:06,685 INFO    : Universal Time is now:  Thu Jan 19 16:04:06 UTC 2012.
+2012-01-19 21:34:06,685 INFO    : Run 'dpkg-reconfigure tzdata' if you wish to change it.
+2012-01-19 21:34:06,686 INFO    : 
+2012-01-19 21:34:22,702 INFO    : Cleaning up
+2012-01-19 21:34:22,704 INFO    : Calling hook: preflight_check
+2012-01-19 21:34:24,006 INFO    : Calling hook: configure_networking
+2012-01-19 21:34:24,046 INFO    : Calling hook: configure_mounting
+2012-01-19 21:34:24,052 INFO    : Calling hook: mount_partitions
+2012-01-19 21:34:24,053 INFO    : Mounting target filesystems
+2012-01-19 21:34:24,053 INFO    : Creating disk image: "/tmp/tmp1c0Rfn" of size: 1025MB
+2012-01-19 21:34:24,097 INFO    : Adding partition table to disk image: /tmp/tmp1c0Rfn
+2012-01-19 21:34:24,345 INFO    : Adding type 4 partition to disk image: /tmp/tmp1c0Rfn
+2012-01-19 21:34:24,346 INFO    : Partition at beginning of disk - reserving first cylinder
+2012-01-19 21:34:24,445 INFO    : Creating loop devices corresponding to the created partitions
+2012-01-19 21:34:24,495 INFO    : Creating file systems
+2012-01-19 21:34:24,598 INFO    : mke2fs 1.41.14 (22-Dec-2010)
+2012-01-19 21:34:40,881 INFO    : Calling hook: install_bootloader
+2012-01-19 21:35:10,760 INFO    : Removing update-grub hooks from /etc/kernel-img.conf in favour of
+2012-01-19 21:35:10,760 INFO    : /etc/kernel/ hooks.
+2012-01-19 21:35:14,207 INFO    : Searching for GRUB installation directory ... found: /boot/grub
+2012-01-19 21:35:14,249 INFO    : Searching for default file ... Generating /boot/grub/default file and setting the default boot entry to 0
+2012-01-19 21:35:14,250 INFO    : Searching for GRUB installation directory ... found: /boot/grub
+2012-01-19 21:35:14,254 INFO    : Testing for an existing GRUB menu.lst file ... 
+2012-01-19 21:35:14,254 INFO    : 
+2012-01-19 21:35:14,254 INFO    : Could not find /boot/grub/menu.lst file. 
+2012-01-19 21:35:14,255 INFO    : Generating /boot/grub/menu.lst
+2012-01-19 21:35:14,314 INFO    : Searching for splash image ... none found, skipping ...
+2012-01-19 21:35:14,448 INFO    : grep: /boot/config*: No such file or directory
+2012-01-19 21:35:14,534 INFO    : Updating /boot/grub/menu.lst ... done
+2012-01-19 21:35:14,535 INFO    : 
+2012-01-19 21:35:14,698 INFO    : Searching for GRUB installation directory ... found: /boot/grub
+2012-01-19 21:35:14,743 INFO    : Searching for default file ... found: /boot/grub/default
+2012-01-19 21:35:14,744 INFO    : Testing for an existing GRUB menu.lst file ... found: /boot/grub/menu.lst
+2012-01-19 21:35:14,845 INFO    : Searching for splash image ... none found, skipping ...
+2012-01-19 21:35:14,876 INFO    : grep: /boot/config*: No such file or directory
+2012-01-19 21:35:14,960 INFO    : Updating /boot/grub/menu.lst ... done
+2012-01-19 21:35:14,961 INFO    : 
+2012-01-19 21:35:15,016 INFO    : Searching for GRUB installation directory ... found: /boot/grub
+2012-01-19 21:35:15,024 INFO    : Calling hook: install_kernel
+2012-01-19 21:40:39,581 INFO    : Done.
+2012-01-19 21:40:44,292 INFO    : Running depmod.
+2012-01-19 21:40:44,371 INFO    : update-initramfs: deferring update (hook will be called later)
+2012-01-19 21:40:44,376 INFO    : Examining /etc/kernel/postinst.d.
+2012-01-19 21:40:44,377 INFO    : run-parts: executing /etc/kernel/postinst.d/initramfs-tools 3.0.0-14-virtual /boot/vmlinuz-3.0.0-14-virtual
+2012-01-19 21:40:44,380 INFO    : update-initramfs: Generating /boot/initrd.img-3.0.0-14-virtual
+2012-01-19 21:40:47,687 INFO    : run-parts: executing /etc/kernel/postinst.d/zz-update-grub 3.0.0-14-virtual /boot/vmlinuz-3.0.0-14-virtual
+2012-01-19 21:40:47,782 INFO    : Searching for GRUB installation directory ... found: /boot/grub
+2012-01-19 21:40:47,828 INFO    : Searching for default file ... found: /boot/grub/default
+2012-01-19 21:40:47,829 INFO    : Testing for an existing GRUB menu.lst file ... found: /boot/grub/menu.lst
+2012-01-19 21:40:47,926 INFO    : Searching for splash image ... none found, skipping ...
+2012-01-19 21:40:47,985 INFO    : Found kernel: /boot/vmlinuz-3.0.0-14-virtual
+2012-01-19 21:40:48,082 INFO    : Replacing config file /run/grub/menu.lst with new version
+2012-01-19 21:40:48,103 INFO    : Updating /boot/grub/menu.lst ... done
+2012-01-19 21:40:48,103 INFO    : 
+2012-01-19 21:40:48,784 INFO    : Calling hook: post_install
+2012-01-19 21:40:48,785 INFO    : Calling hook: unmount_partitions
+2012-01-19 21:40:48,785 INFO    : Unmounting target filesystem
+2012-01-19 21:40:52,172 INFO    : Calling hook: convert
+2012-01-19 21:40:52,175 INFO    : Converting /tmp/tmp1c0Rfn to qcow2, format /srv/kvm/yamini/images/tmp1c0Rfn.qcow2
+2012-01-19 21:41:06,932 INFO    : Calling hook: fix_ownership
+2012-01-19 21:41:06,933 INFO    : Calling hook: deploy
+$</pre> 
+       </div> 
+      </div>
+     </div> <p>VMM (Virtual Machine Manager) will show the newly created VM (named glassfish)</p> <p>To further customize the VM, login to the VM (cloud/cloud123) and do the following:</p> 
+     <ol> 
+      <li>Make sure internet is accessible:<br> ping glassfish.java.net<br> If its not accessible, shutdown the VM, change the NIC settings in VMM to use shared bridge device virbr0 and boot the VM. It should also be ok to use NAT.</li> 
+      <li>Install JDK<br> sun-java6-jdk is no longer available in oneiric partner repository, so we will need to pick it up from a private archive: 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">sudo apt-get install python-software-properties
+sudo add-apt-repository ppa:ferramroberto/java
+sudo apt-get update
+sudo apt-get install sun-java6-jdk</pre> 
+         </div> 
+        </div>
+       </div></li> 
+      <li>Install Glassfish bits 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">cd /opt
+sudo mkdir glassfishvm
+sudo chmod a+rwx glassfishvm
+cd glassfishvm
+wget http://$das_address:$das_port/glassfish.zip
+unzip glassfish.zip
+rm glassfish.zip</pre> 
+         </div> 
+        </div>
+       </div></li> 
+      <li>Install glassfish as startup service<br> Copy over glassfish script and create service 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">sudo chmod a+x glassfish
+sudo update-rc.d glassfish defaults</pre> 
+         </div> 
+        </div>
+       </div></li> 
+      <li>Clear history 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">history -c</pre> 
+         </div> 
+        </div>
+       </div></li> 
+      <li>Convert the qow to raw image:<br> The qcow2 disk format has some decent features like encryption, compression and copy to write support but its growing size is difficult to predict. In addition, the compression and the copy processes make it quite a bit slower than raw disk images. I could not get vmbuilder to generate a raw image directly.</li> 
+     </ol> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">qemu-img convert tmpBWigFM.qcow2 glassfish.img</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="VMBuilder-Caveats%3A"></a>Caveats:</h4> 
+     <ol> 
+      <li>I tried to speed up the image creation process by using apt-cacher (pass --mirror <a href="http://localhost:3142/ubuntu">http://localhost:3142/ubuntu</a>) but apparently apt-cacher doesn't download security packages, so vmbuilder failed. But I found later that there is a --security-mirror=URL option which I haven't tried.</li> 
+      <li>vmbuilder creates the file layout under /tmp/tmp* but does not delete the temp files in case of failure. Delete it manually before running out of space.</li> 
+      <li>vmbuilder deletes all files under the --dest directory, so do not store any other data there.</li> 
+      <li>First time I ran vmbuilder, I ran into "device is busy error". Found that one of the scripts had to be modified as follows to avoid the problem: 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">/usr/lib/python2.7/dist-packages/VMBuilder/plugins/ubuntu/dapper.py
+    def unmount_dev(self):
+        self.context.cancel_cleanup(self.unmount_dev)
+        run_cmd('sleep', '10'); // &lt;--- add this line.
+        run_cmd('umount', '%s/dev' % self.context.chroot_dir)</pre> 
+         </div> 
+        </div>
+       </div> <p>Bug:<a href="https://bugs.launchpad.net/ubuntu/+source/vm-builder/+bug/879710">https://bugs.launchpad.net/ubuntu/+source/vm-builder/+bug/879710</a></p></li> 
+     </ol> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jan 31, 2012 by 
+<font color="#0050B2">16320</font>. Exported from wikis.oracle.com on May 27, 2015 20:49.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

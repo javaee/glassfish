@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : ListOfAllFeaturesOrRFEsOrEnhancements</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="ListOfAllFeaturesOrRFEsOrEnhancements-Listofenhancementsbyarea"></a>List of enhancements by area</h2> <p>(These are in additions to ones listed on high level features page)</p> <p>General:</p> 
+     <ul> 
+      <li>Update Derby to 10.2</li> 
+      <li>Update datadirect drivers</li> 
+     </ul> <p>Web:</p> 
+     <ul> 
+      <li>Performance related work 
+       <ul> 
+        <li>commons-modeler performance <a href="https://github.com/javaee/glassfish/issues/1034">Issue: 1034</a> (Amy?) - 1 week</li> 
+        <li>Remove copying data between buffers <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6415250">http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6415250</a> (jfarcand) - 1 week</li> 
+        <li>One ByteBuffer per Thread <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6415247">http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6415247</a> (jfarcand) - <b>DONE</b></li> 
+        <li>WebContainer integration via J2EEInstanceListener is inefficient <a href="https://github.com/javaee/glassfish/issues/858">Issue: 858</a> (jfarcand) - 1 week</li> 
+        <li>Rollback when insufficient data is present (jfarcand) - <b>DONE</b></li> 
+        <li>Look into more complex JSPs and code generation (possibly fixed in 8.x; based on old report from PAE) (kchung) - Non-issue: already handled in AS9</li> 
+        <li>Avoid treating default-web-module as separate web application <a href="https://github.com/javaee/glassfish/issues/1024">Issue: 1024</a> (jluehe) - 4 days</li> 
+        <li>Valve optimizations 
+         <ul> 
+          <li>Coordinate with admin team's profiling work to make sure access logging is turned off by default in development profile (jluehe) - 2 days</li> 
+          <li>Optimize SSO valve invocation if the request does not carry any JSESSIONIDSSO cookie <a href="https://github.com/javaee/glassfish/issues/836">Issue: 836</a> (jluehe) - <b>DONE</b></li> 
+         </ul> </li> 
+        <li>Simplify JSP string encoding <a href="http://glassfish.java.net/issues/show_bug.cgi-843">Issue: 843</a> (kchung) - 1 week</li> 
+        <li>See if we should optimize for the HTTP 1.1 path, possibly taking an expensive hit for 1.0 (jfarcand) - 3 days</li> 
+        <li>OPTIMIZATION - Avoid reparsing the web.xml in the JSP container <a href="https://github.com/javaee/glassfish/issues/740">Issue: 740</a> (jluehe) - <b>DONE</b></li> 
+        <li>Make it possible for servlet and JSP containers to share TLD uri-to-location mappings <a href="https://github.com/javaee/glassfish/issues/747">Issue: 747</a> (jluehe) - <b>DONE</b></li> 
+        <li>Support sharing of JSP taglib instances by all translation units in a webcontext <a href="https://github.com/javaee/glassfish/issues/750">Issue: 750</a> (jluehe) - <b>DONE</b></li> 
+        <li>Do not include cookie for invalidated HTTP session in the response <a href="https://github.com/javaee/glassfish/issues/896">Issue: 896</a> (jluehe) - <b>DONE</b></li> 
+        <li>JSF performance (rlubke) <b>PENDING</b></li> 
+       </ul> </li> 
+      <li>Grizzly v2 related work (jfarcand) - 4 weeks</li> 
+      <li>Grizzly in Jetty (jfarcand) - 1 week</li> 
+      <li>Push Grizzly v1 runtime to ibiblio (jfarcand) - 1 week 
+       <ul> 
+        <li>Refactoring</li> 
+       </ul> </li> 
+      <li>Grizzly requests logging <a href="https://github.com/javaee/glassfish/issues/754">Issue: 754</a> - <b>DONE</b></li> 
+      <li>http to https redirect 4848(4849) <a href="https://github.com/javaee/glassfish/issues/741">Issue: 741</a> - 1 week</li> 
+      <li>JSR 199 (In process JSP compilation) support (kchung) - <b>ALMOST DONE</b></li> 
+      <li>Spec MRs (to be filed by end of September) 
+       <ul> 
+        <li>JSP 2.1 MRx (kchung) 
+         <ul> 
+          <li>Separate EL into its own spec</li> 
+          <li>Make EL implementation pluggable <a href="https://github.com/javaee/glassfish/issues/802">Issue: 802</a> - 2 days</li> 
+          <li>Add expression factory</li> 
+          <li>Standalone EL TCK (nrodin) 
+           <ul> 
+            <li>port ELResolver API tests - <b>DONE</b></li> 
+            <li>port MethodExpression API tests - <b>DONE</b></li> 
+            <li>port ValueExpression, ExpressionFactory API tests - 1 day</li> 
+            <li>port 2.1 Spec tests - 4 days</li> 
+            <li>port 2.0 Literal tests - 1 day</li> 
+            <li>port 2.0 Operators tests - 10 days</li> 
+            <li>port 2.0 Coercion tests - 5 days</li> 
+            <li>port other 2.0 tests - 1 day</li> 
+            <li>add VariableMapper API - 2 days</li> 
+            <li>add Expression implements Serializable - 1 day</li> 
+            <li>add Expression.equals(), getExpressionString() - 1 day</li> 
+            <li>add ELContextListener.contextCreated() - 2 days</li> 
+            <li>add ELContext get and setLocale() - 1 day</li> 
+            <li>add Resolver valuation tests - 2 days</li> 
+            <li>add ExpressionFactoryMultipleThreads test - 3 days</li> 
+            <li>add ExpressionFactory types tests - 1 day</li> 
+            <li>add other EL Spec and Javadoc tests - 3 days</li> 
+            <li>build TCK infrastructure - 3 days</li> 
+            <li>testing - 1 day</li> 
+            <li>Docs - 5 days</li> 
+           </ul> </li> 
+         </ul> </li> 
+        <li>Servlet 2.5 MR6 (mode) 
+         <ul> 
+          <li>Servlet compliance tests breaking when response committed before returning from a RequestDispatcher.forward <a href="https://servlet-spec-eg.java.net/issues/show_bug.cgi-30">Issue: 30</a> 
+           <ul> 
+            <li>Spec update (mode) - 1 day</li> 
+            <li>RI - DONE</li> 
+            <li>TCK - Tests currently being excluded I believe.</li> 
+           </ul> </li> 
+          <li>Allow Servlet context init params to be added / configured from a container wide deployment descriptor <a href="https://servlet-spec-eg.java.net/issues/show_bug.cgi-31">Issue 31</a> 
+           <ul> 
+            <li>Spec update (mode) - 1 day</li> 
+            <li>RI Done</li> 
+            <li>TCK Done</li> 
+           </ul> </li> 
+          <li>Special symbols in non-standard HTTP methods <a href="https://servlet-spec-eg.java.net/issues/show_bug.cgi-32">Issue: 32</a> 
+           <ul> 
+            <li>Spec update (mode) - 1 day</li> 
+            <li>RI update (amyroh) - 1 day</li> 
+           </ul> </li> 
+          <li>Clarify session attribute synchronization <a href="https://servlet-spec-eg.java.net/issues/show_bug.cgi-33">Issue: 33</a> 
+           <ul> 
+            <li>Spec update (mode) - 1 day</li> 
+           </ul> </li> 
+          <li>TCK for HttpSession.getLastAccessedTime() (Fujitsu issue) (djiao) - 2 days</li> 
+          <li>Include lookup method in ServletContext <a href="https://servlet-spec-eg.java.net/issues/show_bug.cgi-35">Issue: 35</a> 
+           <ul> 
+            <li>Spec update (mode) - 1 day</li> 
+            <li>RI (amyroh) - 2 days</li> 
+            <li>TCK (djiao) - 2 days</li> 
+           </ul> </li> 
+          <li>Clarification of scope of request and call to removeAttribute method <a href="https://servlet-spec-eg.java.net/issues/show_bug.cgi-36">Issue: 36</a> 
+           <ul> 
+            <li>Spec update (mode) - 1 day</li> 
+            <li>RI already behaving the way we expect</li> 
+            <li>TCK - no change</li> 
+           </ul> </li> 
+         </ul> </li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li>JSTL 1.2 MRx (jluehe) 
+         <ul> 
+          <li>Bring spec into alignment with existing RI - 1 day</li> 
+         </ul> </li> 
+        <li>JSF 1.2 MR1 
+         <ul> 
+          <li>Who Derives The ViewId <a href="https://javaserverfaces-spec-public.java.net/issues/show_bug.cgi-162">Issue 162</a> 
+           <ul> 
+            <li>Spec update (rogerk) <b>DONE</b></li> 
+            <li>Implementation (rlubke) <b>DONE</b></li> 
+            <li>TCK test (see below)</li> 
+           </ul> </li> 
+          <li>Redundant Annotation Verbage <a href="https://javaserverfaces-spec-public.java.net/issues/show_bug.cgi-166">Issue 166</a> (rogerk) <b>DONE</b></li> 
+          <li>Clarify Verbatim Usage <a href="https://javaserverfaces-spec-public.java.net/issues/show_bug.cgi-167">Issue 167</a> (rogerk) <b>DONE</b></li> 
+          <li>Incorrect Spec Reference:externalContext.getRequestScope() <a href="https://javaserverfaces-spec-public.java.net/issues/show_bug.cgi-196">Issue 196</a> (rogerk) <b>DONE</b></li> 
+          <li>Default encodeChildren() Behavior In Absence Of Renderer <a href="https://javaserverfaces-spec-public.java.net/issues/show_bug.cgi-169">Issue 169</a> (rogerk) <b>DONE</b></li> 
+          <li>EnumConverter Cleanup <a href="https://javaserverfaces-spec-public.java.net/issues/show_bug.cgi-172">Issue 172</a> (rogerk) <b>DONE</b></li> 
+          <li>Incorrect Reference To jsp-version Element <a href="https://javaserverfaces-spec-public.java.net/issues/show_bug.cgi-203">Issue 203</a> (rogerk) <b>DONE</b></li> 
+          <li>TLD Attribute Type Of h:dataTable Var Attr Should Not Be VE Enabled <a href="https://javaserverfaces.java.net/issues/show_bug.cgi-321">RI Issue 321</a> (rlubke) <b>DONE</b></li> 
+          <li>Generify class variable PhaseId.VALUES <a href="https://javaserverfaces-spec-public.java.net/issues/show_bug.cgi-182">Issue 182</a> (edburns) - <b>DONE</b></li> 
+          <li>UIComponentELTag.setBinding <a href="https://javaserverfaces-spec-public.java.net/issues/show_bug.cgi-184">Issue 184</a> (rogerk) <b>DONE</b></li> 
+          <li>Accessibility enhancements for DataTable <a href="https://javaserverfaces.java.net/issues/show_bug.cgi-341">RI Issue 341</a> (edburns) - 10 days <b>DONE</b></li> 
+          <li>Section 3.1.1 Component Identifiers - Assertion for subsequent chars <a href="https://javaserverfaces-spec-public.java.net/issues/show_bug.cgi-185">Issue 185</a> (rogerk) <b>DONE</b></li> 
+          <li>Incorrect converter-id for javax.faces.DoubleConverter <a href="https://javaserverfaces-spec-public.java.net/issues/show_bug.cgi-176">Issue 176</a> (rogerk) <b>DONE</b></li> 
+          <li>Incorrect tlddocs description for f:selectItem "value" attribute <a href="https://javaserverfaces-spec-public.java.net/issues/show_bug.cgi-187">Issue 187</a> (rogerk) <b>DONE</b></li> 
+          <li>javadocs/ConverterException-ConverterTag/ConverterELTag <a href="https://javaserverfaces.java.net/issues/show_bug.cgi-344">RI Issue 344</a> (rogerk) 
+           <ul> 
+            <li>Part 1 - Specify local value conversion <b>DONE</b></li> 
+            <li>Part 2 - Specify what to do when conversion error - <b>DONE</b></li> 
+           </ul> </li> 
+          <li>Section 2.5.2.1 ViewRoot 'locale' Attribute Value - Seperator Char Assertion <a href="https://javaserverfaces-spec-public.java.net/issues/show_bug.cgi-192">Issue 192</a> (rogerk) <b>DONE</b></li> 
+          <li>Section 3.1.1 Redundant Id Uniqueness Verbage <a href="https://javaserverfaces-spec-public.java.net/issues/show_bug.cgi-193">Issue 193</a> (rogerk) <b>DONE</b></li> 
+          <li>f:setPropertyActionListener:Use Converter If Attached To Component <a href="https://javaserverfaces-spec-public.java.net/issues/show_bug.cgi-197">Issue 197</a> (rogerk) - 5 days <b>DONE</b></li> 
+          <li>NPE and SelectItem <a href="https://javaserverfaces-spec-public.java.net/issues/show_bug.cgi-198">Issue 198</a> (rogerk) <b>DONE</b></li> 
+          <li>Input Controls: Rendering The Id <a href="https://javaserverfaces.java.net/issues/show_bug.cgi-309">RI Issue 309</a> (rogerk) <b>DONE</b></li> 
+          <li>RenderKit Docs: Too Restrictive For CommandLink <a href="https://javaserverfaces-spec-public.java.net/issues/show_bug.cgi-199">Issue 199</a> (edburns) - 2 days <b>DONE</b></li> 
+          <li>Incorrect tlddocs description for f:convertNumber "type" attribute <a href="https://javaserverfaces.java.net/issues/show_bug.cgi-387">RI Issue 387</a> (rogerk) <b>DONE</b></li> 
+          <li>TCK Development 
+           <ul> 
+            <li>invokeOnComponent Issue 145 (dougd) - 3 days |</li> 
+            <li>RestoreView Issue 162 (dougd) - 5 days</li> 
+            <li>Managed bean Annotations (nrodin) - 5 days</li> 
+            <li>UIComponentBase.encodeChildren() Issue 169 (dougd) (lower priority) - 2 days</li> 
+            <li>Enum converter Issue 172 (nrodin) 3 days</li> 
+            <li>Accessibility enhancements for DataTable Issue 341 (dougd) (lower priority) - 3 days</li> 
+            <li>ConverterTag.doStartTag and ConverterELTag.doStartTag Issue 344 (dougd) - 3 days</li> 
+            <li>f:setPropertyActionListener:Use Converter Issue 197 (dougd) (low priority) - 5 days</li> 
+            <li>Render kit tests (including issues 199 + 309) (dougd) - 10 days</li> 
+            <li>Content Interweaving (nrodin) - 3 days</li> 
+            <li>Testing (dougd) - 2 days</li> 
+           </ul> </li> 
+         </ul> </li> 
+       </ul> </li> 
+      <li>Web container 
+       <ul> 
+        <li>Support HA/In-memory-replication store SPI (lwhite/jluehe)</li> 
+        <li>Multiple docroot support <a href="https://github.com/javaee/glassfish/issues/948">Issue: 948</a> (jluehe) - 4 days</li> 
+        <li>Multi-byte redirect URI not properly encoded, resulting in 404 error <a href="https://github.com/javaee/glassfish/issues/936">Issue: 936</a> (jluehe) - <b>DONE</b></li> 
+        <li>Multibyte characters in JSP file names <a href="https://github.com/javaee/glassfish/issues/797">Issue: 797</a> (jluehe) - <b>DONE</b></li> 
+        <li>JSR-88 DeploymentManager.redeploy fails for ear <a href="https://github.com/javaee/glassfish/issues/862">Issue: 862</a> (jluehe) - <b>DONE</b></li> 
+        <li>Add support for %time-taken% token to access log pattern <a href="https://github.com/javaee/glassfish/issues/973">Issue: 973</a> (jluehe) - <b>DONE</b></li> 
+        <li>Redeployment memory leak investigation <a href="https://github.com/javaee/glassfish/issues/587">Issue: 587</a> (jluehe) - 3 days</li> 
+        <li>Changing http-listener properties requires server restart <a href="https://github.com/javaee/glassfish/issues/462">Issue: 462</a> (jfarcand) - 2 days</li> 
+        <li>Allow dynamic property changes <a href="https://github.com/javaee/glassfish/issues/547">Issue: 547</a> (jluehe) - <b>DONE</b></li> 
+        <li>Cleanup default HTTP pages <a href="https://github.com/javaee/glassfish/issues/254">Issue: 254</a> (jluehe) - <b>DONE</b></li> 
+        <li>Impossible for JSP error page to set response encoding when invoked from another JSP <a href="https://github.com/javaee/glassfish/issues/815">Issue: 815</a> (jluehe) - 1 day</li> 
+        <li>Namespace Prefix in EL Qualified Functions with '.' or '-' <a href="https://github.com/javaee/glassfish/issues/839">Issue: 839</a> (jluehe) - 2 days</li> 
+        <li>Generated servlet error when app. server installed in a path with space <a href="https://github.com/javaee/glassfish/issues/845">Issue: 845</a> (amyroh) - 2 days</li> 
+        <li>Connection reset by peer accessing Admin UI and custom web apps (including OpenCMS) <a href="https://github.com/javaee/glassfish/issues/888">Issue: 888</a> (Amy) - 1 week</li> 
+        <li>HttpSession.getLastAccessedTime(): Session's lastAccessedTime must be updated by mere presence of JSESSIONID in request (jluehe) - 1 day</li> 
+        <li>Support AJP13 <a href="https://github.com/javaee/glassfish/issues/200">Issue: 200</a> (amyroh) - <b>DONE</b></li> 
+        <li>Simulating load traffic onto port 4848 or 8080 hangs PE <a href="https://github.com/javaee/glassfish/issues/677">Issue: 677</a> (jfarcand) - 2 days once reproduced</li> 
+        <li>MapELResolver.setValue sometimes throws UnsupportedOperation <a href="https://github.com/javaee/glassfish/issues/567">Issue: 567</a> (kchung) - 2 days</li> 
+        <li>Modularization changes to improve startup performance</li> 
+       </ul> </li> 
+     </ul> <p><a href="WebTierV2Schedule.html" title="WebTierV2Schedule">Web Tier Schedule </a></p> <p>Admin:</p> 
+     <ul> 
+      <li><a href="http://wiki.java.net/bin/view/Projects/HighLevelAdminFeaturesForGlassFishV2">http://wiki.java.net/bin/view/Projects/HighLevelAdminFeaturesForGlassFishV2</a></li> 
+     </ul> <p>Admin GUI</p> 
+     <ul> 
+      <li>Charting in PE</li> 
+      <li>Expose Resource Allocation Feature in GUI</li> 
+      <li>OnlineWikiHelp per GUI page</li> 
+      <li>Static Promotions page when offline</li> 
+      <li>Better user experience feedback using promotions frame</li> 
+      <li>Admin GUI using JSF (PE app)</li> 
+     </ul> <p>Docs</p> 
+     <ul> 
+      <li>Online Error Msg Catalog</li> 
+     </ul> <p>LoadBalancer</p> 
+     <ul> 
+      <li>Admin</li> 
+      <li>TBD</li> 
+     </ul> <p>Security</p> 
+     <ul> 
+      <li>JDBCRealm</li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:49.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

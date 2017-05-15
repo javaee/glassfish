@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFishv3.1</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GlassFishv3.1-GlassFishServerOpenSourceEdition3.1"></a>GlassFish Server Open Source Edition 3.1</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#GlassFishv3.1-GlassFishServerOpenSourceEdition3.1">GlassFish Server Open Source Edition 3.1</a></li> 
+       <ul> 
+        <li><a href="#GlassFishv3.1-Features">Features</a></li> 
+        <ul> 
+         <li><a href="#GlassFishv3.1-Legend">Legend</a></li> 
+        </ul> 
+        <li><a href="#GlassFishv3.1-ClusteringInfrastructure">Clustering Infrastructure</a></li> 
+        <li><a href="#GlassFishv3.1-ManagementAPI%2FTools">Management API / Tools</a></li> 
+        <li><a href="#GlassFishv3.1-ProductDelivery">Product Delivery</a></li> 
+        <li><a href="#GlassFishv3.1-Clustering%26Availability">Clustering &amp; Availability</a></li> 
+        <li><a href="#GlassFishv3.1-Serviceability">Serviceability</a></li> 
+        <li><a href="#GlassFishv3.1-Embedded">Embedded</a></li> 
+        <li><a href="#GlassFishv3.1-OSGi">OSGi</a></li> 
+        <li><a href="#GlassFishv3.1-References">References</a></li> 
+        <li><a href="#GlassFishv3.1-GlassFishOpenSourceEdition2.xCLICommandsNotAvailableinGlassFishServerOpenSourceEdition3.1Release">GlassFish Open Source Edition 2.x CLI Commands Not Available in GlassFish Server Open Source Edition 3.1 Release</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="GlassFishv3.1-Features"></a>Features</h2> <p>The defining feature set for 3.1 is cluster management and high availability. Please use <a href="GlassFishV3Requirements.html" title="GlassFishV3Requirements">product requirements from GlassFish Server Open Source Edition 3.0</a> as a guideline and do the next level drill down for features. The data captured below will be used create a list of <a href="V3FunctionalSpecs.html" title="V3FunctionalSpecs">functional specifications</a>. </p> <h4><a name="GlassFishv3.1-Legend"></a>Legend</h3> 
+     <div class="panel" style="background-color: #ccffcc;border-width: 1px;">
+      <div class="panelContent" style="background-color: #ccffcc;"> 
+       <p>(1) Required</p> 
+      </div>
+     </div> 
+     <div class="panel" style="background-color: #f0f0cc;border-width: 1px;">
+      <div class="panelContent" style="background-color: #f0f0cc;"> 
+       <p>(2) Preferred</p> 
+      </div>
+     </div> 
+     <div class="panel" style="background-color: #ffcccc;border-width: 1px;">
+      <div class="panelContent" style="background-color: #ffcccc;"> 
+       <p>(3) Desired, but optional</p> 
+      </div>
+     </div> <h4><a name="GlassFishv3.1-ClusteringInfrastructure"></a>Clustering Infrastructure</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Area </th> 
+         <th class="confluenceTh"> Features Notes </th> 
+         <th class="confluenceTh"> Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Basic Infrastructure </td> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: #ccffcc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #ccffcc;"> 
+            <p> (1) Provide support for clustering infrastructure – Provide cluster lifecycle management (install, create, delete, start, stop, re-start) and monitoring infrastructure More <a href="3.1BasicClustering.html#3.1BasicClustering-section3.1BasicClusteringScope">details </a> </p> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Dynamic Re-config </td> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: #ccffcc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #ccffcc;"> 
+            <p> (1) Dynamically make configuration changes</p> 
+           </div>
+          </div> 
+          <div class="panel" style="background-color: #ccffcc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #ccffcc;"> 
+            <p> (1) Status/results/error reporting and recovery</p> 
+           </div>
+          </div> 
+          <div class="panel" style="background-color: #ccffcc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #ccffcc;"> 
+            <p>(1) Restart required status More <a href="ClusterDynamicReconfig.html#ClusterDynamicReconfig-sectionClusterDynamicReconfigScopeOfTheProject">details </a></p> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Synchronization </td> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: #ccffcc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #ccffcc;"> 
+            <p> (1) Synchronization with DAS during server boot – Cleanup of stale files </p> 
+           </div>
+          </div> 
+          <div class="panel" style="background-color: #ffcccc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #ffcccc;"> 
+            <p> (3) Improved diagnostics More <a href="3.1Synchronization.html#3.1Synchronization-section3.1SynchronizationScope">details </a></p> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Security </td> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: #ccffcc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #ccffcc;"> 
+            <p> (1) Security for cluster infrastructure (see <a href="3.1ClusteringSecurity.html" title="3.1ClusteringSecurity">spec </a>) More <a href="3.1NewSecurityFeatures.html" title="3.1NewSecurityFeatures">details </a> </p> 
+           </div>
+          </div> 
+          <div class="panel" style="background-color: #ccffcc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #ccffcc;"> 
+            <p> (1) <b>Implement</b> --target option for existing 3.0 commands – change-master-password, create-audit-module, delete-audit-module, list-audit-modules, create-auth-realm, delete-auth-realm, list-auth-realms, create-file-user, delete-file-user, update-file-user, list-file-users, list-file-groups, create-message-security-provider, delete-message-security-provider, list-message-security-providers, create-password-alias, delete-password-alias, update-password-alias, list-password-aliases, change-admin-password, login, etc.</p> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> SSH Provisioning </td> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: #ffcccc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #ffcccc;"> 
+            <p> (3) Provisioning of remote instances (leverage from Hudson) </p> 
+           </div>
+          </div> 
+          <div class="panel" style="background-color: #f0f0cc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #f0f0cc;"> 
+            <p> (2) Lifecycle management of remote instance start/stop-instance, start/stop-cluster More <a href="3.1SSHProvisioning.html#3.1SSHProvisioning-section3.1SSHProvisioningFeatureOverview">details </a> </p> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Configuration </td> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: #ccffcc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #ccffcc;"> 
+            <p> (1) Support for concurrent administration (ex. domain.xml corruption) – Token support </p> 
+           </div>
+          </div> 
+          <div class="panel" style="background-color: #ccffcc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #ccffcc;"> 
+            <p> (1) Config validation </p> 
+           </div>
+          </div> 
+          <div class="panel" style="background-color: #f0f0cc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #f0f0cc;"> 
+            <p> (2) Performance – Size of domain.xml should not be a bottleneck for startup and administration – Read config on-demand in DAS for management More <a href="3.1Config.html#3.1Config-section3.1ConfigScope">details </a> </p> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Infrastructure CLI </td> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: #ccffcc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #ccffcc;"> 
+            <p> (1) <b>New commands</b> – create-cluster, delete-cluster, list-clusters, create-instance, delete-instance, list-instances, start-instance, stop-instance, list-instances, backup-domain, restore-domain, list-backups, copy-config, delete-config, list-configs, etc. </p> 
+           </div>
+          </div> 
+          <div class="panel" style="background-color: #ccffcc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #ccffcc;"> 
+            <p> (1) <b>Existing 3.0 commands</b> – create-jvm-options, delete-jvm-options, delete-jvm-options, create-profiler, delete-profiler, create-system-properties, delete-system-property, list-system-properties, monitor, list-jndi-entries, start-domain, stop-domain, restart-domain, version, get, set, list, verify-domain.xml, create-domain, delete-domain, list-domain, start-database, stop-database, create-service, export, multimode, help, verify-domain-xml, unset, monitor, list-domains, etc. </p> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Deployment </td> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: #ccffcc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #ccffcc;"> 
+            <p> (1) Maintain backward compatibility </p> 
+           </div>
+          </div> 
+          <div class="panel" style="background-color: #ccffcc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #ccffcc;"> 
+            <p> (1) Hot deploy: dynamically deploy application to a cluster </p> 
+           </div>
+          </div> 
+          <div class="panel" style="background-color: #ccffcc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #ccffcc;"> 
+            <p> (1) Performance, error reporting </p> 
+           </div>
+          </div> 
+          <div class="panel" style="background-color: #ccffcc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #ccffcc;"> 
+            <p> (1) Rolling upgrade (same as v2.x) </p> 
+           </div>
+          </div> 
+          <div class="panel" style="background-color: #f0f0cc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #f0f0cc;"> 
+            <p> (2) WebLogic DD support (see <a href="SupportWLDDInContainers.html" title="SupportWLDDInContainers">details </a>) – Web Applications </p> 
+           </div>
+          </div> 
+          <div class="panel" style="background-color: #f0f0cc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #f0f0cc;"> 
+            <p> (2) Generate WebLogic DD in tools (NB) </p> 
+           </div>
+          </div> 
+          <div class="panel" style="background-color: #f0f0cc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #f0f0cc;"> 
+            <p> (2) Rename sun-* DD to glassfish-* </p> 
+           </div>
+          </div> 
+          <div class="panel" style="background-color: #ffcccc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #ffcccc;"> 
+            <p> (3) Application versioning </p> 
+           </div>
+          </div> 
+          <div class="panel" style="background-color: #ffcccc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #ffcccc;"> 
+            <p> (3) Progress status - More details - <a href="V3.1Deployment.html#V3.1Deployment-sectionV3.1DeploymentScope">deployment </a>, <a href="AppClientContainer3.1.html" title="AppClientContainer3.1">ACC </a> </p> 
+           </div>
+          </div> 
+          <div class="panel" style="background-color: #ccffcc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #ccffcc;"> 
+            <p> (1) <b>New commands</b> – create-application-ref, delete-application-ref, list-application-refs, etc. </p> 
+           </div>
+          </div> 
+          <div class="panel" style="background-color: #ccffcc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #ccffcc;"> 
+            <p> (1) <b>Implement</b> -target option support for existing 3.0 commands – create-lifecycle-module, delete-lifecycle-module, list-lifecycle-modules, deploy, undeploy, enable, disable, deploydir, get-client-stubs, list-components, list-sub-components, show-component-status, list-applications, etc. </p> 
+           </div>
+          </div></td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">%%</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Resources </td> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: #ffcccc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #ffcccc;"> 
+            <p> (3) Support for multi pool (JDBC Connection Pool) - More <a href="V3.1_Connectors_Pooling_Resources_JDBC.html#V3.1_Connectors_Pooling_Resources_JDBC-sectionV3.1ConnectorsPoolingResourcesJDBCScope...">details </a> </p> 
+           </div>
+          </div> 
+          <div class="panel" style="background-color: #ccffcc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #ccffcc;"> 
+            <p> (1) <b>New commands</b> – create-resource-ref, delete-resource-ref, list-resource-refs, etc. </p> 
+           </div>
+          </div> 
+          <div class="panel" style="background-color: #ccffcc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #ccffcc;"> 
+            <p> (1) <b>Implement</b> -target option for existing 3.0 commands – add-resources, create-admin-object, delete-admin-object, list-admin-objects, create-connector-connection-pool, delete-connector-connection-pool, list-connector-connection-pools, create-connector-resource, delete-connector-resource, list-connector-resources, create-connector-security-map, delete-connector-security-map, update-connector-security-map, list-connector-security-maps, create-resource-adapter-config, delete-resource-adapter-config, list-resource-adapter-configs, create-javamail-resource, delete-javamail-resource, list-javamail-resources, create-jdbc-connection-pool, delete-jdbc-connection-pool, list-jdbc-connection-pools, create-jdbc-resource, delete-jdbc-resource, list-jdbc-resources, ping-connection-pool, create-custom-resource, delete-custom-resource, list-custom-resources, create-jndi-resource, delete-jndi-resource, list-jndi-resources, list-jndi-entries, etc.</p> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Transaction Service </td> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: #ccffcc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #ccffcc;"> 
+            <p> (1) Transaction recovery in a cluster (same as v2.x) – Support for shared file system </p> 
+           </div>
+          </div> 
+          <div class="panel" style="background-color: #f0f0cc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #f0f0cc;"> 
+            <p>(2) Performance </p> 
+           </div>
+          </div>
+          <div class="panel" style="background-color: #ffcccc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #ffcccc;"> 
+            <p>(3) WebLogic DD support </p> 
+           </div>
+          </div>
+          <div class="panel" style="background-color: #f0f0cc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #f0f0cc;"> 
+            <p>(2) DTrace monitoring probes </p> 
+           </div>
+          </div>
+          <div class="panel" style="background-color: #ffcccc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #ffcccc;"> 
+            <p>(3) Coherence integration More <a href="3.1Transaction.html#3.1Transaction-section3.1TransactionScope">details </a> </p> 
+           </div>
+          </div>
+          <div class="panel" style="background-color: #ccffcc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #ccffcc;"> 
+            <p>(1) <b>Implement</b> target option for existing 3.0 commands – recover-transactions, rollback-transaction, freeze-transaction-service, unfreeze-transaction-service </p> 
+           </div>
+          </div></td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishv3.1-ManagementAPI%2FTools"></a>Management API / Tools</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Area </th> 
+         <th class="confluenceTh"> Features Notes </th> 
+         <th class="confluenceTh"> Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> RESTful API </td> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: #ccffcc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #ccffcc;"> 
+            <p>(1) Management and monitoring using REST API More <a href="3.1RestApi.html#3.1RestApi-section3.1RestApiScope">details </a> </p> 
+           </div>
+          </div></td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JMX MBeans </td> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: #f0f0cc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #f0f0cc;"> 
+            <p>(2) Continue to provide Mbeans for management and monitoring </p> 
+           </div>
+          </div> 
+          <div class="panel" style="background-color: #ccffcc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #ccffcc;"> 
+            <p>(1) Java EE Management (JSR 77) support </p> 
+           </div>
+          </div> 
+          <div class="panel" style="background-color: #f0f0cc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #f0f0cc;"> 
+            <p>(2) Provide documentation with examples on how to use RESTful APIs More <a href="3.1JMX.html#3.1JMX-section3.1JMXScope">details </a> </p> 
+           </div>
+          </div></td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Console </td> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: #ccffcc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #ccffcc;"> 
+            <p>(1) Support for centralized administration and clustering </p> 
+           </div>
+          </div> 
+          <div class="panel" style="background-color: #f0f0cc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #f0f0cc;"> 
+            <p>(2) Support for SSH/SSHD (features parity with create cluster etc.) </p> 
+           </div>
+          </div> 
+          <div class="panel" style="background-color: #ffcccc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #ffcccc;"> 
+            <p>(3) Warn user about conflicts during configuration updates (similar to a wiki) </p> 
+           </div>
+          </div> 
+          <div class="panel" style="background-color: #ffcccc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #ffcccc;"> 
+            <p>(3) Ability to apply updates from UC ? </p> 
+           </div>
+          </div> 
+          <div class="panel" style="background-color: #ffcccc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #ffcccc;"> 
+            <p>(3) Support for DAS backup/recovery </p> 
+           </div>
+          </div> 
+          <div class="panel" style="background-color: #ffcccc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #ffcccc;"> 
+            <p>(3) Multi-domain support </p> 
+           </div>
+          </div> 
+          <div class="panel" style="background-color: #ffcccc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #ffcccc;"> 
+            <p>(3) Integrate OSGi administration in admin console ? More <a href="GlassFish3.1AdminConsole.html#GlassFish3.1AdminConsole-sectionGlassFis1AdminConsoleGoalScope">details </a> </p> 
+           </div>
+          </div></td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> CLI Commands </td> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: #ccffcc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #ccffcc;"> 
+            <p>(1) Support for centralized administration and clustering (same as v2.x) – Any interface change requires CCC approval and full documentation </p> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishv3.1-ProductDelivery"></a>Product Delivery</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Area </th> 
+         <th class="confluenceTh"> Features Notes </th> 
+         <th class="confluenceTh"> Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Installer </td> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: #ccffcc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #ccffcc;"> 
+            <p>(1) GUI installer More <a href="3.1Installer.html#3.1Installer-section3.1InstallerScope">details </a> </p> 
+           </div>
+          </div></td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Packaging </td> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: #ccffcc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #ccffcc;"> 
+            <p>(1) IPS packaging More <a href="GlassFishv3.1Packaging.html#GlassFishv3.1Packaging-sectionGlassFishv3.1PackagingScope">details </a> </p> 
+           </div>
+          </div></td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Upgrade </td> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: #ccffcc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #ccffcc;"> 
+            <p>(1) GlassFish 2.1.1 (side-by-side with noted exceptions for missing features - Node agent, HADB) - GlassFish 3.0.1 (side-by-side) More <a href="GlassFishv3.1Upgrade.html#GlassFishv3.1Upgrade-sectionGlassFishv3.1UpgradeScope">details </a></p> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishv3.1-Clustering%26Availability"></a>Clustering &amp; Availability</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Area </th> 
+         <th class="confluenceTh"> Features Notes </th> 
+         <th class="confluenceTh"> Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> In-memory Session Replication </td> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: #ccffcc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #ccffcc;"> 
+            <p>(1) Support for in-memory state replication </p> 
+           </div>
+          </div>
+          <div class="panel" style="background-color: #ccffcc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #ccffcc;"> 
+            <p>(1) HA SPI Implementation with Provider implementation from Project Shoal </p> 
+           </div>
+          </div>
+          <div class="panel" style="background-color: #f0f0cc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #f0f0cc;"> 
+            <p>(2) Use Shoal based on Grizzly and remove JXTA </p> 
+           </div>
+          </div>
+          <div class="panel" style="background-color: #f0f0cc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #f0f0cc;"> 
+            <p>(2) DTrace monitoring probes ? </p> 
+           </div>
+          </div>
+          <div class="panel" style="background-color: #f0f0cc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #f0f0cc;"> 
+            <p>(2) Performance More <a href="GlassFishv3.1HA.html#GlassFishv3.1HA-sectionGlassFishv3.1HAScopeOfTheProject">details </a> </p> 
+           </div>
+          </div></td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Loadbalancer </td> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: #ccffcc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #ccffcc;"> 
+            <p>(1) LB plugin and mod_jk support for 3.1 </p> 
+           </div>
+          </div>
+          <div class="panel" style="background-color: #f0f0cc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #f0f0cc;"> 
+            <p>(2) Cookie based smart failover support for HA (to support consistent hash based in-memory replication) </p> 
+           </div>
+          </div> 
+          <div class="panel" style="background-color: #f0f0cc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #f0f0cc;"> 
+            <p>(2) Configurator </p> 
+           </div>
+          </div> 
+          <div class="panel" style="background-color: #ffcccc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #ffcccc;"> 
+            <p>(3) Automatic apply from DAS is optional More <a href="3.1Loadbalancer.html#3.1Loadbalancer-section3.1LoadbalancerScope">details </a> </p> 
+           </div>
+          </div>
+          <div class="panel" style="background-color: #ccffcc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #ccffcc;"> 
+            <p>(1) <b>New commands</b> – apply-http-lb-changes, configure-lb-weight, create-http-health-checker, create-http-lb, create-http-lb-config, create-http-lb-ref, delete-http-health-checker, delete-http-lb, delete-http-lb-config, delete-http-lb-ref, disable-http-lb-application, disable-http-lb-server, enable-http-lb-application, enable-http-lb-server, export-http-lb-config, list-http-lbs, list-http-lb-configs, etc. </p> 
+           </div>
+          </div></td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Web Tier </td> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: #ccffcc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #ccffcc;"> 
+            <p>(1) Integration of HA container SPI </p> 
+           </div>
+          </div> 
+          <div class="panel" style="background-color: #f0f0cc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #f0f0cc;"> 
+            <p>(2) WebLogic DD support </p> 
+           </div>
+          </div> 
+          <div class="panel" style="background-color: #f0f0cc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #f0f0cc;"> 
+            <p>(2) Additional DTrace monitoring probes </p> 
+           </div>
+          </div> 
+          <div class="panel" style="background-color: #f0f0cc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #f0f0cc;"> 
+            <p>(2) Coherence web support </p> 
+           </div>
+          </div> 
+          <div class="panel" style="background-color: #ffcccc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #ffcccc;"> 
+            <p>(3) Additional Coherence support More <a href="WebTierv3.1.html#WebTierv3.1-sectionWebTierv3.1ScopeOfTheProject">details </a> </p> 
+           </div>
+          </div> 
+          <div class="panel" style="background-color: #ccffcc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #ccffcc;"> 
+            <p>(1) <b>Implement</b> -target option for existing 3.0 commands – create-threadpool, delete-threadpool, list-threadpools, create-ssl, delete-ssl, create-http-listener, delete-http-listener, list-http-listeners, create-virtual-server, delete-virtual-server, list-virtual-servers </p> 
+           </div>
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> EJB </td> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: #ccffcc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #ccffcc;"> 
+            <p>(1) Integration of HA container SPI </p> 
+           </div>
+          </div> 
+          <div class="panel" style="background-color: #ccffcc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #ccffcc;"> 
+            <p>(1) EJB Timer service in cluster mode </p> 
+           </div>
+          </div> 
+          <div class="panel" style="background-color: #ccffcc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #ccffcc;"> 
+            <p>(1) Singleton EJB support (per SPEC) </p> 
+           </div>
+          </div> 
+          <div class="panel" style="background-color: #ccffcc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #ccffcc;"> 
+            <p>(1) Integration with IIOP path </p> 
+           </div>
+          </div> 
+          <div class="panel" style="background-color: #ffcccc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #ffcccc;"> 
+            <p>(3) WebLogic DD support </p> 
+           </div>
+          </div> 
+          <div class="panel" style="background-color: #f0f0cc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #f0f0cc;"> 
+            <p>(2) Additional DTrace monitoring probes </p> 
+           </div>
+          </div> 
+          <div class="panel" style="background-color: #ffcccc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #ffcccc;"> 
+            <p>(3) Coherence support ? </p> 
+           </div>
+          </div> 
+          <div class="panel" style="background-color: #ffcccc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #ffcccc;"> 
+            <p>(3) Retain SFSB / EJB Timer state during redeployment (save-session-on-reload) More <a href="GlassFishv3.1EJB.html#GlassFishv3.1EJB-sectionGlassFishv3.1EJBScopeOfTheProject">details </a> </p> 
+           </div>
+          </div> 
+          <div class="panel" style="background-color: #ccffcc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #ccffcc;"> 
+            <p>(1) <b>New Commands</b> – migrate-timers </p> 
+           </div>
+          </div>
+          <div class="panel" style="background-color: #ccffcc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #ccffcc;"> 
+            <p>(1) <b>Implement</b> -target option for existing 3.0 commands – list-timers </p> 
+           </div>
+          </div></td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> IIOP </td> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: #ccffcc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #ccffcc;"> 
+            <p>(1) Clustering and HA support on IIOP path </p> 
+           </div>
+          </div> 
+          <div class="panel" style="background-color: #ffcccc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #ffcccc;"> 
+            <p>(3) WebLogic DD support </p> 
+           </div>
+          </div> 
+          <div class="panel" style="background-color: #f0f0cc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #f0f0cc;"> 
+            <p>(2) DTrace monitoring probes <a href="http://kenai.com/projects/gf-corba-v3-mirror/pages/TableVersion">More details </a> </p> 
+           </div>
+          </div>
+          <div class="panel" style="background-color: #ccffcc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #ccffcc;"> 
+            <p>(1) <b>Implement</b> -target option for existing 3.0 commands – create-iiop-listener, delete-iiop-listener, list-iiop-listeners </p> 
+           </div>
+          </div></td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JMS </td> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: #ccffcc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #ccffcc;"> 
+            <p>(1) JMS clustering and HA support – Support for EMBEDDED, LOCAL, REMOTE modes </p> 
+           </div>
+          </div>
+          <div class="panel" style="background-color: #ffcccc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #ffcccc;"> 
+            <p>(3) WebLogic DD support </p> 
+           </div>
+          </div> 
+          <div class="panel" style="background-color: #ccffcc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #ccffcc;"> 
+            <p>(1) Support for resource adapter </p> 
+           </div>
+          </div> 
+          <div class="panel" style="background-color: #f0f0cc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #f0f0cc;"> 
+            <p>(2) DTrace monitoring probes </p> 
+           </div>
+          </div> 
+          <div class="panel" style="background-color: #ffcccc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #ffcccc;"> 
+            <p>(3) Coherence support More <a href="3.1JMS.html#3.1JMS-section3.1JMSScopeOfTheProject">details </a> </p> 
+           </div>
+          </div> 
+          <div class="panel" style="background-color: #ccffcc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #ccffcc;"> 
+            <p>(1) <b>Implement</b> -target option for existing 3.0 commands – create-jms-host, delete-jms-host, list-jms-hosts, create-jms-resource, delete-jms-resource, list-jms-resources, create-jmsdest, delete-jmsdest, list-jmsdest, flush-jmsdest, jms-ping, etc. </p> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Metro </td> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: #f0f0cc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #f0f0cc;"> 
+            <p>(2) High Availability support </p> 
+           </div>
+          </div>
+          <div class="panel" style="background-color: #f0f0cc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #f0f0cc;"> 
+            <p>(2) – Reliable messaging sequence failover </p> 
+           </div>
+          </div>
+          <div class="panel" style="background-color: #f0f0cc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #f0f0cc;"> 
+            <p>(2) – Secure conversation session failover </p> 
+           </div>
+          </div>
+          <div class="panel" style="background-color: #ffcccc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #ffcccc;"> 
+            <p>(3) WebLogic DD support </p> 
+           </div>
+          </div>
+          <div class="panel" style="background-color: #f0f0cc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #f0f0cc;"> 
+            <p>(2) DTrace monitoring probes </p> 
+           </div>
+          </div>
+          <div class="panel" style="background-color: #f0f0cc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #f0f0cc;"> 
+            <p>(2) Compliance: WS-I BP 2.0, RSP 1.0 and BSP 1.1 More <a href="3.1Metro.html#3.1Metro-section3.1MetroScope">details </a> </p> 
+           </div>
+          </div></td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Group Management Service (GMS) </td> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: #ccffcc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #ccffcc;"> 
+            <p>(1) Support in-memory replication module, timer migration, IIOP LB, Metro HA (if any), tx recovery (for failure notification) </p> 
+           </div>
+          </div>
+          <div class="panel" style="background-color: #ccffcc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #ccffcc;"> 
+            <p>(1) Shoal GMS Over Grizzly </p> 
+           </div>
+          </div>
+          <div class="panel" style="background-color: #f0f0cc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #f0f0cc;"> 
+            <p>(2) DTrace monitoring probes ? </p> 
+           </div>
+          </div>
+          <div class="panel" style="background-color: #f0f0cc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #f0f0cc;"> 
+            <p>(2) Performance </p> 
+           </div>
+          </div>
+          <div class="panel" style="background-color: #ffcccc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #ffcccc;"> 
+            <p>(3) GMS over non-multicast networks More <a href="GlassFishv3.1GMS.html#GlassFishv3.1GMS-sectionGlassFishv3.1GMSScopeOfTheProject">details </a> </p> 
+           </div>
+          </div>
+          <div class="panel" style="background-color: #f0f0cc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #f0f0cc;"> 
+            <p>(2) <b>New commands</b> – get-health </p> 
+           </div>
+          </div> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishv3.1-Serviceability"></a>Serviceability</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Area </th> 
+         <th class="confluenceTh"> Features Notes </th> 
+         <th class="confluenceTh"> Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> DAS's Recovery </td> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: #f0f0cc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #f0f0cc;"> 
+            <p>(2) Manual recovery support with backup/recovery </p> 
+           </div>
+          </div></td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Logging &amp; Diagnostics </td> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: #f0f0cc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #f0f0cc;"> 
+            <p>(2) Integration with log viewer for remote instances </p> 
+           </div>
+          </div>
+          <div class="panel" style="background-color: #ccffcc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #ccffcc;"> 
+            <p>(1) Error message reference </p> 
+           </div>
+          </div>
+          <div class="panel" style="background-color: #f0f0cc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #f0f0cc;"> 
+            <p>(2) Integration with syslog for remote instances - Self management rule for log file pruning ? (Optional) - Diagnostic report ? More <a href="3.1Logging.html#3.1Logging-section3.1LoggingScope">details </a> </p> 
+           </div>
+          </div>
+          <div class="panel" style="background-color: #f0f0cc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #f0f0cc;"> 
+            <p>(2) <b>New Commands</b> – display-error-distribution, display-error-statistics, display-log-records, display-license, generate-jvm-report, generate-diagnostic-report, etc. </p> 
+           </div>
+          </div>
+          <div class="panel" style="background-color: #ccffcc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #ccffcc;"> 
+            <p>(1) <b>Implement</b> -target option for existing 3.0 commands – rotate-log, etc. </p> 
+           </div>
+          </div></td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishv3.1-Embedded"></a>Embedded</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Area </th> 
+         <th class="confluenceTh"> Features Notes </th> 
+         <th class="confluenceTh"> Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Embedded </td> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: #ffcccc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #ffcccc;"> 
+            <p>(3) Formalize the APIs and offer official support </p> 
+           </div>
+          </div> 
+          <div class="panel" style="background-color: #ffcccc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #ffcccc;"> 
+            <p>(3) Finish the remaining work (Scattered archive, EJB timer, etc.) - Enhancement to the Maven plugin More <a href="GlassFish3.1Embedded.html#GlassFish3.1Embedded-sectionGlassFis1EmbeddedGoalScope">details </a> </p> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd"> Maven plugin enhancents: glassfish:run should use reasonable defaults and little-to-no pre-configuration. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishv3.1-OSGi"></a>OSGi</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Area </th> 
+         <th class="confluenceTh"> Features Notes </th> 
+         <th class="confluenceTh"> Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> OSGi &amp; Java EE </td> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: #ffcccc;border-width: 1px;">
+           <div class="panelContent" style="background-color: #ffcccc;"> 
+            <p>(3) Support OSGi enabled war, ejb-jar, rar, ear. Support OSGi &amp; JPA More <a href="3.1OSGi.html#3.1OSGi-section3.1OSGiScope">details </a> </p> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishv3.1-References"></a>References </h2> 
+     <ul> 
+      <li>Oracle GlassFish Server 2.1.1 CLI Command <a href="http://docs.sun.com/app/docs/doc/821-0179/6nl8hchmr?l=en&amp;a=expand">Documentation</a></li> 
+      <li>Oracle GlassFish Server 3.0 CLI Commands (<a href="http://docs.sun.com/app/docs/doc/820-7701/6nium5vqn?l=en&amp;a=expand">Documentation</a>, <a href="https://glassfish.java.net/nonav/v3/admin/planning/j109/list-of-commands.html">List</a>)</li> 
+     </ul> <h4><a name="GlassFishv3.1-GlassFishOpenSourceEdition2.xCLICommandsNotAvailableinGlassFishServerOpenSourceEdition3.1Release"></a>GlassFish Open Source Edition 2.x CLI Commands Not Available in GlassFish Server Open Source Edition 3.1 Release</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Area </th> 
+         <th class="confluenceTh"> Comments </th> 
+         <th class="confluenceTh"> CLI Commands </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Node Agent </td> 
+         <td class="confluenceTd"> All node-agent related commands are not available in 3.1 release. Node agent is optional in 3.x architecture </td> 
+         <td class="confluenceTd"> create-node-agent, create-node-agent-config, delete-node-agent, delete-node-agent-config, list-node-agents, start-node-agent, stop-node-agent </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> HADB </td> 
+         <td class="confluenceTd"> All HADB related commands are not available in 3.1 release </td> 
+         <td class="confluenceTd"> configure-ha-persistence, clear-ha-store, configure-ha-cluster, create-ha-store, remove-ha-cluster </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JBI </td> 
+         <td class="confluenceTd"> All JBI related commands are not available in 3.1 release </td> 
+         <td class="confluenceTd"> create-jbi-application-configuration, create-jbi-application-variable, delete-jbi-application-configuration, delete-jbi-application-variable, deploy-jbi-service-assembly, export-jbi-application-environment, install-jbi-component, install-jbi-shared-library, list-jbi-application-configurations, list-jbi-application-variables, list-jbi-binding-components, list-jbi-service-assemblie, list-jbi-service-engines, list-jbi-shared-libraries, set-jbi-component-configuration, set-jbi-component-logger, set-jbi-runtime-configuration, set-jbi-runtime-logger, show-jbi-application-configuration, show-jbi-binding-component, show-jbi-runtime-configuration, show-jbi-runtime-loggers, show-jbi-service-assembly, show-jbi-service-engine, show-jbi-shared-library, show-jbi-statistics, shut-down-jbi-component, shut-down-jbi-service-assembly, start-jbi-component, start-jbi-service-assembly, stop-jbi-component, stop-jbi-service-assembly, undeploy-jbi-service-assembly, uninstall-jbi-component, uninstall-jbi-shared-library, update-jbi-application-configuration, update-jbi-application-variable, upgrade-jbi-component, verify-jbi-application-environment, list-jbi-service-assemblies </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Web Services Management </td> 
+         <td class="confluenceTd"> All web services management commands are not available in 3.1 release </td> 
+         <td class="confluenceTd"> configure-webservice-management, create-transformation-rule, unpublish-from-registry, publish-to-registry, list-transformation-rules, list-registry-locations, delete-management-rule, delete-transformation-rule, delete-management-rule </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Self Management </td> 
+         <td class="confluenceTd"> Self Management is not implemented in 3.1 release </td> 
+         <td class="confluenceTd"> create-management-rule, delete-management-rule, list-management-rules, create-mbean, delete-mbean, list-mbeans </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Call Flow </td> 
+         <td class="confluenceTd"> Call Flow monitoring is not available in 3.1 release </td> 
+         <td class="confluenceTd"> start-callflow-monitoring, stop-callflow-monitoring </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Misc </td> 
+         <td class="confluenceTd"> Deprecated commands and other commands that do not make sense in 3.x </td> 
+         <td class="confluenceTd"> start-appserv, stop-appserv, shutdown, list-acls, create-persistence-resource, delete-persistence-resource, list-persistence-resources, install-license </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 13, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : JavaEE6TutorialDukesTutoring</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="JavaEE6TutorialDukesTutoring-DukesTutoringCaseStudyExample"></a>Dukes Tutoring Case Study Example</h1> <p>The Duke's Tutoring example application is a tracking system for a tutoring center for students. Students can check in and out, and the center can log attendance and status updates, as well as have contact information for guardians and students.</p> <h4><a name="JavaEE6TutorialDukesTutoring-Design%26Architecture"></a>Design &amp; Architecture</h2> <p>Duke's Tutoring is a web application using the following Java EE 6 platform technologies:</p> 
+     <ul> 
+      <li>Java Persistence API entities 
+       <ul> 
+        <li>JavaBeans Validation API annotations on the entities for verifying data</li> 
+        <li>Custom JavaBeans Validation annotation <tt>@Email</tt> for validating email addresses</li> 
+       </ul> </li> 
+      <li>Enterprise beans 
+       <ul> 
+        <li>All enterprise beans packaged withing the WAR for business logic</li> 
+        <li>local, no-interface view session and singleton beans</li> 
+        <li>Some session beans are JAX-RS resources</li> 
+        <li>Java EE security constraints on the admin business methods</li> 
+       </ul> </li> 
+      <li>JavaServer Faces using Facelets for the web front-end 
+       <ul> 
+        <li>templating</li> 
+        <li>composite components</li> 
+        <li>custom formatter <tt>PhoneNumberFormatter</tt></li> 
+        <li>security constraints on the admin interface</li> 
+       </ul> </li> 
+     </ul> <p>There are two parts of the Duke's Tutoring application: the main interface, for students, guardians, and staff; and the admin interface used by the staff to manage the students and guardians, and to generate attendance reports. Both parts are packaged within a single WAR file.</p> <p>Apart from the main and admin interface, there is a JUnit test that demonstrates how to use the embedded EJB container.</p> <h4><a name="JavaEE6TutorialDukesTutoring-MainInterface"></a>Main Interface</h2> <h4><a name="JavaEE6TutorialDukesTutoring-Entities%28%7B%7Bdukestutoring.entitypackage%7D%7D%29"></a>Entities (<tt>dukestutoring.entity package</tt>)</h3> 
+     <ul> 
+      <li><tt>Person</tt>: Defines common attributes for people tracked by Duke's Tutoring.</li> 
+      <li><tt>PersonDetails</tt>: Defines additional attributes (pictures, birthday, etc.) that aren't included in <tt>Person</tt> for performance reasons.</li> 
+      <li><tt>Student</tt>: Extends <tt>Person</tt> with attributes specific to the students that come to tutoring.</li> 
+      <li><tt>Guardian</tt>: Extends <tt>Person</tt> with attributes specific to the parents or guardians of <tt>Student</tt>.</li> 
+      <li><tt>Address</tt>: A mailing address, associated with <tt>Person</tt> entities.</li> 
+      <li><tt>TutoringSession</tt>: An entity that represents a particular day at the tutoring center.</li> 
+      <li><tt>StatusEntry</tt>: An entity for logging student's status changes, with timestamps.</li> 
+     </ul> <h4><a name="JavaEE6TutorialDukesTutoring-EnterpriseBeans%28%7B%7Bdukestutoring.ejbpackage%7D%7D%29"></a>Enterprise Beans (<tt>dukestutoring.ejb package</tt>)</h3> 
+     <ul> 
+      <li><tt>ConfigBean</tt>: a singleton session bean used to create the default students and create EJB timers that create tutoring session entities for every weekday</li> 
+      <li><tt>RequestBean</tt>: a stateless session bean containing the business methods for the main interface. Students or staff can check in/out students, and track when they go to and come back from the playground. Also has business methods for retrieving lists of students.</li> 
+     </ul> <h4><a name="JavaEE6TutorialDukesTutoring-Faceletsfiles%28in%7B%7Bweb%7D%7Ddirectory%29"></a>Facelets files (in <tt>web</tt> directory)</h3> 
+     <ul> 
+      <li><tt>template.xhtml</tt>: Template file for the main interface.</li> 
+      <li><tt>error.xhtml</tt>: Error file if something goes wrong (this shouldn't occur).</li> 
+      <li><tt>index.xhtml</tt>: Landing page for main interface.</li> 
+      <li><tt>park.xhtml</tt>: Page showing who is currently at the playground.</li> 
+      <li><tt>current.xhtml</tt>: Page showing who is currently in today's tutoring session.</li> 
+      <li><tt>statusEntries.xhtml</tt>: Page showing the status entry log for today's session.</li> 
+      <li><tt>resources/components/allStudentsTable.xhtml</tt>: Composite component for a table displaying all active students.</li> 
+      <li><tt>resources/components/currentSessionTable.xhtml</tt>: Composite component for a table displaying all students in today's session.</li> 
+      <li><tt>resources/components/parkTable.xhtml</tt>: Composite component for a table displaying all students current at the playground.</li> 
+      <li><tt>WEB-INF/includes/navigation.xhtml</tt>: XHTML fragment for the main interface's navigation bar.</li> 
+      <li><tt>WEB-INF/includes/footer.xhtml</tt>: XHTML fragment for the main interface's footer.</li> 
+     </ul> <h4><a name="JavaEE6TutorialDukesTutoring-HelperClasses%28%7B%7Bdukestutoring.utilpackage%7D%7D%29"></a>Helper Classes (<tt>dukestutoring.util package</tt>)</h3> 
+     <ul> 
+      <li><tt>CalendarUtil</tt>: strips the unnecessary time data from <tt>java.util.Calendar</tt> instances.</li> 
+      <li><tt>Email</tt>: Custom JavaBeans Validation annotation for validating email addresses.</li> 
+      <li><tt>StatusType</tt>: An enumerated type defining the different statuses that a student can be.</li> 
+     </ul> <h4><a name="JavaEE6TutorialDukesTutoring-Propertiesfiles"></a>Properties files</h3> 
+     <ul> 
+      <li><tt>ValidationMessages.properties</tt>: Strings for default locale used by JavaBeans Validation runtime to display validation messages. This file must be named <tt>ValidationMessages.properties</tt> and located in the default package as required by JSR 303.</li> 
+      <li><tt>dukestutoring/web/messages/Messages.properties</tt>: Strings for default locale for the main and admin Facelets interface.</li> 
+     </ul> <h4><a name="JavaEE6TutorialDukesTutoring-Deploymentdescriptors"></a>Deployment descriptors</h3> 
+     <ul> 
+      <li><tt>src/conf/beans.xml</tt>: Empty file used to enable the CDI runtime.</li> 
+      <li><tt>web/WEB-INF/faces-config.xml</tt>: JavaServer Faces configuration file.</li> 
+      <li><tt>src/conf/persistence.xml</tt>: Java Persistence API configuration file.</li> 
+      <li><tt>web/WEB-INF/sun-web.xml</tt>: GlassFish-specific configuration file.</li> 
+      <li><tt>web/WEB-INF/web.xml</tt>: Web application's configuration file.</li> 
+     </ul> <h4><a name="JavaEE6TutorialDukesTutoring-AdminInterface"></a>Admin Interface</h2> <h4><a name="JavaEE6TutorialDukesTutoring-Enterprisebeans%28%7B%7Bdukestutoring.ejb%7D%7Dpackage%29"></a>Enterprise beans (<tt>dukestutoring.ejb</tt> package)</h3> 
+     <ul> 
+      <li><tt>AdminBean</tt>: Stateless session bean for all admin business logic</li> 
+     </ul> <h4><a name="JavaEE6TutorialDukesTutoring-Faceletsfiles%28in%7B%7Bweb%7D%7Ddirectory%29"></a>Facelets files (in <tt>web</tt> directory)</h3> 
+     <ul> 
+      <li><tt>admin</tt> directory: 
+       <ul> 
+        <li><tt>adminTemplate.xhtml</tt>: Template for admin interface.</li> 
+        <li><tt>index.xhtml</tt>: Landing page for admin interface.</li> 
+        <li><tt>login.xhtml</tt>: Login page for security-constrained admin interface.</li> 
+        <li><tt>loginError.xhtml</tt>: Page displayed if there are errors authenticating the admin user.</li> 
+        <li><tt>address</tt> directory: Create, edit, delete XHTML files for <tt>Address</tt> entities.</li> 
+        <li><tt>guardian</tt> directory: Create, edit, delete XHTML files for <tt>Guardian</tt> entities.</li> 
+        <li><tt>student</tt> directory: Create, edit, delete XHTML files for <tt>Student</tt> entities.</li> 
+       </ul> </li> 
+      <li><tt>resources/components/formLogin.xhtml</tt>: Composite component for a login form using Java EE security.</li> 
+      <li><tt>WEB-INF/includes/adminNav.xhtml</tt>: XHTML fragment for the admin interface's navigation bar.</li> 
+     </ul> <h4><a name="JavaEE6TutorialDukesTutoring-Tests"></a>Tests</h2> <h4><a name="JavaEE6TutorialDukesTutoring-JUnittestclasses%28in%7B%7Btest%7D%7Ddirectory%29"></a>JUnit test classes (in <tt>test</tt> directory)</h3> 
+     <ul> 
+      <li><tt>dukestutoring.ejb.RequestBeanTest</tt>: JUnit test class for exercising the <tt>dukestutoring.ejb.RequestBean</tt> stateless session bean. Uses the embeddable EJB container.</li> 
+     </ul> <h4><a name="JavaEE6TutorialDukesTutoring-Status"></a>Status</h2> 
+     <ul> 
+      <li>Partially localized.</li> 
+      <li>Delete functionality in admin interface not complete.</li> 
+      <li>Need to figure out localization in <tt>web/resources/components/loginForm.xhtml</tt>, since using the <tt>Messages.properties</tt> via <tt>#{bundle.<em>propertyname</em></tt> results in runtime errors.</li> 
+      <li>Need to add a JAX-RS interface.</li> 
+      <li>Need to resolve the issue where adding Bean Validation annotations to persistent attributes in the entities causes input fields in the Facelets files to fail validation by the JSF runtime if those attributes aren't required. For example, a mobile phone number isn't required, but leaving the input form blank causes the JSF runtime to show validation errors. I emailed Ed Burns about this issue, but he had a higher priority project he had to work on. <b>If this is a bug, it needs to be filed and fixed before I get back.</b> 
+       <hr> </li>
+     </ul> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 02, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

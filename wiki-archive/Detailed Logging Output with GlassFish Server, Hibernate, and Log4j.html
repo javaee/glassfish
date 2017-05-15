@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : Detailed Logging Output with GlassFish Server, Hibernate, and Log4j</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>Detailed logging output simplifies the debugging of a typical Java Platform, Enterprise Edition (Java EE) application, for example, a three-tier application that is deployed in an application server and stores data in a relational database management system (RDBMS). By integrating Hibernate 4, Apache Log4j, and GlassFish Server with the Eclipse integrated development environment (IDE) for Java EE developers, you can obtain detailed logging output from an application that you are developing. Hibernate obtains basic SQL logging output. Apache Log4j obtains detailed logging output. The Eclipse IDE displays a concise form of the individual log entries, omitting extraneous information in the raw server.log file.</p> <p>A sample application is provided to demonstrate the logging output that you can obtain by integrating these technologies.</p> 
+     <hr> <p><b>Note -</b> Because of class loading limitations with Hibernate, you <b>must</b> use Hibernate 4.</p> 
+     <hr> <p>This tutorial addresses the following topics:</p> 
+     <div> 
+      <ul> 
+       <li><a href="#DetailedLoggingOutputwithGlassFishServer%2CHibernate%2CandLog4j-SuggestedAudience">Suggested Audience</a></li> 
+       <li><a href="#DetailedLoggingOutputwithGlassFishServer%2CHibernate%2CandLog4j-Downloading%2CInstalling%2CandConfiguringRequiredSoftware">Downloading, Installing, and Configuring Required Software</a></li> 
+       <li><a href="#DetailedLoggingOutputwithGlassFishServer%2CHibernate%2CandLog4j-CreatingaProjectinEclipseIDE">Creating a Project in Eclipse IDE</a></li> 
+       <li><a href="#DetailedLoggingOutputwithGlassFishServer%2CHibernate%2CandLog4j-SettingUptheDatabaseandDataSource">Setting Up the Database and Data Source</a></li> 
+       <li><a href="#DetailedLoggingOutputwithGlassFishServer%2CHibernate%2CandLog4j-SpecifyingHibernateasthePersistenceProvider">Specifying Hibernate as the Persistence Provider</a></li> 
+       <li><a href="#DetailedLoggingOutputwithGlassFishServer%2CHibernate%2CandLog4j-ConfiguringHibernatetoObtainBasicSQLLoggingOutput">Configuring Hibernate to Obtain Basic SQL Logging Output</a></li> 
+       <li><a href="#DetailedLoggingOutputwithGlassFishServer%2CHibernate%2CandLog4j-ConfiguringLog4jToObtainDetailedLoggingOutput">Configuring Log4j To Obtain Detailed Logging Output</a></li> 
+       <li><a href="#DetailedLoggingOutputwithGlassFishServer%2CHibernate%2CandLog4j-UsingtheSampleApplication">Using the Sample Application</a></li> 
+       <li><a href="#DetailedLoggingOutputwithGlassFishServer%2CHibernate%2CandLog4j-FurtherReading">Further Reading</a></li> 
+      </ul>
+     </div> <h4><a name="DetailedLoggingOutputwithGlassFishServer%2CHibernate%2CandLog4j-SuggestedAudience"></a>Suggested Audience</h1> <p>This tutorial is for software developers who are developing Java EE applications for deployment in GlassFish Server. This tutorial assumes that you are familiar with all the technologies that are used in the tutorial. </p> <h4><a name="DetailedLoggingOutputwithGlassFishServer%2CHibernate%2CandLog4j-Downloading%2CInstalling%2CandConfiguringRequiredSoftware"></a>Downloading, Installing, and Configuring Required Software</h1> <p>Before you begin, download, install, and configure the required software.</p> 
+     <ol> 
+      <li>Ensure that <a href="http://www.oracle.com/technetwork/java/javase/downloads/jdk-6u31-download-1501634.html">Java Development Kit (JDK) 6</a> is installed and that <a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&amp;id=GSRLN00252">paths and environment variables for the JDK</a> are correct. If the JDK and the Java Runtime Environment (JRE) are installed, ensure that the path to the JDK precedes the path to the JRE in your path statement. Otherwise, GlassFish Server might use a JRE for its Java virtual machine (VM) and steps for compiling JavaServer Pages (JSP) technology pages will fail.</li> 
+      <li>Download and install <a href="http://www.eclipse.org/downloads/packages/eclipse-ide-java-ee-developers/indigosr2">Eclipse IDE for Java EE developers</a>.</li> 
+      <li>Download and install <a href="http://glassfish.java.net/downloads/3.1.2-final.html">GlassFish Server Open Source Edition 3.1.2</a>.</li> 
+      <li>Download <a href="http://logging.apache.org/log4j/1.2/download.html">Apache Log4j</a> and extract the log4j-1.2.x.jar file to the glassfish3/glassfish/lib folder.</li> 
+      <li>Download <a href="http://sourceforge.net/projects/hibernate/files/hibernate4/">Hibernate 4 </a> and extract all JAR files in the following folders to the glassfish3/glassfish/lib folder: 
+       <ul> 
+        <li>hibernate-release-4.x.x.Final/lib/jpa</li> 
+        <li>hibernate-release-4.x.x.Final/lib/required 
+         <hr> <p><b>Notes -</b> </p></li> 
+        <li>The Hibernate 4 libraries are distributed in a set of folders. However, you must copy the JAR files directly into the glassfish3/glassfish/lib folder without preserving this folder structure.</li> 
+        <li>To use use other features of Hibernate, such as 2nd-level caching, extract the JAR files in all folders under hibernate-release-4.x.x.Final/lib.</li> 
+        <li>If you are running multiple domains, extract the Hibernate libraries and Log4j library to the glassfish3/glassfish/domains/domain1/lib folder. 
+         <hr></li> 
+       </ul> </li> 
+      <li>Download and install the <a href="http://glassfishplugins.java.net/eclipse36/index.html#getting">GlassFish Server plugin for Eclipse IDE</a>. When you add an update site, specify the location as <tt><a href="http://download.java.net/glassfish/eclipse/indigo">http://download.java.net/glassfish/eclipse/indigo</a></tt> and not the location that is stated in the instructions.</li> 
+      <li><a href="http://glassfishplugins.java.net/eclipse36/index.html#1">Register your installation of GlassFish Server with Eclipse IDE</a>. When you select the server type, select GlassFish 3.1.2 and not the type that is stated in the instructions.</li> 
+      <li><a href="http://glassfishplugins.java.net/eclipse36/index.html">Change the global preferences for GlassFish Server</a> to meet the requirements of your application. If your application uses the Java DB database that is bundled with GlassFish Server, select all options on the Preferences page as shown in the following figure.<br> <span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/36438286/38502401.jpg" style="border: 1px solid black"></span></li> 
+     </ol> <h4><a name="DetailedLoggingOutputwithGlassFishServer%2CHibernate%2CandLog4j-CreatingaProjectinEclipseIDE"></a>Creating a Project in Eclipse IDE</h1> <p>Before you start to develop your application, create a suitable <a href="http://help.eclipse.org/indigo/topic/org.eclipse.jst.j2ee.doc.user/topics/ph-projects.html">Eclipse IDE project for developing Java EE applications</a>.</p> <h4><a name="DetailedLoggingOutputwithGlassFishServer%2CHibernate%2CandLog4j-SettingUptheDatabaseandDataSource"></a>Setting Up the Database and Data Source</h1> <p>Exactly how to set up the database and data source depends on the database that your application uses. For detailed instructions, see <a href="http://docs.oracle.com/cd/E26576_01/doc.312/e24928/jdbc.htm">Administering Database Connectivity</a> in <em>Oracle GlassFish Server Administration Guide</em>.</p> <h4><a name="DetailedLoggingOutputwithGlassFishServer%2CHibernate%2CandLog4j-SpecifyingHibernateasthePersistenceProvider"></a>Specifying Hibernate as the Persistence Provider</h1> <p>By default, GlassFish Server Open Source Edition uses EclipseLink as the persistence provider. To specify Hibernate as the persistence provider, you must explicitly declare the persistence provider in the persistence.xml file. The persistence.xml file is a descriptor file that defines one or more persistence units in an enterprise application that uses <a href="http://docs.oracle.com/javaee/6/tutorial/doc/bnbqa.html">entities</a>.</p> <p>Declare the persistence provider as follows:</p> 
+     <ol> 
+      <li>Add a <tt>persistence-unit</tt> element.</li> 
+      <li>Set the <tt>name</tt> attribute of the <tt>persistence-unit</tt> element to a unique name in the current scoped class loader.</li> 
+      <li>Add a <tt>provider</tt> element inside the <tt>persistence-unit</tt> element.</li> 
+      <li>In the <tt>provider</tt> element, specify the fully qualified Java class name of the underlying Java Persistence API (JPA) <tt>EntityManager</tt> implementation, namely <tt>org.hibernate.ejb.HibernatePersistence</tt>.</li> 
+     </ol> <p>The element <tt>&lt;property name="hibernate.show-sql"&nbsp; value="true"/&gt;</tt> does not affect the SQL logging output. Therefore, you can omit this element.</p> <p>The following example persistence.xml file declares a persistence unit that is named <tt>BankServiceCtx</tt> for which the persistence provider is <tt>org.hibernate.ejb.HibernatePersistence</tt>.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Eclipse; brush: html/xml; gutter: false">&lt;persistence xmlns="http://java.sun.com/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd" version="2.0"&gt;
+    &lt;persistence-unit name="BankServiceCtx" transaction-type="JTA"&gt;
+&nbsp;&nbsp;&nbsp;&nbsp; &lt;provider&gt;org.hibernate.ejb.HibernatePersistence&lt;/provider&gt;
+&nbsp;&nbsp;&nbsp;&nbsp; &lt;jta-data-source&gt;jdbc/__default&lt;/jta-data-source&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;properties&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;property name="hibernate.dialect" value="org.hibernate.dialect.DerbyDialect"/&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;property name="hibernate.hbm2ddl.auto" value="create"/&gt;
+&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;!-- &lt;property name="hibernate.show-sql"&nbsp; value="true"/&gt; --&gt;
+&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&lt;/properties&gt;
+&nbsp;&nbsp;&nbsp; &lt;/persistence-unit&gt;
+&lt;/persistence&gt;</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="DetailedLoggingOutputwithGlassFishServer%2CHibernate%2CandLog4j-ConfiguringHibernatetoObtainBasicSQLLoggingOutput"></a>Configuring Hibernate to Obtain Basic SQL Logging Output</h1> 
+     <ol> 
+      <li>Create the hibernate.properties file in the source folder of your project. In the sample application, this folder is the ejbModule folder.</li> 
+      <li>Add the following lines to the hibernate.properties file: 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">hibernate.show_sql=true
+hibernate.format_sql=true</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ol> <h4><a name="DetailedLoggingOutputwithGlassFishServer%2CHibernate%2CandLog4j-ConfiguringLog4jToObtainDetailedLoggingOutput"></a>Configuring Log4j To Obtain Detailed Logging Output</h1> <p>Before you begin, ensure that the glassfish3/glassfish/lib folder in your GlassFish Server installation contains the Log4j library file log4j-1.2.x.jar. </p> <p>To obtain detailed SQL logging output for the <tt>org.hibernate.ejb.HibernatePersistence</tt> persistence provider, configure Log4j to trace all packages whose name starts with <tt>org.hibernate</tt>:</p> 
+     <ol> 
+      <li>From the <b>Hibernate 4 distribution file</b>, extract the log4j.properties file to the source folder of your project. In the sample application, this folder is the ejbModule folder. 
+       <hr> <p><b>Note -</b> The log4j.properties file is in the Hibernate 4 distribution file, <b>not</b> the Apache Log4j distribution file.</p> 
+       <hr></li> 
+      <li>Verify in the extracted log4j.properties file that <tt>log4j.logger.org.hibernate</tt> is set to <tt>debug</tt>: 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">log4j.logger.org.hibernate=debug</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ol> <p>The complete log4j.properties file is as follows:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">### direct log messages to stdout ###
+log4j.appender.stdout=org.apache.log4j.ConsoleAppender
+log4j.appender.stdout.Target=System.out
+log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
+log4j.appender.stdout.layout.ConversionPattern=%d{ABSOLUTE} %5p %c{1}:%L - %m%n
+
+### direct messages to file hibernate.log ###
+#log4j.appender.file=org.apache.log4j.FileAppender
+#log4j.appender.file.File=hibernate.log
+#log4j.appender.file.layout=org.apache.log4j.PatternLayout
+#log4j.appender.file.layout.ConversionPattern=%d{ABSOLUTE} %5p %c{1}:%L - %m%n
+
+### set log levels - for more verbose logging change 'info' to 'debug' ###
+
+log4j.rootLogger=warn, stdout
+
+#log4j.logger.org.hibernate=info
+log4j.logger.org.hibernate=debug
+
+### log HQL query parser activity
+#log4j.logger.org.hibernate.hql.ast.AST=debug
+
+### log just the SQL
+#log4j.logger.org.hibernate.SQL=debug
+
+### log JDBC bind parameters ###
+log4j.logger.org.hibernate.type=info
+#log4j.logger.org.hibernate.type=debug
+
+### log schema export/update ###
+log4j.logger.org.hibernate.tool.hbm2ddl=debug
+
+### log HQL parse trees
+#log4j.logger.org.hibernate.hql=debug
+
+### log cache activity ###
+#log4j.logger.org.hibernate.cache=debug
+
+### log transaction activity
+#log4j.logger.org.hibernate.transaction=debug
+
+### log JDBC resource acquisition
+#log4j.logger.org.hibernate.jdbc=debug
+
+### enable the following line if you want to track down connection ###
+### leakages when using DriverManagerConnectionProvider ###
+#log4j.logger.org.hibernate.connection.DriverManagerConnectionProvider=trace</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="DetailedLoggingOutputwithGlassFishServer%2CHibernate%2CandLog4j-UsingtheSampleApplication"></a>Using the Sample Application</h1> <p>The sample application is a three-tier application that stores data that a user enters in persistent storage, namely a database. </p> <p>The web tier consists of a very simple form that invokes a basic servlet to process the data. The web tier accesses only the session beans.</p> <p>Within the enterprise bean tier, the session beans use Java persistence entities. The entities access the database tables that store the entity states. A plain old Java object (POJO) with some annotations specifies how JPA is to store the data persistently. Hibernate 4 complies fully with the JPA 2.0 specification. The <tt>EntityManager</tt> implementation creates the tables in the database.</p> <p>The application uses the JavaDB database that is bundled with Glassfish Server. You can set up this database by using the the GlassFish Server Administration Console without using the command line.</p> <p>The container controls transactions by using the using the <tt>jdbc/__default</tt> <a href="http://docs.oracle.com/javaee/6/tutorial/doc/bncjj.html"><tt>DataSource</tt> object</a>. This object is specified in the <tt>jta-data-source</tt> element of the persistence.xml file as follows:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Eclipse; brush: html/xml; gutter: false">&lt;jta-data-source&gt;jdbc/__default&lt;/jta-data-source&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>Using the sample application involves the following tasks:</p> 
+     <ul> 
+      <li><a href="#DetailedLoggingOutputwithGlassFishServer%2CHibernate%2CandLog4j-ToConverttheSampleApplicationtoanEclipseIDEProject">Converting the sample application to an Eclipse IDE project</a></li> 
+      <li><a href="#DetailedLoggingOutputwithGlassFishServer%2CHibernate%2CandLog4j-ToModifytheDerbyPoolConnectionPool">Modifying the <tt>DerbyPool</tt> connection pool</a></li> 
+      <li><a href="#DetailedLoggingOutputwithGlassFishServer%2CHibernate%2CandLog4j-ToRuntheSampleApplication">Running the sample application</a></li> 
+      <li><a href="#DetailedLoggingOutputwithGlassFishServer%2CHibernate%2CandLog4j-ToViewtheSQLLoggingOutput">Viewing the SQL logging output</a></li> 
+     </ul> <h4><a name="DetailedLoggingOutputwithGlassFishServer%2CHibernate%2CandLog4j-ToConverttheSampleApplicationtoanEclipseIDEProject"></a>To Convert the Sample Application to an Eclipse IDE Project</h2> <p>The sample application is distributed as an enterprise application archive (EAR) file. To use this application, you must convert it to an Eclipse IDE project.</p> 
+     <ol> 
+      <li>Download the <a href="http://java.net/projects/glassfish/sources/v2/content/trunk/www/docs/Sql-logging-with-Hibernate/SqlLogging.ear">application EAR file </a>.</li> 
+      <li><a href="http://help.eclipse.org/indigo/topic/org.eclipse.jst.j2ee.doc.user/topics/tjimpear.html">Import the application EAR file into Eclipse IDE</a>.</li> 
+      <li><a href="http://help.eclipse.org/indigo/topic/org.eclipse.wst.webtools.doc.user/topics/twprjset.html">Set the properties</a> of the <tt>SqlLoggingWeb</tt> project to add the <tt>SqlLoggingEjb</tt> project to the Java build path.</li> 
+     </ol> <h4><a name="DetailedLoggingOutputwithGlassFishServer%2CHibernate%2CandLog4j-ToModifytheDerbyPoolConnectionPool"></a>To Modify the DerbyPool Connection Pool</h2> <p>The sample application uses the preconfigured <tt>DerbyPool</tt> connection pool for connections to the database. To enable the sample application to use this pool, you must modify the preset values of some properties of the pool.</p> <p>Before you begin, ensure that the option to start the Java DB process with GlassFish Server is set in the global preferences for the GlassFish Server.</p> 
+     <ol> 
+      <li><a href="http://help.eclipse.org/indigo/topic/org.eclipse.wst.server.ui.doc.user/topics/twsrtins.html">Start GlassFish Server in Eclipse IDE</a>. The JavaDB database that is bundled with GlassFish Server is also started.</li> 
+      <li>In the Servers view, select and right-click GlassFish Server.</li> 
+      <li>From the pop-up menu that opens, choose GlassFish→View Admin Console. The GlassFish Server Administration Console is opened in the system browser.</li> 
+      <li>In the navigation tree, under the Resources node, expand the JDBC node.</li> 
+      <li>Under the JDBC node, select the JDBC Connection Pools node. The Connection Pools page opens.</li> 
+      <li>In the table of connection pools, click <tt>DerbyPool</tt>. The Edit Connection Pool page opens.</li> 
+      <li>On the Edit Connection Pool page, click the Additional Properties tab. The Edit Connection Pool Properties page opens.</li> 
+      <li>Edit the properties as follows: 
+       <div class="table-wrap"> 
+        <table class="confluenceTable">
+         <tbody> 
+          <tr> 
+           <th class="confluenceTh">Property</th> 
+           <th class="confluenceTh">Value</th> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd">User</td> 
+           <td class="confluenceTd">user</td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd">Password</td> 
+           <td class="confluenceTd">user</td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd">DatabaseName</td> 
+           <td class="confluenceTd">newdb</td> 
+          </tr> 
+         </tbody>
+        </table> 
+       </div> <p>The following figure shows the Edit Connection Pool Properties page after these properties have been edited.<br> <span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/36438286/38436867.jpg" style="border: 1px solid black"></span> </p></li> 
+      <li>Click Save.</li> 
+      <li>Confirm that the connection to the pool is usable. 
+       <ol> 
+        <li>On the Edit Connection Pool Properties page, click the General tab. The Edit Connection Pool page opens.</li> 
+        <li>On the Edit Connection Pool page, click Ping.</li> 
+       </ol> </li> 
+      <li>Confirm that the JNDI name of the connection pool is correct. 
+       <ol> 
+        <li>In the navigation tree, under the Resources node, expand the JDBC node.</li> 
+        <li>Under the JDBC node, select the JDBC Resources node. The JDBC Resources page opens.</li> 
+        <li>On the JDBC Resources page, select <tt>jdbc/__default</tt>. <tt>DerbyPool</tt> is associated with this JNDI name as shown in the following figure.<br> <span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/36438286/38436866.jpg" style="border: 1px solid black"></span></li> 
+       </ol> </li> 
+     </ol> <h4><a name="DetailedLoggingOutputwithGlassFishServer%2CHibernate%2CandLog4j-ToRuntheSampleApplication"></a>To Run the Sample Application</h2> 
+     <ol> 
+      <li>In the Project Explorer view, select and right-click the <tt>SqlLogging</tt> project.</li> 
+      <li>From the pop-up menu that opens, select Run As→Run on Server. The Run on Server wizard opens.</li> 
+      <li>Ensure that the option to choose an existing server is selected.</li> 
+      <li>From the list of servers, select GlassFish Server and click Next. The Add and Remove page opens.</li> 
+      <li>Confirm that <tt>SqlLogging</tt> is listed under the configured projects.</li> 
+      <li>Click Finish.</li> 
+     </ol> <h4><a name="DetailedLoggingOutputwithGlassFishServer%2CHibernate%2CandLog4j-ToViewtheSQLLoggingOutput"></a>To View the SQL Logging Output</h2> <p>Viewing the SQL logging output involves viewing the server.log file in Eclipse IDE.</p> 
+     <ol> 
+      <li>In the Servers view, select and right-click GlassFish Server.</li> 
+      <li>From the pop-up menu that opens, choose GlassFish→View Log File.<br> The SQL logging output is displayed in Eclipse IDE as shown in the following figure.<br> <span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/36438286/38436865.jpg" style="border: 1px solid black"></span></li> 
+     </ol> <h4><a name="DetailedLoggingOutputwithGlassFishServer%2CHibernate%2CandLog4j-FurtherReading"></a>Further Reading</h1> <p>For more information about the technologies in this tutorial, see the following documentation:</p> 
+     <ul> 
+      <li><a href="http://glassfish.java.net/docs/index.html">GlassFish Server Product Documentation</a></li> 
+      <li><a href="http://glassfishplugins.java.net/eclipse36/index.html">Eclipse IDE and GlassFish Server Integration </a></li> 
+      <li><a href="http://docs.oracle.com/javaee/6/tutorial">The Java EE 6 Tutorial</a></li> 
+      <li><a href="http://help.eclipse.org/indigo/index.jsp">Eclipse documentation - Current Release (Eclipse Indigo)</a></li> 
+      <li><a href="http://hibernate.org/docs">Hibernate documentation</a></li> 
+      <li><a href="http://logging.apache.org/log4j/1.2/manual.html">Short introduction to log4j</a></li> 
+     </ul> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/36438286/38436865.jpg">Console-Eclipse.jpg</a> (image/jpeg) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/36438286/38436866.jpg">Edit-JDBC-Connection Pool.jpg</a> (image/jpeg) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/36438286/38436867.jpg">Edit-Porperties-JDBC-Connection Pool.jpg</a> (image/jpeg) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/36438286/38502401.jpg">glassfishpreferences.jpg</a> (image/jpeg) 
+      <br> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Apr 19, 2012 by 
+<font color="#0050B2">10189</font>. Exported from wikis.oracle.com on May 27, 2015 20:43.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

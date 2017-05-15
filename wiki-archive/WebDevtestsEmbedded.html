@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : WebDevtestsEmbedded</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="WebDevtestsEmbedded-Knownissue"></a>Known issue</h2> <p><a href="https://github.com/javaee/glassfish/issues/11516">issue 11516</a> Embedded does not work in offline mode (without internet)</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> test name </th> 
+         <th class="confluenceTh"> description </th> 
+         <th class="confluenceTh"> comments </th> 
+         <th class="confluenceTh"> issue number </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> empty-servlet-path-jsp-include </td> 
+         <td class="confluenceTd"> bug </td> 
+         <td class="confluenceTd"> jsp compilation </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jsp-custom-taglib-bundled-as-jar </td> 
+         <td class="confluenceTd"> bug </td> 
+         <td class="confluenceTd"> Caused by: java.io.FileNotFoundException: <a href="http://java.sun.com/j2ee/dtd/web-jsptaglibrary_1_2.dtd">http://java.sun.com/j2ee/dtd/web-jsptaglibrary_1_2.dtd</a> <p> </p></td> 
+         <td class="confluenceTd"> issue 11516 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jsp-custom-taglib-jar-inside-ear-with-manifest-classpath </td> 
+         <td class="confluenceTd"> bug </td> 
+         <td class="confluenceTd"> Caused by: java.io.FileNotFoundException: <a href="http://java.sun.com/j2ee/dtd/web-jsptaglibrary_1_2.dtd">http://java.sun.com/j2ee/dtd/web-jsptaglibrary_1_2.dtd</a> <p> </p></td> 
+         <td class="confluenceTd"> issue 11516 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jsp-custom-taglib-jar-inside-ear-without-manifest-classpath </td> 
+         <td class="confluenceTd"> bug </td> 
+         <td class="confluenceTd"> java.io.FileNotFoundException: <a href="http://java.sun.com/j2ee/dtd/web-jsptaglibrary_1_2.dtd">http://java.sun.com/j2ee/dtd/web-jsptaglibrary_1_2.dtd</a> <p> </p></td> 
+         <td class="confluenceTd"> issue 11516 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jsp-in-webapp-with-bundled-xercesImpl </td> 
+         <td class="confluenceTd"> bug </td> 
+         <td class="confluenceTd"> java.io.FileNotFoundException: <a href="http://java.sun.com/j2ee/dtd/web-jsptaglibrary_1_2.dtd">http://java.sun.com/j2ee/dtd/web-jsptaglibrary_1_2.dtd</a> <p> </p></td> 
+         <td class="confluenceTd"> issue 11516 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> auth-annotation-inheritance </td> 
+         <td class="confluenceTd"> bug </td> 
+         <td class="confluenceTd"> Login failed </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> auth-annotations </td> 
+         <td class="confluenceTd"> bug </td> 
+         <td class="confluenceTd"> Login failed </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> login-logout </td> 
+         <td class="confluenceTd"> bug </td> 
+         <td class="confluenceTd"> Login failed </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> xml-override-auth-annotations </td> 
+         <td class="confluenceTd"> bug </td> 
+         <td class="confluenceTd"> Login failed: javax.security.auth.login.LoginException: Failed file login for javaee </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> session-destroyed-during-undeploy </td> 
+         <td class="confluenceTd"> bug </td> 
+         <td class="confluenceTd"> WARNING: Web login failed: Login failed: javax.security.auth.login.LoginException: Failed file login for testuser. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> virtual-server-auth-realm-property </td> 
+         <td class="confluenceTd"> bug </td> 
+         <td class="confluenceTd"> WARNING: Web login failed: Login failed: javax.security.auth.login.LoginException: Failed file login for testuser. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> async-listener-on-complete </td> 
+         <td class="confluenceTd"> supported? </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> async-listener-on-timeout </td> 
+         <td class="confluenceTd"> supported? </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> cookie-http-only </td> 
+         <td class="confluenceTd"> bug </td> 
+         <td class="confluenceTd"> URLConnection.getHeaderField("Set-Cookie") return NULL </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> session-cookie-custom-name-web-xml-sun-web-xml-precedence </td> 
+         <td class="confluenceTd"> bug </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> servlet-request-get-path-info-collapse-contiguous-slashes </td> 
+         <td class="confluenceTd"> bug </td> 
+         <td class="confluenceTd"> Wrong response. Expected: / <a href="http://www.sun.com/">http://www.sun.com/</a> <p>, received: /http:/www.sun.com/ </p></td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> exploded-war </td> 
+         <td class="confluenceTd"> bug </td> 
+         <td class="confluenceTd"> Error scan jar entryWEB-INF/lib/foo.jarerror in opening zip file </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> session-jvm-route </td> 
+         <td class="confluenceTd"> bug </td> 
+         <td class="confluenceTd"> Cannot inject com.sun.enterprise.config.serverbeans.JavaConfig com.sun.enterprise.v3.admin.commands.CreateJvmOptions.jc in component com.sun.enterprise.v3.admin.commands.CreateJvmOptions@1464577</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> session-memory-persist-second </td> 
+         <td class="confluenceTd"> bug </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> session-memory-persist-primitive-class-second </td> 
+         <td class="confluenceTd"> bug </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> session-property-enableCookies-instance-level </td> 
+         <td class="confluenceTd"> bug </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> session-preserve-across-redeploy-declarative-third </td> 
+         <td class="confluenceTd"> bug </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> session-serialize-on-shutdown-only-second </td> 
+         <td class="confluenceTd"> bug </td> 
+         <td class="confluenceTd"> 503 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> single-sign-on-cookie-secure </td> 
+         <td class="confluenceTd"> bug </td> 
+         <td class="confluenceTd"> Web login failed: Login failed: javax.security.auth.login.LoginException: Failed file login for testuser. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> single-sign-on-http-service-dynamic-reconfig </td> 
+         <td class="confluenceTd"> bug </td> 
+         <td class="confluenceTd"> Web login failed: Login failed: javax.security.auth.login.LoginException: Failed file login for testuser. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> use-bundled-jsf-with-tag-compilation </td> 
+         <td class="confluenceTd"> bug </td> 
+         <td class="confluenceTd"> jsp compilation error </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> virtual-server-default-web-module </td> 
+         <td class="confluenceTd"> bug </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> virtual-server-default-web-module-form-login-jsecurity-check-direct-access </td> 
+         <td class="confluenceTd"> bug </td> 
+         <td class="confluenceTd"> Adding User testuser to file realm file failed. null </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> virtual-server-default-web-module-request-dispatcher </td> 
+         <td class="confluenceTd"> bug </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> virtual-server-default-web-module-request-path </td> 
+         <td class="confluenceTd"> bug </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> wl-context-root </td> 
+         <td class="confluenceTd"> bug </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> wl-session-cookie-config-declarative </td> 
+         <td class="confluenceTd"> bug </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> wl-session-expired </td> 
+         <td class="confluenceTd"> bug </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> wl-session-id-url-rewrite-session-tracking-mode-declarative </td> 
+         <td class="confluenceTd"> bug </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> wl-session-preserve-across-redeploy-declarative-third </td> 
+         <td class="confluenceTd"> bug </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> wl-web-directoryListing </td> 
+         <td class="confluenceTd"> bug </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 14, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:48.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

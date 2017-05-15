@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : JRubyGFFAQJa</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="JRubyGFFAQJa-JRuby%E3%81%8A%E3%82%88%E3%81%B3GlassFish%E3%81%AB%E9%96%A2%E3%81%99%E3%82%8BFAQ"></a>JRuby および GlassFish に関する FAQ</h1> 
+     <ol> 
+      <li><b>他にも色々な言語があるのに、なぜ Ruby なのですか？</b> 
+       <ul> 
+        <li>Ruby は Rails のおかげでどんどんポピュラーになってきています。</li> 
+        <li>Ruby-on-Rails (ROR) は Web 開発者の間ではとても人気のあるフレームワークです。</li> 
+        <li>JRuby は Java で書かれた、完成度の高い Ruby の処理系です。 JRuby は JVM 上で動作しますので、 Ruby から既存の Java のライブラリにアクセスすることが可能です。</li> 
+       </ul> </li> 
+      <li><b>シンプルさと生産性の高さ以外に、 JRuby や Ruby を選ぶ理由はありますか？</b>&lt;br&gt;<br> Ruby 人気を支えているのは、 <a href="http://rubyonrails.org/">Rails</a> というフレームワークです。 JRuby を利用すれば、 Ruby の簡易性と Java のライブラリに秘められたパワーをともに享受することができます。&lt;br&gt;</li> 
+      <li><b>GlassFish が生成する JRuby インスタンスの数を設定することはできますか？</b>&lt;br&gt;<br> はい、できます。設定方法は<a href="http://wiki.jruby.org/wiki/Goldspike#How_do_I_configure_the_number_of_requests_GoldSpike_can_handle.3F">こちら</a>で説明されています。</li> 
+      <li><b>JRuby 1.0.2 を使うと、 Ruby と Java を組み合わせた場合と比較して非常にパフォーマンスが悪いようです。この問題にはどう対処すれば良いですか？</b>&lt;br&gt;<br> JRuby の最近のリリースは以前に比べてパフォーマンスがかなり向上していますので、最新のものを利用することをお勧めします。また、ちょっとしたチューニングを施すことで（ <a href="http://blog.nicksieger.com/articles/2007/10/25/jruby-performance-tweaks">JRuby のパフォーマンス・チューニング（英文）</a> 参照）、 CRuby (MRI) とほぼ同等のパフォーマンスを出すことも可能です。パフォーマンス・ベンチマークの結果は<a href="http://blog.nicksieger.com/articles/2007/10/25/jruby-on-rails-fast-enough">JRuby on Rails は速い（英文）</a>にてご覧いただけます。</li> 
+      <li><b>GlassFish は複数の Rails のバージョンをサポートしていますか ?</b>&lt;br&gt;<br> はい、サポートしています。アップデートセンターから入手可能な JRuby 用モジュールを使うと、スタンドアロンモードとライブラリ共有モードのWARファイルの２タイプの WAR ファイルを作成することができます。&lt;br&gt;<br> スタンドアロンモードの WAR ファイルには、アプリケーションが必要とする全てのライブラリ、 gem 、プラグインが全て同梱されています。対して、共用モードの WAR ファイルはアプリケーション固有のライブラリのみで構成され、その他のクラスは GlassFish アプリケーションサーバのインスタンスに設定されたクラスパスに従ってロードされる仕組みになっています。&lt;br&gt;<br> GlassFish のインスタンス上には、スタンドアロンモードの WAR ファイルを複数配備することができます。または、一台あるいは複数台のマシンにインストールした複数の GlassFish のインスタンスを、それぞれ異なるバージョンの Rails 用に構成することもできます。この場合、ロードバランサを用いてこれらのインスタンスをフロントエンドすることが可能です。 
+       <ul> 
+        <li>GlassFish を使う場合、 Rails のインスタンスを操作する複数のスレッド間で変数が共有されるのですか、それともそれぞれが独立しているのでしょうか？*&lt;br&gt;<br> 全てのリクエストはそれぞれの Rails インスタンス内で発生し、複数のリクエスト間で何かが共有されることはありません。配備モデルは mongrel を用いる場合とおおむね同じですが、 mongrel は必要ありません。&lt;br&gt;</li> 
+       </ul> </li> 
+      <li><b>レコードのマイグレーションを行う際には、 関連付けられた Active Records をリフレッシュする必要があります。ホットデプロイサイクルの一環としてこれを実現する方法は？</b>&lt;br&gt;<br> WAR ファイルのデプロイに時にマイグレーションを実行するような Ruby Shim を書くのも、一つの方法でしょう。JIRA のように、起動時に正しいバージョンのテーブルを参照しているかを確認するためデータベース・スキャンを行う製品では、このような作業が重要となります。この手法は常に利用できるものではありませんが、配備を完全に自由に制御できる状況にある場合は非常に便利です。</li> 
+      <li><b>小規模なエンタープライズシステムの開発に GlassFish を利用するメリットは？</b>&lt;br&gt;<br> GlassFish をエンタープライズシステム開発に用いることで、以下のようなメリットを享受できます： 
+       <ul> 
+        <li>RoR アプリケーションと Java EE アプリケーションを同一のコンテナ上で共存させることが可能</li> 
+        <li>分かりやすく、かつ Java EE と類似した開発 / 配備モデル</li> 
+        <li>データベース・コネクション・プーリング</li> 
+        <li>WAR のホットデプロイ機能（デプロイ時にコンテナの再起動が不要）</li> 
+        <li>ロードバランシング、クラスタリング、高可用性のもたらす利点により、高度なスケーラビリティを期待できます。</li> 
+       </ul> </li> 
+      <li><b>JRuby のベンチマーク数は ?</b>&lt;br&gt;<br> 参考サイト： 
+       <ul> 
+        <li><a href="http://blog.nicksieger.com/articles/2007/10/25/jruby-on-rails-fast-enough">JRuby on Rails は十分に高速である（英文）</a></li> 
+        <li><a href="http://blog.nicksieger.com/articles/2007/10/25/jruby-performance-tweaks">JRuby のパフォーマンス・チューニング（英文）</a></li> 
+        <li><a href="http://shootout.alioth.debian.org/gp4sandbox/benchmark.php?test=all&amp;lang=jruby">ベンチマーク（英文）</a></li> 
+        <li><a href="http://antoniocangiano.com/2007/12/03/the-great-ruby-shootout/">The Great JRuby shootout</a>&lt;br&gt;</li> 
+       </ul> </li> 
+     </ol> <p> なお、これらのベンチマーク数公開後にパフォーマンスの改善がなされています。ベンチマーク数はバージョン 1.1 あたりから更に向上する事でしょう。</p> 
+     <ol> 
+      <li><b>JRuby はいつ Ruby 1.8.6 に対応するでしょう ?</b>&lt;br&gt;<br> JRuby 1.1 で stdlib をアップデートする計画があります。 - that's really all is meant by 1.8.5 support, since largely that's all that's changed.</li> 
+      <li><b>GlassFish 上で負荷分散の調整を行うには?</b>&lt;br&gt;<br> GlassFish インスタンスのクラスタに対する負荷分散の調整は、以下のいずれかのアプローチで行うことが可能です 
+       <ul> 
+        <li>Sun Web Server 、 Apache および IIS 上で Sun LB プラグインを使用</li> 
+        <li>Apache (mod_jk)</li> 
+        <li>F5</li> 
+        <li>Sun Secure Application Switch</li> 
+       </ul> </li> 
+     </ol> <p> 詳しくは、GlassFish v2 の <a href="https://glassfish.java.net/javaee5/build/GlassFish_LB_Cluster.html">セットアップの手引き / ロードバランサの調整 </a> をお読みください。</p> 
+     <ol> 
+      <li><b>GlassFish はページ・キャッシングをどのように処理しますか ?</b>&lt;br&gt;<br> Grizzly のファイル・キャッシュ機能により、静的なページは Web サーバにアクセスすることなく配信されます。</li> 
+      <li><b>JRuby の Rubinius サポートはどのような状態になっていますか ?</b>&lt;br&gt;<br> Rubenius （およびその他の Ruby 実装）の現状は、 <a href="http://headius.blogspot.com/2007/11/top-five-questions-i-get-asked.html">http://headius.blogspot.com/2007/11/top-five-questions-i-get-asked.html</a> で紹介されています。また、より最近の情報は <a href="http://on-ruby.blogspot.com/2007/12/rubinius-on-jruby.html">こちら</a>でもご覧いただけます。&lt;br&gt;<br> Rubenius のバイトコードは現在進行形で更新されているようなので、これ以上の Rubinius バイトコードのサポートは行われません。幸いなことにJRuby の通常のインタプリタモードのパフォーマンスが改善されたため、新しいバイトコード・エンジンのインストールは、もはや優先事項ではなくなりました。&lt;br&gt;<br> JRuby 開発チームは、時々 Rubinius の様々なコア・クラス群を JRuby 上で実行してみています。それらは通常問題なく動作しますが、動作速度は 2x 程度となっています。</li> 
+      <li><b>GlassFish と Apache httpd の静的ページの表示速度を比較したベンチマークはありますか？</b>&lt;br&gt;<br> はい。ベンチマークは <a href="http://weblogs.java.net/blog/sdo/archive/2007/05/how_to_test_con.html">ここ（英文）</a> でご覧いただけます。</li> 
+      <li><b>GlassFish V3 および JRuby GlassFish gem をビルドする方法は？</b>&lt;br&gt; 
+       <ul> 
+        <li>準備するもの 
+         <ul> 
+          <li>Subversion クライアント</li> 
+          <li>Maven 2.0.x</li> 
+         </ul> </li> 
+        <li>GlassFish V3 および JRuby GlassFish gem をビルドするには、以下のコマンドを実行してください。</li> 
+       </ul> </li> 
+     </ol> <p>&lt;pre&gt;<br> svn checkout <a href="https://svn.java.net/svn/glassfish-svn/trunk/v3">https://svn.java.net/svn/glassfish-svn/trunk/v3</a><br> cd v3<br> mvn -U install<br> cd distributions/gem<br> mvn install<br> &lt;/pre&gt;<br> コマンドを実行すると、 distributions/gem/target/dependency/glassfish/pkg に gem が生成されます。</p> 
+     <hr> <p>日本語翻訳: <a href="http://apercu-j.blogspot.com/">Kana</a></p> <p><a href="JRubyGFFAQ.html" title="JRubyGFFAQ">英文 </a> (翻訳したバージョン: 60)</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 08, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : 3.1DevToolingNB7.1</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="3.1DevToolingNB7.1-GlassFishServerOpenSourceEditionDeveloperToolingwithNetBeans7.1"></a>GlassFish Server Open Source Edition - Developer Tooling with NetBeans 7.1</h1> <p><b>author:</b> <a href="mailto:vince.kraemer@oracle.com">Vince Kraemer</a></p> 
+     <div> 
+      <ul> 
+       <li><a href="#3.1DevToolingNB7.1-GlassFishServerOpenSourceEditionDeveloperToolingwithNetBeans7.1">GlassFish Server Open Source Edition - Developer Tooling with NetBeans 7.1</a></li> 
+       <ul> 
+        <li><a href="#3.1DevToolingNB7.1-Introduction">Introduction</a></li> 
+        <li><a href="#3.1DevToolingNB7.1-Goal%2FScope">Goal / Scope</a></li> 
+        <ul> 
+         <li><a href="#3.1DevToolingNB7.1-ComparativeSchedulinginfo">Comparative Scheduling info</a></li> 
+         <li><a href="#3.1DevToolingNB7.1-Features">Features</a></li> 
+         <li><a href="#3.1DevToolingNB7.1-OutofScope">Out of Scope</a></li> 
+        </ul> 
+        <li><a href="#3.1DevToolingNB7.1-TaskList">Task List</a></li> 
+        <li><a href="#3.1DevToolingNB7.1-DesignDocument">Design Document</a></li> 
+        <li><a href="#3.1DevToolingNB7.1-Quality">Quality</a></li> 
+        <li><a href="#3.1DevToolingNB7.1-Documentation">Documentation</a></li> 
+        <li><a href="#3.1DevToolingNB7.1-Workspace">Workspace</a></li> 
+        <li><a href="#3.1DevToolingNB7.1-Estimates">Estimates</a></li> 
+        <li><a href="#3.1DevToolingNB7.1-Research">Research</a></li> 
+        <li><a href="#3.1DevToolingNB7.1-References">References</a></li> 
+        <li><a href="#3.1DevToolingNB7.1-DevTests">Dev Tests</a></li> 
+        <li><a href="#3.1DevToolingNB7.1-EmailAlias">Email Alias</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="3.1DevToolingNB7.1-Introduction"></a>Introduction</h2> <p>When NetBeans 7.1 ships users will expect new features and bug fixes for the GlassFish Server integration. This project is supposed to make that happen.</p> <h4><a name="3.1DevToolingNB7.1-Goal%2FScope"></a>Goal / Scope</h2> <p>The goal of this project is to expose more features of GlassFish Server that fit into the work-flow of the next new-feature release of NetBeans (post 7.0), which is being called 7.1 in this document..</p> <p>A secondary goal is the continuous improvement of the integration between NetBeans and GlassFish.</p> <h4><a name="3.1DevToolingNB7.1-ComparativeSchedulinginfo"></a>Comparative Scheduling info</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Date </th> 
+         <th class="confluenceTh"> NB 7.0.1 </th> 
+         <th class="confluenceTh"> NB 7.1 </th> 
+         <th class="confluenceTh"> Note </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2011/05/12 </td> 
+         <td class="confluenceTd"> branched from trunk </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> trunk becomes 7.1 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2011/06/14 </td> 
+         <td class="confluenceTd"> HCF </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ??? </td> 
+         <td class="confluenceTd"> FCS </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.1DevToolingNB7.1-Features"></a>Features</h3> <p>The priorities listed here are for the next 'new feature' release of NetBeans. </p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Feature ID </th> 
+         <th class="confluenceTh"> Priority </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> Engineering response </th> 
+         <th class="confluenceTh"> Owner </th> 
+         <th class="confluenceTh"> Estimated effort </th> 
+         <th class="confluenceTh"> Source of Requirement </th> 
+         <th class="confluenceTh"> Status/Comment </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> nbinteg-01 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Register a cluster </td> 
+         <td class="confluenceTd"> yes </td> 
+         <td class="confluenceTd"> vbk </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> need to extend the type of servers that can be registered as deployment targets to include clusters</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> nbinteg-02 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> register a stand-alone instance </td> 
+         <td class="confluenceTd"> maybe </td> 
+         <td class="confluenceTd"> vbk </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> registering a stand-alone instance seems redundant from a developer perspective, since the DAS is a stand-alone instance in most every respect</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> nbinteg-03 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> start a cluster </td> 
+         <td class="confluenceTd"> yes </td> 
+         <td class="confluenceTd"> vbk </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> nbinteg-04 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> start a cluster with the instances in debug mode </td> 
+         <td class="confluenceTd"> maybe </td> 
+         <td class="confluenceTd"> vbk </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> depends on an extension of the start-cluster command.</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> nbinteg-05 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> stop a cluster </td> 
+         <td class="confluenceTd"> yes </td> 
+         <td class="confluenceTd"> vbk </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> nbinteg-06 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> stop a stand-alone instance </td> 
+         <td class="confluenceTd"> maybe </td> 
+         <td class="confluenceTd"> vbk </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> won't support if start is not supported</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> nbinteg-07 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> view admin console </td> 
+         <td class="confluenceTd"> yes </td> 
+         <td class="confluenceTd"> vbk </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> open the admin console for a registered cluster</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.1DevToolingNB7.1-OutofScope"></a>Out of Scope</h3> <p>Obviously, a feature that is not listed is out-of-scope.</p> <h4><a name="3.1DevToolingNB7.1-TaskList"></a>Task List</h2> <p><span class="error">[Issue tracker based 'view'|]</span> is likely to be more up-to-date, since it is easier to update.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task </th> 
+         <th class="confluenceTh"> Target Milestone </th> 
+         <th class="confluenceTh"> Start </th> 
+         <th class="confluenceTh"> End </th> 
+         <th class="confluenceTh"> Owner </th> 
+         <th class="confluenceTh"> Supports Feature ID </th> 
+         <th class="confluenceTh"> Status/Comments </th> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.1DevToolingNB7.1-DesignDocument"></a>Design Document</h2> 
+     <ul> 
+      <li>coming soon</li> 
+     </ul> <h4><a name="3.1DevToolingNB7.1-Quality"></a>Quality</h2> 
+     <ul> 
+      <li>Link to Test Plan</li> 
+     </ul> <h4><a name="3.1DevToolingNB7.1-Documentation"></a>Documentation</h2> 
+     <ul> 
+      <li>Link to Documentation</li> 
+     </ul> <h4><a name="3.1DevToolingNB7.1-Workspace"></a>Workspace</h2> 
+     <ul> 
+      <li>coming soon</li> 
+     </ul> <h4><a name="3.1DevToolingNB7.1-Estimates"></a>Estimates</h2> <p>The list is somewhat order-dependent.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Area </th> 
+         <th class="confluenceTh"> When </th> 
+         <th class="confluenceTh"> Notes </th> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.1DevToolingNB7.1-Research"></a>Research</h2> 
+     <ul> 
+      <li>coming soon</li> 
+     </ul> <h4><a name="3.1DevToolingNB7.1-References"></a>References</h2> 
+     <ul> 
+      <li><a href="http://docs.sun.com/app/docs/doc/821-0179/6nl8hchmr?l=en&amp;a=expand">GlassFish v2.x CLI Commands</a></li> 
+      <li><a href="PlanForGlassFish3.1.html" title="PlanForGlassFish3.1">GlassFish Server Open Source Edition 3.1 Plans including Sub Projects</a></li> 
+     </ul> <h4><a name="3.1DevToolingNB7.1-DevTests"></a>Dev Tests</h2> 
+     <ul> 
+      <li>Coming soon</li> 
+     </ul> <h4><a name="3.1DevToolingNB7.1-EmailAlias"></a>Email Alias</h2> 
+     <ul> 
+      <li>Please contact us at <a href="mailto:dev@glassfish.java.net">dev@glassfish.java.net</a></li> 
+     </ul> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on May 18, 2011 by 
+<font color="#0050B2">vsunk2</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

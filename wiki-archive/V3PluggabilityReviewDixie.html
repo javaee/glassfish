@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : V3PluggabilityReviewDixie</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p><tt>1. Terminology was my biggest issue in this writeup, specifically what you call the "modules". I found lots of different terms for what I think might be the same thing:</tt><br> {{}}<br> {{ * addons}}<br> {{ * modules}}<br> {{ * incremental modules/features}}<br> {{ * add-on modules}}<br> {{ * set of modules}}<br> {{ * plugin bundles}}<br> {{ * plugins}}<br> {{ * set of plugins}}<br> {{ * pluggable extensions}}<br> {{}}<br> <tt>Lloyd used the term modules almost exclusively.</tt><br> <tt>Jerome used the terms plugins, or set of modules.</tt><br> <tt>The pluggability 1-pager uses all these terms, which makes it confusing. In trying to understand your1-pager, I kept wondering if you were talking about different things or one thing. Can we pick one term and just use that?</tt><br> {{}}<br> <tt>Is there any other type of extensibility, or is pluggability pretty much it? If so, do we even need to talk about "extensibility"?</tt><br> {{}}<br> <tt>2. Is there anywhere that all the pluggable modules are listed? JBI, JRuby, and Portal container are mentioned, but there must be more. Is AdminConsole is a pluggable module? Is asadmin is a pluggable module? Or do they come as part of other modules? Somewhere we will need to describe each module in detail, with all its bits and dependencies and interrelationships (sounds like JES :-\ ?).</tt><br> {{}}<br> <tt>3. What does GF come with as a default installation? If everything is considered a pluggable module, which basic pieces provide a working appserver? We might need an in-depth discussion of the architecture. Do users need to understand such detail (admins, OEMs, and devs)?</tt><br> {{}}<br> <tt>4. Are CLI commands no longer going to be considered "remote" or "local"? 2.2.2 CLI</tt><br> {{}}<br> <tt>5. Administrator's tasks seems to include the following, correct? How much of this is dynamic?</tt><br> {{}}<br> {{ 1. Install a module (can also be done via Update Center)}}<br> {{ 2. Update a module (can also be done via Update Center)}}<br> {{ 3. Uninstall a module}}<br> {{ 4. List modules}}<br> {{ 5. View contents of module}}<br> {{ 6. Monitor module}}<br> {{ 7. Do I do any tweaking of modules, for performance, etc?}}<br> {{ 8. Validate to make sure nothing bad happens when 3rd-party plugins are integrated. Section 4.11.1}}<br> {{}}<br> <tt>6. Developer's tasks:</tt><br> {{}}<br> {{ 1. is the console-config.xml file something that a user edits?}}<br> {{ 2. Skins, rebranding, themes}}<br> {{ 3. Customizations}}<br> {{ 4. Embedding GF---does this have anything to do with modules?}}<br> {{}}<br> <tt>7. Will all functionality work though both the GUI and CLI? Will there be parity for Prelude? parity for v3?</tt></p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 09, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:48.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

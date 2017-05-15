@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : M2GMigrateApp</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="M2GMigrateApp-MigratingtheApplication"></a>Migrating the Application</h1> <p>Migrating the application involves the following procedures:</p> 
+     <ul> 
+      <li>Specify Input Java EE Application Details</li> 
+      <li>Specify Output Java EE Application Details</li> 
+      <li>Migration Actions</li> 
+      <li>Automatic Migration Progress</li> 
+      <li>Migration Report</li> 
+      <li>Using The Toolbar</li> 
+      <li>Using the Menu Options</li> 
+     </ul> <h4><a name="M2GMigrateApp-SpecifyInputJavaEEApplicationDetails"></a>Specify Input Java EE Application Details</h2> <p>In the Input Java EE Application Details panel, you specify:</p> 
+     <ol> 
+      <li>The Source Application Server for the application to be migrated.</li> 
+      <li>The location and details of the Java EE component or application to be migrated.</li> 
+     </ol> <h4><a name="M2GMigrateApp-SpecifyingtheSourceServer"></a>Specifying the Source Server</h3> <p>Select the application server from the "Source Server" drop-down list. The migration tool supports, as input sources, the following source platforms: </p> 
+     <ul> 
+      <li>WebLogic Server 5.1/6.0/6.1/8.1</li> 
+      <li>WebSphere Application Server 4.0/5.1</li> 
+      <li>J2EE Reference Implementation 1.3/1.4</li> 
+      <li>Sun ONE Application Server 6.x/7</li> 
+      <li>JBoss 3.0 Application Server</li> 
+      <li>TomCat 4.1.1.2 WebServer</li> 
+     </ul> <h4><a name="M2GMigrateApp-SpecifyingtheApplicationDirectoryorArchive"></a>Specifying the Application Directory or Archive</h3> <p>You can specify input in one of the following forms:</p> 
+     <ul> 
+      <li>A single directory that contains all the source files</li> 
+      <li>A single archive file</li> 
+      <li>A set of specific file-types in a directory</li> 
+     </ul> <p>Select the "Source" radio button to specify multiple archives or a directory as input or select the "Archive" radio button to specify a single archive.</p> <h4><a name="M2GMigrateApp-SpecifyingaSingleArchiveasInput"></a>Specifying a Single Archive as Input</h3> <p>To specify a single archive file as input:</p> 
+     <ol> 
+      <li>Either enter the archive path directly in the "Archive" text field or use the "Browse..." button to navigate to the archive of your choice.</li> 
+      <li>If you select an archive using the "Browse..." button, the archive path will be displayed in the text field.</li> 
+     </ol> <h4><a name="M2GMigrateApp-SpecifyingaSingleDirectoryasInput"></a>Specifying a Single Directory as Input</h3> <p>To specify a single directory as input, use one of the following procedures:</p> 
+     <ol> 
+      <li>Migrate all files in a single directory:</li> 
+     </ol> <p> a. To select a single directory containing the source files, either enter the input application path directly in the "Source" text field or use the "Browse..." button to navigate to the directory of your choice.<br> b. If you select a directory using the "Browse..." button, the directory name will be displayed in the text field.</p> 
+     <ol> 
+      <li>Migrate specific filetypes in a single directory:</li> 
+     </ol> <p> a. If you want to migrate a particular type of file, first select the directory, then use the "Filter..." button. Press the filter button to bring up the "Migrate files of type..." pop-up. Select the file types to migrate. Only files of the file types selected will be migrated from the directory that contains the source files. All other file types will be left as is.<br> b. If a directory contains multiple archives, you need to select "Archive Files (<b>.jar/</b>.war)" from the "Filter" popup.</p> <p>If the Migration Tool identifies that you have specified JAR/WAR/RAR files or a single EAR file as input, the tool will create a temporary directory in your home directory. The name of this directory will begin with an "<tt>asmt_</tt>" prefix and have a "TIMESTAMP" suffix. Another directory, called <tt>Input_Archives</tt>, will be created in the <tt>asmt_TIMESTAMP</tt> directory. JAR/WAR/RAR/EAR files will be extracted from the <tt>Input_Archives</tt> directory. This <tt>Input_Archives</tt> directory will then be supplied to the Migration Tool as input. If you want to make any changes in the contents of the extracted JAR/WAR/RAR/EAR files, you can directly access these files in the <tt>Input_Archives</tt> directory. Once you have made the changes, you can resubmit the directory as input to the Migration Tool. You do not need to extract the archives for every change iteration.</p> <h4><a name="M2GMigrateApp-ValidationsPerformed"></a>Validations Performed</h3> <p>When you press the "Migrate" button, the Migration Tool performs the following validations for the input details:</p> 
+     <ol> 
+      <li>If you specified a directory as input, the only valid input is a directory that contains one or more Java, JSP, XML, HTM/HTML, JAR, WAR, RAR, or server configuration file(s).</li> 
+      <li>If you specified an archive as input, the only valid input is a single EAR, JAR, WAR, or RAR file.</li> 
+      <li>The Migration Tool does not allow selection of archive (JAR/WAR/RAR/EAR) files and source (HTML, Java, JSP, XML, or configuration) files together. because an archive file needs to be extracted first; source files can be migrated right away.</li> 
+      <li>If the Migration Tool finds JAR files in an EAR file that are not mentioned inside the <tt>application.xml</tt> file, these JAR files are moved to a directory called <tt>Utilities</tt>, in the <tt>Input_Archives</tt> directory.</li> 
+      <li>If the Migration Tool finds that there is insufficient space in the specified output directory to enable successfully extract the archive file, the tool will notify you and abort the extraction process.</li> 
+      <li>Although multiple JAR/WAR/RAR files are allowed as input, you cannot select multiple archives (EAR files) as input.</li> 
+      <li>The Migration Tool iterates through all of the selected files after you press the "Migrate" button. If the tool finds an input file that does not belong to the selected source server in the previous screen, it will prompt you for confirmation about the cross-server input. If you choose to proceed, it will ignore the mismatched file(s). For example, if the input directory/files contains a <tt>weblogic.xml</tt> file, but the selected source application server is WebSphere Application Server 4.0, pressing the "Migrate" button brings up a dialog box with the following message: 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">"Warning: Found following proprietary file(s) [weblogic.xml] in the
+input source code. Source server selected is WebSphere Application server 4.0 whose
+proprietary files would be migrated. The artifacts for the other appservers would not be migrated. Do you
+want to continue ?"</pre> 
+         </div> 
+        </div>
+       </div></li> 
+      <li>Empty directories cannot be migrated.</li> 
+     </ol> <h4><a name="M2GMigrateApp-SpecifyOutputJavaEEApplicationDetails"></a>Specify Output Java EE Application Details</h2> <p>You use the "Output Java EE Application Details" panel to specify the destination application server to which the application will be migrated and the output directory to which the Migration Tool will write the migrated source files. The Migration Tool supports only the Sun Java System Application Server as the destination application server. In addition, you can also specify certain advanced migration options.</p> <h4><a name="M2GMigrateApp-SpecifyingtheOutputDirectory"></a>Specifying the Output Directory</h3> <p>Enter the output directory path directly in the "Directory" text field or press the "Browse" button and locate the directory to which the Migration Tool will write all migrated files.</p> <h4><a name="M2GMigrateApp-SpecifyingtheTargetServer"></a>Specifying the Target Server</h3> <p>The "Target Server" drop-down list shows the target application server to which the Java EE application will be migrated. Your only choice is Sun Java System Application Server. Even though this is your only choice, you still must select it from the drop-down menu.</p> <h4><a name="M2GMigrateApp-SpecifyingAdvancedMigrationOptions"></a>Specifying Advanced Migration Options</h3> <p>Press the "Advanced" button to display the "Advanced Migration Options" dialog.<br> This dialog provides the following options:</p> 
+     <ul> 
+      <li>"Migrate CMPs from EJB1.1 to 2.0 specs"</li> 
+     </ul> <p>If you select this option, the Migration Tool will try to upgrade the EJB 1.1-compliant CMP entity beans in the input application to the EJB 2.0 CMP specification. The tool accomplishes this using an internal, two-stage process: </p> <p>In stage one, the Migration Tool verifies that the CMP entity beans in the input source can be upgraded to the EJB 2.0 CMP specification. The tool does not alter the following:</p> 
+     <ul> 
+      <li>The <tt>remoteAPI</tt> of the bean (consisting of the Remote interface, Home interface, and the Primary Key Class)</li> 
+      <li>The business functionality of the bean.</li> 
+     </ul> <p>In stage two, the Migration Tool actually upgrades all beans deemed upgradeable in the first stage to EJB 2.0-compliant entity beans. The tool minimally modifies beans that are not upgradeable to make them deployable on the Application Server. <br> Choosing this option enables the following two options: </p> 
+     <ul> 
+      <li>"Overwrite conflicting accessors"</li> 
+     </ul> <p> This "forced migration" option directs the Migration Tool to skip one of the verification steps in stage one. Choosing this option affects the application being migrated. .</p> 
+     <ul> 
+      <li>"Comment out setters of primary key fields"</li> 
+     </ul> <p> This "forced migration" option also directs the Migration Tool to skip one of the verification steps in stage one. Choosing this option also affects the application being migrated. </p> <p>Java2DB Tool Invocation<br> Enable this option to direct the Migration Tool to generate the output so that you can use the Java2DB tool. If you select this option, you can also: </p> 
+     <ul> 
+      <li>Check the "Create tables at deploy" option to automatically create tables at deployment time.</li> 
+      <li>Check the "Delete tables at undeploy" option to automatically delete tables after the application is undeployed.</li> 
+      <li>Specify the "Database vendor name." If none is specified, the default (SQL-92) will be used.</li> 
+     </ul> <p> With Java2DB support, the application will be successfully deployed in the Application Server when the EJB module (JAR file) contains only an <tt>ejb-jar.xml</tt> deployment descriptor, <tt>sun-ejb-jar.xml</tt> deployment descriptor, and CMP bean classes and interfaces.</p> <p>You can use the generated sun-cmp-mappings deployment descriptor, ddl files, and the file with the database metadata (<tt>.dbschema</tt>) to change the automatically-generated mappings.</p> <h4><a name="M2GMigrateApp-ValidationsPerformed"></a>Validations Performed</h3> <p>Press the "Migrate" button and the Migration Tool will perform the following validations for the output details:</p> 
+     <ol> 
+      <li>Ensure that you specified a valid output directory.</li> 
+      <li>If the directory you specified does not exist, the tool will prompt you to create a new directory (subject to requisite write permissions) or change the specified directory.</li> 
+      <li>If you choose the option to create a new output directory, the Migration Tool will create the output directory.</li> 
+     </ol> <p> Note - You cannot create a directory with a name that includes any of the following special characters: asterisk <img class="emoticon" src="images/icons/emoticons/star_yellow.gif" height="16" width="16" align="absmiddle" alt="" border="0">, less than (&lt;), greater than (&gt;), ampersand (&amp;), vbar (|), exclamation <img class="emoticon" src="images/icons/emoticons/warning.gif" height="16" width="16" align="absmiddle" alt="" border="0">, pound sign (#), semicolon (<img class="emoticon" src="images/icons/emoticons/wink.gif" height="20" width="20" align="absmiddle" alt="" border="0">, colon (<img class="emoticon" src="images/icons/emoticons/smile.gif" height="20" width="20" align="absmiddle" alt="" border="0">, white space, open single quotation (`), close single quotation ('), dollar sign ($), or backslash (). However, you can select an existing directory whose name contains these special characters.</p> 
+     <ol> 
+      <li>Display a warning message if the specified output directory is not empty.</li> 
+      <li>You can synchronously perform multiple migration processes in a single invocation of the Migration Tool. However, the tool will display a warning if you specify the same input and output directories in subsequent sessions.</li> 
+      <li>If you canceled a previous migration session (and used the same output directory), the Migration Tool will display a warning message noting the possibility of overwriting output files.</li> 
+     </ol> <h4><a name="M2GMigrateApp-MigrationActions"></a>Migration Actions</h2> <p>The buttons in this area depict various actions that can be peformed once the user has specified all the input and output details.<br> This area contains four buttons whose functions are as follows:</p> 
+     <ul> 
+      <li>The "Migrate" button starts the actual migration of the application. Before performing the migration, the Migration Tool verifies that the input and output details are valid. The tool performs several validations, described in the sections Specify Input Java EE Application Details and Specify Output Java EE Application Details. After validating the user-supplied input and output details, the Automatic Migration Progress process starts.</li> 
+      <li>The "View Report" button allows the user to view the migration report of the open project if that project has been migrated. A detailed Migration Report appears in a separate window. The report contains the status of each file processed by the migration tool. It also contains information about build scripts and other files generated by the migration tool. The full path name for each file is included in the report as an HTML hyperlink. From the Migration Report window, you can click the hyperlink to view the source code of the migrated files. This button is disabled if no migration has been performed or the migration report file of a project has been deleted from the location specified in the project file.</li> 
+      <li>The "Reset Fields" button re-initializes the Migration Tool by:</li> 
+     </ul> 
+     <ul class="alternate" type="square"> 
+      <li>Clearing all the text fields</li> 
+      <li>Re-initializing all drop-down lists</li> 
+      <li>Disabling all Specifying Advanced Migration Options options</li> 
+      <li>Disabling the Specifying a Single Directory as Input so the user can migrate another application</li> 
+     </ul> <p> You cannot use this button to open a new project for migration.</p> 
+     <ul> 
+      <li>The "Exit" button terminates the Migration Tool. Before quitting, the tool prompts the user to save the opened project file.</li> 
+     </ul> <h4><a name="M2GMigrateApp-AutomaticMigrationProgress"></a>Automatic Migration Progress</h2> <p>The Automatic Migration Progress screen displays the migration progress. The screen contains a progress bar that indicates the current activity taking place in the Migration Tool. Apart from the progress bar, a series of check boxes (representing the various constituents of the Java EE application) are checked as the Migration Tool proceeds to migrate the application.<br> The label-text of the progress bar dynamically indicates the exact stage in the migration progress. The entire migration process goes through these phases:</p> 
+     <ul> 
+      <li>Pre-Processing: Indicates the progress of the pre-processing stage. Once pre-processing is complete, the progress bar re-initializes for the next migration stage. During the pre-processing stage, the tool parses the user input, copies the input directory contents to the output directory, and prepares necessary data-structures.</li> 
+      <li>Migrating: The Migrating Input phase is comprised of several stages, one for each category of constituent files:</li> 
+      <li>Check-boxes correspond to each stage. These checkboxes are initially shown with a gray background.</li> 
+      <li>As the processing for a stage commences, its checkbox is highlighted with a yellow light.</li> 
+      <li>After all processing in the stage has finished, its corresponding checkbox is shown as checked (a tick-mark appears).</li> 
+      <li>When the set of selected input does not contain a particular type of file, the corresponding stage is skipped and the checkbox remains gray.</li> 
+      <li>When the input provided to the migration tool is in the form of directory/file(s), the next-to-last stage is always the creation of an HTML Migration Report. When the input provided is in the form of archive(s) (JAR/WAR/RAR/EAR file(s)) input, the last stage is Building Migrated Output, during which the tool internally executes its dynamically-generated build scripts. This stage is represented by a checkbox as well.</li> 
+     </ul> <p>Note - The Building Migrated Output stage is visible only for an archive input. The following screen shows the Automatic Migration screen with this conditional transition.</p> <p>When the migration finishes, the Migration Tool invokes the automatic JSP Validator.</p> <h4><a name="M2GMigrateApp-JSPValidator"></a>JSP Validator</h3> <p>The automatic JSP Validator is an engine that validates the tags used in a JSP file, according to the tag libraries that define them. Specifically, this engine checks whether the case of the tags inside the JSP file is different from the case of the tags inside the TLD file. The JSP validator runs this check on the set of JSPs. For any non-conformance it finds, it modifies that tag in the JSP.<br> Since this is a post-migration activity related to deployment, the current migration report does not include the JSP Validator activity. Instead, a separate XML report is generated for JSP validation. The link for this report is in the Migration Report Table of Contents. The name of the report has the same format as the name of the migration report: for example, JSPValidator_TIMESTAMP.xml. The report is written to the output directory by default. The structure of this report is as follows: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&amp;lt;validator&gt;
+  
+       
+     &amp;lt;file path="E:\output\iBank\docroot\ShowTransactionHistory.jsp" usesTagLib="true"&gt;
+        &amp;lt;tld path="/WEB-INF/TMBHisto.tld"&gt;
+           &amp;lt;tag changed="false"&gt;
+              &amp;lt;name&gt;printTransactionHistory&amp;lt;/name&gt; 
+           &amp;lt;/tag&gt; 
+        &amp;lt;/tld&gt; 
+     &amp;lt;/file&gt; 
+       
+     &amp;lt;file path="E:\output\iBank\docroot\TestShowTransactionHistory.jsp" usesTagLib="true"&gt;
+        &amp;lt;tld path="/WEB-INF/TMBHisto.tld"&gt;
+           &amp;lt;tag changed="false"&gt;
+               &amp;lt;name&gt;printTransactionHistory&amp;lt;/name&gt; 
+           &amp;lt;/tag&gt; 
+        &amp;lt;/tld&gt; 
+     &amp;lt;/file&gt; 
+       
+     &amp;lt;file path="E:\output\iBank\docroot\TransferCheckFailed.jsp" usesTagLib="false"/&gt;
+  
+       
+     &amp;lt;file path="E:\output\iBank\docroot\TransferFunds.jsp" usesTagLib="false"/&gt;
+  
+  &amp;lt;/validator&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>A custom Swing component opens this report, so that the user can expand or collapse all XML nodes.</p> <h4><a name="M2GMigrateApp-InterruptingtheMigrationProcess"></a>Interrupting the Migration Process</h3> <p>If you need to interrupt the migration process, press the "Cancel" button located beneath the progress bars. You will be prompted to confirm the action.<br> The Migration Progress pop-up includes a checkbox that lets you determine the state of the pop-up once the migration terminates. You can choose to automatically close or open the pop-up.</p> <h4><a name="M2GMigrateApp-MigrationReport"></a>Migration Report</h2> <p>The Migration Tool generates a Migration Report for each migration performed. The report provides insight into the state of the migrated application. It also provides pointers to the next steps that the system administrator performs to successfully deploy the migrated application. View the report by clicking the "View Report" button in the "Actions" panel. The report explains the how and why of the final result of the migration process.</p> <p>The report is divided into the following logical sections, arranged by order of importance in the overall success of the migration process:</p> 
+     <ul> 
+      <li>The Migration Summary</li> 
+      <li>Files That Failed to Migrate</li> 
+      <li>Files Partially Migrated</li> 
+      <li>Files Changed and Successfully Migrated</li> 
+      <li>Files Unchanged and Migrated</li> 
+      <li>Build Scripts Generated</li> 
+     </ul> <p>The color scheme for each section heading is analogous to a traffic signal color scheme.<br> There are also links for the following:<br> JSP Validator<br> Logging<br> <a href="M2GPostRun.html" title="M2GPostRun">Post Migration Actions</a></p> <h4><a name="M2GMigrateApp-TheMigrationSummary"></a>The Migration Summary</h3> <p>This is a high level view of the migration process, a tabular representation of details about the migration process. An explanation of the contents of this follows.</p> 
+     <ul> 
+      <li>Migration date: 2003-8-6 Time: 4: 31: 43 PM.</li> 
+      <li>Source Application Server: J2EE Reference Implementation 1.4</li> 
+      <li>Destination Application Server: Sun Java System Application Server Platform Edition 8</li> 
+      <li>Input Directory: C:\DOCUME~1\JASPRE~1\LOCALS~1\Temp\asmt_2003_8_6_At_4_31_34_500_PM\Input_Archives</li> 
+      <li>Output Directory: &gt;e:\output\j2eeri1.4\hellodb\Input_Archives</li> 
+      <li>*Input Archive: E:\work\iasmt3\examples\j2ee_ri_1_4\HelloWorld\HelloWorld.ear</li> 
+      <li>*Output Archive Directory: e:\output\j2eeri1.4\hellodb\Input_Archives\build_ear.cmd 
+       <div class="table-wrap"> 
+        <table class="confluenceTable">
+         <tbody> 
+          <tr> 
+           <th class="confluenceTh">Input Component —&gt; </th> 
+           <th class="confluenceTh">Java </th> 
+           <th class="confluenceTh">JSP </th> 
+           <th class="confluenceTh">XML/XMI </th> 
+           <th class="confluenceTh">HTML </th> 
+           <th class="confluenceTh">Config </th> 
+           <th class="confluenceTh">&nbsp;</th> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> Failed </td> 
+           <td class="confluenceTd"> 0 </td> 
+           <td class="confluenceTd"> 0 </td> 
+           <td class="confluenceTd"> 0 </td> 
+           <td class="confluenceTd"> 0 </td> 
+           <td class="confluenceTd"> 0 </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> Partially Migrated </td> 
+           <td class="confluenceTd"> 0 </td> 
+           <td class="confluenceTd"> 0 </td> 
+           <td class="confluenceTd"> 0 </td> 
+           <td class="confluenceTd"> 0 </td> 
+           <td class="confluenceTd"> 0 </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> Successfully Migrated </td> 
+           <td class="confluenceTd"> 0 </td> 
+           <td class="confluenceTd"> 0 </td> 
+           <td class="confluenceTd"> 4 </td> 
+           <td class="confluenceTd"> 0 </td> 
+           <td class="confluenceTd"> 0 </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> Unchanged </td> 
+           <td class="confluenceTd"> 7 </td> 
+           <td class="confluenceTd"> 1 </td> 
+           <td class="confluenceTd"> 0 </td> 
+           <td class="confluenceTd"> 1 </td> 
+           <td class="confluenceTd"> 0 </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> Total </td> 
+           <td class="confluenceTd"> 7 </td> 
+           <td class="confluenceTd"> 1 </td> 
+           <td class="confluenceTd"> 4 </td> 
+           <td class="confluenceTd"> 1 </td> 
+           <td class="confluenceTd"> 0 </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+          </tr> 
+         </tbody>
+        </table> 
+       </div> </li> 
+     </ul> 
+     <ul> 
+      <li>This field gets displayed only in the case of archive JAR/WAR/RAR/EAR input.</li> 
+     </ul> <h4><a name="M2GMigrateApp-FilesThatFailedtoMigrate"></a>Files That Failed to Migrate</h3> <p>A list of the files that failed to migrate in the order they were processed by the Migration Tool.</p> 
+     <ul> 
+      <li>Configuration Files These files may fail to migrate if:</li> 
+      <li>The selected source server is not applicable for the input configuration file. For example, a weblogic.properties file is encountered when the selected source server is IBM WebSphere 4.0.</li> 
+      <li>The configuration file format is incorrect. For example, a server-cfg.xml file includes XML content that is not well formed.</li> 
+      <li>XML files XML files may fail to migrate:</li> 
+      <li>If the input XML file requires other XML or Java files for migration, and these files are not found in the input directory structure. The migration tool displays the path and name for the required file.</li> 
+      <li>Although you can choose an XML file applicable to one application server, the same XML file will cause a differently selected source application server to fail the migration. In this case, the Migration Tool displays the error message for converting the subject XML file, prompting you to select the applicable server as the source application server.</li> 
+      <li>The input XML file is not well formed.</li> 
+      <li>The input XML file is not valid; that is, it does not conform to its DTD.</li> 
+      <li>JSP Files JSP files may fail to migrate because of the following reasons:</li> 
+      <li>JSP file migration consists of several independent modifications. The Migration Tool supports most, but not all, of these required modifications. If it detects only unsupported modifications in the input JSP, the migration tool fails migration of that file and lists all such unsupported modifications.</li> 
+     </ul> <p> SOLUTION: You should manually edit the output JSP file to achieve migration. </p> 
+     <ul> 
+      <li>In the case of a single JSP file (as input), the file may contain references to the taglibs. The tool fails to migrate such a single JSP file, since it cannot find the corresponding web.xml file for the taglibs (referenced in .jsp file).</li> 
+      <li>Java Files Java files may fail to migrate due to:</li> 
+      <li>Java file migration consists of several independent modifications. The Migration Tool supports most, but not all, of these required modifications. If it detects only unsupported modifications in the input Java file, the Migration Tool fails migration of that file and lists all such unsupported modifications.</li> 
+     </ul> <p> SOLUTION: Manually edit the output Java file to achieve migration. </p> <h4><a name="M2GMigrateApp-FilesPartiallyMigrated"></a>Files Partially Migrated</h3> <p>Partial migration occurs when the Migration Tool detects some, but not all, the modifications required by the input file for successful migration. The Migration Tool displays a list of all successful, attempted, and failed modifications. <br> SOLUTION: You can view the non-migrated elements and manually edit the output file to achieve full migration.</p> 
+     <ul> 
+      <li>Configuration Files These files may partially migrate when:</li> 
+      <li>The Migration Tool is able to convert some, but not all, of the properties that it supports.</li> 
+      <li>JSP Files These files may partially migrate under certain conditions:</li> 
+      <li>JSP file migration consists of several independent modifications. The Migration Tool supports most, but not all, of these required modifications. If it detects both supported and unsupported modifications in the input JSP, the Migration Tool performs the supported modifications and lists all the supported and unsupported modifications.</li> 
+     </ul> <p> SOLUTION: You can manually edit the output JSP to achieve full migration. An example of a partial migration is:<br> WebLogic 5.1 is chosen as the source application server and the packages weblogic.servlet.security and weblogic.db.jdbc are present in the JSP file to be migrated. This JSP will be displayed in the 'Files Partially Migrated' section because weblogic.db.jdbc is supported by the Migration Tool and weblogic.servlet.security is not.</p> 
+     <ul> 
+      <li>Java Files</li> 
+     </ul> <p> In the case of partial migration, the treatment of Java files is the same as that of JSP files..</p> <h4><a name="M2GMigrateApp-FilesChangedandSuccessfullyMigrated"></a>Files Changed and Successfully Migrated</h3> <p>This result implies that all the input files were successfully modified by the Migration Tool and are compatible with the destination application server.</p> 
+     <ul> 
+      <li>Configuration Files</li> 
+     </ul> <p> Displays files that have the following properties found in the input files and that have been successfully migrated to the target server format.</p> 
+     <ul> 
+      <li>DataSources used by the applications</li> 
+      <li>StartupClass properties</li> 
+      <li>ThreadPool settings</li> 
+      <li>XML files</li> 
+     </ul> <p> This section displays files when:</p> 
+     <ul> 
+      <li>The input XML file has been modified and made consistent with the DTD format of the target application server.</li> 
+      <li>JSP Files</li> 
+     </ul> <p> This section displays files when:</p> 
+     <ul> 
+      <li>All proprietary classes belonging to the source server packages in the input file were successfully modified and made totally compliant with the classes and package structures of the target application server.</li> 
+      <li>Java Files</li> 
+     </ul> <p> This section displays files when the following apply:</p> 
+     <ul> 
+      <li>Same as those for JSP files.</li> 
+     </ul> <h4><a name="M2GMigrateApp-FilesUnchangedandMigrated"></a>Files Unchanged and Migrated</h3> <p>If an input file does not require any changes to make it compliant to the target application server, the file is simply copied to the output directory.</p> 
+     <ul> 
+      <li>Configuration Files</li> 
+     </ul> <p> Configuration Files<br> These files may remain unchanged and migrated when:</p> 
+     <ul> 
+      <li>No source server-specific properties are found.</li> 
+      <li>XML files</li> 
+     </ul> <p> These files may remain unchanged and migrated when:</p> 
+     <ul> 
+      <li>The DTD of the input XML file is compliant with the target application server.</li> 
+      <li>JSP Files</li> 
+     </ul> <p> These files may remain unchanged and migrated when:</p> 
+     <ul> 
+      <li>No proprietary classes belonging to the source application server are found in the input file.</li> 
+      <li>Java Files</li> 
+     </ul> <p> These files may remain unchanged and migrated when:</p> 
+     <ul> 
+      <li>No proprietary classes belonging to the source application server are found in the input file.</li> 
+     </ul> <h4><a name="M2GMigrateApp-BuildScriptsGenerated"></a>Build Scripts Generated</h3> <p>After migrating valid input files to the specified destination directory, the Migration Tool generates, for every Java EE component, a corresponding XML file that contains instructions for <a href="http://jakarta.apache.org/ant">http://jakarta.apache.org/ant</a>to build the corresponding archive file.<br> In addition to the Ant XML file, the tool generates two scripts, one for Solaris (<tt>build_</tt><em>xxx</em><tt>.sh</tt>) and another for Windows (<tt>build_</tt><em>xxx</em><tt>.cmd</tt>). When executed, these scripts invoke Ant. The generated files are as follows:</p> 
+     <ul> 
+      <li>When the DD file is <tt>ejb-jar.xml</tt></li> 
+      <li><tt>build_jar.xml</tt></li> 
+      <li><tt>build_jar.sh</tt></li> 
+      <li><tt>build_jar.cmd</tt></li> 
+      <li>When the DD file is <tt>web.xml</tt></li> 
+      <li><tt>build_war</tt>.xml</li> 
+      <li><tt>build_war.sh</tt></li> 
+      <li><tt>build_war.cmd</tt></li> 
+      <li>When the DD file is <tt>application.xml</tt></li> 
+      <li><tt>build_ear.xml</tt></li> 
+      <li><tt>build_ear.sh</tt></li> 
+      <li><tt>build_ear.cmd</tt><br> An optional target <tt>deploy</tt>, provided in each of the build files, deploys the generated archive file. For example, the <tt>build_ear.cmd deploy</tt> command generates the EAR file and deploys it on the Application Server.<br> A special case occurs when the selected source application server is WebLogic 5.1. Since WebLogic 5.1 has no <tt>application.xml</tt> file, the migration tool generates a file called <tt>application.sasmt</tt>. The <tt>application.sasmt</tt> file is used to generate the EAR file for the target application server.<br> The name of the generated JAR, WAR, and EAR files is the same as the display name specified in the corresponding DD file. If the display name is not mentioned, then the first ejb-name and servlet-name are taken to be the JAR and WAR file names respectively. If multiple enterprise beans or Servlets are present in the DD files, "andothers" is concatenated to the file name.</li> 
+      <li>If the application.xml file is already present, the names of the generated JAR/WAR files should be the same as the module names specified in the application.xml file.Build Scripts Generated</li> 
+      <li>If the application contains multiple JAR and WAR files, then a <tt>build.properties</tt> file is generated by the Migration Tool in the same directory as the <tt>build_ear</tt> files.</li> 
+      <li>If the display-name tags of the DDs do not have the same name as that of the corresponding module in the application.xml file, you must modify the <tt>build.properties</tt> file before running the <tt>build_ear</tt> (<tt>.sh</tt> or <tt>.cmd</tt>) file. Such modification of the <tt>build.properties</tt> file is required because no mapping exists between the module name in the <tt>application.xml</tt> file and the directory in which the files of that module are present.</li> 
+      <li>If the application.xml has either one JAR or one WAR module, then a default one-to-one mapping of JAR/WAR name in the <tt>application.xml</tt> file and the directory containing the <tt>ejb-jar.xml</tt>/<tt>web.xml</tt> file is available. The <tt>build.properties</tt> file file is not generated in such a case.</li> 
+     </ul> <p>The <tt>build.properties</tt> file consists of properties, which need to be assigned the appropriate module names from the <tt>application.xml}}file. A sample {{build.properties</tt> file is shown below.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">################################################################################
+# Modules found in application.xml are
+# ---&gt;customerEjb.jar&amp;lt;---     
+# ---&gt;inventoryEjb.jar&amp;lt;---     
+# ---&gt;petstore.war&amp;lt;---     
+################################################################################     
+################################################################################     
+# Deployment Descriptors have been found in the following directories,    
+# please enter a module name from the application.xml that should be given     
+# to the module generated from the files inside these directories.     
+################################################################################     
+
+# ejb-jar.xml was found in the directory /temp/components/ejb1/src, enter the module name after "=" temp_components_ejb1_src=     
+
+# ejb-jar.xml was found in the directory /temp/components/ejb2/src, enter the module name after "=" temp_components_ejb2_src= 
+
+# web.xml was found in the directory /temp/web/src, the module name     
+# has been assigned by the tool from application.xml     
+
+temp_web_src_war=petstore.war</pre> 
+       </div> 
+      </div>
+     </div> <p>You should assign the appropriate module name to each property, then run the build using the following command:<br> For Solaris: <tt>% sh build_ear.sh -Dp=y</tt><br> For Windows: <tt>PROMPT&gt; build_ear -Dp=y</tt><br> If you assign incorrect module names to the properties, the generated EAR file is not deployable.</p> 
+     <ul> 
+      <li>If <tt>weblogic.properties</tt>, <tt>config.xml</tt>, or <tt>server-cfg.xml</tt> file is present, the following files are generated:</li> 
+      <li><tt>buildconfig.xml</tt></li> 
+      <li><tt>buildconfig.sh</tt> (for Solaris)</li> 
+      <li><tt>buildconfig.cmd</tt> (for Windows)<br> This build script registers the DataSources and redeploys the StartupClass in the application server.</li> 
+      <li>If JMS configuration elements are found inside the <tt>config.xml</tt> file, the following files are generated:</li> 
+      <li><tt>buildjms.xml</tt></li> 
+      <li><tt>buildjms.sh</tt> (for Solaris)</li> 
+      <li><tt>buildjms.cmd</tt> (for Windows)<br> This build script registers the Destination JMS resources found in the <tt>config.xml</tt> file.<br> For each Connection Factory found inside the <tt>config.xml</tt> file, two xmls are generated. For example, if the name of the Connection Factory is <tt>testConn</tt>, the build scripts generated are: <br> For registering it as a Queue Connection Factory:</li> 
+      <li><tt>buildjmstestConn</tt><em>qf</em><tt>.xml</tt></li> 
+      <li><tt>buildjmstestConn</tt><em>qf</em><tt>.sh</tt> (for Solaris)</li> 
+      <li><tt>buildjmstestConn</tt><em>qf</em><tt>.cmd</tt> (for Windows)<br> For registering it as a Topic Connection Factory:</li> 
+      <li><tt>buildjmstestConn</tt><em>tf</em><tt>.xml</tt></li> 
+      <li><tt>buildjmstestConn</tt><em>tf</em><tt>.sh</tt> (for Solaris)</li> 
+      <li><tt>buildjmstestConn</tt><em>tf</em><tt>.cmd</tt> (for Windows)Note -<br> Only one of these build scripts should be executed, depending upon the requirement.<br> Use the following command for running the configuration build scripts for registering the resources on the application server: </li> 
+      <li>On Solaris: <tt>% sh filename -Du=&lt;username&gt; -DH=&lt;hostname&gt; -Dp=&lt;portno&gt; -Di=&lt;instancename&gt; -Dw=&lt;passwordfile&gt;</tt></li> 
+      <li>On Windows: <tt>PROMPT&gt; filename -Du=&lt;username&gt; -DH=&lt;hostname&gt; -Dp=&lt;portno&gt; -Di=&lt;instancename&gt; -Dw=&lt;passwordfile&gt;</tt></li> 
+     </ul> <h4><a name="M2GMigrateApp-UsingTheToolbar"></a>Using The Toolbar</h2> <p>The Migration Tool has a toolbar with three icons for frequently performed functions:</p> 
+     <ul> 
+      <li>Press the "New" icon to open a new migration project. If a migration project is already open, you will be prompted to save the open project file. Opening a new project Migration Actions all fields.</li> 
+      <li>Press the "Open" icon to open a previously saved project file. If a migration project is already open, you will be prompted to first save the open project file. Then, a dialog box displays from which you select the project file to open.</li> 
+      <li>Press the "Save" icon to save the input fields into a project file with a <tt>.prj</tt> file extension.</li> 
+     </ul> <h4><a name="M2GMigrateApp-UsingtheMenuOptions"></a>Using the Menu Options</h2> <p>The menu bar includes the menu items listed below.</p> 
+     <ul> 
+      <li>Project</li> 
+      <li>Edit</li> 
+      <li>Help</li> 
+     </ul> <h4><a name="M2GMigrateApp-ProjectMenuItems"></a>Project Menu Items</h3> <p>Use the Project menu to do the following:</p> 
+     <ul> 
+      <li>Select "New" to open a new migration project. If a migration project is currently open, you will be prompted to save the opened project file. Opening a new project Using The Toolbar all fields.</li> 
+      <li>Select "Open" to open an existing project file. If a migration project is currently open, you will be prompted to save the opened project file and then a dialog box will prompt you to select the project file to open.</li> 
+      <li>Select "Save" to save the input fields into a project file (a file with a <tt>.prj</tt> extension).</li> 
+      <li>Select "Save As" to save the project file to a different name or location than the original.</li> 
+      <li>Select "Exit" to exit the Migration Tool.</li> 
+     </ul> <h4><a name="M2GMigrateApp-EditMenuItem"></a>Edit Menu Item</h3> <p>Use the Edit menu to set preferences. If you select the "Preferences" subitem, the Preferences dialog will be displayed. The Preferences dialog has two options: "Logging" and "Miscellaneous."<br> With the "Logging" option selected, specify your preferences:</p> 
+     <ul> 
+      <li>Under the "Logging" section, select what kind of information will be logged:</li> 
+      <li>Tool Migration Log contains information specific to areas of the migration that interest the user.</li> 
+      <li>Tool Debugging Log contains debugging information that is generated during migration. This information is useful for tracking the flow of migration from the developers' perspective.</li> 
+     </ul> <p> See the Logging section to learn more about the two types of logs.</p> 
+     <ul> 
+      <li>From the "Logging Type" section, specify your preference:</li> 
+      <li>Generate either log or generate both logs</li> 
+      <li>Append new logging information to an existing log file or overwrite an existing log with new logging information</li> 
+     </ul> <p> You should generate both logs in the overwrite mode. Changed preferences take effect after you restart the tool.<br> With the "Miscellaneous" option selected, specify whether or not to display the Migration Tool's splash screen the next time you start the tool.</p> <h4><a name="M2GMigrateApp-HelpMenuItems"></a>Help Menu Items</h3> <p>Use the Help menu to do the following:</p> 
+     <ul> 
+      <li>Select the "User Guide" menu subitem to display online help for using the various Migration Tool functions.</li> 
+      <li>Select the "About Migration Tool" to display the Migration Tool's version and copyright information.</li> 
+     </ul> <p><a href="M2GRun.html" title="M2GRun">Previous</a> <a href="M2GPostRun.html" title="M2GPostRun">Next</a></p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:49.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

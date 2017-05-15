@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : 3.2AdminConsoleOnePager</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="3.2AdminConsoleOnePager-GlassFishServerOpenSourceEdition3.2AdminConsoleOnePager"></a>GlassFish Server Open Source Edition 3.2 - Admin Console One Pager</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#3.2AdminConsoleOnePager-GlassFishServerOpenSourceEdition3.2AdminConsoleOnePager">GlassFish Server Open Source Edition 3.2 - Admin Console One Pager</a></li> 
+       <li><a href="#3.2AdminConsoleOnePager-1.Introduction">1. Introduction</a></li> 
+       <ul> 
+        <li><a href="#3.2AdminConsoleOnePager-1.1.Project%2FComponentWorkingName%3A">1.1. Project/Component Working Name:</a></li> 
+        <li><a href="#3.2AdminConsoleOnePager-1.2.Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier%3A">1.2. Name(s) and e-mail address of Document Author(s)/Supplier:</a></li> 
+        <li><a href="#3.2AdminConsoleOnePager-1.3.DateofThisDocument%3A">1.3. Date of This Document:</a></li> 
+       </ul> 
+       <li><a href="#3.2AdminConsoleOnePager-2.ProjectSummary">2. Project Summary</a></li> 
+       <ul> 
+        <li><a href="#3.2AdminConsoleOnePager-2.1.ProjectDescription%3A">2.1. Project Description:</a></li> 
+        <li><a href="#3.2AdminConsoleOnePager-2.2.RisksandAssumptions%3A">2.2. Risks and Assumptions:</a></li> 
+       </ul> 
+       <li><a href="#3.2AdminConsoleOnePager-3.ProblemSummary">3. Problem Summary</a></li> 
+       <ul> 
+        <li><a href="#3.2AdminConsoleOnePager-3.1.ProblemArea%3A">3.1. Problem Area:</a></li> 
+        <li><a href="#3.2AdminConsoleOnePager-3.2.Justification%3A">3.2. Justification:</a></li> 
+       </ul> 
+       <li><a href="#3.2AdminConsoleOnePager-4.TechnicalDescription%3A">4. Technical Description:</a></li> 
+       <ul> 
+        <li><a href="#3.2AdminConsoleOnePager-4.1.Details%3A">4.1. Details:</a></li> 
+        <ul> 
+         <li><a href="#3.2AdminConsoleOnePager-4.1.1IaaSManagementService%28IMS%29">4.1.1 IaaS Management Service (IMS)</a></li> 
+         <li><a href="#3.2AdminConsoleOnePager-4.1.2LoadBalancerConfiguration">4.1.2 Load Balancer Configuration</a></li> 
+         <li><a href="#3.2AdminConsoleOnePager-4.1.3ProgressStatus">4.1.3 Progress Status</a></li> 
+         <li><a href="#3.2AdminConsoleOnePager-4.1.4ApplicationScopedResources">4.1.4 Application Scoped Resources</a></li> 
+         <li><a href="#3.2AdminConsoleOnePager-4.1.5ResourcesEnhancement">4.1.5 Resources Enhancement</a></li> 
+         <li><a href="#3.2AdminConsoleOnePager-4.1.6Monitoring">4.1.6 Monitoring</a></li> 
+         <li><a href="#3.2AdminConsoleOnePager-4.1.7JVMspecificJVMoptions">4.1.7 JVM specific JVM options</a></li> 
+         <li><a href="#3.2AdminConsoleOnePager-4.1.8.SecureAdminconfiguration">4.1.8. Secure Admin configuration</a></li> 
+         <li><a href="#3.2AdminConsoleOnePager-4.1.9ServiceOrchestration">4.1.9 Service Orchestration</a></li> 
+        </ul> 
+        <li><a href="#3.2AdminConsoleOnePager-4.3.InScope%3A">4.3. In Scope:</a></li> 
+        <li><a href="#3.2AdminConsoleOnePager-4.4.OutofScope%3A">4.4. Out of Scope:</a></li> 
+        <li><a href="#3.2AdminConsoleOnePager-4.5.Interfaces%3A">4.5. Interfaces:</a></li> 
+        <ul> 
+         <li><a href="#3.2AdminConsoleOnePager-4.5.1ExportedInterfaces">4.5.1 Exported Interfaces</a></li> 
+         <li><a href="#3.2AdminConsoleOnePager-4.5.2ImportedInterfaces">4.5.2 Imported Interfaces</a></li> 
+         <li><a href="#3.2AdminConsoleOnePager-4.5.3Deprecated%2FRemovedInterfaces%3A">4.5.3 Deprecated/Removed Interfaces:</a></li> 
+        </ul> 
+        <li><a href="#3.2AdminConsoleOnePager-4.6.DocImpact%3A">4.6. Doc Impact:</a></li> 
+        <li><a href="#3.2AdminConsoleOnePager-4.7.Admin%2FConfigImpact%3A">4.7. Admin/Config Impact:</a></li> 
+        <li><a href="#3.2AdminConsoleOnePager-4.9.I18N%2FL10NImpact%3A">4.9. I18N/L10N Impact:</a></li> 
+        <li><a href="#3.2AdminConsoleOnePager-4.10.Packaging%2CDelivery%26Upgrade%3A">4.10. Packaging, Delivery &amp; Upgrade:</a></li> 
+        <ul> 
+         <li><a href="#3.2AdminConsoleOnePager-4.10.1.Packaging">4.10.1. Packaging</a></li> 
+         <li><a href="#3.2AdminConsoleOnePager-4.10.3.UpgradeandMigration%3A">4.10.3. Upgrade and Migration:</a></li> 
+        </ul> 
+        <li><a href="#3.2AdminConsoleOnePager-4.11.SecurityImpact%3A">4.11. Security Impact:</a></li> 
+        <li><a href="#3.2AdminConsoleOnePager-4.13.Dependencies%3A">4.13. Dependencies:</a></li> 
+        <ul> 
+         <li><a href="#3.2AdminConsoleOnePager-4.13.1InternalDependencies">4.13.1 Internal Dependencies</a></li> 
+         <li><a href="#3.2AdminConsoleOnePager-4.13.2ExternalDependencies">4.13.2 External Dependencies</a></li> 
+        </ul> 
+        <li><a href="#3.2AdminConsoleOnePager-4.14.TestingImpact%3A">4.14. Testing Impact:</a></li> 
+        <li><a href="#3.2AdminConsoleOnePager-6.1.ProjectedAvailability%3A">6.1. Projected Availability:</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="3.2AdminConsoleOnePager-1.Introduction"></a>1. Introduction</h1> <h4><a name="3.2AdminConsoleOnePager-1.1.Project%2FComponentWorkingName%3A"></a>1.1. Project/Component Working Name:</h2> <p>GlassFish 3.2 Administration Console</p> <h4><a name="3.2AdminConsoleOnePager-1.2.Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier%3A"></a>1.2. Name(s) and e-mail address of Document Author(s)/Supplier:</h2> <p>Anissa Lam: anissa.lam@oracle.com</p> <h4><a name="3.2AdminConsoleOnePager-1.3.DateofThisDocument%3A"></a>1.3. Date of This Document:</h2> <p>April 21, 2011</p> <h4><a name="3.2AdminConsoleOnePager-2.ProjectSummary"></a>2. Project Summary</h1> <h4><a name="3.2AdminConsoleOnePager-2.1.ProjectDescription%3A"></a>2.1. Project Description:</h2> <p>Administration Console (GUI) is one of the tools for application server administrators to configure and monitor the application server.</p> <p>PaaS Administration Console is a simplified console that allows user to deploy application to the cloud and configure Elastic Load Balancing.</p> <p>See below for a longer, more detailed technical description.</p> <h4><a name="3.2AdminConsoleOnePager-2.2.RisksandAssumptions%3A"></a>2.2. Risks and Assumptions:</h2> <p>Many of the new features in the console depends on Admin Infrastructure and other backend teams, the biggest risk is to have the support and API needed by the GUI team in time and according to schedule.</p> <p>Admin Console 3.2 is using REST API for communicating to the server. It is assumed that any features that any sub-project requests to be exposed through the admin console will provide a way for GUI to invoke that through the REST API.</p> <p>The Admin Console will be using the Woodstock components, a JSF component set. Since this is an unsupported product, the GUI team has created a branch for our own use and maintains it. It is assumed that this version will not have major fault that prevents the Admin Console from utilizing it or spend significant time in maintaining it. Although we would prefer to use ADF Faces components, they are unavailable to us due to licensing restrictions.</p> <p>The Admin Console is written on top of the JSFTemplating framework, which is a java.net open source project. It is assumed that JSFTemplating will continue and provide bug fixes if necessary. &nbsp;No major features have been identified for this release.</p> <p>Detecting the available modules for installation or update depends on the API provided by Update Center 2.0. It is assumed that the update center team will continue to support this and fix any issues encountered.</p> <p>PaaS Console will be implemented on another UI framework or using another component set instead of WoodStock. As we are building this from scratch, there may be other unknown risk involved during the project.</p> <h4><a name="3.2AdminConsoleOnePager-3.ProblemSummary"></a>3. Problem Summary</h1> <h4><a name="3.2AdminConsoleOnePager-3.1.ProblemArea%3A"></a>3.1. Problem Area:</h2> <p>The GlassFish Admin Console needs to provide support for &nbsp;Virtualization, Load Balancer Configuration so that user is not limited to the command line interface.</p> <p>This is especially needed as IaaS and PaaS &nbsp;is the main delivery driver for 3.2 and the Admin Console can greatly enhance&nbsp;the GlassFish user experience.</p> <p>User who is accustomed to the simple steps when using Amazon Beanstalk to deploy new application to the cloud environment may feel overwhelmed with the current admin console, &nbsp;as they may not need all the capabilities and features provided by this advanced console. &nbsp; We need to provide a simplified console with just a few steps to help user in this category. &nbsp;</p> <h4><a name="3.2AdminConsoleOnePager-3.2.Justification%3A"></a>3.2. Justification:</h2> <p>The Admin Console was well received by the community and often viewed as a differentiator from other similar products in the market. For GlassFish 3.2, we need to continue to provide to the user this user friendly administration tool.</p> <p>Besides being a simplified tool for promoting user experience in the cloud, &nbsp;PaaS console will also be served as a prototype for immigrating the advanced console to be build on a new UI framework in 4.0.&nbsp;</p> <h4><a name="3.2AdminConsoleOnePager-4.TechnicalDescription%3A"></a>4. Technical Description:</h1> <h4><a name="3.2AdminConsoleOnePager-4.1.Details%3A"></a>4.1. Details:</h2> <p>Admin Console will provide support for the following functionality in 3.2</p> <h4><a name="3.2AdminConsoleOnePager-4.1.1IaaSManagementService%28IMS%29"></a>4.1.1 IaaS Management Service (IMS)</h3> <p>&nbsp;&nbsp; &nbsp; <b>Configure IMS with a virtualization provider.</b>&nbsp;&nbsp; &nbsp; A top level tree node will be created for Virtualization Providers. &nbsp; Support for this includes listing, creation and deletion of provider. &nbsp; During creation, &nbsp;user will be able to select the particular provider, such as &nbsp;OVM, VirtualBox, Libvert etc. &nbsp; Depending on the selection, &nbsp; meta-data that IMS will need to know about this provider will be required.</p> <p><b>&nbsp;&nbsp; &nbsp; Virtualization group.</b>&nbsp;&nbsp;&nbsp;&nbsp;After a provider is configured, &nbsp;user can edit this provider to create a virtualization group. &nbsp; In the provider information page, there will be a 'Group' tab. &nbsp; This allows user to define a group of machines for this provider. &nbsp; The information requested from the user will be different depending on the provider. &nbsp;eg, For OVM, virtualization group would map directly to an OVM server pool. &nbsp;For other providers such as VirtualBox, user may need to explicitly add virtualization &nbsp;servers to the group.</p> <p><b>&nbsp;</b></p> <p><b>&nbsp;&nbsp; &nbsp;VM Template.</b>&nbsp;&nbsp;&nbsp;Allows user to make a template known to IMS and associates it with a virtualization provider group. &nbsp;User will be requested to fill in the information such as the path to the VM template, &nbsp;Credentials for logging into template or any othermata-data as required. &nbsp; &nbsp;This is expected to be a long running process and status of the progress should be displayed to user.</p> <p>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</p> <p><b>&nbsp;&nbsp; &nbsp;Cluster Creation.</b>&nbsp;&nbsp;&nbsp;&nbsp;The current cluster pages will need to be modified to support virtual cluster. &nbsp; When creating a cluster, &nbsp; user will decide (by a checkbox) whether this cluster is a virtual cluster. &nbsp; For a virtual cluster, &nbsp;instead of the current instance table where user creates the instances for the cluster providing the node name, &nbsp;other information specific to virtual cluster will be required. &nbsp;This may include the provider name, group name, &nbsp;template, &nbsp;prefix to be used for any instance under this cluster etc. &nbsp; If user indicates this is for elasticity, &nbsp;additional info such as initial, &nbsp;min and max number of instances to be created will be asked.</p> <h4><a name="3.2AdminConsoleOnePager-4.1.2LoadBalancerConfiguration"></a>4.1.2 Load Balancer Configuration</h3> <p><font color="#000000"><b>&nbsp;&nbsp; &nbsp; &nbsp;</b></font><font color="#000000">Admin console will provide UI to support &nbsp;load balancer configuration similar to v2. &nbsp;This includes adding a top level tree node for Load Balancer, &nbsp;allowing user to list/create/edit/delete load balancers. &nbsp; User can manage the targets for any load&nbsp;</font>balancer. &nbsp;Additional commands including &nbsp;'Export HTTP lb config', &nbsp;'Apply HTTP lb changes' or create health checker will be in 3.2.</p> <h4><a name="3.2AdminConsoleOnePager-4.1.3ProgressStatus"></a>4.1.3 Progress Status</h3> <p><font color="#000000">&nbsp;&nbsp; &nbsp; &nbsp;Some of the&nbsp;</font><font color="#000000">IMS features &nbsp;will trigger long running process,</font><font color="#000000">&nbsp;&nbsp;</font><font color="#000000">admin console needs to provide a way to inform user of the progress. &nbsp; Progress information and/or status will be displayed to the user.</font></p> <h4><a name="3.2AdminConsoleOnePager-4.1.4ApplicationScopedResources"></a>4.1.4 Application Scoped Resources</h3> <p><font color="#000000">&nbsp;&nbsp; &nbsp; &nbsp;Application scoped resource is a feature implemented in 3.1, &nbsp;but not supported in the admin console. &nbsp; For 3.2, this feature will be added. &nbsp; The following will be added:</font></p> 
+     <ul> 
+      <li>Add resources related info while deploying an application</li> 
+      <li>Add resources tab for each aplication</li> 
+      <li>Facilitate monitoring of application scoped resources.&nbsp;</li> 
+     </ul> <h4><a name="3.2AdminConsoleOnePager-4.1.5ResourcesEnhancement"></a>4.1.5 Resources Enhancement</h3> <p><font color="#000000">&nbsp;&nbsp; &nbsp;</font><font color="#000000">A couple of resources enhancement that is not provided in 3.1 will be considered for 3.2 release. &nbsp;This includes:</font></p> 
+     <ul> 
+      <li><font color="#000000">In JDBC pool, add support for statement-leak-timeout and statement-leak-reclaim fields.</font></li> 
+      <li><font color="#000000">Add support for List built in validation class names.</font></li> 
+      <li><font color="#000000">Add support for Introspect field and display the driver class names for installed JDBC drivers.</font></li> 
+     </ul> <h4><a name="3.2AdminConsoleOnePager-4.1.6Monitoring"></a>4.1.6 Monitoring</h3> <p><font color="#000000"><b>&nbsp;&nbsp; &nbsp;</b></font> <font color="#000000">More monitoring support will be in 3.2. &nbsp; GUI team will consider displaying statistics in chart, &nbsp;but this is a nice-to-have feature. The new statistics will include:</font></p> 
+     <ul> 
+      <li><font color="#000000">Application based pool monitoring.</font></li> 
+      <li><font color="#000000">JMS connection factories monitoring.</font></li> 
+      <li><font color="#000000">Application based monitoring for JMS connection factories. &nbsp;(issue: not available through CLI in 3.1)</font></li> 
+     </ul> <h4><a name="3.2AdminConsoleOnePager-4.1.7JVMspecificJVMoptions"></a>4.1.7 JVM specific JVM options</h3> <p><font color="#000000"><b>&nbsp;&nbsp; &nbsp; &nbsp;</b></font> <font color="#000000">JVM options table probably will need to add an optional column for user to specify jvm-specific information. &nbsp; This is described in&nbsp;GLASSFISH-16247 and GLASSFISH-16348</font></p> <h4><a name="3.2AdminConsoleOnePager-4.1.8.SecureAdminconfiguration"></a>4.1.8. Secure Admin configuration</h3> <p>&nbsp;&nbsp; &nbsp; &nbsp; New screen for secure administration will be added for 3.2, &nbsp;allowing user to turn on or turn off secure admin. &nbsp; User can provide additional information such as adminalias and instancealias &nbsp;when they execute the command. &nbsp;Additional information is captured in GLASSFISH-16126.</p> <h4><a name="3.2AdminConsoleOnePager-4.1.9ServiceOrchestration"></a>4.1.9 Service Orchestration</h3> <p><b>&nbsp;&nbsp; &nbsp;</b> Support for Service Orchestration will be provided in the PaaS Console. &nbsp;&nbsp;</p> <p>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;<b>Application Deployment. &nbsp;</b> There will not be any change in the advance admin console regarding application deployment. &nbsp; User who wants to deploy the application to the cloud will need to use the PaaS console. &nbsp;&nbsp;Since this can be potentially a long running process, &nbsp;&nbsp; status of the progress should be displayed to user. &nbsp;&nbsp;</p> <p>A nice-to-have feature is for console to provide UI to allow user to setup resources or other services needed for this application. &nbsp; GUI team will work with the backend team to see how this feature can be provided.&nbsp;</p> <p><b>&nbsp;&nbsp; &nbsp; &nbsp; Provisioned &nbsp;Service. &nbsp;</b> After the application is deployed, &nbsp;PaaS console will display all the provisioned service. &nbsp; This includes the Application Scoped Services and Global / Shared Services</p> <p>&nbsp;&nbsp; &nbsp; &nbsp;&nbsp;<b>Global / Shared Services.</b> &nbsp;&nbsp; Admin Console will fully support Global or Shared Services. &nbsp; User will be able to create / delete / list global services in the domain. &nbsp; The general information page for these global or shared services should also list out the applications that is using the service. &nbsp; &nbsp;</p> <p><b>4.2. Bug/RFE Number(s):</b></p> <p>GUI team is committed to addressing all P1 - P3 bugs.<br> Any Feature or Enhancement request filed will be evaluated on a case-by-case basis.</p> <h4><a name="3.2AdminConsoleOnePager-4.3.InScope%3A"></a>4.3. In Scope:</h2> <h4><a name="3.2AdminConsoleOnePager-4.4.OutofScope%3A"></a>4.4. Out of Scope:</h2> <h4><a name="3.2AdminConsoleOnePager-4.5.Interfaces%3A"></a>4.5. Interfaces:</h2> <p>Interfaces may be commands, files, directory structure, ports,<br> DTD/Schema, tools, APIs, CLIs, etc.<br> Note: In lieu of listing the interfaces in the one pager, providing<br> a link to another specification which defines the interfaces<br> is acceptable.</p> <h4><a name="3.2AdminConsoleOnePager-4.5.1ExportedInterfaces"></a>4.5.1 Exported Interfaces</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Interface </th> 
+         <th class="confluenceTh"> Stability </th> 
+         <th class="confluenceTh"> Package Name </th> 
+         <th class="confluenceTh"> Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ConsolePluginService </td> 
+         <td class="confluenceTd"> Evolving </td> 
+         <td class="confluenceTd"> org.glassfish.api.admingui.ConsoleProvider </td> 
+         <td class="confluenceTd"> Java API </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Integration Point </td> 
+         <td class="confluenceTd"> Evolving </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> XML-based Admin Console Integration File, OSGi, and through <a href="https://jsftemplating.java.net/">JSFT </a> syntax </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.2AdminConsoleOnePager-4.5.2ImportedInterfaces"></a>4.5.2 Imported Interfaces</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Interface </th> 
+         <th class="confluenceTh"> Stability </th> 
+         <th class="confluenceTh"> Exporting Project: Name, Specification or other Link. </th> 
+         <th class="confluenceTh"> Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Registration API </td> 
+         <td class="confluenceTd"> Evolving </td> 
+         <td class="confluenceTd"> com.sun.enterprise.registration </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> REST API </td> 
+         <td class="confluenceTd"> Evolving </td> 
+         <td class="confluenceTd"> <a href="V3.1RESTfulApiOnePager.html" title="V3.1RESTfulApiOnePager">one pager </a> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> HK2 </td> 
+         <td class="confluenceTd"> Evolving </td> 
+         <td class="confluenceTd"> org.jvnet.hk2.* </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Deployment Facility API </td> 
+         <td class="confluenceTd"> Evolving </td> 
+         <td class="confluenceTd"> org.glassfish.deployment.client </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Woodstock components </td> 
+         <td class="confluenceTd"> External </td> 
+         <td class="confluenceTd"> <a href="http://woodstock.java.net">http://woodstock.java.net</a> </td> 
+         <td class="confluenceTd"> 4.0.2 branch </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JSFTemplating </td> 
+         <td class="confluenceTd"> External </td> 
+         <td class="confluenceTd"> <a href="http://jsftemplating.java.net">http://jsftemplating.java.net</a> </td> 
+         <td class="confluenceTd"> version 1.2 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JMaki </td> 
+         <td class="confluenceTd"> External </td> 
+         <td class="confluenceTd"> <a href="http://jmaki.java.net">http://jmaki.java.net</a> </td> 
+         <td class="confluenceTd"> version 1.1 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Update Center 2.0 API </td> 
+         <td class="confluenceTd"> External </td> 
+         <td class="confluenceTd"> <a href="http://wiki.updatecenter.java.net/Wiki.jsp?page=About">http://wiki.updatecenter.java.net/Wiki.jsp?page=About</a> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.2AdminConsoleOnePager-4.5.3Deprecated%2FRemovedInterfaces%3A"></a>4.5.3 Deprecated/Removed Interfaces:</h3> <h4><a name="3.2AdminConsoleOnePager-4.6.DocImpact%3A"></a>4.6. Doc Impact:</h2> <p>The Online Help doc set needs to be updated accordingly. Additional content will be needed for pages thats added or changed due to PaaS and IaaS support. &nbsp;</p> <p>No new plugin package anticipated at this point, so no new doc set is expected.</p> <p>Other docs that refers to administration using the GlassFish Admin Console may need to include information for the new features in GlassFish Admin Console.</p> <h4><a name="3.2AdminConsoleOnePager-4.7.Admin%2FConfigImpact%3A"></a>4.7. Admin/Config Impact:</h2> <p>Each sub-projects must expose their configuration or commands via the REST API in order for the GlassFish Admin Console to provide administrative support.<br> There may be changes needed in CLI to support GUI.</p> <p><b>4.8. HA Impact:</b></p> <p>None.</p> <h4><a name="3.2AdminConsoleOnePager-4.9.I18N%2FL10NImpact%3A"></a>4.9. I18N/L10N Impact:</h2> <p>Localization of Admin Console is needed. This includes all the Strings.properties files as well as the context sensitive on line help set.</p> <p>If the REST API is going to participate in localization of content, then the REST API must be capable of accepting the user's preferred locale and returning meta-data that includes the translated strings with the data itself (or some similar solution). If this is done, all REST clients could benefit from centralizing the I18N Strings, although this changes the location in which much of the I18N content is specified for the Admin Console.</p> <h4><a name="3.2AdminConsoleOnePager-4.10.Packaging%2CDelivery%26Upgrade%3A"></a>4.10. Packaging, Delivery &amp; Upgrade:</h2> <h4><a name="3.2AdminConsoleOnePager-4.10.1.Packaging"></a>4.10.1. Packaging</h3> <p>Same as in 3.1.</p> <p><b>4.10.2. Delivery</b></p> <p>Same as in 3.1. Installation will include Admin Console in both the .zip and installer distributions.</p> <h4><a name="3.2AdminConsoleOnePager-4.10.3.UpgradeandMigration%3A"></a>4.10.3. Upgrade and Migration:</h3> <p>We don't anticipate any impact on upgrade or migration.</p> <h4><a name="3.2AdminConsoleOnePager-4.11.SecurityImpact%3A"></a>4.11. Security Impact:</h2> <p>Same as in 3.1. &nbsp;Admin Console will continue to use form authentication as in previous release. We will also need to authenticate the user with the REST API (see <a href="V3.1RESTfulApiOnePager.html" title="V3.1RESTfulApiOnePager">REST API spec</a>). <br class="atl-forced-newline"></p> <p><b>4.12. Compatibility Impact</b></p> <p>None.</p> <h4><a name="3.2AdminConsoleOnePager-4.13.Dependencies%3A"></a>4.13. Dependencies:</h2> <h4><a name="3.2AdminConsoleOnePager-4.13.1InternalDependencies"></a>4.13.1 Internal Dependencies</h3> <p>Admin Console 3.2 heavily dependent on the Admin Infrastructure backend and the REST API. It is important to work with the admin infrastructure and REST API team very closely to resolve any backend issues effecting our implementation.</p> <h4><a name="3.2AdminConsoleOnePager-4.13.2ExternalDependencies"></a>4.13.2 External Dependencies</h3> <p>Refer to the table above regarding Imported Interface. That lists out all our dependencies.</p> <h4><a name="3.2AdminConsoleOnePager-4.14.TestingImpact%3A"></a>4.14. Testing Impact:</h2> <p>There are currently over 100 &nbsp;dev tests that test out the functionality of Admin Console for 3.1<br> Additional dev test will be written as we finish implementation of each feature.</p> <p><b>5. Reference Documents:</b></p> <p>List of related documents, if any (BugID's, RFP's, papers).</p> <p><b>6. Schedule:</b></p> <h4><a name="3.2AdminConsoleOnePager-6.1.ProjectedAvailability%3A"></a>6.1. Projected Availability:</h2> <p>Refer to <a href="3.2AdminConsoleProject.html" title="3.2AdminConsoleProject">Project Page</a> for committed delivery for each Milestone.</p> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jun 06, 2011 by 
+<font color="#0050B2">pauldavies</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

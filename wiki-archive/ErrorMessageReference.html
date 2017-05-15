@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : ErrorMessageReference</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="ErrorMessageReference-ApplicationServer9.1ErrorMessageReference"></a>Application Server 9.1 Error Message Reference</h1> <p>This Wiki is intended to be an interactive, editable version of the Error Message Reference that is also available in <a href="http://docs.sun.com/app/docs/doc/819-3678">HTML</a> and <a href="http://dlc.sun.com/pdf/819-3678/819-3678.pdf">PDF</a> formats.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Note </th> 
+         <td class="confluenceTd"> *Sun Java Application Server 9.1*, bundled with the Java EE 5 SDK, is the commercial version of <b>GlassFish v2</b>. The code bases are the same, only the support options differ. For the purposes of this Wiki, all references to "Application Server" refer equally to "GlassFish"; the names are interchangeable. For information about Application Server 9.1 and the Java EE 5 SDK, please go to the <a href="http://java.sun.com/javaee/downloads/?intcmp=1282">Java EE Downloads</a> page. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>The most significant shortcoming of the current Error Message Reference is that it does not contain enough information – it pretty much contains just the error message IDs and message strings, with little or no explanatory text. The challenge is that it takes a lot of time to develop meaningful descriptions and solutions/workarounds for the problems indicated by the error messages, more time than either the developers or doc writers can currently afford. Moreover, meaningful solutions are really only available after the product has been "in the wild" for some time.</p> <p>Finally, there are a lot of error messages here, but some are more significant and/or encountered more often than others. Through the process of natural community selection, those errors that are most important will hopefully rise to the top of the stack. Please get involved!</p> <p>What follows here is the complete <tt>SEVERE</tt> error message catalog for Application Server 9.1. <b>Please add your comments, descriptions, solutions and/or workarounds directly to this Error Message wiki.</b> See How do I edit a wiki page? for more information about editing these pages. </p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Note </th> 
+         <td class="confluenceTd"> Before contributing to this document, please be sure to read the <a href="./TermsOfUse.html">Terms of Use</a> page. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <hr> <h4><a name="ErrorMessageReference-Preface"></a>Preface</h1> <p>This guide describes error messages you may encounter when using the Glassfish Application Server 9.1 software. The error messages described here can also be viewed with the Application Server Log Viewer.</p> <h4><a name="ErrorMessageReference-WhoShouldUseThisBook"></a>Who Should Use This Book</h2> <p>The Glassfish Application Server 9.1 Error Message Reference is intended for developers and administrators who use the Glassfish Application Server to assemble and deploy distributed and Web-based applications.</p> <p>This guide assumes you are familiar with the following topics:</p> 
+     <ul> 
+      <li>Java APIs as defined in the Java Servlet, JavaServer Pages (JSP), Enterprise JavaBeans (EJB), and Java Database Connectivity (JDBC) specifications</li> 
+     </ul> 
+     <ul> 
+      <li>The SQL structured database query languages</li> 
+     </ul> 
+     <ul> 
+      <li>Relational database concepts</li> 
+     </ul> <h4><a name="ErrorMessageReference-HowThisBookIsOrganized"></a>How This Book Is Organized</h2> <p>This guide is a compilation of messages that you may encounter while running the Application Server. Each message begins with a message ID, which has a format like the following:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;Subsystem\&gt;&lt;IntegerId\&gt;:</pre> 
+       </div> 
+      </div>
+     </div> <p>The error messages in this Wiki are categorized according to their message ID prefix. For example, messages with a <tt>DPL</tt> prefix are in the section titled "DPL Error Messages." In addition, there is a general section at the beginning for "Unexpected Errors."</p> 
+     <ul> 
+      <li><a href="Analyze.html" title="Analyze">Chapter 1, Unexpected Errors</a></li> 
+     </ul> 
+     <ul> 
+      <li><a href="Acc.html" title="Acc">Chapter 2, ACC Error Messages</a></li> 
+     </ul> 
+     <ul> 
+      <li><a href="Act.html" title="Act">Chapter 3, ACT Error Messages</a></li> 
+     </ul> 
+     <ul> 
+      <li><a href="Adm.html" title="Adm">Chapter 4, ADM Error Messages</a></li> 
+     </ul> 
+     <ul> 
+      <li><a href="Cis.html" title="Cis">Chapter 5, CIS Error Messages</a></li> 
+     </ul> 
+     <ul> 
+      <li><a href="Cmnutil.html" title="Cmnutil">Chapter 6, CMNUTIL Error Messages</a></li> 
+     </ul> 
+     <ul> 
+      <li><a href="Conf.html" title="Conf">Chapter 7, CONF Error Messages</a></li> 
+     </ul> 
+     <ul> 
+      <li><a href="Core.html" title="Core">Chapter 8, CORE Error Messages</a></li> 
+     </ul> 
+     <ul> 
+      <li><a href="Diag.html" title="Diag">Chapter 9, DIAG Error Messages</a></li> 
+     </ul> 
+     <ul> 
+      <li><a href="Dpl.html" title="Dpl">Chapter 10, DPL Error Messages</a></li> 
+     </ul> 
+     <ul> 
+      <li><a href="Dtx.html" title="Dtx">Chapter 11, DTX Error Messages</a></li> 
+     </ul> 
+     <ul> 
+      <li><a href="Eeadm.html" title="Eeadm">Chapter 12, EEADM Error Messages</a></li> 
+     </ul> 
+     <ul> 
+      <li><a href="Ejb.html" title="Ejb">Chapter 13, EJB Error Messages</a></li> 
+     </ul> 
+     <ul> 
+      <li><a href="Hadb.html" title="Hadb">Chapter 14, HADB Error Messages</a></li> 
+     </ul> 
+     <ul> 
+      <li><a href="Iop.html" title="Iop">Chapter 15, IOP Error Messages</a></li> 
+     </ul> 
+     <ul> 
+      <li><a href="Jbise.html" title="Jbise">Chapter 16, JBISE Error Messages</a></li> 
+     </ul> 
+     <ul> 
+      <li><a href="Jdo.html" title="Jdo">Chapter 17, JDO Error Messages</a></li> 
+     </ul> 
+     <ul> 
+      <li><a href="Jml.html" title="Jml">Chapter 18, JML Error Messages</a></li> 
+     </ul> 
+     <ul> 
+      <li><a href="JMS.html" title="JMS">Chapter 19, JMS Error Messages</a></li> 
+     </ul> 
+     <ul> 
+      <li><a href="Jts.html" title="Jts">Chapter 20, JTS Error Messages</a></li> 
+     </ul> 
+     <ul> 
+      <li><a href="Launcher.html" title="Launcher">Chapter 21, LAUNCHER Error Messages</a></li> 
+     </ul> 
+     <ul> 
+      <li><a href="Lcm.html" title="Lcm">Chapter 22, LCM Error Messages</a></li> 
+     </ul> 
+     <ul> 
+      <li><a href="Ldr.html" title="Ldr">Chapter 23, LDR Error Messages</a></li> 
+     </ul> 
+     <ul> 
+      <li><a href="Mdb.html" title="Mdb">Chapter 24, MDB Error Messages</a></li> 
+     </ul> 
+     <ul> 
+      <li><a href="Nam.html" title="Nam">Chapter 25, NAM Error Messages</a></li> 
+     </ul> 
+     <ul> 
+      <li><a href="Rar.html" title="Rar">Chapter 26, RAR Error Messages</a></li> 
+     </ul> 
+     <ul> 
+      <li><a href="Sec.html" title="Sec">Chapter 27, SEC Error Messages</a></li> 
+     </ul> 
+     <ul> 
+      <li><a href="Server.html" title="Server">Chapter 28, SERVER Error Messages</a></li> 
+     </ul> 
+     <ul> 
+      <li><a href="Sgmt.html" title="Sgmt">Chapter 29, SGMT Error Messages</a></li> 
+     </ul> 
+     <ul> 
+      <li><a href="Sync.html" title="Sync">Chapter 30, SYNC Error Messages</a></li> 
+     </ul> 
+     <ul> 
+      <li><a href="Util.html" title="Util">Chapter 31, UTIL Error Messages</a></li> 
+     </ul> 
+     <ul> 
+      <li><a href="Vrfy.html" title="Vrfy">Chapter 32, VRFY Error Messages</a></li> 
+     </ul> 
+     <ul> 
+      <li><a href="Web.html" title="Web">Chapter 33, WEB Error Messages</a></li> 
+     </ul> 
+     <ul> 
+      <li><a href="Wss.html" title="Wss">Chapter 34, WSS Error Messages</a></li> 
+     </ul> <p>The messages defined in this reference guide also include the following information:</p> 
+     <ul> 
+      <li><b>Message</b> — The brief text description accompanying the numeric message ID when viewed in the Application Server Log Viewer.</li> 
+     </ul> 
+     <ul> 
+      <li><b>Cause</b> — Meaning and likely cause of the message.</li> 
+     </ul> 
+     <ul> 
+      <li><b>Solutions/Workarounds</b> — Instructions on how to address the condition that caused the message to be generated.</li> 
+     </ul> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 02, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:43.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : Rt_tp2_tasks</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="Rt_tp2_tasks-GlassFishV3RuntimeManagementTP2Tasks"></a>GlassFish V3 - Runtime Management TP2 Tasks</h2> 
+     <div> 
+      <ul> 
+       <li><a href="#Rt_tp2_tasks-GlassFishV3RuntimeManagementTP2Tasks">GlassFish V3 - Runtime Management TP2 Tasks</a></li> 
+       <ul> 
+        <li><a href="#Rt_tp2_tasks-OverallCommandsforTP2">Overall Commands for TP2</a></li> 
+        <li><a href="#Rt_tp2_tasks-ForTP2%2Cthesupportedtargetisthdefaultserver.">For TP2, the supported target is th default server.</a></li> 
+        <li><a href="#Rt_tp2_tasks-PostTP2Tasks">Post TP2 Tasks</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="Rt_tp2_tasks-OverallCommandsforTP2"></a>Overall Commands for TP2</h3> <p>These are <a href="./CLICommandsForGlassFishV3TP2.html">here</a>.</p> <h4><a name="Rt_tp2_tasks-ForTP2%2Cthesupportedtargetisthdefaultserver."></a>For TP2, the supported target is th default server.</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">ID</th> 
+         <th class="confluenceTh">Task</th> 
+         <th class="confluenceTh">Owner</th> 
+         <th class="confluenceTh">Date</th> 
+         <th class="confluenceTh">Done ?</th> 
+         <th class="confluenceTh">Dependencies </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> C01 </td> 
+         <td class="confluenceTd"> Implementation for create/delete/list-jdbc-connection-pool </td> 
+         <td class="confluenceTd"> Jennifer </td> 
+         <td class="confluenceTd"> 29feb08 </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">Dependency on Jerome for injecting configuration in unit tests. AMX will be ready with create/delete commands by 21mar08. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> C02 </td> 
+         <td class="confluenceTd"> Implementation for create/delete/list-jdbc-resource Fix bugs filed by Jagadish Check with Vince for plugin and Lloyd for AMX functionality Unit Test </td> 
+         <td class="confluenceTd"> Jennifer </td> 
+         <td class="confluenceTd"> 14mar08 </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> C03 </td> 
+         <td class="confluenceTd"> Implementation for create/delete/list-http-listener Check back end functionality Check with Vince for plugin and Lloyd for AMX functionality Unit Test </td> 
+         <td class="confluenceTd"> Rajeshwar </td> 
+         <td class="confluenceTd"> 14mar08 </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> C04 </td> 
+         <td class="confluenceTd"> create/delete/list-virtual-server Check back end functionality Check with Vince for plugin and Lloyd for AMX functionality Unit Test </td> 
+         <td class="confluenceTd"> Rajeshwar </td> 
+         <td class="confluenceTd"> 14mar08 </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> C05 </td> 
+         <td class="confluenceTd"> ping-connection-pool Check with Jagadish for bug resolution Unit Test </td> 
+         <td class="confluenceTd"> Sreeni </td> 
+         <td class="confluenceTd"> 14mar08 </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Checked in skeleton code for core functionality to be provided by JDBC team, <a href="https://github.com/javaee/glassfish/issues/4259">issue#4259 </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> C06 </td> 
+         <td class="confluenceTd"> create/delete-jvm-options Verify using the launcher options Check that the behavior is similar to V2 Unit Test </td> 
+         <td class="confluenceTd"> Harry </td> 
+         <td class="confluenceTd"> 14mar08 </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> C07 </td> 
+         <td class="confluenceTd"> create/delete-profiler Check that the behavior is similar to V2 Unit Test </td> 
+         <td class="confluenceTd"> Prashant </td> 
+         <td class="confluenceTd"> 14mar08 </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> C08 </td> 
+         <td class="confluenceTd"> add-resources Verify with Vince for netbeans plugin and Lloyd for AMX functionality Unit Test </td> 
+         <td class="confluenceTd"> Prashant </td> 
+         <td class="confluenceTd"> 14mar08 </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd">Isolating the scope of resources (Tieing them to a particular app) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> C09 </td> 
+         <td class="confluenceTd"> start-database/stop-database </td> 
+         <td class="confluenceTd"> Jennifer </td> 
+         <td class="confluenceTd"> 21mar08 </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd">Discussed with Jerome and Kedar. Decision made to change from local to remote command. Need CCC approval for compatibility. Targeted as remote commands for TP2. In the meantime users can use javadb scripts to start/stop. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p><b>Nice to Have commands (based on meeting on 31jan08):</b></p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <td class="confluenceTd"> C09 </td> 
+         <td class="confluenceTd"> generate-jvm-report </td> 
+         <td class="confluenceTd"> Jennifer </td> 
+         <td class="confluenceTd"> 29feb08 </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd">Nice to have for TP2. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> C10 </td> 
+         <td class="confluenceTd"> create/delete/list-javamail-resource(NTH) </td> 
+         <td class="confluenceTd"> Rajeshwar </td> 
+         <td class="confluenceTd"> 29feb08 </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd">Java Mail back end support is not expected by TP2 time frame. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> C11 </td> 
+         <td class="confluenceTd"> Implementation for create/delete/list-system-properties </td> 
+         <td class="confluenceTd"> Harpreet </td> 
+         <td class="confluenceTd"> 29feb08 </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd">Since we wont have cluster or multi-instance support, we don't need this for TP2. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> C12 </td> 
+         <td class="confluenceTd"> monitor (NTH) </td> 
+         <td class="confluenceTd"> Prashant </td> 
+         <td class="confluenceTd"> 29feb08 </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd">may NOT do it, since we are trying to do monitoring in a better way, we might have a different output here </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="Rt_tp2_tasks-PostTP2Tasks"></a>Post TP2 Tasks</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">ID</th> 
+         <th class="confluenceTh">Task</th> 
+         <th class="confluenceTh">Owner</th> 
+         <th class="confluenceTh">Date</th> 
+         <th class="confluenceTh">Done ?</th> 
+         <th class="confluenceTh">Dependencies </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> A13 </td> 
+         <td class="confluenceTd"> Reinstate Runtime MBean Infrastructure </td> 
+         <td class="confluenceTd"> Sreeni </td> 
+         <td class="confluenceTd"> 28mar08 </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd">HK2 - @companinon objects resolved by 07feb08 Infrastructure - config. variables resolved by 11feb08 Application Management - JSR77 mBeans resolved by 25feb08 Resources - JSR77 mBeans resolved by 10mar08 GUI - OEM Pluggable Interface resolved by 10mar08 </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:49.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

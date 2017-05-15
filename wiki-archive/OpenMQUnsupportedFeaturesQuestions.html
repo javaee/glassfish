@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : OpenMQUnsupportedFeaturesQuestions</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="OpenMQUnsupportedFeaturesQuestions-FAQforunsupportedfeaturesinOpenMessageQueue%21https%3A%2F%2Fmq.java.net%2Fimages%2Fdukemqicon.gif%21"></a>FAQ for unsupported features in Open Message Queue <span class="error">Cannot resolve external resource into attachment.</span></h1> <p>If you are interested in contributing to this FAQ, please read the <a href="MQWikiContributionGuidelines.html" title="MQWikiContributionGuidelines">Contribution Guidelines</a>.</p> <p><a href="OpenMQFAQ.html" title="OpenMQFAQ">Back to main Open MQ FAQ page</a><br> <a href="https://mq.java.net">Back to Open MQ</a></p> 
+     <div class="panel" style="border-width: 1px;"></div> <p><b>Note</b>: This web page lists various features of Open Message Queue that are not supported. Bugs filed against them will probably not be addressed. They are present in Open Message Queue for a number of reasons such as for debugging purposes, or for private use by another product. Use these APIs/features at your own risk.<br> <b>Q: How do I list, query, delete or replace messages in a destination ?</b><br> <b>A:</b> You can either use a private Open Message Queue API and write your own application to do this or imqcmd. However, imqcmd cannot be used to replace messages in a destination. This API and the imqcmd enhancements can be used to inspect messages in queue or topic destinations.<br> A quick description of these operations:</p> 
+     <ul> 
+      <li>list - list messages in a destination</li> 
+      <li>query - query (i.e. obtain more detail) on a specific message in a destination</li> 
+      <li>delete - delete a specific message in a destination</li> 
+      <li>replace - replace a specific message in a destination with one you create. The old/new messages have to match types. Basically this is: 
+       <ul> 
+        <li>delete old/existing message</li> 
+        <li>replace it with the new message you create<br> <b>Open Message Queue API for listing/querying/deleting/replacing messages</b><br> You need to download the following items:</li> 
+       </ul> </li> 
+      <li>zip file containing ant project: <a href="http://wiki.glassfish.java.net/attach/OpenMQUnsupportedFeaturesQuestions/Mqmsgadmin.zip">Mqmsgadmin.zip</a>. The README file included in this zip file will describe how to run the sample applications in the ant project.</li> 
+      <li>(Optional) zip file containing HTML pages that describe the JMS based protocol between the Open Message Queue broker and administrative clients (imqcmd, imqadmin). This zip file is named adminprotocol.zip and is located under the <a href="https://mq.java.net/servlets/ProjectDocumentList">File Archives</a> section of the Open Message Queue website in the architecture/adminprotocol folder. Some of the files in Mqmsgadmin.zip refer to HTML files which are in this adminprotocol.zip file. At the time this document was written, a adminprotocol.zip file for Open Message Queue 4.2 was added to the website - the information relevant to message manipulation there should be compatible with Open Message Queue 4.1 as well.<br> <b>imqcmd</b><br> The following commands can be used to quickly examine messages (eg what type they are or what properties they have) in a destination:<br> <b>Listing messages</b><br> List all messages in queue 'TestQueue': 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">% imqcmd list msg -t q -n TestQueue -nocheck
+Listing messages for the destination
+------------------------------------
+Destination Name    Destination Type
+------------------------------------
+TestQueue           Queue
+
+On the broker specified by:
+
+-------------------------
+Host         Primary Port
+-------------------------
+localhost    7676
+
+--------------------------------------------------------------------------------------------------
+Message #   Message IDs                                                     Priority   Body Type
+--------------------------------------------------------------------------------------------------
+0           ID:9-AAA.BBB.CCC.DDD(e9:3b:c8:51:8b:75)-58798-1217457169630     4          TextMessage
+1           ID:10-AAA.BBB.CCC.DDD(e9:3b:c8:51:8b:75)-58798-1217457169709    4          TextMessage
+2           ID:11-AAA.BBB.CCC.DDD(e9:3b:c8:51:8b:75)-58798-1217457169717    4          TextMessage
+3           ID:12-AAA.BBB.CCC.DDD(e9:3b:c8:51:8b:75)-58798-1217457169720    4          TextMessage
+4           ID:13-AAA.BBB.CCC.DDD(e9:3b:c8:51:8b:75)-58798-1217457169723    4          TextMessage
+5           ID:14-AAA.BBB.CCC.DDD(e9:3b:c8:51:8b:75)-58798-1217457169727    4          TextMessage
+6           ID:15-AAA.BBB.CCC.DDD(e9:3b:c8:51:8b:75)-58798-1217457169731    4          TextMessage
+7           ID:16-AAA.BBB.CCC.DDD(e9:3b:c8:51:8b:75)-58798-1217457169808    4          TextMessage
+8           ID:17-AAA.BBB.CCC.DDD(e9:3b:c8:51:8b:75)-58798-1217457169812    4          TextMessage
+...</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ul> <p>List all messages in queue 'TestQueue' starting at index 90 (Note - indices start at 0):</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">% imqcmd list msg -t q -n TestQueue -startMsgIndex 90 -nocheck
+Listing messages for the destination
+------------------------------------
+Destination Name    Destination Type
+------------------------------------
+TestQueue           Queue
+
+On the broker specified by:
+
+-------------------------
+Host         Primary Port
+-------------------------
+localhost    7676
+
+--------------------------------------------------------------------------------------------------
+Message #   Message IDs                                                     Priority   Body Type
+--------------------------------------------------------------------------------------------------
+90          ID:99-AAA.BBB.CCC.DDD(e9:3b:c8:51:8b:75)-58798-1217457170112    4          TextMessage
+91          ID:100-AAA.BBB.CCC.DDD(e9:3b:c8:51:8b:75)-58798-1217457170115   4          TextMessage
+92          ID:101-AAA.BBB.CCC.DDD(e9:3b:c8:51:8b:75)-58798-1217457170118   4          TextMessage
+93          ID:102-AAA.BBB.CCC.DDD(e9:3b:c8:51:8b:75)-58798-1217457170124   4          TextMessage
+94          ID:103-AAA.BBB.CCC.DDD(e9:3b:c8:51:8b:75)-58798-1217457170128   4          TextMessage
+95          ID:104-AAA.BBB.CCC.DDD(e9:3b:c8:51:8b:75)-58798-1217457170131   4          TextMessage
+96          ID:105-AAA.BBB.CCC.DDD(e9:3b:c8:51:8b:75)-58798-1217457170134   4          TextMessage
+97          ID:106-AAA.BBB.CCC.DDD(e9:3b:c8:51:8b:75)-58798-1217457170138   4          TextMessage
+98          ID:107-AAA.BBB.CCC.DDD(e9:3b:c8:51:8b:75)-58798-1217457170141   4          TextMessage
+99          ID:108-AAA.BBB.CCC.DDD(e9:3b:c8:51:8b:75)-58798-1217457170144   4          TextMessage</pre> 
+       </div> 
+      </div>
+     </div> <p>List 10 messages in queue 'TestQueue' starting at index 15:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">% imqcmd list msg -t q -n TestQueue -startMsgIndex 15 -maxMsgsRet 10 -nocheck
+Listing messages for the destination
+------------------------------------
+Destination Name    Destination Type
+------------------------------------
+TestQueue           Queue
+
+On the broker specified by:
+
+-------------------------
+Host         Primary Port
+-------------------------
+localhost    7676
+
+-------------------------------------------------------------------------------------------------
+Message #   Message IDs                                                    Priority   Body Type
+-------------------------------------------------------------------------------------------------
+15          ID:24-AAA.BBB.CCC.DDD(e9:3b:c8:51:8b:75)-58798-1217457169837   4          TextMessage
+16          ID:25-AAA.BBB.CCC.DDD(e9:3b:c8:51:8b:75)-58798-1217457169840   4          TextMessage
+17          ID:26-AAA.BBB.CCC.DDD(e9:3b:c8:51:8b:75)-58798-1217457169844   4          TextMessage
+18          ID:27-AAA.BBB.CCC.DDD(e9:3b:c8:51:8b:75)-58798-1217457169846   4          TextMessage
+19          ID:28-AAA.BBB.CCC.DDD(e9:3b:c8:51:8b:75)-58798-1217457169849   4          TextMessage
+20          ID:29-AAA.BBB.CCC.DDD(e9:3b:c8:51:8b:75)-58798-1217457169854   4          TextMessage
+21          ID:30-AAA.BBB.CCC.DDD(e9:3b:c8:51:8b:75)-58798-1217457169857   4          TextMessage
+22          ID:31-AAA.BBB.CCC.DDD(e9:3b:c8:51:8b:75)-58798-1217457169860   4          TextMessage
+23          ID:32-AAA.BBB.CCC.DDD(e9:3b:c8:51:8b:75)-58798-1217457169872   4          TextMessage
+24          ID:33-AAA.BBB.CCC.DDD(e9:3b:c8:51:8b:75)-58798-1217457169875   4          TextMessage
+
+Successfully listed messages.</pre> 
+       </div> 
+      </div>
+     </div> <p><b>Querying a message</b><br> Query a message in queue 'TestQueue' (Note - the message ID is placed in quotes to prevent any potential problems with the command shell):</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">% imqcmd query msg -t q -n TestQueue -msgID "ID:24-AAA.BBB.CCC.DDD(e9:3b:c8:51:8b:75)-58798-1217457169837" -nocheck
+Querying message:
+------------------------------------------------------------
+Message ID
+------------------------------------------------------------
+ID:24-AAA.BBB.CCC.DDD(e9:3b:c8:51:8b:75)-58798-1217457169837
+
+In the destination
+------------------------------------
+Destination Name    Destination Type
+------------------------------------
+TestQueue           Queue
+
+On the broker specified by:
+
+-------------------------
+Host         Primary Port
+-------------------------
+localhost    7676
+
+--------------------------
+Message Header Information
+--------------------------
+Message ID                  ID:24-AAA.BBB.CCC.DDD(e9:3b:c8:51:8b:75)-58798-1217457169837
+Correlation ID              TestCorrID
+Destination Name            TestQueue
+Destination Type            Queue
+Delivery Mode               PERSISTENT (2)
+Priority                    4
+Redelivered                 false
+Timestamp                   7/30/08 3:32:49 PM
+Type
+Expiration                  12/31/69 4:00:00 PM
+ReplyTo Destination Name    temporary_destination://queue/AAA.BBB.CCC.DDD/58798/1
+ReplyTo Destination Type
+
+------------------------------
+Message Properties Information
+------------------------------
+LongProp      6534
+IntProp       3
+StringProp    TestStringValue
+DoubleProp    7.4687643E7
+
+------------------------
+Message Body Information
+------------------------
+Body Type    TextMessage (1)</pre> 
+       </div> 
+      </div>
+     </div> <p><b>Deleting a message</b><br> Delete a message in queue 'TestQueue' (Note - the message ID is placed in quotes to prevent any potential problems with the command shell):</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">imqcmd destroy msg -t q -n TestQueue -msgID "ID:24-AAA.BBB.CCC.DDD(e9:3b:c8:51:8b:75)-58798-1217457169837" -nocheck
+Destroying message:
+------------------------------------------------------------
+Message ID
+------------------------------------------------------------
+ID:24-AAA.BBB.CCC.DDD(e9:3b:c8:51:8b:75)-58798-1217457169837
+
+In the destination
+------------------------------------
+Destination Name    Destination Type
+------------------------------------
+TestQueue           Queue
+
+On the broker specified by:
+
+-------------------------
+Host         Primary Port
+-------------------------
+localhost    7676
+
+Are you sure you want to destroy this message? (y/n)[n] y
+
+Successfully destroyed message.</pre> 
+       </div> 
+      </div>
+     </div> 
+     <hr> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Dec 01, 2011 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:49.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

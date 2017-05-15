@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : ToolingFunctionalSpecForNetBeans</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="ToolingFunctionalSpecForNetBeans-Introduction"></a>Introduction</h1> <p>This document describes a module for the NetBeans IDE, which will provide support for developers to develop SIP applications and deploy them onto an application server based on the SailFin project code-base. </p> <p>NetBeans is a project focused IDE for Java and other languages, built on the NetBeans Platform. Many of the IDE features are accessible from the Project "Explorer"</p> <p>A NetBeans module extends the functionality of an application built upon the NetBeans platform. A module may depend on other modules.</p> <p>A SIP Application is a collection of SIP Servlets and Listeners (which are APIs defined in JSR289) Java classes packaged as an archive that are deployed onto a SIP Servlet Container (also defined in JSR289).</p> <p>The SailFin project extends the application server based on the GlassFish project code-base with a JSR289 SIP Servlet Container.</p> <h4><a name="ToolingFunctionalSpecForNetBeans-Features"></a>Features</h2> <h4><a name="ToolingFunctionalSpecForNetBeans-Project"></a>Project</h3> <p>NetBeans users interact with a couple of objects while doing development of "deployed" applications. Their primary focus is their project. A project organizes the code and processes associated with a single archive around a simple set of concepts. A project organizes the "code" of the project and the processes associated with development into a single user visible object.</p> <p>Since a SIP Application is an archive, it make sense for the module to allow users to create a new project.</p> <p>A NetBeans project is a structured collection of files. The files persist the "code" that a user is developing along with the metadata that the IDE uses to create the archive associated with the project and that archives relationship with other archives (and the contain that will host its execution, in the case of a SIP Application).</p> <p>The IDE uses a wizard to lead the user through the process of associating some location on their disk with the project that they are creating. new project</p> <p>The IDE needs to collect the following data to create a new project: The name of the project. The location that will be used to store the project's metadata (from the users perspective).</p> <p>In the case of projects for archives that are associated with a container, an instance of the container is usually associated with the project when it is create.</p> <p>After the required data is entered, the IDE will write the files necessary to create a SIP Application project to disk.</p> <p>Since many projects are already in existence (based on an earlier specification <a href="http://jcp.org/en/jsr/detail-116">JSR116</a>) there needs to be some way to associate a project with existing java code, etc. </p> <p>One of the first operations that users will need to do after creating a project is to create new code that will become part of the project's archive. In NetBeans this is usually done with the New item that is associated with the project (in its contextual or right-click menu). The item allows the user to access a select number of likely artifacts that the user would want to create. This "likely artifact menu" (refered to as the PrivilegedTemplates) needs to have entries for a SipServlet and a SipListener.</p> <p>The Other menu items on the Project's right-click menu would include items similar to those found on a Web App Project. All of these items would behave as if the project was a regular web app project. One exception would be the Run item, which will NOT trigger the browser by default. The correct behavior for this item would be to open some Ui that would allow the user to generate SIP protocol messages and receive the responses.</p> <p>It will be possible to add this project to an Enterprise Application project as a submodule.</p> <h4><a name="ToolingFunctionalSpecForNetBeans-WebFramework"></a>Web Framework</h3> <p>The SIP Application development module will continue register a web-app framework that supports the creation of projects that contain SIP functionality. This framework will be "pre-registered" in the projects created by the aforementioned New Project wizard. The framework will be removable from web-apps that have been extended with this framework. It can also be removed from projects created by the aforementioned wizard. Removing the framework from a project will not remove code that the user has written that depends on the presence of the framework. </p> <p>Most of the time removing the SIP framework from a SIP application is probably a user error. The presence of this framework allows the user to recover from such an error.</p> <h4><a name="ToolingFunctionalSpecForNetBeans-NewFileTemplates"></a>New File Templates</h3> <p>there are three files that a SIP application developer is likely to need to create.</p> 
+     <ol> 
+      <li>SipServlet<br> The Wizard should ask for the name that the user want the SipServlet to have. It should also ask for the package where the servlet belongs. The wizard should also allow the user to specify which methods to implement. After the user finishes the wizard, the java source is written into the project source tree at the appropriate location in the package structure. Ideally, the project should be deployable at this point... even though that won't make much sense, since the "business logic" hasn't been added to the servlet yet. This implies that the wizard must be able to prevent the user from creating a servlet that implements a SIP method that is already implemented by another servlet in the project. The code written by the wizard will use JSR289 annotation. If there are elements that must be added to the sip.xml to support the immediate deployability requirement, they should be added to the file. If the sip.xml file doesn't exist, it should be created also.</li> 
+      <li>Sip Listener Implementation<br> the wizard will ask for the name and package of the Listener. the wizard will present a list of interfaces that listener will implement. after the user finishes the wizard the java source will be written. The project should be deployable at this point. The wizard will need to prevent the user from creating "duplicate" listeners (if there is cases where such a restriction applies). the code written by the wizard will use JSR289 annotation. If elements must be added to the sip.xml to support "immediate deployability" they will be added as the wizard finishes. if the sip.xml file doesn't exist when these elements are required, it will also be created by the wizard.</li> 
+      <li>sip.xml<br> This wizard will create an empty sip.xml file with the proper namespace declaration and required elements to be immediately deployable. The sip.xml would be written to the web/WEB-INF directory.</li> 
+     </ol> <p>A developer targeting Sailfin will probably need to be able to create a sun-sip.xml file. This would also be supported by a wizard. The wizard would create the file in the correct location. the project would be immediately deployable aftger running through the wizard. This implies that all required elements would be populated by the wizard.</p> <h4><a name="ToolingFunctionalSpecForNetBeans-Javacodeediting"></a>Java code editing</h3> <p>The java editor will support code completion for JSR289 annotations. The development module will integrate editor hints and error detection for SIP Application semantics. the number of hints and errors detected will be based on the time available to implement them.</p> <h4><a name="ToolingFunctionalSpecForNetBeans-XMLediting"></a>XML editing</h3> <p>The xml editor will support code completion for the sip.xml and sun-sip.xml file. This support will apply to sip-app_1_0.dtd based instances and sip-app_1_1.xsd based instances of the sip.xml file.</p> <h4><a name="ToolingFunctionalSpecForNetBeans-DesignOverview"></a>Design Overview</h1> <p>Creating a new project type, based on the Web App Project code base, is costly over the long term. Much of the code for such a project would be copy/pasted from the current web project. As the web project was fixed, a project created by copying the code would also need to be evaluated and fixed. Applying the SIP functionality as a web framework over a web app project is straight-forward, but lowers the visibility of the functionality considerably.</p> <p>Another implementation strategy would be to create a project wizard which creates a web app that has been preconfigured with the SIP framework. This raises the visibility of the SIP features. The wizard for this new project "type" would collect data that would be used to replace tokens in a pre-configured skeleton web-app project. The skeleton would be created by unzipping a static prototype.</p> <p>Once the Wizard finished, the standard open hooks for the web app make the project appear in the Project explorer. The actions associated with the node would all come from the web app project.</p> <p>The PrivilegedTemplates list for the resulting project would be extended by using the new Web API, <a href="http://bits.netbeans.org/dev/javadoc/org-netbeans-api-web-webmodule/org/netbeans/modules/web/spi/webmodule/WebPrivilegedTemplates.html">WebPrivilegedTemplates</a>.<br> <span class="error">Cannot resolve external resource into attachment.</span></p> <p>the build process also needs to get altered a bit, to try to open the test agent on project Run/Debug/Profile. This would be accomplished with an <a href="http://bits.netbeans.org/dev/javadoc/org-netbeans-modules-project-ant/org/netbeans/api/project/ant/AntBuildExtender.html">AntBuildExtender</a></p> <p>The templates for the new file types will be implemented using the "standard" method. The templates will part of the module.</p> <p>The annotation processing will be accomplished by java editor, pretty much automatically, based on the availability of the api definition.</p> <p>The XML file processing will be accomplished by the xml editor. The sip-app_1_0.dtd and the sip-app_1_1.xsd will be registered with NetBeans to enable these features.</p> <h4><a name="ToolingFunctionalSpecForNetBeans-QualityandAvailability"></a>Quality and Availability</h1> <p>The initial implementation of the module will be available at approximately the same time as the milestone 3 of the Sailfin project's server implementation. There may be a slight delay, since NetBeans 6.0 may not release until after Sailfin's MS3.</p> <p>The module will be "promoted" by the development team and then we will start to implement enhancements to the initial implementation as directed by interested users. The goal is to get a basic level of functionality out to users quickly and improve the plugin iteratively, based on user feedback.</p> <p>The 1.0 release of the plugin will occur about the same time as the Sailfin 1.0 release.</p> <p>There is one person on the team dedicated to testing the module against Sailfin and NetBeans 6.0.</p> <h4><a name="ToolingFunctionalSpecForNetBeans-Performance"></a>Performance</h1> <p>There are very few places where performance issues are acceptable in an IDE. The module will provide feedback to indicate when long lived operations are happening.</p> <p>The amount of time taken to create a SIP Application project should not exceed 120% of the amount of time taken to create a "normal" web app project. The amount of time necessary to open a SIP Application project should not exceed 110% of the amount of time required to open a like sized web-app project.</p> <h4><a name="ToolingFunctionalSpecForNetBeans-ManagementandMonitoring"></a>Management and Monitoring</h1> <p>The module is a NetBeans module and is subject to some management through interfaces associated with that system. the module does not expose additional management interfaces.</p> <p>The module exposes no configurable options or preferences. </p> <p>The module will expose diagnostic information via the JDK's Logger capabilities. Error reporting for the module will also integrate into the IDE's error reporting mechanisms.</p> <h4><a name="ToolingFunctionalSpecForNetBeans-FormalInterfaces"></a>Formal Interfaces</h2> <h4><a name="ToolingFunctionalSpecForNetBeans-Packaging%2CFilesandLocation"></a>Packaging, Files and Location</h1> <p>The plugin will consist of a small number of nbm files. These nbm's will be built and packaged according to the rules of the NetBeans module system. These modules will be part of the enterprise4 cluster.</p> <h4><a name="ToolingFunctionalSpecForNetBeans-DocumentationRequirements"></a>Documentation Requirements</h1> <p>The documentation requirements for an IDE module are pretty high. Each page of the wizards will need to have a help button, that will open content relevant to the current page. This content should also link to content that is relevant to the process of developing a SIP Application. this additional content would probably be viewed as a developer's guide or a tutorial of some sort.</p> <p>Any new nodes will need to be described.</p> <p>The javadoc for the new classes and interfaces associated with SIP Application development should be registered with the IDE, to allow editor features to work properly.</p> <h4><a name="ToolingFunctionalSpecForNetBeans-OpenIssues"></a>Open Issues</h1> <p>Are there required elements in the sip.xml when the user adds a sip servlet to a jsr289 app?</p> <p>are there required elements when a user adds a listner to their jsr289 app?</p> 
+     <hr> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20873820/21365359.png">SIP App Project.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20873820/21365103.pdf">FSD_NetBeansSIPTestClient_v0_3.pdf</a> (application/pdf) 
+      <br> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:49.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

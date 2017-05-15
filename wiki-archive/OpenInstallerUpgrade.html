@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : OpenInstallerUpgrade</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>zelracc<br> alc4tbode</p> <h4><a name="OpenInstallerUpgrade-openInstallerUpgradesupportfasttrack"></a>openInstaller - Upgrade support fasttrack</h2> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Template Version: @(#)sac_nextcase 1.64 07/13/07 SMI
+This information is Copyright 2007 Sun Microsystems
+1. Introduction
+    1.1. Project/Component Working Name:
+	 openInstaller Upgrade support
+    1.2. Name of Document Author/Supplier:
+	 Author:  Radhika Ravirala
+    1.3  Date of This Document:
+	31 July, 2007
+4. Technical Description
+1. Introduction
+   1.1. Project/Component Working Name: openInstaller Upgrade support
+
+   1.2. Name of Document Author/Supplier: Radhika Ravirala
+
+   1.3. Date of This Document: 07/31/07
+
+   1.4. Name of Major Document Customer(s)/Consumer(s):
+       1.4.1. The community this proposal comes from
+         openInstaller (External)
+         Message Queue 4.1 IFR (Internal)
+
+   1.5. Email Aliases:
+       1.5.1. Project alias: dev@openinstaller.java.net
+
+       1.5.2. Project Lead: Radhika Ravirala &lt;radhika.ravirala@suncom&gt;
+
+       1.5.3. Interest List: dev@openinstaller.java.net
+
+2. Project Summary
+
+
+   2.1. Project Description:
+
+   This project introduces a simple mechanism to upgrade software from one
+   release to another in the openInstaller framework. With the addition of
+   this feature, products using openInstaller framework for their installation
+   can offer their customers a straightforward way of upgrading
+   software on their systems.
+
+   2.2. Risks and Assumptions:
+
+   Previous versions of products can accurately be described using the same
+   syntax as current versions
+
+3. Context and Need Summary
+   3.1. Problem Area:
+       One of the many critical (and desired) features of an installer
+       is the ability to detect a previously installed version
+       of the software and be able to upgrade if necessary.  Without support
+       for upgrade, products using openInstaller framework would not be
+       able to provide a means for the customers to upgrade software to
+       its latest and greatest versions which is not only a bad user
+       experience but also a major inconvenience to the users.
+
+   3.2. Consumer/Requester:
+       The Message Queue project has requested this functionality
+       (WSARC/2006/536).
+
+   3.3. Justification:
+       Specifically, Message Queue has a varied set of installed versions,
+       as it ships with Solaris, and with Java ES, as well as having its
+       own standalone downloadable distribution.  With such a wide variety
+       of legacy versions, it is difficult to provide straightforward
+       documentation on how to upgrade manually.  Therefore, a "one-click"
+       solution is desired.
+
+   3.4. How will you know when you are done?:
+       When it is possible to describe previous (legacy) versions of
+       products using the interfaces proposed by this project, and have
+       those legacy versions be detected and upgraded automatically by
+       the openInstaller framework.
+
+4. Technical Description:
+   4.1. Details:
+
+    Section 3.7 of the main design document for LSARC 2007/095 describes the
+    openInstaller installation behavior. This behavior is summarized by
+    describing the 5 top-level steps taken to install:
+
+    1) Create internal representation of existing, installed software
+    2) Create internal representation of software available on media
+    3) Ask user what they want to do (e.g. install, or remove, select products)
+    4) Modify representation from 2) to reflect user's choices
+    5) Generate linear set of operations to go from 1) to 4)
+
+    This project introduces the required logic to be added to the install
+    engine in step 5) to deal with upgrade (the astute reader will notice
+    in the document referenced from 2007/095, that "Upgrade" is mentioned,
+    but is not implemented).  This project implements that logic.
+
+    Upgrade support in openInstaller framework essentially consists of
+    two steps:
+
+    * Detection of pre-existing software (step (1) above)
+    * Generation of Upgrade operations (step (5) above).
+
+    4.1.1 Detection of pre-existing software
+
+    For software that has previously been installed using openInstaller, the
+    SIMS (LSARC 2007/097 Software Inventory Management System) is
+    consulted.  This component registers all software that has been installed
+    through openInstaller and is described in detail in the aforementioned
+    LSARC case.  The internal representation of installed software needed
+    in step (1) above is taken from SIMS directly.
+
+    Software that has been installed, but not with openInstaller, is
+    termed "legacy" software for the purposes of this project.
+
+    To detect installed products that have not been installed by
+    openInstaller, the framework relies on a set of descriptors called
+    "legacy descriptors" for each of the products that need to be detected.
+    The legacy descriptors conform to the existing schema that products
+    use to describe their *current* versions of products.
+
+    Each "legacy" descriptor represents a previous version of a product.
+    The descriptor is written as though the developer was writing it for
+    that version of the product at a previous point in time (in most
+    cases, a developer and cut/paste from the current dependency
+    descriptor for their product, and change the versions and/or
+    package names).  Additional attributes and elements have been added
+    to the dependency schema to support certain features for upgrade.
+
+    These legacy descriptors are used by the openInstaller engine to
+    detect the presence of previous versions of the product(s) during
+    the step (1) above.  If one or more previous versions of the product
+    are detected, then they are temporarily registered into the SIMS
+    database, such that the logic that generates upgrade operations can
+    always rely on SIMS to give it the current state of the system, which
+    consists of software installed via openInstaller, and software that was
+    not.  The registration of legacy software into SIMS is *not* persistant
+    (e.g. no new metapackages are created when legacy software is detected).
+    When the install engine quits (e.g. if the user selects "Cancel" before
+    actually performing the upgrade), the results of the detection are
+    thrown away.
+
+    4.1.2 Support for legacy descriptors
+
+    As mentioned in the previous section, some additional attributes and
+    elements have been added to the generic openInstaller dependency
+    descriptor schema to support the creation of legacy descriptors.
+
+  - "critical" attribute:
+      The critical element of the component schema serves to define certain
+      Realizations as critical for the normal functioning of the Operating
+      system. Realizations that are critical will not be remov
+2000
+ed during
+      uninstallation. So shared components that are crucial for the operation
+      of the OS itself can be declared critical in the descriptor.
+
+  - "KeyItems" element
+      For detection of previous versions of software that were NOT installed
+      using standard packaging formats (e.g. SVR4, RPM).  This allows
+      openInstaller to detect previous versions of products by looking
+      for specific files on the filesystem (Relative to an install home),
+      or specific entries in the system's generic regisry (e.g. Windows
+      Registry).
+
+  - "Version" attribute on InstallableUnit
+      Certain Sun products increment SUNW_PRODVERS on Solaris (and the RPM
+      "Release" field on Linux) when patches are applied (since their
+      policy dictates that the standard versioning attribute (e.g. VERSION
+      on Solaris) must remain the same over the lifecycle of a given
+      release).  In this case, openInstaller needs to know what the
+      "special" version string should be on these patched products, such
+      that a proper version can be displayed to the end user.  This
+      attribute allows legacy descriptors to declare the version that
+      should be present in these non-traditional fields of packages for
+      legacy versions of products.
+
+  - "Version" attribute on Realization
+      This attribute serves the exact same purpose as the above
+      InstallableUnit attribute, except declaring it at this level
+      applies it to all enclosed InstallableUnits (in other words,
+      a developer convenience).
+
+    4.1.2 Generation of upgrade operations
+
+    A simple modification of the logic detailed in section 3.7.3 of
+    the case materials for 2007/095 is delivered by this project.
+    Speifically, when generating operations to go from state A to B, when
+    a situation is encountered where a product is desired to be installed,
+    but a previous version is already installed, the operations generated
+    will be to first remove the installed, legacy software (by generating
+    removal operations based on the legacy descriptor's description of the
+    legacy version of the software, as though the user chose to uninstall),
+    followed by the installation of the newer version.
+
+    Note that only those products which are at earlier versions are upgraded.
+    For example, for a product that consists of A, B, and C, if B and C are
+    at (or above) the versions shipped with the installer, but A is below
+    the version of A shipped with the product, then only A will be upgraded.
+
+    4.1.3 User Interface
+
+    ** Interactive modes (GUI/CUI):
+
+    A new screen is delivered by this project which presents the results
+    of the legacy detection, and offers the user a preview of what will
+    be done.  An example mockup is below:
+
+    ---------------------------------------
+    The following components were detected on this system
+    and will be upgraded to the version in (parantheses):
+
+    Foo Product 4.5 (5.0)
+    Bar Product 1.0 (1.1)
+
+    The following components were detected on this system and will remain
+    at their installed versions:
+
+    Baz Product 1.0 FCS
+    --------------------------------------
+
+    In the case that one or more products will be upgraded, the user
+    is forced to agree to this by selecting a specific choice on the
+    upgrade user interface (thereby avoiding destructive operations
+    by accidentially clicking through).
+
+    ** Silent mode:
+
+    By default, openInstaller will refuse to upgrade a product when
+    one or more of the products that require upgrade are marked "Critical".
+    This is to avoid potential catastrophe.  If the user so chooses,
+    a silent (scripted) upgrade can be forced by setting the following
+    attribute to "true":
+
+    Upgrade.upgrade.ALLOW_UPGRADE
+
+   4.1.3 Media Layout
+
+   The install developer is expected to place legacy descriptors in
+   a sub-directory below the main dependency descriptor directory as
+   defined in section 5.3 of the case materials for 2007/095.
+   Each subdirectory must contain the legacy descriptors for one
+   legacy version of a product.
+
+   For example:
+
+   [MEDIA]/dependency         &lt;---- lists the files/descriptors in this version
+             MessageQueue.xml
+             JDK.xml
+             NSPR.xml
+             NSPRD.xml
+             NSS.xml
+             oldVer1/             &lt;---- directory for VersionA descriptors
+               MessageQueue.xml
+               JDK.xml
+               NSPR.xml
+               NSPRD.xml
+               NSS.xml
+
+Where [MEDIA] is the top-level Media-Location directory defined in 2007/095,
+and the "oldVer1" contains the descriptors for an older version of this
+product.  The name of the folder is not important (all subdirectories are
+scanned for legacy descriptors, and used during detection).
+
+   4.2. Bug/RFE Number(s):
+
+          6512352 : Upgrade functionality required
+
+   4.3. In Scope:
+          Detection of legacy and non-legacy software.
+          In-place upgrade of detected software.
+
+   4.4. Out of Scope:
+
+   4.5. Interfaces:
+
+       Exported
+       Interface                    Classification      Comments
+       Component Schema Format[1]      Uncommitted
+       UJpgrade User Interface         Uncommitted
+       Legacy Descriptors location     Uncommitted
+         on Media image
+       Silent mode ALLOW_UPGRADE       Uncommitted
+         parameter name and syntax
+
+       Imported
+       Interface                    Classification         Comments
+       Component Schema Format         Uncommitted         LSARC/2007/098
+       Dependency Provider API         Uncommitted         LSARC/2007/098
+       UI Template Schema              Uncommitted         LSARC/2007/099
+
+       [1] This interface is imported, modified, and re-exported by this
+           project.
+
+   4.6. Doc Impact: None
+
+   4.7. Admin/Config Impact: None
+
+   4.8. HA Impact: None
+
+   4.9. I18N/L10N Impact: The error messages that can occur from this module
+        are localized. There is no impact to localization beside the addition
+        of the new messages
+
+   4.10. Packaging &amp; Delivery: N/A
+
+   4.11. Security Impact: N/A
+
+   4.12. Dependencies:
+
+   LSARC 2007/095 Purple Haze: Component Framework
+   LSARC 2007/097 Purple Haze: Software Inventory Management System
+   LSARC 2007/098 Purple Haze: Dependency &amp; Product Model
+   LSARC 2007/099 Purple Haze: User Interface Framework
+
+5. Reference Documents:
+
+   http://openinstaller.org
+     - External website for openInstaller community
+
+   javadocs/index.html
+     - Reference to auto-generated javadocs for component schema
+
+   javadocs/component.xsd
+     - New schema consisting of changes from this project
+
+   http://blogs.sfbay.sun.com/PS72inst/
+     - Example screenshots from MQ installer showing upgrade
+
+6. Resources and Schedule:
+   6.1. Projected Availability: Now
+
+   6.2. Cost of Effort: feature design
+       feature implementation
+       tests
+       documentation
+       i18n
+       -----------------------
+       Total cost: 6-8 man-weeks
+   6.3. ARC review type expected: FastTrack
+
+7. Prototype Availability: Now
+
+
+
+6. Resources and Schedule
+    6.4. Steering Committee requested information
+   	6.4.1. Consolidation C-team Name:
+		LSARC
+    6.5. ARC review type: FastTrack
+    6.6. ARC Exposure: open</pre> 
+       </div> 
+      </div>
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:49.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

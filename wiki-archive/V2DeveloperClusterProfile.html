@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : V2DeveloperClusterProfile</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="V2DeveloperClusterProfile-GlassFishv2.xDevelopervsClusterProfile"></a>GlassFish v2.x Developer vs Cluster Profile</h1> <h4><a name="V2DeveloperClusterProfile-DevelopervsClusterdomain.xml"></a>Developer vs Cluster domain.xml</h2> <p>In v2.1.1, do </p> 
+     <ol> 
+      <li>create-domain --profile developer</li> 
+      <li>create-domain --profile cluster</li> 
+     </ol> <h4><a name="V2DeveloperClusterProfile-ClusterDifferencesindomain.xmldomaincluster.xml.pdf"></a>Cluster Differences in <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874905/21365168.pdf">domain.xml</a></h3> 
+     <ol> 
+      <li>File caching enabled globally on admin-listener 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">&lt;http-listener id="admin-listener" ...
+       &lt;http-file-cache file-caching-enabled="true" file-transmission-enabled="false" globally-enabled="true" ...</pre> 
+         </div> 
+        </div>
+       </div></li> 
+      <li>jmx-connector has additional client-hostname property 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">&lt;jmx-connector accept-all="false" address="0.0.0.0" auth-realm-name="admin-realm" enabled="true" name="system" port="8686" protocol="rmi_jrmp" security-enabled="false"&gt;
+    &lt;ssl cert-nickname="s1as"/&gt;
+    &lt;property name="client-hostname" value="moonbeam"/&gt;
+&lt;/jmx-connector&gt;</pre> 
+         </div> 
+        </div>
+       </div></li> 
+      <li>Additional jvm property under server-config 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">&lt;jvm-options&gt;-Dcom.sun.appserv.pluggable.features=com.sun.enterprise.ee.server.pluggable.EEPluggableFeatureImpl&lt;/jvm-options&gt;</pre> 
+         </div> 
+        </div>
+       </div></li> 
+      <li>
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">&lt;jvm-options&gt;-Djavax.management.builder.initial=com.sun.enterprise.ee.admin.AppServerMBeanServerBuilder&lt;/jvm-options&gt;</pre> 
+         </div> 
+        </div>
+       </div></li> 
+      <li>Additonal default-config</li> 
+      <li>Additonal elements 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">&lt;clusters/&gt;
+&lt;node-agents/&gt;
+&lt;lb-configs/&gt;
+&lt;load-balancers/&gt;</pre> 
+         </div> 
+        </div>
+       </div></li> 
+      <li>
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">&lt;property name="administrative.domain.name" value="domain-cluster" /&gt;</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ol> <h4><a name="V2DeveloperClusterProfile-DeveloperDifferencesindomain.xmldomaindeveloper.xml.pdf"></a>Developer Differences in <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874905/21365167.pdf">domain.xml</a></h3> 
+     <ol> 
+      <li>File caching disabled, globally disabled on admin-listener 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">&lt;http-listener id="admin-listener"...
+        &lt;http-file-cache globally-enabled="false" file-caching-enabled="false"...</pre> 
+         </div> 
+        </div>
+       </div></li> 
+      <li>
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">&lt;jvm-options&gt;-Djavax.management.builder.initial=com.sun.enterprise.admin.server.core.jmx.AppServerMBeanServerBuilder&lt;/jvm-options&gt;</pre> 
+         </div> 
+        </div>
+       </div></li> 
+      <li>
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">&lt;property name="administrative.domain.name" value="domain-developer" /&gt;</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ol> <h4><a name="V2DeveloperClusterProfile-DevelopervsClusterTemplates"></a>Developer vs Cluster Templates</h2> 
+     <ul> 
+      <li>lib 
+       <ul> 
+        <li>install 
+         <ul> 
+          <li>templates 
+           <ul> 
+            <li><a href="http://download.java.net/glassfish/wiki-archive/attachments/20874905/21365170.pdf">default-config.xml.pdf</a></li> 
+            <li>default-domain.xml.template.pdf</li> 
+            <li>cluster 
+             <ul> 
+              <li><a href="http://download.java.net/glassfish/wiki-archive/attachments/20874905/21365169.pdf">domain.xml.xsl.0.pdf</a> -&gt; Adds ..\default-config.xml to domain&gt;configs</li> 
+              <li><a href="http://download.java.net/glassfish/wiki-archive/attachments/20874905/21365155.pdf">domain.xml.xsl.1.pdf</a></li> 
+              <li><span class="error">[^domain.xml.xsl.1.aix]</span></li> 
+              <li>domain.xml.xsl.default-config -&gt; Similar to domain.xml.xsl.1, but specific to default-config</li> 
+              <li>domain.xml.xsl.server-config -&gt; Similar to domain.xml.xsl.1, but specific to server-config</li> 
+              <li>profile.properties</li> 
+             </ul> </li> 
+            <li>developer 
+             <ul> 
+              <li><span class="error">[^domain.xml.pdf]</span> -&gt; Looks pretty similar to default-domain.xml.template with additional attributes set (could be defaults)</li> 
+              <li><a href="http://download.java.net/glassfish/wiki-archive/attachments/20874905/21365156.pdf">domain.xml.xsl.pdf</a> -&gt; Similar to domain.xml.xsl.1</li> 
+              <li><span class="error">[^domain.xml.xsl.aix]</span></li> 
+              <li>profile.properties</li> 
+             </ul> </li> 
+           </ul> </li> 
+         </ul> </li> 
+       </ul> </li> 
+     </ul> <h4><a name="V2DeveloperClusterProfile-Diffbetweenclusterdomain.xml.xsl.1anddeveloperdomain.xml.xsl"></a>Diff between cluster domain.xml.xsl.1 and developer domain.xml.xsl</h3> <h4><a name="V2DeveloperClusterProfile-ClusterDifferencesinTemplatedomain.xml.xsl.1"></a>Cluster Differences in Template domain.xml.xsl.1</h3> 
+     <ol> 
+      <li>Additional commented out property element</li> 
+      <li>http-file-cache attributes set to true 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">&lt;xsl:template match="http-file-cache"&gt;
+    &lt;xsl:copy&gt;
+      &lt;xsl:copy-of select="@*"/&gt;
+      &lt;xsl:attribute name="globally-enabled"&gt;true&lt;/xsl:attribute&gt;
+      &lt;xsl:attribute name="file-caching-enabled"&gt;true&lt;/xsl:attribute&gt;
+    &lt;/xsl:copy&gt; 
+  &lt;/xsl:template&gt;</pre> 
+         </div> 
+        </div>
+       </div></li> 
+      <li>jmx-connector 
+       <ol> 
+        <li>Additional attribute security-enabled=false</li> 
+        <li>Additional property client-hostname 
+         <div class="code panel" style="border-width: 1px;">
+          <div class="codeContent panelContent"> 
+           <div id="root"> 
+            <pre class="theme: Confluence; brush: java; gutter: false">&lt;xsl:template match="jmx-connector"&gt;
+    &lt;xsl:copy&gt;
+      &lt;xsl:copy-of select="@*"/&gt;
+      &lt;xsl:attribute name="security-enabled"&gt;false&lt;/xsl:attribute&gt;
+      &lt;xsl:element name="ssl"&gt;
+        &lt;xsl:attribute name="cert-nickname"&gt;s1as&lt;/xsl:attribute&gt;
+      &lt;/xsl:element&gt;
+      &lt;xsl:element name="property"&gt;
+        &lt;xsl:attribute name="name"&gt;client-hostname&lt;/xsl:attribute&gt;
+        &lt;xsl:attribute name="value"&gt;%%%HOST_NAME%%%&lt;/xsl:attribute&gt;
+      &lt;/xsl:element&gt;
+    &lt;/xsl:copy&gt;
+  &lt;/xsl:template&gt;</pre> 
+           </div> 
+          </div>
+         </div></li> 
+       </ol> </li> 
+      <li>Additonal java-config elements</li> 
+      <li>Enable availability-service</li> 
+      <li>Add cluster specific elements 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">&lt;xsl:template match="servers"&gt;
+    &lt;xsl:copy&gt;
+      &lt;xsl:apply-templates select="node()|@*"/&gt;
+    &lt;/xsl:copy&gt;
+    &lt;xsl:element name="clusters"/&gt;
+    &lt;xsl:element name="node-agents"/&gt;
+    &lt;xsl:element name="lb-configs"/&gt;
+    &lt;xsl:element name="load-balancers"/&gt;
+  &lt;/xsl:template&gt;</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ol> <h4><a name="V2DeveloperClusterProfile-DeveloperDifferencesinTemplatedomain.xml.xsl"></a>Developer Differences in Template domain.xml.xsl</h3> 
+     <ol> 
+      <li>http-file-cache attributes set to false 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">&lt;xsl:template match="http-file-cache"&gt;
+    &lt;xsl:copy&gt;
+      &lt;xsl:copy-of select="@*"/&gt;
+      &lt;xsl:attribute name="globally-enabled"&gt;false&lt;/xsl:attribute&gt;
+      &lt;xsl:attribute name="file-caching-enabled"&gt;false&lt;/xsl:attribute&gt;
+    &lt;/xsl:copy&gt; 
+  &lt;/xsl:template&gt;</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ol> 
+     <hr> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874905/21365168.pdf">domain_cluster.xml.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874905/21365167.pdf">domain_developer.xml.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874905/21365170.pdf">default-config.xml.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874905/21365169.pdf">domain.xml.xsl.0.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874905/21365156.pdf">domain.xml.xsl.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874905/21365155.pdf">domain.xml.xsl.1.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874905/21365158.pdf">default-domain.xml.template.pdf</a> (application/pdf) 
+      <br> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Dec 01, 2011 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

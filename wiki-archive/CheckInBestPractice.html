@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : CheckInBestPractice</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="CheckInBestPractice-"></a></h2> <h4><a name="CheckInBestPractice-GlassFishWorkspaceCheckinBestPractice"></a>GlassFish Workspace Check-in Best Practice</h2> <p>1. svn update and do a full build from top level.</p> <p>2. If you are integrating external modules to workspace:</p> 
+     <ul> 
+      <li>make sure there are no SNAPSHOT dependencies</li> 
+      <li>the artifact exists in the remote Maven repository</li> 
+      <li>remove the artifact in your local Maven repository and do a complete build</li> 
+     </ul> <p>3. If you add/update a pom.xml, you need to get approval from the RE team. Send an <a href="mailto:dev@glassfish.java.net?SUBJECT=POM%20Change%20Approval%20Request">e-mail to the dev. alias requesting approval</a>.</p> <p>4. Run QL tests. If your changes do not impact glassfish profile, then run the QL web profile. If your changes impact both web and glassfish, run both QL on both web and glassfish profiles. <a href="V3BuildTests.html#V3BuildTests-sectionV3BuildTestsql">QL Instructions </a></p> <p>5. If your code is extensive (non-trivial), please have it reviewed by the <a href="http://java.net/jira/browse/GLASSFISH#selectedTab=com.atlassian.jira.plugin.system.project%3Acomponents-panel">module lead</a>.</p> <p>6. If you are adding new modules in the workspace or external module dependencies, please have it reviewed by the <a href="http://java.net/jira/browse/GLASSFISH/component/10612">packager lead</a>.</p> <p>7. Do another svn update and make sure there are no conflicts right before committing. If Hudson jobs are failing (see step #9), please refrain from committing until Hudson is back to normal.</p> <p>8. Commit the change using an well written commit message (see below).</p> <p>9. After commit, monitor the following Hudson jobs:</p> 
+     <ul> 
+      <li><a href="http://hudson.glassfish.org/job/gf-trunk-build-dev">http://hudson.glassfish.org/job/gf-trunk-build-dev</a></li> 
+      <li><a href="http://hudson.glassfish.org/job/gf-trunk-build-continuous">http://hudson.glassfish.org/job/gf-trunk-build-continuous</a></li> 
+     </ul> <p>10. If QL does not test your new code, please contact QA lead about adding new test cases in QL.</p> <h4><a name="CheckInBestPractice-CommitMessages"></a>Commit Messages</h3> <p>The commit message becomes part of the permanent record of the change in the source code repository. These messages are available to any developer using the "svn log" command and are shown in the "recent changes" section of Hudson jobs. Good commit messages can greatly enhance the ability to review past changes to the code.</p> <p>What questions does a person want to be able to answer by looking at the commit messages, and what does that in turn imply about what must be included?</p> 
+     <ul> 
+      <li>Why was this change made? Formal bug identifier? Feature requirement? FindBugs fix? Copyright date correction?&nbsp; We can't link every check-in - not today at least - to a JIRA or another issue tracking system. &nbsp;When we can we should and when we can't the commit message should briefly describe the problem being fixed or the improvement being made.</li> 
+      <li>What's the general thought behind the solution or improvement?</li> 
+      <li>Who reviewed or approved the check-in?</li> 
+      <li>What tests did the engineer run before check-in? &nbsp;(Can in a few cases be empty - for example, when updating a copyright date or a comment)<br> For problems, the combination of the formal issue and the commit message should explain:</li> 
+      <li>the outward bad behavior.&nbsp; (Typically, if there is an issue, then this should be in the issue.)</li> 
+      <li>the underlying cause, (In either the issue or the commit message - some people like to report their fact-finding in the issue as they work through it, some save it for the commit message), &nbsp;and</li> 
+      <li>the repair. (in the commit message).</li> 
+     </ul> <p>So given this, here is a template to use when writing commit messages:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;issue-id or "no issue"&gt; - &lt;summary of change&gt;.
+[Approved/reviewed by &lt;name&gt;.]
+[Passed &lt;list of test suites&gt;.]</pre> 
+       </div> 
+      </div>
+     </div> <p>The bugid should be something like GLASSFISH-12345, not a URL. Typically only one issue should be fixed in a commit, but if multiple issues are fixed, then use a separate line with a separate summary for each issue. The summary of change may be multiple lines, especially if there is no issue. This summary must at least include a high level description of the changes that were made.&nbsp; If there is no issue, then this may also include a description of what problem is fixed by the change. The name should be the person's real name.&nbsp; The list of test suites can use commonly known abbreviations like QL for Quicklook.&nbsp; The "approved" and "passed" lines are optional but recommended.</p> <p>Here is an example commit message that uses this template.</p> <p></p>
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">GLASSFISH-20056 - Get the deployment order out of the map as a separate step
+before constructing the ApplicationOrderInfo. Also check if the application
+is already loaded before trying to load it in InstallerThread.
+Passed QL, deployment dev tests.</pre> 
+       </div> 
+      </div>
+     </div>When using the -m option of the svn commit command, it is fine to put all of this information on one line. <p></p> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Apr 01, 2013 by 
+<font color="#0050B2">10103</font>. Exported from wikis.oracle.com on May 27, 2015 20:43.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

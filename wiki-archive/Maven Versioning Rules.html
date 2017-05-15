@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : Maven Versioning Rules</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   
+     <div class="preformatted panel" style="border-width: 1px;">
+      <div class="preformattedContent panelContent"> 
+       <pre>	Maven and OSGi packaging, naming, and versioning rules
+
+	Version 8 - 07/16/2012
+	Bill Shannon
+
+
+This note describes our general rules for choosing Maven, OSGi,
+and jar file manifest names and version numbers for implementation
+artifacts related to Java standard technologies.  Not all Java
+standards will produce all artifacts described here, but if they do
+they should use the approach described here.  These are the rules
+that the spec lead for a Java specification should follow for the
+reference implementation; compatible implementations will use
+different names.
+
+A given technology will commonly produce two artifacts:
+
+- an API jar file
+
+	The API jar file typically includes only the JCP-defined
+	classes/interfaces/etc. that define the API, that is,
+	usually just the javax.* class files.  The purpose of the
+	API jar file is *only* to allow programs to be compiled
+	against the API without the risk of depending on non-API
+	classes.  The API jar file is *not* intended to be used
+	at runtime (although in some cases it may be), and it is
+	*not* intended to be a portable implementation of the API
+	classes that can be used by others to derive their own
+	implementation of the specification (although in some cases
+	it will be).
+
+	An extreme example of an API jar file is the "javaee.jar"
+	file that we produce, which contains *no* code at all for
+	any of the classes, and is not a valid class file for use
+	at runtime.  It is suitable only for reference by the compiler.
+	Most other API jar files will not take this extreme approach.
+
+	We strongly encourage API jar files to be published to the Maven
+	central repository.  To that end, the API jar file must be
+	accompanied by two additional jar files:
+
+        The API javadoc jar
+
+          This is a jar file containing the generated documentation for
+          the spec.  The index.html file of the javadoc tree must be at
+          the top level of this jar file.
+
+        The API source jar
+
+          For debugging purposes, this is the source from which the API
+          jar file was compiled.  It need not be compilable on its own.
+
+- an implementation jar file
+
+	If the Java specification defines a standalone version of the
+	technology, the implementation jar file will be such a
+	standalone implementation of the specification, and will meet
+	all the compatibility requirements of the specification.  The
+	implementation jar file typically includes all the classes from
+	the API jar file, plus whatever implementation classes are needed
+	to produce a complete runtime.
+
+	In some cases the implementation jar file might contain only
+	the implementation artifacts, and depend on the API jar file
+	for the API definitions, although this is discouraged for
+	standalone implementations.
+
+	Not all specifications will define a standalone version, and
+	even when they do a standalone version following the
+	recommendations described here might not be available.
+	For example, while the Servlet spec allows for a standalone
+	implementation, we do not produce a standalone Servlet
+	implementation packaged as a single jar file.  There might
+	still be a standalone Servlet implementation, e.g., composed
+	of multiple jar files, but we don't define naming or packaging
+	for that here.
+
+
+- Naming
+
+To illustrate the general approach, we'll use three existing technologies:
+
+- Connectors, a technology only available as a part of GlassFish
+- JSF, a technology closely associated with GlassFish, but available
+  independently
+- JavaMail, a technology included with GlassFish, but widely used
+  independently
+
+The general approach is described using the following "variables":
+
+API_PACKAGE	- the primary Java package defining the API
+IMPL_NAMESPACE	- the primary Java package or namespace used by
+		  the implementation of the API, or with which the
+		  implementation of the API is associated
+STANDALONE_IMPL	- a boolean indicating whether a standalone implementation
+		  is available; if false, no implementation jar file is
+		  defined
+
+Given these variables, the following names should be used:
+
+API jar file:			${API_PACKAGE}-api.jar
+  OSGi Bundle-SymbolicName:	${API_PACKAGE}-api
+  Maven group ID, artifact ID:	${API_PACKAGE}:${API_PACKAGE}-api
+  jar Extension-Name:		${API_PACKAGE}
+  API javadoc jar file:         ${API_PACKAGE}-api-javadoc.jar
+  API source jar file:          ${API_PACKAGE}-api-sources.jar
+
+Implementation jar file:	${API_PACKAGE}.jar
+  OSGi Bundle-SymbolicName:	${IMPL_NAMESPACE}.${API_PACKAGE}
+  Maven group ID, artifact ID:	${IMPL_NAMESPACE}:${API_PACKAGE}
+  jar Extension-Name:		${API_PACKAGE}
+
+These names are appropriate for the reference implementation of a
+specification.  Compatible implementations should create an
+implementation jar file named ${IMPL_NAMESPACE}.${API_PACKAGE}.jar.
+Compatible implementations should not produce an API jar file.
+
+
+The jar file names above are the names that should be used for jar files
+that are made available in a download bundle, such as a zip file
+distribution for the technology.  Note that, when building with Maven,
+the jar file names will include the version number, as described in
+the following section.
+
+Note that the above would produce both an API jar and an implementation
+jar with the same jar Extension-Name.  In the case where an implementation
+jar file depends on the API jar file (rather than including the API
+definitions), the API jar file should *not* have an Extension-Name header.
+
+Note that even though the API jar file is not usable at runtime, it
+should have OSGi metadata to allow it to be used by development tools
+that understand OSGi bundles.
+
+
+Applying these rules to our three examples, we get:
+
+Connectors:
+
+    API_PACKAGE=javax.resource
+    IMPL_NAMESPACE=org.glassfish
+    STANDALONE_IMPL=false
+
+	API jar file:			javax.resource-api.jar
+	  OSGi Bundle-SymbolicName:	javax.resource-api
+	  Maven group ID, artifact ID:	javax.resource:javax.resource-api
+	  jar Extension-Name:		javax.resource
+         API javadoc jar file:          javax.resource-api-javadoc.jar
+         API source jar file:           javax.resource-api-sources.jar
+
+JSF:
+
+    API_PACKAGE=javax.faces
+    IMPL_NAMESPACE=org.glassfish
+    STANDALONE_IMPL=true
+
+	API jar file:			javax.faces-api.jar
+	  OSGi Bundle-SymbolicName:	javax.faces-api
+	  Maven group ID, artifact ID:	javax.faces:javax.faces-api
+	  jar Extension-Name:		javax.faces
+          API javadoc jar file:         javax.faces-api-javadoc.jar
+          API source jar file:          javax.faces-api-sources.jar
+
+	Implementation jar file:	javax.faces.jar
+	  OSGi Bundle-SymbolicName:	org.glassfish.javax.faces
+	  Maven group ID, artifact ID:	org.glassfish:javax.faces
+	  jar Extension-Name:		javax.faces
+
+JavaMail:
+
+    API_PACKAGE=javax.mail
+    IMPL_NAMESPACE=com.sun.mail
+    STANDALONE_IMPL=true
+
+	API jar file:			javax.mail-api.jar
+	  OSGi Bundle-SymbolicName:	javax.mail-api
+	  Maven group ID, artifact ID:	javax.mail:javax.mail-api
+	  jar Extension-Name:		javax.mail
+          API javadoc jar file:         javax.mail-api-javadoc.jar
+          API source jar file:          javax.mail-api-sources.jar
+
+	Implementation jar file:	javax.mail.jar
+	  OSGi Bundle-SymbolicName:	com.sun.mail.javax.mail
+	  Maven group ID, artifact ID:	com.sun.mail:javax.mail
+	  jar Extension-Name:		javax.mail
+
+
+For technologies that are closely associated with GlassFish,
+the org.glassfish name should be used as IMPL_NAMESPACE.
+For technologies that are more independent of GlassFish, a
+name should be chosen based on the Java packages used for
+the implementation, or the web site hosting the project.
+
+
+
+- Version numbers
+
+In addition to names, we also need to specify version numbers for
+each of the artifacts produced.  The version numbers of the API
+are specified through the JCP.  Two common approaches are used for
+the version numbers of the implementation:
+
+1. The implementation version tracks the API version, using a
+   "dot-dot" version number to distinguish versions of the implementation
+   that all implement the same API version.  This approach is most
+   often used when the implementation is primarily intended to be only
+   the reference implementation of the given technology.
+
+2. The implementation version number is completely independent of the
+   API version number.  This approach is most often used when the
+   implementation has a purpose different from, or larger than, being
+   just a reference implementation of a specification.  For example,
+   The GlassFish version number is independent of the version numbers
+   of any specification implemented by GlassFish.
+
+A version number is a Dewey-decimal number of two or three components,
+either &lt;major&gt;.&lt;minor&gt; or &lt;major&gt;.&lt;minor&gt;.&lt;micro&gt;.
+
+We define the following additional variables:
+
+SPEC_VERSION		- version number of the JCP specification,
+			  always of the form &lt;major&gt;.&lt;minor&gt;
+SPEC_IMPL_VERSION	- version number of the API classes, derived from
+			  SPEC_VERSION by adding an optional micro version
+			  number
+IMPL_VERSION		- version number of the implementation
+
+Having a separate SPEC_VERSION and SPEC_IMPL_VERSION allows the API
+definition classes to be updated (e.g., to fix spec or implementation
+bugs) in cases where the corresponding spec has not changed.  In case
+#1 above, SPEC_IMPL_VERSION and IMPL_VERSION will have the same value.
+In case #2 above, SPEC_IMPL_VERSION will need to be maintained and
+updated separately from IMPL_VERSION.
+
+Adding the version number information to our general rules, we get:
+
+API jar file:			${API_PACKAGE}-api.jar
+  OSGi Bundle-SymbolicName:	${API_PACKAGE}-api
+  OSGi bundle specversion:	${SPEC_VERSION}
+  OSGi Bundle-Version:		${SPEC_IMPL_VERSION}
+  Maven group ID, artifact ID:	${API_PACKAGE}:${API_PACKAGE}-api
+  Maven version:		${SPEC_IMPL_VERSION}
+  Maven API jar file:		${API_PACKAGE}-api-${SPEC_IMPL_VERSION}.jar
+  jar Extension-Name:		${API_PACKAGE}
+  jar Specification-Version:	${SPEC_VERSION}
+  jar Implementation-Version:	${SPEC_IMPL_VERSION}
+
+Implementation jar file:	${API_PACKAGE}.jar
+  OSGi Bundle-SymbolicName:	${IMPL_NAMESPACE}.${API_PACKAGE}
+  OSGi bundle specversion:	${SPEC_VERSION}
+  OSGi Bundle-Version:		${IMPL_VERSION}
+  Maven group ID, artifact ID:	${IMPL_NAMESPACE}:${API_PACKAGE}
+  Maven version:		${IMPL_VERSION}
+  Maven impl jar file:		${API_PACKAGE}-${IMPL_VERSION}.jar
+  jar Extension-Name:		${API_PACKAGE}
+  jar Specification-Version:	${SPEC_VERSION}
+  jar Implementation-Version:	${IMPL_VERSION}
+
+
+Note that Oracle is separately planning to submit a JSR to define
+how versioning works for OSGi bundles corresponding to Java specifications.
+A key part of that proposal is to use a "specversion" attribute to define
+the specification version that a bundle implements or requires.  I've
+used that approach above.  The proposed JSR will also define how the
+Bundle-Version should be chosen; since that part of the proposed JSR
+is less clear, I haven't tried to accommodate it above, although once
+it's defined we should use it here.  It will likely require defining a
+new "COMPAT_VERSION" variable to express the compatibility characteristics
+of a bundle.
+
+For technologies that are closely associated with GlassFish, and
+especially for technologies that are built with the main GlassFish
+workspace, the version number of the implementation should track
+the version number of GlassFish.
+
+Applying the above rules to our examples gives:
+
+Connectors:
+
+    API_PACKAGE=javax.resource
+    IMPL_NAMESPACE=org.glassfish
+    STANDALONE_IMPL=false
+    SPEC_VERSION=1.6
+    SPEC_IMPL_VERSION=1.6
+
+	API jar file:			javax.resource-api.jar
+	  OSGi Bundle-SymbolicName:	javax.resource-api
+	  OSGi bundle specversion:	1.6
+	  OSGi Bundle-Version:		1.6
+	  Maven group ID, artifact ID:	javax.resource:javax.resource-api
+	  Maven version:		1.6
+	  Maven API jar file:		javax.resource-api-1.6.jar
+	  jar Extension-Name:		javax.resource
+	  jar Specification-Version:	1.6
+	  jar Implementation-Version:	1.6
+
+JSF:
+
+    API_PACKAGE=javax.faces
+    IMPL_NAMESPACE=org.glassfish
+    STANDALONE_IMPL=true
+    SPEC_VERSION=2.0
+    SPEC_IMPL_VERSION=2.0
+    IMPL_VERSION=2.0
+
+	API jar file:			javax.faces-api.jar
+	  OSGi Bundle-SymbolicName:	javax.faces-api
+	  OSGi bundle specversion:	2.0
+	  OSGi Bundle-Version:		2.0
+	  Maven group ID, artifact ID:	javax.faces:javax.faces-api
+	  Maven version:		2.0
+	  Maven API jar file:		javax.faces-api-2.0.jar
+	  jar Extension-Name:		javax.faces
+	  jar Specification-Version:	2.0
+	  jar Implementation-Version:	2.0
+
+	Implementation jar file:	javax.faces.jar
+	  OSGi Bundle-SymbolicName:	org.glassfish.javax.faces
+	  OSGi bundle specversion:	2.0
+	  OSGi Bundle-Version:		2.0
+	  Maven group ID, artifact ID:	org.glassfish:javax.faces
+	  Maven version:		2.0
+	  Maven imp jar file:		javax.faces-2.0.jar
+	  jar Extension-Name:		javax.faces
+	  jar Specification-Version:	2.0
+	  jar Implementation-Version:	2.0
+
+JavaMail:
+
+    API_PACKAGE=javax.mail
+    IMPL_NAMESPACE=com.sun.mail
+    STANDALONE_IMPL=true
+    SPEC_VERSION=1.4
+    SPEC_IMPL_VERSION=1.4.3
+    IMPL_VERSION=1.4.3
+
+	API jar file:			javax.mail-api.jar
+	  OSGi Bundle-SymbolicName:	javax.mail-api
+	  OSGi bundle specversion:	1.4
+	  OSGi Bundle-Version:		1.4.3
+	  Maven group ID, artifact ID:	javax.mail:javax.mail-api
+	  Maven version:		1.4.3
+	  Maven API jar file:		javax.mail-api-1.4.3.jar
+	  jar Extension-Name:		javax.mail
+	  jar Specification-Version:	1.4
+	  jar Implementation-Version:	1.4.3
+
+	Implementation jar file:	javax.mail.jar
+	  OSGi Bundle-SymbolicName:	com.sun.mail.javax.mail
+	  OSGi bundle specversion:	1.4
+	  OSGi Bundle-Version:		1.4.3
+	  Maven group ID, artifact ID:	com.sun.mail:javax.mail
+	  Maven version:		1.4.3
+	  Maven imp jar file:		javax.mail-1.4.3.jar
+	  jar Extension-Name:		javax.mail
+	  jar Specification-Version:	1.4
+	  jar Implementation-Version:	1.4.3
+
+
+Note that the Maven API jar file name contains the *implementation*
+version number.  This allows the API definitions to be updated, e.g.,
+to fix bugs, even though the API *specification* hasn't changed.
+
+
+
+
+- Version numbers for non-final specifications
+
+While a Java standard specification is under development, we need to
+be able to publish artifacts corresponding to the non-final specification.
+Maven version rules define a version number with a modifier as being
+"less then", or older than a version number without a modifier.  This allows
+us to use modifiers for these intermediate versions without confusion with
+the final version number.  Ideally, the modifiers would correspond to the
+JCP stages, but since modifiers sort lexicographically this won't work.
+Unfortunately, this makes it difficult to determine (e.g.) which artifact
+corresponds to the Proposed Final Draft version of the specification.
+
+Unfortunately, OSGi defines modifiers as being "greater than" the base
+version number, as does the jar extension spec.  This prevents us from
+using modifiers in the same way as we would with Maven.  Instead, we
+adopt a convention that a "micro" version number of "99" means a
+non-final version of the following version number.
+
+Some variables to define the new version numbers:
+
+SPEC_BUILD		- the number of a particular build of the API jar file,
+			  e.g., "01", "02", etc.
+IMPL_BUILD		- the number of a particular build of the
+			  implementation jar file, e.g., "01", "02", etc.
+SPEC_VERSION		- version number of the last final JCP specification,
+			  always of the form &lt;major&gt;.&lt;minor&gt;
+IMPL_VERSION		- version number of the previous final implementation
+OSGI_IMPL_VERSION	- IMPL_VERSION truncated to &lt;major&gt;.&lt;minor&gt;
+NEW_SPEC_VERSION	- the version number of the specification under
+			  development
+NEW_IMPL_VERSION	- the version number of the implementation that
+			  will be used when the implementation is final
+
+This gives us the general rules for versioning a non-final artifact:
+
+API jar file:			${API_PACKAGE}-api.jar
+  OSGi Bundle-SymbolicName:	${API_PACKAGE}-api
+  OSGi bundle specversion:	${SPEC_VERSION}.99.b${SPEC_BUILD}
+  OSGi Bundle-Version:		${SPEC_VERSION}.99.b${SPEC_BUILD}
+  Maven group ID, artifact ID:	${API_PACKAGE}:${API_PACKAGE}-api
+  Maven version:		${NEW_SPEC_VERSION}-b${SPEC_BUILD}
+  jar Extension-Name:		${API_PACKAGE}
+  jar Specification-Version:	${SPEC_VERSION}.99.${SPEC_BUILD}
+  jar Implementation-Version:	${NEW_SPEC_VERSION}-b${SPEC_BUILD}
+
+Implementation jar file:	${API_PACKAGE}.jar
+  OSGi Bundle-SymbolicName:	${IMPL_NAMESPACE}.${API_PACKAGE}
+  OSGi bundle specversion:	${SPEC_VERSION}.99.b${SPEC_BUILD}
+  OSGi Bundle-Version:		${OSGI_IMPL_VERSION}.99.b${IMPL_BUILD}
+  Maven group ID, artifact ID:	${IMPL_NAMESPACE}:${API_PACKAGE}
+  Maven version:		${NEW_IMPL_VERSION}-b${IMPL_BUILD}
+  jar Extension-Name:		${API_PACKAGE}
+  jar Specification-Version:	${SPEC_VERSION}.99.${SPEC_BUILD}
+  jar Implementation-Version:	${NEW_IMPL_VERSION}-b${IMPL_BUILD}
+
+
+Let's apply these rules to our examples:
+
+Connectors:
+
+    API_PACKAGE=javax.resource
+    IMPL_NAMESPACE=org.glassfish
+    STANDALONE_IMPL=false
+    SPEC_BUILD=01
+    SPEC_VERSION=1.6
+    NEW_SPEC_VERSION=2.0	(making this up)
+
+	API jar file:			javax.resource-api.jar
+	  OSGi Bundle-SymbolicName:	javax.resource-api
+	  OSGi bundle specversion:	1.6.99.b01
+	  OSGi Bundle-Version:		1.6.99.b01
+	  Maven group ID, artifact ID:	javax.resource:javax.resource-api
+	  Maven version:		2.0-b01
+	  jar Extension-Name:		javax.resource
+	  jar Specification-Version:	1.6.99.01
+	  jar Implementation-Version:	2.0-b01
+
+JSF:
+
+    API_PACKAGE=javax.faces
+    IMPL_NAMESPACE=org.glassfish
+    STANDALONE_IMPL=true
+    SPEC_VERSION=2.0
+    SPEC_IMPL_VERSION=2.0.2
+    IMPL_VERSION=2.0.2
+    OSGI_IMPL_VERSION=2.0
+    NEW_SPEC_VERSION=2.1
+    SPEC_BUILD=01
+    NEW_IMPL_VERSION=2.1
+    IMPL_BUILD=01
+
+	API jar file:			javax.faces-api.jar
+	  OSGi Bundle-SymbolicName:	javax.faces-api
+	  OSGi bundle specversion:	2.0.99.b01
+	  OSGi Bundle-Version:		2.0.99.b01
+	  Maven group ID, artifact ID:	javax.faces:javax.faces-api
+	  Maven version:		2.1-b01
+	  jar Extension-Name:		javax.faces
+	  jar Specification-Version:	2.0.99.01
+	  jar Implementation-Version:	2.1-b01
+
+	Implementation jar file:	javax.faces.jar
+	  OSGi Bundle-SymbolicName:	org.glassfish.javax.faces
+	  OSGi bundle specversion:	2.0.99.b01
+	  OSGi Bundle-Version:		2.0.99.b01
+	  Maven group ID, artifact ID:	org.glassfish:javax.faces
+	  Maven version:		2.1-b01
+	  jar Extension-Name:		javax.faces
+	  jar Specification-Version:	2.0.99.01
+	  jar Implementation-Version:	2.1-b01
+
+JavaMail:
+
+    API_PACKAGE=javax.mail
+    IMPL_NAMESPACE=com.sun.mail
+    STANDALONE_IMPL=true
+    SPEC_VERSION=1.4
+    SPEC_IMPL_VERSION=1.4.4
+    IMPL_VERSION=1.4.4
+    OSGI_IMPL_VERSION=1.4
+    NEW_SPEC_VERSION=1.5
+    SPEC_BUILD=01
+    NEW_IMPL_VERSION=1.5
+    IMPL_BUILD=01
+
+	API jar file:			javax.mail-api.jar
+	  OSGi Bundle-SymbolicName:	javax.mail-api
+	  OSGi bundle specversion:	1.4.99.b01
+	  OSGi Bundle-Version:		1.4.99.b01
+	  Maven group ID, artifact ID:	javax.mail:javax.mail-api
+	  Maven version:		1.5-b01
+	  jar Extension-Name:		javax.mail
+	  jar Specification-Version:	1.4.99.01
+	  jar Implementation-Version:	1.5-b01
+
+	Implementation jar file:	javax.mail.jar
+	  OSGi Bundle-SymbolicName:	com.sun.mail.javax.mail
+	  OSGi bundle specversion:	1.4.99.b01
+	  OSGi Bundle-Version:		1.4.99.b01
+	  Maven group ID, artifact ID:	com.sun.mail:javax.mail
+	  Maven version:		1.5-b01
+	  jar Extension-Name:		javax.mail
+	  jar Specification-Version:	1.4.99.01
+	  jar Implementation-Version:	1.5-b01
+
+
+
+- Dependencies
+
+If the API definition of a given technology depends on the API of
+another technology, the API jar file should represent that dependency.
+Likewise, if the implementation of a given technology depends on the
+API or implementation of another technology, the implementation jar
+file should represent that dependency.  The dependency should be
+represented using each of the relevant module technologies:
+
+-- Maven dependencies
+
+Maven dependencies should be represented in the pom.xml file for
+the artifact that has the dependency.  API jar files should only
+have dependencies on other API jar file artifacts.  Implementation
+jar files should generally have dependencies on other implementation
+jar file artifacts.  Note that such implementation dependencies
+might include artifacts not defined by a JCP specification, such
+as Apache Commons modules.
+
+Because versions of JCP specifications are generally maintained to
+be upwards compatible, a dependency on an API jar artifact should
+include a version reference that specifies the minimum version of
+the dependent technology, as defined by the specification, with no
+maximum version number, e.g., "[1.6,)".
+
+On the other hand, implementations often depend intimately on the
+implementation details of dependent implementations.  The version
+reference of a dependent implementation might be very specific or
+open-ended.
+
+-- OSGi dependencies
+
+We strongly recommend the use of the OSGi Import-Package header to
+specify dependencies.  The version references should be as described
+above for Maven.
+
+ISSUE:	We hope to provide more detailed recommendations for OSGi
+	versioning in the future.
+
+-- jar extension dependencies
+
+The manifest of the API and implementation jar files should be used to
+specify dependencies on other extensions, using the extension names
+defined by this document.  The mechanism is defined by this document:
+http://java.sun.com/javase/6/docs/technotes/guides/extensions/
+Note that specification version references always use a "greater than
+or equal to" comparison.  An API jar should use only Specification-Version
+references.  An implementation jar might also use Implementation-Vendor-Id
+and Implementation-Version references.
+
+While not defined here, we recommend that jar file manifests also include
+the following attributes: Specification-Vendor, Implementation-Vendor,
+and Implementation-Vendor-Id.
+
+In addition to using the jar extension manifest headers to specify
+dependencies, the jar Class-Path header should be used.  The simple
+names of the dependent jar files (using the names specified by this
+document) should be included in the Class-Path header.  The Class-Path
+header of an API jar file should only include other API jar files.
+The Class-Path header of an implementation jar file might include
+other implementation jar files.
+
+
+- Non-standalone implementations
+
+For technologies that don't define a standalone implementation (e.g.,
+Connectors), or for which no standalone implementation is produced
+(e.g., Servlets), we don't define the naming, packaging, or versioning
+of the implementation artifacts.  In general, we would expect the
+implementation to follow the conventions of the larger project or
+product in which it is embedded.  For example, the Connector and
+Servlet implementation artifacts follow the conventions used by other
+implementation artifacts that are part of GlassFish.
+
+
+- Source code jar files
+
+When licensing allows, we recommend that source code jar files be
+published to the Maven repository using the Maven convention of:
+
+  Maven API jar file:	${API_PACKAGE}-api-${SPEC_IMPL_VERSION}-sources.jar
+  Maven imp jar file:	${API_PACKAGE}-${IMPL_VERSION}-sources.jar
+
+
+- Special considerations for GlassFish
+
+For technologies that are included in the GlassFish workspace,
+it is sometimes necessary to separate the API definitions from
+the API implementation, e.g., in order to avoid circular dependencies
+between modules.  In such cases, separate API and implementation jar
+files may be generated and delivered with GlassFish.  These artifacts
+are not intended to be reused outside of GlassFish, and may have
+artifact names and version numbers that are specific to GlassFish.
+
+If a standalone version of these technologies is also made available,
+it should follow the rules described in this document.  It might be
+necessary to repackage the artifacts to do so.
+
+
+- Transition
+
+Many of our existing artifacts are not following the guidelines above.
+Switching to these guidelines may disrupt users of current products
+and thus doing so should be done carefully and with sufficient notification
+to users.
+
+For example, if version 1.4 of the JavaMail implementation was
+previously available at http://download.java.net/maven/2/javax/mail,
+and version 1.5 is published at
+http://download.java.net/maven/2/com/sun/mail/javax/mail, users may
+not notice that a new version is available, or may not be able to find
+it easily.
+
+During a transition period it may be reasonable to publish artifacts
+using the existing conventions of the project, as well as publishing
+new artifacts with the same content using the guidelines described here.
+
+Alternatively, the Maven relocation feature described at
+http://maven.apache.org/guides/mini/guide-relocation.html
+may be used to redirect users to the new location for the artifacts.
+
+How long the transition phase should be maintained can be different for
+different projects, but generally should be measured in years, not
+months. Note that it is permissible to publish artifacts to maven
+central as long as sonatype's requirements are met.  The requirements
+specified in this document are over and above what is required by
+sonatype.
+
+
+- Maven hints
+
+If a Maven build is set up to produce an implementation jar file as
+defined above (that includes both the API classes and the
+implementation classes), an API jar file can be produced using a
+pom.xml of the following form:
+
+&lt;project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+			    http://maven.apache.org/maven-v4_0_0.xsd"&gt;
+    &lt;parent&gt;
+	&lt;groupId&gt;${IMPL_NAMESPACE}&lt;/groupId&gt;
+	&lt;artifactId&gt;all&lt;/artifactId&gt;
+	&lt;version&gt;${IMPL_VERSION}&lt;/version&gt;
+    &lt;/parent&gt;
+    &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+    &lt;groupId&gt;${API_PACKAGE}&lt;/groupId&gt;
+    &lt;artifactId&gt;${API_PACKAGE}-api&lt;/artifactId&gt;
+    &lt;version&gt;${SPEC_IMPL_VERSION}&lt;/version&gt;
+    &lt;packaging&gt;jar&lt;/packaging&gt;
+    &lt;name&gt;${API_PACKAGE} API jar&lt;/name&gt;
+
+    &lt;build&gt;
+        &lt;plugins&gt;
+	    &lt;plugin&gt;
+		&lt;artifactId&gt;maven-dependency-plugin&lt;/artifactId&gt;
+		&lt;executions&gt;
+		    &lt;execution&gt;
+			&lt;id&gt;unpack&lt;/id&gt;
+			&lt;phase&gt;process-sources&lt;/phase&gt;
+			&lt;goals&gt;
+			    &lt;goal&gt;unpack&lt;/goal&gt;
+			&lt;/goals&gt;
+		    &lt;/execution&gt;
+		&lt;/executions&gt;
+		&lt;configuration&gt;
+		    &lt;artifactItems&gt;
+			&lt;artifactItem&gt;
+			    &lt;groupId&gt;${API_PACKAGE}&lt;/groupId&gt;
+			    &lt;artifactId&gt;${API_PACKAGE}&lt;/artifactId&gt;
+			    &lt;version&gt;${$IMPL_VERSION}&lt;/version&gt;
+			&lt;/artifactItem&gt;
+		    &lt;/artifactItems&gt;
+		    &lt;outputDirectory&gt;
+			${project.build.outputDirectory}
+		    &lt;/outputDirectory&gt;
+		    &lt;includes&gt;
+			javax/**,
+			META-INF/*
+		    &lt;/includes&gt;
+		&lt;/configuration&gt;
+	    &lt;/plugin&gt;
+	    &lt;plugin&gt;
+		&lt;artifactId&gt;maven-jar-plugin&lt;/artifactId&gt;
+		&lt;configuration&gt;
+		    &lt;finalName&gt;${project.artifactId}&lt;/finalName&gt;
+		    &lt;archive&gt;
+			&lt;manifestFile&gt;
+			  ${project.build.outputDirectory}/META-INF/MANIFEST.MF
+			&lt;/manifestFile&gt;
+		    &lt;/archive&gt;
+		&lt;/configuration&gt;
+	    &lt;/plugin&gt;
+        &lt;/plugins&gt;
+    &lt;/build&gt;
+&lt;/project&gt;
+
+Guidelines for migrating java.net hosted projects to this new scheme may be found at
+&lt;http://java.net/projects/maven2-repository/pages/MigrationAndCleanupRelatedDocumentation &gt;.
+
+Requirements for publishing to maven central may be found at 
+&lt;https://docs.sonatype.org/display/Repository/Central+Sync+Requirements&gt;.
+
+ ISSUE:	Need Maven example for relocation
+</pre> 
+      </div>
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 19, 2012 by 
+<font color="#0050B2">13011</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : OpenMQSamples</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   
+     <div> 
+      <ul> 
+       <li><a href="#OpenMQSamples-OpenMQCommunitySamples">Open MQ Community Samples</a></li> 
+       <ul> 
+        <li><a href="#OpenMQSamples-Spring">Spring</a></li> 
+        <li><a href="#OpenMQSamples-StompConnect">StompConnect</a></li> 
+        <li><a href="#OpenMQSamples-JRubyandJMSwithOpenMQ">JRuby and JMS with Open MQ</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="OpenMQSamples-OpenMQCommunitySamples"></a>Open MQ Community Samples </h1> <p>If you are interested in contributing to this FAQ, please read the <a href="MQWikiContributionGuidelines.html" title="MQWikiContributionGuidelines">Contribution Guidelines</a>.</p> <p>Please note that these samples are posted for the benefit of the community. These samples are intended to help you understand how you can use Open MQ in various integration and application settings. Use of these samples is at your own risk.</p> <p>We welcome your feedback – <a href="mailto:users@mq.java.net">users@mq.java.net</a></p> <h4><a name="OpenMQSamples-Spring"></a>Spring</h2> <p>We get lots of questions about integrating <a href="http://www.springframework.org/">Spring</a> with Open MQ. We've put together a few samples to illustrate how you can tie these two products together. <a href="http://java.net/projects/mq/downloads/download/Samples/OpenMQSpring.zip">Here is a Maven project</a> that can help you work with these samples if you use <a href="http://netbeans.org">NetBeans</a> (You might find you need to add the <a href="http://plugins.netbeans.org/PluginPortal/faces/PluginDetailPage.jsp?pluginid=56">Maven Plugin</a>)</p> 
+     <ol> 
+      <li>Spring with XA 
+       <ol> 
+        <li><a href="OpenMQSpringAtomikos.html" title="OpenMQSpringAtomikos">Spring and Open MQ using Atomikos</a></li> 
+        <li><a href="OpenMQSpringJTOM.html" title="OpenMQSpringJTOM">Spring and Open MQ using JTOM</a></li> 
+       </ol> </li> 
+      <li><a href="OpenMQSpringConnectionConsumer.html" title="OpenMQSpringConnectionConsumer">Spring and ConnectionConsumer &amp; ServerSession</a></li> 
+     </ol> <h4><a name="OpenMQSamples-StompConnect"></a>StompConnect</h2> <p><a href="http://stomp.codehaus.org/Home">STOMP</a> is a streaming text protocol that was created to provide an easy way to integrate with JMS platforms. StompConnect is a bit of Java that wraps any JMS compliant platform. This sample shows how to set up and configure StompConnect to Open MQ</p> 
+     <ul> 
+      <li><a href="OpenMQStompConnect.html" title="OpenMQStompConnect">StompConnect and Open MQ</a></li> 
+     </ul> <h4><a name="OpenMQSamples-JRubyandJMSwithOpenMQ"></a>JRuby and JMS with Open MQ</h2> <p>With the ability to call Java libraries from Ruby script, creating a JMS client applications with <a href="http://jruby.codehaus.org/">JRuby</a> is pretty straightforward. Here is an example that demonstrates how to use JMS APIs in a JRuby script with Open MQ:</p> 
+     <ul> 
+      <li><a href="OpenMQJRuby.html" title="OpenMQJRuby">Using JRuby and Open MQ</a></li> 
+     </ul> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Nov 08, 2011 by 
+<font color="#0050B2">edbratt</font>. Exported from wikis.oracle.com on May 27, 2015 20:49.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : V3CoreInfrastructureImprovements</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   
+     <div> 
+      <ul> 
+       <li><a href="#V3CoreInfrastructureImprovements-V3CoreInfrastructureImprovements">V3 Core Infrastructure Improvements</a></li> 
+       <ul> 
+        <li><a href="#V3CoreInfrastructureImprovements-QueryforP1admin%2FconfigurationV3PRDRequirements">Query for P1 admin/configuration V3-PRD Requirements</a></li> 
+        <li><a href="#V3CoreInfrastructureImprovements-QueryforP2admin%2FconfigurationV3PRDRequirements">Query for P2 admin/configuration V3-PRD Requirements</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="V3CoreInfrastructureImprovements-V3CoreInfrastructureImprovements"></a>V3 Core Infrastructure Improvements</h1> <p>This document is part of <a href="V3AdministrationImprovements.html" title="V3AdministrationImprovements">V3AdministrationImprovements</a>.</p> <p>%%sortable</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Desired Improvement </th> 
+         <th class="confluenceTh"> Priority </th> 
+         <th class="confluenceTh"> Comments </th> 
+         <th class="confluenceTh"> Issue Link </th> 
+         <th class="confluenceTh"> Eng Response </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> CoreInfra-000 </td> 
+         <td class="confluenceTd"> Scale a cluster of application server instances to 100. </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Admin server should be certified with large cluster sizes. Note, this requirement applies to a SCALABLE cluster (single point of management/deployment) and not an HA cluster. </td> 
+         <td class="confluenceTd"> <a href="https:--glassfish.java.net-issues-show_bug.cgi-4357">4357 </a> </td> 
+         <td class="confluenceTd"> Yes for 50. Stretch goal 75. Need to define # of clusters in the domain and the perf criteria for startup, etc. Also, what is the expectation from HA side? We should have these two numbers in synch. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> CoreInfra-001 </td> 
+         <td class="confluenceTd"> Removed </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> N/A </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> CoreInfra-002 </td> 
+         <td class="confluenceTd"> Provide a way to fully customize the domain creation process. </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> Allow <b>user code</b> to be run during it. If possible create a user interface to do this. This is the extension of GlassFish V2 Profiles, where only domain.xml is customizable, using style sheets. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> No </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> CoreInfra-003 </td> 
+         <td class="confluenceTd"> Provide admin server High Availability. </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> It should be possible to create a configuration where all configuration changes are saved redundantly. Introduction of primary-secondary admin server is acceptable. The idea is an admin server <b>fails over</b> to another incarnation of it <b>automatically</b>. </td> 
+         <td class="confluenceTd"> <a href="https:--glassfish.java.net-issues-show_bug.cgi-4359">4359 </a> </td> 
+         <td class="confluenceTd"> Yes. Many customers requested for this feature. This is probably a P2. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> CoreInfra-004 </td> 
+         <td class="confluenceTd"> Provide role based access control for administration. </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Fine grained access control and configurable roles. Visual cues should be given through the administration console (eg: only show manageable items based on role/rights). </td> 
+         <td class="confluenceTd"> <a href="https:--glassfish.java.net-issues-show_bug.cgi-4361">4361 </a> </td> 
+         <td class="confluenceTd"> Yes. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> CoreInfra-005 </td> 
+         <td class="confluenceTd"> Multi-homing Readiness. </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> It should be possible to provide <b>one</b> configuration hook that configures the entire server to listen on a given network interface. This should be thoroughly tested. It is required for a number of cases where deployments occur with private and public interfaces on the same hosts. This is a problem for many users on the GlassFish users alias. </td> 
+         <td class="confluenceTd"> <a href="https:--glassfish.java.net-issues-show_bug.cgi-4362">4362 </a> </td> 
+         <td class="confluenceTd"> Yes. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> CoreInfra-006 </td> 
+         <td class="confluenceTd"> Provide an admin interface for all of the configuration files. </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> An API for updating domain.xml is required by Sailfin, potentially other products as well. Extending API configuration to the remaining configuration files would be beneficial (P3) </td> 
+         <td class="confluenceTd"> <a href="https:--glassfish.java.net-issues-show_bug.cgi-4365">4365 </a> </td> 
+         <td class="confluenceTd"> No. Stretch goal for default web.xml. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> CoreInfra-007 </td> 
+         <td class="confluenceTd"> Improve the Reliability of <b>status determination</b> of the server instances. </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> In an enterprise deployment, there are cases where the status is determined incorrectly. </td> 
+         <td class="confluenceTd"> <a href="http:--wiki.glassfish.java.net-Wiki.jsp?page=V3CoreInfrastructureImprovements">4366 </a> </td> 
+         <td class="confluenceTd"> Yes. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> CoreInfra-008 </td> 
+         <td class="confluenceTd"> Moved to <a href="http:--wiki.glassfish.java.net-Wiki.jsp?page=V3HighAvailabilityImprovements">HA-4/HA-5 </a> </td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd"> N/A </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> CoreInfra-009 </td> 
+         <td class="confluenceTd"> Make the product firewall-friendly. </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> In other words, remove use of RMI from infrastructure. Consider using Grizzly in Node Agent. This enables a configuration where admin server is deployed inside firewall and application server nodes are available outside. Likely required to support <a href="http:--wiki.glassfish.java.net-Wiki.jsp?page=V3HighAvailabilityImprovements">HA-4/HA-5 </a>. </td> 
+         <td class="confluenceTd"> <a href="https:--glassfish.java.net-issues-show_bug.cgi-4367">4367 </a> </td> 
+         <td class="confluenceTd"> Yes for removing RMI connector. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> CoreInfra-010 </td> 
+         <td class="confluenceTd"> Moved to <a href="http:--wiki.glassfish.java.net-Wiki.jsp?page=V3DeveloperExperienceImprovements">DEVEX-11 </a> </td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd"> <a href="https:--glassfish.java.net-issues-show_bug.cgi-4369">4369 </a> </td> 
+         <td class="confluenceTd"> Yes. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> CoreInfra-011 </td> 
+         <td class="confluenceTd"> Provide a way to do <b>post-deployment configuration</b> of applications. </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> This may sound like building IDE, but this is essential, because we don't have a concept of deploying the application's configuration today. For example, a user just wants to stop the application, add a security role <b>mapping</b> for another principal that was just created. This requires application redeployment today, which is a heavy-weight operation. The modus operandi should be: 1. Stop the Application. 2. Change the Configuration. 3. Start the Application. This assumes that all the deployment descriptors are available post deployment. (The annotations are processed and they don't change). This is a must for changing the <b>environment parameters</b> used by web applications. Currently, there is no way to do this. Think of it as an override of what is available in standard deployment descriptors (e.g. web.xml). <a href="http:--forums.java.net-jive-thread.jspa?messageID=85039&amp;tstart=0">Much has been said about how unsatisfied users are </a>, with our treatment of this problem. Also a <a href="http:--www.nabble.com-Re%3A-GlassFish-V3-planning---What-do-*you*-want-in-GlassFish-V3--p13684646.html">community request </a>. </td> 
+         <td class="confluenceTd"> <a href="https:--glassfish.java.net-issues-show_bug.cgi-4371">4371 </a> </td> 
+         <td class="confluenceTd"> Partial yes. Will take this up step-by-step. The original deployment descriptors need to be saved. Impact on Application versioning needs to be thought through. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> CoreInfra-012 </td> 
+         <td class="confluenceTd"> Applications server needs a documented, supported, safe way to back up domain in a live system </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Stretch goal. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> CoreInfra-013 </td> 
+         <td class="confluenceTd"> Interface with Operating Platforms better. </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> This includes the system-tray icons, platform services,showing the server.log from desktops, etc. Ease of use requirement. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Will address some of this in installer. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> CoreInfra-014 </td> 
+         <td class="confluenceTd"> Provide the so-called <em>offline</em> support for configuration management. It should be possible to programmatically modify the configuration of the server without having to start the domain administration server. This is particularly useful from the update-center perspective. </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> This notion might change if we made it explicit that the admin server need not be a J2EE process. The admin server, for reasons of reliability, startup time and "footprint" ought to be a bare-bones MBeanServer which exposes the configuration. Making this possible would mean that it could be brought up in any process. The key point is that the so-called "offline" mode could then use the same interfaces; a client would bring up the admin server in its own JVM, then simply operate on it as if it were remote. Much more powerful, and one code path to implement. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Stretch goal. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> CoreInfra-015 </td> 
+         <td class="confluenceTd"> From an architectural perspective, there should be no limit to the number of instances (standalone or part of a cluster) a user can manage through a single user interface. This should be tested to 150 instances. </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Large deployments are a primary goal of GlassFish V3. Customers do not want to log in to multiple admin consoles to manage a large deployment. For example, which console owns "instances 173"? This is related to CoreInfra-000, but requires testing to a higher number of total instances. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> <del>Quality team needs to look at this.</del> Same as CoreInfra-000. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> CoreInfra-016 </td> 
+         <td class="confluenceTd"> Support for multiple versions of an application running simultaneously </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Simplifies application upgrades and a Dev/Test/QA/Production scenario on same instance. Community request (<a href="http:--forums.java.net-jive-message.jspa?messageID=243394#243394">here </a>). (<a href="http:--forums.java.net-jive-message.jspa?messageID=243286#243286">here </a>) (<a href="http:--forums.java.net-jive-message.jspa?messageID=243672#243672">here </a>) (Sailfin Requirement <a href="http:--wiki.glassfish.java.net-Wiki.jsp?page=V3DeploymentImprovements">Deploy-009 </a>) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Container teams needs to review this. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> CoreInfra-014 </td> 
+         <td class="confluenceTd"> It should be possible to version the backed up images and their effective restoration. </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> Would add to ease of use of the application server. Currently external version control systems can be used so a solution exists, albeit less than ideal. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Stretch goal. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> CoreInfra-017 </td> 
+         <td class="confluenceTd"> Configuration Extensibility </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> This is the ability to extend domain.xml to add any additional component configuration. Want this at a cluster level and instance level. While this is a SailFin requirement, it is generally applicable for modules that are (or become) a core part of the GlassFish. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Yes. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> CoreInfra-018 </td> 
+         <td class="confluenceTd"> Ability to to add a container at the cluster level </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> The current addon support for cluster profile is very limited. Assuming there will be an equivalent mechanism in V3 for addons, we need the extension to be at the cluster level. Hooks for module developers. </td> 
+         <td class="confluenceTd"> <a href="https:--glassfish.java.net-issues-show_bug.cgi-4191">4191 </a> </td> 
+         <td class="confluenceTd"> Yes. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> CoreInfra-019 </td> 
+         <td class="confluenceTd"> Changing log rotation settings should not require a server reboot </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Scheduler based log rotation requires a server restart. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Partial yes. Dynamic reconfiguration infrastructure will be in place. We container team needs to look at this. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> CoreInfra-020 </td> 
+         <td class="confluenceTd"> Delegated administration </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> Enable application server administrators to delegate a subset of tasks to other users or groups. Useful in an IT, outsourced or hosting environment. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> No. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> CoreInfra-021 </td> 
+         <td class="confluenceTd"> Improved and light-weight provisioning that's built-in </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> The V2-way of creating clusters and instances across machines requires every machine (Box, as enterprises call them, lovingly <img class="emoticon" src="images/icons/emoticons/wink.gif" height="20" width="20" align="absmiddle" alt="" border="0">) to have the full installation of a given release of GlassFish. It would be more than desirable if this requirement is hugely relaxed such that it requires a very light-weight process to be started on the box and the required bits are downloaded from the admin-server. There are interesting issues to solve here, but this will make the install and user experience of enterprise GlassFish deployment very favorable. </td> 
+         <td class="confluenceTd"> <a href="https:--glassfish.java.net-issues-show_bug.cgi-4372">4372 </a> </td> 
+         <td class="confluenceTd"> Yes. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="V3CoreInfrastructureImprovements-QueryforP1admin%2FconfigurationV3PRDRequirements"></a>Query for P1 admin/configuration V3-PRD Requirements</h2> <p>These are <a href="https://glassfish.java.net/issues/buglist.cgi?component=glassfish&amp;subcomponent=admin&amp;subcomponent=configuration&amp;priority=P1&amp;status_whiteboard=v3-prd-item&amp;&amp;status_whiteboard_type=fulltext&amp;order=target_milestoneid&amp;Submitquery=Submitquery">Admin P1 RRD Items</a>.</p> <h4><a name="V3CoreInfrastructureImprovements-QueryforP2admin%2FconfigurationV3PRDRequirements"></a>Query for P2 admin/configuration V3-PRD Requirements</h2> <p>These are <a href="https://glassfish.java.net/issues/buglist.cgi?component=glassfish&amp;subcomponent=admin&amp;subcomponent=configuration&amp;priority=P2&amp;status_whiteboard=v3-prd-item&amp;&amp;status_whiteboard_type=fulltext&amp;order=Reusesamesortaslasttime&amp;Submitquery=Submitquery">Admin P2 RRD Items</a>.</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 09, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

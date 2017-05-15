@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : Domainxmlchange</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   
+     <div> 
+      <ul> 
+       <li><a href="#Domainxmlchange-Elementsinsundomain13.dtdthatcauseanincompatibility"> <b>Elements in sun-domain-1_3.dtd that cause an incompatibility</b></a></li> 
+       <ul> 
+        <li><a href="#Domainxmlchange-Workaround"> <b>Workaround</b></a></li> 
+        <li><a href="#Domainxmlchange-Workaround2%3ACopyingDomainfromsourcetotarget"> <b>Workaround 2 : Copying Domain from source to target</b></a></li> 
+       </ul> 
+       <li><a href="#Domainxmlchange-IssueswithCluster%2FGMS%3A"> <b>Issues with Cluster / GMS:</b></a></li> 
+       <ul> 
+        <li><a href="#Domainxmlchange-Workaroundforthisissue%3A"> <b>Workaround for this issue :</b></a></li> 
+       </ul> 
+       <li><a href="#Domainxmlchange-IssueswithApplicationDeployment%3A"> <b>Issues with Application Deployment:</b></a></li> 
+       <li><a href="#Domainxmlchange-Issueswithcomsunwebui%3A"> <b>Issues with com_sun_web_ui :</b></a></li> 
+       <ul> 
+        <li><a href="#Domainxmlchange-Workaroundforthisissue%3A"> <b>Workaround for this issue :</b></a></li> 
+       </ul> 
+       <li><a href="#Domainxmlchange-IssueswithDefaultServletpackagename%3A">__Issues with DefaultServlet package name :</a></li> 
+       <ul> 
+        <li><a href="#Domainxmlchange-Workaroundforthisissue%3A"> <b>Workaround for this issue :</b></a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="Domainxmlchange-Elementsinsundomain13.dtdthatcauseanincompatibility"></a><b>Elements in sun-domain-1_3.dtd that cause an incompatibility</b></h1> 
+     <hr> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">ELEMENT cluster
+    (server-ref*, resource-ref*, application-ref*, system-property*,
+    property*)
+
+
+ATTLIST cluster
+    name CDATA #REQUIRED
+    config-ref CDATA #REQUIRED
+    heartbeat-port CDATA #REQUIRED
+    heartbeat-address CDATA #REQUIRED
+    heartbeat-enabled %boolean; "true"</pre> 
+       </div> 
+      </div>
+     </div> <p>As seen here the heartbeat-port and heartbeat-enabled attributes are REQUIRED and these are newly introduced in the sun-domain-1_3.dtd . This needs to be changed to IMPLIED</p> <h4><a name="Domainxmlchange-Workaround"></a><b>Workaround</b></h3> <p>I changed REQUIRED to IMPLIED for the attributes heartbeat-port and heartbeat-attribute in the sun-domain_1_2.dtd and sun-domain_1_3.dtd. Built the admin-core module and copied the 1.2, 1.3.dtds and appserv-rt.jar to my 9.1install-root/lib/dtds directory. The upgrade here creates the clusters/stand-alone instances afresh instead of copying the entire domain directory from source to target.</p> <p>1. Did an inplace EE-&gt;EE upgrade (source had a cluster with one instance and a stand alone instance referring the nodeagent)<br> After an upgrade, i copied the required dtds and appserv-rt.jar into the lib directory.<br> I started the domain1 successfully.<br> Started the node-agent also successfully using the "asadmin start-node-agent --syncinstances=true --user admin NA" command.</p> <p>2. Did an inplace EE-&gt;EE upgrade (source had only one stand alone instance referring the node-agent).<br> After an upgrade, i started the domain1 successfully. When i tried to start the node-agent, i hit a PELaunch problem.<br> "java.lang.NoClassDefFoundError: com/sun/enterprise/server/PELaunch"<br> This can be seen in the instance server.log. The classpath that has been passed is null, since in the domain.xml in the instance/config/ directory, there is no system classpath with the appserv-launch.jar.</p> <p><b>Conclusion</b> : The instance's config has not been synchronized. Do we have to pass the option "--syncinstances=true" everytime we startup the node-agent after an inplace upgrade?</p> <p>The node-agent starts up fine when the heartbeat-port and heartbeat-attributes are made IMPLIED. There is no issue with the domain's certs.</p> <h4><a name="Domainxmlchange-Workaround2%3ACopyingDomainfromsourcetotarget"></a><b>Workaround 2 : Copying Domain from source to target</b></h3> <p>I tested the following manually. This is an 8.2ee -&gt; 9.1ee SBS upgrade.</p> <p>8.2ee setup : Default node-agent, stand-alone instance - sains1, cluster - cluster1, clustered instance - clus-ins1, hello.war and stateless-simple.ear deployed on DAS.</p> <p>Before doing this, copied the modified 1.3.dtd and appserv-rt.jar into the lib directory of 9.1 (as mentioned in the above section)</p> <p>1. Copied the directories under domain1 from source to target (except bin, imq, session-store, docroot).</p> <p>2. Changed the dtd version from 1.1 to 1.3 in the domain.xml</p> <p>3. Start domain (asadmin start-domain --user admin domain1).</p> <p>4. Hit the "<em><font color="#cc0000">java.lang.NoClassDefFoundError: com/sun/enterprise/server/PELaunch</font></em>" exception.</p> <p>5. Manually edited the domain.xml - added the system-classpath with appserv-launch.jar in java-config element.</p> <p>6. Start domain (Iteration 2)</p> <h4><a name="Domainxmlchange-IssueswithCluster%2FGMS%3A"></a><b>Issues with Cluster / GMS:</b></h1> <p>7. Hit the issue with GMS (needed by the cluster)</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">An error occured during initialization
+javax.management.RuntimeMBeanException: RuntimeException thrown by the invoke method of the Dynamic MBean
+        at com.sun.jmx.mbeanserver.DynamicMetaDataImpl.invoke(DynamicMetaDataImpl.java:227)
+        at com.sun.jmx.mbeanserver.MetaDataImpl.invoke(MetaDataImpl.java:220)
+        at com.sun.jmx.interceptor.DefaultMBeanServerInterceptor.invoke(DefaultMBeanServerInterceptor.java:815)
+        at com.sun.jmx.mbeanserver.JmxMBeanServer.invoke(JmxMBeanServer.java:784)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+        at java.lang.reflect.Method.invoke(Method.java:585)
+        at com.sun.enterprise.admin.util.proxy.ProxyClass.invoke(ProxyClass.java:77)
+        at $Proxy1.invoke(Unknown Source)
+        at com.sun.enterprise.admin.server.core.jmx.SunoneInterceptor.invoke(SunoneInterceptor.java:297)
+        at com.sun.enterprise.ee.cms.lifecycle.GMSLifecycleImpl.onInitialization(GMSLifecycleImpl.java:111)
+        at com.sun.enterprise.server.ApplicationServer.onInitialization(ApplicationServer.java:240)
+        at com.sun.enterprise.server.ondemand.OnDemandServer.onInitialization(OnDemandServer.java:93)
+        at com.sun.enterprise.server.PEMain.run(PEMain.java:316)
+        at com.sun.enterprise.server.PEMain.main(PEMain.java:260)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+        at java.lang.reflect.Method.invoke(Method.java:585)
+        at com.sun.enterprise.server.PELaunch.main(PELaunch.java:272)
+Caused by: java.lang.NullPointerException
+        at com.sun.enterprise.ee.admin.mbeans.GMSClientMBeanHelper.getGMSConfigProps(GMSClientMBeanHelper.java:286)
+        at com.sun.enterprise.ee.admin.mbeans.GMSClientMBeanHelper.initGMSGroupForNamedCluster(GMSClientMBeanHelper.java:91)
+        at com.sun.enterprise.ee.admin.mbeans.GMSClientMBean.initGMSGroupForNamedCluster(GMSClientMBean.java:144)
+        at com.sun.enterprise.ee.admin.mbeans.GMSClientMBean.initGMSGroupForAllClusters(GMSClientMBean.java:127)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+        at java.lang.reflect.Method.invoke(Method.java:585)
+        at com.sun.jmx.mbeanserver.StandardMetaDataImpl.invoke(StandardMetaDataImpl.java:414)
+        at javax.management.StandardMBean.invoke(StandardMBean.java:323)
+        at com.sun.jmx.mbeanserver.DynamicMetaDataImpl.invoke(DynamicMetaDataImpl.java:213)
+        ... 20 more</pre> 
+       </div> 
+      </div>
+     </div> <p>8. Added the following to the domain.xml in the default-config, sains1-config and clus-ins1 config manually.</p> <p><font color="#006600">group-management-service fd-protocol-max-tries="3" fd-protocol-timeout-in-millis="2000" merge-protocol-max-interval-in-millis="10000" merge-protocol-min-interval-in-millis="5000" ping-protocol-timeout-in-millis="2000" vs-protocol-timeout-in-millis="1500"</font></p> <p>Started the domain (Iteration 3), Still got the following exception. Any element missing in the domain.xml, that needs to be added?</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">An error occured during initialization
+javax.management.RuntimeMBeanException: RuntimeException thrown by the invoke method of the Dynamic MBean
+        at com.sun.jmx.mbeanserver.DynamicMetaDataImpl.invoke(DynamicMetaDataImpl.java:227)
+        at com.sun.jmx.mbeanserver.MetaDataImpl.invoke(MetaDataImpl.java:220)
+        at com.sun.jmx.interceptor.DefaultMBeanServerInterceptor.invoke(DefaultMBeanServerInterceptor.java:815)
+        at com.sun.jmx.mbeanserver.JmxMBeanServer.invoke(JmxMBeanServer.java:784)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+        at java.lang.reflect.Method.invoke(Method.java:585)
+        at com.sun.enterprise.admin.util.proxy.ProxyClass.invoke(ProxyClass.java:77)
+        at $Proxy1.invoke(Unknown Source)
+        at com.sun.enterprise.admin.server.core.jmx.SunoneInterceptor.invoke(SunoneInterceptor.java:297)
+        at com.sun.enterprise.ee.cms.lifecycle.GMSLifecycleImpl.onInitialization(GMSLifecycleImpl.java:111)
+        at com.sun.enterprise.server.ApplicationServer.onInitialization(ApplicationServer.java:240)
+        at com.sun.enterprise.server.ondemand.OnDemandServer.onInitialization(OnDemandServer.java:93)
+        at com.sun.enterprise.server.PEMain.run(PEMain.java:316)
+        at com.sun.enterprise.server.PEMain.main(PEMain.java:260)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+        at java.lang.reflect.Method.invoke(Method.java:585)
+        at com.sun.enterprise.server.PELaunch.main(PELaunch.java:272)
+Caused by: java.lang.NullPointerException
+        at java.util.Hashtable.put(Hashtable.java:396)
+        at com.sun.enterprise.ee.admin.mbeans.GMSClientMBeanHelper.getGMSConfigProps(GMSClientMBeanHelper.java:298)
+        at com.sun.enterprise.ee.admin.mbeans.GMSClientMBeanHelper.initGMSGroupForNamedCluster(GMSClientMBeanHelper.java:91)
+        at com.sun.enterprise.ee.admin.mbeans.GMSClientMBean.initGMSGroupForNamedCluster(GMSClientMBean.java:144)
+        at com.sun.enterprise.ee.admin.mbeans.GMSClientMBean.initGMSGroupForAllClusters(GMSClientMBean.java:127)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+        at java.lang.reflect.Method.invoke(Method.java:585)
+        at com.sun.jmx.mbeanserver.StandardMetaDataImpl.invoke(StandardMetaDataImpl.java:414)
+        at javax.management.StandardMBean.invoke(StandardMBean.java:323)
+        at com.sun.jmx.mbeanserver.DynamicMetaDataImpl.invoke(DynamicMetaDataImpl.java:213)
+        ... 20 more</pre> 
+       </div> 
+      </div>
+     </div> <p>9. Added the heartbeat-enabled="true" to the domain.xml in the &lt;cluster&gt; element.<br> Tried to start the domain and got the following exception</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">An error occured during initialization
+javax.management.RuntimeMBeanException: RuntimeException thrown by the invoke method of the Dynamic MBean
+        at com.sun.jmx.mbeanserver.DynamicMetaDataImpl.invoke(DynamicMetaDataImpl.java:227)
+        at com.sun.jmx.mbeanserver.MetaDataImpl.invoke(MetaDataImpl.java:220)
+        at com.sun.jmx.interceptor.DefaultMBeanServerInterceptor.invoke(DefaultMBeanServerInterceptor.java:815)
+        at com.sun.jmx.mbeanserver.JmxMBeanServer.invoke(JmxMBeanServer.java:784)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+        at java.lang.reflect.Method.invoke(Method.java:585)
+        at com.sun.enterprise.admin.util.proxy.ProxyClass.invoke(ProxyClass.java:77)
+        at $Proxy1.invoke(Unknown Source)
+        at com.sun.enterprise.admin.server.core.jmx.SunoneInterceptor.invoke(SunoneInterceptor.java:297)
+        at com.sun.enterprise.ee.cms.lifecycle.GMSLifecycleImpl.onInitialization(GMSLifecycleImpl.java:111)
+        at com.sun.enterprise.server.ApplicationServer.onInitialization(ApplicationServer.java:240)
+        at com.sun.enterprise.server.ondemand.OnDemandServer.onInitialization(OnDemandServer.java:93)
+        at com.sun.enterprise.server.PEMain.run(PEMain.java:316)
+        at com.sun.enterprise.server.PEMain.main(PEMain.java:260)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+        at java.lang.reflect.Method.invoke(Method.java:585)
+        at com.sun.enterprise.server.PELaunch.main(PELaunch.java:272)
+Caused by: java.lang.NullPointerException
+        at java.util.Hashtable.put(Hashtable.java:396)
+        at com.sun.enterprise.ee.admin.mbeans.GMSClientMBeanHelper.getGMSConfigProps(GMSClientMBeanHelper.java:298)
+        at com.sun.enterprise.ee.admin.mbeans.GMSClientMBeanHelper.initGMSGroupForNamedCluster(GMSClientMBeanHelper.java:91)
+        at com.sun.enterprise.ee.admin.mbeans.GMSClientMBean.initGMSGroupForNamedCluster(GMSClientMBean.java:144)
+        at com.sun.enterprise.ee.admin.mbeans.GMSClientMBean.initGMSGroupForAllClusters(GMSClientMBean.java:127)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+        at java.lang.reflect.Method.invoke(Method.java:585)
+        at com.sun.jmx.mbeanserver.StandardMetaDataImpl.invoke(StandardMetaDataImpl.java:414)
+        at javax.management.StandardMBean.invoke(StandardMBean.java:323)
+        at com.sun.jmx.mbeanserver.DynamicMetaDataImpl.invoke(DynamicMetaDataImpl.java:213)
+        ... 20 more</pre> 
+       </div> 
+      </div>
+     </div> <p>10. Added group-management-service="INFO" to the module-log-levels in all configs and heartbeat-address and heartbeat-port in the cluster element.</p> <p>Tried to start the domain and did not hit any issues with the cluster/GMS elements.</p> <h4><a name="Domainxmlchange-Workaroundforthisissue%3A"></a><b>Workaround for this issue :</b></h3> <p>Upgrade tool should add the following (as a part of the transformation module)</p> <p>1. heartbeat-enabled="true", heartbeat-address="any value in the range of 225.0.0.0 to 231.255..255.255", heartbeat-port="any integer" to the all the cluster elements in the domain.xml</p> <p>2. group-management-service element with all its attributes in all the configs in domain.xml</p> <p>3. group-management-service="INFO" in all the module-log-level elements.</p> <h4><a name="Domainxmlchange-IssueswithApplicationDeployment%3A"></a><b>Issues with Application Deployment:</b></h1> <p>The following exception was observed when the domain started up.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">An exception was thrown during an ejb invocation on [TimerBean]|#]
+
+[#|2006-12-11T10:55:08.714+0530|INFO|sun-appserver-ee9.1|javax.enterprise.system.container.ejb|_ThreadID=10;_ThreadName=main;|
+javax.ejb.AccessLocalException: Client not authorized for this invocation.
+        at com.sun.ejb.containers.BaseContainer.preInvoke(BaseContainer.java:1152)
+        at com.sun.ejb.containers.EJBLocalHomeInvocationHandler.invoke(EJBLocalHomeInvocationHandler.java:203)
+        at $Proxy17.checkStatus(Unknown Source)
+        at com.sun.ejb.containers.TimerBeanContainer.doAfterApplicationDeploy(TimerBeanContainer.java:127)
+        at com.sun.enterprise.server.AbstractLoader.loadEjbs(AbstractLoader.java:565)
+        at com.sun.enterprise.server.ApplicationLoader.load(ApplicationLoader.java:183)
+        at com.sun.enterprise.server.TomcatApplicationLoader.load(TomcatApplicationLoader.java:113)
+        at com.sun.enterprise.server.AbstractManager.loadOneSystemApp(AbstractManager.java:331)
+        at com.sun.enterprise.server.AbstractManager.loadSystem(AbstractManager.java:289)
+        at com.sun.enterprise.server.SystemAppLifecycle.loadSystemApps(SystemAppLifecycle.java:149)
+        at com.sun.enterprise.server.SystemAppLifecycle.onStartup(SystemAppLifecycle.java:95)
+        at com.sun.enterprise.server.ApplicationServer.onStartup(ApplicationServer.java:332)
+        at com.sun.enterprise.server.ondemand.OnDemandServer.onStartup(OnDemandServer.java:112)
+        at com.sun.enterprise.server.PEMain.run(PEMain.java:326)
+        at com.sun.enterprise.server.PEMain.main(PEMain.java:260)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+        at java.lang.reflect.Method.invoke(Method.java:585)
+        at com.sun.enterprise.server.PELaunch.main(PELaunch.java:272)
+|#]
+
+[#|2006-12-11T10:55:08.716+0530|WARNING|sun-appserver-ee9.1|javax.enterprise.system.container.ejb|_ThreadID=10;_ThreadName=main;TimerBean;_RequestID=4811f6d8-a636-415c-b443-34ac269094db;|EJB5108:Unable to initialize EJB Timer Service. The likely cause is the database has not been started or the timer database table has not been created.|#]</pre> 
+       </div> 
+      </div>
+     </div> <p>I found that the install_root/domains/domain1/generated/policy/*ejb_container_timer_app/ejb_jar/granted.policy does not have any permissions in it. Whereas, the file install_root/domains/domain1/generated/policy/*ejb_container_timer_app/granted.policy has all the javax.security.jacc.EJBMethodPermission.</p> <p>Since we copy over the generated directory from 8.2ee to 9.1ee, and in 8.2ee, the granted.policy that has all the permissions is found in <font color="green">generated/policy/*ejb_container_timer_app</font> directory and 9.1ee expects it to be in <font color="green">generated/policy/*ejb_container_timer_app/ejb_jar</font> directory.</p> <p>Is this an issue?</p> <p><font color="#ff6600"><a href="./UTDashboard.html">Back</a></font></p> <h4><a name="Domainxmlchange-Issueswithcomsunwebui%3A"></a><b>Issues with com_sun_web_ui :</b></h1> <p>The com_sun_web_ui physical directory is not found in the 9.1eeInstall_root/lib/install/applications directory. This reflects as an exception shown below.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">[#|2006-12-11T10:55:11.665+0530|SEVERE|sun-appserver-ee9.1|javax.enterprise.system.container.web|_ThreadID=10;_ThreadName=main;_RequestID=4811f6d8-a636-415c-b443-34ac269094db;|WEB0200: Configuration error in web module [com_sun_web_ui] (while initializing virtual server [__asadmin])
+com.sun.enterprise.config.ConfigException: I/O error while loading deployment descriptor for: com_sun_web_ui
+cause: /opt/appserver-trial-1-91/lib/install/applications/com_sun_web_ui
+        at com.sun.enterprise.instance.WebModulesManager.getDescriptor(WebModulesManager.java:381)
+        at com.sun.enterprise.instance.WebModulesManager.getDescriptor(WebModulesManager.java:320)
+        at com.sun.enterprise.web.VirtualServer.loadWebModuleConfig(VirtualServer.java:617)
+        at com.sun.enterprise.web.VirtualServer.getWebModules(VirtualServer.java:466)
+        at com.sun.enterprise.web.WebContainer.loadWebModules(WebContainer.java:954)
+        at com.sun.enterprise.web.WebContainer.start(WebContainer.java:820)
+        at com.sun.enterprise.web.PEWebContainer.startInstance(PEWebContainer.java:750)
+        at com.sun.enterprise.web.PEWebContainerLifecycle.onStartup(PEWebContainerLifecycle.java:71)
+        at com.sun.enterprise.server.ApplicationServer.onStartup(ApplicationServer.java:332)
+        at com.sun.enterprise.server.ondemand.OnDemandServer.onStartup(OnDemandServer.java:112)
+        at com.sun.enterprise.server.PEMain.run(PEMain.java:326)
+        at com.sun.enterprise.server.PEMain.main(PEMain.java:260)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+        at java.lang.reflect.Method.invoke(Method.java:585)
+        at com.sun.enterprise.server.PELaunch.main(PELaunch.java:272)
+Caused by: java.io.FileNotFoundException: /opt/appserver-trial-1-91/lib/install/applications/com_sun_web_ui
+        at com.sun.enterprise.deployment.deploy.shared.FileArchive.open(FileArchive.java:66)
+        at com.sun.enterprise.instance.WebModulesManager.getDescriptor(WebModulesManager.java:352)
+        ... 16 more
+|#]</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="Domainxmlchange-Workaroundforthisissue%3A"></a><b>Workaround for this issue :</b></h3> <p>Upgrade tool has to do the following (as a part of the transformation module)</p> <p>1. Delete the com_sun_web_ui module from the domain.xml</p> <p>2. Remove all the app references.</p> <p><font color="#ff6600"><a href="./UTDashboard.html">Back</a></font></p> <h4><a name="Domainxmlchange-IssueswithDefaultServletpackagename%3A"></a>__Issues with DefaultServlet package name :</h1> <p>__</p> <p>The package name for DefaultServelet in default-web.xml has changed from com.sun.enterprise.web.servlets.DefaultServlet to org.apache.catalina.servlets.DefaultServlet.</p> <p>This change has to be made by the upgrade tool</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">com.sun.enterprise.web.servlets.DefaultServlet
+java.lang.ClassNotFoundException: com.sun.enterprise.web.servlets.DefaultServlet
+        at org.apache.catalina.loader.WebappClassLoader.loadClass(WebappClassLoader.java:1507)
+        at org.apache.catalina.core.StandardWrapper.loadServlet(StandardWrapper.java:1096)
+        at org.apache.catalina.core.StandardWrapper.load(StandardWrapper.java:994)
+        at org.apache.catalina.core.StandardContext.loadOnStartup(StandardContext.java:4689)
+        at org.apache.catalina.core.StandardContext.start(StandardContext.java:5081)
+        at com.sun.enterprise.web.WebModule.start(WebModule.java:299)
+        at org.apache.catalina.core.ContainerBase.start(ContainerBase.java:1189)
+        at org.apache.catalina.core.StandardHost.start(StandardHost.java:924)
+        at org.apache.catalina.core.ContainerBase.start(ContainerBase.java:1189)
+        at org.apache.catalina.core.StandardEngine.start(StandardEngine.java:520)
+        at org.apache.catalina.startup.Embedded.start(Embedded.java:916)
+        at com.sun.enterprise.web.WebContainer.start(WebContainer.java:839)
+        at com.sun.enterprise.web.PEWebContainer.startInstance(PEWebContainer.java:750)
+        at com.sun.enterprise.web.PEWebContainerLifecycle.onStartup(PEWebContainerLifecycle.java:71)
+        at com.sun.enterprise.server.ApplicationServer.onStartup(ApplicationServer.java:332)
+        at com.sun.enterprise.server.ondemand.OnDemandServer.onStartup(OnDemandServer.java:112)
+        at com.sun.enterprise.server.PEMain.run(PEMain.java:326)
+        at com.sun.enterprise.server.PEMain.main(PEMain.java:260)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+        at java.lang.reflect.Method.invoke(Method.java:585)
+        at com.sun.enterprise.server.PELaunch.main(PELaunch.java:272)
+|#]</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="Domainxmlchange-Workaroundforthisissue%3A"></a><b>Workaround for this issue :</b></h3> <p>Upgrade tool has to add a transformation rule to edit the default-web.xml file. The com.sun.enterprise.web.servlets.DefaultServlet will be changed to org.apache.catalina.servlets.DefaultServlet. </p> <p><font color="#ff6600"><a href="./UTDashboard.html">Back</a></font></p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:48.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

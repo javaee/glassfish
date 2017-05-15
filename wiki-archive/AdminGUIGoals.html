@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : AdminGUIGoals</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   
+     <ol> 
+      <li>Role Based Administration 
+       <ul> 
+        <li>Delegated Administration1 
+         <ul> 
+          <li>Provide ability for multiple users to administer specific areas of the GlassFish Admin Console during the V3 development cycle.</li> 
+         </ul> </li> 
+        <li>Personalization1 
+         <ul> 
+          <li>Backend support that comes with Delegate Administration will allow us to achieve this. Measuring by allowing user to add specific task from a predefined list of common tasks to the common task page.</li> 
+         </ul> </li> 
+        <li>Authorization 
+         <ul> 
+          <li>Allow multiple users to login to our admin console from an LDAP Realm. (Currently we only allow users to login via a File-based Realm.) This will be achieved during the GF V3 development cycle.</li> 
+         </ul> </li> 
+       </ul> </li> 
+     </ol> 
+     <ol> 
+      <li>Plug-ability1(ken) 
+       <ul> 
+        <li>Enable 3rd party applications to add pages &amp; help content to the GlassFish admin console by GlassFish V2 update 1.</li> 
+       </ul> </li> 
+     </ol> 
+     <ol> 
+      <li>Navigation- Ana 
+       <ul> 
+        <li>Tagging 
+         <ul> 
+          <li>Allow users to tag specific content(i.e. Object/tasks) and the ability to view those "tags". Backend support will be needed for persistence of tag data. This will be achieved during GF V3.</li> 
+         </ul> </li> 
+        <li>Site Map 
+         <ul> 
+          <li>We will provide an overview or hierarchical visual model of the tree. The site map will make it easier for a user to find a specific task or object in the tree and will allow them to familiarize themselves with the tree layout. This can be accomplished by GF V3.</li> 
+         </ul> </li> 
+        <li>Tree 
+         <ul> 
+          <li>Reorganize tree so that we can better present navigational structure of admin. console. At a minimum we will investigate and gather usability info. during V3 and not implement at this stage.</li> 
+         </ul> </li> 
+       </ul> </li> 
+      <li>Monitoring - Senthil 
+       <ul> 
+        <li>Charting 
+         <ul> 
+          <li>Provide different way of representing monitoring attributes, may be for this release the presentation would be such as bar, pie, and line chart. At the minimum we've to have the monitoring support for the following 
+           <ul> 
+            <li>JVM Memory usage</li> 
+            <li>Server Response Time</li> 
+            <li>JDBC pools</li> 
+            <li>Metrics of all web applications, ejbs</li> 
+            <li>Thread Pools</li> 
+            <li>Performance Statistics such as user sessions, connection pools etc.</li> 
+            <li>Alert configuration for certain parameters.</li> 
+           </ul> </li> 
+          <li>The rest will be determined later.</li> 
+         </ul> </li> 
+        <li>Overview Page 
+         <ul> 
+          <li>overall monitoring of the server in a text based, or graphical, or a mix of both representation will be decided based on what we're going to show on this screen.</li> 
+         </ul> </li> 
+       </ul> </li> 
+      <li>Error Messages / I18N Anissa 
+       <ul> 
+        <li>Work with backend for locale specific error msg. Also need to work with doc team about setting up a database, probably in wiki that gathers info about particular error, work around, a place for user to share their experience.</li> 
+       </ul> </li> 
+     </ol> 
+     <ol> 
+      <li>HADB Mgmt. Senthil 
+       <ul> 
+        <li>Improve upon from the previous HADB UI prototype by fixing the bugs filed, and providing support for additional features added in HADB since 9.0</li> 
+       </ul> </li> 
+     </ol> 
+     <ol> 
+      <li>Cert. Mgmt1 Anissa 
+       <ul> 
+        <li>Achievable if we get the backend support, and some UI layout help from HIE.</li> 
+        <li>need user's info: hostname, locale, country etc then generate self-sign cert, or cert. request. browse/delete/import cert.</li> 
+       </ul> </li> 
+     </ol> 
+     <ol> 
+      <li>Admin Console GUI 
+       <ul> 
+        <li>implement GUI's own logger and move all the loggings to this new logger.</li> 
+       </ul> </li> 
+     </ol> 
+     <ol> 
+      <li>Enhanced WebService Mgmt (ken) 
+       <ul> 
+        <li>Provide better support for Web Service features in GlassFish for V3. (We need to investigate what specific features are not supported or need better support, perhaps related to WSIT or other Metro features.)</li> 
+       </ul> </li> 
+     </ol> <p>Stretch Goals:</p> 
+     <ul> 
+      <li>Atom / RSS</li> 
+      <li>Wiki Integration</li> 
+      <li>Issue Tracker Integration</li> 
+     </ul> <p>1 Dependant on backend support.</p> <p>S - Specific<br> M - Measurable<br> A - Achievable<br> R - Result oriented<br> T - Time-bound</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:48.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

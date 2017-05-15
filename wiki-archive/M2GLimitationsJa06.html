@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : M2GLimitationsJa06</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="M2GLimitationsJa06-OS%2FPlatformIssues"></a>OS/Platform Issues</h2> <h4><a name="M2GLimitationsJa06-OS%2F%E3%83%97%E3%83%A9%E3%83%83%E3%83%88%E3%83%95%E3%82%A9%E3%83%BC%E3%83%A0%E3%81%AE%E5%88%B6%E7%B4%84"></a>OS/プラットフォームの制約</h2> <p>本セクションでは、下位の OS もしくは JDK に関する既知の制約事項やバグを載せています。</p> <h4><a name="M2GLimitationsJa06-JavaDevelopmentKit%28JDK%291.5.x"></a>Java Development Kit (JDK) 1.5.x</h3> <p>異なるバージョンの JDK を使用する場合、互換性の問題がいくつかあります。</p> 
+     <ul> 
+      <li>マイグレーションツールを動かすには JDK が必須です。JRE だけでは不十分です。</li> 
+      <li>マイグレーションツールは JDK 1.5.x を必要とします。</li> 
+     </ul> <h4><a name="M2GLimitationsJa06-Windows2000ServicePack2"></a>Windows 2000 Service Pack 2</h3> <p>マイグレーションツールは Windows 200 の場合、Service Pack 2 もしくはそれ以降を必要とします。SP2 より以前のものが使用されると、入力パネルにファイルを表示する際、おかしな挙動をすることがあります。</p> <h4><a name="M2GLimitationsJa06-%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB%E3%83%81%E3%83%A5%E3%83%BC%E3%82%B6%E3%83%BC%E3%81%AE%E6%A9%9F%E8%83%BD"></a>ファイルチューザーの機能</h3> <p>出力ディレクトリを選択する際ポップアップするファイルチューザーダイアログは、JDK 内の機能の欠陥によりいくつかの機能を持ちません。「フォルダの新規作成」ボタンは新規フォルダを作成しますが、新しく作成されたフォルダをハイライトしません。このことで混乱するユーザがいるかも知れません。</p> <h4><a name="M2GLimitationsJa06-%E3%83%95%E3%83%AD%E3%83%83%E3%83%94%E3%83%BC%E3%83%89%E3%83%A9%E3%82%A4%E3%83%96%28A%3A%29%E3%82%92%E9%81%B8%E6%8A%9E%E3%81%99%E3%82%8B%E9%9A%9B%E3%81%AE%E5%95%8F%E9%A1%8C"></a>フロッピードライブ (A<img class="emoticon" src="images/icons/emoticons/smile.gif" height="20" width="20" align="absmiddle" alt="" border="0"> を選択する際の問題</h3> <p>Windows にて入力もしくは出力ディレクトリを選択する際、フロッピードライブ (A:) をクリックすると、(ドライブが空の場合には) 「java.exe - No Disk」という名前で、Abort, Retry, Ignore の 3 つのボタンのあるダイアログがポップアップします。このポップアップは Ignore ボタンをクリックしても 2 度表示されます。</p> <h4><a name="M2GLimitationsJa06-%E5%85%A5%E5%8A%9B%E3%81%A7%E3%81%AEJAR%2CWAR%2CRAR%2CEAR%E3%81%AE%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB%E5%90%8D%E3%81%AE%E5%95%8F%E9%A1%8C"></a>入力での JAR, WAR, RAR, EAR のファイル名の問題</h3> <p>マイグレーションツールは入力として、ファイル名にスペースを持つものを受け付けません。</p> <p><a href="M2GCapabiltiesJa.html" title="M2GCapabiltiesJa">戻る</a> </p> 
+     <hr> <p>日本語翻訳: ogino</p> <p><a href="M2GLimitations.html" title="M2GLimitations">英文 </a> (翻訳したバージョン: 5) </p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:49.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

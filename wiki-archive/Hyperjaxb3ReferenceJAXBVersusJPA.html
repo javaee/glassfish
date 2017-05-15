@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : Hyperjaxb3ReferenceJAXBVersusJPA</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="Hyperjaxb3ReferenceJAXBVersusJPA-JAXBversusJPA"></a>JAXB versus JPA</h1> <p>Both JAXB and JPA work with Java objects. JAXB provides objects with XML binding, JPA - with relational persistence. Unfortunatelly, combining these two technologies is complicated by the fact that there is a number of severe incompatibilities between them. These incompatibilities are mainly due to the limitations of JPA specifications. However, there are also few JAXB-specific issues.</p> <p>In this section I'll explain major JAXB/JPA incompatibilities and sketch out solutions implemented in Hyperjaxb3.</p> <h4><a name="Hyperjaxb3ReferenceJAXBVersusJPA-Limitedsupportforpropertytypes"></a>Limited support for property types</h2> <p>JPA only supports the following property types:</p> 
+     <ul> 
+      <li>primitive types, wrappers of the primitive types;</li> 
+      <li><tt>java.lang.String</tt>;</li> 
+      <li><tt>java.math.BigInteger</tt>, <tt>java.math.BigDecimal</tt>;</li> 
+      <li><tt>java.util.Date</tt>, <tt>java.util.Calendar</tt>, <tt>java.sql.Date</tt>, <tt>java.sql.Time</tt>, <tt>java.sql.Timestamp</tt></li> 
+      <li>serializable types;</li> 
+      <li><tt>byte())), ((Byte(())), ((char(())), ((Character((</tt>;</li> 
+      <li>enums;</li> 
+      <li>entity types;</li> 
+      <li>collections of entity types;</li> 
+      <li>embeddable classes.</li> 
+     </ul> <p>As you see, this set is quite limited. Only a very small number of simple types is supported. Take, for instance a good old <tt>java.net.URL</tt> - it will be mapped as a serializiable type (so say goodbye to the nice string representation of the URL). JPA also does not provide any way to define own custom types (like "user-defined types" in Hibernate).</p> <p>JAXB in its turn <em>does</em> use some simple types which are not supported by JPA, for instance:</p> 
+     <ul> 
+      <li><tt>javax.xml.namespace.QName</tt> (<tt>xsd:QName</tt>),</li> 
+      <li><tt>javax.xml.datatype.Duration</tt> (<tt>xsd:duration</tt>),</li> 
+      <li><tt>javax.xml.datatype.XMLGregorianCalendar</tt> (<tt>xsd:date</tt>, <tt>xsd:time</tt>, <tt>xsd:dateTime</tt>, <tt>xsd:gYearMonth</tt>, <tt>xsd:gYear</tt>, <tt>xsd:gMonthDay</tt>, <tt>xsd:gDay</tt>, <tt>xsd:gMonth</tt>).</li> 
+     </ul> <p>Sometimes it is also desired to map a list of strings as a comma-separated strings, not as a collection</p> <p>In order to allow these "custom" simple types to be mapped by JPA, Hyperjaxb3 adds another getter/setter pair which adapt the problematic property and perform conversion when accessed.</p> <h4><a name="Hyperjaxb3ReferenceJAXBVersusJPA-Collectionsofsimpletypes"></a>Collections of simple types</h2> <p>As the JPA spec excerpt above says, JPA supports collections of entity types <em>only</em>. So if you have a list of number or a set of strings, you can't map it with JPA. Not too POJO-friendly, I would say.</p> <p>At the same time, JAXB generates collections of simple types quite naturally. For instance the following element:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;xs:element name="myLongCollection" type="xs:long" minOccurs="0" maxOccurs="unbounded"/&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>will quite naturally produce the following property:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">public List&lt;Long&gt; getLong() {
+        if (_long == null) {
+            _long = new ArrayList&lt;Long&gt;();
+        }
+        return this._long;
+    }</pre> 
+       </div> 
+      </div>
+     </div> <p>This property is not mappable with pure JPA. To overcome this, Hyperjaxb3 creates a new artifical entity and wrapes the simple collection as a collection of entities.</p> <h4><a name="Hyperjaxb3ReferenceJAXBVersusJPA-Heterogeneouscollections"></a>Heterogeneous collections</h2> <p>Depending on typing, collections may be homogeneous (all elements have the same common base type) or heterogeneous (elements have different types). Heterogeneous collections are not quite common in the POJO world, depelopers usually prefer homogeneous collections.</p> <p>There are certain cases, when JAXB generates heterogeneous collection properties. For instance, if you have a repetable sequence in your schema, it's likely that you'll get a heterogeneous collection. Consider the following example:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;xs:complexType name="heteroSequenceType"&gt;
+		&lt;xs:sequence&gt;
+			&lt;!-- ... --&gt;
+			&lt;xs:sequence maxOccurs="unbounded"&gt;
+				&lt;xs:element name="e" type="xs:string"/&gt;
+				&lt;xs:element name="f" type="complexType"/&gt;
+			&lt;/xs:sequence&gt;
+			&lt;!-- ... --&gt;
+		&lt;/xs:sequence&gt;
+	&lt;/xs:complexType&gt;</pre> 
+       </div> 
+      </div>
+     </div> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">/**
+     * Gets the value of the eAndF property.
+     * ...
+     * Objects of the following type(s) are allowed in the list
+     * {@link String }
+     * {@link ComplexType }
+     */
+    @Transient
+    public List&lt;Object&gt; getEAndF() {
+        if (eAndF == null) {
+            eAndF = new ArrayList&lt;Object&gt;();
+        }
+        return this.eAndF;
+    }</pre> 
+       </div> 
+      </div>
+     </div> <p>The <tt>EAndF</tt> property is a heterogeneous list - it cn contain strings as well as instances of <tt>ComplexType</tt> as well.</p> <p>JPA can't map this type of collections. Therefore Hyperjaxb3 needs to "homogenize" the collection by introducing a new artificial entity capable of holding all the possible collection types - and adapting the heterogeneous collection property with a new homogenized collection.</p> <p>This is probably the most complicated hack carried out by Hyperjaxb3.</p> <h4><a name="Hyperjaxb3ReferenceJAXBVersusJPA-JAXBElementproperties"></a>JAXBElement properties</h2> <p>In certain cases JAXB generates properties where the real value is wrapped into <tt>javax.xml.bind.JAXBElement</tt>. For instance, if you declare a <em>nillable</em> element, JAXB will wrap the actual value:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;xs:element name="dateNillable" type="xs:date" minOccurs="0" nillable="true"/&gt;</pre> 
+       </div> 
+      </div>
+     </div> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">public JAXBElement&lt;XMLGregorianCalendar&gt; getDateNillable() {
+        return dateNillable;
+    }
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>Needless to say, this type of properties can't be mapped by JPA. They have to be wrapped into collections of simplifies types.</p> <h4><a name="Hyperjaxb3ReferenceJAXBVersusJPA-DOMproperties"></a>DOM properties</h2> <p>A very useful extension of JAXB is <tt>xjc:dom</tt> which instructs JAXB to load a part of the XML document into an object structure as a DOM element - without any unmarshalling:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;xs:element name="single" minOccurs="0"&gt;
+	&lt;xs:annotation&gt;
+		&lt;xs:appinfo&gt;
+			&lt;xjc:dom/&gt;
+		&lt;/xs:appinfo&gt;
+	&lt;/xs:annotation&gt; 
+&lt;/xs:element&gt;</pre> 
+       </div> 
+      </div>
+     </div> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@XmlAnyElement
+        protected Element single;
+
+        public Element getSingle() {
+            return single;
+        }</pre> 
+       </div> 
+      </div>
+     </div> <p>DOM elements can't be persisted by JPA. Hyperjaxb3 solves this problem by converting the DOM into XML string in the wrapping property.</p> <h4><a name="Hyperjaxb3ReferenceJAXBVersusJPA-Generic%28%7B%7Bany%7D%7Dtype%29properties"></a>Generic (<tt>any</tt> type) properties</h2> <p>JAXB is capable of handling XML Schema's <tt>xsd:any</tt> constructs. Depending on the processing type (<tt>strict</tt>, <tt>lax</tt>, <tt>skip</tt>) you may get DOM properties (<tt>skip</tt> procesing), generic properties (<tt>strict</tt>) or even mixed properties. Generic properties may contain any object type available in current JAXB context. This contradicts JPA where you have to know the type of the associated entity.</p> <p>To handle this case, Hyperjaxb3 marshalls the generic content and saves it as string.</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:48.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

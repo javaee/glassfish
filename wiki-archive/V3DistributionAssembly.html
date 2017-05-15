@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : V3DistributionAssembly</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   
+     <div class="panel" style="border-width: 1px;">
+      <div class="panelContent"> 
+       <h4><a name="V3DistributionAssembly-DistributionAssemblyProcess"></a>Distribution Assembly Process</h1> 
+       <hr> 
+       <p>Jspwiki style: center</p> 
+      </div>
+     </div> <p>This document captures the process in which we create a runnable, installable GlassFish distribution zip file and relevant artifacts.</p> <h4><a name="V3DistributionAssembly-DesignGoals"></a>Design Goals</h1> <p>The primary design goal of the distribution assembly process is to simplify creating multiple distributions that consists of different contents, to work with multiple profiles of GlassFish.</p> <p>Toward this goal, the system is designed to reduce the amount of descriptor necessary to create a distribution, and infer as much as possible from POMs of the maven modules.</p> <h4><a name="V3DistributionAssembly-Howitworks"></a>How it works</h2> <p>At the highest level, a distribution is built as a Maven module, by Maven, by utilizing the maven-antrun-extended-plugin and its functionalities. Much of the heavy lifting is actually in this plugin.</p> <p>A distribution is assembled from multiple Maven modules, so the first step is to figure out what set of modules are used for building a particular assembly. This is simply determined by computing the transitive dependencies from the distribution maven module.</p> <p>The process then look at those modules more carefully, analyze relationship among each other, and pay attention to the type of the modules. During this phase, it determines which module goes where. For example, an HK module A might be placed as-is in <tt>glassfish/modules</tt>, another module might go to <tt>glassfish/modules/ejb</tt>, while yet another might be unzipped and placed into <tt>glassfish/install</tt>.</p> <p>The process then places all these files under <tt>target/stage</tt>, and pack it up to create a single zip file, which becomes the final output from the distribution assembly.</p> <h4><a name="V3DistributionAssembly-MainConcepts"></a>Main Concepts</h1> <h4><a name="V3DistributionAssembly-MavenModules"></a>Maven Modules</h2> <p>All the pieces that eventually get into a distribution comes as artifacts from other Maven modules. The modules packaging in Maven play a key role in determining how the artifacts are handled.</p> 
+     <ul> 
+      <li><b>hk2-jar type</b>: HK2 modules generally go under <tt>glassfish/modules</tt> or one of its sub-directories. For more details about how the exact location is determined, refer to the advanced topics section. For more details about how to write an HK2 module, refer to V3EngineeringGuide.</li> 
+      <li><b>jar type</b>: When a HK2 module X depends on a plain jar module Y, Y will be placed into the same directory as X is. Note that this means sometimes you get multiple copies of Ys in different directories.</li> 
+      <li><b>pom type</b>: POM modules are only used for bundling multiple modules into one, and as such the POM module itself will not be placed into the final distribution. See the "Features" section for more details about how this is used.</li> 
+      <li><b>distribution-fragment type</b>: These modules are used to bundle up files to be placed as-is into the distribution. These include documents, shell scripts, data files, etc.</li> 
+     </ul> <h4><a name="V3DistributionAssembly-Features"></a>Features</h2> <p>Maven modules are normally too fine-grained for distribution assembly purpose, so if we start listing up individual modules that are to be included into a distribution, the list will quickly get intractable.</p> <p>So in v3 we adopted a convention to group a series of related maven modules together, so that we can work at higher-level. This grouping is called "feature." For example, the EJB feature already consists of 4 Maven modules and there'll be likely more Maven modules. But they are all grouped together into one EJB feature (called "ejb-all"), so that in <tt>distributions/glassfish/pom.xml</tt>, it only depends on this <tt>ejb-all</tt> module and don't list up individual pieces.</p> <p>This simplifies the distribution assembly process, and it leaves the component team the control to decide what will be a part of the distribution.</p> <p>At Maven level, a "feature" is nothing but a POM module that lists members as dependencies. Maven supports transitive dependencies, so you need not list up all the member modules individually,as long as they come in as transitive dependencies. See <a href="http://fisheye4.cenqua.com/browse/glassfish-svn/trunk/v3/ejb/ejb-all/pom.xml?r=trunk">the ejb-all feature</a> for an example.</p> <h4><a name="V3DistributionAssembly-DistributionFragments"></a>Distribution Fragments</h2> <p>A distribution fragment is a Maven module which creates a zip file as an artifact. The contents of this zip file will become a part of the final distribution (hence the name 'fragment'.)</p> <p>A distribution fragment is typically used for delivering resources — documents, scripts, data files, etc — into the distribution, but it's often used to place binaries into specific locations as well (such as a system web/ejb application.)</p> <p>A distribution fragment can be built any way you want, but the most common way to build this is to create <tt>src/main/resources</tt> directory and place resource files in here as they'd appear in the final distribution. See <a href="http://fisheye4.cenqua.com/browse/glassfish-svn/trunk/v3/ejb/ejb-timer-databases">ejb-timer-databases</a> for an example that follows this pattern.</p> <p>In more complicated situation, you'd need to perform some processing to resource files. The followings are the typical use cases:</p> 
+     <ol> 
+      <li>Perform token replacements</li> 
+      <li>Run XSLT transformation</li> 
+      <li>Generate scripts</li> 
+      <li>Execute a program to create data files</li> 
+      <li>Rebundle 3rd party distribution of something (e.g., Ant, JavaDB) with minor modifications</li> 
+     </ol> <p>For this kind of needs, <a href="https://maven-antrun-extended-plugin.java.net/">the maven-antrun-extended-plugin</a> would be useful, as it lets you use Ant for procedual, sequential processing. See <a href="http://fisheye4.cenqua.com/browse/glassfish-svn/trunk/v3/ejb/ejb-timer-databases/pom.xml?r=trunk">ejb-timer-databases POM</a> for an example of how this can be done.</p> <p>Once a fragment is defined, have the appropriate feature POM (or in some rare cases, the distribution POM) list your fragment as a dependency like this:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;dependency&gt;
+    &lt;groupId&gt;org.glassfish.external&lt;/groupId&gt;
+    &lt;artifactId&gt;javadb&lt;/artifactId&gt;
+    &lt;version&gt;...&lt;/version&gt;
+    &lt;type&gt;distribution-fragment&lt;/type&gt;
+&lt;/dependency&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>See <a href="http://fisheye4.cenqua.com/browse/glassfish-svn/trunk/v3/ejb/ejb-all/pom.xml?r=trunk">the ejb-all feature</a> for an example of this.</p> <h4><a name="V3DistributionAssembly-DistributionInheritance"></a>Distribution Inheritance</h2> <p>It's often convenient to define a distribution in terms of difference with another distribution. For example, one might want to say "EE bundle is web bundle + EJB." A distribution inheritance is a mechanism in which one does this.</p> <p>To define a distribution by inheriting another distribution, simply declare a dependency on another distribution like this:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;dependency&gt;
+    &lt;groupId&gt;org.glassfish.distributions&lt;/groupId&gt;
+    &lt;artifactId&gt;web&lt;/artifactId&gt;
+    &lt;version&gt;...&lt;/version&gt;
+    &lt;type&gt;zip&lt;/type&gt;
+&lt;/dependency&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>This means you can inherit from multiple distributions, if necessary. All the modules included in any of the base distributions will become a part of the new distribution. See <a href="http://fisheye4.cenqua.com/browse/glassfish-svn/trunk/v3/distributions/glassfish/pom.xml?r=trunk">the glassfish distribution</a> for a complete example.</p> <h4><a name="V3DistributionAssembly-Howtos"></a>How-tos</h1> <h4><a name="V3DistributionAssembly-IneedtoaddXYZtoadistribution"></a>I need to add XYZ to a distribution</h2> 
+     <ol> 
+      <li>If it's an HK2 module to be used in application server JVM... 
+       <ol> 
+        <li>Think about why/when your HK2 module needs to be in the distribution. For example, is it an utility or a library to be used by another module? If so, you don't need to do anything, because when that "another module" is a part of the distribution, your stuff will be automatically pulled in.</li> 
+        <li>Think about whether your HK2 module should belong to a "feature" cluster, like EJB or web-tier. If so, locate that feature POM in the V3 workspace and add your module in there. Your module will automatically show up in the appropriate distributions.</li> 
+        <li>If you are developing a brand-new feature cluster, where you expect to have several modules, write a feature POM and add your HK2 module in there, instead of adding it directly to the distribution POM.</li> 
+        <li>Finally, if you are positive that your HK2 module doesn't fit any of the category, add the dependency directly to the distribution POM.</li> 
+       </ol> </li> 
+      <li>If it's a file that need to be placed somewhere else in the distribution, then write a distribution fragment. See the "distribution fragments" above for more details.</li> 
+      <li>If it's something else, contact knowledgable folks for discussion</li> 
+     </ol> <h4><a name="V3DistributionAssembly-Ineedtocreateanewdistribution"></a>I need to create a new distribution</h2> <p>TBD.</p> <h4><a name="V3DistributionAssembly-Advancedtopicsfordistributionmaintainers"></a>Advanced topics for distribution maintainers</h1> <h4><a name="V3DistributionAssembly-Howdowedecidewhichmodulesgowhichdirectory%3F"></a>How do we decide which modules go which directory?</h2> <p>This involves in a fairly straight-forward dependency graph analysis.</p> <p>First, the process starts with the entire dependency graph between HK2 modules, and several "head" HK2 modules. Intuitively speaking, a head HK2 module is a module that brings in a cluster of other HK2 modules through its dependencies. Head HK2 module will be placed into its own directory, such as "web" or "ejb".</p> <p>With this input, the computation goes like this: for each HK2 module, we look at the dependencies to that HK2 module. If all the dependencies from the root goes through one and only one head, then this HK2 module will be placed into the same directory as the head (the justification is that this module is only "used" within a cluster lead by this head, not shared.) If there are dependencies that go through multiple heads, then the module would go directly under the <tt>modules</tt> directory. This includes those HK2 modules that are directly referenced by the distribution POM.</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 08, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

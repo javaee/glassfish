@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : VersioningDesignDocument</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="VersioningDesignDocument-GlassFishServerOpenSourceEdition3.1VersioningDesignSpec"></a>GlassFish Server Open Source Edition 3.1 - Versioning Design Spec</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#VersioningDesignDocument-GlassFishServerOpenSourceEdition3.1VersioningDesignSpec">GlassFish Server Open Source Edition 3.1 - Versioning Design Spec</a></li> 
+       <li><a href="#VersioningDesignDocument-1.Introduction">1. Introduction</a></li> 
+       <ul> 
+        <li><a href="#VersioningDesignDocument-1.1Project%2FComponentWorkingName">1.1 Project/Component Working Name</a></li> 
+        <li><a href="#VersioningDesignDocument-1.2Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier">1.2 Name(s) and e-mail address of Document Author(s)/Supplier</a></li> 
+        <li><a href="#VersioningDesignDocument-1.3DateofThisDocument">1.3 Date of This Document</a></li> 
+        <li><a href="#VersioningDesignDocument-1.4Highlevelfeaturesoverview">1.4 Highlevel features overview</a></li> 
+        <ul> 
+         <li><a href="#VersioningDesignDocument-1.4.1Supportedfeatures">1.4.1 Supported features</a></li> 
+         <li><a href="#VersioningDesignDocument-1.4.2Restrictedfeatures">1.4.2 Restricted features</a></li> 
+         <li><a href="#VersioningDesignDocument-1.4.3Unsupportedfeatures">1.4.3 Unsupported features</a></li> 
+        </ul> 
+        <li><a href="#VersioningDesignDocument-1.5Basicversioninginterest">1.5 Basic versioning interest</a></li> 
+       </ul> 
+       <li><a href="#VersioningDesignDocument-2.Functionality">2. Functionality</a></li> 
+       <ul> 
+        <li><a href="#VersioningDesignDocument-2.1Syntaxdefinitions">2.1 Syntax definitions</a></li> 
+        <ul> 
+         <li><a href="#VersioningDesignDocument-2.1.1Versionidentifier">2.1.1 Version identifier</a></li> 
+         <li><a href="#VersioningDesignDocument-2.1.2Versionexpression">2.1.2 Version expression</a></li> 
+         <li><a href="#VersioningDesignDocument-2.1.3Untaggedversion">2.1.3 Untagged version</a></li> 
+        </ul> 
+        <li><a href="#VersioningDesignDocument-2.2Usecontext">2.2 Use context</a></li> 
+        <ul> 
+         <li><a href="#VersioningDesignDocument-2.2.1Theversioninformation">2.2.1 The version information</a></li> 
+         <li><a href="#VersioningDesignDocument-2.2.2ContextrootandJNDIname">2.2.2 Context root and JNDI name</a></li> 
+         <li><a href="#VersioningDesignDocument-2.2.3Commonversionresources">2.2.3 Common version resources</a></li> 
+         <li><a href="#VersioningDesignDocument-2.2.4Rollback">2.2.4 Rollback</a></li> 
+         <li><a href="#VersioningDesignDocument-2.2.5Contextofcommandsuse">2.2.5 Context of commands use</a></li> 
+         <li><a href="#VersioningDesignDocument-2.2.6Preservationofsessions">2.2.6 Preservation of sessions</a></li> 
+         <li><a href="#VersioningDesignDocument-2.2.7Resourcesadapters">2.2.7 Resources-adapters</a></li> 
+        </ul> 
+       </ul> 
+       <li><a href="#VersioningDesignDocument-3.Unversionedvs.versionedappsandbackwardcompatibility">3. Unversioned vs. versioned apps and backward compatibility</a></li> 
+       <li><a href="#VersioningDesignDocument-4.Implementation">4. Implementation</a></li> 
+       <ul> 
+        <li><a href="#VersioningDesignDocument-4.1Domain.xml">4.1 Domain.xml</a></li> 
+        <li><a href="#VersioningDesignDocument-4.2DeploymentRelatedAdminClasses">4.2 Deployment Related Admin Classes</a></li> 
+        <li><a href="#VersioningDesignDocument-4.3DeploymentObjectLibrary">4.3 Deployment Object Library</a></li> 
+        <li><a href="#VersioningDesignDocument-4.4ApplicationRef">4.4 ApplicationRef</a></li> 
+       </ul> 
+       <li><a href="#VersioningDesignDocument-5.Basiccommands">5. Basic commands</a></li> 
+       <ul> 
+        <li><a href="#VersioningDesignDocument-5.1Versiondeployment">5.1 Version deployment</a></li> 
+        <li><a href="#VersioningDesignDocument-5.2Versionredeployment">5.2 Version redeployment</a></li> 
+        <li><a href="#VersioningDesignDocument-5.3Versionswitch">5.3 Version switch</a></li> 
+        <li><a href="#VersioningDesignDocument-5.4Versiondeactivation">5.4 Version deactivation</a></li> 
+        <li><a href="#VersioningDesignDocument-5.5Version%28s%29undeployment">5.5 Version(s) undeployment</a></li> 
+        <li><a href="#VersioningDesignDocument-5.6Versionclientstubs">5.6 Version client-stubs</a></li> 
+        <li><a href="#VersioningDesignDocument-5.7Versionlist">5.7 Version list</a></li> 
+        <ul> 
+         <li><a href="#VersioningDesignDocument-5.7.1listapplications%2Flistcomponents">5.7.1 list-applications/list-components</a></li> 
+         <li><a href="#VersioningDesignDocument-5.7.2showcomponentstatus">5.7.2 show-component-status</a></li> 
+         <li><a href="#VersioningDesignDocument-5.7.3listsubcomponents">5.7.3 list-sub-components</a></li> 
+        </ul> 
+        <li><a href="#VersioningDesignDocument-5.8Versionapplicationref">5.8 Version application-ref</a></li> 
+        <ul> 
+         <li><a href="#VersioningDesignDocument-5.8.1listapplicationrefs">5.8.1 list-application-refs</a></li> 
+         <li><a href="#VersioningDesignDocument-5.8.2createapplicationref">5.8.2 create-application-ref</a></li> 
+         <li><a href="#VersioningDesignDocument-5.8.3deleteapplicationref">5.8.3 delete-application-ref</a></li> 
+        </ul> 
+       </ul> 
+       <li><a href="#VersioningDesignDocument-6.JSR88">6. JSR-88</a></li> 
+       <li><a href="#VersioningDesignDocument-7.OSGiandGlassFishversioning">7. OSGi and GlassFish versioning</a></li> 
+       <li><a href="#VersioningDesignDocument-8.Inplacedirectorydeployment">8. In-place directory deployment</a></li> 
+       <li><a href="#VersioningDesignDocument-9.Versioned%2Funversioned">9. Versioned / unversioned</a></li> 
+       <li><a href="#VersioningDesignDocument-10.Samplesscenarios">10. Samples scenarios</a></li> 
+       <li><a href="#VersioningDesignDocument-11.Rejectedscenarios">11. Rejected scenarios</a></li> 
+       <ul> 
+        <li><a href="#VersioningDesignDocument-11.1Baduseofcommands">11.1 Bad use of commands</a></li> 
+        <li><a href="#VersioningDesignDocument-11.2Badscenarios">11.2 Bad scenarios</a></li> 
+        <ul> 
+         <li><a href="#VersioningDesignDocument-11.2.1Switchtoanondeployedversion">11.2.1 Switch to a non-deployed version</a></li> 
+         <li><a href="#VersioningDesignDocument-11.2.2Undeploymentofanondeployedversion">11.2.2 Undeployment of a non-deployed version</a></li> 
+         <li><a href="#VersioningDesignDocument-11.2.3Deploymentofanexistingversion">11.2.3 Deployment of an existing version</a></li> 
+         <li><a href="#VersioningDesignDocument-11.2.4Applicationreference%28s%29creation">11.2.4 Application reference(s) creation</a></li> 
+        </ul> 
+       </ul> 
+       <li><a href="#VersioningDesignDocument-12.SomeOpenIssues">12. Some Open Issues</a></li> 
+       <li><a href="#VersioningDesignDocument-13.Demos">13. Demos</a></li> 
+       <ul> 
+        <li><a href="#VersioningDesignDocument-13.1MS3Demo">13.1 MS3 Demo</a></li> 
+       </ul> 
+       <li><a href="#VersioningDesignDocument-14.DevTests">14. Dev Tests</a></li> 
+       <li><a href="#VersioningDesignDocument-15.EmailAlias">15. Email Alias</a></li> 
+      </ul>
+     </div> 
+     <hr> <h4><a name="VersioningDesignDocument-1.Introduction"></a>1. Introduction</h1> <h4><a name="VersioningDesignDocument-1.1Project%2FComponentWorkingName"></a>1.1 Project/Component Working Name</h2> <p>Deployment/Versioning</p> <h4><a name="VersioningDesignDocument-1.2Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier"></a>1.2 Name(s) and e-mail address of Document Author(s)/Supplier</h2> 
+     <ul> 
+      <li>Romain Grécourt - SERLI (<a href="mailto:romain.grecourt@serli.com">romain.grecourt@serli.com</a>)</li> 
+      <li>Hervé Souchaud - SERLI (<a href="mailto:herve.souchaud@serli.com">herve.souchaud@serli.com</a>)</li> 
+      <li>Mathieu ANCELIN - SERLI (<a href="mailto:mathieu.ancelin@serli.com">mathieu.ancelin@serli.com</a>)</li> 
+      <li>Pierre-Henri DEZANNEAU - SERLI (<a href="mailto:pierrehenri.dezanneau@serli.com">pierrehenri.dezanneau@serli.com</a>)</li> 
+     </ul> <h4><a name="VersioningDesignDocument-1.3DateofThisDocument"></a>1.3 Date of This Document</h2> <p>05/11/2010</p> <h4><a name="VersioningDesignDocument-1.4Highlevelfeaturesoverview"></a>1.4 Highlevel features overview</h2> <h4><a name="VersioningDesignDocument-1.4.1Supportedfeatures"></a>1.4.1 Supported features</h3> 
+     <ul> 
+      <li>Application Versioning allows multiple versions of the same application to exist in a GlassFish domain. It provides the developer and the administrator extensions to the relevant existing tools and commands to deploy, view, and manage multiple versions of applications.</li> 
+      <li>At most one version of an application may be enabled on any target. To the extent possible, implement the changes to the exposed interfaces so that the same changes could be used as-is or with minimal revision to support runtime versioning.</li> 
+      <li>Explicit versioning: the user will experience the v2 behavior for all application operations he or she invokes without specifying a version.</li> 
+      <li>Unlimited number of versions of an application: the user may create, aside from limitations in disk space for storing the application and its configuration information.</li> 
+      <li>Any published interface that supports the application operations that are affected by application versioning (e.g., deploy, undeploy, enable, disable, create/delete-app-ref, get- client-stubs) will support application versioning. This includes the CLI, the GUI, ant tasks, and the callable DeploymentFacility.</li> 
+     </ul> <h4><a name="VersioningDesignDocument-1.4.2Restrictedfeatures"></a>1.4.2 Restricted features</h3> 
+     <ul> 
+      <li>Using more than one in-place directory deployed applications deployed from the same directory is ambiguous. In order to introduce a new behavior of --force option for in-place deployments, GlassFish will reject deployments of already used directories and display warnings about the --force option use. This behavior is consistent with the regular cases as using --force=true will undeploy the currently deployed application before the new deployment. For instance it will be possible to redeploy in-place directory deployed applications by using --force=true.</li> 
+      <li>Because OSGi already has its own versioning system, GlassFish will ignore the version information provided with the name option but will let the deployment go through. In the case where users are using the GlassFish versioning with an OSGI bundle, some warnings will be printed out to inform them that the version information they provides will be ignored.</li> 
+     </ul> <h4><a name="VersioningDesignDocument-1.4.3Unsupportedfeatures"></a>1.4.3 Unsupported features</h3> 
+     <ul> 
+      <li>Automatic versioning, in which users specify no version information but GlassFish automatically supplies successive automatically-generated version identifiers in response to successive deployments of an application.</li> 
+      <li>Runtime versioning, in which multiple versions of an application can be enabled on a single target. This would require added runtime support in the containers and in naming which is not needed for application versioning alone.</li> 
+     </ul> <h4><a name="VersioningDesignDocument-1.5Basicversioninginterest"></a>1.5 Basic versioning interest</h2> <p>The versioning system described in this document is a basic feature. Eventually we want to provide runtime versioning where more than one version of the application are enabled at the same time in the runtime, so there will be no loss of service for users when they are upgrading or rolling back the versions. This basic application versioning is one step toward that direction.</p> <p>Users can be interested in this feature in terms of administration. As all the versions of an application are stored in the GlassFish repository, it will help minimize downtime during upgrade or rollback. Indeed upgrade and rollback operations can be done by "hand", for instance deploying a new copy of running application consists:</p> 
+     <ul> 
+      <li>downing the current application</li> 
+      <li>undeploying the current application</li> 
+      <li>copying up the new artifact</li> 
+      <li>expanding that artifact on GlassFish</li> 
+      <li>deploying the new application</li> 
+      <li>starting the new application<br> In a clustered environment theses operations can also be done by "hand" but this result in a lot of hoop jumping and coordination. With versioned applications, GlassFish can do these steps for the user, and, ideally let he or she switch over (and back) very quickly with little management.</li> 
+     </ul> <h4><a name="VersioningDesignDocument-2.Functionality"></a>2. Functionality</h1> <h4><a name="VersioningDesignDocument-2.1Syntaxdefinitions"></a>2.1 Syntax definitions</h2> <p>There are two kinds of syntax defined to handle versioning within GlassFish server:</p> <h4><a name="VersioningDesignDocument-2.1.1Versionidentifier"></a>2.1.1 Version identifier </h3> <p>A version identifier satisfies the following regular expression :</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">[A-Z|a-z|0-9]+([_|.|-][A-Z|a-z|0-9]+)*</pre> 
+       </div> 
+      </div>
+     </div> <p>This expression allows the use of maven/OSGi version values (major.minor.micro-QUALIFIER or QUALIFIER-major.minor.micro) as identifiers.</p> <h4><a name="VersioningDesignDocument-2.1.2Versionexpression"></a>2.1.2 Version expression</h3> <p>A version expression is either a version identifier or a wildcard expression that contains one or more «&nbsp;*&nbsp;» characters as the wildcard. GF applies the associated operation to all versions of the application which match the expression. </p> <p>Version identifier and expression are used as suffixes to application names, introduced by a colon «&nbsp;:&nbsp;» ; for example «&nbsp;myApp:Beta&nbsp;» or «&nbsp;inventory:RC*&nbsp;».</p> <p>This approach preserves existing APIs (e.g. JSR-77, JSR-88, AMX) while allowing them to take advantage of the versioning feature. Places where an application name appears in the v2 APIs will accept a name with version expression in v3.</p> 
+     <div class="panelMacro">
+      <table class="noteMacro">
+       <colgroup>
+        <col width="24">
+        <col>
+       </colgroup>
+       <tbody>
+        <tr>
+         <td valign="top"><img src="images/icons/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td>
+         <td><b>Be careful with wildcard character</b><br>There are possible issues with the use of the wildcard character <tt>*</tt> in commands with some shells. Many Unix shells provide globbing on filenames at the command line and in shell scripts. The shell expands the "glob pattern" (<tt>foo:*</tt> for example) and supplied the list of all the matches to the execution of the command.<br> When encoutering this issue, please surround the version expression by quotes like :<br> <tt>$ asadmin undeploy "foo:*"</tt></td>
+        </tr>
+       </tbody>
+      </table>
+     </div> <h4><a name="VersioningDesignDocument-2.1.3Untaggedversion"></a>2.1.3 Untagged version </h3> <p>The untagged version is a version having an empty string as identifier and that follows the same rules as all others version. This concept was introduced to maintain backward compatibility with GlassFish v2 users. </p> <h4><a name="VersioningDesignDocument-2.2Usecontext"></a>2.2 Use context</h2> <h4><a name="VersioningDesignDocument-2.2.1Theversioninformation"></a>2.2.1 The version information</h3> <p>The GlassFish versioning system embeds the version information as part of application names. An application becomes a versioned application if the version information is provided at deployment time. Users can follow either Maven or OSGI versioning schema but there is no relationship among versions of the same application (no later/previous versions).</p> <p>For all deployment mechanisms using a name option, the use of <tt>--name</tt> is mandatory to pass in the version information. For the others mechanisms (e.g. "JSR88" or "Autodeploy") a new version element will be introduced in the GlassFish deployment descriptor (glassfish-*.xml).</p> <h4><a name="VersioningDesignDocument-2.2.2ContextrootandJNDIname"></a>2.2.2 Context root and JNDI name</h3> <p>In v2 GlassFish enforces some restrictions among different applications, such as requiring each application to have a unique context root and to use distinct JNDI names (same jndi names among versions of a same application). These restrictions remain among different applications in v3 but do not apply to different versions of the same application. GlassFish v3 permits different versions of the same application to use the same context root and the same JNDI names. This causes no runtime conflict because at most one of the versions can be enabled at a time.</p> <h4><a name="VersioningDesignDocument-2.2.3Commonversionresources"></a>2.2.3 Common version resources</h3> <p>Database tables created or deleted as part of deployment and undeployment are global resources and so cannot be qualified by an application version, so users have to be very carefull when using global resources among versions of the same application.</p> <h4><a name="VersioningDesignDocument-2.2.4Rollback"></a>2.2.4 Rollback</h3> <p>GlassFish supports version rollback through the enable command. If the user deploys a new version he or she can rollback simply by enabling a different version. Because enable automatically disables any enabled version of the application, enable accomplishes rollback.</p> <h4><a name="VersioningDesignDocument-2.2.5Contextofcommandsuse"></a>2.2.5 Context of commands use</h3> <p>An identifier is bound to an unique version while an expression matches a set of versions. Consequently there are two different command groups using either an identifier or an expression as argument</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Identifier aware operations </th> 
+         <th class="confluenceTh"> Expression aware operations </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> deploy / deploydir / redeploy </td> 
+         <td class="confluenceTd"> undeploy </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> enable </td> 
+         <td class="confluenceTd"> disable </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> get-client-stubs </td> 
+         <td class="confluenceTd"> show-component-status </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-application-ref </td> 
+         <td class="confluenceTd"> create-application-ref </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-sub-components </td> 
+         <td class="confluenceTd"> delete-application-ref </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="VersioningDesignDocument-2.2.6Preservationofsessions"></a>2.2.6 Preservation of sessions</h3> <p>The sessions are preserved during the redeployment of a version as GlassFish treats it like a distinct application. On the other side, preserving sessions among different versions of the same application is more complex as the key used for session variables has to be the same between the versions being switched.</p> <h4><a name="VersioningDesignDocument-2.2.7Resourcesadapters"></a>2.2.7 Resources-adapters</h3> <p>Resources are created with reference to the resource-adapter's (application's) name. <br> Since we embed version within the application's name, the older version's resources will not refer to newer version of the application. Administrator/Developer need to explicitly create resources for the newer version of the application.</p> <p>Moreover GlassFish will ignore any duplicate exported global resources and let deployment go through.</p> <h4><a name="VersioningDesignDocument-3.Unversionedvs.versionedappsandbackwardcompatibility"></a>3. Unversioned vs. versioned apps and backward compatibility</h1> <p>Although the same operations apply to versions and unversioned applications, the effects can be slightly different. We want users to have a consistent experience in v3 when they use a sequence of operations they have used from v2. We also want users to be able to deploy an unversioned application and later use versioned application whenever they want.</p> <p>GlassFish provides <b>explicit versioning</b> through the use of the name option: the user has to provide explicitly an application name following the versioning syntax described above. For the commands where the name option is optional such as deploy, the use of the <tt>--name</tt> attribute is mandatory if the user wants to use versioned applications. Therefore the complete versioned name won't be deduced from the archive name to avoid some ambiguity.</p> <p>This approach gives users the same experience they had with v2.</p> <h4><a name="VersioningDesignDocument-4.Implementation"></a>4. Implementation</h1> <h4><a name="VersioningDesignDocument-4.1Domain.xml"></a>4.1 Domain.xml</h2> <p>This proposal requires no new changes in the layout. The version information is embedded in the module name.</p> <h4><a name="VersioningDesignDocument-4.2DeploymentRelatedAdminClasses"></a>4.2 Deployment Related Admin Classes</h2> <p>As we are using the versioning syntax as part of the application name, all the impacted classes (identifier aware operations and expression aware operations) will evolve so they operates on the correct version of the application.</p> <h4><a name="VersioningDesignDocument-4.3DeploymentObjectLibrary"></a>4.3 Deployment Object Library</h2> <p>The DOL will evolve so that the getAppName() method for application and getModuleName() method for module descriptor returns only the untagged name of the versioned application excluding the version identifier. The getRegistrationName() for application will return the versioned name as we use it to register the application.</p> <p>Theses modifications will provide the possibility to have unique JNDI names for versioned EJBs and unique context roots for versioned WAR where it's not known (not provided in the web file descriptor or at deployment time through asadmin option <tt>--contextroot</tt>).</p> <h4><a name="VersioningDesignDocument-4.4ApplicationRef"></a>4.4 ApplicationRef</h2> <p>The colon character has to be allowed for ref attribute in ApplicationRef so we can use it as part of application names. The restriction in GlassFish v3.0 was: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Pattern(regexp="[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_./;#]*")
+public String getRef();</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="VersioningDesignDocument-5.Basiccommands"></a>5. Basic commands</h1> <h4><a name="VersioningDesignDocument-5.1Versiondeployment"></a>5.1 Version deployment</h2> <p>The deployment process is performed by the deploy command which is an identifier aware operation. The syntaxes presented above are used as name option, therefore there is no relationship between the archive name and the versioning system at all.</p> <p>The deploydir command is currently deprecated but has to be presented because it extends the deploy command in order to provide some backward compatibilty for v2 users.</p> <p>Moreover deploying an enabled version will automatically disable the currently enabled one if there is one depending of the value of the <tt>--enabled</tt> attribute. The default behaviour of a new version deployment is to disable the currently enabled version as the default value of the <tt>--enabled</tt> attribute is true.</p> 
+     <ul> 
+      <li>A user wants to deploy the application "foo" (untagged version) 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin deploy foo.war</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ul> 
+     <ul> 
+      <li>A user wants to deploy an enabled version: 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin deploy --name=foo:1 foo_1.war</pre> 
+         </div> 
+        </div>
+       </div> </li> 
+     </ul> 
+     <ul> 
+      <li>A user wants to deploy a new disabled version: 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin deploy --enabled=false --name=foo:2 foo_2.war</pre> 
+         </div> 
+        </div>
+       </div> </li> 
+     </ul> 
+     <ul> 
+      <li>A user wants to deploy a version named "RC-1": 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin deploy --name=foo:RC-1 foo_RC-1.war</pre> 
+         </div> 
+        </div>
+       </div> </li> 
+     </ul> 
+     <ul> 
+      <li>A user wants to deploy a version named "RC-2" from a directory: 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin deploy --name=foo:RC-2 /home/user/applications/foo_RC-2/</pre> 
+         </div> 
+        </div>
+       </div> <p>or</p> 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin deploydir --name=foo:RC-2 /home/user/applications/foo_RC-2/</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ul> <h4><a name="VersioningDesignDocument-5.2Versionredeployment"></a>5.2 Version redeployment </h2> <p>The redeployment process is accomplished by the redeploy command which simply invokes the deploy command correctly. The use and the behavior of this command is similar to deploy command:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin deploy --name=foo:1 foo_1.war (1st deployment) 
+$ asadmin redeploy --name=foo:1 foo_1.war (redeployment) 
+$ asadmin deploy --force=true --name=foo:1 foo_1.war (redeployment)</pre> 
+       </div> 
+      </div>
+     </div> <p>The last two commands are equivalent. The force option is needed for redeployment when using deploy command so the user does not accidentally overwrite the version.</p> <h4><a name="VersioningDesignDocument-5.3Versionswitch"></a>5.3 Version switch </h2> <p>The user can perform switch operation by using the enable command which is an identifier aware operation because only one application can be enabled at runtime. The enable process disables the currently enabled version before enabling the one specified by the user.</p> <p>The primary argument of this command is the application name, it's used to specify the version to enable (the targeted version must be already deployed).</p> 
+     <ul> 
+      <li>A user wants to activate the untagged version: 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin enable foo</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ul> 
+     <ul> 
+      <li>A user wants to activate a version with a simple identifier: 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin enable foo:2</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ul> 
+     <ul> 
+      <li>A user wants to activate a version with a more complex identifier: 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin enable foo:RC-1</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ul> <h4><a name="VersioningDesignDocument-5.4Versiondeactivation"></a>5.4 Version deactivation </h2> <p>The disable command is an expression aware operation which allows the user to disable any version.</p> <p>Although only one version of an application can be enabled at runtime, this command accepts version expressions to be more flexible for users. Only one application can be disabled by the command process even if the targeted expression matches more than one version.</p> <p>If the currently enabled version doesn't matched by the expression, the command will result in a no-operation. This is to be consistent with the current non versioned commands (disabling an already disabled application will do nothing because what the user wants to achieve is achieved).</p> <p>If a user disables the currently enabled version, then GlassFish will not enable automatically another version.</p> 
+     <ul> 
+      <li>A user wants to disable the untagged version: 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin disable foo</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ul> 
+     <ul> 
+      <li>A user wants to disable a version with a simple identifier: 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin disable foo:2</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ul> 
+     <ul> 
+      <li>A user wants to disable the currently enabled version, but he doesn't know the version identifier: 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin disable foo:*</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ul> <p>The expression "foo:*" matches all versions of "foo" application (including the untagged version) and so the enabled version.</p> 
+     <div class="panelMacro">
+      <table class="warningMacro">
+       <colgroup>
+        <col width="24">
+        <col>
+       </colgroup>
+       <tbody>
+        <tr>
+         <td valign="top"><img src="images/icons/emoticons/forbidden.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td>
+         <td><b>Warning</b><br><tt>foo*</tt> is not a valid version expression. The wildcard character is only allowed in the version part of the command value (ie. after the colon character).</td>
+        </tr>
+       </tbody>
+      </table>
+     </div> 
+     <ul> 
+      <li>A user wants to disable the currently enabled version if its identifier begins with "RC": 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin disable foo:RC*</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ul> <h4><a name="VersioningDesignDocument-5.5Version%28s%29undeployment"></a>5.5 Version(s) undeployment </h2> <p>The undeployment process is performed by the undeploy command which is an expression aware operation because several versions can be undeployed at the same time unlike the disable command that process over one version at most whatever expression supplied.</p> <p>Indeed the undeployment process deletes matched version bits in repository which might also result in undeploying the currently enabled version if the expression matches it.</p> <p>If a user undeploys the currently enabled version, then GlassFish will not enable automatically another version.</p> 
+     <ul> 
+      <li>A user wants to undeploy the untagged version: 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin undeploy foo</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ul> 
+     <ul> 
+      <li>A user wants to undeploy a version with a simple identifier: 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin undeploy foo:2</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ul> 
+     <ul> 
+      <li>A user wants to undeploy all versions (including the untagged) of "foo" application: 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin undeploy foo:*</pre> 
+         </div> 
+        </div>
+       </div> 
+       <div class="panelMacro">
+        <table class="warningMacro">
+         <colgroup>
+          <col width="24">
+          <col>
+         </colgroup>
+         <tbody>
+          <tr>
+           <td valign="top"><img src="images/icons/emoticons/forbidden.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td>
+           <td><b>Warning</b><br><tt>foo*</tt> is not a valid version expression. The wildcard character is only allowed in the version part of the command value (ie. after the colon character).</td>
+          </tr>
+         </tbody>
+        </table>
+       </div></li> 
+     </ul> 
+     <ul> 
+      <li>A user wants to undeploy all the version(s) of an application where the identifier begins with "RC": 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin undeploy foo:RC*</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ul> <h4><a name="VersioningDesignDocument-5.6Versionclientstubs"></a>5.6 Version client-stubs </h2> <p>The client-stubs generation process is performed by the get-client-stubs command which is an identifier aware operation because the generated files can only match one version.</p> <p>The targeted version is specified as identifier.</p> 
+     <ul> 
+      <li>A user wants to retrieve the stubs of an application with a specific version: 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin get-client-stubs --appname=foo:RC-1.0.0 [path]/stubs/</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ul> 
+     <ul> 
+      <li>A user wants to retrieve the stubs of an application with the untagged version: 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin get-client-stubs --appname=foo [path]/stubs/</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ul> <h4><a name="VersioningDesignDocument-5.7Versionlist"></a>5.7 Version list </h2> <h4><a name="VersioningDesignDocument-5.7.1listapplications%2Flistcomponents"></a>5.7.1 list-applications/list-components</h3> <p>The <tt>list-applications</tt> and <tt>list-components</tt> commands allow users to display the versions of each deployed application, no identifier will be shown for untagged applications. The interest of this command in the context of versioning is that in addition to list all versions, it allows users to quickly find which version of an application is currently enabled.</p> <p>This command has two modes of use, a default and a verbose mode.</p> <p>The default mode will display the versions in a compact way, using the version identifier format used in the commands. This mode allows v2 users to keep using GlassFish as they are used to.</p> <p>The verbose mode will be activated with the <tt>--verbose</tt> option, it will add the enabled state of each version in addition with the information of the default mode.</p> 
+     <ul> 
+      <li>A user wants to list versions after some deployments: 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin deploy foo.war 
+$ asadmin deploy --name=foo:RC-1 foo_RC-1.war 
+$ asadmin deploy --enabled=false --name=foo:RC-2 foo_RC-2.war 
+$ asadmin list-applications 
+foo &lt;web&gt; 
+foo:RC-1 &lt;web&gt; 
+foo:RC-2 &lt;web&gt;</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ul> 
+     <ul> 
+      <li>After some time, the user might not remember which version is enabled, he can then get the version list again, but this time with the enabled state information: 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin list-applications --verbose=true 
+foo &lt;web&gt;	(disabed) 
+foo:RC-1 &lt;web&gt;	(enabled) 
+foo:RC-2 &lt;web&gt;	(disabled)</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ul> <h4><a name="VersioningDesignDocument-5.7.2showcomponentstatus"></a>5.7.2 show-component-status</h3> <p>The show-component-status command allow users to display the enabled state of a given application. This command is an expression aware operation as the v2 users can still use it as they used to (by refering to the untagged version) and as it provide users the possibility to look at the enable states of a version set.</p> 
+     <ul> 
+      <li>A user wants to show the status of an application: 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin show-component-status foo
+Status of foo is enabled.</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ul> 
+     <ul> 
+      <li>A user wants to show the status of a specific version: 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin show-component-status foo:RC-1
+Status of foo:RC-1 is enabled.</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ul> 
+     <ul> 
+      <li>A user wants to show the status of the version set: 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin show-component-status foo:*
+Status of foo is disabled.
+Status of foo:ALPHA-1 is disabled.
+Status of foo:RC-1 is enabled.</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ul> <h4><a name="VersioningDesignDocument-5.7.3listsubcomponents"></a>5.7.3 list-sub-components</h3> <p>The list-sub-components command is an identifier aware operations because it use a module name as argument and an application name as option. The restriction to version identifier exist primarily in order to not make users confuse.</p> 
+     <ul> 
+      <li>A user list the subcomponents of the untagged version of an application "fooEAR" within a module "fooWAR": 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin list-sub-components --appname fooEAR fooWAR
+default &lt;Servlet&gt;
+jsp &lt;Servlet&gt;</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ul> 
+     <ul> 
+      <li>A user list the subcomponents of a specific version of the "fooEAR" application within a Web module "fooWAR": 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin list-sub-components --appname fooEAR:RC-1 fooWAR
+default &lt;Servlet&gt;
+jsp &lt;Servlet&gt;</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ul> <h4><a name="VersioningDesignDocument-5.8Versionapplicationref"></a>5.8 Version application-ref</h2> <h4><a name="VersioningDesignDocument-5.8.1listapplicationrefs"></a>5.8.1 list-application-refs</h3> <p>The list-application-refs command is very similar to the list-applications command but it process over application references. As the list-applications command we will provide two modes of use: a default and a verbose mode.</p> 
+     <ul> 
+      <li>A user who had v2 experience has created some references to applications and want to list them: 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin list-application-refs
+foo
+foo:ALPHA:1.0.0
+foo:RC-1.0.0
+bar
+bar:BETA-1.0.0
+bar:PRELUDE-1.0.0
+helloworld</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ul> 
+     <ul> 
+      <li>Then he process the same command in verbose mode to display the enable states of the references: 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin list-application-refs --verbose=true
+foo                (disabled)
+foo:ALPHA:1.0.0    (disabled)
+foo:RC-1.0.0       (enabled)
+bar                (disabled)
+bar:BETA-1.0.0     (disabled)
+bar:PRELUDE-1.0.0  (enabled)
+helloworld         (enabled)</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ul> <h4><a name="VersioningDesignDocument-5.8.2createapplicationref"></a>5.8.2 create-application-ref</h3> <p>The create-application-ref command is an identifier aware operation or an expression aware operation depending on the value of --enabled option. It accepts version expression to provide user facilities. As the default value of <tt>--enabled</tt> option is true, processing this command over a set of versions will try to enable all of them on the provided target. This user facility is only consistent with <tt>--enabled=false</tt>.</p> <p>So this command accepts version identifier by default because the default value of <tt>--enabled</tt> is true ; it also accepts version expression only if the <tt>--enabled</tt> option is false and warnings will be printed out if some references are already created in the target.</p> <p>GlassFish will reject the command with a meaningful error message when <tt>--enabled=true</tt> is used with a version expression. GlassFish will also display a message when <tt>--enabled=true</tt> is used with a version identifier to warn users that they can use version expressions.</p> 
+     <ul> 
+      <li>A user creates a reference to the untagged version of Web module "foo" on the unclustered server instance NewServer: 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin create-application-ref --target NewServer foo
+[WARNING] version expression are available only with --enabled=false</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ul> 
+     <ul> 
+      <li>A user creates a reference to a specific version of Web module "foo" on the unclustered server instance NewServer: 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin create-application-ref --target NewServer foo:RC.1
+[WARNING] version expression are available only with --enabled=false</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ul> 
+     <ul> 
+      <li>A user creates references to a set of versions of Web module "foo" on the unclustered server instance NewServer: 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin create-application-ref --enabled=false --target NewServer foo:RC*</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ul> <p><b>Interesting usecase</b></p> 
+     <ul> 
+      <li>A user creates references to a previously deployed version set of the Web module "foo" on the unclustered server instance NewServer, then deploy 2 new versions on the DAS and finally updates the references on the instance NewServer:</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin create-application-ref --enabled=false --target NewServer foo:*</pre> 
+       </div> 
+      </div>
+     </div> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin list-application-ref
+foo
+foo:ALPHA-1.0.0
+foo:RC-1.0.0</pre> 
+       </div> 
+      </div>
+     </div> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin deploy --name=foo:SNAPSHOT-1.0
+$ asadmin deploy --name=foo:SNAPSHOT-1.1</pre> 
+       </div> 
+      </div>
+     </div> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin create-application-ref --enabled=false --target NewServer foo:*
+[WARNING] version "foo" already referenced on target NewServer
+[WARNING] version "foo:ALPHA-1.0.0" already referenced on target NewServer
+[WARNING] version "foo:RC-1.0.0" already referenced on target NewServer</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="VersioningDesignDocument-5.8.3deleteapplicationref"></a>5.8.3 delete-application-ref</h3> <p>The delete-application-ref command is an expression aware operations to allow users to delete references over a version set or a targeted version.</p> 
+     <ul> 
+      <li>A user deletes a reference to the untagged version of Web module "foo" on the unclustered server instance NewServer: 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin delete-application-ref --target NewServer foo</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ul> 
+     <ul> 
+      <li>A user deletes a reference to a specific version of Web module "foo" on the unclustered server instance NewServer: 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin delete-application-ref --target NewServer foo:RC.1</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ul> 
+     <ul> 
+      <li>A user deletes references to a set of versions of Web module "foo" on the unclustered server instance NewServer: 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin delete-application-ref --target NewServer foo:RC*</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ul> <h4><a name="VersioningDesignDocument-6.JSR88"></a>6. JSR-88</h1> <p>It is possible to use versions with a JSR88 client application. For the commands where the application name is optional such as deploy, the use of a specific name is mandatory if the user wants to use versioned applications.</p> <p>Although there are two common ways to deploy with JSR88 depending on the API used, only one allow users to fill a specific name: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">javax.enterprise.deploy.spi.DeploymentManager.distribute(Target[], InputStream, InputStream)</pre> 
+       </div> 
+      </div>
+     </div> <p>The application name is taken from the display-name entry in the Java EE standard deployment descriptor. If it's not present GlassFish will use a temporary name for deployment like : <tt>jsr88-2866258839334960706.tmp</tt>, in this case the version information is not provided explicitly so GlassFish will not deploy the application as a version.</p> <p><b>v3 documentation:</b></p> 
+     <ul> 
+      <li><a href="http://docs.sun.com/app/docs/doc/820-7693/giptw?l=en&amp;a=view">General Deployment Functionality</a></li> 
+      <li><a href="http://docs.sun.com/app/docs/doc/820-7693/giiel?l=en&amp;a=view">JSR 88 Naming</a></li> 
+     </ul> <h4><a name="VersioningDesignDocument-7.OSGiandGlassFishversioning"></a>7. OSGi and GlassFish versioning</h1> <p>As OSGi have its own versioning system, GlassFish will let the deployment go through but will display a warning if a version information is provided as part of the name option.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin deploy --name=foo:1 --type=osgi foo_1.jar
+
+[WARNING] OSGI bundles can't use GlassFish's versioning, any version information embeded as part of the name option will be ignored.</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="VersioningDesignDocument-8.Inplacedirectorydeployment"></a>8. In-place directory deployment</h1> <p>A directory shouldn't be deployed twice with a different version identifier. The versioning for in-place directory must be managed by users: if they wants to use two version of a same application with a unique directory, they has to provide the <tt>--force=true</tt> option:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin deploy --name=foo:1 /home/user/applications/foo/ 
+$ asadmin deploy --name=foo:2 --force=true /home/user/applications/foo/</pre> 
+       </div> 
+      </div>
+     </div> <p>The fact that users provide the <tt>--force</tt> option indicates an unusual behavior, as a directory is already assigned to a version. If the <tt>--force</tt> option is not provided, the <tt>deploy</tt> command will fail:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin deploy --name=foo:1 /home/user/applications/foo/ 
+$ asadmin deploy --name=foo:2 /home/user/applications/foo/
+
+org.glassfish.api.admin.CommandException: remote failure: Error during deployment:
+ The directory "/home/user/applications/foo/" is already assigned.</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="VersioningDesignDocument-9.Versioned%2Funversioned"></a>9. Versioned / unversioned</h1> <p>Users not using versioning as in GlassFish v2 are implicitly processing on the untagged version. Actually when people refer to an application <tt>foo</tt>, GlassFish performs the task over a version with an empty string as identifier.</p> <p>The user can start to use versions and go back to the untagged one when he wants, he can also operate on the untagged version as he would with all others basic commands.</p> 
+     <ul> 
+      <li>A user wants to use v2 unversioned commands: 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin deploy foo.war 
+$ asadmin enable foo 
+$ asadmin undeploy foo</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ul> 
+     <ul> 
+      <li>A user starts using versions and then go back to use the untagged version: 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin deploy --name=foo:1 foo_1.war 
+$ asadmin deploy foo.war</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ul> 
+     <ul> 
+      <li>A user starts using GlassFish without versioning and then use the versioning: 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin deploy foo.war 
+$ asadmin deploy --name=foo:1 foo_1.war</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ul> <h4><a name="VersioningDesignDocument-10.Samplesscenarios"></a>10. Samples scenarios</h1> <p>This part attends to present the life-cycle of an application from a user perspective through command sequences.</p> <p>A user is developing a simple Java EE application named <tt>foo</tt> and uses GlassFish to deploy it. He deploys his application the first time as follows:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin deploy foo.war</pre> 
+       </div> 
+      </div>
+     </div> <p>After some code updates, he compiles again the application and wants to re-deploy it this way:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin deploy --force=true foo.war</pre> 
+       </div> 
+      </div>
+     </div> <p>At this point the user thinks he has reached the milestones he fixed, but he wants to go further in the development of its application by proposing new features. Consequently he plans new milestones and decides to version his application.</p> <p>Once the development of the next targeted version finished, the user deploys it like:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin deploy --name=foo:BETA-1.0 foo_beta-1-0.war</pre> 
+       </div> 
+      </div>
+     </div> <p>Then the user has decided to plan a new "BETA" version containing a special feature not needed at this moment but potentially required later. Therefore once the version developed, he deploys it but doesn't enable it (he will switch later):</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin deploy --name=foo:BETA-1.1 --enabled=false foo_beta-1-1.war</pre> 
+       </div> 
+      </div>
+     </div> <p>The 'BETA-1.1' additional feature is needed now, and the user has to switch for this version:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin enable foo:BETA-1.1</pre> 
+       </div> 
+      </div>
+     </div> <p>The user has now reached another version and he deploys it:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin deploy --name=foo:RC-1.0 foo_rc-1-0.war</pre> 
+       </div> 
+      </div>
+     </div> <p>Before doing anything else the user wants to refresh his memory about the deployed versions:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin list-applications --verbose=true 
+foo &lt;web&gt;	        (disabled) 
+foo:BETA-1.0 &lt;web&gt;	(disabled) 
+foo:BETA-1.1 &lt;web&gt;	(disabled) 
+foo:RC-1.0 &lt;web&gt;	(enabled)</pre> 
+       </div> 
+      </div>
+     </div> <p>At this moment the current enabled version is "RC-1.0", and the user assumes that the "BETA" versions are no longer useful. Therefore he can undeploy all the "BETA" versions this way:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin undeploy foo:BETA*</pre> 
+       </div> 
+      </div>
+     </div> <p>A moment later, a major bug is found in version RC-1.0. He knows that the application before versioning does not include the bug, so he decides to return to the untagged version:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin enable foo</pre> 
+       </div> 
+      </div>
+     </div> <p>A famous company released an open source Java EE application named "magicFOO" performing exactly the "foo" process in a more powerful way. Therefore the user decides to drop his application and use the new one instead:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin undeploy foo:*
+$ asadmin deploy magicFOO.war</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="VersioningDesignDocument-11.Rejectedscenarios"></a>11. Rejected scenarios </h1> <p>The scenarios presented below show what the user cannot do in accordance with the definitions. ;:The error message "Version untaggedName:versionIdentifier not registered" is used as somehow the previous releases chose to use word "registered". Moreover there is no real difference between "registered" and "deployed".</p> <h4><a name="VersioningDesignDocument-11.1Baduseofcommands"></a>11.1 Bad use of commands</h2> <p>The identifier aware operations can't process if the expected argument is a version expression: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin deploy --name=foo:* foo.war 
+
+org.glassfish.api.admin.CommandException: remote failure:
+ '*' wildcard not allowed in version identifier</pre> 
+       </div> 
+      </div>
+     </div> <p>or </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin enable foo:*
+
+org.glassfish.api.admin.CommandException: remote failure:
+ '*' wildcard not allowed in version identifier</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="VersioningDesignDocument-11.2Badscenarios"></a>11.2 Bad scenarios</h2> <p>This part deals with the forbidden sequences causing a GlassFish error. The rejected commands cause no change in which version (if any) of an application is enabled.</p> <h4><a name="VersioningDesignDocument-11.2.1Switchtoanondeployedversion"></a>11.2.1 Switch to a non-deployed version</h3> <p>It is not possible to enable a version not previously deployed:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin deploy --name=foo:1 foo_1.war 
+$ asadmin deploy --enabled=false --name=foo:3 foo_3.war 
+$ asadmin enable foo:2
+
+org.glassfish.api.admin.CommandException: remote failure: Version foo:2 not registered</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="VersioningDesignDocument-11.2.2Undeploymentofanondeployedversion"></a>11.2.2 Undeployment of a non-deployed version</h3> <p>Same case for undeploy command, it's not possible to undeploy a non-existing version:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin deploy foo.war 
+$ asadmin undeploy foo:1 
+
+org.glassfish.api.admin.CommandException: remote failure: Version foo:1 not registered</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="VersioningDesignDocument-11.2.3Deploymentofanexistingversion"></a>11.2.3 Deployment of an existing version</h3> <p>If an application is deployed, the user must supply the 'force' argument to specify that he wants to re-deploy the application:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin deploy --name=foo:1 foo_1.war 
+$ asadmin deploy --name=foo:1 foo_2.war 
+
+org.glassfish.api.admin.CommandException: remote failure: Error during deployment:
+ Application with name foo:1 is already registered.</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="VersioningDesignDocument-11.2.4Applicationreference%28s%29creation"></a>11.2.4 Application reference(s) creation</h3> <p>Version expression shouldn't be used if the <tt>--enabled</tt> option is not specified or is set to true.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin create-application-ref --target NewServer foo:*
+
+org.glassfish.api.admin.CommandException: remote failure: Error during deployment:
+ version expressions are allowed only with --enabled=false</pre> 
+       </div> 
+      </div>
+     </div> <p>or</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin create-application-ref --enabled=true --target NewServer foo:*
+
+org.glassfish.api.admin.CommandException: remote failure: Error during deployment:
+ version expressions are allowed only with --enabled=false</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="VersioningDesignDocument-12.SomeOpenIssues"></a>12. Some Open Issues</h1> 
+     <ul> 
+      <li>There are possible conflicts between application name and repository name with the "-".<br> For instance if a user has deployed a version "foo:BETA-1.0", it will be stored in a directory named "foo-BETA-1.0" of the application repository ; then if the name "foo-BETA-1.0" is used either as application name or archive name during a deployment, this will raise an issue.<br> A solution could be using a specific characters combinaison to minimize the possible conflicts.</li> 
+     </ul> 
+     <ul> 
+      <li>Are there aspects other than context root and JNDI names that should either be permitted to be the same in different versions of the same app, required to be the same, or required to be different?</li> 
+     </ul> <h4><a name="VersioningDesignDocument-13.Demos"></a>13. Demos</h1> <h4><a name="VersioningDesignDocument-13.1MS3Demo"></a>13.1 MS3 Demo</h2> <p>*<a href="http://download.java.net/glassfish/wiki-archive/attachments/20875425/21365031.pdf">Demo Instructions</a><br> *<span class="error">[Demo Bits|V3.1Deployment^appVersioning_MS1-Demo3.tar.gz]</span></p> <h4><a name="VersioningDesignDocument-14.DevTests"></a>14. Dev Tests</h1> 
+     <ul> 
+      <li><a href="3.1DeploymentDevTests.html" title="3.1DeploymentDevTests">Dev tests</a></li> 
+     </ul> <h4><a name="VersioningDesignDocument-15.EmailAlias"></a>15. Email Alias</h1> 
+     <ul> 
+      <li>Please contact us at <a href="mailto:dev@glassfish.java.net">dev@glassfish.java.net</a></li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Nov 04, 2010 by 
+<font color="#0050B2">anthony_gaidot</font>. Exported from wikis.oracle.com on May 27, 2015 20:48.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

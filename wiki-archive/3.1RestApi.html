@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : 3.1RestApi</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="3.1RestApi-GlassFishServerOpenSourceEdition3.1RESTfulAdministrationAPI"></a>GlassFish Server Open Source Edition 3.1 - RESTful Administration API</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#3.1RestApi-GlassFishServerOpenSourceEdition3.1RESTfulAdministrationAPI">GlassFish Server Open Source Edition 3.1 - RESTful Administration API</a></li> 
+       <ul> 
+        <li><a href="#3.1RestApi-Introduction">Introduction</a></li> 
+        <li><a href="#3.1RestApi-Scope">Scope</a></li> 
+        <li><a href="#3.1RestApi-FeatureOverview">Feature Overview</a></li> 
+        <li><a href="#3.1RestApi-DesignDocument">Design Document</a></li> 
+        <li><a href="#3.1RestApi-MilestoneSchedule">Milestone Schedule</a></li> 
+        <li><a href="#3.1RestApi-TaskList">Task List</a></li> 
+        <li><a href="#3.1RestApi-DevTests">Dev Tests</a></li> 
+        <li><a href="#3.1RestApi-References">References</a></li> 
+        <li><a href="#3.1RestApi-EmailAlias">Email Alias</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="3.1RestApi-Introduction"></a>Introduction</h2> <p>The REST Administration API will be the primary <img class="emoticon" src="images/icons/emoticons/help_16.gif" height="16" width="16" align="absmiddle" alt="" border="0"> API for administrative interactions with the server.</p> <h4><a name="3.1RestApi-Scope"></a>Scope </h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Feature ID </th> 
+         <th class="confluenceTh"> Priority </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> Eng Response </th> 
+         <th class="confluenceTh"> Owner(s) </th> 
+         <th class="confluenceTh"> Estimate (Man Days) </th> 
+         <th class="confluenceTh"> Source of Requirement </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/11929">REST-001 </a> </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Provide necessary APIs for centralized cluster management and monitoring </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Jason, Ludo, Mitesh </td> 
+         <td class="confluenceTd"> 35 </td> 
+         <td class="confluenceTd"> 3.1 Primary Focus </td> 
+         <td class="confluenceTd"> Admin console will rely on RESTful API </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/11930">REST-002 </a> </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Provide necessary APIs to provide support for JMS CLI commands </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Jason, Ludo, Mitesh </td> 
+         <td class="confluenceTd"> 20 </td> 
+         <td class="confluenceTd"> Feature parity </td> 
+         <td class="confluenceTd"> JMS Broker is no longer standalone, so admin support must be added to GlassFish. Additionally, the console currently supports the operations provided by the CLI, though uses AMX/JMX to effect them. With the move from AMX to REST, this functionality must be provided to maintain funcationality </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/11931">REST-003 </a> </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> Create and expose REST endpoints dynamically based on the ConfigBeans loaded at runtime </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Jason, Ludo, Mitesh </td> 
+         <td class="confluenceTd"> 40 </td> 
+         <td class="confluenceTd"> Server pluggability/modularity </td> 
+         <td class="confluenceTd"> Three options: ASM, JDK 6 Java compiler API, internal Jersey APIs </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/11932">REST-004 </a> </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> Provide means for generating an authentication token/session </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Jason </td> 
+         <td class="confluenceTd"> 10 </td> 
+         <td class="confluenceTd"> Admin Console security requirements </td> 
+         <td class="confluenceTd"> An in-container solution exists, so this is lower priority. A long-term goal of the Console is to run out-of-process </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/11933">REST-005 </a> </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> specify the returned type in url extension (.xml, .json) </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Ludo </td> 
+         <td class="confluenceTd"> 4 </td> 
+         <td class="confluenceTd"> ease of use and testing from the browser as well. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.1RestApi-FeatureOverview"></a>Feature Overview </h2> <p>The REST Admin API will be the API that clients, most notably the <a href="GlassFish3.1AdminConsole.html" title="GlassFish3.1AdminConsole">Admin Console</a>, will use to interact with the server. Every operation that is supported via the CLI or through the now deprecated AMX interface must be supported via REST.</p> <p>The major push in 3.1 is clustering, so support for this new capability will be the top priority for the API. Additionally, the very prominent Admin Console will be the primary consumer initially, so great care will be given to insure that the Console works as expected once the transition is made to use this API.</p> <h4><a name="3.1RestApi-DesignDocument"></a>Design Document</h2> 
+     <ul> 
+      <li>Link to one-pager</li> 
+     </ul> <h4><a name="3.1RestApi-MilestoneSchedule"></a>Milestone Schedule</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 01. </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd"> REST-001 </td> 
+         <td class="confluenceTd"> Cluster management </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> REST support for clustering depends on the implementation of the clustering CLI commands see (<a href="3.1BasicClustering.html" title="3.1BasicClustering">Clustering Project </a>) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 02. </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd"> REST-002 </td> 
+         <td class="confluenceTd"> JMS support </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 03. </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd"> REST-003 </td> 
+         <td class="confluenceTd"> Expose REST endpoints dynamically (work starts in MS1) </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 04. </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> REST-004 </td> 
+         <td class="confluenceTd"> Create session token mechanism </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.1RestApi-TaskList"></a>Task List</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task </th> 
+         <th class="confluenceTh"> Target Milestone </th> 
+         <th class="confluenceTh"> Start </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Owner(s) </th> 
+         <th class="confluenceTh"> Feature ID </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Make the naming and formatting of param names/keys consistent (<a href="https://github.com/javaee/glassfish/issues/11935">issue </a>) </td> 
+         <td class="confluenceTd"> M1-M2 </td> 
+         <td class="confluenceTd"> 2010-05-04 </td> 
+         <td class="confluenceTd"> 2010-06-21 </td> 
+         <td class="confluenceTd"> Ludo </td> 
+         <td class="confluenceTd"> REST-001 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Default to <a href="3.1RestApiCamelCaseNames.html" title="3.1RestApiCamelCaseNames">CamelCased key names </a> (<a href="https://github.com/javaee/glassfish/issues/11936">issue </a>) </td> 
+         <td class="confluenceTd"> M2 </td> 
+         <td class="confluenceTd"> 2010-05-04 </td> 
+         <td class="confluenceTd"> 2010-06-21 </td> 
+         <td class="confluenceTd"> Ludo </td> 
+         <td class="confluenceTd"> REST-001 </td> 
+         <td class="confluenceTd"> The Admin Console will hard-code mappings for now so that a PoC can be created </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Refactor generated and supporting code (<a href="https://github.com/javaee/glassfish/issues/11937">issue </a>) </td> 
+         <td class="confluenceTd"> M3 </td> 
+         <td class="confluenceTd"> 2010-05-04 </td> 
+         <td class="confluenceTd"> 2010-07-19 </td> 
+         <td class="confluenceTd"> Ludo, Mitesh </td> 
+         <td class="confluenceTd"> REST-002 </td> 
+         <td class="confluenceTd"> Refactoring should simplify the code base, making comprehension and maintenance (and dynamicity) easier in the long term </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Help develop Console REST-based prototype (<a href="https://github.com/javaee/glassfish/issues/11934">issue </a>) </td> 
+         <td class="confluenceTd"> M1 </td> 
+         <td class="confluenceTd"> 2010-05-10 </td> 
+         <td class="confluenceTd"> 2010-05-24 </td> 
+         <td class="confluenceTd"> Jason </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> This task has been completed and the console team is pressing forward with its migration </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Dynamic REST Resources (<a href="https://github.com/javaee/glassfish/issues/11931">issue </a>) </td> 
+         <td class="confluenceTd"> M4 </td> 
+         <td class="confluenceTd"> 2010-05-04 </td> 
+         <td class="confluenceTd"> 2010-08-16 </td> 
+         <td class="confluenceTd"> team </td> 
+         <td class="confluenceTd"> ALL </td> 
+         <td class="confluenceTd"> Investigate options (jersey, ASM, JDK) in M1, M2, implementation in M4 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Develop more dev tests (<a href="https://github.com/javaee/glassfish/issues/11938">issue </a>) </td> 
+         <td class="confluenceTd"> M4 </td> 
+         <td class="confluenceTd"> 2010-05-04 </td> 
+         <td class="confluenceTd"> 2010-08-16 </td> 
+         <td class="confluenceTd"> Jason </td> 
+         <td class="confluenceTd"> ALL </td> 
+         <td class="confluenceTd"> Will have necessary dev tests during MS2, MS3 for feature hand over </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Create session authentication token mechanism (<a href="https://github.com/javaee/glassfish/issues/11932">issue </a>) </td> 
+         <td class="confluenceTd"> M3 </td> 
+         <td class="confluenceTd"> 2010-05-10 </td> 
+         <td class="confluenceTd"> 2010-06-21 </td> 
+         <td class="confluenceTd"> Jason </td> 
+         <td class="confluenceTd"> REST-004 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Returned type in URL (<a href="https://github.com/javaee/glassfish/issues/11933">issue </a>) </td> 
+         <td class="confluenceTd"> M3 </td> 
+         <td class="confluenceTd"> 2010-06-10 </td> 
+         <td class="confluenceTd"> 2010-07-19 </td> 
+         <td class="confluenceTd"> Ludo </td> 
+         <td class="confluenceTd"> REST-005 </td> 
+         <td class="confluenceTd"> This feature has been implemented. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.1RestApi-DevTests"></a>Dev Tests </h2> <p>The dev tests for the REST module reside in the standard Maven location under src/test in v3/admin/rest. The tests require a running GlassFish instance, though, so the Maven Surefire plugin has been disabled in the test phase of the Maven lifecycle. Execution of the tests, then, will be skipped during the normal build/package/install process, and must be run explicitly using the 'test' profile via </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">mvn -Prest-devtest test</pre> 
+       </div> 
+      </div>
+     </div> <p>A Hudson job will be configured to run these tests automatically.</p> <h4><a name="3.1RestApi-References"></a>References</h2> 
+     <ul> 
+      <li><a href="V3.1RESTfulApiOnePager.html" title="V3.1RESTfulApiOnePager">One pager</a></li> 
+      <li><a href="https://glassfish.java.net/issues/buglist.cgi?Submitquery=Submitquery&amp;component=glassfish&amp;subcomponent=rest-interface&amp;issue_status=UNCONFIRMED&amp;issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=fulltext&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=&amp;cmdtype=doit&amp;namedcmd=AdminGUIDefects&amp;newqueryname=&amp;order=Reusesamesortaslasttime">Issue Tracker</a></li> 
+      <li><a href="GuiRestRequirements.html" title="GuiRestRequirements">GUI Requirements</a></li> 
+      <li><a href="ActionReport.html" title="ActionReport">ActionReport Analysis</a></li> 
+     </ul> <h4><a name="3.1RestApi-EmailAlias"></a>Email Alias</h2> 
+     <ul> 
+      <li>Please contact us at <a href="mailto:admin@glassfish.java.net">admin@glassfish.java.net</a></li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 13, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

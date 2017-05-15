@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : FaqCongifureLog4J</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="FaqCongifureLog4J-HowdoIconfigureLog4JforuseinGlassFish%3F"></a>How do I configure Log4J for use in GlassFish?</h2> <p>By default Glassfish does not provide Log4J support and therefore most likely any Log4J statements end up in thin air. In order to make it work the Log4J archive must be made available to Glassfish alongside with a Log4J configuration file either as properties or XML. The instruction steps here are designed not to rely on Glassfish default loading bye making it explicit.</p> <h4><a name="FaqCongifureLog4J-InstallationofLog4J"></a>Installation of Log4J</h2> 
+     <ol> 
+      <li>Create a new directory inside of <b>&lt;Glassfish Home&gt;/lib</b> directory which is called <b>logging</b> for now</li> 
+      <li>Put <b>log4j.jar</b> inside the newly created directory <b>logging</b></li> 
+      <li>Put the <b>Log4J configuration</b> file inside the <b>logging</b> directory as well</li> 
+      <li>Fire up Glassfish and open the admin web UI inside a browser (for example _*<a href="http://localhost:4848*_">http://localhost:4848*_</a>)</li> 
+      <li>Click on <b>Application Server</b>, then <em><b>JVM Settings</b></em> tab and finally the <em><b>Path Settings</b></em> tab</li> 
+      <li>In the <b>System Classpath</b> box enter in the first line fully qualified path to the Log4J archive, hit enter to go to the next line and then add the fully qualified path to the directory that contains the Log4J settings file</li> 
+      <li>Click on the <b>Save</b> button</li> 
+      <li>Restart the <b>Glassfish</b> domain</li> 
+      <li>Check if the Log4J statements are now available</li> 
+     </ol> <h4><a name="FaqCongifureLog4J-NotesandAdjustments"></a>Notes and Adjustments</h2> <p>Because the System Classpath contains fully qualified paths you can have the Log4J archive and the Log4J settings file anywhere you like. You may want to consider the following:</p> 
+     <ol> 
+      <li>You can use *$ 
+       <div class="error">
+        <span class="error">Unknown macro: {as.install*}</span> 
+       </div> <p> to reference the Glassfish installation directory so that the installation directory can be relocated</p></li> 
+      <li>If you are using multiple installations it is probably best to place the <em><b>Log4J settings inside the domain</b></em> directory so that you can adjust it for each domain</li> 
+      <li>Or you could use a Glassfish property so that at least the output file (if used) is placed inside its own domain</li> 
+      <li>Log4J console output may be lost so you a file or other type of appender</li> 
+     </ol> <p>Have fun - Andreas Schaefer</p> 
+     <hr> 
+     <hr> 
+     <div class="tabletitle"> 
+      <a name="comments"> <h4>Comments:</h2> </a> 
+     </div> 
+     <table border="0" width="100%"> 
+      <tbody>
+       <tr> 
+        <td> <a name="comment-20877872"></a> <font class="smallfont"><p>These instructions pertain to Glassfish v2.1 and older, since the System Classpath settings are no longer editable in Glassfish v3 admin.</p> <p>I found an alternative that works in v3 here: nzpcmad.blogspot.com/2009/10/log4j-path-to-properties-file.html</p> <p>The instructions are:</p> <p>For Glassfish, we normally put the log4j.properties in the "domain / config" directory.</p> <p>To enable Glassfish to find it, add the following to the Glassfish JVM settings. Easiest way is to use the Admin console i.e. Application Server / JVM Settings / JVM Options.</p> <p>Add this line:</p> 
+          <div class="code panel" style="border-style: solid;border-width: 1px;">
+           <div class="codeHeader panelHeader" style="border-bottom-width: 1px;border-bottom-style: solid;">
+            <b>Java Opt</b>
+           </div>
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">-Dlog4j.configuration=[file:///$]{com.sun.aas.instanceRoot}/config/log4j.properties</pre> 
+            </div> 
+           </div>
+          </div></font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by james_r at Jul 07, 2010 13:30 
+         </div> </td> 
+       </tr> 
+      </tbody>
+     </table> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 02, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:44.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFish3.1HAOnePager</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GlassFish3.1HAOnePager-GlassFishServerOpenSourceEdition3.1InmemoryReplicationOnePager"></a>GlassFish Server Open Source Edition 3.1 - In-memory Replication One Pager</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#GlassFish3.1HAOnePager-GlassFishServerOpenSourceEdition3.1InmemoryReplicationOnePager">GlassFish Server Open Source Edition 3.1 - In-memory Replication One Pager</a></li> 
+       <li><a href="#GlassFish3.1HAOnePager-1.Introduction">1. Introduction</a></li> 
+       <ul> 
+        <li><a href="#GlassFish3.1HAOnePager-1.1.Project%2FComponentWorkingName%3A">1.1. Project/Component Working Name:</a></li> 
+        <li><a href="#GlassFish3.1HAOnePager-1.2.Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier%3A">1.2. Name(s) and e-mail address of Document Author(s)/Supplier:</a></li> 
+        <li><a href="#GlassFish3.1HAOnePager-1.3.DateofThisDocument%3A">1.3. Date of This Document:</a></li> 
+       </ul> 
+       <li><a href="#GlassFish3.1HAOnePager-2.ProjectSummary">2. Project Summary</a></li> 
+       <ul> 
+        <li><a href="#GlassFish3.1HAOnePager-2.1.ProjectDescription%3AInmemoryReplicationinGlassFishServerOpenSourceEdition3.1">2.1. Project Description: In memory Replication in GlassFish Server Open Source Edition 3.1</a></li> 
+        <li><a href="#GlassFish3.1HAOnePager-2.2.RisksandAssumptions%3A">2.2. Risks and Assumptions:</a></li> 
+       </ul> 
+       <li><a href="#GlassFish3.1HAOnePager-3.ProblemSummary">3. Problem Summary</a></li> 
+       <ul> 
+        <li><a href="#GlassFish3.1HAOnePager-3.1.ProblemArea%3A">3.1. Problem Area:</a></li> 
+        <li><a href="#GlassFish3.1HAOnePager-3.2.Justification%3AWhyisitimportanttodothisproject%3F">3.2. Justification: Why is it important to do this project?</a></li> 
+       </ul> 
+       <li><a href="#GlassFish3.1HAOnePager-4.TechnicalDescription%3A">4. Technical Description:</a></li> 
+       <ul> 
+        <li><a href="#GlassFish3.1HAOnePager-4.1.Details%3A">4.1. Details:</a></li> 
+        <ul> 
+         <li><a href="#GlassFish3.1HAOnePager-4.1.1ReplicationinV2">4.1.1 Replication in V2</a></li> 
+         <li><a href="#GlassFish3.1HAOnePager-4.1.2ReplicationinV3">4.1.2 Replication in V3</a></li> 
+         <li><a href="#GlassFish3.1HAOnePager-4.1.3SimilaritiesbetweenV2andV3.1replication">4.1.3 Similarities between V2 and V3.1 replication</a></li> 
+         <li><a href="#GlassFish3.1HAOnePager-4.1.4AssumptionsabouthowBackingStorewillbeused">4.1.4 Assumptions about how BackingStore will be used</a></li> 
+         <li><a href="#GlassFish3.1HAOnePager-4.1.5NoteforBackingStoreproviders">4.1.5 Note for BackingStore providers</a></li> 
+         <li><a href="#GlassFish3.1HAOnePager-4.1.6NoteforContainers">4.1.6 Note for Containers</a></li> 
+        </ul> 
+        <li><a href="#GlassFish3.1HAOnePager-4.2.Bug%2FRFENumber%28s%29%3A">4.2. Bug/RFE Number(s):</a></li> 
+        <li><a href="#GlassFish3.1HAOnePager-4.3.InScope%3A">4.3. In Scope:</a></li> 
+        <li><a href="#GlassFish3.1HAOnePager-4.4.OutofScope%3A">4.4. Out of Scope:</a></li> 
+        <li><a href="#GlassFish3.1HAOnePager-4.5.Interfaces%3A">4.5. Interfaces:</a></li> 
+       </ul> 
+       <li><a href="#tab:BackingStoreFactory">BackingStoreFactory</a></li> 
+       <li><a href="#tab:-BackingStore-">"BackingStore"</a></li> 
+       <li><a href="#tab:-StoreEntry">@StoreEntry</a></li> 
+       <li><a href="#tab:-Attribute">@Attribute</a></li> 
+       <li><a href="#tab:-Version">@Version</a></li> 
+       <ul> 
+        <li><a href="#GlassFish3.1HAOnePager-4.6.DocImpact%3A">4.6. Doc Impact:</a></li> 
+        <li><a href="#GlassFish3.1HAOnePager-4.7.Admin%2FConfigImpact%3A">4.7. Admin/Config Impact:</a></li> 
+        <li><a href="#GlassFish3.1HAOnePager-4.8.HAImpact%3A">4.8. HA Impact:</a></li> 
+        <li><a href="#GlassFish3.1HAOnePager-4.9.I18N%2FL10NImpact%3A">4.9. I18N/L10N Impact:</a></li> 
+        <li><a href="#GlassFish3.1HAOnePager-4.10.Packaging%2CDelivery%26Upgrade%3A">4.10. Packaging, Delivery &amp; Upgrade:</a></li> 
+        <ul> 
+         <li><a href="#GlassFish3.1HAOnePager-4.10.1.Packaging">4.10.1. Packaging</a></li> 
+         <li><a href="#GlassFish3.1HAOnePager-4.10.2.Delivery">4.10.2. Delivery</a></li> 
+         <li><a href="#GlassFish3.1HAOnePager-4.10.3.UpgradeandMigration%3A">4.10.3. Upgrade and Migration:</a></li> 
+        </ul> 
+        <li><a href="#GlassFish3.1HAOnePager-4.11.SecurityImpact%3A">4.11. Security Impact:</a></li> 
+        <li><a href="#GlassFish3.1HAOnePager-4.12.CompatibilityImpact">4.12. Compatibility Impact</a></li> 
+        <ul> 
+         <li><a href="#GlassFish3.1HAOnePager-4.12.1ChangestoBackingStoreinterface">4.12.1 Changes to BackingStore interface</a></li> 
+         <li><a href="#GlassFish3.1HAOnePager-4.12.2Changestoavailabilityserviceelementindomain.xml">4.12.2 Changes to availability-service element in domain.xml</a></li> 
+         <li><a href="#GlassFish3.1HAOnePager-4.12.3ImpactonUpgradetool">4.12.3 Impact on Upgrade tool</a></li> 
+        </ul> 
+        <li><a href="#GlassFish3.1HAOnePager-4.13.Dependencies%3A">4.13. Dependencies:</a></li> 
+        <li><a href="#GlassFish3.1HAOnePager-4.14.TestingImpact%3A">4.14. Testing Impact:</a></li> 
+       </ul> 
+       <li><a href="#GlassFish3.1HAOnePager-5.ReferenceDocuments%3A">5. Reference Documents:</a></li> 
+       <li><a href="#GlassFish3.1HAOnePager-6.Schedule%3A">6. Schedule:</a></li> 
+       <ul> 
+        <li><a href="#GlassFish3.1HAOnePager-6.1.ProjectedAvailability%3A">6.1. Projected Availability:</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="GlassFish3.1HAOnePager-1.Introduction"></a>1. Introduction</h1> <h4><a name="GlassFish3.1HAOnePager-1.1.Project%2FComponentWorkingName%3A"></a>1.1. Project/Component Working Name: </h2> <p>In memory Replication in GlassFish Server Open Source Edition 3.1</p> <h4><a name="GlassFish3.1HAOnePager-1.2.Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier%3A"></a>1.2. Name(s) and e-mail address of Document Author(s)/Supplier:</h2> <p>Mahesh Kannan<br> &lt;p&gt;Mahesh.Kannan@Oracle.Com&lt;/p&gt;</p> <h4><a name="GlassFish3.1HAOnePager-1.3.DateofThisDocument%3A"></a>1.3. Date of This Document:</h2> <p>May 15 2010</p> <h4><a name="GlassFish3.1HAOnePager-2.ProjectSummary"></a>2. Project Summary</h1> <h4><a name="GlassFish3.1HAOnePager-2.1.ProjectDescription%3AInmemoryReplicationinGlassFishServerOpenSourceEdition3.1"></a>2.1. Project Description: In memory Replication in GlassFish Server Open Source Edition 3.1</h2> <p> GlassFish V2 relied on session state persistence feature to provide high availability of session states (HTTP and EJB) by enabling containers to persist HTTP or EJB session states to a persistent 'store' that can survive GlassFish instance faiures. In order to be able to interact with a variety of physical stores (like file system, in memory, HADB etc.) GlassFish V2 defined an SPI called BackingStore SPI. The SPI defined a set of classes that a store provider must implement (SPI) and also a set of APIs for the containers to use. This allowed containers to persist the session states to a variety of BackingStores without worrying about the actual physical store. One such BackingStore was in memory replication that replicated the session states to an another GlassFish instance so that session states are available even in the presence of instance failure.</p> <p> In V3.1, replication module has been redesigned to provide some more improvements over V2 implementation. First of all, it is an OSGi module just like many other modules in V3. Secondly, it internally uses a consistent hash algorithm to pick a replica instance within a cluster of instances. This allows the replication module to locate the replica (or find the replicated data) in an easy manner when the contianers need to retrieve the data. The replication module allows any Serializable POJOs to be replicated (and retrieved) in a cluster of GlassFish instances. This means that the module can be used to provide availability of any POJOs and not just HTTP and Stateful EJBs.</p> <p> Basically, the replication layer provides a set of APIs to (a) save, (b) retrieve, (c) update and (d) delete data (some POJO). The save method is implemented by replicating the data to another instance in the cluster. In V3.1, it internally uses a consistent hash algorithm to pick a replica instance within a cluster of instances. The retrieve operation is implemented by locating the replica and then pulling the data (POJO) from the replica. </p> <p> The rest of the document will describe the various details of in memory implementation module.</p> <h4><a name="GlassFish3.1HAOnePager-2.2.RisksandAssumptions%3A"></a>2.2. Risks and Assumptions:</h2> <p>For V3.1, we will continue to use the BackingStore SPI that was approved for the Sailfin release. The SPI allows our containers to save states (HTTP Session / Stateful EJBs) to avariety of physical stores (like Database, Filesystem, InMemory replication etc.)</p> <p>It is assumed that GMS will provide the APIs for the following:</p> <p>1. APIs for sending and receiving serialized data (byte[]) to a specific target instance / all members in the cluster</p> <p>2. APIs for receiving events about health of members in the cluster. More specifically, the HA module will rely on the existence of JOIN_AND_READY, MEMBER_FAILED, CLUSTER_STOP and CLUSTER_START events. Also, the JOIN_AND_READY event can additionally specify a sub-event (REJOIN) to indicate that the member has rejoined the group after leaving the group for a brief period of time. This sub event is typically generated when an instance is restarted (and joins the cluster) even before GMS could detect the failure. More details can be found the GMS one pager.</p> <p>3. It is assumed that, for this release, we cannot guarentee availability of session state in the event of multiple (more than one) server failures. This is because, the replication module will replicate the data to only one replica instance and hence may not be able to recover state in the presence of more than one server failure.</p> <p>4. Metro HA (particularly reliable messaging) requires larger payloads. While the exact payload sizes are application dependent, it is assumed that GMS messaging layer can support these higher payload sizes.</p> <p>5. For better performance, it is expected that the web container sets a cookie called 'replicaLocation' in the response. This cookie tells where the replica resides. It is assumed that the GlassFish LB plugin will - after a failure - route the request to the node indicated by the cookie. </p> <p>6. The 'replicaLocation' cookie approach can be taken by EJB container as well, but this is NOT planned for this release (as this requires more work in the ORB, request/response interceptors etc.)</p> <h4><a name="GlassFish3.1HAOnePager-3.ProblemSummary"></a>3. Problem Summary</h1> <h4><a name="GlassFish3.1HAOnePager-3.1.ProblemArea%3A"></a>3.1. Problem Area:</h2> <h4><a name="GlassFish3.1HAOnePager-3.2.Justification%3AWhyisitimportanttodothisproject%3F"></a>3.2. Justification: Why is it important to do this project?</h2> <p>GlassFish 2.x ensured HTTP and EJB session state availability by providing a in memory replication module. GlassFish 3.0 did not have the necessary clustering infrastructure to provide the above HA feature. Since, clustering support will be available in GlassFish 3.1, we need a light weight, open source implementation of in-memory replication module.</p> <h4><a name="GlassFish3.1HAOnePager-4.TechnicalDescription%3A"></a>4. Technical Description:</h1> <p> Similar to V2.x, the general approach is to replicate session state from each instance in a cluster to a back-up / replica instance. </p> <p> The replication layer itself will use the GMS communication APIs for transporting the data. It is assumed that GMS will use the appropriate transport APIs (like Grizzly APIs) to send the data.</p> <p> The current plan is to leverage GMS for cluster group membership services including things like initial bootstrapping/startup and various cluster shape changes including instances being stopped and re-started, instances failing, new instances being added to the cluster, etc. Its is assumed that ReplicaSelector will register itself with GMS to know the current 'alive' members so that it can pick an 'alive' replica.</p> <p> The plan is to have as close to zero configuration as possible. Availability configuration will continue to work as it has for previous HA enabled releases. The existing persistence-type ("replicated") will continue to be supported. This will allow QA and performance tests to run as they do with V2.x.</p> <h4><a name="GlassFish3.1HAOnePager-4.1.Details%3A"></a>4.1. Details:</h2> <p> For the rest of the document we will use the following notations:</p> 
+     <ol> 
+      <li>n1, n2, n3 denote the instances in the cluster. The terms nodes and instances will be used interchangeably.</li> 
+      <li>s1, s2, s2, s3 are used to denote session ids and k1, k2 and k3 will be used to denote keys (of any object that might be persisted in the store).</li> 
+      <li>The terms keys, ids and session ids - in this document - mean the same.</li> 
+     </ol> <p> <b>Note: We will continue to use the same set of classes and interfaces that ASARCH approved for Sailfin release.</b></p> <h4><a name="GlassFish3.1HAOnePager-4.1.1ReplicationinV2"></a>4.1.1 Replication in V2</h3> <p> Let us assume that the loadbalancer routes sessions s1, s2 and s3 to node n1. In V2, n1 would have replicated s1, s2 and s3 to n2. This is because it followed a 'buddy' replication scheme wherein a instance will replicate all its data just to its neighboring instance.</p> <p> Now, lets say that n1 fails and the loca balancer routes s1 to n2 and s2 and s3 to n3. Obviously, when the container(s) in both instances will ask the BackingStore to 'load' the data. The load request for s1 can be satisfied 'locally' by n2 as originally n1 replicated s1 to n2. However, the load requests for s2 and s3 cannot be satifisfied 'locally' by n3. It will have to send out a 'broadcast' query to the entire cluster to retrieve the dat from n2. We have seen that this approach leads to severe performance problems as, under heavy load, (a) there will be a lot of these broadcast requests and (b) the instance that has the replica will also has to serve extra data to the requesting instances.</p> <p> V2.1 used a bunch of classes like Metadata, SimpleMetadata, CompositeMetadata and BatchMetadata to replicate / persist data in to an instance of BackingStore. This meant that the BackingStore implementations needed to understand these objects to correctly store / replicate data. Also, it was difficult to support a new container as addition of new containers typically meant new artifacts that must be understood by &lt;bold&gt;each&lt;/bold&gt; BackingStore implementations.</p> <h4><a name="GlassFish3.1HAOnePager-4.1.2ReplicationinV3"></a>4.1.2 Replication in V3</h3> <p> Again, assume that the loadbalancer routes sessions s1, s2 and s3 to node n1. In V3, n1 might replicate s1 to n2 and s2, s3 to n3. This is because it uses a consistent hash algorithm to map a key to an (available) instance. The reason why this is called a consistent hash is that, the function yields the same (consistent) instance name when computed from any instance in the cluster. In V3, instead of using a consistent hash function directly, the replication module will define an interface called ReplicaSelector. The input to the ReplicaSelector will be the key and the groupname and the ReplicaSelector will return an instance name (that is alive witin the specified group) to which the data must be replicated. Each backup instance will store the replicated data in-memory.</p> <p> Project SHOAL will provide the in-memory replication implementation. Project shoal will provide a class called DataStore that supports all methods of GlassFish BackingStore interface. DataStore will use GMS under the covers to join a group and to replicate data (using GMS send API). The reasons for doing it in project shoal are:</p> 
+     <ol> 
+      <li>It ensures that the in-memory replication module is built using clean abstractions instead of having direct dependencies on container modules.</li> 
+      <li>Also, it allows for independent testing without any need for any GlassFish cluster.</li> 
+     </ol> <p> The main interfaces that are used by the Containers are (a) BackingStoreFactory, (b) BackingStore and (c) BatchBackingStore. BackingStoreFactory is used to create the other two stores. BatchBackingStore is used only by the EJB Contianer. BackingStore will be used by Web, EJB and Metro.</p> <p> In Sailfin, we took a different approach. The BackingStore SPI was extended by defining four new annotations. The most important annotation being @StoreEntry and @Attribute annotations. This allowed containers to define any POJO that contained the data to be persisted. The POJOs are annotated with these annotations which allowed containers to describe each attribute of the POJO. Here is an example:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@StoreEntry 
+public class PersistentState {
+  @Attribute(name="id")
+  public String getId() {...}
+  
+  @Attribute(name="version")
+  public long getVersion() {...}
+
+  @Attribute(name="state")
+  public byte[] getState() {...}
+
+  @Attribute(name="data1")
+  public String getData1() {...}
+  
+}</pre> 
+       </div> 
+      </div>
+     </div> <p> Here we have defined a simple POJO called PersistentState and have annotated the getter methods with @Attribute annotation. Lets say that a container wants to store the above in a BackingStore. The container first calls BackingStoreFactory.createBackingStore() and passes PersistetState.class as one of the parameters. This allows the BackingStore implementation class to use reflection APIs to examine the "Attributes" of this POJO. A database implementation might use these "Attributes" to create a table whose field names are the attribute names. Currently, only "Attributes" that are primitives, primitive wrappers, String and byte[] types can be annotated with @Attribute.</p> <p> Once the POJO is defined, it must be run through an annotation processor that is defined in ha-apt module. This will create a couple of classes:</p> 
+     <ol> 
+      <li>For each POJO named X it will generate a sub class named X_Sub. This class will override all the getters and setters in the parent class (X) whose getters are marked with @Attribute. This allows the underlying physical store to determine which attributes are 'dirty' and perform an efficient update.</li> 
+      <li>For each POJO named X it will generate a class called X_. This can be used for creating portable queries. Since GlassFish 3.1 containers do not perform any queries, we will not be implementing any query support in this release.</li> 
+     </ol> <p> In V3.1, we will let the containers to use any POJO object that are annotated with @StoreEntry and @Attribute. In fact, it will be easy for the containers to annotate the V2 artificats (like Metadata, WebMetada, SimpleMetadata, SFSBBeanState etc.) </p> <p> These genertaed sub class POJOs are used in BackingStore operations. The generated sub class X_Sub (or PersistentState_Sub) will contain (generated) methods that allows dirty detection (meaning if a setter was called on, say attribute 'y', then the generated sub class remembers that the attribute y is dirty. This allows, say a database implementation, to efficiently perform updates).</p> <h4><a name="GlassFish3.1HAOnePager-4.1.3SimilaritiesbetweenV2andV3.1replication"></a>4.1.3 Similarities between V2 and V3.1 replication</h3> 
+     <ol> 
+      <li>The way HA feature is enabled / disabled remains the same</li> 
+      <li>BackingStoreFactory is still used to create BackingStores for a particular persistence type</li> 
+      <li>BackingStore APIs remain the same between V2 and V3.1. There are a few more methods in this class but are required only for Sailfin</li> 
+     </ol> <h4><a name="GlassFish3.1HAOnePager-4.1.4AssumptionsabouthowBackingStorewillbeused"></a>4.1.4 Assumptions about how BackingStore will be used</h3> 
+     <ol> 
+      <li>It is assumed (for this release) that a BackingStore will be used to persist a single type of object (that is if the store was initialized with a V.class then store.save() will beused to save only objects of type V).</li> 
+      <li>Lets say that instances inst1 and inst2 are alive and have replicated some data. Now when instance inst3 comes up, the implementation must ensure that no data is replicated to inst3 until inst3 is in some 'operational' state.</li> 
+     </ol> <h4><a name="GlassFish3.1HAOnePager-4.1.5NoteforBackingStoreproviders"></a>4.1.5 Note for BackingStore providers</h3> <p> Ensure that the implementation class is annotated with @Service like:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Service(name="replication")
+     public class ReplicatedBackingStoreFactory {
+         .......       
+     }</pre> 
+       </div> 
+      </div>
+     </div> <p> Also, (to lazily load the actual BackingStoreFactory) write a separate OSGi module (V3 module) that implements V3 Startup interface that registers a proxy BackingStoreFactory for the supported persistence type as follows:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">public ProxyForReplicationBackingStoreFactory
+     implements Startup, BackingStoreFactory {
+ 
+     public Startup.Lifecycle getLifecycle() {
+       BackingStoreFactoryRegistry.register("replication", this);
+       return Startup.Lifecycle.SERVER;
+     }
+ 
+     //Other BackingStoreFactory methods...
+  }</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="GlassFish3.1HAOnePager-4.1.6NoteforContainers"></a>4.1.6 Note for Containers</h3> <p> In V3.1 an instance of BackingStoreFactory can be obtained as follows:<br> Habitat habit = ....;<br> BackingStoreFactory factory = habitat.getComponent(BackingStoreFactory.class, type);<br> OR<br> BackingStoreFactory factory = BackingStoreFactoryRegistry.getBackingStoreFactory(type);<br> Where type is the persistence type (like "file", "replication", "db", "coherence" etc. )</p> <h4><a name="GlassFish3.1HAOnePager-4.2.Bug%2FRFENumber%28s%29%3A"></a>4.2. Bug/RFE Number(s):</h2> <h4><a name="GlassFish3.1HAOnePager-4.3.InScope%3A"></a>4.3. In Scope:</h2> <p> This project will deal will replication of HTTP Sessions and Stateful Session EJBs and some Metro artifacts.</p> <h4><a name="GlassFish3.1HAOnePager-4.4.OutofScope%3A"></a>4.4. Out of Scope:</h2> 
+     <ol> 
+      <li>The project deals with providing availability of sessions (both EJB and HTTP) in the presence of one instance failure</li> 
+      <li>In the case of multiple failures, it is assumed that the time between successive failures are large enough for the sub-system to replicate the sessions to another replica instance</li> 
+      <li>We will not support multiple replicas for this release.&lt;/p&gt;</li> 
+     </ol> <h4><a name="GlassFish3.1HAOnePager-4.5.Interfaces%3A"></a>4.5. Interfaces:</h2> <p><b>Note: We will continue to use the same set of classes and interfaces that ASARCH approved for Sailfin release.</b></p> 
+     <div class="sun-tabs"> 
+      <div id="sun-tab:BackingStoreFactory" class="sun-tab"> 
+       <h4 id="tab:BackingStoreFactory">BackingStoreFactory</h1> 
+       <div class="sun-tab-content"> 
+        <div class="code panel" style="border-width: 1px;">
+         <div class="codeContent panelContent"> 
+          <div id="root"> 
+           <pre class="theme: Confluence; brush: java; gutter: false">/**
+ * A factory for creating BackingStore(s). Every provider must provide an
+ * implementation of this interface.
+ *
+ * The &lt;code&gt;createBackingStore(env)&lt;/code&gt; method is called typically during
+ * container creation time. 
+ *
+ * The &lt;code&gt;createBatchBackingStore()&lt;/code&gt; method will be called whenever
+ * the container decides to save a set of states that belong different
+ * applications.
+ *
+ */
+@Contract
+public interface BackingStoreFactory {
+
+    /**
+     * This method is called to create a BackingStore that will store objects
+     * of type vClazz and keys of type kClazz.
+     */
+    public &lt;K, V&gt; BackingStore&lt;K, V&gt; createBackingStore(
+            String storeName, Class&lt;K&gt; keyClazz, Class&lt;V&gt; vClazz, Properties env)
+            throws BackingStoreException;
+
+    /**
+     * This method is called to store a set of Objects objects atomically.
+     */
+    public BatchBackingStore createBatchBackingStore(Properties env)
+            throws BackingStoreException;
+
+}</pre> 
+          </div> 
+         </div>
+        </div> 
+       </div> 
+      </div> 
+      <div id="sun-tab:-BackingStore-" class="sun-tab"> 
+       <h4 id="tab:-BackingStore-">"BackingStore"</h1> 
+       <div class="sun-tab-content"> 
+        <div class="code panel" style="border-width: 1px;">
+         <div class="codeContent panelContent"> 
+          <div id="root"> 
+           <pre class="theme: Confluence; brush: java; gutter: false">/**
+ * An object that stores a objects (of type V) against an id (of type K). This class defines the
+ * set of operations that a container could perform on a store.
+ *
+ * The store implementation must be thread safe.
+ * 
+ */
+public abstract class BackingStore&lt;K, V&gt; {
+
+    protected String getStoreName() {...}
+
+    protected void initialize(String storeName, Class&lt;K&gt; keyClazz, Class&lt;V&gt; vClazz, 
+    
+    public abstract V load(K key, long version) throws BackingStoreException;
+
+    public abstract void save(K key, V value, boolean isNew) throws BackingStoreException;
+
+    public abstract void remove(K key) throws BackingStoreException;
+
+    public abstract void updateTimestamp(K key, long time) throws BackingStoreException;
+
+    public abstract int removeExpired(long idleForMillis)
+             throws BackingStoreException;
+
+    public abstract int size() throws BackingStoreException;
+
+    //Typically called during appserver shutdown 
+    public void close()
+        throws BackingStoreException {     
+    }
+
+    //Typically called during app undeployment.
+    public abstract void destroy() throws BackingStoreException;
+
+}</pre> 
+          </div> 
+         </div>
+        </div> 
+       </div> 
+      </div> 
+     </div> 
+     <fieldset class="hidden parameters"> 
+      <input type="hidden" id="sunTabsUpdateHash" value="true"> 
+     </fieldset> 
+     <div class="sun-tabs"> 
+      <div id="sun-tab:-StoreEntry" class="sun-tab"> 
+       <h4 id="tab:-StoreEntry">@StoreEntry</h1> 
+       <div class="sun-tab-content"> 
+        <div class="code panel" style="border-width: 1px;">
+         <div class="codeContent panelContent"> 
+          <div id="root"> 
+           <pre class="theme: Confluence; brush: java; gutter: false">@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+public @interface StoreEntry {
+    String value() default "";
+}</pre> 
+          </div> 
+         </div>
+        </div> 
+       </div> 
+      </div> 
+      <div id="sun-tab:-Attribute" class="sun-tab"> 
+       <h4 id="tab:-Attribute">@Attribute</h1> 
+       <div class="sun-tab-content"> 
+        <div class="code panel" style="border-width: 1px;">
+         <div class="codeContent panelContent"> 
+          <div id="root"> 
+           <pre class="theme: Confluence; brush: java; gutter: false">Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+public @interface Attribute {
+    String value() default "";
+}</pre> 
+          </div> 
+         </div>
+        </div> 
+       </div> 
+      </div> 
+      <div id="sun-tab:-Version" class="sun-tab"> 
+       <h4 id="tab:-Version">@Version</h1> 
+       <div class="sun-tab-content"> 
+        <div class="code panel" style="border-width: 1px;">
+         <div class="codeContent panelContent"> 
+          <div id="root"> 
+           <pre class="theme: Confluence; brush: java; gutter: false">@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+public @interface Version {
+    String value() default "";
+}</pre> 
+          </div> 
+         </div>
+        </div> 
+        <hr> 
+       </div> 
+      </div> 
+     </div> 
+     <fieldset class="hidden parameters"> 
+      <input type="hidden" id="sunTabsUpdateHash" value="true"> 
+     </fieldset> <p>. 4.5.3 Deprecated/Removed Interfaces:<br> List existing public interfaces which will be deprecated or<br> removed by this project.</p> 
+     <ul> 
+      <li>Interface:</li> 
+      <li>Reason for Removal:</li> 
+     </ul> <h4><a name="GlassFish3.1HAOnePager-4.6.DocImpact%3A"></a>4.6. Doc Impact:</h2> <p>Any asadmin commands that set various attributes of availability-service need to change (to not use any hadb configuration)</p> <h4><a name="GlassFish3.1HAOnePager-4.7.Admin%2FConfigImpact%3A"></a>4.7. Admin/Config Impact:</h2> <p>Admin GUI pages that performed availaibility-service configuration need to change (to not use any hadb configuration)</p> <p>Identify changes to GUIs, CLI, agents, plugins...</p> <h4><a name="GlassFish3.1HAOnePager-4.8.HAImpact%3A"></a>4.8. HA Impact:</h2> <p>Depends on GMS for communication APIs<br> Depends on GMS API for obtaining previous cluster state<br> For better performance, after an instance failure, replication layer expects GlassFish LB plugin to understand the 'replicaLocation' cookie and route the request to the instance indicated by this cookie. The cookie will be set by web-container. </p> <h4><a name="GlassFish3.1HAOnePager-4.9.I18N%2FL10NImpact%3A"></a>4.9. I18N/L10N Impact:</h2> <p>Does this proposal impact internationalization or localization?</p> <h4><a name="GlassFish3.1HAOnePager-4.10.Packaging%2CDelivery%26Upgrade%3A"></a>4.10. Packaging, Delivery &amp; Upgrade:</h2> <h4><a name="GlassFish3.1HAOnePager-4.10.1.Packaging"></a>4.10.1. Packaging</h3> <p>The BackingStore SPI classes will be available as an OSGi module and will be available in the web profile as well. The module will also contain a no-op BackingStore implementaiton.</p> <h4><a name="GlassFish3.1HAOnePager-4.10.2.Delivery"></a>4.10.2. Delivery</h3> <p>There will be there jars delivered to support the in memory replication feature. </p> 
+     <ol> 
+      <li>ha-api.jar will contain BackingStore SPI.</li> 
+      <li>shoal-replication.jar will provide the implementation of BackingStore API using memory replication. It will live in shoal project but will have dependency on ha-api which is in glassfish repository</li> 
+     </ol> <h4><a name="GlassFish3.1HAOnePager-4.10.3.UpgradeandMigration%3A"></a>4.10.3. Upgrade and Migration:</h3> 
+     <ul> 
+      <li>What impact will this proposal have on product upgrade and/or migration from prior releases?</li> 
+      <li>Enumerate requirements this project has on upgrade and migration.</li> 
+     </ul> <h4><a name="GlassFish3.1HAOnePager-4.11.SecurityImpact%3A"></a>4.11. Security Impact:</h2> <p>N/A</p> <h4><a name="GlassFish3.1HAOnePager-4.12.CompatibilityImpact"></a>4.12. Compatibility Impact</h2> <h4><a name="GlassFish3.1HAOnePager-4.12.1ChangestoBackingStoreinterface"></a>4.12.1 Changes to BackingStore interface</h3> <p> We have added the following three methods to the BackingStore. These methods were added for Sailfin to support query feature. But, none of te GlassFish 3.1 containers will use these APIs.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">public Collection findByCriteria(Criteria&lt;V&gt; criteria, StoreEntryEvaluator&lt;K, V&gt; eval) {
+        return (Collection) Collections.EMPTY_LIST;
+    }
+
+    public void removeByCriteria(Criteria&lt;V&gt; criteria,
+              StoreEntryEvaluator&lt;K, V&gt; eval) throws BackingStoreException {
+
+    }
+
+     public Collection synchronizeKeys(Criteria&lt;V&gt; criteria, StoreEntryEvaluator&lt;K, V&gt; eval, boolean eagerFetch) {
+        return Collections.EMPTY_LIST;
+    }</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="GlassFish3.1HAOnePager-4.12.2Changestoavailabilityserviceelementindomain.xml"></a>4.12.2 Changes to availability-service element in domain.xml</h3> <p>Listed below are the relevant elements and attributes that were used to configure availability-service. </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;!ELEMENT availability-service
+    (web-container-availability?, ejb-container-availability?,                 
+    jms-availability?, property*)&gt;      
+
+&lt;!ATTLIST availability-service
+    availability-enabled %boolean; "true"
+    ha-agent-hosts CDATA #IMPLIED
+    ha-agent-port CDATA #IMPLIED
+    ha-agent-password CDATA #IMPLIED
+    ha-store-name CDATA #IMPLIED
+    auto-manage-ha-store %boolean; "false"
+    store-pool-name CDATA #IMPLIED
+    ha-store-healthcheck-enabled %boolean; "false"
+    ha-store-healthcheck-interval-in-seconds CDATA "5"&gt;
+
+&lt;!ATTLIST web-container-availability
+    availability-enabled %boolean; #IMPLIED
+    persistence-type CDATA "memory"
+    persistence-frequency %session-save-frequency; #IMPLIED
+    persistence-scope %session-save-scope; #IMPLIED
+    persistence-store-health-check-enabled %boolean; "false"
+    sso-failover-enabled %boolean; "false"
+    http-session-store-pool-name CDATA #IMPLIED&gt;
+
+&lt;!ATTLIST ejb-container-availability
+    availability-enabled %boolean; #IMPLIED
+    sfsb-ha-persistence-type CDATA "ha"
+    sfsb-persistence-type CDATA "file"
+    sfsb-checkpoint-enabled %boolean; #IMPLIED
+    sfsb-quick-checkpoint-enabled %boolean; #IMPLIED
+    sfsb-store-pool-name CDATA #IMPLIED&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>The current plan is to retain the same V2 availability-service element. The HADB related attributes will not be used by V3. The plan is to mark the corresponding config attributes with @Deprecated </p> <h4><a name="GlassFish3.1HAOnePager-4.12.3ImpactonUpgradetool"></a>4.12.3 Impact on Upgrade tool</h3> <p> Since clustering was not in Glassfish v3, there is no upgrade from v3 to v3.1.</p> <p> Upgrade from glassfish v2 clustering applications to glassfish v3.1 is also NOT needed since we will retain the same availability-service elements from v2 domain.xml</p> <h4><a name="GlassFish3.1HAOnePager-4.13.Dependencies%3A"></a>4.13. Dependencies:</h2> <p> Replication module depends heavily on GMS module for the following:</p> 
+     <ol> 
+      <li>Various cluster shape change notification events</li> 
+      <li>GMSHandle.send() APIs to transmit replication messages (both to a specific target and broadcast to group). Note that replication module doesn't use any transport APIs to transmit or receive data. This is done under the covers by GMS. In V3.1 GMS will use Grizzly under the covers as transport layer.</li> 
+      <li>API to register event handlers for receiving messages.</li> 
+      <li>The ability to get the previous view of the cluster when a node rejoins a cluster (or when a node fails).</li> 
+     </ol> <p> In terms of maven dependencies, </p> 
+     <ol> 
+      <li>ha-api.jar (contains SPI classes) will not depend on anything else.</li> 
+      <li>shoal-replication.jar (contains in memory implementation classes) will depend on ha-api.jar</li> 
+     </ol> <h4><a name="GlassFish3.1HAOnePager-4.14.TestingImpact%3A"></a>4.14. Testing Impact:</h2> <p> In V2, GlassFish used buddy replication to replicate data. Some of the SIFT tests might have been coded for this specific way of replication. For example, after sending the requests to instance1, the tests may expect some log messages to appear in the instance2 server.log. These tests need to change. One approach is to rely on the 'replicaLocation' cookie (which tells the replica location)</p> <h4><a name="GlassFish3.1HAOnePager-5.ReferenceDocuments%3A"></a>5. Reference Documents:</h1> <p> <a href="GlassFishv3.1HA.html" title="GlassFishv3.1HA">HA Milestone doc</a> </p> <p> <a href="http://fisheye4.atlassian.com/browse/glassfish-svn/trunk/v3/ha/ha-api/src/main/java/org/glassfish/ha/store/spi">HA BackingStore classes (fisheye)</a></p> <p> <a href="GlassFishv3.1GMS.html" title="GlassFishv3.1GMS">GMS Milestone doc</a></p> <p> Metro One Pager</p> <h4><a name="GlassFish3.1HAOnePager-6.Schedule%3A"></a>6. Schedule:</h1> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Desired Improvement </th> 
+         <th class="confluenceTh"> Priority </th> 
+         <th class="confluenceTh"> Comments </th> 
+         <th class="confluenceTh"> Issue # </th> 
+         <th class="confluenceTh"> Milestone </th> 
+         <th class="confluenceTh"> Eng Response </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> HA-1 </td> 
+         <td class="confluenceTd"> Session Persistence BackingStore SPI port from v2 to 3.1 workspace </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Port V2 SPI functionality. </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/12223">12223 </a> </td> 
+         <td class="confluenceTd"> Milestone 1 </td> 
+         <td class="confluenceTd"> YES </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> HA-2 </td> 
+         <td class="confluenceTd"> Implement Replication Store in Project Shoal providing save(), remove() operations </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Allows session data to be persisteed and removed from store </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/12224">12224 </a> </td> 
+         <td class="confluenceTd"> Milestone 2 </td> 
+         <td class="confluenceTd"> YES </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> HA-3 </td> 
+         <td class="confluenceTd"> Implement load() operation to retrieve state from shoal replication store </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Allows session data to be retrieved from ReplicationStore </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/12228">12228 </a> </td> 
+         <td class="confluenceTd"> Milestone 3 </td> 
+         <td class="confluenceTd"> YES </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> HA-4 </td> 
+         <td class="confluenceTd"> Support load() and save() operations on a restarted instance </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Allows session data to be retrieved from ReplicationStore after a server restart </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/12232">12232 </a> </td> 
+         <td class="confluenceTd"> Milestone 4 </td> 
+         <td class="confluenceTd"> YES </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> HA-5 </td> 
+         <td class="confluenceTd"> Implement HA BackingStore SPI using shoal Replication store </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Allows Containers to interact with the shoal Replication store using the SPI </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/12225">12225 </a> </td> 
+         <td class="confluenceTd"> Milestone 2 </td> 
+         <td class="confluenceTd"> YES </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> HA-6 </td> 
+         <td class="confluenceTd"> Implement a No-Op HA BackingStore SPI </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Allows Metro to operate outside of GlassFish. Other containers may also use this approach when run in non-cluster mode. </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/12226">12226 </a> </td> 
+         <td class="confluenceTd"> Milestone 2 </td> 
+         <td class="confluenceTd"> YES </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> HA-7 </td> 
+         <td class="confluenceTd"> Retain v2.1 HA configuration elements and attributes in domain.xml </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Allows QA test scripts to enable &amp; disable HA </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/12227">12227 </a> </td> 
+         <td class="confluenceTd"> Milestone 2 </td> 
+         <td class="confluenceTd"> YES </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> HA-8 </td> 
+         <td class="confluenceTd"> Improved logging for tracking replication messages </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Provide better logging to track replication commands </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/12229">12229 </a> </td> 
+         <td class="confluenceTd"> Milestone 3 </td> 
+         <td class="confluenceTd"> YES </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> HA-9 </td> 
+         <td class="confluenceTd"> Monitoring Stat Providers </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Provide stats that be used for both monitoring and debugging </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/12233">12233 </a> </td> 
+         <td class="confluenceTd"> Milestone 4 </td> 
+         <td class="confluenceTd"> YES </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> HA-10 </td> 
+         <td class="confluenceTd"> Performance improvement work </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Improve performance </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/12234">12234 </a> </td> 
+         <td class="confluenceTd"> Milestone 4 </td> 
+         <td class="confluenceTd"> YES </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> HA-11 </td> 
+         <td class="confluenceTd"> Implement BatchBackingStore for EJB Container </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Feature parity </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/12230">12230 </a> </td> 
+         <td class="confluenceTd"> Milestone 3 </td> 
+         <td class="confluenceTd"> YES </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> HA-12 </td> 
+         <td class="confluenceTd"> Implement Local caching of state for passivated EJB </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Feature parity. Also, ensures that passivated EJB's state is available when a replica instance crashes </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/12231">12231 </a> </td> 
+         <td class="confluenceTd"> Milestone 3 </td> 
+         <td class="confluenceTd"> YES </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFish3.1HAOnePager-6.1.ProjectedAvailability%3A"></a>6.1. Projected Availability:</h2> 
+     <ul> 
+      <li>Initially integrated (may not be feature complete): Milestone 2</li> 
+      <li>Feature complete (ready for handoff to QA): Milestone 4</li> 
+      <li>At production quality level: Final release</li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 09, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

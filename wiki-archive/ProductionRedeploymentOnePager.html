@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : ProductionRedeploymentOnePager</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="ProductionRedeploymentOnePager-ProductionRedeploymentOnePager"></a>Production Redeployment One Pager</h1> <h4><a name="ProductionRedeploymentOnePager-1.Introduction"></a>1. Introduction</h1> <h4><a name="ProductionRedeploymentOnePager-1.1.Project%2FComponentWorkingName%3A"></a>1.1. Project/Component Working Name:</h2> <p>Production Redeployment</p> <h4><a name="ProductionRedeploymentOnePager-1.2.Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier%3A"></a>1.2. Name(s) and e-mail address of Document Author(s)/Supplier:</h2> <p>Marian Muller : <a href="mailto:marian.muller@serli.com">marian.muller@serli.com</a><br> Pierre-Henry Soulaneix : <a href="mailto:pierre-henry.soulaneix@serli.com">pierre-henry.soulaneix@serli.com</a></p> <h4><a name="ProductionRedeploymentOnePager-1.3.DateofThisDocument%3A"></a>1.3. Date of This Document:</h2> <p>01/09/2013</p> <h4><a name="ProductionRedeploymentOnePager-2.ProjectSummary"></a>2. Project Summary</h1> <h4><a name="ProductionRedeploymentOnePager-2.1.ProjectDescription%3A"></a>2.1. Project Description:</h2> <p>Support production redeployment.</p> <h4><a name="ProductionRedeploymentOnePager-2.2.RisksandAssumptions%3A"></a>2.2. Risks and Assumptions:</h2> <p>This feature is done by external contributor SERLI and there is certain risk associated with external contributors.</p> <h4><a name="ProductionRedeploymentOnePager-3.ProblemSummary"></a>3. Problem Summary</h1> <h4><a name="ProductionRedeploymentOnePager-3.1.ProblemArea%3A"></a>3.1. Problem Area:</h2> <p>To allow users to switch between versions with no loss of service.<br> To allow users to deploy two active versions of the same application.</p> <p>The production redeployment described in this document may interest users:</p> 
+     <ul> 
+      <li>to deploy application versions without loss of service.</li> 
+      <li>when deploying application versions which break session compatibility (so active redeployment cannot be used).</li> 
+      <li>to rollback to the previous version of an application.</li> 
+     </ul> <p>As application versioning does not keep an order relation between versions, production redeployment can be used for both upgrading and rolling back application versions.</p> <h4><a name="ProductionRedeploymentOnePager-3.2.Justification%3A"></a>3.2. Justification:</h2> <p>To provide high availability.</p> <h4><a name="ProductionRedeploymentOnePager-4.TechnicalDescription%3A"></a>4. Technical Description:</h1> <h4><a name="ProductionRedeploymentOnePager-4.1.Details%3A"></a>4.1. Details:</h2> <h4><a name="ProductionRedeploymentOnePager-4.1.1.Expectedbehaviour"></a>4.1.1. Expected behaviour</h3> <p>With production redeployment feature, the user will be able to deploy simultaneously two active versions of the same application. This feature aims at two targets: allow the user to switch from one version to the other without loss of service, and allow clients of the said application to experience a smooth upgrade.</p> <p>When two versions of the same application are enabled concurrently, we distinguish :</p> 
+     <ul> 
+      <li>The 'active' version, which is the most recently enabled. It serves all the new clients.</li> 
+      <li>The 'retired' version, which is the previously deployed (and active) version. It only serves the clients who were already using it.</li> 
+     </ul> <p>When the two versions are enabled concurrently, the incoming requests will have to be routed to the appropriate version, depending on their attached session. The routing will follow a simple set of rules:</p> 
+     <ul> 
+      <li>If the request has no session information, route to the active version.</li> 
+      <li>If the request has session information and a matching session is found in the session manager of one version, use that version.</li> 
+      <li>If the request has session information but no matching session can be found, use the active version.</li> 
+     </ul> <p>The retirement process makes sure that the retired version :</p> 
+     <ul> 
+      <li>only serves the previously existing clients.</li> 
+      <li>is disabled after a given timeout, or when all the attached sessions have expired.</li> 
+      <li>can be rolled back without losing its clients' sessions.</li> 
+     </ul> <p>Production redeployment will be available in the CLI through a set of options for the deployment commands. It will also have to be made available through the GUI.<br> Options will be available to configure the production redeployment behavior, especially for specifying the retirement time.</p> <p>The production redeployment will be an optional feature of the deployment commands (CLI options will be optional). Omitting the production redeployment options will result in experiencing the previous existing behavior.</p> <p>Please see this <a href="ProductionRedeploymentDesignSpec.html" title="ProductionRedeploymentDesignSpec">page</a>&nbsp;for more technical details.</p> <h4><a name="ProductionRedeploymentOnePager-4.1.1.1.Clustermode"></a>4.1.1.1. Cluster mode</h4> <p>Production redeployment supports running on a cluster. Deployment commands are replicated to each instance, and each instance manages the two concurrent enabled versions (requests routing, version switching, disabling at the end of retirement). The retirement end time is added to domain.xml, which is available to all instances in the cluster.</p> <p>When an instance is started (e.g. added to the cluster or restarted), the retired version is enabled in the <b>retired</b> state, while the active version is enabled as usual. If this endtime has already been reached when the instance starts, the retired version is simply not enabled.</p> <p>Regarding the end of the retirement period, <font color="red"><em>three options are being considered</em></font>:</p> <p>a. The DAS <b>must be up during the whole process</b>, failing what, expired retired applications would <b>remain enabled and served</b> until DAS comes back up.</p> <p>c. The DAS does not need to be up during the whole process. Thanks to the retirement time in domain.xml, instances know when the retired version should be disabled. Instances can <b>start routing all requests to the active version</b> when the time expires, and wait for the DAS to be back up and to send the disable command, before actually disabling the retired version.</p> <p>d. The DAS does not need to be up during the whole process. Thanks to the retirement time in domain.xml, instances know when the retired version should be disabled. Instances can <b>disable the retired version on their own</b> when the time expires (by running the disable command locally). When the DAS is back up, it sends the disable command to all instances. Instances that have already disabled the version simply ignore the command.</p> <h4><a name="ProductionRedeploymentOnePager-4.1.2.Restrictedfeatures"></a>4.1.2. Restricted features</h3> 
+     <ul> 
+      <li>Any restriction of the application versioning applies to production redeployment (as it is based on versioning).</li> 
+      <li>Production redeployment assumes that both active versions use the same context-root. Otherwise, ensuring continuity of service would not make sense, since clients would have to be aware of the context-root modification. If production redeployment is used with different context-roots, an error occurs.</li> 
+     </ul> <h4><a name="ProductionRedeploymentOnePager-4.1.3.Unsupportedfeatures"></a>4.1.3. Unsupported features</h3> 
+     <ul> 
+      <li>Allowing concurrent activation of a version for test purpose (that is, a version enabled but only available from a specific IP address or using a test-specific context-root).</li> 
+      <li>While an active and a retired versions are enabled concurrently, it is <b>not</b> possible to deploy another version using production redeployment (which would make two retired versions). A user has to explicitely disable the retired version before.</li> 
+     </ul> <h4><a name="ProductionRedeploymentOnePager-4.1.4.Assumptionsonapplications"></a>4.1.4. Assumptions on applications</h3> <p>For production redeployment to be fully fonctional, it is assumed that:</p> 
+     <ul> 
+      <li>The application does not use Message-Driven Beans. The incoming messages could not be routed to a specific version's MDB. Nevertheless, the application may use JMS to send messages, granted that the recipient supports being called by two concurrent versions of the application.</li> 
+      <li>The application does not declare any global-scope JNDI resource. Two concurrent versions could not declare the same global resource.</li> 
+      <li>Any external resource (databases, filesystems, sockets, ...) accessed by the application must support being used by two versions concurrently.</li> 
+     </ul> <p>N.B.: As external resources can not be handled by production redeployment, application authors should make sure that two enabled versions are either compatible regarding the external resources (e.g. same database schema), or use separate resources.</p> <p>N.B.: The application may rely on any technology based on HTTP protocol (e.g. WebSockets, JAX-WS, ...) and benefit from production redeployment's request routing, granted that the technology relies on <b>HTTP sessions</b>.</p> <h4><a name="ProductionRedeploymentOnePager-4.1.5.Usecaseexamples"></a>4.1.5. Use case examples</h3> <h4><a name="ProductionRedeploymentOnePager-4.1.5.1.Contextofexamples"></a>4.1.5.1. Context of examples</h4> <p>For production redeployment to apply, there must be an active version of the application. For instance an application version "foo:1.0" can be deployed using the regular command with versioning:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin deploy --name foo:1.0 foo1.war</pre> 
+       </div> 
+      </div>
+     </div> <p>This version serves all the incoming requests as usual.</p> <p>If production redeployment is used when there is no active version of the application, an error occurs.</p> <h4><a name="ProductionRedeploymentOnePager-4.1.5.2.Upgradeanapplicationwithoutlossofservice"></a>4.1.5.2. Upgrade an application without loss of service</h4> <p>A user wants to upgrade the application "foo:1.0" to "foo:2.0", without loss of service, and to keep "foo:1.0" to serve clients with existing sessions during 5 minutes:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin deploy --name foo:2.0 --retiretimeout=300 foo2.war</pre> 
+       </div> 
+      </div>
+     </div> <p>Both "foo:1.0" and "foo:2.0" are enabled. Although, "foo:1.0" is only available to clients with existing sessions created by "foo:1.0" (it is "retired"). The default version for other clients is "foo:2.0" (the "active" version).<br> After all the attached sessions have expired, or after the given retirement time (e.g. 300 seconds), whichever comes first, "foo:1.0" is automatically disabled.</p> <h4><a name="ProductionRedeploymentOnePager-4.1.5.3.Disablearetiredversion"></a>4.1.5.3. Disable a retired version</h4> <p>A user wants to explicitely disable the version "foo:1.0" (this can happen before the end of the retirement time):</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin disable foo:1.0</pre> 
+       </div> 
+      </div>
+     </div> <p>Only "foo:1.0" is disabled. "foo:2.0" is now used for all the clients, even those with an active session created by "foo:1.0". The routing mechanism is disabled as only one version remains available.</p> <h4><a name="ProductionRedeploymentOnePager-4.1.5.4.Rollbackanapplicationwithoutlossofservice"></a>4.1.5.4. Roll back an application without loss of service</h4> <p>A user wants to roll the application "foo" back to the disabled "foo:1.0", without loss of service, and to keep "foo:2.0" to serve clients with existing sessions during 30 seconds:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin enable --retiretimeout=30 foo:1.0</pre> 
+       </div> 
+      </div>
+     </div> <p>Version "foo:2.0" stays retired to serve existing clients during 30 seconds, while "foo:1.0" becomes the active version again.<br> After all the attached sessions have expired, or after the given retirement time (e.g. 30 seconds), whichever comes first, "foo:2.0" is automatically disabled.</p> <p>Note: the "foo:1.0" version has never been completely disabled during the process of retiring and rolling back, so no sessions are lost.</p> <h4><a name="ProductionRedeploymentOnePager-4.1.5.5.Disableanactiveversion"></a>4.1.5.5. Disable an active version</h4> <p>A user wants to explicitely disable the version "foo:2.0" before the end of the retirement time of "foo:1.0":</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin disable foo:2.0</pre> 
+       </div> 
+      </div>
+     </div> <p><font color="red"><em>Three options are being considered</em></font>:</p> <p>a. The <b>operation is not permitted</b> while two versions are enabled: an error message shows up.</p> <p>b. The active version (e.g. "foo:2.0") is <b>actually disabled</b>, but the retired version (e.g. "foo:1.0") <b>stays on to serve its clients</b> until all sessions complete, unless a positive retiretimeout value is specified, in which case this timeout would be honored.</p> <p>c. Both versions are disabled, OR, the retired version becomes active again.</p> <h4><a name="ProductionRedeploymentOnePager-4.1.5.6.Undeployanapplication"></a>4.1.5.6. Undeploy an application</h4> <p>A user wants to explicitely disable and undeploy the retired version "foo:2.0" (this can happen before the end of the retirement time):</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin undeploy foo:2.0</pre> 
+       </div> 
+      </div>
+     </div> <p>Version "foo:2.0" is disabled and removed, while "foo:1.0" stays the only active version. The routing mechanism is disabled as only one version remains available.</p> <h4><a name="ProductionRedeploymentOnePager-4.1.5.7.Listapplicationswiththeircurrentstate"></a>4.1.5.7. List applications with their current state</h4> <p>A user wants to list all the deployed applications, with their current production redeployment related state.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin list-applications --long
+
+NAME      TYPE        STATUS    EXTENDED_STATUS   RETIRES_ON
+foo:rc1  &lt;web&gt;       disabled
+foo:1.0  &lt;web&gt;       enabled    active
+foo:2.0  &lt;web&gt;       enabled    retired          2012-12-19 03:33:54</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="ProductionRedeploymentOnePager-4.1.6.Rejectedscenarios"></a>4.1.6. Rejected scenarios</h3> <p>Production redeployment relies on application versioning. Therefore, any scenario rejected by application versioning applies here.</p> <h4><a name="ProductionRedeploymentOnePager-4.1.6.1.Multipleretiredversions"></a>4.1.6.1. Multiple retired versions</h4> <p>Production redeployment does not support multiple retired versions. This scenario is rejected.</p> 
+     <ul> 
+      <li>A user has deployed the application "foo:1.0" using the regular command with versioning: 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin deploy --name foo:1.0 foo1.war</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ul> 
+     <ul> 
+      <li>A user wants to upgrade the application "foo:1.0" to "foo:2.0", without loss of service, and to keep "foo:1.0" to serve clients with existing sessions during 10 minutes: 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin deploy --name foo:2.0 --retiretimeout=600 foo2.war</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ul> 
+     <ul> 
+      <li>While "foo:1.0" and "foo:2.0" are already enabled, a user wants to upgrade to "foo:3.0", without loss of service, and to keep "foo:2.0" to serve clients with existing sessions during 15 minutes: 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin deploy --name foo:3.0 --retiretimeout=900 foo3.war</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ul> <p><b>This raises an error, and deployment fails.</b> Production redeployment does not support multiple retired versions.</p> <p>To deploy "foo:3.0" and keep "foo:2.0" as retired, the user has to explicitely disable the already retired version (foo:1.0):</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin disable foo:1.0
+$ asadmin deploy --name foo:3.0 --retiretimeout=900 foo3.war</pre> 
+       </div> 
+      </div>
+     </div> <p>After this command, "foo:3.0" is the active version, and "foo:2.0" is retired. After the given retirement time (e.g. 15 minutes), "foo:2.0" is automatically disabled.</p> <h4><a name="ProductionRedeploymentOnePager-4.1.6.2.Enablingaversionwithdifferentcontextroot"></a>4.1.6.2. Enabling a version with different context-root</h4> <p>Production redeployment cannot be used if the version to be deployed uses a different context-root than the current active version.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin deploy --name foo:1.0 --contextroot foo foo1.war</pre> 
+       </div> 
+      </div>
+     </div> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin deploy --name foo:2.0 --contextroot newfoo --retiretimeout=60 foo2.war
+
+ERROR: active version of application "foo" uses a different context root : foo.</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="ProductionRedeploymentOnePager-4.1.6.3.Enablingaversionwhilenoversionisactive"></a>4.1.6.3. Enabling a version while no version is active</h4> <p>Production redeployment cannot be used if there is not already an active version.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin list-applications --long
+
+NAME      TYPE        STATUS    EXTENDED_STATUS   RETIRES_ON
+foo:1.0  &lt;web&gt;       disabled
+foo:2.0  &lt;web&gt;       disabled</pre> 
+       </div> 
+      </div>
+     </div> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin enable --retiretimeout=60 foo:2.0
+
+ERROR: there is no active version of application "foo".</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="ProductionRedeploymentOnePager-4.2Domain.xml"></a>4.2 Domain.xml</h2> <p>An attribute will be added to the application-ref element : retirement-time. This attribute will hold the date and time when the retirement period of a version ends.</p> <p>An example of application version stored with its retirement period end time in domain.xml:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;application-ref ref="foo:1.0" virtual-servers="server" retirement-time="2012-12-19 03:40:29"&gt;&lt;/application-ref&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>The date and time of the retirement period end are computed using the retirement timeout and the current date/time when enabling a version.</p> <h4><a name="ProductionRedeploymentOnePager-4.3.Bug%2FRFENumber%28s%29%3A"></a>4.3. Bug/RFE Number(s):</h2> <p>None.</p> <h4><a name="ProductionRedeploymentOnePager-4.4.InScope%3A"></a>4.4. In Scope:</h2> <p>Support concurrent deployment of two active version.</p> <p>Routing of the incoming requests to the appropriate version.</p> <p>Only standalone web applications (.war) are supported by production redeployment.</p> <h4><a name="ProductionRedeploymentOnePager-4.5.OutofScope%3A"></a>4.5. Out of Scope:</h2> <p>The application availability is only guaranteed on the HTTP layer, that is for incoming HTTP requests only.</p> <p>Enterprise applications (.ear) are not supported by production redeployment.</p> <h4><a name="ProductionRedeploymentOnePager-4.6.Interfaces%3A"></a>4.6. Interfaces:</h2> <h4><a name="ProductionRedeploymentOnePager-4.6.1PublicInterfaces"></a>4.6.1 Public Interfaces</h3> <p>The production redeployment is performed by the deploy or the enable command. Instead of disabling the currently enabled version and enabling the new one, both versions are enabled at the same time.</p> <p>Only one option is added to the deploy and enable commands to trigger production redeployment:</p> 
+     <ul> 
+      <li>The&nbsp;--retiretimeout=<em>n</em> option tells GlassFish to use production redeployment instead of the usual deployment. This means the current active version will NOT be disabled right now, and the version being deployed/enabled will be enabled concurrently. The version being deployed will be the new "active" version. The previous version will be the "retired" version, and will only be available to clients with an active session created by the said version, for the given retirement time (in seconds), or until there are no longer any session attached to this version (when <em>n</em> equals -1).</li> 
+     </ul> 
+     <ul> 
+      <li>Interface: deploy</li> 
+      <li>Comment Option</li> 
+      <li>Comment: Add the&nbsp;--retiretimeout option to trigger production redeployment instead of the usual redeployment, and to configure the retirement time.</li> 
+     </ul> 
+     <ul> 
+      <li>Interface: enable</li> 
+      <li>Comment: Add the&nbsp;--retiretimeout option to trigger production redeployment instead of the usual redeployment, and to configure the retirement time.</li> 
+     </ul> 
+     <ul> 
+      <li>Commands undeploy and disable will have to be modified to behave correctly regarding production redeployment. This means they should handle the cases of disabling/undeploying a version whether it is active or a retired.</li> 
+     </ul> 
+     <ul> 
+      <li>Interface: list-applications</li> 
+      <li>Comment: When used with&nbsp;--long option, display the production redeployment related informations : the version state (active or retired) and the retirement end time.</li> 
+     </ul> 
+     <ul> 
+      <li>When the server is restarted, if there were retired versions which did not reach their retirement end time, they are loaded and enabled in the retired state until the retirement end time is reached. The active versions are loaded and enabled as usual.</li> 
+     </ul> <h4><a name="ProductionRedeploymentOnePager-4.6.2PrivateInterfaces"></a>4.6.2 Private Interfaces</h3> <p>None.</p> <h4><a name="ProductionRedeploymentOnePager-4.6.3Deprecated%2FRemovedInterfaces%3A"></a>4.6.3 Deprecated/Removed Interfaces:</h3> <p>None.</p> <h4><a name="ProductionRedeploymentOnePager-4.7.DocImpact%3A"></a>4.7. Doc Impact:</h2> <p>Update man pages for the new/modified CLI commands</p> <p>Application Deployment Guide/Developer Guide for new features</p> <h4><a name="ProductionRedeploymentOnePager-4.8.Admin%2FConfigImpact%3A"></a>4.8. Admin/Config Impact:</h2> <p>CLI:</p> 
+     <ul> 
+      <li>the retiretimeout option to be added to deploy and enable commands.</li> 
+      <li>the production redeployment related informations, displayed when using the&nbsp;--long option.<br> GUI:</li> 
+      <li>provide a way to trigger production redeployment through GUI.</li> 
+      <li>provide a way to view production redeployment related informations.</li> 
+     </ul> <h4><a name="ProductionRedeploymentOnePager-4.9.HAImpact%3A"></a>4.9. HA Impact:</h2> <p>No impact.</p> <h4><a name="ProductionRedeploymentOnePager-4.10.I18N%2FL10NImpact%3A"></a>4.10. I18N/L10N Impact:</h2> <p>No impact.</p> <h4><a name="ProductionRedeploymentOnePager-4.11.Packaging%2CDelivery%26Upgrade%3A"></a>4.11. Packaging, Delivery &amp; Upgrade:</h2> <h4><a name="ProductionRedeploymentOnePager-4.11.1.Packaging"></a>4.11.1. Packaging</h3> <p>No impact.</p> <h4><a name="ProductionRedeploymentOnePager-4.11.2.Delivery"></a>4.11.2. Delivery</h3> <p>No impact.</p> <h4><a name="ProductionRedeploymentOnePager-4.11.3.UpgradeandMigration%3A"></a>4.11.3. Upgrade and Migration:</h3> <p>No impact.</p> <h4><a name="ProductionRedeploymentOnePager-4.12.SecurityImpact%3A"></a>4.12. Security Impact:</h2> <p>No impact.</p> <h4><a name="ProductionRedeploymentOnePager-4.13.CompatibilityImpact"></a>4.13. Compatibility Impact</h2> <p>No impact. The new feature will stay optional, so the previous behavior is kept as is.</p> <h4><a name="ProductionRedeploymentOnePager-4.14.Dependencies%3A"></a>4.14. Dependencies:</h2> <h4><a name="ProductionRedeploymentOnePager-4.14.1InternalDependencies"></a>4.14.1 Internal Dependencies</h3> <p>None.</p> <h4><a name="ProductionRedeploymentOnePager-4.14.2ExternalDependencies"></a>4.14.2 External Dependencies</h3> <p>None.</p> <h4><a name="ProductionRedeploymentOnePager-4.15.TestingImpact%3A"></a>4.15. Testing Impact:</h2> <p>Add new tests (automated) to test production redeployment feature.</p> <h4><a name="ProductionRedeploymentOnePager-5.ReferenceDocuments%3A"></a>5. Reference Documents:</h1> <p><a href="ProductionRedeploymentDesignSpec.html" title="ProductionRedeploymentDesignSpec">Production Redeployment Design Spec</a></p> <h4><a name="ProductionRedeploymentOnePager-6.Schedule%3A"></a>6. Schedule:</h1> <h4><a name="ProductionRedeploymentOnePager-6.1.ProjectedAvailability%3A"></a>6.1. Projected Availability:</h2> 
+     <ul> 
+      <li>Initially integrated (may not be feature complete) - 12/19/2012 (EE7 MS3)</li> 
+      <li>Feature complete (ready for handoff to QA) - 1/16/2013 (EE7 MS4)</li> 
+      <li>At production quality level - 3/13/2013 (EE7 MS6)</li> 
+     </ul> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 16, 2013 by 
+<font color="#0050B2">16653</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

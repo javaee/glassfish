@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : SessionTrackingCookieConfig</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Index: ServletContext.java
+===================================================================
+RCS file: /cvs/glassfish/servlet-api/src/jakarta-servletapi-5/jsr154/src/share/javax/servlet/ServletContext.java,v
+retrieving revision 1.7.6.1
+diff -u -r1.7.6.1 ServletContext.java
+--- ServletContext.java 17 Apr 2008 20:15:00 -0000      1.7.6.1
++++ ServletContext.java 5 May 2008 19:23:15 -0000
+@@ -59,6 +59,7 @@
+ import java.io.InputStream;
+ import java.net.MalformedURLException;
+ import java.net.URL;
++import java.util.EnumSet;
+ import java.util.Enumeration;
+ import java.util.Set;
+
+@@ -704,6 +705,80 @@
+      */
+
+     public String getServletContextName();
++
++    /**
++     * Sets the session tracking cookie configuration for this
++     * &lt;tt&gt;ServletContext&lt;/tt&gt;.
++     *
++     * &lt;p&gt;The given &lt;tt&gt;sessionCookieConfig&lt;/tt&gt; replaces any
++     * session tracking cookie configuration that was set by a previous
++     * invocation of this method on this &lt;tt&gt;ServletContext&lt;/tt&gt;.
++     *
++     * @param sessionCookieConfig the configuration of the session
++     * tracking cookies for this &lt;tt&gt;ServletContext&lt;/tt&gt;
++     *
++     * @throws IllegalStateException if this &lt;tt&gt;ServletContext&lt;/tt&gt; has
++     * already been initialized
++     */
++    public void setSessionCookieConfig(SessionCookieConfig sessionCookieConfig);
++
++    /**
++     * Gets the session tracking cookie configuration of this
++     * &lt;tt&gt;ServletContext&lt;/tt&gt;.
++     *
++     * @return the session tracking cookie configuration of this
++     * &lt;tt&gt;ServletContext&lt;/tt&gt;, or &lt;tt&gt;null&lt;/tt&gt; if
++     * {@link #setSessionCookieConfig setSessionCookieConfig} was never
++     * called on this &lt;tt&gt;ServletContext&lt;/tt&gt;
++     */
++    public SessionCookieConfig getSessionCookieConfig();
++
++    /**
++     * Sets the session tracking modes that are to become effective for this
++     * &lt;tt&gt;ServletContext&lt;/tt&gt;.
++     *
++     * &lt;p&gt;The given &lt;tt&gt;sessionTrackingModes&lt;/tt&gt; replaces any
++     * session tracking modes set by a previous invocation of this
++     * method on this &lt;tt&gt;ServletContext&lt;/tt&gt;.
++     *
++     * @param sessionTrackingModes enum set of session tracking modes to
++     * become effective for this &lt;tt&gt;ServletContext&lt;/tt&gt;
++     *
++     * @throws IllegalStateException if this &lt;tt&gt;ServletContext&lt;/tt&gt; has
++     * already been initialized
++     * @throws IllegalArgumentException if &lt;tt&gt;sessionTrackingModes&lt;/tt&gt;
++     * specifies a combination of &lt;tt&gt;SessionTrackingMode.SSL&lt;/tt&gt; with a
++     * session tracking mode other than &lt;tt&gt;SessionTrackingMode.SSL&lt;/tt&gt;,
++     * or if &lt;tt&gt;sessionTrackingModes&lt;/tt&gt; specifies a session tracking mode
++     * that is not supported by the servlet container
++     */
++    public void setSessionTrackingModes(EnumSet&lt;SessionTrackingMode&gt; sessionTrackingModes);
++
++    /**
++     * Gets the session tracking modes that are supported by default for this
++     * &lt;tt&gt;ServletContext&lt;/tt&gt;.
++     *
++     * @return enum set of the session tracking modes supported by default for
++     * this &lt;tt&gt;ServletContext&lt;/tt&gt;
++     */
++    public EnumSet&lt;SessionTrackingMode&gt; getDefaultSessionTrackingModes();
++
++    /**
++     * Gets the session tracking modes that are in effect for this
++     * &lt;tt&gt;ServletContext&lt;/tt&gt;.
++     *
++     * &lt;p&gt;The session tracking modes in effect are those provided to
++     * {@link #setSessionTrackingModes setSessionTrackingModes}.
++     *
++     * &lt;p&gt;By default, the session tracking modes returned by
++     * {@link #getDefaultSessionTrackingModes getDefaultSessionTrackingModes}
++     * are in effect.
++     *
++     * @return enum set of the session tracking modes in effect for this
++     * &lt;tt&gt;ServletContext&lt;/tt&gt;
++     */
++    public EnumSet&lt;SessionTrackingMode&gt; getEffectiveSessionTrackingModes();
++
+ }</pre> 
+       </div> 
+      </div>
+     </div> <p>-------------------------------------------------------------------------------------------------------</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">package javax.servlet;
+
+/**
+ * Enumeration of session tracking modes.
+ *
+ * @since 3.0
+ */
+public enum SessionTrackingMode {
+    COOKIE,
+    URL,
+    SSL
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>-------------------------------------------------------------------------------------------------------</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">package javax.servlet;
+
+/**
+ * Session tracking cookie configuration class.
+ *
+ * @since 3.0
+ */
+public class SessionCookieConfig {
+
+    private String domain;
+    private String path;
+    private String comment;
+    private boolean isHttpOnly;
+    private boolean isSecure;
+
+    /**
+     * Constructor.
+     * 
+     * &lt;p&gt;If &lt;tt&gt;isHttpOnly&lt;/tt&gt; is &lt;tt&gt;true&lt;/tt&gt;, any session
+     * tracking cookies configured by this &lt;tt&gt;SessionCookieConfig&lt;/tt&gt;
+     * will be marked as &lt;i&gt;HttpOnly&lt;/i&gt;, by adding the &lt;tt&gt;HttpOnly&lt;/tt&gt;
+     * attribute to them. &lt;i&gt;HttpOnly&lt;/i&gt; cookies are not supposed to be
+     * exposed to client-side scripting code, and may therefore help
+     * mitigate certain kinds of cross-site scripting attacks.
+     *
+     * &lt;p&gt;If &lt;tt&gt;isSecure&lt;/tt&gt; is &lt;tt&gt;true&lt;/tt&gt;, any session
+     * tracking cookie configured by this &lt;tt&gt;SessionCookieConfig&lt;/tt&gt;
+     * will be marked as &lt;i&gt;secure&lt;/i&gt;, even if the request that initiated
+     * the corresponding session is using plain HTTP instead of a secure
+     * protocol such as HTTPS.
+     * If &lt;tt&gt;isSecure&lt;/tt&gt; is &lt;tt&gt;false&lt;/tt&gt;, any session tracking
+     * cookie configured by this &lt;tt&gt;SessionCookieConfig&lt;/tt&gt; will be marked
+     * as &lt;i&gt;secure&lt;/i&gt; only if the request that initiated the corresponding
+     * session is also secure.
+     * 
+     * @param domain The domain assigned to any session tracking cookie
+     * configured by this &lt;tt&gt;SessionCookieConfig&lt;/tt&gt;
+     * @param path The path assigned to any session tracking cookie
+     * configured by this &lt;tt&gt;SessionCookieConfig&lt;/tt&gt;, or &lt;tt&gt;null&lt;/tt&gt; if the
+     * context path of the &lt;tt&gt;ServletContext&lt;/tt&gt; with which this
+     * &lt;tt&gt;SessionCookieConfig&lt;/tt&gt; has been associated is to be used
+     * as the cookie path
+     * @param comment The comment assigned to any session tracking cookie
+     * configured by this &lt;tt&gt;SessionCookieConfig&lt;/tt&gt;
+     * @param isHttpOnly true if any session tracking cookies configured
+     * by this &lt;tt&gt;SessionCookieConfig&lt;/tt&gt; will be marked as &lt;i&gt;HttpOnly&lt;/i&gt;,
+     * false otherwise
+     * @param isSecure true if any session tracking ccokie configured by
+     * this &lt;tt&gt;SessionCookieConfig&lt;/tt&gt; will be marked as &lt;i&gt;secure&lt;/i&gt;
+     * even if the request that initiated the corresponding session is
+     * using plain HTTP instead of HTTPS, and false if any session tracking
+     * cookie configured by this &lt;tt&gt;SessionCookieConfig&lt;/tt&gt; will be marked
+     * as &lt;i&gt;secure&lt;/i&gt; only if the request that initiated the corresponding
+     * session is also secure
+     *
+     * @see javax.servlet.http.Cookie#setDomain(String)
+     * @see javax.servlet.http.Cookie#setPath(String)
+     * @see javax.servlet.http.Cookie#setComment(String)
+     * @see javax.servlet.http.Cookie#setHttpOnly(boolean)
+     * @see javax.servlet.http.Cookie#setSecure(boolean)
+     * @see ServletContext#setSessionCookieConfig
+     */
+    public SessionCookieConfig(String domain, String path, String comment,
+                               boolean isHttpOnly, boolean isSecure) {
+        this.domain = domain;
+        this.path = path;
+        this.comment = comment;
+        this.isHttpOnly = isHttpOnly;
+        this.isSecure = isSecure;
+        
+    }
+
+    /**
+     * Gets the domain assigned to any session tracking cookie configured
+     * by this &lt;tt&gt;SessionCookieConfig&lt;/tt&gt;.
+     *
+     * @return the session tracking cookie domain
+     *
+     * @see javax.servlet.http.Cookie#getDomain()
+     */
+    public String getDomain() {
+        return domain;
+    }
+
+    /**
+     * Gets the path assigned to any session tracking cookie configured
+     * by this &lt;tt&gt;SessionCookieConfig&lt;/tt&gt;.
+     *
+     * @return the session tracking cookie path
+     *
+     * @see javax.servlet.http.Cookie#getPath()
+     */
+    public String getPath() {
+        return path;
+    }
+
+    /**
+     * Gets the comment assigned to any session tracking cookie configured
+     * by this &lt;tt&gt;SessionCookieConfig&lt;/tt&gt;.
+     *
+     * @return the session tracking cookie comment
+     *
+     * @see javax.servlet.http.Cookie#getComment()
+     */
+    public String getComment() {
+        return comment;
+    }
+
+    /**
+     * Checks if any session tracking cookies configured by this
+     * &lt;tt&gt;SessionCookieConfig&lt;/tt&gt; will be marked as &lt;i&gt;HttpOnly&lt;/i&gt;.
+     *
+     * @return true if any session tracking cookies configured by this
+     * &lt;tt&gt;SessionCookieConfig&lt;/tt&gt; will be marked as &lt;i&gt;HttpOnly&lt;/i&gt;,
+     * false otherwise
+     *
+     * @see javax.servlet.http.Cookie#isHttpOnly(boolean)
+     */
+    public boolean isHttpOnly() {
+        return isHttpOnly;
+    }
+
+    /**
+     * Checks if any session tracking cookie configured by this
+     * &lt;tt&gt;SessionCookieConfig&lt;/tt&gt; will be marked as &lt;i&gt;secure&lt;/i&gt; even
+     * if the request that initiated the corresponding session is using
+     * plain HTTP instead of HTTPS.
+     *
+     * @return true if any session tracking cookie configured by this
+     * &lt;tt&gt;SessionCookieConfig&lt;/tt&gt; will be marked as &lt;i&gt;secure&lt;/i&gt; even
+     * if the request that initiated the corresponding session is using
+     * plain HTTP instead of HTTPS, and false if any session tracking
+     * cookie configured by this &lt;tt&gt;SessionCookieConfig&lt;/tt&gt; will be marked
+     * as &lt;i&gt;secure&lt;/i&gt; only if the request that initiated the corresponding
+     * session is also secure.
+     *
+     * @see javax.servlet.http.Cookie#getSecure()
+     * @see ServletRequest#isSecure()
+     */
+    public boolean isSecure() {
+        return isSecure;
+    }
+}</pre> 
+       </div> 
+      </div>
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

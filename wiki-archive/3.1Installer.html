@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : 3.1Installer</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="3.1Installer-GlassFishServerOpenSourceEdition3.1Installer"></a>GlassFish Server Open Source Edition 3.1 - Installer</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#3.1Installer-GlassFishServerOpenSourceEdition3.1Installer">GlassFish Server Open Source Edition 3.1 - Installer</a></li> 
+       <ul> 
+        <li><a href="#3.1Installer-Introduction">Introduction</a></li> 
+        <li><a href="#3.1Installer-Scope">Scope</a></li> 
+        <li><a href="#3.1Installer-FeatureOverview">Feature Overview</a></li> 
+        <ul> 
+         <li><a href="#3.1Installer-1%29.Clusterconfigurationfeatures.">1). Cluster configuration features.</a></li> 
+         <li><a href="#3.1Installer-2%29.Compliancefeatures">2). Compliance features</a></li> 
+         <li><a href="#3.1Installer-3%29.Userexperiencefeatures">3). User experience features</a></li> 
+        </ul> 
+        <li><a href="#3.1Installer-DesignDocument">Design Document</a></li> 
+        <li><a href="#3.1Installer-MilestoneSchedule">Milestone Schedule</a></li> 
+        <li><a href="#3.1Installer-TaskList">Task List</a></li> 
+        <li><a href="#3.1Installer-DevTests">Dev Tests</a></li> 
+        <li><a href="#3.1Installer-References">References</a></li> 
+        <li><a href="#3.1Installer-EmailAlias">Email Alias</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="3.1Installer-Introduction"></a>Introduction</h2> <p>This installation and uninstallation program will provide support for easy installation and configuration of features provided by GlassFish 3.1. Improvements to user experience where ever possible would also be addressed.</p> <h4><a name="3.1Installer-Scope"></a>Scope </h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Feature ID </th> 
+         <th class="confluenceTh"> Priority </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> Eng Response </th> 
+         <th class="confluenceTh"> Owner(s) </th> 
+         <th class="confluenceTh"> Estimate (Man Days) </th> 
+         <th class="confluenceTh"> Source of Requirement </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> INST-001 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Support for OS Services for DAS and Instances </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Sathyan Catari </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Feature parity with 2.1 and extension of support to cover non-windows platforms also. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> INST-002 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Installed files/directories adhering to security policy </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Sathyan Catari </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Oracle's security guidelines </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> INST-003 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Signed executables on Windows platform </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Sathyan Catari </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Windows security </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> INST-004 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Option to skip DAS (domain) setup </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Sathyan Catari </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Feature parity </td> 
+         <td class="confluenceTd"> Remote node installation </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> INST-005 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> HPUX support </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Sathyan Catari </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Product level platform support </td> 
+         <td class="confluenceTd"> Not yet investigated. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> INST-006 </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> Option to setup the whole Cluster </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Sathyan Catari </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Better experience for users getting exposed to GlassFish clusters </td> 
+         <td class="confluenceTd"> setup a cluster with a domain and 2 local instances. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> INST-007 </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> Support Custom/Complete/Typical installation mode </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Sathyan Catari </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> User experience improvements </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> INST-008 </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> User experience improvements </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Sathyan Catari </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Community/Customer forum </td> 
+         <td class="confluenceTd"> better log, error, status messages. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.1Installer-FeatureOverview"></a>Feature Overview </h2> <p>The features that this version of installer support can be grouped into the following categories. </p> 
+     <ul> 
+      <li>1). Features that support cluster configuration.</li> 
+      <li>2). Compliance features.</li> 
+      <li>3). user experience improvements.</li> 
+     </ul> <h4><a name="3.1Installer-1%29.Clusterconfigurationfeatures."></a>1). Cluster configuration features.</h3> 
+     <ul> 
+      <li>GlassFish 3.0.x installers did not provide a way to configure the supported web server(s) and application server, to enable Load Balancing plugin. Initially this resulted in bad user experience given the number of manual steps to perform the configuration. However, this tedious process was automated using IzPack installer script and the same was provided outside product bundle as a separate utility. In this release, the users will be given an option to run the tool during installation time with the necessary arguments. The tool, however would be kept as a separate entity away from installer so that configuration of Load Balancing plugin can be done outside of installation. Keeping it separate will also help users installing community bundles, where this feature will not be supported through installation.<br> NOTE: This is dropped after the initial evaluation revealed increase in size of overall bundle by 15MB. </li> 
+     </ul> 
+     <ul> 
+      <li>To support the cases where the installation machine might participate only as a "node" in the cluster and not as the "server", an option will be introduced to skip domain admin server creation. We are also evaluating a potential "cluster" option that creates a domain with 2 instances.</li> 
+     </ul> 
+     <ul> 
+      <li>Installations will provide an option to configure the server as a service, in all of the supported OS where create-service command is supported.</li> 
+     </ul> <h4><a name="3.1Installer-2%29.Compliancefeatures"></a>2). Compliance features</h3> 
+     <ul> 
+      <li>Permissions</li> 
+     </ul> <p>The files/directories installed by this program will adhere to Oracle's security policy guidelines.</p> 
+     <ul> 
+      <li>Passwords</li> 
+     </ul> <p>Exposing or accepting plain-text passwords in silent installer state-file will be removed and encryption<br> of such passwords will be enforced.</p> 
+     <ul> 
+      <li>Signed executable on windows</li> 
+     </ul> <p>The installer and uninstaller executables on windows platform will be signed appropriately with Oracle<br> as the publisher.</p> <h4><a name="3.1Installer-3%29.Userexperiencefeatures"></a>3). User experience features</h3> 
+     <ul> 
+      <li>Support for remote MQ installation.</li> 
+     </ul> <p>This is to support the scenario where the application server may connect/store/retrieve messages to a message queue provider running on a remote machine. Currently we bundle and install message queue without giving the users an option to skip the configuration. In this version, there will be an option to skip message queue configuration during GlassFish installation. <br> NOTE: Dropped after asarch discussion.</p> 
+     <ul> 
+      <li>Custom/typical/complete installation mode.<br> The classification would be based on how much user input is required and the extent of configuration to be done by installer.</li> 
+     </ul> 
+     <ul> 
+      <li>Improvements to log messages, meaningful error messages, better status messages on progress will also be provided.</li> 
+     </ul> 
+     <ul> 
+      <li>JDK Selection option will be enabled on Mac and HPUX.</li> 
+     </ul> <h4><a name="3.1Installer-DesignDocument"></a>Design Document</h2> 
+     <ul> 
+      <li>[ Link to one-pager | <a href="http://wiki.glassfish.java.net/attach/V3FunctionalSpecs/GFV3.1FinalInstallerOnePager.txt">http://wiki.glassfish.java.net/attach/V3FunctionalSpecs/GFV3.1FinalInstallerOnePager.txt</a> ]</li> 
+     </ul> <h4><a name="3.1Installer-MilestoneSchedule"></a>Milestone Schedule</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> #1 </td> 
+         <td class="confluenceTd"> MS2&amp;4 </td> 
+         <td class="confluenceTd"> INST-001 </td> 
+         <td class="confluenceTd"> Support creation/removal of services </td> 
+         <td class="confluenceTd"> YES </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> #2 </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> INST-002 </td> 
+         <td class="confluenceTd"> Installed files/directories adhering to security policy </td> 
+         <td class="confluenceTd"> YES </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> #3 </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd"> INST-003 </td> 
+         <td class="confluenceTd"> Signed executables on Windows platform </td> 
+         <td class="confluenceTd"> YES </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> #4 </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> INST-004 </td> 
+         <td class="confluenceTd"> Option to skip DAS (domain) setup </td> 
+         <td class="confluenceTd"> YES </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> #5 </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd"> INST-005 </td> 
+         <td class="confluenceTd"> HPUX support </td> 
+         <td class="confluenceTd"> YES </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> #6 </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd"> INST-006 </td> 
+         <td class="confluenceTd"> Option to setup the whole cluster </td> 
+         <td class="confluenceTd"> YES </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> #7 </td> 
+         <td class="confluenceTd"> MS4&amp;5 </td> 
+         <td class="confluenceTd"> INST-007 </td> 
+         <td class="confluenceTd"> Support Custom/Complete/Typical installation mode </td> 
+         <td class="confluenceTd"> YES </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> #8 </td> 
+         <td class="confluenceTd"> MS5 </td> 
+         <td class="confluenceTd"> INST-008 </td> 
+         <td class="confluenceTd"> Customizable JDK location on Mac OS </td> 
+         <td class="confluenceTd"> YES </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> #9 </td> 
+         <td class="confluenceTd"> MS5 </td> 
+         <td class="confluenceTd"> INST-009 </td> 
+         <td class="confluenceTd"> User experience improvements </td> 
+         <td class="confluenceTd"> YES </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.1Installer-TaskList"></a>Task List</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task </th> 
+         <th class="confluenceTh"> Target Milestone </th> 
+         <th class="confluenceTh"> Start </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Owner(s) </th> 
+         <th class="confluenceTh"> Feature ID </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Draft initial installer spec </td> 
+         <td class="confluenceTd"> MS1 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Sathyan Catari </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd">Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Incorporate review feedback and finalize spec </td> 
+         <td class="confluenceTd"> MS1 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Sathyan Catari </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd">Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Analysis and selection of framework </td> 
+         <td class="confluenceTd"> MS1 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Sathyan Catari </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd">Done - use Open Installer </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Generate signed exe using signtool </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Sathyan Catari </td> 
+         <td class="confluenceTd"> INST-003 </td> 
+         <td class="confluenceTd"> Done, will have to redo once Oracle certificate file is available. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> build automation of signed exe generation </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Sathyan Catari </td> 
+         <td class="confluenceTd"> INST-003 </td> 
+         <td class="confluenceTd">Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Create and implement rules interface </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Sathyan Catari </td> 
+         <td class="confluenceTd"> INST-002 </td> 
+         <td class="confluenceTd"> Done</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Integrate rules interface with installer </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Sathyan Catari </td> 
+         <td class="confluenceTd"> INST-002 </td> 
+         <td class="confluenceTd"> Done</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Skip domain creation user interface changes </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Sathyan Catari </td> 
+         <td class="confluenceTd"> INST-004 </td> 
+         <td class="confluenceTd"> Done</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Integrate skip domain creation option(GUI &amp; Silent) </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Sathyan Catari </td> 
+         <td class="confluenceTd"> INST-004 </td> 
+         <td class="confluenceTd"> Done</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Component metadata changes to support skip domain option </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Sathyan Catari </td> 
+         <td class="confluenceTd"> INST-004 </td> 
+         <td class="confluenceTd"> Done</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> User interface changes for Services support </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Sathyan Catari </td> 
+         <td class="confluenceTd"> INST-001 </td> 
+         <td class="confluenceTd"> Done</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Integrate services support(GUI &amp; Silent) on windows/solaris </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Sathyan Catari </td> 
+         <td class="confluenceTd"> INST-001 </td> 
+         <td class="confluenceTd"> Done</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Configure cluster user interface changes </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Sathyan Catari </td> 
+         <td class="confluenceTd"> INST-006 </td> 
+         <td class="confluenceTd"> Started</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Integrate Configure Cluster option(GUI &amp; Silent) </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Sathyan Catari </td> 
+         <td class="confluenceTd"> INST-006 </td> 
+         <td class="confluenceTd"> Started</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Component metadata changes to support Configure Cluster option </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Sathyan Catari </td> 
+         <td class="confluenceTd"> INST-006 </td> 
+         <td class="confluenceTd"> Started</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Installation type user interface changes </td> 
+         <td class="confluenceTd"> MS4,5 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Sathyan Catari </td> 
+         <td class="confluenceTd"> INST-007 </td> 
+         <td class="confluenceTd"> Depending on approval of "Cluster configuration" feature. An approval means this feature pushed to MS5. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Integrate Installation type option(GUI &amp; Silent) </td> 
+         <td class="confluenceTd"> MS4,5 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Sathyan Catari </td> 
+         <td class="confluenceTd"> INST-004 </td> 
+         <td class="confluenceTd"> Depending on approval of "Cluster configuration" feature. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Component metadata changes to support Installation type option </td> 
+         <td class="confluenceTd"> MS4,5 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Sathyan Catari </td> 
+         <td class="confluenceTd"> INST-004 </td> 
+         <td class="confluenceTd"> Depending on approval of "Cluster configuration" feature. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Integrate delete service support </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Sathyan Catari </td> 
+         <td class="confluenceTd"> INST-001 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Extend service support for Linux and Mac </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Sathyan Catari </td> 
+         <td class="confluenceTd"> INST-001 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> OpenInstaller changes for HPUX support </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Sathyan Catari </td> 
+         <td class="confluenceTd"> INST-005 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Wrapper changes to support HPUX </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Sathyan Catari </td> 
+         <td class="confluenceTd"> INST-005 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Key/Value pair cleanup for silent installer statefile </td> 
+         <td class="confluenceTd"> MS5 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Sathyan Catari </td> 
+         <td class="confluenceTd"> INST-008 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Extend JDK selection support for Mac/HpUX </td> 
+         <td class="confluenceTd"> MS5 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Sathyan Catari </td> 
+         <td class="confluenceTd"> INST-004 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> User experience improvements </td> 
+         <td class="confluenceTd"> MS5 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Sathyan Catari </td> 
+         <td class="confluenceTd"> INST-008 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.1Installer-DevTests"></a>Dev Tests </h2> 
+     <ul> 
+      <li>Coming soon</li> 
+     </ul> <h4><a name="3.1Installer-References"></a>References</h2> 
+     <ul> 
+      <li><a href="http://docs.sun.com/app/docs/doc/821-0179/6nl8hchmr?l=en&amp;a=expand">GlassFish v2.x CLI Commands</a></li> 
+      <li><a href="GlassFishV2Architecture.html" title="GlassFishV2Architecture">GlassFish v2 Cluster Architecture </a></li> 
+     </ul> <h4><a name="3.1Installer-EmailAlias"></a>Email Alias</h2> 
+     <ul> 
+      <li>Please contact us at <a href="mailto:dev@glassfish.java.net">dev@glassfish.java.net</a></li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 22, 2010 by 
+<font color="#0050B2">scatari</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

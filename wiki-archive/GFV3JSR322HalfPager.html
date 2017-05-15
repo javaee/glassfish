@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GFV3JSR322HalfPager</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GFV3JSR322HalfPager-JSR322JavaEEConnectorArchitecture1.6ReferenceImplementationHalfPager"></a>JSR 322 - JavaEE Connector Architecture 1.6 - Reference Implementation - Half Pager</h1> <p>[</p> 
+     <div class="error">
+      <span class="error">Unknown macro: {TableOfContents title='Connector Runtime Half Pager'}</span> 
+     </div> <p>|(TableOfContentstitle='ConnectorRuntimeHalfPager')]</p> <h4><a name="GFV3JSR322HalfPager-1.Introduction"></a>1. Introduction</h1> <h4><a name="GFV3JSR322HalfPager-1.1.Project%2FComponentWorkingName"></a>1.1. Project/Component Working Name</h2> <p>JavaEE Connector Architecture 1.6 - Reference Implementation</p> <h4><a name="GFV3JSR322HalfPager-1.2.Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier"></a>1.2. Name(s) and e-mail address of Document Author(s)/Supplier</h2> <p>Jagadish Ramu <br> Jagadish.Ramu@Sun.COM</p> <h4><a name="GFV3JSR322HalfPager-1.3.DateofThisDocument"></a>1.3. Date of This Document</h2> <p>12/17/08</p> <h4><a name="GFV3JSR322HalfPager-1.4RevisionHistory"></a>1.4 Revision History</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Date </th> 
+         <th class="confluenceTh"> Change </th> 
+         <th class="confluenceTh"> Revision </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 12/17/08 </td> 
+         <td class="confluenceTd"> Review Ready </td> 
+         <td class="confluenceTd"> 1 </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GFV3JSR322HalfPager-2.ProjectSummary"></a>2. Project Summary</h1> <h4><a name="GFV3JSR322HalfPager-2.1.ProjectDescription"></a>2.1. Project Description</h2> <p>Java EE Connector Architecture 1.6 introduces Work Context and Ease of use features via annotations<br> as major additions.<br> This specification also has several minor additions, clarifications and deprecations. <br> This half pager will capture the required changes (addition of new features, change in existing features) <br> in the Connector Runtime (Reference Implementation)</p> <h4><a name="GFV3JSR322HalfPager-2.1.1WorkContextSupport"></a>2.1.1 Work Context Support</h2> <p>Work Context support involves support from the deployment and connector-runtime. Connector-runtime<br> will provide support for all the standard contexts namely :</p> 
+     <ul> 
+      <li>TransactionInflowContext</li> 
+      <li>SecurityInflowContext</li> 
+      <li>HintsInflowContext</li> 
+     </ul> <h4><a name="GFV3JSR322HalfPager-2.1.2SupportforstandardInflowContexts"></a>2.1.2 Support for standard Inflow Contexts</h2> <p>Resource-Adapter provider can optionally specify the mandatory support of inflow-contexts <br> from the application server. Application server should check for this and if it does not <br> support any of the required-inflow-contexts, deployment of the resource-adapter must fail. <br> This can be specified via a new element <tt>&lt;required-inflow-contexts&gt;</tt> in the descriptor.</p> <h4><a name="GFV3JSR322HalfPager-2.1.3WorkSecurityMap"></a>2.1.3 Work Security Map</h2> <p>For one of the cases of <tt>SecurityInflowContext</tt>, a work security map is needed to map eis identities to<br> appserver domain's identities. This mapping mechanism will be implementation (vendor) specific.<br> Support from admin CLI, GUI is needed in GlassFish<br> Refer Connectors, pooling, JDBC-RA one-pager for the CLI commands and dtd changes</p> <h4><a name="GFV3JSR322HalfPager-2.1.4MDBsupportrelatedtoSecurityInflowContext"></a>2.1.4 MDB support related to SecurityInflowContext</h2> <p>End to end security for inbound communication involves support from connector as well message end point <br> container (MDB). JSR 318 (EJB Specification) introduces the necessary mechanisms (security-role-ref) <br> so that an MDB can check the role via <tt>MessageDrivenContext.isCallerInRole()</tt> and the inflow context <br> established principal via <tt>MessageDrivenContext.getCallerPrincipal()</tt></p> <h4><a name="GFV3JSR322HalfPager-2.1.5Annotations"></a>2.1.5 Annotations</h2> <p>This specification introduces ease-of-use features which involves annotations. Many RA <br> artifacts can be JavaBeans with annotations. Now it is possible to have a simple RA <br> without a deployment-descriptor (ra.xml). <br> Connector-runtime implementation will support the defined annotations in this release.</p> <h4><a name="GFV3JSR322HalfPager-2.1.6MergingannotationvaluesandDDvalues"></a>2.1.6 Merging annotation values and DD values</h2> <p>With the introduction of annotations, it is possible for an RA to have both<br> annotation as well deployment-descriptor. Connector-runtime will merge the configuration <br> properties specified in both descriptor and annotations for a RA artifact. Following <br> RA artifacts' configuration will be merged based on values from annotation and descriptor.</p> 
+     <ul> 
+      <li><tt>ResourceAdapter</tt></li> 
+      <li><tt>ManagedConnectionFactory</tt></li> 
+      <li><tt>ActivationSpec</tt></li> 
+     </ul> <h4><a name="GFV3JSR322HalfPager-2.1.7RuntimetransactionsupportlevelspecificationbyMCF"></a>2.1.7 Runtime transaction-support-level specification by MCF</h2> <p><tt>MCF.getTransactionSupport()</tt> can provide the level of tx-support it can support. <br> This helps to provide more granular transaction-support at MCF level rather than RA-level <br> support. Refer connectors, pooling, JDBC-RA one-pager for more details.</p> <h4><a name="GFV3JSR322HalfPager-2.1.8Changestoexistinginterfacesanditsimpact"></a>2.1.8 Changes to existing interfaces and its impact</h2> 
+     <ul> 
+      <li><tt>LazyAssociatableConnectionManager.inactiveConnectionClosed()</tt> : System-RAs that support</li> 
+     </ul> <p>lazy-connection-association will have to provide appropriate notification to ConnectionManager.</p> <h4><a name="GFV3JSR322HalfPager-2.1.9ResourceAdapterAssociation"></a>2.1.9 ResourceAdapter Association </h2> <p>ResourceAdapter instance is associated with specification mandated resource-adapter artifacts <br> that implements <tt>ResourceAdapterAssociation</tt> interface.<br> This version of specification includes support for the following artifacts :</p> 
+     <ul> 
+      <li><tt>AdministeredObject</tt></li> 
+      <li><tt>Work/DistributableWork</tt></li> 
+     </ul> <h4><a name="GFV3JSR322HalfPager-2.1.10Supportfor%3Cconfigproperty%3EforActivationSpec"></a>2.1.10 Support for &lt;config-property&gt; for Activation-Spec</h2> <p>This specification allows specifying optional configuration properties <tt>&lt;config-property&gt;</tt><br> for <tt>activation-spec</tt>. Unlike <tt>&lt;required-config-property&gt;</tt>, these are optional properties which<br> will be set when the activation-spec JavaBean has support, but will not fail end-point activation.</p> <h4><a name="GFV3JSR322HalfPager-2.1.11Deprecation"></a>2.1.11 Deprecation </h2> <p>Following functionalities/modes are being deprecated and the same can be now achieved via bean validation.</p> 
+     <ul> 
+      <li><tt>ActivationSpec.validate()</tt></li> 
+      <li>Specifing <tt>&lt;required-config-property&gt;</tt> for <tt>activation-spec</tt> artifact.</li> 
+     </ul> <p>Support for the deprecated functionalities will be available in v3.</p> <h4><a name="GFV3JSR322HalfPager-2.1.12AdministeredObjectUniqueness"></a>2.1.12 Administered Object Uniqueness</h2> <p>RA provider now must provide the fully qualified class name of the interface and the implementation <br> of <tt>administered-object</tt>. The combination of interface and implementation must be unique. This can be <br> validated during deployment of the RA</p> <h4><a name="GFV3JSR322HalfPager-2.1.13AvailabilityofaRARforallapplications"></a>2.1.13 Availability of a RAR for all applications</h2> <p>JSR 322 relaxes the RAR accessibility such that only applications that refers a RAR by <br> standard means (use-cases defined by JSR 322 specification, refer Packaging Requirements <br> section) are allowed. In v2, all applications have access to all RARs. <br> This functionality is optional, low-priority and hence may or may not be implemented in this release.</p> <h4><a name="GFV3JSR322HalfPager-2.1.14DistributedWorkManager"></a>2.1.14 Distributed Work Manager</h2> <p>JSR-322 introduces support of Distributed Work Manager. This feature is optional and<br> will be found useful in cluster environments. Hence postponing the support to<br> GlassFish release that supports clustering.</p> <h4><a name="GFV3JSR322HalfPager-2.1.15JavaBeanValidation%28303%29"></a>2.1.15 JavaBean Validation (303)</h2> <p>There is a proposal to use JavaBean validation (JSR 303) mechanisms to specify bounds and constraints <br> for configuration of various resource-adapter artifacts. <b>This proposal is still under discussion</b></p> <h4><a name="GFV3JSR322HalfPager-2.2.RisksandAssumptions"></a>2.2. Risks and Assumptions</h2> 
+     <ul> 
+      <li>Assumptions : APIs defined by JSR 322 will be finalized within the time line of GlassFish v3 schedule.</li> 
+     </ul> <p>JSR 322 is in Public Review stage. It is possible that there will be API changes, artifact name (terminology) changes. <br> eg: InflowContext will be renamed as WorkContext</p> 
+     <ul> 
+      <li>Risks : Availability of JSR 303 (Bean Validation) Reference Implementation in GlassFish</li> 
+     </ul> <h4><a name="GFV3JSR322HalfPager-3.Interfaces"></a>3. Interfaces</h1> <h4><a name="GFV3JSR322HalfPager-3.1.ExportedInterfaces"></a>3.1. Exported Interfaces</h2> <p>Interface: JSR 322 API (javax.resource.*)<br> Stability: Standard<br> Specified: <a href="http://www.jcp.org/en/jsr/detail-322">http://www.jcp.org/en/jsr/detail-322</a><br> Comments : JSR 322 is in Public Review stage.</p> <h4><a name="GFV3JSR322HalfPager-3.2.ImportedInterfaces"></a>3.2. Imported Interfaces</h2> <p>Interface : JSR 322 API (javax.resource.*)<br> Stability : Standard<br> Exporting Project: Java EE 6 (via JSR 322)<br> Comments : JSR 322 is in Public Review stage.</p> <h4><a name="GFV3JSR322HalfPager-3.3.OtherInterfaces%28Optional%29"></a>3.3. Other Interfaces (Optional)</h2> <p>None</p> <h4><a name="GFV3JSR322HalfPager-4.ReferenceDocuments"></a>4. Reference Documents</h2> 
+     <ol> 
+      <li><a href="http://www.jcp.org/en/jsr/detail-322">JSR 322 - Java EE Connector Architecture Specification 1.6</a></li> 
+      <li><a href="http://www.jcp.org/en/jsr/detail-318">JSR 318 - Enterprise JavaBeans Specification 3.1</a></li> 
+      <li><a href="http://www.jcp.org/en/jsr/detail-303">JSR 303 - Bean Validation</a></li> 
+     </ol> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 09, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:44.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

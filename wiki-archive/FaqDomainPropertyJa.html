@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : FaqDomainPropertyJa</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="FaqDomainPropertyJa-%E3%81%82%E3%82%8B%E3%83%89%E3%83%A1%E3%82%A4%E3%83%B3%E3%81%AB%E5%9B%BA%E6%9C%89%E3%81%AE%E3%83%97%E3%83%AD%E3%83%91%E3%83%86%E3%82%A3%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB%E3%81%AF%E3%81%A9%E3%81%93%E3%81%AB%E7%BD%AE%E3%81%91%E3%81%B0%E3%82%88%E3%81%84%E3%81%A7%E3%81%99%E3%81%8B%EF%BC%9F"></a>あるドメインに固有のプロパティファイルはどこに置けばよいですか？ </h2> <p>あるアプリケーションが、配備(deploy)された場所に依存してリソースの構成を行う必要<br> があり、さらにそのアプリケーションを「変更せずに」異なった環境にも配備したい場合<br> を想像してみてください。<br> 簡単な例としては、アプリケーションの作業ディレクトリを指定し、そのアプリケーション<br> を開発、テスト、そして運用環境に配備するけど、データベースは構成コンポーネントには<br> 入れたくないような場合です。</p> <p>ドメイン全体に対するプロパティファイルは良い解決策になります。EAR の変更は必要<br> ないし、DB に依存しないし、再配備にも対応します。</p> <p>では、そのようなファイルをどこに置けば良いのでしょうか？</p> <p>プロパティファイルは歴史的に Glassloader.getResource と関連するメソッドによって<br> ロードされます。ということは、プロパティファイルはクラスパス上に置いておく必要<br> があります。</p> <p>サーバー上では、簡単に既知の場所のサーバークラスパスを追加することができ、<br> プロパティファイルをそこに置くことができます。</p> <p>そして、サーバーのクラスローダーから見える、ライブラリやクラスのための<br> ドメイン固有の場所が用意されています。</p> <p>$domain が、そのドメインのディレクトリだと仮定してみましょう（Windows での<br> インストールならば、デフォルトドメインなら一般的に C:\Sun\AppServer\domains\domain1<br> になります)。</p> <p>この場合、プロパティファイルを配備する標準的な場所は次のようになります:</p> <p>$domain/lib/classes</p> <p>このように、examples.properties のようなファイルをこのディレクトリに置いて、<br> アプリケーションから使うことができます。</p> <p>このプロパティファイルにアクセスするには、次のようなコードを使います:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">public Properties loadProperties() throws IOException {
+    Properties prop = new Properties();
+    InputStream is = this.getClass().getClassLoader().getResourceAsStream("examples.properties");
+    if (is != null) {
+        try {
+            prop.load(is);
+        }
+        finally {
+            // Forgetting to close input streams from property loaders
+            // is a common source of resource leaks in applications.
+            is.close();
+        }
+    }
+    return prop;
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>このメソッドは EJB でも WAR でも使えます。$domain/lib/classes ディレクトリは<br> どちらのコンポーネントのクラスパスでもあるからです。</p> 
+     <hr> <p>日本語翻訳: <a href="http://blogs.oracle.com/shioda">shioda</a></p> <p><a href="FaqDomainProperty.html" title="FaqDomainProperty">英文 </a> (翻訳したバージョン: 1)</p> 
+     <hr> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 02, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:44.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

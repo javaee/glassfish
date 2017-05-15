@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : AlternateAsyncProposalRebuttal</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="AlternateAsyncProposalRebuttal-Alternateasyncproposalpremiserebuttal"></a>Alternate async proposal premise rebuttal</h2> <p>The <a href="AlternateProposalForAsyncServlets.html" title="AlternateProposalForAsyncServlets">Alternate Proposal For Async Servlets</a> is based on several premises that are disputed and some have been demonstrated to be incorrect.</p> <p><em><b>The most common use of suspend and resume is really to manipulate the response in a delayed fashion without blocking the container.</b></em></p> <p>This is one of only three general use cases for asynchronous handling and it is not clear that it is the "most common use". The three general use-cases are to suspend (or threadlessly wait) BEFORE, DURING or AFTER normal servlet processing. </p> <p><b>BEFORE</b> The use-case to suspend before normal servlet processing is to wait for an available resource or to make other Quality of Service handling. A key example of this is avoiding many threads waiting on a JDBC connection pool. A request is suspended when there are no available JDBC connections and resumes when a JDBC connection becomes available. Once resume, the request can proceed through normal servlet processing and no framework/application code needs to be altered.</p> <p><b>DURING</b> The use-case to suspend during normal servlet processing is to call remote webservices. In the example linked below, normal JSF processing is used to handle a post request and initiate an asynchronous web services request to ebay. The request is then suspended until the web services response is received. The request is then resumed and the JSF phases are continued with normal handling to produce the response. Typically frameworks/applications need some minor modifications to allow state to be restored (see JSF ebay example below).</p> <p><b>AFTER</b> The use-cases to suspend after normal servlet processing is for new protocols like comet or for proxying remote servlets. After the request is handled by the servlet, the request is suspended so that it is not committed by the container. Asynchronous threads and services may then generate the response as events occur or remote data is received. Typically the content will be generated by newly written frameworks/applications. This is the only use-case supported by the alternate proposal.</p> <p><a href="AsyncUseCaseFeedback.html" title="AsyncUseCaseFeedback">Feedback received</a> from Amazon, Ebay, LinkedIn, Paypal and Yahoo indicate that they are all very much interested in the <b>BEFORE</b> and <b>DURING</b> use cases. Such large websites as must deal with the scaling issues of limited resources (eg JDBC connections) and slow remote web services. All have implemented proprietary extensions for these use-cases, but are interested in a standards based solutions. Enterprises without the resources of such companies should not be forced to implement proprietary solutions to achieve scalability.</p> <p>''<b>Re-dispatching of request does not help application and framework authors. It is a distraction and adds more complexity to the application in addition to potentially breaking existing applications.</b><br> ''</p> <p>Re-dispatching is not a new feature for the servlet specification. Requests are already redispatched by the error page mechanism for exceptions that are caught by the container. Many frameworks (eg sitemesh) redispatch the request multiple times to down stream processing. RequestDispatchers also create the possibility that filters and servlets can see the same request more than once.</p> <p>The asynchronous features may break some applications, but only if the developer chooses to use them. As described below, a large amount of code will be able to be used with suspend/resume without any changes.</p> <p><em><b>If a component calls suspend on the request object and if JSF is in the process of building the component tree then it would be the responsibility of JSF in this case to store the state it is in before spawning of a separate thread. To achieve this the framework would have to wrap the Request and Response objects so it can capture the state so that when the request is resumed and redispatched it can restore the components and then continue processing.</b></em></p> <p>Wrapping the request is not necessary to save state. A <a href="http://svn.codehaus.org/jetty/jetty/trunk/modules/examples/async-jsf-example-webapp/src/main/patch/mojarra.patch">simple patch</a> has been written for the mojarra JSF implementation. These 36 lines allow any phase of JSF processing to suspend a request and that phase will be re-executed when the request is resumed. The component tree is saved as a request attribute when the request is suspended and recovered when the request is resumed. This allows application code to suspend during phase processing or during rendering. The example provided with Jetty-7 uses this patch to suspend during an asynchronous REST call to the ebay webservices, so that a thread need not be held during the several hundred millisecond wait for a response.</p> <p>The alternative proposal does not work at all with JSF.</p> <h4><a name="AlternateAsyncProposalRebuttal-InsufficientexamplefortheAlternateasyncproposal"></a>Insufficient example for the Alternate async proposal </h2> <p>The example given for the alternate proposal show a CometProcessor that extends Thread that is started by a suspended request. This is a poor example! </p> <p>If every suspending (auto-commit=false) servlet spawns a thread to handle the request, then there is no benefit from the async, as there is still a thread per request, it is just a different thread. </p> <p>So assuming that the CometProcessor thread, is shared between multiple suspended requests then the example does not show the complexity of how that thread would handle an event. Consider if the comet app was a chat room with a 100 users in it,<br> then the CometProcessor would have references to 100 suspended requests. When an event happens, it must arrange for a response to be sent to all 100 suspended requests. If the thread sends the responses itself, it must handle all the IO issues of sending each response and each response may block causing delays in<br> other responses. Preferably, the CometProcessor will need to invoke 100 new threads<br> (or 100 new tasks to a thread pool), so that each response may be written without the potential to hold up other responses.</p> <p>But the servlet container already provides a thread pool. One of the key benefits of the resume proposal is that it allows the existing thread pool to be used to handle the sending of responses for each suspended request rather than the application creating a wasteful second thread pool.</p> <p>To truely evaluate the alternate proposal, fully working examples are needed to discover all the hidden complexities. The suspend/resume proposal has fully working examples available that are running real world applications.</p> <h4><a name="AlternateAsyncProposalRebuttal-It%27snotaservlet"></a>It's not a servlet</h2> <p>A suspending (auto-commit=false) servlet is not fully functional servlet.</p> 
+     <ul> 
+      <li>It can't be filtered with filters such a GzipFilter that will attempt to complete the response on exit. The is no API for a filter to enquire if the response it is handling is suspended or not.</li> 
+     </ul> 
+     <ul> 
+      <li>It can't be dispatch to like a normal servlet. Because the content is produced asynchronously by another thread, forwards and includes will not work. The suspend/resume proposal can work with forwards and includes because content is produced normally within a servlet.</li> 
+     </ul> 
+     <ul> 
+      <li>Content cannot be generated with existing frameworks like JSP, JSF</li> 
+     </ul> <h4><a name="AlternateAsyncProposalRebuttal-ThecaseforResume"></a>The case for Resume</h2> <p>With the alternative proposal (suspend without resume),<br> once suspended, a request cannot access any existing content<br> generation framework. So after waiting for whatever event<br> (comet, webservice, JSR-237) a response still needs to be<br> generated.</p> <p>Undeniably the alternative proposal can invoke an asynchronous<br> web service call (servlet 1.0 could do it - invocation is the easy<br> part). But once the asynchronous web service call(s) completes<br> the response content still needs to be generated.</p> <p>The examples given simply say:<br> &lt;pre&gt;<br> OutputStream os = req.getResponse().getOutputStream();<br> // Write web service's response to OutputStream<br> &lt;/pre&gt;<br> This is glossing over a decade of content generation technology<br> and complexity. JSP, JSF, Struts, cocoon, sitemesh, grails,<br> jruby etc. etc. will not be able to be used to generate such content.</p> <p>Unless existing frameworks and applications can be invoked,<br> all the content generation will have to be done by new<br> frameworks and applications. More over, many of the techniques<br> and approaches familiar to current content generation will not<br> be available as they are designed around filtering, forwarding<br> and including.</p> <p>The new frameworks will have to operate in a environment<br> without many useful features provided by the servlet<br> specification.</p> 
+     <ul> 
+      <li>The container Thread pool. Additional thread pools will be needed (when the intent is to reduce thread usage!). Also threading is not trivial and the CometProcess example given is broken. Using a thread pool for comet handling will either use more threads or will queue comet processors behind others waiting for events.</li> 
+     </ul> 
+     <ul> 
+      <li>No JNDI resource or other JEE resource may be used by the threads generating the content as the thread will not be anointed with JNDI initial context.</li> 
+     </ul> 
+     <ul> 
+      <li>No authorized resources will be able to be used as the thread will not be anointed with the authentication.</li> 
+     </ul> 
+     <ul> 
+      <li>Error handling will need to be reimplemented as the existing container error page mechanism will not be able to be used. Nor will any filters used be able to catch exceptions.</li> 
+     </ul> <p>There is no need to reinvent content generation<br> frameworks and applications. We should be able to<br> invoked existing content generation from a suspended<br> request.</p> <p>Resume allows existing applications and frameworks to<br> be invoked using the existing container threadpool,<br> error handling mechanism, JNDI context and authentication<br> model. It is no different to the existing Error page<br> mechanism that redispatches a request.</p> <p>I have demonstrated resumed requests working with JSF,<br> JSP, Struts, spring MVC, Spring acegi, GWT, DWR, GzipFilter,<br> IceFaces, IBM Tivoli Auth Filter and more. Some of these are<br> already in production.</p> <p>Resumed requests mostly work without any modification to<br> either frameworks or application. When modifications are<br> needed they tend to be simple. The modification needed<br> for filters will have to be done anyway as the they are<br> needed for suspend in the alternative proposal.</p> <p>Resume is optional. If developers find the suspend-close<br> model sufficient, then they can still use that style.</p> <p>Resume supports much needed use cases for which I have shown<br> endorsements from amazon, ebay, linkedIn and yahoo/zimbra.<br> Some of these companies are already using proprietary resume<br> extensions to access servlet content generation. If<br> servlet 3.0 does not support these use-case, then alternates<br> to the standard will continue to be used and the JCP<br> standard will be devalued.</p> <p>The proposal of suspend without resume is only half a<br> solution. </p> <p>It is bizzarre to have suspend only, where a thread or <br> a call back can do anything to a ServletResponse other than<br> pass it to an application running in an well known framework<br> running in a servlet container!</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:48.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

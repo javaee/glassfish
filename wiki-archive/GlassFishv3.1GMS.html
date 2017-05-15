@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFishv3.1GMS</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GlassFishv3.1GMS-GlassFishServerOpenSourceEdition3.1ShoalGroupManagementService%28GMS%29forRuntimeClusteringServices"></a>GlassFish Server Open Source Edition 3.1 - Shoal Group Management Service (GMS) for Runtime Clustering Services </h1> 
+     <div> 
+      <ul> 
+       <li><a href="#GlassFishv3.1GMS-GlassFishServerOpenSourceEdition3.1ShoalGroupManagementService%28GMS%29forRuntimeClusteringServices">GlassFish Server Open Source Edition 3.1 - Shoal Group Management Service (GMS) for Runtime Clustering Services</a></li> 
+       <ul> 
+        <li><a href="#GlassFishv3.1GMS-ScopeoftheProject">Scope of the Project</a></li> 
+        <li><a href="#GlassFishv3.1GMS-FeatureOverview">Feature Overview</a></li> 
+        <ul> 
+         <li><a href="#GlassFishv3.1GMS-GMS01ShoalGMSoverGrizzlyimplementation">GMS-01 Shoal GMS over Grizzly implementation</a></li> 
+         <li><a href="#GlassFishv3.1GMS-GMS02IntegrateShoalGMSintoGFv3.1usingdev.stopgapclusteringcmds">GMS-02 Integrate Shoal GMS into GF v3.1 using dev. stop-gap clustering cmds</a></li> 
+         <li><a href="#GlassFishv3.1GMS-GMS07GMSoverGrizzlyvirtualmulticast">GMS-07 GMS over Grizzly virtual multicast</a></li> 
+         <li><a href="#GlassFishv3.1GMS-GMS09MonitoringStatProviders">GMS-09 Monitoring Stat Providers</a></li> 
+        </ul> 
+        <li><a href="#GlassFishv3.1GMS-Onepager%2FFunctionalSpecification">One-pager / Functional Specification</a></li> 
+        <li><a href="#GlassFishv3.1GMS-DevTests">Dev Tests</a></li> 
+        <li><a href="#GlassFishv3.1GMS-Quality">Quality</a></li> 
+        <li><a href="#GlassFishv3.1GMS-Documentation">Documentation</a></li> 
+        <li><a href="#GlassFishv3.1GMS-MilestoneSchedule">Milestone Schedule</a></li> 
+        <li><a href="#GlassFishv3.1GMS-References%2FLinks">References / Links</a></li> 
+        <li><a href="#GlassFishv3.1GMS-EmailAlias">Email Alias</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="GlassFishv3.1GMS-ScopeoftheProject"></a>Scope of the Project </h2> <p>Shoal GMS is a clustering framework that provides infrastructure to build fault tolerance, reliability and availability. <br> The clustering framework provides the following functionalities to Glassfish services and user applications.</p> 
+     <ul> 
+      <li>GMS event notification 
+       <ul> 
+        <li>register callback for GMS event notification</li> 
+        <li>GMS runtime notifies when changes in group membership occur.</li> 
+       </ul> </li> 
+      <li>Cluster-wide Messaging 
+       <ul> 
+        <li>send a message to one, sublist or broadcast to all members of cluster</li> 
+        <li>register message callback to process messages sent by other group members.</li> 
+       </ul> </li> 
+      <li>GMS status methods 
+       <ul> 
+        <li>list of all members or just list of CORE members</li> 
+        <li>request a member status on any member in cluster</li> 
+       </ul> </li> 
+      <li>GMS Group Configuration 
+       <ul> 
+        <li>configure multicast address and port used by a group</li> 
+        <li>ability to configure gms listener BIND_INTERFACE_ADDRESS(ip address of network interface) to use on a multihome machine</li> 
+       </ul> </li> 
+     </ul> <p>Recent enhancement to GMS is to have a pluggable transport and a Grizzly implementation of that transport. <br> GF HA subsystem is building on top of GMS clustering framework and its messaging. </p> <p><a href="https://glassfish.java.net/issues/buglist.cgi?Submitquery=Submitquery&amp;component=glassfish&amp;subcomponent=group_management_service&amp;issue_status=UNCONFIRMED&amp;issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED&amp;issue_status=RESOLVED&amp;issue_status=VERIFIED&amp;issue_status=CLOSED&amp;op_sys=All&amp;target_milestone=3.1_ms01&amp;target_milestone=3.1_ms02&amp;target_milestone=3.1_ms03&amp;target_milestone=3.1_ms04&amp;target_milestone=3.1_ms05&amp;target_milestone=3.1_ms06&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=fulltext&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=&amp;cmdtype=doit&amp;order=Reusesamesortaslasttime">group-management-service Feature Status from glassfish issue tracker features targeted for GFv3.1 milestone</a></p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Priority </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> Eng Response </th> 
+         <th class="confluenceTh"> Owner(s) </th> 
+         <th class="confluenceTh"> Estimate (Person Days) </th> 
+         <th class="confluenceTh"> Source of Requirement </th> 
+         <th class="confluenceTh"> Status/Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-01 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Shoal GMS over Grizzly implementation </td> 
+         <td class="confluenceTd"> YES </td> 
+         <td class="confluenceTd"> Joe Fialli, Bobby Bissett </td> 
+         <td class="confluenceTd"> DONE </td> 
+         <td class="confluenceTd"> switch to a well supported transport </td> 
+         <td class="confluenceTd"> shoal gms dev level testing confirmed working </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-02 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Integrate Shoal GMS into GF v3.1 using dev. stop-gap clustering cmds </td> 
+         <td class="confluenceTd"> YES </td> 
+         <td class="confluenceTd"> Joe Fialli, Bobby Bissett </td> 
+         <td class="confluenceTd"> near complete </td> 
+         <td class="confluenceTd"> earlier gms in gf v3.1 testing </td> 
+         <td class="confluenceTd"> this is a transitional integration. building of gms-adapter not enabled in cluster pom.xml yet. tmp gms cluster config files/asadmin cluster cmds so gms in gf v3.1 testing can start </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-03 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Shoal GMS integration via domain.xml configuration </td> 
+         <td class="confluenceTd"> YES </td> 
+         <td class="confluenceTd"> Bobby/Joe </td> 
+         <td class="confluenceTd"> estimateManDays </td> 
+         <td class="confluenceTd"> impl v2.1 functionality </td> 
+         <td class="confluenceTd"> initial gmsconfig document presented to admin team, updating doc with feedback. Send out update to admin dev alias. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-04 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Introduce GMS GroupHandle.getPreviousAliveOrReadyMembers() </td> 
+         <td class="confluenceTd"> YES </td> 
+         <td class="confluenceTd"> Joe Fialli </td> 
+         <td class="confluenceTd"> 5 days </td> 
+         <td class="confluenceTd"> HA request </td> 
+         <td class="confluenceTd"> Mahesh needs to use this during HA M3 development. Higher priority than rejoin. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-05 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Introduce GMS rejoin subevent in JOIN and JOINED_AND_READY notification </td> 
+         <td class="confluenceTd"> YES </td> 
+         <td class="confluenceTd"> Bobby </td> 
+         <td class="confluenceTd"> estimateManDays </td> 
+         <td class="confluenceTd"> compensate for loss of v2.1 NodeAgent as gms watchdog </td> 
+         <td class="confluenceTd"> subevent informs GMS client that a clustered instance failed and was restarted quicker than GMS heartbeat failure detection would have been able to detect failure. In GF v3.1, local initrc technique for monitoring a process and restarting it when it fails will cause this to occur. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-06 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> asadmin get-health clustered-instance or cluster </td> 
+         <td class="confluenceTd"> YES </td> 
+         <td class="confluenceTd"> Joe </td> 
+         <td class="confluenceTd"> 3-7 days </td> 
+         <td class="confluenceTd"> feature parity </td> 
+         <td class="confluenceTd"> note: only works for gms-enabled cluster </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-07 </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> GMS over Grizzly virtual multicast </td> 
+         <td class="confluenceTd"> NO </td> 
+         <td class="confluenceTd"> ownerTBD </td> 
+         <td class="confluenceTd"> estimateManDays </td> 
+         <td class="confluenceTd"> identified as desirable feature during GF v3.1 launch </td> 
+         <td class="confluenceTd"> status/comments </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-08 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> multicast enabled diagnostic utility </td> 
+         <td class="confluenceTd"> YES </td> 
+         <td class="confluenceTd"> Bobby </td> 
+         <td class="confluenceTd"> estimate? </td> 
+         <td class="confluenceTd"> ease of support request </td> 
+         <td class="confluenceTd"> test already exist in shoal gms just needs to be properly packaged </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-09 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Monitoring Stat Providers </td> 
+         <td class="confluenceTd"> YES </td> 
+         <td class="confluenceTd"> Bobby/Joe </td> 
+         <td class="confluenceTd"> estimateManDays </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Provide stats that be used for both monitoring and debugging. messaging throughput and event notification counters </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-10 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Upgrade from v2.1 cluster and group-management-service element's attributes/properties to v3.1 cluster/group-management-server </td> 
+         <td class="confluenceTd"> YES </td> 
+         <td class="confluenceTd"> Bobby </td> 
+         <td class="confluenceTd"> ?? </td> 
+         <td class="confluenceTd"> feature parity </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-11 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Update external library Shoal GMS to meet GF v3.1 logging requirements </td> 
+         <td class="confluenceTd"> YES </td> 
+         <td class="confluenceTd"> Bobby/Joe </td> 
+         <td class="confluenceTd"> ?? </td> 
+         <td class="confluenceTd"> feature parity </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishv3.1GMS-FeatureOverview"></a>Feature Overview </h2> <h4><a name="GlassFishv3.1GMS-GMS01ShoalGMSoverGrizzlyimplementation"></a>GMS-01 Shoal GMS over Grizzly implementation </h3> 
+     <ul> 
+      <li>Description</li> 
+     </ul> <p>Replace JXTA as the transport provider for GMS and provide an implementation over Grizzly using Grizzly as the transport provider for TCP and UDP messages. The basic implementation is being provided by Bongjae Chang, Shoal community member, but needs further enhancements to make it production quality. </p> 
+     <ul> 
+      <li>Sub-tasks 
+       <ul> 
+        <li>Tune default Grizzly NetworkManager parameters. These are settable via following GMS Property parameters. &lt;b&gt;MAX_POOLSIZE, CORE_POOLSIZE, KEEP_ALIVE_TIME, POOL_QUEUE_SIZE, HIGH_WATER_MARK, MAX_PARALLEL, WRITE_TIMEOUT, MAX_WRITE_SELECTOR_POOL_SIZE&lt;/b&gt;. These parameters manage resources available to process incoming Grizzly processing.</li> 
+        <li>The GMS over Grizzly implementation will be tested over several of the critical test scenarios to establish its viability and stability for usage in a production quality GlassFish deployment. Initial stability tests will be based on module level distributed tests.</li> 
+        <li>Requires QE to port over earlier GMS tests that were based on Appserver and depended on Appserver asadmin commands et al and revert to a module level test as we did with initial GlassFish v2 testing.</li> 
+        <li>Fix P1 and P2 type bugs</li> 
+       </ul> </li> 
+      <li>Dependencies 
+       <ul> 
+        <li>Grizzly framework and util jars version 1.9.19</li> 
+        <li>Add GMS messaging load testing since HA relying directly on GMS over Grizzly messaging. (in v2.1, HA used jxta messaging directly)</li> 
+       </ul> </li> 
+     </ul> <h4><a name="GlassFishv3.1GMS-GMS02IntegrateShoalGMSintoGFv3.1usingdev.stopgapclusteringcmds"></a>GMS-02 Integrate Shoal GMS into GF v3.1 using dev. stop-gap clustering cmds </h3> 
+     <ul> 
+      <li>Sub-tasks 
+       <ul> 
+        <li>QE use the stop-gap clustering cmds/configurations so gms over grizzly testing in gf v3.1 does not have to wait till GMS-03 functionality complete. Should be simple replacement of stop-gap cluster command for equivalent asadmin cluster command when GMS-03 is ready.</li> 
+        <li>Make GMS OSGi compliant - GMS was not an OSGi compliant module. Changes being incorporated to mavenize GMS to publish to maven repository, and use GF v3 maven commands to build an OSGi compliant module</li> 
+        <li>Create a GMS Service in GlassFish that will act as a delegate to start and stop GMS module in each GF 3.1 instance</li> 
+       </ul> </li> 
+     </ul> <p>Create a GMS Service in GlassFish that will delegate start and stop operations on GMS module in each GF 3.1 instance. This is an @Startup class that will be part of the startup services in a clustered GF instance. Need to close on requirements with respect to when GMS module will be started - need architects to consider impact of introducing instability and unpredictability in group memberships with lazy startup guidelines. COMPLETED by Sheetal. </p> 
+     <ul> 
+      <li>Dependencies</li> 
+     </ul> <p>GMS for JoinedAndReady (instance start and restart), failure detection notifications and all Messaging pertaining to session replication. <br> DOL (possibly for deployment framework support to correctly handle automatic timer creation) &lt;br&gt; </p> <h4><a name="GlassFishv3.1GMS-GMS07GMSoverGrizzlyvirtualmulticast"></a>GMS-07 GMS over Grizzly virtual multicast</h3> 
+     <ul> 
+      <li>Description</li> 
+     </ul> <p>Multicast is not always enabled in all production environments. Additionally, it is not available in cload environments.<br> So this feature is desirable for those configurations. </p> <p>Implement as a staic list of ip address and ports that make up cluster. no dynamic capabilities when multicast not enabled in network.</p> 
+     <ul> 
+      <li>issues 
+       <ul> 
+        <li>Yet another configuration to test. Really need to run all existing shoal tests with this configuration to be sure it is working.</li> 
+       </ul> </li> 
+     </ul> <h4><a name="GlassFishv3.1GMS-GMS09MonitoringStatProviders"></a>GMS-09 Monitoring Stat Providers </h3> 
+     <ul> 
+      <li>Description</li> 
+     </ul> <p>Provide monitoring stats that will help with diagnosing GMS membership related issues. </p> <h4><a name="GlassFishv3.1GMS-Onepager%2FFunctionalSpecification"></a>One-pager / Functional Specification </h2> 
+     <ul> 
+      <li><a href="GlassFish_v3.1_GMS_One_Pager.html" title="GlassFish_v3.1_GMS_One_Pager">GMS one pager</a></li> 
+     </ul> <h4><a name="GlassFishv3.1GMS-DevTests"></a>Dev Tests </h2> 
+     <ul> 
+      <li>Information on GMS junit dev tests posted on <a href="DeveloperTestDashboard.html" title="DeveloperTestDashboard">Dev Tests</a> page</li> 
+      <li>TBD. Post how to run automated distributed shoal gms developer unit test will be added to <a href="DeveloperTestDashboard.html" title="DeveloperTestDashboard">Dev Tests</a> page</li> 
+      <li>14 junit tests. Run as part of "mvn install". Also, "ant run-junit-tests.</li> 
+      <li>distributed developer level tests (runnable with multiple instances on one machine AND distributed as one instance per machine.) 
+       <ul> 
+        <li>4 gms event notification tests (join/joinAndReady/suspected/failure/plannedShutdown)</li> 
+        <li>2 gms messaging tests</li> 
+       </ul> </li> 
+      <li>Automation of nightly running of shoal gms distributed developer level test (both on single machine and distributed) via hudson is in progress.</li> 
+     </ul> <h4><a name="GlassFishv3.1GMS-Quality"></a>Quality </h2> 
+     <ul> 
+      <li>Link to Test Plans</li> 
+     </ul> <h4><a name="GlassFishv3.1GMS-Documentation"></a>Documentation </h2> 
+     <ul> 
+      <li>Link to Documentation</li> 
+     </ul> <h4><a name="GlassFishv3.1GMS-MilestoneSchedule"></a>Milestone Schedule</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> GF Issue Tracker </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 01 </td> 
+         <td class="confluenceTd"> DONE </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> GMS-01 </td> 
+         <td class="confluenceTd"> GMS over Grizzly </td> 
+         <td class="confluenceTd"> QA handover done, no doc handover needed </td> 
+         <td class="confluenceTd"> Initial distributed unit level testing done. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 02 </td> 
+         <td class="confluenceTd"> DONE </td> 
+         <td class="confluenceTd"><a href="https://github.com/javaee/glassfish/issues/12189">gfit 12189 </a></td> 
+         <td class="confluenceTd"> GMS-02 </td> 
+         <td class="confluenceTd"> Integrate Shoal GMS into GF v3.1 using dev. stop-gap clustering cmds </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 03 </td> 
+         <td class="confluenceTd"> DONE </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/121910">gfit 12190 </a> </td> 
+         <td class="confluenceTd"> GMS-03 </td> 
+         <td class="confluenceTd"> Shoal GMS integration via domain.xml configuration </td> 
+         <td class="confluenceTd"> QA Handoff: PENDING(will complete on 6/28) Docs: yes </td> 
+         <td class="confluenceTd"> AS ARCH completed on <a href="http://wiki.glassfish.java.net/attach/GlassFishv3GMS/gmsconfig.rtf">gms config doc </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 04 </td> 
+         <td class="confluenceTd"> M3 </td> 
+         <td class="confluenceTd"> DONE <a href="https://github.com/javaee/glassfish/issues/12191">gfit 12191 </a></td> 
+         <td class="confluenceTd"> GMS-04 </td> 
+         <td class="confluenceTd"> Introduce GMS GroupHandle.getPreviousAliveOrReadyMembers() </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Dev test is sufficient. Only useful for consistent hash calculation in HA. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 05 </td> 
+         <td class="confluenceTd"> M3 </td> 
+         <td class="confluenceTd"> DONE <a href="https://github.com/javaee/glassfish/issues/12192">gfit 12192 </a></td> 
+         <td class="confluenceTd"> GMS-05 </td> 
+         <td class="confluenceTd"> Introduce GMS rejoin subevent in JOIN and JOINED_AND_READY notification </td> 
+         <td class="confluenceTd"> QA Handover YES, DOC: javadoc, Project shoal web pages </td> 
+         <td class="confluenceTd"> Status/Comments </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 06 </td> 
+         <td class="confluenceTd"> M? </td> 
+         <td class="confluenceTd"> v3.2 </td> 
+         <td class="confluenceTd"> GMS-07 </td> 
+         <td class="confluenceTd"> GMS over Grizzly virtual multicast </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> while desirable, impl and testing resources not identified yet </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 07 </td> 
+         <td class="confluenceTd"> M4 </td> 
+         <td class="confluenceTd"> DONE <a href="https://github.com/javaee/glassfish/issues/12195">gfit 12195 </a></td> 
+         <td class="confluenceTd"> GMS-08 </td> 
+         <td class="confluenceTd"> multicast enabled diagnostic utility </td> 
+         <td class="confluenceTd"> YES </td> 
+         <td class="confluenceTd"> DONE </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 08 </td> 
+         <td class="confluenceTd"> moved to v3.2 </td> 
+         <td class="confluenceTd"><a href="https://github.com/javaee/glassfish/issues/12194">gfit 12194 </a></td> 
+         <td class="confluenceTd"> GMS-09 </td> 
+         <td class="confluenceTd"> Monitoring Stat Providers </td> 
+         <td class="confluenceTd"> YES </td> 
+         <td class="confluenceTd"> This feature was moved from M4 to v3.2. message throughput, thread utilitization, number of detect SUSPECTED, number of FAILURES, </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 09 </td> 
+         <td class="confluenceTd"> M4(8/16) </td> 
+         <td class="confluenceTd"> DONE <a href="https://github.com/javaee/glassfish/issues/12563">gfit 12563 </a></td> 
+         <td class="confluenceTd"> GMS-10 </td> 
+         <td class="confluenceTd"> Upgrade from v2.1 cluster and group-management-service element's attributes/properties to v3.1 cluster/group-management-server </td> 
+         <td class="confluenceTd"> YES </td> 
+         <td class="confluenceTd"> manual testing completed. automated testing to be done in admin devtest. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 10 </td> 
+         <td class="confluenceTd"> M5(9/13) </td> 
+         <td class="confluenceTd"> DONE <a href="https://github.com/javaee/glassfish/issues/12196">gfit 12196 </a> </td> 
+         <td class="confluenceTd"> GMS-11 </td> 
+         <td class="confluenceTd"> Update external library Shoal GMS to meet GF v3.1 logging requirements </td> 
+         <td class="confluenceTd"> No QA handoff or doc </td> 
+         <td class="confluenceTd"> Status/Comments </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 11 </td> 
+         <td class="confluenceTd"> M1(5/24) </td> 
+         <td class="confluenceTd"> DONE </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> GMS one-pager </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Identifying dependencies and new methods being added. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 12 </td> 
+         <td class="confluenceTd"> M4 </td> 
+         <td class="confluenceTd"> DONE <a href="https://github.com/javaee/glassfish/issues/12193">GFIT 12193 </a> </td> 
+         <td class="confluenceTd"> GMS-06 </td> 
+         <td class="confluenceTd"> asadmin get-heatlth cluster or clustered-instance </td> 
+         <td class="confluenceTd"> YES </td> 
+         <td class="confluenceTd"> automated test in admin devtest </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task </th> 
+         <th class="confluenceTh"> Target Milestone </th> 
+         <th class="confluenceTh"> Start </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Owner(s) </th> 
+         <th class="confluenceTh"> Feature ID </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Test GMS over Grizzly in shoal unit testing based on evaluation criteria </td> 
+         <td class="confluenceTd"> DONE </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Kazem, Steve DiMilla </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> maintain gf v2.1 quality. Run 6-8 critical scenarios of all scenarios over several iterations to establish feasibility of Grizzly transport based implementation and stability levels equivalent to the JXTA based implementation. still need scenario 51. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Automate running shoal distributed dev tests via Hudson </td> 
+         <td class="confluenceTd"> M1 </td> 
+         <td class="confluenceTd"> 05/03 </td> 
+         <td class="confluenceTd"> 05/17 </td> 
+         <td class="confluenceTd"> Steve DiMilla </td> 
+         <td class="confluenceTd"> GMS-01 </td> 
+         <td class="confluenceTd"> automation of standard shoal notification validation nearly complete. msg throughput test still being worked on. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> OSGI shoal-gms.jar </td> 
+         <td class="confluenceTd"> M1 </td> 
+         <td class="confluenceTd"> DONE </td> 
+         <td class="confluenceTd"> DONE </td> 
+         <td class="confluenceTd"> Sheetal </td> 
+         <td class="confluenceTd"> GMS-02 </td> 
+         <td class="confluenceTd"> initial pass completed. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Load shoal-gms.jar only when gms-enabled </td> 
+         <td class="confluenceTd"> M2 </td> 
+         <td class="confluenceTd"> 5/2? </td> 
+         <td class="confluenceTd"> endDate </td> 
+         <td class="confluenceTd"> Bobby or Joe (whoever is free first to work on it) </td> 
+         <td class="confluenceTd"> GMS-02 or GMS-03 </td> 
+         <td class="confluenceTd"> only load shoal-gms.jar when a clustered instance/DAS has a gms-enabled cluster. Check with Jerome if okay to enable gms in gfv3.1 before implementing this task. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Meet GF v3.1 OSGI requirements </td> 
+         <td class="confluenceTd"> M2 </td> 
+         <td class="confluenceTd"> start </td> 
+         <td class="confluenceTd"> end </td> 
+         <td class="confluenceTd"> Bobby </td> 
+         <td class="confluenceTd"> GMS-02 </td> 
+         <td class="confluenceTd"> Export minimal gms pks based on OSGI requirements documented in <a href="OsgiPkgDepAnalyser.html" title="OsgiPkgDepAnalyser">How to run OSGI Pkg Dep Analyzer </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> stop-gap clustering control in gf v3.1 </td> 
+         <td class="confluenceTd"> M1 </td> 
+         <td class="confluenceTd"> DONE </td> 
+         <td class="confluenceTd"> DONE </td> 
+         <td class="confluenceTd"> Steve DiMilla </td> 
+         <td class="confluenceTd"> GMS-02 </td> 
+         <td class="confluenceTd"> dev handoff to QE was completed on April 29. Note: cluster/pom.xml is not building gms-adapter yet. Check with Jerome if okay to enable it before completing Lazy loading of shoal-gms.jar only when cluster gms-enabled is on. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> DAS joins all of its domain.xml clusters when started </td> 
+         <td class="confluenceTd">DONE </td> 
+         <td class="confluenceTd"> Start </td> 
+         <td class="confluenceTd"> endDate </td> 
+         <td class="confluenceTd"> Joe </td> 
+         <td class="confluenceTd"> GMS-03 </td> 
+         <td class="confluenceTd"> task documents v2.1 impl behavior , may need to be revisited in v3.1 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> DAS dynamically joins cluster created by "asadmin create-cluster" </td> 
+         <td class="confluenceTd"> DONE </td> 
+         <td class="confluenceTd"> Start </td> 
+         <td class="confluenceTd"> endDate </td> 
+         <td class="confluenceTd"> Joe </td> 
+         <td class="confluenceTd"> GMS-03 </td> 
+         <td class="confluenceTd"> task docs v2.1 impl behavior, may need to be revisited in v3.1 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Test GMS within gf v3.1 with stop-gap clustering </td> 
+         <td class="confluenceTd"> M2 </td> 
+         <td class="confluenceTd"> start </td> 
+         <td class="confluenceTd"> DONE </td> 
+         <td class="confluenceTd"> Kazem/Steve </td> 
+         <td class="confluenceTd"> featureID </td> 
+         <td class="confluenceTd"> stop-gap clustering implemented and initial gms integration into gf is completed. cluster/gms-adapter checked in but building not enabled yet by cluster/pom.xml. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Test GMS within gf v3.1 with domain.xml/asadmin cmds </td> 
+         <td class="confluenceTd"> M? </td> 
+         <td class="confluenceTd"> start </td> 
+         <td class="confluenceTd"> endDate </td> 
+         <td class="confluenceTd"> Kazem </td> 
+         <td class="confluenceTd"> featureID </td> 
+         <td class="confluenceTd"> use domain.xml config and GF v3.1 asadmin cmds. Depends on asadmin start-cluster, start-instance, stop-instance, stop-cluster. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> asadmin get-health clustered-instance or cluster </td> 
+         <td class="confluenceTd"> M4 </td> 
+         <td class="confluenceTd"> startDate </td> 
+         <td class="confluenceTd"> 3-7 days </td> 
+         <td class="confluenceTd"> Joe </td> 
+         <td class="confluenceTd"> GMS-06 </td> 
+         <td class="confluenceTd">note: only works for gms-enabled cluster. Leverage existing GMS get-member-status method. most time will be implementing Admin CLI command side. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Developer unit test for Distributed State Cache </td> 
+         <td class="confluenceTd"> M3 </td> 
+         <td class="confluenceTd"> CANCELLED </td> 
+         <td class="confluenceTd"> 5 day task </td> 
+         <td class="confluenceTd"> Joe Fialli </td> 
+         <td class="confluenceTd"> featureId </td> 
+         <td class="confluenceTd"> source of NPE and hangs in v2.1, IIOP will use DSC as it did in v2.1 to get IIOP address of other members in cluster </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Disable Distributed State Cache for GF v3.1 </td> 
+         <td class="confluenceTd"> M3 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 1 day task </td> 
+         <td class="confluenceTd"> Joe Fialli </td> 
+         <td class="confluenceTd"> featureId </td> 
+         <td class="confluenceTd"> more efficient for IIOP to just read IIOP port info directly from domain.xml. transaction is no longer using fencing, so add property to disable DSC completely. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Performance Tuning: Tune Grizzly NetworkManager default settings </td> 
+         <td class="confluenceTd"> M4 </td> 
+         <td class="confluenceTd"> StartDate </td> 
+         <td class="confluenceTd"> EndDate </td> 
+         <td class="confluenceTd"> Joe Fialli </td> 
+         <td class="confluenceTd"> featureId </td> 
+         <td class="confluenceTd"> tune default values </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Place ALL SEVERE, WARNING, INFO log messages into logstrings.properties. Must have event id (GMS-050) </td> 
+         <td class="confluenceTd"> M5 </td> 
+         <td class="confluenceTd"> startDate </td> 
+         <td class="confluenceTd"> endDate </td> 
+         <td class="confluenceTd"> Bobby </td> 
+         <td class="confluenceTd"> GMS-11 </td> 
+         <td class="confluenceTd"> status/comments </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Add Diagnostic messages for SEVERE and WARNING </td> 
+         <td class="confluenceTd"> M5 </td> 
+         <td class="confluenceTd"> startDate </td> 
+         <td class="confluenceTd"> endDate </td> 
+         <td class="confluenceTd"> Joe </td> 
+         <td class="confluenceTd"> GMS-11 </td> 
+         <td class="confluenceTd"> Minimally required for GMS properties when misset cause instance to not come up. (i.e. BIND_INTERFACE_ADDRESS) </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishv3.1GMS-References%2FLinks"></a>References / Links </h2> 
+     <ul> 
+      <li><a href="http://wikis.sun.com/download/attachments/209655406/gmsconfig_gfv3_1.pdf">GMS configuration in domain.xml</a> <h4><a name="GlassFishv3.1GMS-EmailAlias"></a>Email Alias </h2></li> 
+      <li>Please contact us at <a href="mailto:dev@shoal.java.net">dev@shoal.java.net</a></li> 
+     </ul> 
+     <hr> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874937/21365681.pdf">gmsconfig_gfv3_1.pdf</a> (application/x-download) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874937/21365148.pdf">gms_gfv3_1_onepager.txt.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874937/21365204.pdf">gmsconfig_gfv3_4.rtf.pdf</a> (application/pdf) 
+      <br> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Nov 08, 2011 by 
+<font color="#0050B2">joe.fialli</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

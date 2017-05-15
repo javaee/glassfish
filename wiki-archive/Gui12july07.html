@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : Gui12july07</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="Gui12july07-MeetingminuteforJuly%2C122007"></a>Meeting minute for July,12 2007</h2> <h4><a name="Gui12july07-Attendes%3AAnissa%2CSreenivas%2CMike%2CSenthil%2CSteve%2CJudy%2CAnissa%2CKen%2CAna"></a>Attendes:Anissa, Sreenivas, Mike, Senthil, Steve, Judy, Anissa, Ken, Ana</h2> <h4><a name="Gui12july07-Agendafor7%2F12%2F2007"></a>Agenda for 7/12/2007 </h2> 
+     <ul> 
+      <li>Status and issues relating to Doc.</li> 
+      <li>QE status</li> 
+     </ul> <p>I want to discuss the memory issue that QE run into when running the automated test Developer status</p> 
+     <ul> 
+      <li>Develper status</li> 
+     </ul> <h4><a name="Gui12july07-MeetingDetail"></a>Meeting Detail</h2> <h4><a name="Gui12july07-DOC"></a>DOC</h3> 
+     <ul> 
+      <li>Rajeev is not able to dial in. Here is the status report from him.</li> 
+     </ul> <p> 1. Search related bugs are fixed. I checked the builds for both Solarisand Windows 2000 and found the Search working. I do not have an XPmachine and hence haven't tested it there. But it should have got fixedbecause this problem seems to have been caused by a file binary calledDOCS.TAB, which was not checked in as a binary.<br> 2. There was a bug to create Index entries for JBI terms. This has alsobeen fixed.<br> 3. We are going thru all the screens again and checking if there any broken links. We found a couple of them and I have sent the screennames to Senthil. The mapping is correct in Helplinks.properties andthe corresponding html files have been checked in.<br> 4. Regression bug 6532532: For now, I have added a note in the help forthe Physical Destinations page. I have mentioned this in the bug description.</p> 
+     <ul> 
+      <li>Mike is meeting with the doc writer as he is aware of 2 screens content not correct. Happy with the overall OLH for JBI screen, not great, but fine. There are some bugs relating to JBI runtime, he is trying to document the different use cases that work.</li> 
+      <li>Anissa checked the OLH.</li> 
+      <li>Judy request gui team to review Admin Guide. Anissa will contact Rajeev to see if he needs the team to review it.</li> 
+     </ul> <h4><a name="Gui12july07-HIE"></a>HIE</h3> 
+     <ul> 
+      <li>Mike has been testing with IE6, product name is still broken in mashhead, relating to transparency file issue in IE6. IE6 is white text on white background. Mike will file an issue. We will see if we get a new gif and whether checked in.</li> 
+      <li>Inform Steve that we may need screens for cert. management, but no action needed from Steve till GUI team has decided that will be the one of the new feature for next release.</li> 
+     </ul> <h4><a name="Gui12july07-QE"></a>QE</h3> 
+     <ul> 
+      <li>Judy mentioned the issue the QE team runs into when doing automated testing. This prevents them to generate complete test report in a timely manner.</li> 
+     </ul> <p> 1. When running the test continuously, involving deploy/undeploy/redeploy app, they frequently see the out of memory problem. Sujatha has filed a bug reporting this before.</p> <p> 6573563:b50e-promoted EE build: Server crashes and server.log shows NullPointerException<br> 2. Another issue is after running the test for sometims, and did a lot of start/stop domain/cluster/instance etc. the server stopped response, and seems to hang. <br> Sent the above question to Kedar who suggested to increase heap size and capture server.log when it happened.<br> There is not much GUI can do in this case, but will keep an eye on it.</p> <h4><a name="Gui12july07-Developer"></a>Developer</h3> 
+     <ul> 
+      <li>Mike reported that he still sees problem in being logged out of the console randomly. Not easy to reproduce, but will request Priti to do some Selinum test case to see if reproduce consistently.</li> 
+      <li>Ana also sees the logout problem, and it seems only occurs when running on Window.</li> 
+      <li>GUI never invalidate the session exception when user specifically logged out, and Ana has confirmed that part of the code was never called. Ken speculates that maybe some limit is reached and causes that.</li> 
+      <li>Mike also experienced problem when logout button doesn't function properly. After pressing logout, he got a blank screen, and refreshing the browser showed he is still logging in. This is a concern since the JBI code uses a lot of session variable.</li> 
+      <li>Probably will change the code in the next release to not rely on session variable unless really need to.</li> 
+     </ul> <h4><a name="Gui12july07-BacktoAdminConsoleiteamAdminGUI"></a><a href="AdminGUI.html" title="AdminGUI">Back to Admin Console iteam </a></h2> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 08, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

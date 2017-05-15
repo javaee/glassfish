@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : AdministrationReferenceResolved</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="AdministrationReferenceResolved-ResolvedCommentsfortheAdministrationReference"></a>Resolved Comments for the Administration Reference</h2> <p>The following table lists comments that have been resolved for the <a href="AdministrationReference.html" title="AdministrationReference">Administration Reference</a>.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Comment ID </th> 
+         <th class="confluenceTh"> Section, Page Number/URL </th> 
+         <th class="confluenceTh"> Comment </th> 
+         <th class="confluenceTh">Status – (<font color="lime">RESOLVED</font>/<font color="red">UNRESOLVED</font>) </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> 28 </td> 
+         <td class="confluenceTd"> Orig : lb-enabled false (optional) If true, all load-balancers consider this application available to them. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Modification: lb-enabled false (optional) If true, all load-balancers referring to this application consider its available to them. </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd"> 28 </td> 
+         <td class="confluenceTd"> Attributes devide-host, device-port, ssl-proxy-host, ssl-proxy-port are used to identify the Physical load balancer (the ssl and non-ssl host and port info). </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> These attributes are used by the apply-http-lb-changes and also to automatically transfer the loadbalancer changes when auto-apply-enabled flag is turned on. </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Might atleast want to mention about the physical loadbalancer. </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3 </td> 
+         <td class="confluenceTd"> 128 </td> 
+         <td class="confluenceTd"> Orig : lb-enabled false (optional) If true, all load-balancers consider this server instance available to them. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Modification: lb-enabled false (optional) If true, all load-balancers referring to this server instance consider its available to them. </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Prashanth </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> <a href="http://wiki.glassfish.java.net/attach/AdministrationReference/Review-Administration-reference.txt">More feedback </a> </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4 </td> 
+         <td class="confluenceTd"> Default Paths and names,12 </td> 
+         <td class="confluenceTd"> instance-dir is not referred anywhere, it should be removed as it is confusing <b>JP:</b> instance-dir is defined in every doc preface. </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5 </td> 
+         <td class="confluenceTd"> Table 1-159 page 126 </td> 
+         <td class="confluenceTd"> mapped-principal-class this is not present by default in domain.xml. We need to capture this information <b>JP:</b> Default values section discusses this issue. </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6 </td> 
+         <td class="confluenceTd"> Page 30 </td> 
+         <td class="confluenceTd"> name of the class should be com.sun.enterprise.security.auth.realm.file.FileRealm instead of com.iplanet.ias.security.auth.realm.file.FileRealm </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 7 </td> 
+         <td class="confluenceTd"> Page 79 </td> 
+         <td class="confluenceTd"> default values are incorrect </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 8 </td> 
+         <td class="confluenceTd"> page 29 </td> 
+         <td class="confluenceTd"> default values are incorrect </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 9 </td> 
+         <td class="confluenceTd"> page 31 </td> 
+         <td class="confluenceTd"> In GlassFish v2, the assign-groups property in CertificateRealm has been extended to FileRealm, LDAPRealm, SolarisRealm, and JDBCRealm. </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 10 </td> 
+         <td class="confluenceTd"> Page 31 </td> 
+         <td class="confluenceTd"> JDBCRealm properties are not documented. Please see <b><a href="http://blogs.oracle.com/swchan/entry/jdbcrealm_in_glassfish">this blog post </a></b> </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 11 </td> 
+         <td class="confluenceTd"> Page 106 </td> 
+         <td class="confluenceTd"> default for auth-layer="SOAP" </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 12 </td> 
+         <td class="confluenceTd"> Page 118 </td> 
+         <td class="confluenceTd"> default for security.config is incorrect </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 13 </td> 
+         <td class="confluenceTd"> Page 130 </td> 
+         <td class="confluenceTd"> ssl-enabled of http-protocol is not implemented , so it should not be referred to here. See page 71 -"ssl-enabled - (optional) Not implemented. Use ssl subelements of Âœhttp-listener on page 67 elements." </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 14 </td> 
+         <td class="confluenceTd"> Page 131 </td> 
+         <td class="confluenceTd"> default for cert-nickname should be s1as, </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 15 </td> 
+         <td class="confluenceTd"> Page 130 </td> 
+         <td class="confluenceTd"> I dont think this statement is true - "In the developer profile, SSL is globally disabled by default." </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 16 </td> 
+         <td class="confluenceTd"> Page 131 </td> 
+         <td class="confluenceTd"> allowed values for ssl3-tls-ciphers should be updated or may have to say it depends on JCE Provider <b>JP:</b> Values are correct. </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> hzhang </td> 
+         <td class="confluenceTd"> lifecycle-module, Table 1-104 </td> 
+         <td class="confluenceTd"> The classpath attribute of lifecycle module, the default should the application-root attribute of "domain" element, not "server" element. </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> hzhang </td> 
+         <td class="confluenceTd"> j2ee-application, Table 1-80 </td> 
+         <td class="confluenceTd"> The directory-deployed attribute of j2ee-applications, it should say whether the application has been deployed "as a directory" instead of "to a directory". This same change should apply to all directory-deployed attributes (web-module, ejb-module, appclient-module, connector module, extension-module). </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Jagadish Ramu </td> 
+         <td class="confluenceTd"> jdbc-connection-pool, Table 1-86 </td> 
+         <td class="confluenceTd"> Attribute: "datasource-classname". In Description: java.sql.DataSource, java.sql.XADataSource has to be javax.sql.DataSource, javax.sql.XADataSource </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Jagadish Ramu </td> 
+         <td class="confluenceTd"> jdbc-connection-pool, Table 1-86 </td> 
+         <td class="confluenceTd"> Attribute validate-atmostperiod-in-seconds has to be validate-atmost-once-period-in-seconds </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Jagadish Ramu </td> 
+         <td class="confluenceTd"> connector-connection-pool, Table 1-32 </td> 
+         <td class="confluenceTd"> Attribute validate-atmostperiod-in-seconds has to be validate-atmost-once-period-in-seconds </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Ramesh Parthasarathy </td> 
+         <td class="confluenceTd"> jms-service, Properties Pg 91 </td> 
+         <td class="confluenceTd"> We added the following properties under jms-service for fixing <a href="http://bt2ws.central.sun.com/CrPrint-2146030">http://bt2ws.central.sun.com/CrPrint-2146030</a> <p> user-name : specifies the user name for creating the jms connection default value is guest, password : specifies the password for creating the jms connection default is guest. These are optional properties, and the user has to configure these properties only if the default username/password of "guest/guest" is not available in the broker. </p></td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> sparrow-001 </td> 
+         <td class="confluenceTd"> Page 9 "as-install" </td> 
+         <td class="confluenceTd"> Is there a schedule of adding installation for "Mac OS X" ? </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> We do support the Mac OS, and as-install is the same as for Solaris and Linux. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> sparrow-002 </td> 
+         <td class="confluenceTd"> Page 13 "About the domain.xml File" </td> 
+         <td class="confluenceTd"> "The encoding is UTF-8 to maintain compatibility with regular UNIX text editors." Is it correct ? I open the file "domain.xml" to make sure the text encoding. The file is encoded by "iso-8859-1 as Latin 1". </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> Sentence deleted as instructed by the main domain.xml engineer. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> sparrow-003 </td> 
+         <td class="confluenceTd"> Page 15 "Element Hierarchy" </td> 
+         <td class="confluenceTd"> Can "description" tag be omitted ? </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> Description elements have become attributes. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> shalm-001 </td> 
+         <td class="confluenceTd"> Page 50 idle-timeout-in-seconds </td> 
+         <td class="confluenceTd"> Add this to the description : "This timeout value must be kept shorter than the server side(Database) timeout value to prevent the accumulation of unusable connections in the application." </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> shalm-002 </td> 
+         <td class="confluenceTd"> Page 52 connection-creation-retry-attempts </td> 
+         <td class="confluenceTd"> Modify the description as "Specifies the number of attempts to create a new connection in case of a failure" </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> shalm-003 </td> 
+         <td class="confluenceTd"> Page 52 associate-with-thread </td> 
+         <td class="confluenceTd"> Append this to the description : "Specifies whether a connection is associated with the thread to enable the thread to reuse the connection. If associate-with-thread is set to false, the thread must obtain a connection from the pool each time the thread requires a connection." </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> shalm-004 </td> 
+         <td class="confluenceTd"> Page 52 match-connections </td> 
+         <td class="confluenceTd"> Add to the description : "Specifies whether a connection that is selected from the pool should be matched with the connections with certain credentials". </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> shalm-005 </td> 
+         <td class="confluenceTd"> Page 52 max-connection-usage-count </td> 
+         <td class="confluenceTd"> Add to the description : "By limiting the maximum number of times a connection can be reused, you can avoid statement leaks if the application does not close statements". </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> mvatkina-001 </td> 
+         <td class="confluenceTd"> Page 87-88 transaction-service </td> 
+         <td class="confluenceTd"> Add a note that while the elements are available, the ones that correspond to the transaction recovery do not have any effect as the transaction recovery is not supported in Prelude </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> Added a note: Transaction recovery is not implemented for GlassFish v3 Prelude, even if the JTS and OMG add-on components are installed. Therefore, all transaction service attributes and properties pertaining to transaction recovery or transaction logs are not implemented. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> maheshk-01 </td> 
+         <td class="confluenceTd"> Page 32 </td> 
+         <td class="confluenceTd"> Add a note for the following elements as we do not support Stateful session beans in prelude: cache-resice-quantity, max-cache-size, cache-idle-timeout-in-seconds, removal-timeout-in-seconds, victim-selection-policy </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> maheshk-02 </td> 
+         <td class="confluenceTd"> Page 33 </td> 
+         <td class="confluenceTd"> commit-option: Add a note saying that CMP beans are not yet supported in prelude </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> maheshk-03 </td> 
+         <td class="confluenceTd"> Page 33 </td> 
+         <td class="confluenceTd"> session-store: Add a note saying that Stateful session beans are not yet available in prelude </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> shalm-006 </td> 
+         <td class="confluenceTd"> Page 52 associate-with-thread </td> 
+         <td class="confluenceTd"> Add to the description : "This is an option to associate a connection with the thread such that when the same thread is in need of a connection, it can reuse the connection already associated with that thread. In this case, the overhead of getting a connection from the pool is avoided. However when this value is set to true, one should verify that the value of max-pool-size attribute is comparable to the max-thread-pool-size attribute of the thread-pool element. If the max-thread-pool-size value is way high than the max-pool-size, lot of time is spent in associating a connection to the new thread, after dissociating it from an older one. This attribute is basically used in cases where the user needs the thread pool to reuse connections thereby avoiding an overhead." </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> shalm-007 </td> 
+         <td class="confluenceTd"> Page 51 connection-leak-timeout-in-seconds </td> 
+         <td class="confluenceTd"> Add to the description : "This attribute is used along with connection-leak-reclaim to avoid potential connection leaks from the application. More details are at <a href="http://blogs.oracle.com/ks*tiz/entry/connection_leak_tracing">http://blogs.oracle.com/ks*tiz/entry/connection_leak_tracing</a> <p>." </p></td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> shalm-008 </td> 
+         <td class="confluenceTd"> Page 51 connection-validation-method </td> 
+         <td class="confluenceTd"> Add to the description, after auto-commit and meta-data bullet points : "Because many JDBC drivers cache the results of these calls, they do not always provide reliable validations. Check with the driver vendor to determine whether these calls are cached or not." Add to the description after table bullet point : "The table must exist and be accessible, but it doesn't require any rows. Do not use an existing table that has a large number of rows or a table that is already frequently accessed. More details can be found at <a href="http://blogs.oracle.com/JagadishPrasath/entry/connection_validation_in_glassfish_jdbc">http://blogs.oracle.com/JagadishPrasath/entry/connection_validation_in_glassfish_jdbc</a> <p>." </p></td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> shalm-009 </td> 
+         <td class="confluenceTd"> Page 52 match-connections </td> 
+         <td class="confluenceTd"> Add to the description : "If the connection pool is used by applications that have multiple user credentials, it is necessary that match-connections is turned ON. Connection pool will match the request's credential with the connections in the pool and return a matched connection for use. In case of new requests with different credentials, unmatched free connections will be automatically purged to provide new connections to satisfy the new requests. This attribute need not be set to true if it is known that there is only one credential used by the applications and hence the pool will have homogeneous connections." </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> shalm-010 </td> 
+         <td class="confluenceTd"> Page 52 statement-timeout-in-seconds </td> 
+         <td class="confluenceTd"> Add to the description : "This is the time in seconds after which abnormally running queries are terminated. A long running jdbc query executed by an application may leave it in a hanging state, unless a timeout is explicitly set on the statement. This provides the user to know that all queries would automatically timeout if not completed within the specified period. When statements are created, the queryTimeout will be set according to the value specified in this property. This will work only when the underlying JDBC driver supports queryTimeout for Statement, PreparedStatement, CallableStatement and ResultSet." </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> shalm-011 </td> 
+         <td class="confluenceTd"> Page 52 wrap-jdbc-objects </td> 
+         <td class="confluenceTd"> Change description to : "When this is set to true, wrapped jdbc objects are got for Statement, PreparedStatement, CallableStatement, ResultSet and DatabaseMetaData. This option makes sure that Statement.getConnection() will be the same as DataSource.getConnection(). Hence this option should be set to true when both Statement.getConnection() and DataSource.getConnection() are done. Default is set to false in the Enterprise server so as to not break the existing applications." </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> tjquinn-001 </td> 
+         <td class="confluenceTd"> p. 51, table 1-45 </td> 
+         <td class="confluenceTd"> The web-module-config element makes sense only if the parent engine's 'sniffer' value is "web" and should not appear otherwise. If we think that the description in the table "Configures the parent web module." conveys this, then fine. It might be good to elaborate there just a bit. </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> Added "Applicable only if this engine element has a sniffer value of web" to the table. Added "Applicable only if the parent engine element has a sniffer value of web" to the web-module-config element description. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> tjquinn-002 </td> 
+         <td class="confluenceTd"> p. 25, table 1-8 and p. 95, table 1-104, property row </td> 
+         <td class="confluenceTd"> (There might be a better place than the admin refc doc to describe the following...) As June has mentioned in e-mail, different deployers will pay attention to different property settings at the application and/or module level. The <tt>deploy</tt> command supports --property and --properties options (they are equivalent) to set property names and values at the application level. I'm not sure if there is a way other than the <tt>asadmin set</tt> command and dotted notation to set properties at the module level. There is an application-level property java-web-start-enabled which influences whether app clients in that application are enabled for Java Web Start access. Do we want to gather all such properties here in the admin refc? </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> Added all the properties I know about to the application element properties table, including java-web-start-enabled (moved from under module), the four lifecycle module properties, and the seven jruby properties. Also added an intro to the properties that describes how to set them during deployment and how the engine sniffer attribute determines which are valid. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> chaase-001 </td> 
+         <td class="confluenceTd"> p. 130, Table 1Ã¢Â€Â"165, thread-pool Attributes </td> 
+         <td class="confluenceTd"> The default values shown here are not the same as the defaults used by the asadmin create-threadpool command and the Admin Console. The admin tools create a pool with a max-thread-pool-size of 5, not 200; with a min-thread-pool-size of 2, not 0; with an idle-thread-timeout-in-seconds of 900, not 120; and with a max-queue-size of -1, not 4096. Are the tools doing the wrong thing, or is the document incorrect? </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> I corrected the defaults to Tim's config analyzer output. Also added recommended values for various thread pool uses. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>Return to <a href="GlassFishDocs.html" title="GlassFishDocs">main comments page</a></p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 17, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:42.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

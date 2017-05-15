@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassfishizeSunDTD</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>Proposal to glassfish-ize the sun specific deployment descriptor dtd files</p> <h4><a name="GlassfishizeSunDTD-Scope%3A"></a>Scope:</h2> <p>This proposal is targeted for the sun specific deployment descriptors which complement the standard deployment descriptors.</p> <p>We will glassfish-ize the EE 6 (glassfish v3) set of the dtd files.</p> <p>The following is the list of the sun-*.dtd files which will be covered by this proposal:</p> <p>sun-application-client_6_0-0.dtd<br> sun-application_6_0-0.dtd<br> sun-ejb-jar_3_1-0.dtd<br> sun-web-app_3_0-0.dtd<br> sun-cmp-mapping_1_2.dtd</p> <h4><a name="GlassfishizeSunDTD-Thenameoftheglassfishizeddtds%3A"></a>The name of the glassfish-ized dtds:</h2> <p>The glassfish-ized dtd files will have "glassfish" instead of "sun", and the version number will be bumped up for the last digit.</p> <p>The following is the list of the proposed glassfish-ized dtd file names:</p> <p>glassfish-application-client_6_0-1.dtd<br> glassfish-application_6_0-1.dtd<br> glassfish-ejb-jar_3_1-1.dtd<br> glassfish-web-app_3_0-1.dtd<br> glassfish-cmp-mapping_1_3.dtd</p> <h4><a name="GlassfishizeSunDTD-TheDOCTYPEoftheglassfishizeddtds%3A"></a>The DOCTYPE of the glassfish-ized dtds:</h2> <p>Using the sun-web-app_3_0-0.dtd -&gt; glassfish-web-app_3_0-1.dtd as example:</p> <p>This is the DOCTYPE of the sun-web-app_3_0-0.dtd:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;!DOCTYPE sun-web-app
+PUBLIC "-//Sun Microsystems, Inc.//DTD GlassFish Application Server 3.0 Servlet 3.0//EN"
+"http://www.sun.com/software/appserver/dtds/sun-web-app_3_0-0.dtd"&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>And this is the proposed DOCTYPE of the glassfish-web-app_3_0-1.dtd:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;!DOCTYPE glassfish-web-app
+PUBLIC "-//GlassFish.org//DTD GlassFish Application Server 3.1 Servlet 3.0//EN"
+"http://glassfish.org/dtds/glassfish-web-app_3_0-1.dtd"&gt;</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="GlassfishizeSunDTD-Thecontentsoftheglassfishizeddtds%3A"></a>The contents of the glassfish-ized dtds:</h2> <p>The initial contents of the glassfish-ized dtd files will have the same contents as their sun-*.dtd counterparts except for the root element. The root element will be changed from "sun-" to "glassfish-".</p> <p>For example, the root element of the glassfish-web-app_3_0-1.dtd will be glassfish-web-app (the root element of the sun-web-app_3_0-0.dtd is sun-web-app).</p> <p>For any content changes needed for the glassfish 3.1 release, they will be made on top of the existing contents in this set of the dtds.</p> <h4><a name="GlassfishizeSunDTD-Supportbackwardcompatibilityofsun.dtdfiles."></a>Support backward compatibility of sun-*.dtd files.</h2> <p>All the existing sun-<b>.dtd files will continue to be supported (and deprecated). When both sun-</b>.xml and glassfish-<b>.xml are present in the same archive, the sun-</b>.xml will be ignored with a warning message.</p> <h4><a name="GlassfishizeSunDTD-Openissues%3A"></a>Open issues:</h2> <p>1. For the scope of the glassfish-ized dtds:</p> <p>a. Do we need to glassfish-ize sun-connector dtd? The sun-connector dtd had been deprecated since EE 5 time and we don't have a sun-connector dtd for EE 6.<br> Had a discussion with Siva. We do not need to have glassfish-* equivalent for sun-connector dtd. - Jagadish</p> <p>b. What should we do with sun-cmp dtd? It does not belong in the main set of the sun deployment descriptor dtds, but kind of related. Is sun-cmp dtd deprecated?<br> cmp is still not deprecated hence sun-cmp-mapping_1_2.dtd is still relevant for this exercise - Mitesh</p> <p>2. For the name of the glassfish-ized dtd files, should we bump up versions from glassfish 3.0 sun-*.dtds as now is glassfish 3.1, like this?</p> <p>glassfish-application-client_6_0-1.dtd<br> glassfish-application_6_0-1.dtd<br> glassfish-ejb-jar_3_1-1.dtd<br> glassfish-web-app_3_0-1.dtd<br> Yes, this is what we decided to do now. - Hong</p> <p>3. For the DOCTYPE of the glassfish-ized dtd files, what do people think about the public id, and where should we upload the dtd files? Will it be somewhere under glassfish.org (do we own the site) or somewhere under oracle.com?</p> <p>4. Slightly off-topic, but there are other files with "sun-" prefixes (such as sun-acc.xml) that will also need to change. Some of the questions Hong has raised apply to them as well - such as the DOCTYPE public ID, the URL - and are we going to try to make these changes all at once or let them occur over time?</p> <p>5. I assume that the lib/dtds directory will have both of these files: sun-web-app_3_0-0.dtd AND glassfish-web-app_3_0-1.dtd, RIGHT? This same assumption applies to ALL the dtd files that describe deployment descriptors and the like... (not just the sun-web-app_3_0-0.dtd file...)<br> Yes, both types of dtds will be present as we need to support the backward compatibility (through sun-web-app_3_0-0.dtd) and the new glassfish-ized version (through glassfish-web-app_3_0-0.1td). - Hong</p> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Aug 28, 2012 by 
+<font color="#0050B2">10193</font>. Exported from wikis.oracle.com on May 27, 2015 20:44.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

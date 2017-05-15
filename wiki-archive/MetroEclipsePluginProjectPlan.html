@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : MetroEclipsePluginProjectPlan</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="MetroEclipsePluginProjectPlan-Chapter1.ProjectResearchSummary"></a>Chapter 1. Project Research Summary</h2> <h4><a name="MetroEclipsePluginProjectPlan-StateoftheArtSummary"></a>State of the Art Summary</h3> <p>Today web service has become a common approach to expose the services-applications over the network. It is the software system designed to support interoperability from machine to machine over the network. Web services are being used everywhere. Some specifications have been built or being built to improve Web service interoperability and to add more features. These are known as WS-* or Quality Of Service (QOS) of WSIT(Web Service Interoperability Technology). <sup><a href="#MetroEclipsePluginProjectPlan-1">1</a></sup> These features are - message optimization, reliable messaging, security, bootstrapping and configuration, Currently these WSIT features are included in Netbeans Metro plug-in. Netbeans supports easy creation and modification of web services and these WSIT features through Metro Plug-in. <sup><a href="#MetroEclipsePluginProjectPlan-2">2</a></sup> Netbeans supports top-down, bottom-up and even starting from scratch approach to create web services. We can edit or add WSIT features just by doing right clicking on project in Netbeans. Eclipse is another heavily used IDE to create different projects. Perhaps it is used more than Netbeans. Eclipse doesn't support direct creation of WSIT features. Eclipse is not as easy as Netbeans in creating Web services. There are some plug-ins available for eclipse, those support web service creation. Significant efforts have been done for the core functionalities to be added in eclipse in Axis2 and lomboz plug-ins. They have rich set of features to generate web service in eclipse. <sup><a href="#MetroEclipsePluginProjectPlan-3">3</a></sup> Axis2 of Apache and lomboz are such plug-ins, but they don't support web service creation from scratch nor they provide WSIT or QoS features. Above mentioned plug-ins are open source and promised to deliver more features in their projects. So ultimately they don't support web service creation without having java class or WSDL. Of course we can implement every features described above in Netbeans through some external tools. By using external tools like Wsimport, Wsgen maven2 and SOAP UI or ant build script or CLI, we can implement web service features. <sup><a href="#MetroEclipsePluginProjectPlan-4">4</a></sup> But it is little difficult as manually creating or modifying WSIT configuration is hard. So we have taken a step to build such a plug-in for eclipse that is replica of Metro plug-in in Netbeans. It will support creating web service from scratch, it will support adding or editing WSIT features ( or call it Metro features or QoS) just by doing right click on eclipse project.</p> <h4><a name="MetroEclipsePluginProjectPlan-Chapter2.ProjectRequirements%2CDependencies%2CandDeliverables"></a>Chapter 2. Project Requirements, Dependencies, and Deliverables</h2> <h4><a name="MetroEclipsePluginProjectPlan-Requirements"></a>Requirements</h3> <p><b>Functional Requirements</b></p> 
+     <div class="panel" style="border-width: 1px;">
+      <div class="panelContent"> 
+       <div class="table-wrap"> 
+        <table class="confluenceTable">
+         <tbody> 
+          <tr> 
+           <th class="confluenceTh"> Req. ID </th> 
+           <th class="confluenceTh"> Description </th> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> R1 </td> 
+           <td class="confluenceTd">Plug-in shall provide major functionalities of creating a web service, editing web service to apply advanced features and creating a web service client. </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> R1.1 </td> 
+           <td class="confluenceTd">The Plug-in shall provide ability to create a new web service from scratch, from WSDL or from existing Session Bean. </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> R1.1.1 </td> 
+           <td class="confluenceTd">Create web service from scratch feature shall provide functions for creating, editing and removing operations from web service. </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> R1.1.2 </td> 
+           <td class="confluenceTd">Create web service from existing WSDL feature shall provide functions for creating web methods from existing WSDL specification along with functions for creating, editing and removing operations from web service. </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> R1.1.3 </td> 
+           <td class="confluenceTd">Create web service from existing Session Bean feature shall provide functions for creating web methods from existing methods along with functions for creating, editing and removing operations from web service. </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> R1.2 </td> 
+           <td class="confluenceTd">The Plug-in shall provide ability to edit existing web service attributes to apply advanced features like Security, Reliability, Trust and Transaction Management. </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> R1.2.1 </td> 
+           <td class="confluenceTd">The Security advanced feature shall make web service secure through various security mechanisms. </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> R1.2.2 </td> 
+           <td class="confluenceTd">The Reliability feature shall ensure the reliable message delivery. </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> R1.2.3 </td> 
+           <td class="confluenceTd">The Transaction Management feature will support various transaction management features. </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> R1.2.4 </td> 
+           <td class="confluenceTd">The Trust feature shall provide trust in the web service using trust store. </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> R1.3 </td> 
+           <td class="confluenceTd">The plug-in shall provide functionality for creating web service client using WSDL file. </td> 
+          </tr> 
+         </tbody>
+        </table> 
+       </div> 
+       <hr> 
+       <p>Jspwiki style: sortable</p> 
+      </div>
+     </div> <p>%%</p> <p><b>Dependencies</b><br> None.</p> <p><b>Deliverables</b><br> The following are the deliverables of this project: * An Eclipse IDE Plug-in that will provide the ability to use the complete Metro web services stack in Eclipse. The plug-in will be capable of creating and editing web services as well as creating web services client. * A Blog to publish and discuss issues related to the project. * In the final deliverables, the plug-in capabilities will also be documented in the form of user manual for the future reference and maintenance.</p> <p><b>Limitations</b></p> 
+     <ul> 
+      <li>Currently we will be concentrating on Creating and Editing Web Services part of the plug-in.</li> 
+     </ul> <p>References</p> 
+     <ol> 
+      <li><a href="https://metro.java.net/guide/What_is_WSIT_.html">https://metro.java.net/guide/What_is_WSIT_.html</a></li> 
+      <li><a href="https://metro.java.net/guide/Creating_a_Web_Service.html">https://metro.java.net/guide/Creating_a_Web_Service.html</a></li> 
+      <li><a href="http://www.eclipse.org/webtools/community/tutorials/BottomUpAxis2WebService/bu_tutorial.html">http://www.eclipse.org/webtools/community/tutorials/BottomUpAxis2WebService/bu_tutorial.html</a></li> 
+      <li><a href="http://www.softwaresummit.com/2005/speakers/RymanDevWSwithEclipse.pdf">http://www.softwaresummit.com/2005/speakers/RymanDevWSwithEclipse.pdf</a></li> 
+      <li><a href="http://blogs.oracle.com/mgrebac/entry/new_features_in_metro_1">http://blogs.oracle.com/mgrebac/entry/new_features_in_metro_1</a></li> 
+     </ol> 
+     <hr> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20873585/21365414.png">architecture.PNG</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20873585/21365417.gif">arhitecture.GIF</a> (image/gif) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20873585/21365415.jpg">architecture.JPG</a> (image/jpeg) 
+      <br> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:49.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

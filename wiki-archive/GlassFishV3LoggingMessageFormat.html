@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFishV3LoggingMessageFormat</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>This page addresses the specifics for the GlassFish message format and message id requirements. Implementation details are described in the one pager though some information it provided here because it is useful for developers that use the logging mechanism. </p> <h4><a name="GlassFishV3LoggingMessageFormat-Loggingrequirementsaddressedonthispage"></a>Logging requirements addressed on this page</h2> 
+     <ol> 
+      <li>Log messages shall have a common/uniform format.</li> 
+      <li>Every SEVERE, WARNING and INFO Log message shall have a unique key (such as unique message id) that can be used to index into a operational manual or on-line database.</li> 
+     </ol> <h4><a name="GlassFishV3LoggingMessageFormat-MessageFilesinGlassFish"></a>Message Files in GlassFish</h2> <p>Messages that the GlassFish server logs can be found in usually one of two files in the workspace. Most messages that are logged to the server log file are found in files called LogStrings.properties. These messages follow the format described here. All messages in these files require a message id and all SEVERE and WARNING level messages require diagnostic information. All messages in these files are localized.</p> <p>In addition, there are files called LocalStrings.properties which contain messages that are for GlassFish CLI or exception messages. These messages do not require a message id nor do they required diagnostic information. Some components that were brought into GlassFish such as Tomcat code use files called LocalStrings.properties for messages that are logged. By default any messages from these files have a INFO level if they are logged to the server log file. All messages in LocalStrings.properties are also localized. </p> <h4><a name="GlassFishV3LoggingMessageFormat-UniformLoggingFormat"></a>Uniform Logging Format</h2> <p>Each message that is written to the logs or the console will be formatted as described below. <br> There are 6 fields in a record each separated by a '|'. Within a field there may be additional delimiter. Name Value Pairs use a semi-colon between pairs and the Message Id is the first string in the message text that ends with a colon.<br> Each record contains a beginning and ending marker. Begin marker is <a href="#GlassFishV3LoggingMessageFormat-andendmarkerisNo."># and end marker is #</a><br> Date Time is Internet Standard format<br> Level is the level of this message (SEVERE, WARNING, INFO, FINE, FINER or FINEST)<br> ProductId is "glassfishv3.0", etc.<br> Logger name is found in logging.properties file<br> Name Value pairs - formatter adds information about the thread id and thread name. Each pair is separated by a ';'<br> Message begins with the MsgId delimited by a ':' followed by the text of the message<br> Generic record format: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">[#|yyyy-mm-ddTHH:mm:ss:SSS-ZZZZ|Level|ProductId|Logger Name|Name Value Pairs|MsgId: Message|#]</pre> 
+       </div> 
+      </div>
+     </div> <p>Sample record format: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">[#|2009-08-06T13:41:09.192-0700|INFO|glassfish|javax.enterprise.system.core.security.com.sun.enterprise.security|_ThreadID=20;_ThreadName=Thread-1;|SEC1002: Security Manager is OFF.|#]</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="GlassFishV3LoggingMessageFormat-MessageIdRequirement"></a>Message Id Requirement</h2> <p>For v3 the requirement applies to SEVERE and WARNING messages only. <b>In later versions of v3 message ids are required for INFO level messages too.</b></p> <p>SEVERE, WARNING and INFO level messages are actually in a resource bundle and not in the Java files. Generally the resource bundle's name is LogStrings.properties. See <a href="http://java.sun.com/j2se/1.4.2/docs/api/java/text/MessageFormat.html">java.text.MessageFormat</a> for details on constructing messages. Messages in this file must be of the form</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;Subsystem&gt;&lt;4CharIntegerMessageId&gt;: &lt;message text&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>example.message1=CMNUTL0001: Test Message. Parameter 1={0} parameter 2={1}<br> In this example, 'CMNUTL0001: Test Message. Parameter 1={0} parameter 2={1}' becomes the message body (MsgId: Message) field of the format described above. 'CMNUTL001:' is the message id and is used to find diagnostic information if it is present. </p> <h4><a name="GlassFishV3LoggingMessageFormat-DiagnosticInformation%3A"></a>Diagnostic Information:</h2> <p>In addition, diagnostic information should also appear in the Resource Bundle. Diagnostic information begins with a message id pre-appended to the string 'cause' or 'check'. See below for complete details on the message format. At least one 'cause' and at least one 'check' message is required for all messages level SEVERE and WARNING. Each message id is made up a set of characters and integers. There will be upto 6 characters to identify the module and upto 4 digits to identify the message within the module.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;6CharIntegerMessageId&gt;.diag.cause.int=&lt;message text&gt;</pre> 
+       </div> 
+      </div>
+     </div> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;6CharIntegerMessageId&gt;.diag.check.int=&lt;message text&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>There may be more than one 'cause' or 'check' message for each message id. Multiple diagnostic information for a message is indicated by a number starting with 1.<br> An example entry in the resource bundle would be: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">enterprise.deployment.backend.fileCopyFailure=DPL8002: file copy failure
+DPL8002.diag.cause.1=Copying of files failed
+DPL8002.diag.cause.2=May be because of lack of space or permission
+DPL8002.diag.check.1=Ensure that there is enough disk space
+DPL8002.diag.check.2=Ensure that the permissions are set as expected</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="GlassFishV3LoggingMessageFormat-BelowarecodeexamplesforloggingmessagesinGlassFish%3A"></a>Below are code examples for logging messages in GlassFish:</h2> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">_logger.warning(&lt;message key&gt;);</pre> 
+       </div> 
+      </div>
+     </div> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">_logger.log(Level.WARNING, &lt;message key&gt;);</pre> 
+       </div> 
+      </div>
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 02, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

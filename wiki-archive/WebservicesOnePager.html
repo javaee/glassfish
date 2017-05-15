@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : WebservicesOnePager</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="WebservicesOnePager-WebservicesIntegrationOnePager"></a>Webservices Integration One Pager</h1> <p>[</p> 
+     <div class="error">
+      <span class="error">Unknown macro: {TableOfContents title=' '}</span> 
+     </div> <p>|(TableOfContentstitle='')]</p> <h4><a name="WebservicesOnePager-1.Introduction"></a>1. Introduction</h1> <h4><a name="WebservicesOnePager-1.1.Project%2FComponentWorkingName%3A"></a>1.1. Project/Component Working Name: </h2> <p>Webservices Integration in Glassfish V3</p> <h4><a name="WebservicesOnePager-1.2.Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier%3A"></a>1.2. Name(s) and e-mail address of Document Author(s)/Supplier:</h2> <p>Bhakti Mehta, Jitendra Kotamraju,Harold Carr, Marek Potociar</p> <p>Name: bhakti.mehta@sun.com, jitendra.kotamraju@sun.com, harold.carr@sun.com, marek.potociar@sun.com</p> <h4><a name="WebservicesOnePager-1.3.DateofThisDocument%3A"></a>1.3. Date of This Document:</h2> <p>12/11/08</p> <h4><a name="WebservicesOnePager-2.ProjectSummary"></a>2. Project Summary</h1> <h4><a name="WebservicesOnePager-2.1.ProjectDescription%3A"></a>2.1. Project Description:</h2> <p>This one pager is to support webservices in v3 and provide QOS which Project Metro has to offer.<br> This will provide information on how Metro is integrated in V3 .</p> <h4><a name="WebservicesOnePager-2.2.RisksandAssumptions%3A"></a>2.2. Risks and Assumptions:</h2> <h4><a name="WebservicesOnePager-3.ProblemSummary"></a>3. Problem Summary</h1> <h4><a name="WebservicesOnePager-3.1.ProblemArea%3A"></a>3.1. Problem Area:</h2> <p>We need to provide support for webservices for JavaEE 6 . For this we need to integrate the webservices stack Metro metro.java.net and also provide<br> support for JSR 109 in V3. We also need to provide the tools required for webservices in V3.</p> <h4><a name="WebservicesOnePager-3.2.Justification%3A"></a>3.2. Justification:</h2> <p>We need to conform to the JavaEE platform specification and provide support for webservices in V3. Additionally we also provide QOS features from Metro 2.0 which get integrated in V3.<br> For more information on Metro check the metro website metro.java.net</p> <h4><a name="WebservicesOnePager-4.TechnicalDescription%3A"></a>4. Technical Description:</h1> <h4><a name="WebservicesOnePager-4.1.Details%3A"></a>4.1. Details:</h2> <p>The Metro bundles will be delivered as OSGI bundles and will be published to a maven repository.<br> The implementation for JSR 109 will be part of v3 and will be plugged into the v3 framework by following the v3 guidelines.</p> <h4><a name="WebservicesOnePager-FileLayout"></a>File Layout</h3> <p>Metro is delivered as 4 OSGi bundles</p> 
+     <ul> 
+      <li>webservices.jar (This OSGi bundle contains all the implementation, api and tools classes from metro excluding JAXB)</li> 
+     </ul> 
+     <ul> 
+      <li>jaxb.jar (This OSGi bundle contains JAXB implementation, api and tool classes)</li> 
+     </ul> 
+     <ul> 
+      <li>webservices.security.jar (Inorder to support metro security in V3 we need to configure a provider to conform to JSR 196)</li> 
+     </ul> 
+     <ul> 
+      <li>jsr109-impl.jar (This jar contains the implementation for JSR 109 )</li> 
+     </ul> <p>These OSGi bundles will be installed in the modules folder of glassfish installation.</p> <h4><a name="WebservicesOnePager-Deployment"></a>Deployment</h3> <p>Deployment will be supported for webapps, ejbs packaged as a JavaEE module . The clients of a webservice can be another webservice,<br> a Java EE component including JavaEE application client or an arbitary Java application.</p> <h4><a name="WebservicesOnePager-AdminGUI"></a>Admin GUI</h3> <p>Admin GUI will support webservices in 2 cases.<br> Whenver an update of Metro is available the user can select to install metro OSGi bundle in v3 via Admin GUI</p> <p>Whenever an Webapplication or Enterprise application with webservices is deployed Admin Gui should show the webservices <br> and enable testing, undeploying and viewing the deployment descriptors .</p> <h4><a name="WebservicesOnePager-4.2.Bug%2FRFENumber%28s%29%3A"></a>4.2. Bug/RFE Number(s):</h2> <h4><a name="WebservicesOnePager-4.3.InScope%3A"></a>4.3. In Scope:</h2> <p>Standalone JAXWS deployment will also use the same packages to bootstrap and work in V3.</p> <h4><a name="WebservicesOnePager-4.4.OutofScope%3A"></a>4.4. Out of Scope:</h2> <p>Persistence of Xml data</p> <p>Workflow and dataflow models</p> <p>Arbitary Xml transformations</p> <p>Client programming model for Web service clients that do not confirm to JSR 109 specification</p> <h4><a name="WebservicesOnePager-4.5.Interfaces%3A"></a>4.5. Interfaces:</h2> <h4><a name="WebservicesOnePager-4.5.1ExportedInterfaces"></a>4.5.1 Exported Interfaces</h3> <p>Scripts in V3.<br> Like in v2 we will add the following scripts in V3</p> 
+     <ul> 
+      <li>1. wsgen</li> 
+     </ul> <p>The wsgen tool generates JAX-WS portable artifacts used in JAX-WS web services. The tool reads a web service endpoint class <br> and generates all the required artifacts for web service deployment, and invocation.</p> 
+     <ul> 
+      <li>2. wsimport</li> 
+     </ul> <p>The wsimport tool generates JAX-WS portable artifacts, for a given wsdl file</p> 
+     <ul> 
+      <li>3. xjc</li> 
+     </ul> <p>The xjc tool generates Java classes from an XML Schema</p> 
+     <ul> 
+      <li>4. schemagen</li> 
+     </ul> <p>The schema generator tool generates schema from Java classes.</p> 
+     <ul> 
+      <li>5.wscompile</li> 
+     </ul> <p>The wscompile tool generates stubs, ties, serializers, and WSDL files used in JAX-RPC clients and services.</p> 
+     <ul> 
+      <li>6.wsdeploy</li> 
+     </ul> <p>The wsdeploy tool reads a WAR file and the jaxrpc-ri.xml file and then generates another WAR file that is ready for deployment</p> <p>These scripts will be installed in the bin folder of glassfish installation.</p> <h4><a name="WebservicesOnePager-4.5.2Importedinterfaces"></a>4.5.2 Imported interfaces</h3> <p>org.glassfish.api.deployment Interfaces<br> com.sun.ejb.spi.stats Interfaces<br> javax.security.auth.message Interfaces</p> <h4><a name="WebservicesOnePager-4.6.DocImpact%3A"></a>4.6. Doc Impact:</h2> <p>Webservices guide, CLI man pages for the tools</p> <h4><a name="WebservicesOnePager-4.7.Admin%2FConfigImpact%3A"></a>4.7. Admin/Config Impact:</h2> <p>Admin GUI needs to provide same support as in V2 plus supporting installation of Metro from Update Center.</p> <h4><a name="WebservicesOnePager-4.8.HAImpact%3A"></a>4.8. HA Impact:</h2> <p>None</p> <h4><a name="WebservicesOnePager-4.9.I18N%2FL10NImpact%3A"></a>4.9. I18N/L10N Impact:</h2> <p>Same I18n/L10N support as V2</p> <h4><a name="WebservicesOnePager-4.10.Packaging%26Delivery%3A"></a>4.10. Packaging &amp; Delivery:</h2> <p>In v3 metro will be available for download via Update Center and will be part of the full glassfish distribution.</p> <h4><a name="WebservicesOnePager-4.11.SecurityImpact%3A"></a>4.11. Security Impact:</h2> <p>No changes from v2.</p> <h4><a name="WebservicesOnePager-4.12.CompatibilityImpact"></a>4.12. Compatibility Impact</h2> <p>Applications developed on Glassfish V2 should work on Glassfish V3.</p> <h4><a name="WebservicesOnePager-4.13.Dependencies%3A"></a>4.13. Dependencies:</h2> <p>Security,</p> <p>EJB</p> <p>Web</p> <p>Deployment</p> <p>Application Client</p> <h4><a name="WebservicesOnePager-5.ReferenceDocuments%3A"></a>5. Reference Documents:</h1> <p><a href="http://metro.java.net">http://metro.java.net</a></p> <h4><a name="WebservicesOnePager-6.Schedule%3A"></a>6. Schedule:</h1> <h4><a name="WebservicesOnePager-6.1.ProjectedAvailability%3A"></a>6.1. Projected Availability:</h2> <p>May 2009</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:49.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

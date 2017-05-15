@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : NonComponentCallers</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="NonComponentCallers-ConnectionEnlistmentStrategyinGlassFish"></a>Connection Enlistment Strategy in GlassFish</h1> <p>THIS IS STILL A DRAFT. SOME CONTENT MAY BE CHANGED </p> <h4><a name="NonComponentCallers-TransactionScenarios."></a>Transaction Scenarios.</h2> <p>In a Java EE application, transactions can multiple components. The connections used<br> in the transaction must be automatically enlisted in the transaction by the containers.<br> The good practice for getting using a connection (be it a JDBC, JMS or a connector connection)<br> is to obtain the connection as late as possible and return the connection to the pool as<br> early as possible. In the pseudo code, it will translate to.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">ut1.begin();
+
+Connection con1 = ds.getConnection()
+con1.createStatement().execute();
+
+Connection con2 = ds.getConnection();
+con2.createStatement().execute();
+
+ut1.commit();</pre> 
+       </div> 
+      </div>
+     </div> <p>The datasource used in the above code snippet is a wrapper above a JDBC driver. So, whenever<br> a getConnection happens, appserver runtime know that it need to be enlisted in the transaction. Note that when con2 is obtained, if ds is wrapping a non-XA datasource, the physical connection used by con1 and con2 will be shared by them.</p> <p>Now, lets take a little more complex scenario.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Connection con1 = ds.getConnection()
+Connection con2 = ds.getConnection();
+
+ut2.begin();
+
+con1.createStatement().execute();
+con2.createStatement().execute();
+
+ut2.commit();</pre> 
+       </div> 
+      </div>
+     </div> <p>In ut2, the connections are obtained outside the transaction boundary and is used within the transaction.<br> This case can happen, typically, in a stateful session bean where connections can be obtained in the ejbCreate/ejbActivate method and they are used in business methods.</p> <p>Now, for enlisting such connections, glassfish server runtime does the following. </p> <p>Whenever a connection is obtained, it will be added to a housekeeping datastructure. There is one such datastructure per component. I.e a stateful session bean will have such a datastructure. Whenever transaction starts in the component, the container (EJB container) will make sure that all the connections<br> in the component's resource list is enlisted in the transaction.</p> <h4><a name="NonComponentCallers-ComponentSharinganditsresourcelist."></a>Component Sharing and its resource list.</h2> <p>The object instance (actual EJB bean) doesnt get shared between two transactions. This is because</p> 
+     <ul> 
+      <li>Enterprise Java Bean Instances cannot be shared between the transactions. There will be only one thread accessing an EJB instance at a time.</li> 
+     </ul> 
+     <ul> 
+      <li>Servlets need to make sure that the connection need to be obtained within doPost or doGet methods as per the Java EE spec (section 4.2.3). So, the resource list is maintained per component per thread. i.e resource list is not shared between the threads or transactions. This means that the connection obtained in the init() method of the servlet cannot be used in a transaction started later on, even if the access to the connection is synchronized. So, for servlets, the resource list is not maintained per component.</li> 
+     </ul> <h4><a name="NonComponentCallers-So%2Cwhatistheproblem%3F"></a>So, what is the problem?</h2> <p>If a session bean A that started the transaction uses a CMP bean. If the CMP bean (The persistence manager behind the bean) obtain a connection in the beforeCompletion method of the transaction synchronization listener, in the absence of <a href="__pm.html" title="__pm">__pm</a>, the connection will be associated with the session bean as the beforeCompletion will get executed after the end of CMP method. If the persistence manager does not close the connection in that transaction and reuse it later on for some other CMP, the connection will be available both to the CMP and to the session bean. This can create interesting concurrency issues.</p> <h4><a name="NonComponentCallers-AllowNonComponentCallers"></a>Allow-NonComponent-Callers</h2> <p>If your code need to handle the above case, then two things are required.</p> <p>1. Make sure that you always get the connection within the transaction and return the connection as soon as you do the database/message queue operation.</p> <p>2. Set the Allow-NonComponent-Callers property in the pool.</p> <h4><a name="NonComponentCallers-Whatdoesitdo%3F"></a>What does it do?</h3> <p>Appserver containers wouldnt keep the connection in the component's resource list, if the connection is obtained from a pool where this property is set. This property is equivalent to the <a href="__pm.html" title="__pm">__pm</a> datasource used in older versions of sun application server.</p> <p>Since the connection is not in the component's resource list, there is no concurrency issue. However you cannot expect the connection obtained outside the transaction to be enlisted.</p> <h4><a name="NonComponentCallers-Implementationdetails"></a>Implementation details</h2> <p>When ever a ConnectionFactory (DataSource) is looked up, the JNDI objectfactory will create a new object. The name of the datasource is available to the ObjectFactory. This ObjectFactory creates an appropriate ConnectionManager and saves the name of the datasource in that. From then onwards, whenever ConnectionManager.allocateConnection is executed, the JNDI name is available to the ConnectionManager. The JNDI name is used by the ConnectionManager to get the default resource principal configured in the deployment descriptor, obtain the resource sharing scope etc. It then passes the JNDI name to PoolManager.</p> <h4><a name="NonComponentCallers-Importantclasses."></a>Important classes.</h3> <p>The <a href="http://fisheye5.cenqua.com/browse/~raw,r=1.16/glassfish/appserv-core/src/java/com/sun/enterprise/resource/PoolManagerImpl.java">PoolManagerImpl</a><br> when it communicate with the transaction manager for tx related activities, use either <a href="http://fisheye5.cenqua.com/browse/~raw,r=1.8/glassfish/appserv-core/src/java/com/sun/enterprise/resource/ResourceManagerImpl.java">ResourceManagerImpl</a> or <a href="http://fisheye5.cenqua.com/browse/~raw,r=1.4/glassfish/appserv-core/src/java/com/sun/enterprise/resource/SystemResourceManagerImpl.java">SystemResourceManagerImpl</a> depending on whether the getConnection request is from the JNDI name suffixed with <a href="__pm.html" title="__pm">__pm</a> or not. SystemResourceManagerImpl skip everything for component association/dissociation during enlistment/delistment. EJB and webcontainers use <a href="http://fisheye5.cenqua.com/browse/~raw,r=1.7/glassfish/appserv-core/src/java/com/sun/enterprise/util/InvocationManagerImpl.java">InvocationManagerImpl</a><br> for registering/deregistering the component invocation information before and after each and every invocation. Look at <a href="http://fisheye5.cenqua.com/browse/~raw,r=1.24/glassfish/appserv-core/src/java/com/sun/ejb/containers/StatefulSessionContainer.java">StatefulSessionContainer</a> for an example.</p> <h4><a name="NonComponentCallers-Couldtheimplementationhavetakenanotherpath%3F"></a>Could the implementation have taken another path?</h2> <p>If a resource adapter supports lazy connection association and lazy connection enlistment, then the connection can be enlisted in the transaction when it is actually used. This will really remove the need for component's resource list. To achieve this, JDBC and JMS resource adapters used in appserver need to support this feature as well. For JDBC resource adapter it will be required to wrap a number of JDBC objects like connection, statement etc. This is something for the later versions of appserver.</p> <h4><a name="NonComponentCallers-TODO%3ALookathowotherappserverhandlethisissue."></a>TODO: Look at how other appserver handle this issue. </h2> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:49.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

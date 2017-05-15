@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : ProvidingScriptsInBinFolder2HideDomains</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   
+     <div> 
+      <ul> 
+       <li><a href="#ProvidingScriptsInBinFolder2HideDomains-Providingscriptstohidetheconceptofdomain">Providing scripts to hide the concept of domain</a></li> 
+       <ul> 
+        <li><a href="#ProvidingScriptsInBinFolder2HideDomains-Introduction">Introduction</a></li> 
+        <li><a href="#ProvidingScriptsInBinFolder2HideDomains-ApossibleScriptandsupportedoperations">A possible Script and supported operations</a></li> 
+        <li><a href="#ProvidingScriptsInBinFolder2HideDomains-Asuggestionforimplementation">A suggestion for implementation</a></li> 
+        <li><a href="#ProvidingScriptsInBinFolder2HideDomains-CommandAliasing">Command Aliasing</a></li> 
+        <li><a href="#ProvidingScriptsInBinFolder2HideDomains-ImplementationofCommandAliasing">Implementation of Command Aliasing</a></li> 
+        <li><a href="#ProvidingScriptsInBinFolder2HideDomains-CommentsfromByron%3A">Comments from Byron:</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="ProvidingScriptsInBinFolder2HideDomains-Providingscriptstohidetheconceptofdomain"></a>Providing scripts to hide the concept of domain</h1> <p><a href="./AdminOverallTaskList.html">Back to Master Task List</a></p> <h4><a name="ProvidingScriptsInBinFolder2HideDomains-Introduction"></a>Introduction</h3> <p>It has been observed that for basic server life cycle control like: start/shutdown/status-check/restart, the concept of "administrative domain" is rather too heavy-weight. Developers and users alike are impatient and want to quickly start the server and deploy their applications. This task proposes a script that is a short-cut for number of common operations. It's assumed that all of the operations happen on the default domain. If the default domain is not present, we simply fail.</p> <h4><a name="ProvidingScriptsInBinFolder2HideDomains-ApossibleScriptandsupportedoperations"></a>A possible Script and supported operations</h3> <p>How about:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">gfctl start/stop/restart/status/thread-dump/help
+
+Controls the default server in a variety of ways.
+
+start              - starts it
+stop               - stops it
+restart            - stops it if running, simply starts it otherwise
+status             - provides basic status like running or not, provides the pid if it's running
+status --verbose   - provides its detailed status
+thread-dump        - provides its *Java* thread dump
+help               - prints this page</pre> 
+       </div> 
+      </div>
+     </div> <p>for starters?</p> <h4><a name="ProvidingScriptsInBinFolder2HideDomains-Asuggestionforimplementation"></a>A suggestion for implementation</h3> <p>Instead of creating a new script, we should just modify the asadmin help output as follows:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">asadmin help
+
+Administers the default server.
+
+start              - starts it
+stop               - stops it
+restart            - stops it if running, simply starts it otherwise
+status             - provides basic status like running or not, provides the pid if it's running
+status --verbose   - provides its detailed status
+thread-dump        - provides its *Java* thread dump
+list-commands      - provides a list of *all* commands supported by a particular instance</pre> 
+       </div> 
+      </div>
+     </div> <p>In order to support this, we need to entertain the <b>alias</b> concept for a command name.</p> <h4><a name="ProvidingScriptsInBinFolder2HideDomains-CommandAliasing"></a>Command Aliasing</h3> <p>This concept is to allow developers and users to create command aliases with asadmin by introducing 3 new commands.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">create-alias  - creates a command alias
+    Syntax:
+        create-alias &lt;alias-name&gt; &lt;command&gt;
+    Example:
+        &gt;asadmin create-alias start 'start-domain --user admin ... domain-name'
+        an alias 'start' is created.  
+        executing 'asadmin start' is the same as 'asadmin start-domain --user ... domain-name'
+
+delete-alias  - deletes a command alias
+    Syntax:
+        delete-alias &lt;alias-name&gt;
+    Example:
+        &gt;asadmin delete-alias start
+        The alias start is removed.
+
+list-aliases  - lists all the command aliases
+    Syntax:
+        list-aliases
+    Example:
+        &gt;asadmin list-aliasas
+        start
+        stop
+        ...</pre> 
+       </div> 
+      </div>
+     </div> <p>The basic lifecycle commands will come with default aliases. <br> The "start-domain domain1" command will have an alias "start".<br> To override the default alias, user can execute create-alias command to override existing alias.</p> <h4><a name="ProvidingScriptsInBinFolder2HideDomains-ImplementationofCommandAliasing"></a>Implementation of Command Aliasing</h3> <p>The aliases are saved in the local file system or user-specific store. When a command is issued with asadmin, commands are searched in the following order: local-command, remote-command, and lastly, alias-command.</p> <h4><a name="ProvidingScriptsInBinFolder2HideDomains-CommentsfromByron%3A"></a>Comments from Byron:</h3> <p>Aliases – a GREAT idea and it should be fairly straight forward to implement. I.e. much bang for the buck.</p> 
+     <ul> 
+      <li>Aliases checked after a remote-command attempt introduces quite a bit of overhead – especially if DAS isn't running. I would go with the UNIX way of handling aliases. The alias is checked <b>first</b>. E.g. if I make an alias on UNIX: alias ls=ls -F --&gt; it first goes with the alias, avoids the infinite loop, and calls the real 'ls'. Another example on UNIX: alias wc=cat then running 'wc file' results in cat getting called, not wc.</li> 
+     </ul> 
+     <ul> 
+      <li>Idea: saving the aliases via the Java Preferences API by default but also allowing them to be placed in a special, say, properties file. Or better – both – with one overriding the other. QE would love this. I've seen so many bug reports with these unbelievably long asadmin command lines. They are so complex that they have to be run in a script.</li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:49.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : JavaEE6Samples</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="JavaEE6Samples-JavaEE6Samples"></a>Java EE 6 Samples</h1> <p>Samples are key to adoption of new Java EE technologies. As with our previous Java EE releases, we will need to create new samples for Java EE 6. For this release, we will start with following two categories of samples.</p> 
+     <ol> 
+      <li>Java EE 6 Tutorial at <a href="https://javaeetutorial.java.net/">https://javaeetutorial.java.net/</a></li> 
+      <li>GlassFish Samples at <a href="https://glassfish-samples.java.net/">https://glassfish-samples.java.net/</a></li> 
+      <li>Use <a href="http://wiki.glassfish.java.net/attach/JavaEE6Samples/index.html">this template</a> to create samples docs (index.html)</li> 
+     </ol> <p>Time and resource permitting, we will try to revisit Java EE blueprints at <a href="https://blueprints.java.net/">https://blueprints.java.net/</a> and update them for Java EE 6.</p> 
+     <hr> <h4><a name="JavaEE6Samples-NextSteps%3A"></a>Next Steps:</h2> <p>There is a good plan for Java EE Tutorial at <a href="JavaEE6TutorialVolume1DocPlan.html" title="JavaEE6TutorialVolume1DocPlan">JavaEE6TutorialVolume1DocPlan</a>. The next step is come up with a plan for Java EE 6 samples.</p> <p>Java EE 6 samples should build upon Java EE 5 samples available in the <a href="https://glassfish-samples.java.net/">GlassFish Samples project</a>. These samples should be slightly more advanced than the examples included in the Java EE tutorial or should cover the areas not yet covered in the Java EE tutorial plan. Some of these samples might be included in Java EE tutorial in a future update. Please review the table below and update it to ensure proper coverage for new or interesting features in your area in samples.</p> <p>Note: The following table is intended to be edited by Java EE specification leads or GlassFish module leads.</p> 
+     <div class="panel" style="border-width: 1px;">
+      <div class="panelContent"> 
+       <div class="table-wrap"> 
+        <table class="confluenceTable">
+         <tbody> 
+          <tr> 
+           <th class="confluenceTh"> Technology </th> 
+           <th class="confluenceTh"> Owner </th> 
+           <th class="confluenceTh"> List of Samples </th> 
+           <th class="confluenceTh"> Feature ready in M2 </th> 
+           <th class="confluenceTh">Feature ready in M6</th> 
+           <th class="confluenceTh"> Priority </th> 
+           <th class="confluenceTh"> Developer </th> 
+           <th class="confluenceTh"> Sample checked in </th> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> Java Persistence API 2.0 </td> 
+           <td class="confluenceTd"> Linda DeMichiel </td> 
+           <td class="confluenceTd"> Pessimistic locking. (web and full profiles) </td> 
+           <td class="confluenceTd"> Y </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+           <td class="confluenceTd"> 2 </td> 
+           <td class="confluenceTd"> Sherry Shen, Mitesh Meswani </td> 
+           <td class="confluenceTd"> Y, checked in MS2 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> Java Persistence API 2.0 </td> 
+           <td class="confluenceTd"> Linda DeMichiel </td> 
+           <td class="confluenceTd">O/R mapping with ternary relationships (maps)Derived identifiers (web and full profiles) </td> 
+           <td class="confluenceTd"> N </td> 
+           <td class="confluenceTd"> Y </td> 
+           <td class="confluenceTd"> 3 </td> 
+           <td class="confluenceTd"> Sherry Shen, Mitesh Meswani </td> 
+           <td class="confluenceTd">Y - checked in 9/28 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> Java Persistence API 2.0 </td> 
+           <td class="confluenceTd"> Linda DeMichiel </td> 
+           <td class="confluenceTd"> Criteria queries (web and full profiles) </td> 
+           <td class="confluenceTd"> N </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+           <td class="confluenceTd"> 2 </td> 
+           <td class="confluenceTd"> Sherry Shen, Mitesh Meswani </td> 
+           <td class="confluenceTd">Y - checked in 9/30. But feature is not completed by Eclipselink yet - waiting for new drop. </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> Java Persistence API 2.0 </td> 
+           <td class="confluenceTd"> Linda DeMichiel </td> 
+           <td class="confluenceTd"> Automatic validation on lifecycle events </td> 
+           <td class="confluenceTd"> N </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+           <td class="confluenceTd"> 1 </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+           <td class="confluenceTd">Not doing. </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> Enterprise Java Beans 3.1 </td> 
+           <td class="confluenceTd"> Ken Saks </td> 
+           <td class="confluenceTd"> ejb/servlet .war based app with no-interface view and init-time Singleton callback. (Web and full profiles) </td> 
+           <td class="confluenceTd"> Y </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+           <td class="confluenceTd"> 1 </td> 
+           <td class="confluenceTd"> Ken Saks </td> 
+           <td class="confluenceTd"> Y - checked in MS2 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> Enterprise Java Beans 3.1 </td> 
+           <td class="confluenceTd"> Ken Saks </td> 
+           <td class="confluenceTd"> Automatic deployment-time timer creation (full profile only) </td> 
+           <td class="confluenceTd"> Y </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+           <td class="confluenceTd"> 2 </td> 
+           <td class="confluenceTd"> Marina Vatkina </td> 
+           <td class="confluenceTd"> Y - checked in MS2 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> Enterprise Java Beans 3.1 </td> 
+           <td class="confluenceTd"> Ken Saks </td> 
+           <td class="confluenceTd"> Local session beans using injection/CMT/JPA executed with embeddable 3.1 API (web and full profiles) </td> 
+           <td class="confluenceTd"> N </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+           <td class="confluenceTd"> 1 </td> 
+           <td class="confluenceTd"> Marina Vatkina </td> 
+           <td class="confluenceTd">Y - checked in 9/16 (No NB support) </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> Java API for RESTful Web Services 1.0 </td> 
+           <td class="confluenceTd"> Paul Sandoz </td> 
+           <td class="confluenceTd"> Sample using no-interface view session/singleton EJBs as resource and provider class instances in the war. Requires SPI from GF EJB infrastructure to be ready. (Web and Full profiles) </td> 
+           <td class="confluenceTd"> Y </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+           <td class="confluenceTd"> 1 </td> 
+           <td class="confluenceTd"> Pavel Bucek </td> 
+           <td class="confluenceTd"> Y - checked in MS2 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> Java API for RESTful Web Services 1.0 </td> 
+           <td class="confluenceTd"> Paul Sandoz </td> 
+           <td class="confluenceTd"> Sample using in managed beans in resource. (Web and Full profiles) </td> 
+           <td class="confluenceTd"> N </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+           <td class="confluenceTd"> 1 </td> 
+           <td class="confluenceTd"> Pavel Bucek </td> 
+           <td class="confluenceTd">Y - checked in 10/6 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> Servlet 3.0 </td> 
+           <td class="confluenceTd"> Rajiv Mordani </td> 
+           <td class="confluenceTd"> Simple servlet based application that uses just annotations and no web.xml (web and full profiles) </td> 
+           <td class="confluenceTd"> Y </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+           <td class="confluenceTd"> 2 </td> 
+           <td class="confluenceTd"> Shing Wai Chan </td> 
+           <td class="confluenceTd"> Y - checked in MS2 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> Servlet 3.0 </td> 
+           <td class="confluenceTd"> Rajiv Mordani </td> 
+           <td class="confluenceTd"> Chat room sample show casing Async, annotations (web and full profiles) </td> 
+           <td class="confluenceTd"> Y </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+           <td class="confluenceTd"> 1 </td> 
+           <td class="confluenceTd"> Shing Wai Chan (with JeanFrancois) </td> 
+           <td class="confluenceTd"> Y - checked in MS2 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> Servlet 3.0 </td> 
+           <td class="confluenceTd"> Rajiv Mordani </td> 
+           <td class="confluenceTd"> dynamic registration Update dynamic registration to show adding listeners features (web and full profiles) </td> 
+           <td class="confluenceTd"> Y </td> 
+           <td class="confluenceTd"> Y </td> 
+           <td class="confluenceTd"> 1 </td> 
+           <td class="confluenceTd"> Jan Luehe </td> 
+           <td class="confluenceTd"> Y - checked in MS2. Checked in updated sample 9/8/09 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> Servlet 3.0 </td> 
+           <td class="confluenceTd"> Rajiv Mordani </td> 
+           <td class="confluenceTd"> Use of ServletContainerInitializer (web and full profiles) </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+           <td class="confluenceTd"> Y </td> 
+           <td class="confluenceTd"> 1 </td> 
+           <td class="confluenceTd"> Vijay Ramachandran </td> 
+           <td class="confluenceTd"> Y - checked in 9/11/09 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> Servlet 3.0 </td> 
+           <td class="confluenceTd"> Rajiv Mordani </td> 
+           <td class="confluenceTd"> Use of Fileupload (web and full profiles) </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+           <td class="confluenceTd"> Y </td> 
+           <td class="confluenceTd"> 1 </td> 
+           <td class="confluenceTd"> Kin-man Chung </td> 
+           <td class="confluenceTd"> Y - checked in 9/15/09 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> Servlet 3.0 </td> 
+           <td class="confluenceTd"> Rajiv Mordani </td> 
+           <td class="confluenceTd"> Use of web-fragments and demonstration of absolute ordering (web and full profiles) </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+           <td class="confluenceTd"> Y </td> 
+           <td class="confluenceTd"> 1 </td> 
+           <td class="confluenceTd"> Shing Wai Chan </td> 
+           <td class="confluenceTd">Y - checked in 9/15/09 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> Servlet 3.0 </td> 
+           <td class="confluenceTd"> Rajiv Mordani </td> 
+           <td class="confluenceTd"> Loading static resources and JSPs from META-INF/resource (web and full profiles) </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+           <td class="confluenceTd"> Y </td> 
+           <td class="confluenceTd"> 1 </td> 
+           <td class="confluenceTd"> Jan Luehe </td> 
+           <td class="confluenceTd"> Y - checked in 9/4/09 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> Servlet 3.0 </td> 
+           <td class="confluenceTd"> Rajiv Mordani </td> 
+           <td class="confluenceTd"> Programmatic session cookie configuration (web and full profile) </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+           <td class="confluenceTd"> Y </td> 
+           <td class="confluenceTd"> 1 </td> 
+           <td class="confluenceTd"> Jan Luehe </td> 
+           <td class="confluenceTd"> Y - checked in 9/4/09 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> Servlet 3.0 Security </td> 
+           <td class="confluenceTd"> Ron Monzillo </td> 
+           <td class="confluenceTd"> (subject to removal - see proposed @Security Constraintsample) Sample that shows usage of all or some of @RolesAllowed, @DenyAll, @PermitAll and @TransportProtected on Servlets. Works in (web and full profiles) </td> 
+           <td class="confluenceTd"> Y </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+           <td class="confluenceTd"> 2 </td> 
+           <td class="confluenceTd"> Kumar Jayanti, Nithya Subramanian </td> 
+           <td class="confluenceTd"> REMOVED 10/5/09 Y - checked in MS2 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> Servlet 3.0 Security </td> 
+           <td class="confluenceTd"> Ron Monzillo </td> 
+           <td class="confluenceTd"> Sample that shows usage of @SecurityConstraint/@MethodConstraint on Servlets (contingent on eearch and EG approval of change from prior use of @RolesAllowed, etc). (web and full profiles) </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+           <td class="confluenceTd">&nbsp;</td> 
+           <td class="confluenceTd"> 2 </td> 
+           <td class="confluenceTd"> Kumar Jayanti, Nithya Subramanian </td> 
+           <td class="confluenceTd">Not doing for this release. Will add in future release </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> Servlet 3.0 Security </td> 
+           <td class="confluenceTd"> Ron Monzillo </td> 
+           <td class="confluenceTd"> Sample that illustrates the usage of login() and logout() API's on HttpServletRequest. (web and full profiles) </td> 
+           <td class="confluenceTd"> Y </td> 
+           <td class="confluenceTd"> Y </td> 
+           <td class="confluenceTd"> 3 </td> 
+           <td class="confluenceTd"> Kumar Jayanti, Nithya Subramanian </td> 
+           <td class="confluenceTd">Y - checked in MS2 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> Servlet 3.0 Security </td> 
+           <td class="confluenceTd"> Ron Monzillo </td> 
+           <td class="confluenceTd"> Sample that demonstrates the use of http-method-omission feature of Servlet 3.0, e.g. to restrict the set of supported HTTP methods to just GET and POST. (web and full profiles) </td> 
+           <td class="confluenceTd"> Y </td> 
+           <td class="confluenceTd"> Y </td> 
+           <td class="confluenceTd"> 3 </td> 
+           <td class="confluenceTd"> Kumar Jayanti, Nithya Subramanian </td> 
+           <td class="confluenceTd"> Y - checked in MS2 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> Web Container </td> 
+           <td class="confluenceTd"> Rajiv Mordani </td> 
+           <td class="confluenceTd"> Invoking Tomcat and GlassFish style valves (Web and full profile) </td> 
+           <td class="confluenceTd"> N </td> 
+           <td class="confluenceTd"> Y </td> 
+           <td class="confluenceTd"> 2 </td> 
+           <td class="confluenceTd"> Jan Luehe </td> 
+           <td class="confluenceTd"> Y - checked in 9/9/09 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> Web Container </td> 
+           <td class="confluenceTd"> Rajiv Mordani </td> 
+           <td class="confluenceTd"> mod_jk configuration sample </td> 
+           <td class="confluenceTd"> N </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+           <td class="confluenceTd"> 2 </td> 
+           <td class="confluenceTd"> Amy Roh </td> 
+           <td class="confluenceTd"> Y - checked in 9/8/09 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> Java Server Faces 2.0 </td> 
+           <td class="confluenceTd"> Ed Burns </td> 
+           <td class="confluenceTd"> Scrum Development Application/test bean field validation using JSF 2.0 (web profile only) </td> 
+           <td class="confluenceTd"> Y </td> 
+           <td class="confluenceTd"> Y </td> 
+           <td class="confluenceTd"> 1 </td> 
+           <td class="confluenceTd"> Ed Burns </td> 
+           <td class="confluenceTd"> Y - checked in MS2 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> Java Server Faces 2.0 </td> 
+           <td class="confluenceTd"> Jim Driscoll </td> 
+           <td class="confluenceTd"> New JSF 2.0 Feature Sample - ajax and ezcomp. (web and full profiles) </td> 
+           <td class="confluenceTd"> Y </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+           <td class="confluenceTd"> 2 </td> 
+           <td class="confluenceTd"> Jim Driscoll </td> 
+           <td class="confluenceTd"> Y - checked in MS2 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> JSF 2.0 / Web Beans/330 </td> 
+           <td class="confluenceTd"> Roger Kitain </td> 
+           <td class="confluenceTd"> JSF 2.0 /Web Beans/330 Sample </td> 
+           <td class="confluenceTd"> Y </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+           <td class="confluenceTd"> 2 </td> 
+           <td class="confluenceTd"> Roger Kitain </td> 
+           <td class="confluenceTd">Y - checked in MS6 (updated sample to include 330) Y - checked in MS2 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> Web Beans </td> 
+           <td class="confluenceTd"> Roger Kitain </td> 
+           <td class="confluenceTd"> Context And Dependency Injection (JSR 299) and Servlets Sample </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+           <td class="confluenceTd"> Y </td> 
+           <td class="confluenceTd"> 1 </td> 
+           <td class="confluenceTd"> Roger Kitain </td> 
+           <td class="confluenceTd">Y - checked in 9/9/09 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> Metro Web Services </td> 
+           <td class="confluenceTd"> Bhakti Mehta </td> 
+           <td class="confluenceTd"> A web service that doesn't bundle wrapper beans in WAR/EAR using 109 deployment (full profile) </td> 
+           <td class="confluenceTd"> Y </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+           <td class="confluenceTd"> 1 </td> 
+           <td class="confluenceTd"> Bhakti Mehta </td> 
+           <td class="confluenceTd"> Y - checked in MS2 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> Metro Web Services </td> 
+           <td class="confluenceTd"> Bhakti Mehta </td> 
+           <td class="confluenceTd"> Exposing singleton as a web service (full profile) </td> 
+           <td class="confluenceTd"> Y </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+           <td class="confluenceTd"> 2 </td> 
+           <td class="confluenceTd"> Bhakti Mehta </td> 
+           <td class="confluenceTd"> Y - checked in MS2 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> Metro Web Services </td> 
+           <td class="confluenceTd"> Bhakti Mehta </td> 
+           <td class="confluenceTd"> @WebServiceRef + @MTOM/@Addressing (full profile) </td> 
+           <td class="confluenceTd"> ? </td> 
+           <td class="confluenceTd"> Y </td> 
+           <td class="confluenceTd"> 3 </td> 
+           <td class="confluenceTd"> Rama Pulavarthi </td> 
+           <td class="confluenceTd">Y - checked in 9/15/09 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> Java EE Connector Architecture 1.6 </td> 
+           <td class="confluenceTd"> Sivakumar Thyagarajan </td> 
+           <td class="confluenceTd"> A Sample Resource Adapter that uses the new EoD constructs (only annotations and no deployment descriptor (can use the existing JavaMail sample and demonstrate how it would be built using the new EoD additions. updated sample to add a resource adapter demonstrating Security Context mechanism (full profile) </td> 
+           <td class="confluenceTd"> Y </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+           <td class="confluenceTd"> 2 </td> 
+           <td class="confluenceTd"> Jagadish Ramu </td> 
+           <td class="confluenceTd"> Y - checked in MS2 Updated sample checked in 9/15, waiting for Netbeans related documentation </td> 
+          </tr> 
+         </tbody>
+        </table> 
+       </div> 
+       <hr> 
+       <p>Jspwiki style: sortable</p> 
+      </div>
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 02, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

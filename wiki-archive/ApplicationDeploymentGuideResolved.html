@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : ApplicationDeploymentGuideResolved</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="ApplicationDeploymentGuideResolved-ResolvedCommentsfortheApplicationDeploymentGuide"></a>Resolved Comments for the Application Deployment Guide</h2> <p>The following table lists comments that have been resolved for the <a href="ApplicationDeplyomentGuide.html" title="ApplicationDeplyomentGuide">Application Deployment Guide</a> for V3 Prelude.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Comment ID </th> 
+         <th class="confluenceTh"> Section, Page Number/URL </th> 
+         <th class="confluenceTh"> Comment </th> 
+         <th class="confluenceTh">Status – (<font color="lime">RESOLVED</font>/<font color="red">UNRESOLVED</font>) </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> tjquinn </td> 
+         <td class="confluenceTd"> Deploying an App Client, p. 42 </td> 
+         <td class="confluenceTd"> The paragraph that begins "If you are using..." can be removed. At the very early stages of the JWS support work we thought this might be an issue but it is not (and never was). I should have spotted this earlier. Thanks to Hong for pointing it out. </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> tjquinn </td> 
+         <td class="confluenceTd"> App. A, 61-62 </td> 
+         <td class="confluenceTd"> graphical display of sun-application-client.xml structure omits vendor subelement of java-web-start element </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> hzhang </td> 
+         <td class="confluenceTd"> Overview of Assembly and Deployment, JavaEE Standard Annotation </td> 
+         <td class="confluenceTd"> The sentence "If the standard deployment descriptors have specified the attribute full, annotations in the application or module are ignored." The attribute "full" was renamed to "metadata-complete". </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> chengfang </td> 
+         <td class="confluenceTd"> App. A sun-ejb-jar.xml </td> 
+         <td class="confluenceTd"> login-config element should have an additional subelement "realm". See sun-ejb-jar_3_0-0.dtd </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> tjquinn-001 </td> 
+         <td class="confluenceTd"> last section on p. 17: 'The NetBeans IDE' </td> 
+         <td class="confluenceTd"> Can we mention in the paragraph that other IDEs will work as well? I know it's good to promote NB, but the paragraph as it stands <em>could</em> be misinterpreted to suggest that NB is required." </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> tjquinn_002 </td> 
+         <td class="confluenceTd"> p. 18, #2, 1st sentence. reference to "server instance or cluster" </td> 
+         <td class="confluenceTd"> Prelude does not support clusters or instances other than the default instance. Maybe change "an accessible server instance or cluster" to "a server" ?? </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> tjquinn-003 </td> 
+         <td class="confluenceTd"> p. 20, automatic deployment, last sentence - reference to the default server instance </td> 
+         <td class="confluenceTd"> Prelude supports only one instance so "the default server instance" could be confusing </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> tjquinn-004 </td> 
+         <td class="confluenceTd"> p. 20, in "To Enable and configure..." - reference to developer profile and cluster profile </td> 
+         <td class="confluenceTd"> Prelude does not have the cluster profile. </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> tjquinn-005 </td> 
+         <td class="confluenceTd"> a few places - references to archive files being deployed </td> 
+         <td class="confluenceTd"> Although the deploydir command is deprecated, the underlying feature is not. Developers can still deploy applications in expanded form by specifying a directory instead of a .war file on the asadmin deploy and redeploy commands and in the admin console. </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> tjquinn-006 </td> 
+         <td class="confluenceTd"> p. 20, second sentence (mention of the _jar and _war directory suffixes </td> 
+         <td class="confluenceTd"> It is true that within an app modules of different types can have the same name. The naming convention for the directories is accurate but of minimal use to users. GlassFish expands the app's modules into these directories internally. The only time users would be concerned with this convention is if they use directory deployment, which requires the user to "pre-expand" the archive into the directories. </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> tjquinn_007 </td> 
+         <td class="confluenceTd"> p. 20, 2nd bullet at top </td> 
+         <td class="confluenceTd"> Repeats how default names are derived which was just explained. The introduction to the bullet list says how to <em>specify</em> a name. So the 2nd bullet only needs to describe the --name option. </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> tjquinn-008 </td> 
+         <td class="confluenceTd"> recheck of tjquinn-005 which is marked as resolved; </td> 
+         <td class="confluenceTd"> p. 20 still refers to the deprecated <em>deploydir</em> command. It should refer to the fact that the <em>deploy</em> command can accept a directory as long as it is expanded correctly (as described in the text already). </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> tjquinn-009 </td> 
+         <td class="confluenceTd"> p. 23, Dynamic Reloading section </td> 
+         <td class="confluenceTd"> Please double-check with Jan about the treatment of JSPs. I believe what the text says is true: updating a JSP in the application directory will automatically trigger its recompilation. In prelude currently, to start using updated <em>classes</em> the user must either create or update the file .reload in the directory mentioned in the text or redeploy the application as explained on p. 24 in the "To Reload Code or Deployment Descriptor Changes" section. if it's helpful to explain to users, in fact the .reload feature triggers an automatic redeployment of the application. </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> tjquinn-010 </td> 
+         <td class="confluenceTd"> p. 25, second bullet </td> 
+         <td class="confluenceTd"> Another reference to the <em>deploydir</em> command. It should refer to <em>deploy</em> instead. </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> tjquinn-011 </td> 
+         <td class="confluenceTd"> p. 26, list of asadmin commands, <em>deploy</em> </td> 
+         <td class="confluenceTd"> The text seems to imply a difference between a module being 'deployed' and 'existing.' As far as the server is concerned, a module that is not deployed does not exist. I'd suggest removing 'or already exists' </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> tjquinn-012 </td> 
+         <td class="confluenceTd"> p. 26, list of commands, <em>deploydir</em> </td> 
+         <td class="confluenceTd"> This command is deprecated. Describe this feature as part of the <em>deploy</em> command instead. Also, we've used the term "exploded" and "expanded" already to describe this sort of directory structure. Here we introduce "open" as yet another synonym. Can we keep it to just two at least: exploded and expanded? </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> anissa-01 </td> 
+         <td class="confluenceTd"> 1st ch. 1st sentence </td> 
+         <td class="confluenceTd"> Sun JavaTM System Enterprise Server, shouldn't this be GlassFish v3 Prelude ? </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> Our docs refer to the for-sale version of the product. If a specifically GlassFish version will be generated, the product name variable name will change accordingly. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> anissa-02 </td> 
+         <td class="confluenceTd"> pg 17 </td> 
+         <td class="confluenceTd"> the link to Sun GlassFish Enterprise Server v3 Prelude Installation Guide points to <a href="http://docs.sun.com/app/docs/doc/820-5968">http://docs.sun.com/app/docs/doc/820-5968</a> <p> and it results in 'Not Found' error </p></td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> This link should resolve after the product is officially released. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> anissa-03 </td> 
+         <td class="confluenceTd"> pg 22, Dynamic Deployment </td> 
+         <td class="confluenceTd"> keepSessions option. You usually mentions how to do a task with cli and gui, but for this no mention about the console. This is supported by checking a check box in the redeployment page. </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> anissa-04 </td> 
+         <td class="confluenceTd"> pg23. Dynamic Reloading. </td> 
+         <td class="confluenceTd"> It says dynamic reloading is enabled by default, however, it is 'false' by default. Since default will not be writing out to domain.xml, if you disable it, it is not writen out. Only when you enable, you see that it is set to 'true' in domain.xml. Not sure if this is a bug. Need to confirm with Tim/Jerome. </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> Though disabled in the code, it is enabled (present) in the default domain.xml file. So "true" is the effective default, the one the user sees. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> anissa-05 </td> 
+         <td class="confluenceTd"> pg 24, Auto deployment </td> 
+         <td class="confluenceTd"> Same as dynamic reload, default seems to be changed to 'false'. </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> As for dynamic reload, "true" is the effective default. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> anissa-06 </td> 
+         <td class="confluenceTd"> pg 25, Directory Deployment </td> 
+         <td class="confluenceTd"> This directory must be accessible from the Server machine, should we mention this ? </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> anissa-07 </td> 
+         <td class="confluenceTd"> pg 26, asadmin command </td> 
+         <td class="confluenceTd"> list-components. list-applications has been added for v3, should we mention this ? </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> Changed list-components to list-applications. Since list-components wasn't mentioned in this book in previous releases, no need to note deprecation. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> anissa-08 </td> 
+         <td class="confluenceTd"> pg 26. </td> 
+         <td class="confluenceTd"> . asadmin deploy can be used for directory deployment as well. deploydir command exists just for v2 compatibilty </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> I have clarified this in my working version. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> anissa-09 </td> 
+         <td class="confluenceTd"> pg 26. deployment in console. </td> 
+         <td class="confluenceTd"> <em>You can also specify deployment settings that vary according to the type of module</em>. We don't allow you change the module in v3 prelude since we only support war deployment. Maybe we don't need this sentence. </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> EJB modules and web services are supported if the EJB and Metro add-on components are installed. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> anissa-10 </td> 
+         <td class="confluenceTd"> Deploying a Web Service. </td> 
+         <td class="confluenceTd"> Admin Console doesn't show any Web Services. Please modify this session accordingly. </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> Added Metro add-on note. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> anissa-11 </td> 
+         <td class="confluenceTd"> Deploying a WAR Module. </td> 
+         <td class="confluenceTd"> maybe mention how to enable keepSessions in Admin Console </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> anissa-12 </td> 
+         <td class="confluenceTd"> Deploying a WAR Module. </td> 
+         <td class="confluenceTd"> <em>If you include this property when you deploy the WAR module, the generated source is kept in domain-dir/generated/jsp/module-name.</em> Should we give an example, how to specify this property. </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> anissa-13 </td> 
+         <td class="confluenceTd"> Deploying an EJB JAR Module. </td> 
+         <td class="confluenceTd"> This is not supported in v3 prelude. But the EJB Jar can be in a WAR file for deployment. May want to consult Tim about this. </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> Added EJB container add-on note. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> anissa-14 </td> 
+         <td class="confluenceTd"> General comment: </td> 
+         <td class="confluenceTd"> The limitation, ie the required packages to support EJB, Web Service, Message security is specified at the end of the chapter. It maybe better to specify the requirement in the section that talks about it. eg. Web Service deployment. </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> maheshk-01 </td> 
+         <td class="confluenceTd"> pg 28, Deploying an EJB JAr module </td> 
+         <td class="confluenceTd"> Remove the paragraphs about --keepgenerated, --retrieve and asadmin get-client-stubs as we do not yet support remote EJBs </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> maheshk-02 </td> 
+         <td class="confluenceTd"> pg 36 </td> 
+         <td class="confluenceTd"> cmp element (and sub elements): Add a note that CMP is not supported in prelude </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> maheshk-03 </td> 
+         <td class="confluenceTd"> pg 36 </td> 
+         <td class="confluenceTd"> is-read-only-bean, commit-option, use-thread-pool-id and gen-classes: Add a note "not supported" </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> maheshk-04 </td> 
+         <td class="confluenceTd"> pg 36 </td> 
+         <td class="confluenceTd"> bean-pool and bean-cache elements: Not supported </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> maheshk-04 </td> 
+         <td class="confluenceTd"> pg 37 </td> 
+         <td class="confluenceTd"> flush-at-end-of-method elements: Not supported </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> maheshk-04 </td> 
+         <td class="confluenceTd"> pg 38 </td> 
+         <td class="confluenceTd"> checkpointed-methods and checkpoint-at-end-of-method: Not supported </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> janey-01 </td> 
+         <td class="confluenceTd"> pg 20 </td> 
+         <td class="confluenceTd"> 2nd bullet, you may also want to add WAR file: If deploying using the asadmin deploy command, the default name of the module is the prefix of the <em>WAR or</em> Jar file... </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> Covered under Naming Standards. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> janey-02 </td> 
+         <td class="confluenceTd"> pg 22 </td> 
+         <td class="confluenceTd"> I didn't understand the 2nd paragraph of item 3, Redeployment - "When redeploying through the Administration Console, the redployed module is deployed to the domain". In GFv3, module is deployed to the domain. There is no cluster or instances </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> janey-03 </td> 
+         <td class="confluenceTd"> Chapter 1 </td> 
+         <td class="confluenceTd"> Replace deploydir with deploy command and mention that deploydir is deprecated in GFv3, use deploy command instead. The deploy command accepts file or directory as the operand. The command can figure out if the operand is a directory then it will do a directory deployment. If user uses deploydir command, a warning message is displayed: "deploydir command deprecated. Please use deploy command instead." </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> This is already done in the working draft. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> janey-04 </td> 
+         <td class="confluenceTd"> pg 25 </td> 
+         <td class="confluenceTd"> Please add that directory deployment, "asadmin deploy directory" where directory is accessible to the server. </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jane,tim,anissa </td> 
+         <td class="confluenceTd"> CH.1 </td> 
+         <td class="confluenceTd"> Q: reviewed; items above (10/09/08). JY reviewed, comments above (10/14/08). AL reviewed, comments above. All these comments incorporated. </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Jan Luehe </td> 
+         <td class="confluenceTd"> sun-web.xml elements </td> 
+         <td class="confluenceTd"> Jan's comments received via email and incorporated. </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Mahesh Kannan </td> 
+         <td class="confluenceTd"> sun-ejb-jar.xml elements related to persistence </td> 
+         <td class="confluenceTd"> Mahesh's comments received and incorporated. sun-ejb-jar.xml elements not related to persistence </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Mitesh Meswani </td> 
+         <td class="confluenceTd"> sun-ejb-jar.xml elements related to persistence </td> 
+         <td class="confluenceTd"> Mitesh's comments received via email and incorporated. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Comment ID </th> 
+         <th class="confluenceTh"> Date </th> 
+         <th class="confluenceTh"> Section, Page Number/URL </th> 
+         <th class="confluenceTh"> Comment </th> 
+         <th class="confluenceTh">Status – (<font color="lime">RESOLVED</font>/<font color="red">UNRESOLVED</font>) </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Example: <em>jsmith-001</em> </td> 
+         <td class="confluenceTd"> <em>Date comment entered</em> </td> 
+         <td class="confluenceTd"> <em>Detailed pointer to location in the doc</em> </td> 
+         <td class="confluenceTd"> <em>Detailed comment</em> </td> 
+         <td class="confluenceTd"><em>Leave blank – the writer will provide status</em> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ksaks-001 </td> 
+         <td class="confluenceTd"> 5/19 </td> 
+         <td class="confluenceTd"> Global comment. Two examples : Page 27, Preface 2nd paragraph; Page 36 </td> 
+         <td class="confluenceTd"> References to Java EE 5 should be changed to Java EE 6, and component spec versions should be updated to the latest EE 6 numbers. E.g., EJB 3.0 (JSR 220) should be EJB 3.1 (JSR 318) </td> 
+         <td class="confluenceTd"> done 5/22/9 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ksaks-002 </td> 
+         <td class="confluenceTd"> 5/19 </td> 
+         <td class="confluenceTd"> Page 34, "Enterprise Java Beans(EJB) Modules" limitation </td> 
+         <td class="confluenceTd"> Paragraph contents should be replaced with "In the web distribution, only EJB 3.1 Lite is supported. EJB 3.1 Lite includes support for Local stateless, stateful, and singleton session beans. Additional EJB features that make up the Full EJB 3.1 API such as Remote EJBs, message-driven beans, Web Service EJB Endpoints, and the EJB Timer Service, are available within the Glassfish v3 Enterprise Server Preview. </td> 
+         <td class="confluenceTd"> Done 5/22/9 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ksaks-003 </td> 
+         <td class="confluenceTd"> 5/19 </td> 
+         <td class="confluenceTd"> Page 37, Web Module </td> 
+         <td class="confluenceTd"> It's not clear from the writeup of Web Module that enterprise beans can be packaged in .wars. Suggest adding "enterprise beans" to first sentence and "enterprise bean classes" to the list in the last sentence </td> 
+         <td class="confluenceTd"> Done 5/22/9 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ksaks-004 </td> 
+         <td class="confluenceTd"> 5/19 </td> 
+         <td class="confluenceTd"> Page 48, Example 2-2 </td> 
+         <td class="confluenceTd"> It would be better to just remove this. Stub generation is no longer needed (they're generated dynamically at runtime) The option is supported for backward compatibility but it's better not to highlight it. </td> 
+         <td class="confluenceTd"> Done 5/22/9 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ksaks-005 </td> 
+         <td class="confluenceTd"> 5/19 </td> 
+         <td class="confluenceTd"> Page 58, Stubs and Ties section </td> 
+         <td class="confluenceTd"> This should be removed as well. It's better to just mention the get-client-stubs command when describing the use of appclients. </td> 
+         <td class="confluenceTd"> Done 5/22/9 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> hong.zang </td> 
+         <td class="confluenceTd"> 5/18/9 </td> 
+         <td class="confluenceTd"> entire doc </td> 
+         <td class="confluenceTd"> comments received by email </td> 
+         <td class="confluenceTd"> Done 5/26/9 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> marina.vatkina </td> 
+         <td class="confluenceTd"> 5/20/9 </td> 
+         <td class="confluenceTd"> transactions </td> 
+         <td class="confluenceTd"> comments received by email </td> 
+         <td class="confluenceTd"> no transactions for Preview </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jagadish.ramu </td> 
+         <td class="confluenceTd"> 5/22/9 </td> 
+         <td class="confluenceTd"> various </td> 
+         <td class="confluenceTd"> comments received by email </td> 
+         <td class="confluenceTd"> Done 5/26/9 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> tim.quinn </td> 
+         <td class="confluenceTd"> 5/27/9 </td> 
+         <td class="confluenceTd"> autodeploy examples </td> 
+         <td class="confluenceTd"> comments received by email </td> 
+         <td class="confluenceTd"> Done 5/27/9 </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>Return to <a href="GlassFishDocs.html" title="GlassFishDocs">main comments page</a></p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 02, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:43.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

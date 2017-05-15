@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : Rubyjruby_proceJa</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="Rubyjruby_proceJa-Ruby%2FJRubyProcessModelsExplained%28byArunGupta8%2F20%2F07%29"></a>Ruby/JRuby Process Models Explained (by Arun Gupta 8/20/07)</h1> <p><a href="http://blogs.oracle.com/arungupta/entry/jruby_on_rails_hackday_report">JRuby Hackday</a> にて、<a href="http://blog.nicksieger.com/">Nick Sieger</a> は以下に Rails アプリケーションを配備した際のプロセスモデルを解説しました。</p> 
+     <ul> 
+      <li><a href="http://mongrel.rubyforge.org/">Mongrel</a> 上に、伝統的な C Ruby</li> 
+      <li>Mongrel 上に JRuby</li> 
+      <li><a href="http://glassfish.java.net/ja/">GlassFish</a> 上に <a href="http://jruby.codehaus.org/">JRuby</a></li> 
+     </ul> <p>本ブログエントリで、私はイベント後の頭の中のダンプをとります。以下の画像は上で述べた各アプローチのプロセスモデルです。各画像のに含まれている箱はプロセスでなく、アプリケーションロジックを表します。画像の凡例は次のようなものです。</p> <p><span class="error">Cannot resolve external resource into attachment.</span></p> <p>最初のアプローチでは、C ベース Ruby on Rails アプリケーションは、フロントに HTTP ライブラリ、Mongrel を置いています。典型的なアプリケーションは Mongrel サーバのクラスタ (<a href="http://mongrel.rubyforge.org/docs/mongrel_cluster.html">Mongrel_cluster プラグイン</a>で提供される) に配備されます。</p> <p><span class="error">Cannot resolve external resource into attachment.</span><br> このプラグインは複数の Mongrel サーバを設定し、制御します。Mongrel は概ね Ruby で書かれていて、HTTP リクエストのパースに ネイティブ C を使っています。Mongrel の各インスタンスはサーバソケットをリッスンする Ruby インタプリタを起動します。Ruby スクリプトには Mongrel ハンドラがあり、クライアントからの複数のリクエストをキューに置き、状態を一つずつ Rails インスタンスに渡します (これはシングルスレッドで設計されています)。</p> <p>Mongrel クラスタでは、複数の Ruby インタプリタは OS の単一プロセスとして起動されます。</p> <p>二つ目のアプローチは、Rails アプリケーションを JRuby を使って配備するかを示します。これは、C Ruby + Mongrel 配備と JRuby + GlassFish 配備の間の過渡的なアプローチです。</p> <p><span class="error">Cannot resolve external resource into attachment.</span><br> <a href="http://ola-bini.blogspot.com/2007/05/announcing-mongreljcluster.html">Mongrel JCluster</a> は JRuby のみで動作する Mongrel_cluster のアップデートです。最大の違いは JVM インスタンスを一つだけ起動し、複数の Mongrel を同一の JVM 内でスレッドとして複数の JRuby プロセスとして起動することです。伝統的なアプローチと同様、各 Mongrel はサーバソケットをリッスンし、リクエストの状態を Rails に渡します。</p> <p>Mongrel JCluster では、OS プロセスとしては、JVM が一つ起動されるのみです。</p> <p>最後のアプローチは JRuby アプリケーションをどう GlassFish に配備するかを示します。このアプローチでは、アプリケーションを配備する上で二つのモードがあります。</p> <p><span class="error">Cannot resolve external resource into attachment.</span></p> <p>一つ目の場合、<a href="http://www.headius.com/jrubywiki/index.php/Rails_Integration">Goldspike プラグイン</a>が標準的な Rails アプリケーションにインストールされます。このプラグインは "war:*" rake ターゲットを Rails プロジェクトに追加します。rake ターゲット "war:standalone:create" を実行すると、依存性のある JRuby と Rails ライブラリを全て含む WAR ファイルを生成します。そうすると、この WAR ファイルを GlassFish に配備できます。この WAR ファイル内の "web.xml" には、Servlet リクエストから Rails ディスパッチャへデータを変換する Servlet (org.jruby.webapp.RailsServlet) が載っています。</p> <p><span class="error">Cannot resolve external resource into attachment.</span></p> <p>二つ目の場合では、<a href="https://grizzly.java.net/">Grizzly コネクタ</a>がリクエストの形式を理解し、直接、事前に設定された JRuby インストール (Rails gem で更新されます) にディスパッチします。両方の場合で、GlassFish としては単一の JVM が OS プロセスとして動いています。二つ目のアプローチの主な利点は、web アプリケーション処理をバイパスし、リクエストを直接 Rails フレームワークに委任することです。</p> <p>最初の GlassFish のケース (Goldspike/JRuby) に関する詳しいスクリーンキャストは<a href="http://blogs.oracle.com/arungupta/entry/screencast_web6_first_jruby_app">こちら</a>で、二つ目のケース (Grizzly/JRuby) は<a href="http://blogs.oracle.com/arungupta/entry/first_jruby_on_rails_app">こちら</a>にドキュメントされています。</p> 
+     <hr> <p>日本語翻訳: <a href="http://blogs.oracle.com/ogino">ogino</a></p> <p><a href="http://weblogs.java.net/blog/arungupta/archive/2007/08/rubyjruby_proce.html">英文</a></p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 09, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : V4Jsr314JavaServerFacesIntegration</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="V4Jsr314JavaServerFacesIntegration-WhoisResponsibleforIntegratingJSR314JavaServerFacesintoGlassFish%3F"></a>Who is Responsible for Integrating JSR-314 JavaServer Faces into GlassFish?</h1> <p>The &nbsp;following Oracle employees</p> 
+     <ul> 
+      <li>Edward Burns</li> 
+      <li>Sheetal Vartak</li> 
+      <li>Roger Kitain</li> 
+     </ul> <h4><a name="V4Jsr314JavaServerFacesIntegration-MostRecentlyIntegratedVersionofJSR314Implementation"></a>Most Recently Integrated Version of JSR-314 Implementation</h1> <p>On 20110127, Ed Burns integrated version 2.1.0-b11 of Mojarra into GlassFish. &nbsp;The SVN url for this version is &lt;<a href="https://svn.java.net/svn/mojarra~svn/tags/2.1.0-b10">https://svn.java.net/svn/mojarra~svn/tags/2.1.0-b11</a>&gt;. &nbsp;This corresponds to the following SVN tag.</p> <h4><a name="V4Jsr314JavaServerFacesIntegration-MavenRepositoryInformation"></a>Maven Repository Information</h3> 
+     <ul> 
+      <li>Repository&nbsp;<a href="http://download.java.net/maven/2">http://download.java.net/maven/2</a></li> 
+      <li>Put this in your &lt;dependencies&gt; section</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;dependency&gt;
+  &lt;groupId&gt;com.sun.faces&lt;/groupId&gt;
+  &lt;artifactId&gt;jsf-api&lt;/artifactId&gt;
+  &lt;version&gt;2.1.0-b11&lt;/version&gt;
+  &lt;scope&gt;provided&lt;/scope&gt;
+&lt;/dependency&gt;
+&lt;dependency&gt;
+  &lt;groupId&gt;com.sun.faces&lt;/groupId&gt;
+  &lt;artifactId&gt;jsf-impl&lt;/artifactId&gt;
+  &lt;version&gt;2.1.0-b11&lt;/version&gt;
+  &lt;scope&gt;provided&lt;/scope&gt;
+&lt;/dependency&gt;</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="V4Jsr314JavaServerFacesIntegration-IntegrationProcess"></a>Integration Process</h1> <p>There is a multi stage integration process.&nbsp;</p> <h4><a name="V4Jsr314JavaServerFacesIntegration-Stage1%3ABuildandverifycorrectnessofMojarra2.1HEAD"></a>Stage 1: Build and verify correctness of Mojarra 2.1 HEAD</h3> 
+     <ul> 
+      <li>Check out a fresh mojarra HEAD branch (<a href="https://svn.java.net/svn/mojarra~svn/trunk">https://svn.java.net/svn/mojarra~svn/trunk</a>), configure the build.properties to point to a known-good installation of GlassFish 3.1, and run <b>ant -Dbuild.number=DATE-TIME clean main test.with.container.refresh</b>. Replace DATE-TIME with today's date an the current time, for example, <b>20100804-2321</b>. This is not required but it does put information into the server log verifying that you are, in fact, running the expected Mojarra bits. &nbsp;Instructions on doing this may be found in the <a href="JavaServerFacesRI.html" title="JavaServerFacesRI">Mojarra FAQ</a>. Look for "automated tests"</li> 
+     </ul> <h4><a name="V4Jsr314JavaServerFacesIntegration-Stage2%3ABuildandverifycorrectnessofGlassFish3.1HEAD"></a>Stage 2: Build and verify correctness of GlassFish 3.1 HEAD</h3> 
+     <ul> 
+      <li>Build the absolute latest GlassFish 3.1 from the HEAD branch of its svn repository. (svn checkout&nbsp; <a href="https://svn.java.net/svn/glassfish~svn/trunk/v3">https://svn.java.net/svn/glassfish~svn/trunk/v3</a>, mvn -Prelease-phase1 -e clean install).</li> 
+     </ul> 
+     <ul> 
+      <li>Run the quicklook tests. &nbsp;There are instructions for this elsewhere, but we reproduce the highlights here. 
+       <ol> 
+        <li>When the GlassFish 3.1 build successfully completes, cd to <b>distributions/glassfish</b>&nbsp;relative to the GlassFish 3.1 source root.</li> 
+        <li>rename the freshly built target directory to have today's date and time. &nbsp;This is just a precautionary measure. &nbsp;For example <b>target-20100716-1854</b>.</li> 
+        <li>cd to your freshly renamed target directory</li> 
+        <li>unzip <b>glassfish.zip</b></li> 
+        <li>cd <b>glassfishv3</b>&nbsp;and note the current directory, obtained via the <b>pwd</b> command. &nbsp;For example <b>/home/ejburns/Documents/JavaEE/workareas/glassfish-1HEAD/distributions/glassfish/target-20100716-1854</b></li> 
+        <li>&nbsp;cd to the root of your GlassFish source workarea and then&nbsp;cd <b>v3/tests/quicklook</b></li> 
+        <li>run&nbsp;<b>mvn -Dglassfish.home=$GLASSFISH test</b>&nbsp;where $GLASSFISH is the fully qualified path from two steps ago.</li> 
+        <li>CAREFULLY scrutinize the output to ensure that the tests all passed successfully. &nbsp;If not, the integration cannot proceed until they do.&nbsp;</li> 
+       </ol> </li> 
+     </ul> <h4><a name="V4Jsr314JavaServerFacesIntegration-Stage3%3AInstallMojarra2.1HEADintoGlassFish3.1HEADandVerifyBoth"></a>Stage 3: Install Mojarra 2.1 HEAD into GlassFish 3.1 HEAD and Verify Both</h3> 
+     <ul> 
+      <li>Modify Mojarra HEAD workspace local build.properties file to point to glassfish home from Stage 2. &nbsp;Re-run <b>ant -Dbuild.number=DATE-TIME main test.with.container.refresh</b>. Replace DATE-TIME with today's date an the current time, for example,<b>20100804-2321</b>.&nbsp;As a side-effect, this will install the latest Mojarra jars into the GlassFish HEAD.</li> 
+      <li>Re-run the quicklook tests starting with step 6 from Stage 2.</li> 
+      <li>If both sets of tests complete successfully, without failure, start the glassfish server manually and visit the admin GUI.</li> 
+      <li>If the admin GUI comes up successfully and basic operations can be performed, you can proceed to Stage 4.</li> 
+     </ul> <h4><a name="V4Jsr314JavaServerFacesIntegration-Stage4%3AUpdateVersionNumbers%2CCommit%2CandSVNTagMojarra2.1HEAD"></a>Stage 4: Update Version Numbers, Commit, and SVN Tag Mojarra 2.1 HEAD</h3> 
+     <ul> 
+      <li>If necessary update the version numbers in <b>common/ant/common.xml</b>. &nbsp;This is seldom necessary.</li> 
+      <li>Update the version number in <b>jsf-tools/pom.xml</b> to correspond with <b>common/ant/common.xml</b></li> 
+      <li>Update the version number in&nbsp;<b>updatecenter2/conf/jsf_proto.py</b> . &nbsp;For example, if you are building 2.1.0-b09 you would make the file have this in it:&nbsp;<b>"version" &nbsp; &nbsp; &nbsp; : "2.1.0,0-9",</b></li> 
+      <li>svn commit the modified version files.</li> 
+      <li>svn tag the HEAD using the following naming convention:&nbsp;</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">svn copy https://svn.java.net/svn/mojarra~svn/trunk \
+ https://svn.java.net/svn/mojarra~svn/tags/2.1.0-b09 \
+ -m "Tag 2.1.0 Build 09"</pre> 
+       </div> 
+      </div>
+     </div> <p>Replace <b>b09</b> and <b>Build 09</b> with the appropriate build number.</p> <h4><a name="V4Jsr314JavaServerFacesIntegration-Stage5%3APushjsfapi.jarandjsfimpl.jartojava.netsotheGlassFishBuildCanDependOnThem"></a><b>Stage 5: Push jsf-api.jar and jsf-impl.jar to java.net so the GlassFish Build Can Depend On Them</b></h3> 
+     <ul> 
+      <li>svn checkout the source from the tag created in Stage 4. &nbsp;Edit <b>build.properties</b> as usual, setting the <b>jsf.build.home</b>, <b>container.name</b>, and <b>container.home</b> properties correctly. &nbsp;Point to the GlassFish 3.1 HEAD build from Stage 2.</li> 
+      <li>Run ant main <b>-Dbuild.type=FCS -Dbuild.number=b09</b> container.deploy to get the jars pushed into the GlassFish 3.1 HEAD build</li> 
+      <li>Re-run the quicklook tests as a sanity check.</li> 
+      <li>Do a test run of generating the maven artifacts for jsf-api and jsf-impl. 
+       <ul> 
+        <li><b>cd jsf-api; &nbsp;ant mvn.deploy.promoted.local -Dbuild.number=b09</b></li> 
+        <li><b>cd jsf-ri; ant mvn.deploy.promoted.local -Dbuild.number=b09</b></li> 
+        <li>Naturally, replace <b>b09</b>&nbsp;with the build number from the tag.</li> 
+        <li>Inspect the jsf-api and jsf-impl artifacts that were pushed into your local repository. &nbsp;Look at the build output to find where they end up. &nbsp;For example,</li> 
+       </ul> </li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">[INFO] Installing /Users/edburns/Documents/JavaEE/workareas/mojarra-2HEAD/jsf-api/build/mvn/target/jsf-api-2.1.0-b09.jar to&nbsp;
+/Users/edburns/.m2/repository/com/sun/faces/jsf-api/2.1.0-b09/jsf-api-2.1.0-b09.jar</pre> 
+       </div> 
+      </div>
+     </div> <p>In particular, look at the .pom files and make sure everything looks right.</p> 
+     <ul> 
+      <li>Once you are satisfied that the maven build artifacts look correct, and assuming you have the proper credentials to publish jars to the java.net maven repository, you can do the publishing by re-running the previous ant targets, but omitting the ".local" suffix. &nbsp;That is, 
+       <ul> 
+        <li><b>cd jsf-api; &nbsp;ant mvn.deploy.promoted -Dbuild.number=b09</b></li> 
+        <li><b>cd jsf-ri; ant mvn.deploy.promoted -Dbuild.number=b09</b></li> 
+       </ul> </li> 
+      <li>Wait about 30 minutes for the jars to appear at&nbsp;<a href="http://download.java.net/maven/2/com/sun/faces/jsf-api/">http://download.java.net/maven/2/com/sun/faces/jsf-api/</a>&nbsp;and&nbsp;<a href="http://download.java.net/maven/2/com/sun/faces/jsf-impl/">http://download.java.net/maven/2/com/sun/faces/jsf-impl/</a>.</li> 
+     </ul> <h4><a name="V4Jsr314JavaServerFacesIntegration-Stage6%3AModifyglassfishbuildfilestopointtothejustpublishedmavenjars"></a>Stage 6: Modify glassfish build files to point to the just published maven jars</h3> 
+     <ul> 
+      <li>Remove the jsf-api and jsf-impl jars from your local maven repository. &nbsp;For example 
+       <ul> 
+        <li><b>rm -rf ~/.m2/repository/com/sun/faces</b></li> 
+       </ul> </li> 
+      <li>In your GlassFish 3.1 HEAD workspace open the top level <b>pom.xml</b> and update the contents of the <b>&lt;jsf-api.version&gt;</b> and <b>&lt;jsf-impl.version&gt;</b> elements to be consistent with the just published maven jars.</li> 
+      <li>In the same workspace, edit the file&nbsp;<b>packager/resources/pkg_conf.py</b>&nbsp;and update the <b>jsf_version</b> property. &nbsp;For example, if you were pushing 2.1.0-b09, the property would be&nbsp;<b>jsf_version="2.1.0,0-3"</b>.</li> 
+      <li>svn update, clean, and rebuild your GlassFish 3.1 HEAD workspace.</li> 
+      <li>Repeat Stage 2 with this new build.</li> 
+      <li>If the quicklook tests succeed, you are ready to proceed.</li> 
+     </ul> <h4><a name="V4Jsr314JavaServerFacesIntegration-Stage7%3AObtainPermissiontoCommittheIntegration%2CCommittheIntegration"></a><b>Stage 7: Obtain Permission to Commit the Integration, Commit the Integration</b></h3> <p>Send the pom review request to dev@glassfish.java.net. &nbsp;Please consider using this format for the email.</p> 
+     <blockquote> 
+      <p>Subject: pom.xml review request: integrate JSF 2.1.0-b09</p> 
+      <p>This change-bundle integrates JSF 2.1.0-b09. &nbsp;I have run the quicklook<br> tests with these jars pulled fresh from maven to a local repo that does<br> not have any com/sun/faces directory and the tests ran successfully to<br> completion.</p> 
+      <p>I have also brought up the adminGUI web application (as this exercises<br> on the new JSF version). &nbsp;It worked just fine.</p> 
+      <p>SECTION: Diffs</p> 
+      <p>Index: pom.xml<br> ===================================================================<br> --- pom.xml&nbsp;&nbsp; &nbsp;(revision 42527)<br> +++ pom.xml&nbsp;&nbsp; &nbsp;(working copy)<br> @@ -104,8 +104,8 @@<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;el-impl.version&gt;2.2.1-b03&lt;/el-impl.version&gt;<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;jstl-impl.version&gt;1.2&lt;/jstl-impl.version&gt;<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;jstl-api.version&gt;1.2&lt;/jstl-api.version&gt;<br> -&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;jsf-api.version&gt;2.1.0-b06&lt;/jsf-api.version&gt;<br> -&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;jsf-impl.version&gt;2.1.0-b06&lt;/jsf-impl.version&gt;<br> +&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;jsf-api.version&gt;2.1.0-b09&lt;/jsf-api.version&gt;<br> +&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;jsf-impl.version&gt;2.1.0-b09&lt;/jsf-impl.version&gt;<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;jsf-ext.version&gt;0.2&lt;/jsf-ext.version&gt;<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;woodstock.version&gt;4.0.2.6&lt;/woodstock.version&gt;<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;jaxrpc-api.version&gt;1.1&lt;/jaxrpc-api.version&gt;<br> Index: packager/resources/pkg_conf.py<br> ===================================================================<br> --- packager/resources/pkg_conf.py&nbsp;&nbsp; &nbsp;(revision 42527)<br> +++ packager/resources/pkg_conf.py&nbsp;&nbsp; &nbsp;(working copy)<br> @@ -64,7 +64,7 @@<br> &nbsp;felix_version="3.0.5,0-0"<br> &nbsp;javadb_version="10.5.3.0,0-0"<br> &nbsp;corba_version="3.1.0,0-12"<br> -jsf_version="2.1.0,0-6"<br> +jsf_version="2.1.0,0-7"<br> &nbsp;grizzly_version="1.9.21,0-1"<br> &nbsp;metro_version="2.1,0-17"<br> &nbsp;javahelp_version="2.0.2,0-1"</p> 
+     </blockquote> <p>Once you have received approval, commit the changes. &nbsp;Please consider using the following as the changebundle.txt file in your commit command.</p> <p><b>svn commit -F changebundle.txt pom.xml&nbsp;packager/resources/pkg_conf.py</b></p> 
+     <blockquote> 
+      <p>Integration of JSF 2.1.0 b09 into GlassFish 3.1 HEAD <a href="http://aseng-wiki.us.oracle.com/asengwiki/display/GlassFish/JSF+2.1+Schedule">http://aseng-wiki.us.oracle.com/asengwiki/display/GlassFish/JSF+2.1+Schedule</a></p> 
+      <p>r=janey</p> 
+      <p>MODIFIED FILES</p> 
+      <p>pom.xml<br> <b>packager/resources/pkg_conf.p</b><b>y</b></p>
+     </blockquote> <h4><a name="V4Jsr314JavaServerFacesIntegration-Stage8%3AWatchHudsonLikeAHawktoEnsureYouDidn%27tBreakTheBuild"></a>Stage 8: Watch Hudson Like A Hawk to Ensure You Didn't Break The Build</h3> <p>The hudson URL to watch is&nbsp;<a href="http://gf-hudson.us.oracle.com/hudson/view/GFv3%20Trunk/job/gf-trunk-build-continuous/">http://gf-hudson.us.oracle.com/hudson/view/GFv3%20Trunk/job/gf-trunk-build-continuous/</a>.</p> <p>If the build breaks, get right on top of it and revert your changes.</p> <h4><a name="V4Jsr314JavaServerFacesIntegration-Stage9%3AUpdatethispagewiththenewbuildinformation%2Cnamesanddates."></a>Stage 9: Update this page with the new build information, names and dates.</h3> <p><b>If Performing A Formal Release, do the following</b></p> <h4><a name="V4Jsr314JavaServerFacesIntegration-Stage10%3ARelnotes"></a>Stage 10: Relnotes</h3> <p>Search the commit logs to generate a list of issues fixed during this release. &nbsp;For example.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">svn log -r \{2009-07-02\}:8830 &gt; log-2009-07-02-8830.txt
+
+grep -v "^[-+]" log-2009-07-02-8830.txt | grep -v "^@" | grep -v "^r" | grep ".*[0-9].*"</pre> 
+       </div> 
+      </div>
+     </div> <p>This will get all the commit log messages from 2 July 2009 until revision 8830, cat them to a file, and then output all the lines in the log that have a number in them, excluding the revision number line and lines in diffs.</p> <h4><a name="V4Jsr314JavaServerFacesIntegration-Stage11%3Apublishingthereleasetomaven"></a>Stage 11: publishing the release to maven</h3> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">ant clean -main -Dbuild.type=FCS
+cd jsf-api
+ant mvn.deploy.release.local</pre> 
+       </div> 
+      </div>
+     </div> <p>Inspect the jars, particularly the manifest, to make sure all the OSGi information is correct. &nbsp;The string SNAPSHOT must not occur any where in the jar file name itself or in the manifest. &nbsp;For example, for 2.1.0, the jar file name is jsf-api-2.1.0.jar. &nbsp;If everything looks ok, do the same in jsf-ri and check that jar and its manifest too. &nbsp;If that is ok also, go back to jsf-api and run the mvn.deploy.release target. &nbsp;Once it deploys to the repo, do the same for jsf-ri.</p> <h4><a name="V4Jsr314JavaServerFacesIntegration-ForMojarra2.0.Xreleases"></a>For Mojarra 2.0.X releases</h2> <p>Make sure you build Mojarra with Java 5 since it must also run on Java 5.</p> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Nov 08, 2011 by 
+<font color="#0050B2">rogerk</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

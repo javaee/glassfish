@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : FAQFormatting</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p><b>DEPRECATED. See <a href="GlassFishWikiFAQ.html" title="GlassFishWikiFAQ">GlassFishWikiFAQ</a> instead.</b></p> 
+     <div> 
+      <ul> 
+       <li><a href="#FAQFormatting-ColouredText%3F">Coloured Text?</a></li> 
+       <li><a href="#FAQFormatting-HowdoIcreateanchorsandlinktotheminaWikipage%3F">How do I create anchors and link to them in a Wiki page?</a></li> 
+       <li><a href="#FAQFormatting-Printfriendlyformat%3F">Print-friendly format?</a></li> 
+       <li><a href="#FAQFormatting-Canwehavetextalignment%3F">Can we have text alignment?</a></li> 
+       <li><a href="#FAQFormatting-HowdoIconfiguremyJSPWikitohandleJPGandGIFinlineimages%3F">How do I configure my JSPWiki to handle JPG and GIF inline images?</a></li> 
+       <li><a href="#FAQFormatting-HowtochangetheleftUppericontomineown%3F">How to change the leftUpper icon to mine own?</a></li> 
+       <li><a href="#FAQFormatting-Comments%3F">Comments?</a></li> 
+       <li><a href="#FAQFormatting-IsthereawayIcandumpallthepagestoHTML">Is there a way I can dump all the pages to HTML</a></li> 
+       <li><a href="#FAQFormatting-Implicitlinebreaks">Implicit line breaks</a></li> 
+       <li><a href="#FAQFormatting-RawHTML%3F">Raw HTML?</a></li> 
+       <li><a href="#FAQFormatting-Removingtheattachmentinfolink%3F">Removing the attachment info link?</a></li> 
+       <li><a href="#FAQFormatting-Textformatting">Text formatting</a></li> 
+       <li><a href="#FAQFormatting-Strikethroughtext%3F">Strike-through text?</a></li> 
+      </ul>
+     </div> <h4><a name="FAQFormatting-ColouredText%3F"></a>Coloured Text?</h2> <p>Q: How can I change the colour of text on the screen - do I need a plug in or is there an inbuilt function I can use?</p> <p>A: Use CSS!</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">%%(color:red)This is red%%</pre> 
+       </div> 
+      </div>
+     </div> <p>Gives you <font color="red">This is red</font></p> 
+     <hr> <h4><a name="FAQFormatting-HowdoIcreateanchorsandlinktotheminaWikipage%3F"></a>How do I create anchors and link to them in a Wiki page?</h2> <p>I want to present a Table of Contents section in my page so that the viewer can simply click on the appropriate entry and be brought automatically to that section of the page. I know I could have each TOC entry as a link to a different page but I don't want that!</p> <p>A: At the moment you have to use the footnotes feature. However, on 2.2 every heading also generates a named anchor, so you can build a table of contents using that.</p> <h4><a name="FAQFormatting-Printfriendlyformat%3F"></a>Print-friendly format?</h2> <p>Q: Does jspwiki support a print-friendly mode? If it can, how do I use it?</p> <p>A: JSPWiki comes default with a print-friendly CSS. It should be automatically activated whenever you print.</p> <h4><a name="FAQFormatting-Canwehavetextalignment%3F"></a>Can we have text alignment?</h2> <p>Q: Can align text in JSPWiki? I mean for example can titles be centered at their line?</p> <p>A: In 2.0, you have to enable raw HTML, but this is a security risk. However, in 2.2 it is already possible to apply any CSS style to any block of text. For example</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">%%(text-align:center)
+!This text is centered.
+%%</pre> 
+       </div> 
+      </div>
+     </div> <p>Would produce centered headline "This text is centered".</p> <h4><a name="FAQFormatting-HowdoIconfiguremyJSPWikitohandleJPGandGIFinlineimages%3F"></a>How do I configure my JSPWiki to handle JPG and GIF inline images?</h2> <p>Testing JSPWiki for the first time, and mapping it against the feature set in UseMod (a popular engine I must now give up), I noticed immediately that GIF and JPG image formats are not supported in inline image linking. </p> <p>A: Check out the <tt>jspwiki.translatorReader.inlinePattern</tt> -property in jspwiki.properties. To support inlining of GIF images, you just add </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">jspwiki.translatorReader.inlinePattern.gif = *.gif</pre> 
+       </div> 
+      </div>
+     </div> <p>to your jspwiki.properties. By default, GIF inlining is disabled as an ongoing attempt to discourage people from using it <img class="emoticon" src="images/icons/emoticons/smile.gif" height="20" width="20" align="absmiddle" alt="" border="0">.</p> <h4><a name="FAQFormatting-HowtochangetheleftUppericontomineown%3F"></a>How to change the leftUpper icon to mine own?</h2> <p>Q: I want to put the mine own logo on the leftUpper corner. But, there is always a JSPWiki there. How to deal with this? Or, it must be there?</p> <p>A: Create your own WikiTemplate. You can modify it at will and change it look like anything you'd ever want.</p> <h4><a name="FAQFormatting-Comments%3F"></a>Comments?</h2> <p>Q: Is it possible to add a comment to a version when you change something (for pages as well as for attachments) as seen on <a href="http://en.wikipedia.org/wiki/Main_Page">wikipedia</a>?</p> <p>A: Not currently, but it would be a nice feature. If added, it would also be nice to see the comments shown in the recent changes/etc. --MichaelGentry</p> <h4><a name="FAQFormatting-IsthereawayIcandumpallthepagestoHTML"></a>Is there a way I can dump all the pages to HTML</h2> <p>I would like to set up a Wiki internally but would like to periodically publish its contents on to the Web as plain old HTML pages. Any thoughts on the best approach ?</p> <p>A: Two possible solutions come to mind:</p> 
+     <ul> 
+      <li>Have a spider crawl it all and publish it (for example <span class="error">[wget]</span> might work well)</li> 
+      <li>Use <a href="http://www.jspwiki.org/Wiki.jsp?page=Hula">http://www.jspwiki.org/Wiki.jsp?page=Hula</a> by MahlenMorris to fetch the contents of all pages using XML-RPC, then apply them in your own templates.</li> 
+     </ul> <h4><a name="FAQFormatting-Implicitlinebreaks"></a>Implicit line breaks</h2> <p>Q: JSPWiki is pretty much perfect for my uses, but one thing I find annoying is having to specify a line break<br> . I prefer the classic Wiki way of inserting breaks on a newline. Is there any way I can change this?</p> <p>A: No.</p> <p>For all intents and purposes it's far better to just leave a blank line between the paragraphs. The line break character should be used very sparingly. The resulting WikiMarkup looks far more readable anyway if you use blank lines instead of line breaks.</p> <p>The other problem is that line breaks are not visible on screen while the user is editing. This may cause a lot of confusion to newbies, if the lines break at seemingly random places.</p> <p>If you really, really want it, you can just easily modify TranslatorReader to emit a &lt;br&gt; when it meets a newline.</p> <h4><a name="FAQFormatting-RawHTML%3F"></a>Raw HTML?</h2> <p>Q: How do you allow raw html in wbepages? I've been reading through the help files and the text formatting files and can't find it. I've found references to the fact that it has been added on these pages: WikiMarkupDevelopment and AllowingRawHTML but there is no link to any page telling you how to actually start using raw html...</p> <p>A: Turn on <tt>jspwiki.allowHTML</tt> in jspwiki.properties.</p> <h4><a name="FAQFormatting-Removingtheattachmentinfolink%3F"></a>Removing the attachment info link?</h2> <p>Q: I want to tweak my wiki page for it to work more the way i want it to. I have password restricted the edit page but i want to be able to remove the upload a file link from the view page and add it to the edit page. Also is there any way of removing the paper clip from next to an attachment?</p> <p>A: Yes, replace the images/attachment_small.png with a transparent 1x1 png <img class="emoticon" src="images/icons/emoticons/smile.gif" height="20" width="20" align="absmiddle" alt="" border="0">. You can modify the templates at will, I just recommend that you make your own copy of the "default" template and modify that.</p> <h4><a name="FAQFormatting-Textformatting"></a>Text formatting</h2> <p>Q: Is there a general way to escape the formatting-significant characters? I see that doubled left-square-brackets gives you a literal left square bracket, but what about the others? (Immediate source of the question is this: I'm trying to build a page with an "ls -l" directory listing, where some of the files have 600 permissions, hence runs of four or more dashes, hence I'm seeing (unwanted) HRs in the output). Just getting into JSPWiki, and I apologize in advance if the answer's staring me in the face. Thanks, MarkFrancillon - Sept. 20, 2003.</p> <p>Three braces (like this: { { </p> 
+     <div class="error">
+      <span class="error">Unknown macro: {, but no spaces){code}</span> 
+     </div> <p> Like this ---- Can do anything</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">allows you to put anything there in between without it being parsed.
+
+-- JanneJalkanen
+
+Thanks. Actually I should have said that I have HTML-interpretation on, and that my text is in the middle of a bunch of HTML markup. But I see that if I get inside that markup, what you say about wrapping in triple-curly-braces still works. Hmm, time to look at TranslatorReader, I think, and see how you're doing all this... - Mark.
+
+The problem with the three braces is that it puts the contents inside a pre tag, which puts it in its own block. I can't see a way to refer to, say, a Windows UNC path (starts with two backslashes) inside a paragraph.
+
+-- LachlanODea
+
+I worked around this and specify paths using &amp;lt;a href=""&amp;gt; and the backslash special character &amp; # 92 ; (no spaces).
+
+Ah, okay.  In 2.1 you can do this, just don't put the three braces as the first ones on the line, since it emits a &lt;span&gt; instead of a &lt;pre&gt;-tag.
+
+-- JanneJalkanen
+
+I don't like the way it works because I always seem to get a linebreak after the }}}. Is there a way to prevent this?
+
+-- ChristophGrimmer
+
+
+That this is because the &lt;/pre&gt; HTML tag generates spacing, and then you get the &lt;br&gt; linebreak for the normal paragraphing. You would have to make TranslatorReader more intelligent by making sure it only emitted line breaks if it is not after certain tags. Of course, you could just nest up your Wiki page such as:</pre> 
+       </div> 
+      </div>
+     </div> <p> A paragraph</p> <p> { { </p> 
+     <div class="error">
+      <span class="error">Unknown macro: { Code }</span> 
+     </div> <p> } }Start of next paragraph</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">But I guess not very nice...
+
+-- KieronWilkinson
+
+h2. How does one create a nested list structure?
+
+Is there a way, using the current list markup tags, to create nested (and mixed) list structures?  For example:</pre> 
+       </div> 
+      </div>
+     </div> <p>1. This is the first item</p> 
+     <ul> 
+      <li>Task</li> 
+      <li>Another Task<br> 2. This is the second item</li> 
+      <li>Yet Another Task
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false"></pre> 
+         </div> 
+        </div>
+       </div><br> This type of nesting is possible with <a href="http://tavi.sourceforge.net/">WikkiTikkiTavi</a>. See <a href="http://tavi.sourceforge.net/FormalFormattingRules/Lists">FormalFormattingRules/Lists</a> to see how they handle it. It might also be nice to specify bullet/numbering styles, too, but the nesting support would be really nice to have before specifying styles.</li> 
+     </ul> <p>A: There is nesting support.</p> 
+     <ul> 
+      <li>This is a first item. 
+       <ol> 
+        <li>Task</li> 
+        <li>Another task</li> 
+       </ol> </li> 
+      <li>This is the second item 
+       <ol> 
+        <li>Yet Another Task</li> 
+       </ol> </li> 
+     </ul> <h4><a name="FAQFormatting-Strikethroughtext%3F"></a>Strike-through text?</h2> <p>Is there anyway to strike-through text? Other Wikis use -<del>text</del>- markup. If not, is there any plans to add it in the future?</p> <p>A: Yes, it's possible. Use CSS:</p> <p>Striked-through text.</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:49.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

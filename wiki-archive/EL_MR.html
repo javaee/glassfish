@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : EL_MR</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="EL_MR-ExpressionLanguageMaintenanceReleaseSummary"></a>Expression Language Maintenance Release Summary</h1> <p>The main goal for this MR is to introduce a new syntax for method invocations<br> in EL.</p> <h4><a name="EL_MR-BackgroundandMotivations"></a>Background and Motivations</h2> <p>The current EL allows for creation of a MethodExpression, such as</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;h:commandButton action="#{trader.buy}" value="buy"/&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>Here the method </p>
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">buy</pre> 
+       </div> 
+      </div>
+     </div> in the bean 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">trader</pre> 
+       </div> 
+      </div>
+     </div> is specified in EL. The method<br> signature used to identify the method is not specified in EL.<br> In JSP, that information is specified in a TLD (tag library descriptor). The<br> actual invocation of the method, and the specification of the actual parameters<br> for it does not happen in the EL, and can only be done in Java.<p></p> <p>Although this is sufficiently useful for specifying JSF actions, it is somewhat<br> lacking in a general purpose expression language. Ideally, evaluation of EL<br> expressions should include method calls with parameters. Also, the added<br> parentheses to a method call provides a nice visual clue to EL. The proposed<br> MR attempts to address such issues. The above example can then be written as</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;h:commandButton action="#{trader.buy('JAVA')}" value="buy"/&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>To invoke methods in EL, we can now write</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;c:out value="${myBean.foo().bar('abc')}"/&gt;</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="EL_MR-ModificationstoELspec"></a>Modifications to EL spec</h2> <h4><a name="EL_MR-ELOperatorsand."></a>EL Operators [] and .</h3> <p> New Syntax:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">expr-a[expr-b](&lt;parameters&gt;)</pre> 
+       </div> 
+      </div>
+     </div> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">expr-a.identifier-b(&lt;parameters&gt;)</pre> 
+       </div> 
+      </div>
+     </div> <p> where </p>
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;parameters&gt;</pre> 
+       </div> 
+      </div>
+     </div> is 0 or more expressions, separated by commas.<p></p> <p> Semantics for the new syntax:<br> The expression </p>
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">expr-a</pre> 
+       </div> 
+      </div>
+     </div> is evaluated to represent a bean object. The<br> expression 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">expr-b</pre> 
+       </div> 
+      </div>
+     </div> is evaluated and coerced to a string. This string<br> or 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">identifier-b</pre> 
+       </div> 
+      </div>
+     </div> is the name of the method<br> in 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">expr-a</pre> 
+       </div> 
+      </div>
+     </div>.<br> The 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;parameters&gt;</pre> 
+       </div> 
+      </div>
+     </div> are the actual parameters for the method invocation.<p></p> <p> If the expression is a ValueEpxression, then calling its </p>
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">getValue</pre> 
+       </div> 
+      </div>
+     </div><br> causes the method to be invoked. If the expression is a<br> MethodExpression, then calling its 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">invoke</pre> 
+       </div> 
+      </div>
+     </div> causes the<br> method to be invoked, and the parameters 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">params</pre> 
+       </div> 
+      </div>
+     </div> for the 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">invoke</pre> 
+       </div> 
+      </div>
+     </div><br> will be ignored, since those specified in EL will be used.<p></p> <p> To be more precise, the behavior for invoking the method specified<br> in the above EL expression depends on the </p>
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">ELResolver</pre> 
+       </div> 
+      </div>
+     </div> in the current<br> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">ELContext</pre> 
+       </div> 
+      </div>
+     </div>, as to be described next. The 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">BeanELResolver</pre> 
+       </div> 
+      </div>
+     </div>, also to be<br> described, provides a default behavior for invoking methods in a<br> bean object. The user can use a custom EL resolver to make calls<br> to "methods" that do not exist in a class. This allows<br> for creation of macros, and can lead to some interesting applications.<p></p> <h4><a name="EL_MR-MethodExpression"></a>MethodExpression</h3> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">public abstract class MethodExpression extends Expression {
+...
+    /**
+     * If a String literal is specified as the expression, returns the
+     * String literal coerced to the expected return type of the method
+     * signature. An &lt;code&gt;ELException&lt;/code&gt; is thrown if
+     * &lt;code&gt;expectedReturnType&lt;/code&gt; is void or if the coercion of the String
+literal
+     * to the &lt;code&gt;expectedReturnType&lt;/code&gt; yields an error (see Section "1.18 Type
+     * Conversion" of the EL specification).
+     *
+     * If not a String literal, evaluates the expression
+     * relative to the provided context, invokes the method that was
+     * found using the supplied parameters, and returns the result of
+     * the method invocation.
+     *
+     * Any parameters passed to this method is ignored if isLiteralText()
+     * or isParametersProvided() is true.
+     *
+     * @param context The context of this evaluation.
+     * @param params The parameters to pass to the method, or
+     *     &lt;code&gt;null&lt;/code&gt; if no parameters.
+     * @return the result of the method invocation (&lt;code&gt;null&lt;/code&gt; if
+     *     the method has a &lt;code&gt;void&lt;/code&gt; return type).
+     * @throws NullPointerException if context is &lt;code&gt;null&lt;/code&gt;
+     * @throws PropertyNotFoundException if one of the property
+     *     resolutions failed because a specified variable or property
+     *     does not exist or is not readable.
+     * @throws MethodNotFoundException if no suitable method can be found.
+     * @throws ELException if a String literal is specified and
+     * expectedReturnType of the MethodExpression is void or if the coercion of
+the String literal
+     * to the expectedReturnType yields an error (see Section "1.18 Type
+     * Conversion").
+     * @throws ELException if
+     * an exception was thrown while performing
+     *     property or variable resolution. The thrown exception must be
+     *     included as the cause property of this exception, if
+     *     available.  If the exception thrown is an
+     *     &lt;code&gt;InvocationTargetException&lt;/code&gt;, extract its
+     *     &lt;code&gt;cause&lt;/code&gt; and pass it to the
+     *     &lt;code&gt;ELException&lt;/code&gt; constructor.
+     */
+    public abstract Object invoke(ELContext context, Object[] params);
+
+    /**
+     * Return whether this MethodExpression was created with parameters.
+     *
+     * &lt;p&gt;This method must return &lt;code&gt;true&lt;/code&gt; if and only if
+     * parameters are specified in the EL, using the
+     * expr-a.expr-b(...) syntax.&lt;/p&gt;
+     *
+     * @return &lt;code&gt;true&lt;/code&gt; if the MethodExpression was created with
+     *    parameters, &lt;code&gt;false&lt;/code&gt; otherwise.
+     */
+    public boolean isParmetersProvided() {
+        return false;
+    }
+...
+}</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="EL_MR-ELResolver"></a>ELResolver</h3> <p> The evaluation of bean properties can be customized with user specified<br> EL Resolvers. Similarly, the evaluation of method invocations should be<br> allowed to be customized with user specified EL Resolvers. A new method<br> is now added to </p>
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">ELResolver</pre> 
+       </div> 
+      </div>
+     </div>.<p></p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">public abstract class ELResolver {
+    ...
+    /**
+     * Attemps to resolve and invoke the given &lt;code&gt;method&lt;/code&gt; on the given
+     * &lt;code&gt;base&lt;/code&gt; object.
+     *
+     * &lt;p&gt;If this resolver handles the given (base, method) pair,
+     * the &lt;code&gt;propertyResolved&lt;/code&gt; property of the
+     * &lt;code&gt;ELContext&lt;/code&gt; object must be set to &lt;code&gt;true&lt;/code&gt;
+     * by the resolver, before returning. If this property is not
+     * &lt;code&gt;true&lt;/code&gt; after this method is called, the caller should ignore
+     * the return value.&lt;/p&gt;
+     *
+     * &lt;p&gt;A default implementation is provided that returns null so that
+     * existing classes that extend ELResolver can continue to function.&lt;/p&gt;
+     *
+     * @param context The context of this evaluation.
+     * @param base The bean on which to invoke the method
+     * @param method The simple name of the method to invoke.
+     *     Will be coerced to a &lt;code&gt;String&lt;/code&gt;.
+     * @param paramTypes An array of Class objects identifying the
+     *     method's formal parameter types, in declared order.
+     *     Use an empty array if the method has no parameters.
+     *     Can be &lt;code&gt;null&lt;/code&gt;, in which case the method's formal
+     *     parameter types are assumed to be unknown.
+     * @param params The parameters to pass to the method, or
+     *     &lt;code&gt;null&lt;/code&gt; if no parameters.
+     * @return The result of the method invocation (&lt;code&gt;null&lt;/code&gt; if
+     *     the method has a &lt;code&gt;void&lt;/code&gt; return type).
+     * @throws MethodNotFoundException if no suitable method can be found.
+     * @throws ELException if an exception was thrown while performing
+     *     (base, method) resolution.  The thrown exception must be
+     *     included as the cause property of this exception, if
+     *     available.  If the exception thrown is an
+     *     &lt;code&gt;InvocationTargetException&lt;/code&gt;, extract its
+     *     &lt;code&gt;cause&lt;/code&gt; and pass it to the
+     *     &lt;code&gt;ELException&lt;/code&gt; constructor.
+     */
+    public Object invoke(ELContext context,
+                         Object base,
+                         Object method,
+                         Class&lt;?&gt;[] paramTypes,
+                         Object[] params) {
+        return null;
+    }
+    ...</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="EL_MR-BeanELResolver"></a>BeanELResolver</h3> <p> The implementation of the "invoke" method in BeanELResolver provides a<br> default implementation for resolving the method invocations in a bean.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">public class BeanELResolver extends ELResolver {
+...
+    /**
+     * If the base object is not &lt;code&gt;null&lt;/code&gt;, invoke the method, with
+     * the given parameters on this bean.  The return value from the method
+     * is returned.
+     *
+     * &lt;p&gt;If the base is not &lt;code&gt;null&lt;/code&gt;, the
+     * &lt;code&gt;propertyResolved&lt;/code&gt; property of the &lt;code&gt;ELContext&lt;/code&gt;
+     * object must be set to &lt;code&gt;true&lt;/code&gt; by this resolver, before
+     * returning. If this property is not &lt;code&gt;true&lt;/code&gt; after this
+     * method is called, the caller should ignore the return value.&lt;/p&gt;
+     *
+     * &lt;p&gt;The provided method object will first be coerced to a
+     * &lt;code&gt;String&lt;/code&gt;.  The methods in the bean is then examined and
+     * an attempt will be made to selct one for invocation.  If no suitable
+     * can be found, a &lt;code&gt;MethodNotFoundException&lt;/code&gt; is thrown.
+     *
+     * If the given paramTypes is not &lt;code&gt;null&lt;/code&gt;, select the method
+     * with the given name and parameter types.
+     *
+     * Else select the method with the given name that has the same number
+     * of parameters.  If there are more than one such method, the method
+     * selection process is undefined.
+     *
+     * Else select the method with the given name that takes a variable
+     * number of arguments.
+     *
+     * Note the resolution for overloaded methods will likely be clarified
+     * in a future version of the spec.
+     *
+     * The provide parameters are coerced to the correcponding parameter
+     * types of the method, and the method is then invoked.
+     *
+     * @param context The context of this evaluation.
+     * @param base The bean on which to invoke the method
+     * @param method The simple name of the method to invoke.
+     *     Will be coerced to a &lt;code&gt;String&lt;/code&gt;.  If method is
+     *     "&amp;lt;init&amp;gt;"or "&amp;lt;clinit&amp;gt;" a MethodNotFoundException is
+     *     thrown.
+     * @param paramTypes An array of Class objects identifying the
+     *     method's formal parameter types, in declared order.
+     *     Use an empty array if the method has no parameters.
+     *     Can be &lt;code&gt;null&lt;/code&gt;, in which case the method's formal
+     *     parameter types are assumed to be unknown.
+     * @param params The parameters to pass to the method, or
+     *     &lt;code&gt;null&lt;/code&gt; if no parameters.
+     * @return The result of the method invocation (&lt;code&gt;null&lt;/code&gt; if
+     *     the method has a &lt;code&gt;void&lt;/code&gt; return type).
+     * @throws MethodNotFoundException if no suitable method can be found.
+     * @throws ELException if an exception was thrown while performing
+     *     (base, method) resolution.  The thrown exception must be
+     *     included as the cause property of this exception, if
+     *     available.  If the exception thrown is an
+     *     &lt;code&gt;InvocationTargetException&lt;/code&gt;, extract its
+     *     &lt;code&gt;cause&lt;/code&gt; and pass it to the
+     *     &lt;code&gt;ELException&lt;/code&gt; constructor.
+     */
+
+    public Object invoke(ELContext context,
+                         Object base,
+                         Object method,
+                         Class&lt;?&gt;[] paramTypes,
+                         Object[] params) {
+
+        if (base == null || method == null) {
+            return null;
+        }
+        Method m = findMethod(base, method.toString(), paramTypes, params);
+        Object ret = invokeMethod(m, base, params);
+        context.setPropertyResolved(true);
+        return ret;
+    }
+...
+}</pre> 
+       </div> 
+      </div>
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:48.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

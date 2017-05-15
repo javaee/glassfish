@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GMSDiscoveryRegistrationService</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   
+     <div> 
+      <ul> 
+       <li><a href="#GMSDiscoveryRegistrationService-DiscoveryServiceOptions">Discovery Service Options</a></li> 
+       <ul> 
+        <li><a href="#GMSDiscoveryRegistrationService-GFRESTDiscoveryService">GF REST Discovery Service</a></li> 
+        <li><a href="#GMSDiscoveryRegistrationService-AmazonS3asDiscoveryService">Amazon S3 as Discovery Service</a></li> 
+        <li><a href="#GMSDiscoveryRegistrationService-TheClient">The Client</a></li> 
+       </ul> 
+       <li><a href="#GMSDiscoveryRegistrationService-ModelAPI">Model API</a></li> 
+      </ul>
+     </div> <h4><a name="GMSDiscoveryRegistrationService-DiscoveryServiceOptions"></a>Discovery Service Options</h2> <p>The goal of the service is to act a map of groups to masters. The group is described by a group name and namespace, and the returned data contains information about the GMS member including its location (IP address, port, protocol). When an instance is started, it checks with the discovery service to see if there is already a master for the group. If not, this member puts its own information into the service and becomes group master. When another instance comes up, it will retrieve the master's location and connect to the group.</p> <p>We currently have two options for this service: <br class="atl-forced-newline"></p> 
+     <ol> 
+      <li>Our own REST-based service, which will need to live at a WKA</li> 
+      <li>Amazon S3, which can be used anywhere that is web-accessible (does not have to be used within AWS, but it would be cheaper that way as I understand it)</li> 
+     </ol> <p>In either case, the bulk of GMS code will not need to know how the master information is stored. That logic is kept in a simple SPI used by the GMS runtime. However, there will be some slightly different requirements for the user as discussed below.</p> <h4><a name="GMSDiscoveryRegistrationService-GFRESTDiscoveryService"></a>GF REST Discovery Service</h3> <p>The service is implemented as a RESTful web service running in a GlassFish instance. The actual implementation of the service can change (currently a Java web app using Jersey and requiring a full Java EE container), but the REST interface defined should not change.</p> <p>It is expected that there is at least one instance of the service running, and later we may implement replication of data so that more than one instance can be used. To the GMS code, the instance is simply defined by a URI. The URI(s) of the discovery services are the only well known addresses that we need. An implementation of the service could be running anywhere that is accessible through HTTP; it doesn't have to be in the same environment as the GMS group.</p> <p><b>TBD:</b> <br class="atl-forced-newline"></p> 
+     <ul> 
+      <li>Where this service will live within an installation. It could be a standalone process, but it would nice if there is some existing process that this code could live in.</li> 
+      <li>Currently we have no security built into the REST service. This is a TODO for later.</li> 
+      <li>Replication from one instance of service to another (GMS already accepts more than one service URI to handle this case).</li> 
+     </ul> <p><b>User Requirements:</b> <br class="atl-forced-newline"></p> 
+     <ul> 
+      <li>Service must be deployed at a well-known address.</li> 
+      <li>Location of the service is set in the GMS_DISCOVERY_REGISTRY_URI_LIST cluster property</li> 
+     </ul> <h4><a name="GMSDiscoveryRegistrationService-AmazonS3asDiscoveryService"></a>Amazon S3 as Discovery Service</h3> <p><a href="http://aws.amazon.com/s3/">Amazon S3</a> is storage that is available to a machine anywhere on the internet. It's a fee-based service, though <a href="http://aws.amazon.com/s3/#pricing" title="S3 Pricing">prices would be cheap</a> for the amount of traffic that GMS would generate. The service operates as a RESTful and non-REST web service, and there is a client library already for accessing it. Information is stored in "buckets," and each bucket is defined by a name that is unique within S3. The GMS runtime, a client to the discovery service, shouldn't care whether the service is our own home-grown one or Amazon S3. But there may be some changes we need to make based on the limitations of S3. For instance, it is "eventually consistent," so we may need to poll for changes after setting a master for a group. For more on the data consistency of S3, see <a href="http://awsdocs.s3.amazonaws.com/S3/latest/s3-dg.pdf" title="S3 Developer Guide">the developer guide</a> starting with page 9.</p> <p><b>TBD:</b></p> 
+     <ul> 
+      <li>How to write a Jersey client to call to S3. The alternative would be to use the Amazon 3rd party library.</li> 
+      <li>How to handle the "eventually consistent" data model. A solution to this, such as having group masters periodically poll the service and take some action to resign as master, could solve other split-group issues as well.</li> 
+     </ul> <p><b>User Requirements:</b></p> 
+     <ul> 
+      <li>Location of S3 service can be included in the GMS_DISCOVERY_REGISTRY_URI_LIST property, signalling that GMS should use S3 for master discovery.</li> 
+      <li>We will need to either generate an S3 bucket name or let the user supply one.</li> 
+      <li>Security is already built into S3, but we need a way for a user to specify the access information for that account.</li> 
+     </ul> <h4><a name="GMSDiscoveryRegistrationService-TheClient"></a>The Client</h3> <p>In this discussion, any GMS member is a client to the discovery service. See <a href="GMS3.2OnePager.html" title="GMS3.2OnePager">the one pager</a> for more information on what a member does with the information. As to how a member uses the service, a client has been written that abstracts away the actual client-server protocol. The current client we use is:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">/**
+ * REST client for operations on a group's master. If created with
+ * more than one URI, it will use all the services as noted in the method
+ * documentation.
+ */
+public class MasterResourceClient {
+
+    /**
+     * Creates the client used to access discovery registries. The
+     * constructor takes a comma-separated list of URIs that are
+     * used in the business methods. It is expected that an instance
+     * is only created when this string exists and is not empty.
+     *
+     * @param baseUrisString Comma-separated list of URIs for discovery
+     * services, e.g. "http:server:port/contextroot".
+     * @throws IllegalArgumentException if the passed in string is
+     * empty or null.
+     */
+    public MasterResourceClient(String baseUrisString) {...}
+
+    /**
+     * Gets the master, if one exists. If not, returns null. This method
+     * checks the services in the order their URIs were passed into the
+     * constructor. It returns the first master found and stops checking
+     * other services.
+     *
+     * If a GET call throws an exception other than for a 204 response, it
+     * is logged and the next service is checked. (A 204 http response
+     * indicates "No content," which happens when there is no master for
+     * the given group id.)
+     *
+     * @param gid Id of the group.
+     * @return The MemberInfo of the master, if there is one.
+     * @throws IllegalArgumentException if the GroupId parameter.
+     * is null or contains null fields.
+     */
+    public MemberInfo getMaster(GroupId gid) {...}
+
+    /**
+     * Put the new master for a group. There can only be one
+     * master for a group. If a master is already set, then this
+     * call has no effect. It is expected that discovery services
+     * replicate information among themselves. Therefore, this method
+     * attempts to PUT to the first service in the URI list. If it
+     * receives an error (such as a 404 returned for the service),
+     * then it proceeds with the next on the list.
+     *
+     * @param mi The member to set.
+     * @return True if the master was set, otherwise false.
+     * @throws IllegalArgumentException if the MemberInfo parameter
+     * does not contain a valid GroupId.
+     */
+    public boolean putMaster(MemberInfo mi) {...}
+
+    /**
+     * Remove the master for a group id. If this member is not the
+     * master, the current master is not removed and this method
+     * returns false. It is expected that discovery services
+     * replicate information among themselves. Therefore, this method
+     * attempts to DELETE to the first service in the URI list. If it
+     * receives an error (such as a 404 returned for the service),
+     * then it proceeds with the next on the list.
+     *
+     * The current logic for removing a member for a group is to
+     * compare the member name to the current master. So only the
+     * GroupId and memberName inside the MemberInfo are important.
+     *
+     * @param mi The member info to delete as master.
+     * @return True if the member was deleted.
+     * @throws IllegalArgumentException if the MemberInfo parameter
+     * does not contain a valid GroupId.
+     */
+    public boolean deleteMaster(MemberInfo mi) {...}
+
+    /**
+     * Don't forget this when done.
+     */
+    public void close() {
+        client.destroy();
+    }
+
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>For my reference, <a href="http://jersey.java.net/nonav/apidocs/latest/jersey/index.html">here is the Jersey API</a></p> <h4><a name="GMSDiscoveryRegistrationService-ModelAPI"></a>Model API</h2> <p>Snapshot of the model classes used by the client:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">public class MemberInfo {
+&nbsp;&nbsp;&nbsp; private GroupId groupId;
+&nbsp;&nbsp;&nbsp; private Location location;
+&nbsp;&nbsp;&nbsp; private String memberName;
+&nbsp;&nbsp;&nbsp; private boolean isMaster;
+} &nbsp;</pre> 
+       </div> 
+      </div>
+     </div> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">public class GroupId {
+    private String groupName;
+    private String nameSpace;
+}</pre> 
+       </div> 
+      </div>
+     </div> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">public class Location {
+    // todo: switch to java.net classes later if we want to
+    private String ipAddress;
+    private int port;
+
+    // todo: make this an enum once we have the REST part working
+    private String protocol;
+}</pre> 
+       </div> 
+      </div>
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on May 02, 2011 by 
+<font color="#0050B2">bbissett</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

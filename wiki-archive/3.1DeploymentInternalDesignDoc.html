@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : 3.1DeploymentInternalDesignDoc</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>(This document is working in progress).<br> This page will cover some of the internal design details of the deployment framework which are of interest for the container teams. </p> <h4><a name="3.1DeploymentInternalDesignDoc-MainScenarios"></a>Main Scenarios</h3> <h5><a name="3.1DeploymentInternalDesignDoc-Deployment"></a>Deployment</h5> <p>The basic deployment phases are: prepare, load, start.<br> All three phases will be invoked for the deployed target.<br> When the deployed target is not DAS, only the prepare phase will be invoked on DAS.<br> The internal phase generateArtifacts (part of the prepare) will be invoked to generate artifacts on DAS. When the deployed target is not DAS, the artifacts on DAS will be synchronized to target instances (no artifacts generation happens on instances).<br> The Origin for deployment is Origin.deploy/deploy_instance. Origin.isDeploy will return true for deployment.</p> <h5><a name="3.1DeploymentInternalDesignDoc-Enable"></a>Enable</h5> <p>All three phases (prepare, load, start) will be invoked on the enabled target.<br> When the enabled target is not DAS, no phases are executed and only the domain.xml is updated on DAS.<br> No artifacts generation happens for enable.<br> The Origin for enable is Origin.load.</p> <h5><a name="3.1DeploymentInternalDesignDoc-Createapplicationref"></a>Create application ref</h5> <p>All three phases (prepare, load, start) will be invoked on the create-application-ref command target.<br> When the create-application-ref target is not DAS, no phases are executed and only the domain.xml is updated on DAS.<br> No artifacts generation happens for create application ref.<br> The Origin for create-application-ref is Origin.create_application_ref on DAS and Origin.deploy_instance on the instance.</p> <h5><a name="3.1DeploymentInternalDesignDoc-Applicationloadinginserverstart"></a>Application loading in server start</h5> <p>All three phases (prepare, load, start) will be invoked on the referenced server instance.<br> When an application is not referenced by DAS, only the prepare phase will be invoked for DAS start up.<br> No artifacts generation happens for server start.<br> The Origin for enable is Origin.load.</p> <h5><a name="3.1DeploymentInternalDesignDoc-Undeployment"></a>Undeployment</h5> <p>The basic undeployment phases are: stop, unload, clean.<br> All three phases will be invoked for the undeployed target.<br> When the undeployed target is not DAS, only the clean phase will be invoked on DAS.<br> The Origin for deployment is Origin.undeploy.</p> <h5><a name="3.1DeploymentInternalDesignDoc-Disable"></a>Disable</h5> <p>The stop and unload phases will be invoked on the disabled target.<br> When the disabled target is not DAS, no phases are executed and only the domain.xml is updated on DAS.<br> The Origin for disable is Origin.unload.</p> <h5><a name="3.1DeploymentInternalDesignDoc-Deleteapplicationref"></a>Delete application ref</h5> <p>The stop and unload phases will be invoked on the disabled target.<br> When the disabled target is not DAS, no phases are executed and only the domain.xml is updated on DAS.<br> The Origin for delete-application-ref is Origin.unload on DAS and Origin.undeploy on the instance.</p> <h5><a name="3.1DeploymentInternalDesignDoc-Applicationunloadinginservershutdown"></a>Application unloading in server shutdown</h5> <p>The stop and unload phases will be invoked on the referenced server instance.<br> The Origin for enable is Origin.unload.</p> <h4><a name="3.1DeploymentInternalDesignDoc-DeploymentEvents"></a>Deployment Events</h3> <p>Other than the formal Deployment/Container <a href="http://docs.sun.com/app/docs/doc/820-7727/ghmon?l=en&amp;a=view">SPI </a>, there is also the lightweight event mechanism to hook into the deployment framework. </p> <p>During the deployment lifecycle, there are events sent at each main phase, such as after application is prepared, after the application is loaded, after the application is started etc. A class could be registered as an event listener and take certain actions upon receiving the event. </p> <p>The main events are sent from these classes during deployment lifecycle:<br> 1. v3/core/kernel/src/main/java/com/sun/enterprise/v3/server/ApplicationLifecycle.java<br> For example:<br> events.send(new Event&lt;DeploymentContext&gt;(Deployment.APPLICATION_PREPARED, context), false);</p> <p>2. v3/common/internal-api/src/main/java/org/glassfish/internal/data/ApplicationInfo.java<br> For example:<br> events.send(new Event&lt;ApplicationInfo&gt;(Deployment.APPLICATION_LOADED, this), false);</p> <p>3. v3/common/internal-api/src/main/java/org/glassfish/internal/data/ModuleInfo.java<br> For example:<br> events.send(new Event&lt;ModuleInfo&gt;(Deployment.MODULE_LOADED, this), false);</p> <p>The application loading/starting events are sent from ApplicationInfo and module level loading/starting events are sent from ModuleInfo. The ApplicationLifecycle sends the rest of the events.</p> <p>In the event sent from ApplicationLifecycle, the hook object from the event is the DeploymentContext, while the hook object sent from the event sent from ApplicationInfo/ModuleInfo classes are ApplicationInfo and ModuleInfo objects. The application information could be obtained from these hook objects.</p> <p>An event could be synchronous or asynchronous, the events used in the above examples have "false" as the last param which means they are synchronous events.</p> <p>To become an event listener:<br> 1. The class needs to implement the EventListener interface.<br> 2. It need to inject an Events object and register itself as a listener with the Events object.<br> 3. Have an event() method and perform actions on the event.</p> <p>Some of the examples for the listener classes:<br> v3/deployment/admin/src/main/java/org/glassfish/deployment/admin/DeployCommand listens to the APPLICATION_PREPARED event sent from ApplicationLifecycle.<br> And these two classes listen to the events sent from ApplicationInfo and ModuleInfo.<br> v3/security/core/src/main/java/com/sun/enterprise/security/SecurityDeployer.java<br> v3/web/weld-integration/src/main/java/org/glassfish/weld/WeldDeployer.java </p> <h4><a name="3.1DeploymentInternalDesignDoc-OfflineMode"></a>Offline Mode</h3> <h5><a name="3.1DeploymentInternalDesignDoc-Deployment"></a>Deployment</h5> <p>When the target instances are offline, the deployment operation will execute on DAS first. And when the target instances are back up on line, the instances will synchronize with the DAS for the domain.xml and the application bits. As part of the synchronization, the relevant application entries will be added to the instances domain.xml and the applications bits added to the instances applications directory.The instances will then load the application based on the domain.xml.<br> When some of the target instances are up and some are offline, the applications will be deployed to the online instances as usual. And the offline instances will load up the applications when they are brought back online.</p> <h5><a name="3.1DeploymentInternalDesignDoc-Undeployment"></a>Undeployment</h5> <p>When the target instances are offline, the undeployment operations will execute on DAS first. And when the target instances are back up on line, the instances will synchronize with the DAS for the domain.xml and application bits. As part of the synchronization, the relevant application entries will be removed from the instances domain.xml and the applications bits removed from the instances applications directory.<br> When some of the target instances are up and some are offline, the applications will be undeployed from the online instances as usual. And the offline instances will clean up the domain.xml and applications bits when they are brought back online. </p> <h4><a name="3.1DeploymentInternalDesignDoc-ErrorHandling"></a>Error Handling</h3> <h5><a name="3.1DeploymentInternalDesignDoc-Deployment"></a>Deployment</h5> <p>When an application failed to deploy on DAS, we failed the deployment and roll back (if the deployed target is not DAS, the code will not reach the instances as DAS part runs first). The stop, unload, clean will be invoked on DAS to rollback the deployment on DAS.</p> <p>When an application failed to load on instances (some of the instances or all the instances), the stop, unload, clean will be invoked on the relevant instances to rollback the loading. However, we don't fail and rollback the overall deployment, no rollback is done for DAS part of the deployment which has already completed before reaching the instances. We will inform the user the application has failed to load on instanceXXX and advise them to fix their application and redeploy. </p> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Nov 02, 2010 by 
+<font color="#0050B2">hong.zhang</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

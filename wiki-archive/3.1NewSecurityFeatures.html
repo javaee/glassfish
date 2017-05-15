@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : 3.1NewSecurityFeatures</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="3.1NewSecurityFeatures-GlassFishServerOpenSourceEdition3.1NewSecurityFeatures"></a>GlassFish Server Open Source Edition 3.1 New Security Features</h1> <p>This page describes the New Security Features that we intend to add in GlassFish V3.1 release. This is in addition to <a href="3.1ClusteringSecurity.html" title="3.1ClusteringSecurity">Clustering support</a> (which is the main theme for V3.1).</p> 
+     <ul> 
+      <li>Kumar Jayanti</li> 
+      <li>Nithya Subramanian</li> 
+     </ul> 
+     <div> 
+      <ul> 
+       <li><a href="#3.1NewSecurityFeatures-GlassFishServerOpenSourceEdition3.1NewSecurityFeatures">GlassFish Server Open Source Edition 3.1 New Security Features</a></li> 
+       <li><a href="#3.1NewSecurityFeatures-Introduction">Introduction</a></li> 
+      </ul>
+     </div> 
+     <hr> <h4><a name="3.1NewSecurityFeatures-Introduction"></a>Introduction</h1> <p>The following new features are being planned for the GlassFish Open Source Edition 3.1 release</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Owner </th> 
+         <th class="confluenceTh"> Man Days </th> 
+         <th class="confluenceTh"> Priority </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> Status/Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> SEC-001 </td> 
+         <td class="confluenceTd"> Sudarsan </td> 
+         <td class="confluenceTd"> 7 </td> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> Fixing master password set in javax.net.ssl.keyStorePassword and javax.net.ssl.trustStorePassword system properties </td> 
+         <td class="confluenceTd"> 80% complete, cleaned up code in Admin and Security Modules that deal with this. Working to fix how Grizzly gets this information securely. There is also a JarSigner usage in AppClient that seems to expect a password from the SecuritySupport SPI which needs to be cleaned up similarly </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> SEC-002 </td> 
+         <td class="confluenceTd"> Kumar/Nithya </td> 
+         <td class="confluenceTd"> 10 </td> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> Cleanup universal grants in server.policy </td> 
+         <td class="confluenceTd"> some of the universal grants in server.policy are too accomodating and we need to clean it up to make the appserver more secure by default. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> SEC-003 </td> 
+         <td class="confluenceTd"> Nithya </td> 
+         <td class="confluenceTd"> 10 </td> 
+         <td class="confluenceTd"> 3 </td> 
+         <td class="confluenceTd"> Securing access to the NameService </td> 
+         <td class="confluenceTd"> 80% complete, fix also backported to v3.0.1., <a href="http://blogs.oracle.com/nithya/entry/accessing_orb_service_securely_in">details here </a>, Additional work is to make enhancements that were being experimented for Puma, Utilize the <a href="http://jse.east.sun.com/~monzillo/puma/">code changes Ron made </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> SEC-004 </td> 
+         <td class="confluenceTd"> Kumar &amp; Nithya </td> 
+         <td class="confluenceTd"> ? </td> 
+         <td class="confluenceTd"> 3 </td> 
+         <td class="confluenceTd"> FailOver and Loadbalancing of Secure IIOP requests </td> 
+         <td class="confluenceTd"> Dependency on Corba team. <a href="http://appserver.sfbay.sun.com/attach/GF3.1KickoffMeeting%2FIIOPClustering.pdf">See Corba Slides </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> SEC-005 </td> 
+         <td class="confluenceTd"> Nithya &amp; Kumar </td> 
+         <td class="confluenceTd"> ? </td> 
+         <td class="confluenceTd"> 3 </td> 
+         <td class="confluenceTd"> WebLogic Deployment Descriptor Support </td> 
+         <td class="confluenceTd"> <a href="SupportWLDD.html" title="SupportWLDD">More details here </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> SEC-006 </td> 
+         <td class="confluenceTd"> Sudarsan </td> 
+         <td class="confluenceTd"> Completed </td> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd"> Extend Certificate realm to allow custom validation and group assignment based on the recieved client certificate in an SSL Mutual Authentcation. </td> 
+         <td class="confluenceTd"> <a href="http://blogs.oracle.com/nasradu8/entry/extend_certificaterealm_with_loginmodule_glassfish">Completed </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> SEC-007 </td> 
+         <td class="confluenceTd"> Nithya </td> 
+         <td class="confluenceTd"> 5 </td> 
+         <td class="confluenceTd"> 3 </td> 
+         <td class="confluenceTd"> Finalize the support for PAM Realm in V3.1. This will allow secure apps deployed on V3.1 to authenticate its users against the native Solaris/Linux users list. </td> 
+         <td class="confluenceTd"> 90% done. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> SEC-008 </td> 
+         <td class="confluenceTd"> Nithya/Kumar </td> 
+         <td class="confluenceTd"> 10 </td> 
+         <td class="confluenceTd"> 3 </td> 
+         <td class="confluenceTd"> Use of Tubes in GlassFish instead of Pipes for supporting Asychrony. Methods on the pipe are synchronous and hold on to the thread. </td> 
+         <td class="confluenceTd"> Risk : There is some talk of JAXWS defning another new API. Need to check on its timelines. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> SEC-009 </td> 
+         <td class="confluenceTd"> Kumar </td> 
+         <td class="confluenceTd"> 20 </td> 
+         <td class="confluenceTd"> 3 </td> 
+         <td class="confluenceTd"> Support for application scoped permissions : policies bundled in application jar's </td> 
+         <td class="confluenceTd"> Could be more powerful if 10) is implemented </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> SEC-010 </td> 
+         <td class="confluenceTd"> Kumar/Ron </td> 
+         <td class="confluenceTd"> (mostly e-mail communication - not full time work) </td> 
+         <td class="confluenceTd"> 3 </td> 
+         <td class="confluenceTd"> Coordinate with the classloader team on retaining the Jar Signer information. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> SEC-011 </td> 
+         <td class="confluenceTd"> Kumar/Nithya </td> 
+         <td class="confluenceTd"> 15 </td> 
+         <td class="confluenceTd"> 3 </td> 
+         <td class="confluenceTd"> Support for custom web principals </td> 
+         <td class="confluenceTd"> Users requested this feature on the forums and also required for spec compatibility w.r.t Servlet Profile of JSR 196 (see <a href="http://wikihome.sfbay.sun.com/security/attach/V3.1%2Fwebprincipal.txt">ron's notes </a>) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> SEC-012 </td> 
+         <td class="confluenceTd"> Kumar/Nithya </td> 
+         <td class="confluenceTd"> 15 </td> 
+         <td class="confluenceTd"> 4 </td> 
+         <td class="confluenceTd"> Support for Dynamic Keystores. GlassFish currently has the limitation that Key-Passwords have to be the same as KeyStore Password </td> 
+         <td class="confluenceTd"> ( <a href="http://java.sun.com/javase/6/docs/technotes/guides/security/jsse/JSSERefGuide.html#KeystoreFormats">http://java.sun.com/javase/6/docs/technotes/guides/security/jsse/JSSERefGuide.html#KeystoreFormats</a> <p>). The java.security.KeyStore.Builder class abstracts the construction and initialization of a KeyStore object. It supports the use of CallbackHandlers for password prompting and can be subclassed to support additional features as desired by an application. For example, it is possible to implement a Builder that allows individual KeyStore entries to be protected with different passwords. The javax.net.ssl.KeyStoreBuilderParameters class then can be used to initialize a KeyManagerFactory using one or more of these Builder objects. </p></td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> SEC-013 </td> 
+         <td class="confluenceTd"> Ron </td> 
+         <td class="confluenceTd"> ? </td> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> Fixing defects in the Security chapter of Servlet 3.0 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> SEC-014 </td> 
+         <td class="confluenceTd"> Ron &amp; Kumar </td> 
+         <td class="confluenceTd"> 25 </td> 
+         <td class="confluenceTd"> 4 </td> 
+         <td class="confluenceTd"> including a portable JAAS based jsr 196 AuthConfigProvider as a separate module within Glassfish (to allow the configuration of Servlet (and perhaps SOAP) based auth modules via the standard JAAS config file. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> SEC-015 </td> 
+         <td class="confluenceTd"> Kumar &amp; Nithya </td> 
+         <td class="confluenceTd"> ? </td> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> OAM support for 3.1. In addition, OAM support enables us to use OWSM for configuring web services policy and therefore we will have to also test OWSM interop for 3.1 </td> 
+         <td class="confluenceTd"> we will need to provide a backport for 2.x release. More details on the current proposal for <a href="http://wikihome.sfbay.sun.com/security/Wiki.jsp?page=Proposal">OAM support are here </a>. The OWSM interop scenarios defined would require support for <a href="Metro2.1PolicyAlternatives.html" title="Metro2.1PolicyAlternatives">Policy Alternatives in Metro 2.1 </a>. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> SEC-016 </td> 
+         <td class="confluenceTd"> Kumar &amp; Nithya </td> 
+         <td class="confluenceTd"> ? </td> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> Security related CLI support for 3.1 </td> 
+         <td class="confluenceTd"> Need to verify existing security related CLIs and provide --target support to enable cluster security infrastructure support. Refer to <a href="GlassFishv3.1.html" title="GlassFishv3.1">GlassFish 3.1 features wiki </a> (Security section) for complete CLI list. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 13, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

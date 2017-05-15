@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFishV3.1SecurityDocPlan</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GlassFishV3.1SecurityDocPlan-SecurityDocumentationPlanforGlassFishServerOpenSourceEdition3.1"></a><em>Security</em> Documentation Plan for GlassFish Server Open Source Edition 3.1</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#GlassFishV3.1SecurityDocPlan-SecurityDocumentationPlanforGlassFishServerOpenSourceEdition3.1"> <em>Security</em> Documentation Plan for GlassFish Server Open Source Edition 3.1</a></li> 
+       <ul> 
+        <li><a href="#GlassFishV3.1SecurityDocPlan-PeopleandRoles">People and Roles</a></li> 
+        <li><a href="#GlassFishV3.1SecurityDocPlan-Audience">Audience</a></li> 
+        <li><a href="#GlassFishV3.1SecurityDocPlan-SummaryoftheFeatureFromaUser%27sPerspective">Summary of the Feature From a User's Perspective</a></li> 
+        <li><a href="#GlassFishV3.1SecurityDocPlan-Availability">Availability</a></li> 
+        <li><a href="#GlassFishV3.1SecurityDocPlan-StatementofWork">Statement of Work</a></li> 
+        <ul> 
+         <li><a href="#GlassFishV3.1SecurityDocPlan-NewBooks">New Books</a></li> 
+         <ul> 
+          <li><a href="#GlassFishV3.1SecurityDocPlan-SecurityGuide"> <em>Security Guide</em></a></li> 
+          <ul> 
+           <li><a href="#GlassFishV3.1SecurityDocPlan-ContentSources">Content Sources</a></li> 
+           <li><a href="#GlassFishV3.1SecurityDocPlan-ProposedSecurityGuideOutline">Proposed <em>Security Guide</em> Outline</a></li> 
+          </ul> 
+         </ul> 
+         <li><a href="#GlassFishV3.1SecurityDocPlan-ChangestoBooks">Changes to Books</a></li> 
+         <ul> 
+          <li><a href="#GlassFishV3.1SecurityDocPlan-AdministrationGuideChanges"> <em>Administration Guide</em> Changes</a></li> 
+          <li><a href="#GlassFishV3.1SecurityDocPlan-ApplicationDeploymentGuideChanges"> <em>Application Deployment Guide</em> Changes</a></li> 
+          <li><a href="#GlassFishV3.1SecurityDocPlan-ApplicationDevelopmentGuideChanges"> <em>Application Development Guide</em> Changes</a></li> 
+          <li><a href="#GlassFishV3.1SecurityDocPlan-DomainFileFormatReferenceChanges"> <em>Domain File Format Reference</em> Changes</a></li> 
+         </ul> 
+         <li><a href="#GlassFishV3.1SecurityDocPlan-ChangestomanPages">Changes to man Pages</a></li> 
+         <ul> 
+          <li><a href="#GlassFishV3.1SecurityDocPlan-asadminmanPageChanges"> <em>asadmin man Page</em> Changes</a></li> 
+         </ul> 
+         <li><a href="#GlassFishV3.1SecurityDocPlan-ChangestoOnlineHelp">Changes to Online Help</a></li> 
+         <ul> 
+          <li><a href="#GlassFishV3.1SecurityDocPlan-AdminConsoleOnlineHelpChanges"> <em>Admin Console Online Help</em> Changes</a></li> 
+         </ul> 
+        </ul> 
+        <li><a href="#GlassFishV3.1SecurityDocPlan-ReviewSchedule">Review Schedule</a></li> 
+        <li><a href="#GlassFishV3.1SecurityDocPlan-RelatedInformation">Related Information</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="GlassFishV3.1SecurityDocPlan-PeopleandRoles"></a>People and Roles</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Name </th> 
+         <th class="confluenceTh"> Role </th> 
+         <th class="confluenceTh"> Location </th> 
+         <th class="confluenceTh"> Time Zone </th> 
+         <th class="confluenceTh"> Email </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Scott Fordin </td> 
+         <td class="confluenceTd"> Documentation Feature Owner </td> 
+         <td class="confluenceTd"> Burlington, MA, USA </td> 
+         <td class="confluenceTd"> US/Eastern </td> 
+         <td class="confluenceTd"> <tt>sfordin@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Paul Davies </td> 
+         <td class="confluenceTd"> Peer Reviewer </td> 
+         <td class="confluenceTd"> Santa Clara, CA, USA </td> 
+         <td class="confluenceTd"> US/Pacific </td> 
+         <td class="confluenceTd"> <tt>pauldavies@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Kumar Jayanti </td> 
+         <td class="confluenceTd"> Feature Lead </td> 
+         <td class="confluenceTd"> Bangalore, India </td> 
+         <td class="confluenceTd"> IST </td> 
+         <td class="confluenceTd"> <tt>kumarjayanti@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Tom Mueller </td> 
+         <td class="confluenceTd"> Software Engineer </td> 
+         <td class="confluenceTd"> Omaha, NE, USA </td> 
+         <td class="confluenceTd"> US/Central </td> 
+         <td class="confluenceTd"> <tt>tmueller@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Bill Shannon </td> 
+         <td class="confluenceTd"> Software Engineer </td> 
+         <td class="confluenceTd"> Santa Clara, CA, USA </td> 
+         <td class="confluenceTd"> US/Pacific </td> 
+         <td class="confluenceTd"> <tt>shannon@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Martin Matula </td> 
+         <td class="confluenceTd"> SW Engineering Manager </td> 
+         <td class="confluenceTd"> Prague, Czech Republic </td> 
+         <td class="confluenceTd"> Middle/Central European (MET) </td> 
+         <td class="confluenceTd"> <tt>martin.matula@sun.com</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Tim Quinn </td> 
+         <td class="confluenceTd"> Software Engineer </td> 
+         <td class="confluenceTd"> Itasca, IL, USA </td> 
+         <td class="confluenceTd"> US/Central </td> 
+         <td class="confluenceTd"> <tt>timq@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Sonia Liu </td> 
+         <td class="confluenceTd"> QA Engineer </td> 
+         <td class="confluenceTd"> Santa Clara, CA, US </td> 
+         <td class="confluenceTd"> US/Pacific </td> 
+         <td class="confluenceTd"> <tt>sonialiu@dev.java.net</tt> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3.1SecurityDocPlan-Audience"></a>Audience</h2> <p>This feature is aimed at system administrators, application developers, and product support engineers.</p> <h4><a name="GlassFishV3.1SecurityDocPlan-SummaryoftheFeatureFromaUser%27sPerspective"></a>Summary of the Feature From a User's Perspective</h2> <p>The GlassFish 3.1 Security module will address the following high-level problems:</p> 
+     <ol> 
+      <li>Security in Cluster Mode</li> 
+      <li>New Features and BugFixes in the core security framework of GlassFish V3.1</li> 
+      <li>WebLogic Deployment Descriptor Support</li> 
+     </ol> <h4><a name="GlassFishV3.1SecurityDocPlan-Availability"></a>Availability</h2> <p>This feature is available in all GlassFish Server distributions.</p> <h4><a name="GlassFishV3.1SecurityDocPlan-StatementofWork"></a>Statement of Work</h2> <p>This section describes in detail for each document the work that is required by the introduction of the feature, such as changes, addition of new material, relocation of existing material, and removal of existing material.</p> <p>Documentation Impact:</p> 
+     <ul> 
+      <li>None</li> 
+      <li>Minor</li> 
+      <li>Moderate</li> 
+      <li>Major</li> 
+      <li>New</li> 
+     </ul> 
+     <hr> <p><b>Note -</b> If a document is task based (as opposed to reference), the changes should be determined from the user task analysis for the feature.</p> 
+     <hr> <h4><a name="GlassFishV3.1SecurityDocPlan-NewBooks"></a>New Books</h3> <h4><a name="GlassFishV3.1SecurityDocPlan-SecurityGuide"></a><em>Security Guide</em></h4> <p>The GlassFish Security Review has recommended that a <em>Security Guide</em> be produced which documents application security mechanisms and outlines how to install and manage applications securely. GlassFish Product management has defined 3.1 as the target release for this Guide.</p> <h5><a name="GlassFishV3.1SecurityDocPlan-ContentSources"></a>Content Sources</h5> <p>The content in the new <em>Security Guide</em> will be a combination new and existing material from the following sources:</p> 
+     <ul> 
+      <li>Content migrated from the GlassFish 3.0.1 <em>Administration Guide</em>, updated as needed to accommodate new or changed features.</li> 
+      <li>Content migrated from the GlassFish 2.1.1 Administration Guide, updated as needed.</li> 
+      <li>Content derived from the existing <a href="http://download.oracle.com/docs/cd/E12840_01/wls/docs103/webapp/weblogic_xml.html#wp1073709">weblogic.xml Deployment Descriptor Elements</a> chapter in <a href="http://download-llnw.oracle.com/docs/cd/E12840_01/wls/docs103/webapp/">Developing Web Applications, Servlets, and JSPs for Oracle WebLogic Server</a>.</li> 
+      <li>New content as needed to document new features.</li> 
+     </ul> <h5><a name="GlassFishV3.1SecurityDocPlan-ProposedSecurityGuideOutline"></a>Proposed <em>Security Guide</em> Outline</h5> <p>The parenthetical notation preceding each chapter and section heading indicates the source product documentation for the material for that entry. The following key is used:</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <td class="confluenceTd"> (3.0.1) </td> 
+         <td class="confluenceTd"> GlassFish 3.0.1 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> (2.1.1) </td> 
+         <td class="confluenceTd"> GlassFish 2.1.1 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> (WLS) </td> 
+         <td class="confluenceTd"> WebLogic Server </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> (NEW) </td> 
+         <td class="confluenceTd"> New material </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>''GlassFish 3.1 Security Guide''</p> 
+     <ol> 
+      <li>(3.0.1) Administering System Security</li> 
+      <li>(NEW) Installing GlassFish in a Secure Environment 
+       <ol> 
+        <li>(NEW/WLS)</li> 
+        <li>(NEW) Closed Network Installation</li> 
+        <li>(3.0.1) About System Security in GlassFish Server 
+         <ol> 
+          <li>(3.0.1) Authentication 
+           <ol> 
+            <li>(3.0.1) Authentication Types</li> 
+            <li>(NEW) Adding JSR 196 Authentication Mechanisms to the Servlet Container</li> 
+            <li>(3.0.1) Passwords 
+             <ol> 
+              <li>(3.0.1) Master Password and Keystores</li> 
+              <li>(3.0.1) Administration Password</li> 
+              <li>(3.0.1) Encoded Passwords</li> 
+              <li>(3.0.1) Web Browsers and Password Storage</li> 
+             </ol> </li> 
+            <li>(3.0.1) Password Aliases</li> 
+            <li>(3.0.1) Single Sign-on</li> 
+           </ol> </li> 
+          <li>(3.0.1) Authorization 
+           <ol> 
+            <li>(3.0.1) Roles</li> 
+            <li>(3.0.1) Java Authorization Contract for Containers</li> 
+            <li>(NEW) Working with Policy Files 
+             <ol> 
+              <li>(NEW) ~/.policy Files</li> 
+              <li>(NEW) Node ~/.policy Files</li> 
+             </ol> </li> 
+           </ol> </li> 
+          <li>(3.0.1) Auditing</li> 
+          <li>(3.0.1) Firewalls</li> 
+          <li>(3.0.1) Certificates and SSL 
+           <ol> 
+            <li>(3.0.1) Certificates</li> 
+            <li>(3.0.1) Certificate Chains</li> 
+            <li>(3.0.1) Certificate Files</li> 
+            <li>(3.0.1) Secure Sockets Layer</li> 
+            <li>(NEW) SSL Mutual Authentication 
+             <ol> 
+              <li>(3.0.1) Ciphers</li> 
+              <li>(3.0.1) Name-based Virtual Hosts</li> 
+              <li>(NEW) Custom Validation</li> 
+              <li>(NEW) Group Assignments</li> 
+             </ol> </li> 
+           </ol> </li> 
+          <li>(3.0.1) Tools for Managing System Security</li> 
+         </ol> </li> 
+        <li>(3.0.1) Administering Passwords 
+         <ol> 
+          <li>(NEW) Master Password Security Options</li> 
+          <li>(3.0.1) To Change the Master Password</li> 
+          <li>(3.0.1) To Change the Administration Password</li> 
+          <li>(3.0.1) To Set a Password From a File</li> 
+          <li>(3.0.1) Administering Password Aliases 
+           <ol> 
+            <li>(3.0.1) To Create a Password Alias</li> 
+            <li>(3.0.1) To List Password Aliases</li> 
+            <li>(3.0.1) To Delete a Password Alias</li> 
+            <li>(3.0.1) To Update a Password Alias</li> 
+           </ol> </li> 
+         </ol> </li> 
+        <li>(3.0.1) Administering Audit Modules 
+         <ol> 
+          <li>(3.0.1) To Create an Audit Module</li> 
+          <li>(3.0.1) To List Audit Modules</li> 
+          <li>(3.0.1) To Delete an Audit Module</li> 
+         </ol> </li> 
+        <li>(3.0.1) Administering JSSE Certificates 
+         <ol> 
+          <li>(3.0.1) To Generate a Certificate by Using keytool</li> 
+          <li>(3.0.1) To Sign a Certificate by Using keytool</li> 
+          <li>(3.0.1) To Delete a Certificate by Using keytool</li> 
+         </ol> </li> 
+       </ol> </li> 
+      <li>(3.0.1) Administering User Security 
+       <ol> 
+        <li>(3.0.1) Administering Authentication Realms 
+         <ol> 
+          <li>(3.0.1) Overview of Authentication Realms 
+           <ol> 
+            <li>(NEW) PAM Realm</li> 
+            <li>(NEW) OSGi Realm</li> 
+           </ol> </li> 
+          <li>(3.0.1) To Create an Authentication Realm</li> 
+          <li>(3.0.1) To List Authentication Realms</li> 
+          <li>(3.0.1) To Update an Authentication Realm</li> 
+          <li>(3.0.1) To Delete an Authentication Realm</li> 
+          <li>(3.0.1) To Configure a JDBC or Digest Authentication Realm</li> 
+         </ol> </li> 
+        <li>(3.0.1) Administering File Users 
+         <ol> 
+          <li>(3.0.1) To Create a File User</li> 
+          <li>(3.0.1) To List File Users</li> 
+          <li>(3.0.1) To List File Groups</li> 
+          <li>(3.0.1) To Update a File User</li> 
+          <li>(3.0.1) To Delete a File User</li> 
+         </ol> </li> 
+       </ol> </li> 
+      <li>(3.0.1) Administering Message Security 
+       <ol> 
+        <li>(3.0.1) About Message Security in GlassFish Server 
+         <ol> 
+          <li>(3.0.1) Security Tokens and Security Mechanisms</li> 
+          <li>(3.0.1) Authentication Providers</li> 
+          <li>(3.0.1) Message Protection Policies</li> 
+          <li>(3.0.1) Application-Specific Web Services Security</li> 
+          <li>(3.0.1) Message Security Administration 
+           <ol> 
+            <li>(3.0.1) Message Security Tasks</li> 
+            <li>(3.0.1) Message Security Roles 
+             <ol> 
+              <li>(3.0.1) System Administrator</li> 
+              <li>(3.0.1) Application Deployer</li> 
+              <li>(3.0.1) Application Developer/Assembler</li> 
+             </ol> </li> 
+           </ol> </li> 
+          <li>(3.0.1) Sample Application for Web Services</li> 
+         </ol> </li> 
+        <li>(3.0.1) Enabling Default Message Security Providers for Web Services 
+         <ol> 
+          <li>(3.0.1) To Enable a Default Server Provider</li> 
+          <li>(3.0.1) To Enable a Default Client Provider</li> 
+         </ol> </li> 
+        <li>(3.0.1) Configuring Message Protection Policies 
+         <ol> 
+          <li>(3.0.1) Message Protection Policy Mapping</li> 
+          <li>(3.0.1) To Configure the Message Protection Policies for a Provider</li> 
+          <li>(3.0.1) Setting the Request and Response Policy for the Application Client Configuration</li> 
+         </ol> </li> 
+        <li>(3.0.1) Administering Non-default Message Security Providers 
+         <ol> 
+          <li>(3.0.1) To Create a Message Security Provider</li> 
+          <li>(3.0.1) To List Message Security Providers</li> 
+          <li>(3.0.1) To Update a Message Security Provider</li> 
+          <li>(3.0.1) To Delete a Message Security Provider</li> 
+         </ol> </li> 
+        <li>(NEW) Administering JACC Providers 
+         <ol> 
+          <li>(NEW) To Create a JACC Provider</li> 
+          <li>(NEW) To Delete a JACC Provider</li> 
+          <li>(NEW) To List JACC Providers</li> 
+         </ol> </li> 
+        <li>(3.0.1) Enabling Message Security for Application Clients</li> 
+        <li>(3.0.1) Additional Information About Message Security</li> 
+       </ol> </li> 
+      <li>(NEW) Administering Security in Cluster Mode 
+       <ol> 
+        <li>(2.1.1) Security Options</li> 
+        <li>(2.1.1/NEW) Configuring Load Balancer Security</li> 
+        <li>(2.1.1/NEW) Configuring Web Server Security</li> 
+        <li>(2.1.1/NEW) Configuring Certificates in Cluster Mode</li> 
+       </ol> </li> 
+      <li>(NEW) Administering Runtime Security 
+       <ol> 
+        <li>(NEW) Runtime Security Overview 
+         <ol> 
+          <li>(NEW) Running GlassFish with Default Security</li> 
+          <li>(NEW) Running GlassFish with Secure Admin 
+           <ol> 
+            <li>(NEW) Blocking DAS-to-DAS and Instance-to-Instance Traffic</li> 
+            <li>(NEW) Restricting Admin Client-to-Instance Traffic</li> 
+           </ol> </li> 
+         </ol> </li> 
+        <li>(NEW) Controlling Secure Admin 
+         <ol> 
+          <li>(NEW) <tt>enable-secure-admin</tt> Subcommand</li> 
+          <li>(NEW) <tt>disable-secure-admin</tt> Subcommand</li> 
+         </ol> </li> 
+        <li>(NEW) Securing Remote Client-to-DAS Traffic 
+         <ol> 
+          <li>(NEW) Forcing HTTPS Request Upgrade</li> 
+          <li>(NEW) Sending HTTPS Authorization Header</li> 
+          <li>(NEW) Sending HTTPS Without Authorization Header</li> 
+          <li>(NEW) Forcing HTTP Authorization Header</li> 
+          <li>(NEW) Allowing Browser Access to the DAS</li> 
+          <li>(NEW) Using SSL/TLS Negotiation</li> 
+          <li>(NEW) Allowing Unsecured Administrator Login</li> 
+         </ol> </li> 
+        <li>(NEW) Securing Local asadmin Client-to-Instance Traffic</li> 
+        <li>(NEW) Securing DAS-to-Instance and Instance-to-DAS Traffic</li> 
+        <li>(NEW) Guarding Against Unwanted Connections 
+         <ol> 
+          <li>(NEW) DAS-to-DAS and Instance-to-Instance Considerations</li> 
+          <li>(NEW) Remote Client-to-Instance Considerations</li> 
+         </ol> </li> 
+        <li>(NEW) Securing Remote Instances 
+         <ol> 
+          <li>(NEW) Configuring Grizzly</li> 
+          <li>(NEW) Creating Secure Domains</li> 
+          <li>(NEW) Creating a New Instance 
+           <ol> 
+            <li>(NEW) Using <tt>asadmin create-instance</tt> and SSH Remotely</li> 
+            <li>(NEW) Using <tt>asadmin create-local-instance</tt> Locally</li> 
+           </ol> </li> 
+          <li>(NEW) Starting the New Instance</li> 
+         </ol> </li> 
+        <li>(NEW) Upgrading a Secure GlassFish Installation 
+         <ol> 
+          <li>(NEW) Upgrading the DAS</li> 
+          <li>(NEW) Upgrading the Instances</li> 
+         </ol> </li> 
+       </ol> </li> 
+     </ol> <h4><a name="GlassFishV3.1SecurityDocPlan-ChangestoBooks"></a>Changes to Books</h3> <h4><a name="GlassFishV3.1SecurityDocPlan-AdministrationGuideChanges"></a><em>Administration Guide</em> Changes</h4> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Section </th> 
+         <th class="confluenceTh"> Documentation Impact </th> 
+         <th class="confluenceTh"> Writer </th> 
+         <th class="confluenceTh"> Reviewers </th> 
+         <th class="confluenceTh"> Description of Change </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Part II, Security Administration </td> 
+         <td class="confluenceTd"> Moderate-Major </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> All reviewers </td> 
+         <td class="confluenceTd"> Migrate entire Part to new <em>Security Guide</em>; includes Chapters 11, 12, and 13 of current guide; redirect links from other sections and books as needed. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3.1SecurityDocPlan-ApplicationDeploymentGuideChanges"></a><em>Application Deployment Guide</em> Changes</h4> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Section </th> 
+         <th class="confluenceTh"> Documentation Impact </th> 
+         <th class="confluenceTh"> Writer </th> 
+         <th class="confluenceTh"> Reviewers </th> 
+         <th class="confluenceTh"> Description of Change </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Appendix B, GlassFish Server Deployment Descriptor Files </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> About the GlassFish Server Deployment Descriptors </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Kumar </td> 
+         <td class="confluenceTd"> Add WebLogic Deployment Descriptors to list. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> The sun-application.xml File<br class="atl-forced-newline">The sun-web.xml File<br class="atl-forced-newline">The sun-ejb-jar.xml File<br class="atl-forced-newline">The sun-cmp-mappings.xml File<br class="atl-forced-newline">The sun-application-client.xml file<br class="atl-forced-newline">The sun-acc.xml File<br class="atl-forced-newline">The sun-resources.xml File</td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Sonia </td> 
+         <td class="confluenceTd"> Add WebLogic Deployment Descriptors to relevant locations. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> C. Elements of the GlassFish Server Deployment Descriptors </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Kumar, Tom, Bill </td> 
+         <td class="confluenceTd"> Describe WebLogic Deployment Descriptors. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3.1SecurityDocPlan-ApplicationDevelopmentGuideChanges"></a><em>Application Development Guide</em> Changes</h4> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Section </th> 
+         <th class="confluenceTh"> Documentation Impact </th> 
+         <th class="confluenceTh"> Writer </th> 
+         <th class="confluenceTh"> Reviewers </th> 
+         <th class="confluenceTh"> Description of Change </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 5, Securing Applications </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Security Goals </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Kumar </td> 
+         <td class="confluenceTd"> Add PAM, OSGi to list of authentication realms. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GlassFish Server Specific Security Features </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Kumar </td> 
+         <td class="confluenceTd"> Add JACC support. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Roles, Principals, and Principal to Role Mapping </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Bill </td> 
+         <td class="confluenceTd"> Add custom and group mapping support. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Realm Configuration, Supported Realms </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Tom </td> 
+         <td class="confluenceTd"> Add PAM, OSGi realms. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Creating a Custom Realm </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Kumar </td> 
+         <td class="confluenceTd"> Update, add new Login module information. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JACC Support </td> 
+         <td class="confluenceTd"> Moderate-New </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Kumar </td> 
+         <td class="confluenceTd"> Add new JACC support information; new CLI options. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> The server.policy File, all subsections &amp; tasks </td> 
+         <td class="confluenceTd"> Major </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Kumar, Bill </td> 
+         <td class="confluenceTd"> Provide new/updated details about the five available categories of permission grants. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Configuring Message Security for Web Services,<br class="atl-forced-newline">Application-Specific Message Protection </td> 
+         <td class="confluenceTd"> Major-New </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> All reviewers </td> 
+         <td class="confluenceTd"> Document new and updated message methods; new sample application? </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Configuring Message Security for Web Services,<br class="atl-forced-newline">Message Security Providers </td> 
+         <td class="confluenceTd"> Major-New </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> All reviewers </td> 
+         <td class="confluenceTd"> Document new and modified message security providers, JACC interoperability </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Configuring Message Security for Web Services,<br class="atl-forced-newline">Application-Specific Message Protection </td> 
+         <td class="confluenceTd"> Major-New </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> All reviewers </td> 
+         <td class="confluenceTd"> Document new and updated message methods; new sample application? </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Programmatic Login </td> 
+         <td class="confluenceTd"> Moderate-New </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> All reviewers </td> 
+         <td class="confluenceTd"> Document new and updated Login methods, grants, groups; new examples. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> User Authentication for Single Sign-On </td> 
+         <td class="confluenceTd"> Moderate-New </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> All reviewers </td> 
+         <td class="confluenceTd"> Add SSL mutual authentication, groups, custom validation. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Adding Authentication Mechanisms to the Servlet Container </td> 
+         <td class="confluenceTd"> Major-New </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> All reviewers </td> 
+         <td class="confluenceTd"> Add descriptions of new methods; new example </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3.1SecurityDocPlan-DomainFileFormatReferenceChanges"></a><em>Domain File Format Reference</em> Changes</h4> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Section </th> 
+         <th class="confluenceTh"> Documentation Impact </th> 
+         <th class="confluenceTh"> Writer </th> 
+         <th class="confluenceTh"> Reviewers </th> 
+         <th class="confluenceTh"> Description of Change </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 1, The domain.xml File </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Sonia </td> 
+         <td class="confluenceTd"> Document new JACC elements. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3.1SecurityDocPlan-ChangestomanPages"></a>Changes to man Pages</h3> <h4><a name="GlassFishV3.1SecurityDocPlan-asadminmanPageChanges"></a><em>asadmin man Page</em> Changes</h4> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Topic Title </th> 
+         <th class="confluenceTh"> Documentation Impact </th> 
+         <th class="confluenceTh"> Writer </th> 
+         <th class="confluenceTh"> Reviewers </th> 
+         <th class="confluenceTh"> Description of Change </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>create-jacc-provider</tt> </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Kumar </td> 
+         <td class="confluenceTd"> New subcommand. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>delete-jacc-provider</tt> </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Kumar </td> 
+         <td class="confluenceTd"> New subcommand. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>list-jacc-providers</tt> </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Kumar </td> 
+         <td class="confluenceTd"> New subcommand. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>list-supported-ciphers</tt> </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Kumar </td> 
+         <td class="confluenceTd"> New subcommand </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>enable-secure-admin</tt> </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Tim </td> 
+         <td class="confluenceTd"> New subcommand. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>disable-secure-admin</tt> </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Tim </td> 
+         <td class="confluenceTd"> New subcommand. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>create-auth-realm</tt> </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Kumar </td> 
+         <td class="confluenceTd"> Changed behavior. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3.1SecurityDocPlan-ChangestoOnlineHelp"></a>Changes to Online Help</h3> <h4><a name="GlassFishV3.1SecurityDocPlan-AdminConsoleOnlineHelpChanges"></a><em>Admin Console Online Help</em> Changes</h4> <p>See the <a href="GlassFishV3.1AdminConsoleDocPlan.html" title="GlassFishV3.1AdminConsoleDocPlan">GlassFish 3.1 Admin Console Doc Plan</a> for a list of Admin Console online help changes.</p> <h4><a name="GlassFishV3.1SecurityDocPlan-ReviewSchedule"></a>Review Schedule</h2> <p>The review schedule for the documentation items that are affected by this feature is provided in the following table.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item </th> 
+         <th class="confluenceTh"> Review Start Date </th> 
+         <th class="confluenceTh"> Review End Date </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Security Guide </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Administration Guide </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Application Deployment Guide </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Application Development Guide </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Domain File Format Reference </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> asadmin man Page </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Admin Console Online Help </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>Reviewers are listed in the <em>Statement of Work</em>.</p> <h4><a name="GlassFishV3.1SecurityDocPlan-RelatedInformation"></a>Related Information</h2> 
+     <ul> 
+      <li><a href="./V3.1Security.html">Security Project Page</a></li> 
+      <li><a href="./3.1Security1Pager.html">Security One-Pager</a></li> 
+      <li><a href="./3.1ClusteringSecurity.html">Clustering Security One-Pager</a></li> 
+      <li><a href="./3.1SecureAdminTraffic.html">3.1 Secure Admin Traffic One-Pager</a></li> 
+      <li><a href="./SupportWLDD.html">WebLogic Deployment Descriptor Support Project Page</a></li> 
+      <li><a href="./GlassFishv3.1..html">Overall product feature set</a></li> 
+      <li><a href="./V3FunctionalSpecs.html">Product Functional Specifications</a></li> 
+     </ul> <p>Email aliases:</p> 
+     <ul> 
+      <li><a href="mailto:admin@glassfish.java.net">admin@glassfish.java.net</a></li> 
+      <li><a href="mailto:users@glassfish.java.net">users@glassfish.java.net</a></li> 
+      <li><a href="mailto:docs@glassfish.java.net">docs@glassfish.java.net</a></li> 
+     </ul> 
+     <hr> 
+     <div class="tabletitle"> 
+      <a name="comments"> <h4>Comments:</h2> </a> 
+     </div> 
+     <table border="0" width="100%"> 
+      <tbody>
+       <tr> 
+        <td> <a name="comment-20881357"></a> <font class="smallfont">
+          <div class="table-wrap"> 
+           <table class="confluenceTable">
+            <tbody> 
+             <tr> 
+              <th class="confluenceTh"> Comment ID <br class="atl-forced-newline"> </th> 
+              <th class="confluenceTh"> Section </th> 
+              <th class="confluenceTh"> Comment <br class="atl-forced-newline"> </th> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> PMD-001 </td> 
+              <td class="confluenceTd"> People and Roles <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> Add: <br class="atl-forced-newline"> 
+               <ul> 
+                <li>Tim Quinn</li> 
+                <li>Martin Matula, SW Engineering Manager, located in Prague, Czech Republic, in the Middle/Central European Time (MET) time zone, email martin.matula@sun.com (he doesn't have a java.net email address).</li> 
+               </ul> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> PMD-002 </td> 
+              <td class="confluenceTd"> Summary of the Feature From a User's Perspective <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd">
+               <ul> 
+                <li>Items 2, 3: OAM and OWSM integration are outwith the scope of GlasFish Server Open Source Edition. Remove references to them from this plan.</li> 
+                <li>Item 4: Double check with the CORBA team to see if these changes will be made in release 3.1.</li> 
+                <li>Item 6: Clarify the extent to which WLS DD elements will be supported in 3.1.</li> 
+               </ul> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> PMD-003 </td> 
+              <td class="confluenceTd"> Proposed Security Guide Outline <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> Ensure that changes that result from PMD-002 are propagated to this outline. <br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> PMD-004 </td> 
+              <td class="confluenceTd"> <em>Application Deployment Guide</em> Changes </td> 
+              <td class="confluenceTd"> Itemize the WLS DD elements that are to be added. As I understand it, not all WLS DD elements will be supported in this release. <br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> PMD-005 <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> <em>Reference Manual</em> Changes </td> 
+              <td class="confluenceTd"> Delete this section. The changes to man pages are propagated automatically to the Reference Manual without further intervention from the writer, so they do not need to be listed twice. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> PMD-006 <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> <em>Domain File Format Reference</em> Changes </td> 
+              <td class="confluenceTd"> Remove the reference to WLS DD elements. The WLS DD elements are not part of domain.xml. <br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> PMD-007 <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> Changes to Online Help </td> 
+              <td class="confluenceTd"> Move the content of this section to the <a href="GlassFishV3.1AdminConsoleDocPlan.html" title="GlassFishV3.1AdminConsoleDocPlan">Administration Console Documentation Plan</a> and add a cross-reference to that plan. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> PMD-008 </td> 
+              <td class="confluenceTd"> Related Information <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> Add a link to the <a href="3.1SecureAdminTraffic.html" title="3.1SecureAdminTraffic">3.1 Secure Admin Traffic 1-pager</a>.<br class="atl-forced-newline"> </td> 
+             </tr> 
+            </tbody>
+           </table> 
+          </div> </font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by pauldavies at Jul 30, 2010 10:43 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20880945"></a> <font class="smallfont">
+          <div class="table-wrap"> 
+           <table class="confluenceTable">
+            <tbody> 
+             <tr> 
+              <th class="confluenceTh"> Comment ID </th> 
+              <th class="confluenceTh"> Comment </th> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> PMD-001 </td> 
+              <td class="confluenceTd"> Added entries. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> PMD-002 </td> 
+              <td class="confluenceTd"> Removed OAM and OWSM entries. CORBA and WLS DD info still TBD. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> PMD-003 </td> 
+              <td class="confluenceTd"> Done. Also added entries per Kumar et al. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> PMD-004 </td> 
+              <td class="confluenceTd"> List TBD. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> PMD-005 </td> 
+              <td class="confluenceTd"> Deleted. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> PMD-006 </td> 
+              <td class="confluenceTd"> Deleted. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> PMD-007 </td> 
+              <td class="confluenceTd"> Moved content. Also added entries per Kumar et al. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> PMD-008 </td> 
+              <td class="confluenceTd"> Added link. </td> 
+             </tr> 
+            </tbody>
+           </table> 
+          </div> </font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by sfordin at Aug 09, 2010 19:04 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20878577"></a> <font class="smallfont">
+          <div class="table-wrap"> 
+           <table class="confluenceTable">
+            <tbody> 
+             <tr> 
+              <th class="confluenceTh"> Comment ID </th> 
+              <th class="confluenceTh"> Section </th> 
+              <th class="confluenceTh"> Comment </th> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> SRF-001 </td> 
+              <td class="confluenceTd"> <em>Security Guide</em> </td> 
+              <td class="confluenceTd"> Added new chapter, "Administering Runtime Security." </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> SRF-002 </td> 
+              <td class="confluenceTd"> asadmin man Pages </td> 
+              <td class="confluenceTd"> Added two new subcommands to man Pages: <tt>enable-secure-admin</tt>, <tt>disable-secure-admin</tt>. </td> 
+             </tr> 
+            </tbody>
+           </table> 
+          </div> </font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by sfordin at Aug 16, 2010 20:11 
+         </div> </td> 
+       </tr> 
+      </tbody>
+     </table> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Aug 23, 2010 by 
+<font color="#0050B2">sfordin</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

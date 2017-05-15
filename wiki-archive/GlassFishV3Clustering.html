@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFishV3Clustering</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GlassFishV3Clustering-GFv3Clustering"></a>GF v3 Clustering </h2> <p> V3 Clustering is a superset of GF v2 Clustering features. <br> In addition to the existing GFv2 feature set, v3 clustering <br> will address RFEs with high vote counts. RFEs such as :</p> 
+     <ul> 
+      <li>Firewall friendly communication within Domain entities</li> 
+     </ul> <p> This will also help make performance improvements.</p> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li>Domain's interprocess communication will be based off of</li> 
+       </ul> </li> 
+     </ul> <p> JMX HTTP channel instead of the present JMX RMI channel </p> 
+     <ul> 
+      <li>Removing the Single point of Failure through Admin Server(DAS)</li> 
+     </ul> <p> redundancy</p> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li>A secondary redundant DAS process acting in a slave mode</li> 
+       </ul> </li> 
+     </ul> <p> while the master DAS is running, will help overcome the <br> present shortcoming : A domain cannot be managed, once <br> the DAS fails.</p> 
+     <ul> 
+      <li>Pluggable Node Agent(NA) design 
+       <ul> 
+        <li>NodeAgent in v2 served mainly to manage life cycle of</li> 
+       </ul> </li> 
+     </ul> <p> server instances and watchdog the instance processes<br> In v3, A node agent would allow plugging in of any <br> monitorable VM (agent) and manage its create/delete/<br> start/stop lifecycle. </p> 
+     <ul> 
+      <li>Improved diagnostics for NA 
+       <ul> 
+        <li>Node Agent in v2 also has the responsibility to synchronize</li> 
+       </ul> </li> 
+     </ul> <p> contents for server instances either in out of process or <br> in-process mode. v3 will improve on the diagnostics and <br> logging for both the modes.</p> 
+     <ul> 
+      <li>Public interface for NA configuration and flexible</li> 
+     </ul> <p> configuration for instance lifecycle management</p> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li>v3 will include a java config for Node Agent configuration</li> 
+       </ul> </li> 
+     </ul> <p> such as log levels, log location, system properties etc <br> for the NA VM.</p> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li>v3 will provide flexible instance configuration such as</li> 
+       </ul> </li> 
+     </ul> <p> configuration to decide on instance startup on NA startup,<br> instance synchronization on NA startup, whether to watchdog <br> instances and the interval to restart after detection of <br> failure on watchdogged processes and the max count of failures <br> before which watchdogging is disabled.</p> 
+     <ul> 
+      <li>v2 Remote instance management had some inherent drawbacks due to lack of a shared memory mechanism for DAS to NA communication that gave rise to confusion when changes were made in bootstrap parameters. A user has to manually make sure that the two decoupled processes remained in sync on the bootstrap parameters such as master password,handshaken co-ordinates etc v3 clustering design will include an option for a user to choose between a shared memory mode and a decoupled processes mode(v2 mode)</li> 
+     </ul> 
+     <ul> 
+      <li>v3 may include extension of self-management rules in the NA VM</li> 
+     </ul> <h4><a name="GlassFishV3Clustering-HereisthelinktoinitialdiscussionsaboutNArequirementsNAdesign"></a><a href="NAdesign.html" title="NAdesign">Here is the link to initial discussions about NA requirements</a></h3> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 08, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:44.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

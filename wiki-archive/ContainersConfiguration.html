@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : ContainersConfiguration</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="ContainersConfiguration-ContainerConfiginGlassFishV3"></a>Container Config in GlassFish V3</h1> <p>As of today, GlassFish V3 supports four types of applications each served by a particular container :</p> 
+     <ol> 
+      <li>Web Applications</li> 
+      <li>Ruby on Rails using JRuby 0.9.9</li> 
+      <li>Phobos using the phobos runtime</li> 
+      <li>PHP using the resin quercus engine.</li> 
+     </ol> <p>This page will describe all the steps necessary to install these containers prior to start deploying artifacts to them. In a future build, we will most likely install these containers as the deployment request is made but this is not implemented yet so for now, you have to do it manually.</p> <h4><a name="ContainersConfiguration-WebApplications"></a>Web Applications</h2> <p>The web container is bundled with the GlassFish v3 installation so there is nothing that needs to be done to run servlets and jsp. We have not tried yet JSF.</p> <h4><a name="ContainersConfiguration-RubyOnRails"></a>Ruby On Rails</h2> <p>More detailed instructions are available <a href="http://blogs.oracle.com/arungupta/entry/first_jruby_on_rails_app">here</a> are <a href="http://blogs.oracle.com/arungupta/entry/mephisto_on_glassfish_v3">here</a>.</p> <p>First you need to download the JRuby latest release from <a href="http://jruby.codehaus.org/">http://jruby.codehaus.org/</a> and install it either in the glassfish's installation lib directory under the jruby directory or install it anywhere and have jruby.home property in &lt;glassfish&gt;/config/asenv.conf pointing to it.</p> <p>After that you just need to download and deploy a RoR application, you should not have to modify the RoR application except for the database connectivity. Existing RoR apps use native drivers to access the database, however when running in Java this is not the best option so you usally need to modify the RoR application to change that. Let's review this taking mephisto as an example : </p> 
+     <ul> 
+      <li>Download Mephisto at <a href="http://mephistoblog.com/">http://mephistoblog.com/</a></li> 
+      <li>Install MySQL</li> 
+      <li>Expand the downloaded zip in say mephisto directory</li> 
+      <li>change the mephisto/config/database.yml to have the following bindings :</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">development:
+    adapter: jdbc
+    driver: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/mephisto
+    username: dochez
+    password: noway</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>Of course, you need the MySQL JDBC driver in jruby/lib, you can find it at <a href="http://www.mysql.com/products/connector/j/index.html">http://www.mysql.com/products/connector/j/index.html</a></li> 
+      <li>Configure MySQL for mephisto, this is described in mephisto's installation page at <a href="http://mephisto.stikipad.com/help/show/InstallingMephisto">http://mephisto.stikipad.com/help/show/Installing+Mephisto</a></li> 
+      <li>add jdbc to the required packages of the application by adding the following to config/environment.rb</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">if RUBY_PLATFORM =~ /java/
+  require 'rubygems'
+  RAILS_CONNECTION_ADAPTERS = %w(jdbc)
+end</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>deploy the application</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">asadmin deploy --path mephisto</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>browse : <a href="http://localhost:8080/mephisto">http://localhost:8080/mephisto</a></li> 
+     </ul> <h4><a name="ContainersConfiguration-Phobosinstallations"></a>Phobos installations</h2> <p>Same as above, just install the binaries in &lt;glassfish&gt;lib/phobos or have phobos.home in asenv.conf pointing to your installation. Go the phobos documentation on how to configure phobos. Please note that we do not support yet the persistence bindings in Phobos, this should be done right after JavaOne 2007.</p> <h4><a name="ContainersConfiguration-PHP"></a>PHP</h2> <p>PHP installation is a bit more complicated mostly because the Resin Quercus engine is not available in a public maven reposistory. So you need to follow these steps : </p> 
+     <ul> 
+      <li>download quercus from <a href="http://quercus.caucho.com/">http://quercus.caucho.com/</a></li> 
+      <li>explode the .war file you just downloaded : jar -xvf quercus...war</li> 
+      <li>download the GlassFish V3 connector from <a href="http://download.java.net/maven/glassfish/com/sun/enterprise/glassfish/gf-php-connector/10.0-SNAPSHOT/gf-php-connector-10.0-SNAPSHOT.jar">http://download.java.net/maven/glassfish/com/sun/enterprise/glassfish/gf-php-connector/10.0-SNAPSHOT/gf-php-connector-10.0-SNAPSHOT.jar</a> and install it in &lt;glassfish&gt;lib directory</li> 
+      <li>from the exploded quercus directory do :</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">cp WEB-INF/lib/resin-util.jar &lt;glassfish&gt;/lib/jars/resin-util-3.1.jar
+cp WEB-INF/lib/quercus.jar &lt;glassfish&gt;/lib/jars/quercus-3.1.jar
+cp index.php &lt;glassfish&gt;/domains/domain1/docroot</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>browse <a href="http://localhost:8080/index.php">http://localhost:8080/index.php</a> you should see a success message from quercus indicating a valid installation.</li> 
+     </ul> <p>Warning : the PHP integration in GlassFish V3 is not complete and you will probably run into issues. We need to upgrade to Grizzly 1.5 and resolve a few other issues before this will be fully functional.</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 08, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:43.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GuiRestRequirements</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>This page lists out all the commands, attributes or methods that may need special attention from the REST API team. Maybe this has been resolved already, just need to confirm that.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item #</th> 
+         <th class="confluenceTh"> CLI </th> 
+         <th class="confluenceTh"> GUI Page, feature</th> 
+         <th class="confluenceTh"> MBean object name </th> 
+         <th class="confluenceTh"> ClassName </th> 
+         <th class="confluenceTh"> Attribute or methods </th> 
+         <th class="confluenceTh"> Comments </th> 
+         <th class="confluenceTh"> Module Owner </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> generate-jvm-report </td> 
+         <td class="confluenceTd"> Server General page,generate JVM report </td> 
+         <td class="confluenceTd"> amx:pp=/,type=runtime </td> 
+         <td class="confluenceTd"> org.glassfish.admin.amx.base. RuntimeRoot </td> 
+         <td class="confluenceTd"> method: getJVMReport </td> 
+         <td class="confluenceTd"> MS3, <a href="https:--glassfish.java.net-issues-show_bug.cgi-12134">issue #12134 </a> RESOLVED FIXED. </td> 
+         <td class="confluenceTd"> Naman Mehta </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd"> recover-transactions </td> 
+         <td class="confluenceTd"> v2 parity, missing in v3 now. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> MS3 <a href="https:--glassfish.java.net-issues-show_bug.cgi-12135">issue #12135 </a> RESOLVED FIXED </td> 
+         <td class="confluenceTd"> Marina Vatkina </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3 </td> 
+         <td class="confluenceTd"> <del>list-targets</del> </td> 
+         <td class="confluenceTd"> <del>Need a list of targets for application deployment and resources</del> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> <del>MS2, <a href="https:--glassfish.java.net-issues-show_bug.cgi-12143">issue #12143- </a> -Yes, GUI can work around this by making numerous request instead of 1 if backend prefers not to provide this.</del> Issue closed. list-instances will be needed instead. </td> 
+         <td class="confluenceTd"> <del>Tom Mueller</del> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Configuration -&gt; Logger Settings -&gt; General tab get/set the logger related attributes, which is stored in domain1/config/logging.properties file </td> 
+         <td class="confluenceTd"> amx:pp=/,type=logging </td> 
+         <td class="confluenceTd"> org.glassfish.admin.amx.logging. Logging </td> 
+         <td class="confluenceTd"> LoggingAttributes : attributes method:&nbsp; updateLoggingAttributes </td> 
+         <td class="confluenceTd"> MS3, <a href="https:--glassfish.java.net-issues-show_bug.cgi-12147">issue #12147 </a> CLI is not available now. </td> 
+         <td class="confluenceTd"> Naman Mehta </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5 </td> 
+         <td class="confluenceTd"> set-log-level list-logger-levels </td> 
+         <td class="confluenceTd"> Configuration-&gt; Logger Settings-&gt; Log Levers Tab get/set module log levels. These info is stored in domain1/config/logging.properties file. </td> 
+         <td class="confluenceTd"> amx:pp=/,type=logging </td> 
+         <td class="confluenceTd"> org.glassfish.admin.amx.logging. Logging </td> 
+         <td class="confluenceTd"> LoggingProperties : attributes method: updateLoggingProperties </td> 
+         <td class="confluenceTd"> MS3, <a href="https:--glassfish.java.net-issues-show_bug.cgi-12136">issue #12136 </a> We can call list-logger-levels through REST, but the info returned is hard to parse. This needs to be fixed. </td> 
+         <td class="confluenceTd"> Naman Mehta </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> To support Log Viewer </td> 
+         <td class="confluenceTd"> mx:pp=/,type=logging </td> 
+         <td class="confluenceTd"> org.glassfish.admin.amx.logging. Logging org.glassfish.admin.amx.logging. LogQuery* </td> 
+         <td class="confluenceTd"> method: queryServerLog, getDiagnosticCauses, getDiagnosticChecks, getDiagnosticURI LogQuery.Helper.toLogQueryResult </td> 
+         <td class="confluenceTd"> comment from Ludo: I am working on my side on a rest log viewer (based on Hudson code) that should do the job for viewing logs...The client is of course very javascript centric. I hope you'll be able to integrate it somewhere in the admin gui.... </td> 
+         <td class="confluenceTd"> Naman Mehta </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 7 </td> 
+         <td class="confluenceTd"> ?? </td> 
+         <td class="confluenceTd"> For Users managment in a file Realm. Need to list out which group the user belongs to. </td> 
+         <td class="confluenceTd"> amx:pp=/ext,type=realms </td> 
+         <td class="confluenceTd"> org.glassfish.admin.amx.base.Realms </td> 
+         <td class="confluenceTd"> method: getGroupNames (String realmName, String userName); </td> 
+         <td class="confluenceTd"> MS3, <a href="https:--glassfish.java.net-issues-show_bug.cgi-12137">issue #12137 </a> RESOLVED FIXED. This is available through REST only. </td> 
+         <td class="confluenceTd"> V B Kumar Jayanti </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 8 </td> 
+         <td class="confluenceTd"> update-file-users </td> 
+         <td class="confluenceTd"> For Users management. Need to be able to change password of any user. Domain Page, Administration Password Tab </td> 
+         <td class="confluenceTd"> amx:pp=/ext,type=realms </td> 
+         <td class="confluenceTd"> org.glassfish.admin.amx.base. Realms </td> 
+         <td class="confluenceTd"> methods used: getUsernames removeUser addUser getGroupNames updateUser </td> 
+         <td class="confluenceTd"> MS3, <a href="https:--glassfish.java.net-issues-show_bug.cgi-12138">issue #12138 </a> 'update-file-users' doesn't allow change of password. Either fix 'update-file-user' or provide a hidden CLI. </td> 
+         <td class="confluenceTd"> V B Kumar Jayanti </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 9 </td> 
+         <td class="confluenceTd"> ?? </td> 
+         <td class="confluenceTd"> Need to know if this realm supports user management. </td> 
+         <td class="confluenceTd"> amx:pp=/ext,type=realms </td> 
+         <td class="confluenceTd"> org.glassfish.admin.amx.base. Realms </td> 
+         <td class="confluenceTd"> method: supportsUserManagement </td> 
+         <td class="confluenceTd"> MS3, <a href="https:--glassfish.java.net-issues-show_bug.cgi-12139">issue #12139 </a> RESOLVED FIXED. This is available through REST only. </td> 
+         <td class="confluenceTd"> V B Kumar Jayanti </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 10 </td> 
+         <td class="confluenceTd"> ?? </td> 
+         <td class="confluenceTd"> Get the list of predefined auth Realm class </td> 
+         <td class="confluenceTd"> amx:pp=/ext,type=realms </td> 
+         <td class="confluenceTd"> org.glassfish.admin.amx.base.Realms </td> 
+         <td class="confluenceTd"> PredefinedAuthRealmClassNames : attributes </td> 
+         <td class="confluenceTd"> MS3, <a href="https:--glassfish.java.net-issues-show_bug.cgi-12140">issue #12140 </a> RESOLVED FIXED. This is available through REST only. </td> 
+         <td class="confluenceTd"> V B Kumar Jayanti </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 11 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> For user-friendliness UI in the JDBC and Connectors and other resources screens </td> 
+         <td class="confluenceTd"> amx:pp=/ext,type=connector-runtime-api-provider </td> 
+         <td class="confluenceTd"> org.glassfish.admin.amx.base. ConnectorRuntimeAPIProvider </td> 
+         <td class="confluenceTd"> attr: DatabaseVendorNames BuiltInCustomResources SystemConnectorsAllowingPoolCreation all methods: getConnectionDefinitionProperties AndDefaults getConnectionDefinitions getResourceAdapterConfigProps getValidationTableNames pingJDBCConnectionPool flushConnectionPool getJdbcDriverClassName getMCFConfigProps getAdminObjectConfigProps getAdminObjectInterfaceNames getAdminObjectClassNames </td> 
+         <td class="confluenceTd"> MS3, <a href="https:--glassfish.java.net-issues-show_bug.cgi-12141">issue #12141 </a> Need hidden CLI for all these. ConversionTable </td> 
+         <td class="confluenceTd"> Jagadish Ramu </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 12 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Some duckType methods used for pages under Network Config </td> 
+         <td class="confluenceTd"> amx:pp=/domain/configs/config/server-config/network-config/network-listeners, type=network-listener,name=admin-listener </td> 
+         <td class="confluenceTd"> com.sun.grizzly.config.dom. NetworkListener </td> 
+         <td class="confluenceTd"> DuckTyped methods: Protocol findHttpProtocol() Note: This may be issue, but we need this that takes PortUnification into consideration. Protocol findProtocol(); </td> 
+         <td class="confluenceTd"> MS3, <a href="https:--glassfish.java.net-issues-show_bug.cgi-12142">issue #12142 </a> </td> 
+         <td class="confluenceTd"> Justin Lee </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 13 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Update Center functions: We don't use AMX for this, but uses the JAVA API provided by groupid: com.sun.pkg artifactid: pkg-client Should we continue this practice ? </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> probably will be using the same approach as in v3. </td> 
+         <td class="confluenceTd"> Joe Di Pol, Raj Kumar </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 14 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Application Deployment and management. We don't use AMX for deployment, enable/disable etc. but depends on the deployment client: groupid: org.glassfish.deployment articfactid: deployment-client Are we going to switch to REST for this ? There are many functions depending on this, like getting the DD list, the contents of the DD for display etc. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> GUI will continue use DeploymentFacility API as in v3. Any additional support needed will be provided through DF. </td> 
+         <td class="confluenceTd"> Hong Zhang </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 15 </td> 
+         <td class="confluenceTd"> migrate-timers </td> 
+         <td class="confluenceTd"> To support migrate ejb timer. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> MS3, <a href="https:--glassfish.java.net-issues-show_bug.cgi-12280">issue #12280 </a> CLI is not implemented for 3.1 yet. After it is available, need REST API for it. </td> 
+         <td class="confluenceTd"> Marina Vatkina </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 16 </td> 
+         <td class="confluenceTd"> uptime </td> 
+         <td class="confluenceTd"> To display server uptime info to user </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> MS3, <a href="https:--glassfish.java.net-issues-show_bug.cgi-12254">issue # 12254 </a> Byron added <b>--type raw</b> option that only returns the milliseconds, without the fancy formatting. Need review to approve this change </td> 
+         <td class="confluenceTd"> Byron </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 17 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> To list the instances that uses a particular configuration </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> MS2, <a href="https:--glassfish.java.net-issues-show_bug.cgi-12255">issue #12255 </a> Jennifer wants to add an extra option <b>config_name</b> to <b>list-instances</b> instead of a new hidden command. Needs review and approval. Yes, GUI can work around this by making numerous request instead of 1 if backend prefers not to provide this. </td> 
+         <td class="confluenceTd"> Jennifer </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 18 </td> 
+         <td class="confluenceTd"> list-instances </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> MS2, <a href="https:--glassfish.java.net-issues-show_bug.cgi-12274">issue #12274 </a> output from list-instances command is not available to REST. Jason and Byron needs to work on this. However, with list-targets working, GUI will not need to call list-instances at all. Yes, GUI can work around this by making numerous request instead of 1 if backend prefers not to provide this. </td> 
+         <td class="confluenceTd"> Jason </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 02, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFish MS3 Port Unification Demo</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GlassFishMS3PortUnificationDemo-PortUnification"></a>Port Unification</h1> <p>There are 2 pieces to port unification: port redirection and multiple protocol support on one port.</p> <h4><a name="GlassFishMS3PortUnificationDemo-Redirection"></a>Redirection</h3> <p>Redirection is useful in cases where, for example, you want to serve <b>only</b> HTTPS traffic regardless of the original request. If a browser makes an HTTP request, the server can respond with a 302 response code and redirect the browser to the HTTPS version. To configure that, take the following steps:</p> 
+     <ol> 
+      <li>asadmin create-protocol http-redirect</li> 
+      <li>asadmin create-protocol-filter --protocol http-redirect --classname com.sun.grizzly.config.HttpRedirectFilter redirect-filter</li> 
+      <li>asadmin create-protocol pu-protocol</li> 
+      <li>asadmin create-protocol-finder --protocol pu-protocol --target-protocol http-listener-2 --classname com.sun.grizzly.config.HttpProtocolFinder http-finder</li> 
+      <li>asadmin create-protocol-finder --protocol pu-protocol --target-protocol http-redirect --classname com.sun.grizzly.config.HttpProtocolFinder http-redirect</li> 
+      <li>asadmin set configs.config.server-config.network-config.network-listeners.network-listener.http-listener-1.protocol=pu-protocol</li> 
+     </ol> <p>Once that is done you can check the server's response for an HTTP request and see the 302:</p> 
+     <blockquote> 
+      <p>wget -S -O /tmp/index.html --no-check-certificate <a href="http://localhost:8080">http://localhost:8080</a></p> 
+      <p>--2010-07-21 14:41:48-- <a href="http://localhost:8080/">http://localhost:8080/</a><br> Resolving localhost (localhost)... ::1, fe80::1, 127.0.0.1<br> Connecting to localhost (localhost)|::1|:8080... connected.<br> HTTP request sent, awaiting response... <br> HTTP/1.1 302 Moved Temporarily<br> Location: <a href="https://localhost:8080/">https://localhost:8080/</a><br> Connection:close<br> Cache-control: private<br> Location: <a href="https://localhost:8080/">https://localhost:8080/</a> following<br> --2010-07-21 14:41:48-- <a href="https://localhost:8080/">https://localhost:8080/</a><br> Connecting to localhost (localhost)|::1|:8080... connected.<br> WARNING: cannot verify localhost's certificate, issued by "/C=US/ST=California/L=Santa Clara/O=Oracle Corporation/OU=GlassFish/CN=localhost":<br> Self-signed certificate encountered.<br> HTTP request sent, awaiting response... <br> HTTP/1.1 200 OK<br> X-Powered-By: Servlet/3.0 JSP/2.2 (GlassFish Server Open Source Edition 3.1-SNAPSHOT Java/Apple Inc./1.6)<br> Server: GlassFish Server Open Source Edition 3.1-SNAPSHOT<br> Accept-Ranges: bytes<br> ETag: W/"5212-1278454248000"<br> Last-Modified: Tue, 06 Jul 2010 22:10:48 GMT<br> Content-Type: text/html<br> Content-Length: 5212<br> Date: Wed, 21 Jul 2010 18:41:48 GMT<br> Connection: Keep-Alive<br> Length: 5212 (5.1K) <span class="error">[text/html]</span></p>
+     </blockquote> <p>As you can see the server responds with the 302, the client gets redirected to the HTTPS listener which returns the 200 for the HTTPS request.</p> <h4><a name="GlassFishMS3PortUnificationDemo-MultipleProtocols"></a>Multiple Protocols</h3> <p>This is useful when an administrator really only wants to open one port on a firewall, e.g., but still needs to serve many different types of applications. For this, follow these steps:</p> 
+     <ol> 
+      <li>cp -v dummy-protocol.jar <em>&lt;GlassFish Home&gt;</em>/domains/domain1/autodeploy/bundles/dummy-protocol.jar</li> 
+      <li>asadmin create-protocol pu-protocol</li> 
+      <li>asadmin create-protocol pu-http-protocol</li> 
+      <li>asadmin create-http --default-virtual-server server pu-http-protocol</li> 
+      <li>asadmin create-protocol-finder --protocol pu-protocol --target-protocol pu-http-protocol --classname com.sun.grizzly.http.portunif.HttpProtocolFinder http-finder</li> 
+      <li>asadmin create-protocol pu-dummy-protocol</li> 
+      <li>asadmin create-protocol-finder --protocol pu-protocol --target-protocol pu-dummy-protocol --classname org.glassfish.devtests.web.portunif.DummyProtocolFinder dummy-finder</li> 
+      <li>asadmin create-protocol-filter --protocol pu-dummy-protocol --classname org.glassfish.devtests.web.portunif.DummyProtocolFilter dummy-filter</li> 
+      <li>asadmin set configs.config.server-config.network-config.network-listeners.network-listener.http-listener-2.protocol=pu-protocol</li> 
+      <li>asadmin set configs.config.server-config.network-config.network-listeners.network-listener.http-listener-2.enabled=true</li> 
+     </ol> <p>In this example, we're using a simple dummy protocol. To see this configuration in action, point your browser to <a href="http://localhost:8181">http://localhost:8181</a>. There you'll see the familiar default GlassFish welcome screen. To see the dummy protocol in action, telnet to localhost port 8181. At the prompt, type <em>dummy-protocol</em> and hit enter. You'll see the text <em>Dummy-Protocol-Response</em> come back. And there you have two different protocols served on the same port.</p> <p>The <span class="error">[^dummy-protocol.jar]</span> as well bash script versions (<span class="error">[^MS3PortUnifDemo.sh]</span>, <span class="error">[^MS3PortRedirectDemo.sh]</span>) of this page are attached. Note for the bash scripts to work, you'll need the nc utility. All the asadmin commands will work but the validation portions of the scripts use nc to talk to the server.</p> 
+     <div class="tabletitle"> 
+      <a name="comments"> <h4>Comments:</h2> </a> 
+     </div> 
+     <table border="0" width="100%"> 
+      <tbody>
+       <tr> 
+        <td> <a name="comment-20877781"></a> <font class="smallfont"><p>Hello</p> <p>When I execute the command <br> asadmin create-protocol-filter --protocol http-redirect --classname com.sun.grizzly.config.HttpRedirectFilter redirect-filter</p> <p>then I receive a: CLI001 Invalid Command: create-protocol-finder</p> <p>Im Using GlassFish Server Open Source Edition 3.0.1 (build 22) on Ubuntu.</p> <p>How can I solve the problem?<br> Thanks in advance</p></font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by tax789 at May 18, 2011 14:21 
+         </div> </td> 
+       </tr> 
+      </tbody>
+     </table> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 24, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

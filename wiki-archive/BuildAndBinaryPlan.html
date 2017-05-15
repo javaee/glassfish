@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : BuildAndBinaryPlan</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   
+     <ul> 
+      <li>GlassFish v2 will have one binary that contains clustering capabilities.</li> 
+      <li>Initially there may be 2 binaries to start with and will be merged soon after. Goal is to merge only is the difference in size is not more than 10 MB.</li> 
+      <li>By default, clustering features will be disabled</li> 
+      <li>You will be able to select non-clustering or clustering mode when you install. (If possible, after installation also)</li> 
+      <li>It will contain everything in Sun's EE version except for the HADB. A light weight in-memory replication may be included (based on when it comes in)</li> 
+      <li>Source for all this will be available on GF cvs</li> 
+      <li>There will be documentation and Load Balancer plugin (that can be downloaded separately) to configure a load balancer.</li> 
+      <li>There will be documentation to install, configure node-agents, instances, clusters, etc.</li> 
+     </ul> <p>Unresolved issues:</p> 
+     <ul> 
+      <li>When can users switch between non-clustering to clustering mode? during installation or after also?</li> 
+     </ul> <p><b>GlassFish Workspace Meeting Minutes:</b> </p> <p>27 July 2006:</p> <p>SDK Meeting Attendees: </p> 
+     <ul> 
+      <li>Srikanth, Dhiru, Kedar, Pankaj, Snjezana, Lidia, Dinesh</li> 
+     </ul> <p>Agenda:</p> 
+     <ul> 
+      <li>redcvs CVS status for EE modules</li> 
+      <li>9.1 workspace : moving EE modules on java.net with few exceptions in admin-ee, appserv-core-ee</li> 
+      <li>Any packager,installer changes for 9.1</li> 
+     </ul> <p>Minutes:</p> 
+     <ul> 
+      <li>Moving 8 EE modules to java.net repository from redcvs, appserv-core-ee, admin-ee will have some code on redcvs as that's not open source code for HADB, jes-mf, cms dependencies</li> 
+      <li>Kedar mentioned about cleaning up submodules and have all source code from top-level modules under src/java with different packages instead of different submodules.</li> 
+      <li>We need to have the workspace ready for pushing out to java.net by next week, so we can do submodules refactoring later on once we push sources out on java.net.</li> 
+      <li>No admingui, cli, installer-packager changes for milestone 1</li> 
+      <li>How to preserve CVS history check with Raja for RCS,v files.</li> 
+      <li>Have 64-bit binaries separate, not for milestone 1 but later.</li> 
+      <li>Pankaj- aslb bundle will be separate downloadable for milestone 1 and will be working on open sourcing lb code later.</li> 
+     </ul> 
+     <hr> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20873930/21365213.pdf">AS9.1Workspace.html.pdf</a> (application/pdf) 
+      <br> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:48.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

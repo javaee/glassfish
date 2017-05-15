@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : Javaee6wizards</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="Javaee6wizards-JavaEE6WizardsforEclipse"></a>Java EE 6 Wizards for Eclipse </h3> <p>GlassFish Tools bundle v1.2 and our GlassFish plugin will add support for some Java EE 6 wizards. While the current Eclipse 3.5.x does not support Java EE 6 (it will be in Eclipse 3.6, possibly next year), our GlassFish server adapter can deploy and run EE 6 type of applications. It provides the entire set of Java EE 6 APIs to a project, with javadoc code completion, It is possible to create new wizards that would check if the server target is GlassFish v3 and to the best we can do, create Java EE 6 artifacts in the projects. It might not be optimal (i.e current Eclipse could expect some changes in web.xml while our wizards can ignore entirely web.xml editing. </p> <h4><a name="Javaee6wizards-Listofpossiblewizards"></a>List of possible wizards</h2> <h4><a name="Javaee6wizards-Servlet3.0%28usingannotation%29andwithoutweb.xmlmodification"></a>Servlet 3.0 (using annotation) and without web.xml modification</h1> 
+     <ol> 
+      <li>Status: p0 done</li> 
+      <li>P1: possibly better tuning in the generated code (i.e Like Nb does, with some sample code in a comment to actually do stuff in the doget() call - done</li> 
+     </ol> <h4><a name="Javaee6wizards-AsyncSupportforServletsandFilters"></a>Async Support for Servlets and Filters</h1> 
+     <ol> 
+      <li>Status: p1</li> 
+      <li>Info from Rajiv (spec lead): When you add a new Servlet, there should be an option (possibly a checkbox) to say if a servlet is an async servlet. When marked true, the @WebServlet should have the element asyncSupported=true.</li> 
+     </ol> <p>In addition to this, when selecting the async option, we should ask the developer if they would like to add an AsyncListener as well to the project and generate a skeleton AsyncListener</p> <p>Same for Filter. @WebFilter(..., asyncSupported=true). For Filter in the dialog that says add filter mappings, there is also the target for dispatch conditions. We need to add ASYNC dispatch type to that list of checkboxes. Also I don't know if this possible or not, but the entire request processing chain must be async to be able to support async, So for example if you have a filter and a servlet, then to be able to support async, both the filter and servlet must support async, otherwise you cannot support async. It would be nice if NB could detect that early in the cycle and let the developer know that everything in the request processing cycle must be async enabled. This is more of a runtime failure but early indications to the developer will be good.</p> 
+     <ol> 
+      <li>Code snippet (Simple hello world response asynchronously sent from a separate thread):</li> 
+     </ol> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@WebServlet(urlPatters="/foo", asyncSupported=true)
+public class MyServlet extends HttpServlet {
+   public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+              if (!req.isAsyncSupported()) {
+           throw new ServletException("Async not supported when it should");
+       }
+
+       final AsyncContext ac = req.startAsync();
+
+       Timer asyncTimer = new Timer("MyTimer", true);
+       asyncTimer.schedule(
+           new TimerTask() {
+               @Override
+               public void run() {
+                   try {
+                       ac.getResponse().getWriter().println("Hello world");
+                       ac.complete();
+                   } catch (IOException ioe) {
+                       ioe.printStackTrace();
+                   }
+               }
+           },
+           5000);
+        }
+}
+// Asynch listener: 
+MyAsyncListener implements AsyncListener {
+   public void onComplete(...) {
+   }
+   public void onTimeout(...) {
+
+   }
+   public void on Error(...) {
+
+   }
+}</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="Javaee6wizards-simpleweb.xmlwizard"></a>simple web.xml wizard</h1> 
+     <ol> 
+      <li>Status: p1</li> 
+      <li>use case is if the project does not have a web.xml but the developer wants to create one...</li> 
+     </ol> <h4><a name="Javaee6wizards-Filter3.0%28usingannotation%29andwithoutweb.xmlmodification"></a>Filter 3.0 (using annotation) and without web.xml modification</h1> 
+     <ol> 
+      <li>Status: p0 done</li> 
+      <li>Code snippet:</li> 
+     </ol> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">...
+@WebFilter(filterName="NewSimpleFilter", urlPatterns={"/*"})
+public class NewSimpleFilter implements Filter {
+
+...
+
+//see complete example in NB generator (Web-&gt;Filter)</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="Javaee6wizards-WebApplicationServletListener3.0%28usingannotation%29andwithoutweb.xmlmodification"></a>Web Application ServletListener 3.0 (using annotation) and without web.xml modification</h1> 
+     <ol> 
+      <li>Status: p0 done</li> 
+      <li>See Nb wizard (Web-&gt;Web App Listener). It should ask for interfaces to implement (Context Listener, HTTP listener, etc) and avoid web.xml changes.</li> 
+     </ol> <h4><a name="Javaee6wizards-EJB3.1withstateful%2Cstateless%2Corsingletonandcanhavelocal%2Fremote%2Fnone%2Fboth%2CincludinginWebProjects"></a>EJB 3.1 with stateful, stateless, or singleton and can have local/remote/none/both, including in Web Projects</h1> 
+     <ol> 
+      <li>Status: p0 done</li> 
+      <li>Notes: To use, the project must be a web or ejb project.</li> 
+     </ol> <p>The session bean wizard lets you create stateful, stateless, or singleton and can have local/remote/none/both. The main differences b/w that wizard and the standard eclipse one:<br> a) singleton is offered<br> b) local is off by default, no-interface is on instead<br> c) allowed to do in web project<br> d) second page of the wizard is missing a few sections - talked to Ken S. and he said they were not needed (mapped name, ejb 2.1 section). </p> <h4><a name="Javaee6wizards-EJB3.1@LocalBeansupport"></a>EJB 3.1 @LocalBean support</h1> 
+     <ol> 
+      <li>Status: p1 done</li> 
+     </ol> <h4><a name="Javaee6wizards-EJBTimerwizard%28simple%2Cexposingonetimemethodasasample%29"></a>EJB Timer wizard (simple, exposing one time method as a sample)</h1> 
+     <ol> 
+      <li>Status: p0 done</li> 
+      <li>Goal is to exposed some type of notion of the EJB timer concept</li> 
+      <li>Code generation can be as simple as a sample, printing something the GlassFish log file</li> 
+     </ol> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">import javax.ejb.Schedule;
+import javax.ejb.Stateless;
+import javax.ejb.Timer;
+@Stateless  public class MyEJBSchedule { 
+    @SuppressWarnings("unused")
+    @Schedule(second="*/10", minute="*", hour="8-23", dayOfWeek="Mon-Fri", info = "MyTimer")
+    private void scheduledtimeout(Timer t) {
+        System.out.println("@Schedule called at:  "+ new java.util.Date());
+    }     
+}</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ol> 
+      <li>The wizard could ask for some parameters to better control the output of the @Schedule annotation (cron format)</li> 
+     </ol> <h4><a name="Javaee6wizards-webfragment.xmlinlibraryproject"></a>web-fragment.xml in library project</h1> <h4><a name="Javaee6wizards-JavaEE6sampleprojects%28seewhatNbisreusingintermsofsamples%29"></a>Java EE 6 sample projects (see what Nb is reusing in terms of samples)</h1> 
+     <ol> 
+      <li>Status: p1</li> 
+      <li>first step is to "eclipsetize" the EE 6 samples from <a href="https://glassfish-samples.java.net/">https://glassfish-samples.java.net/</a> (see src code), then to provide a build step and an Eclipse plugin to expose them as Eclipse Samples.</li> 
+     </ol> <h4><a name="Javaee6wizards-JAXRSwizards%28noneedtochangeweb.xml%29%28reuse%2FextendwhatisthereinMetroPlugin%3F%29"></a>JAX RS wizards (no need to change web.xml) (reuse/extend what is there in Metro Plugin?)</h1> 
+     <ol> 
+      <li>Status: p0 - all 3 patterns done 
+       <ol> 
+        <li>P0: Creates RESTful web service using one of the following patterns: simple root resource, container-item, client-controlled container-item.</li> 
+       </ol> </li> 
+      <li>For example, a simple root resource rs ws:</li> 
+     </ol> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">package foo;
+
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.GET;
+import javax.ws.rs.Produces;
+
+
+@Path("generic")
+public class GenericResource {
+    @Context
+    private UriInfo context;
+    public GenericResource() {
+    }
+
+    @GET
+    @Produces("application/xml")
+    public String getXml() {
+        throw new UnsupportedOperationException(); //TODO return proper representation object
+    }
+    @PUT
+    @Consumes("application/xml")
+    public void putXml(String content) {
+    }
+}</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ol> 
+      <li>P1: Creates JavaScript client stubs for RESTful web services.</li> 
+      <li>P1: Add the RS tester client web app (html +JS from NetBeans inside Eclipse) <h4><a name="Javaee6wizards-JAXRSfromEntitybeans%3FIsitcomplextodoviaEclipseMetamodel%3F"></a>JAX RS from Entity beans? Is it complex to do via Eclipse Meta model?</h1></li> 
+      <li>Status: p1</li> 
+     </ol> <h4><a name="Javaee6wizards-JSF2.0%3Axhtmlwizard%2Cfacelet%2Cfacelettaglib%2Ccompositecomponent%2C...NetBeans6.8JSFpage"></a>JSF 2.0: xhtml wizard, facelet, facelet taglib, composite component,...<a href="http://wiki.netbeans.org/JEE6IntegrationJSF">NetBeans 6.8 JSF page</a>. Eclipse Facelet support is still in incubation <a href="http://www.eclipse.org/webtools/incubator/proposals/JSF%20Facelets%20Tools%20Proposal.html">link</a> so we will need to check the status and possibly add this module to our bundle.</h1> 
+     <ol> 
+      <li>P2: Based on current discussion, this is ongoing work done by the Oracle guys inside Eclipse, but still in incomplete incubation mode, to be done for Next June 2010, not before. We might have to wait for that...</li> 
+      <li>P0: but for now, the minimum thing we can do is to provide a simple xhtml file wizard (it does not exist yet in Eclipse WTP) that creates some simple xhtml file (and check if xhtml1-strict.dtd DTD is registered )</li> 
+     </ol> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!--
+Simple XHTML file
+--&gt;
+&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"&gt;
+&lt;html xmlns="http://www.w3.org/1999/xhtml"&gt;
+    &lt;head&gt;
+        &lt;meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/&gt;
+        &lt;title&gt;TODO supply a title&lt;/title&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;p&gt;
+            TODO write content
+        &lt;/p&gt;
+    &lt;/body&gt;
+&lt;/html&gt;
+{code}}
+h1. P0: More complex xhtml referring to JSF and a template.xhtml (to create as well)...(Need to check for xhtml1-transitional.dtd presence?).</pre> 
+       </div> 
+      </div>
+     </div> <p>index.xhtml:<br> &lt;?xml version='1.0' encoding='UTF-8' ?&gt; <br> &lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"&gt;<br> &lt;html xmlns="http://www.w3.org/1999/xhtml"<br> xmlns:ui="http://java.sun.com/jsf/facelets"<br> xmlns:h="http://java.sun.com/jsf/html"<br> xmlns:f="http://java.sun.com/jsf/core"&gt;<br> &lt;h:body&gt;</p> <p> This text above will not be displayed.</p> <p> &lt;ui:composition template="/template.xhtml"&gt;</p> <p> This text will not be displayed.</p> <p> &lt;ui:define name="title"&gt;<br> Facelets<br> &lt;/ui:define&gt; <br> This text will also not be displayed.</p> <p> &lt;ui:define name="body"&gt;<br> Hello from Facelet !<br> &lt;/ui:define&gt;</p> <p> This text will not be displayed.</p> <p> &lt;/ui:composition&gt;</p> <p> This text below will also not be displayed.</p> <p> &lt;/h:body&gt;<br> &lt;/html&gt;</p> <p>--------------------</p> <p>template.xhtml is:</p> <p>&lt;?xml version='1.0' encoding='UTF-8' ?&gt; <br> &lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"&gt;<br> &lt;html xmlns="http://www.w3.org/1999/xhtml"<br> xmlns:h="http://java.sun.com/jsf/html"<br> xmlns:ui="http://java.sun.com/jsf/facelets"&gt;<br> &lt;h:head&gt;<br> &lt;h:outputStylesheet name="css/default.css"/&gt;<br> &lt;meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /&gt;<br> &lt;title&gt;Facelets - Template&lt;/title&gt;<br> &lt;/h:head&gt;</p> <p> &lt;body&gt;<br> &lt;h1&gt;<br> &lt;ui:insert name="title"&gt;Default Title&lt;/ui:insert&gt;<br> &lt;/h1&gt;<br> &lt;p&gt;<br> &lt;ui:insert name="body"&gt;Default Body&lt;/ui:insert&gt;<br> &lt;/p&gt;<br> &lt;/body&gt;</p> <p>&lt;/html&gt;<br> {code}}</p> <h4><a name="Javaee6wizards-BeanValidationwizard"></a>Bean Validation wizard</h1> <h4><a name="Javaee6wizards-%3FMavenprojecttargetingJavaEE6%3Fprototypepostedontheweb."></a>? Maven project targeting Java EE 6? prototype posted on the web.</h1> 
+     <ol> 
+      <li>Status: P1</li> 
+      <li>The key here is to be able to generate a default maven project with this type of pom.xml (EE 6 war)</li> 
+     </ol> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"&gt;
+  &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+  &lt;groupId&gt;com.mycompany&lt;/groupId&gt;
+  &lt;artifactId&gt;mavenproject1&lt;/artifactId&gt;
+  &lt;packaging&gt;war&lt;/packaging&gt;
+  &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
+  &lt;name&gt;mavenproject1 Java EE 6 Webapp&lt;/name&gt;
+  &lt;url&gt;http://maven.apache.org&lt;/url&gt;
+  &lt;repositories&gt;
+      &lt;repository&gt;
+          &lt;id&gt;java.net2&lt;/id&gt;
+          &lt;name&gt;Repository hosting the jee6 artifacts&lt;/name&gt;
+          &lt;url&gt;http://download.java.net/maven/2&lt;/url&gt;
+      &lt;/repository&gt;
+  &lt;/repositories&gt;
+  &lt;dependencies&gt;
+    &lt;dependency&gt;
+      &lt;groupId&gt;javax&lt;/groupId&gt;
+      &lt;artifactId&gt;javaee-web-api&lt;/artifactId&gt;
+      &lt;version&gt;6.0-SNAPSHOT&lt;/version&gt;
+      &lt;scope&gt;provided&lt;/scope&gt;
+    &lt;/dependency&gt;
+
+    &lt;dependency&gt;
+      &lt;groupId&gt;junit&lt;/groupId&gt;
+      &lt;artifactId&gt;junit&lt;/artifactId&gt;
+      &lt;version&gt;3.8.2&lt;/version&gt;
+      &lt;scope&gt;test&lt;/scope&gt;
+    &lt;/dependency&gt;
+    
+  &lt;/dependencies&gt;
+  &lt;build&gt;
+    &lt;plugins&gt;
+      &lt;plugin&gt;
+        &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
+        &lt;artifactId&gt;maven-compiler-plugin&lt;/artifactId&gt;
+        &lt;version&gt;2.0.2&lt;/version&gt;
+        &lt;configuration&gt;
+          &lt;source&gt;1.6&lt;/source&gt;
+          &lt;target&gt;1.6&lt;/target&gt;
+        &lt;/configuration&gt;
+      &lt;/plugin&gt;
+      &lt;plugin&gt;
+        &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
+        &lt;artifactId&gt;maven-war-plugin&lt;/artifactId&gt;
+        &lt;version&gt;2.1-beta-1&lt;/version&gt;
+        &lt;configuration&gt;
+          &lt;failOnMissingWebXml&gt;false&lt;/failOnMissingWebXml&gt;
+        &lt;/configuration&gt;
+      &lt;/plugin&gt;
+    &lt;/plugins&gt;
+    &lt;finalName&gt;mavenproject1&lt;/finalName&gt;
+  &lt;/build&gt;
+&lt;/project&gt;</pre> 
+       </div> 
+      </div>
+     </div> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">For a Java EE 6 EJB Module project:
+
+&lt;project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"&gt;
+  &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+  &lt;groupId&gt;com.mycompany&lt;/groupId&gt;
+  &lt;artifactId&gt;mavenproject2&lt;/artifactId&gt;
+  &lt;packaging&gt;ejb&lt;/packaging&gt;
+  &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
+  &lt;name&gt;mavenproject2 Java EE 6 EJB&lt;/name&gt;
+  &lt;url&gt;http://maven.apache.org&lt;/url&gt;
+  &lt;dependencies&gt;
+
+    &lt;dependency&gt;
+      &lt;groupId&gt;javax&lt;/groupId&gt;
+      &lt;artifactId&gt;javaee-api&lt;/artifactId&gt;
+      &lt;version&gt;6.0-SNAPSHOT&lt;/version&gt;
+      &lt;scope&gt;provided&lt;/scope&gt;
+    &lt;/dependency&gt;
+
+    &lt;dependency&gt;
+      &lt;groupId&gt;junit&lt;/groupId&gt;
+      &lt;artifactId&gt;junit&lt;/artifactId&gt;
+      &lt;version&gt;3.8.2&lt;/version&gt;
+      &lt;scope&gt;test&lt;/scope&gt;
+    &lt;/dependency&gt;
+    
+  &lt;/dependencies&gt;
+
+  &lt;repositories&gt;
+      &lt;repository&gt;
+          &lt;id&gt;java.net2&lt;/id&gt;
+          &lt;name&gt;Java.Net Maven2 Repository, hosts the javaee-api dependency&lt;/name&gt;
+          &lt;url&gt;http://download.java.net/maven/2&lt;/url&gt;
+      &lt;/repository&gt;
+  &lt;/repositories&gt;
+
+  &lt;build&gt;
+    &lt;plugins&gt;
+      &lt;plugin&gt;
+        &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
+        &lt;artifactId&gt;maven-compiler-plugin&lt;/artifactId&gt;
+        &lt;version&gt;2.0.2&lt;/version&gt;
+        &lt;configuration&gt;
+          &lt;source&gt;1.6&lt;/source&gt;
+          &lt;target&gt;1.6&lt;/target&gt;
+        &lt;/configuration&gt;
+      &lt;/plugin&gt;
+      &lt;plugin&gt;
+        &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
+        &lt;artifactId&gt;maven-ejb-plugin&lt;/artifactId&gt;
+        &lt;version&gt;2.1&lt;/version&gt;
+        &lt;configuration&gt;
+          &lt;ejbVersion&gt;3.1&lt;/ejbVersion&gt;
+        &lt;/configuration&gt;
+      &lt;/plugin&gt;
+    &lt;/plugins&gt;
+    &lt;finalName&gt;mavenproject2&lt;/finalName&gt;
+  &lt;/build&gt;
+&lt;/project&gt;</pre> 
+       </div> 
+      </div>
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 02, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

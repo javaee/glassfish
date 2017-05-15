@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : CDIDevTests</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="CDIDevTests-ContextsandDependencyInjectionDeveloperTests"></a>Contexts and Dependency Injection Developer Tests</h1> <p>This page lists the ideas for developer tests that are to be developed for <span class="error">[3.1|^3.1CDI]</span></p> <h4><a name="CDIDevTests-CDIusecases"></a>CDI usecases</h2> 
+     <ul> 
+      <li>Test all these unit tests in full profile and web-profile(wherever applicable)</li> 
+      <li>support for dependency injection into various kinds of beans(ManagedBeans, EJB Singleton Beans, SFSB, MDB, Interceptors, Servlets, Servlet Filters, JAX-WS service endpoints, JAX-WS handlers, JSP tag handlers, JSP Tab libraries, handlers)</li> 
+      <li>Typesafe dependency resolution- test straightforward usecases of Qualifiers, Alternatives and test ambiguous and unsatisfied dependency cases (test exactlt on Bean that satisfies each InjectionPoint is allowed)</li> 
+      <li>Test support for detection of unproxyable dependencies</li> 
+      <li>Test availability of default API types</li> 
+      <li>Test specification of API type via @Typed</li> 
+      <li>Programmatic lookup of a contextual instance - Test @Inject Instance&lt;T&gt; with qualifiers(with and without members), scopes etc</li> 
+      <li>test expose a JDK class, a JPA entity as a Bean using Producer methods</li> 
+      <li>Test @New in producer methods</li> 
+      <li>Test Disposer methods(SFSB @Remove methods as well)</li> 
+      <li>Interceptors – (test @AroundInvoke, @PostConstruct), test custom Interceptors</li> 
+      <li>Test ordering of Interceptors</li> 
+      <li>Test InterceptorBindingType inheritance(stacking of InterceptorBinding)</li> 
+      <li>Test for legacy support of @Interceptors(...)</li> 
+      <li>Test various kinds of Decorators and Interceptors ordering for a Bean</li> 
+      <li>Test Decorators: Delegate Injection Point</li> 
+      <li>Test Decorator ordering</li> 
+      <li>Test event producer, consumers where producers and consumers are in different type of Beans, different scopes etc. Test conditional observers, transactional observers(Rollback, Commit, transaction begin/end)</li> 
+      <li>Test multiple stereotypes defined in a Bean(see how conflicts are handled)</li> 
+      <li>Test overriding a stereotype in a Bean</li> 
+      <li>Test Stereotype stacking</li> 
+      <li>Test @Model in a JSF sample</li> 
+      <li>@Specializes and @Alternatives inheritance usecases</li> 
+      <li>Test handling of @Named in @Specializes</li> 
+      <li>Test use of Java EE component environment resources as "resources" (producer field referring to a java:/comp/env resource)</li> 
+      <li>Test availability of Built-in beans(UserTransaction, Principal, ValidatorFactory, Validator)</li> 
+      <li>Test lifecycle methods on ManagedBeans ( @PostConstruct , @PreDestroy )</li> 
+      <li>Java EE component environment injection in ManagedBeans</li> 
+      <li>Test Dependency injection in MDB</li> 
+      <li>Test CDI Interceptors on MDBs</li> 
+      <li>Test Portable extensions(- registering a framework Bean, wrapping an annotated type, adding InjectionTarget, custom scopes)</li> 
+      <li>Test availability of java:comp/BeanManager in an application component</li> 
+      <li>Test built-in scopes (Request, Session, Conversation, Application) scopes</li> 
+      <li>Test use of CDI in application clients, Java SE, embedded modes</li> 
+      <li>Test a complete/comprehensive EE6 web application sample that employs JAX-RS, CDI, Servlet 3, EJB3.1, JPA2, JSF2 like the one <a href="http://blogs.oracle.com/arungupta/entry/totd_124_using_cdi_jpa">here</a></li> 
+     </ul> <h4><a name="CDIDevTests-Weldintegrationspecificusecases"></a>Weld-integration specific usecases</h2> 
+     <ul> 
+      <li>Ensure tests exists that covers all integration points(JSF, EJB, Transactions, JPA, JNDI) in the Weld SPI.</li> 
+      <li>Make existing Weld samples(Weld number-guess and translator) as unit tests.</li> 
+      <li>Test existing portable Weld extensions such as Weld Logger, Weld wicket extension work in GlassFish</li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 02, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:43.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

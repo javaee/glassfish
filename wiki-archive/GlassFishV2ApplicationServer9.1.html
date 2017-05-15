@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFishV2ApplicationServer9.1</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GlassFishV2ApplicationServer9.1-DomainConfigurationManagementforGlassFishV2%28Applicationserver9.1%29"></a>Domain Configuration Management for GlassFish V2 (Application server 9.1)</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#GlassFishV2ApplicationServer9.1-DomainConfigurationManagementforGlassFishV2%28Applicationserver9.1%29">Domain Configuration Management for GlassFish V2 (Application server 9.1)</a></li> 
+       <ul> 
+        <li><a href="#GlassFishV2ApplicationServer9.1-Dates">Dates</a></li> 
+        <li><a href="#GlassFishV2ApplicationServer9.1-DynamicReconfiguration">Dynamic Reconfiguration</a></li> 
+        <li><a href="#GlassFishV2ApplicationServer9.1-Changestothedefaultconfiguration">Changes to the default configuration</a></li> 
+       </ul> 
+      </ul>
+     </div> 
+     <ul> 
+      <li><b>Sreeram Duvur (sduv@dev.java.net) and Kedar Mhaswade (km@dev.java.net)</b> will oversee the changes with overall application server perspective.</li> 
+      <li>The version before <b>9.1 was <a href="http://www.glassfishwiki.org/gfwiki/attach/GlassFishAdministrationPages/domain_1_2.html">sun-domain_1_2.dtd</a>.</b></li> 
+      <li>We moved to <b><a href="http://wiki.glassfish.java.net/gfwiki/attach/GlassFishConfigurationManagement/sun-domain_1_3.dtd">sun-domain_1_3.dtd</a></b> for this release.</li> 
+      <li>Here is the list of changes approved and versions of the DTD's generated: <a href="SunDomainResourecesDTDVersionsForV2.html" title="SunDomainResourecesDTDVersionsForV2">SunDomainResourecesDTDVersionsForV2</a>.</li> 
+     </ul> <h4><a name="GlassFishV2ApplicationServer9.1-Dates"></a>Dates</h2> <p>The cutoff dates for accepting any config changes are as follows. If you want your changes in the config by a certain milestone, please plan accordingly. The buffer is required See the milestone document at: <a href="./Milestones.html">http://www.glassfishwiki.org/gfwiki/Wiki.jsp?page=Milestones</a>.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Milestone </th> 
+         <th class="confluenceTh"> Config Cutoff Date (Proposed Milestone Date) </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd"> *10 Sept 2006 (26 Sept 2006)* </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3 </td> 
+         <td class="confluenceTd"> *30 Oct 2006 (14 Nov2006)* </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Id </th> 
+         <th class="confluenceTh"> Element/XPath</th> 
+         <th class="confluenceTh"> Requester ID, e-mail</th> 
+         <th class="confluenceTh"> Date </th> 
+         <th class="confluenceTh"> Comments (links to other places) </th> 
+         <th class="confluenceTh"> CLI/AMX support needed (Y/N/NA)?</th> 
+         <th class="confluenceTh"> Dynamic reconfiguration needed (Y/N/NA)?</th> 
+         <th class="confluenceTh">Target milestone, release</th> 
+         <th class="confluenceTh"> Status (D/A/I/R)? </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> Entity "object-type" needs to have additional enum value: "externally-managed" </td> 
+         <td class="confluenceTd"> Binod, binod@dev.java.net </td> 
+         <td class="confluenceTd"> 08 Aug 2006 </td> 
+         <td class="confluenceTd"> <a href="ExternallyManagedApplication.html" title="ExternallyManagedApplication">ExternallyManagedApplication</a> </td> 
+         <td class="confluenceTd"> NA </td> 
+         <td class="confluenceTd"> NA </td> 
+         <td class="confluenceTd"> Milestone 2, 9.1 </td> 
+         <td class="confluenceTd">*R*. We have decided to do it differently. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd"> Description change - attribute "poolname" of connector-resource and jdbc-resource </td> 
+         <td class="confluenceTd"> Jagadish.Ramu, jr158900@dev.java.net </td> 
+         <td class="confluenceTd"> 18 Aug 2006 </td> 
+         <td class="confluenceTd"> <a href="ClusteredPoolDTD.html" title="ClusteredPoolDTD">ClusteredPoolDTD</a> <a href="http:--www.glassfishwiki.org-gfwiki-attach-OnePagersOrFunctionalSpecs-ConnectionPoolOnePager.html">Con-Pool-Onepager </a> </td> 
+         <td class="confluenceTd"> Y </td> 
+         <td class="confluenceTd"> Y </td> 
+         <td class="confluenceTd"> Milestone 2, 9.1 </td> 
+         <td class="confluenceTd">*R*. We are not doing clustered pools for this release. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3 </td> 
+         <td class="confluenceTd"> Pooling Infrastructure Enhancements </td> 
+         <td class="confluenceTd"> Jagadish Ramu, jr158900@dev.java.net </td> 
+         <td class="confluenceTd"> 25 Sep 2006 </td> 
+         <td class="confluenceTd"> <a href="http:--www.glassfishwiki.org-gfwiki-attach-OnePagersOrFunctionalSpecs-DTD-Changes-Connection-Pool.html">FinalDTDChanges </a> </td> 
+         <td class="confluenceTd"> Y, one caveat: No additional CLI support. Additional attributes suggested will be set using the dotted names. </td> 
+         <td class="confluenceTd"> Y </td> 
+         <td class="confluenceTd"> Milestone 3, 9.1 </td> 
+         <td class="confluenceTd"> *I*. Will be done by 29 Oct 2006. <a href="FirstCheckinForDomainDtd13.html" title="FirstCheckinForDomainDtd13">FirstCheckinForDomainDtd13</a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4 </td> 
+         <td class="confluenceTd"> Addition of "extension-module" element to "application" </td> 
+         <td class="confluenceTd"> Hong Zhang, hzhang_jn@dev.java.net </td> 
+         <td class="confluenceTd"> 10 Oct 2006 </td> 
+         <td class="confluenceTd"> <a href="https:--glassfish.java.net-issues-show_bug.cgi-886">Issue 886 </a> </td> 
+         <td class="confluenceTd"> Y, one caveat – there won't be any additional CLI support for this. </td> 
+         <td class="confluenceTd"> Y </td> 
+         <td class="confluenceTd"> Milestone 3, 9.1 </td> 
+         <td class="confluenceTd"> *I*. Need for extensibility. Will be done by 29 Oct 2006. <a href="FirstCheckinForDomainDtd13.html" title="FirstCheckinForDomainDtd13">FirstCheckinForDomainDtd13</a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5 </td> 
+         <td class="confluenceTd"> Support object-type for lifecycle modules </td> 
+         <td class="confluenceTd"> Binod, binod@dev.java.net </td> 
+         <td class="confluenceTd"> 11 Oct 2006 </td> 
+         <td class="confluenceTd"> <a href="ObjectTypeForLifecycleModules.html" title="ObjectTypeForLifecycleModules">ObjectTypeForLifecycleModules</a> </td> 
+         <td class="confluenceTd"> NA </td> 
+         <td class="confluenceTd"> NA </td> 
+         <td class="confluenceTd"> Milestone 3, 9.1 </td> 
+         <td class="confluenceTd">*I*. Will be done to support the addons for EE. Will be done by 29 Oct 2006. <a href="FirstCheckinForDomainDtd13.html" title="FirstCheckinForDomainDtd13">FirstCheckinForDomainDtd13</a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6 </td> 
+         <td class="confluenceTd"> Make jbi-enabled attribute on element web-service-endpoint "false" rather than "true". </td> 
+         <td class="confluenceTd"> Vikas Avasthi/ Kedar Mhaswade </td> 
+         <td class="confluenceTd"> 31 Mar 2007 </td> 
+         <td class="confluenceTd"> This was more of a <a href="http:--bugs.sun.com-bugdatabase-view_bug.do?bug_id=6541363">bug fix </a> </td> 
+         <td class="confluenceTd"> NA </td> 
+         <td class="confluenceTd"> NA </td> 
+         <td class="confluenceTd"> BETA-2 </td> 
+         <td class="confluenceTd"> *I*. See the <a href="http://wiki.glassfish.java.net/gfwiki/attach/GlassFishConfigurationManagement/sun-domain_1_3Documentation.html#web-service-endpoint">element </a>. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 7 </td> 
+         <td class="confluenceTd"> Deprecate security-service@anonymous-role and http-protocol@default/forced-response-type </td> 
+         <td class="confluenceTd"> Kedar Mhaswade/JeanFrancois/Shing Wai Chan </td> 
+         <td class="confluenceTd"> 23 May 2007 </td> 
+         <td class="confluenceTd"> This was more of a legacy <a href="https:--glassfish.java.net-issues-show_bug.cgi-2293">bug fix </a> </td> 
+         <td class="confluenceTd"> NA </td> 
+         <td class="confluenceTd"> NA </td> 
+         <td class="confluenceTd"> FCS </td> 
+         <td class="confluenceTd"> *I*. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>&lt;a name="dynamicreconfig"/&gt;</p> <h4><a name="GlassFishV2ApplicationServer9.1-DynamicReconfiguration"></a>Dynamic Reconfiguration</h2> <p>Various changes are dynamically applicable to the runtime. For this release, following settings are now dynamically applicable.<br> The configuration infrastructure was already providing events. It is now that most of the listeners have now started applying those changes dynamically.</p> <p><b>Note: All developers are urged to add relevant information here, so that it can be documented appropriately.</b></p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">ID </th> 
+         <th class="confluenceTh"> XPath </th> 
+         <th class="confluenceTh"> Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 0 </td> 
+         <td class="confluenceTd"> <a href="http:--www.glassfishwiki.org-gfwiki-attach-GlassFishAdministrationPages-sun-domain_1_3Documentation.html#http-service">http-service </a> </td> 
+         <td class="confluenceTd"> All http-service attributes and subelements are dynamically reconfigurable </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd"> <a href="http:--www.glassfishwiki.org-gfwiki-attach-GlassFishAdministrationPages-sun-domain_1_3Documentation.html#message-security-config">security-service/message-security-config </a> </td> 
+         <td class="confluenceTd">Message security config events are now generated and listened to by the listeners. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV2ApplicationServer9.1-Changestothedefaultconfiguration"></a>Changes to the default configuration</h2> <p>It was thought that the current default configuration of GlassFish for all the profiles is not the best for Grizzly to perform. Jeanfrancois has come up with a list of configurations that make Grizzly perform better. There is a confusion among developers and users alike, whether these should make it to the default configuration of the server in all the profiles or whether there should be a separate profile that makes Grizzly perform better. <br> See</p> 
+     <ul> 
+      <li><a href="http://weblogs.java.net/blog/jfarcand/archive/2007/01/configuring_gri.html">Section I</a></li> 
+      <li><a href="http://weblogs.java.net/blog/jfarcand/archive/2007/03/configuring_gri_2.html">Section I</a></li> 
+     </ul> <p>for some background.</p> <p>The following table will decide what we do with the settings proposed here. The final decision, I hope would be to fold<br> some of the settings into the default ones and leave the rest for a different profile.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">ID </th> 
+         <th class="confluenceTh">Setting </th> 
+         <td class="confluenceTd"> Current Default </td> 
+         <td class="confluenceTd">Grizzly Optimization Suggestion </td> 
+         <td class="confluenceTd"> Overall Recommendation (Add to default, don't add to default) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 0 </td> 
+         <td class="confluenceTd"> JVM type </td> 
+         <td class="confluenceTd"> --client for developer profile and cluster profiles, --server for enterprise profile. The reason is that client VM is suited best for frequent start/stops which are typical of developers, whereas for enterprises, it is not typical. Also client VM is supposed to come up faster. Apparently, Grizzly wants server VM all the time. </td> 
+         <td class="confluenceTd"> Grizzly performs better with server VM, so the recommendation here is that for Grizzly to perform well, we should always use server VM and apparently, it makes a "huge" difference. </td> 
+         <td class="confluenceTd"> ? </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> JVM parameters, Sun VM specific </td> 
+         <td class="confluenceTd"> We use minimum JVM options by default, these are the ones that we use: -XX:MaxPermSize=192m, -XX:NewRatio=2, -Xmx512m, -Dsun.rmi.dgc.server.gcInterval=3600000, by default. </td> 
+         <td class="confluenceTd"> The recommended ones are: XX:+AggressiveHeap -Xmx3500m -Xms3500m -Xss128k -XX:+DisableExplicitGC </td> 
+         <td class="confluenceTd"> ? </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd"> Quick startup </td> 
+         <td class="confluenceTd"> This is enabled for developer profile, disabled for cluster and enterprise profiles </td> 
+         <td class="confluenceTd"> Grizzly prefers if the Quick startup is completely disabled, by default. The effect of QS enablement is not as bad as it used to be, though. </td> 
+         <td class="confluenceTd"> We use Quick Startup only for Client VM. See <a href="https://github.com/javaee/glassfish/issues/2884">Issue 2884 </a>. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3 </td> 
+         <td class="confluenceTd"> Request-Processing Threads </td> 
+         <td class="confluenceTd"> The range is from 2 to 20, by default. Thus, when server starts up, 2 request processing threads are started. The maximum number of request processing threads is 20. </td> 
+         <td class="confluenceTd"> The range recommended is 10 to 130. </td> 
+         <td class="confluenceTd"> ? </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4 </td> 
+         <td class="confluenceTd"> Connection queue length (max number of pending connections) </td> 
+         <td class="confluenceTd"> 4096 </td> 
+         <td class="confluenceTd"> No clear recommendation here, the performance runs are taken with this value set to -1. </td> 
+         <td class="confluenceTd">? </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5 </td> 
+         <td class="confluenceTd"> Protocol Handler </td> 
+         <td class="confluenceTd"> WSIT is supported and ws/tcp protocol handler is installed by default </td> 
+         <td class="confluenceTd"> Remove the protocol handler </td> 
+         <td class="confluenceTd"> ? </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6 </td> 
+         <td class="confluenceTd"> Static File Caching </td> 
+         <td class="confluenceTd"> Disabled for developer profile so that the static files changed in the docroot are immediately served. Enabled for cluster/enterprise profiles. This was earlier recommendation. </td> 
+         <td class="confluenceTd"> Enable file cache. </td> 
+         <td class="confluenceTd"> ? </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 09, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:44.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

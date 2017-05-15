@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFishV3.1JMSDocPlan</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GlassFishV3.1JMSDocPlan-JMSIntegrationDocumentationPlanforGlassFishServerOpenSourceEdition3.1"></a><em>JMS Integration</em> Documentation Plan for GlassFish Server Open Source Edition 3.1</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#GlassFishV3.1JMSDocPlan-JMSIntegrationDocumentationPlanforGlassFishServerOpenSourceEdition3.1"> <em>JMS Integration</em> Documentation Plan for GlassFish Server Open Source Edition 3.1</a></li> 
+       <ul> 
+        <li><a href="#GlassFishV3.1JMSDocPlan-PeopleandRoles">People and Roles</a></li> 
+        <li><a href="#GlassFishV3.1JMSDocPlan-Audience">Audience</a></li> 
+        <li><a href="#GlassFishV3.1JMSDocPlan-SummaryoftheFeatureFromaUser%27sPerspective">Summary of the Feature From a User's Perspective</a></li> 
+        <li><a href="#GlassFishV3.1JMSDocPlan-Availability">Availability</a></li> 
+        <li><a href="#GlassFishV3.1JMSDocPlan-StatementofWork">Statement of Work</a></li> 
+        <ul> 
+         <li><a href="#GlassFishV3.1JMSDocPlan-ChangestoBooks">Changes to Books</a></li> 
+         <ul> 
+          <li><a href="#GlassFishV3.1JMSDocPlan-AdministrationGuideChanges"> <em>Administration Guide</em> Changes</a></li> 
+          <li><a href="#GlassFishV3.1JMSDocPlan-DevelopmentGuideChanges"> <em>Development Guide</em> Changes</a></li> 
+          <li><a href="#GlassFishV3.1JMSDocPlan-HighAvailabilityAdministrationGuideChanges"> <em>High Availability Administration Guide</em> Changes</a></li> 
+          <li><a href="#GlassFishV3.1JMSDocPlan-MessageQueueAdministrationGuideChanges"> <em>Message Queue Administration Guide</em> Changes</a></li> 
+          <li><a href="#GlassFishV3.1JMSDocPlan-MessageQueueTechnicalOverviewChanges"> <em>Message Queue Technical Overview</em> Changes</a></li> 
+         </ul> 
+         <li><a href="#GlassFishV3.1JMSDocPlan-ChangestoOnlineHelp">Changes to Online Help</a></li> 
+         <li><a href="#GlassFishV3.1JMSDocPlan-ChangestoManPages">Changes to Man Pages</a></li> 
+        </ul> 
+        <li><a href="#GlassFishV3.1JMSDocPlan-ReviewSchedule">Review Schedule</a></li> 
+        <li><a href="#GlassFishV3.1JMSDocPlan-RelatedInformation">Related Information</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="GlassFishV3.1JMSDocPlan-PeopleandRoles"></a>People and Roles</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Name </th> 
+         <th class="confluenceTh"> Role </th> 
+         <th class="confluenceTh"> Location </th> 
+         <th class="confluenceTh"> Time Zone </th> 
+         <th class="confluenceTh"> Email </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Mike Fitch </td> 
+         <td class="confluenceTd"> Documentation Feature Owner </td> 
+         <td class="confluenceTd"> CA, USA </td> 
+         <td class="confluenceTd"> US/Pacific </td> 
+         <td class="confluenceTd"> <tt>oncered@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Satish Kumar </td> 
+         <td class="confluenceTd"> Software Engineer </td> 
+         <td class="confluenceTd"> Bangalore, IN </td> 
+         <td class="confluenceTd"> IN </td> 
+         <td class="confluenceTd"> <tt>@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Amy Kang </td> 
+         <td class="confluenceTd"> Software Engineer </td> 
+         <td class="confluenceTd"> Santa Clara, CA, USA </td> 
+         <td class="confluenceTd"> US/Pacific </td> 
+         <td class="confluenceTd"> <tt>@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Nigel Deakin </td> 
+         <td class="confluenceTd"> Software Engineer </td> 
+         <td class="confluenceTd"> GB </td> 
+         <td class="confluenceTd"> GMT/BST </td> 
+         <td class="confluenceTd"> <tt>nigeldeakin@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Sonia Liu </td> 
+         <td class="confluenceTd"> QA Engineer </td> 
+         <td class="confluenceTd"> Santa Clara, CA, USA </td> 
+         <td class="confluenceTd"> US/Pacific </td> 
+         <td class="confluenceTd"> <tt>sonialiu@dev.java.net</tt> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3.1JMSDocPlan-Audience"></a>Audience</h2> <p>JMS is used by developers of applications that require reliable routing and delivery of messages and applications whose business logic is triggered by the receipt of messages.</p> <p>The JMS service and the Message Queue software that provides the service in GlassFish are configured and managed by administrators.</p> <h4><a name="GlassFishV3.1JMSDocPlan-SummaryoftheFeatureFromaUser%27sPerspective"></a>Summary of the Feature From a User's Perspective</h2> <p>For GlassFish 3.1, reinstatement of clustering support is the primary feature being added. Moreover, this support is improved over the clustering support available in GlassFish v2 in that conventional MQ clusters can be created without a master broker.</p> <h4><a name="GlassFishV3.1JMSDocPlan-Availability"></a>Availability</h2> <p>JMS support is available in both the web and full GlassFish Server distributions.</p> <h4><a name="GlassFishV3.1JMSDocPlan-StatementofWork"></a>Statement of Work</h2> <p>This section describes in detail for each document the work that is required by the introduction of the feature, such as changes, addition of new material, relocation of existing material, and removal of existing material.</p> <p>Documentation Impact:</p> 
+     <ul> 
+      <li>None</li> 
+      <li>Minor</li> 
+      <li>Moderate</li> 
+      <li>Major</li> 
+      <li>New</li> 
+     </ul> <h4><a name="GlassFishV3.1JMSDocPlan-ChangestoBooks"></a>Changes to Books</h3> <h4><a name="GlassFishV3.1JMSDocPlan-AdministrationGuideChanges"></a><em>Administration Guide</em> Changes</h4> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Section</th> 
+         <th class="confluenceTh">Documentation Impact</th> 
+         <th class="confluenceTh">Writer</th> 
+         <th class="confluenceTh">Reviewers</th> 
+         <th class="confluenceTh">Description of Change </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 19, "Administering the Java Message Service (JMS)" </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Mike Fitch </td> 
+         <td class="confluenceTd"> Satish Kumar </td> 
+         <td class="confluenceTd"> Reinstate the brief clustering-related information (and pointers to the <em>High Availability Administration Guide</em>) from v2 Admin Guide </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3.1JMSDocPlan-DevelopmentGuideChanges"></a><em>Development Guide</em> Changes</h4> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Section</th> 
+         <th class="confluenceTh">Documentation Impact</th> 
+         <th class="confluenceTh">Writer</th> 
+         <th class="confluenceTh">Reviewers</th> 
+         <th class="confluenceTh">Description of Change </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 17, "Using the Java Message Service" </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Mike Fitch </td> 
+         <td class="confluenceTd"> Satish Kumar </td> 
+         <td class="confluenceTd">
+          <ul> 
+           <li>Reinstate clustering-related information from v2 Dev Guide.</li> 
+           <li>Move generic administration-related material to the <em>Administration Guide</em>.</li> 
+          </ul> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3.1JMSDocPlan-HighAvailabilityAdministrationGuideChanges"></a><em>High Availability Administration Guide</em> Changes</h4> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Section</th> 
+         <th class="confluenceTh">Documentation Impact</th> 
+         <th class="confluenceTh">Writer</th> 
+         <th class="confluenceTh">Reviewers</th> 
+         <th class="confluenceTh">Description of Change </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 10, "Java Message Service Load Balancing and Failover" </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Mike Fitch </td> 
+         <td class="confluenceTd"> Satish Kumar </td> 
+         <td class="confluenceTd"> Reinstate from v2 HA Admin Guide. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 10, "Java Message Service Load Balancing and Failover" </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Mike Fitch </td> 
+         <td class="confluenceTd"> Satish Kumar </td> 
+         <td class="confluenceTd"> Add EMBEDDED broker information. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3.1JMSDocPlan-MessageQueueAdministrationGuideChanges"></a><em>Message Queue Administration Guide</em> Changes</h4> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Section</th> 
+         <th class="confluenceTh">Documentation Impact</th> 
+         <th class="confluenceTh">Writer</th> 
+         <th class="confluenceTh">Reviewers</th> 
+         <th class="confluenceTh">Description of Change </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 10, "Configuring and Managing Broker Clusters" </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Mike Fitch </td> 
+         <td class="confluenceTd"> Amy Kang, Nigel Deakin </td> 
+         <td class="confluenceTd"> Add "Configuring Conventional Clusters Without a Master Broker" section </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 10, "Configuring and Managing Broker Clusters" </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Mike Fitch </td> 
+         <td class="confluenceTd"> Amy Kang, Nigel Deakin </td> 
+         <td class="confluenceTd"> Add "Switching Between Conventional Clusters With and Without a Master Broker" section </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 16, "Command Line Reference" </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Mike Fitch </td> 
+         <td class="confluenceTd"> Amy Kang, Nigel Deakin </td> 
+         <td class="confluenceTd"> Add new <tt>imqdbmgr</tt> subcommands: 
+          <ul> 
+           <li><tt>create sharecc_tbl</tt></li> 
+           <li><tt>delete sharecc_tbl</tt></li> 
+           <li><tt>recreate sharecc_tbl</tt></li> 
+           <li><tt>backup sharecc_tbl</tt></li> 
+           <li><tt>restore sharecc_tbl</tt></li> 
+          </ul> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 17, "Broker Properties Reference" </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Mike Fitch </td> 
+         <td class="confluenceTd"> Amy Kang, Nigel Deakin </td> 
+         <td class="confluenceTd"> Add new broker properties 
+          <ul> 
+           <li><tt>imq.cluster.nomasterbroker</tt></li> 
+           <li><tt>imq.cluster.sharecc.persist.jdbc.dbVendor</tt></li> 
+           <li><tt>imq.cluster.sharecc.persist.jdbc.&lt;dbVendor&gt;.user</tt></li> 
+           <li><tt>imq.cluster.sharecc.persist.jdbc.&lt;dbVendor&gt;.property.&lt;propname&gt;</tt></li> 
+           <li><tt>imq.cluster.sharecc.persist.jdbc.&lt;dbVendor&gt;.table.MQSHARECC45</tt></li> 
+          </ul> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3.1JMSDocPlan-MessageQueueTechnicalOverviewChanges"></a><em>Message Queue Technical Overview</em> Changes</h4> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Section</th> 
+         <th class="confluenceTh">Documentation Impact</th> 
+         <th class="confluenceTh">Writer</th> 
+         <th class="confluenceTh">Reviewers</th> 
+         <th class="confluenceTh">Description of Change </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 4, "Broker Clusters" </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Mike Fitch </td> 
+         <td class="confluenceTd"> Amy Kang, Nigel Deakin </td> 
+         <td class="confluenceTd"> Add information about conventional clusters without a master broker </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3.1JMSDocPlan-ChangestoOnlineHelp"></a>Changes to Online Help</h3> <p><b><em>Administration Console Common Online Help</em> Changes</b></p> <p>See the <a href="GlassFishV3.1AdminConsoleDocPlan.html" title="GlassFishV3.1AdminConsoleDocPlan">Administration Console Documentation Plan</a>.</p> <h4><a name="GlassFishV3.1JMSDocPlan-ChangestoManPages"></a>Changes to Man Pages</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Man Page Name and Section</th> 
+         <th class="confluenceTh">Documentation Impact</th> 
+         <th class="confluenceTh">Writer</th> 
+         <th class="confluenceTh">Reviewers</th> 
+         <th class="confluenceTh">Description of Change </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>create-jms-host</tt>, <tt>delete-jms-host</tt>, <tt>list-jms-hosts</tt>, <tt>create-jms-resource</tt>, <tt>delete-jms-resource</tt>, <tt>list-jms-resources</tt>, <tt>create-jmsdest</tt>, <tt>delete-jmsdest</tt>, <tt>list-jmsdest</tt>, <tt>flush-jmsdest</tt>, <tt>jms-ping</tt> </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Mike Fitch </td> 
+         <td class="confluenceTd"> Satish Kumar </td> 
+         <td class="confluenceTd"> Reinstate <tt>--target</tt> option or <em>target</em> operand. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3.1JMSDocPlan-ReviewSchedule"></a>Review Schedule</h2> <p>The review schedule for the documentation items that are affected by this feature is provided in the following table.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Item</th> 
+         <th class="confluenceTh">Review Start Date</th> 
+         <th class="confluenceTh">Review End Date </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <em>Administration Guide</em> changes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <em>Development Guide</em> changes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <em>High Availability Administration Guide</em> changes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <em>Message Queue Administration Guide</em> changes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <em>Message Queue Technical Overview</em> changes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <em>Administration Console Common Online Help</em> changes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Man Page changes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>Reviewers are listed in the <em>Statement of Work</em>.</p> <h4><a name="GlassFishV3.1JMSDocPlan-RelatedInformation"></a>Related Information</h2> 
+     <ul> 
+      <li><a href="3.1JMS.html" title="3.1JMS">Engineering project page</a> for the 3.1 JMS Integration</li> 
+      <li>User task analysis</li> 
+      <li>Design document</li> 
+     </ul> <p>Email aliases:</p> 
+     <ul> 
+      <li><a href="mailto:admin@glassfish.java.net">admin@glassfish.java.net</a></li> 
+      <li><a href="mailto:users@glassfish.java.net">users@glassfish.java.net</a></li> 
+      <li><a href="mailto:docs@glassfish.java.net">docs@glassfish.java.net</a></li> 
+     </ul> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Aug 05, 2010 by 
+<font color="#0050B2">oldestred</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

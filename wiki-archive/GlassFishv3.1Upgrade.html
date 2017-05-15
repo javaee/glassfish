@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFishv3.1Upgrade</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GlassFishv3.1Upgrade-GlassFishServerOpenSourceEdition3.1Upgrade"></a>GlassFish Server Open Source Edition 3.1 - Upgrade </h1> 
+     <div> 
+      <ul> 
+       <li><a href="#GlassFishv3.1Upgrade-GlassFishServerOpenSourceEdition3.1Upgrade">GlassFish Server Open Source Edition 3.1 - Upgrade</a></li> 
+       <ul> 
+        <li><a href="#GlassFishv3.1Upgrade-Introduction">Introduction</a></li> 
+        <li><a href="#GlassFishv3.1Upgrade-Scope">Scope</a></li> 
+        <li><a href="#GlassFishv3.1Upgrade-FeatureOverview">Feature Overview</a></li> 
+        <li><a href="#GlassFishv3.1Upgrade-DesignDocument">Design Document</a></li> 
+        <li><a href="#GlassFishv3.1Upgrade-MilestoneSchedule">Milestone Schedule</a></li> 
+        <li><a href="#GlassFishv3.1Upgrade-TaskList">Task List</a></li> 
+        <li><a href="#GlassFishv3.1Upgrade-DevTests">Dev Tests</a></li> 
+        <li><a href="#GlassFishv3.1Upgrade-References">References</a></li> 
+        <li><a href="#GlassFishv3.1Upgrade-EmailAlias">Email Alias</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="GlassFishv3.1Upgrade-Introduction"></a>Introduction</h2> <p>In the GlassFish v3 and later time period, "upgrade" refers to upgrading a domain from one version of GlassFish to a newer version. This is in contrast to the Update Center, which can alter the app server installation itself to a newer version. The GF server actually performs the upgrade, not a separate tool as in version 2.X. Each module owner is responsible for handling the upgrade requirements of that module.</p> <p>For a user to perform an upgrade, simply run <tt>asadmin start-domain</tt> along with the <tt>-<del>upgrade</del></tt> option and options for domain dir, domain name, etc if needed. Without the <tt>-upgrade</tt> option, the server will still perform an upgrade when needed. Thus, you can simply start a v3.X server with an earlier domain and the rest "just happens."</p> <p>There is still an upgrade tool, but it is mostly a convenience for end users. It is important to note that the upgrade tool does not actually perform an upgrade – it calls asadmin to do the work. See one-pager </p> <h4><a name="GlassFishv3.1Upgrade-Scope"></a>Scope </h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Feature ID </th> 
+         <th class="confluenceTh"> Priority </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> Eng Response </th> 
+         <th class="confluenceTh"> Owner(s) </th> 
+         <th class="confluenceTh"> Estimate (Man Days) </th> 
+         <th class="confluenceTh"> Source of Requirement </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> UPGRADE-001 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Side-by-side upgrade from version 2.1.X </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Bobby/<a href="ModulesAndLeads.html" title="ModulesAndLeads">Leads </a> </td> 
+         <td class="confluenceTd"> ??? </td> 
+         <td class="confluenceTd"> Feature parity </td> 
+         <td class="confluenceTd"> Schedule depends on all module leads </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> UPGRADE-002 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Side-by-side upgrade from version 3.0.X </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Bobby/<a href="ModulesAndLeads.html" title="ModulesAndLeads">Leads </a> </td> 
+         <td class="confluenceTd"> ??? </td> 
+         <td class="confluenceTd"> Feature parity </td> 
+         <td class="confluenceTd"> Schedule depends on all module leads </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> UPGRADE-003 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> In-place upgrade from version 3.0.X using Update Center </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> ??? </td> 
+         <td class="confluenceTd"> ??? </td> 
+         <td class="confluenceTd"> Feature parity </td> 
+         <td class="confluenceTd"> If the update center supports it, the upgrade happens automatically as long as UPGRADE-002 is done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> UPGRADE-004 </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> Upgrade Tool </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Bobby </td> 
+         <td class="confluenceTd"> 10 days (maintenance only) </td> 
+         <td class="confluenceTd"> Feature parity </td> 
+         <td class="confluenceTd"> (The world would be simpler without this tool.) </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishv3.1Upgrade-FeatureOverview"></a>Feature Overview </h2> <p>None of the features in upgrade are new. Much of the work has already been done; modules that implemented upgrade in 3.0 may have little or no work to do. New modules will have to implement their own part of upgrade.</p> <p><b>UPGRADE-001: Side-by-side upgrade from version 2.1.X</b></p> <p>This will mostly impact the modules that were not in 3.0, for instance the clustering-related modules. Modules will need to implement their portion of upgrade along with their features. For features that were already present in 3.0, there may be only incremental changes. The upgrade code should already be present within the modules.</p> <p><b>UPGRADE-002: Side-by-side upgrade from version 3.0.X</b></p> <p>As before, modules that implemented upgrade in 3.0 may have only incremental changes to make. Has no impact on the other modules implementing features that were not present in 3.0.X.</p> <p><b>UPGRADE-003: In-place upgrade from version 3.0.X using Update Center</b></p> <p>If UPGRADE-002 is completed, there are no changes needed in upgrade for this. Once the server has been updated to 3.1, simply starting the domain should work. To the upgrade code, there is no knowledge of the location of the server/domain. As a reminder, the upgrade tool would not be involved in this scenario (and isn't needed for features 001 or 002 as well).</p> <p><b>UPGRADE-004: Upgrade Tool</b></p> <p>In maintenance mode now. Needs bug fixes/usability improvements.</p> <h4><a name="GlassFishv3.1Upgrade-DesignDocument"></a>Design Document</h2> <p>Current <a href="V3.1UpgradeOnePager.html" title="V3.1UpgradeOnePager">one pager</a> is under review. For reference, <a href="http://wiki.glassfish.java.net/attach/V3FunctionalSpecs/v3_upgradetool_spec.html">here is a link to the old one pager</a> (most of which is still valid).</p> <h4><a name="GlassFishv3.1Upgrade-MilestoneSchedule"></a>Milestone Schedule</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1. </td> 
+         <td class="confluenceTd"> M1 </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> Get concrete requirements to all module leads </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2. </td> 
+         <td class="confluenceTd"> M1 </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> Wiki page for coordinating module status </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3. </td> 
+         <td class="confluenceTd"> M2 </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> Get tasks/dates from leads </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Depends: 1, 2 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4. </td> 
+         <td class="confluenceTd"> M4 </td> 
+         <td class="confluenceTd"> UPGRADE-002 </td> 
+         <td class="confluenceTd"> Upgrade from 3.0.X </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Depends on status of individual modules </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5. </td> 
+         <td class="confluenceTd"> M4 </td> 
+         <td class="confluenceTd"> UPGRADE-001 </td> 
+         <td class="confluenceTd"> Upgrade from 2.1.X </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Depends on status of individual modules </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6. </td> 
+         <td class="confluenceTd"> M4 </td> 
+         <td class="confluenceTd"> UPGRADE-003 </td> 
+         <td class="confluenceTd"> In place (update) from 3.0.X </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Depends on #4 and update tool </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 7. </td> 
+         <td class="confluenceTd"> M4 </td> 
+         <td class="confluenceTd"> UPGRADE-004 </td> 
+         <td class="confluenceTd"> Upgrade tool bug fixes </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishv3.1Upgrade-TaskList"></a>Task List</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task </th> 
+         <th class="confluenceTh"> Target Milestone </th> 
+         <th class="confluenceTh"> Start </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Owner(s) </th> 
+         <th class="confluenceTh"> Feature ID </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Getting requirements to owners </td> 
+         <td class="confluenceTd"> M1 </td> 
+         <td class="confluenceTd"> 5/17 </td> 
+         <td class="confluenceTd"> 5/21 </td> 
+         <td class="confluenceTd"> Bobby </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> Need to check with core owners about any changes to the upgrade code (no changes expected) and verify that 3.0.X is recognized as an upgrade. Get technical information in one place to send to leads. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Wiki page </td> 
+         <td class="confluenceTd"> M1 </td> 
+         <td class="confluenceTd"> 5/17 </td> 
+         <td class="confluenceTd"> 5/21 </td> 
+         <td class="confluenceTd"> Bobby </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> Need to check usability requirements for 3.1. There could be some work for modules that have completed upgrade task in the past. All of that information should be on one status page. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Dates from leads </td> 
+         <td class="confluenceTd"> M2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 6/21 </td> 
+         <td class="confluenceTd"> Bobby </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> Make sure all leads at least know what needs to be done for their module. Would also be possible to get stubbed-out upgrade code into each module for tracking status (class output "TODO" message). </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Upgrade from 2.1.X </td> 
+         <td class="confluenceTd"> M4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> All leads </td> 
+         <td class="confluenceTd"> UPGRADE-001 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Upgrade from 3.0.X </td> 
+         <td class="confluenceTd"> M4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> All leads </td> 
+         <td class="confluenceTd"> UPGRADE-002 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> In place update from 3.0.X </td> 
+         <td class="confluenceTd"> M4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Update center </td> 
+         <td class="confluenceTd"> UPGRADE-003 </td> 
+         <td class="confluenceTd"> Not really a separate task for upgrade as far as we know. Will have to test with update center code when available to verify. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Maintain upgrade tool </td> 
+         <td class="confluenceTd"> M4 </td> 
+         <td class="confluenceTd"> post-3.0.1 </td> 
+         <td class="confluenceTd"> 6/18 </td> 
+         <td class="confluenceTd"> Bobby </td> 
+         <td class="confluenceTd"> UPGRADE-004 </td> 
+         <td class="confluenceTd"> Bugs are minor except for security issue involving getting master password to asadmin. Should be fixed by M2, then fix any other bugs as time permits when they pop up. Would also like to continue exploring/suggesting/imploring removing the tool as it's a source of confusion within the team. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishv3.1Upgrade-DevTests"></a>Dev Tests </h2> <p>Want to use test framework developed for clusters. Need to be able to automate stopping/starting domains within test framework.</p> <h4><a name="GlassFishv3.1Upgrade-References"></a>References</h2> 
+     <ul> 
+      <li><a href="http://docs.sun.com/app/docs/doc/821-0179/6nl8hchmr?l=en&amp;a=expand">GlassFish v2.x CLI Commands</a></li> 
+      <li><a href="GlassFishV2Architecture.html" title="GlassFishV2Architecture">GlassFish v2 Cluster Architecture </a></li> 
+      <li><a href="UpgradeCompatibilityRequirements.html" title="UpgradeCompatibilityRequirements">v3 Upgrade Compatibility Requirements </a> TODO: Confirm that these are all still correct.</li> 
+      <li><a href="V3UpgradeDashboard.html" title="V3UpgradeDashboard">v3 Upgrade Dashboard </a> Included here for convenience in case we run into issues similar to those in v3.</li> 
+      <li><a href="V3.1UpgradeDashboard.html" title="V3.1UpgradeDashboard">v3.1 Upgrade Dashboard</a> Here's where the action is. This page should capture all the modules' status and open issues related to upgrade.</li> 
+     </ul> <h4><a name="GlassFishv3.1Upgrade-EmailAlias"></a>Email Alias</h2> 
+     <ul> 
+      <li>Please contact us at <a href="mailto:dev@glassfish.java.net">dev@glassfish.java.net</a></li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 06, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

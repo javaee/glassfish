@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : V3BPMeeting06202008</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="V3BPMeeting06202008-GlassFishV3buildandpackagingteammeeting"></a>GlassFish V3 build and packaging team meeting </h2> <p>June 20, 2008</p> <p>Here are Kohsuke's build issues, and Ken's notes (the bulleted items) from the discussion in the<br> meeting. A recording of the meeting is available, and I have ordered a transcript,<br> which I'll try to clean up and post here after it is available. I'll see about making the audio<br> available here as well.</p> <p>Kohsuke's slides are available on this page as an attachment (click on the attachments link on the bottom<br> of this page).</p> 
+     <hr> <h4><a name="V3BPMeeting06202008-Mavenrepositorymanager"></a>Maven repository manager</h3> <p>One of the painpoints we have today is the # of Maven repositories that we have to hit for a build. Because Maven doesn't remember which artifacts are in which repositories, it often has to hit several repositories just to get 404. We also suffer slow network bandwidth with some of the remote repositories. The usual solution to this problem is to use a Maven repository, and my recommendation is <a href="http://nexus.sonatype.org">Nexus</a>. This allows a single repository manager to act as a Maven-aware HTTP proxy to all our upstream Maven repositories. In this way, our builds would only have to hit our Nexus and it should reduce the build time. For this to work, we need one mirror inside firewall and one mirror outside firewall. That means the actual deployment of this would have to wait for the commission of new <a href="http://glassfishbuildtools.sun.com/">http://glassfishbuildtools.sun.com/</a></p> 
+     <ul> 
+      <li>Today: 5-6 repositories are used, some of which may be slow or unavailable</li> 
+      <li>Multiple repos confuses maven instead of providing redundancy</li> 
+      <li>How big a server is needed?</li> 
+      <li>Snjezana: we should push on this and escalate it</li> 
+      <li>Start internal first 
+       <ul> 
+        <li>External: need security (problem with glassfishbuildtools.com server)</li> 
+       </ul> </li> 
+     </ul> <h4><a name="V3BPMeeting06202008-DistributionassemblyjustbyMaven"></a>Distribution assembly just by Maven</h3> <p>The distribution assembly process has evolved to the point that it can probably do without Ant build script. To make this part of the system easier to understand, it might be a good idea to rewrite this into a pure Maven plugin (or into a Groovy script with <a href="http://groovy.codehaus.org/GMaven-ExecutingGroovyCode#GMaven-ExecutingGroovyCode-ExecuteaRemoteGroovyScriptGMaven">GMaven</a>).</p> 
+     <ul> 
+      <li>Nice to have, but can defer until after first release</li> 
+     </ul> <h4><a name="V3BPMeeting06202008-svnmergeandpersonalbuilds"></a>svnmerge and personal builds</h3> <p>Several people has been using <a href="http://www.orcaware.com/svn/wiki/Svnmerge.py">svnmerge</a> in the development of the Hudson project successfully, and this seems like a good way to emulate a hierarchical workspace in Subversion. Being able to commit changes to a repository without qualifying it first has a number of benefits, such as offloading QL and integration to Hudson.</p> 
+     <ul> 
+      <li>Nice to have, but can defer until after first release</li> 
+     </ul> <h4><a name="V3BPMeeting06202008-JVMprobleminjarhandling"></a>JVM problem in jar handling</h3> <p>We are experiencing an elusive JVM bug, which manifest itself as various form of jar corruption. We've seen it in many places, and this really needs to be tackled.</p> 
+     <ul> 
+      <li>Who on JDK side owns this? no one yet:</li> 
+      <li>Which JDKs? Hudson: platform: Ubuntu solaris. JDK 5 and 6 error, sometimes VM crash: (Harsha suggests Martin Buchholz)</li> 
+      <li>Harsha: file bug, work with Terena</li> 
+     </ul> <h4><a name="V3BPMeeting06202008-PublicHudsonserver"></a>Public Hudson server</h3> <p>We need to keep pushing the lab guys to set up the new <a href="http://glassfishbuildtools.sun.com/">http://glassfishbuildtools.sun.com/</a> We should also get a better host name alias like <a href="http://hudson.glassfish.org/">http://hudson.glassfish.org/</a> and <a href="http://maven.glassfish.org/">http://maven.glassfish.org/</a> since we should be running multiple things here.</p> 
+     <ul> 
+      <li>Ticket filed by Dinesh, cc'd Kohsuke, Abhijit</li> 
+      <li>Also need more useful virtual host names</li> 
+     </ul> <h4><a name="V3BPMeeting06202008-Removecyclicdependencies"></a>Remove cyclic dependencies</h3> <p>Some part of GFv3 builds contain cyclic dependencies in a subtle way. At module level, there's no cycle (or else Maven wouldn't even let us build), but at the build level, there are a cycle between the main GFv3 build and the admin GUI build. This inflicts a number of pains — in particular it makes it impossible to use the maven-release-plugin on GFv3. This needs to be fixed.</p> 
+     <ul> 
+      <li>Identify problems: AMX, GlassFish API</li> 
+      <li>Who should own this issue? Bhakti will look at this.</li> 
+     </ul> <h4><a name="V3BPMeeting06202008-RegularnonSNAPSHOTreleases"></a>Regular non-SNAPSHOT releases</h3> <p>We push our artifacts to the Maven repository, and that's good, but most of them are pushed as SNAPSHOTs today (even TP2 was pushed like that), so people outside GF cannot rely on them. We need to start pushing weeklies and milestones in non-SNAPSHOT version numbers. We've never run maven-release-plugin on GFv3 code base as a whole, so this is mainly an exercise to iron out all the kinks in doing so. Another aspect in this problem is the transition of the build from SNAPSHOT dependencies to non-SNAPSHOT dependencies. I've heard from Jerome that he's been making some progress on this front, but this needs a careful design and experiments.</p> 
+     <ul> 
+      <li>Important for outside users</li> 
+     </ul> 
+     <hr> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875676/21364835.pdf">GlassFish v3 Builds Today.pdf</a> (application/pdf) 
+      <br> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 08, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

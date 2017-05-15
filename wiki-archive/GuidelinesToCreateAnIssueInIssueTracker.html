@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GuidelinesToCreateAnIssueInIssueTracker</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GuidelinesToCreateAnIssueInIssueTracker-GuidelinestoCreateaGlassFishJIRAReport"></a>Guidelines to Create a GlassFish JIRA Report</h1> <p>Testing a software is one of the most intelligent and challenging tasks. In a way, it is akin to writing the software itself. It is an exciting activity as well. So, whoever logs a bug is contributing heavily to the quality of the software. With opportunity however, comes responsibility. That's why here's a simple recipe to follow, while creating issues in the Issue Tracker. Try to follow the <em>spirit</em> of it. It is expected but not required to follow it. But not following it might result in an increase in overall time spent in <em>dealing with</em> a bug (the damned bug scrub activity). If you have any comments or questions about these guidelines (which is very likely), please send an e-mail to the <a href="mailto:users@glasstish.java.net?subject=JIRA%20Guideline%20Feedback">GlassFish Users</a> list.</p> 
+     <ol> 
+      <li>Act like the user of the software. When you use the software you are likely to hit the bugs that are difficult to find than when you are testing for the sake of it.</li> 
+      <li>Be sure that you are using the <em>right</em> build.</li> 
+      <li>When you are not convinced whether a particular behavior is a bug or a feature, e-mail your question to the <a href="mailto:users@glasstish.java.net?subject=JIRA%20Behavior%20Feedback">GlassFish Users</a> list. It is always possible, a particular behavior may be a feature of the software <img class="emoticon" src="images/icons/emoticons/wink.gif" height="20" width="20" align="absmiddle" alt="" border="0"> (This is the famous bug or a feature titled discussions).</li> 
+      <li>When you are convinced that it is indeed a bug or a feature, find out if a similar/same bug has been logged before. This is very likely (but not necessary) if you think of some behavior as "Oh, this can't happen". Query the Issue Tracker by clicking <a href="http://java.net/jira/browse/GLASSFISH">here</a> and doing a search. Try using Subcomponent, Status Whiteboard and/or full-text search. This is critical, because we don't want to spend time creating issues that are going to be closed as "duplicates".</li> 
+      <li>When you are convinced that it is indeed a bug or a feature not logged before, identify it as such (bug/feature/task/enhancement – the boundary is rather blur amongst these) and then log on to Issue Tracker and click on the link <a href="http://java.net/jira/browse/GLASSFISH">JIRA</a> and Click Improvement or Bug on the upper-right section of the page.</li> 
+      <li>You will see that there are some fields that are required, rest of them are optional and some are pre-populated for you. It's your responsibility to fill the fields you are supposed to fill, to the best of your knowledge. Here are the guidelines regarding those: 
+       <ol> 
+        <li>Reporter (your java.net ID), Component (glassfish) are already picked for you.</li> 
+        <li>Make sure the chosen values (e.g. "Found in version" being V3, which is the current default) are as intended by you.</li> 
+        <li><b>Subcomponent</b>, is the field to best direct the bug to relevant people, so that it can get addressed quickly. I will try to do something about providing accurate descriptions for the various sub-components.</li> 
+        <li>Describe the problem as clearly and concisely as possible.</li> 
+        <li><b><del>Attach</del></b> <del>(not copy and paste their contents) relevant files (log files, config files if any) for the sake of completeness. Sorry, this is a separate step in Issue Tracker, but that's the way it is.</del> For the time being, paste any log files, or configuration detail into a comment of the issue. If you need to send something more lengthy, or non-text item, please complete the JIRA report, then either post the attachment to the <a href="mailto:users@glasstish.java.net?subject=JIRA%20Issue%20Details">GlassFish Users</a>, or e-mail it to the user who is assigned the issue (it will be automatically assigned by selecting the project component).</li> 
+       </ol> </li> 
+     </ol> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Feb 08, 2013 by 
+<font color="#0050B2">10193</font>. Exported from wikis.oracle.com on May 27, 2015 20:48.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

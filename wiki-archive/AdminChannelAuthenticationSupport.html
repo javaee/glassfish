@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : AdminChannelAuthenticationSupport</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="AdminChannelAuthenticationSupport-HowadminauthenticationworksforV3TP2"></a>How admin authentication works for V3-TP2</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#AdminChannelAuthenticationSupport-HowadminauthenticationworksforV3TP2">How admin authentication works for V3-TP2</a></li> 
+       <ul> 
+        <li><a href="#AdminChannelAuthenticationSupport-Step1Bydefault%2Cnoauthentication">Step 1 - By default, no authentication</a></li> 
+        <li><a href="#AdminChannelAuthenticationSupport-Step2Situationaftercreatinganadminuser">Step 2 - Situation after creating an admin user</a></li> 
+        <li><a href="#AdminChannelAuthenticationSupport-Whatisprotected">What is protected</a></li> 
+        <li><a href="#AdminChannelAuthenticationSupport-WhatisNOTprotected">What is NOT protected</a></li> 
+        <li><a href="#AdminChannelAuthenticationSupport-Caution%21">Caution!</a></li> 
+       </ul> 
+      </ul>
+     </div> <p>Here is how it works:</p> <h4><a name="AdminChannelAuthenticationSupport-Step1Bydefault%2Cnoauthentication"></a>Step 1 - By default, no authentication</h3> <p>When the default domain is available as part of unzipping the bundle, the domain has no authentication support. Any user can connect to its http-listeners to manage the domain. The installer can help you create a domain with proper user and password protection. <b>asadmin create-domain</b> too can help you create a domain that authenticates requests.</p> <p>The user named "anonymous" is available in case you have chosen no user and password during create-domain/installation. By default, the default-domain (one you got from unzipping web.zip or glassfish.zip) contains the same user in admin-keyfile.</p> <p>As long as the <b>only</b> user available in admin-keyfile is <b>anonymous</b>, there would no authentication enforced.</p> <p>The moment you create an additional admin user or create a domain with admin user <b>other than anonymous</b>, the authentication is automatically enforced.</p> <h4><a name="AdminChannelAuthenticationSupport-Step2Situationaftercreatinganadminuser"></a>Step 2 - Situation after creating an admin user</h3> <p>If you have a domain that does not authenticate admin requests, the way you should start enforcing it is as follows:</p> 
+     <ul> 
+      <li>create a file named say "file" (any name is ok) that contains the following entry:</li> 
+     </ul> <p>AS_ADMIN_USERPASSWORD=your-admin-pass</p> 
+     <ul> 
+      <li>asadmin create-file-user --authrealmname admin-realm --groups asadmin --passwordfile file &lt;admin-user-name-say "admin"&gt;. This will create an entry for this user in admin-keyfile for that domain.</li> 
+      <li>asadmin stop-domain</li> 
+      <li>asadmin start-domain</li> 
+     </ul> <p>From now on, all the commands for asadmin, all web-requests will start mandating user name and password. To specify the user name<br> and password:</p> 
+     <ul> 
+      <li>create a file named "file" (say) and have an entry like below there:</li> 
+     </ul> <p>AS_ADMIN_PASSWORD=your-admin-pass<br> (note the change from above, above command needs AS_ADMIN_USERPASSWORD)</p> 
+     <ul> 
+      <li>start the domain.</li> 
+      <li>asadmin &lt;command&gt; --user admin --passwordfile file</li> 
+     </ul> <h4><a name="AdminChannelAuthenticationSupport-Whatisprotected"></a>What is protected</h3> 
+     <ul> 
+      <li>asadmin commands (remote commands like deploy – most of the asadmin commands are remote)</li> 
+      <li>web requests to *asadmin (e.g. <a href="http://host:8080/*asadmin/version">http://host:8080/*asadmin/version</a>)</li> 
+      <li>admin GUI</li> 
+      <li>admin GUI download (i.e. host:port/admin starts the <a href="./HowAdminConsoleDownloadWorksForV3TP2.html">download of Admin GUI </a> if and only if the user has credentials)</li> 
+     </ul> <h4><a name="AdminChannelAuthenticationSupport-WhatisNOTprotected"></a>What is NOT protected</h3> <p>JMX Channel. If you have started domain with -Dcom.sun.jmxremote.port, then that will not authenticate requests from say JConsole.</p> <h4><a name="AdminChannelAuthenticationSupport-Caution%21"></a>Caution!</h3> <p>It uses <b>HTTP Basic Auth</b>. Of course, we all know it is weak form of security. So, this should not be confused with TP-2 domain/server being "secure".</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

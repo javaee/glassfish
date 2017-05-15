@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : DevelopmentModeFlagRAILS_ENVDiscussion</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>This document describes the JSF spec for implementing <a href="https://javaserverfaces-spec-public.java.net/issues/show_bug.cgi-313">313-DevLifecycle</a>. A full implementation is attached to issue 313.<br> To understand this proposal from the API consumer's perspective, read the Use Cases section. To understand the proposal from the spec implementor's perspective, read the Specification Changes section.</p> <h4><a name="DevelopmentModeFlagRAILS_ENVDiscussion-UseCases"></a>Use Cases</h1> <p>At first glance, 313-DevLifecycle resembles using different log levels to control the verbosity of log output. In fact, 313-DevLifecycle is a superset of that feature. The state of the DevLifecycle flag would dictate a change in behavior that goes beyond simply deciding what kind of and how much information gets logged. Consider the following use cases.</p> <h4><a name="DevelopmentModeFlagRAILS_ENVDiscussion-JSFAppDeveloperUseCase"></a>JSF App Developer Use Case</h2> <p>Currently, if the user neglects to put an &lt;h:messages&gt; tag on their page, they miss out on error messages that may crop up during iterative development. The frequently given advice is: "put an &lt;h:messages&gt; element on every page during development and take it out or customize it when you get to deployment". But what if one forgets to do that? This feature is captured in <a href="https://javaserverfaces-spec-public.java.net/issues/show_bug.cgi-314">314-DevTimeMessages</a> and it cannot be implemented without 313-DevLifecycle.</p> <p>Tapestry's much vaunted "line precise error reporting" feature would be really great to have in JSF components. However, you wouldn't want to have that much developer level detail in the case of errors that happen at deployment time.</p> <h4><a name="DevelopmentModeFlagRAILS_ENVDiscussion-ComponentDeveloperUseCase"></a>Component Developer Use Case</h2> <p>At the time of developing a custom component, one knows the failure states of various elements in the system. It would be nice to be able to share that information with the developer using the component, but only if the DevLifecycle flag is set appropriately.</p> <h4><a name="DevelopmentModeFlagRAILS_ENVDiscussion-PageAuthorUseCase"></a>Page Author Use Case</h2> <p>It is easy to read the value of the product lifecycle phase from EL:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Project Stage is 
+    &lt;c:out value="#{servletContext.projectStage}" /&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>NOTE: This assumes adding a JSP implicit object for the ServletContext called servletContext. Without this, it's much harder to make use of this value from JSP or other template markup.</p> <p>NOTE: I also really think it would be useful to have ServletContext.getCurrentInstance() that uses ThreadLocal storage to make the ServletContext accessible from anywhere. See <a href="http://java.sun.com/javaee/5/docs/api/javax/faces/context/FacesContext.html#getCurrentInstance">FacesContext.getCurrentInstance()</a>.</p> <h4><a name="DevelopmentModeFlagRAILS_ENVDiscussion-SpecificationChanges"></a>Specification Changes</h1> <h4><a name="DevelopmentModeFlagRAILS_ENVDiscussion-AddamethodtoServletContext"></a>Add a method to ServletContext</h2> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">public String getProjectStage()</pre> 
+       </div> 
+      </div>
+     </div> <p> Return the product lifecycle phase for the currently running application instance. The default value is "PRODUCTION"<br> The implementation of this method must perform the following algorithm or an equivalent with the same end result to determine the value to return.</p> <p> If the value has already been determined by a previous call to this method, simply return that value.<br> Otherwise look for an entry in the initParameter of the ServletContext with the key given by the value of java.servlet.ProjectStage <br> <font color="red"><br> <b>Issue</b>: (Should we reserve all javax, com.sun sun init-param names in the spec?)</font>.</p> <p> If this succeeds without exception, save the value and return it.</p> <p> If not found, or any of the previous attempts to discover the constant value have failed, assign the value as PRODUCTION and return it.</p> <p> Since:<br> 3.0</p> <p>The value of this state may be queried at any time after application startup by calling getProjectStage() on the ServletContext instance.</p> <p>This value is immutable at runtime and is configured by a init-param. The value of param-name is the value of the ProjectStage. The default value if nothing is specified is PRODUCTION. The order of the elements for ProjectStage is </p>
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">PRODUCTION, SYSTEM-TEST, UNIT-TEST, DEVELOPMENT</pre> 
+       </div> 
+      </div>
+     </div> followed by any vendor specific definitions.<p></p> <h4><a name="DevelopmentModeFlagRAILS_ENVDiscussion-web.xmlexample"></a>web.xml example</h2> <p>The constants: the java language identifiers of the enum members of this class, capitalized exactly as they appear in this file.</p> <p>For example:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;init-param&gt;
+  &lt;param-name&gt;javax.servlet.ProjectStage&lt;/param-name&gt;
+  &lt;param-value&gt;UNIT-TEST&lt;/param-value&gt;
+
+&lt;/init-param&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>In this case, <tt>ServletContext.getCurrentInstance().getProjectStage()</tt> returns <tt>UNIT-TEST</tt></p> <h4><a name="DevelopmentModeFlagRAILS_ENVDiscussion-ValuesthateverycontainerMUSTsupport"></a>Values that every container MUST support</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> ProjectStage Value </th> 
+         <th class="confluenceTh"> Description </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> DEVELOPMENT </td> 
+         <td class="confluenceTd"> This value indicates the currently running application is right now, at this moment, being developed. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> UNIT-TEST </td> 
+         <td class="confluenceTd"> This value indicates the currently running application is undergoing unit testing. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> SYSTEM-TEST </td> 
+         <td class="confluenceTd"> This value indicates the currently running application is undergoing system testing. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> PRODUCTION </td> 
+         <td class="confluenceTd"> This value indicates the currently running application is deployed in production. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p><font color="red"><br> <b>Issue</b>: Should we allow an annotation to specify the ProjectStage? Or is it good enough to say that the default is PRODUCTION and if it has to be changed it must be in the descriptor. One proposed solution is the have an annotaiton based approach like defined below. Seeking the feedback of the EG.</font></p> <h4><a name="DevelopmentModeFlagRAILS_ENVDiscussion-AllowServletandFilterimplementationstobeannotatedtospecifyProjectStage"></a>Allow Servlet and Filter implementations to be annotated to specify ProjectStage</h2> <p>Because Servlet 3.0 need not always have a web.xml, there needs to be a simple way to set the value of the ProjectStage property directly in code. Let us add an attribute, "projectStage" to the <tt>@Servlet</tt>, and <tt>@Filter</tt> annotations. The value of the attribute is the same as what one would put as the value of the javax.servlet.ProjectStage init-param in the web.xml. We could also define a new annotation - <tt>@ProjectStage</tt> that allows users to set the value appropriately and can be reused by other specifications as well now and in the future. If multiple instances of these annotations are found by the annotation scanning routine, their values are collected in the list and the "lowest" one wins, based on the ordering defined above .</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:48.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

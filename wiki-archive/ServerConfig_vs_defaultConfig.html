@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : ServerConfig_vs_defaultConfig</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="ServerConfig_vs_defaultConfig-3.1defaultconfig.xmltemplate"></a>3.1 default-config.xml template</h2> <p>3.1 default-config.xml template will be used in create-cluster command to create the cluster config. For example, create-cluster cluster1, will make a copy of default-config.xml and rename it to cluster1-config and be added to configs of domain.xml.</p> <h4><a name="ServerConfig_vs_defaultConfig-Comparisons"></a>Comparisons</h3> 
+     <ul> 
+      <li><a href="http://download.java.net/glassfish/wiki-archive/attachments/20875240/21365177.pdf">Diff</a> on v2 server-config(red) vs v2 default-config(blue) in domain.xml</li> 
+      <li><a href="http://download.java.net/glassfish/wiki-archive/attachments/20875240/21365174.pdf">Diff</a> on v2 server-config(red) vs v3 server-config(blue) in domain.xml</li> 
+      <li>Proposed <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875240/21365172.pdf">3.1 default-config</a> based on v3 server-config and using as a guide - the above <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875240/21365177.pdf">diff</a> on v2 server-config(red) vs v2 default-config(blue)</li> 
+      <li>Draft 1 <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875240/21365166.pdf">3.1 default-config.xml.pdf</a> based on v2 default-config, with <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875240/21365175.pdf">notes</a></li> 
+      <li>Draft 2 3.1 default-config.xml with <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875240/21365164.pdf">notes</a></li> 
+     </ul> <h4><a name="ServerConfig_vs_defaultConfig-ReviewCommentsDraft13.1defaultconfig.xmlMarch30%2C2010"></a>Review Comments Draft 1 3.1 default-config.xml - March 30, 2010</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <td class="confluenceTd"> ID </td> 
+         <td class="confluenceTd"> Comment </td> 
+         <td class="confluenceTd"> Owner </td> 
+         <td class="confluenceTd"> Resolution </td> 
+         <td class="confluenceTd">Notes </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> (6)default-web-xml - Should this property be under virtual-server? </td> 
+         <td class="confluenceTd"> Jennifer/Rajiv </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> GF v3 currently does not implement support for this property (that is, it is not possible to change the default-web-xml location from its default, which is domains/domain1/config/default-web.xml). I know there has been a customer escalation related to this, but I don't remember the details. (Jan) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd"> (7)request-timeout-in-seconds - Does it get mapped in 3.1? </td> 
+         <td class="confluenceTd"> Jennifer/web team </td> 
+         <th class="confluenceTh">&nbsp;</th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3 </td> 
+         <td class="confluenceTd"> (19)"simple" policy-provider - Should attributes be set as default values, and then removed from the element? </td> 
+         <td class="confluenceTd"> Jennifer/Ron/Kumar </td> 
+         <td class="confluenceTd"> Ron prefers to keep for clarity </td> 
+         <td class="confluenceTd">May be confusing to have "default" policy provider and "simple" policy provider with default values </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4 </td> 
+         <td class="confluenceTd"> (24)&lt;jvm-options&gt;-XX:MaxPermSize=192m&lt;/jvm-options&gt; - This was in v2. It was marked as 'New in v3' in the draft </td> 
+         <td class="confluenceTd"> Jennifer </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">This jvm option was not in the v2.x default-config.xml template in lib/install/templates, but it is in the actual domain.xml. How did it get there? </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5 </td> 
+         <td class="confluenceTd"> (25)&lt;jvm-options&gt;-client&lt;/jvm-options&gt; - Change to -server? </td> 
+         <td class="confluenceTd"> Jennifer </td> 
+         <td class="confluenceTd"> Yes, change to -server. </td> 
+         <td class="confluenceTd">Keep -client for server-config. User -server for default-config for better performance in cluster env. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6 </td> 
+         <td class="confluenceTd"> (26)-(28) -XX:+UnlockDiagnosticVMOptions, -XX:+LogVMOutput, -XX:LogFile=${com.sun.aas.instanceRoot}/logs/jvm.log Are they needed? What are they for? </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Yes, keep </td> 
+         <td class="confluenceTd">They are used for thread dump and jvm log (Byron) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 7 </td> 
+         <td class="confluenceTd">(29) modules\endorsed - How to make it work for v2 upgrade?</td> 
+         <td class="confluenceTd"> Jerome </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">There are files for JAXB and web services in modules\endorsed. <a href="https://github.com/javaee/glassfish/issues/11753">Issue 11753</a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 8 </td> 
+         <td class="confluenceTd"> (30)-(32)-Dcom.sun.enterprise.security.httpsOutboundKeyAlias, -Djavax.net.ssl.keyStore, -Djavax.net.ssl.trustStore - Marked as 'New in v3'. If it's not there in v2 what will happen in 3.1? </td> 
+         <td class="confluenceTd"> Jennifer/Ron </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">Not new in V3. Were also present in V2. Used to locate keystore and truststore. (Kumar) (30) and (31) are in the actual cluster domain.xml, but not in the lib/install/templates/default-config.xml. (32) required only when app creates outbound SSL connection. How do they get in domain.xml? </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 9 </td> 
+         <td class="confluenceTd"> (33),(34) Remove RMI options </td> 
+         <td class="confluenceTd"> Jennifer </td> 
+         <td class="confluenceTd"> Remove </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 10 </td> 
+         <td class="confluenceTd"> (35) -Djava.ext.dirs - Add back configName </td> 
+         <td class="confluenceTd"> Jennifer </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">configName dir is not listed in the actual v2 domain.xml, so left it out for now. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 11 </td> 
+         <td class="confluenceTd"> (36) antlr jvm option - If missing in v2 what happens in v3? Who uses? </td> 
+         <td class="confluenceTd"> Jennifer/Rajiv/Kin-man </td> 
+         <td class="confluenceTd"> Already being added by V2ToV3ConfigUpgrade.java </td> 
+         <td class="confluenceTd"> Did search for this jvm option. Found in V2ToV3ConfigUpgrade.java in admin/server-mgmt, which adds this option. <a href="https://github.com/javaee/glassfish/issues/11753">Issue 11753 </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 12 </td> 
+         <td class="confluenceTd"> (36) taglib jvm options - Not needed anymore? If set will it be ignored in 3.1? </td> 
+         <td class="confluenceTd"> Jennifer/Ryan </td> 
+         <td class="confluenceTd"> Leave out </td> 
+         <td class="confluenceTd">Correct, they're no longer used in 3.x. 3.x uses a different approach to discover taglibs and the listeners declared in them. Yes, they would be ignored. (Jan) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 13 </td> 
+         <td class="confluenceTd"> (37)-(44) osgi jvm options - not needed in default-config </td> 
+         <td class="confluenceTd"> Jennifer </td> 
+         <td class="confluenceTd"> Remove from default-config </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 14 </td> 
+         <td class="confluenceTd"> (37)-(44) osgi jvm options - upgrade scenario? </td> 
+         <td class="confluenceTd"> Jerome/Sahoo/Byron </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/11753">Issue 11753 </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 15 </td> 
+         <td class="confluenceTd"> (45) Highlight the attribute value differences </td> 
+         <td class="confluenceTd"> Jennifer </td> 
+         <td class="confluenceTd"> done </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 16 </td> 
+         <td class="confluenceTd"> (46) thread-pool - Use one under thread-pools or network-listeners </td> 
+         <td class="confluenceTd"> Jennifer </td> 
+         <td class="confluenceTd"> Keep thread-pool under thread-pools. Remove thread-pool from network-listeners </td> 
+         <td class="confluenceTd">in glassfish, they should live under &lt;thread-pools&gt; like they did in v2. The schema supports them under network-listeners because grizzly-config supports being used outside of glassfish. We'd hoped to only reference them there but Jerome and/or Bill didn't want to move those (partly because the EJB/ORB modules use thread-pool but not yet grizzly-config itself) so the schema supports both locations. At start up, glassfish should detect the thread-pool nodes under network-listeners and move them to the v3 location. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 17 </td> 
+         <td class="confluenceTd"> Don't put default-config in domain.xml. Put in lib/templates. create-cluster will read-in and write out to domain.xml. What about v2 upgrade? and customized default-config? </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/11753">Issue 11753 </a> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="ServerConfig_vs_defaultConfig-Reference"></a>Reference</h3> 
+     <ul> 
+      <li>v2 lib\install\templates[default-config.xml|^v2default-config.xml.pdf]</li> 
+      <li><a href="http://download.java.net/glassfish/wiki-archive/attachments/20875240/21365173.pdf">sun-domain_1_3.dtd</a></li> 
+      <li><a href="http://download.java.net/glassfish/wiki-archive/attachments/20875240/21365176.pdf">Diff</a> v2 to 3.1 default-config.xml</li> 
+      <li><a href="GrizzlyConfigOnePager.html" title="GrizzlyConfigOnePager">v3 Grizzly Config OnePager </a></li> 
+     </ul> 
+     <hr> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875240/21365172.pdf">31default-config.html.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875240/21365173.pdf">sun-domain_1_3.dtd.html.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875240/21365174.pdf">Diff_of_v2_vs_v3_server-config.html.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875240/21365175.pdf">31default-config.xml_with_notes.html.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875240/21365176.pdf">v2default-config_31default-config.html.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875240/21365177.pdf">Diff_of_v2_server-config_and_default-config.html.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875240/21365178.pdf">Unified_Dif_v2_to_31_default-config.xml.html.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875240/21365164.pdf">31default-config.xml_with_notes-2.html.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875240/21365163.pdf">v2default-config.xml.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875240/21365166.pdf">31default-config-proposed.xml.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875240/21365165.pdf">sun-domain_1_3.dtd.pdf</a> (application/pdf) 
+      <br> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Dec 01, 2011 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

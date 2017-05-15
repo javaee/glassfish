@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : 3.1PlatformServices</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="3.1PlatformServices-PlatformServicesforGlassFish3.1"></a>Platform Services for GlassFish 3.1</h1> <p>Platform Services are capabilities provided by the different operating system platforms. In Solaris 10 it is SMF (Solaris Management Framework), on Linux and other UNIX flavors including older Solaris systems it is controlled by daemons that read special configuration files. On Windows, a Services framework is provided that uses a special API.</p> <p>Goals for later versions of GlassFish:</p> 
+     <ul> 
+      <li>seamless use of services for life-cycle management. E.g. when you run 'asadmin stop-domain' it would check and see if the domain is running as a service or not and then act accordingly.</li> 
+      <li>Support services on all supported platforms</li> 
+     </ul> <p>Unfortunately this is beyond the scope of 3.1. It will require 3-6 man months of work.</p> <h4><a name="3.1PlatformServices-WhatdowecurrentlysupportinGlassFish3.x%3F"></a>What do we currently support in GlassFish 3.x ?</h2> 
+     <ul> 
+      <li>Supported Platforms are Solaris 10 with SMF and Windows</li> 
+      <li>asadmin has the <em>create-service</em> command which creates the service on either of the supported platforms.&nbsp; Domains are supported only.</li> 
+      <li>After creating – the user is on his own – all start/stop/uninstall operations have to be done directly with the platform. We document <b>how</b> to do it. <h4><a name="3.1PlatformServices-WhatCANwedofor3.1%3F"></a>What CAN we do for 3.1?</h2></li> 
+      <li>Add support for Linux: Oracle Enterprise Linux, Redhat Enterprise Linux, Ubuntu</li> 
+      <li>Add support to create services for instances</li> 
+     </ul> <h4><a name="3.1PlatformServices-Commands"></a>Commands</h2> 
+     <ul> 
+      <li>create-service – Sets up services for DAS</li> 
+      <li>create-instance-service – Sets up services for an instance</li> 
+     </ul> <h4><a name="3.1PlatformServices-WhatareFutureGoalsfor3.2andonwards%3F"></a>What are Future Goals for 3.2 and onwards?</h2> 
+     <ul> 
+      <li>start/stop/list/uninstall commands&nbsp; for controlling all aspects of the services from within asadmin</li> 
+      <li>Add an attribute to the server element in domain.xml specifying when a server is a service 
+       <ul> 
+        <li>Elegant Solution: We don't write special life-cycle commands. Instead existing commands like stop-instance would make special Services call if that instance is running as a service.</li> 
+       </ul> </li> 
+      <li>Support more platforms -- MAC, HPUX(?), Solaris w/o SMF, other flavors of Linux</li> 
+      <li>Tight sophisticated 2way integration</li> 
+     </ul> <h4><a name="3.1PlatformServices-BestPracticeswhenRunningAsAService"></a>Best Practices when Running As A Service</h2> <p>The overall rule is to use the same tools for handling life-cycle.&nbsp; If you setup a remote instance as a service then you should allow the services implementation of the operating system to do all the starting, stopping and restarting.&nbsp; If you are using services to control the life-cycle of your server(s) then you shouldn't use the life-cycle control commands that GlassFish provides:</p> 
+     <ul> 
+      <li>start-instance</li> 
+      <li>start-domain</li> 
+      <li>start-local-instance</li> 
+      <li>stop-instance</li> 
+      <li>stop-domain</li> 
+      <li>stop-local-instance</li> 
+      <li>restart-instance</li> 
+      <li>restart-domain</li> 
+      <li>start-cluster</li> 
+      <li>stop-cluster</li> 
+     </ul> <p>Instead -- use the capabilities of your platform services.&nbsp; They are just as easy to use.&nbsp; You can also control <em>remote</em> services with the built-in platform tools.</p> <h4><a name="3.1PlatformServices-FailureModeHandlingFAQ"></a>Failure Mode Handling FAQ</h2> <p>Q: Remote server is started by asadmin, user goes to services to stop the instance. What happens?</p> <p>A: Windows and Solaris/SMF did not start it so they will not be able to see it or stop it.&nbsp; Linux and non-SMF Solaris are very low-level.&nbsp; Stopping via services will work because it will just run a simple script command.</p> <p>Q: Remote server is started by service; user stops the server using asadmin (stop-cluster or stop-instance). What happens?</p> <p>A: The service notices that the server stopped.&nbsp; It is marked as not-running. There are ways, depending on the platform, to have the operating system services automatically restart for you.&nbsp; That is beyond the scope for GlassFish.&nbsp; To set that up you'll need to study your platform's services.</p> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Aug 05, 2010 by 
+<font color="#0050B2">bnevins</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

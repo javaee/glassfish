@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFishFAQ</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p><b>DEPRECATED. See <a href="GlassFishUserFAQ.html" title="GlassFishUserFAQ">GlassFishUserFAQ</a> and <a href="GlassFishDeveloperFAQ.html" title="GlassFishDeveloperFAQ">GlassFishDeveloperFAQ</a> instead.</b></p> 
+     <div> 
+      <ul> 
+       <li><a href="#GlassFishFAQ-WhatisaReferenceImplementation">What is a Reference Implementation</a></li> 
+       <li><a href="#GlassFishFAQ-WhatisthedifferencebetweenSunOne%2CSJSAS%2CandGlassFish%3F">What is the difference between SunOne, SJSAS, and GlassFish?</a></li> 
+       <li><a href="#GlassFishFAQ-WhatisthesupportmodelforGlassFish">What is the support model for GlassFish</a></li> 
+       <li><a href="#GlassFishFAQ-Whatarethelicensingterms%3FIsitOKtouseinproductionenvironment%3F">What are the licensing terms? Is it OK to use in production environment?</a></li> 
+       <li><a href="#GlassFishFAQ-DowehaveanyperformancebenchmarknumbersforGlassFish%3F">Do we have any performance benchmark numbers for GlassFish?</a></li> 
+       <li><a href="#GlassFishFAQ-WhatarethecompellingreasonstomoveawayfromWeblogic%2CWebsphereorJBoss%3F">What are the compelling reasons to move away from Weblogic, Websphere or JBoss?</a></li> 
+       <li><a href="#GlassFishFAQ-WhyisSungivingitfree%3F">Why is Sun giving it free?</a></li> 
+       <li><a href="#GlassFishFAQ-Isitanewproject%3FIstheproductoutyet%3F">Is it a new project? Is the product out yet?</a></li> 
+       <li><a href="#GlassFishFAQ-WhyistheprojectcalledGlassFish%3F">Why is the project called GlassFish?</a></li> 
+       <li><a href="#GlassFishFAQ-SupportforSpringinGlassFish%2CwhyGlassFishoverotherlightweightframeworkslikeSpring.">Support for Spring in GlassFish, why GlassFish over other light-weight frameworks like Spring.</a></li> 
+      </ul>
+     </div> <h4><a name="GlassFishFAQ-WhatisaReferenceImplementation"></a>What is a Reference Implementation</h2> <p>A Reference Implementation is one of the official deliverables in the Java Community Process (together with a Specification and a Technology Compatibility Kit). We usually say that Project GlassFish is the RI for Java EE, but, strictly speaking an RI is a binary executable, so the RI for Java EE 5 really corresponds to a specific snapshot of the code in Project GlassFish. An RI can range from a proof-of-concept to a commercial product. Project GlassFish is fully <b>production quality</b> and it is used in a number of <a href="Products.html" title="Products">Products</a>.</p> <p>Also see <a href="http://blogs.oracle.com/theaquarium/entry/references_implementations_and_production_implementations">RI and PI</a>, <br> <a href="http://blogs.oracle.com/theaquarium/entry/things_you_may_have_missed">20 Facts about GlassFish</a></p> <h4><a name="GlassFishFAQ-WhatisthedifferencebetweenSunOne%2CSJSAS%2CandGlassFish%3F"></a>What is the difference between SunOne, SJSAS, and GlassFish?</h2> <p>SunOne is an old branding which was replaced by Sun Java System some time ago. Sun Java System Application Server is the supported version of GlassFish. Specifically, SJSAS 9.0 PE and GlassFish v1 are the same bits (except for the installer). Similarly SJS AS 9.1 and GlassFish v2 will be the same.</p> <h4><a name="GlassFishFAQ-WhatisthesupportmodelforGlassFish"></a>What is the support model for GlassFish</h2> <p>At this point you can <a href="http://store.sun.com/CMTemplate/CEServlet?process=SunStore&amp;cmdViewProduct_CP&amp;catid=150588">buy support</a> for SJSAS 9.0 from Sun for any deployment of GlassFish. Community support is available online (via forums and mailing lists). You can find more details <a href="http://blogs.oracle.com/theaquarium/entry/commercial_support_for_glassfish">here</a>.</p> <h4><a name="GlassFishFAQ-Whatarethelicensingterms%3FIsitOKtouseinproductionenvironment%3F"></a>What are the licensing terms? Is it OK to use in production environment?</h2> <p>Yes, you can use it in deployment. See these <a href="http://blogs.oracle.com/stories">adoption stories</a> for people who have already done this.</p> <h4><a name="GlassFishFAQ-DowehaveanyperformancebenchmarknumbersforGlassFish%3F"></a>Do we have any performance benchmark numbers for GlassFish?</h2> <p>Yes, GlassFish is the only Open Source application server that has published <a href="http://www.spec.org/jAppServer2004/results/jAppServer2004.html">SPECjAppServer2004 results</a> with 521 JOPS. GlassFish v2 (due in September 2007) is expected to provide better results yet.</p> <h4><a name="GlassFishFAQ-WhatarethecompellingreasonstomoveawayfromWeblogic%2CWebsphereorJBoss%3F"></a>What are the compelling reasons to move away from Weblogic, Websphere or JBoss?</h2> <p>GlassFish is open source, has a growing vibrant and open community. It implements Java EE 5 today with very good performance. The broader GlassFish community also provides portal, ESB, SSO, federation, directory, database sister Open Source projects.</p> <h4><a name="GlassFishFAQ-WhyisSungivingitfree%3F"></a>Why is Sun giving it free?</h2> <p>Ubiquity and lower barrier to adoption are key to adoption. We also believe in better products, closer to customer. Sun gets revenue from selling training, support, consulting and systems. The key in Sun's strategy is to make the pie bigger so the (already big) portion gets bigger too.</p> <h4><a name="GlassFishFAQ-Isitanewproject%3FIstheproductoutyet%3F"></a>Is it a new project? Is the product out yet?</h2> <p>GlassFish was announced at JavaOne 2005. The initial contributions were from Sun's Application Server (8.x) and Oracle's TopLink. Release GlassFish v1, a fully-compliant Java EE 5 product, was made available in May 2006. GlassFish v2 is scheduled for April 2007.</p> <h4><a name="GlassFishFAQ-WhyistheprojectcalledGlassFish%3F"></a>Why is the project called GlassFish?</h2> <p>Because we do things transparently! <a href="http://glassfish.java.net">Here</a> and <a href="GlassFishWiki.html" title="GlassFishWiki">here</a>. See also the <a href="GlassFishPrinciples.html" title="GlassFishPrinciples">GlassFish Principles</a> and the <a href="https://glassfish.java.net/public/GovernancePolicy.html">Governance Policy</a>.</p> <h4><a name="GlassFishFAQ-SupportforSpringinGlassFish%2CwhyGlassFishoverotherlightweightframeworkslikeSpring."></a>Support for Spring in GlassFish, why GlassFish over other light-weight frameworks like Spring. </h2> <p>It's not an either/or decision. Please read this <a href="http://blogs.oracle.com/theaquarium/entry/glassfish_and_spring_vs_jboss">Aquarium entry</a> and this <a href="http://blogs.oracle.com/stories/entry/wotif">Wotif Adoption story</a> about using GlassFish together with Spring.</p> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 02, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:49.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

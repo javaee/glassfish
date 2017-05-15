@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GFV3ExtensibilityOnePager</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GFV3ExtensibilityOnePager-GlassFishV3ExtensibilityOnePager"></a>GlassFish V3 Extensibility One Pager</h1> <p>[</p> 
+     <div class="error">
+      <span class="error">Unknown macro: {TableOfContents title=' '}</span> 
+     </div> <p>|(TableOfContentstitle='')]</p> <h4><a name="GFV3ExtensibilityOnePager-1.Introduction"></a>1. Introduction</h1> <h4><a name="GFV3ExtensibilityOnePager-1.1.Project%2FComponentWorkingName%3A"></a>1.1. Project/Component Working Name: </h2> <p>Pluggability and Extensibility.</p> <h4><a name="GFV3ExtensibilityOnePager-1.2.Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier%3A"></a>1.2. Name(s) and e-mail address of Document Author(s)/Supplier:</h2> <p>Sreenivas Munnangi, sreenivas.munnangi@sun.com<br> Nandini Ektare (ne110415@dev.java.net)</p> <h4><a name="GFV3ExtensibilityOnePager-1.3.DateofThisDocument%3A"></a>1.3. Date of This Document:</h2> <p>12/11/08: first version<br> 02/05/09: modified based on Jerome's feedabck</p> <h4><a name="GFV3ExtensibilityOnePager-2.ProjectSummary"></a>2. Project Summary</h1> <h4><a name="GFV3ExtensibilityOnePager-2.1.ProjectDescription%3A"></a>2.1. Project Description:</h2> <p>Provide for extending the application server functionality by enabling the integration of OSGi modules, JARs, and v2 like add-ons. Enable distribution of add-ons to given targets similar to Java EE application. Integration with Update Center 2.0 for managing IPS repository contents. </p> <h4><a name="GFV3ExtensibilityOnePager-2.2.RisksandAssumptions%3A"></a>2.2. Risks and Assumptions:</h2> <p>The add-on dependencies are assumed to be resolved by <a href="http://wikis.sun.com/display/IpsBestPractices/ImagePackagingSystemBestPractices">IPS</a> infrastructure.</p> <p>Depends on deployment and synchronization infrastructure for deployment of add-on and synchronization to remote instances respectively.</p> <p>Usability issues for which we have to discuss with individual providers and determine the ease of use requirements.</p> <p>Rollback will be confined to what the deployment infrastructure provides. </p> <p>While extensibility remains at the top of the teams priorities, its implementation is determined the availability of resources and changing priorities. The complete implementaion may be delivered in phases depending on priority of each release.</p> <h4><a name="GFV3ExtensibilityOnePager-3.ProblemSummary"></a>3. Problem Summary</h1> <h4><a name="GFV3ExtensibilityOnePager-3.1.ProblemArea%3A"></a>3.1. Problem Area:</h2> <p>The extensibility infrastructure provides the ability to extend application server functionality through add-ons. The add-on could be a combination of OSGi module, v2 like add-on, Java EE application or a simple jar. </p> <p>One of the severe limitations of <a href="http://wiki.java.net/bin/view/Projects/AddonInterfaces">add-ons in previous version</a> is that the add-ons were confined to DAS and could not be distributed to clusters/stand-alone instances. We would like to enhance the utility of add-ons in this release by allowing for deployment to clusters and instances in addition to DAS. At the same time provide for operations similar to java ee applications, like deployment to a given target, along with scalability and high availability. </p> <h4><a name="GFV3ExtensibilityOnePager-3.2.Justification%3A"></a>3.2. Justification:</h2> <p>Limited v2 functionality of add-on is enhanced by enabling the deployment of add-ons to clusters/instances along with scalability and availability.</p> <h4><a name="GFV3ExtensibilityOnePager-4.TechnicalDescription%3A"></a>4. Technical Description:</h1> <p>Continuing on the <a href="./GFV3PluggabilityOnePager.html">prelude infrastructure</a>, provide for extending the application server functionality by enabling the integration of OSGi modules, and v2 like add-ons. </p> <p>Provide infrastructure for MDS (Module Distribution System) which enables downloading the add-ons from a given <a href="http://wiki.updatecenter.java.net/Wiki.jsp?page=UC20Plan">Update Center 2.0</a> repository and distribute it to specified targets like clusters and stand-alone instances. Also allows for life-cycle operations like install/uninstall, and enable/disable of the add-ons on specified targets.</p> <p>Subsequently, add-on means any of the type mentioned above including OSGi modules, v2 like add-ons, Java EE Application, and JAR archive. Any of these types could be distributed through Update Center repository as an add-on.</p> <h4><a name="GFV3ExtensibilityOnePager-4.1.Details%3A"></a>4.1. Details:</h2> <p>One can create add-on using the <a href="./GFV3PluggabilityOnePager.html">pluggability API</a> (Configuration, CLI, Monitoring, Deployment, GUI) and proposed extensibility API. </p> <p>Configuration pluggability will ensure that a new module's(contianer's) minimum/default configuration is picked up the first time the module(container) is loaded and this configuration is merged into the domain.xml (refer to the <a href="./V3AdminInfrastructureFS#section-V3AdminInfrastructureFS-4.1.1.6MinifyTheDomain.xml.html">Administration Infrastructure One Pager requirement</a></p> <p>The extensibility infrastructure essentially provides for handling a composite application called add-on similar to ear which can hold both Java EE and non Java EE modules. Java EE modules include war, ear, jar(acc), jar(ejb) and rar. Non Java EE types include OSGi bundle, and Java Archive (JAR). In addition, the extensibility infrastructure enables running of user defined functionality called AdminAction while deploying the add-on contents in defined sequence. The AdminAction interface defines the methods which need to be implemented by the add-on. V3 infrastructure can inject CommandRunner and other pertinent resources while invoking user defined AdminAction. User defined functions typically include various asadmin operations, modifying domain.xml, copying ant setup.xml, running ant script, updating classpath, etc. similar to v2. Refer to interfaces section for details.</p> <p>AdminAction assumes familiarity with several exposed API and caters to complex situations. For users who want to develop simple add-ons who are usually familiar with asadmin commands, we may provide something similar to asadmin script with place holders for certain variables like target which will be token replaced by extensibility infrastructure at the time of deployment. This needs to be understood better and seek asarch recommendations.</p> <p>It is proposed to use the existing deployment infrastructure for deployment and undeployment of add-ons. It makes lot of sense to use existing deployment infrastructure as it has support for persisting applications, running cli commands for applications, synchronization, scalaibility and availability. The deplyoment infrastructure needs to be enhanced for add-on container to invoke deployment API from within add-on container, for ex. sniffer support for embedded modules. Similar to other containers, add-on container will support the deployment of add-ons and invoke user defined AdminAction(s) as part of deployment.</p> <p>Once the add-on is created using pluggability API and extensibility API, it can be made available through Update Center repository using IPS. The client application server image can then download the add-on package from UC repository. The downloaded package is just a payload whose contents need to be understood before acting on them. For example, the payload may contain any and/or a combination of the module types Java EE Application, OSGi bundle, JAR, v2 like add-on. </p> <p>The add-on descriptor (similar to Java EE application.xml) describes the contents and the order in which they have to be deployed/installed. For ex. the module element contains the module id for osgi bundle, j2ee application, jar, and user defined AdminAction. Based on the order of definition, each of the modules is deployed using respective sniffer/container pair. There is no common classloader at the level of add-on. When it is osgi, the bundle is copied to glassfish/modules using OSGi sniffer, if it is jar then it is copied to glassfish/lib, j2ee app is deployed using corresponding sniffer, if defined, AdminAction is invoked. It is expected that the admin action is deployed mostly as osgi bundles before they are invoked. The developer can use the above combination to acheive a custom behavior. </p> <p>While the deployment happens in the order the Modules and AdminActions are defined, the loading is performed by the respective sniffer/container.</p> <p>The deployment to cluster depends on how clustering and synchronization evolve for v3. One thought is to transfer the bits and perform complete deployment (including generation) on each remote instance to avoid sync. issues. Another thought is similar to what is being done in v2. First the deployment is performed on DAS and the corresponding remote instances are notified of the config change. The remote instance then initiates synchronization with the DAS and receives the add-on artifacts and loaded. If non-das is true then the AdminAction is invoked on the non-das remote instance.</p> <p><b>Picture below shows high level design of v3 Extensibility.</b> </p> <p><span class="error">Cannot resolve external resource into attachment.</span></p> <p>Following section discuss specific design details for each of the module types handled by add-on container.</p> <h4><a name="GFV3ExtensibilityOnePager-4.1.1.Addonmodule%3A"></a>4.1.1. Add-on module:</h3> <p>Based on the discussion so far, it would have been obvious that the add-on type is a combination of above module types with customizations. The add-on module will have descriptor which lists the contents of add-on and the order in which they have to be processed. The list can also include AdminAction(s). The add-on module is persisted in domain.xml as a composite-application.</p> <p>Pl. see interfaces section for proposed add-on descriptor and composite-application details.</p> <p>To check for any updates in the Update Center 2.0 Repository, it should be possible to determine the current versions based on the info in domain.xml. To store the add-on module info. and the corresponding IPS packgae (name, version, state), we plan to use composite-application element as described in interfaces scetion.</p> <p>As stated earlier, the add-on may have a combination of OSGi bundle, Java EE Application, JAR, and AdminAction. Following sections describe each of these types in detail.</p> <h4><a name="GFV3ExtensibilityOnePager-4.1.2.OSGiBundle%3A"></a>4.1.2. OSGi Bundle:</h3> <p>Let us assume that MDS (Module Distribution System which is a client of Extensibility API) detects a new IPS package whose payload is an OSGi bundle which does not exist in the application server. The IPS package is first downloaded by MDS to &lt;applications&gt;/my_osgi_bundle.jar. Then the OSGi bundle is deployed (on DAS) to the specified target using deployment API. The OSGi container will sniff the OSGi bundle and copies the OSGi bundle jar to the &lt;glassfish&gt;/modules directory. This is the default action for OSGI bundle. </p> <p>If the target is a cluster the deployment is done similar to Java EE application as described above. </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;!ELEMENT osgi-module (description?, property*)&gt;
+
+&lt;!ATTLIST osgi-module 
+    name CDATA #REQUIRED
+    location CDATA #REQUIRED
+    object-type %object-type; "user"
+    enabled %boolean; "true"&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>It is possible to perform customization by implementing AdminAction interface provided by extensibility API. If the add-on descriptor contains the AdminAction then the add-on container invokes the AdminAction as specified in the descriptor. </p> <p>When MDS is asked to remove the OSGi package, deplyment api (similar to asadmin undeploy --target) is invoked, the add-on container performs the steps in reverse order as defined in the add-on descriptor. </p> <p>It is possible to enable or disable the module during lifecycle similar to Java EE application. Whenever asadmin enable/disable command is issued then the add-on container will invoke the corresponding implementaion provided by the module for enable/disable in its AdminAction. If it has multiple AdminActions then all of them will be accessed and whichever has corresponding method will be invoked.</p> <h4><a name="GFV3ExtensibilityOnePager-4.1.3.JavaArchiveJAR%3A"></a>4.1.3. Java Archive JAR:</h3> <p>Java Archive will be handled similar to OSGi bundle as described in 4.1.2 except that the jar is copied to &lt;glassfish&gt;/lib instead of &lt;glassfish&gt;/modules.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;!ELEMENT jar-module (description?, property*)&gt;
+
+&lt;!ATTLIST jar-module 
+    name CDATA #REQUIRED
+    location CDATA #REQUIRED
+    object-type %object-type; "user"
+    enabled %boolean; "true"&gt;</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="GFV3ExtensibilityOnePager-4.1.4.JavaEEApplication%28WAR%2CEAR%2CRAR%2CEJBModule%2CACCModule%29%3A"></a>4.1.4. Java EE Application (WAR, EAR, RAR, EJB Module, ACC Module):</h3> <p>If the module is one of the standard Java EE types then the module is deployed in the usual manner. If it is part of add-on then the add-on descriptor is consulted to verify the processing order and to invoke any AdminAction. Add-on container needs a way to access deployment API internally to facilitate this. The property element of the module is used to store the corresponding IPS package info otherwise we do not know whether it is a part of IPS package. This package info is critical for determining updates and for cleanup.</p> <p>It is possible for the add-on to get into an inconsistent state either because of partial deployment or because some one manually undeployed the contents of add-on. Extensibility infrastructure needs some support from Java EE containers to handle this situation by not allowing undeployment based on the prersence of certain add-on property. This allows for a proper cleanup by the extensibility infrastructure.</p> <p>For each of the Java EE applications, the corresponding sniffer/container pair are invoked.</p> <h4><a name="GFV3ExtensibilityOnePager-4.1.5.v2addon%3A"></a>4.1.5. v2 add-on:</h3> <p>Though v2 compatability is important, considering the lack of similar infrastructure in v3, we need to assess and determine how best to address this. For ex. in v3 we do not have support for lifecycle modules, add-on infrastructure similar to v2. </p> <p>However, we can address some of the issues in v3 as given below.</p> 
+     <ul> 
+      <li>Lifecycle module in v2: We can implement a lifecycle container similar to v2 by exposing an interface and invoking the lifecycle implementation based on certain events like startup, shutdown.</li> 
+      <li>In v2 we allowed the modification of classpath which can be done in v3 by modifying classpath-suffix thru config API.</li> 
+      <li>Expose v2 interfaces for Installer and Configurator.</li> 
+     </ul> <h4><a name="GFV3ExtensibilityOnePager-4.2.Bug%2FRFENumber%28s%29%3A"></a>4.2. Bug/RFE Number(s):</h2> <p>List any Bug(s)/RFE(s) which will be addressed by this proposed change.</p> <p>Provide links to the Issue tracker Bug(s)/RFE(s)where possible</p> <h4><a name="GFV3ExtensibilityOnePager-4.3.InScope%3A"></a>4.3. In Scope:</h2> <p>Extensibility API and infrastructure for Module Distribution System (MDS).</p> <h4><a name="GFV3ExtensibilityOnePager-4.4.OutofScope%3A"></a>4.4. Out of Scope:</h2> <p>Implementation details of MDS.<br> API to provide for high availability such as in-memory replication, HADB.</p> <h4><a name="GFV3ExtensibilityOnePager-4.5.Interfaces%3A"></a>4.5. Interfaces:</h2> <p>Interfaces are a major part of Architectural review.<br> Commands, Files, Directory Layout, Ports, DTD/Schema, admin tools, <br> config files, APIs, CLIs, and almost anything that is externally <br> observable is an interface. In 1-Pager it is necessary to document <br> any interface that can be used by external projects and products. <br> Documented public interfaces must be assigned a stability level.<br> Some commonly used Stability levels in prior projects are: </p> <p>&lt;pre&gt;<br> Stable : Widely used public interface. changed very rarely.<br> Standard : Defined by a standards body (e.g: JDBCv3). Rare but <br> incompatible clarifications and changes could occur <br> in a standard. Product will specify version of std <br> supported. J2SE, J2EE and WS* are classified <br> as Standard.<br> Evolving : Subject to carefully controlled but possibly <br> incompatible change at a major or minor release. <br> When a change is made all efforts will be made <br> to address incompatiblity and migration. All <br> incompatibilities will need to be reviewed <br> and approved by as-ccc@sun.com. <br> Unstable : Early access, subject to unrestricted degree of <br> change. A few App Server interfaces are classified <br> as Unstable. Docs must call out exported unstable <br> interfaces. Be wary of importing Unstable interfaces.<br> External : Defined external to GlassFish Application Server, <br> but not by a Standards body. Suitable for describing<br> other freeware, open source interfaces.<br> <a href="http://www.opensolaris.org/os/community/arc/policies/interface-taxonomy/">http://www.opensolaris.org/os/community/arc/policies/interface-taxonomy/</a> describes the permitted interface taxonomy.<br> &lt;/pre&gt;</p> <h4><a name="GFV3ExtensibilityOnePager-4.5.1ExportedInterfaces"></a>4.5.1 Exported Interfaces</h3> <p>Disclose all interfaces that this project exports.</p> 
+     <ul> 
+      <li>Interface: add-on container similar to jruby container</li> 
+      <li>Stability:</li> 
+      <li>Former Stability (if changing):</li> 
+      <li>Comments:</li> 
+     </ul> 
+     <ul> 
+      <li>Interface: add-on descriptor similar to ear descriptor</li> 
+      <li>Stability:</li> 
+      <li>Former Stability (if changing):</li> 
+      <li>Comments:</li> 
+     </ul> <p>The add-on descriptor (similar to Java EE application.xml) describes the contents and the order in which they have to be deployed/installed. For ex. the module element contains the module id for osgi bundle, j2ee application, jar, and user defined AdminAction. Based on the order of definition, each of the modules is deployed using respective sniffer/container pair. There is no common classloader at the level of add-on. When it is osgi, the bundle is copied to glassfish/modules using OSGi sniffer, if it is jar then it is copied to glassfish/lib, j2ee app is deployed using corresponding sniffer, if defined, AdminAction is invoked. The developer can use a specific combination to acheive a custom behavior. </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;!ENTITY % boolean "(true | false)"&gt;
+
+&lt;!ELEMENT add-on    (modules, property*)&gt;
+&lt;!ATTLIST add-on    name CDATA #REQUIRED
+                    version CDATA #REQUIRED
+                    description CDATA #IMPLIED&gt;
+
+&lt;!ELEMENT modules   ((module | admin-action)*)&gt;
+
+&lt;!ELEMENT module    (#PCDATA)&gt;
+&lt;!ATTLIST module    name CDATA #REQUIRED&gt;
+
+&lt;!ELEMENT admin-action      (#PCDATA)&gt;
+&lt;!ATTLIST admin-action      name CDATA #REQUIRED
+                    non-das %boolean; "false"&gt;
+
+&lt;!ELEMENT property (description?)&gt;</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>Interface: AdminAction</li> 
+      <li>Stability:</li> 
+      <li>Former Stability (if changing):</li> 
+      <li>Comments:</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;!ELEMENT admin-action      (#PCDATA)&gt;
+&lt;!ATTLIST admin-action      name CDATA #REQUIRED
+                            non-das %boolean; "false"&gt;</pre> 
+       </div> 
+      </div>
+     </div> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Contract
+public interface AdminAction { 
+
+    // inject ServerContext sc, CommandRunner cr, 
+
+    public void execute() throws AddonException;
+
+    public void enable() throws AddonException;
+
+    public void disable() throws AddonException;
+
+    public void cleanup() throws AddonException;
+}</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>Interface: composite-application</li> 
+      <li>Stability:</li> 
+      <li>Former Stability (if changing):</li> 
+      <li>Comments:</li> 
+     </ul> <p>Enhance applications element to include osgi-module and jar-module as described above.<br> Also, in addition to the regular attributes, each of the Java EE application/module will have an additinal attribute to store the composite-application name when they are part of composite-application or add-on. This helps distinguish the applications/modules which are deployed as part of add-on. </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;!ELEMENT composite-application    
+                    (property*, composite-application-config)&gt;
+&lt;!ATTLIST composite-application    
+                    name CDATA #REQUIRED
+                    version CDATA #REQUIRED
+                    description CDATA #IMPLIED
+                    location CDATA #REQUIRED
+                    object-type %object-type; "user"
+                    enabled %boolean; "true"
+                    availability-enabled %boolean; "false"&gt;
+&lt;!ELEMENT property (description?)&gt;
+&lt;!ELEMENT composite-application-config (#PCDATA)&gt;</pre> 
+       </div> 
+      </div>
+     </div> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">/**
+ * Tag interface for composite-application related configuration. 
+ */
+@Configured
+public interface CompositeApplication extends ConfigBeanProxy, Named {
+}</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>Interface: lifecycle interface (similar to lifecycle module in v2)</li> 
+      <li>Stability:</li> 
+      <li>Former Stability (if changing):</li> 
+      <li>Comments:</li> 
+     </ul> <p><a href="http://docs.sun.com/app/docs/doc/819-3672/beamc?a=view">Developing lifecycle listeners</a><br> <a href="https://glassfish.java.net/nonav/javaee5/api/com/sun/appserv/server/package-summary.html">Package com.sun.appserv.server API for lifecycle module</a><br> <a href="http://docs.sun.com/app/docs/doc/819-3675/create-lifecycle-module-1?a=view">create-lifecycle-module</a></p> <h4><a name="GFV3ExtensibilityOnePager-4.5.2Importedinterfaces"></a>4.5.2 Imported interfaces</h3> <p>Disclose interfaces this project imports. </p> 
+     <ul> 
+      <li>Interface: GlassFish <a href="http://wiki.java.net/bin/view/Projects/AddonInterfaces">v2 add-on interfaces</a> for install, configure and upgrade</li> 
+      <li>Stability:</li> 
+      <li>Exporting Project: Name, Specification or other Link.</li> 
+      <li>Comments:</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">AddonVersion: AddonVersion object represents the version in terms of major, minor and patch level.
+Configurator: Name of an implementation of this interface will be configured in the META-INF/services/com.sun.appserv.addons.Configurator file.
+Installer: Name of an implementation of this interface will be put in the META-INF/services/com.sun.appserv.addons.Installer file of the addon installer jar file.</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>Interface: GlassFish <a href="./GFV3PluggabilityOnePager.html">v3 Pluggability API</a></li> 
+      <li>Stability:</li> 
+      <li>Exporting Project: Name, Specification or other Link.</li> 
+      <li>Comments:</li> 
+     </ul> 
+     <ul> 
+      <li>Interface: Handling of new add-on type by deployment</li> 
+      <li>Stability:</li> 
+      <li>Exporting Project: Name, Specification or other Link.</li> 
+      <li>Comments:</li> 
+     </ul> 
+     <ul> 
+      <li>Interface: <a href="http://www.opensolaris.org/os/project/pkg/">IPS API</a></li> 
+      <li>Stability:</li> 
+      <li>Exporting Project: Name, Specification or other Link.</li> 
+      <li>Comments:</li> 
+     </ul> 
+     <ul> 
+      <li>Interface: GlassFish <a href="./ContainerSPI.html">v3 Container SPI</a></li> 
+      <li>Stability:</li> 
+      <li>Exporting Project: Name, Specification or other Link.</li> 
+      <li>Comments:</li> 
+     </ul> 
+     <ul> 
+      <li>Interface: GlassFish v3 Deployment API</li> 
+      <li>Stability:</li> 
+      <li>Exporting Project: Name, Specification or other Link.</li> 
+      <li>Comments:</li> 
+     </ul> 
+     <ul> 
+      <li>Interface: Update Center <a href="http://wiki.updatecenter.java.net/Wiki.jsp?page=UC20Plan">2.0 API</a></li> 
+      <li>Stability:</li> 
+      <li>Exporting Project: Name, Specification or other Link.</li> 
+      <li>Comments:</li> 
+     </ul> 
+     <ul> 
+      <li>Interface: <a href="https://glassfish.java.net/nonav/v3/admin/planning/V3Changes/V3_AMX_SPI.html">AMX API</a></li> 
+      <li>Stability:</li> 
+      <li>Exporting Project: Name, Specification or other Link.</li> 
+      <li>Comments:</li> 
+     </ul> <h4><a name="GFV3ExtensibilityOnePager-4.5.3Otherinterfaces%28Optional%29"></a>4.5.3 Other interfaces (Optional)</h3> <p>Following are the private interfaces and mentioned here just for reference</p> 
+     <ul> 
+      <li>install location of downloaded IPS package</li> 
+      <li>install location of application server and relative paths for copying OSGi bundle, JAR</li> 
+     </ul> <h4><a name="GFV3ExtensibilityOnePager-4.6.DocImpact%3A"></a>4.6. Doc Impact:</h2> <p>List any Documentation (man pages, manuals, service guides...) that will be impacted by this proposal.</p> <h4><a name="GFV3ExtensibilityOnePager-4.7.Admin%2FConfigImpact%3A"></a>4.7. Admin/Config Impact:</h2> 
+     <ul> 
+      <li>add-on container may have its own config</li> 
+      <li>applications element need to be modified to add version, state</li> 
+     </ul> <h4><a name="GFV3ExtensibilityOnePager-4.8.HAImpact%3A"></a>4.8. HA Impact:</h2> <p>What new requirements does this proposal place on the High Availability or Clustering aspects of the component?</p> <h4><a name="GFV3ExtensibilityOnePager-4.9.I18N%2FL10NImpact%3A"></a>4.9. I18N/L10N Impact:</h2> <p>Does this proposal impact internationalization or localization?</p> <h4><a name="GFV3ExtensibilityOnePager-4.10.Packaging%26Delivery%3A"></a>4.10. Packaging &amp; Delivery:</h2> <p>IPS with manifest entries to determine the types of modules conatined in the package. Do we need any other information like order of deploying/loading modules ?</p> <h4><a name="GFV3ExtensibilityOnePager-4.11.SecurityImpact%3A"></a>4.11. Security Impact:</h2> <p>How does this proposal interact with security-related APIs or interfaces? Does it rely on any Java policy or platform user/permissions implication? If the feature exposes any new ports, Or any similar communication points which may have security implications, note these here.</p> <h4><a name="GFV3ExtensibilityOnePager-4.12.CompatibilityImpact"></a>4.12. Compatibility Impact</h2> <p>Version v2 add-on may not be supported as is.</p> <h4><a name="GFV3ExtensibilityOnePager-4.13.Dependencies%3A"></a>4.13. Dependencies:</h2> 
+     <ul> 
+      <li>Deployment infrastructure</li> 
+      <li>Pluggability Infrastructure</li> 
+      <li>Imported interfaces 4.5.2</li> 
+      <li>Configuration pluggability <a href="./V3AdminInfrastructureFS#section-V3AdminInfrastructureFS-4.1.1.6MinifyTheDomain.xml.html">Administration Infrastructure One Pager requirement</a></li> 
+     </ul> <h4><a name="GFV3ExtensibilityOnePager-5.ReferenceDocuments%3A"></a>5. Reference Documents:</h1> <p><a href="./ContainerSPI.html">GlassFish v3 Contianer SPI</a><br> <a href="./Gfv3DeploymentOnePager.html">GlassFish v3 deployment one pager</a><br> <a href="./GFV3PluggabilityOnePager.html">GlassFish v3 pluggability one pager</a><br> <a href="http://wiki.glassfish.java.net/attach/V3FunctionalSpecs/GFv3-OSGi-onepager-v0.2.txt">OSGi related enhancements in GlassFish v3.0</a></p> <h4><a name="GFV3ExtensibilityOnePager-6.Schedule%3A"></a>6. Schedule:</h1> <h4><a name="GFV3ExtensibilityOnePager-6.1.ProjectedAvailability%3A"></a>6.1. Projected Availability:</h2> <p>Dates in appropriate precision (quarters, years)</p> 
+     <hr> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20873428/21364793.jpg">extensibility_onepager_design.jpg</a> (image/pjpeg) 
+      <br> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 09, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:44.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

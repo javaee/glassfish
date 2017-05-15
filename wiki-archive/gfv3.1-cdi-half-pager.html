@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : gfv3.1-cdi-half-pager</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>Half Pager: Contexts and Dependency Injection support in GlassFish 3.1</p> <p>Table of Contents</p> <p>1. Introduction</p> <p>1.1 Project/Component Working Name<br> Contexts and Dependency Injection (CDI) support in GlassFish 3.1</p> <p>1.2 Name(s) and e-mail address of Document Author(s)/Supplier<br> Sivakumar Thyagarajan / sivakumart@sun.com</p> <p>1.3. Date of This Document<br> May 23, 2010</p> <p>2. Project Summary</p> <p>2.1 Project Description</p> <p><b>Weld 1.1 integration</b><br> Weld 1.1 1 is the next major version of the reference implementation of the<br> Contexts and Dependency Injection(CDI) specification 2. The plan is to <br> integrate Weld 1.1 into GlassFish 3.1 for enhancing the current support of <br> dependency injection and contextual lifecycle management. </p> <p>Weld 1.1 intends 3 to enhance the container integration SPI by providing the<br> ability for the container to override the reflection abstraction API. This <br> would enable the container to avoid multiple scans for annotations in archives <br> with CDI and non-CDI modules. Based on the availability of the API earlier in<br> our development cycle, we plan to investigate using this ability to override<br> the default annotation scanning implementation in Weld with ours.</p> <p>Weld 1.1 may also implement the maintenance release of the JSR-299 spec, if it<br> becomes available by Weld 1.1's timeframe.</p> <p><b>Streamlining the Integration Process</b><br> To streamline the integration of the Weld distribution into GlassFish, <br> we plan to do the following tasks as part of this release:</p> 
+     <ul class="alternate" type="square"> 
+      <li>setup a continuous integration mechanism (Hudson) to integrate the latest<br> Weld Workspace/promoted binaries into GlassFish. </li> 
+      <li>develop a battery of development/SQE tests 4 to enhance the current CDI<br> tests.</li> 
+      <li>a pre-integration test suite(subset of 4) covering common container<br> integration issues would be run by JBoss before a promotion/handoff</li> 
+      <li>JBoss to run CDI TCK on GlassFish last promoted build before handoff.</li> 
+     </ul> <p><b>Enhanced Usability and Documentation</b><br> In 3.1, we would also enhance the current tooling support provided by <br> NetBeans making it easier to build and debug CDI applications by making <br> it easier to find the root-cause of unsatisfied and ambiguous dependencies <br> during typesafe resolution in the IDE(Netbeans). We also plan to enhance<br> CDI documentation bundled with GlassFish. We would work with the<br> JAX-RS(Jersey), Web-services, EJB teams to understand their issues <br> with the current Weld SPI and to communicate with JBoss about these SPI <br> enhancements for Weld 1.1.</p> <p>2.2 Risks and Assumptions</p> 
+     <ul class="alternate" type="square"> 
+      <li>Dependent on JBoss for the timely delivery of release candidates and final<br> release of Weld 1.1. for integration into 3.1. Current plan for Weld 1.1 <br> is September 2010. </li> 
+      <li>JSR-299 MR delay should not delay Weld 1.1 release</li> 
+      <li>Our Feature complete only at their release candidate, so late breaking<br> changes may come in</li> 
+      <li>CDI TCK failure analysis also comes in late in their release cycle, this<br> adds more time to our schedule.</li> 
+      <li>If the reflection abstraction API is available in one of the earlier<br> RCs handedoff for integration, we will plan on using it as described <br> in 2.1</li> 
+     </ul> <p>3. Interfaces</p> <p>3.1. Exported Interfaces<br> javax.inject JSR 330<br> javax.enterprise.context JSR 299<br> javax.annotation.ManagedBean JSR 316</p> <p>3.2. Imported Interfaces<br> -</p> <p>3.3. Other Interfaces (Optional)<br> The Weld container integration SPI interfaces </p> <p>4. Reference Documents</p> <p>1 Weld home: <a href="http://seamframework.org/Weld">http://seamframework.org/Weld</a><br> 2 JSR 299 Contexts and Dependency Injection for the Java EE <br> platform: <a href="http://jcp.org/en/jsr/detail-299">http://jcp.org/en/jsr/detail-299</a><br> 3 Weld 1.1 plans: <a href="http://relation.to/Bloggers/PlansForWeld11">http://relation.to/Bloggers/PlansForWeld11</a><br> 4 CDI developer Tests planned <br> for 3.1: <a href="./CDIDevTests.html">http://wiki.glassfish.java.net/Wiki.jsp?page=CDIDevTests</a></p> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Dec 01, 2011 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

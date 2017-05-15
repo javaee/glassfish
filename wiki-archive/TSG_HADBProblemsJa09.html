@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : TSG_HADBProblemsJa09</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="TSG_HADBProblemsJa09-HADB%E7%AE%A1%E7%90%86%E3%81%AE%E5%95%8F%E9%A1%8C"></a>HADB 管理の問題</h2> <p>コマンド及び、多くのサブコマンドとオプションは、高可用性データベース (HADB) の管理に対して、用意されたものです。<tt>hadbm</tt> コマンドは、 install_dir/SUNWhadb/4/bin ディレクトリーに配置されています。</p> <p>このコマンドに対する解説の全ては、<a href="AdministrationGuideJa.html" title="AdministrationGuideJa">Sun Java System Application Server 管理者ガイド</a>の、高可用性データベースの設定の章を参照してください。さまざまな <tt>hadbm</tt> サブコマンドに関する仕様については、 <tt>hadbm man</tt> ページで解説されています。</p> <p>このセクションでは、次の問題が解決されます。 :</p> 
+     <ul> 
+      <li><tt>hadbm</tt> コマンドの失敗 : エージェントがノードに到達できなかった。</li> 
+      <li><tt>hadbm</tt> コマンドの失敗 : コマンドが見つからない。</li> 
+      <li><tt>hadbm</tt> コマンドの失敗 : JAVA_HOME が定義されていない。</li> 
+      <li><tt>hadbm createdomain</tt> が失敗したが、 2 分割されたドメインが作成された。</li> 
+      <li><tt>create</tt> の失敗 : ホスト上に path を出力していない。</li> 
+      <li>データベースが起動しない。</li> 
+      <li><tt>clear</tt> コマンドの失敗</li> 
+      <li><tt>create-session-store</tt> の失敗</li> 
+      <li><tt>hadbm</tt> コマンドのハングアップ</li> 
+      <li>HADB を再起動できない。</li> 
+     </ul> <h4><a name="TSG_HADBProblemsJa09-%7B%7Bhadbm%7D%7D%E3%82%B3%E3%83%9E%E3%83%B3%E3%83%89%E3%81%AE%E5%A4%B1%E6%95%97%3A%E3%82%A8%E3%83%BC%E3%82%B8%E3%82%A7%E3%83%B3%E3%83%88%E3%81%8C%E3%83%8E%E3%83%BC%E3%83%89%E3%81%AB%E5%88%B0%E9%81%94%E3%81%A7%E3%81%8D%E3%81%AA%E3%81%8B%E3%81%A3%E3%81%9F%E3%80%82"></a><tt>hadbm</tt> コマンドの失敗 : エージェントがノードに到達できなかった。</h3> 
+     <ul> 
+      <li><b>解説</b><br> \次のエラーによって、コマンドは失敗します。 :\\\\\~UWC_TOKEN_START~1278579877939~UWC_TOKEN_END<br> \ホストが停止している、通信経路が設定されていない、 URL に記述したポート番号に誤りがある、あるいは、管理エージェントが停止している、等のいずれかの理由から、URL がホストに到達されることが不可能となります。</li> 
+     </ul> 
+     <ul> 
+      <li><b>解決方法</b><br> \URL が正しいか、確認してください。URL が正しい場合は、ホストが起動されて実行中で、通信を受け付けられる状態かどうか、確認してください。 ; 例 :\ 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">ping hostname1ping hostname2...</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ul> <h4><a name="TSG_HADBProblemsJa09-%7B%7Bhadbm%7D%7D%E3%82%B3%E3%83%9E%E3%83%B3%E3%83%89%E3%81%AE%E5%A4%B1%E6%95%97%3A%E3%82%B3%E3%83%9E%E3%83%B3%E3%83%89%E3%81%8C%E8%A6%8B%E3%81%A4%E3%81%8B%E3%82%89%E3%81%AA%E3%81%84%E3%80%82"></a><tt>hadbm</tt> コマンドの失敗 : コマンドが見つからない。</h3> 
+     <ul> 
+      <li><b>解説</b><br> <tt>hadbm</tt> コマンドは、カレントディレクトリから実行可能か、又は、 <tt>PATH</tt> を検索し、いろいろな場所から hadb コマンドへアクセス可能な、利便性の高いものです。エラー "<tt>hadbm: Command not found</tt>," は、それら状態のどちらでもないことを示しています。</li> 
+     </ul> 
+     <ul> 
+      <li><b>解決方法 1</b><br> <tt>cd</tt> で、 <tt>hadbm</tt> コマンドを格納しているディレクトリへ 移動し、そこから実行してください。 :\ 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">cd install_dir/SUNWhadb/4/bin/
+./hadbm</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ul> 
+     <ul> 
+      <li><b>解決方法 2</b><br> \フルパスで <tt>hadbm</tt> コマンドを呼び出してください。 :\ 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">install_dir/SUNWhadb/4/bin/hadbm</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ul> 
+     <ul> 
+      <li><b>解決方法 3</b><br> \環境変数 <tt>PATH</tt> の変更によって、どこからでも <tt>hadbm</tt> コマンドを利用できます。環境変数 <tt>PATH</tt> の変更についての取扱説明は、 <a href="InstallationGuideJa.html" title="InstallationGuideJa">Sun Java System Application Server 9.1 インストールガイド</a>の "HADB の設定準備 " の章に記載されています。<br> <tt>PATH</tt> の設定が正しいか確認するには、次のコマンドを実行して下さい。 :\\\\\~UWC_TOKEN_START~1278579877943~UWC_TOKEN_END<br> \それらコマンドは、有効となっているパスを表示します。</li> 
+     </ul> <h4><a name="TSG_HADBProblemsJa09-hadbm%E3%82%B3%E3%83%9E%E3%83%B3%E3%83%89%E3%81%AE%E5%A4%B1%E6%95%97%3A%7B%7BJAVAHOME%7D%7D%E3%81%8C%E5%AE%9A%E7%BE%A9%E3%81%95%E3%82%8C%E3%81%A6%E3%81%84%E3%81%AA%E3%81%84%E3%80%82"></a>hadbm コマンドの失敗 : <tt>JAVA_HOME</tt> が定義されていない。</h3> 
+     <ul> 
+      <li><b>解説</b><br> \メッセージ "<tt>hadbm: &lt;path\&gt;: Invalid Java home location</tt>" は、環境変数 <tt>JAVA_HOME</tt> が設定されていないことを示しています。</li> 
+     </ul> 
+     <ul> 
+      <li><b>解決方法</b><br> \複数の Java バージョンが、システムにインストールされている場合は、環境変数 <tt>JAVA_HOME</tt> に対して、 正しい Java バージョン (1.4.1_03 若しくはそれより上位の Enterprise Edition) へポイントするよう確保します。<br> \環境変数 <tt>PATH</tt> の変更についての取扱説明は、 <a href="InstallationGuideJa.html" title="InstallationGuideJa">Sun Java System Application Server 9.1 インストールガイド</a>の "HADB の設定準備 " の章に記載されています。</li> 
+     </ul> <h4><a name="TSG_HADBProblemsJa09-%7B%7Bhadbmcreatedomain%7D%7D%E3%81%8C%E5%A4%B1%E6%95%97%E3%81%97%E3%81%9F%E3%81%8C%E3%80%812%E5%88%86%E5%89%B2%E3%81%95%E3%82%8C%E3%81%9F%E3%83%89%E3%83%A1%E3%82%A4%E3%83%B3%E3%81%8C%E4%BD%9C%E6%88%90%E3%81%95%E3%82%8C%E3%81%9F%E3%80%82"></a><tt>hadbm createdomain</tt> が失敗したが、 2 分割されたドメインが作成された。</h3> 
+     <ul> 
+      <li><b>解説</b><br> \多重のネットワークインターフェースにより、ホスト上で HADB 管理エージェントを実行している場合、全てのネットワークインターフェースが、同一サブネット上に存在しない場合に、ドメイン作成コマンドは失敗することが想定されます。 :\\\\\~UWC_TOKEN_START~1278579877944~UWC_TOKEN_END<br> \デフォルトでは、管理エージェントは、 UDP のマルチキャストに対して "first"(<tt>java.net.NetworkInterface.getNetworkInterfaces()</tt> によって返信された "first" として ) インターフェースを使用します。</li> 
+     </ul> 
+     <ul> 
+      <li><b>解決方法</b><br> \最適な解決方法は、設定ファイルの <tt>ma.server.mainternal.interfaces</tt> の設定によって、使用するべきサブネットを管理エージェントに認識させることです。 ; 例 :\\\\\~UWC_TOKEN_START~1278579877945~UWC_TOKEN_END<br> \もう 1 つの方法として、あるひとつの設定で、ルーターが、両方のサブネットに対するマルチキャストパケットのルートを指定します。デフォルトで、管理エージェントはマルチキャストアドレス <tt>228.8.8.8</tt> を使用します。</li> 
+     </ul> <h4><a name="TSG_HADBProblemsJa09-%7B%7Bcreate%7D%7D%E3%81%AE%E5%A4%B1%E6%95%97%3A%E3%83%9B%E3%82%B9%E3%83%88%E4%B8%8A%E3%81%ABpath%E3%82%92%E5%87%BA%E5%8A%9B%E3%81%97%E3%81%A6%E3%81%84%E3%81%AA%E3%81%84%E3%80%82"></a><tt>create</tt> の失敗 : ホスト上に path を出力していない。</h3> 
+     <ul> 
+      <li><b>解説</b><br> <tt>hadbm create</tt> コマンド発行後、コンソールに次のようなエラーが現れます。 :\\\\\~UWC_TOKEN_START~1278579877946~UWC_TOKEN_END<br> \このエラーメッセージは、指定されたパスを出力することなしに、マシン上に新しいドメインを追加した場合でも現れます。</li> 
+     </ul> 
+     <ul> 
+      <li><b>解決方法</b><br> \ホストにログインし、 HADB デバイスと、 HADB 履歴ファイルに対するパスを設定してください。Run <tt>hadbm create</tt> を実行し、パスを設定する為のオプション <tt>-<del>devicepath</del></tt> と <tt>-historypath</tt> を指定してください。ホストで管理エージェントを実行するユーザーが、それらディレクトリに対して、読み込みと書き込みの権限があるかについても、確認してください。<br> *注 :* 実行可能な HADB は、異なるホストの異なるディレクトリへは、インストールできません。</li> 
+     </ul> <h4><a name="TSG_HADBProblemsJa09-%E3%83%87%E3%83%BC%E3%82%BF%E3%83%99%E3%83%BC%E3%82%B9%E3%81%8C%E8%B5%B7%E5%8B%95%E3%81%97%E3%81%AA%E3%81%84%E3%80%82"></a>データベースが起動しない。</h3> <p><tt>create</tt> 又は、 <tt>start</tt> コマンドは、次のエラーメッセージはコンソールに表示されて失敗します。 :\\\\\~UWC_TOKEN_START~1278579877947~UWC_TOKEN_END<br> \考えられる点は以下のとおりです。 :</p> 
+     <ul> 
+      <li><b>セグメントの取得に失敗する共用メモリーが存在していたか ?</b><br> \ 
+       <ul> 
+        <li><b>解説</b><br> \そのノードに配分されたリソース ( 共有メモリー、ディスク領域 ) が、他のいくつかのプロセスによって、使用された場合、起動は失敗し、ノードが停止されます。<br> \</li> 
+        <li><b>Solution</b><br> \この問題の解決方法については、<a href="TSG_HADBProblemsJa01.html" title="TSG_HADBProblemsJa01">HADB データベース生成の失敗</a>の、 "共有メモリーに関連する問題" の章を参照してください。</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li>履歴ファイル保存でエラーとなるか ?*<br> \</li> 
+        <li><b>解説</b><br> \その問題が、まだ続くようであれば、 HADB 履歴ファイルを点検します。より詳細なエラーメッセージの一部は、以下のように見えます。 :\ 
+         <ul> 
+          <li><tt>Could not verify node address</tt><br> \このメッセージは、 HADB サーバプロセスが試行したポートを、他のプロセスが使用している時に、表示されます。それは、さまざまな状況下で、発生しえます。 :\</li> 
+         </ul> </li> 
+       </ul> 
+       <ul class="alternate" type="square"> 
+        <li>このホスト上で、 <tt>portBase</tt> が実行中の他のプロセスによって、使用されています。<br> \次のコマンドを使用して、 <tt>PortBase</tt> 属性に、設定値を変更してください。 :\\\\\~UWC_TOKEN_START~1278579877948~UWC_TOKEN_END<br> -- メンテナンス障害の為に、 HADB ノードの停止を試行します。<br> <tt>hadbm</tt> コマンドによって、ノードの停止を再試行してください。それが失敗する場合は、 該当ノードに常駐している OS のプロセス <tt>clu_nsup_srv</tt> に対して、 <tt>-9</tt> オプションなしで kill コマンドを発行してください。その後 <tt>nsup</tt> プロセスは、 該当する <tt>hadb</tt> の子プロセスを停止する必要があります。If the parent process <tt>nsup</tt> does not exist, kill all the child processes using <tt>kill -9</tt>.<br> -- The HADB node was stopped for maintenance and an inetd process restarted the HADB node before you intended to start it.<br> \Make sure that <tt>inetd</tt> does not start the HADB node before stopping it.<br> \ 
+         <ul> 
+          <li><tt>hadbm</tt> command fails with internal error:"<tt>The database could not be started</tt>"<br> \Check the following:\</li> 
+         </ul> </li> 
+        <li>Shared memory is all correct on all machines in the HADB configuration.<br> -- No other HADB databases are running on the machines, or any other processes that could be using the same port numbers.<br> -- All necessary directories exist and have write permissions.<br> -- There is enough space in directory where devices are going to be written.<br> \</li> 
+       </ul> 
+       <ul> 
+        <li><b>Solutions</b><br> \After verifying that none of the above errors have occurred, try the following remedies, in order:\ 
+         <ul> 
+          <li>データベース削除と再試行</li> 
+          <li>データベース削除、再起動、再試行</li> 
+          <li>データベースの削除、 HADB ソフトウェアの再インストールと再試行</li> 
+          <li>サポートへ連絡<br> \より詳しい情報については、 エラーメッセージリファレンスを参照してください。</li> 
+         </ul> </li> 
+       </ul> </li> 
+     </ul> <h4><a name="TSG_HADBProblemsJa09-%7B%7Bclear%7D%7D%E3%82%B3%E3%83%9E%E3%83%B3%E3%83%89%E3%81%AE%E5%A4%B1%E6%95%97"></a><tt>clear</tt> コマンドの失敗</h3> <p><tt>clear</tt> コマンドは、ディスク上に存在している、データベースデバイスファイルを初期化します。これは、ディスク、又は、ディスクアクセスの問題が原因で、失敗します。hadbm からの他いくつかのエラーメッセージが、これを示しているか、チェックしてください。そうではない場合、 <tt>ma.log</tt> ファイルを参照し、デバイス初期処理が、他いくつかのエラーメッセージを、生成していないかチェックしてください。</p> <h4><a name="TSG_HADBProblemsJa09-%7B%7Bcreatesessionstore%7D%7D%E3%81%AE%E5%A4%B1%E6%95%97"></a><tt>create-session-store</tt> の失敗</h3> <p><tt>asadmin create-session-store</tt> コマンドは、次の理由のうちのひとつによって失敗しえます。 :</p> 
+     <ul> 
+      <li>ユーザー名、又は、パスワードに誤りがある。</li> 
+      <li><tt>SQLException: No suitable driver</tt></li> 
+     </ul> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li>ユーザー名、又は、パスワードに誤りがある。*<br> \このエラーは、 <tt>create-session-store</tt> コマンドへ引き渡された、 <tt>--dbsystempassword</tt> と、データベース作成に一度だけ提供されたパスワードが一致しない場合に発生します。<br> \</li> 
+        <li><b>解決方法 1</b>\\\\\正しいパスワードを指定して、コマンドを再試行してください。<br> \</li> 
+        <li><b>解決方法 2</b><br> \If you cannot remember the <tt>dbsystem</tt> パスワードを忘れてしまった場合は、 <tt>hadbm clear</tt> を使用して、データベースを生成し、新しい <tt>dbsystem</tt> システムパスワードを提供する必要があります。</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li><tt>SQLException: No suitable driver</tt>*<br> <tt>create-session-store</tt> は、次のエラーを発行します。 : <tt>SessionStoreException: java.sql.SQLException: No suitable driver.</tt><br> \</li> 
+        <li><b>解決方法 1</b><br> \このエラーは、 <tt>asadmin</tt> が、 GlassFish アプリケーションサーバーのディレクトリー設定 <tt>asenv.conf</tt> に定義された、 <tt>AS_HADB</tt> パスから、 <tt>hadbjdbc4.jar</tt> を見つけられない～の場合、発生する可能性があります。<br> \その解決方法は、 <tt>AS_HADB</tt> に設定したポイントを、 HADB がインストールされた場所へ、変更することです。<br> \これは、 <tt>asenv.conf</tt> ファイルからの、 <tt>AS_HADB</tt> の入力例です。 :\\\\\~UWC_TOKEN_START~1278579877949~UWC_TOKEN_END<br> \</li> 
+        <li><b>解決方法 2</b><br> \このエラーは、 <tt>--storeUrl</tt> に対して、誤った値を引き渡した場合にも、発生します。この問題を解決する為に、 <tt>hadbm get jdbcURL</tt> を使用することで、正しい URL を取得します。</li> 
+       </ul> </li> 
+     </ul> <h4><a name="TSG_HADBProblemsJa09-%7B%7Bhadbm%7D%7D%E3%82%B3%E3%83%9E%E3%83%B3%E3%83%89%E3%81%AE%E3%83%8F%E3%83%B3%E3%82%B0%E3%82%A2%E3%83%83%E3%83%97"></a><tt>hadbm</tt> コマンドのハングアップ</h3> <p> 管理エージェントが操作完了前に <tt>hadbm</tt> との通信が遮断された場合に、 <tt>hadbm</tt> プロセスは、ハングアップすることが想定されます。全てのエージェントが実行中か、チェックしてください。</p> <h4><a name="TSG_HADBProblemsJa09-HADB%E3%82%92%E5%86%8D%E8%B5%B7%E5%8B%95%E3%81%A7%E3%81%8D%E3%81%AA%E3%81%84%E3%80%82"></a>HADB を再起動できない。</h3> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li>解説*<br> \二重のノード障害の後、 HADB の再起動は動作しません。HADB 再起動可能となる前に、追加の復旧作業が必要です。<br> \二重ノード障害の症状は、以下を含みます。 :\</li> 
+       </ul> 
+       <ul class="alternate" type="square"> 
+        <li><tt>hadbm status</tt> は、 HADB が不可能な状態を表示しています。<br> -- ノードの状態が、 起動中、又は、復旧中の状態であると見られます。たとえ、ノード毎に停止、そして再起動したとしても、開始状態のままとなります。最終的にそのノードの状態は、終了へと変わります。<br> \この問題は、通常、 電源異常後、ミラーの HADB ホストマシンに障害が発生したか、再起動された場合、または、 when a machine is rebooted HADB ( 単一のマシンへインストールされた ) 停止前に、マシンが再起動された場合、または、ミラーマシンのペアが、双方の、データ冗長化ユニット (DRUs) によって、再起動された場合に発生します。<br> \ノードのペアに常駐する、データ部分が消失されたと言う理由から、 HADB は、 "二重障害" と言うような状況化で、自己回復することはできません。そのような状況下では、 hadbm 起動コマンドは成功せず、 hadbm ステータスコマンドは、 HADB が操作できない状態であることを表示します。<br> \より詳しい DRUs と HADB についての論破の情報は、<a href="HighAvailabilityAdministrationGuideJa.html" title="HighAvailabilityAdministrationGuideJa">管理者ガイド</a>の、 "高可用性データベースの管理" とデプロイメントガイドを参照してください。<br> *ヒント :* HADB がストレージの動作 ( 例えばタイムアウトの問題と一致する ) を表示し、問題の回復を再開させたかチェックしたい場合は、再起動コマンドを使用します。<br> \When the HADB が、この手順で再起動された時、 HADB サービスは、利用可能状態となります。反対に、 HADB が <tt>hadbm stop</tt> と <tt>hadbm start</tt> を使用することで、別の操作によって起動され、停止された場合, HADB サービスは、 HADB が停止されている間、利用不可能です。</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li>解決方法*<br> \Verify that the ノードの状態が、 Starting/Recovering と表示されるか、確認し、データベースをリセットしてください。<a href="HighAvailabilityAdministrationGuideJa.html" title="HighAvailabilityAdministrationGuideJa">管理者ガイド</a>の、 "高可用性データベースの管理" の章にある、 "セッションデータ破損からの復旧" にて説明されています。</li> 
+       </ul> </li> 
+     </ul> <p><sup><a href="TSG_HADBProblemsJa.html" title="TSG_HADBProblemsJa">Back</a></sup></p> <p>日本語翻訳: <a href="http://www3.atword.jp/jacksparrow/2008/08/22/gfv2%e3%81%ae-xa-%e3%82%92%e4%bd%bf%e3%81%86%ef%bc%81-part1-%e5%89%8d%e6%ba%96%e5%82%99/">jack spallaw</a></p> <p><a href="TSG_HADBProblems.html#TSG_HADBProblems-sectionTSGHADBProblemsHADBAdministrationProblems">英文 </a> (翻訳したバージョン: 49)</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 08, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

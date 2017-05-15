@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : AdministrationGuideResolved</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="AdministrationGuideResolved-ResolvedCommentsfortheGlassFishv3AdministrationGuide"></a>Resolved Comments for the GlassFish v3 Administration Guide</h2> <p>The following table lists comments that have been resolved.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Comment ID </th> 
+         <th class="confluenceTh"> Date </th> 
+         <th class="confluenceTh"> Section, Page Number/URL </th> 
+         <th class="confluenceTh"> Comment </th> 
+         <th class="confluenceTh">Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Example <em>jsmith-001</em> </td> 
+         <td class="confluenceTd"> <em>Date comment entered</em> </td> 
+         <td class="confluenceTd"> <em>Detailed pointer to location in the doc</em> </td> 
+         <td class="confluenceTd"> <em>Detailed comment</em>. </td> 
+         <td class="confluenceTd"><em>Leave blank, writer provides</em> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> 2007 </td> 
+         <td class="confluenceTd"> chapter 1 </td> 
+         <td class="confluenceTd"> The graphs displayed are cutted. For example, FIGURE 1?1 Application Server Architecture </td> 
+         <td class="confluenceTd"> 5/1/8 TP2 Resolved. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> sparrow-002 </td> 
+         <td class="confluenceTd"> 9/10/08 </td> 
+         <td class="confluenceTd"> Page 113 Configuring theTransaction Service </td> 
+         <td class="confluenceTd"> "Select the Transaction Service node." I can't find the "Transaction Service" node in the Configuration node on Admin Console window. My installation of GFv3-prelude is below. glassfish-v3-prelude-b23.zip 06-Sep-2008 13:51 29M In the future, will this function be implemented on the "Admin Console" of GFv3 ? </td> 
+         <td class="confluenceTd">9/10/08 Transaction Service is not included in the Admin Console for Prelude, and so this chapter will not be included in the Prelude Administration Guide Yes, this function will </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> sparrow-001 </td> 
+         <td class="confluenceTd"> 9/09/08 </td> 
+         <td class="confluenceTd"> Page 119 <em>About Logging</em> </td> 
+         <td class="confluenceTd"> "Transaction service logs, located in the /tx subdirectory" I can't find the directory on glassfish-v3-prelude-b22 and b23 Does it mean that can use Transaction service but it is not stable? And also I can't find "HTTP service access logs" directory. </td> 
+         <td class="confluenceTd">9/10/08 Logging will be entirely different for Prelude, so most of the material in the August PDF that you looked at was incorrect. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jchou-001 </td> 
+         <td class="confluenceTd"> 9/11/08 </td> 
+         <td class="confluenceTd"> Page 132 How the Monitoring Tree Structure Works </td> 
+         <td class="confluenceTd"> Not sure how much detail we want to go into on the tree structure. I think the command should be either asadmin list --monitor=true "server.<b>" or asadmin list --monitor=true "</b>". Check with Prashanth on this section and the commands. Remove server.resources from the list. Add server.web to the list. </td> 
+         <td class="confluenceTd">done 9/25 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jchou-002 </td> 
+         <td class="confluenceTd"> 9/12/08 </td> 
+         <td class="confluenceTd"> Page 133 HTTP Service Tree </td> 
+         <td class="confluenceTd"> As of now we don't have virtual server support under http-service, but we do have thread-pools, with thread-pool-1, thread-pool-2, etc under that </td> 
+         <td class="confluenceTd">done 9/25 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jchou-003 </td> 
+         <td class="confluenceTd"> 9/12/08 </td> 
+         <td class="confluenceTd"> Page 133 Resources Tree </td> 
+         <td class="confluenceTd"> Remove this section. We don't have support for resources. </td> 
+         <td class="confluenceTd">HIDDEN 9/15 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jchou-004 </td> 
+         <td class="confluenceTd"> 9/12/08 </td> 
+         <td class="confluenceTd"> Page 134 How Dotted Names Are Used </td> 
+         <td class="confluenceTd"> This section is confusing to me. Please check with Prashanth on how best to word this. </td> 
+         <td class="confluenceTd">prashanth provided info DONE 9/25 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jchou-005 </td> 
+         <td class="confluenceTd"> 9/12/08 </td> 
+         <td class="confluenceTd"> Page 135 Tasks for Administering Monitoring </td> 
+         <td class="confluenceTd"> Monitorable attributes are available when monitoring is turned on, as in section To Enable Monitoring (High or Low) </td> 
+         <td class="confluenceTd">DONE 9/15 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jchou-006 </td> 
+         <td class="confluenceTd"> 9/12/08 </td> 
+         <td class="confluenceTd"> Page 135 Sample Scripts </td> 
+         <td class="confluenceTd"> Don't think we have sample scripts. Check with Prashanth. </td> 
+         <td class="confluenceTd">Hidden 10/1 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jchou-007 </td> 
+         <td class="confluenceTd"> 9/12/08 </td> 
+         <td class="confluenceTd"> Page 135 Extensibility </td> 
+         <td class="confluenceTd"> Also check with Prashanth about Extensibility. I'm not sure if this means users can use our monitoring framework(flashlight) to monitor what they want. </td> 
+         <td class="confluenceTd">Hidden 10/2 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jchou-008 </td> 
+         <td class="confluenceTd"> 9/12/08 </td> 
+         <td class="confluenceTd"> Page 135 Setting up Monitoring </td> 
+         <td class="confluenceTd"> For Prelude Low and High are the same setting. You can use the description for Low for both - Simple statistics, such as requestCount, processingTime. We may also not want to say that turning on monitoring increases performance. Instead the monitoring for Prelude, has been designed to be highly performant. someting like that. </td> 
+         <td class="confluenceTd">DONE 9/15 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jchou-009 </td> 
+         <td class="confluenceTd"> 9/12/08 </td> 
+         <td class="confluenceTd"> Page 136 To Enable/Disable/Change Monitoring </td> 
+         <td class="confluenceTd"> Remove reference to connector-connection-pool and jdbc-connection-pool </td> 
+         <td class="confluenceTd">HIDDEN 9/15 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jchou-010 </td> 
+         <td class="confluenceTd"> 9/12/08 </td> 
+         <td class="confluenceTd"> Page 138 To View Basic Monitoring Data </td> 
+         <td class="confluenceTd"> The list of commonly monitored statistics needs to be updated. Most listed are not available. Check with Prashanth what should be listed. There should be = sign between --type and jvm: asadmin monitor --type=jvm server </td> 
+         <td class="confluenceTd">done 9/25 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jchou-011 </td> 
+         <td class="confluenceTd"> 9/12/08 </td> 
+         <td class="confluenceTd"> Page 139 To View Comprehensive Monitoring Data </td> 
+         <td class="confluenceTd"> Command should be asadmin list --monitor=true "*". Remove server.resources. Actually it shows: server.jvm.memory server.web.request server.jvm server.jvm.garbage-collectors server.jvm.garbage-collectors.MarkSweepCompact server.web.jsp server.jvm.garbage-collectors.Copy server.web server.applications server.http-service server.jvm.class-loading-system server.web.servlet server.http-service.thread-pool.thread-pool-1 server.jvm.runtime server.jvm.compilation-system server.jvm.operating-system server.web.session server.http-service.thread-pool server </td> 
+         <td class="confluenceTd">done 9/25 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jchou-012 </td> 
+         <td class="confluenceTd"> 9/12/08 </td> 
+         <td class="confluenceTd"> Page 139 Display monitoring statistics for a monitored component or service </td> 
+         <td class="confluenceTd"> Command should be asadmin get --monitor=true server.jvm.* The output shows: server.jvm.runtime.uptime = 2025687 server.jvm.memory.maxHeapSize = 518979584 server.jvm.runtime.classPath = C:/gfv3_0910/v3/distributions/web/target/glassfish/modules/glassfish-10.0-SNAPSHOT.jar server.jvm.runtime.vmVersion = 1.5.0_15-b04 server.jvm.operating-system.name = Windows XP server.jvm.runtime.specVendor = Sun Microsystems Inc. server.jvm.compilation-system.totalCompilationTime = 1757 server.jvm.garbage-collectors.Copy.collectionCount = 196 server.jvm.class-loading-system.totalLoadedClassCount = 6526 server.jvm.runtime.specName = Java Virtual Machine Specification server.jvm.runtime.vmName = Java HotSpot(TM) Client VM server.jvm.operating-system.arch = x86 server.jvm.runtime.specVersion = 1.0 server.jvm.compilation-system.name = HotSpot Client Compiler server.jvm.runtime.name = 3380@moonbeam server.jvm.memory.initNonHeapSize = 8585216 server.jvm.memory.objectPendingFinalizationCount = 0 server.jvm.memory.usedNonHeapSize = 34646544 server.jvm.garbage-collectors.Copy.collectionTime = 1217 server.jvm.operating-system.availableProcessors = 2 server.jvm.memory.committedHeapSize = 70803456 server.jvm.memory.initHeapSize = 0 server.jvm.memory.usedHeapSize = 50498520 server.jvm.memory.committedNonHeapSize = 34734080 server.jvm.memory.maxNonHeapSize = 100663296 server.jvm.operating-system.version = 5.1 server.jvm.garbage-collectors.MarkSweepCompact.collectionCount = 5 server.jvm.class-loading-system.unloadedClassCount = 46 server.jvm.garbage-collectors.MarkSweepCompact.collectionTime = 892 server.jvm.class-loading-system.loadedClassCount = 480 server.jvm.runtime.managementSpecVersion = 1.0 server.jvm.runtime.vmVendor = Sun Microsystems Inc. </td> 
+         <td class="confluenceTd">done 9/25 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jchou-013 </td> 
+         <td class="confluenceTd"> 9/12/08 </td> 
+         <td class="confluenceTd"> Page 140 Showing Monitorable Applications </td> 
+         <td class="confluenceTd"> Command should be asadmin list --monitor=true server.applications.*. Ouput would look like: server.applications.hello server.applications.hello.server </td> 
+         <td class="confluenceTd">done 9/25 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jchou-014 </td> 
+         <td class="confluenceTd"> 9/12/08 </td> 
+         <td class="confluenceTd"> Page 140 Showing Attributes from a Java Application </td> 
+         <td class="confluenceTd"> Might want to change heading to 'Showing Attributes from a Web Application'. Command should be asadmin get --monitor=true server.applications.hello* Output would look like: server.applications.hello.server.totalJspsLoadedCount = 1 server.applications.hello.server.totalServletsLoadedCount = 0 server.applications.hello.server.activatedSessionsTotal = 0 server.applications.hello.server.expiredSessionsTotal = 0 server.applications.hello.server.rejectedSessionsTotal = 0 server.applications.hello.server.sessionsTotal = 1 server.applications.hello.server.activeJspsLoadedCount = 1 server.applications.hello.server.activeSessionsHigh = 1 server.applications.hello.server.maxJspsLoadedCount = 1 server.applications.hello.server.activeSessionsCurrent = 1 server.applications.hello.server.passivatedSessionsTotal = 0 server.applications.hello.server.persistedSessionsTotal = 0 server.applications.hello.server.maxServletsLoadedCount = 0 server.applications.hello.server.activeServletsLoadedCount = 0 </td> 
+         <td class="confluenceTd">done 9/25 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jchou-015 </td> 
+         <td class="confluenceTd"> 9/12/08 </td> 
+         <td class="confluenceTd"> Page 141 Showing a Specific Attribute </td> 
+         <td class="confluenceTd"> Change to use jvm attribute uptime. We don't have lastsampletime. Command should be asadmin get --monitor=true server.jvm.runtime.uptime </td> 
+         <td class="confluenceTd">done 9/25 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jchou-016 </td> 
+         <td class="confluenceTd"> 9/12/08 </td> 
+         <td class="confluenceTd"> Page 141 Showing an Unknown Attribute </td> 
+         <td class="confluenceTd"> Actually it shows no stats and Command get executed successfully. This might be a bug though. </td> 
+         <td class="confluenceTd">deleted per Prashanth 9/25 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jchou-017 </td> 
+         <td class="confluenceTd"> 9/12/08 </td> 
+         <td class="confluenceTd"> Page 141 Expected Output for list and get Commands </td> 
+         <td class="confluenceTd"> I think list -m should be replaced with list --monitor=true, and get -m should be get --monitor=true. -m didn't work for me. asadmin list --monitor=true server doesn't not return me anything. Remove the first row. For asadmin get --monitor=true server.*, replace Output description 'No output...' to 'Displays monitoring data for all monitorable objects under server' </td> 
+         <td class="confluenceTd">done 9/25 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jchou-018 </td> 
+         <td class="confluenceTd"> 9/12/08 </td> 
+         <td class="confluenceTd"> Page 142 Expected Output for list and get Commands Table 11-1 Top Level row 3 </td> 
+         <td class="confluenceTd"> Command should be get --monitor=true. Output should be 'Lists all monitoring data under server' </td> 
+         <td class="confluenceTd">done 9/25 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jchou-019 </td> 
+         <td class="confluenceTd"> 9/12/08 </td> 
+         <td class="confluenceTd"> Page 142 Expected Output for list and get Commands Table 11-2 Applications Level row 1 </td> 
+         <td class="confluenceTd"> Remove row 1. Doesn't show me anything </td> 
+         <td class="confluenceTd">REMOVED 9/15 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jchou-020 </td> 
+         <td class="confluenceTd"> 9/12/08 </td> 
+         <td class="confluenceTd"> Page 142 Expected Output for list and get Commands Table 11-2 Applications Level row 2 </td> 
+         <td class="confluenceTd"> Command should be list --monitor=true </td> 
+         <td class="confluenceTd">done 9/25 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jchou-021 </td> 
+         <td class="confluenceTd"> 9/12/08 </td> 
+         <td class="confluenceTd"> Page 142 Expected Output for list and get Commands Table 11-2 Applications Level row 3 </td> 
+         <td class="confluenceTd"> Command should be get --monitor=true, Output should be 'Lists all monitorable attributes under the applications node. </td> 
+         <td class="confluenceTd">done 9/25 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jchou-022 </td> 
+         <td class="confluenceTd"> 9/12/08 </td> 
+         <td class="confluenceTd"> Page 142 Expected Output for list and get Commands Table 11-3 HTTP Service Level row 3 </td> 
+         <td class="confluenceTd"> Right now we only list thread pools under http-service. We might try to do more for Prelude - not sure. </td> 
+         <td class="confluenceTd">done 9/25 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jchou-023 </td> 
+         <td class="confluenceTd"> 9/12/08 </td> 
+         <td class="confluenceTd"> Page 143 Expected Output for list and get Commands Table 11-4 Resources Level </td> 
+         <td class="confluenceTd"> Remove Resources table. </td> 
+         <td class="confluenceTd">done 9/25 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jchou-024 </td> 
+         <td class="confluenceTd"> 9/12/08 </td> 
+         <td class="confluenceTd"> Page 143 Expected Output for list and get Commands Table 11-5 JVM Level </td> 
+         <td class="confluenceTd"> 1st row: Command should be list --monitor=true, Dotted name should be server.jvm.*, Output should be 'List of monitorable objects under the JVM node.'; 2nd row: Command should be get --monitor=true </td> 
+         <td class="confluenceTd">done 9/25 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jchou-024 </td> 
+         <td class="confluenceTd"> 9/12/08 </td> 
+         <td class="confluenceTd"> Page 143 Expected Output for list and get Commands Table </td> 
+         <td class="confluenceTd"> Might want to have a table for server.web.* </td> 
+         <td class="confluenceTd">added table 9/25 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jchou-026 </td> 
+         <td class="confluenceTd"> 9/12/08 </td> 
+         <td class="confluenceTd"> Page 148 Statistics for Monitored Components and Services </td> 
+         <td class="confluenceTd"> Might want to have a section for Web Container Statistics. With stats: requestCount, errorCount, processingTime, maxTime, persistedSessionsTotal, expiredSessionsTotal, sessionsTotal, passivatedSessionsTotal, rejectedSessionsTotal, activeSessionsCurrent, activeSessionsHigh, activatedSessionsTotal, totalJspsLoadedCount, maxJspsLoadedCount, activeJspsLoadedCount, totalServletsLoadedCount, activeServletsLoadedCount, maxServletsLoadedCount </td> 
+         <td class="confluenceTd">Added to guide 9/25 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jchou-027 </td> 
+         <td class="confluenceTd"> 9/12/08 </td> 
+         <td class="confluenceTd"> Page 149 JDBC Connection Pool Statistics </td> 
+         <td class="confluenceTd"> Remove this section. jdbc connection pool statistics aren't available for Prelude. </td> 
+         <td class="confluenceTd">HIDDEN 9/15 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jchou-028 </td> 
+         <td class="confluenceTd"> 9/12/08 </td> 
+         <td class="confluenceTd"> Page 150 JVM Statistics </td> 
+         <td class="confluenceTd"> Remove Table 11-15 Thread Info and Table 11-16 Threads. Not availabe in Prelude </td> 
+         <td class="confluenceTd">HIDDEN 9/15 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> shalm-001 </td> 
+         <td class="confluenceTd"> 10/10/08 </td> 
+         <td class="confluenceTd"> Page 80 List JDBC Connection Pools </td> 
+         <td class="confluenceTd"> In Example 5-4, the asadmin command should read as "list-connection-pools" instead of "list-connection-pool" </td> 
+         <td class="confluenceTd">Accepted 10/10 <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> shalm-002 </td> 
+         <td class="confluenceTd"> 10/10/08 </td> 
+         <td class="confluenceTd"> Page 81 Before you begin </td> 
+         <td class="confluenceTd"> Point number 2 should have "list-connection-pools" instead of "list-connection-pool" </td> 
+         <td class="confluenceTd">Accepted 10/10 <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> shalm-003 </td> 
+         <td class="confluenceTd"> 10/10/08 </td> 
+         <td class="confluenceTd"> remark5-1 </td> 
+         <td class="confluenceTd"> Answer : Yes. Making the JAR file accessible to the domain server instance is the same as integrating the JDBC driver into an administrative domain. In step 7, it could mentioned like "Integrate the JDBC driver , if not already done so in step 3, ...... </td> 
+         <td class="confluenceTd">"Accepted 10/10 <b>DONE</b> thanks for straightening this out </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> shalm-004 </td> 
+         <td class="confluenceTd"> 10/10/08 </td> 
+         <td class="confluenceTd"> remark5-2 </td> 
+         <td class="confluenceTd"> Step 7 is the same as Step 3. Is step 3 was not done, step 7 should be done. It is an explanation of how step3/step7 can be done. I see that there is a section on Integrating the JDBC driver on page 84. Instead of explaining this procedure here, a link could be provided to the section on page 84. </td> 
+         <td class="confluenceTd">Accepted 10/10 <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> shalm-005 </td> 
+         <td class="confluenceTd"> 10/10/08 </td> 
+         <td class="confluenceTd"> remark5-3 </td> 
+         <td class="confluenceTd"> Making JAR file accessible is explained in the Integrating JDBC driver section on page 84. A link could be provided for the same. </td> 
+         <td class="confluenceTd">Accepted 10/10 <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> yifeng-001 </td> 
+         <td class="confluenceTd"> 10/10/08 </td> 
+         <td class="confluenceTd"> page 32 </td> 
+         <td class="confluenceTd"> under Administration Console topic,tasks described are outdated. general tab only has stop instance push button, name (of machine), HTTP Port(s), IIIP Port(s),Configuration Directory, Installed Version and Debug </td> 
+         <td class="confluenceTd">all removed 10/14 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> yifeng-002 </td> 
+         <td class="confluenceTd"> 10/10/08 </td> 
+         <td class="confluenceTd"> page 32 </td> 
+         <td class="confluenceTd"> under Administration Console topic,tasks described are outdated. under "the following tables allow you to perform additional tasks", not sure what tabs mean here, Resources, Applications are tree nodes. So if you want to describe tree nodes, these are what we have: Registration, Application Server, Applications, Resources, Configuration </td> 
+         <td class="confluenceTd">removed 10/14 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Sujatha-001 </td> 
+         <td class="confluenceTd"> 10/10/08 </td> 
+         <td class="confluenceTd"> page 45 </td> 
+         <td class="confluenceTd"> There is a typo for asadmin: In the "Example 2-6, the following line shows typo for asadmin "sadmin login --host foo --port 828" </td> 
+         <td class="confluenceTd">accepted 10/14 <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Sujatha-002 </td> 
+         <td class="confluenceTd"> 10/10/08 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Under "Basic Administration Commands" Documentation is missing for login(1) and Monitor(1). Clicking on login (1) and Moniotor(1) links go to the page and saying :"Note: The requested part of this document could not be found." </td> 
+         <td class="confluenceTd">both links work for me, to top of the man page Reference doc </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> nluu-001 </td> 
+         <td class="confluenceTd"> 10/10/08 </td> 
+         <td class="confluenceTd"> page 58 </td> 
+         <td class="confluenceTd"> Under "To Install an Add-On Component", the link "Sun GlassFish Enterprise Server v3 Prelude Installation Guide" returns "Not Found" </td> 
+         <td class="confluenceTd">links to books not published yet won't work until release </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> nluu-002 </td> 
+         <td class="confluenceTd"> 10/10/08 </td> 
+         <td class="confluenceTd"> page 58 and 63 </td> 
+         <td class="confluenceTd"> Under "To Install an Add-On Component" and "To Restore an Older Version of the Component", please remove "./" from "./pkg list -a" to make it consistent with all other commands, i.e. other commands do not have "./" in front of them </td> 
+         <td class="confluenceTd">accepted 10/14 <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> nluu-003 </td> 
+         <td class="confluenceTd"> 10/10/08 </td> 
+         <td class="confluenceTd"> page 76 and 77 </td> 
+         <td class="confluenceTd"> Under "Example 5-1" and "Example 5-2", please add the asadmin command to the start-database and stop-database commands in the examples to make them clearer, i.e. asadmin start-database ... </td> 
+         <td class="confluenceTd">accepted 10/14 <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> nluu-004 </td> 
+         <td class="confluenceTd"> 10/10/08 </td> 
+         <td class="confluenceTd"> page 76 </td> 
+         <td class="confluenceTd"> Under "Example 5-1", "glassfish" directory is missing; please update the directory /opt/SUNWappserver/databases/derby.log to <em>as-install</em>/glassfish/databases/derby.log </td> 
+         <td class="confluenceTd">accepted 10/14 <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> nluu-005 </td> 
+         <td class="confluenceTd"> 10/10/08 </td> 
+         <td class="confluenceTd"> page 77 </td> 
+         <td class="confluenceTd"> Under "Java DB Utility Scripts", the scripts are not in <em>as-install</em>/javadb/bin since there is no bin directory, but they are in <em>as-install</em>/javadb/frameworks/NetworkServer/bin </td> 
+         <td class="confluenceTd">accepted 10/14 <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> nluu-006 </td> 
+         <td class="confluenceTd"> 10/10/08 </td> 
+         <td class="confluenceTd"> page 21 </td> 
+         <td class="confluenceTd"> Table P-2 Default Paths and File Names, please update glassfish-v3tp2 to glassfishv3-prelude </td> 
+         <td class="confluenceTd">sent info to Paul for preface update </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> anissa-01 </td> 
+         <td class="confluenceTd"> 10/12/08 </td> 
+         <td class="confluenceTd"> page 26. Enterprise Server Concepts </td> 
+         <td class="confluenceTd"> <em>Each domain has a domain administration server (DAS) which consists of zero or more standalone instances.</em> For v3 prelude, only 1 server instance for each domain, ie the DAS itself </td> 
+         <td class="confluenceTd">accepted 10/14 <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> anissa-02 </td> 
+         <td class="confluenceTd"> 10/12/08 </td> 
+         <td class="confluenceTd"> pg 32. Administration Console </td> 
+         <td class="confluenceTd"> Except for Stopping a domain, and Using the Update Tool, none of the task mentioned is supported in v3 prelude </td> 
+         <td class="confluenceTd">removed 10/14 <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> anissa-03 </td> 
+         <td class="confluenceTd"> 10/12/08 </td> 
+         <td class="confluenceTd"> pg 32. Administratin Console </td> 
+         <td class="confluenceTd"> the tabs mentioned is wrong. There is only General, JVM, Advanced and Monitor tab. </td> 
+         <td class="confluenceTd">removed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> kenpaulsen-01 </td> 
+         <td class="confluenceTd"> 10/13/08 </td> 
+         <td class="confluenceTd"> pg 57. About Extending Enterprise Server </td> 
+         <td class="confluenceTd"> Suggestion: The current text describes the modules in a way that allows you to pick and choose. Perhaps it should also emphasize that it is designed this way to allow you to add your own customizations or entirely new components (not just pre-existing components). Since this is the administrator's guide, (not developer's) there is no topic on how to customize the admin console itself. It might be worth metioning the ability to customize or add new pages to the admin console and direct them to where they can find more information. Here's a link that might be worth pointing to: V3IntegrationPoint I think there's a guide coming out that will focus on this topic which would also be worth referring to. </td> 
+         <td class="confluenceTd">accepted 10/15 I will revise this material and also refer to material in the new Add-on Components Dev guide for info on customizing and creating new components. 10/16 accepted. I am reducing overview material in the Admin Guide (HK2 and OSGi are mentioned) and linking to the new Add-On Component Development guide where they go into more depth. <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> davisn-01 </td> 
+         <td class="confluenceTd"> 10/13/08 </td> 
+         <td class="confluenceTd"> pg 39. Basic Administration Chapter </td> 
+         <td class="confluenceTd"> Not sure if the server is still called as Enterprise Server and the master password is still be using (please, double check). </td> 
+         <td class="confluenceTd">Former Application Server is Enterprise Server. Master password comment accepted 10/15 <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> davisn-02 </td> 
+         <td class="confluenceTd"> 10/13/08 </td> 
+         <td class="confluenceTd"> pg 40. Basic Administration Chapter </td> 
+         <td class="confluenceTd"> --template option should be removed since it is not applicable for V3 server </td> 
+         <td class="confluenceTd">accepted 10/15 <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> davisn-03 </td> 
+         <td class="confluenceTd"> 10/13/08 </td> 
+         <td class="confluenceTd"> pg 44. Basic Administration Chapter </td> 
+         <td class="confluenceTd"> The long return message after "asadmin start-domain domain1" command should be replaced by a short message "Admin port for the domain: 4848." </td> 
+         <td class="confluenceTd">accepted 10/15 <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> davisn-04 </td> 
+         <td class="confluenceTd"> 10/13/08 </td> 
+         <td class="confluenceTd"> pg 45. Basic Administration Chapter </td> 
+         <td class="confluenceTd"> The return message after "asadmin stop-domain sampleDomain" command should be replaced by "Waiting for the domain to stop ......." </td> 
+         <td class="confluenceTd">accepted 10/15 <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> davisn-05 </td> 
+         <td class="confluenceTd"> 10/13/08 </td> 
+         <td class="confluenceTd"> pg 46. Basic Administration Chapter </td> 
+         <td class="confluenceTd"> "asadmin login --host myhost" command should return message: Enter admin user name Enter to accept default &gt;admin Enter admin password&gt; GlassFish Prelude 10.0-SNAPSHOT (build b28) Admin login information for host {localhost} and port {4848} is being overwritten with credentials provided. This is because the --savelogin option was used during create-domain command.......</td> 
+         <td class="confluenceTd">accepted 10/15 <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> davisn-06 </td> 
+         <td class="confluenceTd"> 10/13/08 </td> 
+         <td class="confluenceTd"> pg 51. Basic Administration Chapter </td> 
+         <td class="confluenceTd"> asadmin list-commands should have the local list commands below (11 commands) create-domain delete-domain list-commands list-domains login monitor start-database start-domain stop-database stop-domain version </td> 
+         <td class="confluenceTd">accepted 10/15 <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> davisn-07 </td> 
+         <td class="confluenceTd"> 10/13/08 </td> 
+         <td class="confluenceTd"> pg 54. Basic Administration Chapter </td> 
+         <td class="confluenceTd"> asadmin add-resources command seems do not include the "Add Resource Type: persistent-manager-factory-resource" information, please verify </td> 
+         <td class="confluenceTd">verified by Prashanth; accepted 10/15 <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> davisn-08 </td> 
+         <td class="confluenceTd"> 10/13/08 </td> 
+         <td class="confluenceTd"> pg 55. Basic Administration Chapter </td> 
+         <td class="confluenceTd"> asadmin version command have incorrect return message Version= Sun Java System Application 9.1 </td> 
+         <td class="confluenceTd">accepted 10/15. I assume version should be GlassFish Prelude 10.0 (See davisn-05 above.) <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> davisn-09 </td> 
+         <td class="confluenceTd"> 10/13/08 </td> 
+         <td class="confluenceTd"> pg 117. Administering User Security Chapter </td> 
+         <td class="confluenceTd"> Shouldn't have "To Configure a JDBC Realm for a Java EE Application" information on the page since there is no Java EE Application for Glassfish V3 Prelude server </td> 
+         <td class="confluenceTd">accepted 10/15 <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> sreeni-01 </td> 
+         <td class="confluenceTd"> 10/14/08 </td> 
+         <td class="confluenceTd"> pg 25 </td> 
+         <td class="confluenceTd"> The statement "The Sun GlassFishTM Enterprise Server provides a Java EE-compatible server" is not correct since Prelude is not EE compliant. </td> 
+         <td class="confluenceTd">accepted 10/15 <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> sreeni-02 </td> 
+         <td class="confluenceTd"> 10/14/08 </td> 
+         <td class="confluenceTd"> pg 25 </td> 
+         <td class="confluenceTd"> EJB is not built into Prelude but it will be available as a separate package, pl. verify the latest status </td> 
+         <td class="confluenceTd">Declined 10/15 pkgs are not listed in the Admin Guide except as an example list </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> sreeni-03 </td> 
+         <td class="confluenceTd"> 10/14/08 </td> 
+         <td class="confluenceTd"> pg 25 </td> 
+         <td class="confluenceTd"> Pl. remove content not related to Prelude for ex. clusetring, node-agents, etc. </td> 
+         <td class="confluenceTd">Declined 10/15 clustering, node agents are not mentioned in the Admin Guide. Need more specifics for other issues. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> sreeni-04 </td> 
+         <td class="confluenceTd"> 10/14/08 </td> 
+         <td class="confluenceTd"> pg 28 </td> 
+         <td class="confluenceTd"> Need ta talk about OSGi in addition to HK2 as part of Modular Extensibility </td> 
+         <td class="confluenceTd">accepted 10/15 <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> sreeni-05 </td> 
+         <td class="confluenceTd"> 10/14/08 </td> 
+         <td class="confluenceTd"> pg 34 </td> 
+         <td class="confluenceTd"> Pl. verify the list of concepts which are applicable for Prelude. </td> 
+         <td class="confluenceTd">accepted 10/15 will remove app, config, instance, resource. <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> sreeni-06 </td> 
+         <td class="confluenceTd"> 10/14/08 </td> 
+         <td class="confluenceTd"> pg 45 </td> 
+         <td class="confluenceTd"> Change 'sadmin login ...' to 'asadmin login ...' </td> 
+         <td class="confluenceTd">accepted 10/15 <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> sreeni-07 </td> 
+         <td class="confluenceTd"> 10/14/08 </td> 
+         <td class="confluenceTd"> pg 48 </td> 
+         <td class="confluenceTd"> Change 'Identities the name of the property' to 'Identifies the name of the property' </td> 
+         <td class="confluenceTd">accepted 10/15 <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> sreeni-08 </td> 
+         <td class="confluenceTd"> 10/14/08 </td> 
+         <td class="confluenceTd"> pg 49 </td> 
+         <td class="confluenceTd"> Eample 2-10, change 'http-listener-port=1088' to 'http-listener-port' </td> 
+         <td class="confluenceTd">accepted 10/15 <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> sreeni-09 </td> 
+         <td class="confluenceTd"> 10/14/08 </td> 
+         <td class="confluenceTd"> pg 58 </td> 
+         <td class="confluenceTd"> The link 'http://docs.sun.com/doc/820-5968' is not accesible </td> 
+         <td class="confluenceTd">Declined 10/15 Links to docs that have not been published will not work yet. Only links to TP2 docs will work now. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> sreeni-10 </td> 
+         <td class="confluenceTd"> 10/14/08 </td> 
+         <td class="confluenceTd"> pg 58 </td> 
+         <td class="confluenceTd"> Mention how the binary 'pkg' is going to be available, for ex. specify the location and set it in path </td> 
+         <td class="confluenceTd">accepted 10/16 <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> sreeni-11 </td> 
+         <td class="confluenceTd"> 10/14/08 </td> 
+         <td class="confluenceTd"> pg 103 </td> 
+         <td class="confluenceTd"> I think it should be 'AS_ADMIN_MASTERPASSWORD' instead of 'AS_ADMIN_MAPPEDPASSWORD' </td> 
+         <td class="confluenceTd">accepted 10/16 <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> sreeni-12 </td> 
+         <td class="confluenceTd"> 10/14/08 </td> 
+         <td class="confluenceTd"> pg 112 </td> 
+         <td class="confluenceTd"> It should be 'JDBC' instead of 'JDCB' </td> 
+         <td class="confluenceTd">accepted 10/16 <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> sreeni-13 </td> 
+         <td class="confluenceTd"> 10/14/08 </td> 
+         <td class="confluenceTd"> pg 136 </td> 
+         <td class="confluenceTd"> Change the ProductName-Version from 'GlassFish10.0' to 'glassfish' </td> 
+         <td class="confluenceTd">accepted 10/16 <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> sreeni-14 </td> 
+         <td class="confluenceTd"> 10/14/08 </td> 
+         <td class="confluenceTd"> pg 165 </td> 
+         <td class="confluenceTd"> Pl. make sure that the Admin Commands listed are consistent with what Paul has </td> 
+         <td class="confluenceTd">10/16 They are, except for deploydir. I will add it without a link since it is deprecated. <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> sreeni-15 </td> 
+         <td class="confluenceTd"> 10/14/08 </td> 
+         <td class="confluenceTd"> common </td> 
+         <td class="confluenceTd"> In prelude anonymous login is possible and request you to mention it appropriately </td> 
+         <td class="confluenceTd">10/16 I've seen email discussion saying this is security risk and should not be mentioned (it is mentioned in installation guide). Please confirm. I've mentioned anonymous login in multiple places in the guide. <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> sreeni-18 </td> 
+         <td class="confluenceTd"> 10/14/08 </td> 
+         <td class="confluenceTd"> common </td> 
+         <td class="confluenceTd"> Trouble shooting info on debugging, admin iTeam, admin alias, dev alias, etc. </td> 
+         <td class="confluenceTd">10/16 Declined. Troubleshotting/debugging documentation was not specified for Prelude. SME needs to contact me with information immediately if this is to go into Prelude Admin Guide. Aliases should go into Preface or maybe RN; I will contact Paul Davies. Paul responded that Glassfish community aliases do not belong in the Sun-branded docs. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> janey-01 </td> 
+         <td class="confluenceTd"> 10/14/08 </td> 
+         <td class="confluenceTd"> pg 21 </td> 
+         <td class="confluenceTd"> Default values for as-install is: <em>install-dir</em>/glassfishv3-prelude/glassfish </td> 
+         <td class="confluenceTd">10/16 sent to Paul Davies for Preface </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> janey-02 </td> 
+         <td class="confluenceTd"> 10/14/08 </td> 
+         <td class="confluenceTd"> pg 21 </td> 
+         <td class="confluenceTd"> Remove row in the table about instance-dir. Prelude does not support instance. </td> 
+         <td class="confluenceTd">10/16 sent to Paul Davies for Preface </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> janey-03 </td> 
+         <td class="confluenceTd"> 10/14/08 </td> 
+         <td class="confluenceTd"> pg 26-28 </td> 
+         <td class="confluenceTd"> Remove section about domain and instance. </td> 
+         <td class="confluenceTd">10/16 removed Server Instance section and throughout the doc. However, I suggest removing all overview material for Enterprise Server as most of it is not for Prelude. Please discuss with team. Please chck material for Profilers p.70 and p. 169, and Audit Modules p.104. I'm not sure how to rewrite without "server instance." 10/24 Met with Sreeni. We decided to hide all the application server overview material in chapter 1 for Prelude. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> janey-04 </td> 
+         <td class="confluenceTd"> 10/14/08 </td> 
+         <td class="confluenceTd"> pg 30 </td> 
+         <td class="confluenceTd"> Not sure if we're supporting JMS, JavaMail and JBI in Prelude. Please ask Kedar or Sreeni if these resources are supported. </td> 
+         <td class="confluenceTd">10/16 I suggest removing all overview material for Enterprise Server as most of it is not for Prelude. Please discuss with team. 10/24 Met with Sreeni. We decided to hide all the application server overview material in chapter 1 for Prelude. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> janey-05 </td> 
+         <td class="confluenceTd"> 10/14/08 </td> 
+         <td class="confluenceTd"> pg 33 </td> 
+         <td class="confluenceTd"> The first bullet in "Difference Between Remote Commands and Local Commands", specify the default port number, 4848 is assumed. </td> 
+         <td class="confluenceTd">10/16 accepted <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> janey-06 </td> 
+         <td class="confluenceTd"> 10/14/08 </td> 
+         <td class="confluenceTd"> pg 33 </td> 
+         <td class="confluenceTd"> Add a sentence to tell the user that asadmin utility is located in the glassfishv3-prelude/bin directory. </td> 
+         <td class="confluenceTd">10/16 Declined. Doc style in preface is as-install replaceable is equal to glassfishv3-prelude, so as-install/bin. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> janey-07 </td> 
+         <td class="confluenceTd"> 10/14/08 </td> 
+         <td class="confluenceTd"> pg 34 </td> 
+         <td class="confluenceTd"> First and second bullet in "local commands" section. I don't know if --domain option is supported. Which command is this? </td> 
+         <td class="confluenceTd">10/16 material has been hidden for Prelude. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> janey-08 </td> 
+         <td class="confluenceTd"> 10/14/08 </td> 
+         <td class="confluenceTd"> pg 35 </td> 
+         <td class="confluenceTd"> In "To Start the asadmin Utility", multimode is not supported so remove the paragraph about starting asadmin with "./asadmin". </td> 
+         <td class="confluenceTd">10/16 accepted <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> janey-09 </td> 
+         <td class="confluenceTd"> 10/14/08 </td> 
+         <td class="confluenceTd"> pg 36 </td> 
+         <td class="confluenceTd"> Remove "asenv.conf" for the list of Configuration files. Also remove any reference to this file. GFv3 Prelude does not associate to this file. </td> 
+         <td class="confluenceTd">10/16 accepted. This is the only one to remove? These config files are not mentioned in this guide other than this list. Only logging.properties file is documented in Admin guide. 10/24 Met with Sreeni. All config files hidden except asadminenv.conf, domain.xml, logging.properties, resources.xml, server.policy. <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> janey-10 </td> 
+         <td class="confluenceTd"> 10/14/08 </td> 
+         <td class="confluenceTd"> pg 39 </td> 
+         <td class="confluenceTd"> Remove references to server instances. </td> 
+         <td class="confluenceTd">10/16 accepted. <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> janey-11 </td> 
+         <td class="confluenceTd"> 10/14/08 </td> 
+         <td class="confluenceTd"> pg 40 </td> 
+         <td class="confluenceTd"> List commands that accepts the options listed to administer domain. I see that you have create-domain at the end. If this is the only command that accepts these options please state that in the beginning of this section. You may want to verify these options with Siraj to see if they are supported in GFv3 Prelude. </td> 
+         <td class="confluenceTd">10/16 accepted. Because the options do not apply to all the commands in the section, I will remove all the Command Options sections in the guide and let users rely on man pages. <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> janey-12 </td> 
+         <td class="confluenceTd"> 10/14/08 </td> 
+         <td class="confluenceTd"> pg 41 </td> 
+         <td class="confluenceTd"> In the create-domain example --profile is not supported in GFv3 Prelude. Please remove. </td> 
+         <td class="confluenceTd">10/16 See janey-11. This material removed. <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> janey-13 </td> 
+         <td class="confluenceTd"> 10/14/08 </td> 
+         <td class="confluenceTd"> pg 43 </td> 
+         <td class="confluenceTd"> In delete-domain example (Example 2-3), remove the multimode syntax, "asadmin&gt;" </td> 
+         <td class="confluenceTd">accepted 10/16 <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> janey-14 </td> 
+         <td class="confluenceTd"> 10/14/08 </td> 
+         <td class="confluenceTd"> pg 44 </td> 
+         <td class="confluenceTd"> The example in starting the domain (Example 2-4) is wrong. Please execute start-domain on GFv3 Prelude and provide the output for this section. </td> 
+         <td class="confluenceTd">10/16. Comment applies to all command examples in the book. Command output was taken from the man pages, which apparently were not reviewed for Prelude. It's too late in cycle for me to generate the content myself. However, if SME can provide content for all command examples, I will put it in. 10/24 Updated all output examples in the guide from Jennifer's material. <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> janey-15 </td> 
+         <td class="confluenceTd"> 10/14/08 </td> 
+         <td class="confluenceTd"> pg 44 </td> 
+         <td class="confluenceTd"> Add a sentence about starting the domain with server log outputs to the console by using "start-domain -v", -v or --verbose option. </td> 
+         <td class="confluenceTd">10/16 accepted <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> janey-16 </td> 
+         <td class="confluenceTd"> 10/14/08 </td> 
+         <td class="confluenceTd"> pg 44 </td> 
+         <td class="confluenceTd"> The out of stopping the domain (Example 2-5) is wrong. Please execute sotp-domain on GFv3 Prelude and provide the output for this section. </td> 
+         <td class="confluenceTd">10/16 See janey-14. <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> janey-17 </td> 
+         <td class="confluenceTd"> 10/14/08 </td> 
+         <td class="confluenceTd"> Basic Administration </td> 
+         <td class="confluenceTd"> Please add a section about passwordfile option. Specifically what entry should be in this file. </td> 
+         <td class="confluenceTd">10/16 Declined. Removed all example text that included -passwordfile, per Jennifer. Password file documentation is in the System Security chapter. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> janey-18 </td> 
+         <td class="confluenceTd"> 10/14/08 </td> 
+         <td class="confluenceTd"> pg 58 </td> 
+         <td class="confluenceTd"> The packages list in this section is old. Please update with the latest packages. </td> 
+         <td class="confluenceTd"> This is intended as an example and not a particular listing. It's too late in cycle for me to generate the content myself. However, if SME provides content, I will put it in. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Kana-01 </td> 
+         <td class="confluenceTd"> 10/23/08 </td> 
+         <td class="confluenceTd"> pg 38 </td> 
+         <td class="confluenceTd"> "To start the Administration Console for domain46 in a browser, enter the URL in the following format:" domain46 -&gt; domain6 </td> 
+         <td class="confluenceTd"> Revised by another reviewer. <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Kana-02 </td> 
+         <td class="confluenceTd"> 10/23/08 </td> 
+         <td class="confluenceTd"> pg 39 </td> 
+         <td class="confluenceTd"> <a href="http://hostname:5000">http://hostname:5000</a> <p> -&gt; </p> <a href="http://hostname:6868">http://hostname:6868</a> <p> </p></td> 
+         <td class="confluenceTd"> Revised by another reviewer. <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Kana-03 </td> 
+         <td class="confluenceTd"> 10/24/08 </td> 
+         <td class="confluenceTd"> pg 48 </td> 
+         <td class="confluenceTd"> The output for a list-containers seems to be incorrect. Is this not an output for list-commands ? </td> 
+         <td class="confluenceTd"> Revised by another reviewer. <b>DONE</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> shalm-01 </td> 
+         <td class="confluenceTd"> 05/21/09 </td> 
+         <td class="confluenceTd"> Page 212, Monitoring </td> 
+         <td class="confluenceTd"> Table 15-5 : The command in second row would produce an output with list of attributes and values corresponding to all jdbc connection pools in the system. This needs to be changed. </td> 
+         <td class="confluenceTd"> done 5/28/9 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> shalm-02 </td> 
+         <td class="confluenceTd"> 05/21/09 </td> 
+         <td class="confluenceTd"> Page 212, Monitoring </td> 
+         <td class="confluenceTd"> Table 15-5 : The Dotted Name in the third row should have been "server.resources.connection-pool1". There is no intermediate "jdbc-connection-pool-pool" as mentioned in the doc. </td> 
+         <td class="confluenceTd"> done 5/28/9 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> shalm-03 </td> 
+         <td class="confluenceTd"> 05/21/09 </td> 
+         <td class="confluenceTd"> Page 212, Monitoring </td> 
+         <td class="confluenceTd"> Table 15-5 : The Dotted Name in the fourth row should have been "server.resources.connection-pool1.*". There is no intermediate "jdbc-connection-pool-pool" as mentioned in the doc. </td> 
+         <td class="confluenceTd"> done 5/28/9 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> shalm-04 </td> 
+         <td class="confluenceTd"> 05/21/09 </td> 
+         <td class="confluenceTd"> Page 219, Monitoring Remark:15-5 </td> 
+         <td class="confluenceTd"> Table 15-10 : averageconnwaittime statistic is to be removed as this is not yet implemented. </td> 
+         <td class="confluenceTd"> done 5/28/9 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> shalm-05 </td> 
+         <td class="confluenceTd"> 05/21/09 </td> 
+         <td class="confluenceTd"> Page 219, 220 Monitoring Remark 15-5 </td> 
+         <td class="confluenceTd"> Table 15-10 : Please mark all Units and Data types as "Number" and "CountStatistic" respectively. As of now, all the statistics have been implemented as CountStatistic. </td> 
+         <td class="confluenceTd"> done best guess 5/28/9 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> shalm-06 </td> 
+         <td class="confluenceTd"> 05/21/09 </td> 
+         <td class="confluenceTd"> Page 209, Remark 15-3 </td> 
+         <td class="confluenceTd"> "count" is the only statistic that is exposed as of now. Please add description for "count" statistic taken from v2. </td> 
+         <td class="confluenceTd">there's no jdbc common monitoring for monitor command. removed my placeholder section </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> shalm-07 </td> 
+         <td class="confluenceTd"> 05/21/09 </td> 
+         <td class="confluenceTd"> Page 205, Remark 15-2 </td> 
+         <td class="confluenceTd"> The JDBC tree contains the nodes : "server.resources" and its sub-nodes are the pool names of the existing jdbc connection pools. Sub-nodes of each of the poolNames are the various statistics mentioned in Table 15-10 on page 219 and 220. </td> 
+         <td class="confluenceTd"> done 5/28/9 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> shalm-08 </td> 
+         <td class="confluenceTd"> 05/21/09 </td> 
+         <td class="confluenceTd"> Page 78, To Edit a JDBC Connection Pool </td> 
+         <td class="confluenceTd"> Step 2 should state "View the <b>attributes</b> of the ...". It quotes a wrong example. It has to be changed to "asadmin get resources.jdbc-connection-pool.DerbyPool". Step 2 could also include "asadmin get resources.jdbc-connection-pool.DerbyPool.property" to view <b>properties</b> of a JDBC connection pool. </td> 
+         <td class="confluenceTd"> done 5/28/9 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> shalm-09 </td> 
+         <td class="confluenceTd"> 05/21/09 </td> 
+         <td class="confluenceTd"> Page 78, To Edit a JDBC Connection Pool </td> 
+         <td class="confluenceTd"> Step 3 should be "Set an attribute of the JDBC connection pool by using the set command". Also this step quotes a wrong example. It has to be changed to "asadmin set resources.jdbc-connection-pool.DerbyPool.steady-pool-size=9" </td> 
+         <td class="confluenceTd"> done 5/28/9 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> shalm-10 </td> 
+         <td class="confluenceTd"> 05/21/09 </td> 
+         <td class="confluenceTd"> Page 78, To Edit a JDBC Connection Pool </td> 
+         <td class="confluenceTd"> Step 3 could also include information on setting a property with example "asadmin set resources.jdbc-connection-pool.DerbyPool.property.serverName=host1" </td> 
+         <td class="confluenceTd"> Later </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> shalm-11 </td> 
+         <td class="confluenceTd"> 05/21/09 </td> 
+         <td class="confluenceTd"> Page 32, Configuration Changes That Require Server Restart </td> 
+         <td class="confluenceTd"> Should "Creating or deleting a resource or entity (Exception: Some JDBC.." be removed from here? JDBC Connection pool/JDBC resource creation are dynamic. I see them included in "Dynamic Configuration Changes" on page 33. Applications that refer to the jdbc resource need to redeployed or the server needs to be restarted in this case. </td> 
+         <td class="confluenceTd">changed wording of Exception 5/28/9 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> shalm-12 </td> 
+         <td class="confluenceTd"> 05/21/09 </td> 
+         <td class="confluenceTd"> Page 80, Administering JDBC Resources </td> 
+         <td class="confluenceTd"> Minor : A typo at "Unse a unique Java Naming...". Should have been "Use a unique Java Naming..." </td> 
+         <td class="confluenceTd"> done 5/28/9 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> shalm-13 </td> 
+         <td class="confluenceTd"> 05/21/09 </td> 
+         <td class="confluenceTd"> Page 80, To Create a JDBC Resource </td> 
+         <td class="confluenceTd"> Minor : Grammatical error : ".... use only the jdbc/name format". Please remove the trailing "is used". </td> 
+         <td class="confluenceTd"> done 5/28/9 </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>Return to <a href="AdministrationGuide.html" title="AdministrationGuide">Administration Guide comments page</a></p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 02, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:42.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

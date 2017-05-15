@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : AddOnComponentDevelopmentGuide</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="AddOnComponentDevelopmentGuide-AddOnComponentDevelopmentGuideCommentsPage"></a>Add-On Component Development Guide Comments Page</h2> <p>This document explains how to use published interfaces of Sun GlassFish(TM) Enterprise Server to develop add-on components for Enterprise Server. This document explains how to perform <b>only</b> those tasks that ensure that the add-on component is suitable for Enterprise Server.</p> <p>This document is for software developers who are developing add-on components for Enterprise Server. This document assumes that the developers are working with an Enterprise Server distribution or GlassFish community distribution. Access to the source code of the GlassFish project is <b>not</b> required to perform the tasks in this document. This document also assumes familiarity with the Java^TM^ programming language.</p> <p>The latest version of this document is available in <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875365/21364906.pdf">PDF format</a>. <b>This version applies to GlassFish v3.</b></p> <p>Comments on this version will be considered for a future update.</p> <p>See <a href="AddOnComponentDevelopmentGuideResolved.html" title="AddOnComponentDevelopmentGuideResolved">resolved comments</a>.</p> <h4><a name="AddOnComponentDevelopmentGuide-Comments"></a>Comments</h3> <p>Please add your comments to the table in the following format:</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Comment ID </th> 
+         <th class="confluenceTh"> Date</th> 
+         <th class="confluenceTh">Section, Page Number/URL </th> 
+         <th class="confluenceTh"> Comment </th> 
+         <th class="confluenceTh">Status – (<font color="lime">RESOLVED</font>/<font color="red">UNRESOLVED</font>) </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Example: <em>jsmith-001</em> </td> 
+         <td class="confluenceTd"> <em>Date comment entered</em> </td> 
+         <td class="confluenceTd"> <em>Detailed pointer to location in the doc</em> </td> 
+         <td class="confluenceTd"> <em>Detailed comment</em> </td> 
+         <td class="confluenceTd"><em>Leave blank – the writer will provide status</em> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> sreeni-011 </td> 
+         <td class="confluenceTd"> 22-Oct-2008 </td> 
+         <td class="confluenceTd"> Remark 4-15 &amp; 4-17 </td> 
+         <td class="confluenceTd"> The command is passed to the server using REST like API as an http url with properties and values. Once it is received by the server it parses the params, forms admincontext and injects the specified params. In addition, the admincontext has objects like ActionReport which is used to report the return status of the command. </td> 
+         <td class="confluenceTd">DEFER </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> janey-14 </td> 
+         <td class="confluenceTd"> 24-Oct-2008 </td> 
+         <td class="confluenceTd"> pg 57 Remark 4-13 </td> 
+         <td class="confluenceTd"> The developer need to provide code in execute method to display the text to the client. </td> 
+         <td class="confluenceTd">DEFER </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> janey-15 </td> 
+         <td class="confluenceTd"> 24-Oct-2008 </td> 
+         <td class="confluenceTd"> pg 57-58 Remark 4-14 </td> 
+         <td class="confluenceTd"> Agree with the remark that this section is incomplete especially the Example. The Example code should demonstrate how localized message is used. Let me know if you need help with this. </td> 
+         <td class="confluenceTd">DEFER </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> janey-17 </td> 
+         <td class="confluenceTd"> 24-Oct-2008 </td> 
+         <td class="confluenceTd"> pg 59 Remark 4-16 </td> 
+         <td class="confluenceTd"> Not sure how much detail we want to get into here. Tim has a good UML sequence diagram in his <a href="http://appserver.sfbay.sun.com/attach/Attachments%2Fv3PreludeDeploymentTOI.pdf">TOI presentation </a>. See slide #13. Is this document supposed to have the implementation detail. Maybe I'm going off tangent here. </td> 
+         <td class="confluenceTd">DEFER </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> janey-18 </td> 
+         <td class="confluenceTd"> 24-Oct-2008 </td> 
+         <td class="confluenceTd"> pg 59 Remark 4-17 </td> 
+         <td class="confluenceTd"> How much detail do we need here? Can we provide the java doc api for AdminCommandContext class? </td> 
+         <td class="confluenceTd"> DEFER </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>Return to <a href="GlassFishDocs.html" title="GlassFishDocs">main comments page</a>.</p> 
+     <hr> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875365/21364906.pdf">SGFESADDONDEV.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875365/21364905.pdf">chap3.pdf</a> (application/pdf) 
+      <br> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 13, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:42.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

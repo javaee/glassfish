@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GF4.0Deployment</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   
+     <div> 
+      <ul> 
+       <li><a href="#GF4.0Deployment-GlassFish4.0Deployment%28JavaEE7release%29">GlassFish 4.0 Deployment (Java EE 7 release)</a></li> 
+       <ul> 
+        <li><a href="#GF4.0Deployment-Scope">Scope</a></li> 
+        <li><a href="#GF4.0Deployment-FeatureOverview">Feature Overview</a></li> 
+        <li><a href="#GF4.0Deployment-MilestoneSchedule">Milestone Schedule</a></li> 
+        <li><a href="#GF4.0Deployment-SubProjects">Sub Projects</a></li> 
+        <li><a href="#GF4.0Deployment-OnePager">One Pager</a></li> 
+        <li><a href="#GF4.0Deployment-Devtests">Dev tests</a></li> 
+        <li><a href="#GF4.0Deployment-EmailAlias">Email Alias</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="GF4.0Deployment-GlassFish4.0Deployment%28JavaEE7release%29"></a>GlassFish 4.0 Deployment (Java EE 7 release)</h1> <h4><a name="GF4.0Deployment-Scope"></a>Scope</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Priority </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> Owner </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> DPLY-001 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Java EE 7 Requirements </td> 
+         <td class="confluenceTd"> Hong </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> DPLY-002 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Deployment Order </td> 
+         <td class="confluenceTd"> Gerald </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF4.0Deployment-FeatureOverview"></a>Feature Overview</h2> 
+     <ul> 
+      <li>Java EE 7 platform spec (deployment related requirements) 
+       <ul> 
+        <li>Support external alternate deployment descriptors</li> 
+        <li>Other clarifications (for example, annotation/descriptor overriding rules)</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li>Deployment order 
+       <ul> 
+        <li>Specify a deployment order at application deployment time, and the applications will be loaded based on that order during server start up</li> 
+       </ul> </li> 
+     </ul> <h4><a name="GF4.0Deployment-MilestoneSchedule"></a>Milestone Schedule</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <td class="confluenceTd"> Status / Comments </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> EE7MS3 (12/19) </td> 
+         <td class="confluenceTd"> DPLY-002 </td> 
+         <td class="confluenceTd"> Deployment Order </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> EE7MS4 (01/16) </td> 
+         <td class="confluenceTd"> DPLY-001 </td> 
+         <td class="confluenceTd"> Java EE 7 Requirements </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF4.0Deployment-SubProjects"></a>Sub Projects</h2> 
+     <ul> 
+      <li><a href="ProductionRedeployment.html" title="ProductionRedeployment">Production Redeployment </a><br> (This feature will not be in the Java EE 7 release, it will be available in the GlassFish 4.0 product release)</li> 
+     </ul> <h4><a name="GF4.0Deployment-OnePager"></a>One Pager</h2> 
+     <ul> 
+      <li><a href="./GlassFish+4.0+Deployment+One+Pager.html">GlassFish 4.0 (Java EE 7) Deployment One Pager </a></li> 
+     </ul> <h4><a name="GF4.0Deployment-Devtests"></a>Dev tests</h2> <p><a href="4.0DeploymentDevTests.html" title="4.0DeploymentDevTests">Instruction to Run Dev Test </a></p> <h4><a name="GF4.0Deployment-EmailAlias"></a>Email Alias</h2> <p>Please contact us at <a href="mailto:dev@glassfish.java.net">dev@glassfish.java.net</a></p> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jan 30, 2013 by 
+<font color="#0050B2">17971</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

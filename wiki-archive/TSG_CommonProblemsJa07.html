@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : TSG_CommonProblemsJa07</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="TSG_CommonProblemsJa07-%E3%82%B5%E3%83%BC%E3%83%90%E3%82%A2%E3%83%97%E3%83%AA%E3%82%B1%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%81%AB%E3%82%A2%E3%82%AF%E3%82%BB%E3%82%B9%E3%81%A7%E3%81%8D%E3%81%AA%E3%81%84"></a>サーバアプリケーションにアクセスできない</h2> <p>特定のアプリケーションが GlassFish を通じてアクセスできない場合、下記のような点を確認します:</p> 
+     <ul> 
+      <li>GlassFish は起動しているか？</li> 
+      <li>アプリケーションの配備は成功しているか？</li> 
+      <li>プロンプトされないオプションを使っているのに、ユーザ名もしくはパスワードが不正</li> 
+      <li>管理者ユーザ名もしくはパスワードが不明</li> 
+     </ul> <h4><a name="TSG_CommonProblemsJa07-GlassFish%E3%81%AF%E8%B5%B7%E5%8B%95%E3%81%97%E3%81%A6%E3%81%84%E3%82%8B%E3%81%8B%EF%BC%9F"></a>GlassFish は起動しているか？</h3> 
+     <ul> 
+      <li><b>説明</b><br> \GlassFish が起動していないと、アプリケーションにアクセスできません。</li> 
+     </ul> 
+     <ul> 
+      <li><b>解決策</b><br> \サーバが起動しているかを確認するには、<a href="./TSG_CommonProblemsJa04.html">サーバは起動したか?</a>にある情報をみて下さい。サーバアプリケーションがアクセスされる以前にサーバが起動している必要があります。</li> 
+     </ul> <h4><a name="TSG_CommonProblemsJa07-%E3%82%A2%E3%83%97%E3%83%AA%E3%82%B1%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%81%AE%E9%85%8D%E5%82%99%E3%81%AF%E6%88%90%E5%8A%9F%E3%81%97%E3%81%A6%E3%81%84%E3%82%8B%E3%81%8B%EF%BC%9F"></a>アプリケーションの配備は成功しているか？</h3> 
+     <ul> 
+      <li><b>説明</b><br> \アプリケーションはアクセスされる前に、配備されている必要があります。</li> 
+     </ul> 
+     <ul> 
+      <li><b>解決策</b>\\\\\サーバのログファイルを確認下さい:\ 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">install_dir/domains/domain1/server.log</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ul> <h4><a name="TSG_CommonProblemsJa07-%E3%83%97%E3%83%AD%E3%83%B3%E3%83%97%E3%83%88%E3%81%95%E3%82%8C%E3%81%AA%E3%81%84%E3%82%AA%E3%83%97%E3%82%B7%E3%83%A7%E3%83%B3%E3%82%92%E4%BD%BF%E3%81%A3%E3%81%A6%E3%81%84%E3%82%8B%E3%81%AE%E3%81%AB%E3%80%81%E3%83%A6%E3%83%BC%E3%82%B6%E5%90%8D%E3%82%82%E3%81%97%E3%81%8F%E3%81%AF%E3%83%91%E3%82%B9%E3%83%AF%E3%83%BC%E3%83%89%E3%81%8C%E4%B8%8D%E6%AD%A3"></a>プロンプトされないオプションを使っているのに、ユーザ名もしくはパスワードが不正</h3> <p>不正なユーザ名もしくはパスワード、のエラーがおきているが、プロンプトされないオプションを選択してインストールしているので、パスワードは自動で提供されるはずだ。</p> 
+     <ul> 
+      <li><b>説明</b><br> \正しいパスワードが、インストール時に指定されないかった、もしくはドメインが起動される際渡されなかった。</li> 
+     </ul> 
+     <ul> 
+      <li><b>解決策</b><br> <tt>.asadminprefs</tt> ファイルの中のパスワードを確認して下さい。UNIX/Linux システムでは、サーバをインストールしたユーザのホームディレクトリにあります。Windows では <tt>C:\Documents and Settings</tt><em>ユーザ名</em> になります。ファイルの内容はこの様なものです:\ 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">AS_ADMIN_USER=admin
+AS_ADMIN_PASSWORD=administrator</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ul> <h4><a name="TSG_CommonProblemsJa07-%E7%AE%A1%E7%90%86%E8%80%85%E3%83%A6%E3%83%BC%E3%82%B6%E5%90%8D%E3%82%82%E3%81%97%E3%81%8F%E3%81%AF%E3%83%91%E3%82%B9%E3%83%AF%E3%83%BC%E3%83%89%E3%81%8C%E4%B8%8D%E6%98%8E"></a>管理者ユーザ名もしくはパスワードが不明</h3> <p>管理者ユーザ名を忘れてしまった場合、上の説明にあるように <tt>.adminprefs</tt> ファイルを検査したり、もしくは <tt>install_dir/domains/domain1/config/keyfile</tt> (domain1 はデフォルトドメイン) を検査することで、見つけることができます。違うドメインの場合は、パス内のドメイン名を入れ替えて下さい。</p> <p>管理者パスワードを忘れてしまった場合には、新規のユーザ名、パスワードの組みを作成する必要があります。既存のユーザ名、パスワードを削除、新規に作成した後、サーバを再起動して下さい。(パスワードは keyfile に暗号化されているため、読むことはできません。)</p> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li>ユーザ名とパスワードを完全に削除するには*<br> \</li> 
+       </ul> </li> 
+     </ul> 
+     <ol> 
+      <li>もし動いている場合、GlassFish を停止します。<br> \</li> 
+      <li><tt>WEB-INF</tt> ディレクトリに移動します。例えば:\\\\\~UWC_TOKEN_START~1278691906978~UWC_TOKEN_END<br> \</li> 
+      <li><tt>web.xml</tt> ファイル内の
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">&lt;security-constraint\&gt;</pre> 
+         </div> 
+        </div>
+       </div> 要素を全てコメントアウトします。\\\\\この要素は、後で再度使うので、削除しないで下さい。これにより、コマンドライン操作におけるセキュリティを無効にします。<br> *注:* コマンドはそれでも <tt>-<del>username</del></tt> (もしくは <tt>-u</tt>) と <tt>-password</tt> (もしくは <tt>-w</tt>) を要求します。しかしサーバ側は何らセキュリティ強いないため、これらはダミーの値で構いません。<br> \</li> 
+      <li>GlassFish を起動します。<br> \この時点で、GlassFish はコマンドラインのセキュリティをもちません。<br> \</li> 
+      <li>次のコマンドを実行します:\\\\\~UWC_TOKEN_START~1278691906980~UWC_TOKEN_END\\\\\このコマンドは次の新しいエントリを作成します:\\\\\~UWC_TOKEN_START~1278691906981~UWC_TOKEN_END<br> \</li> 
+      <li><tt>web.xml</tt> ファイルの 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">&lt;security-constraint\&gt;</pre> 
+         </div> 
+        </div>
+       </div> 要素のコメントを外します。<br> \</li> 
+      <li>GlassFish を再起動し、新しいユーザ名、パスワードを有効化します。<br> *注:* GlassFish が起動したら、どのリモートコマンドライン操作も <tt>new_user_id</tt> と <tt>new_secret</tt> をユーザ名とパスワードとして必要とします。</li> 
+     </ol> <p><sup><a href="./TSG_CommonProblemsJa.html">戻る</a></sup></p> 
+     <hr> <p>日本語翻訳: <a href="http://blogs.oracle.com/ogino/">ogino</a></p> <p><a href="./TSG_CommonProblems.html">英文</a> (翻訳したバージョン: 104)</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 09, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

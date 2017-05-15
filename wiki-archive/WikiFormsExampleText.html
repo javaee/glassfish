@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : WikiFormsExampleText</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="WikiFormsExampleText-WikiFormsFormPluginExample"></a>WikiForms Form Plugin Example</h2> <p>This page uses the <a href="WikiForms.html" title="WikiForms">WikiForms</a> plugins to provide parameters to the CurrentTimePlugin,<br> and displays the result.</p> 
+     <div> 
+      <ul> 
+       <li><a href="#WikiFormsExampleText-WikiFormsFormPluginExample">WikiForms Form Plugin Example</a></li> 
+       <ul> 
+        <li><a href="#WikiFormsExampleText-GivingDefaults">Giving Defaults</a></li> 
+        <li><a href="#WikiFormsExampleText-OpeningtheForm">Opening the Form</a></li> 
+        <li><a href="#WikiFormsExampleText-FormFields">Form Fields</a></li> 
+        <li><a href="#WikiFormsExampleText-Submitting">Submitting</a></li> 
+        <li><a href="#WikiFormsExampleText-ClosingtheForm">Closing the Form</a></li> 
+       </ul> 
+       <li><a href="#WikiFormsExampleText-Synopsis%3A">Synopsis:</a></li> 
+      </ul>
+     </div> <h4><a name="WikiFormsExampleText-GivingDefaults"></a>Giving Defaults</h3> <p>The first item, hidden in normal WikiPage viewing, looks like this:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">[{FormSet form='testform' format='EEE, d MMM yyyy HH:mm:ss Z' rd1='r2'}]</pre> 
+       </div> 
+      </div>
+     </div> <p>[</p> 
+     <div class="error">
+      <span class="error">Unknown macro: {FormSet form='testform' format='EEE, d MMM yyyy HH}</span> 
+     </div> <p>|</p> 
+     <div class="error">
+      <span class="error">Unknown macro: {FormSetform='testform'format='EEE,dMMMyyyyHH}</span> 
+     </div> <p>[</p> 
+     <div class="error">
+      <span class="error">Unknown macro: {FormOutput form='testform' handler='CurrentTimePlugin' populate='handler'}</span> 
+      <p>]</p> 
+      <div class="code panel" style="border-width: 1px;">
+       <div class="codeContent panelContent"> 
+        <div id="root"> 
+         <pre class="theme: Confluence; brush: java; gutter: false"></pre> 
+        </div> 
+       </div>
+      </div> 
+      <p>It specifies that the <em>CurrentTimePlugin</em>, which comes in the stock JSPWiki distribution, should be used to generate <br> some output to display here. While the output is usually built in response to a POST from a form called <em>testform</em>, the <em>populate</em> attribute here hints the plugin that we want default information even if no post has been made. This is<br> what the output looks like:</p> 
+      <p>[</p>
+     </div> <p>|(FormOutputform='testform'handler='CurrentTimePlugin'populate='handler')]</p> <h4><a name="WikiFormsExampleText-OpeningtheForm"></a>Opening the Form</h3> <p>The third element starts the actual HTML form called <em>testform</em>:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">[{FormOpen form='testform'}]</pre> 
+       </div> 
+      </div>
+     </div> <p>[</p> 
+     <div class="error">
+      <span class="error">Unknown macro: {FormOpen form='testform'}</span> 
+     </div> <p>|(FormOpenform='testform')]</p> <h4><a name="WikiFormsExampleText-FormFields"></a>Form Fields</h3> <p>We'll use a text field to provide the format of CurrentTimePlugin's output. Notice that the name of this field is <em>format</em> - the name of CurrentTimePlugin's relevant parameter. This value is passed straight to CurrentTimePlugin on submit:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Enter the time format string: [{FormInput type='text' name='format'}]</pre> 
+       </div> 
+      </div>
+     </div> <p>Enter the time format string: [</p> 
+     <div class="error">
+      <span class="error">Unknown macro: {FormInput type='text' name='format'}</span> 
+     </div> <p>|(FormInputtype='text'name='format')]</p> <p>The rest of the form merely demonstrates some other HTML form elements. The don't work with CurrentTimePlugin, but you'll probably want them in your special form handler plugins.</p> <p>Select list:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">[{FormSelect name='sel1' value='fee;*fie;foe;foo'}]UWC_TOKEN_DBBS</pre> 
+       </div> 
+      </div>
+     </div> <p>(Notice, here, the asterisk; this denotes the default value to select. The separator character and the default character can be overridden - check <a href="FormSelect.html" title="FormSelect">FormSelect</a> for more information.)</p> <p>[</p> 
+     <div class="error">
+      <span class="error">Unknown macro: {FormSelect name='sel1' value='fee;*fie;foe;foo'}</span> 
+     </div> <p>|(FormSelectname='sel1'value='fee.*fie.foe.foo')]<br class="atl-forced-newline"></p> <p>Textarea:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">[{FormTextarea name='area1' value='Write your own text here' rows=8 cols=40}]</pre> 
+       </div> 
+      </div>
+     </div> <p>[</p> 
+     <div class="error">
+      <span class="error">Unknown macro: {FormTextarea name='area1' value='Write your own text here' rows=8 cols=40}</span> 
+     </div> <p>|(FormTextareaname='area1'value='Writeyourowntexthere'rows=8cols=40)]</p> <h4><a name="WikiFormsExampleText-Submitting"></a>Submitting</h3> <p>Before finishing up, we need to add a submit button:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">[{FormInput type='submit' name='x' value='Update'}]</pre> 
+       </div> 
+      </div>
+     </div> <p>[</p> 
+     <div class="error">
+      <span class="error">Unknown macro: {FormInput type='submit' name='x' value='Update'}</span> 
+     </div> <p>|(FormInputtype='submit'name='x'value='Update')]</p> <h4><a name="WikiFormsExampleText-ClosingtheForm"></a>Closing the Form</h3> <p>And, finally, an invisible closing element to denote that this form has ended:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">[{FormClose}]</pre> 
+       </div> 
+      </div>
+     </div> <p>-(FormClose)</p> 
+     <hr> <p>Go ahead, click on <em>Update</em>, and notice how your format changes and selections are retained.</p> 
+     <hr> <h4><a name="WikiFormsExampleText-Synopsis%3A"></a>Synopsis:</h2> 
+     <ul> 
+      <li>(Optional) Start with the <em>FormSet</em>, give defaults</li> 
+      <li>(Optional) If the form is supposed to give out information, add an <em>output</em></li> 
+      <li>(Mandatory) <em>open</em> the form</li> 
+      <li>(Optional) add any text/select elements</li> 
+      <li>(Mandatory) add a <em>submit</em></li> 
+      <li>(Mandatory) <em>close</em> the form</li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:49.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

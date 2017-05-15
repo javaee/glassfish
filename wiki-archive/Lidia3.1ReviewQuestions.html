@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : Lidia3.1ReviewQuestions</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>Questions related to GlassFish3.1AdminConsole:</p> <p><b>1.</b> GUI-001, RESTful APIs - Are RESTful APIs going to be implicitly tested by testing different Admin GUI screens, or do we need to create tests that will specifically target this area?<br> <b>AL:</b> If you can fully test that the Admin Console screen is working as expected, thats all is needed. Just like AMX, GUI testing doesn't need to test AMX.</p> <p>==&gt; <b>LM</b> : A follow up question: I would like to narrow down what will be sufficient for testing this feature. We currently have tests exercising different areas of Admin Console, however, none of them fully test any particular screen. They follow scenarios, such as making sure a certain type of application can be deployed. Will such testing, across the features, be sufficient to cover GUI-001, or should we have at least some tests verifying every item on a given Admin Console screen?<br> <b>AL</b>: GUI-001 is about changing from AMX to REST. This is considered done when we remove the AMX dependency from GUI module. All the screens (except deployment) will be going through REST. Every item on every screen is through REST. You really don't need any special test for this GUI-001 task.</p> <p><b>2.</b> GUI-004, support for DAS recovery - I presume Admin Console will only have the backup related functionality and no restore, i.e. that restore will be done from CLI, is that correct?<br> <b>AL:</b> As specified in the one pager, 4.1.2, there will be a screen to configure the backup parameters, like how often, etc. If there is a REST API provided to perform a backup adhoc, there will be a button provided to do that. Restore probably will not be supported.</p> <p>==&gt; <b>LM</b> : There is no section 4.1.2 in <a href="GF3.1AdminConsoleOnePager.html" title="GF3.1AdminConsoleOnePager">Admin Console OnePager</a>...<br> <b>AL</b>: This is a value add feature and have been moved to internal site. I can give you pointer to that.</p> <p><b>3.</b> GUI-015 (mislabeled, between 011 and 012), Log Viewer enhancement - I assume this is "search option" enhancement, is that right?<br> <b>AL:</b> Thanks for pointing that out. I have change that Log Viewer enhancement to GUI-016. And yes, that refers to more search option.</p> <p><b>4.</b> GUI-015, plugin and package cleanup - does this need to be tested explicitly or will generic Admin Console testing cover this item?<br> <b>AL:</b> You don't need to test this. This is just to keep track of our task. If Admin Console comes up fine, this task is done successfully.</p> <p>thanks for the questions !!<br> Anissa.</p> <p>Thanks for the answers...! <img class="emoticon" src="images/icons/emoticons/wink.gif" height="20" width="20" align="absmiddle" alt="" border="0"></p> <p>One more question:</p> <p><b>5.</b> SYNC-006, Provide a mechanism to trigger full synchronization. Expose the mechanism in CLI/GUI - I cannot find a reference neither in the Admin Console wiki document nor one pager to this synchronization feature. If it is part of an existing Admin Console item, which one is it?<br> <b>AL:</b> This is new to me. I am not aware of any request for GUI to provide this. It is up to the owner of that project to contact GUI if they want any support. It is not in our schedule at this point. Thanks.</p> <p>==&gt; <b>6.</b> GUI-006, from OnePager section "Application Version" - is it going to be possible to enable/disable certain versions of an application as well?<br> <b>AL:</b> Yes. you can enable or disable any version. But only 1 version can be enabled at any one time.</p> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 04, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

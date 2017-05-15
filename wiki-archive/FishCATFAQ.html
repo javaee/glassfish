@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : FishCATFAQ</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="FishCATFAQ-FrequentlyAskedQuestions%28FAQs%29"></a>Frequently Asked Questions (FAQs)</h1> <h4><a name="FishCATFAQ-QuestionsaboutHowTo"></a>Questions about HowTo</h2> <h4><a name="FishCATFAQ-A.1IamnewtoGlassFish%2ChowdoIstart"></a>A.1 I am new to GlassFish, how do I start</h3> <p>Here are <a href="./QuickStartGuide.html">Quick Start Guide</a>. These are good docs especially for new FishCAT members to get started with GlassFish. If you are new to GlassFish, please take 30 minutes, you will know how to install GlassFish and how to deploy an application and run it. </p> <p>Complete set of GlassFish v3 doc at: <a href="http://docs.sun.com/app/docs/coll/1343.9?l=en&amp;q=SunGlassFishEnterpriseServerv3">click</a></p> <p>Complete set of GlassFish v2.1.1 doc at: <a href="http://docs.sun.com/app/docs/coll/1343.11?l=en&amp;q=SunGlassFishEnterpriseServerv2.1.1">click</a></p> <p>Here is doc web site: <a href="./GlassFishDocs.html">doc wiki</a></p> <h4><a name="FishCATFAQ-A.2WhatbuildtouseforFishCATTesting%3F"></a>A.2 What build to use for FishCAT Testing ?</h3> <p>What are different GlassFish v3 Distributions <a href="./GLassFishV3Distributions.html">click</a></p> <p>What are the format of bit names in the build, b## stands for build number:</p> 
+     <ul> 
+      <li>AppServer distribution: 
+       <ul> 
+        <li>zip format: glassfish-v3-ea-b##.zip</li> 
+        <li>Unix installer: glassfish-v3-ea-b##-unix.sh</li> 
+        <li>Windows installer: glassfish-v3-ea-b##-windows.exe</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li>Web distribution: 
+       <ul> 
+        <li>zip format: glassfish-v3-web-ea-b##.zip</li> 
+        <li>Unix installer: glassfish-v3-web-ea-b##-unix.sh</li> 
+        <li>Windows installer: glassfish-v3-web-ea-b##-windows.exe</li> 
+       </ul> </li> 
+     </ul> <p>Please use the latest promoted build for FishCAT testing. The GF v3 promoted build is at: <a href="http://download.java.net/glassfish/v3/promoted/">http://download.java.net/glassfish/v3/promoted/</a></p> <p>Some time nightly build is used to verify a bug fix. The GF v3 nightly build is at: <a href="http://download.java.net/glassfish/v3/nightly/">http://download.java.net/glassfish/v3/nightly/</a></p> <h4><a name="FishCATFAQ-A.3HowtologGlassFishbug"></a>A.3 How to log GlassFish bug</h3> 
+     <ul> 
+      <li>Must read. Check out the <a href="GuidelinesToCreateAnIssueInIssueTracker.html" title="GuidelinesToCreateAnIssueInIssueTracker">GuidelinesToCreateAnIssueInIssueTracker</a> first.</li> 
+      <li>Be sure that you are using the latest <a href="http://download.java.net/glassfish/v3/promoted/">promote build </a></li> 
+      <li>When you are not convinced whether a particular behavior is a bug or a feature, send a question to the quality <span class="error">[alias]</span></li> 
+      <li>When you are convinced it is a bug, make sure it has not been filed, check V3 all open bug <a href="https://glassfish.java.net/issues/buglist.cgi?Submitquery=Submitquery&amp;issue_type=DEFECT&amp;component=glassfish&amp;issue_status=UNCONFIRMED&amp;issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED&amp;version=V3&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=fulltext&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=&amp;cmdtype=doit&amp;order=Reusesamesortaslasttime">query</a></li> 
+      <li>If you find it is a dup, please append your finding and add yourself to the interest list. When bug got fixed you will be notified to verify</li> 
+      <li>To file a bug, GlassFish uses Issue Tracker to log bugs. Click <a href="https://glassfish.java.net/servlets/ProjectIssues">Issue Tracker</a>, click login and use your java.net ID to login.</li> 
+      <li>Click New to open an issue</li> 
+      <li>Select V3 for "Found in Version", select the correct "Subcomponent", select "Priority", P1/can't start the server, P2/lost data. P3/not too critical</li> 
+      <li>Please fill in all the following details in the "Description": Which GlassFish V3 build, What JDK Version, What OS</li> 
+      <li>Please give detailed steps to recreat, this is important information</li> 
+      <li>Please attach server.log and the APPLICATION you have to log a bug first, then use attach feature</li> 
+      <li>After bug got fixed, please verify it and then close or reopen if fix does not work</li> 
+     </ul> <h4><a name="FishCATFAQ-A.4Howtofindoutifthereisabugfiledalready%3F"></a>A.4 How to find out if there is a bug filed already ?</h3> <p>This is V3 bug <a href="https://glassfish.java.net/issues/buglist.cgi?Submitquery=Submitquery&amp;issue_type=DEFECT&amp;component=glassfish&amp;issue_status=UNCONFIRMED&amp;issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED&amp;version=V3&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=fulltext&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=&amp;cmdtype=doit&amp;order=Reusesamesortaslasttime">query</a>. It lists all the open bugs. When you are not sure, just send email to quality alias to get help.</p> <h4><a name="FishCATFAQ-A.5HowtosignuptodoFrameworksandApplicationstesting"></a>A.5 How to sign up to do Frameworks and Applications testing </h3> <p>For each row added into Frameworks and Applications table, one needs to add one row or update one row. then one needs to write a blog about the framework or application and update the water, then need to put on what date what kinkd testing is needed.</p> 
+     <ul> 
+      <li><a href="./Frameworks.html">Frameworks </a></li> 
+      <li><a href="./Applications.html">Applications </a></li> 
+     </ul> <h4><a name="FishCATFAQ-A.6HowtofileUpdateToolbug"></a>A.6 How to file Update Tool bug </h3> 
+     <ul> 
+      <li>Click this <a href="https://updatecenter2.java.net/servlets/ProjectIssues">link</a></li> 
+      <li>login using your java.net id</li> 
+     </ul> <h4><a name="FishCATFAQ-QuestionsaboutFishCATprogram"></a>Questions about FishCAT program</h2> <h4><a name="FishCATFAQ-B.1WhatisthemainpurposeofFishCAT%3F"></a>B.1 What is the main purpose of FishCAT ?</h3> <p>The goal of this program is to get GlassFish community members involved in earlier testing of GlassFish V3. Participants will provide feedback on product usability, quality and performance. In return, the participants are given an opportunity to significantly influence and enhance the quality of GlassFish V3. </p> <h4><a name="FishCATFAQ-B.2HowdoIparticipateFishCATprogram%3F"></a>B.2 How do I participate FishCAT program ?</h3> 
+     <ul> 
+      <li>Please click <a href="https://glassfish.java.net/quality/portal/participate.html">Join</a> and do step 1 and 2 to become a member of the GlassFish Quality Community.</li> 
+     </ul> 
+     <ul> 
+      <li>Please apply for the FishCAT program by submit the FishCAT <a href="http://wiki.glassfish.java.net/attach/GlassFishCommunityAcceptanceTestFishCAT/FishCATSignUp.pdf">application form </a> to glassfishquality@glassfish.java.net <span class="error">[Mailto]</span></li> 
+     </ul> 
+     <ul> 
+      <li>We will contact you after you are selected to be FishCAT member</li> 
+     </ul> 
+     <ul> 
+      <li>We will let you know when to start the FishCAT testing</li> 
+     </ul> <h4><a name="FishCATFAQ-B.3WhatistheFishCATtask%3F"></a>B.3 What is the FishCAT task ?</h3> <p>As a member of the FishCAT program you will let us know two or more functionality areas you chose to test in GlassFish V3. In most cases, you need to run your application on weekly promoted build of GlassFish V3, occasionally, you will need to test nightly build of GlassFish V3 for bug verification purpose. You can use the issuetracker to report bugs and use quality@glassfish.java.net mailing list to report your experiences and suggestions on using the GlassFish V3. The main goal is to find as many bugs as you can, it is up to you on how you find bugs.</p> <h4><a name="FishCATFAQ-B.4DoIhavetoconcentrateontwoareasintheapplicationform%3F"></a>B.4 Do I have to concentrate on two areas in the application form? </h3> <p>You don't have to. You can test any area and file bug in any area you find. The reason we list functionality areas for you to chose so we can help to connect you to the developer and SQE in the areas. The contact person will help you to answer your question quickly or find the right place to address your questions. Another reason is to have balanced test coverage.</p> <h4><a name="FishCATFAQ-B.5Ican%27topenandwritetheFishCATapplicationform"></a>B.5 I can't open and write the FishCAT application form</h3> <p>You need to have PDF viewer version 7 or higher. Here is the link to upgrade your PDF viewer.<br> <a href="http://www.adobe.com/products/acrobat/readstep2.html">http://www.adobe.com/products/acrobat/readstep2.html</a> </p> <h4><a name="FishCATFAQ-B.6Whathardwarerequirementis%3F"></a>B.6 What hardware requirement is ?</h3> <p>Here are the minimum hardware configuration requirements of GlassFish.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Operating system </th> 
+         <th class="confluenceTh"> Processor </th> 
+         <th class="confluenceTh"> Memory </th> 
+         <th class="confluenceTh"> Disk space </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Solaris </td> 
+         <td class="confluenceTd"> 433 MHz6 (SPARC II) </td> 
+         <td class="confluenceTd"> 512 MB </td> 
+         <td class="confluenceTd"> 850 MB </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Windows </td> 
+         <td class="confluenceTd"> 860 MHz Pentium III </td> 
+         <td class="confluenceTd"> 512 MB </td> 
+         <td class="confluenceTd"> 1 GB </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Linux </td> 
+         <td class="confluenceTd"> 860 MHz Pentium III </td> 
+         <td class="confluenceTd"> 512 MB </td> 
+         <td class="confluenceTd">850 MB </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Mac OS X </td> 
+         <td class="confluenceTd"> Power PC G4 </td> 
+         <td class="confluenceTd"> 512 MB </td> 
+         <td class="confluenceTd">850 MB </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="FishCATFAQ-B.7Wheretoaskfurtherquestions%3F"></a>B.7 Where to ask further questions ?</h3> <p>Don't hesitate to ask your FishCAT program coordinator <span class="error">[Judy Tang]</span> and <span class="error">[Yifeng Luo]</span> for any question you have. </p> 
+     <hr> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875549/21365171.pdf">FishCATSignUp2.html.pdf</a> (application/pdf) 
+      <br> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 06, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:44.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

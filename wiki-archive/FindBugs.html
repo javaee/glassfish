@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : FindBugs</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="FindBugs-FindBugsonGlassFish"></a>FindBugs on GlassFish</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#FindBugs-FindBugsonGlassFish">FindBugs on GlassFish</a></li> 
+       <ul> 
+        <li><a href="#FindBugs-Background">Background</a></li> 
+        <li><a href="#FindBugs-HowTo">How To</a></li> 
+        <li><a href="#FindBugs-HudsonJobs">Hudson Jobs</a></li> 
+        <li><a href="#FindBugs-Post4.0Changes">Post-4.0 Changes</a></li> 
+        <ul> 
+         <li><a href="#FindBugs-ZeroHighPriorityBugs">Zero High Priority Bugs</a></li> 
+         <li><a href="#FindBugs-NoNewErrors">No New Errors</a></li> 
+         <li><a href="#FindBugs-MoreWorkspaces">More Workspaces</a></li> 
+         <li><a href="#FindBugs-AllBugs">All Bugs</a></li> 
+         <li><a href="#FindBugs-NewBugDetectors">New Bug Detectors</a></li> 
+        </ul> 
+        <li><a href="#FindBugs-ANoteonFindBugsPriorities">A Note on FindBugs Priorities</a></li> 
+        <li><a href="#FindBugs-ExcludeList">Exclude List</a></li> 
+        <li><a href="#FindBugs-ConfiguringYourOwnProjectToUseFindBugs">Configuring Your Own Project To Use FindBugs</a></li> 
+        <li><a href="#FindBugs-Post4.0Goals">Post-4.0 Goals</a></li> 
+        <li><a href="#FindBugs-Process">Process</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="FindBugs-Background"></a>Background</h3> <p>We're using <a href="http://findbugs.sourceforge.net/">FindBugs</a> with GlassFish to, well, find bugs in GlassFish code, and generally to improve the quality of GlassFish. For GlassFish 4.0 we considered both the high and low priority errors reported by FindBugs, but we only checked the main GlassFish source workspace and a few others. Going forward, we'll consider more source workspaces.</p> <h4><a name="FindBugs-HowTo"></a>How To</h3> <p>FindBugs is run on a regular basis and errors found are sent to the person who last touched the line with the error. Errors are sent to your java.net user ID; please make sure such messages are properly forwarded to your real email account, and that your mail filters don't hide such messages.</p> <p>In addition, you can run FindBugs yourself. To run FindBugs on a project, use</p> 
+     <div class="preformatted panel" style="border-width: 1px;">
+      <div class="preformattedContent panelContent"> 
+       <pre>% mvn findbugs:findbugs
+</pre> 
+      </div>
+     </div> <p>This will create a target/findbugsXml.xml with the errors (if any). Once you have generated the file you can view the errors reported in it using the FindBugs GUI:</p> 
+     <div class="preformatted panel" style="border-width: 1px;">
+      <div class="preformattedContent panelContent"> 
+       <pre>% mvn findbugs:gui
+</pre> 
+      </div>
+     </div> <p>Alternatively, you can generate a site report for the project:</p> 
+     <div class="preformatted panel" style="border-width: 1px;">
+      <div class="preformattedContent panelContent"> 
+       <pre>% mvn site:site site:staging
+</pre> 
+      </div>
+     </div> <p>(Note that "mvn site:site" doesn't currently work correctly on the GlassFish workspace.)</p> <p>You would view the FindBugs report as part of the site report in target/staging.</p> <p>To make this work, you need a &lt;distributionManagement&gt; configuration in your pom.xml; see below.</p> <h4><a name="FindBugs-HudsonJobs"></a>Hudson Jobs</h3> <p>Several Hudson jobs run FindBugs on a regular basis. Unfortunately, these jobs are only visible inside Oracle. More jobs will be added; see below.</p> <h4><a name="FindBugs-Post4.0Changes"></a>Post-4.0 Changes</h3> <p>We're going to expand our use of FindBugs in several ways.</p> <h5><a name="FindBugs-ZeroHighPriorityBugs"></a>Zero High Priority Bugs</h5> <p>We're going to continue our policy of enforcing zero high priority bugs in any of our workspaces, and we're going to continue to ensure we stay there by enforcing this as part of the nightly build. If any high priority errors are introduced, the nightly build will fail. This applies to the main GlassFish workspace as well as the workspaces listed below.</p> <h5><a name="FindBugs-NoNewErrors"></a>No New Errors</h5> <p>In addition to no high priority errors ever, we're going to enforce that the number of errors in each module in the GlassFish workspace may not increase. Ideally, we would enforce no new errors at all, and you can think of it that way if you prefer, but the actual rule allows some flexibility and some tradeoffs.</p> <h5><a name="FindBugs-MoreWorkspaces"></a>More Workspaces</h5> <p>In addition to the main GlassFish workspace, FindBugs will now be run on the top 15 Oracle-led workspaces that contribute code to the GlassFish project:</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Workspace <br class="atl-forced-newline"> </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://mq.java.net/">mq</a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://metro.java.net/">metro</a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://mojarra.java.net/">mojarra</a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://glassfish-corba.java.net/">glassfish-corba</a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://grizzly.java.net/">grizzly</a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://jersey.java.net/">jersey</a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://jaxb.java.net/">JAXB</a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://hk2.java.net/">hk2</a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://javamail.java.net/">JavaMail</a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://shoal.java.net/">shoal</a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://tyrus.java.net/">tyrus</a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://jsp.java.net/">jsp</a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://jstl.java.net/">JSTL</a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://uel.java.net/">uel</a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://gmbal.java.net/">gmbal</a> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>Most of those workspaces are in pretty good shape with the high priority FindBugs errors. As they get down to zero, their nightly builds will enforce that.</p> <h5><a name="FindBugs-AllBugs"></a>All Bugs</h5> <p>FindBugs defines three bug priorities - high, normal, and low. These <em>priorities</em> are really the bug <em>confidence</em>, that is, how likely it is that the bug pattern is being detected correctly. While we're only enforcing that there be no high priority bugs, we're looking at bugs of all priorities.</p> <p>To run FindBugs and report on all bugs of all priorities, use this:</p> 
+     <div class="preformatted panel" style="border-width: 1px;">
+      <div class="preformattedContent panelContent"> 
+       <pre>% mvn -Dfindbugs.threshold=Low findbugs:findbugs
+</pre> 
+      </div>
+     </div> <h5><a name="FindBugs-NewBugDetectors"></a>New Bug Detectors</h5> <p>We've created some special purpose GlassFish-specific bug detectors to detect errors related to logging. Most of these new detectors will be included in our low priority jobs. These detectors report violations of the conventions described in the <a href="Logging Guide.html" title="Logging Guide">Logging Guide</a>.</p> <p>There are a large number of errors detected by the GF_INVALID_MSG_ID_PATTERN and GF_MISSING_LOGMESSAGE_INFO_ANNOTATION detectors. These errors will be tracked and managed separately and are not currently part of our overall goals described below.</p> <h4><a name="FindBugs-ANoteonFindBugsPriorities"></a>A Note on FindBugs Priorities</h3> <p>As mentioned above, the FindBugs priority is really the confidence that a bug pattern is detected correctly. Detecting a bug pattern correctly doesn't necessarily mean that the impact of the bug is severe. To address this, the latest version of FindBugs introduces a bug <em>rank</em>. A low bug rank means that the bug, if it's detected correctly, and if it were to occur, would be very severe. A large bug rank number means the impact of the bug is minor.</p> <p>Bug ranks are from 1 to 20.</p> <p>The mapping between bug pattern and bug rank can also be customized, although we have no current plans to do so.</p> <h4><a name="FindBugs-ExcludeList"></a>Exclude List</h3> <p>As you know, FindBugs supports an exclude list. There's about 8 high priority bugs on the exclude list. With medium and low priority bugs, a lot more bugs will be on the exclude list. In particular, I've already excluded these bugs:</p> 
+     <ul> 
+      <li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#DM_DEFAULT_ENCODING">http://findbugs.sourceforge.net/bugDescriptions.html#DM_DEFAULT_ENCODING</a></li> 
+     </ul> <p>This is a new FindBugs 2.0 error that complains about the use of the default character encoding. When reading and writing files on the local system, use of the default encoding is often appropriate. When sending data over the network, using the default is almost never appropriate. We have many cases of the former as well as some of the latter, but because so many of these errors are not real problems I've excluded this bug.</p> 
+     <ul class="alternate" type="square"> 
+      <li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#SIC_INNER_SHOULD_BE_STATIC_ANON">http://findbugs.sourceforge.net/bugDescriptions.html#SIC_INNER_SHOULD_BE_STATIC_ANON</a></li> 
+     </ul> <p>Turning anonymous inner classes into static inner classes is generally not worth the effort and usually makes the code less readable.</p> 
+     <ul class="alternate" type="square"> 
+      <li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#DE_MIGHT_IGNORE">http://findbugs.sourceforge.net/bugDescriptions.html#DE_MIGHT_IGNORE</a></li> 
+     </ul> <p>There's lots of places where we purposely catch and ignore exceptions. Probably some of them should be fixed, but there are too many to consider right now.</p> 
+     <ul class="alternate" type="square"> 
+      <li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#REC_CATCH_EXCEPTION">http://findbugs.sourceforge.net/bugDescriptions.html#REC_CATCH_EXCEPTION</a></li> 
+     </ul> <p>Likewise, there's lots of places where we catch exception "just in case" anything goes wrong. Probably most of them should catch RuntimeException or a smaller set of exceptions. But this doesn't seem important and there's too many to fix right now.</p> 
+     <ul class="alternate" type="square"> 
+      <li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#EI_EXPOSE_REP">http://findbugs.sourceforge.net/bugDescriptions.html#EI_EXPOSE_REP</a></li> 
+      <li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#EI_EXPOSE_REP2">http://findbugs.sourceforge.net/bugDescriptions.html#EI_EXPOSE_REP2</a></li> 
+     </ul> <p>Lots of internal classes pass arrays in and out of methods, knowing that the caller is not going to modify the array. Yes, this is a risk with public APIs where we have no control over the caller, but there are too many of these errors to consider right now.</p> 
+     <ul class="alternate" type="square"> 
+      <li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#PZLA_PREFER_ZERO_LENGTH_ARRAYS">http://findbugs.sourceforge.net/bugDescriptions.html#PZLA_PREFER_ZERO_LENGTH_ARRAYS</a></li> 
+     </ul> <p>Yes, returning a zero length array is often a better design. But it's not an important issue.</p> 
+     <ul class="alternate" type="square"> 
+      <li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#SE_NO_SERIALVERSIONID">http://findbugs.sourceforge.net/bugDescriptions.html#SE_NO_SERIALVERSIONID</a></li> 
+     </ul> <p>Lots of classes extend Exception or Event classes and yet are never serialized so it doesn't really matter that they don't contain a serialVersionUID field.</p> 
+     <ul class="alternate" type="square"> 
+      <li>EJB CMP code. Sigh.</li> 
+     </ul> <p>Lots of errors in the EJB CMP code. We really don't want to touch it.</p> 
+     <ul class="alternate" type="square"> 
+      <li>The verifier. Double sigh.</li> 
+     </ul> <p>Lots and lots of errors in the verifier. We can't afford to deal with all these issues now.</p> <h4><a name="FindBugs-ConfiguringYourOwnProjectToUseFindBugs"></a>Configuring Your Own Project To Use FindBugs</h3> <p>To configure your own project to use FindBugs, add the following entries to your main pom.xml. First, some property settings:</p> 
+     <div class="preformatted panel" style="border-width: 1px;">
+      <div class="preformattedContent panelContent"> 
+       <pre>    &lt;properties&gt;
+        &lt;findbugs.skip&gt;false&lt;/findbugs.skip&gt;
+        &lt;findbugs.threshold&gt;High&lt;/findbugs.threshold&gt;
+        &lt;findbugs.common&gt;exclude-common.xml&lt;/findbugs.common&gt;
+        &lt;findbugs.exclude&gt;&lt;/findbugs.exclude&gt;
+        &lt;findbugs.glassfish.logging.validLoggerPrefixes&gt;
+            javax.enterprise
+        &lt;/findbugs.glassfish.logging.validLoggerPrefixes&gt;
+        &lt;findbugs.version&gt;2.5.2&lt;/findbugs.version&gt;
+    &lt;/properties&gt;
+</pre> 
+      </div>
+     </div> <p>Then, configure the plugin:</p> 
+     <div class="preformatted panel" style="border-width: 1px;">
+      <div class="preformattedContent panelContent"> 
+       <pre>    &lt;build&gt;
+        &lt;plugins&gt;
+            &lt;plugin&gt;
+                &lt;groupId&gt;org.codehaus.mojo&lt;/groupId&gt;
+                &lt;artifactId&gt;findbugs-maven-plugin&lt;/artifactId&gt;
+                &lt;version&gt;${findbugs.version}&lt;/version&gt;
+                &lt;configuration&gt;
+                    &lt;skip&gt;${findbugs.skip}&lt;/skip&gt;
+                    &lt;threshold&gt;${findbugs.threshold}&lt;/threshold&gt;
+                    &lt;findbugsXmlWithMessages&gt;true&lt;/findbugsXmlWithMessages&gt;
+                    &lt;excludeFilterFile&gt;
+                        ${findbugs.common},${findbugs.exclude}
+                    &lt;/excludeFilterFile&gt;
+                    &lt;jvmArgs&gt;-Dfindbugs.glassfish.logging.validLoggerPrefixes=${findbugs.glassfish.logging.validLoggerPrefixes&gt;}&lt;/jvmArgs&gt;
+                &lt;/configuration&gt;
+                &lt;dependencies&gt;
+                    &lt;dependency&gt;
+                        &lt;groupId&gt;org.glassfish.findbugs&lt;/groupId&gt;
+                        &lt;artifactId&gt;findbugs&lt;/artifactId&gt;
+                        &lt;version&gt;1.5&lt;/version&gt;
+                    &lt;/dependency&gt;
+                &lt;/dependencies&gt;
+            &lt;/plugin&gt;
+        &lt;/plugins&gt;
+    &lt;/build&gt;
+</pre> 
+      </div>
+     </div> <p>And finally the site configuration:</p> 
+     <div class="preformatted panel" style="border-width: 1px;">
+      <div class="preformattedContent panelContent"> 
+       <pre>    &lt;!-- following to enable use of "mvn site:stage" --&gt;
+    &lt;distributionManagement&gt;
+        &lt;site&gt;
+            &lt;id&gt;oracle.com&lt;/id&gt;
+            &lt;url&gt;file:/tmp&lt;/url&gt; &lt;!-- not used --&gt;
+        &lt;/site&gt;
+    &lt;/distributionManagement&gt;
+
+    &lt;reporting&gt;
+        &lt;plugins&gt;
+            &lt;plugin&gt;
+                &lt;groupId&gt;org.codehaus.mojo&lt;/groupId&gt;
+                &lt;artifactId&gt;findbugs-maven-plugin&lt;/artifactId&gt;
+                &lt;version&gt;${findbugs.version}&lt;/version&gt;
+                &lt;configuration&gt;
+                    &lt;skip&gt;${findbugs.skip}&lt;/skip&gt;
+                    &lt;threshold&gt;${findbugs.threshold}&lt;/threshold&gt;
+                    &lt;excludeFilterFile&gt;
+                        ${findbugs.common},${findbugs.exclude}
+                    &lt;/excludeFilterFile&gt;
+                    &lt;jvmArgs&gt;-Dfindbugs.glassfish.logging.validLoggerPrefixes=${findbugs.glassfish.logging.validLoggerPrefixes&gt;}&lt;/jvmArgs&gt;
+                &lt;/configuration&gt;
+                &lt;!--
+                &lt;dependencies&gt;
+                    &lt;dependency&gt;
+                        &lt;groupId&gt;org.glassfish.findbugs&lt;/groupId&gt;
+                        &lt;artifactId&gt;findbugs&lt;/artifactId&gt;
+                        &lt;version&gt;1.5&lt;/version&gt;
+                    &lt;/dependency&gt;
+                &lt;/dependencies&gt;
+                --&gt;
+            &lt;/plugin&gt;
+        &lt;/plugins&gt;
+    &lt;/reporting
+</pre> 
+      </div>
+     </div> <p>Note that you'll need to update the "1.5" in the dependencies above to the version of the master GlassFish FindBugs exclude list that you want to depend on. The current version is 1.5.</p> <p>In each module (if you have more than one) there might be an "exclude.xml" file (approved by me) that excludes certain FindBugs errors. The modules configure use of that file by setting a property in their pom.xml:</p> 
+     <div class="preformatted panel" style="border-width: 1px;">
+      <div class="preformattedContent panelContent"> 
+       <pre>        &lt;findbugs.exclude&gt;${project.basedir}/exclude.xml&lt;/findbugs.exclude&gt;
+</pre> 
+      </div>
+     </div> <p>If some modules don't contain code that goes into the product, you can set &lt;findbugs.skip&gt;true&lt;/findbugs.skip&gt; in those modules.</p> <h4><a name="FindBugs-Post4.0Goals"></a>Post-4.0 Goals</h3> <p>Post-4.0 we'll be "raising the bar" for FindBugs errors.</p> <p>In addition to the <b>requirement</b> of zero high priority errors (for all projects) and the <b>requirement</b> of no increase in the number of errors in each module (for the GlassFish project), we'd also like to reduce the number of medium and low priority errors (for the GlassFish project). The goal is:</p> 
+     <ol> 
+      <li><b>Reduce the number of bugs in any module to 20 or fewer.</b></li> 
+      <li><b>Reduce the total number of bugs in the following categories to zero.</b></li> 
+     </ol> <p>Not all bugs have the same impact. We'd like to pay particular attention to bugs in these categories: CORRECTNESS, MALICIOUS_CODE, MT_CORRECTNESS, PERFORMANCE, SECURITY and reduce the number of such bugs to zero.</p> <p>Remember that there are several ways to "fix" a FindBugs error:</p> 
+     <ul class="alternate" type="square"> 
+      <li>Fix the code so that the error doesn't occur.</li> 
+      <li>If the error report isn't really a bug, change the code so that FindBugs doesn't complain about it.</li> 
+      <li>Convince me that the error report should be excluded (see below).</li> 
+     </ul> <h4><a name="FindBugs-Process"></a>Process</h3> <p>The process will be similar to what we've done before:</p> 
+     <ul class="alternate" type="square"> 
+      <li>You'll get immediate email if you violate any of the requirements described above. <b>This is the same as breaking the build.</b> You need to fix such problems immediately.</li> 
+      <li>You'll get periodic email with your FindBugs errors. These are to help you in meeting the goals described above.</li> 
+      <li>If you have an error report that you believe is wrong, convince <a href="mailto:bill.shannon@oracle.com">me</a> and I'll exclude it. It's easier to convince me about lower priority bugs.</li> 
+      <li>If you believe an error type is almost always wrong, or almost never worth fixing (as above), convince me and I'll exclude it.</li> 
+      <li>If it will take you more time to tell me why it's not an error than it does to "fix" it, fix it.</li> 
+     </ul> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874118/21365368.pdf">Glassfish_FindBugs.pdf</a> (application/pdf) 
+      <br> 
+     </div> 
+     <div class="tabletitle"> 
+      <a name="comments"> <h4>Comments:</h2> </a> 
+     </div> 
+     <table border="0" width="100%"> 
+      <tbody>
+       <tr> 
+        <td> <a name="comment-68648998"></a> <font class="smallfont"><p>How is&nbsp;&lt;excludeFilterFile&gt;${findbugs.common},${findbugs.exclude}&lt;/excludeFilterFile&gt;supposed to work? &lt;excludeFilterFile&gt; can only contain a single file name!?</p></font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by 31603 at Jan 15, 2015 15:04 
+         </div> </td> 
+       </tr> 
+      </tbody>
+     </table> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Aug 29, 2013 by 
+<font color="#0050B2">13011</font>. Exported from wikis.oracle.com on May 27, 2015 20:48.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

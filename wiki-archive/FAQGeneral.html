@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : FAQGeneral</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p><b>DEPRECATED. See <a href="GlassFishWikiFAQ.html" title="GlassFishWikiFAQ">GlassFishWikiFAQ</a> instead.</b></p> <h4><a name="FAQGeneral-GeneralquestionsaboutJSPWiki"></a>General questions about JSPWiki</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#FAQGeneral-GeneralquestionsaboutJSPWiki">General questions about JSPWiki</a></li> 
+       <ul> 
+        <li><a href="#FAQGeneral-HowrecentareRecentChangesRecentChanges%3F">How recent are <span class="nobr">Recent Changes <sup><img border="0" alt="" align="absmiddle" width="7" height="7" src="images/icons/plus.gif" class="rendericon"></sup></span> ?</a></li> 
+        <li><a href="#FAQGeneral-HowdoIdeleteapage%3F">How do I delete a page?</a></li> 
+        <li><a href="#FAQGeneral-Whathappensiftwopeopletrytoeditandsaveconcurrently%3FLastonetosavewins%3F">What happens if two people try to edit and save concurrently? Last one to save wins?</a></li> 
+        <li><a href="#FAQGeneral-WheredoIfindthesourcecode%3F">Where do I find the source code?</a></li> 
+        <li><a href="#FAQGeneral-HowdoIaddanewWikipage%3F">How do I add a new Wiki page?</a></li> 
+        <li><a href="#FAQGeneral-HowdoesJSPWikicomparetootherjavabasedWikis%3F">How does JSPWiki compare to other java based Wikis?</a></li> 
+        <li><a href="#FAQGeneral-WhyisRecentChangesveryslow%3F">Why is RecentChanges very slow?</a></li> 
+        <li><a href="#FAQGeneral-Wouldcreatingfoldersandsubfoldersforthecontentstranslateintoahierarchy%3F">Would creating folders and subfolders for the contents translate into a hierarchy?</a></li> 
+        <li><a href="#FAQGeneral-HowdoIseeanIndexofallthepageswhichexist%3F">How do I see an Index of all the pages which exist?</a></li> 
+        <li><a href="#FAQGeneral-HowdoIchangethecolouroftheeditscreentosomethingotherthanpink%3F">How do I change the colour of the edit screen to something other than pink?</a></li> 
+        <li><a href="#FAQGeneral-Whatisaplugin%3F">What is a plugin?</a></li> 
+        <li><a href="#FAQGeneral-Dates">Dates</a></li> 
+        <li><a href="#FAQGeneral-Howtoopenlinkswithinanewbrowserwindow">How to open links within a new browser window</a></li> 
+        <li><a href="#FAQGeneral-Cansubpagesbemade%3F">Can subpages be made?</a></li> 
+        <li><a href="#FAQGeneral-HowcanIhavesynonympages%3F">How can I have synonym pages?</a></li> 
+        <ul> 
+         <li><a href="#FAQGeneral-HowdoyouhandleunreachablepagecontainingSETalias%3F">How do you handle unreachable page containing <em>SET alias</em>?</a></li> 
+        </ul> 
+        <li><a href="#FAQGeneral-What%27stostopsomebodyfromblowingawayallthecontentonaWikisite%3F">What's to stop somebody from blowing away all the content on a Wiki site?</a></li> 
+        <li><a href="#FAQGeneral-LinkingtoUNCPaths">Linking to UNC Paths</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="FAQGeneral-HowrecentareRecentChangesRecentChanges%3F"></a>How recent are <a href="RecentChanges.html" title="RecentChanges">Recent Changes</a>?</h2> <p>Janne : We just basically look at the modification time of each file, then show them in reversed order. Currently the cutoff point is at 60 days, but you can see a full list of all changes at FullRecentChanges.</p> <p>Really, a better solution is needed, since if a page gets modified twice, it can only be seen once. This should be solved when we move things under version control anyway.</p> <p>Asser: I thought that you hide other modifications on purpose <img class="emoticon" src="images/icons/emoticons/smile.gif" height="20" width="20" align="absmiddle" alt="" border="0"> I like this current feature since it keeps the list more compact.</p> <p>Janne: Well, I'll keep it then that way, even though we've moved to version control anyway. <img class="emoticon" src="images/icons/emoticons/smile.gif" height="20" width="20" align="absmiddle" alt="" border="0"></p> <h4><a name="FAQGeneral-HowdoIdeleteapage%3F"></a>How do I delete a page?</h2> <p>Simple. Just put a link to the page <a href="http://www.jspwiki.org/Wiki.jsp?page=DELETEME">DELETEME</a> as the first item on your page, and at some point the administration will delete these pages. Proper deletion support is available in 2.2. (do not use the normal DELETEME Link, because this page should not be shown in the delete wish list)</p> <h4><a name="FAQGeneral-Whathappensiftwopeopletrytoeditandsaveconcurrently%3FLastonetosavewins%3F"></a>What happens if two people try to edit and save concurrently? Last one to save wins? </h2> <p>First one to save wins, the next guy gets a warning and a note telling that you should check what changed and try a re-edit. </p> <h4><a name="FAQGeneral-WheredoIfindthesourcecode%3F"></a>Where do I find the source code?</h2> <p>You can download the JSPWiki distribution package, including a war-file and the source code from <a href="http://www.jspwiki.org/Wiki.jsp?page=JSPWikiDownload">http://www.jspwiki.org/Wiki.jsp?page=JSPWikiDownload</a>.</p> <h4><a name="FAQGeneral-HowdoIaddanewWikipage%3F"></a>How do I add a new Wiki page?</h2> <p>Create a link that points to a new (not existing) page using its <a href="WikiName.html" title="WikiName">WikiName</a>. Click question mark <img class="emoticon" src="images/icons/emoticons/help_16.gif" height="16" width="16" align="absmiddle" alt="" border="0"> after the new link and you will get an editor for the new page. </p> <p>The reason for this is that linking between WikiPages is the way how people<br> find to these pages. If a page is not linked to, nobody can find it and it<br> is thus useless. By forcing people to create a link first, you encourage people to link more and more.<br> In fact, whenever you write something that you think someone could write an explanation for, just make it a hyperlink. Someone will pick it up, someday.</p> 
+     <hr> <h4><a name="FAQGeneral-HowdoesJSPWikicomparetootherjavabasedWikis%3F"></a>How does JSPWiki compare to other java based Wikis?</h2> <p>I am pondering the possibility of installing a Wiki on a site I run. Well, I actually have already decided I will, so now I am looking at different implementations. My hosting provider supports perl, python, php and java, so I can really use anyone. However, since the rest of the site is JSP based I prefer to use a JSP based Wiki if possible. I'd like to know which are the advantages or features of JSPWiki as compared to other JSP <a href="http://c2.com/cgi/wiki?WikiWikiClones">http://c2.com/cgi/wiki?WikiWikiClones</a>. How easy is it to modify the editing markers, for example? --VictorJalencas PS: BTW, I have just seen all the RPC hooks in the JSPWikiDevelopment page... seems like I am almost decided <img class="emoticon" src="images/icons/emoticons/wink.gif" height="20" width="20" align="absmiddle" alt="" border="0"></p> <p><a href="http://www.jspwiki.org/Wiki.jsp?page=MahlenMorris">http://www.jspwiki.org/Wiki.jsp?page=MahlenMorris</a>: I hope you aren't expecting to get some sort of unbiased answer from the people who hang out here. <img class="emoticon" src="images/icons/emoticons/smile.gif" height="20" width="20" align="absmiddle" alt="" border="0"></p> <p>Well, the reasons I chose to use JSPWiki over others were:</p> 
+     <ul> 
+      <li>It's in Java. I'm currently most adept at Java coding, so any modifications i might need to make would be easier in Java. Admittedly, i haven't actually coded any modifications to JSPWiki, but I have tracked down a bug or two.</li> 
+      <li>It's under active development. None of the other Java-based Wiki Clones that i could find were. It means you don't have to fix/add every new feature yourself.</li> 
+      <li>I like the Wiki syntax of JSPWiki. It hasn't been allowed to get too convoluted, which is important to me, since my user base is somewhat naive and easily bewildered.</li> 
+     </ul> <p>Since I adopted it, the XML-RPC server stuff that Janne put in has grabbed my brain and shook it like a wet kitten, inspiring me to start my first FreeSoftware project, Hula. I haven't even had time to implement some of my wackier ideas using that, but stay tuned.</p> <p>Plus, hey, Janne's been a joy to intercontinentally work with. So that's why I'm using JSPWiki.</p> <p><em><a href="http://www.jspwiki.org/Wiki.jsp?page=MahlenMorris">http://www.jspwiki.org/Wiki.jsp?page=MahlenMorris</a>: One of my former co-workers saw this page in his install of JSPWiki and objected to being referred to as "somewhat naive and easily bewildered" by association. So, to be clear, I wasn't talking about him <img class="emoticon" src="images/icons/emoticons/wink.gif" height="20" width="20" align="absmiddle" alt="" border="0"></em></p> <h4><a name="FAQGeneral-WhyisRecentChangesveryslow%3F"></a>Why is RecentChanges very slow?</h2> <p>Are you using RCSFileProvider or VersioningFileProvider? If yes, then the reason is that JSPWiki has to go and find the author for each page separately. Especially with RCSFileProvider, this can take some time.</p> <p>The solution is to enable the CachingFileProvider, which keeps a list of recently used pages and author information in memory. In JSPWiki 2.0 this is enabled via the 'jspwiki.usePageCache' configuration option.</p> <h4><a name="FAQGeneral-Wouldcreatingfoldersandsubfoldersforthecontentstranslateintoahierarchy%3F"></a>Would creating folders and subfolders for the contents translate into a hierarchy?</h2> <p>No. JSPWiki uses an entirely flat file structure for pages. The different PageProviders may use subdirectories, but these are not visible to the user.</p> <p>This is actually a conscious decision: Wikis are flat by nature, and if you want to have a hierarchy, then what you need to do is to define the pages by hand. This is actually very useful - for example, see JSPWikiDevelopment for a page that contains all pages that have something to do with JSPWiki development.</p> <p>Dot based page names, and pattern based index/search could bring this kind of service :<br> ex. of page name : Projects.~RocketLauncher.~UserStories.us_1, ... --AlainRavet</p> <p>Yes. You can easily "simulate" hierarchies by using dots, but JSPWiki in itself does not limit the structure in any way. --JanneJalkanen</p> <p>See IdeasSubPages for more discussion.</p> <h4><a name="FAQGeneral-HowdoIseeanIndexofallthepageswhichexist%3F"></a>How do I see an Index of all the pages which exist?</h2> <p>Go to PageIndex. It is in fact just a regular WikiPage which has just the IndexPlugin from AlainRavet embedded.</p> <h4><a name="FAQGeneral-HowdoIchangethecolouroftheeditscreentosomethingotherthanpink%3F"></a>How do I change the colour of the edit screen to something other than pink?</h2> <p>The background color is determined in three locations:</p> 
+     <ol> 
+      <li>Edit the CSS files (jspwiki_ie.css, jspwiki_ns.css, and jspwiki_mac.css) and change the "BODY.edit" color</li> 
+      <li>Edit the "EditTemplate.jsp" file (see <a href="WikiTemplates.html" title="WikiTemplates">WikiTemplates</a>)</li> 
+      <li>Make your own stylesheet, and redefine "BODY.edit" in it, then use your browser's facilities to force that stylesheet.</li> 
+     </ol> <p>Besides, it's not pink. <img class="emoticon" src="images/icons/emoticons/smile.gif" height="20" width="20" align="absmiddle" alt="" border="0"> And it was changed to light blue in 1.9.2something...</p> <p>--JanneJalkanen</p> <h4><a name="FAQGeneral-Whatisaplugin%3F"></a>What is a plugin?</h2> <p>A: Does <a href="JSPWikiPlugins.html" title="JSPWikiPlugins">JSPWikiPlugins</a> answer that? If not, let us know.</p> <h4><a name="FAQGeneral-Dates"></a>Dates</h2> <p>Q: Is there a wiki notation to add the current date and time in a wiki page?<br> Is there a plugin for that?<br> Thanks! (ch)</p> <p>;:A: <em>You mean like <b>-(CurrentTimePlugin)</b>? See <a href="JSPWikiPlugins.html" title="JSPWikiPlugins">JSPWikiPlugins</a> for more information (such as how to format it). --MichaelGentry</em></p> <h4><a name="FAQGeneral-Howtoopenlinkswithinanewbrowserwindow"></a>How to open links within a new browser window</h2> <p>It is possible to have links opened in a new window by defining an interWikiRef like:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">jspwiki.interWikiRef.NewHttp=http:%s" TARGET="_blank</pre> 
+       </div> 
+      </div>
+     </div> <p>Yes it looks <em>dirty</em> and may not work in the future. For now it works at least with the default template:<br> New Window for Google: [NewHttp://www.google.com].</p> <p>– KarlHeesch</p> <h4><a name="FAQGeneral-Cansubpagesbemade%3F"></a>Can subpages be made?</h2> <p><em>Is it possible to make SubPages?</em></p> <p>I'm afraid this is a feature that has been planned for JSPWiki 2.4, but there has not yet been any work towards it. --JanneJalkanen</p> <h4><a name="FAQGeneral-HowcanIhavesynonympages%3F"></a>How can I have synonym pages?</h2> <p>In order to maximize cross linking, I would like to have some pages have several names (or at least appear to have). For example, being able to define that ThisCamelCaseLink and ThisOtherCamelCaseLink are actually pointing to the same page. This way if users type either of those keywords, this would create a link to the same page. In VeryQuickWiki, I believe it was possible to add a special tag in the page so that the user is automatically forwarded to the other page. I am not sure how to do that in JSPWiki. I see a very dirty hack using symlinks coming, but I was hoping there is a better soluton.</p> <p>--JC</p> <p>A: In 2.1 it is possible to say [</p> 
+     <div class="error">
+      <span class="error">Unknown macro: {SET alias='OtherPage'}</span> 
+     </div> <p>|[</p> 
+     <div class="error">
+      <span class="error">Unknown macro: {SETalias='OtherPage'}</span> 
+     </div> <p>] so that one page can be automatically redirected to another page.</p> <h4><a name="FAQGeneral-HowdoyouhandleunreachablepagecontainingSETalias%3F"></a>How do you handle unreachable page containing <em>SET alias</em>? </h3> <p>How can you edit and remove it?</p> <p>A: You can type in the URL for <em>edit</em> in the browser's address bar, eg. <tt><a href="http://yourdomain.com/Edit.jsp?page=">http://yourdomain.com/Edit.jsp?page=</a>...</tt></p> <h4><a name="FAQGeneral-What%27stostopsomebodyfromblowingawayallthecontentonaWikisite%3F"></a>What's to stop somebody from blowing away all the content on a Wiki site?</h2> <p>Q: I'm new to this, and I'm just wondering... Is there ANY kind of security that stops a malicious person who comes across a Wiki from wiping out all the content, simply by editing the pages and removing all their content?</p> <p>Q: Nope. None whatsoever. See <a href="http://c2.com/cgi/wiki?WhyWikiWorks">http://c2.com/cgi/wiki?WhyWikiWorks</a> for a more detailed discussion, but essentially it's the fact that there are far more good-willed users than malicious users, and that restoring destroyed content is roughly as easy as destroying the content. If everyone could remove graffiti from the buildings with a flick of a wrist, we wouldn't have much of it.</p> <p>Actually, newer versions of JSPWiki do have content protection built-in, but they do also restrict the "good" users.</p> <h4><a name="FAQGeneral-LinkingtoUNCPaths"></a>Linking to UNC Paths</h2> <p><b>Q.</b> How does one link to a UNC path? IOW, I would like to do something like</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">[Go To Location|\\some-machine\some-location]</pre> 
+       </div> 
+      </div>
+     </div> <p>This just shows up as an unrecognized wikiname. Hovering over the link shows the following URL <tt><a href="http://mywiki/Edit.jsp?page=somemachinesomelocation">http://mywiki/Edit.jsp?page=somemachinesomelocation</a></tt>. I've even tried escaping the back-slashes.</p> <p>A: The correct syntax appears to be </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">[Go To Location|file://///some-machine/some-location].</pre> 
+       </div> 
+      </div>
+     </div> <p>I have tested this OK with Internet Explorer 6.0 and Firefox 1.0. </p> <p>Note that Firefox, by default, will disable <tt><a href="file://">file://</a></tt> URLs on pages from a network (<tt>http:</tt>, <tt>https:</tt> or <tt>ftp:</tt>) source, for security reasons. To modify this setting, type <tt>about:config</tt> in the address bar of Firefox. This gives you access to the config. Alter the <tt>security.checkloaduri</tt> value to false. – NigelCharman</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:44.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

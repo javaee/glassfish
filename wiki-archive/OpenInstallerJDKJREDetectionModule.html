@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : OpenInstallerJDKJREDetectionModule</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1. Introduction
+   1.1. Project/Component Working Name: openInstaller JDK Selection
+
+   1.2. Name of Document Author/Supplier: Gustave Loial
+
+   1.3. Date of This Document: 07/31/07
+
+   1.4. Name of Major Document Customer(s)/Consumer(s):
+       1.4.1. The community this proposal comes from
+         openInstaller (External)
+         Message Queue 4.1 IFR (Internal)
+
+
+   1.5. Email Aliases:
+       1.5.1. Project alias: dev@openinstaller.java.net
+
+       1.5.2. Project Lead: Gustave Loial &lt;gustave.loial@sun.com&gt;
+
+       1.5.3. Interest List: dev@openinstaller.java.net
+
+2. Project Summary
+
+        This project is part of the openInstaller (formerly known as project
+        Purple Haze) It does not modify any existing interface. It adds an
+        interface to fulfill needs expressed by our users related to
+        selecting JDK for use during install.
+
+   2.1. Project Description:
+
+       This project introduces a mechanism to select a JDK/JRE (a.k.a.
+       a "Java Platform" for use by java-based products that have a dependency
+       on JDK/JRE.  This project delivers a stock user interface and
+       associated logic for detecting and allowing the user to select
+       a JDK/JRE.
+
+       The Java Platform selected by the user is unrelated to the Java
+       Platform that is actually used to execute the install applicaiton.
+       The one selected by the user is the one the product being installed
+       will use at runtime of the product.
+
+       Three main options are exposed on the user interface:
+         - Use the Java Platform that is shipped with the distribution,
+         - Use a JDK detected in expected locations,
+         - Use a JDK previously installed but not detected by the module.
+
+   2.2. Risks and Assumptions:
+       The assumptions made here are broad enough to cover all situations:
+       the user has the possibility to declare the path to a JDK had the
+       module not detected it.  This approach greatly reduces the risks of
+       unforeseen situations happening.
+
+3. Context and Need Summary
+   3.1. Problem Area:
+       Some distributions do not want to change or introduce a new JDK
+       on a system under installation. This modules allows the installer
+       to reuse an already existent JDK for the product(s) being installed.
+
+   3.2. Consumer/Requester:
+       The Message Queue project has requested this functionality
+       (WSARC/2006/536).
+
+   3.3. Justification:
+       The Message Queue distribution wants to minimize the modification on
+       the system under installation and reuse as much as possible the
+       already installed JDKs, as it is a widely-available technology with
+       a large installed footprint.
+
+   3.4. How will you know when you are done?:
+       When it is possible to re-use an existing JDK during an installation
+       based on openInstaller, or supply a bundled JDK.
+
+4. Technical Description:
+   4.1. Details:
+       This project delivers a new stock UI page that is similar to the
+       stock pages delivered in LSARC 2007/095 Purple Haze Component Framework.
+
+       Prior to the rendition in a page, a detection algorithm will be run,
+       looking in specific locations on the file system. This is a precaution
+       avoiding a complete scan of the system and an effort to save time.
+       This mechanism also searches system registeries such as the
+       Windows Registry, for the presence of JDKs by looking in well-known
+       locations.
+
+       The candidate JDK discovered in the process are actually tested by
+       running a basic  program that has two intents:
+          1- verify that the JDK is operational
+          2- identify the JDK in terms of version and vendor. That
+          information is stored for the next phase of the process.
+
+       The stock JDK Selection Page then conveys the following options
+       to the user:
+          a- install and use the JDK that ships with the rest of the
+             distribution,
+          b- pick a JDK from a subset of the detected JDKs,
+          c- manually locate a JDK that is already present on the host by
+             typing in a path to the JDK_HOME.
+
+             Option a is selectable if the distribution actually contains a
+             JDK. In which case the version and vendor are pulled directly
+             from the JDK's dependency descriptor (see LSARC/2007/098)
+
+       Option a is contingent on a given install application based on
+       openInstaller delivering a a JDK.  If a product wishes to bundle
+       a JDK, it must declare the name of the JDK using the
+       following configuration parameters:
+
+       JDK.Installation.JDK_PRODUCT_NAME - Name of the JDK product as declared
+       in its dependency descriptor
+
+       Option a is only enabled if the product actually contains a subproduct
+       named the same as the value of the variable
+       JDK.Installation.JDK_PRODUCT_NAME
+
+       The product must also declare what the destination directory of the
+       bundled JDK is using the JDK.Installation.JDK_HOME_BASEDIR variable,
+       such that products that depend on knowing this location can reference
+       it in their configuration schemas, and be passed this value during
+       product configuration.
+
+       Option b is contingent on the availability of JDKs that satisfy
+       the version criterion.  In case some JDK were detected on the system
+       and fulfill the version requirement, they are represented for the user
+       to choose among them.
+
+       The install developer can constrain the acceptable JDK versions which
+       appear in the drop-down list of option b.  They can do so by declaring
+       one or more acceptable version ranges using the
+       JDKSelection.directory.JDK_VERSIONRANGE configuration parameter.
+       The default value for this is "[1.5.0_12--INFINITY)" meaning
+       1.5.0_12 or later (the exact syntax is specified in the syntax for
+       version ranges described in 2007/095 Purple Haze Component Framework).
+
+       Option c is always present and allows the user to enter a path to a
+       JDK. This covers the cases where a JDK was previously installed in
+       an unexpected location. No version comparison is made when the user\
+       selects a JDK in this manner.
+
+       If no JDKs are detected on the system, this option (b) is disabled.
+       If no JDKs are detected on the system *and* no JDK is shipped along
+       with the installer, the user is told as such and is forced to
+       supply a path to an existing JDK.
+
+   4.2. Bug/RFE Number(s):
+       6537960: PH: The framework needs to detect whether a JDK is available
+                on the system
+
+   4.3. In Scope: No other area beyond the one described above.
+
+   4.4. Out of Scope:
+
+   4.5. Interfaces:
+
+       Exported
+       Interface                    Classification      Comments
+       User Interface               Uncommitted
+       JDKSelection configuration
+         variable names and syntax  Uncommitted
+
+       Imported
+       Interface                    Classification         Comments
+       Configuration Schema Format     Uncommitted         LSARC/2007/096
+       Dependency Provider API         Uncommitted         LSARC/2007/098
+       UI Template Schema              Uncommitted         LSARC/2007/099
+       Java VM CLI[1]                  Standard
+       Windows Registry CLI (reg.exe)  Unknown
+
+       [1] Used to test a potential JDK to see if it really is a JDK/JRE.
+           http://java.sun.com/j2se/1.5.0/docs/tooldocs/solaris/java.html
+
+   4.6. Doc Impact: None
+
+   4.7. Admin/Config Impact: None
+
+   4.8. HA Impact: None
+
+   4.9. I18N/L10N Impact: The error messages that can occur from this module
+        are localized. There is no impact to localization beside the addition
+        of the new messages
+
+   4.10. Packaging &amp; Delivery: N/A
+
+   4.11. Security Impact: N/A
+
+   4.12. Dependencies:
+
+   LSARC 2007/096 Purple Haze: Configuration Framework
+   LSARC 2007/098 Purple Haze: Dependency &amp; Product Model
+   LSARC 2007/099 Purple Haze: User Interface Framework
+
+
+5. Reference Documents:
+
+  http://blogs.sfbay.sun.com/PS72inst/
+   - Example screenshots from MQ showing L10N Screen
+
+6. Resources and Schedule:
+   6.1. Projected Availability: Now
+
+   6.2. Cost of Effort: feature design
+       feature implementation
+       tests
+       documentation
+       i18n
+       -----------------------
+       Total cost: 2 man-week
+   6.3. ARC review type expected: FastTrack
+
+7. Prototype Availability: Now
+
+
+
+6. Resources and Schedule
+    6.4. Steering Committee requested information
+   	6.4.1. Consolidation C-team Name:
+		unknown
+    6.5. ARC review type: FastTrack
+    6.6. ARC Exposure: open</pre> 
+       </div> 
+      </div>
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:49.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

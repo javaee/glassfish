@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : V3.1Deployment</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="V3.1Deployment-GlassFishServerOpenSourceEdition3.1Deployment"></a>GlassFish Server Open Source Edition 3.1 - Deployment</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#V3.1Deployment-GlassFishServerOpenSourceEdition3.1Deployment">GlassFish Server Open Source Edition 3.1 - Deployment</a></li> 
+       <ul> 
+        <li><a href="#V3.1Deployment-Scope">Scope</a></li> 
+        <li><a href="#V3.1Deployment-MilestoneSchedule">Milestone Schedule</a></li> 
+        <li><a href="#V3.1Deployment-TaskList">Task List</a></li> 
+        <li><a href="#V3.1Deployment-OnePager">One Pager</a></li> 
+        <li><a href="#V3.1Deployment-InternalDesignDoc">Internal Design Doc</a></li> 
+        <li><a href="#V3.1Deployment-Demos">Demos</a></li> 
+        <ul> 
+         <li><a href="#V3.1Deployment-MS1Demo">MS1 Demo</a></li> 
+         <li><a href="#V3.1Deployment-MS2Demo">MS2 Demo</a></li> 
+         <li><a href="#V3.1Deployment-MS3Demo">MS3 Demo</a></li> 
+         <li><a href="#V3.1Deployment-MS4Demo">MS4 Demo</a></li> 
+         <li><a href="#V3.1Deployment-MS5Demo">MS5 Demo</a></li> 
+        </ul> 
+        <li><a href="#V3.1Deployment-SubProjects">Sub Projects</a></li> 
+        <li><a href="#V3.1Deployment-DevTests">Dev Tests</a></li> 
+        <li><a href="#V3.1Deployment-EmailAlias">Email Alias</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="V3.1Deployment-Scope"></a>Scope</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Priority </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> Eng Response </th> 
+         <th class="confluenceTh"> Owner(s) </th> 
+         <th class="confluenceTh"> Estimate (Man Days) </th> 
+         <th class="confluenceTh"> Source of Requirement </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> DPLY-001 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Cluster deployment </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Hong/Tim </td> 
+         <td class="confluenceTd"> 40 </td> 
+         <td class="confluenceTd"> Feature parity </td> 
+         <td class="confluenceTd"> Dynamic deployment to cluster, Rolling Upgrade (see <a href="http://docs.sun.com/app/docs/doc/821-0182/abdik?l=en&amp;a=view">v2.1.1 docs </a>) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> DPLY-002 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Support for application commands in clustering environment </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Hong/Tim </td> 
+         <td class="confluenceTd"> 15 </td> 
+         <td class="confluenceTd"> Feature parity </td> 
+         <td class="confluenceTd"> New commands: create-application-ref, delete-application-ref, list-application-refs, etc. Existing commands: create-lifecycle-module, delete-lifecycle-module, list-lifecycle-modules, deploy, undeploy, enable, disable, deploydir, redeploy, list-components, list-sub-components, show-component-status, list-applications, etc. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> DPLY-003 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Deployment performance </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Tim </td> 
+         <td class="confluenceTd"> 15 </td> 
+         <td class="confluenceTd"> Feature parity </td> 
+         <td class="confluenceTd"> 1) No regression from GlassFish Server Open Source Edition v3 for developer use-cases 2) No regression from GlassFish Server Open Source Edition v2.x for cluster deployment use-cases </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> DPLY-004 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Support WebLogic DD in GlassFish </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Hong/Tim </td> 
+         <td class="confluenceTd"> 25 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Responsible for the framework level changes and weblogic-application.xml and weblogic-application-client.xml elements. Need to figure out tool dependency/schedule. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> DPLY-005 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Rename sun-* DD to glassfish-* </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Hong </td> 
+         <td class="confluenceTd"> 10 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Responsible for the deployment descriptor dtds </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> DPLY-006 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Deployment infrastructure support for other modules </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Hong </td> 
+         <td class="confluenceTd"> 20 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> sun-resources.xml etc </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> DPLY-007 </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> Application versioning </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> SERLI/Hong/Tim </td> 
+         <td class="confluenceTd"> 40 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Hong/Tim help with high level design discussions and code review, SERLI responsible for implementation </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> DPLY-008 </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> DTrace probes </td> 
+         <td class="confluenceTd"> Maybe </td> 
+         <td class="confluenceTd"> Hong </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="V3.1Deployment-MilestoneSchedule"></a>Milestone Schedule</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1. </td> 
+         <td class="confluenceTd"> Milestone 1 (05/24) </td> 
+         <td class="confluenceTd"> DPLY-001 </td> 
+         <td class="confluenceTd"> Synchronization related work </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2. </td> 
+         <td class="confluenceTd"> Milestone 1 (05/24) </td> 
+         <td class="confluenceTd"> DPLY-004 </td> 
+         <td class="confluenceTd"> Basic deployment framework level support for plugging in the processing of weblogic deployment descriptors to allow other subteams to starting working on their areas </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3. </td> 
+         <td class="confluenceTd"> Milestone 1 (05/24) </td> 
+         <td class="confluenceTd"> DPLY-005 </td> 
+         <td class="confluenceTd"> Deployment framework level support to rename the sun specific deployment descriptor </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4. </td> 
+         <td class="confluenceTd"> Milestone 1 (05/24) </td> 
+         <td class="confluenceTd"> DPLY-007 </td> 
+         <td class="confluenceTd"> Support versioning for the basic application commands (deploy/undeploy/enable/disable) </td> 
+         <td class="confluenceTd"> Yes (No QA coverage for P3 feature?) </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5. </td> 
+         <td class="confluenceTd"> Milestone 2 (06/21) </td> 
+         <td class="confluenceTd"> DPLY-001 </td> 
+         <td class="confluenceTd"> Support the basic clustering deployment or provide workaround to allow other sub teams to start working on their clustering requirements </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6. </td> 
+         <td class="confluenceTd"> Milestone 2 (06/21) </td> 
+         <td class="confluenceTd"> DPLY-007 </td> 
+         <td class="confluenceTd"> Support versioning for the rest PE application commands (list-application/list-components --verbose, show-component-status, list-sub-components, get-client-stubs) </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 7. </td> 
+         <td class="confluenceTd"> Milestone 3 (07/19) </td> 
+         <td class="confluenceTd"> DPLY-001 </td> 
+         <td class="confluenceTd"> Clustering deployment support (advanced features and corner cases will be handled in later milestones) </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 8. </td> 
+         <td class="confluenceTd"> Milestone 3 (07/19) </td> 
+         <td class="confluenceTd"> DPLY-002 </td> 
+         <td class="confluenceTd"> Support new application commands in clustering environment </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 9. </td> 
+         <td class="confluenceTd"> Milestone 3 (07/19) </td> 
+         <td class="confluenceTd"> DPLY-002 </td> 
+         <td class="confluenceTd"> Support existing application commands in clustering environment </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 10. </td> 
+         <td class="confluenceTd"> Milestone 3 (07/19) </td> 
+         <td class="confluenceTd"> DPLY-006 </td> 
+         <td class="confluenceTd"> Deployment infrastructure support for other modules </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> On-going </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 11. </td> 
+         <td class="confluenceTd"> Milestone 3 (07/19) </td> 
+         <td class="confluenceTd"> DPLY-007 </td> 
+         <td class="confluenceTd"> Other non-clustering related work. Support versioning for autodeploy/JSR88. And other changes related to directory deployment, JWS and OSGi. </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 12. </td> 
+         <td class="confluenceTd"> Milestone 4 (08/18) </td> 
+         <td class="confluenceTd"> DPLY-001 </td> 
+         <td class="confluenceTd"> Remaining tasks on clustering deployment (advanced features, corner cases) </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 13. </td> 
+         <td class="confluenceTd"> Milestone 4 (08/18) </td> 
+         <td class="confluenceTd"> DPLY-001 </td> 
+         <td class="confluenceTd"> Rolling Upgrade (application part of the commands) </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 14. </td> 
+         <td class="confluenceTd"> Milestone 4 (08/18) </td> 
+         <td class="confluenceTd"> DPLY-004 </td> 
+         <td class="confluenceTd"> Partial support for weblogic-application.xml </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 15. </td> 
+         <td class="confluenceTd"> Milestone 4 (08/18) </td> 
+         <td class="confluenceTd"> DPLY-004 </td> 
+         <td class="confluenceTd"> Remaining tasks on the deployment framework to support WebLogic deployment descriptors (expose WebLogic DD to GUI/tools and error handling etc) </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 16. </td> 
+         <td class="confluenceTd"> Milestone 4 (08/18) </td> 
+         <td class="confluenceTd"> DPLY-005 </td> 
+         <td class="confluenceTd"> Specific changes in each area to rename the sun specific deployment descriptor </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 17. </td> 
+         <td class="confluenceTd"> Milestone 4 (08/18) </td> 
+         <td class="confluenceTd"> DPLY-007 </td> 
+         <td class="confluenceTd"> Support versioning in clustering environment </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 18. </td> 
+         <td class="confluenceTd"> Milestone 5 (09/14) </td> 
+         <td class="confluenceTd"> DPLY-003 </td> 
+         <td class="confluenceTd"> Deployment performance </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> On-going</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 19. </td> 
+         <td class="confluenceTd"> Milestone 5 (09/14) </td> 
+         <td class="confluenceTd"> DPLY-007 </td> 
+         <td class="confluenceTd"> Expose versioning through GUI </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Completed</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 20. </td> 
+         <td class="confluenceTd"> Milestone 5 (09/14) </td> 
+         <td class="confluenceTd"> DPLY-007 </td> 
+         <td class="confluenceTd"> Remaining tasks and advanced feature of application versioning </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd">Completed</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 21. </td> 
+         <td class="confluenceTd"> Milestone 5 (09/14) </td> 
+         <td class="confluenceTd"> DPLY-008 </td> 
+         <td class="confluenceTd"> DTrace probes </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 22. </td> 
+         <td class="confluenceTd"> Milestone 6 (11/22) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Fix P1-P3 bugs </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Started </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="V3.1Deployment-TaskList"></a>Task List</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task </th> 
+         <th class="confluenceTh"> Target Milestone </th> 
+         <th class="confluenceTh"> Start Date </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Owner(s) </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Synchronization related work </td> 
+         <td class="confluenceTd"> Milestone 1 (05/24) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Tim </td> 
+         <td class="confluenceTd"> DPLY-001 </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Work with Vijay to make sure the deploy command could fit into the command replication framework and instance deploy command could receive various payload params as expected </td> 
+         <td class="confluenceTd"> Milestone 2 (06/21) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 6/4 </td> 
+         <td class="confluenceTd"> Tim </td> 
+         <td class="confluenceTd"> DPLY-001 </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Work with Vijay to make sure redeploy/undeploy commands could fit into the command replication framework </td> 
+         <td class="confluenceTd"> Milestone 2 (06/21) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Hong </td> 
+         <td class="confluenceTd"> DPLY-001 </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Work with container teams to skip artifacts regeneration on instance side </td> 
+         <td class="confluenceTd"> Milestone 2 (06/21) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Hong </td> 
+         <td class="confluenceTd"> DPLY-001 </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Implement the instance deploy command to do instance side of partial deployment </td> 
+         <td class="confluenceTd"> Milestone 2 (06/21) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Hong </td> 
+         <td class="confluenceTd"> DPLY-001 </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Support JSR88 deployment in clustering environment </td> 
+         <td class="confluenceTd"> Milestone 3 (07/19) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Hong </td> 
+         <td class="confluenceTd"> DPLY-001 </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Support directory deployment in clustering environment </td> 
+         <td class="confluenceTd"> Milestone 3 (07/19) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Tim </td> 
+         <td class="confluenceTd"> DPLY-001 </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Rolling upgrade (application part of the commands) </td> 
+         <td class="confluenceTd"> Milestone 4 (08/16) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Tim </td> 
+         <td class="confluenceTd"> DPLY-001 </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Add support for enable/disable commands in clustering environment </td> 
+         <td class="confluenceTd"> Milestone 3 (07/19) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Hong </td> 
+         <td class="confluenceTd"> DPLY-002 </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Add support for create-application-refs/delete-application-refs/list-application-refs commands </td> 
+         <td class="confluenceTd"> Milestone 3 (07/19) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Hong </td> 
+         <td class="confluenceTd"> DPLY-002 </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Support list-applications/list-components commands in clustering environment </td> 
+         <td class="confluenceTd"> Milestone 3 (07/19) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Hong </td> 
+         <td class="confluenceTd"> DPLY-002 </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Support redeploy command in clustering environment </td> 
+         <td class="confluenceTd"> Milestone 3 (07/19) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Hong </td> 
+         <td class="confluenceTd"> DPLY-002 </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Support deploydir command in clustering environment </td> 
+         <td class="confluenceTd"> Milestone 3 (07/19) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Tim </td> 
+         <td class="confluenceTd"> DPLY-002 </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Support list-sub-components command in clustering environment </td> 
+         <td class="confluenceTd"> Milestone 3 (07/19) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Hong </td> 
+         <td class="confluenceTd"> DPLY-002 </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Support show-component-status command in clustering environment </td> 
+         <td class="confluenceTd"> Milestone 3 (07/19) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Hong </td> 
+         <td class="confluenceTd"> DPLY-002 </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Support create-lifecycle-modules/delete-lifecycle-modules/list-lifecycle-modules commands in clustering environment </td> 
+         <td class="confluenceTd"> Milestone 3 (07/19) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Hong </td> 
+         <td class="confluenceTd"> DPLY-002 </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Expose the application-ref related operations through DeploymentFacility for GUI　 </td> 
+         <td class="confluenceTd"> Milestone 3 (07/19) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Hong </td> 
+         <td class="confluenceTd"> DPLY-002 </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Support special domain target for deploy/redeploy/undeploy/enable/disable </td> 
+         <td class="confluenceTd"> Milestone 4 (08/16) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Hong </td> 
+         <td class="confluenceTd"> DPLY-002 </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Revisit dotted name set commands for enable attribute </td> 
+         <td class="confluenceTd"> Milestone 4 (08/16) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Hong </td> 
+         <td class="confluenceTd"> DPLY-002 </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Deployment performance </td> 
+         <td class="confluenceTd"> Milestone 5 (09/14) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Tim/Hong </td> 
+         <td class="confluenceTd"> DPLY-003 </td> 
+         <td class="confluenceTd"> On-going </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Basic deployment framework level support for plugging in the processing of weblogic deployment descriptors to allow other subteams to starting working on their areas </td> 
+         <td class="confluenceTd"> Milestone 1 (05/24) </td> 
+         <td class="confluenceTd"> 03/29 </td> 
+         <td class="confluenceTd"> 04/09 </td> 
+         <td class="confluenceTd"> Hong </td> 
+         <td class="confluenceTd"> DPLY-004 </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Partial support for weblogic-application.xml </td> 
+         <td class="confluenceTd"> Milestone 4 (08/16) </td> 
+         <td class="confluenceTd"> 04/05 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Hong </td> 
+         <td class="confluenceTd"> DPLY-004 </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Remaining tasks on the deployment framework to support WebLogic deployment descriptors (expose WebLogic DD to GUI and error handling etc) </td> 
+         <td class="confluenceTd"> Milestone 4 (08/16) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Hong/Tim </td> 
+         <td class="confluenceTd"> DPLY-004 </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Deployment framework level support to rename the sun specific deployment descriptor </td> 
+         <td class="confluenceTd"> Milestone 1 (05/24) </td> 
+         <td class="confluenceTd"> 04/26 </td> 
+         <td class="confluenceTd"> 04/29 </td> 
+         <td class="confluenceTd"> Hong </td> 
+         <td class="confluenceTd"> DPLY-005 </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Specific changes in each area to rename the sun specific deployment descriptor </td> 
+         <td class="confluenceTd"> Milestone 4 (08/16) </td> 
+         <td class="confluenceTd"> 04/26 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Hong </td> 
+         <td class="confluenceTd"> DPLY-005 </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Expose the glassfish deployment descriptors to GUI </td> 
+         <td class="confluenceTd"> Milestone 4 (08/16) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Hong </td> 
+         <td class="confluenceTd"> DPLY-005 </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Deployment infrastructure support for application scoped resources </td> 
+         <td class="confluenceTd"> Milestone 3 (07/19) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Hong </td> 
+         <td class="confluenceTd"> DPLY-006 </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Adding keepState option for preserving state </td> 
+         <td class="confluenceTd"> Milestone 3 (07/19) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Hong </td> 
+         <td class="confluenceTd"> DPLY-006 </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Support versioning for the basic application commands (deploy/undeploy/enable/disable) </td> 
+         <td class="confluenceTd"> Milestone 1 (05/24) </td> 
+         <td class="confluenceTd"> 04/15 </td> 
+         <td class="confluenceTd"> 05/10 </td> 
+         <td class="confluenceTd"> SERLI </td> 
+         <td class="confluenceTd"> DPLY-007 </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Support versioning for the rest PE application commands (list-application etc) </td> 
+         <td class="confluenceTd"> Milestone 2 (06/21) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> SERLI </td> 
+         <td class="confluenceTd"> DPLY-007 </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Other non-clustering related work. Support versioning for autodeploy/JSR88, and other changes related to directory deployment, JWS and OSGi. </td> 
+         <td class="confluenceTd"> Milestone 3 (07/19) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> SERLI </td> 
+         <td class="confluenceTd"> DPLY-007 </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Support versioning in clustering environment </td> 
+         <td class="confluenceTd"> Milestone 4 (08/18) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> SERLI </td> 
+         <td class="confluenceTd"> DPLY-007 </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Remaining tasks and advanced feature of application versioning </td> 
+         <td class="confluenceTd"> Milestone 5(09/14) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> SERLI </td> 
+         <td class="confluenceTd"> DPLY-007 </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Expose versioning through GUI </td> 
+         <td class="confluenceTd"> Milestone 5 (09/14) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> SERLI </td> 
+         <td class="confluenceTd"> DPLY-007 </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> High level design discussions and code review for application versioning </td> 
+         <td class="confluenceTd"> Milestone 4 (08/18) </td> 
+         <td class="confluenceTd"> 03/15 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Hong/Tim </td> 
+         <td class="confluenceTd"> DPLY-007 </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> DTrace probes </td> 
+         <td class="confluenceTd"> Milestone 5 (09/14) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Hong </td> 
+         <td class="confluenceTd"> DPLY-008 </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Set up deployment dev tests on Hudson </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 8/25 </td> 
+         <td class="confluenceTd"> Tim </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Re-enable cluster deployment dev tests </td> 
+         <td class="confluenceTd"> Milestone 3 (07/19) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Hong </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Write automated tests to monitor memory leaks </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Tim </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> OSGi packaging clean up </td> 
+         <td class="confluenceTd"> Milestone 3 (07/19) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Tim </td> 
+         <td class="confluenceTd"> OsgiPkgDepAnalyser </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Fix P1 - P3 bugs </td> 
+         <td class="confluenceTd"> Milestone 6 (11/22) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Hong/Tim/Serli </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Started </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="V3.1Deployment-OnePager"></a>One Pager</h2> <p><a href="3.1DeploymentOnePager.html" title="3.1DeploymentOnePager">3.1 Deployment One Pager</a></p> <h4><a name="V3.1Deployment-InternalDesignDoc"></a>Internal Design Doc</h2> <p><a href="3.1DeploymentInternalDesignDoc.html" title="3.1DeploymentInternalDesignDoc">3.1 Internal Design Doc (work in progress) </a></p> <h4><a name="V3.1Deployment-Demos"></a>Demos</h2> <h4><a name="V3.1Deployment-MS1Demo"></a>MS1 Demo</h3> <p><a href="http://download.java.net/glassfish/wiki-archive/attachments/20875425/21365031.pdf">Demo Instructions </a></p> <p><a href="http://wiki.glassfish.java.net/attach/V3.1Deployment/appVersioning_MS1-Demo.tar.gz">Demo Bits</a></p> <h4><a name="V3.1Deployment-MS2Demo"></a>MS2 Demo</h3> <p><a href="DeploymentMS2DemoScript.html" title="DeploymentMS2DemoScript">Demo Script </a></p> <h4><a name="V3.1Deployment-MS3Demo"></a>MS3 Demo</h3> <p><a href="DeploymentMS3DemoScript.html" title="DeploymentMS3DemoScript">Demo Script </a></p> <h4><a name="V3.1Deployment-MS4Demo"></a>MS4 Demo</h3> <p><a href="DeploymentMS4DemoScript.html" title="DeploymentMS4DemoScript">Demo Script </a></p> <h4><a name="V3.1Deployment-MS5Demo"></a>MS5 Demo</h3> <p><a href="DeploymentMS5DemoScript.html" title="DeploymentMS5DemoScript">Demo Script </a></p> <h4><a name="V3.1Deployment-SubProjects"></a>Sub Projects</h2> 
+     <ul> 
+      <li><a href="3.1ClusteringDeployment.html" title="3.1ClusteringDeployment">Clustering Deployment - P1</a></li> 
+      <li><a href="SupportWLDD.html" title="SupportWLDD">Support WebLogic Deployment Descriptors in Glassfish - P2 </a></li> 
+      <li><a href="GlassfishizeSunDTD.html" title="GlassfishizeSunDTD">Glassfish-ize Sun Deployment Descriptor DTD Files - P2 </a></li> 
+      <li><a href="ApplicationVersioning.html" title="ApplicationVersioning">Application Versioning - P3 </a></li> 
+      <li>Deployment infrastructure support for other subprojects (application scope resources etc) - P2</li> 
+      <li>Add Deployment Monitoring Probes – P3</li> 
+     </ul> <h4><a name="V3.1Deployment-DevTests"></a>Dev Tests</h2> 
+     <ul> 
+      <li><a href="3.1DeploymentDevTests.html" title="3.1DeploymentDevTests">Dev tests</a></li> 
+     </ul> <h4><a name="V3.1Deployment-EmailAlias"></a>Email Alias</h2> 
+     <ul> 
+      <li>Please contact us at <a href="mailto:dev@glassfish.java.net">dev@glassfish.java.net</a></li> 
+     </ul> 
+     <hr> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875425/21365031.pdf">Versioning_demo_MS3.pdf</a> (application/pdf) 
+      <br> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Dec 01, 2011 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : V3IntegrationPoint</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="V3IntegrationPoint-IntegrationPoints"></a>Integration Points</h1> <p><a href="V3PreludeIntegrationPoints.html" title="V3PreludeIntegrationPoints">Prelude Integration Points </a> | <a href="GlassFishV3AdminConsole.html" title="GlassFishV3AdminConsole">Back to AdminConsole V3 </a></p> <p>The following table describes the currently supported IntegrationPoints for the admin console application. If you have questions, please join and email the <a href="mailto:admin@glassfish.java.net">email alias</a>. &nbsp;This table was started for v3, however, some data may apply to earlier releases -- even if the since column says 3.0.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> type </th> 
+         <th class="confluenceTh"> parentId </th> 
+         <th class="confluenceTh"> priority </th> 
+         <th class="confluenceTh"> content </th> 
+         <th class="confluenceTh"> Since </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <b>org.glassfish.admingui:navNode</b><br class="atl-forced-newline"> Currently, the left-hand navigation tree for the application. </td> 
+         <td class="confluenceTd"> The parentId is the ID of the navigation node which should be the parent for the content of this IntegrationPoint. Some of the interesting IDs that you may want to target using the parentId: <br class="atl-forced-newline"> 
+          <ul> 
+           <li><b>tree</b> - The root node of the entire navigation tree.</li> 
+           <li><b>applicationServer</b> - "Application Server" tree node.</li> 
+           <li><b>applications</b> - The "Applications" tree node.</li> 
+           <li><b>webApplications</b> - Web Applications" tree node.</li> 
+           <li><b>Resources</b> - Resources tree node.</li> 
+           <li><b>#{configNameId}</b> - Configuration tree node.</li> 
+           <li><b>webContainer</b> - Web Container tree node.</li> 
+           <li><b>httpService</b> - HTTP Service tree node.</li> 
+          </ul> </td> 
+         <td class="confluenceTd"> Relative ordering of IntegrationPoints with the same parentId. </td> 
+         <td class="confluenceTd"> The content can be one of two things: a relative path to a page containing content to integrate, or a URL to an external resource which returns the appropriate data structure (see "Navigation Node Data Structure" below) for inclusion </td> 
+         <td class="confluenceTd"> GF3.0 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <b>org.glassfish.admingui:rightPanel</b><br class="atl-forced-newline"> See also: org.glassfish.admingui:rightPanelTitle </td> 
+         <td class="confluenceTd"> Not Applicable </td> 
+         <td class="confluenceTd"> If multiple plugins specify content for the right frame, the one with greater priority will take precedence. </td> 
+         <td class="confluenceTd"> This should specify a path relative to the root of the plugin .jar file to a file containing the content for the right panel. Alternately, it may contain a full URL which will deliver the content for the right panel. </td> 
+         <td class="confluenceTd"> GF3.0<br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <b>org.glassfish.admingui:rightPanelTitle</b><br class="atl-forced-newline"> See also: org.glassfish.admingui:rightPanel </td> 
+         <td class="confluenceTd"> Not Applicable </td> 
+         <td class="confluenceTd"> If multiple plugins specify content for the right frame, the one with greater priority will take precedence. </td> 
+         <td class="confluenceTd"> This specifies the title to display at the top of the right panel. </td> 
+         <td class="confluenceTd"> GF3.0<br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <b>org.glassfish.admingui:serverInstTab</b><br class="atl-forced-newline"> Add a tab to the tabSet of the Application Server General page. </td> 
+         <td class="confluenceTd"> The "parentId" is a simple "id" of the tabSet which should be the parent for the "content" of this IntegrationPoint. One id that you may want to target is the "parentId": 
+          <ul> 
+           <li><b>serverInstTabs</b> - the first tabset that displays the General info of the appserver.</li> 
+          </ul> </td> 
+         <td class="confluenceTd"> Relative ordering of IntegrationPoints with the same parentId. </td> 
+         <td class="confluenceTd"> A relative path to a JSF page containing content to integrate. 
+          <ul> 
+           <li>Note: When using this IP, you need to set the session variable of serverInstTabs to your tabId</li> 
+           <li>setSessionAttribute(key="serverInstTabs" value="myTabId");</li> 
+           <li>do a #include "/appServer/serverInstTabs.inc" in your page</li> 
+          </ul> </td> 
+         <td class="confluenceTd"> GF3.0<br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <b>org.glassfish.admingui:commonTask</b><br class="atl-forced-newline"> Add a common task group to the common task page. </td> 
+         <td class="confluenceTd"> Add a common task Group or common task under an existing group. The parentId can be: 
+          <ul> 
+           <li><b>commonTasksSection</b> : use this to add a group</li> 
+           <li><b>deployment</b>: add individual task to Deployment Group</li> 
+           <li><b>monitoring</b>:add task to monitoring group</li> 
+          </ul> </td> 
+         <td class="confluenceTd"> Relative ordering of the intergration point to common task page </td> 
+         <td class="confluenceTd"> A relative path to a JSF page containing content to integrate. </td> 
+         <td class="confluenceTd"> GF3.0<br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <b>org.glassfish.admingui:configuration</b><br class="atl-forced-newline"> Add any component to the configuration page property sheet. </td> 
+         <td class="confluenceTd"> Add a component to the Configuration Page. We normally add a link to the sub tree node that is under configuration. 
+          <ul> 
+           <li><b>propSheetSection</b> - use this to add any component to the page.</li> 
+          </ul> </td> 
+         <td class="confluenceTd"> Relative ordering of the IntegrationPoints to the same parentId </td> 
+         <td class="confluenceTd"> A relative path to a JSF page containing content to integrate. </td> 
+         <td class="confluenceTd"> GF3.0<br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <b>org.glassfish.admingui:resources</b><br class="atl-forced-newline"> Add any component to the resource page property sheet. </td> 
+         <td class="confluenceTd"> Add a component to the Resources Page. We normally add a link to the sub tree node that is under Resources. 
+          <ul> 
+           <li><b>propSheetSection</b> - use this to add any component to the page.</li> 
+          </ul> </td> 
+         <td class="confluenceTd"> Relative ordering of the IntegrationPoints to the same parentId </td> 
+         <td class="confluenceTd"> A relative path to a JSF page containing content to integrate. </td> 
+         <td class="confluenceTd"> GF3.0<br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <b>org.glassfish.admingui:customtheme</b> </td> 
+         <td class="confluenceTd"> Not Applicable </td> 
+         <td class="confluenceTd"> Valid priority values are from 1 to 100. Smallest number will have highest priority and will be used first. </td> 
+         <td class="confluenceTd"> The name of the properties files which contains the correct key/value pairs which will be used to access your theme jar file. The following are required keys: 
+          <ul> 
+           <li><b>ThemeContext.DEFAULT_THEME</b> - define the theme name for the theme that this application may depend on.(required)</li> 
+           <li><b>ThemeContext.DEFAULT_THEME_VERSION</b> - define the theme version this application may depend on.(required)</li> 
+          </ul> </td> 
+         <td class="confluenceTd"> GF3.0<br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <b>org.glassfish.admingui:masthead</b> </td> 
+         <td class="confluenceTd"> Not Applicable </td> 
+         <td class="confluenceTd"> Valid priority values are from 1 to 100. Smallest number will have highest priority and will be used first. </td> 
+         <td class="confluenceTd"> Name and location of the include masthead file which can be customized with a branding image. This include file will be integreted on the masthead of the Administration Console. </td> 
+         <td class="confluenceTd"> GF3.0<br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <b>org.glassfish.admingui:loginimage</b> </td> 
+         <td class="confluenceTd"> Not Applicable </td> 
+         <td class="confluenceTd"> Valid priority values are from 1 to 100. Smallest number will have highest priority and will be used first. </td> 
+         <td class="confluenceTd"> Name and location of the include file containing the branding login image code which will be integrated with the login page of the Administration Console. </td> 
+         <td class="confluenceTd"> GF3.0<br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <b>org.glassfish.admingui:loginform</b> </td> 
+         <td class="confluenceTd"> Not Applicable </td> 
+         <td class="confluenceTd"> Valid priority values are from 1 to 100. Smallest number will have highest priority and will be used first. </td> 
+         <td class="confluenceTd"> Name and location of the include file containing the customized login form code. This code also contains the login background image used for the login of the Administration Console. </td> 
+         <td class="confluenceTd"> GF3.0<br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <b>org.glassfish.admingui:versioninfo</b> </td> 
+         <td class="confluenceTd"> Not Applicable </td> 
+         <td class="confluenceTd"> Valid priority values are from 1 to 100. Smallest number will have highest priority and will be used first. </td> 
+         <td class="confluenceTd"> Name and location of the include file containing the branding image which will be integreted with the content of version popup window. </td> 
+         <td class="confluenceTd"> GF3.0<br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <b>org.glassfish.admingui:upsellframepe</b> </td> 
+         <td class="confluenceTd"> Not Applicable </td> 
+         <td class="confluenceTd"> Valid priority values are from 1 to 100. Smallest number will have highest priority and will be used first. </td> 
+         <td class="confluenceTd"> Name and location of the include file containing the frame source code which will be used to display/hide content in the bottom frame of the Administration console for the community distribution. </td> 
+         <td class="confluenceTd"> GF3.0<br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <b>org.glassfish.admingui:upsellframeee</b> </td> 
+         <td class="confluenceTd"> Not Applicable </td> 
+         <td class="confluenceTd"> Valid priority values are from 1 to 100. Smallest number will have highest priority and will be used first. </td> 
+         <td class="confluenceTd"> Name and location of the include file containing the frame source code which will be used to display/hide content in the bottom frame of the Administration console for the enterprise distribution. </td> 
+         <td class="confluenceTd"> GF3.0<br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <b>org.glassfish.admingui.availabilityTabs</b> </td> 
+         <td class="confluenceTd"> Srini, complete this... </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> GF3.1 </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="V3IntegrationPoint-%7B%7BMETAINF%2Fadmingui%2Fconsoleconfig.xml%7D%7DExample%3A"></a><tt>META-INF/admingui/console-config.xml</tt> Example:</h2> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+
+&lt;console-config id="javaone"&gt;
+    &lt;integration-point
+        id="JavaOneNode"
+        type="org.glassfish.admingui:navNode"
+        priority="210"
+        parentId="tree"
+        content="treenode-ex1.jsf"
+    /&gt;
+&lt;/console-config&gt;</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="V3IntegrationPoint-NavigationNodeDataStructure"></a>Navigation Node Data Structure</h2> <p>A basic navigation node might look something like this:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;gf:navNode id="myNode"
+                  label="My Custom Nav Node"
+                  url="/someNewPage.jsf"
+                  icon="/resources/images/myIcon.gif"
+                  expanded="true"&gt;
+    &lt;/gf:navNode&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>For more complex navigation requirements, {{gf:navNode}}s can be nested. The full set of supported attributes is as follows:</p> 
+     <ul> 
+      <li><b>id</b> - The ID of the component. While IDs are optional, it is a good idea to provide a specific ID, especially if one expects to want to add nodes under this node in the future.</li> 
+      <li><b>label</b> - The text label for the navigation node</li> 
+      <li><b>url</b> - An optional URL</li> 
+      <li><b>icon</b> - The URL to an image for the tree's root icon</li> 
+      <li><b>target</b> - An optional target to specify on the link created for this node (e.g., '_blank')</li> 
+      <li><b>expanded</b> - A boolean indicating whether or not this node should be expanded by default.</li> 
+      <li><b>template</b> - An optional parameter indicate what template should be used to decorate the page to which this node links. The value will be a relative path to a template file provided by the Admin Console or one of its plugins (e.g., '/pluginId/templates/customLayout.xhmtl'). The default value is <tt>/layout.xhtml</tt>. If the 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">url</pre> 
+         </div> 
+        </div>
+       </div> parameter points to an external resource, the URL rendered will point a page in the admin console. This page will then read the contents of the users-specified URL and display those contents in the appropriate spot in the specified template.</li> 
+      <li><b>processPage</b> - This option is intended to be used in conjunction with the <tt>template</tt> parameter. By default, the page read and displayed will be rendered as is. If, however, the plugin author wishes the page to processed by the Admin Console runtime, the parameter should be set to "true." The URL referenced must then return valid markup.</li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Sep 14, 2010 by 
+<font color="#0050B2">ken_paulsen</font>. Exported from wikis.oracle.com on May 27, 2015 20:48.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

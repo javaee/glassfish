@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : CreateCluster</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="CreateCluster-2.CreateCluster"></a>2. Create Cluster</h3> <p>We will need to add support for <a href="http://docs.sun.com/app/docs/doc/821-0179/create-cluster-1?l=en&amp;a=view">create-cluster</a> and <a href="http://docs.sun.com/app/docs/doc/821-0179/delete-cluster-1?l=en&amp;a=view">delete-cluster</a> commands. Create cluster will create the necessary configuration elements in domain.xml for a cluster. If --config option is not mentioned during create-cluster, it creates a copy of the default-config.</p> <p>deploy command needs to support --target option where it will add the necessary application-ref for a target (cluster or stand alone instance).</p> <p>For example,</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;cluster config-ref="cluster1-config" ...&gt;
+      &lt;server-ref disable-timeout-in-minutes="30" enabled="true" 
+       lb-enabled="false" ref="instance1"/&gt;
+      &lt;server-ref disable-timeout-in-minutes="30" enabled="true" 
+       lb-enabled="false" ref="instance2"/&gt;
+      &lt;application-ref disable-timeout-in-minutes="30" enabled="true" 
+       lb-enabled="false" ref="applicationFoo"/&gt;
+      ...
+ &lt;/cluster&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p><b>2.1 Token Support</b><br> GlassFish cluster definition will require token support where user will be able to specify port numbers, etc. to avoid conflicts. A token is defined as ${token} in domain.xml. The value of the token is then defined at <b>config/cluster/server</b> element level as system properties.</p> <p>create-cluster has --systemproperties option that allows user to define the necessary tokens.</p> <p>For example,</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;config name="cluster1-config" ...&gt;
+...
+    &lt;http-listener acceptor-threads="1" address="0.0.0.0" blocking-enabled="false" 
+     default-virtual-server="server" enabled="true" family="inet" id="http-listener-1" 
+     port="${HTTP_LISTENER_PORT}" security-enabled="false" server-name="" 
+     type="default" xpowered-by="true"&gt;
+
+    &lt;!-- defines http port value for everyone using the config --&gt;
+    &lt;system-property name="HTTP_LISTENER_PORT" value="8080"/&gt; 
+...
+&lt;/config&gt;
+
+ &lt;cluster config-ref="cluster1-config" ...&gt;
+     &lt;!-- overrides http port value at config level --&gt;
+     &lt;system-property name="HTTP_LISTENER_PORT" value="38080"/&gt; 
+ &lt;/cluster&gt;
+
+ &lt;server config-ref="cluster1-config" ....&gt;
+     &lt;!-- overrides http port value at cluster level for this server--&gt;
+     &lt;system-property name="HTTP_LISTENER_PORT" value="38181"/&gt;  
+ &lt;/server&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>XXX Config - We will need a mechanism to get un-processed token value for administration at GUI and CLI<br> XXX Do we really need a system-property at JVM level for this? Just replacing at the config bean level seems good enough.</p> <p><a href="Tokensupportv3.html" title="Tokensupportv3">Current v3 implementation</a><br> <a href="Tokensnotesv3.html" title="Tokensnotesv3">v3 observations</a></p> <p><b>2.2 Support for Port Conflicts</b><br> GlassFish v2.x scans domain.xml and sets the appropriate tokens during cluster/instance creation. create-domain command has --checkports option that checks for port conflicts. create-domain also has option such as --portbase that allows user to define a base port for a domain during domain creation. We should continue to support these features (can be considered in phase 2 of this project after basic stuff is working). </p> <p>Refer to this write-up for more details on <a href="AutomaticPortAssignment.html" title="AutomaticPortAssignment">exiting GlassFish v2.x behavior</a>. </p> <p><b>2.3 Manual Synchronization</b><br> Add a command that will return the necessary application and configuration bits for a given cluster. The bundle will contain relative path with the following content under domain dir from DAS:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">||---- config (config files common to all servers including the DAS)
+            | ---- domain.xml, etc.
+            ||---- &lt;server/cluster-name&gt;-config (cluster/server-specific data)
+     ||---- applications
+            ||---- &lt;application-name&gt;
+     ||---- java-web-start
+            ||---- &lt;application-name&gt;
+     ||---- generated
+            ||---- ejb
+                   ||---- &lt;application-name&gt;
+            ||---- jsp
+                   ||---- &lt;application-name&gt;
+            ||---- policy
+                   ||---- &lt;application-name&gt;
+            ||---- xml
+                   ||---- &lt;application-name&gt;
+     ||---- lib (libraries common to all servers including the DAS)
+     ||---- docroot (the default web-container docroot, files are copied to instance's docroot)</pre> 
+       </div> 
+      </div>
+     </div> <p>XXX We may include only deployed applications for a target as an optimization<br> XXX We may handle soft links</p> <p>For example, on DAS machine user will do the following...</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">% asadmin generate-sync-bundle --target &lt;cluster1&gt;  &lt;/tmp/cluster1.zip&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>User will FTP the newly created bundle zip from DAS server to remote instance machine(s) and apply the content using a local command.</p> <p>For example,</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">% asadmin apply-sync-bundle --target &lt;instance1&gt; &lt;cluster1.zip&gt;
+% asadmin apply-sync-bundle --target &lt;instance2&gt; &lt;cluster1.zip&gt;</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="CreateCluster-UseCaseScenarios"></a>Use Case Scenarios</h3> 
+     <ol> 
+      <li>Convenience Case: No direct communication between DAS and remote instances initially, until remote instances are created locally</li> 
+      <li>Never Communication Case: Never any direct communication between DAS and remote instances - Out of scope, not supported</li> 
+     </ol> <h4><a name="CreateCluster-UseCase%231ConvenienceCase"></a>Use Case #1 - Convenience Case</h3> 
+     <ol> 
+      <li>Install GF3.1 on DAS</li> 
+      <li>asadmin create-cluster c1</li> 
+      <li>asadmin create-instance --cluster c1 --node remote i2 (Registers i2 with DAS but i2 filesystem is not created on remote instance since it is not available)</li> 
+      <li>asadmin deploy --target c1 hello.war</li> 
+      <li>Modify c1-config, like create a property</li> 
+      <li>asadmin generate-sync-bundle --target c1 tmp/c1.zip (remote admin command)</li> 
+     </ol> <p> --&gt; Bundle contains subset of directories under domains/domain1</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">-  config (all files)
+                   - domain.xml, etc
+                   - c1-config  (c1 specific)
+          - applications (c1 specific)
+                   - hello
+          - generated (c1 specific)
+                   - jsp
+                        - hello
+           -lib (all files)
+           -docroot (all files)</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ol> 
+      <li>Install GF3.1 on remote Instance machine which can now communicate with DAS</li> 
+      <li>asadmin --host DAS create-local-instance --cluster c1 --node remote i1 (rendezvous with DAS, creates local filesystem, das.properties)</li> 
+      <li>asadmin --host DAS create-local-instance --cluster c1 --node remote i2</li> 
+      <li>FTP c1.zip to Instance machine</li> 
+      <li>asadmin apply-sync-bundle --target i1 --node remote c1.zip (local cli command)</li> 
+     </ol> <p> --&gt; Unzip c1.zip under nodeagents/remote/i1 </p> <h4><a name="CreateCluster-TechnicalRequirements"></a>Technical Requirements</h3> 
+     <ol> 
+      <li>generate-sync-bundle command should internally use synchronization code that will do a --fullsync to get everything. The output stream should go to the zip file located in DAS.</li> 
+      <li>apply-sync-bundle should remove existing contents (applications/ generated/ config/ docroot/ lib/ java-web-start/) before unzipping the new content. If user defined a exclude (this will be a well known location; Bill to decide; refer to SYNC-007: Exclude user created files from cleanup), that should not be removed.</li> 
+     </ol> <p><b>2.4 Ref Support</b><br> Section 2 talks about target support for <a href="http://docs.sun.com/app/docs/doc/821-0179/deploy-1?l=en&amp;a=view">deploy command</a>. Similarly, we also need to add support for <a href="http://docs.sun.com/app/docs/doc/821-0179/create-application-ref-1?l=en&amp;a=view">create-application-ref</a>, <a href="http://docs.sun.com/app/docs/doc/821-0179/delete-application-ref-1?l=en&amp;a=view">delete-application-ref</a>, <a href="http://docs.sun.com/app/docs/doc/821-0179/create-resource-ref-1?l=en&amp;a=view">create-resource-ref</a> and <a href="http://docs.sun.com/app/docs/doc/821-0179/delete-resource-ref-1?l=en&amp;a=view">delete-resource-ref</a> commands that will allow user to associate an application or resource with a target.</p> <p>Note: In this project, it is sufficient to create the application-ref or resource-ref in domain.xml and ensure that the associated applications/resources are loaded during server startup. Dynamic re-config or hot deployment project will deal with deploying the resource/application to the target server instance(s) dynamically. </p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Topic</th> 
+         <th class="confluenceTh">Comment </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2.1 Token Support </td> 
+         <td class="confluenceTd"> AMX already gets unprocessed token values for GUI and CLI </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Need system property - it's used by Launcher </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 04, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:43.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

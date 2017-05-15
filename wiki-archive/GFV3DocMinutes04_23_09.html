@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GFV3DocMinutes04_23_09</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GFV3DocMinutes04_23_09-GlassFishv3CommunityDocsMeetingApril23%2C2009"></a>GlassFish v3 Community Docs Meeting April 23, 2009</h1> <h4><a name="GFV3DocMinutes04_23_09-Attendees"></a>Attendees</h2> <p>Paul, Mike, June, Devika, Kim, Debbie</p> <h4><a name="GFV3DocMinutes04_23_09-Agenda"></a>Agenda</h2> 
+     <ol> 
+      <li>Review of AIs</li> 
+      <li>Progress on writing assignments by feature</li> 
+      <li>Bug status</li> 
+      <li>Open mic</li> 
+      <li>Next Meeting</li> 
+     </ol> <h4><a name="GFV3DocMinutes04_23_09-Minutes"></a>Minutes</h2> 
+     <ol> 
+      <li>Review of AIs: 
+       <ul> 
+        <li> 
+         <ul> 
+          <li>Paul:* Cross-check the <a href="V3FunctionalSpecs.html" title="V3FunctionalSpecs">v3 list of functional specifications</a> against the list of features in the v2 documentation.<br> <b><font color="orange">In progress</font>, expected to be done by next week.</b> Paul is compiling a list of <a href="GlassFishV3DocV2Features.html" title="GlassFishV3DocV2Features">v2 features whose status with respect to v3 is uncertain</a>.</li> 
+          <li>All by April 9* Send Paul the list of features you have questions about for EA (in or out?) and also v3 Final (in or out?). Or update the list of <a href="GlassFishV3DocV2Features.html" title="GlassFishV3DocV2Features">v2 features whose status with respect to v3 is uncertain</a>.<br> <b><font color="orange">In progress</font>, expected to be done by next week.</b></li> 
+          <li>Paul:* Verify EOL process for features that are marked as "Never".<br> <b><font color="orange">In progress.</font></b> Paul will follow up with Abhijit at the same time he asks about the previous AI.<br> <b>In progress, expected to be done by next week.</b></li> 
+          <li>June, Devika, and others:*Determine whether to inlcude jMaki in the single document about scripting into a single document and send the details to Paul.<br> <b><font color="orange">In progress</font>, interested parties will make decision by April 30th.</b></li> 
+          <li>Paul:* Update pubstool registration for <em>Domain File Format Reference</em>.<br> <b><font color="red">Not started.</font></b></li> 
+          <li>Paul:* Look at the man pages to see what properties are already doc'd there.<br> <b><font color="red">Not started.</font></b></li> 
+         </ul> </li> 
+        <li><del><b>June:</b> Add properties that can't easily be set using the CLI to the properties wiki page.</del><br> <b><font color="green">Completed</font>.</b> 
+         <ul> 
+          <li>Paul:* Look into whether there will be an <em>Upgrade and Migration Guide</em>.<br> <b><font color="red">New AI</font></b></li> 
+          <li>Paul:* Add to doc plan which documents are in EA.<br> <b><font color="red">New AI</font></b></li> 
+         </ul> </li> 
+       </ul> </li> 
+      <li>Progress on writing assignments by <a href="GlassFishV3DocStatus.html" title="GlassFishV3DocStatus">feature</a> 
+       <ul> 
+        <li> 
+         <ul> 
+          <li>June:* New Grizzly integration will require dotted name changes, man page changes, upgrade issues.</li> 
+          <li>Paul:* Many v3 changes are either not in EA, or not complete and won't be doc'd.</li> 
+          <li>June:* Still needs a schema for domain.xml. No word from engineering. Alan has directed that if we don't have the info, we don't deliver the <em>Domain File Forma Reference</em>, at least for EA.</li> 
+         </ul> </li> 
+       </ul> </li> 
+      <li>Bug status 
+       <ul> 
+        <li><a href="https://glassfish.java.net/issues/buglist.cgi?component=glassfish&amp;subcomponent=docs&amp;issue_status=UNCONFIRMED&amp;issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED&amp;target_milestone=V3&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=fulltext&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=&amp;cmdtype=doit&amp;order=Reusesamesortaslasttime&amp;Submitquery=Submitquery">All open doc bugs</a> for GlassFish v3.<br> Issue Tracker <a href="https://glassfish.java.net/issues/query.cgi">query </a> criteria: 
+         <ul> 
+          <li>Subcomponent: docs</li> 
+          <li>Status: UNCONFIRMED, NEW, STARTED, REOPENED</li> 
+          <li>Target milestone: v3</li> 
+         </ul> </li> 
+        <li><a href="https://glassfish.java.net/issues/buglist.cgi?issue_type=DEFECT&amp;issue_type=ENHANCEMENT&amp;issue_type=FEATURE&amp;issue_type=TASK&amp;component=glassfish&amp;subcomponent=docs&amp;issue_status=UNCONFIRMED&amp;issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED&amp;priority=P1&amp;priority=P2&amp;priority=P3&amp;priority=P4&amp;priority=P5&amp;target_milestone=V3&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=notregexp&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=notregexp&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=short_desc&amp;type0-0-0=notsubstring&amp;value0-0-0=%5BUB%5D&amp;cmdtype=doit&amp;namedcmd=AS91UR1Docs&amp;newqueryname=&amp;order=Reusesamesortaslasttime&amp;Submitquery=Submitquery">Bundled doc bugs</a><br> Issue Tracker <a href="https://glassfish.java.net/issues/query.cgi">query </a> criteria: 
+         <ul> 
+          <li>Subcomponent: docs</li> 
+          <li>Status: UNCONFIRMED, NEW, STARTED, REOPENED</li> 
+          <li>Target milestone: v3</li> 
+          <li>Summary does not contain the substring [UB]</li> 
+         </ul> </li> 
+        <li><a href="https://glassfish.java.net/issues/buglist.cgi?issue_type=DEFECT&amp;issue_type=ENHANCEMENT&amp;issue_type=FEATURE&amp;issue_type=TASK&amp;component=glassfish&amp;subcomponent=docs&amp;issue_status=UNCONFIRMED&amp;issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED&amp;priority=P1&amp;priority=P2&amp;priority=P3&amp;priority=P4&amp;priority=P5&amp;target_milestone=V3&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=%5BUB%5D&amp;short_desc_type=casesubstring&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=notregexp&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=&amp;cmdtype=doit&amp;namedcmd=AS91UR1Docs&amp;newqueryname=&amp;order=Reusesamesortaslasttime&amp;Submitquery=Submitquery">Unbundled doc bugs</a><br> Issue Tracker <a href="https://glassfish.java.net/issues/query.cgi">query </a> criteria: 
+         <ul> 
+          <li>Subcomponent: docs</li> 
+          <li>Status: UNCONFIRMED, NEW, STARTED, REOPENED</li> 
+          <li>Target milestone: v3</li> 
+          <li>Summary contains the substring [UB]</li> 
+         </ul> </li> 
+       </ul> </li> 
+      <li>Community doc reviews 
+       <ul> 
+        <li>Added by Gail. We will accept all FishCAT feedback received in any format we receive it.</li> 
+       </ul> </li> 
+      <li>Open mic 
+       <ul> 
+        <li>No issues</li> 
+       </ul> </li> 
+      <li>Next meeting 
+       <ul> 
+        <li>April 30, 2009 2:00 PM PDT</li> 
+       </ul> </li> 
+     </ol> <h4><a name="GFV3DocMinutes04_23_09-SuspendedAIs"></a>Suspended AIs</h2> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li>Paul:* Change the description of the process so it highlights that you also need to identify where the tasks will be documented.</li> 
+        <li>June and others:* Contribute to the SolBook rules page.</li> 
+        <li>All:* Add items to the GlassFish v3 documentation <a href="GlassFishV3DocQuality.html" title="GlassFishV3DocQuality">quality assurance</a> page.</li> 
+        <li>All:* If you discover other issues with existing docs, send mail to Paul (with a URL if possible), so he can start keeping a running list of issues and areas for improvement.<br> \</li> 
+       </ul> </li> 
+     </ul> <p><a href="GlassFishV3DocMeetings.html" title="GlassFishV3DocMeetings">Main meetings page</a></p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 09, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:44.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

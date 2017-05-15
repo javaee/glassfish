@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : V3.1RESTfulApiOnePagerReviewVBK</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="V3.1RESTfulApiOnePagerReviewVBK-RESTfulAPIReview"></a>RESTful API Review</h1> <h4><a name="V3.1RESTfulApiOnePagerReviewVBK-Document%3AV3.1RESTfulApiOnePagerV3.1RESTfulApiOnePager"></a>Document: <a href="V3.1RESTfulApiOnePager.html" title="V3.1RESTfulApiOnePager">V3.1RESTfulApiOnePager</a></h3> <h4><a name="V3.1RESTfulApiOnePagerReviewVBK-Reviewer%3Avincekraemer"></a>Reviewer: vince kraemer</h3> <h4><a name="V3.1RESTfulApiOnePagerReviewVBK-Reviewdate%3AMay24%2C2010"></a>Review date: May 24, 2010</h3> <h4><a name="V3.1RESTfulApiOnePagerReviewVBK-Responsedate%3A"></a>Response date: </h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item </th> 
+         <th class="confluenceTh"> Type </th> 
+         <th class="confluenceTh"> Comment </th> 
+         <th class="confluenceTh"> Response </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Reference number </td> 
+         <td class="confluenceTd"> Clarification/Enhancement/Correction/.... </td> 
+         <td class="confluenceTd"> Detailed review comments </td> 
+         <td class="confluenceTd">Response from functional spec/one pager author </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> clarification </td> 
+         <td class="confluenceTd"> will the http adapter api get turned into a real rest api? section 2.1 makes it sound like that is part of the plan. </td> 
+         <td class="confluenceTd"> That is not planned ATM. I've updated the text to remove the implication. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd"> clarification </td> 
+         <td class="confluenceTd"> section 3.1 should mention monitoring, too? </td> 
+         <td class="confluenceTd"> Fixed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3 </td> 
+         <td class="confluenceTd"> correction </td> 
+         <td class="confluenceTd"> 'this play nicely'... replace with something less colloquial. </td> 
+         <td class="confluenceTd"> Fixed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4 </td> 
+         <td class="confluenceTd"> clarification </td> 
+         <td class="confluenceTd"> you are proposing a new authentication token here or do you intend to leverage existing schemes? Authentication Tokens; section 4.1... </td> 
+         <td class="confluenceTd"> That is TBD </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5 </td> 
+         <td class="confluenceTd"> clarification </td> 
+         <td class="confluenceTd"> will commands like deploy be placed in the <a href="http://localhost:4848/management">http://localhost:4848/management</a> <p> url.. or some place else. </p></td> 
+         <td class="confluenceTd"> Also TBD. Commands directly related to domain.xml elements can be put here, but others (such as some JMS-related commands) do not (directly) affect domain.xml, so they may have their own "root" URI </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6 </td> 
+         <td class="confluenceTd"> clarification </td> 
+         <td class="confluenceTd"> will commands that are not linked to the bean tree be documented/described by WADL to support tooling? </td> 
+         <td class="confluenceTd"> WADL support is provided by Jersey, so it should, if I understand it correctly, describe every Resource it knows about. If we add services that are not linked to the bean tree, we will verify that WADL does describe it, and see how to fix that if it does not. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 7 </td> 
+         <td class="confluenceTd"> clarification </td> 
+         <td class="confluenceTd"> I think there is a huge i8n/l10n exposure in this API... consider the use-case: a client running in locale fr_CA makes a call to a server that is running in en_US. The response probably needs to be localized into fr_CA... This is especially true for error handling, no? </td> 
+         <td class="confluenceTd"> We've already had initial i18n discussions, though nothing has been decided yet. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 8 </td> 
+         <td class="confluenceTd"> correction </td> 
+         <td class="confluenceTd"> it seems like <a href="http://localhost:4848/management">http://localhost:4848/management</a> <p> is not right... I get a blank page there, but I do get a useful html interface page on </p> <a href="http://localhost:4848/management/domain">http://localhost:4848/management/domain</a> <p>... you may want to clarify or correct the interface section or the one pager... </p></td> 
+         <td class="confluenceTd"> I've updated the management link </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

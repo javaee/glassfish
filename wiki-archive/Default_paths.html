@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : Default_paths</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="Default_paths-DefaultPathsandFileNames"></a>Default Paths and File Names</h2> <p>The following table describes the default paths and file names that are<br> used in this book.</p> <h4><a name="Default_paths-DefaultPathsandFileNames"></a>Default Paths and File Names</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Placeholder</th> 
+         <th class="confluenceTh">Description</th> 
+         <th class="confluenceTh">Default Value </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <em>install-dir</em> </td> 
+         <td class="confluenceTd"> Represents the base installation directory for Application Server. </td> 
+         <td class="confluenceTd">*Solaris:* <tt>/opt/SUNWappserver/appserver</tt> <b>Linux:</b> <tt>/opt/sun/appserver/</tt> <b>Non-root:</b> <tt>~/SUNWappserver</tt> <b>Windows:</b> <tt><em>Drive</em>:\Sun\AppServer</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <em>domain-root-dir</em> </td> 
+         <td class="confluenceTd"> Represents the directory containing all domains. </td> 
+         <td class="confluenceTd">*Solaris:* <tt>var/opt/SUNWappserver/domains/</tt> <b>Linux:</b> <tt>/var/opt/sun/appserver/domains/</tt> <b>Other:</b> <tt>install-dir/domains/</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <em>domain-dir</em> </td> 
+         <td class="confluenceTd"> Represents the directory for a domain. </td> 
+         <td class="confluenceTd">In configuration files, you might see <em>domain-dir</em> represented as follows: {{$ 
+          <div class="error">
+           <span class="error">Unknown macro: {com.sun.aas.instanceRoot}</span> 
+          </div> <p> <tt>domain-root-dir/domain-dir</tt> </p></td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <em>instance-dir</em> </td> 
+         <td class="confluenceTd"> Represents the directory for a server instance. </td> 
+         <td class="confluenceTd"><tt>domain-dir/instance-dir</tt> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="Default_paths-ThirdPartyWebSiteReferences"></a>Third-Party Web Site References</h2> <p>Third-party URLs are referenced in this document and provide additional, related information.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Note </th> 
+         <td class="confluenceTd">Sun is not responsible for the availability of third-party web sites mentioned in this document. Sun does not endorse and is not responsible or liable for any content, advertising, products, or other materials that are available on or through such sites or resources. Sun will not be responsible or liable for any actual or alleged damage or loss caused or alleged to be caused by or in connection with use of or reliance on any such content, goods, or services that are available on or through such sites or resources. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="Default_paths-AccessingSunResourcesOnline"></a>Accessing Sun Resources Online</h2> <p>The <a href="http://docs.sun.com">docs.sun.com</a> Web site enables you to access Sun technical documentation online. You<br> can browse the docs.sun.com archive or search for a specific book title or subject. Books are available as online files in PDF and HTML formats. Both formats are readable by assistive technologies for users with disabilities.</p> <p>To access the following Sun resources, go to the <a href="http://www.sun.com">Sun Microsystems</a> Web site: </p> 
+     <ul> 
+      <li>Downloads of Sun products</li> 
+     </ul> 
+     <ul> 
+      <li>Services and solutions</li> 
+     </ul> 
+     <ul> 
+      <li>Support (including patches and updates)</li> 
+     </ul> 
+     <ul> 
+      <li>Training</li> 
+     </ul> 
+     <ul> 
+      <li>Research</li> 
+     </ul> 
+     <ul> 
+      <li>Communities (for example, Sun Developer Network)</li> 
+     </ul> <p><a href="ErrorMessageReference.html" title="ErrorMessageReference">Previous</a> <a href="Analyze.html" title="Analyze">Next</a></p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:48.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

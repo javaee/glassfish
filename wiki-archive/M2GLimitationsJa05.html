@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : M2GLimitationsJa05</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="M2GLimitationsJa05-%E3%83%9E%E3%82%A4%E3%82%B0%E3%83%AC%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%81%AB%E9%96%A2%E3%81%99%E3%82%8B%E3%81%9D%E3%81%AE%E4%BB%96%E3%81%AE%E5%88%B6%E7%B4%84"></a>マイグレーションに関するその他の制約</h2> 
+     <ul> 
+      <li>EJB 1.0 仕様に従う Enterprise bean のマイグレーション</li> 
+     </ul> <p> WebSphere Application Server 4.0 は、EJB 1.0 仕様で開発された Enterprise bean をサポートします。しかし GlassFish アプリケーションサーバーは EJB 1.0 bean をサポートしません。マイグレーションツールは、この Enterprise bean を EJB 1.1 仕様に準拠するよう、最小限の面倒を見ますが、この実装には完全な信頼性が無く、移行したアプリケーションの配備時に明るみに出るような食い違いを引き起こす場合があります。<br> この制限を回避するには、マイグレーションの前に bean のコードを EJB 1.1 準拠となるよう修正してください。</p> 
+     <ul> 
+      <li>WebLogic Application Server 6.0/6.1 からのアプリケーションのマイグレーション</li> 
+      <li>WebLogic 6.1 は、CMP entity bean の主キーの値のために自動的にキーを生成する機能が組み込まれています。このキー生成の仕組みを使って bean を生成した場合、WebLogic EJB コンテナはデータベースへの挿入時にこの主キーを自動的に割り当てます。注意 - GlassFish アプリケーションサーバーには同等の機能が無いため、この機能はアプリケーションの一部としてマイグレートされません。</li> 
+     </ul> <p>この制限を回避するには、CMP entity bean がこの機能を使わないように書き換えてください。Floyd Marinescu の <em>EJB Design Paterns</em> に役に立つ情報が書かれています。</p> 
+     <ul> 
+      <li>WebLogic 6.0 は、EJB 2.0 仕様では禁止されている、リモートインターフェースを通しての ２つの bean 間の EJB relationships (CMRs) を使えます。EJB relationship は現在ローカルインターフェースでしか使えません。relationship に加わる enterprise bean はローカルインターフェースを持っている必要があります。リモートインターフェースを使っての relationship は EJB 2.0 仕様から削除されました。また、関連する bean は同じ EJB JAR ファイル内に配備されている必要があります。</li> 
+     </ul> <p> WebLogic 6.0 がリリースされたときにはまだこの制約が無かったため、現在禁止されているこの機能を使ったアプリケーションは、手作業で EJB 2.0 仕様に従うよう修正する必要があります。<br> <a href="http://edocs.bea.com/wls/docs61/notes/migrate60to61.html">http://edocs.bea.com/wls/docs61/notes/migrate60to61.html</a><br> この制限を回避するには、CMP entity bean 間のすべての CMRs がローカルインターフェースで行われ、関連する bean が同じ EJB JAR ファイルの中にあるように、マイグレーションの前または後に手作業で修正してください。</p> 
+     <ul> 
+      <li>WebLogic 6.0 は EJB-QL の替わりに <tt>ejb-jar.xml</tt> ファイルの中に WLQL を書けます。この WLQL はマイグレーションツールでは移行されません。</li> 
+     </ul> <p> この制限を回避するには、マイグレーション後の GlassFish アプリケーションサーバーにアプリケーションを配備する前に、手作業で WLQL を同等の EJB-QL に置き換えてください。</p> 
+     <ul> 
+      <li>アプリケーションの移行は、サーバーローカルを仮定しています。</li> 
+     </ul> <p> マイグレーションツールは、移行されるアプリケーションがサーバーローカルにあることを仮定しています。すなわち、アプリケーションのすべてのメソッドコールやオブジェクトコールは、サーバーのローカルにあるメソッド/オブジェクトを参照するよう移行されます。この点を説明するため、接続情報を持ったコードがマイグレーションツールで修正されたところを以下にに示します。<br> 元のコードは次のものです。</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Properties h = new Properties();
+h.put(Context.INITIAL_CONTEXT_FACTORY, m_INITIAL_CONTEXT_FACTORY);        
+h.put(Context.PROVIDER_URL, m_PROVIDER_URL);        
+h.put(Context.SECURITY_PRINCIPAL, user);        
+h.put(Context.SECURITY_CREDENTIALS, password);        
+.....        
+InitialContext ctx = new InitialContext(h);</pre> 
+       </div> 
+      </div>
+     </div> <p> このコードの断片は、次に示すように空の <tt>IntialContext</tt> コンストラクタに置き換えられます。</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">InitialContext ctx = new InitialContext();
+.....</pre> 
+       </div> 
+      </div>
+     </div> <p> 従って、サーバーローカルではないアプリケーションの移行を行うときには、ツールはリモートオブジェクトコールが存在していないと仮定しているという、この問題を心に留めておいてください。<br> この制限を回避するには、移行前にリモートオブジェクトへのすべてのコールを調べておきます。次にマイグレーションツールでアプリケーションをパスさせます。そして、元のリモートオブジェクトコールに戻すよう、変更されたコードの断片を変更します。特に、元のコードにあった URL やその他の接続プロパティを手作業で追加してくださ。</p> 
+     <ul> 
+      <li>マイグレーションツールは JSP カスタムタグの getter や setter メソッドを適切に扱えません。</li> 
+     </ul> <p> GlassFish アプリケーションサーバーは JSP 1.2 と JSP 2.0 仕様をサポートしています。JSP 1.2 仕様の実装では、カスタムタグの中にあるアトリビュートの getter や setter メソッドを返し、同じデータ型を受け付けなければなりません。マイグレーションツールは、次の例で説明するように、このシナリオを扱うことができません。<br> つぎのコードは、元のタグハンドラークラスです。</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">public class Listtag extends TagSupport{
+  int numIterms;  public int getNumItems() {
+      return numItems;
+  }
+  
+  public void setNumItems(String numItemsStr) 
+    numItems = Integer.parseInt(numItemsStr);
+  } 
+  
+}</pre> 
+       </div> 
+      </div>
+     </div> <p> GlassFish アプリケーションサーバーが要求するタグハンドラークラスは次のようになります。</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">public class Listtag extends TagSupport{
+  int numIterms;  public int getNumItems() {
+      return numItems;
+  }
+  
+  public void setNumItems(int numItemsStr) 
+    numItems = Integer.parseInt(numItemsStr);
+  } 
+  
+}</pre> 
+       </div> 
+      </div>
+     </div> <p> この制限を回避するには、移行したアプリケーションが GlassFish アプリケーションサーバーが期待する動作をするようタグハンドラークラスの中を手作業で修正してください。</p> 
+     <ul> 
+      <li>移行されたコードにあるコメント化されたメソッドコールの影響</li> 
+     </ul> <p> GlassFish アプリケーションサーバーは、<tt>System.setOut()</tt> のような、いくつかのシステムコールの使用に制限があり、使った場合には実行時アクセスコントロール例外を引き起こします。典型的な例としては、<tt>System.out</tt> ストリームが <tt>server.log</tt> ファイルに送られ、この送り先を変えると、サーバーのロギング機能に問題を起こします。実行時例外を回避するために、マイグレーションツールは、移行するコードでそのような呼び出しがある場合に次の例のようにコメントアウトします。<br> こちらが元のコードです。</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">public void init(ServletConfig config) throws ServletException{
+        super.init(config);
+        Logger.initialize("astp.query.log", "Console");
+        Logger.log(Logger.LOGTYPEISMESSAGE, "SrvQueryControlloer", "init", "got here!");
+
+        try{
+        System.setOut(new PrintStream(new ServletOutputStreamAdapter
+                (new FileOutputStream("sys.out"))));
+        }catch(IOException eio){throw new ServletException(eio);}
+}</pre> 
+       </div> 
+      </div>
+     </div> <p> こちらが、コメントアウトされた移行コードです。</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">public void init(ServletConfig config) throws ServletException{
+        super.init(config);
+        Logger.initialize("astp.query.log", "Console");
+        Logger.log(Logger.LOGTYPEISMESSAGE, "SrvQueryControlloer", "init", "got here!");
+
+        try{
+        /*Removed call to System.setOut()*/
+        }catch(IOException eio){throw new ServletException(eio);}
+}</pre> 
+       </div> 
+      </div>
+     </div> <p> しかしながら、この例で注意して欲しいのは、try/catch ブロック内にそのメソッドコールしかなくて、これがコメントアウトされると、IOException は try/catch ブロックからスローされないため、コンパイル時にエラーとなる点です。マイグレーションツールは次のような問題を検出できないため、制限があります。</p> 
+     <ul> 
+      <li>コメントアウトされたメソッドコールが try/catch ブロックが扱う例外を上げるものか。</li> 
+      <li>コメントアウトされたメソッドコールが try/catch ブロックの唯一のコールか。</li> 
+     </ul> <p> この制限を回避するには、この状況を知らせるマイグレーションレポートを見て、必要に応じて例外を引き起こす部分をコメントアウトするなどの対応をしてください。</p> 
+     <ul> 
+      <li>移行された EAR ファイル内のディレクトリ構成の影響</li> 
+     </ul> <p> マイグレーションツールは JAR ファイルが EAR ファイルの直下にあることを想定しています。ツールでは入れ子になった JAR ファイルの移行をサポートしていません。移行を成功させるために、すべての JAR ファイルが EAR ファイルの直下に配置してください。<br> 次の例は、サポートされない EAR ファイル構成を示しています。</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">EAR
+ |
+ |
+ |---Lib/lib.jar
+ |
+ |
+ |---EJBs
+ |    |---EJB1.jar
+ |    |---EJB2.jar
+ |
+ |---WEB
+ |    |---WEB1.war
+ |    |---WEB2.war</pre> 
+       </div> 
+      </div>
+     </div> <p> EAR ファイル構成を、次の例に示すように、移行が成功する形式に修正する必要があります。</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">EAR
+ |
+ |
+ |---lib.jar
+ |
+ |---EJB1.jar
+ |
+ |---EJB2.jar
+ |
+ |---WEB1.war
+ |
+ |---WEB2.war</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>Solaris でサポートされないエンコーディングタイプ "Cp1252"</li> 
+     </ul> <p> "Cp1252 エンコーディングタイプを配備記述子に使うことは Solaris ではサポートされません。この制限を回避するには、移行を Windows 2000/NT/XP といった Windows プラットフォームだけで行うか、エンコーディングタイプを Windows プラットフォームでも Solaris でもサポートできる "UTF-8" に変更します。</p> 
+     <hr> <p>日本語翻訳: <a href="http://blogs.oracle.com/shioda">shioda</a></p> <p><a href="M2GLimitations.html" title="M2GLimitations">英文 </a> (翻訳したバージョン: 5)</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

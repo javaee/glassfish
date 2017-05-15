@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : 3.1DeploymentOnePager</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="3.1DeploymentOnePager-GlassFishServerOpenSourceEdition3.1DeploymentOnePager"></a>GlassFish Server Open Source Edition 3.1 - Deployment One Pager</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#3.1DeploymentOnePager-GlassFishServerOpenSourceEdition3.1DeploymentOnePager">GlassFish Server Open Source Edition 3.1 - Deployment One Pager</a></li> 
+       <li><a href="#3.1DeploymentOnePager-1.Introduction">1. Introduction</a></li> 
+       <ul> 
+        <li><a href="#3.1DeploymentOnePager-1.1.Project%2FComponentWorkingName%3A">1.1. Project/Component Working Name:</a></li> 
+        <li><a href="#3.1DeploymentOnePager-1.2.Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier%3A">1.2. Name(s) and e-mail address of Document Author(s)/Supplier:</a></li> 
+        <li><a href="#3.1DeploymentOnePager-1.3.DateofThisDocument%3A">1.3. Date of This Document:</a></li> 
+       </ul> 
+       <li><a href="#3.1DeploymentOnePager-2.ProjectSummary">2. Project Summary</a></li> 
+       <ul> 
+        <li><a href="#3.1DeploymentOnePager-2.1.ProjectDescription%3A">2.1. Project Description:</a></li> 
+        <li><a href="#3.1DeploymentOnePager-2.2.RisksandAssumptions%3A">2.2. Risks and Assumptions:</a></li> 
+       </ul> 
+       <li><a href="#3.1DeploymentOnePager-3.ProblemSummary">3. Problem Summary</a></li> 
+       <ul> 
+        <li><a href="#3.1DeploymentOnePager-3.1.ProblemArea%3A">3.1. Problem Area:</a></li> 
+        <ul> 
+         <li><a href="#3.1DeploymentOnePager-ClusteringDeployment">Clustering Deployment</a></li> 
+         <li><a href="#3.1DeploymentOnePager-Supportapplicationrelatedcommandsinclusteringenvironment">Support application related commands in clustering environment</a></li> 
+         <li><a href="#3.1DeploymentOnePager-SupportWebLogicdeploymentdescriptorsinGlassfish%28partial%29">Support WebLogic deployment descriptors in Glassfish (partial)</a></li> 
+         <li><a href="#3.1DeploymentOnePager-Renamesunspecificdeploymentdescriptordtds%28sun%5C.dtd%29toglassfishdtds%28glassfish%5C.dtd%29">Rename sun specific deployment descriptor dtds (sun- <b>.dtd) to glassfish dtds (glassfish-</b>.dtd)</a></li> 
+         <li><a href="#3.1DeploymentOnePager-Applicationversioning%2Csupportdeploymentofapplicationwithmultipleversions">Application versioning, support deployment of application with multiple versions</a></li> 
+        </ul> 
+        <li><a href="#3.1DeploymentOnePager-3.2.Justification%3A">3.2. Justification:</a></li> 
+        <ul> 
+         <li><a href="#3.1DeploymentOnePager-ClusteringDeployment">Clustering Deployment</a></li> 
+         <li><a href="#3.1DeploymentOnePager-Supportapplicationrelatedcommandsinclusteringenvironment">Support application related commands in clustering environment</a></li> 
+         <li><a href="#3.1DeploymentOnePager-SupportWebLogicdeploymentdescriptorsinGlassfish%28partial%29">Support WebLogic deployment descriptors in Glassfish (partial)</a></li> 
+         <li><a href="#3.1DeploymentOnePager-Renamesunspecificdeploymentdescriptordtds%28sun%5C.dtd%29toglassfishdtds%28glassfish%5C.dtd%29">Rename sun specific deployment descriptor dtds (sun- <b>.dtd) to glassfish dtds (glassfish-</b>.dtd)</a></li> 
+         <li><a href="#3.1DeploymentOnePager-Applicationversioning%2Csupportdeploymentofapplicationwithmultipleversions">Application versioning, support deployment of application with multiple versions</a></li> 
+        </ul> 
+       </ul> 
+       <li><a href="#3.1DeploymentOnePager-4.TechnicalDescription%3A">4. Technical Description:</a></li> 
+       <ul> 
+        <li><a href="#3.1DeploymentOnePager-4.1.Details%3A">4.1. Details:</a></li> 
+        <ul> 
+         <li><a href="#3.1DeploymentOnePager-ClusteringDeployment">Clustering Deployment</a></li> 
+         <li><a href="#3.1DeploymentOnePager-Supportapplicationrelatedcommandsinclusteringenvironment">Support application related commands in clustering environment</a></li> 
+         <li><a href="#3.1DeploymentOnePager-SupportWebLogicdeploymentdescriptorsinGlassfish%28partial%29">Support WebLogic deployment descriptors in Glassfish (partial)</a></li> 
+         <li><a href="#3.1DeploymentOnePager-Renamesunspecificdeploymentdescriptordtds%28sun%5C.dtd%29toglassfishdtds%28glassfish%5C.dtd%29">Rename sun specific deployment descriptor dtds (sun- <b>.dtd) to glassfish dtds (glassfish-</b>.dtd)</a></li> 
+         <li><a href="#3.1DeploymentOnePager-Applicationversioning%2Csupportdeploymentofapplicationwithmultipleversions">Application versioning, support deployment of application with multiple versions</a></li> 
+        </ul> 
+        <li><a href="#3.1DeploymentOnePager-4.2.Bug%2FRFENumber%28s%29%3A">4.2. Bug/RFE Number(s):</a></li> 
+        <li><a href="#3.1DeploymentOnePager-4.3.InScope%3A">4.3. In Scope:</a></li> 
+        <ul> 
+         <li><a href="#3.1DeploymentOnePager-RollingUpgrade">Rolling Upgrade</a></li> 
+         <li><a href="#3.1DeploymentOnePager-SupportWebLogicdeploymentdescriptorsinGlassfish%28partial%29">Support WebLogic deployment descriptors in Glassfish (partial)</a></li> 
+         <li><a href="#3.1DeploymentOnePager-Applicationversioning%2Csupportdeploymentofapplicationwithmultipleversions">Application versioning, support deployment of application with multiple versions</a></li> 
+        </ul> 
+        <li><a href="#3.1DeploymentOnePager-4.4.OutofScope%3A">4.4. Out of Scope:</a></li> 
+        <ul> 
+         <li><a href="#3.1DeploymentOnePager-RollingUpgrade">Rolling Upgrade</a></li> 
+         <li><a href="#3.1DeploymentOnePager-SupportWebLogicdeploymentdescriptorsinGlassfish%28partial%29">Support WebLogic deployment descriptors in Glassfish (partial)</a></li> 
+         <li><a href="#3.1DeploymentOnePager-Applicationversioning%2Csupportdeploymentofapplicationwithmultipleversions">Application versioning, support deployment of application with multiple versions</a></li> 
+        </ul> 
+        <li><a href="#3.1DeploymentOnePager-4.5.Interfaces%3A">4.5. Interfaces:</a></li> 
+        <ul> 
+         <li><a href="#3.1DeploymentOnePager-4.5.1PublicInterfaces">4.5.1 Public Interfaces</a></li> 
+         <li><a href="#3.1DeploymentOnePager-4.5.2PrivateInterfaces">4.5.2 Private Interfaces</a></li> 
+         <li><a href="#3.1DeploymentOnePager-4.5.3Deprecated%2FRemovedInterfaces%3A">4.5.3 Deprecated/Removed Interfaces:</a></li> 
+        </ul> 
+        <li><a href="#3.1DeploymentOnePager-4.6.DocImpact%3A">4.6. Doc Impact:</a></li> 
+        <li><a href="#3.1DeploymentOnePager-4.7.Admin%2FConfigImpact%3A">4.7. Admin/Config Impact:</a></li> 
+        <ul> 
+         <li><a href="#3.1DeploymentOnePager-CLI">CLI</a></li> 
+         <li><a href="#3.1DeploymentOnePager-GUI">GUI</a></li> 
+        </ul> 
+        <li><a href="#3.1DeploymentOnePager-4.8.HAImpact%3A">4.8. HA Impact:</a></li> 
+        <li><a href="#3.1DeploymentOnePager-4.9.I18N%2FL10NImpact%3A">4.9. I18N/L10N Impact:</a></li> 
+        <li><a href="#3.1DeploymentOnePager-4.10.Packaging%2CDelivery%26Upgrade%3A">4.10. Packaging, Delivery &amp; Upgrade:</a></li> 
+        <ul> 
+         <li><a href="#3.1DeploymentOnePager-4.10.1.Packaging">4.10.1. Packaging</a></li> 
+         <li><a href="#3.1DeploymentOnePager-4.10.2.Delivery">4.10.2. Delivery</a></li> 
+         <li><a href="#3.1DeploymentOnePager-4.10.3.UpgradeandMigration%3A">4.10.3. Upgrade and Migration:</a></li> 
+        </ul> 
+        <li><a href="#3.1DeploymentOnePager-4.11.SecurityImpact%3A">4.11. Security Impact:</a></li> 
+        <li><a href="#3.1DeploymentOnePager-4.12.CompatibilityImpact">4.12. Compatibility Impact</a></li> 
+        <li><a href="#3.1DeploymentOnePager-4.13.Dependencies%3A">4.13. Dependencies:</a></li> 
+        <ul> 
+         <li><a href="#3.1DeploymentOnePager-4.13.1InternalDependencies">4.13.1 Internal Dependencies</a></li> 
+         <li><a href="#3.1DeploymentOnePager-4.13.2ExternalDependencies">4.13.2 External Dependencies</a></li> 
+        </ul> 
+        <li><a href="#3.1DeploymentOnePager-4.14.TestingImpact%3A">4.14. Testing Impact:</a></li> 
+        <ul> 
+         <li><a href="#3.1DeploymentOnePager-ClusteringDeployment">Clustering Deployment</a></li> 
+         <li><a href="#3.1DeploymentOnePager-Supportapplicationrelatedcommandsinclusteringenvironment">Support application related commands in clustering environment</a></li> 
+         <li><a href="#3.1DeploymentOnePager-SupportWebLogicdeploymentdescriptorsinGlassfish%28partial%29">Support WebLogic deployment descriptors in Glassfish (partial)</a></li> 
+         <li><a href="#3.1DeploymentOnePager-Renamesunspecificdeploymentdescriptordtds%28sun%5C.dtd%29toglassfishdtds%28glassfish%5C.dtd%29">Rename sun specific deployment descriptor dtds (sun- <b>.dtd) to glassfish dtds (glassfish-</b>.dtd)</a></li> 
+         <li><a href="#3.1DeploymentOnePager-Applicationversioning%2Csupportdeploymentofapplicationwithmultipleversions">Application versioning, support deployment of application with multiple versions</a></li> 
+        </ul> 
+       </ul> 
+       <li><a href="#3.1DeploymentOnePager-5.ReferenceDocuments%3A">5. Reference Documents:</a></li> 
+       <li><a href="#3.1DeploymentOnePager-6.Schedule%3A">6. Schedule:</a></li> 
+       <ul> 
+        <li><a href="#3.1DeploymentOnePager-6.1.ProjectedAvailability%3A">6.1. Projected Availability:</a></li> 
+        <ul> 
+         <li><a href="#3.1DeploymentOnePager-Clusteringdeployment%2Csupportdynamicdeploymenttoclusterandrollingupgrade">Clustering deployment, support dynamic deployment to cluster and rolling upgrade</a></li> 
+         <li><a href="#3.1DeploymentOnePager-Supportapplicationrelatedcommandsinclusteringenvironment">Support application related commands in clustering environment</a></li> 
+         <li><a href="#3.1DeploymentOnePager-SupportWeblogicdeploymentdescriptorsinGlassfish%28partial%29">Support Weblogic deployment descriptors in Glassfish (partial)</a></li> 
+         <li><a href="#3.1DeploymentOnePager-Renamesunspecificdeploymentdescriptordtds%28sun%5C.dtd%29toglassfishdtds%28glassfish%5C.dtd%29">Rename sun specific deployment descriptor dtds (sun- <b>.dtd) to glassfish dtds (glassfish-</b>.dtd)</a></li> 
+         <li><a href="#3.1DeploymentOnePager-Applicationversioning%2Csupportdeploymentofapplicationwithmultipleversions">Application versioning, support deployment of application with multiple versions</a></li> 
+        </ul> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="3.1DeploymentOnePager-1.Introduction"></a>1. Introduction</h1> <h4><a name="3.1DeploymentOnePager-1.1.Project%2FComponentWorkingName%3A"></a>1.1. Project/Component Working Name:</h2> <p>Deployment</p> <h4><a name="3.1DeploymentOnePager-1.2.Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier%3A"></a>1.2. Name(s) and e-mail address of Document Author(s)/Supplier:</h2> <p>Hong Zhang : hzhang_jn@java.net<br> Tim Quinn : tjquinn@java.net</p> <h4><a name="3.1DeploymentOnePager-1.3.DateofThisDocument%3A"></a>1.3. Date of This Document:</h2> <p>05/14/2010</p> <h4><a name="3.1DeploymentOnePager-2.ProjectSummary"></a>2. Project Summary</h1> <h4><a name="3.1DeploymentOnePager-2.1.ProjectDescription%3A"></a>2.1. Project Description:</h2> 
+     <ul> 
+      <li>Clustering deployment, support dynamic deployment to cluster and rolling upgrade</li> 
+      <li>Support application related commands in clustering environment</li> 
+      <li>Support Weblogic deployment descriptors in Glassfish (partial)</li> 
+      <li>Rename sun specific deployment descriptor dtds (sun-<b>.dtd) to glassfish dtds (glassfish-</b>.dtd)</li> 
+      <li>Application versioning, support deployment of application with multiple versions</li> 
+     </ul> <h4><a name="3.1DeploymentOnePager-2.2.RisksandAssumptions%3A"></a>2.2. Risks and Assumptions:</h2> <p>The clustering deployment feature depends on the clustering infrastructure features (basic clustering, synchronization and dynamic reconfiguration). Any delay in the delivery of the depended features will affect the delivery of the clustering deployment feature.</p> <p>The application versioning feature is done by external contributor SERLI and there is certain risk associated with external contributors.</p> <h4><a name="3.1DeploymentOnePager-3.ProblemSummary"></a>3. Problem Summary</h1> <h4><a name="3.1DeploymentOnePager-3.1.ProblemArea%3A"></a>3.1. Problem Area:</h2> <h4><a name="3.1DeploymentOnePager-ClusteringDeployment"></a>Clustering Deployment</h3> <p>We need to support for this for v2 feature parity. Also this is part of the defining feature set for 3.1.</p> <h4><a name="3.1DeploymentOnePager-Supportapplicationrelatedcommandsinclusteringenvironment"></a>Support application related commands in clustering environment</h3> <p>We need to support the same set of the application commands for v2 feature parity.</p> <h4><a name="3.1DeploymentOnePager-SupportWebLogicdeploymentdescriptorsinGlassfish%28partial%29"></a>Support WebLogic deployment descriptors in Glassfish (partial)</h3> <p>To enable WebLogic applications developed by ISVs to run on GlassFish.</p> <p>To allow user to develop applications with simple WebLogic extensions on Glassfish and then run on WebLogic.</p> <h4><a name="3.1DeploymentOnePager-Renamesunspecificdeploymentdescriptordtds%28sun%5C.dtd%29toglassfishdtds%28glassfish%5C.dtd%29"></a>Rename sun specific deployment descriptor dtds (sun-<b>.dtd) to glassfish dtds (glassfish-</b>.dtd)</h3> <p>A requirement as part of the Oracle-Sun acquisition.</p> <h4><a name="3.1DeploymentOnePager-Applicationversioning%2Csupportdeploymentofapplicationwithmultipleversions"></a>Application versioning, support deployment of application with multiple versions</h3> <p>To make it easier for users to upgrade/rollback between different versions of the application.</p> <h4><a name="3.1DeploymentOnePager-3.2.Justification%3A"></a>3.2. Justification:</h2> <h4><a name="3.1DeploymentOnePager-ClusteringDeployment"></a>Clustering Deployment</h3> <p>v2 feature parity, part of the release driver for this release.</p> <h4><a name="3.1DeploymentOnePager-Supportapplicationrelatedcommandsinclusteringenvironment"></a>Support application related commands in clustering environment</h3> <p>v2 feature parity.</p> <h4><a name="3.1DeploymentOnePager-SupportWebLogicdeploymentdescriptorsinGlassfish%28partial%29"></a>Support WebLogic deployment descriptors in Glassfish (partial)</h3> <p>To provide a bridge between Glassfish and WebLogic.</p> <h4><a name="3.1DeploymentOnePager-Renamesunspecificdeploymentdescriptordtds%28sun%5C.dtd%29toglassfishdtds%28glassfish%5C.dtd%29"></a>Rename sun specific deployment descriptor dtds (sun-<b>.dtd) to glassfish dtds (glassfish-</b>.dtd)</h3> <p>Acquisition requirement.</p> <h4><a name="3.1DeploymentOnePager-Applicationversioning%2Csupportdeploymentofapplicationwithmultipleversions"></a>Application versioning, support deployment of application with multiple versions</h3> <p>Ease of development.</p> <h4><a name="3.1DeploymentOnePager-4.TechnicalDescription%3A"></a>4. Technical Description:</h1> <h4><a name="3.1DeploymentOnePager-4.1.Details%3A"></a>4.1. Details:</h2> <h4><a name="3.1DeploymentOnePager-ClusteringDeployment"></a>Clustering Deployment</h3> 
+     <ul> 
+      <li>Dynamic deployment to cluster</li> 
+     </ul> <p>This <a href="V3.1Clustering.html#V3.1Clustering-sectionV3.1ClusteringDeploymentInClusteredEnvi...">document</a> describes the high level design for supporting dynamic deployment to cluster.</p> <p>We will provide v2 feature parity for dynamic deployment to cluster. We will support the same set of operations to manipulate the application lifecycle in the clustering environment without restarting the server instances: deploy, redeploy, undeploy, enable, disable.</p> <p>The following lists the supported targets of the various deployment mechanisms in the clustering environment:</p> <p>1. Archive deployment: deploy the application as an archive.<br> As in v2, the archive deployment could be used to deploy an application to all of the supported targets: standalone instances (including the default server instance) and cluster instances.</p> <p>2. Directory deployment: deploy the application in a directory format.<br> In v2, directory deployment can only be used to deploy an application to the default server instance.<br> In v3, we plan to enhance the directory deployment to deploy to all of the supported targets provided that the application is stored in a shared file system that is mounted in the same place for DAS, remote instance(s) and all instances that participate in the cluster.<br> Please see this <a href="3.1DirDeployToCluster.html" title="3.1DirDeployToCluster">page </a> for more technical details.</p> <p>3. Dynamic Reloading: redeploy the application by creating/modifying a special .reload file in the applications repository.<br> As in v2, dynamic reloading will only be used to deploy an application to the default server instance.</p> <p>4. Automatic deployment: drop the application archive in the autodeploy directory.<br> As in v2, automatic deployment will only be used to deploy an application to the default server instance.</p> <p>5. JSR88 deployment.<br> As in v2, the JSR88 deployment could be used to deploy an application to all of the supported targets: standalone instances (including the default server instance) and cluster instances.</p> <p>Please see <a href="http://docs.sun.com/app/docs/doc/821-0184?l=en">v2.1 doc</a> for sections describing deploying in cluster profile for more details of the feature.</p> 
+     <ul> 
+      <li>Rolling upgrade</li> 
+     </ul> <p>We will provide v2 feature parity for application rolling upgrade. Please see <a href="http://docs.sun.com/app/docs/doc/821-0182/abdik?l=en&amp;a=view">v2.1 doc</a> for feature details.</p> <p>We plan to enhance the application rolling upgrade by taking advantage of the application versioning feature. With the enhancement, no cluster instance restart is needed and the dynamic reconfiguration can be left on (no need to turn it off and then on).</p> <p>Please see this <a href="V3.1RollingUpgrade.html" title="V3.1RollingUpgrade">page</a> for more technical details.</p> <h4><a name="3.1DeploymentOnePager-Supportapplicationrelatedcommandsinclusteringenvironment"></a>Support application related commands in clustering environment</h3> <p>We will provide v2 feature parity for the application commands in the clustering environment.</p> <p>These are the new commands which will be added on top of the existing set of v3 commands: create-application-ref, delete-application-ref, list-application-refs.</p> <p>These are the existing v3 set of the commands which will be now supported/extended in the clustering environment: create-lifecycle-module, delete-lifecycle-module, list-lifecycle-modules, deploy, undeploy, enable, disable, deploydir, redeploy, list-components, show-component-status, list-applications.</p> <p>Please see <a href="http://docs.sun.com/app/docs/doc/821-0179/6nl8hchmr?l=en&amp;a=expand">v2.1 doc</a> for the detailed syntax on these commands.</p> <h4><a name="3.1DeploymentOnePager-SupportWebLogicdeploymentdescriptorsinGlassfish%28partial%29"></a>Support WebLogic deployment descriptors in Glassfish (partial)</h3> <p>We will support WebLogic deployment descriptors in Glassfish to enable WebLogic applications developed by ISVs to run on GlassFish, and also to allow user to develop applications with simple WebLogic extensions on Glassfish and then run on WebLogic.</p> <p>This <a href="http://download.oracle.com/docs/cd/E15523_01/web.1111/e13706/overview.htm#WLPRG127">document</a> shows an overview of the current set of the WebLogic deployment descriptors.</p> <p>In this release, we will only support the subset of the elements in the WebLogic deployment descriptors where Glassfish has equivalent functionality, and the rest elements will be ignored during processing.</p> <p>This [ page |SupportWLDDInContainers] shows an evaluation of the WebLogic deployment descriptor elements and the Glassfish equivalent deployment descriptor elements when exist.</p> <p>The weblogic deployment descriptor will be ignored with a warning message when the corresponding glassfish or sun deployment descriptor is present in the same archive.</p> <p>The deployment module will be responsible for the deployment framework level changes, and the elements in weblogic-application.xml and weblogic-application-client.xml.</p> <h4><a name="3.1DeploymentOnePager-Renamesunspecificdeploymentdescriptordtds%28sun%5C.dtd%29toglassfishdtds%28glassfish%5C.dtd%29"></a>Rename sun specific deployment descriptor dtds (sun-<b>.dtd) to glassfish dtds (glassfish-</b>.dtd)</h3> <p>Due to the Oracle-Sun acquisition, we will need to rename all the sun specific deployment descriptor dtds to glassfish dtds.</p> <p>The sun specific deployment descriptors will continue to be supported (and deprecated) for backward compatibility. The sun deployment descriptor will be ignored with a warning message when the corresponding glassfish deployment descriptor is present in the same archive.</p> <p>Please see this [ page |GlassfishizeSunDTD] for more technical details.</p> <h4><a name="3.1DeploymentOnePager-Applicationversioning%2Csupportdeploymentofapplicationwithmultipleversions"></a>Application versioning, support deployment of application with multiple versions</h3> <p>With application versioning feature, the user will be able to deploy multiple versions of the application to the Glassfish. And the user can easily upgrade or rollback to one version of the application using the basic set of the commands (deploy/enable/disable). Only one version of the application can be enabled at one time in the runtime.</p> <p>The name option of the existing application commands is extended to include a version identifier or a version expression to support the application versioning feature. For example, you could deploy the version RC-1.0 of web application foo using the following syntax:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">asadmin deploy --name foo:RC-1.0 foo.war</pre> 
+       </div> 
+      </div>
+     </div> <p>This eliminates the need to update all the existing application commands with an additional option and also greatly simplifies the implementation.</p> <p>The non-versioned v2 syntax of application commands are continue to be supported where the name option is interpreted as a name with an untagged version.</p> <p>Please see this [ page |VersioningDesignDocument] for more technical details.</p> <h4><a name="3.1DeploymentOnePager-4.2.Bug%2FRFENumber%28s%29%3A"></a>4.2. Bug/RFE Number(s):</h2> <p>Application versioning, issue <a href="https://github.com/javaee/glassfish/issues/4100">4100</a></p> <p>Rolling upgrade, issue <a href="https://github.com/javaee/glassfish/issues/4132">4132</a></p> <h4><a name="3.1DeploymentOnePager-4.3.InScope%3A"></a>4.3. In Scope:</h2> <h4><a name="3.1DeploymentOnePager-RollingUpgrade"></a>Rolling Upgrade</h3> <p>The application aspect of the rolling upgrade.</p> <h4><a name="3.1DeploymentOnePager-SupportWebLogicdeploymentdescriptorsinGlassfish%28partial%29"></a>Support WebLogic deployment descriptors in Glassfish (partial)</h3> <p>Deployment framework level support for plugging in the processing of the WebLogic deployment descriptors.</p> <p>Support the subset of the elements in weblogic-application.xml and weblogic-application-client.xml where Glassfish has equivalent functionality.</p> <h4><a name="3.1DeploymentOnePager-Applicationversioning%2Csupportdeploymentofapplicationwithmultipleversions"></a>Application versioning, support deployment of application with multiple versions</h3> <p>We only support application versioning with at most one version enabled at one time in the runtime.</p> <h4><a name="3.1DeploymentOnePager-4.4.OutofScope%3A"></a>4.4. Out of Scope:</h2> <h4><a name="3.1DeploymentOnePager-RollingUpgrade"></a>Rolling Upgrade</h3> <p>Load balancer (and its associated cli commands), backup-domain cli command, resource part of the rolling upgrade.</p> <h4><a name="3.1DeploymentOnePager-SupportWebLogicdeploymentdescriptorsinGlassfish%28partial%29"></a>Support WebLogic deployment descriptors in Glassfish (partial)</h3> <p>Support for other weblogic deployment descriptors (weblogic.xml, weblogic-ejb.xml, weblogic-ra.xml, weblogic-webservices.xml). Corresponding container teams will work on those.</p> <h4><a name="3.1DeploymentOnePager-Applicationversioning%2Csupportdeploymentofapplicationwithmultipleversions"></a>Application versioning, support deployment of application with multiple versions</h3> <p>We don't support application runtime versioning where more than one version of the application could be enabled at the same time in the runtime.</p> <h4><a name="3.1DeploymentOnePager-4.5.Interfaces%3A"></a>4.5. Interfaces:</h2> <h4><a name="3.1DeploymentOnePager-4.5.1PublicInterfaces"></a>4.5.1 Public Interfaces</h3> 
+     <ul> 
+      <li>Interface: create-application-ref, delete-application-ref, list-application-refs</li> 
+      <li>Comment: new CLI application commands for clustering</li> 
+     </ul> 
+     <ul> 
+      <li>Interface: create-lifecycle-module, delete-lifecycle-module, list-lifecycle-modules, deploy, undeploy, enable, disable, deploydir, redeploy, list-components, list-applications, show-component-status</li> 
+      <li>Comment: extend the target option to clustering targets</li> 
+     </ul> 
+     <ul> 
+      <li>Interface: deploy, undeploy, enable, disable, deploydir, redeploy, get-client-stubs, list-sub-components, show-component-status, create-application-ref, delete-application-ref, list-application-refs</li> 
+      <li>Comment: extend the name option to include version identifier/expression to support application versioning</li> 
+     </ul> 
+     <ul> 
+      <li>Interface: list-components, list-applications, list-application-refs</li> 
+      <li>Comment: add a long option to indicate which version of the application is currently enabled</li> 
+     </ul> 
+     <ul> 
+      <li>Interface: list-components, list-applications</li> 
+      <li>Comment: add a subcomponents option for the sub components information</li> 
+     </ul> 
+     <ul> 
+      <li>Interface: deploy, deploydir, redeploy</li> 
+      <li>Comment: add a keepstate option for preserving states across redeployment, a lbenabled option for load balancer, an asyncreplication option for high availability</li> 
+     </ul> 
+     <ul> 
+      <li>Interface: create-application-ref</li> 
+      <li>Comment: add a lbenabled option for load balancer</li> 
+     </ul> 
+     <ul> 
+      <li>Interface: list-components, list-applications, list-sub-components</li> 
+      <li>Comment: add a resources option for the application scoped resource information</li> 
+     </ul> 
+     <ul> 
+      <li>Interface: weblogic-application-client.xsd, weblogic-application.xsd, weblogic-connector.xsd, weblogic-ejb-jar.xsd, weblogic-javaee.xsd, weblogic-web-app.xsd, weblogic-webservices.xsd, weblogic-jms.xsd, jdbc-data-source.xsd</li> 
+      <li>Comment: schemas for weblogic deployment descriptors</li> 
+     </ul> 
+     <ul> 
+      <li>Interface: glassfish-web-app_3_0-1.dtd, glassfish-ejb-jar_3_1-1.dtd, glassfish-application_6_0-1.dtd, glassfish-application-client_6_0-1.dtd, glassfish-mapping_1_3.dtd</li> 
+      <li>Comment: Glassfish dtds to replace the sun dtds.</li> 
+     </ul> 
+     <ul> 
+      <li>Interface: glassfish-web-app_3_0-1.dtd, glassfish-ejb-jar_3_1-1.dtd, glassfish-application_6_0-1.dtd, glassfish-application-client_6_0-1.dtd</li> 
+      <li>Comment: add element version-identifier</li> 
+     </ul> 
+     <ul> 
+      <li>Interface: glassfish-web-app_3_0-1.dtd, glassfish-ejb-jar_3_1-1.dtd, glassfish-application_6_0-1.dtd</li> 
+      <li>Comment: add element keep-state</li> 
+     </ul> 
+     <ul> 
+      <li>Interface: glassfish-ejb-jar_3_1-1.dtd</li> 
+      <li>Comment: add elements compatibility, per-request-load-balancing, disable-nonportable-jndi-names</li> 
+     </ul> <h4><a name="3.1DeploymentOnePager-4.5.2PrivateInterfaces"></a>4.5.2 Private Interfaces</h3> <p>N/A.</p> <h4><a name="3.1DeploymentOnePager-4.5.3Deprecated%2FRemovedInterfaces%3A"></a>4.5.3 Deprecated/Removed Interfaces:</h3> 
+     <ul> 
+      <li>Interface: sun-web-app_<b>.dtd, sun-ejb-jar_</b>.dtd, sun-application_<b>.dtd, sun-application-client_</b>.dtd, sun-mapping_*.dtd</li> 
+      <li>Reason for Dreprecation: Acquisition requirement: we will use glassfish-web-app_3_0-1.dtd, glassfish-ejb-jar_3_1-1.dtd, glassfish-application_6_0-1.dtd, glassfish-application-client_6_0-1.dtd, glassfish-mapping_1_3.dtd instead.</li> 
+     </ul> 
+     <ul> 
+      <li>Interface: list-components</li> 
+      <li>Reason for Dreprecation: we have list-applications which is doing the exact thing as list-components.</li> 
+     </ul> <h4><a name="3.1DeploymentOnePager-4.6.DocImpact%3A"></a>4.6. Doc Impact:</h2> <p>Update man pages for the new/modified CLI commands</p> <p>Application Deployment Guide/Developer Guide for new features</p> <h4><a name="3.1DeploymentOnePager-4.7.Admin%2FConfigImpact%3A"></a>4.7. Admin/Config Impact:</h2> <h4><a name="3.1DeploymentOnePager-CLI"></a>CLI</h3> <p>New clustering application commands added.</p> <p>The target option of the existing application commands extends to clustering targets.</p> <p>The name option of the application commands extends to include version identifier/expression.</p> <h4><a name="3.1DeploymentOnePager-GUI"></a>GUI</h3> <p>WebLogic deployment descriptors will be exposed through GUI.</p> <p>The renamed Glassfish deployment descriptors will be exposed through GUI.</p> <p>Application version will be exposed through GUI.</p> <h4><a name="3.1DeploymentOnePager-4.8.HAImpact%3A"></a>4.8. HA Impact:</h2> <p>No impact.</p> <h4><a name="3.1DeploymentOnePager-4.9.I18N%2FL10NImpact%3A"></a>4.9. I18N/L10N Impact:</h2> <p>No impact.</p> <h4><a name="3.1DeploymentOnePager-4.10.Packaging%2CDelivery%26Upgrade%3A"></a>4.10. Packaging, Delivery &amp; Upgrade:</h2> <h4><a name="3.1DeploymentOnePager-4.10.1.Packaging"></a>4.10.1. Packaging</h3> <p>No impact.</p> <h4><a name="3.1DeploymentOnePager-4.10.2.Delivery"></a>4.10.2. Delivery</h3> <p>No impact.</p> <h4><a name="3.1DeploymentOnePager-4.10.3.UpgradeandMigration%3A"></a>4.10.3. Upgrade and Migration:</h3> <p>No impact.</p> <h4><a name="3.1DeploymentOnePager-4.11.SecurityImpact%3A"></a>4.11. Security Impact:</h2> <p>No impact.</p> <h4><a name="3.1DeploymentOnePager-4.12.CompatibilityImpact"></a>4.12. Compatibility Impact</h2> <p>No compatibility impact. The deprecated sun deployment descriptors will continue to be supported in this release for backward compatibility.</p> <p>No new requirement on upgrade or migration tool.</p> <h4><a name="3.1DeploymentOnePager-4.13.Dependencies%3A"></a>4.13. Dependencies:</h2> <h4><a name="3.1DeploymentOnePager-4.13.1InternalDependencies"></a>4.13.1 Internal Dependencies</h3> <p>Clustering infrastructure:</p> 
+     <ul> 
+      <li><a href="3.1BasicClustering.html" title="3.1BasicClustering">Basic clustering</a></li> 
+      <li><a href="3.1Synchronization.html" title="3.1Synchronization">Synchronization</a></li> 
+      <li><a href="ClusterDynamicReconfig.html" title="ClusterDynamicReconfig">Dynamic reconfiguration </a></li> 
+     </ul> <h4><a name="3.1DeploymentOnePager-4.13.2ExternalDependencies"></a>4.13.2 External Dependencies</h3> <p>None</p> <h4><a name="3.1DeploymentOnePager-4.14.TestingImpact%3A"></a>4.14. Testing Impact:</h2> <h4><a name="3.1DeploymentOnePager-ClusteringDeployment"></a>Clustering Deployment</h3> <p>The v2 clustering deployment dev/sqe tests (automated) will be re-enabled and test the deployment to cluster.</p> <h4><a name="3.1DeploymentOnePager-Supportapplicationrelatedcommandsinclusteringenvironment"></a>Support application related commands in clustering environment</h3> <p>The v2 clustering deployment dev/sqe tests (automated) will be re-enabled and test the application commands.</p> <h4><a name="3.1DeploymentOnePager-SupportWebLogicdeploymentdescriptorsinGlassfish%28partial%29"></a>Support WebLogic deployment descriptors in Glassfish (partial)</h3> <p>Add new tests (automated) to test this feature.</p> <h4><a name="3.1DeploymentOnePager-Renamesunspecificdeploymentdescriptordtds%28sun%5C.dtd%29toglassfishdtds%28glassfish%5C.dtd%29"></a>Rename sun specific deployment descriptor dtds (sun-<b>.dtd) to glassfish dtds (glassfish-</b>.dtd)</h3> <p>Add new tests (automated) to test this feature.</p> <h4><a name="3.1DeploymentOnePager-Applicationversioning%2Csupportdeploymentofapplicationwithmultipleversions"></a>Application versioning, support deployment of application with multiple versions</h3> <p>Add new tests (automated) to test this feature.</p> <h4><a name="3.1DeploymentOnePager-5.ReferenceDocuments%3A"></a>5. Reference Documents:</h1> <p><a href="V3.1Clustering.html" title="V3.1Clustering">3.1 Clustering Design Spec</a></p> <p><a href="V3.1ClusteringInfraOnePager.html" title="V3.1ClusteringInfraOnePager">3.1 Clustering Infrastructure One Pager</a></p> <p><a href="3.1BasicClustering.html" title="3.1BasicClustering">3.1 Basic Clustering Wiki Page</a></p> <p><a href="3.1Synchronization.html" title="3.1Synchronization">3.1 Synchronization Wiki Page</a></p> <p><a href="ClusterDynamicReconfig.html" title="ClusterDynamicReconfig">3.1 Dynamic Reconfiguration Wiki Page </a></p> <p><a href="http://docs.sun.com/app/docs/doc/821-0184?l=en">v2.1 Application Deployment Guide</a></p> <p><a href="http://docs.sun.com/app/docs/doc/821-0179/6nl8hchmr?l=en&amp;a=expand">v2.1 CLI Man Page</a></p> <p><a href="http://docs.sun.com/app/docs/doc/821-0182/abdik?l=en&amp;a=view">v2.1 Rolling Upgrade Doc</a></p> <p><a href="V3.1RollingUpgrade.html" title="V3.1RollingUpgrade">3.1 Rolling Upgrade Wiki Page</a></p> <p><a href="http://download.oracle.com/docs/cd/E15523_01/web.1111/e13706/overview.htm#WLPRG127">An Overview of WebLogic Deployment Descriptors</a></p> <p><a href="GlassfishizeSunDTD.html" title="GlassfishizeSunDTD">Renaming Sun Specific Deployment Descriptors Wiki Page </a></p> <p><a href="SupportWLDDInContainers.html" title="SupportWLDDInContainers">Evaluation of WebLogic Deployment Descriptor Elements Wiki Page </a></p> <p><a href="VersioningDesignDocument.html" title="VersioningDesignDocument">Application Versioning Design Spec </a></p> <h4><a name="3.1DeploymentOnePager-6.Schedule%3A"></a>6. Schedule:</h1> <h4><a name="3.1DeploymentOnePager-6.1.ProjectedAvailability%3A"></a>6.1. Projected Availability:</h2> <h4><a name="3.1DeploymentOnePager-Clusteringdeployment%2Csupportdynamicdeploymenttoclusterandrollingupgrade"></a>Clustering deployment, support dynamic deployment to cluster and rolling upgrade</h3> 
+     <ul> 
+      <li>Initially integrated (may not be feature complete) - Milestone 3</li> 
+      <li>Feature complete (ready for handoff to QA) - Milestone 4</li> 
+      <li>At production quality level - Milestone 6</li> 
+     </ul> <h4><a name="3.1DeploymentOnePager-Supportapplicationrelatedcommandsinclusteringenvironment"></a>Support application related commands in clustering environment</h3> 
+     <ul> 
+      <li>Initially integrated (may not be feature complete) - Milestone 3</li> 
+      <li>Feature complete (ready for handoff to QA) - Milestone 4</li> 
+      <li>At production quality level - Milestone 6</li> 
+     </ul> <h4><a name="3.1DeploymentOnePager-SupportWeblogicdeploymentdescriptorsinGlassfish%28partial%29"></a>Support Weblogic deployment descriptors in Glassfish (partial)</h3> 
+     <ul> 
+      <li>Initially integrated (may not be feature complete) - Milestone 4</li> 
+      <li>Feature complete (ready for handoff to QA) - Milestone 4</li> 
+      <li>At production quality level - Milestone 6</li> 
+     </ul> <h4><a name="3.1DeploymentOnePager-Renamesunspecificdeploymentdescriptordtds%28sun%5C.dtd%29toglassfishdtds%28glassfish%5C.dtd%29"></a>Rename sun specific deployment descriptor dtds (sun-<b>.dtd) to glassfish dtds (glassfish-</b>.dtd)</h3> 
+     <ul> 
+      <li>Initially integrated (may not be feature complete) - Milestone 4</li> 
+      <li>Feature complete (ready for handoff to QA) - Milestone 4</li> 
+      <li>At production quality level - Milestone 6</li> 
+     </ul> <h4><a name="3.1DeploymentOnePager-Applicationversioning%2Csupportdeploymentofapplicationwithmultipleversions"></a>Application versioning, support deployment of application with multiple versions</h3> 
+     <ul> 
+      <li>Initially integrated (may not be feature complete) - Milestone 3</li> 
+      <li>Feature complete (ready for handoff to QA) - Milestone 3</li> 
+      <li>At production quality level - Milestone 6</li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Aug 28, 2012 by 
+<font color="#0050B2">10193</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

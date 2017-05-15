@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : OpenMQJRuby</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="OpenMQJRuby-UsingJRubyandOpenMQ%21https%3A%2F%2Fmq.java.net%2Fimages%2Fdukemqicon.gif%21"></a>Using JRuby and Open MQ <span class="error">Cannot resolve external resource into attachment.</span></h1> <p>If you are interested in contributing to this FAQ, please read the <a href="MQWikiContributionGuidelines.html" title="MQWikiContributionGuidelines">Contribution Guidelines</a>.</p> <p>Please note that these samples are posted for the benefit of the community. These samples are intended to help you understand how you can use Open MQ in various integration and application settings. Use of these samples is at your own risk.</p> 
+     <div class="panel" style="border-width: 1px;">
+      <div class="panelContent"> 
+       <p>We welcome your feedback – <a href="mailto:users@mq.java.net">users@mq.java.net</a></p> 
+       <p><a href="https://mq.java.net">Back to Open MQ Project</a></p> 
+       <hr> 
+      </div>
+     </div> 
+     <hr> <p>The following illustrates how you can use JRuby and Open MQ.</p> <h4><a name="OpenMQJRuby-GettingStarted"></a>Getting Started</h2> <p>Before you begin, you'll need the following:</p> 
+     <ul> 
+      <li><a href="http://dist.codehaus.org/jruby/jruby-bin-1.1.5.zip">Download JRuby</a></li> 
+      <li><a href="http://download.java.net/maven/1/javaee/jars/javaee-api-5.jar">Download Java EE 5 API from Java.net Maven Repository</a></li> 
+      <li><a href="https://mq.java.net/downloads.html">Download Open MQ</a></li> 
+      <li><span class="error">[Download HelloWorldMessage.rb\|^/OpenMQJRuby/HelloWorldMessage.rb|]</span></li> 
+     </ul> 
+     <hr> <h4><a name="OpenMQJRuby-Stepstoruntheexampleapplication"></a>Steps to run the example application</h2> 
+     <ol> 
+      <li>Install JRuby</li> 
+      <li>Install Open MQ</li> 
+      <li>Include the following jar files in the classpath: 
+       <ol> 
+        <li>.../mq/lib/jms.jar</li> 
+        <li>.../mq/lib/imq.jar</li> 
+        <li>.../mq/lib/imqjmsra.jar (extract from imqjmsra.rar, i.e. jar xvf imqjmsra.rar imqjmsra.jar)</li> 
+       </ol> </li> 
+      <li>jruby HelloWorldMessage.rb</li> 
+     </ol> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">$ jruby HelloWorldMessage.rb
+Sending Message: Hello World
+Read Message: Hello World</pre> 
+       </div> 
+      </div>
+     </div> 
+     <hr> <h4><a name="OpenMQJRuby-HelloWorldMessage.rb"></a>HelloWorldMessage.rb</h2> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">#############################################################################
+#
+# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+#
+# Copyright 2000-2008 Sun Microsystems, Inc. All rights reserved.
+#
+# The contents of this file are subject to the terms of either the GNU
+# General Public License Version 2 only ("GPL") or the Common Development
+# and Distribution License ("CDDL") (collectively, the "License").  You may
+# not use this file except in compliance with the License.  You can obtain
+# a copy of the License at https://glassfish.java.net/public/CDDL+GPL.html
+# or mq/legal/LICENSE.txt.  See the License for the specific language
+# governing permissions and limitations under the License.
+#
+# When distributing the software, include this License Header Notice in each
+# file and include the License file at mq/legal/LICENSE.txt.  Sun designates
+# this particular file as subject to the "Classpath" exception as provided by
+# Sun in the GPL Version 2 section of the License file that accompanied this
+# code.  If applicable, add the following below the License Header, with the
+# fields enclosed by brackets [] replaced by your own identifying information:
+# "Portions Copyrighted [year] [name of copyright owner]"
+#
+# Contributor(s):
+#
+# If you wish your version of this file to be governed by only the CDDL or
+# only the GPL Version 2, indicate your decision by adding "[Contributor]
+# elects to include this software in this distribution under the [CDDL or GPL
+# Version 2] license."  If you don't indicate a single choice of license, a
+# recipient has the option to distribute your version of this file under
+# either the CDDL, the GPL Version 2 or  to extend the choice of license to
+# its licensees as provided above.  However, if you add GPL Version 2 code
+# and therefore, elected the GPL Version 2 license, then the option applies
+# only if the new code is made subject to such option by the copyright holder.
+#
+#
+# @(#)HelloWorldMessage.rb	1.0 11/06/08
+#
+#############################################################################
+#
+# The HelloWorldMessage.rb consists only of a main method, which sends
+# a message to a queue and then receives the message from the queue.
+#
+require "java"
+
+# Import the JMS API classes.
+include_class "javax.jms.Session"
+
+include_class "com.sun.messaging.ConnectionFactory"
+include_class "com.sun.messaging.Queue"
+
+class HelloWorldMessage
+  def run
+    # Instantiate a Sun Message Queue ConnectionFactory
+    myConnFactory = ConnectionFactory.new
+
+    # Create a connection to the Sun Message Queue Message service
+    myConn = myConnFactory.createConnection()
+
+    # Create a session within the connection
+    mySess = myConn.createSession(false, Session::AUTO_ACKNOWLEDGE)
+
+    # Instantiate a System Message Queue Destination
+    myQueue = Queue.new("world")
+
+    # Create a message producer
+    myMsgProducer = mySess.createProducer(myQueue)
+
+    # Create and send a message to the queue
+    myTextMsg = mySess.createTextMessage()
+    myTextMsg.setText("Hello World")
+    puts "Sending Message: " + myTextMsg.getText()
+    myMsgProducer.send(myTextMsg)
+
+    # Create a message consumer
+    myMsgConsumer = mySess.createConsumer(myQueue)
+
+    # Start the Connection
+    myConn.start()
+
+    # Receive a message from the queue
+    txtMsg = myMsgConsumer.receive()
+
+    # Retreive the contents of the message
+    puts "Read Message: " + txtMsg.getText()
+
+    # Close the session and connection resources
+    mySess.close()
+    myConn.close()
+  end
+end
+
+helloApp = HelloWorldMessage.new
+helloApp.run</pre> 
+       </div> 
+      </div>
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Mar 14, 2012 by 
+<font color="#0050B2">10193</font>. Exported from wikis.oracle.com on May 27, 2015 20:49.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

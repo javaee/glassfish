@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : ModuleInfo</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>pe-10.0-SNAPSHOT.txt!! Modules List</p> 
+     <div class="panel" style="border-width: 1px;">
+      <div class="panelContent"> 
+       <div class="table-wrap"> 
+        <table class="confluenceTable">
+         <tbody> 
+          <tr> 
+           <th class="confluenceTh"> group-id </th> 
+           <th class="confluenceTh"> module-id </th> 
+           <th class="confluenceTh"> version </th> 
+           <th class="confluenceTh"> size </th> 
+           <th class="confluenceTh"> repository </th> 
+           <th class="confluenceTh"> lead </th> 
+           <th class="confluenceTh"> SCM </th> 
+           <th class="confluenceTh"> imports </th> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> com.sun.enterprise.glassfish </td> 
+           <td class="confluenceTd"> glassfish </td> 
+           <td class="confluenceTd"> 10.0-SNAPSHOT </td> 
+           <td class="confluenceTd"> 14596 </td> 
+           <td class="confluenceTd"> <a href="http://download.java.net/maven/glassfish">http://download.java.net/maven/glassfish</a> </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> hg: <a href="http://mercurial.sfbay.sun.com/glassfish_v3/glassfish">http://mercurial.sfbay.sun.com/glassfish_v3/glassfish</a> <p> </p></td> 
+           <td class="confluenceTd"> hk2:0.1-SNAPSHOT auto-depends:0.1-SNAPSHOT </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> com.sun.enterprise.glassfish </td> 
+           <td class="confluenceTd"> shared-components </td> 
+           <td class="confluenceTd"> 10.0-SNAPSHOT </td> 
+           <td class="confluenceTd"> 1978 </td> 
+           <td class="confluenceTd"> <a href="http://download.java.net/maven/glassfish">http://download.java.net/maven/glassfish</a> </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> hg: <a href="http://mercurial.sfbay.sun.com/glassfish_v3/shared-components">http://mercurial.sfbay.sun.com/glassfish_v3/shared-components</a> <p> </p></td> 
+           <td class="confluenceTd"> javaee:5.0 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> com.sun.enterprise.glassfish </td> 
+           <td class="confluenceTd"> gf-web-connector </td> 
+           <td class="confluenceTd"> 10.0-SNAPSHOT </td> 
+           <td class="confluenceTd"> 14060 </td> 
+           <td class="confluenceTd"> <a href="http://download.java.net/maven/glassfish">http://download.java.net/maven/glassfish</a> </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> hg: <a href="http://mercurial.sfbay.sun.com/glassfish_v3/gf-web-connector">http://mercurial.sfbay.sun.com/glassfish_v3/gf-web-connector</a> <p> </p></td> 
+           <td class="confluenceTd"> glassfish-api:10.0-SNAPSHOT hk2:0.1-SNAPSHOT webtier:10.0-SNAPSHOT v3-core:10.0-SNAPSHOT auto-depends-plugin:0.1-SNAPSHOT </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> com.sun.enterprise.glassfish </td> 
+           <td class="confluenceTd"> web-util </td> 
+           <td class="confluenceTd"> 10.0-SNAPSHOT </td> 
+           <td class="confluenceTd"> 40260 </td> 
+           <td class="confluenceTd"> <a href="http://download.java.net/maven/glassfish">http://download.java.net/maven/glassfish</a> </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> hg: <a href="http://mercurial.sfbay.sun.com/web-util">http://mercurial.sfbay.sun.com/web-util</a> <p> </p></td> 
+           <td class="confluenceTd"> common-util:10.0-SNAPSHOT jsp-api:2.1.1-SNAPSHOT servlet-api:2.5 glassfish-api:10.0-SNAPSHOT </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> org.jvnet.glassfish </td> 
+           <td class="confluenceTd"> glassfish-api </td> 
+           <td class="confluenceTd"> 10.0-SNAPSHOT </td> 
+           <td class="confluenceTd"> 17122 </td> 
+           <td class="confluenceTd"> unknown </td> 
+           <td class="confluenceTd"> <a href="http:--blogs.oracle.com-dochez">Jerome Dochez </a> </td> 
+           <td class="confluenceTd"> hg: <a href="http://mercurial.sfbay.sun.com/glassfish_v3/glassfish-api">http://mercurial.sfbay.sun.com/glassfish_v3/glassfish-api</a> <p> </p></td> 
+           <td class="confluenceTd"> hk2:0.1-SNAPSHOT </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> com.sun.enterprise.glassfish </td> 
+           <td class="confluenceTd"> v3-core </td> 
+           <td class="confluenceTd"> 10.0-SNAPSHOT </td> 
+           <td class="confluenceTd"> 264120 </td> 
+           <td class="confluenceTd"> unknown </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> hg: <a href="http://mercurial.sfbay.sun.com/glassfish_v3/v3-core">http://mercurial.sfbay.sun.com/glassfish_v3/v3-core</a> <p> </p></td> 
+           <td class="confluenceTd"> glassfish:10.0-SNAPSHOT glassfish-api:10.0-SNAPSHOT config-api:10.0-SNAPSHOT hk2:0.1-SNAPSHOT grizzly-http:1.5.2 commons:10.0-SNAPSHOT </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> com.sun.enterprise.glassfish </td> 
+           <td class="confluenceTd"> common-util </td> 
+           <td class="confluenceTd"> 10.0-SNAPSHOT </td> 
+           <td class="confluenceTd"> 103711 </td> 
+           <td class="confluenceTd"> <a href="http://download.java.net/maven/glassfish">http://download.java.net/maven/glassfish</a> </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> hg: <a href="http://mercurial.sfbay.sun.com/common-util">http://mercurial.sfbay.sun.com/common-util</a> <p> </p></td> 
+           <td class="confluenceTd"> glassfish-api:10.0-SNAPSHOT servlet-api:2.5 persistence-api:1.0 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> com.sun.enterprise.glassfish </td> 
+           <td class="confluenceTd"> commons </td> 
+           <td class="confluenceTd"> 10.0-SNAPSHOT </td> 
+           <td class="confluenceTd"> 1490827 </td> 
+           <td class="confluenceTd"> <a href="http://download.java.net/maven/glassfish">http://download.java.net/maven/glassfish</a> </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> hg: <a href="http://mercurial.sfbay.sun.com/appserv-commons/maven/commons">http://mercurial.sfbay.sun.com/appserv-commons/maven/commons</a> <p> </p></td> 
+           <td class="confluenceTd"> jaxb-api:2.1 glassfish-api:10.0-SNAPSHOT common-util:10.0-SNAPSHOT </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> com.sun.enterprise.glassfish </td> 
+           <td class="confluenceTd"> gf-jruby-connector </td> 
+           <td class="confluenceTd"> 10.0-SNAPSHOT </td> 
+           <td class="confluenceTd"> 12000 </td> 
+           <td class="confluenceTd"> <a href="http://download.java.net/maven/glassfish">http://download.java.net/maven/glassfish</a> </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> hg: <a href="http://mercurial.sfbay.sun.com/glassfish_v3/gf-jruby-connector">http://mercurial.sfbay.sun.com/glassfish_v3/gf-jruby-connector</a> <p> </p></td> 
+           <td class="confluenceTd"> glassfish-api:10.0-SNAPSHOT v3-core:10.0-SNAPSHOT grizzly-jruby:1.5.2 jruby:1.0 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> com.sun.enterprise.glassfish </td> 
+           <td class="confluenceTd"> ant </td> 
+           <td class="confluenceTd"> 10.0-SNAPSHOT </td> 
+           <td class="confluenceTd"> 1857 </td> 
+           <td class="confluenceTd"> <a href="http://download.java.net/maven/glassfish">http://download.java.net/maven/glassfish</a> </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> hg: <a href="http://mercurial.sfbay.sun.com/glassfish_v3/ant">http://mercurial.sfbay.sun.com/glassfish_v3/ant</a> <p> </p></td> 
+           <td class="confluenceTd"> ant:1.7.0 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> com.sun.enterprise.glassfish </td> 
+           <td class="confluenceTd"> dol </td> 
+           <td class="confluenceTd"> 10.0-SNAPSHOT </td> 
+           <td class="confluenceTd"> 1201617 </td> 
+           <td class="confluenceTd"> <a href="http://download.java.net/maven/glassfish">http://download.java.net/maven/glassfish</a> </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> hg: <a href="http://mercurial.sfbay.sun.com/appserv-commons/maven/dol">http://mercurial.sfbay.sun.com/appserv-commons/maven/dol</a> <p> </p></td> 
+           <td class="confluenceTd"> deployment-api:1.2 ejb-api:3.0 persistence-api:1.0 servlet-api:2.5 jms-api:1.1 mail:1.4.1ea-SNAPSHOT common-util:10.0-SNAPSHOT security-api:1.1 connector-api:1.5 annotation-framework:10.0-SNAPSHOT commons:10.0-SNAPSHOT ant:1.7.0 jsr250-api:1.0 jsr181-api:1.0-MR1 jaxws-api:2.0 jaxrpc-api:1.1 glassfish-jaxb:10.0-SNAPSHOT auto-depends:0.1-SNAPSHOT glassfish-api:10.0-SNAPSHOT </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> com.sun.enterprise.glassfish </td> 
+           <td class="confluenceTd"> grizzly-jruby </td> 
+           <td class="confluenceTd"> 1.5.2 </td> 
+           <td class="confluenceTd"> 2068 </td> 
+           <td class="confluenceTd"> unknown </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> hg: <a href="http://mercurial.sfbay.sun.com/glassfish_v3/grizzly-jruby">http://mercurial.sfbay.sun.com/glassfish_v3/grizzly-jruby</a> <p> </p></td> 
+           <td class="confluenceTd"> jruby:1.5.2 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> com.sun.enterprise.glassfish </td> 
+           <td class="confluenceTd"> webtier-extensions </td> 
+           <td class="confluenceTd"> 10.0-SNAPSHOT </td> 
+           <td class="confluenceTd"> 58836 </td> 
+           <td class="confluenceTd"> <a href="http://download.java.net/maven/glassfish">http://download.java.net/maven/glassfish</a> </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> hg: <a href="http://mercurial.sfbay.sun.com/webtier-extensions">http://mercurial.sfbay.sun.com/webtier-extensions</a> <p> </p></td> 
+           <td class="confluenceTd"> servlet-api:2.5 webtier:10.0-SNAPSHOT pwc:10.0-SNAPSHOT </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> com.sun.enterprise.glassfish </td> 
+           <td class="confluenceTd"> annotation-framework </td> 
+           <td class="confluenceTd"> 10.0-SNAPSHOT </td> 
+           <td class="confluenceTd"> 35749 </td> 
+           <td class="confluenceTd"> <a href="http://download.java.net/maven/glassfish">http://download.java.net/maven/glassfish</a> </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> hg: <a href="http://mercurial.sfbay.sun.com/annotation-framework">http://mercurial.sfbay.sun.com/annotation-framework</a> <p> </p></td> 
+           <td class="confluenceTd"> hk2:0.1-SNAPSHOT </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> com.sun.enterprise.glassfish </td> 
+           <td class="confluenceTd"> grizzly-http </td> 
+           <td class="confluenceTd"> 1.5.2 </td> 
+           <td class="confluenceTd"> 1954 </td> 
+           <td class="confluenceTd"> unknown </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> hg: <a href="http://mercurial.sfbay.sun.com/glassfish_v3/grizzly-http">http://mercurial.sfbay.sun.com/glassfish_v3/grizzly-http</a> <p> </p></td> 
+           <td class="confluenceTd"> http:1.5.2 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> com.sun.enterprise.glassfish </td> 
+           <td class="confluenceTd"> monitoring-core </td> 
+           <td class="confluenceTd"> 10.0-SNAPSHOT </td> 
+           <td class="confluenceTd"> 71853 </td> 
+           <td class="confluenceTd"> <a href="http://download.java.net/maven/glassfish">http://download.java.net/maven/glassfish</a> </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> hg: <a href="http://mercurial.sfbay.sun.com/glassfish_v3/monitoring-core">http://mercurial.sfbay.sun.com/glassfish_v3/monitoring-core</a> <p> </p></td> 
+           <td class="confluenceTd"> management-api:1.1 commons:10.0-SNAPSHOT </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> com.sun.enterprise.glassfish </td> 
+           <td class="confluenceTd"> admin-util </td> 
+           <td class="confluenceTd"> 10.0-SNAPSHOT </td> 
+           <td class="confluenceTd"> 55437 </td> 
+           <td class="confluenceTd"> <a href="http://download.java.net/maven/glassfish">http://download.java.net/maven/glassfish</a> </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> hg: <a href="http://mercurial.sfbay.sun.com/glassfish_v3/admin-util">http://mercurial.sfbay.sun.com/glassfish_v3/admin-util</a> <p> </p></td> 
+           <td class="confluenceTd"> modeler:1.1 commons:10.0-SNAPSHOT logging-api:1.0.4 digester:1.5 collections:2.1 beanutils:1.6.1-20070314 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> com.sun.enterprise.glassfish </td> 
+           <td class="confluenceTd"> gf-phobos-connector </td> 
+           <td class="confluenceTd"> 10.0-SNAPSHOT </td> 
+           <td class="confluenceTd"> 70939 </td> 
+           <td class="confluenceTd"> <a href="http://download.java.net/maven/glassfish">http://download.java.net/maven/glassfish</a> </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> hg: <a href="http://mercurial.sfbay.sun.com/glassfish_v3/gf-phobos-connector">http://mercurial.sfbay.sun.com/glassfish_v3/gf-phobos-connector</a> <p> </p></td> 
+           <td class="confluenceTd"> glassfish-api:10.0-SNAPSHOT hk2:0.1-SNAPSHOT grizzly-http:1.5.2 v3-core:10.0-SNAPSHOT phobos-runtime:0.5.10 jsr223-api:1.0 logging-api:1.0.4 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> com.sun.enterprise.glassfish </td> 
+           <td class="confluenceTd"> webtier </td> 
+           <td class="confluenceTd"> 10.0-SNAPSHOT </td> 
+           <td class="confluenceTd"> 1941580 </td> 
+           <td class="confluenceTd"> <a href="http://download.java.net/maven/glassfish">http://download.java.net/maven/glassfish</a> </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> hg: <a href="http://mercurial.sfbay.sun.com/glassfish_v3/webtier">http://mercurial.sfbay.sun.com/glassfish_v3/webtier</a> <p> </p></td> 
+           <td class="confluenceTd"> servlet-api:2.5 mail:1.4.1ea-SNAPSHOT jsp-api:2.1.1-SNAPSHOT web-util:10.0-SNAPSHOT admin-util:10.0-SNAPSHOT common-util:10.0-SNAPSHOT ant:10.0-SNAPSHOT pwc:10.0-SNAPSHOT hk2:0.1-SNAPSHOT logging-api:1.0.4 modeler:1.1 digester:1.5 beanutils:1.6.1-20070314 collections:2.1 grizzly-http:1.5.2 jasper-jsr199:9.1 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> com.sun.enterprise.glassfish </td> 
+           <td class="confluenceTd"> admin-cli </td> 
+           <td class="confluenceTd"> 10.0-SNAPSHOT </td> 
+           <td class="confluenceTd"> 6805 </td> 
+           <td class="confluenceTd"> <a href="http://download.java.net/maven/glassfish">http://download.java.net/maven/glassfish</a> </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> hg: <a href="http://mercurial.sfbay.sun.com/glassfish_v3/admin-cli">http://mercurial.sfbay.sun.com/glassfish_v3/admin-cli</a> <p> </p></td> 
+           <td class="confluenceTd">&nbsp;</td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> com.sun.enterprise.glassfish </td> 
+           <td class="confluenceTd"> pwc </td> 
+           <td class="confluenceTd"> 10.0-SNAPSHOT </td> 
+           <td class="confluenceTd"> 14916 </td> 
+           <td class="confluenceTd"> <a href="http://download.java.net/maven/glassfish">http://download.java.net/maven/glassfish</a> </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> hg: <a href="http://mercurial.sfbay.sun.com/glassfish_v3/pwc">http://mercurial.sfbay.sun.com/glassfish_v3/pwc</a> <p> </p></td> 
+           <td class="confluenceTd">&nbsp;</td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> com.sun.enterprise.glassfish </td> 
+           <td class="confluenceTd"> config-api </td> 
+           <td class="confluenceTd"> 10.0-SNAPSHOT </td> 
+           <td class="confluenceTd"> 205969 </td> 
+           <td class="confluenceTd"> <a href="http://download.java.net/maven/glassfish">http://download.java.net/maven/glassfish</a> </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> hg: <a href="http://mercurial.sfbay.sun.com/admin-core/config-api">http://mercurial.sfbay.sun.com/admin-core/config-api</a> <p> </p></td> 
+           <td class="confluenceTd"> jaxb-xjc:2.1-SNAPSHOT glassfish-jaxb:10.0-SNAPSHOT property-listener-injector:1.1-SNAPSHOT stax-api:1.0-2 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> com.sun.enterprise.glassfish </td> 
+           <td class="confluenceTd"> v3-web </td> 
+           <td class="confluenceTd"> 10.0-SNAPSHOT </td> 
+           <td class="confluenceTd"> 440259 </td> 
+           <td class="confluenceTd"> <a href="http://download.java.net/maven/glassfish">http://download.java.net/maven/glassfish</a> </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> hg: <a href="http://mercurial.sfbay.sun.com/glassfish_v3/v3-web">http://mercurial.sfbay.sun.com/glassfish_v3/v3-web</a> <p> </p></td> 
+           <td class="confluenceTd"> config-api:10.0-SNAPSHOT glassfish:10.0-SNAPSHOT webtier:10.0-SNAPSHOT grizzly-http:1.5.2 commons:10.0-SNAPSHOT dol:10.0-SNAPSHOT monitoring-core:10.0-SNAPSHOT v3-core:10.0-SNAPSHOT pwc:10.0-SNAPSHOT webtier-extensions:10.0-SNAPSHOT digester:1.5 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> com.sun.enterprise.glassfish </td> 
+           <td class="confluenceTd"> glassfish-jaxb </td> 
+           <td class="confluenceTd"> 10.0-SNAPSHOT </td> 
+           <td class="confluenceTd"> 2047 </td> 
+           <td class="confluenceTd"> <a href="http://download.java.net/maven/glassfish">http://download.java.net/maven/glassfish</a> </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> hg: <a href="http://mercurial.sfbay.sun.com/glassfish_v3/glassfish-jaxb">http://mercurial.sfbay.sun.com/glassfish_v3/glassfish-jaxb</a> <p> </p></td> 
+           <td class="confluenceTd"> jaxb-impl:2.1-SNAPSHOT jaxb-api:2.1 stax-api:1.0-2 </td> 
+          </tr> 
+         </tbody>
+        </table> 
+       </div> 
+       <hr> 
+       <p>Jspwiki style: sortable</p> 
+      </div>
+     </div> <h4><a name="ModuleInfo-Librarieslist"></a>Libraries list</h2> 
+     <div class="panel" style="border-width: 1px;">
+      <div class="panelContent"> 
+       <div class="table-wrap"> 
+        <table class="confluenceTable">
+         <tbody> 
+          <tr> 
+           <th class="confluenceTh"> group-id </th> 
+           <th class="confluenceTh"> module-id </th> 
+           <th class="confluenceTh"> version </th> 
+           <th class="confluenceTh"> size </th> 
+           <th class="confluenceTh"> repository </th> 
+           <th class="confluenceTh"> lead </th> 
+           <th class="confluenceTh"> SCM </th> 
+           <th class="confluenceTh"> imports </th> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> javax.servlet.jsp </td> 
+           <td class="confluenceTd"> jsp-api </td> 
+           <td class="confluenceTd"> 2.1.1-SNAPSHOT </td> 
+           <td class="confluenceTd"> 85578 </td> 
+           <td class="confluenceTd"> <a href="http://download.java.net/maven/glassfish">http://download.java.net/maven/glassfish</a> </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> hg: <a href="http://mercurial.sfbay.sun.com/glassfish_v3/jsp-api">http://mercurial.sfbay.sun.com/glassfish_v3/jsp-api</a> <p> </p></td> 
+           <td class="confluenceTd"> servlet-api:2.5 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> org.jruby </td> 
+           <td class="confluenceTd"> jruby-complete </td> 
+           <td class="confluenceTd"> 1.0RC2 </td> 
+           <td class="confluenceTd"> 3404839 </td> 
+           <td class="confluenceTd"> unknown </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> svn: <a href="http://svn.codehaus.org/jruby/maven/jruby-complete">http://svn.codehaus.org/jruby/maven/jruby-complete</a> <p> </p></td> 
+           <td class="confluenceTd"> junit:3.8.1 bsf:2.3.0 ant:1.5 backport-util-concurrent:3.0 jline:0.9.91 asm:2.2.3 asm-commons:2.2.3 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> javax.xml.stream </td> 
+           <td class="confluenceTd"> stax-api </td> 
+           <td class="confluenceTd"> 1.0-2 </td> 
+           <td class="confluenceTd"> 23346 </td> 
+           <td class="confluenceTd"> unknown </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> unknown </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> javax.management.j2ee </td> 
+           <td class="confluenceTd"> management-api </td> 
+           <td class="confluenceTd"> 1.1 </td> 
+           <td class="confluenceTd"> 15034 </td> 
+           <td class="confluenceTd"> unknown </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> hg: <a href="http://mercurial.sfbay.sun.com/glassfish_v3/management-api">http://mercurial.sfbay.sun.com/glassfish_v3/management-api</a> <p> </p></td> 
+           <td class="confluenceTd"> ejb-api:3.0 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> javax.resource </td> 
+           <td class="confluenceTd"> connector-api </td> 
+           <td class="confluenceTd"> 1.5 </td> 
+           <td class="confluenceTd"> 39883 </td> 
+           <td class="confluenceTd"> unknown </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> hg: <a href="http://mercurial.sfbay.sun.com/glassfish_v3/connector-api">http://mercurial.sfbay.sun.com/glassfish_v3/connector-api</a> <p> </p></td> 
+           <td class="confluenceTd">&nbsp;</td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> javax.javaee </td> 
+           <td class="confluenceTd"> javaee </td> 
+           <td class="confluenceTd"> 5.0 </td> 
+           <td class="confluenceTd"> 2056 </td> 
+           <td class="confluenceTd"> unknown </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> hg: <a href="http://mercurial.sfbay.sun.com/glassfish_v3/javaee">http://mercurial.sfbay.sun.com/glassfish_v3/javaee</a> <p> </p></td> 
+           <td class="confluenceTd"> deployment-api:1.2 ejb-api:3.0 persistence-api:1.0 servlet-api:2.5 jms-api:1.1 security-api:1.1 connector-api:1.5 jsr250-api:1.0 jsr181-api:1.0-MR1 jaxws-api:2.0 jaxrpc-api:1.1 jaxb-api:2.1 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> com.sun.xml.bind </td> 
+           <td class="confluenceTd"> jaxb-impl </td> 
+           <td class="confluenceTd"> 2.1-SNAPSHOT </td> 
+           <td class="confluenceTd"> 841700 </td> 
+           <td class="confluenceTd"> unknown </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> unknown </td> 
+           <td class="confluenceTd"> jaxb-api:2.1 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> toplink.essentials </td> 
+           <td class="confluenceTd"> toplink-essentials </td> 
+           <td class="confluenceTd"> 2.0-43 </td> 
+           <td class="confluenceTd"> 2468341 </td> 
+           <td class="confluenceTd"> unknown </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> unknown </td> 
+           <td class="confluenceTd"> persistence-api:1.0b </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> com.sun.enterprise </td> 
+           <td class="confluenceTd"> hk2 </td> 
+           <td class="confluenceTd"> 0.1-SNAPSHOT </td> 
+           <td class="confluenceTd"> 63217 </td> 
+           <td class="confluenceTd"> <a href="http://download.java.net/maven/glassfish">http://download.java.net/maven/glassfish</a> </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> svn: <a href="https://$<div class=" error"=""><span class="error">Unknown macro: {java.net.usernane}</span> <p>@hk2.java.net/svn/hk2/hk2 | junit:4.3.1 auto-depends:0.1-SNAPSHOT stax-api:1.0-2 |</p> 
+             <div class="table-wrap"> 
+              <table class="confluenceTable">
+               <tbody> 
+                <tr> 
+                 <td class="confluenceTd"> javax.enterprise.deploy </td> 
+                 <td class="confluenceTd"> deployment-api </td> 
+                 <td class="confluenceTd"> 1.2 </td> 
+                 <td class="confluenceTd"> 23609 </td> 
+                 <td class="confluenceTd"> unknown </td> 
+                 <td class="confluenceTd"> no owner </td> 
+                 <td class="confluenceTd"> hg: <a href="http://mercurial.sfbay.sun.com/glassfish_v3/deployment-api">http://mercurial.sfbay.sun.com/glassfish_v3/deployment-api</a> <p> </p></td> 
+                 <td class="confluenceTd">&nbsp;</td> 
+                </tr> 
+                <tr> 
+                 <td class="confluenceTd"> com.sun.commons </td> 
+                 <td class="confluenceTd"> collections </td> 
+                 <td class="confluenceTd"> 2.1 </td> 
+                 <td class="confluenceTd"> 175185 </td> 
+                 <td class="confluenceTd"> unknown </td> 
+                 <td class="confluenceTd"> no owner </td> 
+                 <td class="confluenceTd"> unknown </td> 
+                 <td class="confluenceTd">&nbsp;</td> 
+                </tr> 
+                <tr> 
+                 <td class="confluenceTd"> javax.security </td> 
+                 <td class="confluenceTd"> security-api </td> 
+                 <td class="confluenceTd"> 1.1 </td> 
+                 <td class="confluenceTd"> 26712 </td> 
+                 <td class="confluenceTd"> unknown </td> 
+                 <td class="confluenceTd"> no owner </td> 
+                 <td class="confluenceTd"> hg: <a href="http://mercurial.sfbay.sun.com/glassfish_v3/security-api">http://mercurial.sfbay.sun.com/glassfish_v3/security-api</a> <p> </p></td> 
+                 <td class="confluenceTd"> servlet-api:2.5 </td> 
+                </tr> 
+                <tr> 
+                 <td class="confluenceTd"> com.sun.grizzly </td> 
+                 <td class="confluenceTd"> http </td> 
+                 <td class="confluenceTd"> 1.5.2 </td> 
+                 <td class="confluenceTd"> 154565 </td> 
+                 <td class="confluenceTd"> unknown </td> 
+                 <td class="confluenceTd"> no owner </td> 
+                 <td class="confluenceTd"> svn: <a href="https://www.java.net/svn/grizzly/modules/http">https://www.java.net/svn/grizzly/modules/http</a> <p> </p></td> 
+                 <td class="confluenceTd"> framework:1.5.2 junit:3.8.1 http-utils:1.5.2 rcm:1.5.2 </td> 
+                </tr> 
+                <tr> 
+                 <td class="confluenceTd"> javax.xml </td> 
+                 <td class="confluenceTd"> jaxrpc-api </td> 
+                 <td class="confluenceTd"> 1.1 </td> 
+                 <td class="confluenceTd"> 28492 </td> 
+                 <td class="confluenceTd"> unknown </td> 
+                 <td class="confluenceTd"> no owner </td> 
+                 <td class="confluenceTd"> unknown </td> 
+                 <td class="confluenceTd"> saaj-api:1.3 </td> 
+                </tr> 
+                <tr> 
+                 <td class="confluenceTd"> com.sun.enterprise </td> 
+                 <td class="confluenceTd"> auto-depends </td> 
+                 <td class="confluenceTd"> 0.1-SNAPSHOT </td> 
+                 <td class="confluenceTd"> 22292 </td> 
+                 <td class="confluenceTd"> <a href="http://download.java.net/maven/glassfish">http://download.java.net/maven/glassfish</a> </td> 
+                 <td class="confluenceTd"> no owner </td> 
+                 <td class="confluenceTd"> svn: <a href="https://$">https://$</a></td> 
+                </tr> 
+               </tbody>
+              </table> 
+             </div> @hk2.java.net/svn/hk2/auto-depends"&gt;https://$
+             <div class="error">
+              <span class="error">Unknown macro: {java.net.usernane}</span> 
+              <p>@hk2.java.net/svn/hk2/hk2 | junit:4.3.1 auto-depends:0.1-SNAPSHOT stax-api:1.0-2 |</p> 
+              <div class="table-wrap"> 
+               <table class="confluenceTable">
+                <tbody> 
+                 <tr> 
+                  <td class="confluenceTd"> javax.enterprise.deploy </td> 
+                  <td class="confluenceTd"> deployment-api </td> 
+                  <td class="confluenceTd"> 1.2 </td> 
+                  <td class="confluenceTd"> 23609 </td> 
+                  <td class="confluenceTd"> unknown </td> 
+                  <td class="confluenceTd"> no owner </td> 
+                  <td class="confluenceTd"> hg: <a href="http://mercurial.sfbay.sun.com/glassfish_v3/deployment-api">http://mercurial.sfbay.sun.com/glassfish_v3/deployment-api</a> <p> </p></td> 
+                  <td class="confluenceTd">&nbsp;</td> 
+                 </tr> 
+                 <tr> 
+                  <td class="confluenceTd"> com.sun.commons </td> 
+                  <td class="confluenceTd"> collections </td> 
+                  <td class="confluenceTd"> 2.1 </td> 
+                  <td class="confluenceTd"> 175185 </td> 
+                  <td class="confluenceTd"> unknown </td> 
+                  <td class="confluenceTd"> no owner </td> 
+                  <td class="confluenceTd"> unknown </td> 
+                  <td class="confluenceTd">&nbsp;</td> 
+                 </tr> 
+                 <tr> 
+                  <td class="confluenceTd"> javax.security </td> 
+                  <td class="confluenceTd"> security-api </td> 
+                  <td class="confluenceTd"> 1.1 </td> 
+                  <td class="confluenceTd"> 26712 </td> 
+                  <td class="confluenceTd"> unknown </td> 
+                  <td class="confluenceTd"> no owner </td> 
+                  <td class="confluenceTd"> hg: <a href="http://mercurial.sfbay.sun.com/glassfish_v3/security-api">http://mercurial.sfbay.sun.com/glassfish_v3/security-api</a> <p> </p></td> 
+                  <td class="confluenceTd"> servlet-api:2.5 </td> 
+                 </tr> 
+                 <tr> 
+                  <td class="confluenceTd"> com.sun.grizzly </td> 
+                  <td class="confluenceTd"> http </td> 
+                  <td class="confluenceTd"> 1.5.2 </td> 
+                  <td class="confluenceTd"> 154565 </td> 
+                  <td class="confluenceTd"> unknown </td> 
+                  <td class="confluenceTd"> no owner </td> 
+                  <td class="confluenceTd"> svn: <a href="https://www.java.net/svn/grizzly/modules/http">https://www.java.net/svn/grizzly/modules/http</a> <p> </p></td> 
+                  <td class="confluenceTd"> framework:1.5.2 junit:3.8.1 http-utils:1.5.2 rcm:1.5.2 </td> 
+                 </tr> 
+                 <tr> 
+                  <td class="confluenceTd"> javax.xml </td> 
+                  <td class="confluenceTd"> jaxrpc-api </td> 
+                  <td class="confluenceTd"> 1.1 </td> 
+                  <td class="confluenceTd"> 28492 </td> 
+                  <td class="confluenceTd"> unknown </td> 
+                  <td class="confluenceTd"> no owner </td> 
+                  <td class="confluenceTd"> unknown </td> 
+                  <td class="confluenceTd"> saaj-api:1.3 </td> 
+                 </tr> 
+                 <tr> 
+                  <td class="confluenceTd"> com.sun.enterprise </td> 
+                  <td class="confluenceTd"> auto-depends </td> 
+                  <td class="confluenceTd"> 0.1-SNAPSHOT </td> 
+                  <td class="confluenceTd"> 22292 </td> 
+                  <td class="confluenceTd"> <a href="http://download.java.net/maven/glassfish">http://download.java.net/maven/glassfish</a> </td> 
+                  <td class="confluenceTd"> no owner </td> 
+                  <td class="confluenceTd"> svn: <a href="https://$">https://$</a></td> 
+                 </tr> 
+                </tbody>
+               </table> 
+              </div> 
+             </div>@hk2.java.net/svn/hk2/auto-depends</a> <p> </p></td> 
+           <td class="confluenceTd"> junit:4.3.1 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> com.sun.grizzly </td> 
+           <td class="confluenceTd"> rcm </td> 
+           <td class="confluenceTd"> 1.5.2 </td> 
+           <td class="confluenceTd"> 12968 </td> 
+           <td class="confluenceTd"> unknown </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> svn: <a href="https://www.java.net/svn/grizzly/modules/rcm">https://www.java.net/svn/grizzly/modules/rcm</a> <p> </p></td> 
+           <td class="confluenceTd"> framework:1.5.2 junit:3.8.1 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> org.apache.ant </td> 
+           <td class="confluenceTd"> ant-launcher </td> 
+           <td class="confluenceTd"> 1.7.0 </td> 
+           <td class="confluenceTd"> 11734 </td> 
+           <td class="confluenceTd"> unknown </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> svn: <a href="http://svn.apache.org/repos/asf/ant/core/trunk/ant-launcher">http://svn.apache.org/repos/asf/ant/core/trunk/ant-launcher</a> <p> </p></td> 
+           <td class="confluenceTd"> junit:3.8.2 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> javax.jws </td> 
+           <td class="confluenceTd"> jsr181-api </td> 
+           <td class="confluenceTd"> 1.0-MR1 </td> 
+           <td class="confluenceTd"> 7989 </td> 
+           <td class="confluenceTd"> unknown </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> unknown </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> javax.xml.bind </td> 
+           <td class="confluenceTd"> jaxb-api </td> 
+           <td class="confluenceTd"> 2.1 </td> 
+           <td class="confluenceTd"> 89967 </td> 
+           <td class="confluenceTd"> unknown </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> unknown </td> 
+           <td class="confluenceTd"> stax-api:1.0-2 activation:1.1 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> javax.xml.ws </td> 
+           <td class="confluenceTd"> jaxws-api </td> 
+           <td class="confluenceTd"> 2.0 </td> 
+           <td class="confluenceTd"> 23618 </td> 
+           <td class="confluenceTd"> unknown </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> unknown </td> 
+           <td class="confluenceTd"> jaxb-api:2.0 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> backport-util-concurrent </td> 
+           <td class="confluenceTd"> backport-util-concurrent </td> 
+           <td class="confluenceTd"> 2.0_01_pd </td> 
+           <td class="confluenceTd"> 245992 </td> 
+           <td class="confluenceTd"> unknown </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> unknown </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> javax.jms </td> 
+           <td class="confluenceTd"> jms-api </td> 
+           <td class="confluenceTd"> 1.1 </td> 
+           <td class="confluenceTd"> 26498 </td> 
+           <td class="confluenceTd"> unknown </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> hg: <a href="http://mercurial.sfbay.sun.com/glassfish_v3/jms-api">http://mercurial.sfbay.sun.com/glassfish_v3/jms-api</a> <p> </p></td> 
+           <td class="confluenceTd">&nbsp;</td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> org.apache.ant </td> 
+           <td class="confluenceTd"> ant </td> 
+           <td class="confluenceTd"> 1.7.0 </td> 
+           <td class="confluenceTd"> 1289806 </td> 
+           <td class="confluenceTd"> unknown </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> svn: <a href="http://svn.apache.org/repos/asf/ant/core/trunk/ant">http://svn.apache.org/repos/asf/ant/core/trunk/ant</a> <p> </p></td> 
+           <td class="confluenceTd"> junit:3.8.2 ant-launcher:1.7.0 xercesImpl:2.8.1 xml-apis:1.3.03 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> javax.servlet </td> 
+           <td class="confluenceTd"> servlet-api </td> 
+           <td class="confluenceTd"> 2.5 </td> 
+           <td class="confluenceTd"> 105334 </td> 
+           <td class="confluenceTd"> unknown </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> unknown </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> com.sun.enterprise.glassfish </td> 
+           <td class="confluenceTd"> mail </td> 
+           <td class="confluenceTd"> 1.4.1ea-SNAPSHOT </td> 
+           <td class="confluenceTd"> 402849 </td> 
+           <td class="confluenceTd"> <a href="http://download.java.net/maven/glassfish">http://download.java.net/maven/glassfish</a> </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> hg: <a href="http://mercurial.sfbay.sun.com/glassfish_v3/mail">http://mercurial.sfbay.sun.com/glassfish_v3/mail</a> <p> </p></td> 
+           <td class="confluenceTd"> activation:1.1 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> javax.annotation </td> 
+           <td class="confluenceTd"> jsr250-api </td> 
+           <td class="confluenceTd"> 1.0 </td> 
+           <td class="confluenceTd"> 5848 </td> 
+           <td class="confluenceTd"> unknown </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> unknown </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> javax.transaction </td> 
+           <td class="confluenceTd"> transaction-api </td> 
+           <td class="confluenceTd"> 1.1 </td> 
+           <td class="confluenceTd"> 15071 </td> 
+           <td class="confluenceTd"> unknown </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> unknown </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> com.sun.grizzly </td> 
+           <td class="confluenceTd"> http-utils </td> 
+           <td class="confluenceTd"> 1.5.2 </td> 
+           <td class="confluenceTd"> 128591 </td> 
+           <td class="confluenceTd"> unknown </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> svn: <a href="https://www.java.net/svn/grizzly/modules/http-utils">https://www.java.net/svn/grizzly/modules/http-utils</a> <p> </p></td> 
+           <td class="confluenceTd">&nbsp;</td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> asm </td> 
+           <td class="confluenceTd"> asm </td> 
+           <td class="confluenceTd"> 2.2.3 </td> 
+           <td class="confluenceTd"> 34832 </td> 
+           <td class="confluenceTd"> unknown </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> cvs:pserver:anonymous@cvs.forge.objectweb.org:/cvsroot/asm:asm/asm </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> javax.persistence </td> 
+           <td class="confluenceTd"> persistence-api </td> 
+           <td class="confluenceTd"> 1.0 </td> 
+           <td class="confluenceTd"> 52114 </td> 
+           <td class="confluenceTd"> unknown </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> unknown </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> javax.activation </td> 
+           <td class="confluenceTd"> activation </td> 
+           <td class="confluenceTd"> 1.1 </td> 
+           <td class="confluenceTd"> 63018 </td> 
+           <td class="confluenceTd"> unknown </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> unknown </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> com.sun.grizzly </td> 
+           <td class="confluenceTd"> jruby </td> 
+           <td class="confluenceTd"> 1.5.2 </td> 
+           <td class="confluenceTd"> 15337 </td> 
+           <td class="confluenceTd"> unknown </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> svn: <a href="https://www.java.net/svn/grizzly/modules/jruby">https://www.java.net/svn/grizzly/modules/jruby</a> <p> </p></td> 
+           <td class="confluenceTd"> backport-util-concurrent:2.0_01_pd asm:2.2.3 jruby-complete:1.0RC2 http:1.5.2 junit:3.8.1 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> com.sun.grizzly </td> 
+           <td class="confluenceTd"> framework </td> 
+           <td class="confluenceTd"> 1.5.2 </td> 
+           <td class="confluenceTd"> 150906 </td> 
+           <td class="confluenceTd"> unknown </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> svn: <a href="https://www.java.net/svn/grizzly/framework">https://www.java.net/svn/grizzly/framework</a> <p> </p></td> 
+           <td class="confluenceTd"> junit:3.8.1 http-utils:1.5.2 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> javax.xml.soap </td> 
+           <td class="confluenceTd"> saaj-api </td> 
+           <td class="confluenceTd"> 1.3 </td> 
+           <td class="confluenceTd"> 18817 </td> 
+           <td class="confluenceTd"> unknown </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> unknown </td> 
+           <td class="confluenceTd"> activation:1.1 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> javax.ejb </td> 
+           <td class="confluenceTd"> ejb-api </td> 
+           <td class="confluenceTd"> 3.0 </td> 
+           <td class="confluenceTd"> 32941 </td> 
+           <td class="confluenceTd"> unknown </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> unknown </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> com.sun.commons </td> 
+           <td class="confluenceTd"> logging-api </td> 
+           <td class="confluenceTd"> 1.0.4 </td> 
+           <td class="confluenceTd"> 26896 </td> 
+           <td class="confluenceTd"> unknown </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> unknown </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> com.sun.enterprise </td> 
+           <td class="confluenceTd"> auto-depends-plugin </td> 
+           <td class="confluenceTd"> 0.1-SNAPSHOT </td> 
+           <td class="confluenceTd"> 10668 </td> 
+           <td class="confluenceTd"> <a href="http://download.java.net/maven/glassfish">http://download.java.net/maven/glassfish</a> </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> svn: <a href="https://$<div class=" error"=""><span class="error">Unknown macro: {java.net.usernane}</span> @hk2.java.net/svn/hk2/auto-depends-plugin"&gt;https://$
+             <div class="error">
+              <span class="error">Unknown macro: {java.net.usernane}</span> 
+             </div>@hk2.java.net/svn/hk2/auto-depends-plugin</a> <p> </p></td> 
+           <td class="confluenceTd"> junit:4.3.1 auto-depends:0.1-SNAPSHOT </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> com.sun.commons </td> 
+           <td class="confluenceTd"> modeler </td> 
+           <td class="confluenceTd"> 1.1 </td> 
+           <td class="confluenceTd"> 105474 </td> 
+           <td class="confluenceTd"> unknown </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> unknown </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> com.sun.commons </td> 
+           <td class="confluenceTd"> beanutils </td> 
+           <td class="confluenceTd"> 1.6.1-20070314 </td> 
+           <td class="confluenceTd"> 116626 </td> 
+           <td class="confluenceTd"> unknown </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> unknown </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> jasper-jsr199 </td> 
+           <td class="confluenceTd"> jasper-jsr199 </td> 
+           <td class="confluenceTd"> 9.1 </td> 
+           <td class="confluenceTd"> 9293 </td> 
+           <td class="confluenceTd"> unknown </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> unknown </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> com.sun.commons </td> 
+           <td class="confluenceTd"> digester </td> 
+           <td class="confluenceTd"> 1.5 </td> 
+           <td class="confluenceTd"> 110456 </td> 
+           <td class="confluenceTd"> unknown </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> unknown </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+          </tr> 
+         </tbody>
+        </table> 
+       </div> 
+       <hr> 
+       <p>Jspwiki style: sortable</p> 
+      </div>
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 08, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

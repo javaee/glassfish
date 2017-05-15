@@ -1,0 +1,1740 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFish Server Open Source Edition 3.1 SSH Provisioning Documentation Review</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>This page provides links to review drafts of new and changed documentation for the SSH Provisioning project as listed in the <a href="GlassFishV3.1SSHProvisioningDocPlan.html" title="GlassFishV3.1SSHProvisioningDocPlan">SSH Provisioning Documentation Plan</a>.<br> Mandatory reviewers for each item are listed in each section.</p> <p>Changes to existing documentation since the last release are marked with change bars. No changes are marked in new documentation.</p> <p>Please provide your feedback by adding a comment to this page. To simplify the processing of your comments, please add your comments in the format in the sample comment. Review existing comments to see known issues and avoid duplicates.</p> 
+     <div> 
+      <ul> 
+       <li><a href="#GlassFishServerOpenSourceEdition3.1SSHProvisioningDocumentationReview-ChangestoBooks">Changes to Books</a></li> 
+       <ul> 
+        <li><a href="#GlassFishServerOpenSourceEdition3.1SSHProvisioningDocumentationReview-HighAvailabilityAdministrationGuideChanges"> <em>High Availability Administration Guide</em> Changes</a></li> 
+        <li><a href="#GlassFishServerOpenSourceEdition3.1SSHProvisioningDocumentationReview-UpgradeGuideChanges"> <em>Upgrade Guide</em> Changes</a></li> 
+        <li><a href="#GlassFishServerOpenSourceEdition3.1SSHProvisioningDocumentationReview-DomainFileFormatReferenceChanges"> <em>Domain File Format Reference</em> Changes</a></li> 
+       </ul> 
+       <li><a href="#GlassFishServerOpenSourceEdition3.1SSHProvisioningDocumentationReview-"></a></li> 
+       <li><a href="#GlassFishServerOpenSourceEdition3.1SSHProvisioningDocumentationReview-ChangestoManPages">Changes to Man Pages</a></li> 
+      </ul>
+     </div> <h4><a name="GlassFishServerOpenSourceEdition3.1SSHProvisioningDocumentationReview-ChangestoBooks"></a>Changes to Books</h1> <h4><a name="GlassFishServerOpenSourceEdition3.1SSHProvisioningDocumentationReview-HighAvailabilityAdministrationGuideChanges"></a><em>High Availability Administration Guide</em> Changes</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Section </th> 
+         <th class="confluenceTh"> Documentation Impact </th> 
+         <th class="confluenceTh"> Reviewers </th> 
+         <th class="confluenceTh"> Status <br class="atl-forced-newline"> </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875501/21365587.pdf">Chapter: Configuring SSH for Centralized Administration</a> </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Joe Di Pol <br class="atl-forced-newline"> Carla Mott <br class="atl-forced-newline"> Rajiv Mordani <br class="atl-forced-newline"> Yamini KB <br class="atl-forced-newline"> Homer Yau </td> 
+         <td class="confluenceTd"> Review comments incorporated. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875501/21365571.pdf">Chapter: Administering GlassFish Server Nodes</a> </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Joe Di Pol <br class="atl-forced-newline"> Carla Mott <br class="atl-forced-newline"> Tom Mueller <br class="atl-forced-newline"> Elena Asarina </td> 
+         <td class="confluenceTd"> Review comments incorporated. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishServerOpenSourceEdition3.1SSHProvisioningDocumentationReview-UpgradeGuideChanges"></a><em>Upgrade Guide</em> Changes</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Section </th> 
+         <th class="confluenceTh"> Documentation Impact </th> 
+         <th class="confluenceTh"> Reviewers </th> 
+         <th class="confluenceTh"> Status <br class="atl-forced-newline"> </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875501/21365606.pdf">Upgrading Clusters and Node Agent Configurations</a> </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Joe Di Pol <br class="atl-forced-newline"> Carla Mott <br class="atl-forced-newline"> Tom Mueller </td> 
+         <td class="confluenceTd">Review comments incorporated. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishServerOpenSourceEdition3.1SSHProvisioningDocumentationReview-DomainFileFormatReferenceChanges"></a><em>Domain File Format Reference</em> Changes</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Section </th> 
+         <th class="confluenceTh"> Documentation Impact </th> 
+         <th class="confluenceTh"> Reviewers </th> 
+         <th class="confluenceTh"> Status <br class="atl-forced-newline"> </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Element hierarchy <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Minor <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Joe Di Pol <br class="atl-forced-newline"> Carla Mott <br class="atl-forced-newline"> Rajiv Mordani </td> 
+         <td class="confluenceTd"> Canceled. <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> node </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Joe Di Pol <br class="atl-forced-newline"> Carla Mott <br class="atl-forced-newline"> Rajiv Mordani </td> 
+         <td class="confluenceTd"> Canceled. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> nodes </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Joe Di Pol <br class="atl-forced-newline"> Carla Mott <br class="atl-forced-newline"> Rajiv Mordani </td> 
+         <td class="confluenceTd"> Canceled. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ssh-connector </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Joe Di Pol <br class="atl-forced-newline"> Carla Mott <br class="atl-forced-newline"> Rajiv Mordani </td> 
+         <td class="confluenceTd"> Canceled. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ssh-auth </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Joe Di Pol <br class="atl-forced-newline"> Carla Mott <br class="atl-forced-newline"> Rajiv Mordani </td> 
+         <td class="confluenceTd"> Canceled. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishServerOpenSourceEdition3.1SSHProvisioningDocumentationReview-"></a></h1> <h4><a name="GlassFishServerOpenSourceEdition3.1SSHProvisioningDocumentationReview-ChangestoManPages"></a>Changes to Man Pages</h1> <p>Mandatory reviewers in addition to the reviewers that are listed in the table are as follows:</p> 
+     <ul> 
+      <li>Elena Asarina</li> 
+      <li>Tom Mueller</li> 
+     </ul> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Man Page Name and Section </th> 
+         <th class="confluenceTh"> Documentation Impact </th> 
+         <th class="confluenceTh"> Reviewers </th> 
+         <th class="confluenceTh"> Status <br class="atl-forced-newline"> </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875501/21365843.pdf">create-node-ssh(1)</a> </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Carla Mott </td> 
+         <td class="confluenceTd"> Review comments incorporated. <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875501/21365841.pdf">create-node-config(1)</a> </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Carla Mott </td> 
+         <td class="confluenceTd"> Review comments incorporated. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875501/21365837.pdf">delete-node-ssh(1)</a> </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Carla Mott </td> 
+         <td class="confluenceTd"> Review comments incorporated. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875501/21365838.pdf">delete-node-config(1)</a> </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Carla Mott </td> 
+         <td class="confluenceTd"> Review comments incorporated. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875501/21365836.pdf">install-node(1)</a> </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Rajiv Mordani </td> 
+         <td class="confluenceTd"> Review comments incorporated. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875501/21365803.pdf">list-nodes(1)</a> </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Carla Mott </td> 
+         <td class="confluenceTd"> Review comments incorporated. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875501/21365839.pdf">ping-node-ssh(1)</a> </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Joe Di Pol </td> 
+         <td class="confluenceTd"> Review comments incorporated. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875501/21365840.pdf">setup-ssh(1)</a> </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Yamini KB </td> 
+         <td class="confluenceTd"> Review comments incorporated. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875501/21365812.pdf">uninstall-node(1)</a> </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Rajiv Mordani </td> 
+         <td class="confluenceTd"> Review comments incorporated. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875501/21365834.pdf">update-node-config(1)</a> </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Joe Di Pol </td> 
+         <td class="confluenceTd"> Review comments incorporated. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875501/21365835.pdf">update-node-ssh(1)</a> </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Joe Di Pol </td> 
+         <td class="confluenceTd"> Review comments incorporated. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875501/21365824.pdf">asadmin(1M)</a> </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Joe Di Pol </td> 
+         <td class="confluenceTd"> Review comments incorporated. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875501/21365842.pdf">create-node-ssh.1.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875501/21365843.pdf">create-node-ssh.1.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875501/21365841.pdf">create-node-config.1.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875501/21365836.pdf">install-node.1.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875501/21365840.pdf">setup-ssh.1.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875501/21365839.pdf">ping-node-ssh.1.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875501/21365838.pdf">delete-node-config.1.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875501/21365837.pdf">delete-node-ssh.1.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875501/21365834.pdf">update-node-config.1.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875501/21365812.pdf">uninstall-node.1.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875501/21365835.pdf">update-node-ssh.1.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875501/21365824.pdf">asadmin.1m.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875501/21365803.pdf">list-nodes.1.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875501/21365571.pdf">nodes.pdf</a> (application/x-download) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875501/21365587.pdf">ssh-setup.pdf</a> (application/x-download) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875501/21365605.pdf">fix-node.pdf</a> (application/x-download) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875501/21365606.pdf">fix-node.pdf</a> (application/x-download) 
+      <br> 
+     </div> 
+     <div class="tabletitle"> 
+      <a name="comments"> <h4>Comments:</h2> </a> 
+     </div> 
+     <table border="0" width="100%"> 
+      <tbody>
+       <tr> 
+        <td> <a name="comment-20882295"></a> <font class="smallfont">
+          <div class="table-wrap"> 
+           <table class="confluenceTable">
+            <tbody> 
+             <tr> 
+              <th class="confluenceTh">Comment ID</th> 
+              <th class="confluenceTh">Location</th> 
+              <th class="confluenceTh">Comment</th> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">PMD-001 </td> 
+              <td class="confluenceTd">update-node-ssh(1) man page.</td> 
+              <td class="confluenceTd">Sample comment. Should provide a proposed fix and correct content if applicable.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">PMD-002</td> 
+              <td class="confluenceTd">HA Admin Guide, Chapter 8, To Create a Node</td> 
+              <td class="confluenceTd"> Another sample comment.</td> 
+             </tr> 
+            </tbody>
+           </table> 
+          </div> </font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by pauldavies at Oct 25, 2010 10:56 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20882373"></a> <font class="smallfont">
+          <div class="table-wrap"> 
+           <table class="confluenceTable">
+            <tbody> 
+             <tr> 
+              <th class="confluenceTh"> Comment ID </th> 
+              <th class="confluenceTh"> Location </th> 
+              <th class="confluenceTh"> Comment </th> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> trm-1 </td> 
+              <td class="confluenceTd"> create-node-ssh, description </td> 
+              <td class="confluenceTd"> Regarding the sentence starting with "However, the DAS does not use the <br class="atl-forced-newline"> SSH connector...", if an SSH node with a node host of the DAS is created, then the DAS will use SSH to talk to that node, even though it is local. So I don't really understand what this sentence is trying to get across. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> trm-2 </td> 
+              <td class="confluenceTd"> create-node-ssh, --installdir option </td> 
+              <td class="confluenceTd"> The 2nd sentence about the default should be qualified with "DAS's" software, i.e., the default comes from where the DAS is installed. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> trm-3 </td> 
+              <td class="confluenceTd"> create-node-ssh , <br class="atl-forced-newline"> install-node </td> 
+              <td class="confluenceTd"> For the --installdir and --nodedir options, there should be some mention of differing conventions for specifying paths. &nbsp;For example, if asadmin is run from Windows, and the DAS is on Windows, but the node is on Linux, what path separator is passed to the command. &nbsp;Also, if the asadmin is on Linux and DAS is on Linux, but the node is on Windows (with SSHD coming from cygwin), what path separate is used? </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> trm-4 </td> 
+              <td class="confluenceTd"> create-node-ssh, --force option </td> 
+              <td class="confluenceTd"> It would be helpful to add "in the DAS configuration" after "node is created". <br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> trm-5 </td> 
+              <td class="confluenceTd"> create-node-ssh, example 2 </td> 
+              <td class="confluenceTd"> Replace "on" with "for" in "eg1 on the host". In this case, nothing is done on eghost.example.com because it could not be contacted. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> trm-6 </td> 
+              <td class="confluenceTd"> create-node-ssh, create-node-config </td> 
+              <td class="confluenceTd"> The operand section should specify what the valid characters are for a node name. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> trm-7 </td> 
+              <td class="confluenceTd"> delete-node-ssh </td> 
+              <td class="confluenceTd"> The note about the node localhost should be on the delete-node-config page rather than this one, because the localhost node is a config node. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> trm-8 </td> 
+              <td class="confluenceTd"> general </td> 
+              <td class="confluenceTd"> Thinking ahead to the time when we implement other forms of remote communication for nodes, such as bringing back the node-agent feature, we will then have for example, NA nodes. At that point, the config nodes are no longer nodes that are not configured for SSH, but rather nodes that are not configured for remote communication. I'm wondering if this generalization should be made now rather than waiting until later to rewrite all of the config node manual pages. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> trm-9 </td> 
+              <td class="confluenceTd"> install-node, uninstall-node </td> 
+              <td class="confluenceTd"> Description, 1st pp: Although the install-node command is intended to be run from the DAS, it isn't clear to me that this is required. &nbsp;Someone could install the GlassFish software elsewhere, and then run install-node from there (since it is a local command). So it isn't clear that the DAS has to be configured for SSH for this to work. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> trm-10 </td> 
+              <td class="confluenceTd"> install-node </td> 
+              <td class="confluenceTd"> Description, 2nd bullet of 2nd set of bullets - shouldn't this be the --passwordfile option? </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> trm-11 </td> 
+              <td class="confluenceTd"> install-node </td> 
+              <td class="confluenceTd"> --archivedir: "creates and archive from the DAS installation" - actually, it creates an archive from the installation of the software from which install-node is run. &nbsp;This isn't necessarily the DAS. &nbsp;There also a mention later down about the software coming from the DAS. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> trm-11 </td> 
+              <td class="confluenceTd"> install-node, uninstall-node </td> 
+              <td class="confluenceTd"> --archivedir: "the user that is running the DAS" - actually, it is the user that is running the install-node subcommand. &nbsp;The DAS might not even be running and is&nbsp;irrelevant&nbsp;since this is a local command. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> trm-12 </td> 
+              <td class="confluenceTd"> install-node, uninstall-node </td> 
+              <td class="confluenceTd"> --sshuser: the default is the user running the install-node command, not the user running the DAS. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> trm-13 </td> 
+              <td class="confluenceTd"> install-node, uninstall-node </td> 
+              <td class="confluenceTd"> --sshkeyfile: the file has to be reachable and readable by the install-node command, not the DAS. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> trm-14 </td> 
+              <td class="confluenceTd"> list-nodes, update-node-config, update-node-ssh </td> 
+              <td class="confluenceTd"> terminology: I would prefer that a "host contains a node" rather than a "node represents a host". So the third bullet in the description would be "The name of the host that contains the node". Could use "hosts" for "contains", but saying "the host that hosts the" is a bit odd :-) </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> trm-15 </td> 
+              <td class="confluenceTd"> ping-node-ssh </td> 
+              <td class="confluenceTd"> What does validation actually mean? &nbsp;It does some additional validation at the SSH level, but then it also checks on the version of the GlassFish software on the node and returns it. This ensures that the asadmin command can be executed on the node. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> trm-16 </td> 
+              <td class="confluenceTd"> setup-ssh </td> 
+              <td class="confluenceTd"> Description, 2nd pp, 2nd sentence - this makes it sound like SSH is used for all cluster administration. &nbsp;Add "some" in there somewhere. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> trm-17 </td> 
+              <td class="confluenceTd"> setup-ssh </td> 
+              <td class="confluenceTd"> Description, prerequisites: sshd does not have to be running on the DAS for this to work.&nbsp;<br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> trm-18 </td> 
+              <td class="confluenceTd"> setup-ssh </td> 
+              <td class="confluenceTd"> Don't we support MKS for Windows too? </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> trm-19 </td> 
+              <td class="confluenceTd"> setup-ssh </td> 
+              <td class="confluenceTd"> --sshuser and -sshkeyfile and -sshpublickeyfile: the default is the user running the setup-ssh command, not the DAS </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> trm-20 </td> 
+              <td class="confluenceTd"> setup-ssh </td> 
+              <td class="confluenceTd"> example 1: copyied from the host where the setup-ssh command is run. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> trm-21 </td> 
+              <td class="confluenceTd"> setup-ssh </td> 
+              <td class="confluenceTd"> Do you want to mention that if the SSH password is the same for all of the hosts, then it only needs to be entered once? </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> trm-22 </td> 
+              <td class="confluenceTd"> update-node-config </td> 
+              <td class="confluenceTd"> Description, 4th pp: this is incorrect. &nbsp;This command can be run anywhere since it is a remote command. &nbsp;The configuration changes are made on the DAS. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> trm-23 </td> 
+              <td class="confluenceTd"> update-node-ssh </td> 
+              <td class="confluenceTd"> Description, 2nd pp: it might be helpful to say that this command can change a config node into an SSH node. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> trm-24 </td> 
+              <td class="confluenceTd"> update-node-ssh </td> 
+              <td class="confluenceTd"> --sshuser: it says to specify the user that is running the DAS. &nbsp;AFAIK, this is not needed. The DAS reads it's key file from its own home directory, independent of the sshuser value. </td> 
+             </tr> 
+            </tbody>
+           </table> 
+          </div> </font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by trmueller at Oct 29, 2010 11:40 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20876419"></a> <font class="smallfont">
+          <div class="table-wrap"> 
+           <table class="confluenceTable">
+            <tbody> 
+             <tr> 
+              <th class="confluenceTh"> Comment ID </th> 
+              <th class="confluenceTh"> Location </th> 
+              <th class="confluenceTh"> Comment </th> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> YKB-1 </td> 
+              <td class="confluenceTd"> setup-ssh man page para 2 </td> 
+              <td class="confluenceTd"> "To contact remote hosts.." <br class="atl-forced-newline"> -Its not just contacting remote host but also to perform or execute any administration operation on the remote host. <br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> YKB-2 </td> 
+              <td class="confluenceTd"> setup-ssh man page para 3 </td> 
+              <td class="confluenceTd"> A private key may or may not be protected by a key passphrase </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> YKB-3 </td> 
+              <td class="confluenceTd"> setup-ssh man page para 4 </td> 
+              <td class="confluenceTd"> Generating an SSH key pair<br class="atl-forced-newline"> -The lines starting from "If a passphrase-protected key pair.." till the end of the section are incorrect. setup-ssh supports only generation of key without a passphrase. If user wants to use a stronger key, then passphrase protected key would need to be generated manually. After that, user can run setup-ssh to propagate the key to remote host. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> YKB-4 </td> 
+              <td class="confluenceTd"> setup-ssh man page para 5 </td> 
+              <td class="confluenceTd"> Distributing the public key<br class="atl-forced-newline"> -In the sentence "user-home is the user's home..", change "host" to "remote host"<br class="atl-forced-newline"> -Sentence "If public key authentication is not setup.." is incorrect. If public key auth already works, the command just exits saying that public key authentication is already setup. Password authentication is used to connect to the remote host to propagate the public key. Hence SSH password is mandatory. Password can be specified using a password file or through password prompt (i.e interactive)<br class="atl-forced-newline"> <del>Typo in option name "</del>-pasword"<br class="atl-forced-newline"> -If the private key is protected by a passphrase, user will be prompted for the key passphrase (in interactive mode) or one can specify the passphrase using password file. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> YKB-5 </td> 
+              <td class="confluenceTd"> setup-ssh man page </td> 
+              <td class="confluenceTd"> To add more info to the point "The subcommand does not modify..." setup-ssh doesn't require any configuration information from domain.xml (all information like ssh user host, port, keyfile location etc. is collected through the options) nor does it store any of the SSH information to domain.xml </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> YKB-6 </td> 
+              <td class="confluenceTd"> setup-ssh man page </td> 
+              <td class="confluenceTd"> Prerequisites: <br class="atl-forced-newline"> -sshd on DAS host is not necessary.<br class="atl-forced-newline"> -On Windows, user can rely on OpenSSH within Cygwin or MKS Toolkit. There are a few things to be taken care of in Windows, following links provide more info: <a href="./3.1SSH+-+Installing+Windows+Cygwin+sshd">http://wikis.sun.com/display/GlassFish/3.1SSH+-+Installing+Windows+Cygwin+sshd</a><a href="http://wikis.sun.com/display/GlassFish/3.1SSH+-+MKS+sshd+tips.html">http://wikis.sun.com/display/GlassFish/3.1SSH+-+MKS+sshd+tips</a> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> YKB-7 </td> 
+              <td class="confluenceTd"> setup-ssh man page </td> 
+              <td class="confluenceTd"> --sshkeyfile and --sshpubickeyfile sections: Its just "identity" and "identity.pub" (not identitylocation, identitylocation.pub) </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> YKB-8 </td> 
+              <td class="confluenceTd"> setup-ssh man page </td> 
+              <td class="confluenceTd"> --generatekey description needs be re-written. SSH password is not related to this option at all, all references to password or passphrase needs to be removed from this section.<br class="atl-forced-newline"> -This option is to basically support key generation in non-interactive mode. <br class="atl-forced-newline"> -Since default value of this option is false, if no key pair is found, command fails.<br class="atl-forced-newline"> -If user specifies --generatekey=true and key already exists, no key pair generation takes place. The already existing key is used for propagation. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> YKB-9 </td> 
+              <td class="confluenceTd"> setup-ssh </td> 
+              <td class="confluenceTd"> The password token AS_ADMIN_SSH_PASSWORD (for SSH user password) can be mentioned under --sshuser since ssh user, password go together. Likewise password token AS_ADMIN_SSH_KEYPASSPHRASE (for key passphrase) can be mentioned under --sshkeyfile </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> YKB-10 </td> 
+              <td class="confluenceTd"> setup-ssh </td> 
+              <td class="confluenceTd"> We should also mention that by default, the key pair is expected to be under user-home/.ssh directory on DAS host. In case, there are multiple keys under the .ssh directory, the order of preference is id_rsa, id_dsa, identity. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> YKB-11 </td> 
+              <td class="confluenceTd"> Info </td> 
+              <td class="confluenceTd"> Not sure if you've seen this link on setup-ssh: <a href="./3.1SSHPublicKeySetup.html">http://wikis.sun.com/display/GlassFish/3.1SSHPublicKeySetup</a> </td> 
+             </tr> 
+            </tbody>
+           </table> 
+          </div> </font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by xyamini at Nov 04, 2010 10:11 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20876425"></a> <font class="smallfont">
+          <div class="table-wrap"> 
+           <table class="confluenceTable">
+            <tbody> 
+             <tr> 
+              <td class="confluenceTd"> jfd-1 </td> 
+              <td class="confluenceTd"> trm-1 </td> 
+              <td class="confluenceTd"> Actually if the node-host is detected to be the same as the DAS host then SSH is not used. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> jfd-2 </td> 
+              <td class="confluenceTd"> create-node-ssh, description </td> 
+              <td class="confluenceTd"> "A node must be present on every host..." I prefer: "A node must be created for every host..." </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> jfd-3 </td> 
+              <td class="confluenceTd"> create-node-ssh, --nodedir </td> 
+              <td class="confluenceTd"> The default is "installdir/glassfish/nodes". A relative path may be provided (this was recently fixed). The path is relative "installdir/glassfish". </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> jfd-4 </td> 
+              <td class="confluenceTd"> create-node-ssh, --sshuser </td> 
+              <td class="confluenceTd"> "...user that is to run the process for connecting to this node." I prefer: "...user that is used when connecting to this node via SSH. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> jfd-5 </td> 
+              <td class="confluenceTd"> create-node-ssh, --sshkeyfile </td> 
+              <td class="confluenceTd"> "identitylocation" should be "identity" </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> jfd-6 </td> 
+              <td class="confluenceTd"> create-node-ssh, --sshkeyfile </td> 
+              <td class="confluenceTd"> Should mention how to handle key files that are encrypted with a passphrase. See next comment... </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> jfd-7 </td> 
+              <td class="confluenceTd"> create-node-ssh </td> 
+              <td class="confluenceTd"> Should mention the ability to configure an SSH node to use password authentication via the asadmin password file. I think there needs to be a section mentioning that there are AS_ADMIN_SSHPASSWORD and AS_ADMIN_SSHKEYPASSPHRASE adminfile properties that can be used to specify an SSH password for the user and an SSH keyfile phassphrase. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> jfd-8 </td> 
+              <td class="confluenceTd"> create-node-ssh, See Also </td> 
+              <td class="confluenceTd"> Include create-node-config </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> jfd-9 </td> 
+              <td class="confluenceTd"> create-node-config, Description </td> 
+              <td class="confluenceTd"> "present on" -&gt; "created for" </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> jfd-10 </td> 
+              <td class="confluenceTd"> create-node-config </td> 
+              <td class="confluenceTd"> Mention built in config node "localhost" </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> jfd-11 </td> 
+              <td class="confluenceTd"> create-node-config </td> 
+              <td class="confluenceTd"> May want to mention that config nodes can be used for remote hosts, but if they are then you may not use: create-instance/delete-instance, start-instance, start-cluster – but instead must use the local version of those commands (except for start-cluster which does not have a local version) </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> jfd-12 </td> 
+              <td class="confluenceTd"> asadmin, Options --passwordfile </td> 
+              <td class="confluenceTd"> AS_ADMIN_SSHPASSWORD: also read by create-node-ssh, update-node-ssh. "AS_ADMIN_PASSPHRASE" should be "AS_ADMIN_SSHKEYPASSPHRASE". Description: key passphrase for reading encrypted SSH key files. Also read by create-node-ssh, update-node-ssh </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> jfd-13 </td> 
+              <td class="confluenceTd"> asadmin, Options --paswordfile </td> 
+              <td class="confluenceTd"> I think there should be a mention of the syntax for password aliases,and create-password-alias should be listed in the See Also section. </td> 
+             </tr> 
+            </tbody>
+           </table> 
+          </div> </font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by dipol at Nov 04, 2010 15:31 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20879422"></a> <font class="smallfont">
+          <div class="table-wrap"> 
+           <table class="confluenceTable">
+            <tbody> 
+             <tr> 
+              <th class="confluenceTh">Comment ID</th> 
+              <th class="confluenceTh">Response</th> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">trm-1</td> 
+              <td class="confluenceTd">Decline. See jfd-1.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">trm-2</td> 
+              <td class="confluenceTd">Done.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">trm-3</td> 
+              <td class="confluenceTd">Decline. The path separator to use the path separator for whichever OS the user is using. As this convention is intuitively obvious, users might actually be confused if the convention were to be stated. The only situation in which the convention might need to be stated would be a mixed cluster, which is not supported.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">trm-4</td> 
+              <td class="confluenceTd">Yes. Done.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">trm-5</td> 
+              <td class="confluenceTd">Done.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">trm-6</td> 
+              <td class="confluenceTd">Done.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">trm-7</td> 
+              <td class="confluenceTd">Done.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">trm-8</td> 
+              <td class="confluenceTd">Yes. Done.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">trm-9</td> 
+              <td class="confluenceTd">Done. Each man page now states that SSH must be configured on the host where the subcommand is run and any host on which the subcommand operates.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">trm-10</td> 
+              <td class="confluenceTd">Yes. Done.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">trm-11</td> 
+              <td class="confluenceTd">Done.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">trm-11</td> 
+              <td class="confluenceTd">Done, though I assume you mean --installdir, as uninstall-node does not have an --archivedir option.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">trm-12</td> 
+              <td class="confluenceTd">Done.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">trm-13</td> 
+              <td class="confluenceTd">Done.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">trm-14</td> 
+              <td class="confluenceTd">Decline. Given that a node is defined as a representation of a host, it would be confusing to shift emphasis and talk about a host "containing" a node.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">trm-15</td> 
+              <td class="confluenceTd">Done.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">trm-16</td> 
+              <td class="confluenceTd">Done, although instead of "some", I have said "that acts on multiple hosts", which is the important point.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">trm-17</td> 
+              <td class="confluenceTd">Done, though I assume (and have stated) that the DAS needs the ssh client.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">trm-18</td> 
+              <td class="confluenceTd">Done.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">trm-19</td> 
+              <td class="confluenceTd">Done.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">trm-20</td> 
+              <td class="confluenceTd">Done.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">trm-21</td> 
+              <td class="confluenceTd">Decline. Unncessary detail.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">trm-22</td> 
+              <td class="confluenceTd">Done.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">trm-23</td> 
+              <td class="confluenceTd">Decline. It already does. That's what the statement, "If the node is not enabled for remote communication, the subcommand enables SSH communication for the node," means.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">trm-24</td> 
+              <td class="confluenceTd">Done.</td> 
+             </tr> 
+            </tbody>
+           </table> 
+          </div> </font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by pauldavies at Jan 12, 2011 16:24 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20879421"></a> <font class="smallfont">
+          <div class="table-wrap"> 
+           <table class="confluenceTable">
+            <tbody> 
+             <tr> 
+              <th class="confluenceTh">Comment ID</th> 
+              <th class="confluenceTh">Response</th> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">YKB-1</td> 
+              <td class="confluenceTd">Done. I have said "To contact and administer remote hosts..."</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">YKB-2</td> 
+              <td class="confluenceTd">Done.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">YKB-3</td> 
+              <td class="confluenceTd">Done.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">YKB-4</td> 
+              <td class="confluenceTd">1st item decline. user-home is the user's home directory on either the host where the command is run or on a remote host, dependingin the context. Otherwise, done.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">YKB-5</td> 
+              <td class="confluenceTd">Done.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">YKB-6</td> 
+              <td class="confluenceTd">Done, but see also my response to trm-17. The details about setting up SSH on Windows will be explained in the HA Admin Guide.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">YKB-7</td> 
+              <td class="confluenceTd">Done.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">YKB-8</td> 
+              <td class="confluenceTd">Done.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">YKB-9</td> 
+              <td class="confluenceTd">I have explained these tokens in the paragraph about distributing the key in the Description section.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">YKB-10</td> 
+              <td class="confluenceTd">This point is already made in the descriptions of the --sshkeyfile and --sshpublickeyfile options. I have amended these descriptions to state the order of preference.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">YKB-11</td> 
+              <td class="confluenceTd">Yes, thank you. This information will be useful input to the HA Admin Guide.</td> 
+             </tr> 
+            </tbody>
+           </table> 
+          </div> </font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by pauldavies at Jan 12, 2011 16:26 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20879418"></a> <font class="smallfont">
+          <div class="table-wrap"> 
+           <table class="confluenceTable">
+            <tbody> 
+             <tr> 
+              <th class="confluenceTh">Comment ID</th> 
+              <th class="confluenceTh">Response</th> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">jfd-1</td> 
+              <td class="confluenceTd">No change required.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">jfd-2</td> 
+              <td class="confluenceTd">Done. Changed to say "must exist for".</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">jfd-3</td> 
+              <td class="confluenceTd">Done.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">Jfd-4</td> 
+              <td class="confluenceTd">Done.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">jfd-5</td> 
+              <td class="confluenceTd">Done.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">jfd-6</td> 
+              <td class="confluenceTd">Done.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">jfd-7</td> 
+              <td class="confluenceTd">Done.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">jfd-8</td> 
+              <td class="confluenceTd">Done.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">jfd-9</td> 
+              <td class="confluenceTd">Done. Changed to say "must exist for".</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">jfd-10</td> 
+              <td class="confluenceTd">Done.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">jfd-11</td> 
+              <td class="confluenceTd">Done.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">jfd-12</td> 
+              <td class="confluenceTd">Done.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">jfd-13</td> 
+              <td class="confluenceTd">Done.</td> 
+             </tr> 
+            </tbody>
+           </table> 
+          </div> </font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by pauldavies at Jan 12, 2011 16:27 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20880138"></a> <font class="smallfont"><p>I would like to comment aboiut Chapter2:<br> Administering GlassFish Server Nodes.</p> <p>In order to execute the create-node-ssh sub command,<br> we will specify the public key file and<br> password alias like follows in most case.</p> 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false"># echo "AS_ADMIN_SSHPASSWORD=${ALIAS=ssh-password}" &gt; /tmp/p
+
+# asadmin \--passwordfile /tmp/p create-node-ssh \--nodehost glassfish-node1 \--sshuser root \--sshkeyfile \~/.ssh/id_rsa \--installdir /usr/local/glssfish3 node1</pre> 
+            </div> 
+           </div>
+          </div> <p>You may explain the public key and secret key on<br> Chapter 1. GlassFish Server Compatibility Issues .<br class="atl-forced-newline"></p> <p>However I assume that it may be useful for customer<br> that you should explain how to use the password alias<br> and key files on Chapter2 like above.<br class="atl-forced-newline"></p> <p>I think that you mentioned the very simple use case on the manual now.<br> Actual use case you should specify on the manual.<br class="atl-forced-newline"></p> <p>Thanks &amp; Best Regards.<br> Yoshio.</p> </font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by yosshi at Jan 31, 2011 22:58 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20880020"></a> <font class="smallfont">
+          <div class="table-wrap"> 
+           <table class="confluenceTable">
+            <tbody> 
+             <tr> 
+              <th class="confluenceTh"> Comment ID <br class="atl-forced-newline"> </th> 
+              <th class="confluenceTh"> Location <br class="atl-forced-newline"> </th> 
+              <th class="confluenceTh"> Comment <br class="atl-forced-newline"> </th> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> JC-001 <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> Page 37, Chapter 2, "Administering GlassFish Server Nodes" <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> The last topic covered is upgrading a node from a "CONFIG" node to an "SSH" node.&nbsp; I do not see "upgrading a node from an SSH node to a CONFIG node", which also seems to be possible.&nbsp; Please run this by the admin team.&nbsp; If this is possible (and not a bug), then we should change the word "upgrading" to the word "converting" since it is bi-directional. <br class="atl-forced-newline"> </td> 
+             </tr> 
+            </tbody>
+           </table> 
+          </div> </font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by johnclingan at Feb 03, 2011 09:34 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20879941"></a> <font class="smallfont"><p>On nodes.pdf</p> 
+          <div class="table-wrap"> 
+           <table class="confluenceTable">
+            <tbody> 
+             <tr> 
+              <th class="confluenceTh"> Comment ID </th> 
+              <th class="confluenceTh"> Location<br class="atl-forced-newline"> </th> 
+              <th class="confluenceTh"> Comment<br class="atl-forced-newline"> </th> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> sre-001<br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> p37, Upgrading a CONFIG Node<br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> What are the consequences of upgrading the DAS config node to an SSH node?<br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> sre-002<br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> Following on from JC-001 above<br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> You can convert the DAS config node to an SSH node, but you can't go backwards afterwards (does it make sense being able to change it from CONFIG-&gt;SSH when its the DAS localhost node?) :<br class="atl-forced-newline"> <br class="atl-forced-newline"> 
+               <div class="code panel" style="border-width: 1px;">
+                <div class="codeContent panelContent"> 
+                 <div id="root"> 
+                  <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin update-node-ssh localhost-domain1
+Command update-node-ssh executed successfully.
+
+$ asadmin list-nodes
+localhost-domain1  SSH  localhost
+gfcluster2  SSH  virtlab2-dhcp125
+
+$ asadmin update-node-config localhost-domain1
+remote failure: Cannot update node localhost-domain1. It is the built-in localhost node.
+Command update-node-config failed.</pre> 
+                 </div> 
+                </div>
+               </div> <p>You certainly can go from SSH-&gt;CONFIG, so if this is allowed and won't cause problems it should be documented.<br class="atl-forced-newline"> <br class="atl-forced-newline"></p> 
+               <div class="code panel" style="border-width: 1px;">
+                <div class="codeContent panelContent"> 
+                 <div id="root"> 
+                  <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin list-nodes
+localhost-domain1  SSH  localhost
+gfcluster2  SSH  virtlab2-dhcp125
+Command list-nodes executed successfully.
+
+$ asadmin update-node-config gfcluster2
+Command update-node-config executed successfully.
+
+$ asadmin list-nodes
+localhost-domain1  SSH  localhost
+gfcluster2  CONFIG  virtlab2-dhcp125</pre> 
+                 </div> 
+                </div>
+               </div> </td> 
+             </tr> 
+            </tbody>
+           </table> 
+          </div> </font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by tecknobabble at Feb 04, 2011 09:01 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20879808"></a> <font class="smallfont"><p>Comments on nodes.pdf</p> 
+          <div class="table-wrap"> 
+           <table class="confluenceTable">
+            <tbody> 
+             <tr> 
+              <th class="confluenceTh"> <font color="#000000">Comment ID</font> </th> 
+              <th class="confluenceTh"> <font color="#000000">Location</font> </th> 
+              <th class="confluenceTh"> <font color="#000000">Comment</font> </th> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> <font color="inherit">trm-001</font> </td> 
+              <td class="confluenceTd"> <font color="inherit">p32</font> </td> 
+              <td class="confluenceTd"> <font color="inherit">typo: "servercreates"</font> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> <font color="inherit">trm-002</font> </td> 
+              <td class="confluenceTd"> <font color="inherit">general</font> </td> 
+              <td class="confluenceTd"> <font color="inherit">Following on JC-001 above, conversion is bidirectional. &nbsp;It is possible to convert an SSH node back to a CONFIG node.&nbsp;</font><br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> <font color="inherit">trm-003</font> </td> 
+              <td class="confluenceTd"> <font color="inherit">general</font> </td> 
+              <td class="confluenceTd"> <font color="inherit">Regarding sre-002, update-node-ssh should probably not work on localhost-domain1. &nbsp;This could arguably be called a bug.&nbsp;</font> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> <font color="inherit">trm-004</font> </td> 
+              <td class="confluenceTd"> <font color="inherit">general</font> </td> 
+              <td class="confluenceTd"> <font color="inherit">It might be good to have a reference in this section to the setup-ssh command that is helpful for getting SSH configured.&nbsp;</font> </td> 
+             </tr> 
+            </tbody>
+           </table> 
+          </div> </font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by trmueller at Feb 07, 2011 12:34 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20879823"></a> <font class="smallfont"><p>Chapter 2 Administering GlassFish Server Nodes</p> 
+          <div class="table-wrap"> 
+           <table class="confluenceTable">
+            <tbody> 
+             <tr> 
+              <th class="confluenceTh"> Comment Id<br class="atl-forced-newline"> </th> 
+              <th class="confluenceTh"> Location<br class="atl-forced-newline"> </th> 
+              <th class="confluenceTh"> Comment<br class="atl-forced-newline"> </th> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> jfd-100<br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> p28<br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> May want to mention that create-nod-ssh validates the parameters and tests the SSH connection, so that's why it's a good idea to have ssh working before you create the ssh nodes.<br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> jfd-101<br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> p28<br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> How about adding a description of the SSH authentication options available and how to use the asadmin pasword file to pass the password (or aliases) if need be to create-node-ssh?<br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> jfd-102<br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> p30<br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> How about "Reachable" instead of "Usable"?<br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> jfd-103<br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> trm-3<br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> With respect to Tom's comment on paths...Tom was assuming a mixed OS cluster. I still feel we should state that we do *not* support mixed OS deployments. Or at least that we don't support the DAS on Windows and instances on another platform (even though that can work).<br class="atl-forced-newline"> </td> 
+             </tr> 
+            </tbody>
+           </table> 
+          </div> </font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by dipol at Feb 07, 2011 14:19 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20879828"></a> <font class="smallfont">
+          <div class="table-wrap"> 
+           <table class="confluenceTable">
+            <tbody> 
+             <tr> 
+              <th class="confluenceTh">Comment ID </th> 
+              <th class="confluenceTh"> Location</th> 
+              <th class="confluenceTh"> Comment</th> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">cm-001 </td> 
+              <td class="confluenceTd">p 32</td> 
+              <td class="confluenceTd">There is a reference to "Create an Instance Locally" and in that doc there is a section "Before You Begin" starts with "Ensure that the node on which the instance is to reside exists." I think this is a little confusing. The user can create a config node and the create-local-instance command will populate it with the correct info if needed. In addition create-local-instance will create the node if needed (which is mentioned in the docs). I didn't see mention of the case where the user creates a place holder config node and create-local-command fills in the pertinent info. What we call the offline case. </td> 
+             </tr> 
+            </tbody>
+           </table> 
+          </div> </font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by carlavmott at Feb 07, 2011 14:32 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20879801"></a> <font class="smallfont">
+          <div class="table-wrap"> 
+           <table class="confluenceTable">
+            <tbody> 
+             <tr> 
+              <th class="confluenceTh"> Comment ID<br class="atl-forced-newline"> </th> 
+              <th class="confluenceTh"> Location<br class="atl-forced-newline"> </th> 
+              <th class="confluenceTh"> Comment<br class="atl-forced-newline"> </th> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> JC-002<br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> Setting up ssh page 26<br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> Change "practicable" to "practical"<br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> JC-003<br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> Setting up ssh page 26<br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> "However, setting up SSH might require much effort, especially on Windows systems."&nbsp; We'll want to tweak this statement a bit. "Most operating systems ship with sshd pre-configured and running, so setup is minimal. Windows hosts do not ship with sshd, and will require additional setup."<br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> JC-004<br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> Setting up ssh page 27<br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> "For the cygwin &amp; MKS versions, we should add an "or greater" or "<ins>".&nbsp; So, it would be "Cygwin release 1.7.6</ins>" and "MKS Toolkit for Developers release 9.2+"<br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> JC-005<br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> Setting up ssh page 27<br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> "Remote instances are started as the SSH user." should be changed to "Remote instances are started as the SSH user by default".<br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> JC-006<br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> Setting up ssh page 35<br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> One additional step for MAC OS X.&nbsp; After enabling "remote login", users should ensure that either that either "All Users" are allowed access or the user running the DAS or Instance is allowed access (highlighted).<br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> JC-007<br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> Setting up ssh page 37<br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> In troubleshooting section, it would be valuable to state that the command line "ssh" client has the -v option to produce verbose output, and sshd can be run manually with the "-d" option to produce debugging output.&nbsp; How to manually run sshd varies by platform.<br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> JC-008<br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> Setting up ssh page 39<br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> It is stated in the note that "only required options to complete the task" are required.&nbsp; In the first step, "setup-ssh --generatekey=true host-list", the --generatekey options is actually optional.&nbsp; If a user already has a ssh key, a new one does not need to be created (and setup-ssh will test for this).&nbsp; Many, if not most, non-windows developers will already have an ssh key.&nbsp; Verify with joe dipol.<br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> JC-009<br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> Setting up ssh page 40<br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> "When the SSH user runs a subcommand that requires SSH authentication, SSH must be able to authenticate the user without prompting for the passphrase."<br class="atl-forced-newline"> <br class="atl-forced-newline"> This should be re-phrased to state:<br class="atl-forced-newline"> <br class="atl-forced-newline"> "When the SSH user runs a subcommand that requires SSH authentication, GlassFish Server must be able to authenticate the user without prompting for the passphrase."<br class="atl-forced-newline"> <br class="atl-forced-newline"> Joe DiPol may have more specific verbiage for "GlassFish Server", such as "the DAS and asadmin(1M) utility".<br class="atl-forced-newline"> </td> 
+             </tr> 
+            </tbody>
+           </table> 
+          </div> </font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by johnclingan at Feb 07, 2011 16:37 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20879805"></a> <font class="smallfont">
+          <div class="table-wrap"> 
+           <table class="confluenceTable">
+            <tbody> 
+             <tr> 
+              <th class="confluenceTh">Comment ID</th> 
+              <th class="confluenceTh">Response</th> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">JC-002</td> 
+              <td class="confluenceTd">Done. Although "practicable" is the grammatically correct choice, it is probably the wrong choice as it confuses even native English speakers. I have used "feasible" instead.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">JC-003</td> 
+              <td class="confluenceTd">Done.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">JC-004</td> 
+              <td class="confluenceTd">Decline.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">JC-005</td> 
+              <td class="confluenceTd">Decline. After double-checking with the engineering subject matter expert, I can confirm that it's not a default. The user that starts the instance must log in as the SSH user. I wonder if you are confusing the SSH user with the DAS user, which is the default SSH user?</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">JC-006</td> 
+              <td class="confluenceTd">Done.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">JC-007</td> 
+              <td class="confluenceTd">Done.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">JC-008</td> 
+              <td class="confluenceTd">Done.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">JC-009</td> 
+              <td class="confluenceTd">Done.</td> 
+             </tr> 
+            </tbody>
+           </table> 
+          </div> </font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by pauldavies at Feb 07, 2011 17:32 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20882679"></a> <font class="smallfont"><p>Comments on ssh-setup.pdf</p> 
+          <div class="table-wrap"> 
+           <table class="confluenceTable">
+            <tbody> 
+             <tr> 
+              <th class="confluenceTh"> Comment ID <br class="atl-forced-newline"> </th> 
+              <th class="confluenceTh"> Location <br class="atl-forced-newline"> </th> 
+              <th class="confluenceTh"> Comment <br class="atl-forced-newline"> </th> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> sre-001 </td> 
+              <td class="confluenceTd"> p29, To Set the Home Directory <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> The path /etc/passwd makes no sense unless you are within a cygwin shell.&nbsp; If you try to run a windows editor to edit the file, e.g. notepad /etc/passwd, notepad will fail to open the file.&nbsp; Two choices would appear to be: <br class="atl-forced-newline"> 1) Change the path to c:\cygwin\etc\passwd <br class="atl-forced-newline"> 2) Tell the users to also install "vim" (in the Editors category) so their cygwin install has a common editor, so that vi /etc/passwd is possible. <br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> sre-002 </td> 
+              <td class="confluenceTd"> p37, Troubleshooting <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> It may be obvious, but worth repeating, that if the machine you've setup an ssh server on has a firewall, then a rule will be needed to allow inbound traffic on port 22. <br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> sre-003 </td> 
+              <td class="confluenceTd"> p35, SSH setup on Solaris, point 2 and Example 2-2 <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> Not sure why "status" is in the command.&nbsp; To find the status of an SMF service you just do svcs &lt;service name&gt;. &nbsp;&nbsp; I don't see why we should be looking for information about the NFS status service in addition to the SSH service. <br class="atl-forced-newline"> <br class="atl-forced-newline"> If you change the command to: <br class="atl-forced-newline"> <br class="atl-forced-newline"> /usr/bin/svcs ssh <br class="atl-forced-newline"> <br class="atl-forced-newline"> you get just the information about the ssh service and not the nfs status service.&nbsp; Hence in the example you'd be able to remove the line with nfs/status on it. <br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> sre-004 <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> p46, install-node <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> It doesn't appear possible to create multiple installations on the same machine without resorting to trickery.&nbsp; For example if I have: <br class="atl-forced-newline"> <br class="atl-forced-newline"> 
+               <div class="code panel" style="border-width: 1px;">
+                <div class="codeContent panelContent"> 
+                 <div id="root"> 
+                  <pre class="theme: Confluence; brush: java; gutter: false">NODE NAME           TYPE   NODE HOST          INSTALL DIRECTORY   REFERENCED BY
+localhost-domain1   SSH    localhost          /support/sfw/gf31   c1-i1, c1-i2, inst1
+gfcluster2          SSH    virtlab2-dhcp125   /support/sfw/gf31</pre> 
+                 </div> 
+                </div>
+               </div><br> I can't run install-node like this: <br class="atl-forced-newline"> <br class="atl-forced-newline"> 
+               <div class="code panel" style="border-width: 1px;">
+                <div class="codeContent panelContent"> 
+                 <div id="root"> 
+                  <pre class="theme: Confluence; brush: java; gutter: false">asadmin install-node --installdir=/support/sfw/gf31tmp virtlab2-dhcp125
+
+Node virtlab2-dhcp125 is already installed and configured for use.</pre> 
+                 </div> 
+                </div>
+               </div><br> But if I fully qualify the host then its happy, i.e. <br class="atl-forced-newline"> <br class="atl-forced-newline"> 
+               <div class="code panel" style="border-width: 1px;">
+                <div class="codeContent panelContent"> 
+                 <div id="root"> 
+                  <pre class="theme: Confluence; brush: java; gutter: false">asadmin install-node --installdir=/support/sfw/gf31tmp virtlab2-dhcp125.uk.sun.com
+
+Created installation zip /support/.ssh/glassfish2983466568029542682.zip
+Successfully connected to iplanet@virtlab2-dhcp125.uk.sun.com using keyfile /support/.ssh/id_rsa
+Copying /support/.ssh/glassfish2983466568029542682.zip (116753459 bytes) to virtlab2-dhcp125.uk.sun.com:/support/sfw/gf31tmp
+Installing glassfish2983466568029542682.zip into virtlab2-dhcp125.uk.sun.com:/support/sfw/gf31tmp
+Removing virtlab2-dhcp125.uk.sun.com:/support/sfw/gf31tmp/glassfish2983466568029542682.zip
+Fixing file permissions of all files under virtlab2-dhcp125.uk.sun.com:/support/sfw/gf31tmp/bin
+Command install-node executed successfully.</pre> 
+                 </div> 
+                </div>
+               </div><br> works.&nbsp; It appears to base its checks purely on the hostname provided, when really it should look at (install-dir, node-host) to determine if the installation already exists or not. <br class="atl-forced-newline"> </td> 
+             </tr> 
+            </tbody>
+           </table> 
+          </div> </font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by tecknobabble at Feb 08, 2011 11:05 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20882680"></a> <font class="smallfont"><p>Chapter 2: Setting Up SSH for Centralized Administration</p> 
+          <div class="table-wrap"> 
+           <table class="confluenceTable">
+            <tbody> 
+             <tr> 
+              <th class="confluenceTh"> Comment ID </th> 
+              <th class="confluenceTh"> Location </th> 
+              <th class="confluenceTh"> Comment </th> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> jfd-200 </td> 
+              <td class="confluenceTd"> p26 </td> 
+              <td class="confluenceTd"> I think it is helpful to list the common commands that depend on SSH to function (on remote instances): create-instance, delete-instance, start-instance, start-cluster. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> jfd-201 </td> 
+              <td class="confluenceTd"> p29 </td> 
+              <td class="confluenceTd"> "each user's home directory for Cygwin and Windows must be the same". This is not really true. The discussion on p31 for MKS concerning the trade-off of dual home directories applies to the Cygwin case too. The general issue is the same – the mechanism for changing the home directory is different. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> jfd-202 </td> 
+              <td class="confluenceTd"> p30, 3a-c </td> 
+              <td class="confluenceTd"> ssh-host-config: I think there was some bad info on some wiki pages that got carried over here. Let me try some tests today and get you specifics. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> jfd-203 </td> 
+              <td class="confluenceTd"> p31 </td> 
+              <td class="confluenceTd"> See jfd-201 </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> jfd-204 </td> 
+              <td class="confluenceTd"> p37 Before "Troubleshooting". </td> 
+              <td class="confluenceTd"> May want to add a note saying "The first time you connect to a host you may be told that the authenticity can't be established, and asked if you want to continue connection. Assuming you trust the host just anser 'yes'". </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> jfd-205 </td> 
+              <td class="confluenceTd"> p37 "Setting Up SSH User Authentication" </td> 
+              <td class="confluenceTd"> First paragraph ("When a GlassFish Server subcommand...") is no longer true and should be removed. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> jfd-206 </td> 
+              <td class="confluenceTd"> p38 Table, Public key with passphrase-protected encryption </td> 
+              <td class="confluenceTd"> "For each SSH user, password aliases are required." -&gt; "For each SSH user GlasFish password aliases are required for the encryption passphrase" </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> jfd-207 </td> 
+              <td class="confluenceTd"> p38 Table, Password </td> 
+              <td class="confluenceTd"> "For each SSH user password aliases are required" -&gt; "for each SSH user GlassFish password aliases are required for the SSH password" </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> jfd-208 </td> 
+              <td class="confluenceTd"> p38 </td> 
+              <td class="confluenceTd"> "The public key file..." -&gt; "The private and public key files..." </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> jfd-209 </td> 
+              <td class="confluenceTd"> p39 Step 1 </td> 
+              <td class="confluenceTd"> Note that setup-ssh should be run as the SSH user, or the --sshuser option should be used to indicate the SSH user. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> jfd-210 </td> 
+              <td class="confluenceTd"> p39 Example2-4 </td> 
+              <td class="confluenceTd"> State that the command is being run by user "gfuser" </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> jfd-211 </td> 
+              <td class="confluenceTd"> p39 Next Steps </td> 
+              <td class="confluenceTd"> "...to the SSh user's .ssh directory." -&gt; "...into the SSH user's authorized_keys file. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> jfd-212 </td> 
+              <td class="confluenceTd"> p40 </td> 
+              <td class="confluenceTd"> The paragraph starting "When the SSH user runs..." is misleading and inaccurate. How about something like: "In order for GlassFish to use the encrypted key it needs to know the passphrase that was used to encrypt the key. The secure way to do this is to create a GlassFish password alias for the passphrase." </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> jfd-213 </td> 
+              <td class="confluenceTd"> p41 Step 1 </td> 
+              <td class="confluenceTd"> "The ssh-keygen utility prompts...". May want to add "Accepting the default location in ~/.ssh is recommended." </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> jfd-214 </td> 
+              <td class="confluenceTd"> p42 Step 7 </td> 
+              <td class="confluenceTd"> "Create an alias" -&gt; "Create a GlassFish alias". I've been recommending adding "GlassFish" to clarify this password alias thingie is a GlassFish concept. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> jfd-216 </td> 
+              <td class="confluenceTd"> p42 Note </td> 
+              <td class="confluenceTd"> The Note isn't quite correct. Once you create the SSH node you do not need to pass SSH credentials to commands. So it is more accurate to say: "This file will be needed when you create SSH nodes with create-node-ssh. You will pass it to the asadmin command using the --passwordfile option." </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> jfd-217 </td> 
+              <td class="confluenceTd"> p43 </td> 
+              <td class="confluenceTd"> Similar to jfd-212. The paragraph that starts with "When the SSH user..." is inaccurate. Replace with something like: "When GlassFish connects using SSH it will need the SSH password. This password is provided by the user when running the command create-node-ssh. In order to pass and store this password securely (not in clear text) you will use the GlassFish password alias capability". </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> jfd-218 </td> 
+              <td class="confluenceTd"> p43, last sentence </td> 
+              <td class="confluenceTd"> "public key" -&gt; "password" </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> jfd-219 </td> 
+              <td class="confluenceTd"> p44, Note </td> 
+              <td class="confluenceTd"> The file will be passed only to create-node-ssh, not all subcommands. </td> 
+             </tr> 
+            </tbody>
+           </table> 
+          </div> </font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by dipol at Feb 08, 2011 11:11 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20882687"></a> <font class="smallfont"><p>Regarding sre-004, I've had similar problems setting up an environment on localhost when creating a lab environment.&nbsp; If I use the IP address (127.0.01) vs localhost (already exists), then it works fine.&nbsp;&nbsp; So the logic must be string-comparing names.&nbsp; This will require the user to either have multiple DNS entries for an IP, a multi-homed host, etc.</p> <p>I wouldn't call this trickery per-se.&nbsp; I can see this check on create-node, but I agree that install-node should remove this check (perhaps an RFE).</p></font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by johnclingan at Feb 08, 2011 13:23 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20882636"></a> <font class="smallfont"><p>Created issue GLASSFISH-15910.</p></font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by tecknobabble at Feb 09, 2011 09:29 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20882637"></a> <font class="smallfont"><p>Comments on ha-intro.pdf</p> 
+          <div class="table-wrap"> 
+           <table class="confluenceTable">
+            <tbody> 
+             <tr> 
+              <th class="confluenceTh"> Comment ID </th> 
+              <th class="confluenceTh"> Location<br class="atl-forced-newline"> </th> 
+              <th class="confluenceTh"> Comment<br class="atl-forced-newline"> </th> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> sre-001<br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> p17, Overview of High Availabilty<br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> Is this just the open source version of the HA Admin Guide?&nbsp; If its also for the pay-for version shouldn't we also be plugging (pun intended) our own LB Plugin solution in the list of features at the bottom of the page?<br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> sre-002<br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> p18, Load Balancing with Apache mod_jk<br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> While the website is httpd.apache.org the project is known as the Apache HTTP Server, not HTTPD Server.<br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> sre-003<br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> p18, High Availability Java Message Service<br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> Sun Java Systems Message Queue should be GlassFish Message Queue.<br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> sre-004<br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> p18, High Availability Java Message Service </td> 
+              <td class="confluenceTd"> GF Message Queue doesn't have a standalone existence anymore.&nbsp; Hence "tightly integrated" might be redundant, and could be replaced simply with "provided".<br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> sre-005<br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> p22, Recovering the Domain Administration Server<br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> GF 3.1 has the capability of creating schedules to allow periodic backups to be taken.&nbsp; Perhaps we need a pointer to the documentation that covers that here.<br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> sre-006<br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> p23, Recovering GlassFish Server Instances<br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> Can the update-admin-server-coordinates/update-admin-server-local-coordinates commands be used to remove the restriction on recovering onto a machine using the same IP address as the failed one?<br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> sre-007<br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> p23, Recovering the HTTP Load Balancer </td> 
+              <td class="confluenceTd"> Just backing up the loadbalancer.xml may not be enough.&nbsp; If the DAS certificate has been exported and imported into the Web Server certificate store then either its NSS files should also be backed up, or the administrator will have to re-export and re-import the DAS certificates.<br class="atl-forced-newline"> <br class="atl-forced-newline"> The LB plugin installer currently puts the LB plugin into the glassfish-lbplugin directory within the web server's installation directory.<br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> sre-008<br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> p23, Recovering Message Queue </td> 
+              <td class="confluenceTd"> Given Message Queue will not be available standalone, and will be installed as part of the GF 3.1 installation, its unlikely that the MQ config will be under /var/imq, that's really only valid for the older package-based standalone MQ installations, that were part of the JES stack.&nbsp; The location would only be valid if the customer was using an older version of MQ that used such a location, and hadn't changed the broker's varhome to some other location - the broker would need to be configured as a REMOTE JMS Host in the GF configuration for that to be possible.<br class="atl-forced-newline"> <br class="atl-forced-newline"> If a GF Cluster is not using a highly available MQ cluster, then the MQ data will be under each instance in the node directory, e.g. &lt;gf-install-dir&gt;/glassfish/nodes/&lt;node-name&gt;/&lt;instance-name&gt;/imq.&nbsp; Hence a proper backup of the nodes/instances should also provide a backup of the MQ data.<br class="atl-forced-newline"> <br class="atl-forced-newline"> If the GF Cluster is an HA-MQ cluster, then the data will be in a database (ideally clustered) and it would fall back to whatever backup mechanism is appropriate for the database in question.<br class="atl-forced-newline"> </td> 
+             </tr> 
+            </tbody>
+           </table> 
+          </div> </font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by tecknobabble at Feb 09, 2011 10:00 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20881991"></a> <font class="smallfont"><p>comments for Setting Up SSH for Centralized Administration</p> 
+          <div class="table-wrap"> 
+           <table class="confluenceTable">
+            <tbody> 
+             <tr> 
+              <td class="confluenceTd">Comment ID</td> 
+              <th class="confluenceTh">Location</th> 
+              <th class="confluenceTh">Comment</th> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">cm-001</td> 
+              <td class="confluenceTd">pg. 39 Next Steps</td> 
+              <td class="confluenceTd"> For each host, log in first with the unqualified host name and <b>then</b> with the fully qualified name</td> 
+             </tr> 
+            </tbody>
+           </table> 
+          </div> </font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by carlavmott at Feb 14, 2011 12:00 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20877968"></a> <font class="smallfont"><p>Comments on fix-node.pdf:</p> <p>None.</p></font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by trmueller at Feb 21, 2011 11:51 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20877977"></a> <font class="smallfont"><p>Comments on fix-node.pdf</p> 
+          <div class="table-wrap"> 
+           <table class="confluenceTable">
+            <tbody> 
+             <tr> 
+              <th class="confluenceTh">Comment ID</th> 
+              <th class="confluenceTh">Location </th> 
+              <th class="confluenceTh">Comment</th> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">cm001</td> 
+              <td class="confluenceTd">pg47, 1st paragraph under To Correct the...</td> 
+              <td class="confluenceTd">If the host is not in the node agent info then the nodehost is on set to localhost it is left blank and so the CONFIG node contains just the node name attribute</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">cm002</td> 
+              <td class="confluenceTd">page 48 </td> 
+              <td class="confluenceTd">In the example provide the nodehost name too</td> 
+             </tr> 
+            </tbody>
+           </table> 
+          </div> </font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by carlavmott at Feb 21, 2011 14:19 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20879582"></a> <font class="smallfont"><p>You're welcome and thank you for reviewing this documentation.</p> <p>Procedures for securely using password authentication for SSH logins are provided in the chapter Setting Up SSH for Centralized Administration. These procedures use GlassFish password aliases as an alternative to the creation of a temporary password file as suggested in your comment.</p></font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by pauldavies at Feb 25, 2011 14:00 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20879581"></a> <font class="smallfont">
+          <div class="table-wrap"> 
+           <table class="confluenceTable">
+            <tbody> 
+             <tr> 
+              <th class="confluenceTh">Comment ID</th> 
+              <th class="confluenceTh">Response</th> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">JC-001</td> 
+              <td class="confluenceTd">Done.</td> 
+             </tr> 
+            </tbody>
+           </table> 
+          </div> </font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by pauldavies at Feb 25, 2011 14:01 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20879580"></a> <font class="smallfont">
+          <div class="table-wrap"> 
+           <table class="confluenceTable">
+            <tbody> 
+             <tr> 
+              <th class="confluenceTh">Comment ID</th> 
+              <th class="confluenceTh">Response</th> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">sre-001</td> 
+              <td class="confluenceTd">Answer: Same as for any other CONFIG node. No change required.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">sre-002</td> 
+              <td class="confluenceTd">The asymmetry of the behavior looks like a bug to me. I have added the general CONFIG&gt;SSH use case.</td> 
+             </tr> 
+            </tbody>
+           </table> 
+          </div> </font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by pauldavies at Feb 25, 2011 14:02 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20879585"></a> <font class="smallfont">
+          <div class="table-wrap"> 
+           <table class="confluenceTable">
+            <tbody> 
+             <tr> 
+              <th class="confluenceTh">Comment ID</th> 
+              <th class="confluenceTh">Response</th> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">trm-001</td> 
+              <td class="confluenceTd">Done.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">trm-002</td> 
+              <td class="confluenceTd">Done.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">trm-003</td> 
+              <td class="confluenceTd">See my response to sre-002.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">trm-004</td> 
+              <td class="confluenceTd">A cross-reference to the chapter about setting up SSH has been added to the 1st para of Creating, Listing, Testing, and Deleting SSH Nodes on p28.</td> 
+             </tr> 
+            </tbody>
+           </table> 
+          </div> </font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by pauldavies at Feb 25, 2011 14:03 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20879589"></a> <font class="smallfont">
+          <div class="table-wrap"> 
+           <table class="confluenceTable">
+            <tbody> 
+             <tr> 
+              <th class="confluenceTh">Comment ID</th> 
+              <th class="confluenceTh">Response</th> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">jfd-100</td> 
+              <td class="confluenceTd">Done.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">jfd-101</td> 
+              <td class="confluenceTd">Done.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">jfd-102</td> 
+              <td class="confluenceTd">Done.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">jfd-103</td> 
+              <td class="confluenceTd">Done - in the Deployment Planning Guide.</td> 
+             </tr> 
+            </tbody>
+           </table> 
+          </div> </font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by pauldavies at Feb 25, 2011 14:04 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20879588"></a> <font class="smallfont">
+          <div class="table-wrap"> 
+           <table class="confluenceTable">
+            <tbody> 
+             <tr> 
+              <th class="confluenceTh">Comment ID</th> 
+              <th class="confluenceTh">Response</th> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">cm-001</td> 
+              <td class="confluenceTd">Done, though we don't call it the offline case. See the descriptions of node-host and install-dir in Step 2 of To Create a CONFIG node and Example 2-6 on p 33.</td> 
+             </tr> 
+            </tbody>
+           </table> 
+          </div> </font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by pauldavies at Feb 25, 2011 14:04 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20879592"></a> <font class="smallfont">
+          <div class="table-wrap"> 
+           <table class="confluenceTable">
+            <tbody> 
+             <tr> 
+              <th class="confluenceTh">Comment ID</th> 
+              <th class="confluenceTh">Response</th> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">sre-001</td> 
+              <td class="confluenceTd">Done (option 1).</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">sre-002</td> 
+              <td class="confluenceTd">Done.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">sre-003</td> 
+              <td class="confluenceTd">Done.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">sre-004</td> 
+              <td class="confluenceTd">Decline. This does seem a somewhat unusual use case.</td> 
+             </tr> 
+            </tbody>
+           </table> 
+          </div> </font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by pauldavies at Feb 25, 2011 14:08 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20879602"></a> <font class="smallfont"><p>Done.</p></font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by pauldavies at Feb 25, 2011 14:56 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20879600"></a> <font class="smallfont">
+          <div class="table-wrap"> 
+           <table class="confluenceTable">
+            <tbody> 
+             <tr> 
+              <th class="confluenceTh">Comment ID</th> 
+              <th class="confluenceTh">Response</th> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">jfd-200</td> 
+              <td class="confluenceTd">Decline. The user is more interested in the tasks, which the targets of the existing cross-references list</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">jfd-201</td> 
+              <td class="confluenceTd">Done.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">jfd-202</td> 
+              <td class="confluenceTd">Done.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">jfd-203</td> 
+              <td class="confluenceTd">Done.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">jfd-204</td> 
+              <td class="confluenceTd">Done.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">jfd-205</td> 
+              <td class="confluenceTd">Done - I assume that only the "without prompting part" is no longer true.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">jfd-206 -<br class="atl-forced-newline"> jfd-219</td> 
+              <td class="confluenceTd">Done.</td> 
+             </tr> 
+            </tbody>
+           </table> 
+          </div> </font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by pauldavies at Feb 25, 2011 15:01 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20877775"></a> <font class="smallfont">
+          <div class="table-wrap"> 
+           <table class="confluenceTable">
+            <tbody> 
+             <tr> 
+              <th class="confluenceTh">Comment ID</th> 
+              <th class="confluenceTh">Response</th> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">cm001</td> 
+              <td class="confluenceTd">Done.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">cm002</td> 
+              <td class="confluenceTd">Done.</td> 
+             </tr> 
+            </tbody>
+           </table> 
+          </div> </font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by pauldavies at Mar 11, 2011 14:17 
+         </div> </td> 
+       </tr> 
+      </tbody>
+     </table> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Mar 09, 2011 by 
+<font color="#0050B2">pauldavies</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

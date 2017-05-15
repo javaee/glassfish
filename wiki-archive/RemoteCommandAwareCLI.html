@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : RemoteCommandAwareCLI</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>July 2008, after TP2 and before V3-Lite</p> 
+     <div class="panel" style="border-width: 1px;">
+      <div class="panelContent"> 
+       <h4><a name="RemoteCommandAwareCLI-CurrentStateofCLIandRemoteCommands"></a>Current State of CLI and Remote Commands</h1> 
+       <hr> 
+       <p>Jspwiki style: center</p> 
+      </div>
+     </div> <h4><a name="RemoteCommandAwareCLI-Problems"></a>Problems</h2> 
+     <ul> 
+      <li>The remote command Handling in CLI is completely separate from the Local Command Handling. I.e. almost none of the services provided by the V2 CLI infrastructure are used for remote commands. Many services were re-implemented, imperfectly, from scratch – e.g. command line parsing, handling of generic options like terse and verbose.</li> 
+     </ul> 
+     <ul> 
+      <li>The current paradigm/architecture is that CLI is strictly forbidden from knowing <em>anything_about remote commands. CLI can not assume _anything</em> about parameters. Examples: 
+       <ul> 
+        <li>If CLI sees an argument to a command named "enabled" it is not allowed to assume that this is supposed to contain a boolean value.</li> 
+        <li>Say you type in "asadmin -<del>user foo someCommand". CLI is not allowed to assume that remote command names are forbidden from starting with a hyphen (it <b>is</b> allowed in fact). CLI will dutifully call the server and ask it to run a command named "</del>-user" with 2 operands.</li> 
+       </ul> </li> 
+     </ul> <h4><a name="RemoteCommandAwareCLI-ProposedSolution"></a>Proposed Solution</h2> <p>%%</p> <p>The basic idea that we can not be aware of what remote commands are available on a server is true at build time but not true at runtime. We can get a thorough description of every remote command – including all the parameters, operands, man pages, help, legal values, etc – at any time by simply asking the server. So the first major change is for CLI to become aware of every remote command.</p> <p>Note: Try "asadmin list-descriptors". This is a (toy) command that demonstrates that it is fairly easy to get at the needed information about remote commands.</p> <p>The way CLI deals with local commands is to fully describe the command in XML. At runtime there is a lot of heavily-debugged and massively-tested free code in CLI that uses the data in the XML file to handle and prepare final commands. We need to leverage this for remote commands.</p> <h4><a name="RemoteCommandAwareCLI-Details"></a>Details</h3> <p>The solution is for CLI to call the server and ask for descriptions of all remote commands that are currently available on the Server in the form of an XML file that CLI can use directly. </p> <p>Now whenever a command is given to CLI it consults both the static local command descriptors XML file and the current remote commands XML file. Everything is treated at the top several levels <b>exactly</b> the same just like in V2. Eventually we will know it is a remote command (probably from a boolean "remote-command" property that is set for every command) and do the remote command processing. remote command processing will be drastically simpler because the core CLI will have already validated and created a perfect command line to send to the server.</p> <h4><a name="RemoteCommandAwareCLI-Performance"></a>Performance</h3> <p>This is a classic example where it is very tempting to get prematurely involved in performance enhancements. <br> I'm talking specifically about getting the remote command info, converting into XML and then having CLI parse it. </p> 
+     <ul> 
+      <li>How do we cache this information? Serialized file with a timestamp?</li> 
+      <li>How often do we refresh the information? Is this user-settable? Do we offer a new command to force the refresh?</li> 
+      <li>etc., etc., etc.</li> 
+     </ul> <p>The first order of business is to get it all working properly. The worst-case for performance is getting the remote command info from scratch every time CLI runs. This is also the best-case for getting the most accurate, up-to-date information about remote commands. This may well be "good enough". If the time to do all of that is on the order of (or a fraction of) the network latency time then performance is not an issue. Try 'asadmin list-descriptors' – it is VERY fast.<br> One easy fast reliable performance enhancement is to wait to get remote command info until an unknown command is entered. E.g. it is a big waste of time (and impossible!) to call the server for a "start-domain" command.</p> <p>The possibilities for performance improvements are many and are straight-forward to implement. It is not important until much later in the process....</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

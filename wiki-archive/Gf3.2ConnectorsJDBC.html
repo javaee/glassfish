@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : Gf3.2ConnectorsJDBC</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="Gf3.2ConnectorsJDBC-GlassFish3.2Connectors%28JavaEEConnectorArchitecture%2CConnectionPooling%2CJDBCRA%29HalfPager"></a>GlassFish 3.2 - Connectors (JavaEE Connector Architecture, Connection Pooling, JDBC-RA) Half Pager</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#Gf3.2ConnectorsJDBC-GlassFish3.2Connectors%28JavaEEConnectorArchitecture%2CConnectionPooling%2CJDBCRA%29HalfPager">GlassFish 3.2 - Connectors (JavaEE Connector Architecture, Connection Pooling, JDBC-RA) Half Pager</a></li> 
+       <li><a href="#Gf3.2ConnectorsJDBC-1.Introduction">1. Introduction</a></li> 
+       <ul> 
+        <li><a href="#Gf3.2ConnectorsJDBC-1.1.Project%2FComponentWorkingName%3A">1.1. Project/Component Working Name:</a></li> 
+        <li><a href="#Gf3.2ConnectorsJDBC-1.2.Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier%3A">1.2. Name(s) and e-mail address of Document Author(s)/Supplier:</a></li> 
+        <li><a href="#Gf3.2ConnectorsJDBC-1.3.DateofThisDocument%3A">1.3. Date of This Document:</a></li> 
+        <li><a href="#Gf3.2ConnectorsJDBC-1.4.RevisionHistory">1.4. Revision History</a></li> 
+       </ul> 
+       <li><a href="#Gf3.2ConnectorsJDBC-2.ProjectSummary">2. Project Summary</a></li> 
+       <ul> 
+        <li><a href="#Gf3.2ConnectorsJDBC-2.1.ProjectDescription%3A">2.1. Project Description:</a></li> 
+        <li><a href="#Gf3.2ConnectorsJDBC-2.2.RisksandAssumptions%3A">2.2. Risks and Assumptions:</a></li> 
+       </ul> 
+       <li><a href="#Gf3.2ConnectorsJDBC-3.ProblemSummary">3. Problem Summary</a></li> 
+       <ul> 
+        <li><a href="#Gf3.2ConnectorsJDBC-3.1.ProblemArea%3A">3.1. Problem Area:</a></li> 
+        <li><a href="#Gf3.2ConnectorsJDBC-3.2.Justification%3A">3.2. Justification:</a></li> 
+       </ul> 
+       <li><a href="#Gf3.2ConnectorsJDBC-4.TechnicalDescription%3A">4. Technical Description:</a></li> 
+       <ul> 
+        <li><a href="#Gf3.2ConnectorsJDBC-4.1.Details%3A">4.1. Details:</a></li> 
+        <li><a href="#Gf3.2ConnectorsJDBC-4.1.1SupportforJDBC4.1andJDK7">4.1.1 Support for JDBC-4.1 and JDK-7</a></li> 
+        <li><a href="#Gf3.2ConnectorsJDBC-4.1.2IaaSmachinetemplatesforJavaDBandMySQLservers">4.1.2 IaaS machine templates for JavaDB and MySQL servers</a></li> 
+        <li><a href="#Gf3.2ConnectorsJDBC-4.1.3JavaDBPluginandMySQLPluginimplementations">4.1.3 JavaDB Plugin and MySQL Plugin implementations</a></li> 
+        <li><a href="#Gf3.2ConnectorsJDBC-4.1.4InstallingtheJDBCdriverdynamicallyforPaaSenvironment">4.1.4 Installing the JDBC driver dynamically for PaaS environment</a></li> 
+        <li><a href="#Gf3.2ConnectorsJDBC-4.1.5GranularSQLTracing">4.1.5 Granular SQL Tracing</a></li> 
+        <li><a href="#Gf3.2ConnectorsJDBC-4.1.6%5Ctargetsupportforpingconnectionpoolandflushconnectionpoolcommands">4.1.6 --target support for ping-connection-pool and flush-connection-pool commands</a></li> 
+        <li><a href="#Gf3.2ConnectorsJDBC-4.1.7SupportGlassFishspecificpoolfeaturesfor@DataSourceDefinition">4.1.7 Support GlassFish specific pool features for @DataSourceDefinition</a></li> 
+        <li><a href="#Gf3.2ConnectorsJDBC-4.1.8Monitoringsupportfor@DataSourceDefinition">4.1.8 Monitoring support for @DataSourceDefinition</a></li> 
+        <li><a href="#Gf3.2ConnectorsJDBC-4.1.9Genericlistresourcescommand">4.1.9 Generic list-resources command</a></li> 
+        <li><a href="#Gf3.2ConnectorsJDBC-4.1.10PropertiesfilevalueforJDBCConnectionPoolproperty">4.1.10 Properties file value for JDBC Connection Pool property</a></li> 
+        <li><a href="#Gf3.2ConnectorsJDBC-4.1.11MiscellaneousEnhancements">4.1.11 Miscellaneous Enhancements</a></li> 
+        <li><a href="#Gf3.2ConnectorsJDBC-4.2.Bug%2FRFENumber%28s%29%3A">4.2. Bug/RFE Number(s):</a></li> 
+        <li><a href="#Gf3.2ConnectorsJDBC-4.3.InScope%3A">4.3. In Scope:</a></li> 
+        <li><a href="#Gf3.2ConnectorsJDBC-4.4.OutofScope%3A">4.4. Out of Scope:</a></li> 
+        <li><a href="#Gf3.2ConnectorsJDBC-4.5.Interfaces%3A">4.5. Interfaces:</a></li> 
+        <ul> 
+         <li><a href="#Gf3.2ConnectorsJDBC-4.5.1PublicInterfaces">4.5.1 Public Interfaces</a></li> 
+         <li><a href="#Gf3.2ConnectorsJDBC-4.5.2PrivateInterfaces">4.5.2 Private Interfaces</a></li> 
+         <li><a href="#Gf3.2ConnectorsJDBC-4.5.3Deprecated%2FRemovedInterfaces%3A">4.5.3 Deprecated/Removed Interfaces:</a></li> 
+        </ul> 
+        <li><a href="#Gf3.2ConnectorsJDBC-4.6.DocImpact%3A">4.6. Doc Impact:</a></li> 
+        <li><a href="#Gf3.2ConnectorsJDBC-4.7.Admin%2FConfigImpact%3A">4.7. Admin/Config Impact:</a></li> 
+        <li><a href="#Gf3.2ConnectorsJDBC-4.8.HAImpact%3A">4.8. HA Impact:</a></li> 
+        <li><a href="#Gf3.2ConnectorsJDBC-4.9.I18N%2FL10NImpact%3A">4.9. I18N/L10N Impact:</a></li> 
+        <li><a href="#Gf3.2ConnectorsJDBC-4.10.Packaging%2CDelivery%26Upgrade%3A">4.10. Packaging, Delivery &amp; Upgrade:</a></li> 
+        <ul> 
+         <li><a href="#Gf3.2ConnectorsJDBC-4.10.1.Packaging">4.10.1. Packaging</a></li> 
+         <li><a href="#Gf3.2ConnectorsJDBC-4.10.2.Delivery">4.10.2. Delivery</a></li> 
+         <li><a href="#Gf3.2ConnectorsJDBC-4.10.3.UpgradeandMigration%3A">4.10.3. Upgrade and Migration:</a></li> 
+        </ul> 
+        <li><a href="#Gf3.2ConnectorsJDBC-4.11.SecurityImpact%3A">4.11. Security Impact:</a></li> 
+        <li><a href="#Gf3.2ConnectorsJDBC-4.12.CompatibilityImpact">4.12. Compatibility Impact</a></li> 
+        <li><a href="#Gf3.2ConnectorsJDBC-4.13.Dependencies%3A">4.13. Dependencies:</a></li> 
+        <ul> 
+         <li><a href="#Gf3.2ConnectorsJDBC-4.13.1InternalDependencies">4.13.1 Internal Dependencies</a></li> 
+         <li><a href="#Gf3.2ConnectorsJDBC-4.13.2ExternalDependencies">4.13.2 External Dependencies</a></li> 
+        </ul> 
+        <li><a href="#Gf3.2ConnectorsJDBC-4.14.TestingImpact%3A">4.14. Testing Impact:</a></li> 
+       </ul> 
+       <li><a href="#Gf3.2ConnectorsJDBC-5.ReferenceDocuments%3A">5. Reference Documents:</a></li> 
+       <li><a href="#Gf3.2ConnectorsJDBC-6.Schedule%3A">6. Schedule:</a></li> 
+       <ul> 
+        <li><a href="#Gf3.2ConnectorsJDBC-6.1.ProjectedAvailability%3A">6.1. Projected Availability:</a></li> 
+        <ul> 
+         <li><a href="#Gf3.2ConnectorsJDBC-"></a></li> 
+        </ul> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="Gf3.2ConnectorsJDBC-1.Introduction"></a>1. Introduction</h1> <h4><a name="Gf3.2ConnectorsJDBC-1.1.Project%2FComponentWorkingName%3A"></a>1.1. Project/Component Working Name:</h2> <p>Connectors, Connection Pool, JDBC features in GlassFish Server Open Source Edition 3.2</p> <h4><a name="Gf3.2ConnectorsJDBC-1.2.Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier%3A"></a>1.2. Name(s) and e-mail address of Document Author(s)/Supplier:</h2> <p>Jagadish Ramu: jr158900@java.net</p> <p>Shalini Muthukrishnan: sm157516@java.net</p> <h4><a name="Gf3.2ConnectorsJDBC-1.3.DateofThisDocument%3A"></a>1.3. Date of This Document:</h2> <p>04/25/11</p> <h4><a name="Gf3.2ConnectorsJDBC-1.4.RevisionHistory"></a>1.4. Revision History</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <td class="confluenceTd"> 25-April-11 </td> 
+         <td class="confluenceTd"> Initial document </td> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd">
+          <ul class="alternate" type="square"> 
+           <li></li> 
+          </ul> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="Gf3.2ConnectorsJDBC-2.ProjectSummary"></a>2. Project Summary</h1> <h4><a name="Gf3.2ConnectorsJDBC-2.1.ProjectDescription%3A"></a>2.1. Project Description:</h2> <p>This document describes the functionality changes and enhancements to Connectors, Connection Pooling, JDBC-RA</p> <h4><a name="Gf3.2ConnectorsJDBC-2.2.RisksandAssumptions%3A"></a>2.2. Risks and Assumptions:</h2> <h4><a name="Gf3.2ConnectorsJDBC-3.ProblemSummary"></a>3. Problem Summary</h1> <h4><a name="Gf3.2ConnectorsJDBC-3.1.ProblemArea%3A"></a>3.1. Problem Area:</h2> <p>Following enhancements can be introduced in GlassFish 3.2 to overcome or to provide :</p> 
+     <ul> 
+      <li>Support for JDBC-4.1 and JDK-7</li> 
+      <li>IaaS machine templates for JavaDB and MySQL</li> 
+      <li>JavaDB Plugin and MySQL Plugin implementations</li> 
+      <li>Installing the JDBC driver dynamically for Paas environment</li> 
+      <li>Granular SQL Tracing</li> 
+      <li>--target support for ping-connection-pool and flush-connection-pool</li> 
+      <li>Support GlassFish specific pool features in @DataSourceDefinition</li> 
+      <li>Monitoring support for @DataSourceDefinition</li> 
+      <li>ListResources command</li> 
+      <li>Ability to provide a Properties file as value for a connection pool property</li> 
+      <li>Miscellaneous Enhancements</li> 
+     </ul> <h4><a name="Gf3.2ConnectorsJDBC-3.2.Justification%3A"></a>3.2. Justification:</h2> <p>Enhancements to existing Connectors, Pooling, JDBC-RA modules is very useful as the functionality offered by these modules are used widely among the user-base. These functionality improvements and changes would not only bring in performance improvements but also feature parity. The proposed features will enhance the user experience. There are also several specification issues and minor enhancements addressed in JDBC-4.1 MR that need to be updated in the resource adapter.</p> <h4><a name="Gf3.2ConnectorsJDBC-4.TechnicalDescription%3A"></a>4. Technical Description:</h1> <h4><a name="Gf3.2ConnectorsJDBC-4.1.Details%3A"></a>4.1. Details:</h2> <p>The Connectors, Pooling, JDBC-RA modules will have the following enhancements and features in this release</p> <h4><a name="Gf3.2ConnectorsJDBC-4.1.1SupportforJDBC4.1andJDK7"></a>4.1.1 Support for JDBC-4.1 and JDK-7</h2> <p>The JDBC-4.1 Maintenance release 1.1 addresses several specification issues along with minor enhancements requested by the JDBC EG and user community. It also provides support for Automatic Resource Management introduced in Java SE 7. JDBC resource-adapter will provide wrappers to these API changes (new method additions) and also provide container level support wherever applicable. This support will help users to install JDBC 4.1 compatible jdbc-driver in GlassFish and make use of the new features.</p> <h4><a name="Gf3.2ConnectorsJDBC-4.1.2IaaSmachinetemplatesforJavaDBandMySQLservers"></a>4.1.2 IaaS machine templates for JavaDB and MySQL servers</h2> <p>GlassFish 3.2 introduces support for PaaS styled application deployments. Applications can indicate the need for a database either directly or indirectly (eg: via &lt;resource-ref&gt; in standard deployment descriptors of web/ejb modules or its annotation equivalents or in persistence.xml). Such a request can be served by the GlassFish runtime either by re-using and already provisioned database or provision an application-local (fresh) database. In order to support this feature, it is necessary to have pre-bundled (pre-installed) machine templates of the database software that could be used by GlassFish runtime. These machine templates need to be created according the common guidelines/ best practices laid by IaaS team. For GlassFish 3.2, the plan is to support JavaDB and MySQL databases and hence machine templates for these databases will be made available for use. The list of cloud providers that need to be supported (machine templates for each cloud provider is needed) is based on the release criteria.</p> <h4><a name="Gf3.2ConnectorsJDBC-4.1.3JavaDBPluginandMySQLPluginimplementations"></a>4.1.3 JavaDB Plugin and MySQL Plugin implementations</h2> <p>As part of PaaS runtime capability, Orchestrator need to a mechanism to provision and manage databases. Orchestrator component will define SPIs for plugin using which various service providers (eg: MySQL Database Service provider, JavaDB Database Service provider) can be plugged in the GlassFish runtime. Refer Service Orchestration sub project for Plugin SPI details.</p> <h4><a name="Gf3.2ConnectorsJDBC-4.1.4InstallingtheJDBCdriverdynamicallyforPaaSenvironment"></a>4.1.4 Installing the JDBC driver dynamically for PaaS environment</h2> <p>In a PaaS environment, GlassFish clusters are provisioned on demand. Similarly, databases would also be provisioned based on the requirements of the application. JDBC drivers need to be made available to GlassFish DAS and clusters (instances) in order to enable applications to connect to databases. Current implementation of GlassFish necessitates restart whenever a JDBC driver is made available, in order to make use of the driver. We could introduce OSGi specific mechanism using which JDBC drivers could be installed and made available without restarting GlassFish. As part of OSGi JDBC RFC implementation in GlassFish 3.1, there is support to install JDBC drivers and are made available (dynamically) to all OSGi applications in the OSGi runtime. This feature could be extended to support non-OSGi applications.</p> <h4><a name="Gf3.2ConnectorsJDBC-4.1.5GranularSQLTracing"></a>4.1.5 Granular SQL Tracing</h2> <p>This feature extends the SQL tracing functionality to provide more granular tracing of the SQL queries. The implementation of this feature will log all the Connection related SQL traces as INFO messages.</p> <p>The in-built SQL tracing logger in GlassFish by the name "<b>javax.enterprise.resource.sqltrace</b>" will continue to be used. When the logging level is set to INFO, only the operations done on a Connection will be traced. Existing FINE log level will continue to log operations done on Connection, Statement, PreparedStatement and CallableStatement.</p> <h4><a name="Gf3.2ConnectorsJDBC-4.1.6%5Ctargetsupportforpingconnectionpoolandflushconnectionpoolcommands"></a>4.1.6 --target support for ping-connection-pool and flush-connection-pool commands</h2> <p>At present, <em>ping-connection-pool</em> command can be executed only on DAS. However, each GlassFish instance in the domain will have separate instance of <em>connection pools</em>. It would be useful if user is provided an option to execute <em>ping-connection-pool</em> command on <em>instances</em> as it would help to detect any dissimilarities in the environment (eg: Network setup, database permissions to connect from a host etc.,) between <em>DAS</em> and <em>instances</em>.</p> <p>Similarly, <em>flush-connection-pool</em> command support could be extended to support any <em>instance</em> as target which would help to re-initialize the <em>connection-pool</em> in the <em>instances</em> based on the need.</p> <h4><a name="Gf3.2ConnectorsJDBC-4.1.7SupportGlassFishspecificpoolfeaturesfor@DataSourceDefinition"></a>4.1.7 Support GlassFish specific pool features for @DataSourceDefinition</h2> <p>@DataSourceDefinition (or its descriptor equivalent) is a new capability introduced in Java EE 6 specification using which applications can connect to databases. This feature could be augmented with GlassFish specific connection pool features so that applications can make use of GlassFish's connection pool capabilities. For 3.2, we plan to support a sub-set of connection pool attributes for @DataSourceDefinition. Applications can specify these attributes via the properties element of DataSourceDefinition.&nbsp;</p> <p>eg: In order to make use of 'connection-leak-tracing' capability, user can specify :</p> 
+     <div class="preformatted panel" style="border-width: 1px;">
+      <div class="preformattedContent panelContent"> 
+       <pre> @DataSourceDefinition(name = "java:app/Servlet_DataSource", minPoolSize = 0,
+ initialPoolSize = 0,
+ className = "org.apache.derby.jdbc.ClientXADataSource",
+ user = "APP",
+ password = "APP",
+ databaseName = "testdb",
+ properties = {"connectionAttributes=;create=true","leak-timeout-in-seconds=30"}
+)
+</pre> 
+      </div>
+     </div> <p>List of connection pool attributes supported for @DataSourceDefinition in this release are :</p> 
+     <ul> 
+      <li>pool-resize-quantity</li> 
+      <li>max-wait-time-in-millis</li> 
+      <li>validate-atmost-once-period-in-seconds</li> 
+      <li>connection-leak-timeout-in-seconds</li> 
+      <li>connection-leak-reclaim</li> 
+      <li>is-connection-validation-required</li> 
+      <li>connection-validation-method</li> 
+      <li>validation-classname</li> 
+      <li>validation-table-name</li> 
+      <li>allow-non-component-callers</li> 
+      <li>statement-cache-size</li> 
+     </ul> <h4><a name="Gf3.2ConnectorsJDBC-4.1.8Monitoringsupportfor@DataSourceDefinition"></a>4.1.8 Monitoring support for @DataSourceDefinition</h2> <p>Existing implementation of @DataSourceDefinition is realized internally as a <em>jdbc-resource</em> and <em>jdbc-connection-pool.</em> It would be useful to expose monitoring statistics of @DataSourceDefinition (ie., the jdbc-connection-pool monitoring statistics) to users. Following monitoring hierarchy could be used to display the statistics according to the scope in which the @DataSourceDefinition is defined.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">server.&lt;application-name&gt;.datasource-definition.java:global/&lt;global-scoped-dsd&gt;
+ server.&lt;application-name&gt;.datasource-definition.java:app/&lt;app-scoped-dsd&gt;
+ server.&lt;application-name&gt;.datasource-definition.&lt;module-name&gt;.java:module/&lt;module-scoped-dsd&gt;
+ server.&lt;application-name&gt;.datasource-definition.&lt;module-name&gt;.&lt;component-name&gt;.java:comp/&lt;component-scoped-dsd&gt;
+
+Note :
+1) For component scoped @DSD in web bundle descriptors, following convention will be used
+server.&lt;application-name&gt;.&lt;module-name&gt;.datasource-definition.java:comp/&lt;component-scoped-dsd&gt;
+
+2) For applications that are not .ear, &lt;module-name&gt; will not be applicable.</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="Gf3.2ConnectorsJDBC-4.1.9Genericlistresourcescommand"></a>4.1.9 Generic list-resources command</h2> <p>Existing implementation of GlassFish has list-xxx-commands for each type of resource. There is also support for Application Scoped Resources which could be listed using <em>list-components --resources</em> command. It would be useful to provide a generic <em>list-resources</em> command that could be used to list the resources for all these types ie., normal resources, application-scoped-resources as well provide ability (options) to filter the resources based on type.</p> <p>ie.,</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">asadmin list-resources [--appname] [--modulename] [--resourcetype] [--target]</pre> 
+       </div> 
+      </div>
+     </div> <p>Refer Admin/Config Impact section for more information.</p> <h4><a name="Gf3.2ConnectorsJDBC-4.1.10PropertiesfilevalueforJDBCConnectionPoolproperty"></a>4.1.10 Properties file value for JDBC Connection Pool property</h2> <p>The JDBC resource adapter's existing implementation does not allow setting of a properties file for any Java Bean setter method for DataSource. This new capability will allow users to specify a properties file as a value for any driver vendor specific property. A typical example is to set the connectionCacheProperties property for an oracle jdbc connection pool. The Oracle JDBC driver takes in a Properties file as value for the setConnectionCacheProperties method. In the current version of GlassFish, it is not possible to provide this as a property as we do not parse the properties file and set the driver vendor property. The ability to provide a properties file value for any Java bean setter method of a JDBC driver resolves this major issue and achieves feature parity with Spring Injection.</p> <p>A new property "<b>org.glassfish.resource.properties-type:ACTUAL_SETTER_NAME=PROPERTIES_FILE_PATH</b>" can be set on a jdbc connection pool to specify a PROPERTIES_FILE_PATH to an actual Java Bean setter name. In the above case, this property value would translate as "<b>org.glassfish.resource.properties-type:connectionCacheProperties=/GlassFish/properties/cache.properties</b>". The PROPERTIES_FILE_PATH could be an absolute path or one relative to the GlassFish installation directory.</p> <p><b>org.glassfish.resource.properties-type</b> can be set on a jdbc connection pool as follows</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">asadmin&gt; set server.resources.jdbc-connection-pool.&lt;POOL_NAME&gt;.property.org.glassfish.resource.properties-type:connectionCacheProperties=cache.properties</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="Gf3.2ConnectorsJDBC-4.1.11MiscellaneousEnhancements"></a>4.1.11 Miscellaneous Enhancements</h2> <p>Depending upon the availability of time, following enhancements can be addressed.</p> 
+     <ul> 
+      <li>Ability to specify "Properties"/"Map" in the connection-pool configuration so that the can be applied to the JDBC driver. [TBD - Raise RFE with details. Might also involve "docs" changes as the property-name-format need to be documented.]</li> 
+      <li>Support <em>config-property-supports-dynamic-updates</em> attribute in ra.xml such that when a configuration of resource-adapter/connection-factory/admin-object is updated and if the config-property is found to support dynamic updates, restart or reconfiguration of various resource-adapter artifacts is not needed.</li> 
+      <li>Support System Property token replacement for application-scoped-resources configuration.</li> 
+      <li>Log @DataSourceDefinition configuration (configuration used for the internal jdbc-connection-pool) whenever the @DataSourceDefinition is initialized.</li> 
+      <li>More jdbc-resource, jdbc-connection-pool templates for databases (eg: Berkeley DB, HSQLDB etc.,)</li> 
+     </ul> <h4><a name="Gf3.2ConnectorsJDBC-4.2.Bug%2FRFENumber%28s%29%3A"></a>4.2. Bug/RFE Number(s):</h2> <p><a href="https://github.com/javaee/glassfish/issues/16452">GLASSFISH</a><a href="https://github.com/javaee/glassfish/issues/16452">-16452 </a> : JDK7 and JDBC4.1 Support<br> <a href="https://github.com/javaee/glassfish/issues/15732">GLASSFISH</a><a href="https://github.com/javaee/glassfish/issues/15732">-15732 </a> : Ability to specify GlassFish specific pool attributes in @DataSourceDefinition<br> <a href="https://github.com/javaee/glassfish/issues/3942">GLASSFISH</a><a href="https://github.com/javaee/glassfish/issues/3942">-3942 </a>&nbsp;&nbsp; : Cluster aware "Ping" feature<br> <a href="https://github.com/javaee/glassfish/issues/16469">GLASSFISH</a><a href="https://github.com/javaee/glassfish/issues/16469">-16469 </a> : IaaS machine templates for JavaDB and MySQL servers<br> <a href="https://github.com/javaee/glassfish/issues/16470">GLASSFISH</a><a href="https://github.com/javaee/glassfish/issues/16470">-16470 </a> : JavaDB Plugin and MySQL Plugin implementations<br> <a href="https://github.com/javaee/glassfish/issues/16471">GLASSFISH</a><a href="https://github.com/javaee/glassfish/issues/16471">-16471 </a> : Granular SQL Tracing<br> <a href="https://github.com/javaee/glassfish/issues/16472">GLASSFISH</a><a href="https://github.com/javaee/glassfish/issues/16472">-16472 </a> : Monitoring support for @DataSourceDefinition<br> <a href="https://github.com/javaee/glassfish/issues/13436">GLASSFISH</a><a href="https://github.com/javaee/glassfish/issues/13436">- 13436 </a> : Better error/warning messages for Flush/Ping Connection failure based on warning or error.</p> <h4><a name="Gf3.2ConnectorsJDBC-4.3.InScope%3A"></a>4.3. In Scope:</h2> <p>1. The JDBC4.1 related API changes and clarifications will be made to the jdcb40 module of the jdbc resource adapter<br> 2. Support JavaDB and MySQL databases and make available the machine templates for these databases<br> 3. OSGi specific mechanism to install JDBC drivers and make them available without restarting GlassFish<br> 4. "Connection" related SQL traces are logged as INFO messages<br> 5. Cluster aware database "Ping" and "Flush" connection pool<br> 6. Introduce GlassFish specific connection pool properties to @DataSourceDefinition for applications to use GlassFish's connection pool capabilities<br> 7. Monitoring statistics of DataSourceDefinition<br> 8. list-resources command to list all types of resources.<br> 9. Support for specifying a properties file value to an actual java bean setter method for a jdbc connection pool.</p> <h4><a name="Gf3.2ConnectorsJDBC-4.4.OutofScope%3A"></a>4.4. Out of Scope:</h2> <p>1. Usage of <b>org.glassfish.resource.properties-type:ACUTAL_SETTER_NAME</b> for other types of resources.</p> <h4><a name="Gf3.2ConnectorsJDBC-4.5.Interfaces%3A"></a>4.5. Interfaces:</h2> <h4><a name="Gf3.2ConnectorsJDBC-4.5.1PublicInterfaces"></a>4.5.1 Public Interfaces</h3> <h4><a name="Gf3.2ConnectorsJDBC-4.5.2PrivateInterfaces"></a>4.5.2 Private Interfaces</h3> <h4><a name="Gf3.2ConnectorsJDBC-4.5.3Deprecated%2FRemovedInterfaces%3A"></a>4.5.3 Deprecated/Removed Interfaces:</h3> <h4><a name="Gf3.2ConnectorsJDBC-4.6.DocImpact%3A"></a>4.6. Doc Impact:</h2> 
+     <ol> 
+      <li>Administration Guide</li> 
+      <li>Developer's Guide</li> 
+      <li>Administration Reference Guide</li> 
+      <li>Admin GUI online help</li> 
+      <li>Admin CLI help (man pages)</li> 
+     </ol> <h4><a name="Gf3.2ConnectorsJDBC-4.7.Admin%2FConfigImpact%3A"></a>4.7. Admin/Config Impact:</h2> 
+     <ul> 
+      <li>ping-connection-pool [--target] 
+       <ul> 
+        <li>valid values for <em>target</em> are DAS, Standalone-Instance, Clustered-Instance</li> 
+       </ul> </li> 
+      <li>flush-connection-pool [--target] 
+       <ul> 
+        <li>valid values for <em>target</em> are DAS, Standalone-Instance, Clustered-Instance</li> 
+       </ul> </li> 
+      <li>Generic "list-resources" command</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">asadmin list-resources [--appname] [--modulename] [--resourcetype] [--target]
+Samples :
+asadmin list-resources
+&nbsp; jdbc/__TimerPool&nbsp;&nbsp; &nbsp;&lt;JdbcResource&gt;
+&nbsp; jdbc/__default&nbsp;&nbsp; &nbsp;    &lt;JdbcResource&gt;
+&nbsp; __TimerPool&nbsp;&nbsp; &nbsp;        &lt;JdbcConnectionPool&gt;
+&nbsp; DerbyPool&nbsp;&nbsp; &nbsp;           &lt;JdbcConnectionPool&gt;
+
+asadmin list-resources&nbsp; --resourcetype jdbc-resource
+&nbsp; jdbc/__TimerPool&nbsp;&nbsp; &nbsp;&lt;JdbcResource&gt;
+&nbsp; jdbc/__default&nbsp;&nbsp; &nbsp;    &lt;JdbcResource&gt;
+
+asadmin list-resources --appname app-scoped-resourcesApp
+&nbsp; java:app/jdbc/app-level-ds&nbsp;&nbsp; &nbsp;                    &lt;JdbcResource&gt;
+&nbsp; java:app/jdbc/app-level-pool&nbsp;&nbsp; &nbsp;                 &lt;JdbcConnectionPool&gt;
+&nbsp; java:app/custom/my-java-bean&nbsp;&nbsp; &nbsp;             &lt;CustomResource&gt;
+
+asadmin list-resources --appname app-scoped-resourcesApp --type JdbcResource
+&nbsp; java:app/jdbc/app-level-ds&nbsp;&nbsp; &nbsp;                    &lt;JdbcResource&gt;
+
+asadmin list-resources --appname app-scoped-resourcesApp --modulename app-scoped-resources-ejb.jar
+&nbsp; java:module/jdbc/ejb-level-ds&nbsp;&nbsp; &nbsp;   &lt;JdbcResource&gt;
+&nbsp; java:module/eis/testAdmin&nbsp;&nbsp; &nbsp;      &lt;AdminObjectResource&gt;
+&nbsp; java:module/jdbc/ejb-level-pool&nbsp;&nbsp; &nbsp;&lt;JdbcConnectionPool&gt;
+
+asadmin list-resources --appname app-scoped-resourcesApp --modulename app-scoped-resources-ejb.jar --resourcetype admin-object
+&nbsp; java:module/eis/testAdmin&nbsp;&nbsp; &nbsp;&lt;AdminObjectResource&gt;</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>Monitoring hierarchy for @DataSourceDefinition defined with various scopes in an application.</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">server.&lt;application-name&gt;.datasource-definition.java:global/&lt;global-scoped-dsd&gt;
+ server.&lt;application-name&gt;.datasource-definition.java:app/&lt;app-scoped-dsd&gt;
+ server.&lt;application-name&gt;.datasource-definition.&lt;module-name&gt;.java:module/&lt;module-scoped-dsd&gt;
+ server.&lt;application-name&gt;.datasource-definition.&lt;module-name&gt;.&lt;component-name&gt;.java:comp/&lt;component-scoped-dsd&gt;
+
+Note :
+1) For component scoped @DSD in web bundle descriptors, following convention will be used
+server.&lt;application-name&gt;.&lt;module-name&gt;.datasource-definition.java:comp/&lt;component-scoped-dsd&gt;
+
+2) For applications that are not .ear, &lt;module-name&gt; will not be applicable.</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>GUI support : 
+       <ul> 
+        <li>Support for displaying monitoring statistics of @DataSourceDefinition</li> 
+        <li>Support for <em>--target</em> equivalent in GUI for <em>ping-connection-pool</em> and <em>flush-connection-pool</em> commands</li> 
+       </ul> </li> 
+     </ul> <h4><a name="Gf3.2ConnectorsJDBC-4.8.HAImpact%3A"></a>4.8. HA Impact:</h2> <h4><a name="Gf3.2ConnectorsJDBC-4.9.I18N%2FL10NImpact%3A"></a>4.9. I18N/L10N Impact:</h2> <h4><a name="Gf3.2ConnectorsJDBC-4.10.Packaging%2CDelivery%26Upgrade%3A"></a>4.10. Packaging, Delivery &amp; Upgrade:</h2> <h4><a name="Gf3.2ConnectorsJDBC-4.10.1.Packaging"></a>4.10.1. Packaging</h3> <h4><a name="Gf3.2ConnectorsJDBC-4.10.2.Delivery"></a>4.10.2. Delivery</h3> <h4><a name="Gf3.2ConnectorsJDBC-4.10.3.UpgradeandMigration%3A"></a>4.10.3. Upgrade and Migration:</h3> <h4><a name="Gf3.2ConnectorsJDBC-4.11.SecurityImpact%3A"></a>4.11. Security Impact:</h2> <h4><a name="Gf3.2ConnectorsJDBC-4.12.CompatibilityImpact"></a>4.12. Compatibility Impact</h2> <h4><a name="Gf3.2ConnectorsJDBC-4.13.Dependencies%3A"></a>4.13. Dependencies:</h2> <h4><a name="Gf3.2ConnectorsJDBC-4.13.1InternalDependencies"></a>4.13.1 Internal Dependencies</h3> <h4><a name="Gf3.2ConnectorsJDBC-4.13.2ExternalDependencies"></a>4.13.2 External Dependencies</h3> <h4><a name="Gf3.2ConnectorsJDBC-4.14.TestingImpact%3A"></a>4.14. Testing Impact:</h2> <h4><a name="Gf3.2ConnectorsJDBC-5.ReferenceDocuments%3A"></a>5. Reference Documents:</h1> 
+     <ul> 
+      <li><a href="http://jcp.org/aboutJava/communityprocess/maintenance/jsr221/221ChangeLog.html">JDBC 4.1 MR </a></li> 
+      <li><a href="./3.2+Service+Orchestration+One+Pager.html">Service Orchestration - One Pager</a></li> 
+      <li><a href="./Gfv31ConnectorsJDBC.html">GlassFish 3.1 - One Pager</a></li> 
+      <li><a href="http://download.oracle.com/docs/cd/E18930_01/html/821-2417/giydj.html">GlassFish 3.1 - Application Scoped Resources</a></li> 
+      <li><a href="http://download.oracle.com/javaee/6/api/javax/annotation/sql/DataSourceDefinition.html">DataSourceDefinition</a></li> 
+     </ul> <h4><a name="Gf3.2ConnectorsJDBC-6.Schedule%3A"></a>6. Schedule:</h1> <h4><a name="Gf3.2ConnectorsJDBC-6.1.ProjectedAvailability%3A"></a>6.1. Projected Availability:</h2> 
+     <ul> 
+      <li>Aligned to overall GlassFish 3.2 release schedules</li> 
+     </ul> <h4><a name="Gf3.2ConnectorsJDBC-"></a></h3> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Aug 28, 2012 by 
+<font color="#0050B2">10193</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

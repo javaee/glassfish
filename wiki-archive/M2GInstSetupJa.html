@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : M2GInstSetupJa</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="M2GInstSetupJa-%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB%E3%81%A8%E3%82%BB%E3%83%83%E3%83%88%E3%82%A2%E3%83%83%E3%83%97"></a>インストールとセットアップ</h1> <p>GlassFish プロジェクト向けマイグレーション・ツールは、 Zip ファイルの形式で配布されます。</p> <p>注意 - インストール後にマイグレーション・ツールのディレクトリ構造を変更しないようにしてください。少しでも変更すると、エラーあるいは予期せぬ動作の原因となる場合があります。</p> <h4><a name="M2GInstSetupJa-%E3%82%B7%E3%82%B9%E3%83%86%E3%83%A0%E8%A6%81%E4%BB%B6"></a>システム要件</h2> <p>マイグレーション・ツールをインストールする前に、システムが以下のソフトウェアおよびハードウェア要件を満たしていることを確認してください。</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">ソフトウェア / ハードウェア </th> 
+         <th class="confluenceTh"> 要件 </th> 
+         <th class="confluenceTh">&nbsp;</th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> オペレーティングシステム </td> 
+         <td class="confluenceTd"> マイグレーション・ツールは Solaris 9 x86 、 Solaris 9 および 最新の推奨される<a href="http://sunsolve.sun.com/pub-cgi/show.pl?target=home">パッチ </a>を適用した Solaris 8 Sparc版、 RedHat Linux 2.1 と 3.0、 Windows 2000 、 XP および Windows 2003 上で動作します </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Java 仮想マシン </td> 
+         <td class="confluenceTd"> <a href="http:--java.sun.com-j2se-1.5.0-download.jsp">Java をダウンロードしてください </a>； JRE だけではなく JDK が必要です。また、 &lt;javase-install-dir&gt;/bin ディレクトリを環境変数 PATH に追加し、あわせて Java インストール先ディレクトリへのパスを環境変数 JAVA_HOME として設定してください </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 空きディスク容量 </td> 
+         <td class="confluenceTd"> 最小 40 MB </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> RAM </td> 
+         <td class="confluenceTd"> 最小 128 MB、 推奨 256 MB </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>アプリケーションのコンパイルに必要となるディレクトリおよび JAR ファイルは、システムの CLASSPATH に登録済みであるものとします。マイグレーション・ツールの起動後にコンパイル / ビルドを実施した場合、この設定は引き継がれます。なお、 JDK の lib/ext ディレクトリ内に JAR ファイルが置かれている場合、これらがマイグレーション・ツールに含まれるライブラリと競合を起こす恐れがあります。この場合、JDK の lib/ext 内から JAR ファイルを削除してください。</p> <h4><a name="M2GInstSetupJa-Solaris%E3%81%B8%E3%81%AE%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB"></a>Solarisへのインストール</h2> <p>以下、マイグレーション・ツールが /tmp ディレクトリにダウンロードされたものと仮定して説明します。 Solaris へのマイグレーション・ツールのインストールは以下のように進めてください：</p> <p> 次のように zip ファイルを解凍します：</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">% cd /tmp 
+ % unzip __ASMT.ZIP__</pre> 
+       </div> 
+      </div>
+     </div> <p> 解凍後のディレクトリ構造は次のようになります。</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&amp;lt;INSTALL_DIR&gt;/migrate2glassfish/
+        |
+        |-- bin
+        |                
+        |-- doc                
+        |               
+        |-- lib                
+        |                
+        |-- tools</pre> 
+       </div> 
+      </div>
+     </div> <p> <a href="M2GRunJa.html" title="M2GRunJa">マイグレーション・ツールを起動</a>する前に、以下の環境変数を正しく設定してください：</p> 
+     <ul> 
+      <li><b>JAVA_HOME</b> – JDK がインストールされているディレクトリに設定（例： /opt/j2sdk1.4.0 ）</li> 
+      <li><b>ASMT_HOME</b> – マイグレーション・ツールがインストールされているディレクトリに設定（例： /opt/migrate2glassfish ）</li> 
+      <li><b>J2EE_HOME</b> – J2EE アプリケーション・サーバがインストールされているディレクトリに設定（例： /opt/j2sdkee1.3.1 ）。詳しくはシステム要件のセクションを参照してください。</li> 
+     </ul> <p> なお、 asmigrate.sh を編集してこれらの変数を恒久的に設定することもできます。 asmigrate.sh を編集する場合、まずはファイルをテキストエディタで開いてください。ファイルの先頭には次のように記述されています。</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false"># JAVA_HOME=
+# ASMT_HOME= 
+# J2EE_HOME=</pre> 
+       </div> 
+      </div>
+     </div> <p> これらの変数を適時設定した上で、行頭の '#' を削除してください。</p> <h4><a name="M2GInstSetupJa-Linux%E3%81%B8%E3%81%AE%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB"></a>Linux へのインストール</h2> <p>以下、マイグレーション・ツールが /tmp ディレクトリにダウンロードされたものと仮定して説明します。 Linux へのマイグレーション・ツールのインストールは以下のように進めてください：</p> <p> 次のように zip ファイルを解凍します：</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">% cd /tmp 
+% unzip __ASMT.ZIP__</pre> 
+       </div> 
+      </div>
+     </div> <p> 解凍後のディレクトリ構造は次のようになります。</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&amp;lt;INSTALL_DIR&gt;/
+        |
+        |-- bin
+        |                
+        |-- doc                
+        |                             
+        |-- lib                                
+        |                
+        |-- tools</pre> 
+       </div> 
+      </div>
+     </div> <p> <a href="M2GRun.html" title="M2GRun">マイグレーション・ツールを起動</a>する前に、以下の環境変数を正しく設定してください：</p> 
+     <ul> 
+      <li><b>JAVA_HOME</b> – JDK がインストールされているディレクトリに設定（例： /opt/j2sdk1.4.0 ）</li> 
+      <li><b>ASMT_HOME</b> – マイグレーション・ツールがインストールされているディレクトリに設定（例： /opt/migrate2glassfish ）</li> 
+      <li><b>J2EE_HOME</b> – J2EE アプリケーション・サーバがインストールされているディレクトリに設定（例： /opt/j2sdkee1.3.1 ）。詳しくはシステム要件のセクションを参照してください。</li> 
+     </ul> <p> なお、 asmigrate.sh を編集してこれらの変数を恒久的に設定することもできます。 asmigrate.sh を編集する場合、まずはファイルをテキストエディタで開いてください。ファイルの先頭には次のように記述されています。</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false"># JAVA_HOME=
+# ASMT_HOME= 
+# J2EE_HOME=</pre> 
+       </div> 
+      </div>
+     </div> <p> これらの変数を適時設定した上で、行頭の '#' を削除してください。</p> <h4><a name="M2GInstSetupJa-Windows%E3%81%B8%E3%81%AE%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB"></a>Windows へのインストール</h2> <p>以下、マイグレーション・ツールが C:\temp ディレクトリにダウンロードされたものと仮定して説明します。 Windows へのマイグレーション・ツールのインストールは以下のように進めてください：</p> <p> 次のように zip ファイルを解凍してください。<br> 解凍後のディレクトリ構造は次のようになります。</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">C:\migrate2glassfish\
+        |
+        |-- bin
+        |                
+        |-- doc                
+        |               
+        |-- lib                                
+        |                
+        |-- tools</pre> 
+       </div> 
+      </div>
+     </div> <p> <a href="M2GRun.html" title="M2GRun">マイグレーション・ツールを起動</a>する前に、以下の環境変数を正しく設定してください：</p> 
+     <ul> 
+      <li><b>JAVA_HOME</b> – JDK がインストールされているディレクトリに設定（例： C:\j2sdk1.4.0 ）</li> 
+      <li><b>ASMT_HOME</b> – マイグレーション・ツールがインストールされているディレクトリに設定（例： C:\migrate2glassfish ）</li> 
+      <li><b>J2EE_HOME</b> – J2EE アプリケーション・サーバがインストールされているディレクトリに設定（例： C:\j2sdkee1.3.1 ）。詳しくはシステム要件のセクションを参照してください。</li> 
+     </ul> <p> なお、 asmigrate.sh を編集してこれらの変数を恒久的に設定することもできます。 asmigrate.sh を編集する場合、まずはファイルをテキストエディタで開いてください。ファイルの先頭には次のように記述されています。</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">rem set JAVA_HOME= 
+rem set ASMT_HOME=
+rem set J2EE_HOME=</pre> 
+       </div> 
+      </div>
+     </div> <p> これらの変数を適時設定した上で、行頭の '#' を削除してください。</p> <h4><a name="M2GInstSetupJa-%E3%82%A2%E3%83%97%E3%83%AA%E3%82%B1%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%83%BB%E3%82%B5%E3%83%BC%E3%83%90%E3%81%AE%E6%BA%96%E5%82%99%EF%BC%88%E7%A7%BB%E8%A1%8C%E6%B8%88%E3%81%BF%E3%82%A2%E3%83%97%E3%83%AA%E3%82%B1%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%82%92%E5%AE%9F%E8%A1%8C%E3%81%99%E3%82%8B%E3%81%9F%E3%82%81%E3%81%AB%EF%BC%89"></a>アプリケーション・サーバの準備（移行済みアプリケーションを実行するために）</h2> <p>移行済みのアプリケーションを実行するにあたって、アプリケーション・サーバの設定をいくつか変更する必要があります。この変更を行うことにより、マイグレーション・ツールに含まれる実行時互換ライブラリをアプリケーション・サーバが認識できるようになります。修正方法については次のセクションで説明します。</p> <p>Windows 、 Solaris 、 Linux とも以下の手順を実行してください:</p> <p>アプリケーション・サーバの管理コンソール上で、Admin GUI -&gt; Application Server -&gt; JVM settings -&gt; Path Settings -&gt; Classpath Suffix を開き、 <br> 管理画面 -&gt; アプリケーションサーバー -&gt; JVM 設定 -&gt; Path 設定を開き、クラスパスのサフィックスに <tt>&lt;INSTALL_DIR&gt;/migrate2glassfish/lib/asmt-rt.jar</tt> を追加して保存</p> <p><a href="M2GOverviewJa.html" title="M2GOverviewJa">前へ</a> <a href="M2GPreRunJa.html" title="M2GPreRunJa">次へ</a></p> 
+     <hr> <p>日本語翻訳: <a href="http://apercu-j.blogspot.com/">Kana. Kotake</a></p> <p><a href="M2GOverview.html" title="M2GOverview">英文 </a> (翻訳したバージョン: 11)</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 09, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

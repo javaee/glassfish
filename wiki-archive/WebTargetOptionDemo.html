@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : WebTargetOptionDemo</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="WebTargetOptionDemo-QAhandoverforwebtask%22Implement%5Ctargetoptionforexisting3.0commands%22"></a>QA handover for web task "Implement --target option for existing 3.0 commands"</h3> <p>List of commands implemented to support --target option</p> 
+     <ul> 
+      <li>create-threadpool, delete-threadpool, list-threadpools (v2.1)</li> 
+      <li>create-ssl, delete-ssl (v2.1)</li> 
+      <li>create-virtual-server, delete-virtual-server, list-virtual-servers (v2.1)</li> 
+      <li>create-http, delete-http (v3.0)</li> 
+      <li>create-http-listener, delete-http-listener, list-http-listeners (v2.1)</li> 
+      <li>create-protocol, delete-protocol, list-protocols (v3.0)</li> 
+      <li>create-protocol-filter, delete-protocol-filter, list-protocol-filters (new v3.1)</li> 
+      <li>create-protocol-finder, delete-protocol-finder, list-protocol-finders (new v3.1)</li> 
+      <li>create-transport, delete-transport, list-transports (v3.0)</li> 
+      <li>create-network-listener, delete-network-listener, list-network-listeners (v3.0)</li> 
+     </ul> <p>--target option for these commands are documented in 2.1 reference manual [1].</p> <p>[1] <a href="http://docs.sun.com/app/docs/doc/821-0179/6nl8hchmr?l=en&amp;a=expand">http://docs.sun.com/app/docs/doc/821-0179/6nl8hchmr?l=en&amp;a=expand</a></p> <p>v3 asadmin reference manual - <a href="http://docs.sun.com/app/docs/doc/820-7701/6nium5vqn?l=en&amp;a=expand">http://docs.sun.com/app/docs/doc/820-7701/6nium5vqn?l=en&amp;a=expand</a></p> <p>new 3.1 commands - create-protocol-filter/finder - port unification demo - <a href="./GlassFish+MS3+Port+Unification+Demo.html">http://wikis.sun.com/display/GlassFish/GlassFish+MS3+Port+Unification+Demo</a></p> <p>--target</p> <p>This option specifies the target for which you are creating the virtual server. Valid values are:</p> 
+     <ul> 
+      <li>server- Specifies the default server instance as the target for creating the virtual server. server is the name of the default server instance and is the default value.</li> 
+      <li>configuration_name- Specifies a particular configuration as the target for creating the virtual server.</li> 
+      <li>cluster_name- Specifies a particular cluster as the target for creating the virtual server.</li> 
+     </ul> <h4><a name="WebTargetOptionDemo-Demo"></a>Demo</h4> <p>asadmin start-domain</p> <p>// create cluster and local instances</p> <p>asadmin create-cluster c1</p> <p>asadmin create-local-instance --cluster c1 in1</p> <p>asadmin create-local-instance --cluster c1 in2</p> <p>// start domain and local instances</p> <p>asadmin restart-domain<br> asadmin start-local-instance in1<br> asadmin start-local-instance in2</p> <p>asadmin create-virtual-server <b>--target c1</b> --hosts localhost c1-server</p> <p>asadmin create-virtual-server <b>--target c1-config</b> --hosts localhost c1-config-server</p> <p>asadmin list-virtual-servers c1</p> <p>// Check if c1-server and c1-config-server are included</p> <p>asadmin create-protocol <b>--target c1</b> c1-protocol</p> <p>asadmin create-http <b>--target c1</b> --default-virtual-server c1-server c1-protocol</p> <p>asadmin create-network-listener <b>--target c1</b> --listenerport 17777 --protocol c1-protocol c1-network-listener</p> <p>asadmin deploy <b>--target c1</b> hello.war</p> <p>// Check <a href="http://localhost:17777/hello">http://localhost:17777/hello</a> to see if the app is successfully deployed</p> <p>asadmin delete-network-listener <b>--target c1</b> c1-network-listener</p> <p>asadmin list-network-listeners c1</p> <p>// Check if c1-network-listener is removed</p> <p>asadmin delete-protocol <b>--target c1</b> c1-protocol</p> <p>asadmin list-protocols c1</p> <p>// Check if c1-protocol is removed</p> <p>asadmin delete-virtual-server <b>--target c1</b> c1-server</p> <p>asadmin list-virtual-servers c1</p> <p>// Check if c1-server is removed</p> 
+     <ul> 
+      <li>Devtest</li> 
+     </ul> <p>&nbsp;&nbsp;&nbsp; appserv-tests/devtests/web/asadminDeletesTarget&nbsp;&nbsp;&nbsp; create/delete-threadpool, create/delete-transport, create/delete-protocol, create/delete-http, create/delete-network-listener</p> <p>&nbsp;&nbsp;&nbsp; appserv-tests/devtests/web/networkListenerTarget&nbsp;&nbsp;&nbsp; create/delete-virtual-server, create/delete-protocol, create/delete-http, create/delete-network-listener</p> <p>&nbsp;&nbsp;&nbsp; appserv-tests/devtests/web/portUnificationTarget&nbsp;&nbsp;&nbsp; create/delete-protocol, create/delete-http, create/delete/list-protocol-finder, create/delete/list-protocol-filter</p> <p>&nbsp;&nbsp;&nbsp; appserv-tests/devtests/web/wrongTransportTarget&nbsp;&nbsp;&nbsp; create/delete-protocol, create/delete-http, create/delete/list-protocol-finder, create/delete/list-protocol-filter</p> 
+     <ul> 
+      <li>v2 tests</li> 
+     </ul> <p>appserver-sqe/se/admincli/tonga/testbase</p> <p>Set CVSROOT= :pserver:username@redcvs.red.iplanet.com:/m/jws<br> cvs co appserver-sqe/bootstrap.xml<br> cd appserver-sqe<br> ant -f bootstrap.xml se-admincli-se</p> <h4><a name="WebTargetOptionDemo-Questions%3F"></a>Questions?</h3> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Aug 10, 2010 by 
+<font color="#0050B2">amyroh</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

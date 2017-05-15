@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : NetBeanPluginTestSpec6.5.html</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="NetBeanPluginTestSpec6.5.html-BacktoMainTestSpecificationPageNBPluginTestSpecs"></a><a href="NBPluginTestSpecs.html" title="NBPluginTestSpecs">Back to Main Test Specification Page</a></h2> <h4><a name="NetBeanPluginTestSpec6.5.html-Introduction"></a>Introduction</h2> <p> This document provides a list of test cases that will be manually executed to test the Netbeans6.5 plugin with GlassFish V3 Prelude server.In order to execute this test manually you need to have NetBeans6.5 and GlassFish V3 installed in your system.</p> 
+     <div> 
+      <ul> 
+       <ul> 
+        <li><a href="#NetBeanPluginTestSpec6.5.html-BacktoMainTestSpecificationPageNBPluginTestSpecs"> Back to Main Test Specification Page</a></li> 
+        <li><a href="#NetBeanPluginTestSpec6.5.html-Introduction">Introduction</a></li> 
+       </ul> 
+       <li><a href="#NetBeanPluginTestSpec6.5.html-ServerRegistrationandConfiguration">Server Registration and Configuration</a></li> 
+       <ul> 
+        <li><a href="#NetBeanPluginTestSpec6.5.html-ProjectRunPropertiesandSamples">Project Run Properties and Samples</a></li> 
+        <li><a href="#NetBeanPluginTestSpec6.5.html-ResourcesandConfiguration">Resources and Configuration</a></li> 
+        <li><a href="#NetBeanPluginTestSpec6.5.html-NewTestCasesforWindowVista"> <b>New Test Cases for Window Vista</b></a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="NetBeanPluginTestSpec6.5.html-ServerRegistrationandConfiguration"></a>Server Registration and Configuration</h1> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Test Case ID </th> 
+         <th class="confluenceTh"> Test Case Purpose </th> 
+         <th class="confluenceTh"> Test Case Description </th> 
+         <th class="confluenceTh"> Expected Result </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> Check the default Application server instance and its default properties </td> 
+         <td class="confluenceTd"> 1.Start NB IDE,Go to the Runtime window and expand the Server Registry instances nodes 2. Click on the Services node representing the default server GlassFish V3 Prelude. </td> 
+         <td class="confluenceTd"> The default GlassFish V3 server node should present. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd"> Remove default GlassFish V3 instance </td> 
+         <td class="confluenceTd"> 1. Perform 'Remove' action on the default GlassFish V3 appserver installation node </td> 
+         <td class="confluenceTd">The GlassFish V3 node should disappear. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3 </td> 
+         <td class="confluenceTd"> Add the default Application server installation back </td> 
+         <td class="confluenceTd"> 1.Perform 'Add Server...' action on Server registry node. 2. In the "Choose server" dialog window select server "GlassFish V3 Prelude and click NEXT. 3. In the next dialog window provide the App server's installation Location,Click on FINISH. </td> 
+         <td class="confluenceTd"> New sub node "GlassFish V3 Prelude" should appear under the Server node. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4 </td> 
+         <td class="confluenceTd"> Verify View License Agreement </td> 
+         <td class="confluenceTd"> 1.Start NetBeans IDE,Select IDE menu Server. 2.Select GlassFish V3 Prelude as a server, select NEXT. 3.Click on the link "I have read and accept the license agreement...(Click). </td> 
+         <td class="confluenceTd">It should open license agrement in the browser. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5 </td> 
+         <td class="confluenceTd"> Verify Download V3 Now </td> 
+         <td class="confluenceTd"> 1.Start NetBeans IDE,Select IDE menu Server. 2.Select GlassFish V3 Prelude as a server, select NEXT. 3.Provide server location to downloaded. 4.Check the license agreement and click on the "Download V3 Now". </td> 
+         <td class="confluenceTd">GlassFish V3 should be downloded in the given server location. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6 </td> 
+         <td class="confluenceTd"> Verify Download V3 with invalid path </td> 
+         <td class="confluenceTd"> 1.Start NetBeans IDE,Select IDE menu Server. 2.Select GlassFish V3 Prelude as a server, select NEXT. 3.Provide server invalid server location to downloaded. 4.Check the license agreement and click on the "Download V3 Now". </td> 
+         <td class="confluenceTd">It should show "Path does not exits and can not be created". </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6 </td> 
+         <td class="confluenceTd"> Verify remove server location </td> 
+         <td class="confluenceTd"> 1.Start IDE and right click on the server node select "Add Server...",Select GlassFish V3 prelude and provide the platform location for GlassFish V3 prelude server. 2.Remove platform location of GlassFish V3 prelude server in the dialog window "Platform location folder". 3.Provide the same server location again for GlassFish V3. </td> 
+         <td class="confluenceTd">Should not be any exception. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 7 </td> 
+         <td class="confluenceTd"> Verify Register default domain </td> 
+         <td class="confluenceTd"> 1.Start IDE and right click on the server node select GlassFish V3. 2.Provide platform location for GlassFish V3 server. 3.Click FINISH in the "Domain Location" wizard. </td> 
+         <td class="confluenceTd">Registered GlassFish V3 with default domain should appear under server node. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 8 </td> 
+         <td class="confluenceTd"> Add a multiple Application server instance </td> 
+         <td class="confluenceTd"> 1. Perform 'Add Server...' action on Server registry node. 2. In the opened dialog choose server "GlassFish V3. and click "Next". 3. In the next dialog window give the Appserver's Location. 4. Click "Finish". </td> 
+         <td class="confluenceTd"> A new sub node representing newly added Application server (GlassFish V3 <sup><a href="#NetBeanPluginTestSpec6.5.html-1">1</a></sup> ) should appear under the Server nod. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p><b>Resolve Missing Server Problem</b></p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Test Case ID</th> 
+         <th class="confluenceTh"> Test case Purpose </th> 
+         <th class="confluenceTh">Test Case Description </th> 
+         <th class="confluenceTh">Expected Result </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> Verify Resolve missing server problem </td> 
+         <td class="confluenceTd"> 1. Register GlassFish V3 server. 2. Create a simple web application(Hello World)-Set target server:GlassFish V3 and Java EE version:JAVA EE5. 3. Right click on the GlassFish V3 server and select remove. 4. Right click on the server select Add Server&gt;GlassFish V3 Prelude and select Next. 5.Provide V3 installation location in the server location wizard and select next. 6.Provide domain location to create a new domain and click on finish. 7.Right click on the application select resolve missing server problem. </td> 
+         <td class="confluenceTd"> Should not be any exception. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p><b>i.Test Adding server through the server manager</b></p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Test Case ID</th> 
+         <th class="confluenceTh"> Test case Purpose </th> 
+         <th class="confluenceTh">Test Case Description </th> 
+         <th class="confluenceTh">Expected Result </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> Add Application server </td> 
+         <td class="confluenceTd"> 1. Select IDE menu Tools/Server Manager. 2.Click on Add Server. 3. In the "Choose server" dialog window select server "GlassFish V3 Prelude and click NEXT. 3. In the next dialog window provide the App server's installation Location,Click on FINISH. </td> 
+         <td class="confluenceTd"> A New sub node "GlassFish V3 Prelude" should appear under the Server node. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd"> Remove Application server </td> 
+         <td class="confluenceTd"> 1. Open Tools/Server Manager. 2. Select GlassFish V3 application Server and click on Remove. </td> 
+         <td class="confluenceTd">The server name should disappear from server node list. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3 </td> 
+         <td class="confluenceTd"> Add multiple server instances </td> 
+         <td class="confluenceTd"> 1. Select IDE menu Tools/Server Manager. 2.Click on Add Server. 3. In the "Choose server" dialog window select server "GlassFish V3 Prelude and click NEXT. 3. In the next dialog window provide the App server's installation Location,Click on FINISH. </td> 
+         <td class="confluenceTd"> A New sub node "GlassFish V3 Prelude <sup><a href="#NetBeanPluginTestSpec6.5.html-1">1</a></sup> " should appear under the Server node. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p><b>ii.Test Application server Instances</b></p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Test Case ID</th> 
+         <th class="confluenceTh"> Test case Purpose </th> 
+         <th class="confluenceTh">Test Case Description </th> 
+         <th class="confluenceTh">Expected Result </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> Verify server instance 'Start' </td> 
+         <td class="confluenceTd"> 1.Perform 'Start' action on the GlassFish V3 Prelude server instance node. 2.Clean up:Stop and remove the server. </td> 
+         <td class="confluenceTd">1. GlassFish V3 Prelude server should be successfully started. 2.Check the IDE server messages in a output window. 3.Verify instance node can be expandable 4.Check it should contain Application and Resource node. 5.Check Resource node can be expandable. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd"> Verify server instance 'Restart' </td> 
+         <td class="confluenceTd"> 1.Register GlassFish V3 Prelude server. 2.Select 'Start'action on the server. 3.Select 'Restart' action on the server. 3.Clean up:Stop and remove the server. </td> 
+         <td class="confluenceTd">1.GlassFish v3 server should be restarted successfully. 2.Check the IDE server out put. 3.Verify instance node can be expandable 4.Check it should contain Application and Resource node. 5.Check Resource node can be expandable. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3 </td> 
+         <td class="confluenceTd"> Verify Server instance 'Refresh' </td> 
+         <td class="confluenceTd"> 1.Register GlassFish V3 Prelude server. 2.Select 'Start' action on the server. 3.Select 'Refresh' action on the server. 3.Clean up:Stop and remove the server. </td> 
+         <td class="confluenceTd">1.Server should not be stopped. 2.GlassFish v3 server should refresh. 3.Verify instance node can be expandable 4.Check it should contain Application and Resource node. 5.Check Resource node can be expandable. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4 </td> 
+         <td class="confluenceTd"> Verify server instance 'Start In Debug Mode' </td> 
+         <td class="confluenceTd"> 1.Register GlassFish V3 server. 2.Perform "Start in Debug Mode" action on the GlassFish V3 server instance node. 3.Clean up:Stop and remove the server. </td> 
+         <td class="confluenceTd">1.GlassFish V3 server should be started successfully in debug mode. 2.Check the IDE server out put. 3.Verify instance node can be expandable 4.Check it should contain Application and Resource node. 5.Check Resource node can be expandable. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5 </td> 
+         <td class="confluenceTd"> Verify server instance 'Start in Profile Mode' </td> 
+         <td class="confluenceTd"> 1.Register GlassFish V3 server. 2.Perform "Start in Profile Mode" action on the GlassFish V3 server instance node. 3.Select 'OK' in the information dialog window. 4.Clean up:Stop and remove the server. </td> 
+         <td class="confluenceTd">1.GlassFish V3 server should be started successfully in Profile mode. 2.Check the IDE server out put. 3.Resources node can not be expandable. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6 </td> 
+         <td class="confluenceTd"> Verify 'Refresh' when server in Profile mode </td> 
+         <td class="confluenceTd"> 1.Register GlassFish V3 server. 2.Perform "Start in Profile Mode" action on the GlassFish V3 server instance node. 3.Select 'OK' in the information dialog window. 4.Perform 'Refresh' action on the server node. 4.Clean up:Stop and remove the server. </td> 
+         <td class="confluenceTd">1.GlassFish V3 server should be refreshed successfully. 2.Verify instance node can be expandable 3.Check it should contain Application and Resource node. 4.Resources node can not be expandable. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 7 </td> 
+         <td class="confluenceTd"> Verify 'Restart' when server in Profile mode. </td> 
+         <td class="confluenceTd"> 1.Register GlassFish V3 server. 2.Perform "Start in Profile Mode" action on the GlassFish V3 server instance node. 3.Select 'OK' in the information dialog window. 4.Perform 'Restart' action on the server node. 4.Clean up:Stop and remove the server. </td> 
+         <td class="confluenceTd">1.GlassFish V3 server should be restarted successfully. 2.Verify instance node can be expandable 3.Check it should contain Application and Resource node. 4.Resources node can not be expandable. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 8 </td> 
+         <td class="confluenceTd"> Verify server instance 'View Admin Console' </td> 
+         <td class="confluenceTd"> 1.Register GlassFish V3 server. 2.Perform 'Start' action on the GlassFish V3 Prelude server instance node. 3.Perform ' View Admin Console ' action on the server 4.Clean up:Stop and remove the server. </td> 
+         <td class="confluenceTd">1. GlassFish V3 Prelude server should be successfully started . 2.Browser should open with the following address <a href="http://hostname:8080/admin">http://hostname:8080/admin</a> <p> </p></td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 9 </td> 
+         <td class="confluenceTd"> Verify server instance ' View Update Center ' </td> 
+         <td class="confluenceTd"> 1.Register GlassFish V3 server. 2.Perform 'Start' action on the server 3.Perform 'View Update center' action on the GlassFish V3 server instance node. 3.Click on 'OK' in the question dialog window. 4.Clean up:Stop and Remove the server. </td> 
+         <td class="confluenceTd">1. GlassFish V3 Prelude server should be successfully started . 2.It should install update center successfully. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 10 </td> 
+         <td class="confluenceTd"> Verify server instance ' View Update Center' after installation </td> 
+         <td class="confluenceTd"> 1.Register GlassFish V3 server. 2.Perform 'Start' action on the server 3.Perform 'View Update center' action on the GlassFish V3 server instance node. 3.Clean Up:Stop and remove the server. </td> 
+         <td class="confluenceTd">1.It should open 'Update Center' wizard. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 11 </td> 
+         <td class="confluenceTd"> Verify 'Properties ' </td> 
+         <td class="confluenceTd"> 1.Register GlassFish V3 server. 2.Select 'Properties' action on the server. 3.Clean Up:Remove server. </td> 
+         <td class="confluenceTd">Properties dialog window should open. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 12 </td> 
+         <td class="confluenceTd"> Verify 'View Server log' server instance. </td> 
+         <td class="confluenceTd"> 1.Register GlassFish V3 server. 2.Perform 'Start' action on the GlassFish V3 Prelude server instance node. 3.Perform 'View Server log' action the server. </td> 
+         <td class="confluenceTd">It should show the IDE server log window. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 13 </td> 
+         <td class="confluenceTd"> Verify server instance 'Stop' </td> 
+         <td class="confluenceTd"> 1.Register GlassFish V3 server. 2.Perform 'Start' action on the GlassFish V3 Prelude server instance node. 3.Perform 'Stop' action the server. 4.Clean up:Stop and remove the server. </td> 
+         <td class="confluenceTd">1. GlassFish V3 Prelude server should be successfully started and stopped successfully. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p><b>iii.Test Create DOMAIN</b></p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Test Case ID</th> 
+         <th class="confluenceTh"> Test case Purpose </th> 
+         <th class="confluenceTh">Test Case Description </th> 
+         <th class="confluenceTh">Expected Result </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> Verify create domain </td> 
+         <td class="confluenceTd"> 1.Perform 'Add Server...' action on Server node. 2. In the "Choose server" dialog window select server "GlassFish V3 Prelude and click NEXT. 3. In the next dialog window provide the App server's installation Location,Click on NEXT. 4.Provide Domain to be created in the domain text field. 5.Click on FINISH. </td> 
+         <td class="confluenceTd">1.Domain should be created in the given location with given name. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd"> verify Create domain with empty domain field. </td> 
+         <td class="confluenceTd"> 1.Perform 'Add Server...' action on Server node. 2. In the "Choose server" dialog window select server "GlassFish V3 Prelude and click NEXT. 3. In the next dialog window provide the App server's installation Location,Click on NEXT. 4.Make Domain field as empty. 5.Click on FINISH. </td> 
+         <td class="confluenceTd">It should show message to user that " The domain name can not be blank". </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3 </td> 
+         <td class="confluenceTd"> Verify server instances of created domain </td> 
+         <td class="confluenceTd"> 1.Follow steps as given for test "Test Application server Instances " </td> 
+         <td class="confluenceTd">Results expected as for test " Verify Application server Instances". </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p><b>iv.Test Start/Restart/Refresh/Stop for multiple servers.</b></p> <p> SETUP:Create four domain.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Test Case ID</th> 
+         <th class="confluenceTh"> Test case Purpose </th> 
+         <th class="confluenceTh">Test Case Description </th> 
+         <th class="confluenceTh">Expected Result </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> Verify ' Start ' server instance </td> 
+         <td class="confluenceTd"> 1.Register GlassFish v3 server with each domain(Domain2,Domain3, Domain4, Domain5). 2.Perform 'Start' action on the each server. </td> 
+         <td class="confluenceTd"> 1.All the four servers should be started successfully. 2.Check IDE server messages in the output window for all four server. 3.Verify instance node can be expandable for all four servers 4.Check all the four servers should contain Application and Resource node. 5.Check Resource node can be expandable for all the four servers. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd"> Verify ' Restart ' server instance </td> 
+         <td class="confluenceTd"> 1.Register GlassFish v3 server with each domain(Domain2,Domain3, Domain4, Domain5). 2.Perform 'Start' action on the each server. 3.Perform ' Restart ' action on all the four servers. </td> 
+         <td class="confluenceTd"> 1.All the four servers should be started and restarted successfully. 2.Check IDE server messages in the output window for all four server. 3.Verify instance node can be expandable for all four servers 4.Check all the four servers should contain Application and Resource node. 5.Check Resource node can be expandable for all the four servers. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3 </td> 
+         <td class="confluenceTd"> verify 'Refresh ' server instance </td> 
+         <td class="confluenceTd"> 1.Perform ' Refresh 'action on all four servers. </td> 
+         <td class="confluenceTd">1.Any server should not be stopped. 2.Verify instance node can be expandable for all four servers 3.Check all the four servers should contain Application and Resource node. 4.Check Resource node can be expandable for all four servers. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4 </td> 
+         <td class="confluenceTd"> Verify ' Stop ' server instance </td> 
+         <td class="confluenceTd"> 1.Perform ' Stop ' action on all four servers. </td> 
+         <td class="confluenceTd"> 1.All four the servers should be stopped successfully. 2.Check IDE server log out put message. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p><b>v.Test Deployment,UnDeployment,OpenInBrowser and Samples</b></p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Test Case ID</th> 
+         <th class="confluenceTh"> Test case Purpose </th> 
+         <th class="confluenceTh">Test Case Description </th> 
+         <th class="confluenceTh">Expected Result </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> Verify Deploy application </td> 
+         <td class="confluenceTd"> 1.Register GlassFish V3 server. 2.Perform 'Start' action on the GlassFish V3 Prelude server instance node. 3.Open a sample web application: Select File&gt;NewProject&gt;Samples&gt;JavaWeb&gt;JSTLExamples. 4.Right click on the sample application, select target Clean&amp;Build, Undepoy&amp;Deploy and Run 5.Clean up:Undeploy the application,Stop and remove the server. </td> 
+         <td class="confluenceTd">1.The sample application should be deployed successfully. 2.Deployed application should appear under application node:select Servers&gt;GlassFish V3&gt;Applications. 3.Browser should show out put for the deployed application. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd"> Verify Undeploy application </td> 
+         <td class="confluenceTd"> 1.Perform 'Start' action on the GlassFish V3 Prelude server instance node. 2.Open a sample web application: Select File&gt;NewProject&gt;Samples&gt;JavaWeb&gt;JSTLExamples. 3.Right click on the sample application, select target Clean&amp;Build, Undepoy&amp;Deploy and Run 4.Undeploy the sample application:Right click on the deployed application and select UNDEPLOY:Select servers&gt;GF V3&gt;Application. 5.Clean up:Stop and remove the server. </td> 
+         <td class="confluenceTd">1.The sample application should be Undeployed successfully. 2.Undeployed application should not appear under application node:select Servers&gt;GlassFish V3&gt;Applications. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3 </td> 
+         <td class="confluenceTd"> Verify 'OpenInBrowser' </td> 
+         <td class="confluenceTd"> 1.Register GlassFish V3 server. 2.Perform 'Start' action on the GlassFish V3 Prelude server instance node. 3.Open a sample web application: Select File&gt;NewProject&gt;Samples&gt;JavaWeb&gt;JSTLExamples. 4.Right click on the sample application, select target Clean&amp;Build and Undepoy&amp;Deploy. 5.Right click on the deployed application select 'OpenInBrowser':Select Servers&gt;GlassFish V3&gt;Applications. 6.Clean up:Undeploy the application,Stop and remove the server. </td> 
+         <td class="confluenceTd">Action on 'OpenInBrowser' should bring a browser with out put. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p><b>Do 'OpenInBrowser' for all the sample web, Java Web(Visual JSF) and webServices sample applications.</b></p> <h4><a name="NetBeanPluginTestSpec6.5.html-ProjectRunPropertiesandSamples"></a>Project Run Properties and Samples</h2> <p> <b>SETUP:Need to register two GlassFish V3 server and two simple web application.</b></p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Test Case ID</th> 
+         <th class="confluenceTh"> Test case Purpose </th> 
+         <th class="confluenceTh">Test Case Description </th> 
+         <th class="confluenceTh">Expected Result </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> Verify Change in context Path </td> 
+         <td class="confluenceTd"> 1.Register GlassFish V3 server. 2.Perform 'Start' action on the GlassFish V3 Prelude server instance node. 3.Open a sample web application: Select File&gt;NewProject&gt;Samples&gt;JavaWeb&gt;JSTLExamples. 4.Change context path:Right click on the application select Properties/Run. 5.Right click on the sample application, select target Clean&amp;Build, Undepoy&amp;Deploy and Run 5.Clean up:Undeploy the application,Stop and remove the server. </td> 
+         <td class="confluenceTd">1.The sample application should be deployed successfully. 2.Deployed application should appear under application node:select Servers&gt;GlassFish V3&gt;Applications. 3.Browser should show out put for the deployed application with the specified contextpath. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd"> Verify change in context path with 'OpenInBrowser' </td> 
+         <td class="confluenceTd"> 1.Register GlassFish V3 server. 2.Perform 'Start' action on the GlassFish V3 Prelude server instance node. 3.Open a sample web application: Select File&gt;NewProject&gt;Samples&gt;JavaWeb&gt;JSTLExamples. 4.Change context path:Right click on the application select Properties/Run. 5.Right click on the sample application, select target Clean&amp;Build, Undepoy&amp;Deploy. 6.Right click on the deployed application select'OpenInBrowser'. 5.Clean up:Undeploy the application,Stop and remove the server. </td> 
+         <td class="confluenceTd">1.The sample application should be deployed successfully. 2.Deployed application should appear under application node:select Servers&gt;GlassFish V3&gt;Applications. 3.Browser should show out put for the deployed application with the specified contextpath on selecting 'OpenInBrowser' action. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3 </td> 
+         <td class="confluenceTd"> Verify change target server. </td> 
+         <td class="confluenceTd"> 1.Register two GlassFish V3 server. 2.Perform 'Start' action on both GlassFiah server. 3.Open two sample web application:Select File&gt;NewProject&gt;Samples&gt;web&gt;JSTLExamples,JSPExamples. 4.Change the target server in the run properties of the web application if it is set to another GlassFish V3 server. 5.Right click on the application select target Clean&amp;Build, Undeploy&amp;Deploy and Run. </td> 
+         <td class="confluenceTd">Application should be deployed on selected server. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p><b>Do change context path for all the sample web, Java Web(Visual JSF) and webServices sample applications.</b></p> <h4><a name="NetBeanPluginTestSpec6.5.html-ResourcesandConfiguration"></a>Resources and Configuration</h2> <p><b>JDBC Resource Configuration:</b></p> <p> <b>i.Test Use Existing JDBC ConnectionPool:</b></p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Test Case ID</th> 
+         <th class="confluenceTh"> Test case Purpose </th> 
+         <th class="confluenceTh">Test Case Description </th> 
+         <th class="confluenceTh">Expected Result </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> Verify JNDI Name </td> 
+         <td class="confluenceTd"> 1.Start NetBeans IDE and Register GlassFish V3 Prelude server and start. 2.Create a simple web application(Hello World):Select File&gt;NewProject&gt;Java Web&gt;WebApplication,Set target server-GF V3 and Java EE-Java EE5. 3.Right click on the web application select New&gt;Other&gt;GlassFish&gt;JDBC Resource&gt;Use ExistingConnectionPool. 4.Set JNDI Name:jdbc/myDatasource_New 5.Select BACK&gt;NEXT. 6.Clean up: Stop/Remove server. </td> 
+         <td class="confluenceTd">Given JNDI Name should be saved even on selecting BACK&gt;NEXT. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd"> Verify JNDI Name with suffixing special charactors </td> 
+         <td class="confluenceTd"> 1.Start NetBeans IDE and Register GlassFish V3 Prelude server and start. 2.Create a simple web application(Hello World):Select File&gt;NewProject&gt;Java Web&gt;WebApplication,Set target server-GF V3 and Java EE-Java EE5. 3.Right click on the web application select New&gt;Other&gt;GlassFish&gt;JDBC Resource. 4.Select NEXT. 5.Don't select any connection pool(Use existing connection pool or create New). 5.Suffix special charactors to the JNDI Name:JNDI Name:jdbc/myDatasource*(&lt;,&gt;,?) </td> 
+         <td class="confluenceTd">Still wizard should show error message. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3 </td> 
+         <td class="confluenceTd"> Verify Existing JDBC ConnectionPool Drop-Down list when server is running </td> 
+         <td class="confluenceTd"> 1.Start NetBeans IDE and Register GlassFish V3 Prelude server and start. 2.Create a simple web application(Hello World):Select File&gt;NewProject&gt;Java Web&gt;WebApplication,Set target server-GF V3 and Java EE-Java EE5. 3.Right click on the web application select New&gt;Other&gt;GlassFish&gt;Use Existing JDBC Connection Pool. 4.Clean up:Stop/Remove server. </td> 
+         <td class="confluenceTd"> The Drop-Down list should list out the available connection pool. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4 </td> 
+         <td class="confluenceTd"> Verify Existing JDBC ConnectionPool Drop-Down list when server is not running </td> 
+         <td class="confluenceTd"> 1.Start NetBeans IDE and Register GlassFish V3 Prelude server. 2.Create a simple web application(Hello World):Select File&gt;NewProject&gt;Java Web&gt;WebApplication,Set target server-GF V3 and Java EE-Java EE5. 3.Right click on the web application select New&gt;Other&gt;GlassFish&gt;Use Existing JDBC Connection Pool. </td> 
+         <td class="confluenceTd"> The Drop-Down list should not list out the available connection pool. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5 </td> 
+         <td class="confluenceTd"> Verify Use existing JDBC connectionPool </td> 
+         <td class="confluenceTd"> 1.Start NetBeans IDE and Register GlassFish V3 Prelude server and start. 2.Create a simple web application(Hello World):Select File&gt;NewProject&gt;Java Web&gt;WebApplication,Set target server-GF V3 and Java EE-Java EE5. 3.Right click on the web application select New&gt;Other&gt;GlassFish&gt;JDBC Resource&gt;Use ExistingConnectionPool. 4.Select Derby Pool from the drop-down list. 5.Set General attributes for JDBC Resource: JNDI Name:jdbc/myDataResource_1234 Object type:The type of the object Enabled:Set to true to enable the resource, or false to disable the resource Description:Description of the resource. 6.Additional Properties: i.Click Add to add two row for the new property to the table with same name and different value. ii.In the Properties table, enter the same Name and different Value of the new property. iii.Click Enter to save the changes to the property table. </td> 
+         <td class="confluenceTd">Check created resource in the sun-resource.xml file. 2.Verify information dialog window "Duplicate Property: Property Name should be Unique". When you type same Name. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6 </td> 
+         <td class="confluenceTd"> Verify Use existing JDBC connectionPool with different JDBC ConnectionPool(Sample Pool) </td> 
+         <td class="confluenceTd"> 1.Follow above steps as in the test case3 to create second JDBC connection Pool(DerbyPool) </td> 
+         <td class="confluenceTd">Results expected as in the test case3. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 7 </td> 
+         <td class="confluenceTd"> Verify Deployed resoure </td> 
+         <td class="confluenceTd"> 1.Steps1-6 same as test case5. 2.Right click on the application select Clean and Build/Undeploy&amp;Deploy/Run. </td> 
+         <td class="confluenceTd">1.Application should be deployed successfully. 2.Deployed resource should appear under Resources node. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 8 </td> 
+         <td class="confluenceTd"> Verify Delete deployed resource </td> 
+         <td class="confluenceTd"> 1.Steps1-6 same as test case5. 2.Right click on the application select Clean and Build/Undeploy&amp;Deploy/Run. 3.Go to deployed resource, Right click on it and select Unregister. 4.Clean up: Undeploy the application,Stop/Remove server. </td> 
+         <td class="confluenceTd">Undeployed resource should not appear under resources node. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p><b>ii.Test Create New JDBC Connection Pool:</b></p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Test Case ID</th> 
+         <th class="confluenceTh"> Test case Purpose </th> 
+         <th class="confluenceTh">Test Case Description </th> 
+         <th class="confluenceTh">Expected Result </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> Verify JNDI Name </td> 
+         <td class="confluenceTd"> 1.Start NetBeans IDE and Register GlassFish V3 Prelude server. 2.Create a simple web application(Hello World):Select File&gt;NewProject&gt;Java Web&gt;WebApplication,Set target server-GF V3 and Java EE-Java EE5. 3.Right click on the web application select New&gt;Other&gt;GlassFish&gt;JDBC Resource&gt;Create New JDBC ConnectionPool. 4.Set JNDI Name:jdbc/myDatasource_New 5.Select BACK&gt;NEXT. </td> 
+         <td class="confluenceTd">Given JNDI Name should be saved even on selecting BACK&gt;NEXT. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd"> Verify Create New JDBC connectionPool </td> 
+         <td class="confluenceTd"> 1.Start NBIDE and Register GFV3 Prelude server. 2.Create a simple web application(Hello World):Select File&gt;NewProject&gt;Java Web&gt;WebApplication,Set target server-GF V3 and Java EE-Java EE5. 3.Right click on the web application select New&gt;Other&gt;GlassFish&gt;JDBC Resource&gt;Create New ConnectionPool. 4.Set*General attributes for JDBC Resource:* JNDI Name:jdbc/myDataResource_1234 Object type:The type of the object Enabled:Set to true to enable the resource, or false to disable. Description:Description of the resource. 5.<b>Additional Properties:</b> i.Click Add to add two row for the new property to the table with same name and different value. ii.In the Properties table, enter the same Name and different Value of the new property. iii.Click Enter to save the changes to the property table. 6.Choose DataBase Connection: i.Set JDBC Connection Pool name:connectionpool_1. ii.Select Extract from Existing Connection pool(derby/sample,derby/travel, derby/vir). 7.Add Connection Pool Properties: Leave the default value,and select Next. 9.Specify Optional Properties For Connection Pool: i.Leave the default values and select Finish. </td> 
+         <td class="confluenceTd">1.Check created resource in the sun-resource.xml file. 2.Verify information dialog window "Duplicate Property: Property Name should be Unique". When you type same Name. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3 </td> 
+         <td class="confluenceTd"> Verify Create New JDBC connectionPool with different JDBC ConnectionPool(Travel ,vir) </td> 
+         <td class="confluenceTd"> 1.Follow above steps as in the test case3 to create second JDBC connection Pool(DerbyPool) </td> 
+         <td class="confluenceTd">Results expected as in the test case3. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4 </td> 
+         <td class="confluenceTd"> Verify Deployed resource </td> 
+         <td class="confluenceTd"> 1.Steps1-9 same as test case5. 2.Right click on the application select Clean and Build/Undeploy&amp;Deploy/Run. </td> 
+         <td class="confluenceTd">1.Application should be deployed successfully. 2.Deployed resource should appear under Resources node. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5 </td> 
+         <td class="confluenceTd"> Verify Delete deployed resource </td> 
+         <td class="confluenceTd"> 1.Steps1-9 same as test case2. 2.Right click on the application select Clean and Build/Undeploy&amp;Deploy/Run. 3.Go to deployed resource, Right click on it and select Unregister. 4.Clean up: Undeploy the application,Stop/Remove server. </td> 
+         <td class="confluenceTd">Deleted resource should not appear under resources node. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p><b>Test Use DataBase Context Action</b></p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Test Case ID</th> 
+         <th class="confluenceTh"> Test case Purpose </th> 
+         <th class="confluenceTh">Test Case Description </th> 
+         <th class="confluenceTh">Expected Result </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> Verify Use Database </td> 
+         <td class="confluenceTd"> 1.Start NetBeans IDE,register GlassFishV3 and start. 2.Create a simple web application(Hello World). 3.Create a Servlet in the web application. 4.Right click in the Servlet code and select Inert Code/Use Database. 5.Set Reference by clicking Add button. 6.Select Server Data Sources(jdbc/_Default or jdbs/sample). 7.check the copy selected data resource to project and click OK. 8.Select General Inline Look up code and select OK. 9.Right click on the web application select Build/Undeploy and deploy/Run. 10. Clean up: Undeploy the application,Stop/Remove server. </td> 
+         <td class="confluenceTd">1.@ Resource and Data resource name should be generated in the Servlet code. 2.Resource should be deployed under node Server/GlassFish v2/Resource/ JDBC. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="NetBeanPluginTestSpec6.5.html-NewTestCasesforWindowVista"></a><b>New Test Cases for Window Vista</b></h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Test Case ID</th> 
+         <th class="confluenceTh"> Test case Purpose </th> 
+         <th class="confluenceTh">Test Case Description </th> 
+         <th class="confluenceTh">Expected Result </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> Default Installation </td> 
+         <td class="confluenceTd"> 1.Download the 6.5 Trunk build. 2.Select to install NB6.5, Glassfish V2 and Glassfish V3. 3.Select everything by default. 4.Extend Servers node &gt; select Glassfish V3 to start the server </td> 
+         <td class="confluenceTd">1. Verify if Glassfish V3 Server started correctly (check server.log file) 2.There currently a bug that prevent GF V3 server started correctly </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd"> Default Installation but with User Account Control turn OFF </td> 
+         <td class="confluenceTd"> 1.Download the 6.5 Trunk build. 2.Select to install NB6.5, Glassfish V2 and Glassfish V3. 3.Select everything by default. 4.Extend Servers node &gt; select Glassfish V3 to start the server </td> 
+         <td class="confluenceTd">1. Verify if Glassfish V3 Server started correctly (check server.log file) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3 </td> 
+         <td class="confluenceTd"> Default Installation for NB only </td> 
+         <td class="confluenceTd">1.Download the 6.5 Trunk build. 2.Select to install NB6.5, Glassfish V2 and Glassfish V3. 3.Select default directory for NB6.5, Glassfish V2 but Glassfish installed to "c:\sun\Glassfish-V3". 4.Extend Servers node &gt; select Glassfish V3 to start the server</td> 
+         <td class="confluenceTd">1. Verify if Glassfish V3 Server started correctly (check server.log file) 2.There currently a bug that prevent GF V3 server started correctly </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4 </td> 
+         <td class="confluenceTd"> Install NB as multiple Users </td> 
+         <td class="confluenceTd"> 1.Login Vista as Administrator &gt; create User 1. 2.Re-login Vista as User 1 &gt; install NB 6.5 Trunk EE build to User 1 directory for NB, GF V2 &amp; V3. 3.Re-login Vista as Administrator User. 4.Start Netbean IDE from the desktop icon. 5.Right-click at the Servers&gt;Glassfish V3 node, select Start menu </td> 
+         <td class="confluenceTd">1. Verify if Glassfish V3 Server started correctly (check server.log file) 2.There is currently a bug 143556 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5 </td> 
+         <td class="confluenceTd"> Deploy an Application on Vista with different users </td> 
+         <td class="confluenceTd"> 1.Login Vista as Administrator &gt; create User 1. 2.Relogin Vista as User 1 &gt; install NB 6.5 Trunk EE build to User 1 directory for NB IDE, GF V2 &amp; V3. 3.Relogin Vista as Administrator User. 4.Create ServletExample project. 5.Select to Deploy to Glassfish V2 server </td> 
+         <td class="confluenceTd">1. Verify if the Servlet Application was deployed and executed successfully (check server.log file) </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:49.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

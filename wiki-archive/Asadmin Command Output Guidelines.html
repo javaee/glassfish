@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : Asadmin Command Output Guidelines</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>The asadmin supports many subcommands that are developed by different people. These guidelines are intended to help with getting consistent output across the various commands.&nbsp;</p> <h4><a name="AsadminCommandOutputGuidelines-OutputForms%26nbsp%3B"></a><b>Output Forms&nbsp;</b></h3> <p><b>NOTE:</b> This section describes the long term direction for command output forms. For the 3.1 release, these guidelines will only be partially implemented. Current list commands that take a verbose option will be changed to take long instead. Implementation of the guidelines beyond that will be on a case-by-case basis.&nbsp;</p> <p>Command output is controlled by several input options: <b>terse</b>, <b>header</b> (short form: <b>h</b>), <b>output</b> (short form: <b>o</b>), and <b>long</b> (short form: l). &nbsp;The header, output and long options are intended for the various list commands, and they control whether a header is included in the output, which columns are output, and the list of columns, respectively. Each command that supports the output option has a default set of columns. With the long option, the default set of columns can be longer, possibly including all available columns. The long option is shorthand for an output option with more columns. When the terse option is used, the output is intended to be used by a program, so the header is turned off (unless it is explicitly requested using --header=true).&nbsp;</p> 
+     <ol> 
+      <li>If a command supports columnar output, it must support the header and output options. It may support the long option.</li> 
+      <li>All columnar output is formatted so that each column is wide enough for the largest data item (or column heading) in that column plus two spaces.&nbsp;</li> 
+      <li>Column headings and data items are left aligned in the columns.</li> 
+      <li>Column headings are in all uppercase with no spaces (because they are used with the output option.)</li> 
+      <li>Columns are formatted without any column separators and there is no line between the column headings and the data.</li> 
+      <li>The order of the columns listed in the output option determines the order in the output.</li> 
+      <li>Columns may be designated as "key" fields, which causes the output to be sorted based on the order of the key fields (left to right, i.e., the data is sorted by the leftmost key column first, then the next key column, and so forth).&nbsp;</li> 
+      <li>Since the column separator is whitespace, data items that contain blanks can cause parsing problems for the output. &nbsp;If possible, avoid blanks in data items, for example, by using dashes between words. &nbsp;If a column must have blanks, make it the last column in default output.&nbsp;</li> 
+      <li>Column names are case insensitive when passed to the output option. The name of the column for the input is the same as the column heading in the output.</li> 
+      <li>When a list has no items, then output a "Nothing to list" message if and only if column headings are turned on. If there are no column headings, then output nothing for an empty list.</li> 
+     </ol> <p>A class,&nbsp;com.sun.enterprise.admin.util.ColumnFormatter in the admin-util.jar file, has been implemented to help with formatting in this way. Currently, it only formats data with column headings and it omits many of the features listed above (sorting, etc.). &nbsp;This class will be expanded as more of the guidelines are implemented.</p> <p><font color="inherit">Here is an example of some forms of the list-instances command output:</font></p> <p><font color="inherit">list-instances --terse:</font></p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">i1  running
+i2  not-running</pre> 
+       </div> 
+      </div>
+     </div> <p><font color="inherit">list-instances --terse --header=true</font></p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">NAME  STATE
+i1    running
+i2    not-running</pre> 
+       </div> 
+      </div>
+     </div> <p><font color="inherit">list-instances (default columns are name and state):</font></p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">NAME  STATE
+i1    running
+i2    not-running
+Command list-instances executed successfully.</pre> 
+       </div> 
+      </div>
+     </div> <p><font color="inherit">list-instances -o name,host,port,cluster,state,uptime</font></p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">NAME  HOST       PORT   CLUSTER  STATE        UPTIME
+i1 &nbsp; &nbsp;localhost &nbsp;24848  c1 &nbsp; &nbsp; &nbsp; running      1:37
+i2 &nbsp; &nbsp;localhost &nbsp;24849 &nbsp;c1 &nbsp; &nbsp; &nbsp; not-running  0:00
+Command list-instances executed successfully.</pre> 
+       </div> 
+      </div>
+     </div> <p>The <b>verbose</b> option (short form: <b>v</b>) is only used for the non-list commands such as: start-domain, &nbsp;start-cluster, start-local-instance, stop-cluster, version, &nbsp;validate-multicast, backup-domain, and restore-domain. In these cases, the terse and verbose options should not be allowed together.&nbsp;</p> <h4><a name="AsadminCommandOutputGuidelines-ConfirmationMessages"></a>Confirmation Messages</h3> <p>The asadmin command itself generates a "Command such-and-such executed successfully." message (unless the terse option is used), and the exit code of the command indicates success for failure. &nbsp;Therefore, a command must not output its own confirmation message that an operation succeeded, unless that message provides additional information. For example, the create-instance command outputs the list of port assignments that were made for the instance. However, the command stop-instance should not output a message saying "The instance, i1, was stopped." This message does not add any additional information to the message that is already output by asadmin.&nbsp;</p> <p><b>Blank Lines</b></p> <p>Command output must not have blank lines in a list, especially at the end. This is especially important for terse output so that programs that consume the output of a command do not have to deal with blank lines.&nbsp;</p> <h4><a name="AsadminCommandOutputGuidelines-States"></a>States</h3> 
+     <ol> 
+      <li>Use lowercase.</li> 
+      <li>Use the following values:&nbsp; 
+       <ol> 
+        <li><b>running</b>&nbsp;</li> 
+        <li><b>not-running</b>&nbsp;</li> 
+        <li><b>running:requires-restart</b>&nbsp;(a more detailed form of running, meaning that a configuration change has been made but not applied to the instance, so a restart is required to get the instance to see that change)</li> 
+        <li><b>running:started-at:TIME</b>&nbsp;(a more detailed form of running, with an indication of the time that the server was started)</li> 
+        <li><b>running:rejoined-at:TIME</b>&nbsp;(a more detailed form of running, with an indication of when the server restarted after a brief outage)</li> 
+        <li><b>not-running:stopped-at:TIME</b>&nbsp;(a more detailed form of not running, with an indication of the time that the server was stopped)</li> 
+        <li><b>not-running:failed-at:TIME</b>&nbsp;(a more detail form of not running, with an indication of the time that the server failed)</li> 
+       </ol> </li> 
+     </ol> <p>TODO: need to add more states for quiesed</p> <p>Question: should we use "up" and "down" rather than "running" and "not-running" (or operational/nonoperational, functional/nonfunctional)</p> <h4><a name="AsadminCommandOutputGuidelines-NoClassNamesinOutput"></a>No Class Names in Output</h3> <p>No command output, including that for error messages, should reference any Java package or class names, unless they are user entered values. This information should be in a server.log entry. &nbsp;For example, the following output is incorrect:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">remote failure: Error during deployment : org.jvnet.hk2.config.ValidationException: Constraints for this bean violated.&nbsp;
+Message = ref must match "[\p{L}\p{N}_][\p{L}\p{N}\-_./;:#]*"
+Command deploy failed.</pre> 
+       </div> 
+      </div>
+     </div> <p>because it references the org.jvnet.hk2.config.ValidationException. The text from the ValidationException and name of the exception can be output to the server.log file, but a user friendly message should be output from the command, potentially with a hint to check the server log for more details.&nbsp;</p> <p>An example of a user entered value is a class name that is input to the create-jdbc-connection-pool command via the driverclassname argument. The value that the user entered can be echoed back to the user in an error message, list output, etc.</p> <h4><a name="AsadminCommandOutputGuidelines-HiddenCommandsandOptions"></a>Hidden Commands and Options</h3> <p>No command output should mention a hidden command or use a hidden option. For example, if the _delete-instance-filesystem command that is run by delete-instance fails, the error message must not tell the user that the _delete-instance-filesystem failed or request the user to run the _delete-instance-filesystem command. The server.log file message should have the details about what command actually failed with exception messages, if any.&nbsp;</p> <h4><a name="AsadminCommandOutputGuidelines-Compatibilityvs.Consistency"></a>Compatibility vs. Consistency</h3> <p>For 3.1 only, consistency of command output is preferred over backward compatibility of output. For example, the 3.0 list-domains command has output like this:&nbsp;</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Name: domain1 Status: Not Running
+Command list-domains executed successfully.</pre> 
+       </div> 
+      </div>
+     </div> <p>This is inconsistent with the list-instances, list-clusters, and list-nodes commands in 3.1, and it is inconsistent with the 2.1.1 list-domains command. So in 3.1, the list-domains output has been changed to the following:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">domain1 running
+Command list-domains executed successfully.</pre> 
+       </div> 
+      </div>
+     </div> <p>Terse output should be changed in compatible ways, because programs may be depending on the output.&nbsp;</p> <h4><a name="AsadminCommandOutputGuidelines-Internationalization"></a>Internationalization</h3> <p>All of the output from asadmin subcommands must be based on format strings in properties files so that it can be localized. This is the case even for terse output that is intended for programs. When a program is reading the output from asadmin, it is expected that the developer has set up the environment for asadmin so that it produces output in the language that the program is expecting. The one exception to this is column headings.&nbsp; See the paragraph below for more details.</p> <p>The input for asadmin is not localized, e.g., the create-instance command is called "create-instance" and the host option is called "host"&nbsp;in all locales. This means that commands that output recommendations about other commands to execute generate the output for the command itself the way that the input is expected. The input for column names in the output option is not localized. This is the reason why column names are also not localized on output.</p> <h4><a name="AsadminCommandOutputGuidelines-OpenIssues"></a>Open Issues</h2> 
+     <ul> 
+      <li>What type of debugging information should be printed out when user sets AS_DEBUG?</li> 
+      <li>Should there be guidelines about what goes to stderr vs. stdout?</li> 
+     </ul> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jan 15, 2013 by 
+<font color="#0050B2">10103</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

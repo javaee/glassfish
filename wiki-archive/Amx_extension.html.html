@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : Amx_extension.html</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"&gt;<br> &lt;HTML&gt;<br> &lt;HEAD&gt;<br> &lt;META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=iso-8859-1"&gt;<br> &lt;TITLE&gt;&lt;/TITLE&gt;<br> &lt;META NAME="GENERATOR" CONTENT="StarOffice 8 (Solaris x86)"&gt;<br> &lt;META NAME="AUTHOR" CONTENT="Yamini"&gt;<br> &lt;META NAME="CREATED" CONTENT="20071113;10510400"&gt;<br> &lt;META NAME="CHANGEDBY" CONTENT="Yamini"&gt;<br> &lt;META NAME="CHANGED" CONTENT="20071217;14301600"&gt;<br> &lt;STYLE TYPE="text/css"&gt;<br> &lt;!--<br> H2.western </p> 
+     <div class="error">
+      <span class="error">Unknown macro: { font-family}</span> 
+     </div> <p> H2.cjk </p> 
+     <div class="error">
+      <span class="error">Unknown macro: { font-family}</span> 
+     </div> <p> H2.ctl </p> 
+     <div class="error">
+      <span class="error">Unknown macro: { font-family}</span> 
+     </div> <p> --&gt;<br> &lt;/STYLE&gt;<br> &lt;/HEAD&gt;<br> &lt;BODY LANG="en-US" DIR="LTR"&gt;<br> &lt;H1 ALIGN=CENTER&gt;Design Proposal for Extending GlassFish AMX&lt;/H1&gt;<br> &lt;P ALIGN=CENTER&gt;&lt;BR&gt;&lt;BR&gt;<br> &lt;/P&gt;<br> &lt;H2 CLASS="western"&gt;Introduction&lt;/H2&gt;<br> &lt;P&gt;This document describes a proposal for extending the existing AMX<br> support in GlassFish. The need for this is driven by the SailFin<br> requirement to provide AMX support for the new SailFin Mbeans.&lt;/P&gt;<br> &lt;P&gt;In the current AMX support code, it is not possible to plug-in<br> external Mbeans. By external, we mean Mbeans developed outside of<br> GlassFish to support any new domain configuration elements. The new<br> AMX Mbeans should be loaded automatically during the runtime. So our<br> aim is to provide runtime pluggability for the newly added AMX<br> Mbeans. At the same time, AMX extension should be done such that it<br> should not affect the loading of regular GlassFish AMX Mbeans.&lt;/P&gt;<br> &lt;P&gt;When SailFin is installed on top of GlassFish, it should load the<br> new SailFin AMX Mbeans as well.&lt;/P&gt;<br> &lt;P&gt;We would like to target this feature for GlassFish 9.1.1&lt;/P&gt;<br> &lt;H2 CLASS="western"&gt;AMX Extension&lt;/H2&gt;<br> &lt;P&gt;We can enable extended AMX support by using a system property<br> “&lt;I&gt;com.sun.appserv.pluggable.extensions.amx&lt;/I&gt;” This<br> property will basically point to an implementation class exposing<br> methods to pass all the required information to AMX support. The<br> following interface<br> &lt;I&gt;com.sun.appserv.management.ext.support.ExtendedAMX&lt;/I&gt; can be<br> exposed from AMX:&lt;/P&gt;<br> &lt;P&gt;&lt;BR&gt;&lt;BR&gt;<br> &lt;/P&gt;<br> &lt;P&gt;&lt;BR&gt;&lt;BR&gt;<br> &lt;/P&gt;<br> &lt;P&gt;&lt;BR&gt;&lt;BR&gt;<br> &lt;/P&gt;<br> &lt;P&gt;&lt;IMG SRC="http://wiki.glassfish.java.net/attach/Amx_extension.html/ExtendedAMX.jpg" NAME="graphics1" ALIGN=LEFT WIDTH=705 HEIGHT=635 BORDER=0&gt;&lt;BR CLEAR=LEFT&gt;&lt;BR&gt;&lt;BR&gt;<br> &lt;/P&gt;<br> &lt;P&gt;&lt;I&gt;package com.sun.appserv.management.ext.support; &lt;/I&gt;<br> &lt;/P&gt;<br> &lt;P&gt;&lt;I&gt;import java.util.HashMap; &lt;/I&gt;<br> &lt;/P&gt;<br> &lt;P&gt;&lt;I&gt;import java.util.Map; &lt;/I&gt;<br> &lt;/P&gt;<br> &lt;P&gt;&lt;I&gt;/** &lt;/I&gt;<br> &lt;/P&gt;<br> &lt;P&gt;&lt;I&gt;* Base interface implemented by external modules. &lt;/I&gt;<br> &lt;/P&gt;<br> &lt;P&gt;&lt;I&gt;* All the extended AMX Support Features can be added here. &lt;/I&gt;<br> &lt;/P&gt;<br> &lt;P&gt;&lt;I&gt;* This interface is &lt;b&gt;not&lt;/b&gt; for public<br> consumption. &lt;/I&gt;<br> &lt;/P&gt;<br> &lt;P&gt;&lt;I&gt;* &lt;/I&gt;<br> &lt;/P&gt;<br> &lt;P&gt;&lt;I&gt;* @author: Yamini K B &lt;/I&gt;<br> &lt;/P&gt;<br> &lt;P&gt;&lt;I&gt;*/ &lt;/I&gt;<br> &lt;/P&gt;<br> &lt;P&gt;&lt;I&gt;public interface ExtendedAMX </p> 
+     <div class="error">
+      <span class="error">Unknown macro: { &lt;/I&gt;&lt;/P&gt;&lt;P&gt;&lt;I&gt;/** &lt;/I&gt;&lt;/P&gt;&lt;P&gt;&lt;I&gt;* Get all external AMX interfaces. &lt;/I&gt;&lt;/P&gt;&lt;P&gt;&lt;I&gt;* &lt;/I&gt;&lt;/P&gt;&lt;P&gt;&lt;I&gt;* @return Class[] containing the interfaces. &lt;/I&gt;&lt;/P&gt;&lt;P&gt;&lt;I&gt;*/ &lt;/I&gt;&lt;/P&gt;&lt;P&gt;&lt;I&gt;public Class[] getExternalMbeanInterfaces(); &lt;/I&gt;&lt;/P&gt;&lt;P&gt;&lt;I&gt;/** &lt;/I&gt;&lt;/P&gt;&lt;P&gt;&lt;I&gt;* Get all the new config types. &lt;/I&gt;&lt;/P&gt;&lt;P&gt;&lt;I&gt;* &lt;/I&gt;&lt;/P&gt;&lt;P&gt;&lt;I&gt;* @return String[] containing the new config types. &lt;/I&gt;&lt;/P&gt;&lt;P&gt;&lt;I&gt;*/ &lt;/I&gt;&lt;/P&gt;&lt;P&gt;&lt;I&gt;public String[] getAllConfigTypes(); &lt;/I&gt;&lt;/P&gt;&lt;P&gt;&lt;I&gt;/** &lt;/I&gt;&lt;/P&gt;&lt;P&gt;&lt;I&gt;* Get the child types for a config type. &lt;/I&gt;&lt;/P&gt;&lt;P&gt;&lt;I&gt;* &lt;/I&gt;&lt;/P&gt;&lt;P&gt;&lt;I&gt;* @return Object[] containing all the child types. &lt;/I&gt;&lt;/P&gt;&lt;P&gt;&lt;I&gt;*/ &lt;/I&gt;&lt;/P&gt;&lt;P&gt;&lt;I&gt;public Object[] getAllChildTypes(); &lt;/I&gt;&lt;/P&gt;&lt;P&gt;&lt;I&gt;/** &lt;/I&gt;&lt;/P&gt;&lt;P&gt;&lt;I&gt;* Get all misc child types for a config type. &lt;/I&gt;&lt;/P&gt;&lt;P&gt;&lt;I&gt;* &lt;/I&gt;&lt;/P&gt;&lt;P&gt;&lt;I&gt;* @return String[)(] containing all the misc child types. &lt;/I&gt;&lt;/P&gt;&lt;P&gt;&lt;I&gt;*/ &lt;/I&gt;&lt;/P&gt;&lt;P&gt;&lt;I&gt;public String[)(] getAllMiscChildTypes(); &lt;/I&gt;&lt;/P&gt;&lt;P&gt;&lt;I&gt;/** &lt;/I&gt;&lt;/P&gt;&lt;P&gt;&lt;I&gt;* Get the old config types. &lt;/I&gt;&lt;/P&gt;&lt;P&gt;&lt;I&gt;* &lt;/I&gt;&lt;/P&gt;&lt;P&gt;&lt;I&gt;* @return Map containing the old config types. &lt;/I&gt;&lt;/P&gt;&lt;P&gt;&lt;I&gt;*/ &lt;/I&gt;&lt;/P&gt;&lt;P&gt;&lt;I&gt;public Map&lt;String,String&gt; getOldConfigTypes(); &lt;/I&gt;&lt;/P&gt;&lt;P&gt;&lt;I&gt;/** &lt;/I&gt;&lt;/P&gt;&lt;P&gt;&lt;I&gt;* Get the interface implementation classes &lt;/I&gt;&lt;/P&gt;&lt;P&gt;&lt;I&gt;* &lt;/I&gt;&lt;/P&gt;&lt;P&gt;&lt;I&gt;* @return Map conating the interface implementations. &lt;/I&gt;&lt;/P&gt;&lt;P&gt;&lt;I&gt;*/ &lt;/I&gt;&lt;/P&gt;&lt;P&gt;&lt;I&gt;public Map&lt;String,String&gt; getInterfaceImpls(); &lt;/I&gt;&lt;/P&gt;&lt;P&gt;&lt;I&gt;/** &lt;/I&gt;&lt;/P&gt;&lt;P&gt;&lt;I&gt;* Get the old monitor types. &lt;/I&gt;&lt;/P&gt;&lt;P&gt;&lt;I&gt;* &lt;/I&gt;&lt;/P&gt;&lt;P&gt;&lt;I&gt;* @return Map containing the old monitor types. &lt;/I&gt;&lt;/P&gt;&lt;P&gt;&lt;I&gt;*/ &lt;/I&gt;&lt;/P&gt;&lt;P&gt;&lt;I&gt;public Map&lt;String,String&gt; getOldMonitorTypes(); &lt;/I&gt;&lt;/P&gt;&lt;P&gt;&lt;I&gt;/** &lt;/I&gt;&lt;/P&gt;&lt;P&gt;&lt;I&gt;* Get all the new monitor types. &lt;/I&gt;&lt;/P&gt;&lt;P&gt;&lt;I&gt;* &lt;/I&gt;&lt;/P&gt;&lt;P&gt;&lt;I&gt;* @return String[] containing the new monitor types. &lt;/I&gt;&lt;/P&gt;&lt;P&gt;&lt;I&gt;*/ &lt;/I&gt;&lt;/P&gt;&lt;P&gt;&lt;I&gt;public String[] getAllServerRootMonitorTypes(); &lt;/I&gt;&lt;/P&gt;&lt;P&gt;&lt;I&gt;/** &lt;/I&gt;&lt;/P&gt;&lt;P&gt;&lt;I&gt;* Get the child types for a monitor type. &lt;/I&gt;&lt;/P&gt;&lt;P&gt;&lt;I&gt;* &lt;/I&gt;&lt;/P&gt;&lt;P&gt;&lt;I&gt;* @return Object[] containing all the monitor child types. &lt;/I&gt;&lt;/P&gt;&lt;P&gt;&lt;I&gt;*/ &lt;/I&gt;&lt;/P&gt;&lt;P&gt;&lt;I&gt;public Object[] getAllMonitorChildTypes(); &lt;/I&gt;&lt;/P&gt;&lt;P&gt;&lt;I&gt;}</span> 
+     </div> <p> &lt;/I&gt;<br> &lt;/P&gt;<br> &lt;H2 CLASS="western"&gt;getExternalMbeanInterfaces()&lt;/H2&gt;<br> &lt;P&gt;Can return an array of the new AMX interfaces (like<br> SIPServiceConfig.class, SIPListenerConfig.class and so on..) This<br> will be consumed by &lt;I&gt;TypesMapper&lt;/I&gt; during the initialization to<br> provide a mapping for the new types defined in &lt;I&gt;SIPXTypes&lt;/I&gt;.&lt;/P&gt;<br> &lt;H2 CLASS="western"&gt;getAllConfigTypes(), getAllChildTypes()&lt;/H2&gt;<br> &lt;P&gt;These methods can be used to define the containment. For example,<br> &lt;SPAN STYLE="text-decoration: none"&gt;&lt;I&gt;SIPServiceConfig&lt;/I&gt;&lt;/SPAN&gt;<br> needs to be within &lt;I&gt;ConfigConfig. &lt;/I&gt;&lt;SPAN STYLE="font-style: normal"&gt;Likewise,<br> &lt;/SPAN&gt;&lt;I&gt;SIPListenerConfig&lt;/I&gt; &lt;SPAN STYLE="font-style: normal"&gt;is<br> child of &lt;/SPAN&gt;&lt;I&gt;SIPServiceConfig&lt;/I&gt;&lt;/P&gt;<br> &lt;P&gt;&lt;I&gt;getAllConfigTypes()&lt;/I&gt; can return an array of all new child<br> types for &lt;I&gt;ConfigConfig &lt;/I&gt;&lt;SPAN STYLE="font-style: normal"&gt;type.<br> &lt;/SPAN&gt;&lt;I&gt;getAllChildTypes()&lt;/I&gt; &lt;SPAN STYLE="font-style: normal"&gt;can<br> be used to define the new child types (i.e the containing objects)<br> for a specific container type. &lt;/SPAN&gt;&lt;I&gt;TypeInfos&lt;/I&gt; &lt;SPAN STYLE="font-style: normal"&gt;will<br> use the data provided from these two methods to define the<br> containment hierarchy for the new data types.&lt;/SPAN&gt;&lt;/P&gt;<br> &lt;H2 CLASS="western"&gt;getOldConfigTypes()&lt;/H2&gt;<br> &lt;P&gt;Provide a mapping between the new J2EE types and the “old”<br> config types. For example, the new J2EE type X-SIPServiceConfig<br> should map to the 'sip-service' configuration.&lt;/P&gt;<br> &lt;H2 CLASS="western"&gt;getAllServerRootMonitorTypes(),<br> getAllMonitorChildTypes()&lt;/H2&gt;<br> &lt;P&gt;These methods can be used to define the containment for the<br> monitoring Mbeans. For example, &lt;I&gt;SIPServiceMonitor&lt;/I&gt; needs to be<br> within &lt;I&gt;ServerRootMonitorChild&lt;/I&gt;.&lt;/P&gt;<br> &lt;P&gt;&lt;I&gt;getAllMonitorChildTypes()&lt;/I&gt; can be used to define the new<br> monitor child types&lt;/P&gt;<br> &lt;H2 CLASS="western"&gt;getOldMonitorTypes()&lt;/H2&gt;<br> &lt;P&gt;To provide a mapping between the new J2EE types and the “old”<br> monitor types. For example, the new J2EE type X-SIPServiceMonitor<br> should map to the monitoring service 'sip-service' configuration.&lt;/P&gt;<br> &lt;H2 CLASS="western"&gt;getInterfaceImpls()&lt;/H2&gt;<br> &lt;P&gt;Currently the package info for the interface and implementation is<br> predefined. This method can be used to provide a mapping for the new<br> AMX interfaces and the actual implementation classes for<br> configuration and monitoring Mbeans.&lt;/P&gt;<br> &lt;H2 CLASS="western"&gt;How will ExtendedAMX be used?&lt;/H2&gt;<br> &lt;P&gt;&lt;I&gt;ExtendedAMX&lt;/I&gt; will be used in following places to plug-in the<br> external (SailFin in this case) Mbean information.&lt;/P&gt;<br> &lt;OL&gt;<br> &lt;LI&gt;&lt;P&gt;We have a &lt;I&gt;TypesMapper&lt;/I&gt; which maps the &lt;I&gt;XTypes&lt;/I&gt;<br> with their Mbean interfaces. The &lt;I&gt;TypesMapper&lt;/I&gt; can obtain the<br> list of new SailFin Mbean interfaces during the initialization using<br> &lt;I&gt;getExternalMbeanInterfaces().&lt;/I&gt;&lt;/P&gt;<br> &lt;LI&gt;&lt;P&gt;The &lt;I&gt;TypeInfo&lt;/I&gt; class provides a mapping of the interface<br> and the actual implementation class. This information is passed<br> using &lt;I&gt;getInterfaceImpls()&lt;/I&gt;&lt;/P&gt;<br> &lt;LI&gt;&lt;P&gt;&lt;SPAN STYLE="font-style: normal"&gt;The &lt;/SPAN&gt;&lt;I&gt;TypeInfos<br> &lt;/I&gt;&lt;SPAN STYLE="font-style: normal"&gt;class defines the containment<br> hierarchy for the configuration or monitoring types. Using<br> &lt;/SPAN&gt;&lt;I&gt;ExtendedAMX&lt;/I&gt;&lt;SPAN STYLE="font-style: normal"&gt;, the<br> container/containee information can be passed to &lt;/SPAN&gt;&lt;I&gt;TypeInfos&lt;/I&gt;<br> &lt;SPAN STYLE="font-style: normal"&gt;for the SailFin configuration and<br> monitoring types.&lt;/SPAN&gt;&lt;/P&gt;<br> &lt;LI&gt;&lt;P STYLE="font-style: normal"&gt;The OldConfigTypes and<br> OldMonitorTypes loads the external mapping i.e for the SailFin<br> Xtypes.&lt;/P&gt;<br> &lt;/OL&gt;<br> &lt;H2 CLASS="western"&gt;Alternate AMX Extension&lt;/H2&gt;<br> &lt;P&gt;Instead of using system property, the new interface can be exposed<br> by using Pluggable Feature Factory of GlassFish. This pluggable<br> feature interface will be similar to &lt;I&gt;ExtendedAMX&lt;/I&gt; interface<br> except that the feature will be loaded automatically during runtime<br> without introducing yet another JVM option!&lt;/P&gt;<br> &lt;H2 CLASS="western"&gt;Packaging of SailFin AMX&lt;/H2&gt;<br> &lt;TABLE WIDTH=988 BORDER=1 BORDERCOLOR="#000000" CELLPADDING=4 CELLSPACING=0&gt;<br> &lt;COL WIDTH=446&gt;<br> &lt;COL WIDTH=212&gt;<br> &lt;COL WIDTH=305&gt;<br> &lt;TR VALIGN=TOP&gt;<br> &lt;TD WIDTH=446 BGCOLOR="#b3b3b3"&gt;<br> &lt;P&gt;Prefix&lt;/P&gt;<br> &lt;/TD&gt;<br> &lt;TD WIDTH=212 BGCOLOR="#b3b3b3"&gt;<br> &lt;P&gt;SailFin module&lt;/P&gt;<br> &lt;/TD&gt;<br> &lt;TD WIDTH=305 BGCOLOR="#b3b3b3"&gt;<br> &lt;P&gt;Comments&lt;/P&gt;<br> &lt;/TD&gt;<br> &lt;/TR&gt;<br> &lt;TR VALIGN=TOP&gt;<br> &lt;TD WIDTH=446&gt;<br> &lt;P&gt;org.jvnet.glassfish.comms.management.config&lt;/P&gt;<br> &lt;/TD&gt;<br> &lt;TD WIDTH=212&gt;<br> &lt;P&gt;administration&lt;/P&gt;<br> &lt;/TD&gt;<br> &lt;TD WIDTH=305&gt;<br> &lt;P&gt;Config public interfaces&lt;/P&gt;<br> &lt;/TD&gt;<br> &lt;/TR&gt;<br> &lt;TR VALIGN=TOP&gt;<br> &lt;TD WIDTH=446&gt;<br> &lt;P&gt;org.jvnet.glassfish.comms.management.monitor&lt;/P&gt;<br> &lt;/TD&gt;<br> &lt;TD WIDTH=212&gt;<br> &lt;P&gt;administration&lt;/P&gt;<br> &lt;/TD&gt;<br> &lt;TD WIDTH=305&gt;<br> &lt;P&gt;Monitor public interfaces&lt;/P&gt;<br> &lt;/TD&gt;<br> &lt;/TR&gt;<br> &lt;TR VALIGN=TOP&gt;<br> &lt;TD WIDTH=446&gt;<br> &lt;P&gt;org.jvnet.glassfish.comms.admin.management.extensions.config&lt;/P&gt;<br> &lt;/TD&gt;<br> &lt;TD WIDTH=212&gt;<br> &lt;P&gt;administration&lt;/P&gt;<br> &lt;/TD&gt;<br> &lt;TD WIDTH=305&gt;<br> &lt;P&gt;Config implementation classes&lt;/P&gt;<br> &lt;/TD&gt;<br> &lt;/TR&gt;<br> &lt;TR VALIGN=TOP&gt;<br> &lt;TD WIDTH=446&gt;<br> &lt;P&gt;org.jvnet.glassfish.comms.admin.management.extensions.monitor&lt;/P&gt;<br> &lt;/TD&gt;<br> &lt;TD WIDTH=212&gt;<br> &lt;P&gt;administration&lt;/P&gt;<br> &lt;/TD&gt;<br> &lt;TD WIDTH=305&gt;<br> &lt;P&gt;Monitor implementation classes&lt;/P&gt;<br> &lt;/TD&gt;<br> &lt;/TR&gt;<br> &lt;/TABLE&gt;<br> &lt;P&gt;&lt;BR&gt;&lt;BR&gt;<br> &lt;/P&gt;<br> &lt;/BODY&gt;<br> &lt;/HTML&gt;</p> 
+     <hr> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20873953/21365371.jpg">ExtendedAMX6.jpg</a> (image/pjpeg) 
+      <br> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:48.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : RESTfulWebServicesDevelopersGuide</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="RESTfulWebServicesDevelopersGuide-RESTfulWebServicesDeveloper%27sGuide"></a>RESTful Web Services Developer's Guide</h2> <p><b>This guide describes how to use Jersey with the GlassFish v3 Prelude Application Server.</b> Jersey is the open source reference implementation for Java API for RESTful Web Services (<a href="http://jcp.org/en/jsr/detail-311">JAX-RS, JSR 311</a>).<br> Jersey implements support for the annotations defined in JSR-311, making it easy for developers to build RESTful web services with Java<br> and the Java JVM. Jersey also adds additional features not specified by the JSR. For more information about Project Jersey, visit the <a href="http://wikis.sun.com/display/Jersey/Main">Community Wiki for Project Jersey</a>.</p> <p><b>The latest review document is available in PDF format as an attachment to this wiki page.</b> As viewing attachments does not seem immediately obvious to me, here are the steps to try:</p> 
+     <ol> 
+      <li>Click the Attachments link below the Comments table below.</li> 
+      <li>Click on the file in the list of attachments. The version to review is <b><tt>RESTWEBSVCSDG.pdf</tt></b>.</li> 
+      <li>After you have selected the file, click in the box to the right, Image Preview, to see the document.</li> 
+      <li>Comment on the document by adding your comment to the table below. Helpful comments include noting things that don't work as documented, things that are not clearly explained, things that you'd like to know more about but for which you cannot find information, things that you find redundant or too elementary, things that you find too obtuse to understand, and, of course, praise for things that are well documented!<br> \</li> 
+     </ol> <h4><a name="RESTfulWebServicesDevelopersGuide-Comments"></a>Comments</h3> <p>Thank you very much for providing input on this guide. To comment on the guide, you have to first log in. When you are logged in, click the Edit link below this table and edit this wiki page by providing your comments in the format shown. Unofficially, you can just click the Comment? link and add a standard comment. </p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Comment ID </th> 
+         <th class="confluenceTh"> Date </th> 
+         <th class="confluenceTh"> Section, Page Number/URL </th> 
+         <th class="confluenceTh"> Comment </th> 
+         <th class="confluenceTh">Status – (<font color="lime">RESOLVED</font>/<font color="red">UNRESOLVED</font>) </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Example: <em>jsmith-001</em> </td> 
+         <td class="confluenceTd"> <em>Date comment entered</em> </td> 
+         <td class="confluenceTd"> <em>Detailed pointer to location in the doc</em> </td> 
+         <td class="confluenceTd"> <em>Detailed comment</em> </td> 
+         <td class="confluenceTd"><em>Leave blank – the writer will provide status</em> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> carson </td> 
+         <td class="confluenceTd"> 9/5/08 </td> 
+         <td class="confluenceTd"> all </td> 
+         <td class="confluenceTd"> Thank you for commenting on this doc! </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jim jiang </td> 
+         <td class="confluenceTd"> 10/11/08 </td> 
+         <td class="confluenceTd"> page 38 </td> 
+         <td class="confluenceTd"> The section 'Explore the Storage-service Example' uses crul commad tool. Please add more introduction about how to get start with this tools. – </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> - will show up in revision 6 of the PDF </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jim jiang </td> 
+         <td class="confluenceTd"> 10/11/08 </td> 
+         <td class="confluenceTd"> page 31,45 </td> 
+         <td class="confluenceTd"> The examples building and running the HelloWorld specified with NetBeans 6.5, while the bookstore demo does not. Please describe if any specify requirement for Jersey exampale building/running with NetBeans </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> - will show up in revision 6 of the PDF </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>Return to <a href="GlassFishDocs.html" title="GlassFishDocs">main comments page</a></p> 
+     <hr> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876086/21365408.pdf">RESTWEBSVCSDG.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876086/21365407.gif">next.gif</a> (image/gif) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876086/21365410.gif">caution.gif</a> (image/gif) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876086/21365409.gif">ix-generic.gif</a> (image/gif) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876086/21365413.gif">procedure.gif</a> (image/gif) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876086/21365412.gif">prev.gif</a> (image/gif) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876086/21364879.pdf">RESTWEBSVCSDG.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876086/21364859.gif">procedure.gif</a> (image/gif) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876086/21364858.gif">prev.gif</a> (image/gif) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876086/21364857.gif">ix-generic.gif</a> (image/gif) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876086/21364856.gif">caution.gif</a> (image/gif) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876086/21364880.gif">next.gif</a> (image/gif) 
+      <br> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

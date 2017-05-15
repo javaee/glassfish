@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : M2GMigrateAppJa</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="M2GMigrateAppJa-%E3%82%A2%E3%83%97%E3%83%AA%E3%82%B1%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%81%AE%E3%83%9E%E3%82%A4%E3%82%B0%E3%83%AC%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3"></a>アプリケーションのマイグレーション</h1> <p>本項（アプリケーションのマイグレーション）では、以下の手順について説明します：</p> 
+     <ul> 
+      <li>入力元 Java EE アプリケーションの詳細設定</li> 
+      <li>出力先 Java EE アプリケーションの詳細設定</li> 
+      <li>マイグレーションの実行</li> 
+      <li>自動マイグレーション・プロセス</li> 
+      <li>マイグレーション・レポート</li> 
+      <li>ツールバーの利用</li> 
+      <li>メニューオプションの利用</li> 
+     </ul> <h4><a name="M2GMigrateAppJa-%E5%85%A5%E5%8A%9B%E5%85%83JavaEE%E3%82%A2%E3%83%97%E3%83%AA%E3%82%B1%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E8%A9%B3%E7%B4%B0%E3%81%AE%E8%A8%AD%E5%AE%9A"></a>入力元 Java EE アプリケーション詳細の設定</h2> <p>Source (Input) Applicationのパネルでは、次の項目を指定できます：</p> 
+     <ol> 
+      <li>移行するアプリケーションが配備されている、移行元のアプリケーションサーバ</li> 
+      <li>移行しようとしている Java EE コンポーネント、あるいはアプリケーションの位置および詳細</li> 
+     </ol> <h4><a name="M2GMigrateAppJa-%E7%A7%BB%E8%A1%8C%E5%85%83%E3%82%B5%E3%83%BC%E3%83%90%E3%81%AE%E6%8C%87%E5%AE%9A"></a>移行元サーバの指定</h3> <p> "Source Server" のドロップダウンリストから、移行元サーバを 選択します。マイグレーションツールは、入力元として次のプラットフォームをサポートします。</p> 
+     <ul> 
+      <li>WebLogic Server 5.1/6.0/6.1/8.1</li> 
+      <li>WebSphere Application Server 4.0/5.x</li> 
+      <li>J2EE Reference Implementation Application Server 1.3/1.4　（※Javaリファレンス実装 アプリケーションサーバ 1.3/1.4）</li> 
+      <li>JBoss Application Server 3.0</li> 
+      <li>Sun Java System Application Server 7</li> 
+      <li>Sun ONE Application Server 6.5</li> 
+      <li>Tomcat Web Server 4.1</li> 
+     </ul> <h4><a name="M2GMigrateAppJa-%E3%82%A2%E3%83%97%E3%83%AA%E3%82%B1%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%81%AE%E3%83%87%E3%82%A3%E3%83%AC%E3%82%AF%E3%83%88%E3%83%AA%E3%80%81%E3%81%BE%E3%81%9F%E3%81%AF%E3%82%A2%E3%83%BC%E3%82%AB%E3%82%A4%E3%83%96%E3%81%AE%E6%8C%87%E5%AE%9A"></a>アプリケーションのディレクトリ、またはアーカイブの指定</h3> <p>入力元は以下のいずれかの形で指定できます。</p> 
+     <ul> 
+      <li>すべてのソースファイルを含む単一のディレクトリ</li> 
+      <li>単一のアーカイブファイル</li> 
+      <li>ディレクトリ内に含まれる特定のファイルタイプ</li> 
+     </ul> <p>入力元として複数のアーカイブやディレクトリを指定する場合は "Source" ラジオボタンを、単一のアーカイブを指定する場合は "Archive" ラジオボタンを選択してください。</p> <h4><a name="M2GMigrateAppJa-%E5%85%A5%E5%8A%9B%E5%85%83%E3%81%AB%E5%8D%98%E4%B8%80%E3%81%AE%E3%82%A2%E3%83%BC%E3%82%AB%E3%82%A4%E3%83%96%E3%82%92%E6%8C%87%E5%AE%9A%E3%81%99%E3%82%8B"></a>入力元に単一のアーカイブを指定する</h3> <p>入力元として単一のアーカイブファイルを指定するには：</p> 
+     <ol> 
+      <li>"Archive" のテキストフィールドにアーカイブのパスを直接入力するか、 "Browse..." ボタンをクリックして対象のアーカイブを選択してください。</li> 
+      <li>"Browse..." ボタンからアーカイブを選択すると、アーカイブへのパスがテキストフィールドに表示されます。</li> 
+     </ol> <h4><a name="M2GMigrateAppJa-%E5%85%A5%E5%8A%9B%E5%85%83%E3%81%A8%E3%81%97%E3%81%A6%E5%8D%98%E4%B8%80%E3%81%AE%E3%83%87%E3%82%A3%E3%83%AC%E3%82%AF%E3%83%88%E3%83%AA%E3%82%92%E6%8C%87%E5%AE%9A%E3%81%99%E3%82%8B"></a>入力元として単一のディレクトリを指定する</h3> <p>入力元として単一のディレクトリを指定する場合、以下のいずれかの手順に従ってください。</p> 
+     <ol> 
+      <li>単一のディレクトリ内にあるすべてのファイルをマイグレートする：</li> 
+     </ol> <p> a. ソースファイルが格納されている単一のディレクトリを選択する場合、"Source" のテキストフィールドにアプリケーションのパスを直接入力するか、 "Browse..." ボタンをクリックして対象のディレクトリを選択してください。<br> b. "Browse..." ボタンからアーカイブを選択すると、ディレクトリ名がテキストフィールドに表示されます。</p> 
+     <ol> 
+      <li>単一のディレクトリ内にある特定のタイプのファイルをマイグレートする：</li> 
+     </ol> <p> a. 特定のタイプのファイルをマイグレートしたい場合、まずディレクトリを選択し、続いて "Filter..." ボタンを使用します。Filtterボタンを押下すると "Migrate files of type..." というポップアップが表示されますので、ここでマイグレートするファイルタイプを選択してください。選択されたタイプのファイルのみが、ソースファイルを含むディレクトリからマイグレートされます。それ以外のタイプのファイルはすべてそのまま残ります。<br> b. ディレクトリ内に複数のアーカイブが含まれる場合は、ポップアップで "Archive Files (<b>.jar/</b>.war)" を選択する必要があります。</p> <p>JAR/WAR/RAR ファイル、あるいは EAR ファイルが入力元として指定されたことをマイグレーションツールが検知すると、ツールはホームディレクトリ内に一時ディレクトリを作成します。ディレクトリ名は "<tt>asmt_</tt>" で始まり、末尾に "TIMESTAMP" が付加されます。また、 <tt>asmt_TIMESTAMP</tt> ディレクトリ内には <tt>Input_Archives</tt> と呼ばれるディレクトリが作成されます。 JAR/WAR/RAR/EAR ファイルは <tt>Input_Archives</tt> ディレクトリから展開され、この <tt>Input_Archives</tt> ディレクトリが入力元としてマイグレーションツールに渡されます。</p> <p>展開された JAR/WAR/RAR/EAR ファイルに何らかの変更を施したい場合は、 <tt>Input_Archives</tt> 内のファイルを直接操作して構いません。変更を加えたら、改めてマイグレーションツールにそのディレクトリを入力元として登録してください。変更を施すたびにアーカイブを展開する必要はありません。</p> <h4><a name="M2GMigrateAppJa-%E6%A4%9C%E8%A8%BC%E3%81%AE%E5%AE%9F%E6%96%BD"></a>検証の実施</h3> <p>"Migrate" ボタンを押下すると、マイグレーション・ツールは入力元の詳細について以下の検証を行います：</p> 
+     <ol> 
+      <li>入力元としてディレクトリを選択した場合、 Java 、JSP 、 XML 、 HTM/HTML 、JAR 、 WAR 、 RAR 、およびサーバ構成ファイルが格納された単一のディレクトリのみが正しい入力元であると判断されます。</li> 
+      <li>入力元としてアーカイブを選択した場合は、単一の EAR 、 JAR 、 WAR および RAR ファイルのみが正しい入力元であると判断されます。</li> 
+      <li>アーカイブファイルは事前に一旦展開されるのに対し、ソースファイルは即時にマイグレートされます。従って、入力元としてアーカイブファイル (JAR/WAR/RAR/EAR) とソースファイル (HTML 、 Java 、 JSP、 XML および構成ファイル) を同時に選択することはできません。</li> 
+      <li><tt>application.xml</tt> 内に記載されていない JAR ファイルが EAR ファイル内に見つかると、マイグレーション・ツールはそれらの JAR ファイルを <tt>Input_Archives</tt> ディレクトリ内の <tt>Utilities</tt> ディレクトリに移動します。</li> 
+      <li>アーカイブファイルを正しく展開するため、マイグレーションツールは出力先ディレクトリ名に不適切なスペースが含まれていると展開を中断して警告を表示します。</li> 
+      <li>入力元には JAR/WAR/RAR を指定することができますが、複数のアーカイブ（ EAR ファイル）を入力元として指定することはできません。</li> 
+      <li>"Migrate" ボタンが押下されると、マイグレーションツールは選択された全てのファイルを順に処理していきます。前の画面で指定したアプリケーション・サーバとは関係のないファイルを検出した場合、ツールは cross-server 入力に関する確認画面を表示します。ここで処理の続行を選択すると、適合しないファイルは無視されます。たとえば、移行元サーバに WebSphere アプリケーション・サーバ 4.0 を選択したのに入力元のディレクトリ／ファイルの中に <tt>weblogic.xml</tt> が含まれる場合、 "Migrate" ボタンを押下すると次のようなメッセージダイアログが表示されます: 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">"Warning: Found following proprietary file(s) [weblogic.xml] in the input source code. 
+Source server selected is WebSphere Application server 4.0 whose proprietary files would be migrated. 
+The artifacts for the other appservers would not be migrated. Do you
+want to continue ?"</pre> 
+         </div> 
+        </div>
+       </div></li> 
+      <li>空のディレクトリをマイグレートすることはできません。</li> 
+     </ol> <h4><a name="M2GMigrateAppJa-%E5%87%BA%E5%8A%9B%E5%85%88JavaEE%E3%82%A2%E3%83%97%E3%83%AA%E3%82%B1%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%81%AE%E8%A9%B3%E7%B4%B0%E8%A8%AD%E5%AE%9A"></a>出力先 Java EE アプリケーションの詳細設定</h2> <p>アプリケーションのマイグレート先アプリケーションサーバ、およびマイグレーション・ツールが移行対象のソースファイルを書き出す出力先ディレクトリの指定は、 "Output Java EE Appkication Details （出力先 Java EE アプリケーションの詳細設定）" パネルで行います。<br> マイグレーションツールがサポートするマイグレート先アプリケーションサーバは、 Sun Java Application Server のみとなっています。出力先アプリケーションサーバに加えて、マイグレーションに関するいくつかの高度なオプションを指定することも可能です。</p> <h4><a name="M2GMigrateAppJa-%E5%87%BA%E5%8A%9B%E5%85%88%E3%83%87%E3%82%A3%E3%83%AC%E3%82%AF%E3%83%88%E3%83%AA%E3%81%AE%E6%8C%87%E5%AE%9A"></a>出力先ディレクトリの指定</h3> <p>出力先ディレクトリのパスを "Directory" のテキストフィールドに直接入力するか、"Browse" ボタンを押下して出力先のディレクトリを選択します。マイグレーション・ツールは、このディレクトリにデータを書き出し、ファイル類をマイグレートします。</p> <h4><a name="M2GMigrateAppJa-%E3%82%BF%E3%83%BC%E3%82%B2%E3%83%83%E3%83%88%E3%82%B5%E3%83%BC%E3%83%90%E3%81%AE%E6%8C%87%E5%AE%9A"></a>ターゲットサーバの指定</h3> <p>"Target Server" のドロップダウンリストには、Java EE アプリケーションのマイグレート先となるターゲット・アプリケーションサーバが入っています。といっても、実際に選択できるのは Sun Java Application Server ただひとつです。選択肢は一つしかありませんが、それでもドロップダウンメニューから選択してください。</p> <h4><a name="M2GMigrateAppJa-%E9%AB%98%E5%BA%A6%E3%81%AA%E3%83%9E%E3%82%A4%E3%82%B0%E3%83%AC%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%83%BB%E3%82%AA%E3%83%97%E3%82%B7%E3%83%A7%E3%83%B3%E3%81%AE%E6%8C%87%E5%AE%9A"></a>高度なマイグレーション・オプションの指定</h3> <p>"Advanced" ボタンを押下して、 "Advanced Migration Options" のダイアログを表示してください。このダイアログでは、次のようなオプション指定を行うことができます。</p> 
+     <ul> 
+      <li>"Migrate CMPs from EJB1.1 to 2.0 specs" （CMP の EJB1.1 を 2.0 の仕様に合わせてマイグレートする）</li> 
+     </ul> <p>このオプションを選択すると、マイグレーションツールは入力元アプリケーションに含まれる EJB 1.1 準拠の CMP エンティティ Bean を、EJB 2.0 CMP の仕様にアップグレードします。はじめに、マイグレーションツールは 入力元ソースの中の CMP エンティティ Bean が EJB 2.0 CMP の仕様にアップグレード可能かどうかを検証します。</p> <p>なお、ツールは以下の項目については変換を行いません：</p> 
+     <ul> 
+      <li>（ Remote インタフェース、 Home インタフェース、および プライマリ･キー・クラスから構成される） Bean の <tt>remoteAPI</tt></li> 
+      <li>Bean のビジネス・ファンクション</li> 
+     </ul> <p>次に、マイグレーション・ツールは第一段階においてアップグレード可能であるとみなされた全ての Bean を、実際に EJB 2.0 準拠のエンティティ Bean にアップグレードします。また、アップロードできない Bean に対しては、アプリケーション・サーバへの配備を可能にするため、最小限の修正が加えられます。なお、このオプションを選択下場合は、次の二つのオプションを指定することが可能です。</p> 
+     <ul> 
+      <li>"Overwrite conflicting accessors （競合するアクセサを上書きする） "</li> 
+     </ul> <p>この "forced migration （強制マイグレーション）" を選ぶと、第一段階で行われる検証のうちの一つがスキップされます。このオプションを選択すると、移行中のアプリケーションに影響が及びます。</p> 
+     <ul> 
+      <li>"Comment out setters of primary key fields（setter およびプライマリ・キー・フィールドをコメントアウトする） "</li> 
+     </ul> <p> この "forced migration" オプションも、第一段階で行われる検証のうちの一つをスキップさせます。このオプションを選択した場合も、移行中のアプリケーションに影響が及びます。</p> <p>Java2DB Tool Invocation （Java2DB ツールの起動）<br> Java2DB ツールを使用するにはこのオプションを選択し、マイグレーションがアウトプットを生成するように設定します。このオプションを選択した場合は、以下の設定も行えます：</p> 
+     <ul> 
+      <li>"Create tables at deploy" オプションにチェックを入れて、配備時に自動的にテーブルを作成できます。</li> 
+      <li>"Delete tables at undeploy" にチェックを入れて、アプリケーションの配備解除時に自動的にテーブルを削除できます。</li> 
+      <li>"Database vendor name （データベース・ベンダ名）" を指定できます。何も指定しない場合は、デフォルトのデータベース (SQL-92) になります。</li> 
+     </ul> <p>Java2DB サポートにより、 EJB モジュールが <tt>ejb-jar.xml</tt> 配備記述子、 <tt>sun-ejb-jar.xml</tt> 配備記述子、および CMP Bean クラスやインタフェースのみで構成される場合も、アプリケーションは首尾よくアプリケーション・サーバ上に配備されます。<br> なお、この際に生成される sun-cmp-mappings 配備記述子、 ddl ファイル、およびデータベース・メタデータに関するファイル (<tt>.dbschema</tt>) を操作して、自動生成されたマッピング情報を変更することも可能です。</p> <h4><a name="M2GMigrateAppJa-%E6%A4%9C%E8%A8%BC%E3%81%AE%E5%AE%9F%E6%96%BD"></a>検証の実施</h3> <p>"Migration" ボタンを押下すると、マイグレーション・ツールは出力項目の詳細について、以下の検証を実施します：</p> 
+     <ol> 
+      <li>正しい出力先ディレクトリが指定されているかを確認。</li> 
+      <li>指定されたディレクトリが存在しない場合、ツールは新規ディレクトリを作成するか（ディレクトリは書き込み許可となります）、もしくは別のディレクトリを指定するよう促します。</li> 
+      <li>新しいディレクトリを作成するよう指定した場合、マイグレーション・ツールにより出力用のディレクトリが作成されます。</li> 
+     </ol> <p>注意 - 次に示す特殊文字を含む名前でディレクトリを作成することはできません：アスタリスク <img class="emoticon" src="images/icons/emoticons/star_yellow.gif" height="16" width="16" align="absmiddle" alt="" border="0">, 小なり (&lt;), 大なり (&gt;), アンパサンド (&amp;), 垂直バー (|), 感嘆符 <img class="emoticon" src="images/icons/emoticons/warning.gif" height="16" width="16" align="absmiddle" alt="" border="0">, シャープ (#), セミコロン (<img class="emoticon" src="images/icons/emoticons/wink.gif" height="20" width="20" align="absmiddle" alt="" border="0">, コロン (<img class="emoticon" src="images/icons/emoticons/smile.gif" height="20" width="20" align="absmiddle" alt="" border="0">, 空白, 単一引用符（開始） (`), 単一引用符（終了） ('), ドルマーク ($), バックスラッシュ () 。<br> ただし、これらの特殊記号を含む名前の既存ディレクトリを選択することは可能です。</p> 
+     <ol> 
+      <li>指定されたディレクトリが空ではない場合、警告メッセージを表示します。</li> 
+      <li>マイグレーション・ツールを一度呼び出すだけで、複数のマイグレーション・プロセスを同時に実行することが可能です。ただし、連続したセッションにおいて同一の入力元／出力先ディレクトリを指定した場合、ツールが警告メッセージを表示します。</li> 
+      <li>直前のマイグレーション・セッションをキャンセルした場合（そして、同じ出力先ディレクトリを再度指定した場合）、マイグレーション・ツールは出力されたファイルが上書きされる可能性があるという警告メッセージを表示します。</li> 
+     </ol> <h4><a name="M2GMigrateAppJa-%E3%83%9E%E3%82%A4%E3%82%B0%E3%83%AC%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%81%AE%E5%AE%9F%E8%A1%8C"></a>マイグレーションの実行</h2> <p>このエリアにあるボタンには、入力元および出力元に関する設定をすべて終えた後に実行可能となるさまざまなアクションが割り付けられています。</p> <p>このエリアには 4 つのボタンがあります。それぞれの機能は以下の通りです：</p> 
+     <ul> 
+      <li>"Migrate" ボタンは、実際にアプリケーションのマイグレーションを開始するためのものです。ツールはマイグレーションを開始する前に、入力元、および出力先に関する詳細設定が妥当であるかどうかの検証を行います。ここでは、 "入力元 Java EE アプリケーションの詳細設定" および "出力先 Java EE アプリケーションの詳細設定" で解説されているような事項がチェックされます。ユーザが入力した入力元および出力先に関する詳細設定の検証が完了すると、自動マイグレーション進行プロセスがスタートします。</li> 
+      <li>プロジェクトのマイグレーションが完了していれば、 "View Report（レポートを見る）" ボタンで現在開いているプロジェクトのマイグレーション・レポートを閲覧できます。詳しいマイグレーション・レポートは、独立した別のウィンドウに表示されます。レポートには、マイグレーションツールにより処理されたファイルのステータスが記載されています。また、マイグレーションツールが生成したビルドスクリプトやその他のファイルについての情報も含まれます。各ファイルへのフルパス名は HTML のハイパーリンクになっていますので、 Migration Report Window （マイグレーションレポート・ウィンドウ）でリンクをクリックして、マイグレートされたファイルのソースコードを見ることができます。なお、マイグレーションが実行されていない場合、あるいはマイグレーション・ファイルが削除され、プロジェクトファイルで指定された場所にマイグレーションレポートのファイルが存在しない場合は、このボタンは使用不可となります。</li> 
+      <li>"Reset Fields （フィールドのリセット） " ボタンは以下の処理を行い、マイグレーションツールの再初期化を行います：</li> 
+     </ul> 
+     <ul class="alternate" type="square"> 
+      <li>すべてのテキストフィールドをクリアする</li> 
+      <li>全てのドロップダウン・リストを初期状態に戻す</li> 
+      <li>"Advanced Migration Options" で指定された全てのオプションを解除する</li> 
+      <li>入力元として指定された単一ディレクトリユーザの選択を解除し、別のアプリケーションのマイグレーションを行えるようにする<br> このボタンを使って、新規マイグレーションプロジェクトを開くことはできません。</li> 
+     </ul> 
+     <ul> 
+      <li>"Exit" ボタンを押下すると、マイグレーションツールを終了します。終了時にはプロジェクトファイルを保存するかの確認ダイアログが表示されます。</li> 
+     </ul> <h4><a name="M2GMigrateAppJa-%E8%87%AA%E5%8B%95%E3%83%9E%E3%82%A4%E3%82%B0%E3%83%AC%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%83%97%E3%83%AD%E3%82%BB%E3%82%B9"></a>自動マイグレーションプロセス</h2> <p>Automatic Migration Progress （自動マイグレーションプロセス） のスクリーンには、マイグレーションの進行状況が表示されます。スクリーンにはプログレスバー（進捗バー）が表示され、マイグレーションツールが現在実行している処理が示されます。プログレスバーの他には Java EE アプリケーションの構成要素をあらわす一連のチェックボックスがあり、マイグレーションの進捗にあわせてこれらがチェックされていきます。<br> プログレスバーのラベルには、マイグレーション・プロセスのうちのどのステージにあるのかがリアルタイムに表示されます。マイグレーション・プロセスには、以下の 3 つのフェーズがあります：</p> 
+     <ul> 
+      <li>Pre-Processing （前処理中） : プリプロセッシング段階における進捗状況を示します。このフェーズが完了すると、プログレスバーは次のマイグレーション・ステージに備えて再度初期化されます。プリプロセッシング・ステージでは、ユーザ入力をパースしたり、入力元ディレクトリ内のコンテンツを出力先ディレクトリにコピーしたり、必要なデータ構造を準備したりといった作業が行われます。</li> 
+      <li>Migrating （移行中）: 入力元（ソース）の移行フェーズは複数のステージで構成され、各ステージにおいていくつかのカテゴリのファイルが処理されます：</li> 
+      <li>チェックボックスはそれぞれのステージに対応しています。個々のチェックボックスの背景色は、初期状態ではグレイに設定されています。</li> 
+      <li>各ステージの処理が開始すると、そのステージに対応するチェックボックスが黄色くハイライト表示されます。</li> 
+      <li>全ての処理が完了すると、そのステージに対応するチェックボックスがチェック済みとなります（チェックマークが表示されます）。</li> 
+      <li>選択された入力元に所定の種類のファイルが含まれない場合、そのファイルタイプに対応するステージはスキップされ、チェックボックスはグレイのまま残ります。</li> 
+      <li>入力元としてディレクトリやファイルが指定された場合、以後のステージで HTML 形式のマイグレーション・レポートが作成されます。</li> 
+      <li>入力元にディレクトリ、またはファイルを指定した場合、次のステージでは HTML 形式のマイグレーションレポートが作成されます。入力元にアーカイブ（ JAR/WAR/RAR/EAR ファイル）が指定された場合、最終ステージは Building Migrated Output （マイグレート対象物のビルド）が実行されます。このステージにおいて、マイグレーションツールは自動生成されたビルドスクリプトを内部的に実行します。このステージも、やはりチェックボックスで表されています。</li> 
+     </ul> <p>注意 - Building Migrated Output （マイグレート対象物のビルド）ステージは入力元にアーカイブを指定した場合のみ可視状態となり、以後、この状態変化を示す自動マイグレーションの画面が示されます。なお、マイグレーションが完了すると、ツールにより JSP バリデータが自動的に起動されます。</p> <h4><a name="M2GMigrateAppJa-JSP%E3%83%90%E3%83%AA%E3%83%87%E3%83%BC%E3%82%BF"></a>JSP バリデータ</h3> <p>自動 JSP バリデータは、タグライブラリに基づき、 JSP ファイル内に登場するタグを検証するためのエンジンです。具体的にいうと、このエンジンは JSP ファイル内にのタグの大文字・小文字表記が TDL ファイル内に定義されているものと異なるかどうかをチェックします。 JSP バリデータはこの検証を一連の JSP ファイルに対して行い、一致しないものが見つかった場合はそのタグを修正します。この機能は配備に関連して移行後に実行されるものなので、現状、JSP バリデータの処理結果はマイグレーション・レポートには含まれません。かわりに JSP バリデータにより 独立した XML 形式のレポートが生成され、このこのレポートへのリンクがマイグレーションレポートの目次内に入ります。レポートの名前は、たとえば JSPValidator_TIMESTAMP.xml のように、マイグレーション・レポートと同じ書式でつけられます。なお、デフォルトの設定ではレポートは出力先ディレクトリに書き出されます。また、レポートの構造は以下のようになります：</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&amp;lt;validator&gt;
+  
+       
+     &amp;lt;file path="E:\output\iBank\docroot\ShowTransactionHistory.jsp" usesTagLib="true"&gt;
+        &amp;lt;tld path="/WEB-INF/TMBHisto.tld"&gt;
+           &amp;lt;tag changed="false"&gt;
+              &amp;lt;name&gt;printTransactionHistory&amp;lt;/name&gt; 
+           &amp;lt;/tag&gt; 
+        &amp;lt;/tld&gt; 
+     &amp;lt;/file&gt; 
+       
+     &amp;lt;file path="E:\output\iBank\docroot\TestShowTransactionHistory.jsp" usesTagLib="true"&gt;
+        &amp;lt;tld path="/WEB-INF/TMBHisto.tld"&gt;
+           &amp;lt;tag changed="false"&gt;
+               &amp;lt;name&gt;printTransactionHistory&amp;lt;/name&gt; 
+           &amp;lt;/tag&gt; 
+        &amp;lt;/tld&gt; 
+     &amp;lt;/file&gt; 
+       
+     &amp;lt;file path="E:\output\iBank\docroot\TransferCheckFailed.jsp" usesTagLib="false"/&gt;
+  
+       
+     &amp;lt;file path="E:\output\iBank\docroot\TransferFunds.jsp" usesTagLib="false"/&gt;
+  
+  &amp;lt;/validator&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>このレポートの表示には Swing で作られたカスタムコンポーネントが利用され、全ての XML のノードを展開したり、折りたたんだりすることが可能となっています。</p> <h4><a name="M2GMigrateAppJa-%E3%83%9E%E3%82%A4%E3%82%B0%E3%83%AC%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%83%BB%E3%83%97%E3%83%AD%E3%82%BB%E3%82%B9%E3%81%AE%E4%B8%AD%E6%96%AD"></a>マイグレーション・プロセスの中断</h3> <p>マイグレーション・プロセスを中断する必要がある場合は、進捗バーの下の "Cancel" ボタンを押下してください。ボタンを押下すると、本当に中断して良いかの確認ダイアログが表示されます。<br> マイグレーション・プロセスのポップアップには、マイグレーションの終了後にポップアップをどうするのかを指定するチェックボックスがあります。自動的にポップアップを閉じるか、もしくは開いたままにするかをここで選択することができます。</p> <h4><a name="M2GMigrateAppJa-%E3%83%9E%E3%82%A4%E3%82%B0%E3%83%AC%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%83%BB%E3%83%AC%E3%83%9D%E3%83%BC%E3%83%88"></a>マイグレーション・レポート</h2> <p>マイグレーション・ツールは、実行された全てのマイグレーションについてマイグレーション・レポートを生成します。このレポートには、マイグレートされたアプリケーションの状態に関する説明が含まれます。また、システム管理者が実行する次のステップへの道しるべを示し、マイグレートされたアプリケーションのスムーズな配備を手助けします。レポートを閲覧するには、 "Actions" パネル上の "View Report" ボタンをクリックしてください。レポート内では、マイグレーションプロセスがどのように実施され、なぜそのような結果になったのかが説明されています。レポートは以下のような論理セクションに分割され、成功した全てのマイグレーションプロセスが重要度に応じて並べられます。</p> 
+     <ul> 
+      <li>The Migration Summary （マイグレーションの要約）</li> 
+      <li>Files That Failed to Migrate （マイグレーションに失敗したファイル）</li> 
+      <li>Files Partially Migrated （部分的にマイグレートされたファイル）</li> 
+      <li>Files Changed and Successfully Migrated （変更後、マイグレーションに成功したファイル）</li> 
+      <li>Files Unchanged and Migrated （変更されずにマイグレートされたファイル）</li> 
+      <li>Build Scripts Generated （生成されたビルドスクリプト）</li> 
+     </ul> <p>各セクションのヘッダは、信号と同じカラー体系で塗り分けられます。また、レポートには以下の項目へのリンクも挿入されます：</p> <p> JSP Validator （ JSP バリデータ）<br> Logging （ロギング）<br> <a href="M2GPostRun.html" title="M2GPostRun">マイグレーション後の処理</a></p> <h4><a name="M2GMigrateAppJa-TheMigrationSummary%EF%BC%88%E3%83%9E%E3%82%A4%E3%82%B0%E3%83%AC%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%81%AE%E8%A6%81%E7%B4%84%EF%BC%89"></a>The Migration Summary （マイグレーションの要約）</h3> <p>マイグレーションのサマリーはマイグレーションプロセスの概要をあらわすもので、マイグレーションプロセスの詳細がテーブル状にまとめられています。以下、このサマリーの内容を示します。</p> 
+     <ul> 
+      <li>Migration date: 2003-8-6 Time: 4: 31: 43 PM.</li> 
+      <li>Source Application Server: J2EE Reference Implementation 1.4</li> 
+      <li>Destination Application Server: Sun Java System Application Server Platform Edition 8</li> 
+      <li>Input Directory: C:\DOCUME~1\JASPRE~1\LOCALS~1\Temp\asmt_2003_8_6_At_4_31_34_500_PM\Input_Archives</li> 
+      <li>Output Directory: &gt;e:\output\j2eeri1.4\hellodb\Input_Archives</li> 
+      <li>*Input Archive: E:\work\iasmt3\examples\j2ee_ri_1_4\HelloWorld\HelloWorld.ear</li> 
+      <li>*Output Archive Directory: e:\output\j2eeri1.4\hellodb\Input_Archives\build_ear.cmd 
+       <div class="table-wrap"> 
+        <table class="confluenceTable">
+         <tbody> 
+          <tr> 
+           <th class="confluenceTh">Input Component —&gt; </th> 
+           <th class="confluenceTh">Java </th> 
+           <th class="confluenceTh">JSP </th> 
+           <th class="confluenceTh">XML/XMI </th> 
+           <th class="confluenceTh">HTML </th> 
+           <th class="confluenceTh">Config </th> 
+           <th class="confluenceTh">&nbsp;</th> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> Failed </td> 
+           <td class="confluenceTd"> 0 </td> 
+           <td class="confluenceTd"> 0 </td> 
+           <td class="confluenceTd"> 0 </td> 
+           <td class="confluenceTd"> 0 </td> 
+           <td class="confluenceTd"> 0 </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> Partially Migrated </td> 
+           <td class="confluenceTd"> 0 </td> 
+           <td class="confluenceTd"> 0 </td> 
+           <td class="confluenceTd"> 0 </td> 
+           <td class="confluenceTd"> 0 </td> 
+           <td class="confluenceTd"> 0 </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> Successfully Migrated </td> 
+           <td class="confluenceTd"> 0 </td> 
+           <td class="confluenceTd"> 0 </td> 
+           <td class="confluenceTd"> 4 </td> 
+           <td class="confluenceTd"> 0 </td> 
+           <td class="confluenceTd"> 0 </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> Unchanged </td> 
+           <td class="confluenceTd"> 7 </td> 
+           <td class="confluenceTd"> 1 </td> 
+           <td class="confluenceTd"> 0 </td> 
+           <td class="confluenceTd"> 1 </td> 
+           <td class="confluenceTd"> 0 </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> Total </td> 
+           <td class="confluenceTd"> 7 </td> 
+           <td class="confluenceTd"> 1 </td> 
+           <td class="confluenceTd"> 4 </td> 
+           <td class="confluenceTd"> 1 </td> 
+           <td class="confluenceTd"> 0 </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+          </tr> 
+         </tbody>
+        </table> 
+       </div> </li> 
+     </ul> 
+     <ul> 
+      <li>このフィールドは、入力元が JAR/WAR/RAR/EAR いずれかの形式のアーカイブである場合にのみ表示されます。</li> 
+     </ul> <h4><a name="M2GMigrateAppJa-FilesThatFailedtoMigrate%EF%BC%88%E3%83%9E%E3%82%A4%E3%82%B0%E3%83%AC%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%81%AB%E5%A4%B1%E6%95%97%E3%81%97%E3%81%9F%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB%EF%BC%89"></a>Files That Failed to Migrate （マイグレーションに失敗したファイル）</h3> <p>このセクションには、移行に失敗したファイルのリストが処理された順に表示されます。</p> 
+     <ul> 
+      <li>設定ファイル：以下のような場合に、設定ファイルの移行に失敗することがあります。 
+       <ul> 
+        <li>選択された入力元サーバが設定ファイルに適合しない場合。たとえば、入力元サーバに IBM WebSphere 4.0 にもかかわらず weblogic.properties ファイルが存在するなど。</li> 
+        <li>設定ファイルの書式が正しくない場合。たとえば server-cfg.xml に整形 XML ではない内容が含まれるなど。</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li>XML ファイル：以下のような場合、 XML ファイルのマイグレーションに失敗することがあります。 
+       <ul> 
+        <li>XML ファイルのマイグレーションに際して、他の XML ファイルや Java ファイルを必要とするにもかかわらず、それらのファイルが入力元のディレクトリ構造内に存在しない。この場合、必要とされるファイルのパスおよび名前が表示されます。</li> 
+        <li>あるアプリケーションサーバに対して正しく適用可能な XML ファイルが、別のアプリケーションサーバに対してはマイグレーションを失敗させる原因となることがあります。このような場合、マイグレーションツールは問題の XML ファイルの変換に関するエラーメッセージを表示し、改めて入力元アプリケーション・サーバを選択するよう求めてきます。</li> 
+        <li>入力元 XML ファイルが well-formed XML （整形式 XML ）ではない場合</li> 
+        <li>入力元 XML が valid XML （妥当な XML ）ではない場合；すなわち DTD に適合した形になっていない場合</li> 
+       </ul> </li> 
+      <li>JSP ファイル：以下のような場合、 JSP ファイルのマイグレーションに失敗する場合があります。 
+       <ul> 
+        <li>JSP ファイルのマイグレーションには、いくつかの独立した変更処理が必要となります。マイグレーションツールはこうした変更処理の大半をサポートしていますが、必要とされる全ての変更処理をカバーしているわけではありません。入力元の JSP ファイル内に含まれる変更がサポート対象外のものばかりであった場合、ツールはそのファイルをマイグレートを行わず、サポート対象外の変更点が全てリストアップされます。</li> 
+       </ul> </li> 
+     </ul> <p>　解決策：マイグレーションを実行するには、出力された JSP ファイルを手動で編集してください。</p> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li>（入力元として）単一の JSP ファイルが指定される場合、当該ファイルにタグライブラリへの参照が記述されていることがあります。このような場合ツールはタグライブラリ（ .jsp ファイル内で参照されている）に対応した web.xml を見つけることができません。従って、こういった単一の JSP ファイルは正しくマイグレートされません。</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li>Java ファイル：以下のような場合、Java ファイルのマイグレーションに失敗する場合があります： 
+       <ul> 
+        <li>Java ファイルのマイグレーションには、いくつかの独立した変更処理が必要となります。マイグレーションツールはこうした変更処理の大半をサポートしていますが、必要とされる全ての変更処理をカバーしているわけではありません。入力元の Java ファイル 内に含まれる変更がサポート対象外のものであった場合、ツールはそのファイルをマイグレートを行わず、サポート対象外の変更点が全てリストアップされます。</li> 
+       </ul> </li> 
+     </ul> <p>　解決策：マイグレーションを実行するには、出力された Java ファイルを手動で編集してください。</p> <h4><a name="M2GMigrateAppJa-FilesPartiallyMigrated%EF%BC%88%E9%83%A8%E5%88%86%E7%9A%84%E3%81%AB%E3%83%9E%E3%82%A4%E3%82%B0%E3%83%AC%E3%83%BC%E3%83%88%E3%81%95%E3%82%8C%E3%81%9F%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB%EF%BC%89"></a>Files Partially Migrated （部分的にマイグレートされたファイル）</h3> <p>入力元のファイルに要求された変更に対して一部のみ対応可能である場合、マイグレーションは部分的に実行されます（ Partial migration )。マイグレーションツールは、変更に成功した項目、および変更を試みたが失敗に終わった項目を全てリストアップします。</p> <p>解決策：マイグレーションを完全に実行するには、出力されたファイルを参考にして、マイグレートされなかった項目を手動で編集してください。</p> 
+     <ul> 
+      <li>設定ファイル：以下のような場合、設定ファイルは部分的にマイグレートされます。 
+       <ul> 
+        <li>マイグレーションツールはサポートされるプロパティを変換することができますが、全てがサポートされるわけではありません。</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li>JSP ファイル：以下のような状況において、 JSP ファイルの部分的なマイグレーションが発生する場合があります。 
+       <ul> 
+        <li>JSP ファイルのマイグレーションには、いくつかの独立した変更処理が必要となります。マイグレーションツールはこうした変更処理の大半をサポートしていますが、必要とされる全ての変更処理をカバーしているわけではありません。入力元の JSP ファイル内にサポート対象の変更と対象外の変更とが混在する場合、ツールはサポート対象の箇所のみを変更し、サポート対象外の変更全てをリストアップします。</li> 
+       </ul> </li> 
+     </ul> <p>　解決策：マイグレーションを実行するには、出力された JSP ファイルを手動で編集してください。以下に部分的なマイグレーションの例を示します：</p> <p>入力元アプリケーションサーバとして WebLogic 5.1 が選択され、マイグレーション対象の JSP ファイル内から weblogic.servlet.security および weblogic.db.jdbc の二つのパッケージを参照している場合。 weblogic.db.jdbc はマイグレーションツールのサポート対象、そして weblogic.servlet.security は対象外であるため、この JSP ファイルは 'Files Partially Migrated' のセクションに表示されます。</p> 
+     <ul> 
+      <li>Java ファイル</li> 
+     </ul> <p>　部分的なマイグレーションにおいて、 Java ファイルは JSP ファイルと同様に扱われます。</p> <h4><a name="M2GMigrateAppJa-FilesChangedandSuccessfullyMigrated%EF%BC%88%E5%A4%89%E6%9B%B4%E5%BE%8C%E3%80%81%E3%83%9E%E3%82%A4%E3%82%B0%E3%83%AC%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%81%AB%E6%88%90%E5%8A%9F%E3%81%97%E3%81%9F%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB%EF%BC%89"></a>Files Changed and Successfully Migrated （変更後、マイグレーションに成功したファイル）</h3> <p>これが表示された場合、マイグレーションツールにより全てのファイルが正しく変更され、マイグレーション先のアプリケーションに移行可能な状態になっていると考えることができます。</p> 
+     <ul> 
+      <li>設定ファイル：入力元ファイル内から次のようなプロパティを含むファイルが検出され、それが対象サーバのフォーマットに正しくマイグレートされた場合は、このセクションに表示されます。 
+       <ul> 
+        <li>アプリケーションが使用するデータソース (DataSources)</li> 
+        <li>StartupClass プロパティ</li> 
+        <li>ThreadPool settings</li> 
+        <li>スレッドプール (ThreadPool) の設定</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li>XML ファイル：次のような場合、このセクションにファイルが表示されます： 
+       <ul> 
+        <li>入力元 XML ファイルが、対象アプリケーションサーバの DTD フォーマットに適合するよう変更された場合。</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li>JSP ファイル：次のような場合、このセクションにファイルが表示されます： 
+       <ul> 
+        <li>移行元サーバのパッケージに所属する全ての固有クラスが、対象アプリケーションサーバのクラスおよびパッケージ構造に完全に適合するよう正しく変更された場合。</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li>Java ファイル：次のような場合、このセクションにファイルが表示されます： 
+       <ul> 
+        <li>JSP ファイルの場合と同様。</li> 
+       </ul> </li> 
+     </ul> <h4><a name="M2GMigrateAppJa-FilesUnchangedandMigrated%EF%BC%88%E5%A4%89%E6%9B%B4%E3%81%95%E3%82%8C%E3%81%9A%E3%81%AB%E3%83%9E%E3%82%A4%E3%82%B0%E3%83%AC%E3%83%BC%E3%83%88%E3%81%95%E3%82%8C%E3%81%9F%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB%EF%BC%89"></a>Files Unchanged and Migrated （変更されずにマイグレートされたファイル）</h3> <p>入力元ファイルを対象サーバに適応するにあたって変更すべき箇所がない場合、ファイルはそのまま出力先ディレクトリにコピーされます。</p> 
+     <ul> 
+      <li>設定ファイル：次のような場合、設定ファイルは変更されることなくマイグレートされます。 
+       <ul> 
+        <li>入力元サーバ固有のプロパティが含まれない場合</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li>XML ファイル：次のような場合、XML ファイルは変更されることなくマイグレートされます。 
+       <ul> 
+        <li>入力元の XML ファイルが対象アプリケーションサーバに適合している場合。</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li>JSP ファイル：次のような場合、JSP ファイルは変更されることなくマイグレートされます。 
+       <ul> 
+        <li>入力元の JSP ファイル内において、移行元アプリケーションサーバ固有のクラスが使用されていない場合</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li>Java ファイル：次のような場合、Java ファイルは変更されることなくマイグレートされます。 
+       <ul> 
+        <li>入力元の Java ファイル内において、移行元アプリケーションサーバ固有のクラスが使用されていない場合</li> 
+       </ul> </li> 
+     </ul> <h4><a name="M2GMigrateAppJa-BuildScriptsGenerated%EF%BC%88%E7%94%9F%E6%88%90%E3%81%95%E3%82%8C%E3%81%9F%E3%83%93%E3%83%AB%E3%83%89%E3%82%B9%E3%82%AF%E3%83%AA%E3%83%97%E3%83%88%EF%BC%89"></a>Build Scripts Generated （生成されたビルドスクリプト）</h3> <p>移行可能なファイル類を指定されたディレクトリにマイグレートした後、ツールは全ての Java EE コンポーネントについて、対応する XML ファイルを生成します。この XML ファイルには、所定のアーカイブファイルを生成するための <a href="http://jakarta.apache.org/ant">http://jakarta.apache.org/ant</a> への指示が書き込まれています。<br> この Ant 用の XMLファイルに加え、ツールは更に二つのスクリプトを生成します。一つは Soralis 用の (<tt>build_</tt><em>xxx</em><tt>.sh</tt>) ファイル、そしてもう一つは Windows 用の (<tt>build_</tt><em>xxx</em><tt>.cmd</tt>) ファイルです。これらのスクリプトを実行して Ant を起動します。生成されるファイルの詳細を以下に示します：</p> 
+     <ul> 
+      <li>DD ファイルが <tt>ejb-jar.xml</tt> の場合 
+       <ul> 
+        <li><tt>build_jar.xml</tt></li> 
+        <li><tt>build_jar.sh</tt></li> 
+        <li><tt>build_jar.cmd</tt></li> 
+       </ul> </li> 
+      <li>DD ファイルが <tt>web.xml</tt> の場合 
+       <ul> 
+        <li><tt>build_war</tt>.xml</li> 
+        <li><tt>build_war.sh</tt></li> 
+        <li><tt>build_war.cmd</tt></li> 
+       </ul> </li> 
+      <li>DD ファイルが <tt>application.xml</tt> の場合 
+       <ul> 
+        <li><tt>build_ear.xml</tt></li> 
+        <li><tt>build_ear.sh</tt></li> 
+        <li><tt>build_ear.cmd</tt></li> 
+       </ul> </li> 
+     </ul> <p>各ビルドファイルに含まれる <tt>deploy</tt> ターゲットを指定すると（任意）、生成されたアーカイブを配備することができます。たとえば <tt>build_ear.cmd deploy</tt> コマンドを実行すると EAR ファイルが生成され、生成された EAR ファイルが GlassFish アプリケーション・サーバ上に配備されます。</p> <p>なお、移行元アプリケーション・サーバが WebLogic 5.1 の場合は、少し事情が異なります。<br> WebLogic 5.1 は <tt>application.xml</tt> を使用しないため、マイグレーションツールは <tt>application.sasmt</tt> というファイルを生成します。この <tt>application.sasmt</tt> ファイルが、対象アプリケーション・サーバ用の EAR ファイルを生成するために使用されます。<br> JAR 、 WAR 、および EAR ファイルの名前は、対応する DD ファイル内で指定された display name と同じもにになります。 display name が指定されていない場合は、最初に見つかった ejb-name 、および servlet-name の値が、 JAR ファイルと WAR ファイルの名前にそれぞれ割り当てられます。 DD ファイル内に複数の EJB あるいは サーブレットが存在する場合、ファイル名に "andothers" が付加されます。</p> 
+     <ul> 
+      <li>application.xml が既に存在する場合、 JAR/WAR ファイルの名前は application.xml ファイル内で指定されているモジュール名となります。</li> 
+      <li>アプリケーションに複数の JAR および WAR ファイルが含まれる場合、 マイグレーションツールは <tt>build_ear</tt> ファイルと同じディレクトリの中に <tt>build.properties</tt> ファイルを作成します。</li> 
+     </ul> 
+     <ul> 
+      <li>DD ファイル内の display-name タグで指定されている名前に対応するモジュールが application.xml ファイル内に見つからない場合、 <tt>build_ear</tt> (<tt>.sh</tt> <tt>.cmd</tt>) などのファイルを実行する前に <tt>build.properties</tt> を修正する必要があります。</li> 
+     </ul> <p><tt>build.properties</tt> に対して前述のような修正を行う必要があるのは、<tt>application.xml</tt> ファイル内で指定されているモジュール名と実際のモジュールファイルが存在するディレクトリとがマッピングされていないためです。</p> 
+     <ul> 
+      <li>application.xml に JAR あるいは WAR モジュールが一つだけ含まれる場合は、 <tt>application.xml</tt> 内の JAR/WAR 名と <tt>ejb-jar.xml</tt>/<tt>web.xml</tt> ファイルを含むディレクトリとを結びつけるデフォルトの one-to-one マッピングが有効となります</li> 
+     </ul> <p>このような場合、 <tt>build.properties</tt> ファイルは生成されません。<br> <tt>build.properties</tt> ファイルには、<tt>application.xml</tt> で指定された名前を適切なモジュールに割り当てるためのプロパティが含まれます。<tt>build.properties</tt> ファイルのサンプルを以下に示します。</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">################################################################################
+# Modules found in application.xml are
+# ---&gt;customerEjb.jar&amp;lt;---     
+# ---&gt;inventoryEjb.jar&amp;lt;---     
+# ---&gt;petstore.war&amp;lt;---     
+################################################################################     
+################################################################################     
+# Deployment Descriptors have been found in the following directories,    
+# please enter a module name from the application.xml that should be given     
+# to the module generated from the files inside these directories.     
+################################################################################     
+
+# ejb-jar.xml was found in the directory /temp/components/ejb1/src, enter the module name after "=" temp_components_ejb1_src=     
+
+# ejb-jar.xml was found in the directory /temp/components/ejb2/src, enter the module name after "=" temp_components_ejb2_src= 
+
+# web.xml was found in the directory /temp/web/src, the module name     
+# has been assigned by the tool from application.xml     
+
+temp_web_src_war=petstore.war</pre> 
+       </div> 
+      </div>
+     </div> <p>各々のプロパティに適切なモジュール名を割り当て、以下のコマンドでビルドを実行して下さい。<br> Soralis 用 ： <tt>% sh build_ear.sh -Dp=y</tt><br> Windows用 : <tt>PROMPT&gt; build_ear -Dp=y</tt></p> <p>プロパティに対して適切なモジュール名が割り当てられなかった場合、生成された EAR ファイルを配備することはできません。</p> 
+     <ul> 
+      <li><tt>weblogic.properties</tt> 、 <tt>config.xml</tt> 、 あるいは <tt>server-cfg.xml</tt> ファイルが存在する場合は以下のファイル類が生成されます： 
+       <ul> 
+        <li><tt>buildconfig.xml</tt></li> 
+        <li><tt>buildconfig.sh</tt> (for Solaris)</li> 
+        <li><tt>buildconfig.cmd</tt> (for Windows)<br> 　このビルドスクリプトは DataSource を登録し、アプリケーション・サーバに StartupClass を再配備します。</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li><tt>config.xml</tt> ファイル内に JMS 設定に関する要素が含まれる場合、以下のファイル類が生成されます： 
+       <ul> 
+        <li><tt>buildjms.xml</tt></li> 
+        <li><tt>buildjms.sh</tt> (for Solaris)</li> 
+        <li><tt>buildjms.cmd</tt> (for Windows)<br> 　このビルドスクリプトは <tt>config.xml</tt> で定義されている Destination JMS リソースを登録します。</li> 
+       </ul> </li> 
+     </ul> <p> <tt>config.xml</tt> に含まれる個々の Connection ファクトリに対し、それぞれ二つの xml ファイルが生成されます。たとえば Connection ファクトリの名前が <tt>testConn</tt> である場合、ビルドスクリプトは以下のようなファイルを生成します：<br> Queue Connection ファクトリ登録用：</p> 
+     <ul> 
+      <li><tt>buildjmstestConn</tt><em>qf</em><tt>.xml</tt></li> 
+      <li><tt>buildjmstestConn</tt><em>qf</em><tt>.sh</tt> (for Solaris)</li> 
+      <li><tt>buildjmstestConn</tt><em>qf</em><tt>.cmd</tt> (for Windows)</li> 
+     </ul> <p>Topic Connection ファクトリ登録用：</p> 
+     <ul> 
+      <li><tt>buildjmstestConn</tt><em>tf</em><tt>.xml</tt></li> 
+      <li><tt>buildjmstestConn</tt><em>tf</em><tt>.sh</tt> (for Solaris)</li> 
+      <li><tt>buildjmstestConn</tt><em>tf</em><tt>.cmd</tt> (for Windows)</li> 
+     </ul> <p>注意 - </p> <p>要求に応じて、これらのスクリプトのうち一つだけを実行するようにしてください。<br> 以下のコマンドで、リソース類をアプリケーション・サーバに登録するための設定ビルドファイルを<br> 実行することができます：</p> 
+     <ul> 
+      <li>Soralis の場合： <tt>% sh filename -Du=&lt;username&gt; -DH=&lt;hostname&gt; -Dp=&lt;portno&gt; -Di=&lt;instancename&gt; -Dw=&lt;passwordfile&gt;</tt></li> 
+      <li>Windowsの場合： <tt>PROMPT&gt; filename -Du=&lt;username&gt; -DH=&lt;hostname&gt; -Dp=&lt;portno&gt; -Di=&lt;instancename&gt; -Dw=&lt;passwordfile&gt;</tt></li> 
+     </ul> <h4><a name="M2GMigrateAppJa-%E3%83%84%E3%83%BC%E3%83%AB%E3%83%90%E3%83%BC%E3%82%92%E4%BD%BF%E7%94%A8%E3%81%99%E3%82%8B"></a>ツールバーを使用する</h2> <p>マイグレーションツールには、よく使う三つの機能を起動するためのアイコンをのせたツールバーが搭載されています。</p> 
+     <ul> 
+      <li>新規マイグレーションプロジェクトを開くには、 "New" アイコンを押してください。既にマイグレーションプロジェクトが開かれている場合は、先に開いているプロジェクトのファイルを保存するよう促されます。新しいプロジェクトを開くと、全てのマイグレーション・アクションが起動されます。</li> 
+      <li>以前に保存したプロジェクトファイルを開くには、 "Open" アイコンを押下します。にマイグレーションプロジェクトが開かれている場合は、先に開いているプロジェクトのファイルを保存するよう促されます。ファイルが保存されるとダイアログボックスが表示されますので、開きたいプロジェクトのファイルを選択してください。</li> 
+      <li>フィールドに入力した値をプロジェクトファイルに保存するには、 "Save" アイコンを押下します。ファイルは <tt>.prj</tt> という拡張子をつけて保存されます。</li> 
+     </ul> <h4><a name="M2GMigrateAppJa-%E3%83%A1%E3%83%8B%E3%83%A5%E3%83%BC%E3%83%90%E3%83%BC%E3%82%92%E4%BD%BF%E7%94%A8%E3%81%99%E3%82%8B"></a>メニューバーを使用する</h2> <p>メニューバーには以下に示すようなメニュー項目があります。</p> 
+     <ul> 
+      <li>Project （プロジェクト）</li> 
+      <li>Edit （編集）</li> 
+      <li>Help （ヘルプ）</li> 
+     </ul> <h4><a name="M2GMigrateAppJa-Project%EF%BC%88%E3%83%97%E3%83%AD%E3%82%B8%E3%82%A7%E3%82%AF%E3%83%88%EF%BC%89%E3%83%A1%E3%83%8B%E3%83%A5%E3%83%BC"></a>Project （プロジェクト）メニュー</h3> <p>プロジェクトメニューからは以下のような機能にアクセスできます：</p> 
+     <ul> 
+      <li>新規移行プロジェクトを開くには "New" を選択します。既に移行プロジェクトが開いている場合には、開いているプロジェクトを保存するか聞かれます。</li> 
+      <li>既存のプロジェクトファイルを開くには、"Open" を選択します。既に移行プロジェクトが開いている場合には、開いているプロジェクトを保存するか聞かれ、続いて、新たに開くプロジェクトを選択するよう、ダイアログボックスが表示されます。</li> 
+      <li>入力フィールドをプロジェクトファイル (.prj 拡張子のファイル) に保存するには、"Save" を選択します。</li> 
+      <li>プロジェクトファイルを別名もしくはオリジナルと違う場所に保存するには、"Save As" を選択します。</li> 
+      <li>マイグレーションツールを閉じるには、"Exit" を選択します。</li> 
+     </ul> <h4><a name="M2GMigrateAppJa-Edit%EF%BC%88%E7%B7%A8%E9%9B%86%EF%BC%89%E3%83%A1%E3%83%8B%E3%83%A5%E3%83%BC"></a>Edit （編集） メニュー</h3> <p>設定を変更するには、編集メニューを利用します。"Preferences" サブメニューを選択すると、設定ダイアログが表示されます。設定ダイアログには 2 つの設定画面があります: "Logging（ログ）" と "Miscellaneous（その他）" です。</p> 
+     <ul> 
+      <li>"Logging" 画面では、どの情報をログに記録させるかを選択します:</li> 
+      <li>"Tool Migration Log" には、ユーザにとって興味のある、移行に関係する情報が含まれます。</li> 
+      <li>"Tool Debugging Log" には、移行処理時に生成されたデバッグ情報が含まれます。この情報は、開発者の視点から移行の流れを追跡する上で有用です。この 2 種類のログについてさらに知りたい場合は、<a href="M2GCapabiltiesJa.html" title="M2GCapabiltiesJa">マイグレーションツールで可能なこと</a>ページ、「ログ」の節を参照下さい。</li> 
+      <li>"Logging Type" セクションでは次の設定をします: 
+       <ul> 
+        <li>生成するログは、2 つのどちらか、もしくは両方か。</li> 
+        <li>新しいログ情報を、既存のログファイルに追加していくか、もしくは、既存のログを新しいログ情報で上書きするか。Overwrite（上書き）モードでは、両方のログを生成すべきです。変更された設定はツールを再起動した際有効になります。</li> 
+       </ul> </li> 
+      <li>"Miscellaneous" 画面では、次回ツールを起動した際にマイグレーションツールのスプラッシュスクリーンを表示させるか否かを指定します。</li> 
+     </ul> <h4><a name="M2GMigrateAppJa-Help%EF%BC%88%E3%83%98%E3%83%AB%E3%83%97%EF%BC%89%E3%83%A1%E3%83%8B%E3%83%A5%E3%83%BC"></a>Help （ヘルプ）メニュー</h3> <p>ヘルプメニューからは以下のような機能にアクセスできます：</p> 
+     <ul> 
+      <li>サブメニューの "User Guide" を選択すると、マイグレーションツールの様々な機能に関するオンラインヘルプを表示できます。</li> 
+      <li>"About Migration Tool" を選択すると、マイグレーションツールのバージョンおよび著作権情報が表示されます。</li> 
+     </ul> <p><a href="M2GRunJa.html" title="M2GRunJa">前へ</a> <a href="M2GPostRunJa.html" title="M2GPostRunJa">次へ</a></p> 
+     <hr> <p>日本語翻訳: <a href="http://apercu-j.blogspot.com/">Kana. Kotake</a></p> <p><a href="M2GMigrateApp.html" title="M2GMigrateApp">英文 </a> (翻訳したバージョン: 8)</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 09, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

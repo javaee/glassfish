@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : DevTest FrameWork Demo for 3.1 MS3</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="DevTestFrameWorkDemofor3.1MS3-DevTestFrameWorkDemoforMS3"></a>Dev Test Frame Work Demo for MS3</h2> <p>Creates&nbsp; Multi Node GlassFish Cluster on top of Hudson Cluster. Provides Hooks for User Tasks and Ant Tasks.</p> <h4><a name="DevTestFrameWorkDemofor3.1MS3-Team"></a>Team</h3> <p>This demo is brought to you by Ed Bratt's Dev Test Frame Work Team:</p> 
+     <ul> 
+      <li>Harshad Vilekar (Hudson Plugin)</li> 
+      <li>Mathirajan Manoharan (Ant Tasks)</li> 
+     </ul> <h4><a name="DevTestFrameWorkDemofor3.1MS3-DemoScript"></a>Demo Script</h3> 
+     <ol> 
+      <li>Show Hudson Cluster <a href="http://intg1t1000.red.iplanet.com:8080">Nodes </a></li> 
+      <li>Create a new job, and show - "<b>Add Build Step - Glass Fish Cluster</b>" Menu.</li> 
+      <li>Launch "GlassFishMultiNodeCluster" job.</li> 
+      <li>Walk through the GUI of "GlassFishMultiNodeCluster".</li> 
+      <li>Show Console Output</li> 
+      <li>Deploy .war file (User Tasks)</li> 
+      <li>Reload the http URLs to show running app. (Note: Following three links are normally dead) 
+       <ol> 
+        <li><a href="http://intgv880-1.red.iplanet.com:8356/helloworld/hi.jsp">instance1</a></li> 
+        <li><a href="http://jmq-ultra3.sfbay:8100/helloworld/hi.jsp">instance2</a></li> 
+        <li><a href="http://intgwin7.red.iplanet.com:8868/helloworld/hi.jsp">instance3</a></li> 
+       </ol> </li> 
+      <li>Discuss Plugin Features.</li> 
+      <li>Discuss Ant Targets.</li> 
+      <li>Show Consolidated Server Logs.</li> 
+     </ol> <h4><a name="DevTestFrameWorkDemofor3.1MS3-"></a></h3> <h4><a name="DevTestFrameWorkDemofor3.1MS3-HudsonGlassFishClusterPluginFeatures"></a>Hudson GlassFish Cluster Plugin Features</h3> 
+     <ul> 
+      <li>Multi Node GlassFish Cluster</li> 
+      <li>GlassFish Installation Support</li> 
+      <li>Cluster Life Cycle Support: Create / Start / Stop the Cluster</li> 
+      <li>The plugin is accessible to user jobs via "Add Build Step – GlassFish Cluster" Menu.</li> 
+      <li>
+       <hr></li> 
+      <li>Cluster Creation Use Cases: (Number of Instances = I,&nbsp;&nbsp; Number of Nodes = N) 
+       <ul> 
+        <li>Single Node Cluster:&nbsp;&nbsp; 
+         <ul> 
+          <li>N = 1, I &gt;= N</li> 
+         </ul> </li> 
+        <li>Multi Node Cluster, One Instance per Node: 
+         <ul> 
+          <li>N &gt; 1, I = N</li> 
+         </ul> </li> 
+        <li>Multi Node Cluster, Multiple Instances per Node:&nbsp; 
+         <ul> 
+          <li>N &gt; 1, I &lt; N</li> 
+         </ul> </li> 
+       </ul> </li> 
+      <li>
+       <hr></li> 
+      <li>Collection and Archival of Server Logs: 
+       <ul> 
+        <li>In the Job Configuration, Select: Archive the Artifacts: "logs/**"</li> 
+       </ul> </li> 
+      <li>Dynamic Port Allocation: 
+       <ul> 
+        <li>User specified preferred base port.</li> 
+        <li>Dynamically reassign the ports for GF Instances, in case of port conflict.</li> 
+        <li>Note: No dynamic port allocation for DAS.</li> 
+       </ul> </li> 
+      <li>Hooks for Ant Scripts / User Tasks: 
+       <ul> 
+        <li>Cluster information passed using cluster config file.</li> 
+       </ul> </li> 
+      <li>Multiple Plugin Instances within the same job can share the cluster configuration.</li> 
+      <li>Configurable Node selection labels.</li> 
+     </ul> <h4><a name="DevTestFrameWorkDemofor3.1MS3-Howdoesthepluginwork"></a>How does the plugin work</h3> 
+     <ul> 
+      <li>Some of the Hudson nodes are labeled "GFCluster". They work as plugin's "subslaves".</li> 
+      <li>When the build is launched: 
+       <ul> 
+        <li>The Plugin finds available "N" subslaves.</li> 
+        <li>Installs GlassFish on each node.</li> 
+        <li>Starts DAS on the "build" node</li> 
+        <li>Starts one clustered GF instance on each subslave (this is optional step)</li> 
+       </ul> </li> 
+     </ul> <h4><a name="DevTestFrameWorkDemofor3.1MS3-Limitations%2FKnownIssues%3A"></a>Limitations / Known Issues:</h3> 
+     <ul> 
+      <li>Hudson core node allocation logic is bypassed when assigning the subslaves. This has various side effects. The fix is planned in<br> Phase 3 (date TBD). 
+       <ul> 
+        <li>The build for "N" instance multinode cluster fails if N subslaves are not available.</li> 
+        <li>If two or more multi-nodes jobs are running at the same time – they might use the same subslave at the same time.</li> 
+       </ul> </li> 
+      <li>Can't use Hudson Master as a build node due to port conflict with DAS.</li> 
+     </ul> <h4><a name="DevTestFrameWorkDemofor3.1MS3-HudsonGlassfishAntTargets"></a>Hudson Glassfish Ant Targets</h3> 
+     <ul> 
+      <li>Features 
+       <ul> 
+        <li>Ant Targets Provide a means to start, stop, delete, create, kill Glassfish Cluster Instances</li> 
+        <li>Tightly integrated and triggered though the Hudson Glassfish Plugin</li> 
+        <li>Provides a platform independent way to manage Glassfish Cluster Instances</li> 
+        <li>Functionality can be easily extended</li> 
+       </ul> </li> 
+      <li>Dependency 
+       <ul> 
+        <li>Ant Contrib, JDK</li> 
+       </ul> </li> 
+     </ul> <h4><a name="DevTestFrameWorkDemofor3.1MS3-PluginSetup%28HudsonAdmin%29"></a>Plugin Setup (Hudson Admin)</h3> 
+     <ul> 
+      <li>Upload GlassFish Plugin (1.03 or later):&nbsp;</li> 
+     </ul> <h4><a name="DevTestFrameWorkDemofor3.1MS3-DevTestFrameWorkDemoforMS3"></a>Dev Test Frame Work Demo for MS3</h2> <p>Creates&nbsp; Multi Node GlassFish Cluster on top of Hudson Cluster. Provides Hooks for User Tasks and Ant Tasks.</p> <h4><a name="DevTestFrameWorkDemofor3.1MS3-Team"></a>Team</h3> <p>This demo is brought to you by Ed Bratt's Dev Test Frame Work Team:</p> 
+     <ul> 
+      <li>Harshad Vilekar (Hudson Plugin)</li> 
+      <li>Mathirajan Manoharan (Ant Tasks)</li> 
+     </ul> <h4><a name="DevTestFrameWorkDemofor3.1MS3-DemoScript"></a>Demo Script</h3> 
+     <ol> 
+      <li>Show Hudson Cluster <a href="http://intg1t1000.red.iplanet.com:8080">Nodes </a></li> 
+      <li>Create a new job, and show - "<b>Add Build Step - Glass Fish Cluster</b>" Menu.</li> 
+      <li>Launch "GlassFishMultiNodeCluster" job.</li> 
+      <li>Walk through the GUI of "GlassFishMultiNodeCluster".</li> 
+      <li>Show Console Output</li> 
+      <li>Deploy .war file (User Tasks)</li> 
+      <li>Reload the http URLs to show running app. (Note: Following three links are normally dead) 
+       <ol> 
+        <li><a href="http://intgv880-1.red.iplanet.com:8356/helloworld/hi.jsp">instance1</a></li> 
+        <li><a href="http://jmq-ultra3.sfbay:8100/helloworld/hi.jsp">instance2</a></li> 
+        <li><a href="http://intgwin7.red.iplanet.com:8868/helloworld/hi.jsp">instance3</a></li> 
+       </ol> </li> 
+      <li>Discuss Plugin Features.</li> 
+      <li>Discuss Ant Targets.</li> 
+      <li>Show Consolidated Server Logs.</li> 
+     </ol> <h4><a name="DevTestFrameWorkDemofor3.1MS3-"></a></h3> <h4><a name="DevTestFrameWorkDemofor3.1MS3-HudsonGlassFishClusterPluginFeatures"></a>Hudson GlassFish Cluster Plugin Features</h3> 
+     <ul> 
+      <li>Multi Node GlassFish Cluster</li> 
+      <li>GlassFish Installation Support</li> 
+      <li>Cluster Life Cycle Support: Create / Start / Stop the Cluster</li> 
+      <li>The plugin is accessible to user jobs via "Add Build Step – GlassFish Cluster" Menu.</li> 
+      <li>
+       <hr></li> 
+      <li>Cluster Creation Use Cases: (Number of Instances = I,&nbsp;&nbsp; Number of Nodes = N) 
+       <ul> 
+        <li>Single Node Cluster:&nbsp;&nbsp; 
+         <ul> 
+          <li>N = 1, I &gt;= N</li> 
+         </ul> </li> 
+        <li>Multi Node Cluster, One Instance per Node: 
+         <ul> 
+          <li>N &gt; 1, I = N</li> 
+         </ul> </li> 
+        <li>Multi Node Cluster, Multiple Instances per Node:&nbsp; 
+         <ul> 
+          <li>N &gt; 1, I &lt; N</li> 
+         </ul> </li> 
+       </ul> </li> 
+      <li>
+       <hr></li> 
+      <li>Collection and Archival of Server Logs: 
+       <ul> 
+        <li>In the Job Configuration, Select: Archive the Artifacts: "logs/**"</li> 
+       </ul> </li> 
+      <li>Dynamic Port Allocation: 
+       <ul> 
+        <li>User specified preferred base port.</li> 
+        <li>Dynamically reassign the ports for GF Instances, in case of port conflict.</li> 
+        <li>Note: No dynamic port allocation for DAS.</li> 
+       </ul> </li> 
+      <li>Hooks for Ant Scripts / User Tasks: 
+       <ul> 
+        <li>Cluster information passed using cluster config file.</li> 
+       </ul> </li> 
+      <li>Multiple Plugin Instances within the same job can share the cluster configuration.</li> 
+      <li>Configurable Node selection labels.</li> 
+     </ul> <h4><a name="DevTestFrameWorkDemofor3.1MS3-Howdoesthepluginwork"></a>How does the plugin work</h3> 
+     <ul> 
+      <li>Some of the Hudson nodes are labeled "GFCluster". They work as plugin's "subslaves".</li> 
+      <li>When the build is launched: 
+       <ul> 
+        <li>The Plugin finds available "N" subslaves.</li> 
+        <li>Installs GlassFish on each node.</li> 
+        <li>Starts DAS on the "build" node</li> 
+        <li>Starts one clustered GF instance on each subslave (this is optional step)</li> 
+       </ul> </li> 
+     </ul> <h4><a name="DevTestFrameWorkDemofor3.1MS3-Limitations%2FKnownIssues%3A"></a>Limitations / Known Issues:</h3> 
+     <ul> 
+      <li>Hudson core node allocation logic is bypassed when assigning the subslaves. This has various side effects. The fix is planned in<br> Phase 3 (date TBD). 
+       <ul> 
+        <li>The build for "N" instance multinode cluster fails if N subslaves are not available.</li> 
+        <li>If two or more multi-nodes jobs are running at the same time – they might use the same subslave at the same time.</li> 
+       </ul> </li> 
+      <li>Can't use Hudson Master as a build node due to port conflict with DAS.</li> 
+     </ul> <h4><a name="DevTestFrameWorkDemofor3.1MS3-HudsonGlassfishAntTargets"></a>Hudson Glassfish Ant Targets</h3> 
+     <ul> 
+      <li>Features 
+       <ul> 
+        <li>Ant Targets Provide a means to start, stop, delete, create, kill Glassfish Cluster Instances</li> 
+        <li>Tightly integrated and triggered though the Hudson Glassfish Plugin</li> 
+        <li>Provides a platform independent way to manage Glassfish Cluster Instances</li> 
+        <li>Functionality can be easily extended</li> 
+       </ul> </li> 
+      <li>Dependency 
+       <ul> 
+        <li>Ant Contrib, JDK</li> 
+       </ul> </li> 
+     </ul> <h4><a name="DevTestFrameWorkDemofor3.1MS3-PluginSetup%28HudsonAdmin%29"></a>Plugin Setup (Hudson Admin)</h3> 
+     <ul> 
+      <li>Upload GlassFish Plugin glassfish.hpi (1.03 or later):&nbsp; 
+       <ul> 
+        <li><a href="http://icon.red.iplanet.com/export7/gf_hudson_plugin/target/latest">http://icon.red.iplanet.com/export7/gf_hudson_plugin/target/latest</a></li> 
+       </ul> </li> 
+      <li>Install Port Allocator Plugin version 1.5</li> 
+      <li>Install cygpath plugin version 1.3</li> 
+      <li>Restart Hudson (The plugin is built with Hudson version 1.371)</li> 
+      <li>Add the label "glassfish-cluster" to selected Hudson nodes. This marks the node as "plugin subslave". Make sure these nodes are online.</li> 
+      <li>Set Number Of Executors on the Master node to "0".</li> 
+     </ul> <h4><a name="DevTestFrameWorkDemofor3.1MS3-MoreInformation%3A"></a>More Information:</h3> 
+     <ul> 
+      <li><a href="https://svn.java.net/svn/glassfish-svn/trunk/hudson-plugin">Plugin Source Code </a></li> 
+      <li><a href="http://icon.red.iplanet.com/export7/gf_hudson_plugin/target/">Plugin Binary Distribution</a></li> 
+      <li><a href="./3.1DevTest.html">3.1DevTest Wiki </a></li> 
+     </ul> 
+     <ul> 
+      <li>/net/icon.red.iplanet.com/export7/gf_hudson_plugin/target/latest/glassfish.hpi</li> 
+      <li>Install Port Allocator Plugin version 1.5</li> 
+      <li>Install cygpath pluin version 1.3</li> 
+      <li>Restart Hudson (The plugin is built with Hudson version 1.371)</li> 
+      <li>Add the label "glassfish-cluster" to selected Hudson nodes. This marks the node as "plugin subslave". Make sure these nodes are online.</li> 
+      <li>Set Number Of Executors on the Master node to "0".</li> 
+     </ul> <h4><a name="DevTestFrameWorkDemofor3.1MS3-MoreInformation%3A"></a>More Information:</h3> 
+     <ul> 
+      <li><a href="https://svn.java.net/svn/glassfish-svn/trunk/hudson-plugin">Plugin Source Code </a></li> 
+      <li><a href="http://icon.red.iplanet.com/export7/gf_hudson_plugin/target/">Plugin Binary Distribution</a></li> 
+      <li><a href="./3.1DevTest.html">3.1DevTest Wiki </a></li> 
+     </ul> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Aug 30, 2010 by 
+<font color="#0050B2">hmv</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : SipBasic3pccRollingUpgrade</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="SipBasic3pccRollingUpgrade-RollingupgradeofSailFindemonstratedusingBasic3pccsample"></a>Rolling upgrade of SailFin demonstrated using Basic3pcc sample</h1> <h4><a name="SipBasic3pccRollingUpgrade-Whatisrollingupgrade%3F"></a>What is rolling upgrade?</h1> <p>Rolling upgrade is a zero downtime upgrade of the SailFin cluster.</p> <p>It can broadly be classfied into the following types :</p> 
+     <ul> 
+      <li>Upgrade of your running application.</li> 
+     </ul> 
+     <ul> 
+      <li>Upgrade of your hardware hosting the SailFin cluster.</li> 
+     </ul> 
+     <ul> 
+      <li>Upgrade of your running SailFin cluster from version 'x' to version 'y' ('y' should be backward compatible with 'x')</li> 
+     </ul> 
+     <ul> 
+      <li>As simple as applying a bugfix patches to your running SailFin cluster.</li> 
+     </ul> <p>Goal of this document is to give a preview of Rolling Upgrade feature in SailFin, with an example of application upgrade.</p> <p>To achieve any type of rolling upgrade, you need to have at least 2 instance cluster with your application deployed as high-availability (HA) enabled (i.e., you need to have your application deployed with : asadmin deploy --target &lt;your-cluster&gt; --availabilityenabled=true &lt;your-app&gt;)</p> <h4><a name="SipBasic3pccRollingUpgrade-Rollingupgradeof%22Basic3pcc%22applicationinSailFincluster%3A"></a>Rolling upgrade of "Basic3pcc" application in SailFin cluster:</h1> <p>In this example, we will go through :</p> 
+     <ul> 
+      <li>How the application looks before the rolling upgrade</li> 
+     </ul> 
+     <ul> 
+      <li>Performing the rolling upgrade.</li> 
+     </ul> 
+     <ul> 
+      <li>How the application looks after the rolling upgrade</li> 
+     </ul> <h4><a name="SipBasic3pccRollingUpgrade-Beforetherollingupgrade%3A"></a>Before the rolling upgrade:</h2> <p>Deploy and execute the Basic3pcc cluster sample as explained in <a href="SipBasic3pccHighAvailability.html" title="SipBasic3pccHighAvailability">SipBasic3pccHighAvailability</a> by following "Instructions to deploy" and "Instructions to execute" sections.</p> <p>:Now the call is in progress between Alice and Bob, and your (i.e., Alice's) web browser displays the call history as shown the figure below (Note that I also clicked 'Call Adam', 'Call Eve' before clicking 'Call Bob', so the 'Call History' shows those statuses as well) :</p> <p></p>
+     <div class="panel" style="border-width: 1px;">
+      <div class="panelContent"> 
+       <hr> 
+       <p>Jspwiki style: sortable</p> 
+      </div>
+     </div>table-filter<p></p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <td class="confluenceTd"> <span class="error">Cannot resolve external resource into attachment.</span> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>%%<br> %%</p> <p><b><em>Figure 1. Alice's browser showing the call call history, login time, etc (Before the Rolling Upgrade)</em></b></p> <p>Now, without logging out from the browser, and without disconnecting the call between Alice and Bob, let us perform the rolling upgrade of Basic3pcc sample application.</p> <h4><a name="SipBasic3pccRollingUpgrade-PerformingtheRollingUpgrade%3A"></a>Performing the Rolling Upgrade:</h2> 
+     <ul> 
+      <li>% cd SF_HOME/samples/sipservlet/Basic3pcc<br> It would point to the sailfin sample 'Basic3pcc' direcotry</li> 
+     </ul> 
+     <ul> 
+      <li>% SF_HOME/lib/ant/bin/ant do-rollingupgrade</li> 
+     </ul> <p> It would do the rolling upgrade of Basic3pcc sample application. This step may take a while, wait for its completion.</p> <p>Thats about it, the rolling upgrade of the application is done!</p> <p><b><em>Internal details (what takes place during do-rollingupgrade) :</em></b></p> 
+     <ul> 
+      <li>Upgrading the application: In this example, I wanted to provide a better user interface than what is shown in Figure 1. So, I upgraded 3pccConvergedApp.sar by updating its .jsp files, and adding some new .css, image files, etc.</li> 
+     </ul> 
+     <ul> 
+      <li>Disabling dynamic reconfiguration: This is required so that the upgraded application does not get distributed immediately to the cluster instead it gets re-deployed instance-by-instance as we do the rolling of each instance in the cluster.</li> 
+     </ul> 
+     <ul> 
+      <li>Deploying the upgraded application. Because of step (2), the instances in the cluster will still be running the older version of the application, until we execute the following steps.</li> 
+     </ul> 
+     <ul> 
+      <li>Rolling an instance : 
+       <ul> 
+        <li>Disable the instance: CLB will remove this instance from its healthy instances list, and will no longer route any requests to this instance.</li> 
+        <li>Finish replicating: Ensure that any outstanding (asynchronous) replications are finished.</li> 
+        <li>Restart the instance: Stop the instance and start it back.</li> 
+        <li>Restore the sessions: Bring back all the sessions which were replicated by this instance prior to doing the rolling.</li> 
+        <li>Enable the instance: CLB will add this instance to its healthy instances list, and will start routing the requests to this instance.</li> 
+        <li>Reconile the sessions: Ensure that all the sessions are of correct/highest version. Since there was no downtime during the rolling upgrade, the sessions might have been accessed from a different instance, hence those sessions need to be brought back to this instance during this step. (Note : After enabling and before reconciling, a separate technique is used to ensure that highest version of the session is discovered and used).</li> 
+       </ul> </li> 
+     </ul> <p>Perform step (4) for all the instances in the cluster.</p> <h4><a name="SipBasic3pccRollingUpgrade-Aftertherollingupgrade%3A"></a>After the rolling upgrade:</h2> <p>Click on "Refresh Page" link in your (i.e., Alice's) browser, and you will see a all new upgraded user interface, and with no loss of your session:</p> <p></p>
+     <div class="panel" style="border-width: 1px;">
+      <div class="panelContent"> 
+       <hr> 
+       <p>Jspwiki style: sortable</p> 
+      </div>
+     </div>table-filter<p></p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <td class="confluenceTd"> <span class="error">Cannot resolve external resource into attachment.</span> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>%%<br> %%</p> <p><b><em>Figure 2. Alice's browser showing the call call history, login time, etc (After the Rolling Upgrade)</em></b></p> <p>You can also see that the ongoing call between Alice and Bob also gets handled by rolled instance (instance4) gracefully.</p> <p>You can check that out by clicking "Hang Up" button in Alice's phone. The BYE request sent from Alice's phone gets routed to the rolled instance4 and the upgraded ConvergedApp running in instance4 will process the BYE request using the same session which was created before doing the rolling upgrade. So the call will between Alice and Bob gets ended gracefully.</p> <h4><a name="SipBasic3pccRollingUpgrade-Summary%3A"></a>Summary :</h1> <p>We demonstrated a seamless rolling upgrade of a running "Basic3pcc" application in SailFin cluster with no downtime, no session/call loss.</p> 
+     <hr> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874968/21364973.png">after-ru.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874968/21364972.png">before-ru.png</a> (image/png) 
+      <br> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 02, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

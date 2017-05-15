@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : OpenInstallerResourceAndSubstitutionReAlignment</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="OpenInstallerResourceAndSubstitutionReAlignment-ResourceandSubstitutionRealignmentinOpenInstaller"></a>Resource and Substitution Realignment in OpenInstaller</h1> <h4><a name="OpenInstallerResourceAndSubstitutionReAlignment-Introduction"></a>Introduction</h2> <p>The primary goal of this project is to design/architect a common mechanism for loading different types of OI and install developer resources. In addition, the following set of issues are also tackled as part of this project</p> 
+     <ul> 
+      <li>Replace different substitution methods in the openInstaller with one standard technique.</li> 
+      <li>Eliminate the need for full duplication of *.prefs</li> 
+      <li>Remove the need to carry full PSP.xml for tweaking the display</li> 
+     </ul> <h4><a name="OpenInstallerResourceAndSubstitutionReAlignment-Hardrequirement"></a>Hard requirement</h2> 
+     <ul> 
+      <li>Must not break backward compatibility.</li> 
+     </ul> <p>We have already shipped a product which defines the limitations we must work with. These assumptions are:</p> 
+     <ol> 
+      <li>Old syntax must retain the original meaning 
+       <ol> 
+        <li>Old ui.prefs must exist and must be parsed as 
+         <ol> 
+          <li>Tweaks to the ui</li> 
+          <li>Resource bundle messages to be recognized as such</li> 
+         </ol> </li> 
+       </ol> </li> 
+     </ol> <h4><a name="OpenInstallerResourceAndSubstitutionReAlignment-Initialanalysys"></a>Initial analysys</h1> <h4><a name="OpenInstallerResourceAndSubstitutionReAlignment-TypeofResources"></a>Type of Resources</h2> 
+     <ul> 
+      <li>Model resources</li> 
+      <li>View resources</li> 
+      <li>OI resources (such as ResourceMsgs)</li> 
+      <li>Install developer resources</li> 
+     </ul> <h4><a name="OpenInstallerResourceAndSubstitutionReAlignment-Substitutionmechanisms"></a>Substitution mechanisms</h2> 
+     <ul> 
+      <li>:(</li> 
+      <li>$var in UI pages</li> 
+      <li>Freemarker based substitution</li> 
+     </ul> <h4><a name="OpenInstallerResourceAndSubstitutionReAlignment-ResourcesinopenInstaller"></a>Resources in openInstaller</h2> 
+     <div class="panel" style="border-width: 1px;">
+      <div class="panelContent"> 
+       <div class="table-wrap"> 
+        <table class="confluenceTable">
+         <tbody> 
+          <tr> 
+           <th class="confluenceTh"> Resource Type </th> 
+           <th class="confluenceTh"> Resource </th> 
+           <th class="confluenceTh"> Template used </th> 
+           <th class="confluenceTh">Substitution/Loading mechanism used </th> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> openInstaller view resources </td> 
+           <td class="confluenceTd"> *.ftl </td> 
+           <td class="confluenceTd"> freemarker template </td> 
+           <td class="confluenceTd"> DataModel </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> openInstaller and install developer view resources </td> 
+           <td class="confluenceTd"> *.prefs </td> 
+           <td class="confluenceTd"> java properties files </td> 
+           <td class="confluenceTd"> Java properties/resource loading + Freemarker template substitution </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> openInstaller and install developer resources </td> 
+           <td class="confluenceTd"> *.properties </td> 
+           <td class="confluenceTd"> java properties files </td> 
+           <td class="confluenceTd"> Java properties/resource loading </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> openInstaller engine resources </td> 
+           <td class="confluenceTd"> *.jpgs, *.gifs </td> 
+           <td class="confluenceTd"> image files </td> 
+           <td class="confluenceTd"> Java resource loading </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> openInstaller model resources </td> 
+           <td class="confluenceTd"> *.xcs </td> 
+           <td class="confluenceTd"> OOR schema based xmls </td> 
+           <td class="confluenceTd"> :( </td> 
+          </tr> 
+         </tbody>
+        </table> 
+       </div> 
+       <hr> 
+       <p>Jspwiki style: sortable</p> 
+      </div>
+     </div> <h4><a name="OpenInstallerResourceAndSubstitutionReAlignment-UseCases"></a>Use Cases</h2> <h4><a name="OpenInstallerResourceAndSubstitutionReAlignment-Possiblesolutions%28Old%29"></a>Possible solutions (Old)</h2> 
+     <ul> 
+      <li>New substitution engine token type, e.g. :[dm:mq:VAR] which reads from mq.prefs (where does this go? what if there need to be more than one?) 
+       <ul> 
+        <li>Breaks backward compatibility unless resource translators and versioning are introduced tranparently. 
+         <ul> 
+          <li>Maybe move to all-XML format for all resources i.e. *.prefs becomes XML too so we can start versioning it.</li> 
+         </ul> </li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li>New DataModel syntax for specifying overwrite e.g. "overwrite:listname:newelement1" - Rejected because of backward compatibilty requirement</li> 
+     </ul> 
+     <ul> 
+      <li>Specify bundlename in EE - Longer term</li> 
+     </ul> 
+     <ul> 
+      <li>Change ${} usages in view files to use existing substutition syntax type, e.g. :[some.var.name] (this is already implemented in the "simple" substitution)</li> 
+     </ul> 
+     <ul> 
+      <li>Think about how to split out into multiple data models and what that means - Partly implemented 
+       <ul> 
+        <li>Current data model for View side assumed only one singleton instance. Summary report generation fed in it's own data into this Global namespace. Some product definitions were stuck into this view side model when they should have been in the data side space. This is partly fixed by making TemplateProcessor non-singleton and multiple instances using their own instance of the 'DataModel' class.</li> 
+       </ul> </li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:49.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

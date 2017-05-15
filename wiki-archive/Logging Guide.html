@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : Logging Guide</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="LoggingGuide-1.0Overview"></a>1.0 Overview</h2> <p>This document serves to provide a developer's guide to Logging in Glassfish.</p> <h4><a name="LoggingGuide-2.0RequirementForModuleOwners"></a>2.0 Requirement For Module Owners</h2> 
+     <ul> 
+      <li>Use java.util.logging (JUL)</li> 
+      <li>Use org.glassfish.api.logging.LogLevel levels (slightly customized JUL levels) when the standard JUL levels do not suffice.</li> 
+      <li>Use a recognizable, subsystem based logger name</li> 
+      <li>Messages logged at levels INFO and above must be localized</li> 
+      <li>Messages logged at levels SEVERE or above should include a Cause and Action.</li> 
+      <li>Messages logged at levels FINE and lower must not be localized. Do not use logging annotations described below for such messages.</li> 
+      <li>Message IDs must use this format: XXXX-YYYYY-NNNNN</li> 
+      <li>Write high quality log messages.</li> 
+     </ul> <h4><a name="LoggingGuide-3.0java.util.logging"></a>3.0 java.util.logging</h2> <p>Java Util Logging will be utilized as the logging framework because it provides the following benefits:</p> 
+     <ul> 
+      <li>Standard SE logging API</li> 
+      <li>Known by developers</li> 
+      <li>Open Source</li> 
+      <li>Likely to already be in use by Glassfish dependencies</li> 
+     </ul> <p>Logging has been enhanced by adding an annotation that provides:</p> 
+     <ul> 
+      <li>Structured data about the message.</li> 
+      <li>The log message and meta data are maintained in the source close to where the message is generated.</li> 
+      <li>The annotation processor can generate multiple output streams: 
+       <ul> 
+        <li>Log message's resource bundle</li> 
+        <li>XML to be consumed by validation and doc publishing tools.</li> 
+       </ul> </li> 
+      <li>The use of annotations is consistent with current programming practices.</li> 
+     </ul> <h4><a name="LoggingGuide-4.0LoggingLevels"></a>4.0 Logging Levels</h2> <p>The following logging levels may be used. Most common cases are supported by standard JUL levels. Uncommon cases involving critical system errors are addressed with custom levels. To use the custom levels import: org.glassfish.api.logging.LogLevel (groupId: org.glassfish.main.common, artifactId: glassfish-api).</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Message Level </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> JUL Level </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> EMERGENCY </td> 
+         <td class="confluenceTd"> A "panic" condition. The system is in an unstable and likely non-functional state. The state is likely unrecoverable. </td> 
+         <td class="confluenceTd"> Custom - 1100 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ALERT </td> 
+         <td class="confluenceTd"> A subsystem is failing or has failed. While the aggregate system may be functional some functionality (subsystem) is not available due to the failure. Alert staff immediately to correct the situation. </td> 
+         <td class="confluenceTd"> Custom - 1050 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> SEVERE </td> 
+         <td class="confluenceTd"> Error conditions - An operation encountered an error. The error is likely recoverable but should be relayed to admins (and developers if appropriate) as administrative action my be required. </td> 
+         <td class="confluenceTd"> SEVERE - 1000 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> WARNING </td> 
+         <td class="confluenceTd"> Warning messages - not an error, but an indication that an error will occur if action is not taken. Warning messages should be reviewed by the System Admin. </td> 
+         <td class="confluenceTd"> WARNING - 900 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> INFO </td> 
+         <td class="confluenceTd"> Normal operational messages. For example major lifecycle events such as the activation or deactivation of a primary subsystem or feature. </td> 
+         <td class="confluenceTd"> INFO - 800 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> CONFIG </td> 
+         <td class="confluenceTd"> Static configuration messages. </td> 
+         <td class="confluenceTd"> CONFIG - 700 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> FINE </td> 
+         <td class="confluenceTd"> Info useful to developers for debugging the application, not useful during operations. </td> 
+         <td class="confluenceTd"> FINE - 500 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> FINER </td> 
+         <td class="confluenceTd"> Verbose info useful to developers for debugging the application, not useful during operations. </td> 
+         <td class="confluenceTd"> FINER - 400 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> FINEST </td> 
+         <td class="confluenceTd"> Extreamly verbose info useful to developers for debugging the application, not useful during operations. </td> 
+         <td class="confluenceTd"> FINEST - 300 </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>It should be noted that the EMERGENCY and ALERT levels should be used only in rare situations and should be reviewed for proper use by team leads and architects. For most cases, the standard JUL levels should suffice and should be used.</p> <h4><a name="LoggingGuide-5.0LoggerNames"></a>5.0 Logger Names</h2> <p>Each logger in the system must be named in order to identify it and provide logger specific configuration. The Java documentation recommends loggers be named, using a hierarchical dot-separated namespace based on the package name or class name of the logged component, such as java.net or javax.swing. Unfortunately GlassFish uses a variety of package names, some names based on former projects or companies the software originated from. Following this convention would create a confusing and inconsistent set of logger names.</p> <p>Applications may also define their own loggers. It is important the the application's logger name does not conflict with any loggers defined by the server implementation. To avoid conflicts the project will define new loggers under the "<b>javax.enterprise</b>" namespace for Java EE modules. For example the EJB implementation logger would be named "javax.enterprise.ejb".</p> <p>It is important for users and support personnel to be able to correlate loggers to subsystems in the product. These users are likely not aware of the implementation details (e.g., Java packages/classes in use or modules used to provide the functionality of the subsystem). Maintaining a set of recognizable, subsystem based loggers while allowing for sub-loggers to be defined would provide a logging mechanism easy for the end user to utilize. It would also provide the developer and support person the flexibility of finer grain control via child loggers of the subsystem logger.</p> <p>For example the EJB subsystem could define a logger name "javax.enterprise.ejb". This logger would be exposed through the Admin Console to allow users to enable it. It would also be included in the documentation. The "javax.enterprise.ejb" logger could have several child loggers that can be used by developers and support personnel to enable finer grain logging for specific areas of the EJB subsystem. For example:</p> 
+     <ul> 
+      <li>javax.enterprise.ejb: Main EJB Logger 
+       <ul> 
+        <li>javax.enterprise.ejb.mdb: Child logger used to enable message driven bean log messages</li> 
+        <li>javax.enterprise.ejb.timer: Child logger used to enable EJB timer related log messages</li> 
+       </ul> </li> 
+     </ul> <p>A user could configure the EJB messages to be logged at a level INFO or above by setting javax.enterprise.ejb.level=INFO while a developer who wanted finer grain log messages for the timer area could do by setting javax.enterprise.ejb.level=INFO and javax.enterprise.ejb.timer.level=FINE.</p> <p>Logger names should be chosen so that it will be easy to identify the module that defined it. They should be aligned with the subsystem identifier of ids used within the module. It should be easy for the end user to correlate the logger name to the subsystem abbreviation use by the log message ID (e.g., AS-EJB-00001). For example a customer may report a SEVERE level log message to the support organization. The support engineer could choose to increase the verbosity for log messages in the area of the error. If the subsystem identifier in the message id mirrored the logger name the support engineer would know to increase the log level for the logger called javax.enterprise.ejb.</p> <p>Logger names should be defined as String constants and be annotated with the <b>org.glassfish.logging.annotation.LoggerInfo</b> annotation.&nbsp; The org.glassfish.logging.annotation.LoggerInfo annotation has the following attributes:</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Name </th> 
+         <th class="confluenceTh"> Description </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> subsystem </td> 
+         <td class="confluenceTd"> Name of the subsystem, eg EJB defining the logger </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> publish </td> 
+         <td class="confluenceTd"> If true, the logger will be documented </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> description </td> 
+         <td class="confluenceTd"> Logger description </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>Please see <a href="#LoggingGuide-LoggingGuideobtainLogger">Obtaining Logger Instances</a> section for an example.</p> <p>The LoggerInfo annotations will also be used to generate meta-data about loggers that may be exposed through commands, tools, etc. For example, the asadmin list-loggers command will display a table of known loggers along with their subsystem and description. The description should indicate the component area for which the logger is expected to generate information. Avoid using a pattern such as "Logger for xxx" as description since it will be repetitious in the output generated by tools.</p> <h4><a name="LoggingGuide-6.0LocalizingLogMessages"></a>6.0 Localizing Log Messages</h2> <p>Messages logged at a level of INFO or greater must be localized. They are localized by storing the messages in resource bundles (property files).</p> <p>The need to maintain certain log messages in resource bundles has created challenges in the past mainly due to the fact that the resource bundles are not co-located with the source where the log messages are used. Manually maintaining the resource bundle along with the corresponding cause and action information compounds the challenge.</p> <p>To improve localization of log messages a source level LogMessageInfo annotation has been created. The annotation can be used to define the log message string along with metadata used to generate essential documentation about the product. By using the annotation we eliminate the need to manually manage resource bundle files. The resource bundles will be created by the annotation processor from declared annotations during module build.</p> <p>The name of the annotation is <b>org.glassfish.logging.annotation.LogMessageInfo</b>. It supports the following elements and properties:</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Name </th> 
+         <th class="confluenceTh"> Required </th> 
+         <th class="confluenceTh"> Default </th> 
+         <th class="confluenceTh"> Description </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> message </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> The message to be logged. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> comment </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> A one line comment that appears above the message in the resource bundle. This comment provides additional context to assist localization. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> cause </td> 
+         <td class="confluenceTd"> Recommended </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> A description of what likely caused the log message to be generated. Suitable for end-user documentation. <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> action </td> 
+         <td class="confluenceTd"> Recommended </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> A description of what action(s) the user can take to resolve or correct the issue. Suitable for end-user documentation </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> level </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> INFO </td> 
+         <td class="confluenceTd"> The message severity. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> publish </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> true </td> 
+         <td class="confluenceTd"> Whether this message should be included in the end-user documentation. (default: true) </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>The LogMessageInfo annotation definitions should typically be in the classes where the corresponding log messages are generated.</p> <p>Here's a simple example (Example 1):</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">package com.foo.foobar.one;
+
+import java.util.logging.Logger;
+import java.util.logging.Level;
+import org.glassfish.logging.annotation.LogMessageInfo;
+import org.glassfish.logging.annotation.LoggerInfo;
+import org.glassfish.logging.annotation.LogMessagesResourceBundle;
+
+public class One {
+  // The resourceBundle name to be used for the module's log messages
+  @LogMessagesResourceBundle
+  public static final String SHARED_LOGMESSAGE_RESOURCE =
+      "com.foo.foobar.LogMessages";
+
+  @LoggerInfo(subsystem="EJB", desription="Main EJB Logger", publish=true)
+  public static final String EJB_MAIN_LOGGER = "javax.enterprise.ejb";
+  private static final Logger ejbLogger =
+  Logger.getLogger(EJB_MAIN_LOGGER, SHARED_LOGMESSAGE_RESOURCE);
+
+  // Define the log message
+  @LogMessageInfo(
+      message = "EJB subsystem initialized.",
+      comment = "This is a comment about this log message.",
+      level = "INFO")
+  public static final String EJB_SYSTEM_INITIALIZED = "AS-EJB-00003";
+
+  @LogMessageInfo(
+      message = "EJB {0} failed to initialize.",
+      comment = "This is a comment about this log message.",
+      level = "SEVERE",
+      cause = "Could not access the ...",
+      action = "Verify the ...")
+  public static final String EJB_INITIALIZATION_FAILED = "AS-EJB-00004";
+
+  @LogMessageInfo(
+      message = "EJB {0} referenced an undeclared security role {1}.",
+      comment = "This is a comment about this log message.",
+      level = "WARNING",
+      cause = "Could not access the ...",
+      action = "Verify the ...")
+  public static final String EJB_REFS_UNDECLARED_SECROLE = "AS-EJB-00005";
+
+  public void doSomething() {
+    ...
+    logger.log(Level.WARNING, EJB_INITIALIZATION_FAILED, ejbName);  // single argument
+    ...
+  }
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>When the code is compiled a source level annotation processor processes the LogMessageInfo annotation. A single resource bundle for all LogMessageInfo annotation definitions within the entire module will be created based on the value of a <b>org.glassfish.logging.annotation.LogMessagesResourceBundle</b> annotation as described <a href="./Enabling+LogMessageInfo+processing+-+pom.xml+changes">here</a>. In the above example, it will be <font color="#009100.html">com/foo/foobar/LogMessages.properties.</font></p> <p>It is probably obvious, but special characters (e.g., quote, new-line, etc.) in cause/action strings should be escaped as per Java rules.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false"># This is a comment about this log message.
+AS-EJB-00003=EJB subsystem initialized.
+# This is a comment about this log message.
+AS-EJB-00004=EJB {0} failed to initialize.
+# This is a comment about this log message.
+AS-EJB-00005=EJB {0} referenced an undeclared security role {1}.</pre> 
+       </div> 
+      </div>
+     </div> <p>The above would be added to the file:</p> <p>.../target/classes/com/foo/foobar/LogMessages.properties</p> <p>In the annotation example above it is important to note that the value of the String variable passed to the log method will serve two purposes:</p> 
+     <ol> 
+      <li>It is the key used to look up the string in the resource bundle.</li> 
+      <li>It is the message ID that will accompany the log message in the log entry.</li> 
+     </ol> <p>It is important that the value of this string adhere to the requirements outlined in the "Log Message IDs" section below.</p> <p>One reason for using the message-id as the key that appears in the source files is that it should be easy to locate the source where a log message is generated from a message in the log file. Message ids are unique identities for the message and will be present in the log records regardless of locales. Thus, starting with the message-id as it appears in the log message, it will be easy to locate the source of the message.</p> <p>Following is an example of an ODL (Oracle Diagnostic Logging) formatted log record:</p> <p><b>[2012-02-02T01:20:47.196-08:00] [AdminServer] [WARNING] [AS-EJB-00004] [javax.enterprise.ejb] [tid: ExecuteThread-4] [userId: &lt;anonymous&gt;] [ecid: 0000JKxNR_Z7y0Y_HpO5yf1FA_Li000001,0] EJB myEJB failed to initialize.</b></p> <p>Aligning the subsystem portion in the message-id and the logger name with the module will help to quickly locate the source where a message is generated. For example, with the above generated log record, the reader would know that it is generated by an EJB module. Searching for the message-id AS-EJB-00004 in respective module and following its reference will help locate the code making the logging call.</p> <p>A separate annotation processor will create a project-wide messages.xml file that would contain the message along with the metadata associated with the message (level, cause, action, subsystem, etc.).</p> <h4><a name="LoggingGuide-7.0LogMessageCauseandAction"></a>7.0 Log Message Cause and Action</h2> <p>The LogMessageInfo has support for defining a cause and action. The "cause" element is provided to allow the developer to associate a probable cause with the log message. The "action" element is provided to allow the developer to offer the user an action they can take to resolve the issue.</p> <p>For example:</p> <p><b>Log message</b>: WARNING: Unable to detect heartbeat for instance1 on host: foo.bar.com.<br> <b>Cause</b>: A network connectivity issue may be preventing the master server from reaching the instance or the host may be down.<br> <b>Action</b>: Verify the instance's host is available over the network. For example attempt to log into it from the master server's host.</p> <p>Multiple pairs of cause and actions can also be specified by specifying a subscript index as follows:<br> <b>Cause</b>: [0] Likely cause for this failure. [1] Another likely cause could be this.<br> <b>Action</b>: [0] Take this action when you suspect the first cause. [1] Alternative action for second cause.<br> It is highly desirable to provide both a cause and action for WARNING level messages. <b>However, messages above SEVERE level are required to have a Cause and an Action for documentation purposes.</b></p> <p>The log message meta-data (including the cause and actions) will be used to generate product Error Reference Guides that users and support engineers will utilize during the normal use of product.</p> <p>Contents and formatting of cause and actions should be consistent with <a href="http://st-doc.us.oracle.com/projects/messages/msgguide.html">Error Message Writing Guidelines</a>. It is probably obvious, but special characters (e.g., quote, new-line, etc.) in cause/action strings should be escaped as per Java rules.</p> <h4><a name="LoggingGuide-8.0LogMessageIDs"></a>8.0 Log Message IDs</h2> <p>Modern day enterprise software products provide documentation that is specific to the error and log messages emitted by the product. Users will use these guides to look up errors generated by the product. The error message guide will provide the user with additional information about the cause and any action the user should take.</p> <p>Log messages must have a unique, component-specific prefix. The prefix must be followed by a subsystem identifier and then a five digit numeric identifier. The following format will be used: XXXX-YYYYY-00000. XXXX is a component-specific ID prefix. For nucleus logging we will use NCLS and for appserver we will use AS: NCLS-ADMIN-12345, AS-EJB-12345.<br> The component specific ID prefix is followed by a subsystem id that could be up to 8 chars long and a five digit numeric ID. Each subsystem may use any numeric ID as long as it is unique to the subsystem. Therefore AS-EJB-00001 and AS-JMS-00001 represent different error/log messages.</p> <p>Note that a subsystem (e.g., EJB) may own multiple modules (e.g., maven projects) that may share the same subsystem prefix.</p> <p>It should be easy for the end user to correlate the subsystem logger name to the subsystem abbreviation used by the log message (e.g., AS-EJB-00001). For example a customer may report a SEVERE level log message to the support organization. The support engineer could choose to increase the verbosity for log messages in the area of the error. If the subsystem identifier in the message id mirrored the logger name the support engineer would know to increase the log level for the logger called javax.enterprise.ejb.</p> <p>A component often maps to a product (e.g., AS for application server), although sometimes it can be a layer (e.g., Nucleus) on which a product is built. A registry for component and subsystem specific prefixes will be maintained. Following are some of the component prefixes.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Component </th> 
+         <th class="confluenceTh"> Prefix </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Nucleus </td> 
+         <td class="confluenceTd"> NCLS </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> App Server </td> 
+         <td class="confluenceTd"> AS </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> HK2 </td> 
+         <td class="confluenceTd"> HK2 </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p><br class="atl-forced-newline"></p> <p>Log message ids must be unique. One way to choose the next available id for a new message could be to refer to the generated messages resource bundle. The messages will be sorted by keys, so last entry would help choose the next available id. Eventually, a tool will be provided that will help choose the next id. It should be noted that message IDs will be documented when products are released. Once released, an assigned message ID must not be reused for some other message. However, during development, new (ie not yet released) message IDs may be updated if necessary.</p> <h4><a name="LoggingGuide-9.0LogMessageQuality"></a>9.0 Log Message Quality</h2> <p>A high level (e.g., WARNING, SEVERE, etc.) log message has little value to end users and support personnel if the message makes little sense to the consumer. Cryptic messages might be fine when logged at the FINE level but they are not appropriate for the more severe levels.</p> <p>When writing a log message ensure that a user with likely much less context about the implementation or functionality that generates the log message can interpret the message and with reasonable judgment will have a good sense for what they should do next.</p> <p>Messages logged at the WARNING or higher level should also have an associated cause and action that will appear with the message in the product's Error Reference Guide. Providing a good cause/action may help to eliminate costly support calls.</p> <h4><a name="LoggingGuide-10.0ObtainingLoggerinstances"></a>10.0 Obtaining Logger instances</h2> <p>References to the logger instances should be obtained with the usual JUL Logger.getLogger() call. Resource bundle names must be specified in the getLogger calls for top level loggers. Although the child loggers will inherit the resource bundles, we are recommending that the ResourceBundle name be specified in the getLogger() call to avoid walking the parent logger tree at runtime during log invocation.</p> <p>Note that the Resource bundle name is declared as a constant that is annotated with the <b>org.glassfish.logging.annotation.LogMessagesResourceBundle</b> annotation. Since the logger resource bundle will likely be used from a number of places within a module, it is better to define it as a public final String constant in an interface or class that is imported elsewhere in the module along with the Logger name declaration.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">package com.foo.foobar;
+
+import java.util.logging.Logger;
+import com.foo.foobar.messages.LogMessages;
+import org.glassfish.logging.annotation.LoggerInfo;
+import org.glassfish.logging.annotation.LogMessagesResourceBundle;
+
+public class FooBar {
+        // Resource bundle name for the module's log messages.
+        @LogMessagesResourceBundle
+        public static final String SHARED_LOGMESSAGE_RESOURCE =
+            "com.foo.foobar.LogMessages";
+
+        @LoggerInfo(subsystem="EJB", description="Main EJB Logger", publish=true)
+        public static final String EJB_MAIN_LOGGER = "javax.enterprise.ejb";
+        private static final Logger ejbLogger =
+          Logger.getLogger(EJB_MAIN_LOGGER, SHARED_LOGMESSAGE_RESOURCE);
+
+        // Note that the logger is not published, so it will not be
+        // included in the public documentation but Support folks will
+        // be able to enable fine level messages for these loggers for
+        // troubleshooting purposes.
+        @LoggerInfo(subsystem="EJB",
+            description="Child logger used to enable ejb timer log messages",
+            publish=false)
+        public static final String EJB_TIMER_LOGGER = "javax.enterprise.ejb.timer";
+        private static final Logger ejbTimerLogger =
+            Logger.getLogger(EJB_TIMER_LOGGER, SHARED_LOGMESSAGE_RESOURCE);
+
+        @LoggerInfo(subsystem="EJB",
+            description="Child logger used to enable ejb mdb log messages",
+            publish=true)
+        public static final String EJB_MDB_LOGGER = "javax.enterprise.ejb.mdb";
+        private static final Logger ejbMDBLogger =
+            Logger.getLogger(EJB_MDB_LOGGER, SHARED_LOGMESSAGE_RESOURCE);
+
+        @LoggerInfo(subsystem="EJB",
+            description=
+                "Child logger used to enable ejb mdb connection log messages",
+            publish=false)
+        public static final String EJB_MDB_CONNECTION_LOGGER =
+                                        "javax.enterprise.ejb.mdb.connection";
+        private static final Logger ejbMDBConnectionLogger =
+            Logger.getLogger(EJB_MDB_CONNECTION_LOGGER, SHARED_LOGMESSAGE_RESOURCE);
+    }</pre> 
+       </div> 
+      </div>
+     </div> <p>It should be noted that the resource bundles are scoped to the modules containing them and in general, are not visible to other modules in OSGi environments. Since resource bundles are associated with the logger instances, logging calls should be invoked on logger instances defined in the same module. In other words, passing logger references across modules (e.g., as parameters to methods) may result in incorrect localization, thus should be avoided.</p> <p><img class="emoticon" src="images/icons/emoticons/warning.gif" height="16" width="16" align="absmiddle" alt="" border="0"> <b>Please note that the value assigned to the SHARED_LOGMESSAGE_RESOURCE annotated by LogMessagesResourceBundle must be a constant value and not a computed expression. If the value is an expression, a null value is made available to the annotation processor. Also, please follow the convention that it ends with LogMessages so that the localization team can easily find the generated properties file for translation.</b></p> <p>Also the package for the resource bundle needs to be one of the packages from the module itself. Ideally it can be the same package as that of the containing class declaring the LogMessagesResourceBundle for the top most logger.</p> <h4><a name="LoggingGuide-11.0DebugLogging"></a>11.0 Debug Logging</h2> <p>Debug messages are FINE and lower level messages that are not to be localized. They do not have an associated message ID and they are not logged as part of normal operations in production environments. Do not use logging annotations described above for messages with levels FINE and lower.</p> <p>Debug messages strings are often constructed on the fly, typically with string concatenation. In order to avoid unnecessary computations when debug is not enabled, such logging code should be conditionally executed within isLoggable() if block. For example,</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">if (logger.isLoggable(Level.FINE)) {
+  logger.log(Level.FINE, logging.getAbsolutePath() +
+      " not found, creating new file from template.");
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>Conditional logging may also be used with non-debug levels.</p> <p>The following snippet shows an example of a debug log message in the UniformLogFormat.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">[#|2012-10-03T11:39:21.982-0400|FINE|44.0|com.oracle.logging|_ThreadID=117;_ThreadName=http-listener-1(2);_TimeMillis=1349278761982;_LevelValue=500;ClassName=org.apache.jsp.hello_jsp;MethodName=_jspService;|Hello World</pre> 
+       </div> 
+      </div>
+     </div> <p>Also note that there is no requirement to localize debug messages. Thus, there is no need to use LogMessageInfo annotations for messages with levels FINE and below.</p> <h4><a name="LoggingGuide-12.0EnablingtheLogMessagesResourceBundlegeneratorAnnotationProcessor"></a>12.0 Enabling the LogMessages ResourceBundle generator Annotation Processor</h2> <p>Currently the build is not enabled to use the annotation processor at compile time. At some point that may change but for now when a module begins to use @LogMessageInfo the developer will need to update the pom.xml file according to these instructions:</p> 
+     <ul> 
+      <li><a href="./Enabling+LogMessageInfo+processing+-+pom.xml+changes.html">Enabling LogMessageInfo processing - pom.xml changes</a></li> 
+     </ul> <h4><a name="LoggingGuide-13.0LoggingalocalizedmessagewithanException"></a>13.0 Logging a localized message with an Exception</h2> <p>There is a LogHelper API class provided as solution for <a href="https://github.com/javaee/glassfish/issues/19156">GLASSFISH-19156</a> that will allow users to pass in the message parameters and a Throwable while logging a message. An example code snippet is shown below.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">import org.glassfish.api.logging.LogHelper;
+
+LogHelper.log(LOGGER /*Logger to be used for logging the message*/,
+              Level.SEVERE /* Level of the message being logger */,
+              ERROR_READING_TEST_CONF_FILE /* Message ID for the log message */,
+              new Exception(msg) /* Throwable associated with the log message */,
+              param1, param2
+              /* Parameters to localize the message from the resource bundle */);</pre> 
+       </div> 
+      </div>
+     </div> <p> <b>Please note that earlier we had a special case handling in the Formatter to print the Exception and its stack trace if it was included last in the array of message parameters. Folks who used the earlier pattern are now advised to use the LogHelper API.</b> This was rolled back because the GlassFish Formatter may not be available in all the environments. See the comments in <a href="https://github.com/javaee/glassfish/issues/19156">GLASSFISH-19156</a> for further details.</p> <h4><a name="LoggingGuide-14.0Localizingnonloggedmessages"></a>14.0 Localizing non-logged messages</h2> <p>The strings that need to be localized and that are not logged as log messages will continue to use the existing LocalStrings.properties mechanism. For example when you are throwing an exception and initializing it with a localized message but not logging it. The exception message will be defined in the package level LocalStrings.properties file with the key and value and the localized string retrieved at runtime using the LocalStringsManagerImpl class.</p> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Aug 22, 2013 by 
+<font color="#0050B2">25315</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

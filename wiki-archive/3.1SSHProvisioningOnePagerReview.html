@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : 3.1SSHProvisioningOnePagerReview</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="3.1SSHProvisioningOnePagerReview-3.1SSHProvisioningReview"></a>3.1 SSH Provisioning Review</h1> <h4><a name="3.1SSHProvisioningOnePagerReview-Document%3A3.1SSHProvisioningOnePager"></a>Document: <a href="3.1SSHProvisioningOnePager.html" title="3.1SSHProvisioningOnePager">3.1SSHProvisioningOnePager</a> </h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item </th> 
+         <th class="confluenceTh"> Section </th> 
+         <th class="confluenceTh"> Comment </th> 
+         <th class="confluenceTh"> Response </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> XXX-# </td> 
+         <td class="confluenceTd"> #.# </td> 
+         <td class="confluenceTd"> Comment </td> 
+         <td class="confluenceTd">Response </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> deakin-01 </td> 
+         <td class="confluenceTd"> 2.2 </td> 
+         <td class="confluenceTd"> (Nigel Deakin) I refer to the assumption that "customer has suitably configured SSH on all nodes involved in GlassFish cluster". Even if Glassfish doesn't redistribute a SSH provider, will the user be given any advice on what SSH providers have been used for testing and are confirmed to work satisfactorily, especially on Windows? Will users who purchase support licences be expected to use specified SSH providers, or will Oracle support Glassfish deployments with any SSH provider? Will the product documentation include any guidance on selecting and installing a SSH provider, especially on Windows? </td> 
+         <td class="confluenceTd">I've updated the 1-pager to indicate the Cygwin SSHD will likely be our SSHD provider of choice on Windows. On Unix we will use and test the bundle SSHD implementation with the assumption that they are all fairly compatible. I've added this assumption to the 1-pager as well. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> deakin-02 </td> 
+         <td class="confluenceTd"> 3.1 </td> 
+         <td class="confluenceTd"> (Nigel Deakin) I refer to the statement "In simple terms SSH Provisioning attempts to provide some of the capability that was provided by the node agent in GF v2". Given that 3.1 will not provide a node agent, what are the capabilities offered by the node agent that will not be provided by SSH provisioning? For those users, especially those on Windows, who have not obtained, installed and configured a SSH provider, what capabilities (if any) currently offered in 2.1.1 will not be available? </td> 
+         <td class="confluenceTd"> I've updated section 1.0 of the design spec to call out what was offered by the nodeagent that 3.1 will not support, and what in 3.1 will work only if you have SSH configured. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> fialli-01 </td> 
+         <td class="confluenceTd"> SSH Provisioning Design Document, 8.0 CLI </td> 
+         <td class="confluenceTd"> (Joe Fialli)Usability feedback. While the disclaimers state that admin must configure SSH on their own, a developer trying to quickly try things out could use at least aone reference to how one gets a sshkeyfile for some OS. It is frustrating to see a parameter to a command that is difficult to conceptualize how the file is created. THIS IS NOT AN ISSUE for our internal test development. We are already familiar with how to get this file. Comment is only for quick start of clusters. </td> 
+         <td class="confluenceTd"> Agreed. I will write-up some SSH quickstart instructions. This will be even more important for Windows user's. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> fialli-02 </td> 
+         <td class="confluenceTd"> SSH Provisioning Design Document, 8.0 CLI </td> 
+         <td class="confluenceTd"> (Joe Fialli and Steve DiMilla) do not understand the need for the "node-ssh" variant of the following commands: delete-node-config and list-nodes-config. The documentation is identical and neither list-node-ssh nor delete-node-ssh commands rely on ssh. </td> 
+         <td class="confluenceTd">Yes – we debated this. The general rule is if you have a "create-foo-bar" then it is "delete-foo-bar". In this case it is a bit silly. An alternative is to use "delete-node" and "list-nodes" to handle all node types. We will continue to noodle this. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> fialli-03 </td> 
+         <td class="confluenceTd"> SSH Provisioning Design Document, 8.0 CLI </td> 
+         <td class="confluenceTd"> (Joe Fialli and Steve DiMilla) maybe out of scope of this document. Will there be a list-clusters command to find out all clusters associated with a DAS. </td> 
+         <td class="confluenceTd"> Yes, there is a list-clusters (covered by the basic clustering subproject). </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> fialli-04 </td> 
+         <td class="confluenceTd"> SSH Provisioning Design Document, 8.0 CLI </td> 
+         <td class="confluenceTd"> (Joe Fialli and Steve DiMilla)list-nodes-config with a target of node_name is documents to list the named node. Does this mean it list the instances and clusters associated with the node. </td> 
+         <td class="confluenceTd">Ouput of the list-node* commands is still TBD. They will likely have terse default output and an option (--verbose) for longer output. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> fialli-05 </td> 
+         <td class="confluenceTd"> 4.4 </td> 
+         <td class="confluenceTd"> (Joe Fialli) Additional out of scope. in addition to performing watchdog restart of a clustered instance, the gf v2 node agent additionally sent gms a watchdog failure notification when it detected an instance had failed via monitoring local process id. This mechanism guaranteed that GMS FAILURE notification was sent before an instance restarted quickly after failure (shorter than 8 seconds). The mechanism is documented <a href="http://wiki.glassfish.java.net/PageInfo.jsp?page=SFv2FunctionalSpecs-gmsWatchdog.pdf">here </a>. I could not identify the native OS service feature in the one pager, but when this is implemented, GMS will be impacted by fast restart again and it will need to have REJOIN mechanism implemented. Merely documenting this feature lost from gf v2 nodeagent. </td> 
+         <td class="confluenceTd"> Recommend you file an issue on the native service feature. Some existing issues for reference: <a href="https://github.com/javaee/glassfish/issues/12125">12125 </a>, <a href="https://github.com/javaee/glassfish/issues/11692">11692 </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> fialli-06 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> (Joe Fialli) Not sure if this question goes here or in clustering one pager. It is duplicated in both places. this is a question about the propagation of cluster configuration info when a cluster is running. if one has 2 instances, instance1 and instance2 in a glassfish cluster clusterA and that cluster is started via "asadmin start-cluster", what happens when one dynamically adds a new instance to clusterA, namely executing "asadmin create-instance instance3" while DAS, instance1 and instance2 are already running? When will the configuration info for the newly created instance3 be introduced to in-memory config/domain.xml of running instances instance1 and instance2. When the newly created instance "instance3" is started and joins the running cluster, we are trying to gauge if config lookup of "clusterA" within the GMS "join" event of instnace3 inside of already running instance1 and instance2 will see config info created for instance3 when it was created. We are trying to determine if IIOP could get its endpoint info from the cluster config. The IIOP config information is definitley for each clustered instance in domain.xml for instances created in the cluster before the members of the cluster are started. </td> 
+         <td class="confluenceTd">This has been answered in the basic clustering review. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> shannon-01 </td> 
+         <td class="confluenceTd"> 2.2 </td> 
+         <td class="confluenceTd"> Item #1 - note that SSH will need to be configured for the user that the DAS runs as, which might be different than the user who installed GlassFish. </td> 
+         <td class="confluenceTd">I've updated the 1-pager to state this. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> shannon-02 </td> 
+         <td class="confluenceTd"> 2.2 </td> 
+         <td class="confluenceTd"> Item #2 - What do you assume you're talking to at the Windows end of an SSH connection? A Unix-like shell running on Windows (e.g., cygwin)? A Windows "cmd" process? In general, what knowledge of the remote command interpreter do you need to have, and how will you handle the differences between command interpreters? </td> 
+         <td class="confluenceTd">Good question. I don't have an answer yet. In the upcoming weeks we will start experimenting with the Cygwin SSHD provider. Hopefully that will add clarity as to the right thing to do. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> shannon-03 </td> 
+         <td class="confluenceTd"> 4.5.2 </td> 
+         <td class="confluenceTd"> In addition to the "nodehome", which tells what the "installdir" for GlassFish is, you also need to allow for an optional "agentdir", in case the user wants the nodeagent configuration information stored elsewhere. </td> 
+         <td class="confluenceTd">Ugh. I've added it to the design spec. See "create-node-ssh". </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 13, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

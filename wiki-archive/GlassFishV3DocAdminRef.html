@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFishV3DocAdminRef</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>&lt;h1&gt;GlassFish v3 <em>Domain File Format Reference</em> Document Plan&lt;/h1&gt;</p> 
+     <div> 
+      <ul> 
+       <li><a href="#GlassFishV3DocAdminRef-PeopleandRoles">People and Roles</a></li> 
+       <li><a href="#GlassFishV3DocAdminRef-Audience">Audience</a></li> 
+       <li><a href="#GlassFishV3DocAdminRef-PurposeandDescription">Purpose and Description</a></li> 
+       <li><a href="#GlassFishV3DocAdminRef-StatementofWork">Statement of Work</a></li> 
+       <ul> 
+        <li><a href="#GlassFishV3DocAdminRef-FCSStatementofWork">FCS Statement of Work</a></li> 
+       </ul> 
+       <li><a href="#GlassFishV3DocAdminRef-OverallContentOutline">Overall Content Outline</a></li> 
+       <li><a href="#GlassFishV3DocAdminRef-Reviewers">Reviewers</a></li> 
+       <li><a href="#GlassFishV3DocAdminRef-DeliveryMethods">Delivery Methods</a></li> 
+       <li><a href="#GlassFishV3DocAdminRef-RelatedInformation">Related Information</a></li> 
+      </ul>
+     </div> <h4><a name="GlassFishV3DocAdminRef-PeopleandRoles"></a>People and Roles</h1> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Name </th> 
+         <th class="confluenceTh">Role </th> 
+         <th class="confluenceTh">Location</th> 
+         <th class="confluenceTh">Time Zone</th> 
+         <th class="confluenceTh">Email </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> June Parks </td> 
+         <td class="confluenceTd"> Document Owner </td> 
+         <td class="confluenceTd"> SCA16 1724 </td> 
+         <td class="confluenceTd"> US Pacific </td> 
+         <td class="confluenceTd"><em>junesm</em><tt>@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Additional Writers </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"><em>java.netID</em><tt>@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Julie Bettis </td> 
+         <td class="confluenceTd"> Editor </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"><em>java.netID</em><tt>@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> See <a href="GlassFishV3DocPlanDevGuide.html#GlassFishV3DocPlanDevGuide-sectionGlassFishV3DocPlanDevGuideReviewers">Reviewers </a> </td> 
+         <td class="confluenceTd"> Software Engineers </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"><em>java.netID</em><tt>@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> See <a href="GlassFishV3DocPlanDevGuide.html#GlassFishV3DocPlanDevGuide-sectionGlassFishV3DocPlanDevGuideReviewers">Reviewers </a> </td> 
+         <td class="confluenceTd"> QA Engineers </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"><em>java.netID</em><tt>@dev.java.net</tt> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3DocAdminRef-Audience"></a>Audience</h1> <p>The <em>Domain File Format Reference</em> (formerly <em>Administration Reference</em>) is for only the most advanced, XML-savvy administrators.</p> <h4><a name="GlassFishV3DocAdminRef-PurposeandDescription"></a>Purpose and Description</h1> <p>The <em>Domain File Format Reference</em> describes the domain.xml file, which contains most of the Enterprise Server configuration. </p> <h4><a name="GlassFishV3DocAdminRef-StatementofWork"></a>Statement of Work</h1> <p>This section describes in detail for each milestone the work that is needed on the document, such as changes, addition of new material, relocation of existing material, and removal of existing material. Work might result from new features, changes to existing features, bug fixes, RFEs, and editorial enhancements.</p> <p>Documentation Impact:</p> 
+     <ul> 
+      <li>None</li> 
+      <li>Minor</li> 
+      <li>Moderate</li> 
+      <li>Major</li> 
+      <li>New</li> 
+     </ul> <h4><a name="GlassFishV3DocAdminRef-FCSStatementofWork"></a>FCS Statement of Work</h2> <p>For FCS, all of the GFv2 elements will be restored except those related to clusters.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Elements </th> 
+         <th class="confluenceTh">Documentation Impact</th> 
+         <th class="confluenceTh">Description of Change </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>applications</tt>, <tt>system-applications</tt>, and children </td> 
+         <td class="confluenceTd"> MAJOR </td> 
+         <td class="confluenceTd">Entirely new element tree but with much functionality moved from GFv2 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>resources</tt> and children </td> 
+         <td class="confluenceTd"> MAJOR </td> 
+         <td class="confluenceTd">Updates for <tt>jdbc-connection-pool</tt> and <tt>connector-connection-pool</tt>, new <tt>work-security-map</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>network-config</tt>, <tt>http-service</tt>, and children </td> 
+         <td class="confluenceTd"> MAJOR </td> 
+         <td class="confluenceTd">Entirely new element tree but with much functionality moved from GFv2 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> All other elements </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd">Mostly reinstatement of GFv2 elements </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3DocAdminRef-OverallContentOutline"></a>Overall Content Outline</h1> <p>Most of the content consists of the XML elements described in alphabetical order.</p> <h4><a name="GlassFishV3DocAdminRef-Reviewers"></a>Reviewers</h1> <p>The review schedule for this document is provided in the following table.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Review Milestone</th> 
+         <th class="confluenceTh">Start Date</th> 
+         <th class="confluenceTh">End Date </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Final Version </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>The reviewers of this document are listed in the following table.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Elements </th> 
+         <th class="confluenceTh">Writers</th> 
+         <th class="confluenceTh">Reviewers</th> 
+         <th class="confluenceTh">Final Done </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>applications</tt>, <tt>system-applications</tt>, and children </td> 
+         <td class="confluenceTd"> June Parks </td> 
+         <td class="confluenceTd"> Tim Quinn Hong Zhang </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>resources</tt> and children </td> 
+         <td class="confluenceTd"> June Parks </td> 
+         <td class="confluenceTd"> Jagadish Prasad Ramu Shalini Muthukrishnan Smitha Prabhu QA </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>network-config</tt>, <tt>http-service</tt>, and children </td> 
+         <td class="confluenceTd"> June Parks </td> 
+         <td class="confluenceTd"> Jean-Francois Arcand Justin Lee Oleksiy Stashok Dhiru Pandey </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> All other elements </td> 
+         <td class="confluenceTd"> June Parks </td> 
+         <td class="confluenceTd"> Jerome Dochez Lloyd Chambers Nandini Ektare </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3DocAdminRef-DeliveryMethods"></a>Delivery Methods</h1> <p>The <em>Domain File Format Reference</em> will be published on the docs.sun.com^SM^ site in PDF and HTML formats.</p> <h4><a name="GlassFishV3DocAdminRef-RelatedInformation"></a>Related Information</h1> <p>Latest draft (PDF): <a href="AdministrationReference.html" title="AdministrationReference">Domain File Format Reference Comments Page</a><br> Previous Prelude version (HTML): <a href="http://docs.sun.com/doc/820-4507">Administration Reference</a></p> <p>Email aliases:</p> 
+     <ul> 
+      <li><span class="error">[admin@glassfish.java.net]</span></li> 
+      <li><span class="error">[users@glassfish.java.net]</span></li> 
+      <li><span class="error">[docs@glassfish.java.net]</span></li> 
+     </ul> 
+     <hr> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875355/21364910.pdf">SJSASEEAREF.pdf</a> (application/pdf) 
+      <br> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 02, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:44.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

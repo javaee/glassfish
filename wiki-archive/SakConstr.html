@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : SakConstr</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="SakConstr-ConstraintsintheUseoftheSessionKeyMechanismofJSR289"></a>Constraints in the Use of the Session Key Mechanism of JSR-289</h1> <h4><a name="SakConstr-Background"></a>Background</h3> <p>Different mechanisms in the JSR-289 assumes that the application sessions are always accessible, which in principle implies remote access of sessions in a cluster environment, or that sessions are stored in a separate data tier. </p> <p>The Sailfin architecture does not support this. In Sailfin sessions are only accessible within the JVM. Thus the SipSessionUtil, SipFactory and @SipApplicationKey can only access SipApplicationSession objects that exists in the JVM of the instance where any of these API:s are invoked.</p> <p>It is the responsibility of the load balancer to ensure that requests are routed to the instance where the session for it is expected to exist.</p> <h4><a name="SakConstr-Details"></a>Details</h3> <p>One of the proposals to the JSR-289 is that it should be possible to create/get an application session using a application specific key. This is a proposed extension to the SipFactory interface. </p> <p>In addition, the interface of the SipSessionUtil mandates that it shall be possible to retrieve an application session using the container generated ID of the application session. See section 13.3 of JSR-289.</p> <p>Finally, the new Session Key Based targeting mechanism (section 15.11.2 of JSR-289) specifies that the application shall be able to associate an application session by providing the container the application specific key to that application session using a method annotated @SipApplicationKey.</p> <p>All three mechaisms above have the implication that it must be possible to access application sessions from any instance in the cluster. However, we early came to the conclusion that with our architecture and what we could develop in short-term (Sailfin 1.0) this would not be doable with acceptable performance. (We discussed solutions like making it possible to access application sessions remotely via RMI, etc.)</p> <p>However, when we analyzed the spec further it was clear that the @SipApplicationKey mechanism was very like the Data Centric solution in the EAS; both mechanisms extracts a key from a request. Thus, we decided to introduce the Data Centric in Sailfin. By routing the traffic according to a configurable Data Centric rule file it was ensured that all traffic associated with a certain entity, e.g, a user or a conference, which was included as a field in a message, would be served by the same back-end instance, and if the @SipApplicationKey method uses the same rules to extract the session key, all session data pertaining to that entity would exist in the memory of that instance.</p> <p>This solution would then be very performant since once a request has been routed it will not need to fetch data using any remote access mechanism.</p> <p>The drawback, however, is that the @SipApplicationKey concept is now coupled with the Data Centric mechanism in the Converged Load Balance. The Data Centric rules must be setup to match the @SipApplicationKey. In most cases this should not be a big problem (e.g, if there is a test case for this in the TCK, the DCR rules should be configured to match the @SipApplicationKey of the test servlet).</p> <p>However, when a service is composed of several different applications this might be a problem, since the applications might have different session keys. The reason why this is a problem is that the container checks if the session key returned by the @SipApplicationKey method matches the key extracted by the Data Centric mechanism and if they do not match, the container favors the result from Data Centric thus selecting an application session keyed by the Data Centric key. The exact consequences this might have for an application is hard to determine. In many cases it does not matter, but one case could be that one of the applications uses the SipFactory to create an application session in response to some out-of-band mechanism. This session would not be used when extracted via the @SipApplicationKey in case the Data Centric key has another value. On the other hand in other cases it could be expected that the different applications actually shall use the same key and then this is not a problem.</p> <p>Another problem is that the SipApplicationKey annotated method is more powerful than the DCR rules. The DCR rules defined in the dcr.xml are rather static and normally defines a combination of data in the request that is used as a key. The method on the other hand could take more input then only the request, i.e., it could return a different key depending on the time of day, or it could consult an external database etc. The consequence of the coupling of the DCR with the @SipApplicationKey concept is that the @SipApplicationKey should be restricted to selecting a static subset of the data in the request, when used in a cluster.</p> <h4><a name="SakConstr-Relationbetween@SipApplicationKeyandSipApplicationSeesion.getId%28%29"></a>Relation between @SipApplicationKey and SipApplicationSeesion.getId()</h3> <p>Also, note that @SipApplicationKey and SipApplicationSeesion.getId() is not the same thing although that might be the intepretation of section 15.11.2:<br> <em>...It is strongly recommended that the same value be returned by the getId() method of the SipApplicationSession...</em><br> The subsequent sentence is important:<br class="atl-forced-newline"> <em>...If the annotation exists then the container should use the return value of the @SipApplicationKey method in the return value of getId() after having added any unique prefix as required...</em><br> This matches the javadoc SipApplicationSession.getId():<br> <em>...For applications with a method with SipApplicationKey annotation the containers MUST incorporate the return value from that into its Id generation, such that a certain key is consistently associated with one and only one SipApplication instance...</em></p> <p>Thus, the session key is part of the ID but the ID might also contains other information to make it unique. This is how it is implemented in Sailfin.</p> <h4><a name="SakConstr-Exampleofwhenthiscanbealimitation"></a>Example of when this can be a limitation</h3> <p>Consider an application that handles conferences, where the each application session corresponds to a conference. Now, say that one would like to implement an admin interface via which it should be possible to check the state of each application session. There should then exist a servlet which can iterate over all application sessions currently active (note, in order for this to work the application must store the ID:s of all sessions in a database). The servlet would then read all session ID:s from the database and use SipSessionUtil to fetch the corresponding application session. However, du to the constraints described earlier it would only be able to obtain the application sessions that exists in the local JVM.</p> <h4><a name="SakConstr-Possibleworkarounds"></a>Possible workarounds</h3> <p><b>Accessing a SipApplicationSession with SIP</b></p> <p>Suppose you come in with a request which is not routed by the DCR rules (e.g., a RMI request), or with a request where the key for DCR routing is not yet known.<br> Such a request will not be guaranteed to end up on the same instance as where the SAS 'lives'.<br> Therefore, the SipSessionUtils.getApplicationSessionById and getApplicationSessionByKey will not work as expected.<br> This can be circumvented by creating a new SIP request (e.g., an OPTIONs message or any other initial non-dialog creating request of your choice), ensuring that the request contains all the keys needed by the DCR rules and the @SipApplicationKey annotated method, then send this request via the CLB to yourself. This can be done by pushing a route to your own IPaddress, or to the VIP address. It is not recommended to use 127.0.0.1, since these kind of requests will not be routed via the CLB. This request will be targeted to the SAS on the correct instance.<br> There some code can be executed and the result can be transported in the 200OK response to the OPTIONS message.<br> Sort of like a poor-man's remote procedure call.</p> <p>In case the original request is already received via SIP, the same mechanism can apply, but now with a proxy. I.e., let the first servlet proxyTo() the original request URI, but add all the DCR related data to the outgoing request, and push a route to your own ip address or to the VIP. In the second servlet the request will be be targeted to the correct SAS.</p> <p><em>need code examples</em></p> <p><b>Accessing a SipApplicationSession via HTTP</b></p> <p>The one and ONLY way that is currently available to target an HTTP request to a specific SAS is to use the SipApplicationSession.encodeURL() method to create an URL targeted to the SAS<br> However, to be able to call the encodeURL() on the SAS you want to target, you already need to be on the instance where this SAS lives.<br> The way to go about this is that you create DCR rules that route the HTTP request to the correct instance. It will not be targeted to the correct SAS yet (with the key obtained from the DCR), but it will end up on the correct instance. This means that then you can do a SipSessionsUtil.getApplicationSessionByKey() using the same key as was used in the DCR. On the returned SAS you then invoke the encodeURL() to get a targeted URL and you then return a redirect response to this URL. The redirected request will then be targeted to the correct SAS.</p> <p><em>need code examples</em></p> <h4><a name="SakConstr-KeyallocationforUAC"></a>Key allocation for UAC</h3> <p>In the above descriptions, it was assumed that the SIP Application Session is created based on incoming requests. However, when designing a UAC there are several ways to create a new Sip Application Session.</p> 
+     <ul> 
+      <li>use SipSessionsUtil.getSipApplicationSessionByKey(<em>key</em>, true);</li> 
+      <li>use SipFactory.createSipApplicationSessionByKey(<em>key</em>);</li> 
+      <li>use SipFactory.createSipApplicationSession();</li> 
+     </ul> <p>In the first two cases you already have to have a key that maps to the current instance. Such a "keyed" SipApplicationSession can later be used for targeting requests by key (i.e., using the @SipApplicationKey annotation).<br> In the latter case a non-keyed SipApplicationSession is created. Internally in the container it is still keyed, since the container relies on the keys for the routing, but the key is never exposed to the application, nor can it be used to select a specific SipApplicationSession. Hence, such a SipApplicationSession can not be targeted by key, but only by id (using the encodeURI()). I will call these SipApplicationSession non-keyed, since that is what they are from the application's point of view.</p> <p>It should be noted that way the application deals with such non-keyed SipApplicationSession does have some impact on the distribution of the SipApplicationSession (and hence the traffic) after a failover.<br> The container calculates a single unique key that maps to the current instance. This key is used internally for by the container, but is currently shared amongst <b>all</b> the applications that use non-keyed SASes. To make up the SasId, a unique random part is added to the key. The key is used for routing, together with the random part a unique SAS can still be identified. This works perfectly in a normal case.<br> However, in the case of failover the SipApplicationSessions are redistributed over the cluster. This is done according to a consistent hash algorithm mentioned above. But, the distribution is solely based on the key part of a non-keyed SipApplicationSession, and all the SipApplicationSession created by SipFactory.createSipApplicationSession() on a single instance share the same key. Therefore, <b>all</b> of the non-keyed SipApplicationSessions of the failed instance will be redistributed to the <b>same</b> instance after the failover.</p> <h4><a name="SakConstr-Workarounds"></a>Workarounds</h3> <p>There are some enhancements planned for 2.0 which ensure that multiple keys will be used for non-keyed SipApplicationSessions. But until that time it is wise to avoid the non-keyed creation of a SipApplicationSession using the SipFactory.createSipApplicationSession() in a cluster environment, especially if the UAC case is the main use case in the application and these are long lived sessions that should survive failures.<br> If the trigger to create the SipApplicationSession is another SIP or HTTP request, then consider to share the same SipApplicationSession as used in the incoming request (effectively making a converged application).<br> If the trigger is another protocol or mechanism not controled by the Converged Load Balancer (e.g., EJBTimers, Diameter), then the application developer should consider starting a triggering dialog that is routed internally in the cluster.<br> For example, create a random key. Add the random key to a SIP header. Send a SIP OPTIONS message via the CLB (e.g., to the VIP or to the external IP address of the local instance). Write a sort of B2BUA that acts as a UAS for the OPTIONS request and either uses the SAS created on the UAS side also for the UAC side.<br> A similar solution can be used with an initial HTTP request triggering the UAC.</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : BuildInformation</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="BuildInformation-InformationonGlassFishBuilds"></a>Information on GlassFish Builds</h1> <p><b>Also See</b> : <b><a href="http://hudson.glassfish.org/job/gf-trunk-build-continuous/">Continuous Build Info</a></b> | <b><a href="https://glassfish.java.net/public/BuildGlassFish.html#Complete_Instructions_on_how_to_Build">V2 Full Instructions</a></b>| <b><a href="FullBuildInstructions.html" title="FullBuildInstructions">V3 Build Instructions</a></b> </p> <h4><a name="BuildInformation-GlassFishBuildQuickstart"></a>GlassFish Build Quickstart</h1> <p>This page describes how to build GlassFish V2.1.1, currently the "Trunk" (SJSAS91_FCS_BRANCH) is under development phase. To build GlassFish V3, see <a href="FullBuildInstructions.html" title="FullBuildInstructions">here</a>.</p> <h4><a name="BuildInformation-PrerequisitestobuildingGlassFish"></a>Prerequisites to building GlassFish</h2> 
+     <ul> 
+      <li>The users must have <a href="http://maven.apache.org/maven-1.x/start/download.html">Maven</a> (1.0.2) installed: This will create the local repository needed by Maven to store GlassFish dependencies.</li> 
+      <li>The user must have a <a href="https://glassfish.java.net/public/BuildGlassFish.html">login on java.net</a> and must have access to the CVS repository for the GlassFish project.</li> 
+      <li>The user must login to the GlassFish CVS repository once (so CVS saves the password in the .cvspass file in the user's<br> home directory) </li> 
+      <li><a href="http://java.sun.com/j2se/1.5.0/download.jsp">J2SE 5.0</a><br> (1.5.0_11) must be installed (you can't use Java SE 6), configured as JAVA_HOME env variable and in your binary path. We recommend that you use the latest GlassFish nightly tested version.</li> 
+      <li>Setup <a href="https://glassfish.java.net/servlets/ProjectSource#wincvs">cvs client</a> per java.net instructions.</li> 
+      <li>Research per client instructions.</li> 
+     </ul> <h4><a name="BuildInformation-GlassFishBuildQuickstartGuide"></a>GlassFish Build Quickstart Guide</h2> <p>Assuming you have <a href="http://maven.apache.org/maven-1.x/start/download.html">Apache Maven</a> 1.0.2 and <a href="http://java.sun.com/j2se/1.5.0/download.jsp">JDK 5.0</a> (1.5.0_11) installed and configured as specified in the prerequisites<br> above.</p> 
+     <ul> 
+      <li><b>Checkout glassfish/bootstrap module</b> : This is the top-level build module consisting of building all or subset of the modules. 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">% mkdir workspace
+% cd workspace
+% cvs -d :pserver:&lt;userid&gt;@cvs.java.net:/cvs checkout -r SJSAS91_FCS_BRANCH glassfish/bootstrap</pre> 
+         </div> 
+        </div>
+       </div></li> 
+      <li><b>Configure Build Variables</b> : Create <tt>workspace/glassfish/bootstrap/build.properties</tt> or for re-usable GlassFish workspace, one-time process is to create <tt>${HOME}/build.properties</tt> (Unix) or <tt>%HOMEPATH%\build.properties</tt> (Windows) and set following variables. 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">glassfish.os.name=&lt;OS Name: Possible values- WINNT, SunOS, Linux, SunOS_X86, Darwin&gt;
+glassfish.cvs.username=&lt;java.net id&gt;</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ul> <p>Following two variables don't need to be configured, this is just for information. Default values are set to: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">glassfish.root=$\{basedir}/../..  (basedir -directory points to where project.xml is present)
+glassfish.home=${glassfish.root}/publish/glassfish =&gt; e.g.  /workspace/publish/glassfish</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li><b>Checkout the sources</b> :<br> GlassFish workspace has option to build all the modules or subset of modules. Usually developers want to checkout and build only their required modules, so in such situations checkout out subset of modules make sense. But if you are making major integrations including adding/deleting class/module, new feature etc then, you need to checkout and build all the modules so that intermodule dependencies are verified.</li> 
+     </ul> 
+     <ul> 
+      <li>To checkout all the <a href="https://glassfish.java.net/source/browse/glassfish/">GlassFish source modules</a>, do following 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">% cd glassfish/bootstrap&lt;br&gt;% maven checkout</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ul> 
+     <ul> 
+      <li>If you want to checkout subset of modules that you want to develop, use <tt>-Dmodules=</tt> flag. 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">% maven -Dmodules=mail,activation checkout</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ul> 
+     <ul> 
+      <li><b>Build the sources</b>: After you checkout sources using Step 3, developer can select the option of "bootstrap" which downloads the pre-built server and builds only subset of the modules. Other option "bootstrap-all" is to create the server from scratch (this requires to checkout all the modules using "maven checkout"), and build all the modules to verify the intermodule or binary dependencies version change.</li> 
+     </ul> 
+     <ul> 
+      <li><b>bootstrap-all</b> option: Building all the modules from the source. 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">% maven bootstrap-all build</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ul> 
+     <ul> 
+      <li>*bootstrap option: Build your own module using pre-built server 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">% maven -Dmodules=mail,activation bootstrap build</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ul> 
+     <ul> 
+      <li><b>Configure or Install Server</b> :<br> This step will configure or install server to use runtime. This will create the asadmin script, run create-domain, etc which are needed to run the GlassFish server.</li> 
+     </ul> 
+     <ul> 
+      <li>To create single-instance domain similar to GlassFish V1, run following command. 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">% maven configure-runtime (Default is silent installation)</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ul> 
+     <ul> 
+      <li>To create cluster mode domain of GlassFish V2, run following command: 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">% maven configure-cluster</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ul> 
+     <ul> 
+      <li><b>Start the Server</b>:<br> All GlassFish server commands are located in the <tt>${glassfish.home}/bin</tt> directory.</li> 
+     </ul> 
+     <ul> 
+      <li>To start the server, run following command. 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">% asadmin start-domain domain1</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ul> 
+     <ul> 
+      <li>To stop server, run following command. 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">% asadmin stop-domain domain1</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ul> 
+     <ul> 
+      <li>*Clean Build, Uninstall Server: *<br> You can use any of the above three goals during your development process. Update the sources using your favorite IDE,<br> 2000 and use any of the following commands on already built workspace to bring the workspace to its original stage to rebuild and verify your changes. </li> 
+     </ul> 
+     <ul> 
+      <li>To clean the modules to delete build generated files like .class, .properties and ready to recompile, run<br> following command 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">% maven clean (or maven -Dmodules=mail,activation clean)</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ul> 
+     <ul> 
+      <li>To delete or uninstall the server, that may be corrupted or you want to get new updated server, run following command. This will remove all the scripts and jar files used to run the server. It will remove everything under {{ ${glassfish.home} }} which is 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">/workspace/publish/glassfish</pre> 
+         </div> 
+        </div>
+       </div> 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">% maven clobber</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ul> 
+     <ul> 
+      <li>To clean the server configured in step 5 above, use command below to clean the server which deletes Administration Server, domain1 and preserves the server back to original installed stage. (Deletes newly generated token replaced<br> files in <tt>${glassfish.home}/bin</tt>, <tt>config</tt> directories.)</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">% maven clean-config</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>You can use "maven clean-config" if you want to verify your changes related to domain and administration server startup related. "clobber" goal can be used to delete your server to get new server. "clean" can be used to delete build files and ready to compile.</li> 
+     </ul> 
+     <ul> 
+      <li><b>Run Quicklook Tests</b> :<br> Quicklook Tests are meant to give the developer a way of testing major functionality in the Application Server and of running a sanity check to ensure that nothing major is broken.</li> 
+     </ul> 
+     <ul> 
+      <li>Checkout the required test failes from glassfish/appserv-tests as below.</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">% cd glassfish/bootstrap&lt;br&gt;% maven checkout-quicklook</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>Set <tt>APS_HOME</tt>. This is the directory where you checked out the<br> workspace including the workspace root name (e.g. <tt>/workspace/glassfish/appserv-tests</tt>)</li> 
+      <li>Set <tt>S1AS_HOME</tt>. This is installation directory for the GlassFish Server (e.g. <tt>/workspace/publish/glassfish</tt>)</li> 
+      <li>The installation properties are under <tt>${APS_HOME}/config.properties</tt> to match your installation (e.g. <tt>admin.password</tt>, <tt>http.port</tt>, etc.). If you changed any default values, edit this config.properties<br> file. </li> 
+      <li>Make sure the server is NOT running before running the tests, stop the server if its already running.</li> 
+     </ul> 
+     <ul> 
+      <li><b>Quicklook</b>: Run the test on Single instance Domain on Domain Admin Server (domain1). 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">% cd $APS_HOME&lt;br&gt;% maven runtest</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ul> <p><b>Quicklook for Cluster mode</b> : Run the test on Cluster mode Domain (which is created by using "maven configure-cluster"). This will run test on Remote instance sqe-server, created and managed by nodeagent, sqe-agent that will be automatically created by the following target. </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">% cd $APS_HOME&lt;br&gt;% maven runtest-ee-standalone</pre> 
+       </div> 
+      </div>
+     </div> <p>To run both Quicklook types above to verify your changes for all server combinations, use following command (which may take longer sinceits going to run the tests on both, domain1 and sqe-server as above)</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">% cd $APS_HOME&lt;br&gt;% maven runtest-ee</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>Open the <tt>${APS_HOME}/test_results.html</tt> file in a browser and examine the results.</li> 
+     </ul> 
+     <ul> 
+      <li>You can find the detailed instructions to run Quicklook tests <a href="https://glassfish.java.net/public/GuidelinesandConventions.html#Quicklook_Tests">HERE</a>.</li> 
+     </ul> <p>See the <a href="https://glassfish.java.net/public/BuildGlassFish.html#Complete_Instructions_on_how_to_Build">complete build instructions</a> for details of how to build GlassFish. For Building from branch, see <a href="https://glassfish.java.net/public/BuildGlassFish.html#Branch">GlassFish Branch</a> build instructions.</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jan 02, 2012 by 
+<font color="#0050B2">10011</font>. Exported from wikis.oracle.com on May 27, 2015 20:43.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

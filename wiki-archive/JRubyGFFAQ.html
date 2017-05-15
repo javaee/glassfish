@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : JRubyGFFAQ</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>FAQs relating to JRuby and GlassFish</p> 
+     <ol> 
+      <li><b>Why Ruby when there are many other languages ?</b> 
+       <ul> 
+        <li>Ruby is getting popular due to Rails.</li> 
+        <li>Ruby-on-Rails (ROR) is very popular among web developers.</li> 
+        <li>JRuby is a pretty mature implementation of Ruby in Java, running on JVM and able to use existing Java libraries.</li> 
+       </ul> </li> 
+      <li><b>Can the number of JRuby instances created by GlassFish be configured ?</b>&lt;br&gt;<br> Yes, it can be configured as defined <a href="./ConfiguringJRubyRuntimePool.html">here</a>.&lt;br&gt;</li> 
+      <li><b>Can GlassFish support multiple Rails versions ?</b>&lt;br&gt;<br> Yes. Follow the Rails programming model to specify which Rails version your application is using. </li> 
+      <li><b>In the GlassFish case, will the threads supporting the Rails instances share the variables or is it standalone ?</b>&lt;br&gt;<br> Every request would happen inside its own Rails instance, and there would be no sharing during requests. The deployment model is largely the same as with mongrels, but without the mongrels.&lt;br&gt; </li> 
+      <li><b>During record migration the associated Active Records need to be refreshed. How is this done as part of the hot deployment cycle ?</b>&lt;br&gt;<br> A shim can be written that run the migrations upon deploy of the WAR file. There's a precedence for this sort of thing, with products like JIRA that do a database scan at startup to make sure you're running the correct version of the tables. It's not going to be for everybody, but if you have full control of your deployment it's a nice convenience.</li> 
+      <li><b>What advantages does JRuby-on-GlassFish offer to smaller enterprises ?</b>&lt;br&gt;<br> GlassFish offers several advantages to enterprises: 
+       <ul> 
+        <li>Allows RoR and Java EE applications to co-exist on the same container.</li> 
+        <li>Simpler/Similar development/deployment model</li> 
+        <li>Database connection pooling</li> 
+        <li>Hot deployment of WAR (no need to restart the container)</li> 
+        <li>All the advantages of Load Balancing, Clustering, High Availability are available for further scalability as well.</li> 
+       </ul> </li> 
+      <li><b>What are the benchmark numbers on JRuby ?</b>&lt;br&gt;<br> Some pointers: 
+       <ul> 
+        <li><a href="http://blog.nicksieger.com/articles/2007/10/25/jruby-on-rails-fast-enough">JRuby on Rails Fast Enough</a></li> 
+        <li><a href="http://blog.nicksieger.com/articles/2007/10/25/jruby-performance-tweaks">JRuby performance tweaks</a></li> 
+        <li><a href="http://shootout.alioth.debian.org/gp4sandbox/benchmark.php?test=all&amp;lang=jruby">Benchmark</a></li> 
+        <li><a href="http://antoniocangiano.com/2007/12/03/the-great-ruby-shootout/">The Great JRuby shootout</a></li> 
+       </ul> </li> 
+     </ol> <p> And around 1.1 there will be consolidated numbers for all the benchmarks. Performance has improved again since all these sets were published.</p> 
+     <ol> 
+      <li><b>When would 1.8.6 support be introduced in JRuby ?</b>&lt;br&gt;<br> There are plans to update stdlib in JRuby 1.1 - that's really all is meant by 1.8.5 support, since largely that's all that's changed.</li> 
+      <li><b>How is load balancing configured in GlassFish ?</b>&lt;br&gt;<br> A cluster of GlassFish instances can be load-balanced using any of the following approaches: 
+       <ul> 
+        <li>Sun LB plug-in on Sun Web Server, Apache and IIS</li> 
+        <li>Apache (mod_jk)</li> 
+        <li>F5</li> 
+        <li>Sun Secure Application Switch</li> 
+       </ul> </li> 
+     </ol> <p> Read more about <a href="https://glassfish.java.net/javaee5/build/GlassFish_LB_Cluster.html">how to setup/configure load balancer</a> with GlasFish v2.</p> 
+     <ol> 
+      <li><b>How does GlassFish deal with caching of pages ?</b>&lt;br&gt;<br> The file cache in Grizzly provides caching where static pages are served without talking to the Web server.</li> 
+      <li><b>What is the state of Rubinius support in JRuby ?</b>&lt;br&gt;<br> The state of Rubinius (and other Ruby implementations) is described at <a href="http://headius.blogspot.com/2007/11/top-five-questions-i-get-asked.html">http://headius.blogspot.com/2007/11/top-five-questions-i-get-asked.html</a>. Also read a more recent update <a href="http://on-ruby.blogspot.com/2007/12/rubinius-on-jruby.html">here</a>.&lt;br&gt;<br> There are no further updates on Rubinius bytecode support since Rubinius bytecode seems to be still changing. We've also managed to improve normal interpreted performance, so we're happy enough that installing a new bytecode engine hasn't been a priority.&lt;br&gt;<br> The JRuby team occasionally plays with getting Rubinius's implementations of various core classes to run in JRuby, and they usually work well but with about a 2x performance hit.</li> 
+      <li><b>Are there any benchmarks on the speed of static pages between GlassFish (Grizzly) and Apache httpd ?</b>&lt;br&gt;<br> Yes, the benchmarks are available <a href="http://weblogs.java.net/blog/sdo/archive/2007/05/how_to_test_con.html">here</a>.</li> 
+      <li><b>How to build GlassFish V3 and JRuby GlassFish gem ?</b>&lt;br&gt; 
+       <ul> 
+        <li>Pre-Requists 
+         <ul> 
+          <li>Subversion client</li> 
+          <li>Maven 2.0.x</li> 
+         </ul> </li> 
+        <li>To build GlassFish V3</li> 
+       </ul> </li> 
+     </ol> <p>&lt;pre&gt;<br> svn checkout <a href="https://svn.java.net/svn/glassfish-scripting/trunk/rails/v3">https://svn.java.net/svn/glassfish-scripting/trunk/rails/v3</a><br> cd v3<br> mvn clean install<br> &lt;/pre&gt;</p> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li>To build GlassFish gem</li> 
+       </ul> </li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">svn checkout https://svn.java.net/svn/glassfish-scripting/trunk/rails/v3/gem
+   cd gem
+   mvn clean install</pre> 
+       </div> 
+      </div>
+     </div> <p> The gem would be present under target/dependency/glassfish/pkg.</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 03, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

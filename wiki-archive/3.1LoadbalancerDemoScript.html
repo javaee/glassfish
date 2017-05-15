@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : 3.1LoadbalancerDemoScript</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="3.1LoadbalancerDemoScript-Loadbalancerdemoscript"></a>Load-balancer demo script</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#3.1LoadbalancerDemoScript-Loadbalancerdemoscript">Load-balancer demo script</a></li> 
+       <ul> 
+        <li><a href="#3.1LoadbalancerDemoScript-Prerequisite">Prerequisite</a></li> 
+        <li><a href="#3.1LoadbalancerDemoScript-MS4Demo%3APreferredfailoverinstancefeature">MS4 Demo : Preferred failover instance feature</a></li> 
+        <ul> 
+         <li><a href="#3.1LoadbalancerDemoScript-Maintainingstickinessusingcookies">Maintaining stickiness using cookies</a></li> 
+         <li><a href="#3.1LoadbalancerDemoScript-Maintainingstickinessusingurlrewriting">Maintaining stickiness using url-rewriting</a></li> 
+        </ul> 
+        <li><a href="#3.1LoadbalancerDemoScript-MS3Demo%3AStepstogenerateandtransferloadbalancer.xmltowebserver.">MS3 Demo : Steps to generate and transfer loadbalancer.xml to web-server.</a></li> 
+        <ul> 
+         <li><a href="#3.1LoadbalancerDemoScript-Approach1">Approach 1</a></li> 
+         <li><a href="#3.1LoadbalancerDemoScript-Approach2">Approach 2</a></li> 
+        </ul> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="3.1LoadbalancerDemoScript-Prerequisite"></a>Prerequisite</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <td class="confluenceTd"><b>Cluster setup</b><br> <span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20874368/21365315.gif" style="border: 0px solid black"></span> 
+          <ul> 
+           <li>Setup cluster as per your requirement. Refer to <a href="./3.1SSHDemoScript.html">ssh demo script</a> for more details.</li> 
+           <li>User can create standalone instance(s) instead of cluster(s) and front-end them with load-balancer. However there cannot be a mix of cluster(s) and stand-alone instance(s).</li> 
+           <li>Install web-server and configure load-balancer plugin. Refer to <a href="http://docs.sun.com/app/docs/doc/821-0182/gchvt?a=view">GlassFish v2 documentation</a> for more details.</li> 
+           <li>Create a SSL listener in web-server and enable client certificate authentication for that listener. This step is needed in case you want to use command apply-http-lb-changes.</li> 
+          </ul> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.1LoadbalancerDemoScript-MS4Demo%3APreferredfailoverinstancefeature"></a>MS4 Demo : Preferred failover instance feature</h2> 
+     <ul> 
+      <li>Deploy an application across cluster. Application used for demo - <a href="http://wikis.sun.com/download/attachments/210479800/SimpleWebApp.war">SimpleWebApp.war</a> is attached.</li> 
+      <li>As part of demo, session replication is not enabled. However user can enable session replication by deploying this application with <em>availabilityenabled</em> argument set to true.</li> 
+      <li>Generate the load-balancer xml and push it web-server. Web-server is now ready to service requests for application SimpleWebApp.</li> 
+     </ul> <h4><a name="3.1LoadbalancerDemoScript-Maintainingstickinessusingcookies"></a>Maintaining stickiness using cookies</h3> 
+     <ol> 
+      <li>Access application multiple times to validate round-robin behavior. 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">Access URL : http://&lt;web-server-host&gt;:&lt;web-server-port&gt;/SimpleWebApp/SimpleServlet</pre> 
+         </div> 
+        </div>
+       </div></li> 
+      <li>Create session by accessing below URL 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">Access URL : http://&lt;web-server-host&gt;:&lt;web-server-port&gt;/SimpleWebApp/SimpleServlet?createSession=true</pre> 
+         </div> 
+        </div>
+       </div></li> 
+      <li>Repeat step 1. You will notice after creating session, all subsequent requests will stick to same instance.</li> 
+      <li>Set replica partner information. Select an instance from the same cluster and use it as value for parameter <em>replica-instance</em>. <b>Note</b>: This information will be automatically set by session replication framework and web container. However in this demo, we set this information manually. 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">Access URL : http://&lt;web-server-host&gt;:&lt;web-server-port&gt;/SimpleWebApp/SimpleServlet?replica-instance=&lt;instance-name&gt;</pre> 
+         </div> 
+        </div>
+       </div></li> 
+      <li>Bring down instance currently servicing the request. You can access that information from web page itself. Check for highlighted name value pair : <b>Instance name</b>. 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">asadmin stop-instance &lt;instance-name&gt;</pre> 
+         </div> 
+        </div>
+       </div></li> 
+      <li>Repeat step 1. You will notice all requests are being serviced from instance selected in step 4. Since session replication is not enabled, the session will not be available on failed-over instance.</li> 
+      <li>Bring back stopped instance. 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">asadmin stop-instance &lt;instance-name&gt;</pre> 
+         </div> 
+        </div>
+       </div></li> 
+      <li>Repeat step 1. You will notice all requests are still being serviced from instance selected in step 4. Sessions are not moved back on instance recovery.</li> 
+      <li>Create multiple clusters and now run step 4 choosing an instance from different cluster.</li> 
+      <li>Bring down instance currently servicing the requests.</li> 
+      <li>Repeat step 1. You will notice your suggested fail-over instance directive is ignored. Sessions are only allowed to fail-over with in cluster boundary. Load-balancer will only fail-over requests outside cluster boundary if all instances in current cluster are not available (unhealthy or disabled). In current case, load-balancer will select an instance from current cluster to service the request.</li> 
+     </ol> <h4><a name="3.1LoadbalancerDemoScript-Maintainingstickinessusingurlrewriting"></a>Maintaining stickiness using url-rewriting</h3> 
+     <ol> 
+      <li>Access application multiple times to validate round-robin behavior. 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">Access URL : http://&lt;web-server-host&gt;:&lt;web-server-port&gt;/SimpleWebApp/SimpleServlet</pre> 
+         </div> 
+        </div>
+       </div></li> 
+      <li>Create session by accessing below URL 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">Access URL : http://&lt;web-server-host&gt;:&lt;web-server-port&gt;/SimpleWebApp/SimpleServlet?createSession=true</pre> 
+         </div> 
+        </div>
+       </div></li> 
+      <li>Repeat step 1. You will notice after creating session, all subsequent requests will stick to same instance.</li> 
+      <li>Bring down instance currently servicing the request. You can access that information from web page itself. Check for highlighted name value pair : <b>Instance name</b>. 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">asadmin stop-instance &lt;instance-name&gt;</pre> 
+         </div> 
+        </div>
+       </div></li> 
+      <li>Set replica partner information. Select an instance from the same cluster and use it as value for parameter <em>jreplica</em>. <b>Note</b>: This information will be automatically set by session replication framework and web container. However in this demo, we set this information manually. 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">Access URL : http://&lt;web-server-host&gt;:&lt;web-server-port&gt;/SimpleWebApp/SimpleServlet;jreplica=&lt;instance-name&gt;</pre> 
+         </div> 
+        </div>
+       </div></li> 
+      <li>Repeat step 1. You will notice all requests are being serviced from instance selected in step 5. Since session replication is not enabled, the session will not be available on failed-over instance.</li> 
+     </ol> <h4><a name="3.1LoadbalancerDemoScript-MS3Demo%3AStepstogenerateandtransferloadbalancer.xmltowebserver."></a>MS3 Demo : Steps to generate and transfer loadbalancer.xml to web-server.</h2> <h4><a name="3.1LoadbalancerDemoScript-Approach1"></a>Approach 1 </h3> 
+     <ul> 
+      <li>Use <em>export-http-lb-config</em> directly to generate load-balancer xml 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">asadmin export-http-lb-config --lbtargets &lt;comma-separated-list-of-clusters&gt; --property &lt;colon-separated-list-of-properties-as-name-value-pair&gt; &lt;load-balancer-xml-file&gt;
+example : asadmin export-http-lb-config --lbtargets cluster1,cluster2 --property response-timeout-in-seconds=30:https-routing=true loadbalancer.xml</pre> 
+         </div> 
+        </div>
+       </div></li> 
+      <li>Copy the generated loadbalancer.xml file to web-server config directory</li> 
+      <li>Once new loadbalancer.xml is loaded by load-balancer plugin, it will start routing requests based on that.</li> 
+     </ul> <h4><a name="3.1LoadbalancerDemoScript-Approach2"></a>Approach 2</h3> 
+     <ul> 
+      <li>Create a load-balancer using <em>create-http-lb</em> 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">asadmin create-http-lb --devicehost &lt;web-server-host-name&gt; --deviceport &lt;web-server-SSL-port&gt; --target &lt;GlassFish-cluster-name&gt; &lt;load-balancer-name&gt;
+example : asadmin create-http-lb --devicehost machine1.oracle.com --deviceport 443 --target cluster1 lb-cluster1</pre> 
+         </div> 
+        </div>
+       </div></li> 
+      <li>Either use <em>apply-http-lb-changes</em> or <em>export-http-lb-config</em> 
+       <ul> 
+        <li><b>Option 1</b> : Using apply-http-lb-changes to generate and push load-balancer xml file over the wire to web-server 
+         <ul> 
+          <li>Export DAS certificate and import it to web-server certificate database. Refer to section <em>Export and Import the DAS Certificate</em> in <a href="http://docs.sun.com/app/docs/doc/821-0182/gchvt?a=view">GlassFish v2 documentation</a> for more details.</li> 
+          <li>Test SSL connection to the web-server 
+           <div class="code panel" style="border-width: 1px;">
+            <div class="codeContent panelContent"> 
+             <div id="root"> 
+              <pre class="theme: Confluence; brush: java; gutter: false">asadmin apply-http-lb-changes  --ping=true &lt;load-balancer-name&gt;
+example : asadmin apply-http-lb-changes  --ping=true lb-cluster1</pre> 
+             </div> 
+            </div>
+           </div></li> 
+          <li>Push load-balancer xml over the wire to web-server 
+           <div class="code panel" style="border-width: 1px;">
+            <div class="codeContent panelContent"> 
+             <div id="root"> 
+              <pre class="theme: Confluence; brush: java; gutter: false">asadmin apply-http-lb-changes &lt;load-balancer-name&gt;
+example : asadmin apply-http-lb-changes lb-cluster1</pre> 
+             </div> 
+            </div>
+           </div></li> 
+         </ul> </li> 
+        <li><b>Option 2</b> : Using <em>export-http-lb-config</em> to generate load-balancer xml and then manually copy it to web-server 
+         <ul> 
+          <li>Use export-http-lb-config to generate load-balancer xml 
+           <div class="code panel" style="border-width: 1px;">
+            <div class="codeContent panelContent"> 
+             <div id="root"> 
+              <pre class="theme: Confluence; brush: java; gutter: false">asadmin export-http-lb-config --lbname &lt;load-balancer-name&gt; &lt;load-balancer-xml-file&gt;
+example : asadmin export-http-lb-config --lbname lb-cluster1 loadbalancer.xml</pre> 
+             </div> 
+            </div>
+           </div></li> 
+          <li>Copy the generated loadbalancer.xml file to web-server config directory</li> 
+          <li>Once new loadbalancer.xml is loaded by load-balancer plugin, it will start routing requests based on that.</li> 
+         </ul> </li> 
+       </ul> </li> 
+     </ul> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874368/21365315.gif">LB-deployment.gif</a> (image/gif) 
+      <br> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Aug 24, 2010 by 
+<font color="#0050B2">kshitiz_s</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

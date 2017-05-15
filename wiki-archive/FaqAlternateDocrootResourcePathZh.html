@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : FaqAlternateDocrootResourcePathZh</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="FaqAlternateDocrootResourcePathZh-Web%E5%AE%B9%E5%99%A8%E5%A6%82%E4%BD%95%E8%AE%A1%E7%AE%97%E5%AF%B9%E5%BA%94%E4%BA%8E%E5%A4%87%E7%94%A8%E6%96%87%E6%A1%A3%E6%A0%B9%E7%9B%AE%E5%BD%95%E7%9A%84%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E8%B5%84%E6%BA%90%E8%B7%AF%E5%BE%84%EF%BC%9F"></a>Web 容器如何计算对应于备用文档根目录的文件系统资源路径？</h2> <p>配置备用文档根目录时，请牢记以下规则：</p> 
+     <ul> 
+      <li><b>备用文档根目录（更明确地说，它们的 &lt;code&gt;from&lt;/code&gt; 值）与某个请求的路径信息（通过调用 &lt;code&gt;javax.servlet.http.HttpServletRequest.getPathInfo()&lt;/code&gt; 获取）相匹配。</b></li> 
+     </ul> 
+     <ul> 
+      <li><b>其请求已与某个备用文档根目录匹配的资源的本地路径通过如下方式计算得出：将该请求的路径信息附加到备用文档根目录的 &lt;code&gt;dir&lt;/code&gt; 值后面。</b></li> 
+     </ul> <p>例如，考虑 &lt;code&gt;sun-web.xml&lt;/code&gt; 中的如下备用文档根目录声明：</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;property name=''alternatedocroot_1'' value=''from=/orderstore/* dir=C:/stryker_cci/orderstore''/&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>和此请求 URL：</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">http://localhost/CIWeb/orderstore/test.txt</pre> 
+       </div> 
+      </div>
+     </div> <p>假设该请求映射到部署于 &lt;code&gt;/CIWeb&lt;/code&gt; 的 Web 应用程序，这意味着该请求 URL 的上下文根目录部分为 &lt;code&gt;/CIWeb&lt;/code&gt;，其路径信息部分为 &lt;code&gt;/orderstore/test.txt&lt;/code&gt;（与上述备用文档根目录匹配）。将在其中查找所请求资源的本地文件系统路径的值为备用文档根目录的 &lt;code&gt;dir&lt;/code&gt; 值：</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">C:/stryker_cci/orderstore</pre> 
+       </div> 
+      </div>
+     </div> <p>后面附加该请求的路径信息：</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">/orderstore/test.txt</pre> 
+       </div> 
+      </div>
+     </div> <p>结果，得到的路径是：</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">C:/stryker_cci/orderstore/orderstore/test.txt</pre> 
+       </div> 
+      </div>
+     </div> <p>又例如，考虑 &lt;code&gt;sun-web.xml&lt;/code&gt; 中的如下备用文档根目录声明：</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;property name=''alternatedocroot_1'' value=''from=/myimages/* dir=/images''/&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>和此请求 URL：</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">http://localhost:8080/myimages/image1.jpg</pre> 
+       </div> 
+      </div>
+     </div> <p>进一步假设上述请求映射到部署于根上下文 (<em>&lt;code&gt;/&lt;/code&gt;</em>) 的 Web 应用程序。此时，该请求的路径信息计算为：</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">/myimages/image1.jpg</pre> 
+       </div> 
+      </div>
+     </div> <p>意味着它与上述备用文档根目录匹配。将在其中查找所请求资源的本地文件系统路径的值为备用文档根目录的 &lt;code&gt;dir&lt;/code&gt; 值：</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">/images</pre> 
+       </div> 
+      </div>
+     </div> <p>后面附加该请求的路径信息：</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">/myimages/image1.jpg</pre> 
+       </div> 
+      </div>
+     </div> <p>结果，得到的路径是：</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">/images/myimages/image1.jpg</pre> 
+       </div> 
+      </div>
+     </div> 
+     <hr> <p><a href="FaqAlternateDocrootResourcePath.html" title="FaqAlternateDocrootResourcePath">英文 </a></p> 
+     <hr> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 02, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:44.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

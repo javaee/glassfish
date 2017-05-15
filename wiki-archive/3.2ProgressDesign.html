@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : 3.2ProgressDesign</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="3.2ProgressDesign-AdminCommandProgressDesignSpec%28v0.1%29"></a>Admin Command Progress Design Spec (v0.1)</h4> <p>This document captures the design for the Admin Command Progress feature to be used by long running commands.</p> <p>Note: This is an initial version of the design doc and thus does not capture much design yet.</p> <h4><a name="3.2ProgressDesign-1.0DesignAreas"></a>1.0 Design Areas</h4> <p>The following enumerates areas where some level of design is required in order to implement this feature.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> # </th> 
+         <th class="confluenceTh"> Name </th> 
+         <th class="confluenceTh"> Description </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1.0 </td> 
+         <td class="confluenceTd"> Client side (asadmin) </td> 
+         <td class="confluenceTd"> How do we need to evolve the client side CLI framework to handle long-running commands. Do we use polling, comet style techniques, or some alternative. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1.1 </td> 
+         <td class="confluenceTd"> Client side (REST) </td> 
+         <td class="confluenceTd"> How will the REST interface need to evolve to retrieve on-going status from long running commands? </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1.2 </td> 
+         <td class="confluenceTd"> asadmin CLI </td> 
+         <td class="confluenceTd"> How will the asadmin CLI need to change to support sync and async commands as well as support the ability to retrieve status from async long running commands? </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1.3 </td> 
+         <td class="confluenceTd"> Command replication </td> 
+         <td class="confluenceTd"> How will the existing command replication mechanism in the DAS need to be modified to properly support reporting progress back to the client for the replicated commands? The initial commands targeted for progressization do not use the replication code so no work may be required here for the initial implementation. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1.4 </td> 
+         <td class="confluenceTd"> DAS progress store </td> 
+         <td class="confluenceTd"> For async commands (if supported) it will be necessary for a service in the DAS to maintain progress in a store until the progress is retrieved or expires. The service will need to manage the lifecycle of this store. The general feeling is this store should hold progress in non-persistent storage. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1.4.1 </td> 
+         <td class="confluenceTd"> Progress store characteristics </td> 
+         <td class="confluenceTd"> How does the contents of the store expire? How do we limit the amount of progress maintained for a specific command. How is the progress status reaped? How do we expose configuration of these characteristics? </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1.5 </td> 
+         <td class="confluenceTd"> Server side command impl </td> 
+         <td class="confluenceTd"> A mechanism needs to be provided to allow a command implementation to indicate it is long running (e.g. use an annotation?). A mechanism needs to be provided to allow the command impl to return results (and overall progress indication) in a piecemeal format. This may have impact on the threading model for command execution. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p><b>Other considerations:</b></p> 
+     <ul> 
+      <li>If we choose to support the async (disconnected) command mode what are the security implications of other users viewing the progress of commands?</li> 
+      <li>Follow up with the IDE folks to understand how the interact with the REST interface.</li> 
+      <li>Proxies: Will they cache partial results of an open HTTP Request?</li> 
+      <li>Proxies: Will they close an HTTP Request after a period of time if no traffic has been generated?</li> 
+     </ul> <h4><a name="3.2ProgressDesign-2.0Scenarios"></a>2.0 Scenarios</h4> 
+     <ul> 
+      <li>Synchronous (asadmin does not return until the command completes) 
+       <ul> 
+        <li>Command completes normally (successfully or with error)</li> 
+        <li>Connection lost before command completes (some progress may have been delivered to the user)</li> 
+       </ul> </li> 
+      <li>Asynchronous, progress tracking ID returned. (asadmin returns after options/operand have been validated) 
+       <ul> 
+        <li>Status for completed command retrieved at a future time.</li> 
+        <li>Status for an executing command is retrieved (e.g. progress status to-date)</li> 
+        <li>Status for a failed command is retrieved (e.g. the command completed but it indicated failure)</li> 
+        <li>Status for a completed command is retrieved but the progress ID has expired.</li> 
+        <li>Status for the executing command begins to expire in the store prior to the command completing.</li> 
+       </ul> </li> 
+     </ul> <h4><a name="3.2ProgressDesign-3.0CLI"></a>3.0 CLI</h4> <h4><a name="3.2ProgressDesign-3.1CLIProgressRepresentation"></a>3.1 CLI - Progress Representation</h4> 
+     <ul> 
+      <li>How should the CLI represent the progress for a command. 
+       <ul> 
+        <li>Example 1 (as a percentage): 
+         <ul> 
+          <li>30%: Progress status text...</li> 
+          <li>50%: Progress status text...</li> 
+          <li>80%: Progress status text...</li> 
+         </ul> </li> 
+        <li>Example 2 (as a ratio): 
+         <ul> 
+          <li>1/35: Progress status text...</li> 
+          <li>5/35: Progress status text...</li> 
+          <li>25/35: Progress status text...</li> 
+         </ul> </li> 
+        <li>Example 3 (if we know no progress text will be provided but ratio/percent metadata will be available - represent the progress in place if a TTY is available): 
+         <ul> 
+          <li>30% -&gt; 40% -&gt; 50% or 1/35 -&gt; 2/35 -&gt; 3/35</li> 
+         </ul> </li> 
+        <li>Example 1 and 2 could also update the text in place. TBD.</li> 
+       </ul> </li> 
+     </ul> <h4><a name="3.2ProgressDesign-3.2CLIAsyncSupport"></a>3.2 CLI - Async Support</h4> 
+     <ul> 
+      <li>In the async mode what status is returned: 
+       <ul> 
+        <li>if the command has not completed yet.</li> 
+        <li>if the command has completed.</li> 
+        <li>if the results we are retrieving have expired.</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li>CLI to list unexpired/unretrieved command status: list-command-status</li> 
+      <li>CLI to list progress of specific command: show-command-status 1234</li> 
+     </ul> <p>If we are going to allow async commands to run there will likely be a need to stop/kill a long running async command. In the existing asadmin implementation if a user ctrl-C's asadmin the server side command continues to execute. At this point in time we don't feel there is a need to provide a mechanism to kill async mode long running commands (e.g. stop-command 1234).</p> <h4><a name="3.2ProgressDesign-4.0Misc"></a>4.0 Misc</h4> 
+     <ul> 
+      <li><b>Phasing of features</b> 
+       <ul> 
+        <li>Phase 1: Support for synchronous progress status. This limits the amount of new CLI that needs to be introduced in 3.2</li> 
+        <li>Phase 2: Support for asynchronous progress status (i.e. asadmin disconnects from the command execution).</li> 
+       </ul> </li> 
+     </ul> <h4><a name="3.2ProgressDesign-5.0References"></a>5.0 References</h4> 
+     <ul> 
+      <li><a href="3.2ProgressRequirements.html" title="3.2ProgressRequirements">Progress Requirements</a></li> 
+      <li><a href="http://glassfish.java.net/nonav/v3/admin/planning/j109/admin-cli.html">V3 Admin CLI Spec (out of date)</a></li> 
+      <li><a href="https://github.com/javaee/glassfish/issues/12032">JIRA-12032</a></li> 
+      <li><a href="./GlassFishAdministrationPages.html">GlassFish Administration Infrastructure Pages</a></li> 
+      <li><a href="http://www.infoq.com/news/2008/12/websockets-vs-comet-ajax">HTML 5 Web Sockets vs. Comet and Ajax</a></li> 
+     </ul> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Dec 21, 2011 by 
+<font color="#0050B2">10125</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : V3WorkspaceStructure</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="V3WorkspaceStructure-Glassfishv3WorkspaceStructure"></a>Glassfish v3 Workspace Structure</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#V3WorkspaceStructure-Glassfishv3WorkspaceStructure">Glassfish v3 Workspace Structure</a></li> 
+       <ul> 
+        <li><a href="#V3WorkspaceStructure-glassfishv3WorkspaceUndersvn">glassfish v3 Workspace Under svn</a></li> 
+        <li><a href="#V3WorkspaceStructure-CurrentglassfishWorkspaceUndercvs">Current glassfish Workspace Under cvs</a></li> 
+        <li><a href="#V3WorkspaceStructure-v3MavenDirectoryLayoutRequirements%28Draft%29">v3 Maven Directory Layout Requirements (Draft)</a></li> 
+        <li><a href="#V3WorkspaceStructure-TaskPlan%28Draft%29">Task Plan (Draft)</a></li> 
+        <li><a href="#V3WorkspaceStructure-TaskBreakdown%28Draft%29">Task Breakdown (Draft)</a></li> 
+        <li><a href="#V3WorkspaceStructure-Questions">Questions</a></li> 
+        <li><a href="#V3WorkspaceStructure-Feedback">Feedback</a></li> 
+       </ul> 
+      </ul>
+     </div> <p>This page contains all information related to the Glassfish v3 workspace structure, and the Maven targets needed to support that structure. It also contains information on how non-java file types will be processed. </p> <h4><a name="V3WorkspaceStructure-glassfishv3WorkspaceUndersvn"></a>glassfish v3 Workspace Under svn</h2> <p>Below is the v3 workspace structure. Check back for updates.</p> 
+     <ul> 
+      <li><a href="https://glassfish-svn.java.net/source/browse/glassfish-svn/trunk">v3 trunk</a> 
+       <ul> 
+        <li>admin 
+         <ul> 
+          <li>admin-core</li> 
+          <li>cli</li> 
+          <li>config-api</li> 
+          <li>monitor</li> 
+          <li>util</li> 
+         </ul> </li> 
+        <li>api 
+         <ul> 
+          <li>activation</li> 
+          <li>deployment-api</li> 
+          <li>ejb-api</li> 
+          <li>mail</li> 
+          <li>persistence-api</li> 
+          <li>transaction-api</li> 
+         </ul> </li> 
+        <li>build 
+         <ul> 
+          <li>legal</li> 
+          <li>maven-glassfish-plugin</li> 
+         </ul> </li> 
+        <li>common 
+         <ul> 
+          <li>annotation-framework</li> 
+          <li>common-util</li> 
+          <li>dol</li> 
+          <li>glassfish-api</li> 
+         </ul> </li> 
+        <li>core 
+         <ul> 
+          <li>bootstrap</li> 
+          <li>kernel</li> 
+          <li>shared</li> 
+         </ul> </li> 
+        <li>distributions 
+         <ul> 
+          <li>external</li> 
+          <li>gem</li> 
+          <li>nucleus</li> 
+          <li>nucleus-base</li> 
+          <li>pe</li> 
+          <li>pe-base</li> 
+         </ul> </li> 
+        <li>extras 
+         <ul> 
+          <li>phobos</li> 
+          <li>php</li> 
+          <li>rails</li> 
+         </ul> </li> 
+        <li>web 
+         <ul> 
+          <li>appserv-webtier</li> 
+          <li>pwc-commons</li> 
+          <li>war-util</li> 
+          <li>web-connector</li> 
+         </ul> </li> 
+       </ul> </li> 
+     </ul> <h4><a name="V3WorkspaceStructure-CurrentglassfishWorkspaceUndercvs"></a>Current glassfish Workspace Under cvs</h2> <p>This is the current organization of the glassfish workspace:</p> 
+     <ul> 
+      <li>glassfish 
+       <ul> 
+        <li>activation</li> 
+        <li>admin</li> 
+        <li>admin-cli</li> 
+        <li>admin-cli-ee</li> 
+        <li>admin-core</li> 
+        <li>admin-core-ee</li> 
+        <li>admin-ee</li> 
+        <li>dmin-gui</li> 
+        <li>admin-gui-ee</li> 
+        <li>annotation-framework</li> 
+        <li>appserv-addons</li> 
+        <li>appserv-api</li> 
+        <li>appserv-commons</li> 
+        <li>appserv-commons-ee</li> 
+        <li>appserv-core</li> 
+        <li>appserv-core-ee</li> 
+        <li>appserv-docs</li> 
+        <li>appserv-docs-ee</li> 
+        <li>appserv-http-engine</li> 
+        <li>appserv-jstl</li> 
+        <li>appserv-native</li> 
+        <li>appserv-native-ee</li> 
+        <li>appserv-persistence</li> 
+        <li>appserv-tests</li> 
+        <li>appserv-webtier</li> 
+        <li>avk</li> 
+        <li>bootstrap</li> 
+        <li>cmp</li> 
+        <li>common-util</li> 
+        <li>config-api</li> 
+        <li>config-api-tests</li> 
+        <li>connector-api</li> 
+        <li>container-auth</li> 
+        <li>deployment-api</li> 
+        <li>distributions</li> 
+        <li>ejb-api</li> 
+        <li>entity-persistence</li> 
+        <li>entity-persistence-tests</li> 
+        <li>external</li> 
+        <li>glassfish</li> 
+        <li>jacc-api</li> 
+        <li>jacc-provider</li> 
+        <li>javaee-api</li> 
+        <li>jaxr-api</li> 
+        <li>jaxr-ri</li> 
+        <li>jdbcra</li> 
+        <li>jmac-api</li> 
+        <li>jmac-provider</li> 
+        <li>jms-api</li> 
+        <li>jmx-remote</li> 
+        <li>jsf-extensions</li> 
+        <li>jts</li> 
+        <li>legal</li> 
+        <li>mail</li> 
+        <li>management-api</li> 
+        <li>packager-ext</li> 
+        <li>persistence-api</li> 
+        <li>persistence-impl</li> 
+        <li>public</li> 
+        <li>pwc-commons</li> 
+        <li>repo</li> 
+        <li>sailfin-linkage</li> 
+        <li>servlet-api</li> 
+        <li>tools</li> 
+        <li>transaction-api</li> 
+        <li>update-center</li> 
+        <li>webtier-extensions</li> 
+        <li>web-util</li> 
+        <li>www</li> 
+       </ul> </li> 
+     </ul> <h4><a name="V3WorkspaceStructure-v3MavenDirectoryLayoutRequirements%28Draft%29"></a>v3 Maven Directory Layout Requirements (Draft)</h2> 
+     <ul> 
+      <li>The v3 directory structure should conform to <a href="http://maven.apache.org/guides/introduction/introduction-to-the-standard-directory-layout.html">Maven standard directory layout</a>. Background info: 
+       <ul> 
+        <li>At the top level files descriptive of the project: a pom.xml file (and any properties, maven.xml or build.xml if using Ant). In addition, there are textual documents meant for the user to be able to read immediately on receiving the source: README.txt, LICENSE.txt, etc.</li> 
+        <li>There are just two subdirectories of this structure: src and target. The only other directories that would be expected here are metadata like CVS or .svn, and any subprojects in a multiproject build (each of which would be laid out as above).</li> 
+        <li>The target directory is used to house all output of the build.</li> 
+        <li>The src directory contains all of the source material for building the project, its site and so on. It contains a subdirectory for each type: main for the main build artifact, test for the unit test code and resources, site and so on.</li> 
+        <li>Within artifact producing source directories (ie. main and test), there is one directory for the language java (under which the normal package hierarchy exists), and one for resources (the structure which is copied to the target classpath given the default resource definition).</li> 
+        <li>If there are other contributing sources to the artifact build, they would be under other subdirectories: for example src/main/antlr would contain Antlr grammar definition files.</li> 
+       </ul> </li> 
+     </ul> <p><b>Directory Layout Table</b></p> <p></p>
+     <div class="panel" style="border-width: 1px;">
+      <div class="panelContent"> 
+       <hr> 
+       <p>Jspwiki style: sortable</p> 
+      </div>
+     </div>table-filter<p></p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Directory </th> 
+         <th class="confluenceTh"> File Types </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> module/LICENSE.txt </td> 
+         <td class="confluenceTd">License </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> module/README.txt </td> 
+         <td class="confluenceTd">Readme </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> module/pom.xml </td> 
+         <td class="confluenceTd">Maven pom file </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> module/maven.xml </td> 
+         <td class="confluenceTd">Maven properties file </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> module/build.xml </td> 
+         <td class="confluenceTd">Ant build file </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> module/src/main/java </td> 
+         <td class="confluenceTd">Java Application/Library sources </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> module/src/main/cpp </td> 
+         <td class="confluenceTd">c/cpp Application/Library sources <sup><a href="#V3WorkspaceStructure-1">1</a></sup> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> module/src/main/resources </td> 
+         <td class="confluenceTd">Application/Library resources that are added to the jar file's META-INF subdir (e.g. application.properties) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> module/src/main/filters </td> 
+         <td class="confluenceTd">Resource filter files that provide build-time property values </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> module/src/main/assembly </td> 
+         <td class="confluenceTd">Assembly descriptors that describe assembly formats and dependencies (e.g., app.xml) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> module/src/main/config </td> 
+         <td class="confluenceTd">Configuration files. (e.g., application.xml describing services bundled into an app) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> module/src/main/webapp </td> 
+         <td class="confluenceTd">Web application sources </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> module/src/main/webapp/WEB-INF/jsp </td> 
+         <td class="confluenceTd">JSP files </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> module/src/main/webapp/css </td> 
+         <td class="confluenceTd">CSS files </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> module/src/main/webapp/images </td> 
+         <td class="confluenceTd">Image files </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> module/src/main/webapp/js </td> 
+         <td class="confluenceTd">Javascript files </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> module/src/test/java </td> 
+         <td class="confluenceTd">Java Test sources </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> module/src/test/cpp </td> 
+         <td class="confluenceTd">c/cpp Test sources <sup><a href="#V3WorkspaceStructure-1">1</a></sup> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> module/src/test/resources </td> 
+         <td class="confluenceTd">Test resources </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> module/src/test/filters </td> 
+         <td class="confluenceTd">Test resource filter files </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> module/src/site </td> 
+         <td class="confluenceTd">Site: Documentation + extra resources (css, image, etc) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> module/src/site/site.xml </td> 
+         <td class="confluenceTd">Site descriptor </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> module/src/site/apt </td> 
+         <td class="confluenceTd"> <a href="http://maven.apache.org/guides/mini/guide-apt-format.html">Almost Plan Text </a>(APT). wiki-like format that allows you to write simple, structured documents. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> module/src/site/fml </td> 
+         <td class="confluenceTd">FML format is the FAQ format] </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> module/src/site/xdoc </td> 
+         <td class="confluenceTd">XDoc format </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> module/src/site/fr </td> 
+         <td class="confluenceTd">i18n'ed docs in fr locale </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> module/target </td> 
+         <td class="confluenceTd">Houses all build output </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>%%<br> %%<br> <a name="V3WorkspaceStructure-1"></a> <b>1</b> - Additional file type not described by Maven standard directory layout.</p> 
+     <ul> 
+      <li>Non-java file types must be handled by Maven targets. These types include: 
+       <ul> 
+        <li>.xml</li> 
+        <li>.html</li> 
+        <li>.c</li> 
+        <li>.properties</li> 
+        <li>.js</li> 
+        <li>.gif (+ other image file types)</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li>Multiple, hierarchical modules must be handled by Maven targets.</li> 
+     </ul> <h4><a name="V3WorkspaceStructure-TaskPlan%28Draft%29"></a>Task Plan (Draft)</h2> 
+     <ol> 
+      <li>Review <a href="http://maven.apache.org/guides/introduction/introduction-to-the-standard-directory-layout.html">Maven standard directory layout</a>.</li> 
+      <li>Review existing Maven projects for examples of how different file types are managed.</li> 
+      <li>Select a glassfish module on which to start. Current plan is to choose glassfish/activation.</li> 
+      <li>Modify directory structure in a workspace. Current plan is to use cvs GF_V3_PREWORK_BRANCH.</li> 
+      <li>Modify Maven targets to support new layout.</li> 
+      <li>Modify Maven targets to process non-java files.</li> 
+      <li>Review changes with stakeholders.</li> 
+      <li>Start QA test cycle 
+       <ol> 
+        <li>Make edits as needed.</li> 
+        <li>Commit changes to target module.</li> 
+        <li>Run smoke tests on target module.</li> 
+        <li>Repeat cycle, if needed.</li> 
+       </ol> </li> 
+      <li>Apply same pattern to all glassfish modules.</li> 
+      <li>Add pom.xml to glassfish directory</li> 
+     </ol> <h4><a name="V3WorkspaceStructure-TaskBreakdown%28Draft%29"></a>Task Breakdown (Draft)</h2> 
+     <ul> 
+      <li>Determine modules that have non-java files 
+       <ul> 
+        <li>activation 
+         <ul> 
+          <li>xml</li> 
+         </ul> </li> 
+        <li>admin 
+         <ul> 
+          <li>html</li> 
+          <li>xml</li> 
+         </ul> </li> 
+        <li>admin-cli 
+         <ul> 
+          <li>html</li> 
+          <li>xml</li> 
+         </ul> </li> 
+        <li>admin-core 
+         <ul> 
+          <li>html</li> 
+          <li>xml</li> 
+         </ul> </li> 
+        <li>admin-core 
+         <ul> 
+          <li>xml</li> 
+         </ul> </li> 
+        <li>admin-ee 
+         <ul> 
+          <li>xml</li> 
+         </ul> </li> 
+        <li>admin-gui 
+         <ul> 
+          <li>html</li> 
+          <li>js</li> 
+          <li>css</li> 
+          <li>gif</li> 
+          <li>jpg</li> 
+          <li>xml</li> 
+         </ul> </li> 
+        <li>admin-gui/admin-jsf 
+         <ul> 
+          <li>xml</li> 
+         </ul> </li> 
+        <li>admin-gui-ee 
+         <ul> 
+          <li>html</li> 
+          <li>css</li> 
+          <li>gif</li> 
+         </ul> </li> 
+        <li>annotation-framework 
+         <ul> 
+          <li>xml</li> 
+         </ul> </li> 
+        <li>appserv-addons 
+         <ul> 
+          <li>xml</li> 
+         </ul> </li> 
+        <li>appserv-api 
+         <ul> 
+          <li>html</li> 
+         </ul> </li> 
+        <li>appserv-commons 
+         <ul> 
+          <li>html</li> 
+         </ul> </li> 
+        <li>appserv-core 
+         <ul> 
+          <li>html</li> 
+          <li>xml</li> 
+         </ul> </li> 
+        <li>appserv-core-ee 
+         <ul> 
+          <li>xml</li> 
+         </ul> </li> 
+        <li>appserv-docs 
+         <ul> 
+          <li>html</li> 
+          <li>css</li> 
+          <li>gif</li> 
+          <li>xml</li> 
+         </ul> </li> 
+        <li>appserv-docs-ee 
+         <ul> 
+          <li>html</li> 
+          <li>gif</li> 
+          <li>jpg</li> 
+          <li>xml</li> 
+         </ul> </li> 
+        <li>appserv-http-engine 
+         <ul> 
+          <li>html</li> 
+          <li>css</li> 
+          <li>js</li> 
+          <li>gif</li> 
+          <li>png</li> 
+          <li>jpg</li> 
+          <li>xml</li> 
+         </ul> </li> 
+        <li>appserv-jstl 
+         <ul> 
+          <li>html</li> 
+          <li>css</li> 
+          <li>gif</li> 
+          <li>xml</li> 
+         </ul> </li> 
+        <li>appserv-native 
+         <ul> 
+          <li>xml</li> 
+         </ul> </li> 
+        <li>appserv-native-ee 
+         <ul> 
+          <li>xml</li> 
+         </ul> </li> 
+        <li>appserv-persistence 
+         <ul> 
+          <li>xml</li> 
+         </ul> </li> 
+        <li>appserv-webtier 
+         <ul> 
+          <li>html</li> 
+          <li>xml</li> 
+         </ul> </li> 
+        <li>avk 
+         <ul> 
+          <li>html</li> 
+          <li>css</li> 
+          <li>gif</li> 
+          <li>xml</li> 
+         </ul> </li> 
+        <li>bootstrap 
+         <ul> 
+          <li>xml</li> 
+         </ul> </li> 
+        <li>cmp 
+         <ul> 
+          <li>xml</li> 
+         </ul> </li> 
+        <li>common-util 
+         <ul> 
+          <li>xml</li> 
+         </ul> </li> 
+        <li>connector-api 
+         <ul> 
+          <li>html</li> 
+          <li>xml</li> 
+         </ul> </li> 
+        <li>deployment-api 
+         <ul> 
+          <li>html</li> 
+          <li>xml</li> 
+         </ul> </li> 
+        <li>ejb-api 
+         <ul> 
+          <li>html</li> 
+          <li>xml</li> 
+         </ul> </li> 
+        <li>jacc-api 
+         <ul> 
+          <li>html</li> 
+          <li>xml</li> 
+         </ul> </li> 
+        <li>jacc-api-provider 
+         <ul> 
+          <li>xml</li> 
+         </ul> </li> 
+        <li>jaxr-api 
+         <ul> 
+          <li>html</li> 
+          <li>xml</li> 
+         </ul> </li> 
+        <li>jaxr-ri 
+         <ul> 
+          <li>html</li> 
+          <li>xml</li> 
+         </ul> </li> 
+        <li>jdbcra 
+         <ul> 
+          <li>xml</li> 
+         </ul> </li> 
+        <li>jmac-api 
+         <ul> 
+          <li>html</li> 
+          <li>xml</li> 
+         </ul> </li> 
+        <li>jmx-remote 
+         <ul> 
+          <li>html</li> 
+          <li>xml</li> 
+         </ul> </li> 
+        <li>jms-api 
+         <ul> 
+          <li>html</li> 
+         </ul> </li> 
+        <li>jsf-extensions 
+         <ul> 
+          <li>js</li> 
+          <li>html</li> 
+          <li>xml</li> 
+          <li>gif (+ other image file types)</li> 
+          <li>css</li> 
+         </ul> </li> 
+        <li>jts 
+         <ul> 
+          <li>xml</li> 
+         </ul> </li> 
+        <li>mail 
+         <ul> 
+          <li>html</li> 
+          <li>xml</li> 
+         </ul> </li> 
+        <li>management-api 
+         <ul> 
+          <li>html</li> 
+          <li>xml</li> 
+         </ul> </li> 
+        <li>packager-ext 
+         <ul> 
+          <li>html</li> 
+          <li>gif</li> 
+          <li>xml</li> 
+         </ul> </li> 
+        <li>persistence-api 
+         <ul> 
+          <li>html</li> 
+          <li>xml</li> 
+         </ul> </li> 
+        <li>persistence-impl 
+         <ul> 
+          <li>html</li> 
+          <li>jpg</li> 
+          <li>xml</li> 
+         </ul> </li> 
+        <li>pwc-commons 
+         <ul> 
+          <li>xml</li> 
+         </ul> </li> 
+        <li>servlet-api 
+         <ul> 
+          <li>html</li> 
+          <li>gif</li> 
+          <li>jpg</li> 
+          <li>xml</li> 
+         </ul> </li> 
+        <li>tools 
+         <ul> 
+          <li>html</li> 
+          <li>gif</li> 
+          <li>xml</li> 
+         </ul> </li> 
+        <li>transaction-api 
+         <ul> 
+          <li>html</li> 
+          <li>xml</li> 
+         </ul> </li> 
+        <li>update-center 
+         <ul> 
+          <li>xml</li> 
+         </ul> </li> 
+        <li>webtier-extensions 
+         <ul> 
+          <li>xml</li> 
+         </ul> </li> 
+       </ul> </li> 
+     </ul> <h4><a name="V3WorkspaceStructure-Questions"></a>Questions</h2> 
+     <ul> 
+      <li>Are there any dependencies between html files located in each of the modules?</li> 
+     </ul> <h4><a name="V3WorkspaceStructure-Feedback"></a>Feedback</h2> <p>Please add feedback here:</p> 
+     <ul> 
+      <li>Comment:</li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 09, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:48.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : 3.1ChangeControl</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="3.1ChangeControl-GlassFishServerOpenSourceEdition3.1"></a>GlassFish Server Open Source Edition 3.1</h1> <h4><a name="3.1ChangeControl-ChangeControlProcessforHighResistanceMode"></a>Change Control Process for High Resistance Mode</h2> <p>(v1.3)</p> 
+     <div> 
+      <ul> 
+       <li><a href="#3.1ChangeControl-GlassFishServerOpenSourceEdition3.1">GlassFish Server Open Source Edition 3.1</a></li> 
+       <ul> 
+        <li><a href="#3.1ChangeControl-ChangeControlProcessforHighResistanceMode">Change Control Process for High Resistance Mode</a></li> 
+        <ul> 
+         <li><a href="#3.1ChangeControl-Overview">Overview</a></li> 
+         <li><a href="#3.1ChangeControl-ShouldIfixthisissuenow%3F">Should I fix this issue now?</a></li> 
+         <li><a href="#3.1ChangeControl-ChangeControlProcess">Change Control Process</a></li> 
+         <ul> 
+          <li><a href="#3.1ChangeControl-Stage1%28Approvaltodevelopthebugfix%29">Stage 1 (Approval to develop the bug fix)</a></li> 
+          <li><a href="#3.1ChangeControl-Stage2%28Integratethechange%29">Stage 2 (Integrate the change)</a></li> 
+         </ul> 
+        </ul> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="3.1ChangeControl-Overview"></a>Overview</h3> <p>It is important to control the rate of change in a project as the project approaches completion. It is a fact for most software projects that a small percentage of "bug fixes" introduce new bugs and therefore it is necessary to enact a formal process to manage what comes into a project in its final stage before release.</p> <p>This document describes the change control process the GlassFish project will use.</p> <p>See "<a href="http://www.guardian.co.uk/technology/2006/may/25/insideit.guardianweeklytechnologysection">Why we all sell code with bugs</a>" for a good article on how to prioritize which bugs should be fixed in a software project.</p> <h4><a name="3.1ChangeControl-ShouldIfixthisissuenow%3F"></a>Should I fix this issue now?</h3> <p>There usually is no easy answer to this question given the varying factors that must be considered. Clearly not every bug needs to be fixed and many bug fixes can be deferred to future releases. It is important that we use consistent and objective criteria across the project to determine if the issue should be fixed now, later or never.</p> <p>The following types of issues are good candidates to be fixed prior to release:</p> 
+     <ul> 
+      <li>Impacts product security</li> 
+      <li>Represents a CTS failure</li> 
+      <li>Is a regression of functionality or performance available in a prior release</li> 
+      <li>Introduces an incompatibility</li> 
+      <li>Likely to generate a customer support call</li> 
+      <li>Significantly impacts the operation of a primary release driver feature</li> 
+      <li>An in-your-face issue that will touch the majority of users</li> 
+     </ul> <p>Meeting the above criteria is not sufficient to give a bug fix a green light for integration. The answers to the following questions must be understood and taken into account:</p> <p>1. How bad is its impact? (Severity)</p> 
+     <ul> 
+      <li>Identify why the fix needs to occur now: 
+       <ul> 
+        <li>Impacts product security</li> 
+        <li>Represents a CTS failure</li> 
+        <li>Is a regression of functionality or performance available in a prior release</li> 
+        <li>Introduces an incompatibility</li> 
+        <li>Likely to generate a customer support call</li> 
+        <li>Significantly impacts the operation of a primary release driver feature</li> 
+        <li>An in-your-face issue that will touch the majority of users</li> 
+       </ul> </li> 
+     </ul> <p>2. How often does it happen? (Frequency)<br> 3. How much effort is required to fix it? (Cost)<br> 4. What is the risk of fixing it? (Risk)<br> 5. Does a work around for the issue exist? Can the workaround be reasonably employed by the end user?<br> 6. If the issue is not fixed should the issue and its workaround (if applicable) be described in the Release Notes?<br> 7. How long has the bug existed in the product?<br> 8. Do regression tests exist for this issue?<br> 9. Which tests should QA (re)run to verify the fix did not destabilize GlassFish?<br> 10. When will a tested fix be ready for integration?</p> <p>The first two questions are directly related to the criteria above while the second two questions address the trade-offs of fixing a bug. Can we afford to do it? Is the risk worth the effort? If the first two questions suggest there is no urgency to fix the issue then there probably is not a need to fix the issue in the current release timeframe.</p> <p>Bugs with big impact, high frequency, low effort to fix and low risk should be high priority to fix now while bugs with little impact or frequency and high cost/risk to fix should be deferred (or even closed as will-not-fix).</p> <h4><a name="3.1ChangeControl-ChangeControlProcess"></a>Change Control Process</h3> <p>The following process will be used by developers to request approval to work on a bug fix:</p> <h5><a name="3.1ChangeControl-Stage1%28Approvaltodevelopthebugfix%29"></a>Stage 1 (Approval to develop the bug fix)</h5> <p>1. Add the "3_1-review" tag to the issue<br> 2. Add detailed answers to the questions below as well as any supporting information as a note in the issue:</p> 
+     <div class="code panel" style="border-style: solid;border-width: 1px;">
+      <div class="codeHeader panelHeader" style="border-bottom-width: 1px;border-bottom-style: solid;">
+       <b>Change Request Questions</b>
+      </div>
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">How bad is its impact? (Severity)
+  Identify why the fix needs to occur now:
+    * Impacts product security
+    * Represents a CTS failure
+    * Is a regression of functionality or performance available in a prior release
+    * Introduces an incompatibility
+    * Likely to generate a customer support call
+    * Significantly impacts the operation of a primary release driver feature
+    * An in-your-face issue that will touch the majority of users
+
+How often does it happen? (Frequency)
+
+How much effort is required to fix it? (Cost)
+
+What is the risk of fixing it? (Risk)
+
+Does a work around for the issue exist?   Can the workaround be reasonably employed by the end user?
+
+If the issue is not fixed should the issue and its workaround (if applicable) be described in the Release Notes?
+
+How long has the bug existed in the product?
+
+Do regression tests exist for this issue?
+
+Which tests should QA (re)run to verify the fix did not destabilize GlassFish?
+
+When will a tested fix be ready for integration?</pre> 
+       </div> 
+      </div>
+     </div> <p>3. Send mail to gf-cc@sun.com</p> 
+     <div class="code panel" style="border-style: solid;border-width: 1px;">
+      <div class="codeHeader panelHeader" style="border-bottom-width: 1px;border-bottom-style: solid;">
+       <b>Email Template</b>
+      </div>
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">To: gf-cc@sun.com
+Subject: 3.1 Change Request
+
+Component Name: XXXXX
+Issue: https://github.com/javaee/glassfish/issues/NNNNN</pre> 
+       </div> 
+      </div>
+     </div> <p>4. An approver will review the issue:<br> 4.1 The approver will remove the 3_1-review tag.<br> 4.2 If it is approved the 3_1-approved tag will be added to the issue. The Fix Version/s will be changed to the appropriate milestone with an "Approved" comment added to the issue.<br> 4.3 If it is rejected the 3_1-exclude tag will be added to the issue. If the deferred issue is a candidate for the next update release then the 3_1-next tag will be added.<br> 4.4 The approver will reply to the change request mail (including the alias) indicating their position on the issue.</p> <h5><a name="3.1ChangeControl-Stage2%28Integratethechange%29"></a>Stage 2 (Integrate the change)</h5> <p>After the issue has been approved for the release you may develop the fix. Once the fix is available choose a peer to review the code. The reviewer should put their review comments in the issue. Once the pertinent changes from the review have been addressed and the appropriate pre-integration tests have successfully passed the issue may be committed.</p> <p>The commit comment must include the issue number, name of the code reviewer and name of the person who approved the change request. It is also a good practice for the commit comment to also include a summary of what you fixed and possibly how you fixed it.</p> <p>The issue must be updated to reflect the revision number the issue was resolved in. At this time the fix must be integrated to both the trunk and the 3.1 branch. Record both revision numbers in the issue when the issue is closed.</p> <p>.</p> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Dec 14, 2011 by 
+<font color="#0050B2">10125</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : FaqMonitorGlassFishZh</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="FaqMonitorGlassFishZh-%E6%98%AF%E5%90%A6%E6%9C%89%E7%94%A8%E4%BA%8E%E7%9B%91%E8%A7%86GlassFish%E7%9A%84%E5%AE%9E%E7%94%A8%E7%A8%8B%E5%BA%8F%EF%BC%9F"></a>是否有用于监视 GlassFish 的实用程序？</h2> <p>由 users@glassfish 邮件列表改述：</p> <p>*问：*是否有用于监视 GlassFish Web 层的实用程序或工具？例如，是否有某个应用程序可充当 GlassFish 和客户机之间的代理，并收集有关请求以及完成请求所用时间的统计信息？我正在寻找一个综合的监视应用程序，以帮助我了解请求、内存、连接、JMS 等在某个时刻以及一天工作之后的状态。是否有这样的工具？</p> <p><b>答：</b> </p> <p><em>Witold Szczerba</em>：要获得有关 JVM 的基本信息以及 JMX 公开的所有内容，可以使用 Sun Java 6 监视和管理控制台。默认情况下，自 1.5 版（或者也许更早版本）以后的每个 JDK 都包括该控制台（我不确定 JRE 中是否包括它，但不管怎样，您有 JDK）。可执行文件名为 jconsole。我发现它很适合我，因为可以看到内存/CPU 使用情况和线程计数，可以调用垃圾收集器，还可以看到 JMS 统计信息等。</p> <p><em>Chris Fleischmann</em>：您可能想了解 GlassBox 以及前面提到的 JMX 控制台 (jconsole)：</p> 
+     <ul> 
+      <li><a href="http://weblogs.java.net/blog/maxpoon/archive/javaone/index.html">JavaOne2007 Hands-On Lab 1420</a>（JavaOne2007 动手实验室 1420）</li> 
+      <li><a href="http://developers.sun.com/learning/javaoneonline/j1lab.jsp?lab=LAB-1420&amp;yr=2007&amp;track=5">Monitoring and Troubleshooting using JMX and JConsole Lab</a>（使用 JMX 和 JConsole 进行监视和疑难解答实验室）</li> 
+     </ul> <p><em>Gabor Szokoli</em>：<a href="http://munin.projects.linpro.no/">Munin</a> 是一个不错的计数器绘图工具，它有一个 JMX 插件。</p> 
+     <hr> <p><a href="FaqMonitorGlassFish.html" title="FaqMonitorGlassFish">英文 </a></p> 
+     <hr> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 02, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:44.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

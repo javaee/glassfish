@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : JaxpNextDiscussion</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="JaxpNextDiscussion-JAXP.nextCommunityDiscussionWiki"></a>JAXP.next Community Discussion Wiki</h1> <p>This page has been created as a place to share ideas about the next version of JAXP, i.e. JAXP.next. All ideas are welcome, but we are mostly interested in feedback about:</p> 
+     <ol> 
+      <li>Improving ease of use</li> 
+      <li>Supporting XPath 2.0 and XSLT 2.0.</li> 
+     </ol> <p>Please use the section "Community Comments" at the bottom of this page to add your comments. The following two sections summarize some of the discussion thus far. For a discussion on StAX.next features, please refer to <a href="StaxNextDiscussion.html" title="StaxNextDiscussion">StaxNextDiscussion</a>.</p> <h4><a name="JaxpNextDiscussion-ImprovingEaseofUse"></a>Improving Ease of Use</h2> <p>When it comes to ease of use, most people agree that JAXP is <em>not</em> really easy to use. Tasks that should take one or two lines often take ten or twelve lines instead. There are a number of reasons for this, including: JAXP factories, checked exceptions and parameter wrappers, all of which must be dealt with to write even the simplest of tasks. </p> <p>Some of these issues have already been discussed <a href="http://weblogs.java.net/blog/spericas/archive/2006/12/simplifying_the.html">in this blog entry</a>. The basic idea proposed in the blog is to create a <em>facade</em> on top of the existing API to handle the majority of the common use cases. As you can see from the comments in that blog entry, reactions were mixed but many --at the very least showing that people do care about API proposals such as this.</p> <p>An alternative to simply introducing an API facade may be the design of a radically different API in which Sources, Results and their flavors (SAX, DOM, StAX) are completely hidden from the programmer. This API can also add support for chaining borrowing some ideas from the <a href="http://www.w3.org/TR/xproc/">XProc Language</a>. For example, validating an XML document and then applying a transform to it could be written as:</p> <p>&lt;pre&gt;<br> &lt;code&gt;<br> Xml xsl = new Xml("some-system-id-1");<br> Xml xml = new Xml("some-system-id-2");<br> Xml xsd = new Xml("some-system-id-3");</p> <p> new XmlStylesheet(xsl)<br> .transform(new XmlSchema(xsd).validate(xml))<br> .to(System.out);<br> &lt;/code&gt; <br> &lt;/pre&gt;</p> <p>using the following API classes:</p> <p>&lt;pre&gt;<br> &lt;code&gt;<br> /**</p> 
+     <ul> 
+      <li>The class Xml represents an XML document or XML</li> 
+      <li>fragment that can be parsed from and serialized to</li> 
+      <li>various representations.<br> */<br> class Xml 
+       <div class="error">
+        <span class="error">Unknown macro: { public Xml(File f) { }</span> 
+       </div> <p> <br> public Xml(InputStream is) { } <br> public Xml(String systemId) { } <br> public Xml(char[] xmlLiteral) { } <br> public Xml(Node n) { } <br> public Xml(Source source) { } <br> public void to(File f) { } <br> public void to(String systemId) { } <br> public void to(OutputStream is) { } <br> public void to(StringBuffer xmlLiteral) { } <br> public void to(Node n) { } <br> public void to(Result result) { } <br> }<br> /**</p></li> 
+      <li>This class can be used to apply XSLT stylesheets.<br> */<br> class XmlStylesheet 
+       <div class="error">
+        <span class="error">Unknown macro: { public XmlStylesheet(Xml d) { }</span> 
+       </div> <p> <br> public Xml transform(Xml source) { } <br> }<br> /**</p></li> 
+      <li>This class can be used to validate Xml instances.</li> 
+      <li>The result of the validation is a, possibly extended,</li> 
+      <li>Xml.<br> */<br> class XmlSchema 
+       <div class="error">
+        <span class="error">Unknown macro: { public XmlSchema(Xml d) { }</span> 
+       </div> <p> <br> public Xml validate(Xml source) { } <br> }<br> /**</p></li> 
+      <li>This class can be used to select parts of an</li> 
+      <li>Xml using XPath. The result of a selection</li> 
+      <li>is also an Xml instance.<br> */<br> class XmlXpath 
+       <div class="error">
+        <span class="error">Unknown macro: { public XmlXpath(String expression) { }</span> 
+       </div> <p> <br> public Xml evaluate(Xml source) { }<br> }<br> &lt;/code&gt;<br> &lt;/pre&gt;</p></li> 
+     </ul> <p>Actually, the need for a radically different API often arise while discussing support the new XPath 2.0 data model, so the two topics mentioned at beginning of this page are clearly interrelated. Contrary to how the XPath 1.0 data model is supported in JAXP today, many believe that exposing the XPath 2.0 data model is required to take advantage of the new 2.0 standards. Should the decision be made to go in this direction, the goals to simplify the API and to support the new 2.0 standards will likely converge.</p> <h4><a name="JaxpNextDiscussion-XPath2.0andXSLT2.0Standards"></a>XPath 2.0 and XSLT 2.0 Standards</h2> <p>Many of you may know that the <a href="http://www.w3.org/TR/xpath20/">XPath 2.0</a> and <a href="http://www.w3.org/TR/xslt20/">XSLT 2.0</a> recommendations are final since late last January. Since JAXP.next is possibly going into Dolphin (JDK 7.0), which is very tentatively schedule for late 2008, there seems to be plenty of time to incorporate these new technologies into JAXP and the Java platform. </p> <p>Naturally, XPath 2.0 and XSLT 2.0 are not yet as popular as their 1.0 counterparts, but the status quo is likely to change in the next 2 to 3 years. As discussed in the previous section, supporting these technologies may require significant additions to the JAXP API if the current approach of <em>hiding</em> the XPath data model is deemed insufficient. So the question of <em>if</em> these technologies should be part of JAXP.next very rapidly becomes a question of <em>how</em> these technologies should be supported.</p> <h4><a name="JaxpNextDiscussion-CommunityComments"></a>Community Comments</h2> 
+     <ul> 
+      <li>__Santiago Pericas-Geertsen (4/20/2007):</li> 
+     </ul> <p>Created this page!</p> 
+     <ul> 
+      <li>__JirkaKosek (4/26/2007):</li> 
+     </ul> <p>What I would like to see:</p> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li>XPath 2.0 and XSLT 2.0 support</li> 
+        <li>Integrated support for RELAX NG, ISO Schematron and NVDL</li> 
+        <li>XML resolver smoothly integrated into Java platform</li> 
+        <li>Ability to access PSVI in an usable way – not just TypeInfo object, but nodes in DOM should be easily accessible as Java datatypes</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li>__Santiago Pericas-Geertsen (5/22/2007): 
+       <ul> 
+        <li>StAX API should use generics whenever possible. See <a href="http://weblogs.java.net/blog/forax/archive/2006/10/is_bug_6472193.html">this discussion</a>.</li> 
+        <li>StAX API should support typed accessors. See <a href="http://tech.groups.yahoo.com/group/stax_builders/">stax_builders@yahoogroup.com</a> archive in May 2007.</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li>__Norman Walsh (23 May 2007): 
+       <ul> 
+        <li>The XPath API should allow the caller to specify the context position and the context size.</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li>__Santiago Pericas-Geertsen (5/24/2007): 
+       <ul> 
+        <li>Transformer.setParameter() should be further specified. It states that an arbitrary Java object can be passed but in reality XSLT processors can only convert a few types. At the very least it should something about this being implementation depedent.</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li>__Fabian Ritzmann (2007-08-29): 
+       <ul> 
+        <li>We would like to see support for xml:base in StAX and the underlying parsers. Currently our application is forced to track the base URI for every element that uses xml:base and all its child elements. It would be much more convenient if we could retrieve the applicable base URI with a simple call to e.g. javax.xml.stream.Location.getBaseUri().</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li>__Sean Mullan (2007-09-21): 
+       <ul> 
+        <li>+1 to the xml:base support. Also, support for xml:id so that you do not need to have a DTD or schema to identify elements with ID attributes, or require the application to register them. Both of these features would be helpful for supporting XML Signature/Encryption and XML C14N 1.1. Another useful addition would be an XML attribute context (similar to the javax.xml.NamespaceContext) that would allow you to retrieve the values of inheritable xml attributes (like xml:space, xml:lang) that are in scope for an element.</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li>__Santiago Pericas-Geertsen (2007-10-10): 
+       <ul> 
+        <li>The spec needs to be clear on what is expected from classes that consume DOMSource(node). How much of the ancestors and context from 'node' should be inspected? For XSLT: Should all of the ancestors be considered? For Schema processing: Should all the parent namespaces be looked at?</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li>__&lt;Your Name&gt; (&lt;date&gt;):</li> 
+     </ul> <p>&lt;Your comment&gt;</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:48.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

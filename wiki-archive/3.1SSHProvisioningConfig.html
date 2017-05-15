@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : 3.1SSHProvisioningConfig</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p><em>0.5</em></p> <h4><a name="3.1SSHProvisioningConfig-SSHProvisioninganddomain.xml"></a>SSH Provisioning and domain.xml</h1> <p>GF v2 has node agents. GF 3.1 will have ssh nodes (systems that can be accessed via ssh). Beyond 3.1 we may once again have node agent support.</p> <p>SSH node configuration information must be saved in domain.xml and we should do so in a fashion that can handle node agent nodes in the future. For reference here is a domain.xml snippet for a node agent from v2:</p> <h4><a name="3.1SSHProvisioningConfig-v2nodeagentsnippet"></a>v2 node-agent snippet</h2> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;server . . . name="myinstance1"  node-agent-ref="my_node_agent"&gt;
+. . .
+&lt;/server&gt;
+
+&lt;node-agents&gt;
+  &lt;node-agent name="my_node_agent" start-servers-in-startup="true" system-jmx-connector-name="system"&gt;
+    &lt;jmx-connector accept-all="false" address="0.0.0.0" auth-realm-name="admin-realm" enabled="true" name="system" port="42852" protocol="rmi_jrmp" security-enabled="true"&gt;
+      &lt;ssl cert-nickname="s1as" client-auth-enabled="false" ssl2-enabled="false" ssl3-enabled="true" tls-enabled="true" tls-rollback-enabled="true"/&gt;
+      &lt;property name="client-hostname" value="nwc.Red.IPlanet.COM"/&gt;
+    &lt;/jmx-connector&gt;
+    &lt;auth-realm classname="com.sun.enterprise.security.auth.realm.file.FileRealm" name="admin-realm"&gt;
+      &lt;property name="file" value="${com.sun.aas.instanceRoot}/config/admin-keyfile"/&gt;
+      &lt;property name="jaas-context" value="fileRealm"/&gt;
+    &lt;/auth-realm&gt;
+    &lt;log-service alarms="false" file="${com.sun.aas.instanceRoot}/logs/server.log" log-rotation-limit-in-bytes="500000" log-rotation-timelimit-in-minutes="0" log-to-console="false" retain-error-statistics-for-hours="5" use-system-logging="false"&gt;
+      &lt;module-log-levels admin="INFO" classloader="INFO" cmp="INFO" cmp-container="INFO" configuration="INFO" connector="INFO" corba="INFO" deployment="INFO" ejb-container="INFO" group-management-service="INFO" javamail="INFO" jaxr="INFO" jaxrpc="INFO" jdo="INFO" jms="INFO" jta="INFO" jts="INFO" management-event="INFO" mdb-container="INFO" naming="INFO" node-agent="INFO" resource-adapter="INFO" root="INFO" saaj="INFO" security="INFO" self-management="INFO" server="INFO" synchronization="INFO" util="INFO" verifier="INFO" web-container="INFO"/&gt;
+    &lt;/log-service&gt;
+    &lt;property name="rendezvousOccurred" value="true"/&gt;
+  &lt;/node-agent&gt;
+&lt;/node-agents&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>For 3.1 we must introduce the concept of an ssh node. Below are two proposals for doing this. Option 1 refactors node-agent into a generic "node" config element with specialization for ssh and the traditional node agent. Option 2 keeps node-agent and just adds a different variation of it to support ssh nodes.</p> <h4><a name="3.1SSHProvisioningConfig-Option1%3Arefactorwithgenericelement%22node%22"></a>Option 1: refactor with generic element "node"</h2> <p>In this option we create a new element, the generic "node". A node can have zero or more connectors. In 3.1 we would support zero connectors or an ssh connector. In the future other connectors (like one to support legacy style node agents) could be supported.</p> <p>The benefit to this option is it cleanly reflects the architecture of node and connectors. The negative is it is more work to implement since it refactors domain.xml.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;server . . . name="myinstance1"  node-ref="ssh_node"&gt;
+. . .
+&lt;/server&gt;
+
+&lt;nodes&gt;
+
+  &lt;!-- An SSH node --&gt;
+  &lt;node name="ssh_node" host="gf1.sfbay.sun.com" glassfish-home="/export/gf"&gt;
+    &lt;ssh-connector port="22"&gt;
+      &lt;ssh-auth type="key" username="dipol" keyfile="~/.ssh/id_dsa" /&gt;
+    &lt;/ssh-connector&gt;
+  &lt;/node&gt;
+
+  &lt;!-- A localhost node. No connector needed. --&gt;
+  &lt;node name="mynode" host="localhost"&gt;
+  &lt;/node&gt;
+
+  &lt;!-- A localhost node from a different install location. --&gt;
+  &lt;node name="mynode" host="localhost" glassfish-home="/export/apps/gf"&gt;
+  &lt;/node&gt;
+
+  &lt;!-- Placeholder node after create-node-config --&gt;
+  &lt;node name="yournode"&gt;
+  &lt;/node&gt;
+
+  &lt;!-- No connector node after create-local-instance --&gt;
+  &lt;node name="yournode" host="gf1.sfbay.sun.com" &gt;
+  &lt;/node&gt;
+
+  &lt;!-- A node-agent node (post 3.1 if we do node agents) --&gt;
+  &lt;node name="mynodeagent" host="gf2.sfbay.sun.com"&gt;
+    &lt;jmx-connector accept-all="false" address="0.0.0.0" auth-realm-name="admin-realm" enabled="true" name="system" port="42852" protocol="rmi_jrmp" security-enabled="true"&gt;
+      &lt;ssl cert-nickname="s1as" client-auth-enabled="false" ssl2-enabled="false" ssl3-enabled="true" tls-enabled="true" tls-rollback-enabled="true"/&gt;
+    &lt;/jmx-connector&gt;
+    &lt;auth-realm classname="com.sun.enterprise.security.auth.realm.file.FileRealm" name="admin-realm"&gt;
+      &lt;property name="file" value="${com.sun.aas.instanceRoot}/config/admin-keyfile"/&gt;
+      &lt;property name="jaas-context" value="fileRealm"/&gt;
+    &lt;/auth-realm&gt;
+    &lt;agent start-servers-in-startup="true" system-jmx-connector-name="system"&gt;
+      &lt;log-service alarms="false" file="${com.sun.aas.instanceRoot}/logs/server.log" log-rotation-limit-in-bytes="500000" log-rotation-timelimit-in-minutes="0" log-to-console="false" retain-error-statistics-for-hours="5" use-system-logging="false"&gt;
+        &lt;module-log-levels admin="INFO" classloader="INFO" cmp="INFO" cmp-container="INFO" configuration="INFO" connector="INFO" corba="INFO" deployment="INFO" ejb-container="INFO" group-management-service="INFO" javamail="INFO" jaxr="INFO" jaxrpc="INFO" jdo="INFO" jms="INFO" jta="INFO" jts="INFO" management-event="INFO" mdb-container="INFO" naming="INFO" node-agent="INFO" resource-adapter="INFO" root="INFO" saaj="INFO" security="INFO" self-management="INFO" server="INFO" synchronization="INFO" util="INFO" verifier="INFO" web-container="INFO"/&gt;
+      &lt;/log-service&gt;
+    &lt;agent&gt;
+    &lt;property name="rendezvousOccurred" value="true"/&gt;
+  &lt;/node&gt;
+&lt;/nodes&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>Some things to note:</p> 
+     <ol> 
+      <li>A generic node element "node" is now used to refer to a node of any type.</li> 
+      <li>A new node connector element "ssh-connector" holds the ssh specific connection info</li> 
+      <li>hostname is not in the connector, it is an attribute of "node".</li> 
+      <li>A new element "agent" is introduced to support the other attributes and elements specific to node-agent</li> 
+      <li>A node may have no connector information. This can be used for local nodes (i.e. hostname is localhost relative to the DAS) or for nodes where SSH won't be used, or for stubs (ala create-node-agent-config). A node stub can be populated by a subsequent run of "update-node" or via the GF console. By creating the stub we can support subsequent calls to create-instance which reference the node by name.</li> 
+      <li>We don't need to nail down legacy node-agent configuration for 3.1 since that will likely change if/when legacy style node-agents are added in the future (for example they would not use JMX if re-indroduced).</li> 
+     </ol> <h4><a name="3.1SSHProvisioningConfig-Option2%3ATweaknodeagenttosupportanSSHconnector"></a>Option 2: Tweak node-agent to support an SSH connector</h2> <p>In this design we make the smallest amount of change to the v2 node-agent config needed to support an SSH connector. The benefit to this design is it is a smaller, more incremental change.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;server . . . name="myinstance1"  node-agent-ref="node_nwc"&gt;
+. . .
+&lt;/server&gt;
+
+&lt;node-agents&gt;
+
+  &lt;!-- An SSH node --&gt;
+  &lt;node-agent name="node_nwc" host="nwc.red.iplanet.com" glassfish-home="/export/glassfish"&gt;
+    &lt;ssh-connector port="22"&gt;
+      &lt;ssh-auth type="key" username="dipol" keyfile="~/.ssh/id_dsa" /&gt;
+    &lt;/ssh-connector&gt;
+    &lt;property name="rendezvousOccurred" value="true"/&gt;
+  &lt;/node-agent&gt;
+
+
+  &lt;!-- A node placeholder after create-node-agent-config (in v3.1) --&gt;
+  &lt;node-agent name="mynode"&gt;
+    &lt;property name="rendezvousOccurred" value="false"/&gt;
+  &lt;/node&gt;
+
+  &lt;!-- A node-agent node (post 3.1 if we do node agents) --&gt;
+  &lt;node-agent name="my_node_agent" start-servers-in-startup="true" system-jmx-connector-name="system"&gt;
+    &lt;jmx-connector . . .&gt;
+      . . .
+    &lt;/jmx-connector&gt;
+    . . .
+    &lt;property name="rendezvousOccurred" value="true"/&gt;
+   &lt;/node-agent&gt;
+&lt;/node-agents&gt;</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="3.1SSHProvisioningConfig-Discardeddesign"></a>Discarded design</h2> <h4><a name="3.1SSHProvisioningConfig-Keepnodeagentsandsshnodescompletelyseparate"></a>Keep node-agents and ssh-nodes completely separate</h3> <p>In this design we keep ssh nodes and node agents completely separate. </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;server . . . name="myinstance1"  ssh-node-ref="node_nwc"&gt;
+. . .
+&lt;/server&gt;
+
+&lt;server . . . name="myinstance2"  node-agent-ref="my_node_agent"&gt;
+. . .
+&lt;/server&gt;
+
+&lt;ssh-nodes&gt;
+  &lt;ssh-node name="node_nwc" host="nwc.red.iplanet.com" port="20" glassfish-home="/export/glassfish"&gt;
+    &lt;ssh-auth type="key" username="dipol" keyfile="~/.ssh/id_dsa" /&gt;
+  &lt;/ssh-node&gt;
+&lt;/ssh-nodes&gt;
+
+&lt;node-agents&gt;
+  &lt;node-agent name="my_node_agent" . . . &gt;
+  . . .
+  &lt;/node-agent&gt;
+&lt;/node-agents&gt;</pre> 
+       </div> 
+      </div>
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 09, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

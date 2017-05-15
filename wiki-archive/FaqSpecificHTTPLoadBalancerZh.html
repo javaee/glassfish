@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : FaqSpecificHTTPLoadBalancerZh</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="FaqSpecificHTTPLoadBalancerZh-%E6%88%91%E8%A6%81%E5%B0%86Web%E6%9C%8D%E5%8A%A1%E9%83%A8%E7%BD%B2%E5%88%B0%E7%BE%A4%E9%9B%86%E4%B8%AD%E3%80%82%E9%9C%80%E8%A6%81%E5%AE%89%E8%A3%85%E7%89%B9%E5%AE%9A%E7%9A%84HTTP%E8%B4%9F%E8%BD%BD%E5%B9%B3%E8%A1%A1%E5%99%A8%E6%8F%92%E4%BB%B6%E5%90%97%EF%BC%9F"></a>我要将 Web 服务部署到群集中。需要安装特定的 HTTP 负载平衡器插件吗？ </h2> <p>由 users@glassfish 邮件列表改述：</p> <p>*问：*我开发了一些 Web 服务，并使用 GlassFish v2 安装了一个包含两台计算机的群集。我要将我的 Web 服务部署到该群集中。我要将它们部署为 Web 应用程序（.war 文件）。需要安装 HTTP 负载平衡器插件吗？HTTP 负载平衡器插件只负责对作业在群集节点上进行负载平衡吗，或者如果我将 Web 服务部署到群集中，群集会自动对其进行平衡吗？</p> <p>*答：*Alexis：群集和数据复制功能不需要特定的负载平衡解决方案。您可以使用 GlassFish 提供的软件负载平衡器（通过 GF 管理控制台对其进行管理），或使用任何第三方会话负载平衡（如 F5 的 BIG-IP，如 <a href="http://blogs.oracle.com/Prashanth/entry/load_balancing_glassfish_v2_with">Prashanth 的博客文章</a>中所述）。无论如何，您的群集"前面"多少都要有一定的负载平衡。</p> <p>建议您阅读此文档：</p> 
+     <ul> 
+      <li><a href="https://glassfish.java.net/javaee5/build/GlassFish_LB_Cluster.html">Configuring the Cluster/Load Balancer with GlassFish V2</a>（针对 GlassFish V2 配置群集/负载平衡器）</li> 
+      <li><a href="http://developers.sun.com/appserver/reference/techart/glassfishcluster/">Clustering in GlassFish Version 2</a>（GlassFish 版本 2 中的群集功能）</li> 
+     </ul> <p>此外请听来自上届 JavaOne 会议的 GlassFish v2 演示，<a href="http://developers.sun.com/learning/javaoneonline/j1sessn.jsp?sessn=TS-4436&amp;yr=2007&amp;track=3">Technical Overview of GlassFish v2</a>（GlassFish v2 技术概述）。 </p> 
+     <hr> <p><a href="FaqSpecificHTTPLoadBalancer.html" title="FaqSpecificHTTPLoadBalancer">英文 </a></p> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 02, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:44.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

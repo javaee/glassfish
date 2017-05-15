@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : AsyncContentHandlers</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   
+     <hr> <h4><a name="AsyncContentHandlers-AsychronousContentHandlerProposal"></a>Asychronous Content Handler Proposal</h1> 
+     <hr> <h4><a name="AsyncContentHandlers-Introduction"></a>Introduction</h1> <p>This is a proposal to meet part of the <a href="AsynchronousServlets.html" title="AsynchronousServlets">Asynchronous Servlets</a> requirements of JSR315.</p> <h4><a name="AsyncContentHandlers-UseCases"></a>Use-Cases</h1> <p>This proposal does not address the use-cases of <a href="SuspendableRequests.html" title="SuspendableRequests">Suspendable Requests</a>.</p> <h4><a name="AsyncContentHandlers-AsynchronousIO"></a>Asynchronous IO</h2> <p>This proposal addresses the need for Asynchronous IO when a request has large content that<br> cannot be read without blocking, or content cannot be written to response without blocking.</p> <h4><a name="AsyncContentHandlers-Commoncontenttypes"></a>Common content types</h2> <p>Content types such as multi-part-mime and XML documents must currently be converted to/from bytes by code supplied by the web application. Applications could be simplified and efficiency improved if the container could handle conversion of known content-types to/from java representations.</p> <h4><a name="AsyncContentHandlers-Proxying"></a>Proxying</h2> <p>A HTTP proxy implemented in a web application should be able to asynchronously <br> read content from a request and forward to a remote server and asynchronously receive<br> content to be written back to the client.</p> <h4><a name="AsyncContentHandlers-Overview"></a>Overview</h1> <h4><a name="AsyncContentHandlers-ContainerContenthandling"></a>Container Content handling</h2> <p>In order to avoid the need for servlets to perform complex asynchronous <br> IO, the <tt>ServletRequest</tt> and <tt>ServletResponse</tt><br> classes are extended with methods to allow HTTP message content to be<br> retrieved and set as complex Java objects. </p> <p>The task of converting the byte content of requests/responses to/from<br> these complex objects will be performed by handler classes that can<br> either be supplied by the container (for common types efficiently handled)<br> or by the application/framework (for less common types of specific handling).</p> <p>Container provided handlers will be able to directly access the <br> containers IO mechanisms to most efficiently perform the conversion.<br> A compliant container will be<br> expected to provide a standard set of handlers, including the<br> following:</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Mime Type </th> 
+         <th class="confluenceTh"> Java Type </th> 
+         <th class="confluenceTh">&nbsp;</th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>any</tt> </td> 
+         <td class="confluenceTd"> <tt>byte[]</tt> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>any</tt> </td> 
+         <td class="confluenceTd"> <tt>java.lang.String</tt> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>any</tt> </td> 
+         <td class="confluenceTd"> <tt>java.io.File</tt> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>text/xml</tt> </td> 
+         <td class="confluenceTd"> <tt>org.w3c.dom.Document</tt> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>text/json</tt> </td> 
+         <td class="confluenceTd"> <tt>java.util.Map</tt> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>multipart/form-data</tt> </td> 
+         <td class="confluenceTd"> <tt>java.util.Map</tt> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>Application/framework provided converters would be implemented<br> against and an API that would likely not be as efficient as possible <br> (eg byte arrays instead of direct buffers), but would allow <br> asynchronous handling.</p> <p><b>NOTE:</b> ''The current API proposal uses the<br> Object class for content, however it should be possible to extend<br> this proposal to use generics for type safe content handling.<br> ''</p> <p><b>NOTE:</b> ''There has been a suggestion that JAF could be used to assist with<br> the conversion of bytes streams to/from java objects. This proposal has<br> not been updated with that suggestion.''</p> <h4><a name="AsyncContentHandlers-JavaAPI"></a>Java API</h1> <h4><a name="AsyncContentHandlers-ServletRequest"></a>ServletRequest</h2> <p>The existing<br> <tt>ServletRequest</tt><br> interface is extended with methods to access parsed content and to<br> suspend request handling:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">public interface ServletRequest 
+{
+    /**
+     * Get the request body content as an Object. 
+     * 
+     * &lt;p&gt;The bytes received byte the server will be parsed and converted to the Object
+     * by a {@link RequestContentConverter} provided either by the container or the 
+     * application and configured in the deployment descriptor or servlet annotations. 
+     * Examples of the type of Object that could be returned include 
+     * {@link java.nio.ByteBuffer}, {@link String}, {@link java.io.File} and 
+     * {@link org.w3c.dom.Document}. If the request specifies a character encoding or 
+     * Locale, then this will be used for the parsing of the content, otherwise default 
+     * encodings may be specified in the deployment descriptor or servlet annotations.
+     * &lt;/p&gt;
+     * 
+     * &lt;p&gt;If the deployment descriptor or servlet annotations indicates that the request 
+     * URL is asynchronous, then the container will parse the content before the request 
+     * is dispatched to the filter chain and/or servlet and this call will never block. 
+     * Otherwise, the content is parsed during this call and may block waiting for the 
+     * complete content to be received.&lt;/p&gt;
+     * 
+     * @return   an object containing parsed body of the request
+     *
+     * @exception IllegalStateException  if the {@link #getReader} or 
+     *     {@link #getInputStream} methods has already been called for this request
+     *                                   
+     * @exception ObjectSTreamException  if there was a problem parsing the content.                                
+     *
+     * @exception IOException           if an input or output exception occurred
+     */
+    Object getContent() throws IllegalStateException, ObjectStreamException;
+   
+}</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="AsyncContentHandlers-ServletResponse"></a>ServletResponse</h2> <p>The existing <tt>ServletResponse</tt><br> interface is extended with methods to asynchronously send content and<br> to obtain non stop streams:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">public interface ServletResponse
+{
+    // existing response methods omitted
+
+    /**
+     * Set the response content body
+     * 
+     * &lt;p&gt;Set the response body to be sent as an Object.  The Object will be
+     * converted to bytes byte a {@link ResponseContentConverter} instance 
+     * provided either by the container or application and configured in the
+     * deployment descriptor or servlet annotations.&lt;/p&gt;
+     * 
+     * &lt;p&gt;The converter will set the content length, content type and content
+     * encoding of the response.&lt;/p&gt;
+     * 
+     * &lt;p&gt;A call to {@link #flushBuffer()} will block until the entire content
+     * is converted to bytes and flushed. If {@link #flushBuffer()} is not called,
+     * then the container may generate and write the byte content asynchronously 
+     * after the call to the filter chain and servlet service method return 
+     * to the container.
+     * 
+     * @exception IllegalStateException if any of the {@link #getWriter()}, 
+     *     {@link #getNonStopWriter(),  {@link #getOutputStream()} or
+     *     {@link #getNonStopOutputStream()} methods have been called on 
+     *     this response
+     *
+     */
+    void setContent(Object content);    
+}</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="AsyncContentHandlers-RequestContentHandler"></a>RequestContentHandler</h2> <p>A new <tt>RequestContentHandler</tt><br> interface is provided for applications to handle request content<br> asynchronously. The container provided handlers are not<br> required to use this interface and may use alternate (and more<br> efficient) mechanisms to handle content.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">/**
+ * A handler for Request content.
+ * 
+ * &lt;p&gt;Implementations of this interface are responsible for handling 
+ * bytes received from a request, normally by conversion to an Object instance that will be 
+ * made available via the {@link ServletRequest#getContent()} method.
+ * 
+ * &lt;p&gt;The container will create as many instances of a converter as needed
+ * and an instance will be associated with a request by a call to 
+ * {@link #init(ServletRequest)}. The container will call 
+ * {@link #convert(byte[])} as content is received until either an object 
+ * is returned or an exception is throw.
+ * 
+ * &lt;p&gt;Container provided handlers are not required to implement this
+ * interface.
+ * 
+ */
+public interface RequestContentHandler
+{
+    interface Dispatcher
+    {
+        /**
+         * Dispatch the request to a Servlet.
+         * &lt;p&gt; The request that was passed to 
+         * {@link RequestContentHandler#begin(Dispatcher,ServletRequest)} will be
+         * dispatched to a Servlet, potentially via a Filter chain. The content 
+         * object passed will be available via the {@link ServletRequest#getContent()} method.
+         * Any content bytes not consumed asynchronously will be available via the normal 
+         * blocking API of the request.
+         */
+        void dispatch(Object content);
+    }
+
+    /**
+     * Initialize this handler for the request.
+     * &lt;p&gt;
+     * @param dispatcher The dispatcher instance that should be used to 
+     * call {@link Dispatcher#dispatch} when the content is converted to
+     * an Object. The request will not be dispatched to a servlet until 
+     * dispatch is called.
+     * @param request The request that contains the content. The request 
+     * headers may be inspected, but not methods that consume content may
+     * be called (eg {@link ServletRequest#getInputStream()}. 
+     * @param response The response.
+     * @throws IllegalStateException If this converter cannot convert the
+     * request.
+     */
+    void begin(Dispatcher dispatcher, ServletRequest request, ServletResponse response);
+    
+    
+    /**
+     * handle a chunk of request content.
+     * 
+     * &lt;p&gt;This method is called when the container receives some bytes of 
+     * content. The content may not be complete and subsequent calls to
+     * convert will be required to deliver the complete content.
+     * A subsequent call will not be made until after the current call
+     * to handle has returned. Bytes not consumed by a call to handle will
+     * be included in the next call to handle.
+     * 
+     * @param chunk Either a partial or complete content as an
+     * array of bytes.
+     * @param offset the offset into the chunk array where content starts
+     * @param length the length of the content withing the array
+     * @return The number of bytes consumed by this call.
+     * @throws IOException If the content cannot be parsed.
+     */
+    int handle(byte[] chunk,int offset,int length) throws IOException;
+
+    /**
+     * handle a read error.
+     *
+     * &lt;p&gt; This method is called when the container detects an error on a 
+     * connection that is delivering content.
+     * After this call, this instance of the handler is no longer associated
+     * with the request passed in begin and may be reused for a new request.
+     * @param th a Throwable indicating the error condition.
+     */
+    void error(Throwable th);
+
+    /**
+     * handle a timeout.
+     *
+     * &lt;p&gt; This method is called when the container detects no activity on
+     * a connection that is delivering content.
+     * After this call, this instance of the handler is no longer associated
+     * with the request passed in begin and may be reused for a new request.
+     */
+    void timeout();
+
+    /**
+     * Complete the request
+     *
+     * &lt;p&gt; This method is called when the container detects the end of 
+     * request content. 
+     * After this call, this instance of the handler is no longer associated
+     * with the request passed in begin and may be reused for a new request.
+     *
+    void complete();
+    
+}</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="AsyncContentHandlers-ResponseContentHandler"></a>ResponseContentHandler</h2> <p>A new<br> <tt>ResponseContentHandler</tt><br> interface is provided for applications to handler request content<br> passed as Objects. The container provided handlers are not<br> required to use this interface and may use alternate (and more<br> efficient) mechanisms to convert content.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">/* ------------------------------------------------------------ */
+/**
+ * A handler for Response content.
+ * 
+ * &lt;p&gt;Implementations of this interface are responsible for converting 
+ * Objects passed in the {@link ServletResponse#setContent(Object)} method 
+ * to bytes to be sent as the response content.
+ * 
+ * &lt;p&gt;The container will create as many instances of a converter as needed
+ * and an instance will be associated with a response by a call to 
+ * {@link #init(ServletResponse)}. The container will call 
+ * {@link #convert(byte[], int, int)} until -1 is returned.
+ * 
+ * &lt;p&gt;Container provided converters are not required to implement this
+ * interface.
+ *
+ */
+public interface ResponseContentHandler
+{
+    /**
+     * Associate this handler with a response.
+     * &lt;p&gt;The response headers may be set to indicate the content
+     * size, type and encoding.
+     * 
+     * @param response The response
+     * @param content The content to convert.
+     * @throws IllegalStateException If the content cannot be converted
+     * by this converter.
+     */
+    void begin(HttpServletResponse response, Object content);
+
+    /** 
+     * Convert the content to bytes. The converted bytes are written into
+     * the passed buffer starting at the given offset and not exceeding the
+     * given length. The actual number of bytes written is returned.
+     * The bytes written my represent all of the content or a part of the
+     * content. Subsequent calls to convert may be required to convert the
+     * entire content.
+     * 
+     * &lt;p&gt;The container will not call convert until a previous call to convert 
+     * returns. The container may delay calling convert until it is ready to
+     * send more content to the client.
+     * 
+     * @param buffer The byte array into which content should be written
+     * @param offset The offset into the array at which content should be written
+     * @param length The maximum number of bytes that may be written.
+     * @return The number of bytes written or -1 to indicate that the entire
+     * content has been written.
+     * @throws IOException If the content cannot be converted.
+     */
+    int handle(byte[] buffer,int offset, int length) throws IOException;
+}</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="AsyncContentHandlers-DeploymentDescriptor"></a>Deployment Descriptor</h1> <h4><a name="AsyncContentHandlers-RequestContentHandlers"></a>Request Content Handlers</h2> <p>Request content handlers may be<br> defined in the deployment descriptor and may contain the following<br> elements:</p> <p> <b>url-pattern</b> </p> <p> The URL pattern to which the converter applies<br> which follows the same conventions as the servlet and filter<br> mappings. A content handler element may have multiple <tt>url-pattern</tt><br> elements.</p> <p> <b>servlet-name</b> </p> <p> The name of a servlet to which the converter<br> applies. A converter may have multiple <tt>servlet-name</tt><br> elements.</p> <p> <b>mime-type</b> </p> <p> The mime-type (content-type excluding parameters and encoding) to<br> which the converter applies.</p> <p> <b>content-class</b> </p> <p> The java class of the Object that the converter<br> will create to contain the content. An instance of this class will<br> be made available via the <tt>ServletRequest.getContent()</tt><br> method.</p> <p> <b>asynchronous</b> </p> <p> If the <tt>asynchronous</tt><br> element is present in a converter, then the converter will run<br> (asynchronously if possible) before the initial dispatch. If it is<br> not present, then the converter will run only if and when<br> <tt>ServletRequest.getContent()</tt><br> is called.</p> <p> <b>provided</b> </p> <p> If the provided element is present, the web<br> application will use a converter class provided by the container<br> that matches the <tt>mime-type</tt><br> and <tt>content-class</tt>.<br> If the container does not provide a matching converter, and there is<br> no <tt>converter-class</tt><br> element, then the web application will not be able to be deployed.</p> <p> <b>handler-class</b> </p> <p> An application supplied class that implements the<br> <tt>RequestContentHandler</tt><br> interface that will be used to convert content. If only a<br> <tt>converter-class</tt><br> element is present, then it will be used. If both a <tt>converter-class</tt><br> and <tt>provided</tt><br> elements are present, then provided takes precedence if the<br> container does provide such a converter.</p> <p>An example request converter descriptor is:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;request-content-handler&gt;    
+  &lt;url-pattern&gt;/comet/*&lt;/url-pattern&gt;
+
+  &lt;mime-type&gt;text/json&lt;/mime-type&gt;
+  &lt;content-class&gt;java.util.Map&lt;/content-class&gt;
+  &lt;asynchronous/&gt;
+  &lt;provided/&gt;
+  &lt;handler-class&gt;com.acme.ajax.JsonContentParser&lt;/handler-class&gt;
+&lt;/request-content-handler&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>This descriptor defines a handler<br> that applies to requests to /comet/* that have a content type header<br> indicating a text/json mime type. The content is converted to a java<br> Map object asynchronously before the request is dispatched. If the<br> container provides a suitable handler, it will be used, otherwise<br> the application provided class will be used.</p> <h4><a name="AsyncContentHandlers-ResponseContentHandler"></a>Response Content Handler</h2> <p>Request content handlers may be<br> defined in the deployment descriptor and may contain the following<br> elements:</p> <p> <b>url-pattern</b> </p> <p> The URL pattern to which the converter applies<br> which follows the same conventions as the servlet and filter<br> mappings. A converter element may have multiple <tt>url-pattern</tt><br> elements.</p> <p> <b>servlet-name</b> </p> <p> The name of a servlet to which the converter<br> applies. A converter may have multiple <tt>servlet-name</tt><br> elements.</p> <p> <b>content-class</b> </p> <p> The java class to which this converter may be<br> applied. This is the type or super type of the Object passed to<br> <tt>ServletResponse.setContent(Object)</tt>.</p> <p> <b>content-type</b> </p> <p> The content type and optional content encoding, to which the content<br> will be converted.</p> <p> <b>provided</b> </p> <p> If the provided element is present, the web<br> application will use a converter class provided by the container<br> that matches the <tt>mime-type</tt><br> and <tt>content-class</tt>.<br> If the container does not provide a matching converter, and there is<br> no <tt>handler-class</tt><br> element, then the web application will not be able to be deployed.</p> <p> <b>handler-class</b> </p> <p> An application supplied class that implements the<br> <tt>RequestContentHander</tt><br> interface that will be used to convert content. If only a<br> <tt>converter-class</tt><br> element is present, then it will be used. If both a <tt>converter-class</tt><br> and <tt>provided</tt><br> elements are present, then provided takes precedence if the<br> container does provide such a converter.</p> <p>An example response converter descriptor is:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;response-content-handler&gt;
+  &lt;url-pattern&gt;/comet/*&lt;/url-pattern&gt;
+
+  &lt;content-class&gt;org.w3c.dom.Document&lt;/content-class&gt;
+  &lt;content-type&gt;text/xml; charset=utf-8&lt;/content-type&gt;
+  &lt;provided/&gt;
+&lt;/request-content-handler&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>This converter<br> applies to all responses generated by resources<br> at URIs matching /comet/* that use the<br> <tt>ServletResponse.setContent(Object)</tt><br> to pass an object of type org.w3c.dom.Document. The passed content<br> will be converted to XML encoded as utf-8 using a converter provided<br> by the container. If no such converter is available, the web<br> application will not be able to be deployed.</p> <h4><a name="AsyncContentHandlers-Annotations"></a>Annotations</h1> <p>Appropriate annotations can be<br> defined for filters and servlets to effectively create request and<br> converter entries with the same semantics as the deployment<br> descriptor.</p> 
+     <hr> <h4><a name="AsyncContentHandlers-Examples"></a>Examples</h1> 
+     <hr> <h4><a name="AsyncContentHandlers-JSPfileuploadExample"></a>JSP file upload Example</h1> <p>This example shows how asynchronous<br> input may be achieved within a JSP.<br> This example uses<br> a JSP to generate an multipart form for uploading file content. The<br> <tt>ServletRequest.getContent()</tt><br> API is used to allow the container to upload large files<br> asynchronously and save them to a temporary file. The upload request<br> is dispatched to the JSP only once the entire file is uploaded. The<br> JSP then simply renames the temporary file to a permanent location<br> before making it available via a link.</p> <h4><a name="AsyncContentHandlers-upload.js%3A"></a>upload.js:</h3> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;%@ page contentType='text/html; charset=UTF-8' import='java.util.Map,java.io.File' %&gt;
+&lt;%
+Map content=(Map)request.getContent();
+if (content==null)
+{
+%&gt;
+    &lt;h2&gt;UPLOAD content&lt;/h2&gt;
+    &lt;form method='POST' enctype='multipart/form-data' accept-charset='utf-8' action="."&gt;
+      Description: &lt;input type='text' name='comment' value='comment'/&gt;&lt;br/&gt;
+      File: &lt;input type='file' name='file' /&gt;&lt;br/&gt;
+      &lt;input type='submit' name='Action' value='Submit'&gt;&lt;br/&gt;
+    &lt;/form&gt;
+&lt;%
+}
+else
+{
+    String comment = (String)content.get("comment");
+    File file = (File)content.get("file");
+    String path="/store/"+file.getName();
+    file.renameTo(new File(request.getRealPath(path)));
+%&gt;
+    &lt;h2&gt;UPLOADED content&lt;/h2&gt;
+    Comment: &lt;%= comment%&gt;&lt;br/&gt;
+    File: &lt;a href="&lt;%=path%&gt;"&gt;&lt;%=file.getName()%&gt;&lt;/a&gt;&lt;br/&gt;  
+&lt;%
+}
+%&gt;</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="AsyncContentHandlers-web.xml%3A"></a>web.xml:</h3> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;request-content-handler&gt;    
+  &lt;url-pattern&gt;/upload.jsp&lt;/url-pattern&gt;
+
+  &lt;mime-type&gt;multipart/form-data&lt;/mime-type&gt;
+  &lt;content-class&gt;java.util.Map&lt;/content-class&gt;
+  &lt;asynchronous/&gt;
+  &lt;provided/&gt;
+&lt;/request-content-handler&gt;</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="AsyncContentHandlers-StreamingServlet"></a>Streaming Servlet</h1> <p>To be provided..... but will show a ContentHandler writing directly to a response.</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:48.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

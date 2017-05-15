@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFishV3.1TransactionServiceDocPlan</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GlassFishV3.1TransactionServiceDocPlan-TransactionServiceDocumentationPlanforGlassFishServerOpenSourceEdition3.1"></a><em>Transaction Service</em> Documentation Plan for GlassFish Server Open Source Edition 3.1</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#GlassFishV3.1TransactionServiceDocPlan-TransactionServiceDocumentationPlanforGlassFishServerOpenSourceEdition3.1"> <em>Transaction Service</em> Documentation Plan for GlassFish Server Open Source Edition 3.1</a></li> 
+       <ul> 
+        <li><a href="#GlassFishV3.1TransactionServiceDocPlan-PeopleandRoles">People and Roles</a></li> 
+        <li><a href="#GlassFishV3.1TransactionServiceDocPlan-Audience">Audience</a></li> 
+        <li><a href="#GlassFishV3.1TransactionServiceDocPlan-SummaryoftheFeatureFromaUser%27sPerspective">Summary of the Feature From a User's Perspective</a></li> 
+        <li><a href="#GlassFishV3.1TransactionServiceDocPlan-Availability">Availability</a></li> 
+        <li><a href="#GlassFishV3.1TransactionServiceDocPlan-StatementofWork">Statement of Work</a></li> 
+        <ul> 
+         <li><a href="#GlassFishV3.1TransactionServiceDocPlan-ChangestoBooks">Changes to Books</a></li> 
+         <ul> 
+          <li><a href="#GlassFishV3.1TransactionServiceDocPlan-ApplicationDevelopmentGuideChanges"> <em>Application Development Guide</em> Changes</a></li> 
+          <li><a href="#GlassFishV3.1TransactionServiceDocPlan-AdministrationGuideChanges"> <em>Administration Guide</em> Changes</a></li> 
+         </ul> 
+         <li><a href="#GlassFishV3.1TransactionServiceDocPlan-ChangestoOnlineHelp">Changes to Online Help</a></li> 
+         <li><a href="#GlassFishV3.1TransactionServiceDocPlan-ChangestoManPages">Changes to Man Pages</a></li> 
+        </ul> 
+        <li><a href="#GlassFishV3.1TransactionServiceDocPlan-ReviewSchedule">Review Schedule</a></li> 
+        <li><a href="#GlassFishV3.1TransactionServiceDocPlan-RelatedInformation">Related Information</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="GlassFishV3.1TransactionServiceDocPlan-PeopleandRoles"></a>People and Roles</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Name </th> 
+         <th class="confluenceTh"> Role </th> 
+         <th class="confluenceTh"> Location </th> 
+         <th class="confluenceTh"> Time Zone </th> 
+         <th class="confluenceTh"> Email </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Paul Davies </td> 
+         <td class="confluenceTd"> Documentation Feature Owner </td> 
+         <td class="confluenceTd"> Santa Clara, CA, USA </td> 
+         <td class="confluenceTd"> US/Pacific </td> 
+         <td class="confluenceTd"> <tt>pauldavies@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Peer Reviewer </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> <em>java.netID</em><tt>@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Marina Vatkina </td> 
+         <td class="confluenceTd"> Software Engineer </td> 
+         <td class="confluenceTd"> Santa Clara, CA, USA </td> 
+         <td class="confluenceTd"> US/Pacific </td> 
+         <td class="confluenceTd"> <tt>mvatkina@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Sherry Hill </td> 
+         <td class="confluenceTd"> QA Engineer </td> 
+         <td class="confluenceTd"> Santa Clara, CA, USA </td> 
+         <td class="confluenceTd"> US/Pacific </td> 
+         <td class="confluenceTd"> <tt>sherryshen@dev.java.net</tt> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3.1TransactionServiceDocPlan-Audience"></a>Audience</h2> <p>The Transaction Service is aimed at system administrators.</p> <h4><a name="GlassFishV3.1TransactionServiceDocPlan-SummaryoftheFeatureFromaUser%27sPerspective"></a>Summary of the Feature From a User's Perspective</h2> <p>The transaction service ensures data integrity and consistency by enclosing a series of discreet actions in an application that must all complete successfully in a transaction, which is an indivisible unit of work. The transaction service enables system administrators to start and stop the service and to recover and roll back transactions.</p> <h4><a name="GlassFishV3.1TransactionServiceDocPlan-Availability"></a>Availability</h2> <p>The Transaction Service is supplied in the Web Profile distribution and the Full Platform distribution.</p> <h4><a name="GlassFishV3.1TransactionServiceDocPlan-StatementofWork"></a>Statement of Work</h2> <p>This section describes in detail for each document the work that is required by the introduction of the feature, such as changes, addition of new material, relocation of existing material, and removal of existing material.</p> <p>Documentation Impact:</p> 
+     <ul> 
+      <li>None</li> 
+      <li>Minor</li> 
+      <li>Moderate</li> 
+      <li>Major</li> 
+      <li>New</li> 
+     </ul> 
+     <hr> <p><b>Note -</b> If a document is task based (as opposed to reference), the changes should be determined from the user task analysis for the feature.</p> 
+     <hr> <h4><a name="GlassFishV3.1TransactionServiceDocPlan-ChangestoBooks"></a>Changes to Books</h3> <h4><a name="GlassFishV3.1TransactionServiceDocPlan-ApplicationDevelopmentGuideChanges"></a><em>Application Development Guide</em> Changes</h4> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Section </th> 
+         <th class="confluenceTh"> Documentation Impact </th> 
+         <th class="confluenceTh"> Writer </th> 
+         <th class="confluenceTh"> Reviewers </th> 
+         <th class="confluenceTh"> Description of Change </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 15, Using the Transaction Service </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Paul Davies </td> 
+         <td class="confluenceTd"> Marina Vatkina </td> 
+         <td class="confluenceTd"> Move this chapter to the Administration Guide and consolidate it with the chapter about administering transactions there. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3.1TransactionServiceDocPlan-AdministrationGuideChanges"></a><em>Administration Guide</em> Changes</h4> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Section </th> 
+         <th class="confluenceTh"> Documentation Impact </th> 
+         <th class="confluenceTh"> Writer </th> 
+         <th class="confluenceTh"> Reviewers </th> 
+         <th class="confluenceTh"> Description of Change </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 21 Administering Transactions </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Paul Davies </td> 
+         <td class="confluenceTd"> Marina Vatkina </td> 
+         <td class="confluenceTd"> Consolidate the information in this chapter with the information from the <em>Application Development Guide</em>. <br class="atl-forced-newline"> <br class="atl-forced-newline"> Reinstate <em>Distributed Transaction Recovery</em> from the v2.1.1 documentation. <br class="atl-forced-newline"> <br class="atl-forced-newline"> Remove information about using the Administration Console. <br class="atl-forced-newline"> <br class="atl-forced-newline"> In <em>Storing Transaction Logs in a Database</em>, explain the limitations of storing the logs in a database. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3.1TransactionServiceDocPlan-ChangestoOnlineHelp"></a>Changes to Online Help</h3> <p>None. Support in the Administration Console for recovering transactions on clustered instances and standalone instances is provided through Administration Console changes for the Cluster Infrastructure feature.</p> <h4><a name="GlassFishV3.1TransactionServiceDocPlan-ChangestoManPages"></a>Changes to Man Pages</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Man Page Name and Section </th> 
+         <th class="confluenceTh"> Documentation Impact </th> 
+         <th class="confluenceTh"> Writer </th> 
+         <th class="confluenceTh"> Reviewers </th> 
+         <th class="confluenceTh"> Description of Change </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>freeze-transaction-service</tt>(1) </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Paul Davies </td> 
+         <td class="confluenceTd"> Marina Vatkina </td> 
+         <td class="confluenceTd"> Reinstate description of --<tt>target</tt> option. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>recover-transactions</tt>(1) </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Paul Davies </td> 
+         <td class="confluenceTd"> Marina Vatkina </td> 
+         <td class="confluenceTd"> Reinstate description of --<tt>target</tt> option. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>rollback-transaction</tt>(1) </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Paul Davies </td> 
+         <td class="confluenceTd"> Marina Vatkina </td> 
+         <td class="confluenceTd"> Reinstate description of --<tt>target</tt> option. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>unfreeze-transaction-service</tt>(1) </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Paul Davies </td> 
+         <td class="confluenceTd"> Marina Vatkina </td> 
+         <td class="confluenceTd"> Reinstate description of --<tt>target</tt> option. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3.1TransactionServiceDocPlan-ReviewSchedule"></a>Review Schedule</h2> <p>The review schedule for the documentation items that are affected by this feature is provided in the following table.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item </th> 
+         <th class="confluenceTh"> Review Start Date </th> 
+         <th class="confluenceTh"> Review End Date </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <em>Application Development Guide</em> changes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <em>Administration Guide Guide</em> changes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Man page changes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>Reviewers are listed in the <em>Statement of Work</em>.</p> <h4><a name="GlassFishV3.1TransactionServiceDocPlan-RelatedInformation"></a>Related Information</h2> 
+     <ul> 
+      <li><a href="3.1TransactionOnePager.html" title="3.1TransactionOnePager">1-pager</a></li> 
+      <li>User task analysis</li> 
+      <li>Design document</li> 
+      <li><a href="3.1Transaction.html" title="3.1Transaction">Project page</a></li> 
+      <li><a href="GlassFishV3.1TransactionServiceDocReview.html" title="GlassFishV3.1TransactionServiceDocReview">Transaction Service Doc Review</a></li> 
+     </ul> <p>Email aliases:</p> 
+     <ul> 
+      <li><a href="mailto:admin@glassfish.java.net">admin@glassfish.java.net</a></li> 
+      <li><a href="mailto:users@glassfish.java.net">users@glassfish.java.net</a></li> 
+      <li><a href="mailto:docs@glassfish.java.net">docs@glassfish.java.net</a></li> 
+     </ul> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Nov 03, 2010 by 
+<font color="#0050B2">rebeccaparks</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

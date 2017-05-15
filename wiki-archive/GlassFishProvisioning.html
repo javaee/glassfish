@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFishProvisioning</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p><em>v0.5</em></p> <p>GlassFish 3.1 supports provisioning using SSH. This page describes basic steps for using this feature.</p> <h5><a name="GlassFishProvisioning-OntheWindowsplatform%3A"></a>On the Windows platform:</h5> <p><b>Supported Software:</b></p> 
+     <ul> 
+      <li>Windows 7</li> 
+      <li>Windows XP Professional</li> 
+      <li>Windows 2003</li> 
+      <li>CYGWIN_NT-6.1</li> 
+      <li>CYGWIN_NT-5.6p1</li> 
+      <li>MKS 9.2</li> 
+      <li>JDK 6_18 or higher</li> 
+      <li>GlassFish 3.1 Build 26 or later</li> 
+     </ul> <h5><a name="GlassFishProvisioning-Cygwin%3A"></a>Cygwin:</h5> <p><b>Steps:</b></p> <p><b>1)</b> Install Cygwin per product install instructions on all hosts that are part of the cluster (here are some <a href="3.1SSH - Installing Windows Cygwin sshd.html" title="3.1SSH - Installing Windows Cygwin sshd">informal instructions for installing Cygwin on Windows</a>). We have tested using the default installation options. Update your Window's path to include the cygwin bin directory (C:\cygwin\bin for example) so that the GlassFish tools can find the ssh related commands.</p> <p><b>2)</b> Install Java and make sure its bin directory is in your path: both your Windows path and your $PATH when in a cygwin shell.</p> <p><b>3)</b> <a href="https://glassfish.java.net/public/downloadsindex.html">Download</a> and install the GlassFish bundle using the installer on the host that you want to run the GlassFish Domain Admin Server (DAS) on. Note the location of the installed product. Build 26 or later is recommended.</p> <p><b>4)</b> Start the GlassFish server in a command prompt window. Go to the bin directory of the GlassFish installation and run the command:<br> C:&gt; <b>asadmin start-domain</b></p> <p><b>5)</b> Setup SSH for communication between the current host (host1) and a remote host (host2) using the setup-ssh command. <b>Note:</b> If the command fails and states that ssh-keygen fails then you may need to create a directory named ".ssh" in your Window's home directory first (issue <a href="https://github.com/javaee/glassfish/issues/13985">13985</a>).<br> C:&gt; <b>asadmin setup-ssh --generatekey host2</b></p> <p>At this point, a directory called .ssh has been created in the user's Windows home directory on host1 and it contains the key files. A directory called .ssh has also been created on host2 in the user's cygwin home directory and it contains an authorized_keys file.</p> <p><b>6)</b> Install GlassFish on host2 using the install-node command. This command will look in the .ssh directory created for the keys needed to copy the glassfish image to host2. It will generate a zip file based on the current installation, copy it to host2 and unzip the image under the installation directory provided by the --installdir option. <b>Note:</b> The installdir on the remote host must be specified in Unix style path since the remote commands are running in the cygwin shell at that time, see issue <a href="https://github.com/javaee/glassfish/issues/13998">13998</a>.<br> C:&gt; <b>asadmin install-node --installdir /cydrive/c/gf-install host2</b><br> if the installation directory (gf-install in this example) already exists and is writeable then the native Windows path can be used like this:<br> C:&gt; <b>asadmin install-node --installdir 'c:\gf-install' host2</b></p> <p><b>7)</b> We are ready to start creating a cluster and instances. First part is to create a node that describes the host where the instance will be created. A default node for localhost already exists in GlassFish for instances that are on the same system as the DAS. A second node will need to be created for the remote host. Then we create the cluster and instances that belong to the cluster. Here we create a cluster with two instances i1 which is on host2 and i2 which is on the localhost (host1).<br> C:&gt; <b>asadmin create-node-ssh --nodehost host2 --installdir /cygdrive/c/gf-install/glassfish3/glassfish n1</b><br> C:&gt; <b>asadmin create-cluster c1</b><br> C:&gt; <b>asadmin create-instance --cluster c1 --node n1 in1</b><br> C:&gt; <b>asadmin create-instance --cluster c1 --node localhost in2</b></p> <p><b>8)</b> Starting the instances in the cluster can be done with one command. All information about the instances and their location is in the configuration file.<br> C:&gt; <b>asadmin start-cluster</b></p> <h5><a name="GlassFishProvisioning-MKS%3A"></a>MKS:</h5> <p><b>1)</b> Install MKS per product install instructions on all hosts that are part of the cluster We have tested using the default installation options. Update your Window's path to include the MKS bin directory (C:\Program Files\MKS Toolkit\mksnt for example) so that the GlassFish tools can find the ssh related commands. The test machines did not have any patches installed..</p> <p><b>2)</b> Install Java and make sure its bin directory is in your path: both your Windows path and your $PATH when in the MKS shell.</p> <p><b>3)</b> <a href="https://glassfish.java.net/public/downloadsindex.html">Download</a> and install the GlassFish bundle using the installer on the host that you want to run the GlassFish Domain Admin Server (DAS) on. Note the location of the installed product. Build 26 or later is recommended.</p> <p><b>4)</b> Start the GlassFish server in a command prompt window. Go to the bin directory of the GlassFish installation and run the command:<br> C:&gt; <b>asadmin start-domain</b></p> <p><b>5)</b> Setup SSH for communication between the current host (host1) and a remote host (host2) using the setup-ssh command. <b>Note:</b> If the command fails and states that ssh-keygen fails then you may need to create a directory named ".ssh" in your Window's home directory first<br> C:&gt; <b>asadmin setup-ssh</b></p> <p>At this point, a directory called .ssh has been created in the user's Windows home directory on host1 and it contains the key files. A directory called .ssh has also been created on host2 in the user's home directory and it contains an authorized_keys file.</p> <p><b>6)</b> Install GlassFish on host2 using the install-node command. This command will look in the .ssh directory created for the keys needed to copy the glassfish image to host2. It will generate a zip file based on the current installation, copy it to host2 and unzip the image under the installation directory provided by the --installdir option. The installdir may be specified using either Unix style paths or Windows style paths.</p> <p>C:&gt; <b>asadmin install-node --installdir c:\myglassfish host2</b></p> <p><b>7)</b> We are ready to start creating a cluster and instances. First part is to create a node that describes the host where the instance will be created. A default node for localhost already exists in GlassFish for instances that are on the same system as the DAS. A second node will need to be created for the remote host. Then we create the cluster and instances that belong to the cluster. Here we create a cluster with two instances i1 which is on host2 and i2 which is on the localhost (host1).<br> C:&gt; <b>asadmin create-node-ssh --nodehost host2 n1</b><br> C:&gt; <b>asadmin create-cluster c1</b><br> C:&gt; <b>asadmin create-instance --cluster c1 --node n1 in1</b><br> C:&gt; <b>asadmin create-instance --cluster c1 --node localhost in2</b></p> <p><b>8)</b> Starting the instances in the cluster can be done with one command. All information about the instances and their location is in the configuration file.<br> C:&gt; <b>asadmin start-cluster</b></p> <p>Summary of testing various values of installdir on Windows platform.<br> In all cases the directory on the remote machine was empty even if it existed.</p> <p>In cygwin tests I was running as user cmott. In the MKS tests I was running as user Administrator.</p> <p>Error messages displayed during testing:</p> 
+     <ol> 
+      <li>IOException: Error during SCP Transfer</li> 
+     </ol> <p>These tables summaries the results when the install-node command where installdir is left as specified by the user. On cygwin I was running as user cmott and on MKS I was running as user Administrator</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Specify as Windows path AND directory on remote host does NOT exist </th> 
+         <td class="confluenceTd"> cygwin </td> 
+         <td class="confluenceTd"> MKS </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> c:\mygf3 </td> 
+         <td class="confluenceTd"> Failed with error #1, see Note 1 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> \mygf3 </td> 
+         <td class="confluenceTd"> Failed with error #1, see Note 2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Specify as Windows path AND directory on remote host does exist </th> 
+         <td class="confluenceTd"> cygwin </td> 
+         <td class="confluenceTd"> MKS </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> c:\mygf3 </td> 
+         <td class="confluenceTd"> Failed with error #1 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> \mygf3 </td> 
+         <td class="confluenceTd"> Failed with error #1, see Note 3 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Specify as Unix path AND directory on remote host does exist </th> 
+         <td class="confluenceTd"> cygwin </td> 
+         <td class="confluenceTd"> MKS </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> /mygf3 </td> 
+         <td class="confluenceTd"> PASS </td> 
+         <td class="confluenceTd"> PASS </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>Note 1: The directory c:\mygf3\tmp was NOT created on the remote machine<br> Note 2: The directory \mygf3\tmp were created on the remote machine<br> Note 3: The directories had 'rwx' permissions for all</p> <p>These tables summaries the results when the install-node command converted installdir to always use Unix style path separators. On cygwin I was running as user cmott and on MKS I was running as user Administrator</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Specify as Windows path AND directory on remote host does NOT exist </th> 
+         <td class="confluenceTd"> cygwin </td> 
+         <td class="confluenceTd"> MKS </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> c:\mygf3 </td> 
+         <td class="confluenceTd"> PASS** </td> 
+         <td class="confluenceTd"> PASS* </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> \mygf3 </td> 
+         <td class="confluenceTd"> PASS* </td> 
+         <td class="confluenceTd"> PASS* </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Specify as Windows path AND directory on remote host does exist </th> 
+         <td class="confluenceTd"> cygwin </td> 
+         <td class="confluenceTd"> MKS </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> c:\mygf3 </td> 
+         <td class="confluenceTd"> PASS </td> 
+         <td class="confluenceTd"> PASS* </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> \mygf3 </td> 
+         <td class="confluenceTd"> PASS </td> 
+         <td class="confluenceTd"> PASS* </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Specify as Unix path AND directory on remote host does exist </th> 
+         <td class="confluenceTd"> cygwin </td> 
+         <td class="confluenceTd"> MKS </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> /mygf3 </td> 
+         <td class="confluenceTd"> PASS </td> 
+         <td class="confluenceTd"> PASS </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>* mygf3 was put under \ dir.</p> <p>** mygf3 was put under \cygdrive\c</p> <p>Additional info: I didn't specify my home directory in any of the tests because my home directory on the remote host contains a space as there are known issues with spaces in path names.</p> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Nov 19, 2010 by 
+<font color="#0050B2">carlavmott</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

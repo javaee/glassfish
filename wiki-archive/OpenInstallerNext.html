@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : OpenInstallerNext</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="OpenInstallerNext-HighLevelWhiteboardforopenInstaller1.0.xand1.1"></a>High Level Whiteboard for openInstaller 1.0.x and 1.1</h2> <p>Features are driven by CAPS product, Updatecenter 2.0, Developer tool and missing features require for portal.</p> 
+     <ul> 
+      <li>oI Developer tool</li> 
+      <li>G11N/i18n/L10N Simplification 
+       <ul> 
+        <li>custom pages need not carry full copies of oI prefs</li> 
+        <li>tooltips need i18n</li> 
+        <li>custom config need access to ResourceMessages.properties</li> 
+       </ul> </li> 
+      <li>PSP enhancements (subcomponents/plugins) 
+       <ul> 
+        <li>Driven by CAPS requirements</li> 
+       </ul> </li> 
+      <li>Pluggable swing into pages 
+       <ul> 
+        <li>Driven by CAPS requirements</li> 
+       </ul> </li> 
+      <li>Updatecenter alignment 
+       <ul> 
+        <li>ability to install new packaging format</li> 
+       </ul> </li> 
+      <li>binaries in maven 
+       <ul> 
+        <li>repository layout</li> 
+        <li>alignment with swi requirements</li> 
+       </ul> </li> 
+      <li>HTTP install enhancements 
+       <ul> 
+        <li>setup jnlp example on openInstaller site</li> 
+        <li>document how to create a jnlp</li> 
+        <li>tied to repository?</li> 
+        <li>build target for creating</li> 
+       </ul> </li> 
+      <li>oI web site improvements 
+       <ul> 
+        <li>new front page</li> 
+       </ul> </li> 
+      <li>Documentation 
+       <ul> 
+        <li>Break into sections 
+         <ul> 
+          <li>Design/Architecture</li> 
+          <li>oI Framework Developers</li> 
+          <li>oI Framework users (application developers)</li> 
+          <li>Improved Javadocs posted on oI site</li> 
+          <li>XML docs for interfaces</li> 
+         </ul> </li> 
+       </ul> </li> 
+      <li>Java based init-config 
+       <ul> 
+        <li>Cross platform init config</li> 
+       </ul> </li> 
+      <li>New config validations 
+       <ul> 
+        <li>Valid host check</li> 
+        <li>Port listen check</li> 
+        <li>Accessible URL check</li> 
+       </ul> </li> 
+      <li>size reduction 
+       <ul> 
+        <li>don't include jaxb if 1.6</li> 
+        <li>see package breakup</li> 
+       </ul> </li> 
+      <li>performance improvements 
+       <ul> 
+        <li>package checking</li> 
+        <li>startup</li> 
+        <li>page transitions</li> 
+        <li>jnlp</li> 
+       </ul> </li> 
+      <li>build improvements 
+       <ul> 
+        <li>single build creates all platforms</li> 
+        <li>zips need TextUI support</li> 
+        <li>break up optional features into separate installables</li> 
+       </ul> </li> 
+      <li>Testing 
+       <ul> 
+        <li>Unit Test improvements</li> 
+        <li>Increasted BAT testing</li> 
+        <li>G11N Testing</li> 
+        <li>Feature Testing Process Definition</li> 
+       </ul> </li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

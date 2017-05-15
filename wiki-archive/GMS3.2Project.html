@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GMS3.2Project</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GMS3.2Project-GlassFishServerOpenSourceEdition3.2GMS"></a>GlassFish Server Open Source Edition 3.2 - GMS</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#GMS3.2Project-GlassFishServerOpenSourceEdition3.2GMS">GlassFish Server Open Source Edition 3.2 - GMS</a></li> 
+       <ul> 
+        <li><a href="#GMS3.2Project-Introduction">Introduction</a></li> 
+        <li><a href="#GMS3.2Project-FeatureOverview">Feature Overview</a></li> 
+        <li><a href="#GMS3.2Project-FeatureListandSchedule">Feature List and Schedule</a></li> 
+        <li><a href="#GMS3.2Project-OutofScope">Out of Scope</a></li> 
+        <li><a href="#GMS3.2Project-DesignDocument">Design Document</a></li> 
+        <li><a href="#GMS3.2Project-Quality">Quality</a></li> 
+        <li><a href="#GMS3.2Project-Documentation">Documentation</a></li> 
+        <li><a href="#GMS3.2Project-Demos">Demos</a></li> 
+        <li><a href="#GMS3.2Project-Workspace">Workspace</a></li> 
+        <li><a href="#GMS3.2Project-MilestoneSchedule">Milestone Schedule</a></li> 
+        <li><a href="#GMS3.2Project-TaskList">Task List</a></li> 
+        <li><a href="#GMS3.2Project-Research">Research</a></li> 
+        <li><a href="#GMS3.2Project-References">References</a></li> 
+        <li><a href="#GMS3.2Project-DevTests">Dev Tests</a></li> 
+        <li><a href="#GMS3.2Project-Estimates">Estimates</a></li> 
+        <li><a href="#GMS3.2Project-EmailAlias">Email Alias</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="GMS3.2Project-Introduction"></a>Introduction</h2> <p>Shoal GMS is a clustering framework that provides infrastructure to build fault tolerance, reliability and availability.</p> <h4><a name="GMS3.2Project-FeatureOverview"></a>Feature Overview</h2> <p>The clustering framework provides the following functionality to GlassFish services and user applications:</p> 
+     <ul> 
+      <li>GMS event notification 
+       <ul> 
+        <li>register callback for GMS event notification</li> 
+        <li>GMS runtime notifies when changes in group membership occur.</li> 
+       </ul> </li> 
+      <li>Cluster-wide Messaging 
+       <ul> 
+        <li>send a message to one, sub list or broadcast to all members of cluster</li> 
+        <li>register message callback to process messages sent by other group members.</li> 
+       </ul> </li> 
+      <li>GMS status methods 
+       <ul> 
+        <li>list of all members or just list of CORE members</li> 
+        <li>request a member status on any member in cluster</li> 
+       </ul> </li> 
+      <li>GMS Group Configuration 
+       <ul> 
+        <li>configure multicast address and port used by a group</li> 
+        <li>configure alternative transport settings when UDP multicast will not be used (<em>new feature for GF 3.2</em>)</li> 
+        <li>ability to configure GMS listener BIND_INTERFACE_ADDRESS (IP address of network interface) to use on a multihome machine</li> 
+       </ul> </li> 
+     </ul> <h4><a name="GMS3.2Project-FeatureListandSchedule"></a>Feature List and Schedule</h2> <p><em>(Features and priorities not yet final.)</em></p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Feature ID </th> 
+         <th class="confluenceTh"> Priority </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> Eng Response </th> 
+         <th class="confluenceTh"> Owner(s) </th> 
+         <th class="confluenceTh"> Estimate (Man Days) </th> 
+         <th class="confluenceTh"> Source of Requirement </th> 
+         <th class="confluenceTh"> JIRA Link </th> 
+         <th class="confluenceTh">&nbsp;</th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh">&nbsp;</th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-1.0.01 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Administrators shall be able to configure a GMS group discovery mechanism for a site. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Bobby </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/16413">GLASSFISH-16413</a> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-1.0.02 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Administrator shall be able to configure a cluster to not require UDP multicast </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Bobby </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/16414">GLASSFISH-16414</a> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-1.0.03 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Administrator shall be able to configure GMS TCP point to point messages to use SSL. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Joe </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/14664">GLASSFISH-14664</a> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-1.0.04 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Administrators shall be able to configure clustered instances to potentially be separated by a firewall. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Joe </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/16415">GLASSFISH-16415</a> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-1.0.05 </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> <em>(previously deleted)</em> <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-1.0.06 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> GMS monitoring stats provider </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Joe, Bobby <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/12194">GLASSFISH-12194</a> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-1.0.07 </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> Administrator shall be able to create up to 10 instances in a cluster </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-1.0.08 </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> Administrator shall be able to create 20 clusters in a domain. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-1.0.09 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Administrator shall be able to configure heartbeats to be sent over UDP unicast transport when multicast is disabled. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Joe <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/16416">GLASSFISH-16416</a> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-1.0.10 </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> <em>asadmin get-health</em> needs to work in self configuring(ad hoc clusters) cluster env </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/16417">GLASSFISH-16417</a> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-1.0.11 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> New heartbeat failure detection implementation optimized for non-multicast and no DAS </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Joe <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/16418">GLASSFISH-16418</a> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-1.0.12 </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> Support for OS configured with IPv6 only </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Workaround in <a href="https://github.com/javaee/glassfish/issues/16103">GLASSFISH-16103</a> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-1.0.13 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Virtual multicast optimization to send messages concurrently. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Bobby <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/16419">GLASSFISH-16419</a> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-1.0.14 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> New GMS configuration info on cluster and group-management-service element in domain.xml </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Bobby <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/16420">GLASSFISH-16420</a> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-1.0.15 </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> GMS Member authentication when member is joining. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/14663">GLASSFISH-14663</a> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-1.0.16 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Factor Shoal GMS grizzly transport dependent classes into shoal-gms-grizzly-1_9.jar and shoal-gms-grizzly-2_0.jar. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Joe <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/16421">GLASSFISH-16421</a> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-1.0.17 </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> Support secure communications with discovery service. <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GMS3.2Project-OutofScope"></a>Out of Scope</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> # </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-1.1.1 </td> 
+         <td class="confluenceTd"> Will not support network interface changes while cluster is running. </td> 
+         <td class="confluenceTd"> Will be identifying IPV4 only, IPV6 only or dual stack at startup and work for that mode. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-1.1.2 </td> 
+         <td class="confluenceTd"> Will not support network fragmentation that isolates group discovery service from clustered instances. </td> 
+         <td class="confluenceTd"> There should be a group discovery service per subnet if it is a concern that routers/network can fail. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-1.1.3 </td> 
+         <td class="confluenceTd"> Will not support hybrid approach of using UDP multicast within subnets and unicast between subnets. </td> 
+         <td class="confluenceTd"> Simplification to consider all members reachable by UDP multicast or to consider all members communicating via unicast. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-1.1.4 </td> 
+         <td class="confluenceTd"> For no DAS case (self-configuring clusters) when there are no instances running, <br class="atl-forced-newline"> supporting multiple GMS clustered instances all being started concurrently. </td> 
+         <td class="confluenceTd"> DAS always was first instance in cluster started and it would become master before any other clustered instances were started. Thus, GMS Master Collision Resolution technique has never been tested in glassfish environment. There are no existing tests for this case.&nbsp; To support this, tests would need to be written and this is the type of concurrent, non-repeatable testing scenario where something like this would work most of time and intermittently fail.&nbsp; Thus, this is a simplifying non-requirement request. If one simply ensures that after the first instance in cluster is started, that there is a 2 second delay before the next instance is started, it would avoid the chance of issues in the master collision resolution algorithm. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-1.1.5 </td> 
+         <td class="confluenceTd"> Will not support hybrid list of master discovery services. </td> 
+         <td class="confluenceTd"> It is not expected that the GMS_DISCOVERY_REGISTRY_URI_LIST cluster property will contain the address of one or more REST discovery services <b>and</b> an Amazon S3 service. We will not try to synchronize our master discovery information with an S3 bucket. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GMS3.2Project-DesignDocument"></a>Design Document</h2> <p><a href="GMS3.2OnePager.html" title="GMS3.2OnePager">GMS One Pager for GF 3.2</a></p> <h4><a name="GMS3.2Project-Quality"></a>Quality</h2> 
+     <ul> 
+      <li>Link to Test Plan</li> 
+     </ul> <h4><a name="GMS3.2Project-Documentation"></a>Documentation</h2> 
+     <ul> 
+      <li>Link to Documentation Plan</li> 
+     </ul> <h4><a name="GMS3.2Project-Demos"></a>Demos</h2> 
+     <ul> 
+      <li>To be filled in as demos come up each milestone or as appropriate.</li> 
+     </ul> <h4><a name="GMS3.2Project-Workspace"></a>Workspace</h2> <p>Shoal workspace is shared by GMS and HA: <a href="http://shoal.java.net">http://shoal.java.net</a></p> <p>GMS-specific parts of <a href="http://glassfish.org">GlassFish</a> are in cluster/gms-bootstrap and cluster/gms-adapter modules.</p> <h4><a name="GMS3.2Project-MilestoneSchedule"></a>Milestone Schedule</h2> <p>(TBD) Milestones not assigned yet to P3 features.</p> <p>For reference, here's a <a href="GlassFishV3Schedule.html" title="GlassFishV3Schedule">link to GlassFish milestone schedule</a></p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> JIRA issue ID &amp; link </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> 3 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> GMS-1.0.02 </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/16414">GLASSFISH-16414</a> </td> 
+         <td class="confluenceTd"> Administrator shall be able to configure a cluster to not require UDP multicast </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd"> 3 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> GMS-1.0.16 </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/16421">GLASSFISH-16421</a> </td> 
+         <td class="confluenceTd"> Factor Shoal GMS grizzly transport dependent classes into shoal-gms-grizzly-1_9.jar and shoal-gms-grizzly-2_0.jar. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3 </td> 
+         <td class="confluenceTd"> 3 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> GMS-1.0.14 </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/16420">GLASSFISH-16420</a> </td> 
+         <td class="confluenceTd"> New GMS configuration info on cluster and group-management-service element in domain.xml </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4 </td> 
+         <td class="confluenceTd"> 4 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> GMS-1.0.01 </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/16413">GLASSFISH-16413</a> </td> 
+         <td class="confluenceTd"> Administrators shall be able to configure a GMS group discovery mechanism for a site. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5 </td> 
+         <td class="confluenceTd"> 5 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> GMS-1.0.03 </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/14664">GLASSFISH-14664</a> </td> 
+         <td class="confluenceTd"> Administrator shall be able to configure GMS TCP point to point messages to use SSL. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6 </td> 
+         <td class="confluenceTd"> 5 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> GMS-1.0.06 </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/12194">GLASSFISH-12194</a> </td> 
+         <td class="confluenceTd"> GMS monitoring stats provider </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 7 </td> 
+         <td class="confluenceTd"> 5 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> GMS-1.0.11 </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/16418">GLASSFISH-16418</a> </td> 
+         <td class="confluenceTd"> New heartbeat failure detection implementation optimized for non-multicast and no DAS </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 8 </td> 
+         <td class="confluenceTd"> 5 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> GMS-1.0.13 </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/16419">GLASSFISH-16419</a> </td> 
+         <td class="confluenceTd"> Virtual multicast optimization to send messages concurrently. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 9 </td> 
+         <td class="confluenceTd"> 6 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> GMS-1.0.04 </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/16415">GLASSFISH-16415</a> </td> 
+         <td class="confluenceTd"> Administrators shall be able to configure clustered instances to potentially be separated by a firewall. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 10 </td> 
+         <td class="confluenceTd"> TBD (P2) </td> 
+         <td class="confluenceTd"> GMS-1.0.09 </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/16416">GLASSFISH-16416</a> </td> 
+         <td class="confluenceTd"> Administrator shall be able to configure heartbeats to be sent over UDP unicast transport when multicast is disabled. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 11 </td> 
+         <td class="confluenceTd"> (P3) </td> 
+         <td class="confluenceTd"> GMS-1.0.07 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Administrator shall be able to create up to 10 instances in a cluster </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 12 </td> 
+         <td class="confluenceTd"> (P3) </td> 
+         <td class="confluenceTd"> GMS-1.0.08 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Administrator shall be able to create 20 clusters in a domain. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 13 </td> 
+         <td class="confluenceTd"> (P3) </td> 
+         <td class="confluenceTd"> GMS-1.0.10 </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/16417">GLASSFISH-16417</a> </td> 
+         <td class="confluenceTd"> <em>asadmin get-health</em> needs to work in self configuring(ad hoc clusters) cluster env </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 14 </td> 
+         <td class="confluenceTd"> (P3) </td> 
+         <td class="confluenceTd"> GMS-1.0.12 </td> 
+         <td class="confluenceTd"> Workaround in <a href="https://github.com/javaee/glassfish/issues/16103">GLASSFISH-16103</a> </td> 
+         <td class="confluenceTd"> Support for OS configured with IPv6 only </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 15 </td> 
+         <td class="confluenceTd"> (P3) </td> 
+         <td class="confluenceTd"> GMS-1.0.15 </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/14663">GLASSFISH-14663</a> </td> 
+         <td class="confluenceTd"> GMS Member authentication when member is joining. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 16 </td> 
+         <td class="confluenceTd"> (P3) </td> 
+         <td class="confluenceTd"> GMS-1.0.17 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Support secure communications with discovery service. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GMS3.2Project-TaskList"></a>Task List</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task </th> 
+         <th class="confluenceTh"> Target Milestone </th> 
+         <th class="confluenceTh"> Start </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Owner(s) </th> 
+         <th class="confluenceTh"> Feature ID </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> 3 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> GMS-1.0.02 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> 3 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> GMS-1.0.16 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> 3 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> GMS-1.0.14 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> 4 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> GMS-1.0.01 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> 5 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> GMS-1.0.03 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> 5 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> GMS-1.0.06 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 7 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> 5 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> GMS-1.0.11 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 8 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> 5 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> GMS-1.0.13 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 9 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> 6 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> GMS-1.0.04 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 10 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> TBD <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> GMS-1.0.09 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 11 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> GMS-1.0.07 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 12 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> GMS-1.0.08 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 13 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> GMS-1.0.10 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 14 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> GMS-1.0.12 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 15 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> GMS-1.0.15 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 16 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> GMS-1.0.17 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GMS3.2Project-Research"></a>Research</h2> <h4><a name="GMS3.2Project-References"></a>References</h2> <h4><a name="GMS3.2Project-DevTests"></a>Dev Tests</h2> <h4><a name="GMS3.2Project-Estimates"></a>Estimates</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Area </th> 
+         <th class="confluenceTh"> When </th> 
+         <th class="confluenceTh"> Notes </th> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GMS3.2Project-EmailAlias"></a>Email Alias</h2> 
+     <ul> 
+      <li>Please contact us at <a href="mailto:dev@glassfish.java.net">dev@glassfish.java.net</a></li> 
+     </ul> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Apr 28, 2011 by 
+<font color="#0050B2">bbissett</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

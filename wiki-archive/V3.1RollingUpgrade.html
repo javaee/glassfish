@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : V3.1RollingUpgrade</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="V3.1RollingUpgrade-GlassFishServerOpenSourceEdition3.1RollingUpgrade"></a>GlassFish Server Open Source Edition 3.1 - Rolling Upgrade</h1> <p>This page captures information for the rolling upgrade feature as part of the clustering support in GlassFish 3.1.</p> 
+     <div> 
+      <ul> 
+       <li><a href="#V3.1RollingUpgrade-GlassFishServerOpenSourceEdition3.1RollingUpgrade">GlassFish Server Open Source Edition 3.1 - Rolling Upgrade</a></li> 
+       <li><a href="#V3.1RollingUpgrade-Introduction">Introduction</a></li> 
+       <li><a href="#V3.1RollingUpgrade-RoleofApplicationVersioning">Role of Application Versioning</a></li> 
+       <li><a href="#V3.1RollingUpgrade-RemainingRollingUpgradeSteps">Remaining Rolling Upgrade Steps</a></li> 
+       <li><a href="#V3.1RollingUpgrade-Questions%2Fnotes%2Fissues%3A">Questions/notes/issues:</a></li> 
+       <li><a href="#V3.1RollingUpgrade-SomeImplementationNotes">Some Implementation Notes</a></li> 
+      </ul>
+     </div> 
+     <hr> <h4><a name="V3.1RollingUpgrade-Introduction"></a>Introduction</h1> <p>Part of clustering in 3.1 is support for rolling upgrade of applications. The <a href="http://docs.sun.com/app/docs/doc/821-0182/abdik?l=en&amp;a=view">GlassFish 2 documentation</a> describes the procedure, which is mostly manual. GlassFish 3.1 simplifies some of the manual steps.</p> <p>The general flow of rolling upgrade in 3.1 is:</p> 
+     <ul> 
+      <li>Administrator delivers a new version of an app - in disabled state - to all instances in the cluster.</li> 
+      <li>One instance at a time, the administrator brings the application to a quiescent state on that instance, then enables the new version of the application on that instance.</li> 
+     </ul> <h4><a name="V3.1RollingUpgrade-RoleofApplicationVersioning"></a>Role of Application Versioning</h1> <p>GlassFish 3.1 supports <a href="ApplicationVersioning.html" title="ApplicationVersioning">application versioning</a> which allows the administrator to deploy multiple versions of an application concurrently. At most one version of an app can be enabled at any given time.</p> <p>App versioning will simplify rolling upgrade.</p> <p>Suppose the cluster is currently running myApp:1.0 (version 1.0 of myApp). With app versioning support, the administrator can deploy the new version of the application in a disabled state, using a command like</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">asadmin deploy --enabled=false --target myCluster myApp:1.1</pre> 
+       </div> 
+      </div>
+     </div> <p>Clustering's dynamic deployment support will deliver the new version's bits - in a disabled state as requested on the illustrated <tt>deploy</tt> command - to each instance to which the app is assigned if that instance is up at the time of deployment. And only the instance which are up at deployment time are the relevant ones during a rolling app upgrade. (Instances which are down when the administrator deploys the new app will synchronize with the DAS during instance restart.) When deployment finishes, each active instance has the preceding version of the app - which remains live - and the files for the new version.</p> <h4><a name="V3.1RollingUpgrade-RemainingRollingUpgradeSteps"></a>Remaining Rolling Upgrade Steps</h1> <p>To continue the rolling upgrade, for each live instance in the cluster which hosts the app, the administrator:</p> 
+     <ol> 
+      <li>Brings the app on that instance to a quiescent state, which includes diverting load balancer traffic away from the instance (as described in the GlassFish 2 documentation).</li> 
+      <li>Uses <tt>enable --target instanceID myApp:1.1</tt> to simultaneously disable myApp:1.0 and enable myApp:1.1.</li> 
+      <li>Restores load balancer traffic to the instance.</li> 
+     </ol> <p>Key improvements over the 2.x scheme:</p> 
+     <ul> 
+      <li>No server restarts are needed. Because GlassFish can deploy the new version in a disabled state without perturbing the preceding version which still runs, the administrator no longer needs to restart each instance to retrieve the new version's files.</li> 
+      <li>Dynamic reconfiguration can be left on during this process, saving two steps (turning it off and turning it back on).</li> 
+     </ul> <h4><a name="V3.1RollingUpgrade-Questions%2Fnotes%2Fissues%3A"></a>Questions/notes/issues:</h1> 
+     <ul> 
+      <li>GlassFish 2 required an administrator to redeploy an app to the same instances where it already resided. Normally for clusters this was natural because the admin would specify the same cluster name for the deployment and the redeployment...or if --target was omitted from the redeployment GlassFish automatically used the targets where the app was deployed.<br> Currently we have no similar restriction in the app versioning proposal. That is, we don't currently mandate that a new version of an app be deployed to the same target(s) where its predecessor is already assigned. I don't think we want to do that, because it seems like a valid use case to deploy one version of an app to one target and another version to another target (for testing, training, etc.).</li> 
+     </ul> <p>Instead, GlassFish 3.1 could <b>warn</b> if the user deploys a subsequent version of an app to a different set of targets from the set where it's already deployed. That would create "noise" in the example above - where the admin wants one version on one target and another version on another target - but the example would be allowed. And in the case where the administrator intended to hit the same targets but didn't the warning would alert him or her to that.</p> 
+     <ul> 
+      <li>For this scheme to work, administrators must be able to enable/disable application versions selectively on the individual instances in a cluster, as opposed to on the cluster as a whole. This is a departure from most commands – such as deployment – which do not allow the administrator to operate on one instance in a cluster individually.</li> 
+     </ul> <h4><a name="V3.1RollingUpgrade-SomeImplementationNotes"></a>Some Implementation Notes</h1> 
+     <ul> 
+      <li>With the new ability to enable or disable an app individually on a cluster instance, the enabled state of the app ref at the cluster level becomes slightly ambiguous and must be managed differently. Specifically, the cluster-level state of an app ref will be enabled if <b>at least one</b> instance-level app ref is enabled; it will be disabled only if <b>all</b> instance-level states are disabled. Internally, then, when applied to a cluster instance the enable command logic will need to check the states of the corresponding app ref on other instances in the cluster and, if needed, update the cluster-level app ref state accordingly.</li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 27, 2010 by 
+<font color="#0050B2">timq</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

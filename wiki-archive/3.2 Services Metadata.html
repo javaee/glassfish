@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : 3.2 Services Metadata</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="3.2ServicesMetadata-1.ServicesMetadataSchema"></a><b>1. Services Metadata Schema</b></h3> <p>Here is the initial proposed schema for services metadata:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt;
+
+&lt;xs:schema version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema"&gt;
+
+&nbsp; &lt;xs:element name="glassfish-services" type="serviceMetadata"/&gt;
+
+&nbsp; &lt;xs:complexType name="property"&gt;
+&nbsp;&nbsp;&nbsp; &lt;xs:sequence/&gt;
+&nbsp;&nbsp;&nbsp; &lt;xs:attribute name="name" type="xs:string"/&gt;
+&nbsp;&nbsp;&nbsp; &lt;xs:attribute name="value" type="xs:string"/&gt;
+&nbsp; &lt;/xs:complexType&gt;
+
+&nbsp; &lt;xs:complexType name="serviceCharacteristics"&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;xs:annotation&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;xs:documentation&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The characteristics element defines the characteristics
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; using which an appropriate IMS template should be chosen for
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; creating the service.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/xs:documentation&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/xs:annotation&gt;
+&nbsp;&nbsp;&nbsp; &lt;xs:sequence&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;xs:element name="characteristic" type="property" minOccurs="0" maxOccurs="unbounded"/&gt;
+&nbsp;&nbsp;&nbsp; &lt;/xs:sequence&gt;
+&nbsp; &lt;/xs:complexType&gt;
+
+&nbsp; &lt;xs:complexType name="serviceDescription"&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;xs:annotation&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;xs:documentation&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The service-description element defines high level requirement
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; on how the services should be provisioned and configured.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/xs:documentation&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/xs:annotation&gt;
+&nbsp;&nbsp;&nbsp; &lt;xs:sequence&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;xs:choice minOccurs="0"&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;xs:element name="template" type="templateIdentifier"/&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;xs:element name="characteristics" type="serviceCharacteristics"/&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/xs:choice&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;xs:element name="configurations" minOccurs="0"&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;xs:annotation&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;xs:documentation&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The configurations element defines how the service should be
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; configured. For example, number of nodes in a multi-node service.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/xs:documentation&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/xs:annotation&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;xs:complexType&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;xs:sequence&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;xs:element name="configuration" type="property" minOccurs="0" maxOccurs="unbounded"/&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/xs:sequence&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/xs:complexType&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/xs:element&gt;
+&nbsp;&nbsp;&nbsp; &lt;/xs:sequence&gt;
+&nbsp;&nbsp;&nbsp; &lt;xs:attribute name="init-type" type="xs:string"/&gt;
+&nbsp;&nbsp;&nbsp; &lt;xs:attribute name="name" type="xs:string" use="required"&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;xs:annotation&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;xs:documentation&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The name of the service should be unique in the PaaS runtime.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/xs:documentation&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/xs:annotation&gt;
+&nbsp;&nbsp;&nbsp; &lt;/xs:attribute&gt;
+&nbsp; &lt;/xs:complexType&gt;
+
+&nbsp; &lt;xs:complexType name="templateIdentifier"&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;xs:annotation&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;xs:documentation&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The template element specifies the identifier of the IMS template
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; that should be chosen to create the service.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/xs:documentation&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/xs:annotation&gt;
+&nbsp;&nbsp;&nbsp; &lt;xs:sequence/&gt;
+&nbsp;&nbsp;&nbsp; &lt;xs:attribute name="id" type="xs:string" use="required"/&gt;
+&nbsp; &lt;/xs:complexType&gt;
+
+&nbsp; &lt;xs:complexType name="serviceMetadata"&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;xs:annotation&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;xs:documentation&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The glassfish-services is a root element of a Service Metadata
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; deployment descriptor. Holds both service description and
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; service references.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/xs:documentation&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/xs:annotation&gt;
+&nbsp;&nbsp;&nbsp; &lt;xs:sequence&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;xs:element name="service-description" type="serviceDescription" minOccurs="0" maxOccurs="unbounded"/&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;xs:element name="service-reference" type="serviceReference" minOccurs="0" maxOccurs="unbounded"/&gt;
+&nbsp;&nbsp;&nbsp; &lt;/xs:sequence&gt;
+&nbsp; &lt;/xs:complexType&gt;
+
+&nbsp; &lt;xs:complexType name="serviceReference"&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;xs:annotation&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;xs:documentation&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The service-reference element defines how the services should be
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; associated/wired with each other.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/xs:documentation&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/xs:annotation&gt;
+&nbsp;&nbsp;&nbsp; &lt;xs:sequence&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;xs:element name="properties"&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;xs:complexType&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;xs:sequence&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;xs:element name="entry" minOccurs="0" maxOccurs="unbounded"&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;xs:complexType&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;xs:sequence&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;xs:element name="key" minOccurs="0" type="xs:anyType"/&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;xs:element name="value" minOccurs="0" type="xs:anyType"/&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/xs:sequence&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/xs:complexType&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/xs:element&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/xs:sequence&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/xs:complexType&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/xs:element&gt;
+&nbsp;&nbsp;&nbsp; &lt;/xs:sequence&gt;
+&nbsp;&nbsp;&nbsp; &lt;xs:attribute name="name" type="xs:string" use="required"/&gt;
+&nbsp;&nbsp;&nbsp; &lt;xs:attribute name="optional" type="xs:boolean" use="required"/&gt;
+&nbsp;&nbsp;&nbsp; &lt;xs:attribute name="service-name" type="xs:string" use="required"/&gt;
+&nbsp;&nbsp;&nbsp; &lt;xs:attribute name="type" type="xs:string"/&gt;
+&nbsp; &lt;/xs:complexType&gt;
+&lt;/xs:schema&gt;</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="3.2ServicesMetadata-2.SomeScenarios%3A"></a><b>2. Some Scenarios:</b></h3> <p>2.1. An external JDBC service is available. But that service was not configured using 'create-external-service' command. However, the application wants to use it.</p> <p>In this case, specify the raw information in &lt;jdbc-connection-pool&gt; properties. This scenario is already supported in current version of GlassFish.</p> <p>2.2. Referencing to external service which was already configured using 'create-external-service' command.</p> <p>For JDBC case, 'create-external-service' command had already created a shared jdbc connection pool. The name of the shared connection pool is known to the user (say shared-jdbc-pool-A)</p> <p>Case (a). The application will directly use the shared connection pool using the current mechanism, like this:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">glassfish-resources.xml :-&gt;
+--------------------------------
+
+&lt;jdbc-resource jndi-name="jdbc/myres" pool-name="shared-jdbc-pool-A"/&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>Case (b). The application does not want to use the shared connection pool created by 'create-external-service' . Instead it wants to create its own connection pool around the externally created service (say external-service-A):</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">glassfish-resources.xml :-&gt;
+-------------------------------
+
+&lt;jdbc-connection-pool datasource-classname="com.mysql.jdbc.Driver" res-type="javax.sql.XADataSource" name="myPoolB"&gt;
+      &lt;property name="serviceName" value="external-service-A"/&gt;
+      &lt;property name="User" value="dbuser" /&gt;
+      &lt;property name="Password" value="dbpassword" /&gt;
+      &lt;property name="driverType" value="4" /&gt;
+      &lt;property name="dataBaseName" value="testdb" /&gt;
+      &lt;property name="createDatabaseIfNotExist" value="true" /&gt;
+      &lt;property name="server.basedir" value="/tmp/testDB" /&gt;
+&lt;/jdbc-connection-pool&gt;
+
+&lt;jdbc-resource jndi-name="jdbc/myres2" pool-name="myPoolB"/&gt;
+
+[external-service-A would know the actual host, port, admin credentials of the external database server]</pre> 
+       </div> 
+      </div>
+     </div> <p>JMS is also similar to JDBC case wherein the connector-connection-pool will have</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;property name="serviceName" value="external-jms-service-A"/</pre> 
+       </div> 
+      </div>
+     </div> <p>2.3 Referencing a shared provisioned service which was created using 'create-shared-service' command:</p> <p>Same as 2.2, except that the service-name would point to the name of the shared service to bind to.</p> <p>2.4. The JMS service needs to be provisioned during deployment of the application (specification through templates):</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">glassfish-services.xml :-&gt;
+------------------------------
+
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+
+&lt;glassfish-services&gt;
+
+    &lt;!-- Description on how to provision the service --&gt;
+    &lt;service-description name="myMQ" init-type="lazy"&gt;
+        &lt;template id="OpenMQ_MINI"/&gt; &lt;!-- name of the template to be used to provision myMQ service --&gt;
+        &lt;configurations&gt; &lt;!-- provisioned service needs to have the following configurations --&gt;
+            &lt;configuration name="JVM_OPTIONS" value="-Xmx1024m"/&gt; &lt;!-- set the heap size of MQ broker service to 1GB --&gt;
+        &lt;/configurations&gt;
+    &lt;/service-description&gt;
+
+&lt;/glassfish-services&gt;
+
+glassfish-resources.xml :-&gt;
+--------------------------------
+&lt;connector-connection-pool associate-with-thread="false" connection-creation-retry-attempts="0" connection-creation-retry-interval-in-seconds="10" connection-definition-name="javax.jms.ConnectionFactory" connection-leak-reclaim="false" connection-leak-timeout-in-seconds="0" fail-all-connections="false" idle-timeout-in-seconds="300" is-connection-validation-required="false" lazy-connection-association="false" lazy-connection-enlistment="false" match-connections="true" max-connection-usage-count="0" max-pool-size="32" max-wait-time-in-millis="60000" name="jms/JupiterConnectionFactory" pool-resize-quantity="2" resource-adapter-name="jmsra" steady-pool-size="8" validate-atmost-once-period-in-seconds="0"&gt;
+
+&lt;!--
+  &lt;property name="Password" value="guest" /&gt;
+  &lt;property name="UserName" value="guest" /&gt;
+  &lt;property name="AddressList" value="Host1,Host2:12148" /&gt;
+--&gt;
+&lt;property name="ServiceName" value="myMQ" /&gt;
+&lt;property name="IMQ_DESTINATION_NAME" value="MyTopic"/&gt;
+  &lt;/connector-connection-pool&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>2.5. The JMS service needs to be provisioned during deployment of the application (specification through characteristics):</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">glassfish-services.xml :-&gt;
+------------------------------
+
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+
+&lt;glassfish-services&gt;
+
+    &lt;!-- Description on how to provision the service --&gt;
+    &lt;service-description name="myMQ" init-type="lazy"&gt;
+        &lt;!-- Based on the characteristics specified below, the Orchestrator
+would match to a Template in the Template Catalog and provision that Service --&gt;
+        &lt;characteristics&gt;
+           &lt;characteristic name="service-type" value="JMS"/&gt;
+           &lt;characteristic name="product-vendor" value="Oracle"/&gt;
+           &lt;characteristic name="product-name" value="OpenMQ"/&gt;
+           &lt;characteristic name="product-version" value="4.6"/&gt;
+           &lt;characteristic name="os-name" value="Linux"/&gt;
+        &lt;/characteristics&gt;
+
+        &lt;configurations&gt; &lt;!-- provisioned service needs to have the following configurations --&gt;
+            &lt;configuration name="JVM_OPTIONS" value="-Xmx1024m"/&gt; &lt;!-- set the heap size of MQ broker service to 1GB --&gt;
+        &lt;/configurations&gt;
+    &lt;/service-description&gt;
+
+&lt;/glassfish-services&gt;
+
+glassfish-resources.xml is same as in 2.4</pre> 
+       </div> 
+      </div>
+     </div> <p>2.5 Provisioning of application-scoped GlassFish service:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">glassfish-services.xml :-&gt;
+------------------------------
+
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+
+&lt;glassfish-services&gt;
+
+&lt;service-description name="myGlassFish" init-type="lazy"&gt;
+
+        &lt;characteristics&gt;
+           &lt;characteristic name="service-type" value="JavaEE"/&gt;
+           &lt;characteristic name="product-vendor" value="Oracle"/&gt;
+           &lt;characteristic name="product-name" value="GlassFish"/&gt;
+           &lt;characteristic name="product-version" value="3.2"/&gt;
+           &lt;characteristic name="os-name" value="Linux"/&gt;
+        &lt;/characteristics&gt;
+
+        &lt;configurations&gt; &lt;!-- provisioned service needs to have the following configurations --&gt;
+            &lt;configuration name="JVM_OPTIONS" value="-Xmx1024m"/&gt;
+            &lt;configuration name="min.clustersize" value="2"/&gt;
+            &lt;configuration name="max.clustersize" value="5"/&gt;
+            &lt;configuration name="pre.deploy.script" value="file:///tmp/create_resources.asadmin"/&gt;
+        &lt;/configurations&gt;
+
+&lt;/service-description&gt;
+
+&lt;/glassfish-services&gt;</pre> 
+       </div> 
+      </div>
+     </div> 
+     <div class="tabletitle"> 
+      <a name="comments"> <h4>Comments:</h2> </a> 
+     </div> 
+     <table border="0" width="100%"> 
+      <tbody>
+       <tr> 
+        <td> <a name="comment-20883713"></a> <font class="smallfont"><p>The schema documented by the August 12, 2011 version of this page (<a href="http://wikis.sun.com/pages/viewpage.action?pageId=241218039">http://wikis.sun.com/pages/viewpage.action?pageId=241218039</a>) is pretty weak.</p> <p>While the extensive use of name/value pairs makes it easy to use as we prototype the feature, it makes it hard to:<br> *document what users can put in this file and<br> *create editors that provide useful code completion and the like</p> <p>Please consider creating a schema that is 'richer'.</p></font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by vince.kraemer at Aug 31, 2011 13:12 
+         </div> </td> 
+       </tr> 
+      </tbody>
+     </table> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Apr 12, 2012 by 
+<font color="#0050B2">16752</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

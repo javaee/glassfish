@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : 3.1SSHSetup</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="3.1SSHSetup-SettingupSSHforusewithGlassFish3.1"></a>Setting up SSH for use with GlassFish 3.1</h2> <p>Before using SSH nodes in GlassFish 3.1 you need to have SSH setup and configured on your hosts. The most reliable way to do this is to use ssh public key authentication and ensure that the following prerequisite is met:</p> 
+     <div class="panel" style="border-width: 1px;">
+      <div class="panelContent"> 
+       <p>The user that the DAS runs as must be able to SSH from the DAS system to all the other instance systems without ssh prompting for anything. </p> 
+      </div>
+     </div> <p>This document describes how to quickly setup SSH to satisfy this pre-requisite.</p> <h4><a name="3.1SSHSetup-Unix%2FLinux"></a>Unix/Linux</h3> <h4><a name="3.1SSHSetup-1%29InstallSSHDandmakesureitisrunning"></a>1) Install SSHD and make sure it is running</h4> <p>Pretty much all unix systems include ssh support – both client (ssh, scp, etc) and server (sshd). Usually ssh is in /bin or /usr/bin and sshd is in /usr/sbin or /usr/lib/ssh. On Linux you may not have the server (sshd) software installed. In this case you'll have to install the sshd package. It may be called openssh-server or something like that.</p> <p>Once the software is installed you can verify sshd is running by telnet'ing to port 22. You should see something like this:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">$ telnet adc2101159 22
+Trying xx.xxx.xxx.xxx...
+Connected to adc2101159.
+Escape character is '^]'.
+SSH-2.0-OpenSSH_4.3</pre> 
+       </div> 
+      </div>
+     </div> <p>If instead you see "connection refused" then SSHD is not running and you'll need to enable it. How to do this varies by OS.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <td class="confluenceTd">Solaris 10, OpenSolaris</td> 
+         <td class="confluenceTd">svcadm enable ssh</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">Macintosh</td> 
+         <td class="confluenceTd">System Preferences -&gt; Sharing -&gt; check Remote Login</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">Linux</td> 
+         <td class="confluenceTd">TBD</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.1SSHSetup-2%29ConfigureSSH"></a>2) Configure SSH</h4> <p>Now that all the instance systems are running SSHD you'll need to configure SSH to use key authentication to authenticate to the instance systems. If you think this is already true skip to "Verify SSH". Otherwise here are the steps:</p> <p>On the DAS system do the following:</p> 
+     <ol> 
+      <li>Make sure you are logged in as the user that the DAS will be running as</li> 
+      <li>Run '<tt>ssh &lt;instancehost&gt;</tt>' for each instance host. You will need to provide your ssh password. This will ensure that <tt>~/.ssh</tt> is created on each instance host. Just log out immediately after logging in.</li> 
+      <li>Back on the DAS system generate your key pair by running: '<tt>ssh-keygen -t dsa</tt>'. When asked for a passphrase just press <tt>&lt;return&gt;</tt>. GlassFish does not yet support encrypted key files.</li> 
+      <li>On the DAS system run: '<tt>scp ~/.ssh/id_dsa.pub &lt;instancehost&gt;:.ssh/authorized_keys2</tt>' for each instance host.</li> 
+      <li>Now run '<tt>ssh &lt;instancehost&gt;</tt>' for each instance again. Do it using both the unqualified name (<tt>instancehost</tt>) and the fully qualified name (<tt>instance.us.oracle.com</tt>). This makes sure both names get saved in your trusted host file and will work with GlassFish.</li> 
+     </ol> <p>That's it! Next step is to verify the setup.</p> <h4><a name="3.1SSHSetup-3%29VerifySSH"></a>3) Verify SSH</h4> <p>We want to make sure you can log into each instance host without ssh prompting for anything so let's double check that one more time.</p> 
+     <ul> 
+      <li>For each instance run '<tt>ssh &lt;instancehost&gt;</tt>' using both the unqualified name (<tt>instancehost</tt>) and the fully qualified name (<tt>instance.us.oracle.com</tt>). If ssh does <b>not</b> prompt you for anything you are good to go. If you are prompted for a password then there is something amiss in your SSH setup. You may want to verify that your public key file was correctly copied onto the instance host (<tt><sub>/.ssh/id_dsa.pub</sub></tt> to <tt>/.ssh/authorized_keys2</tt>).</li> 
+     </ul> <h4><a name="3.1SSHSetup-Windows"></a>Windows</h3> <h4><a name="3.1SSHSetup-1%29InstallCygwinSSHDandmakesureitisrunning"></a>1) Install Cygwin SSHD and make sure it is running</h4> <p>For a basic setup see: <a href="./3.1SSH+-+Installing+Windows+Cygwin+sshd.html">3.1SSH: Installing Windows Cygwin sshd</a></p> <p>Do this an all the instance systems. Also do this on the DAS system, but you don't need to actually run the SSHD service on the DAS (but you do need the SSH client for testing and key generation).</p> <h4><a name="3.1SSHSetup-2%29ConfigureSSH"></a>2) Configure SSH</h4> <p>On the DAS system do the following:</p> 
+     <ol> 
+      <li>Make sure you are logged in as the user that the DAS will be running as</li> 
+      <li>Run '<tt>ssh &lt;instancehost&gt;</tt>' for each instance host. You will need to provide your ssh password. Once logged in do: 
+       <ol> 
+        <li>$ mkdir .ssh</li> 
+       </ol> </li> 
+      <li>Back on the DAS system generate your key pair by running: '<tt>ssh-keygen -t dsa</tt>'. When asked for a passphrase just press <tt>&lt;return&gt;</tt>. GlassFish does not yet support encrypted key files.</li> 
+      <li>On the DAS system run: '<tt>scp ~/.ssh/id_dsa.pub &lt;instancehost&gt;:.ssh/authorized_keys2</tt>' for each instance host.</li> 
+      <li>Now run '<tt>ssh &lt;instancehost&gt;</tt>' for each instance again. Do it using both the unqualified name (<tt>instancehost</tt>) and the fully qualified name (<tt>instance.us.oracle.com</tt>). This makes sure both names get saved in your trusted host file and will work with GlassFish.</li> 
+     </ol> <h4><a name="3.1SSHSetup-3%29VerifySSH"></a>3) Verify SSH</h4> <p>We want to make sure you can log into each instance host without ssh prompting for anything so let's double check that one more time.</p> 
+     <ul> 
+      <li>For each instance run '<tt>ssh &lt;instancehost&gt;</tt>' using both the unqualified name (<tt>instancehost</tt>) and the fully qualified name (<tt>instance.us.oracle.com</tt>). If ssh does <b>not</b> prompt you for anything you are good to go. If you are prompted for a password then there is something amiss in your SSH setup. You may want to verify that your public key file was correctly copied onto the instance host (<tt><sub>/.ssh/id_dsa.pub</sub></tt> to <tt>/.ssh/authorized_keys2</tt>).</li> 
+     </ul> <h4><a name="3.1SSHSetup-UsingGlassFishwithyourSSHsetup"></a>Using GlassFish with your SSH setup</h2> <p>Now that you have SSH set up you can use GlassFish 3.1 with it. GlassFish supports basic unencrypted key file authentication (as described in this document), encrypted key file authentication, and username/password authentication.</p> <p>For information on how to configure GlassFish to use this various forms of authentication when access an SSH node please see: <a href="3.1SSHAuthentication.html" title="3.1SSHAuthentication">3.1 SSH Authentication</a></p> 
+     <div class="tabletitle"> 
+      <a name="comments"> <h4>Comments:</h2> </a> 
+     </div> 
+     <table border="0" width="100%"> 
+      <tbody>
+       <tr> 
+        <td> <a name="comment-20878294"></a> <font class="smallfont"><p>I followed the instructions in part 2 Configure SSH, step 4 and it did not work on CentOS 5.5. I then found out that the use of authorized_keys2 for protocol 2 has been <a href="http://marc.info/?l=openssh-unix-dev&amp;m=100508718416162&amp;w=2">deprecated since 2001.</a> Changing it to use authorized_keys instead worked.</p></font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by hiro2k at Jul 07, 2011 09:27 
+         </div> </td> 
+       </tr> 
+      </tbody>
+     </table> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Sep 08, 2010 by 
+<font color="#0050B2">dipol</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

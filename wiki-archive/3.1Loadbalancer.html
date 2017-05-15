@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : 3.1Loadbalancer</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="3.1Loadbalancer-GlassFishServerOpenSourceEdition3.1Loadbalancer"></a>GlassFish Server Open Source Edition 3.1 - Loadbalancer</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#3.1Loadbalancer-GlassFishServerOpenSourceEdition3.1Loadbalancer">GlassFish Server Open Source Edition 3.1 - Loadbalancer</a></li> 
+       <ul> 
+        <li><a href="#3.1Loadbalancer-Scope">Scope</a></li> 
+        <li><a href="#3.1Loadbalancer-Onepager">One-pager</a></li> 
+        <li><a href="#3.1Loadbalancer-DemoScript">Demo Script</a></li> 
+        <li><a href="#3.1Loadbalancer-LoadbalancersupportfordifferenteditionsofGlassFish">Load-balancer support for different editions of GlassFish</a></li> 
+        <ul> 
+         <li><a href="#3.1Loadbalancer-GlassFishOpenSourceEdition">GlassFish OpenSource Edition</a></li> 
+         <li><a href="#3.1Loadbalancer-OracleGlassFishServer">Oracle GlassFish Server</a></li> 
+        </ul> 
+        <li><a href="#3.1Loadbalancer-FeatureOverview">Feature Overview</a></li> 
+        <ul> 
+         <li><a href="#3.1Loadbalancer-Administration">Administration</a></li> 
+         <li><a href="#3.1Loadbalancer-LBREC003%3AInstaller">LBREC-003 : Installer</a></li> 
+         <li><a href="#3.1Loadbalancer-LBREC004%3APreferredfailoverinstance">LBREC-004 : Preferred fail-over instance</a></li> 
+        </ul> 
+        <li><a href="#3.1Loadbalancer-SupportedWebservers">Supported Web servers</a></li> 
+        <li><a href="#3.1Loadbalancer-SupportedPlatform">Supported Platform</a></li> 
+        <li><a href="#3.1Loadbalancer-MilestoneSchedule">Milestone Schedule</a></li> 
+        <li><a href="#3.1Loadbalancer-TaskList">Task List</a></li> 
+        <li><a href="#3.1Loadbalancer-DevTests">Dev Tests</a></li> 
+        <li><a href="#3.1Loadbalancer-EmailAlias">Email Alias</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="3.1Loadbalancer-Scope"></a>Scope </h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Feature ID </th> 
+         <th class="confluenceTh"> Priority </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> Eng Response </th> 
+         <th class="confluenceTh"> Owner(s) </th> 
+         <th class="confluenceTh"> Estimate (Man Days) </th> 
+         <th class="confluenceTh"> Source of Requirement </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> LBREC-001 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Admin command to create load-balancer elements in domain xml </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Yamini </td> 
+         <td class="confluenceTd"> 20 </td> 
+         <td class="confluenceTd"> Feature parity </td> 
+         <td class="confluenceTd"> Admin commands : configure-lb-weight, create-http-health-checker, create-http-lb, create-http-lb-config, create-http-lb-ref, delete-http-health-checker, delete-http-lb, delete-http-lb-config, delete-http-lb-ref, disable-http-lb-application, disable-http-lb-server, enable-http-lb-application, enable-http-lb-server, list-http-lbs, list-http-lb-configs etc. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> LBREC-002 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Admin command to generate load-balancer xml </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Kshi tiz </td> 
+         <td class="confluenceTd"> 10 </td> 
+         <td class="confluenceTd"> Feature parity </td> 
+         <td class="confluenceTd"> Admin command : export-http-lb-config </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> LBREC-003 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Installer support for Load-balancer plugin </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Kshi tiz </td> 
+         <td class="confluenceTd"> 5 </td> 
+         <td class="confluenceTd"> Feature parity </td> 
+         <td class="confluenceTd"> GlassFish Loadbalancer Configurator already exists. It need to be tested by QE. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> LBREC-004 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Preferred fail-over instance </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Kshi tiz </td> 
+         <td class="confluenceTd"> 15 </td> 
+         <td class="confluenceTd"> Feature requested by session replication team </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> LBREC-005 </td> 
+         <td class="confluenceTd"> P4 </td> 
+         <td class="confluenceTd"> Pushing load-balancer xml over the wire to web-server </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Kshi tiz </td> 
+         <td class="confluenceTd"> 15 </td> 
+         <td class="confluenceTd"> Feature parity </td> 
+         <td class="confluenceTd"> Admin command : apply-http-lb-changes </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> LBREC-006 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Upgrade Tasks </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Kshi tiz </td> 
+         <td class="confluenceTd"> 15 </td> 
+         <td class="confluenceTd"> Upgrade requirements </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.1Loadbalancer-Onepager"></a>One-pager </h2> 
+     <ul> 
+      <li><a href="./GlassFish+3.1+Load+Balancer+Plugin+One+Pager.html">One pager for load-balancer plugin</a></li> 
+     </ul> <h4><a name="3.1Loadbalancer-DemoScript"></a>Demo Script</h2> 
+     <ul> 
+      <li><a href="3.1LoadbalancerDemoScript.html" title="3.1LoadbalancerDemoScript">Load-balancer demo script</a></li> 
+     </ul> <h4><a name="3.1Loadbalancer-LoadbalancersupportfordifferenteditionsofGlassFish"></a>Load-balancer support for different editions of GlassFish</h2> <h4><a name="3.1Loadbalancer-GlassFishOpenSourceEdition"></a>GlassFish OpenSource Edition</h3> 
+     <ul> 
+      <li>Apache + mod_jk is suggested load-balancer for community edition of GlassFish 3.1</li> 
+     </ul> <h4><a name="3.1Loadbalancer-OracleGlassFishServer"></a>Oracle GlassFish Server</h3> 
+     <ul> 
+      <li>Use existing native load-balancer plugin for GlassFish 3.1</li> 
+     </ul> <h4><a name="3.1Loadbalancer-FeatureOverview"></a>Feature Overview </h2> <h4><a name="3.1Loadbalancer-Administration"></a>Administration </h3> <p>The administration module of GlassFish 3.1 will provide support for following commands :</p> 
+     <ul> 
+      <li><b>LBREC-001</b> : Commands to create, edit, delete and list http load-balancer element and attributes in domain xml 
+       <ul> 
+        <li>create-http-lb</li> 
+        <li>create-http-lb-config</li> 
+        <li>create-http-lb-ref</li> 
+        <li>create-http-healthchecker</li> 
+        <li>delete-http-lb</li> 
+        <li>delete-http-lb-config</li> 
+        <li>delete-http-lb-ref</li> 
+        <li>enable-http-lb-application</li> 
+        <li>enable-http-lb-server</li> 
+        <li>disable-http-lb-application</li> 
+        <li>disable-http-lb-server</li> 
+        <li>configure-lb-weight</li> 
+        <li>list-http-lbs</li> 
+        <li>list-http-lb-configs</li> 
+       </ul> </li> 
+      <li><b>LBREC-002</b> : Command to generate load-balancer xml. This file need to be manually copied to web server for proper functioning of load-balancer 
+       <ul> 
+        <li>export-http-lbconfig</li> 
+       </ul> </li> 
+      <li><b>LBREC-005</b> : Optional command to push load-balancer xml over the wire to web server 
+       <ul> 
+        <li>apply-http-lb-changes</li> 
+       </ul> </li> 
+     </ul> <h4><a name="3.1Loadbalancer-LBREC003%3AInstaller"></a>LBREC-003 : Installer</h3> <p>In GlassFish 2.1.1, we developed a installer and configurator for load-balancer plugin. It is known as <a href="https://www.sun.com/offers/details/glassfish_loadbalancer.xml">GlassFish Loadbalancer Configurator</a>. Its beta version was made available to GlassFish user. We can leverage it for GlassFish 3.1 as well. This will act as standalone installer to install and configure load-balancer plugin on supported web servers and platforms.</p> <p>We will further discuss with installer team of GlassFish 3.1 whether installer can take care of above mentioned functionality, as used to be the case in GlassFish 2.x.</p> <h4><a name="3.1Loadbalancer-LBREC004%3APreferredfailoverinstance"></a>LBREC-004 : Preferred fail-over instance</h3> <p>As of now if instance currently handling session goes down then load-balancer will select another healthy instance from the cluster and forward request to that instance. We can call this newly selected instance as fail-over instance. Since round-robin algorithm is used to select fail-over instance, it is not guaranteed that fail-over instance will have user session in its replica cache and will resort to broadcast mechanism to get user session.</p> <p>If a mechanism can be developed wherein GlassFish let load-balancer know of instance which acts as replica for user session. The load-balancer can then fail-over request to preferred fail-over instance rather than using round-robin mechanism to select it. This will need certain amount of work in native load-balancer plugin code as well as GlassFish. </p> <p>Another point to note here is that load-balancer does not use and expect plain instance names as cookie value. It generates instance ID for each instance using a propriety encoding mechanism. If GlassFish stamps the replica instance name, then it need to follow same mechanism to encode fail-over instance. We need to always ensure that encoding mechanism is always consistent in GlassFish and load-balancer.</p> <p>We need to decide whether existing load-balancer plugin will be enhanced to include this feature.</p> <h4><a name="3.1Loadbalancer-SupportedWebservers"></a>Supported Web servers</h2> <p>We will continue to support web servers which were supported by load-balancer plugin in GlassFish 2.x. Below is the list of supported web servers :</p> 
+     <ul> 
+      <li>Sun Java System Web Server 6.1SPx/7.x</li> 
+      <li>Apache HTTP server 2.0.x/2.2.x</li> 
+      <li>Internet Information Services(IIS) 5.0/6.0</li> 
+     </ul> <h4><a name="3.1Loadbalancer-SupportedPlatform"></a>Supported Platform</h2> <p>Supported platforms by load-balancer plugin will be subset of platforms supported by GlassFish 3.1. It will continue to support platforms already supported in GlassFish 2.x. No new platform support is planned as of now. Below is the list of supported platforms :</p> 
+     <ul> 
+      <li>Solaris 9/10</li> 
+      <li>RHEL 3/4/5</li> 
+      <li>Windows 2003 Advanced Server Edition</li> 
+     </ul> <p>We may additional support SLES 11 if existing load-balancer plugin works successfully on that platform. QE need to verify load-balancing functionality on SLES 11.</p> <h4><a name="3.1Loadbalancer-MilestoneSchedule"></a>Milestone Schedule</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> MS1 </td> 
+         <td class="confluenceTd"> N.A. </td> 
+         <td class="confluenceTd"> Load-balancer one pager describing features and implementation details </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> COMPLETED </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> LBREC-001 </td> 
+         <td class="confluenceTd"> Admin command to create load-balancer elements in domain xml </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> COMPLETED </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3 </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> LBREC-002 </td> 
+         <td class="confluenceTd"> Admin command to generate load-balancer xml </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> COMPLETED </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4 </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> LBREC-005 </td> 
+         <td class="confluenceTd"> Pushing load-balancer xml over the wire to web-server </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> COMPLETED </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5 </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd"> LBREC-004 </td> 
+         <td class="confluenceTd"> Preferred fail-over instance </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> COMPLETED </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6 </td> 
+         <td class="confluenceTd"> MS5 </td> 
+         <td class="confluenceTd"> LBREC-003 </td> 
+         <td class="confluenceTd"> Installer support for Load-balancer plugin </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6 </td> 
+         <td class="confluenceTd"> MS5 </td> 
+         <td class="confluenceTd"> LBREC-006 </td> 
+         <td class="confluenceTd"> Upgrade tasks </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.1Loadbalancer-TaskList"></a>Task List</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task </th> 
+         <th class="confluenceTh"> Target Milestone </th> 
+         <th class="confluenceTh"> Start </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Owner(s) </th> 
+         <th class="confluenceTh"> Feature ID </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Load-balancer one pager </td> 
+         <td class="confluenceTd"> MS1 </td> 
+         <td class="confluenceTd"> 5/10 </td> 
+         <td class="confluenceTd"> 5/20 </td> 
+         <td class="confluenceTd"> Kshi tiz </td> 
+         <td class="confluenceTd"> N.A. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Admin command to create load-balancer elements in domain xml : configure-lb-weight, create-http-health-checker, create-http-lb, create-http-lb-config, create-http-lb-ref, delete-http-health-checker, delete-http-lb, delete-http-lb-config, delete-http-lb-ref, disable-http-lb-application, disable-http-lb-server, enable-http-lb-application, enable-http-lb-server, list-http-lbs, list-http-lb-configs etc. </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> 6/7 </td> 
+         <td class="confluenceTd"> 7/19 </td> 
+         <td class="confluenceTd"> Yamini </td> 
+         <td class="confluenceTd"> LBREC-001 </td> 
+         <td class="confluenceTd"> COMPLETED </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Admin command to generate load-balancer xml : export-http-lb-config </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> 6/7 </td> 
+         <td class="confluenceTd"> 7/19 </td> 
+         <td class="confluenceTd"> Kshi tiz </td> 
+         <td class="confluenceTd"> LBREC-002 </td> 
+         <td class="confluenceTd"> COMPLETED </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Pushing load-balancer xml over the wire to web-server </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> 6/7 </td> 
+         <td class="confluenceTd"> 7/19 </td> 
+         <td class="confluenceTd"> Kshi tiz </td> 
+         <td class="confluenceTd"> LBREC-005 </td> 
+         <td class="confluenceTd"> COMPLETED </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Preferred fail-over instance </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd"> 7/20 </td> 
+         <td class="confluenceTd"> 8/16 </td> 
+         <td class="confluenceTd"> Kshi tiz </td> 
+         <td class="confluenceTd"> LBREC-004 </td> 
+         <td class="confluenceTd"> COMPLETED </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Installer support for Load-balancer plugin </td> 
+         <td class="confluenceTd"> MS5 </td> 
+         <td class="confluenceTd"> 8/17 </td> 
+         <td class="confluenceTd"> 9/13 </td> 
+         <td class="confluenceTd"> Kshi tiz </td> 
+         <td class="confluenceTd"> LBREC-003 </td> 
+         <td class="confluenceTd"> Already available. Probably require some minor changes. Also need to add upgrade support. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> In-place upgrade for load-balancer elements in domain.xml </td> 
+         <td class="confluenceTd"> MS5 </td> 
+         <td class="confluenceTd"> 8/17 </td> 
+         <td class="confluenceTd"> 9/13 </td> 
+         <td class="confluenceTd"> Kshi tiz, Yamini </td> 
+         <td class="confluenceTd"> LBREC-006 </td> 
+         <td class="confluenceTd"> For load-balancer element, device-host and device-port need to be converted to attributes from properties. Remove auto-apply-enabled attribute with suitable warning </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.1Loadbalancer-DevTests"></a>Dev Tests </h2> 
+     <ul> 
+      <li>Coming soon</li> 
+     </ul> <h4><a name="3.1Loadbalancer-EmailAlias"></a>Email Alias</h2> 
+     <ul> 
+      <li>Please contact us at <a href="mailto:dev@glassfish.java.net">dev@glassfish.java.net</a></li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Nov 11, 2011 by 
+<font color="#0050B2">kshitiz_s</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

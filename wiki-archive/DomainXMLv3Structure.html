@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : DomainXMLv3Structure</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="DomainXMLv3Structure-Structureofdomain.xmlinv3"></a>Structure of domain.xml in v3</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#DomainXMLv3Structure-Structureofdomain.xmlinv3">Structure of domain.xml in v3</a></li> 
+       <ul> 
+        <li><a href="#DomainXMLv3Structure-ConfigAnalyzerTool">ConfigAnalyzer Tool</a></li> 
+        <ul> 
+         <li><a href="#DomainXMLv3Structure-Download">Download</a></li> 
+         <li><a href="#DomainXMLv3Structure-Run">Run</a></li> 
+         <li><a href="#DomainXMLv3Structure-Output">Output</a></li> 
+        </ul> 
+        <li><a href="#DomainXMLv3Structure-v3domain.xml%28asof22July2009%29">v3 domain.xml (as of 22 July 2009)</a></li> 
+        <li><a href="#DomainXMLv3Structure-Inconsistencies%2FErrorsinthe@ConfiguredInterfaces">Inconsistencies/Errors in the @Configured Interfaces</a></li> 
+        <li><a href="#DomainXMLv3Structure-BugsintheToolitself">Bugs in the Tool itself</a></li> 
+       </ul> 
+      </ul>
+     </div> <p>There have been several requests for a DTD or other definition for the v3 domain.xml. There cannot really be a static DTD or XSD because the format of the domain.xml file can change as new, unanticipated types of containers are added to a GlassFish installation. The proper structure of domain.xml is therefore dynamic and can only be computed by examining the @Configured interfaces in the GlassFish code base.</p> <h4><a name="DomainXMLv3Structure-ConfigAnalyzerTool"></a>ConfigAnalyzer Tool</h2> <p>Still, there is no denying the value in having a static description of the format, even if it is only a snapshot of a given moment in time. To try to meet that need, I've created a very simple tool that analyzes all the @Configured interfaces in JARs you point it to and displays the structure from a given @Configured type and below. I have not (so far) formatted the output as a DTD or XSD but the output information should be at least equivalent to DTD and XSD content.</p> <p>For example, if you ask the tool to display from </p>
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">com/sun/enterprise/config/serverbeans/Domain</pre> 
+       </div> 
+      </div>
+     </div> you will see (in theory) the entire structure of domain.xml. <p></p> <h4><a name="DomainXMLv3Structure-Download"></a>Download</h3> <p>You can download the ConfigAnalyzer tool from <a href="http://wiki.glassfish.java.net/attach/DomainXMLv3Structure/ConfigAnalyzer.jar">here</a>. Be sure to download the <a href="http://wiki.glassfish.java.net/attach/DomainXMLv3Structure/ASM.jar">ASM library</a> and save it as lib/ASM.jar relative to where you save the tool itself.</p> <h4><a name="DomainXMLv3Structure-Run"></a>Run</h3> <p>Use </p>
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">java -jar xxx/ConfigAnalyzer.jar internal-name-of-interface-to-analyze comma-or-space-separated-list-of-JARs-to-analyze</pre> 
+       </div> 
+      </div>
+     </div><p></p> <p>where </p>
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">xxx</pre> 
+       </div> 
+      </div>
+     </div> is the path where you downloaded the JAR and 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">internal-name-of-interface-to-analyze</pre> 
+       </div> 
+      </div>
+     </div> is the fully-qualified interface name (using slashes, not dots) you want to analyze. You need to specify the list of JARs you want the tool to scan looking for @Configured interfaces. You can specify individual JARs. You can also specify directories, in which case the tool will include all JARs in the directory. <p></p> <p>For example, this command will display the format of the entire domain.xml file:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">java  -jar xxx/ConfigAnalyzer.jar com/sun/enterprise/config/serverbeans/Domain ${installDir}/glassfishv3/glassfish/modules/</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="DomainXMLv3Structure-Output"></a>Output</h3> <p>The tool prints each interface that corresponds to an XML element at the left margin, followed by a list of attributes (if any) and their characteristics (required, default value, etc.). Then comes the list of subelements (if any). The tool derives the name of each subelement from the @Configured interface type returned by the corresponding </p>
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">get</pre> 
+       </div> 
+      </div>
+     </div> method defined on the containing interface.<p></p> <p>The tool loosely uses regex-style notation for </p> 
+     <ul> 
+      <li>optional <img class="emoticon" src="images/icons/emoticons/help_16.gif" height="16" width="16" align="absmiddle" alt="" border="0"></li> 
+      <li>required-once (no added notation),</li> 
+      <li>required-at-least-once <img class="emoticon" src="images/icons/emoticons/add.gif" height="16" width="16" align="absmiddle" alt="" border="0">, or</li> 
+      <li>optional-repeating <img class="emoticon" src="images/icons/emoticons/star_yellow.gif" height="16" width="16" align="absmiddle" alt="" border="0">.</li> 
+     </ul> <p>For elements defined using </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Element("*")
+List&lt;OtherType&gt; getOtherTypes();</pre> 
+       </div> 
+      </div>
+     </div> <p>the tool displays, for that subelement, a choice of all @Configured interfaces which extend </p>
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">OtherType</pre> 
+       </div> 
+      </div>
+     </div>. On that same line the tool also flags the use of the wildcard processing and displays the @Configured interface type which the subelement interfaces extend. Here is <em>partial</em> output from the earlier command anchored at com/sun/enterprise/config/serverbeans/Domain that illustrates this output:<p></p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">domain
+  Attributes:
+    application-root
+    log-root
+    locale
+    version
+
+  Subelements:
+    applications ?
+    system-applications ?
+    resources ?
+    configs 
+    servers 
+    clusters ?
+    node-agents ?
+    lb-configs ?
+    load-balancers ?
+    system-property *
+    property *
+
+applications
+  Subelements:
+    ( module | ejb-module | appclient-module | connector-module | mbean | server | cluster | lifecycle-module | j-2-ee-application | web-module | config | application | container | extension-module ) * [wildcard type = org/glassfish/api/admin/config/Named returned by getModules]
+
+system-applications
+  Subelements:
+    ( module | ejb-module | appclient-module | connector-module | mbean | server | cluster | lifecycle-module | j-2-ee-application | web-module | config | application | container | extension-module ) * [wildcard type = org/glassfish/api/admin/config/Named returned by getModules]
+
+resources
+  Subelements:
+    ( external-jndi-resource | jdbc-connection-pool | custom-resource | mail-resource | admin-object-resource | resource-adapter-config | persistence-manager-factory-resource | connector-resource | work-security-map | jdbc-resource | connector-connection-pool ) * [wildcard type = com/sun/enterprise/config/serverbeans/Resource returned by getResources]</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="DomainXMLv3Structure-v3domain.xml%28asof22July2009%29"></a>v3 domain.xml (as of 22 July 2009)</h2> <p>Here is the <a href="http://wiki.glassfish.java.net/attach/DomainXMLv3Structure/domain.txt">entire analysis</a> of the v3 domain.xml elements, using the above command, as of this writing.</p> <p>There seem to be some inconsistencies in the way some of the @Configured interfaces are defined. What I've seen so far are @Configured interfaces that do not extend the correct parent interface, or methods defined on @Configured interfaces that seem to return an overly-general type. I've started a table below recording them based on my quick looks so far. There might be more; if you find any please add them to the table.</p> <p>As for actually changing the definitions, we probably need to be careful because of how important these interfaces are to the server's operation. Code reviews involving Jerome and/or the admin team are probably in order.</p> <h4><a name="DomainXMLv3Structure-Inconsistencies%2FErrorsinthe@ConfiguredInterfaces"></a>Inconsistencies/Errors in the @Configured Interfaces</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">@Configured interface/method</th> 
+         <th class="confluenceTh">Issue</th> 
+         <th class="confluenceTh">Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Applications#getModules </td> 
+         <td class="confluenceTd"> returns 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">List&lt;Named&gt;</pre> 
+            </div> 
+           </div>
+          </div>; should return 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">List&lt;Module&gt;</pre> 
+            </div> 
+           </div>
+          </div> instead? currently returns types that are not really modules (cluster, server, container) but are Named </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> SystemApplications#getModules </td> 
+         <td class="confluenceTd"> returns 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">List&lt;Named&gt;</pre> 
+            </div> 
+           </div>
+          </div>; should return 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">List&lt;Module&gt;</pre> 
+            </div> 
+           </div>
+          </div> instead? </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ServerRef </td> 
+         <td class="confluenceTd"> should also extend Ref; it does not so it is excluded from lb-config subelements; what is currently 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">cluster-ref *</pre> 
+            </div> 
+           </div>
+          </div> should be 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">(cluster-ref | server-ref) *</pre> 
+            </div> 
+           </div>
+          </div> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="DomainXMLv3Structure-BugsintheToolitself"></a>Bugs in the Tool itself</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Problem </th> 
+         <th class="confluenceTh"> Status </th> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Dec 01, 2011 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:43.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

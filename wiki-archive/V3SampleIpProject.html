@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : V3SampleIpProject</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="V3SampleIpProject-SampleProjecttoshowtheIntegrationPointtoGlassFishv3AdminConsole"></a>Sample Project to show the Integration Point to GlassFish v3 Admin Console</h1> <p><a href="./GlassFishV3AdminConsole.html">Back to AdminConsole V3</a></p> <p>Last updated on 9/11/208</p> <p>A sample is created that shows how to extend the Admin Console by using <a href="./V3IntegrationPoint.html">Integration Points</a>.<br> The source code of the project and the resulting plugin module is checked in the <a href="http://glassfish-samples.java.net">glassfish-samples</a> project.<br> Here is the instructions on how to checkout the sample and try it out.</p> <h4><a name="V3SampleIpProject-DownloadandinstallMaven2version2.0.9"></a>Download and install Maven2 version 2.0.9 </h3> <p>You can get that from <a href="http://maven.apache.org/download.html">http://maven.apache.org/download.html</a><br> After installation, verify it by</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">mvn -version</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="V3SampleIpProject-Checkouttheproject"></a>Checkout the project</h3> <p>Change the <em>username</em> to your java.net user account name.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">cvs -d :pserver:username@cvs.java.net:/cvs co glassfish-samples/v3/plugin/adminconsole/console-sample-ip</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="V3SampleIpProject-Buildtheproject%28optionalasthejaritselfhasbeencheckedout%29"></a>Build the project (optional as the jar itself has been checked out)</h3> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">cd glassfish-samples/v3/plugin/adminconsole/console-sample-ip/project
+mvn install</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="V3SampleIpProject-Copythepluginmoduletothemodulesdirectoryandstarttheserver"></a>Copy the plugin module to the modules directory and start the server</h3> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">cp glassfish-samples/v3/plugin/adminconsole/console-sample-ip/target/console-sample-ip-plugin-3.0-Prelude.jar  &lt;GFv3-prelude&gt;/glassfish/modules/
+&lt;GFv3-prelude&gt;/glassfish/bin/asadmin start-domain</pre> 
+       </div> 
+      </div>
+     </div> <p>By default, access the console by *<a href="http://localhost:4848/*">http://localhost:4848/*</a></p> <h4><a name="V3SampleIpProject-Filesthatyoushouldexamine%3A"></a>Files that you should examine:</h3> <p><b>1. src/main/java/org/glassfish/admingui/plugin/SamplePlugin.java</b><br> This is the Java Class which implements the ConsoleProvider @Contract. This is done so your plugin can be discovered by the GlassFish v3 Administration Console. Implementing the ConsoleProvider interface is simply a matter of annotating your class with the @Service annotation and implementing its single method.<br> <b>2. src/main/resources/META-INF/admingui/console-config.xml</b><br> This file shows you how to declare your "IntegrationPoints."</p> 
+     <ul> 
+      <li>3. src/main/resources/<b>.jsf</b><br> These are files that is specified as the content of the integration points. <h4><a name="V3SampleIpProject-Hereisacouplescreenshots"></a>Here is a couple screenshots </h3></li> 
+     </ul> <p><span class="error">Cannot resolve external resource into attachment.</span><br> <span class="error">Cannot resolve external resource into attachment.</span><br> <span class="error">Cannot resolve external resource into attachment.</span></p> 
+     <hr> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20873627/21364749.jpg">sample-ips.jpg</a> (image/pjpeg) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20873627/21364744.jpg">commontask.jpg</a> (image/pjpeg) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20873627/21364748.jpg">pagePlugin.jpg</a> (image/pjpeg) 
+      <br> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 09, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:48.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

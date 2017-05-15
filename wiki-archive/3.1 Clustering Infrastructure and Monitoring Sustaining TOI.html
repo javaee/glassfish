@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : 3.1 Clustering Infrastructure and Monitoring Sustaining TOI</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="3.1ClusteringInfrastructureandMonitoringSustainingTOI-ClusteringInfrastructureandMonitoringSustainingTOI"></a>Clustering Infrastructure and Monitoring Sustaining TOI</h1> <p>This is a page to capture information for the Clustering Infrastructure and Monitoring TOI for Sustaining.</p> 
+     <ul> 
+      <li><a href="http://appserver.sfbay.sun.com/Wiki.jsp?page=3.1SupportTraining">Schedule</a>&nbsp;for all TOIs</li> 
+      <li>Sign-off copy of <a href="http://swpubs.us.oracle.com/writing/appserver/docs/cd/E18930_01/index.htm">GlassFish 3.1 docs</a></li> 
+     </ul> <p>The clustering infrastructure feature consists of the command line interfaces (CLIs) for creating and managing clusters. The commands include:</p> 
+     <ul> 
+      <li><a href="http://swpubs.us.oracle.com/writing/appserver/docs/cd/E18930_01/html/821-2426/gkqdy.html#gkqdm">create/delete/list-cluster</a></li> 
+      <li><a href="http://swpubs.us.oracle.com/writing/appserver/docs/cd/E18930_01/html/821-2426/gkrbv.html">create/delete/list-instance</a></li> 
+      <li><a href="http://swpubs.us.oracle.com/writing/appserver/docs/cd/E18930_01/html/821-2433/create-local-instance-1.html">create</a> /<a href="http://swpubs.us.oracle.com/writing/appserver/docs/cd/E18930_01/html/821-2433/delete-local-instance-1.html">delete-local-instance</a></li> 
+      <li><a href="http://swpubs.us.oracle.com/writing/appserver/docs/cd/E18930_01/html/821-2426/abdjq.html">copy/delete/list-config</a></li> 
+      <li><a href="http://swpubs.us.oracle.com/writing/appserver/docs/cd/E18930_01/html/821-2426/gkqal.html#gkqaw">start/stop-instance</a></li> 
+      <li><a href="http://swpubs.us.oracle.com/writing/appserver/docs/cd/E18930_01/html/821-2426/gkqdw.html#gkqak">start/stop-local-instance</a></li> 
+      <li><a href="http://swpubs.us.oracle.com/writing/appserver/docs/cd/E18930_01/html/821-2426/gkqal.html#gkqcc">restart-instance</a>,<a href="http://swpubs.us.oracle.com/writing/appserver/docs/cd/E18930_01/html/821-2426/gkqdw.html#gkqef">restart-local-instance</a></li> 
+      <li><a href="http://swpubs.us.oracle.com/writing/appserver/docs/cd/E18930_01/html/821-2426/gkqal.html#gkqcj">start/stop-cluster</a></li> 
+     </ul> <p>Although not part of this section, these commands also depend on the node configuration and SSH feature.&nbsp;</p> <p>These commands allow the user to create a cluster and clustered instances, or&nbsp;<a href="http://swpubs.us.oracle.com/writing/appserver/docs/cd/E18930_01/html/821-2426/gkrbn.html">stand-alone instances</a>.&nbsp;</p> <p>There is a new synchronization algorithm that copies the data from the DAS to the instances. &nbsp;Details about this algorithm are in the <a href="V3.1Clustering.html" title="V3.1Clustering">design specification</a>.&nbsp;<br> Once a cluster is running, commands that change the cluster configuration trigger a command replication algorithm that results in dynamic reconfiguration of the cluster.&nbsp;<br> The dynamic reconfiguration algorithm maintains state information about each instance in a .instancestate file.</p> <p>To upgrade a GlassFish 2.1 installation that uses clusters, the upgrade logic converts node-agents to nodes. &nbsp;After upgrading the DAS, the instances<br> are recreated using the create-local-instance command.&nbsp;</p> <p>Information about the monitoring feature in GlassFish 3.1 can be found here:</p> 
+     <ul> 
+      <li><a href="MonitoringReference.html" title="MonitoringReference">Monitoring reference</a></li> 
+     </ul> <h4><a name="3.1ClusteringInfrastructureandMonitoringSustainingTOI-ClusteringInfrastructureImplementation"></a>Clustering Infrastructure Implementation</h2> <p>Developer Name(s}: Byron Nevins, Jennifer Chou, Bhakti Mheta, Bill Shannon, Tom Mueller, Vijay Ramachandran, Tim Quinn, Sheetal Vartaket, Jerome Dochez, et. al.</p> <h4><a name="3.1ClusteringInfrastructureandMonitoringSustainingTOI-Description"></a>Description</h3> <p>This feature allows you to create clusters and clustered and stand-alone instances, start and stop clusters and instances, and manage configurations. This feature is based on similar functionality from GlassFish 2.1. The main differences from 2.1 are:</p> 
+     <ul> 
+      <li>There are no longer any node-agents. &nbsp;Centralized&nbsp;management of instances is accomplished using SSH.&nbsp;</li> 
+      <li>Dynamic reconfiguration is accomplish through command replication rather than data replication. &nbsp;Whenever an asadmin command is executed on the DAS, it's execution is replicated on the required instances, bringing about the reconfiguration change that is needed for that instance.&nbsp;</li> 
+     </ul> <h4><a name="3.1ClusteringInfrastructureandMonitoringSustainingTOI-FeatureDetails"></a>Feature Details</h3> <p>The <a href="V3.1Clustering.html" title="V3.1Clustering">feature design specification</a> describes the following asadmin subcommands:</p> <p>create/delete/list-cluster<br> create/delete/list-instance<br> create/delete-local-instance<br> copy/delete/list-config<br> start/stop-instance<br> start/stop-local-instance<br> restart-instance<br> restart-local-instance<br> start/stop-cluster<br> export-sync-bundle/import-sync-bundle</p> <p>In addition, there are several internal "hidden" commands:</p> <p>_bootstrap-secure-admin<br> _create-config<br> _post-register-instance<br> _post-unregister-instance<br> _register-instance<br> _register-instance-at-instance<br> _restart-instance<br> _stop-instance<br> _synchronize-files<br> _unregister-instance</p> <p>There are several new annotations to support dynamic replication:</p> <p>@ExecuteOn - indicates which type of a node a command should be executed on.</p> <p>@TargetType - indicates the valid types of targets for the --target option to a command.</p> <h4><a name="3.1ClusteringInfrastructureandMonitoringSustainingTOI-Documentation"></a>Documentation</h3> <p>Engineering Documents</p> 
+     <ul> 
+      <li><a href="V3.1ClusteringInfraOnePager.html" title="V3.1ClusteringInfraOnePager">One pager</a></li> 
+      <li><a href="V3.1Clustering.html" title="V3.1Clustering">Clustering Design Specification</a> 
+       <ul> 
+        <li><a href="3.1BasicClustering.html" title="3.1BasicClustering">Basic Clustering</a></li> 
+        <li><a href="3.1Config.html" title="3.1Config">Configuration</a></li> 
+        <li><a href="3.1Synchronization.html" title="3.1Synchronization">Synchronization</a></li> 
+        <li><a href="ClusterDynamicReconfig.html" title="ClusterDynamicReconfig">Dynamic Reconfiguration</a></li> 
+       </ul> </li> 
+     </ul> <p>Product Documentation</p> 
+     <ul> 
+      <li><a href="GlassFishV3.1ClusterInfrastructureDocPlan.html" title="GlassFishV3.1ClusterInfrastructureDocPlan">Documentation Project</a> (contains pointers to all documents that relate to clustering)</li> 
+      <li><a href="http://swpubs.us.oracle.com/writing/appserver/docs/cd/E18930_01/html/821-2426/index.html">High Availability Administration Guide</a> , Chapters 4, 5, and 6</li> 
+      <li><a href="http://swpubs.us.oracle.com/writing/appserver/docs/cd/E18930_01/html/821-2416/index.html">Administration Guide</a> , Chapter 3</li> 
+      <li><a href="http://swpubs.us.oracle.com/writing/appserver/docs/cd/E18930_01/html/821-2433/index.html">Reference Manual</a> , see manual pages for commands listed above</li> 
+     </ul> <p>Demos</p> 
+     <ul> 
+      <li><a href="3.1MS1ClusteringDemo.html" title="3.1MS1ClusteringDemo">Cluster Infrastructure Demo</a></li> 
+      <li><a href="http://aseng-wiki.us.oracle.com/asengwiki/display/GlassFish/3.1MS5ClusterScalingDemo">Cluster Scalability Demo</a>&nbsp;(internal link)</li> 
+      <li><a href="http://www.youtube.com/watch?v=xSiZHKJLOh4">GlassFish 3.1 Clustering, High Availability and Centralized Administration</a> screencast by Arun Gupta (shows more than just clustering infrastructure</li> 
+     </ul> <h4><a name="3.1ClusteringInfrastructureandMonitoringSustainingTOI-Sourcecodeinformation"></a>Source code information</h3> 
+     <ul> 
+      <li>v3/cluster - main module for clustering implementation 
+       <ul> 
+        <li>v3/cluster/admin (<b>cluster-admin.jar</b>) - remote commands that run within the server and code for command replication</li> 
+        <li>v3/cluster/cli (<b>cluster-cli.jar</b>) - local commands that run within asadmin</li> 
+        <li>v3/cluster/common (<b>cluster-common.jar</b>) - shared code for the clustering modules</li> 
+       </ul> </li> 
+      <li>v3/admin/config-api (<b>config-api.jar</b>) - config beans for domain.xml elements such as cluster, config, server, node, etc.</li> 
+     </ul> <p><b>Design information</b></p> <p>See the design specification for design details, especially the synchronization algorithm and the design for command replication.</p> <h4><a name="3.1ClusteringInfrastructureandMonitoringSustainingTOI-RestartInfo"></a>Restart Info</h3> <p>All servers can be restarted remotely and locally.&nbsp; This was rather hairy to implement just right.&nbsp; Here are some highlights:</p> 
+     <ul> 
+      <li>The server is restarted precisely the way it was started.&nbsp; E.g. if it was started with "java -jar" then that's nhow it is restarted.&nbsp; We bend over backwards to support any weird way you want to start the server.&nbsp; All commandline args, classname, classpath etc. are remembered and reused.&nbsp; In addition you can change the debug flag when restarting.</li> 
+      <li>--verbose&nbsp; In this case the server owns a window.&nbsp; The trick is to keep owning that window.&nbsp; very difficult to do correctly.&nbsp; What happens: 
+       <ul> 
+        <li>asadmin is sitting there with a handle to the running server.&nbsp; When the server is restarted it will exit with a special return value (10).&nbsp; asadmin notices this and simply redoes exactly what it did to start the server in the first place.&nbsp; The asadmin JVM remains alive which is the only way we can keep the window connected.&nbsp; Try it like so:</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li>*# asadmin start-domain --verbose 
+       <ol> 
+        <li>asadmin restart-domain</li> 
+       </ol> </li> 
+      <li>non-verbose.&nbsp; In this case we do the following: 
+       <ul> 
+        <li>At the end of the stop sequence, just before the JVM dies we fire off a new JVM that will start the reincarnated server.&nbsp; The new JVM doesn't just start.&nbsp; That would have guaranteed a ton of race-condition bugs.&nbsp;&nbsp; The new JVM sits there and reads the stdout.&nbsp; This blocks until the stream closes at which time the server is completely dead.</li> 
+       </ul> </li> 
+     </ul> <h4><a name="3.1ClusteringInfrastructureandMonitoringSustainingTOI-Defects"></a>Defects</h3> 
+     <ul> 
+      <li>JIRA Sub-component name: <b>admin</b> (there isn't a separate category for clustering)</li> 
+      <li>See the <a href="http://java.net/jira/secure/Dashboard.jspa?selectPageId=10064">Admin Iteam Dashboard</a> for admin related issue information</li> 
+     </ul> <h4><a name="3.1ClusteringInfrastructureandMonitoringSustainingTOI-Debugging"></a>Debugging</h3> <p>NetBeans works very well for setting breakpoints and stepping through the clustering code.&nbsp;</p> <p>To see how command replication is working, see the following key classes:</p> 
+     <ul> 
+      <li>CommandRunnerImpl (this implement the remote command processing)</li> 
+      <li>GlassfishClusterExecutor (this figures out where the command needs to be executed)</li> 
+      <li>ClusterOperationUtil (this actually executes the command remotely)</li> 
+     </ul> <p>The logger to set to see admin log messages, including those for clustering, is:</p> <p><b>javax.enterprise.system.tools.admin</b></p> <p>To see debugging information for command execution, set the AS_DEBUG environment variable to "true".</p> 
+     <ul> 
+      <li>set AS_LOGFILE=somefilename and every CLI command will be automatically logged to this file. Very handy for debugging, especially when you get tons of irrelevant information from a customer. This will cut to the chase. Set it once an forget it.</li> 
+     </ul> 
+     <ul> 
+      <li>set AS_SUPER_DEBUG=true and you can attach a debugger to a restarting server. Without this - it would be difficult to debug.</li> 
+     </ul> 
+     <ul> 
+      <li>Startup problems: The logging service starts long after the JVM fires up. You will NOT SEE most or all error messages that are generated before the logging service starts. You will definitely not see any fatal JVM errors. E.g. add a bad JVM option and you will not have a clue what happened.<br> UNLESS you start the server with the --verbose flag. Then you are guaranteed to see everything. Remember this!</li> 
+     </ul> <p><b>Tests</b></p> 
+     <ul> 
+      <li><a href="AdminTests.html" title="AdminTests">admin devtests information page</a></li> 
+      <li>hudson jobs for clustering-related dev tests 
+       <ul> 
+        <li><a href="http://hudson-sca.us.oracle.com/job/admin-devtests-trunk/">admin-devtests-trunk</a></li> 
+        <li><a href="http://hudson-sca.us.oracle.com/job/cluster-devtests-v3.1/">cluster-devtests-v3.1</a></li> 
+       </ul> </li> 
+     </ul> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on May 03, 2011 by 
+<font color="#0050B2">trmueller</font>. Exported from wikis.oracle.com on May 27, 2015 20:44.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

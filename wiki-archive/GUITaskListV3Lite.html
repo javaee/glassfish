@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GUITaskListV3Lite</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GUITaskListV3Lite-AdminConsoleV3LiteExpressTaskList"></a>Admin Console V3 Lite Express Task List</h1> <p><a href="./GlassFishV3AdminConsole.html">Back to AdminConsole V3</a></p> <h4><a name="GUITaskListV3Lite-Introduction"></a>Introduction</h2> <p>This is the overall master task list for all the tasks we would do for V3 Lite Release. Refer to <a href="./GUIForGFV3Lite.html">GUI V3 Lite</a> for what will be delivered. We will continue modify this list as we make progress and move on to the next milestone.</p> <p>According to the V3 Lite schedule, feature freeze is on Aug 4, 2008 and Hard code freeze is on Aug 25. The task list table below is to specify in details what will be delivered for each milestone so that by SCF date, implementation of the feature will be complete.</p> <p>Here is the key date, with each milestone for every 2 weeks.<br> MS1 - July 7<br> MS2 - July 21<br> SCF - Aug 11<br> HCF - Aug 27<br> <b>Key Days for one pager:</b><br> Initial Draft Complete: June 30 '08<br> Architecture Review Complete: July 21 '08<br> Finalize Specifications: July 28 '08</p> <p>__We have limited resource for this release, and any task without a delivery date next to it is not committed and at high risk.</p> <p>__</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Features </th> 
+         <th class="confluenceTh"> Owner(s) </th> 
+         <th class="confluenceTh"> Descriptions </th> 
+         <th class="confluenceTh"> Implementation Time </th> 
+         <th class="confluenceTh"> Delivery Date </th> 
+         <th class="confluenceTh"> Dependency </th> 
+         <th class="confluenceTh"> Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> *Plugability* </td> 
+         <td class="confluenceTd"> *Ken* </td> 
+         <td class="confluenceTd"> *Allows modules to plugin to console in every aspect* </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> OSGi, mvn </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> * Functionaly spec </td> 
+         <td class="confluenceTd"> 4 days </td> 
+         <td class="confluenceTd"> 6/27 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> * Resolve ClassLoader Issues for delivering GUI and plugin module as OSGi bundles </td> 
+         <td class="confluenceTd"> 4 days </td> 
+         <td class="confluenceTd"> MS1 (7/7) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> * API and implementation allowing Tab plugin </td> 
+         <td class="confluenceTd"> 4 days </td> 
+         <td class="confluenceTd"> MS2 (7/21) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> * API and implementation for adding additional component to page </td> 
+         <td class="confluenceTd"> 2 days </td> 
+         <td class="confluenceTd"> MS2 (7/21) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> * Cleanup pages to work with new design better (leverage Integration Points) </td> 
+         <td class="confluenceTd"> 5 days </td> 
+         <td class="confluenceTd"> MS2 (8/4) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> jdlee has provided templates, pages have not been converted (however new plugin pages can use these templates) - no more work planned here for prelude </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> * API and implementation for modifying components, eg dropdown, table action </td> 
+         <td class="confluenceTd"> 2 days </td> 
+         <td class="confluenceTd"> MS2 (8/4) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Not tested. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> * OnLineHelp plugin (NTH) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Not implemented. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> *Navigation* </td> 
+         <td class="confluenceTd"> *Ken* </td> 
+         <td class="confluenceTd"> *Bring back V2 functionality* </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> * Tree Refresh </td> 
+         <td class="confluenceTd"> 2 days </td> 
+         <td class="confluenceTd"> SCF (8/4) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Related to breadcrumbs, needs work. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> * Breadcrumbs </td> 
+         <td class="confluenceTd"> 2 days </td> 
+         <td class="confluenceTd"> SCF (8/4) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 90% done – woodstock issues w/ dynafaces. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> *Scripting Support* </td> 
+         <td class="confluenceTd"> *Ken* </td> 
+         <td class="confluenceTd"> *Support for jRuby/jRuby on Rails and Groovy* </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> * decide on what functionality is needed </td> 
+         <td class="confluenceTd"> 2 days </td> 
+         <td class="confluenceTd"> SCF (8/4) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 0% </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> * create a scripting plugin module </td> 
+         <td class="confluenceTd"> 2 days </td> 
+         <td class="confluenceTd"> SCF (8/4) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 0% </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> * deployment screen </td> 
+         <td class="confluenceTd"> 2 days </td> 
+         <td class="confluenceTd"> SCF (8/4) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 0% </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>In additional to above, 20% of Ken's time will spend on supporting technical issue in GUI</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Features </th> 
+         <th class="confluenceTh"> Owner(s) </th> 
+         <th class="confluenceTh"> Descriptions </th> 
+         <th class="confluenceTh"> Duration^a1^ </th> 
+         <th class="confluenceTh"> Start-End Date </th> 
+         <th class="confluenceTh"> Dependency </th> 
+         <th class="confluenceTh"> Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> *UpdateCenter Integration* </td> 
+         <td class="confluenceTd"> *Anissa* </td> 
+         <td class="confluenceTd"> *Migrate GUI to utilize UC for download and update* </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> * Investigate building GUI and plugin module as IPS </td> 
+         <td class="confluenceTd"> 4 days </td> 
+         <td class="confluenceTd"> 7/1-7/7 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> DONE </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> * Deliver GUI and plugin modules as IPS </td> 
+         <td class="confluenceTd"> 5 days </td> 
+         <td class="confluenceTd"> 7/8-7/14 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Snjezana took over. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> * Work with <del>Kedar</del> Ken on inital download through UC </td> 
+         <td class="confluenceTd"> 3 days </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 80% </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> * UI design to manage plugin </td> 
+         <td class="confluenceTd"> 3 days </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> DONE </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> * Implementation and Plugin management feature complete </td> 
+         <td class="confluenceTd"> 4 days </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> UC API </td> 
+         <td class="confluenceTd"> DONE </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> *Core Function* </td> 
+         <td class="confluenceTd"> *Anissa* </td> 
+         <td class="confluenceTd"> *Dynamic tree node support* </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> * MBean Tree adaptor </td> 
+         <td class="confluenceTd"> 7 days </td> 
+         <td class="confluenceTd"> 7/15-7/23 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> DONE </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> * display Deployed Apps in tree </td> 
+         <td class="confluenceTd"> 2 days </td> 
+         <td class="confluenceTd"> 7/24-7/25 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> DONE </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> *Woodstock* </td> 
+         <td class="confluenceTd"> *Anissa* </td> 
+         <td class="confluenceTd"> *Upgrade to woodstock 4.2 GA Release* </td> 
+         <td class="confluenceTd"> 2 days </td> 
+         <td class="confluenceTd"> 7/28-7/29 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> DONE </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> *Web Plugin* </td> 
+         <td class="confluenceTd"> *Anissa* </td> 
+         <td class="confluenceTd"> *Finish missing functionality* </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> * Security Realm management </td> 
+         <td class="confluenceTd"> 4 days </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> DONE </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> * User and Group management </td> 
+         <td class="confluenceTd"> 3 days </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> DONE </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> * Display dynamic tree node, eg HTTL Listerners, Virtual servers etc. </td> 
+         <td class="confluenceTd"> 2 days </td> 
+         <td class="confluenceTd"> 7/30-8/1 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> DONE </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> *Application Management* </td> 
+         <td class="confluenceTd"> *Anissa* </td> 
+         <td class="confluenceTd"> *Deployment Descriptor Editing after application is deployed* </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> * UI to display list of predefined elements in DD </td> 
+         <td class="confluenceTd"> 4 days </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> deployment team, AMX </td> 
+         <td class="confluenceTd"> DONE </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> * Allow editing and save edited value to domain.xml </td> 
+         <td class="confluenceTd"> 3 days </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">DONE </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p><sup>a1</sup> Duration taking into consideration of other task such as meeting, discussion, forum, email, support etc.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Features </th> 
+         <th class="confluenceTh"> Owner(s) </th> 
+         <th class="confluenceTh"> Descriptions </th> 
+         <th class="confluenceTh"> Duration </th> 
+         <th class="confluenceTh"> Delivery </th> 
+         <th class="confluenceTh"> Dependency </th> 
+         <th class="confluenceTh"> Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> *OEM Support* </td> 
+         <td class="confluenceTd"> *Ana* </td> 
+         <td class="confluenceTd"> *Allow customizable theme* </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> * Use Woodstock Theme component - Set Theme via Handler </td> 
+         <td class="confluenceTd"> 5 days </td> 
+         <td class="confluenceTd"> 8/4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> DONE </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> * Create custom theme OSGI Bundle </td> 
+         <td class="confluenceTd"> 2 days </td> 
+         <td class="confluenceTd"> 8/6 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> DONE </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> * Read and Process Integration Points - Set Theme via Integration Points </td> 
+         <td class="confluenceTd"> 3 days </td> 
+         <td class="confluenceTd"> 8/12 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> *Preferences Support* </td> 
+         <td class="confluenceTd"> *Ana* </td> 
+         <td class="confluenceTd"> *User customization of GUI* </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> * Mechanism to persist user's preferences </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>Ana will be on vacation 7/7 - 7/28.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Features </th> 
+         <th class="confluenceTh"> Owner(s) </th> 
+         <th class="confluenceTh"> Descriptions </th> 
+         <th class="confluenceTh"> Dependency </th> 
+         <th class="confluenceTh"> Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> *Monitoring/Dashboard* </td> 
+         <td class="confluenceTd"> Jennifer Chou </td> 
+         <td class="confluenceTd"> GUI support for monitoing </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Jason Lee </td> 
+         <td class="confluenceTd"> * Monitoring configuration </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">90% need to add JVM and thread-pool </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Jennifer Chou </td> 
+         <td class="confluenceTd"> * display of data </td> 
+         <td class="confluenceTd"> monitoring-core </td> 
+         <td class="confluenceTd"> 90% need end-to-end testing with completed monitoring-core, fix bugs, cleanup </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:48.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

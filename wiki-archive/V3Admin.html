@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : V3Admin</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="V3Admin-InstallWideFeatures"></a>Install Wide Features</h2> <h4><a name="V3Admin-Managementacrossdomains"></a>Management across domains</h3> 
+     <ul> 
+      <li>create, list, view, delete domains, start, stop domains</li> 
+      <li>create, list, view, delete, start, stop nodeagents</li> 
+      <li>show status of all domains/nodeagents</li> 
+      <li>archive(backup) existing domains 
+       <ul> 
+        <li>maintain a version history of archived domains</li> 
+        <li>rollback to previous versions</li> 
+        <li>install new gf bits (archive old bits/domains)</li> 
+       </ul> </li> 
+      <li>archive existing apps (is this useful?) 
+       <ul> 
+        <li>rollback to earlier versions</li> 
+       </ul> </li> 
+      <li>search facility (search application names etc)</li> 
+     </ul> <h4><a name="V3Admin-Distribution"></a>Distribution</h3> 
+     <ul> 
+      <li>Software distribution across machines in a single one-click install 
+       <ul> 
+        <li>A glassfish install consisting of domains and clusters can span several machines. Distribute and instal any piece of software across these machines.</li> 
+        <li>Hands free setup: A user provides a list of machines (with login account information) where GF should be installed and type of GF configuration to be installed on each of these machines. A GF install agent script (or tool) will go in and install the configurations on each of these machines.</li> 
+       </ul> </li> 
+      <li>Interaction with the update center</li> 
+      <li>Ability to create pre-packaged bundles that can be distributed. For e.g: Create a bundle of GF+mysql driver(configured to point to a production db) + portal. Another example would be GF+predeployed applications.</li> 
+      <li>Ability to migrate applications from development environment to production environment through one-click.</li> 
+     </ul> <h4><a name="V3Admin-Tools"></a>Tools</h3> 
+     <ul> 
+      <li>web based tool runs in a light weight web container. Manages the entire install.</li> 
+     </ul> <h4><a name="V3Admin-DeploymentDescriptorEditing"></a>Deployment Descriptor Editing</h2> 
+     <ul> 
+      <li>Certain descriptors of Deployed Applications should be editable from the admin console/admin CLI. This would help users avoid repackaging and redeployment in some cases.</li> 
+     </ul> <h4><a name="V3Admin-ApplicationManagementandMonitoring"></a>Application Management and Monitoring</h2> 
+     <ul> 
+      <li>Make monitors first class citizens. A monitor is a condition or a rule. For example, average response time from a servlet should fall within a certain range. This could be tied in to self management rules</li> 
+      <li>Show health and availability of : 
+       <ul> 
+        <li>any application deployed in the appserver</li> 
+        <li>any component of the appserver, such as web container, ejb container, etc.</li> 
+       </ul> </li> 
+      <li>Health is defined as a set of monitors for a particular application or component. When one or mor monitor rules are violated, health is 'critical'. User should be able to see, why the health of an application or component is 'critical' at any given time. This is Root Cause Analysis. Some corrective action should be suggested as well.</li> 
+      <li>CallFlow based features 
+       <ul> 
+        <li>Monitor particular application</li> 
+        <li>Monitor containers only (e.g turn on CF for web container)</li> 
+        <li>CF Lite that can be turned on all the time</li> 
+        <li>Periodic monitoring of CF that can capture Container specific and Application Specific statistics</li> 
+       </ul> </li> 
+      <li>Incorporate Statistical Information to show 
+       <ul> 
+        <li>Mean, Median, Mean Time Between Failure (need to define what failure is)</li> 
+        <li>Probability when the next crash (application/server) will be (e.g if a customer sees that based on past history, there is a 90% probability that app server might crash in the next 2 days. He may want to reboot the server before crunch time)</li> 
+       </ul> </li> 
+      <li>Identify the amount of resources used by a particular application.</li> 
+      <li>Specify application grades (Critical/Non-Critical application).</li> 
+      <li>Ability to throttle non-critical applications.</li> 
+      <li>Email/SMS when server/application crashes</li> 
+     </ul> <h4><a name="V3Admin-RoleBasedAdministration"></a>Role Based Administration</h2> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 09, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

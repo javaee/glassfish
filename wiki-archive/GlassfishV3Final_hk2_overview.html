@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassfishV3Final_hk2_overview</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GlassfishV3Final_hk2_overview-HK2OnePager"></a>HK2 One-Pager</h1> <h4><a name="GlassfishV3Final_hk2_overview-1.Introduction"></a>1. Introduction</h1> <h4><a name="GlassfishV3Final_hk2_overview-1.1.Project%2FComponentWorkingName%3A"></a>1.1. Project/Component Working Name: </h2> <p>Hk2 for the Hundred Kilobytes Kernel</p> <h4><a name="GlassfishV3Final_hk2_overview-1.2.Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier%3A"></a>1.2. Name(s) and e-mail address of Document Author(s)/Supplier:</h2> <p>Jerome Dochez</p> <p>Name: jerome.dochez@sun.com</p> <h4><a name="GlassfishV3Final_hk2_overview-1.3.DateofThisDocument%3A"></a>1.3. Date of This Document:</h2> <p>12/17/08</p> <h4><a name="GlassfishV3Final_hk2_overview-2.ProjectSummary"></a>2. Project Summary</h1> <h4><a name="GlassfishV3Final_hk2_overview-2.1.ProjectDescription%3A"></a>2.1. Project Description:</h2> <p>Hk2 is aimed at providing the basic infrastructure for writing server side software. It provides the following features :</p> 
+     <ol> 
+      <li>Modular subsystem abstraction : Hk2 provides classes and interfaces aimed at isolating code from directly depending on a modular subsystem like OSGi. This allow replacement of full fledge modular subsystem with mock up implementations to run in static environment.</li> 
+      <li>Service Based Lookup : Provides hooks and abstraction to help developers write code using a service based design pattern by defining a simple component model with dependency injection capability.</li> 
+      <li>Configuration loading and writing : Coupled with the component model, hk2 can read and write configuration and bind it directly to specific components.</li> 
+     </ol> <h4><a name="GlassfishV3Final_hk2_overview-2.2.RisksandAssumptions%3A"></a>2.2. Risks and Assumptions:</h2> <p>It is assumed that hk2 can run only on JDK 5 and above. </p> <h4><a name="GlassfishV3Final_hk2_overview-3.ProblemSummary"></a>3. Problem Summary</h1> <h4><a name="GlassfishV3Final_hk2_overview-3.1.ProblemArea%3A"></a>3.1. Problem Area:</h2> <p>Writing modular code is complicated, it requires to understand the code path and dependencies of your software. On top of that, resolving dependencies and wiring code parts together would quickly become tedious without a serious infrastructure to help the developer's productivity. HK2 is aimed at providing such infrastructure, a simple component based infrastructure offering module resolution, services lookup and wiring while concentrating on java code only.</p> <h4><a name="GlassfishV3Final_hk2_overview-3.2.Justification%3A"></a>3.2. Justification:</h2> <p>Without the HK2 infrastructure, the V3 codebase and modules writing would be a lot more complicated for the average programmer resulting in a loss of productivity.</p> <h4><a name="GlassfishV3Final_hk2_overview-4.TechnicalDescription%3A"></a>4. Technical Description:</h1> <h4><a name="GlassfishV3Final_hk2_overview-4.1.Details%3A"></a>4.1. Details:</h2> <h4><a name="GlassfishV3Final_hk2_overview-4.1.1Hk2Modules"></a>4.1.1 Hk2 Modules</h3> <p>The first feature offered by Hk2 is an abstraction of the module subsystem will allow for its replaceability or absence through a mock up implementation. This abstraction is not aimed at providing all the features that a sophisticated module subsystem would offer but enough to write a component based modular application without tights to the underlying modular APIs. </p> <p>The features offered are in threw folds : </p> 
+     <ul> 
+      <li>Module description</li> 
+     </ul> <p>Hk2 will provide an abstraction for describing module, versions and dependencies between modules. Such dependency will use metadata from the underlying module delivery (eg a jar file) to present such information in a portable manner. Such abstraction is implemented in the com.sun.enterprise.module package of the hk2-core module. Classes like ModuleDefinition, ModuleDependency represent the basic interfaces for module metadata. </p> 
+     <ul> 
+      <li>Repository Management</li> 
+     </ul> <p>Hk2 provides a simple repository management allowing modules to be discovered, added, removed as well as providing a abstraction of the underlying file system or network used to procure modules to the runtime. </p> 
+     <ul> 
+      <li>Startup infrastructure.</li> 
+     </ul> <p>Some effort has been spent to allow starting an executable with our without a module subsystem, using classes in the com.sun.enterprise.module.bootstrap package.</p> <p>All the code related to these features is documented at <a href="https://hk2.java.net/nonav/hk2/apidocs/">Module APIS</a></p> <h4><a name="GlassfishV3Final_hk2_overview-4.1.2Componentmodel"></a>4.1.2 Component model</h3> <p>A simple Component Model has been developed to help developers being more productive and focus on their code rather than decorations like META-INF/services files. In order to achieve plugability in a modular environment, we use services, where clients can lookup services implementation in a central location called the <a href="https://hk2.java.net/nonav/auto-depends/apidocs/org/jvnet/hk2/component/Habitat.html">Habitat</a>.</p> <p>In order to define a new type of service, developer need to annotate an abstract class or interface with the <a href="https://hk2.java.net/nonav/auto-depends/apidocs/org/jvnet/hk2/annotations/Contract.html">Contract</a> annotation. Implementations of such contracts are called services and such concrete classes need to be annotated with the <a href="https://hk2.java.net/nonav/auto-depends/apidocs/org/jvnet/hk2/annotations/Service.html">Service</a> annotation.</p> <p>Simplest example of this concept is this contract definition</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Contract
+public interface Greetings { 
+    public String sayHello();
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>and the implementation</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Service
+public class EnFrancais implements Greetings {
+   public String sayHello() {
+      return "bonjour";
+   }
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>Contracts and implementation do not need to reside in the same module, however when they are packaged in separate modules, care must be exercised that all clients and implementations of the contract use the same module's classloader to load the contract class. This is usually ensure by setting the dependencies correctly so that only one API/SPI module is loaded.</p> <h4><a name="GlassfishV3Final_hk2_overview-4.1.3Dependency"></a>4.1.3 Dependency</h3> <p>Once a network of contracts and services exist, it's obvious that some services implementation will require other services to function properly, such higher level services which are called Composite Services can be assembled automatically by the system using dependency injection. Service dependency is identified in the composite definition using the <a href="https://hk2.java.net/nonav/auto-depends/apidocs/org/jvnet/hk2/annotations/Inject.html">Inject</a> annotation. The annotation optional attribute can be used to make the service resolution mandatory or not. a name can also be used to disambiguate different implementations of a contract.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">public class Diplomacy {
+    @Inject
+    Greetings greetings;
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>Sometimes, it is interesting to lazily reference other services because the service resolution might be expensive and should be deferred until it is used or because the service use may be only necessary under certain conditions. To achieve that, developers can either use the <a href="https://hk2.java.net/nonav/auto-depends/apidocs/org/jvnet/hk2/component/Habitat.html">Habitat</a> or they can inject a <a href="https://hk2.java.net/nonav/auto-depends/apidocs/com/sun/hk2/component/Holder.html">Holder</a> pattern :</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">public class Diplomacy {
+
+    @Inject
+    Holder&lt;Greetings&gt; greetings;
+
+    public void introduction() {
+        greetings.get().sayHello();
+    }
+}</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="GlassfishV3Final_hk2_overview-4.1.4Configurationsupport"></a>4.1.4 Configuration support</h3> <p>Building on the component model, another managed component are the configured objects. Configured object represent configuration that will be used by the server, it is usually store in an xml file (like the domain.xml in glassfish). Such configuration is described using interfaces definition that are binding interfaces (like JAXB interfaces) using annotations in the <a href="https://hk2.java.net/nonav/config/apidocs/">Config</a> module. An interface is annotated with the @Configured annotation, and xml attributes can be described using the @Attribute annotation while xml sub elements are defined with a @Element annotation.</p> <p>Example : </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Configured
+public interface SomeConfig extends ConfigBeanProxy {
+
+    @Attribute
+    String getAttributeName();
+
+    @Element
+    SubConfig getSub();
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>SubConfig is another interface annotated with the @Configured annotation. </p> <p>All of these interfaces are actually implemented by only one object in hk2, called the <a href="https://hk2.java.net/nonav/config/apidocs/org/jvnet/hk2/config/ConfigBean.html">ConfigBean</a>. This class which most developers will never see or have access is responsible for binding the interface definition to underlying XML fragments using the Stax parser.</p> <p>Annotated @Attribute can optionally specify a target data type, a default value, wether their value is used a key or index in the resulting xml file, and if it is optional or not. Complete reference is <a href="https://hk2.java.net/nonav/config/apidocs/org/jvnet/hk2/config/Attribute.html">Here</a></p> <p>Clients of the @Configured interfaces can use injection like any other hk2 components, they injected type will be @Configured interface type. Hk2 will create Java SE proxies for these interfaces which are implemented by the ConfigBean class described above. Therefore the access to the configuration data is completely typed. </p> <p>Example :</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Service
+public class Diplomacy {
+
+    @Inject
+    SomeConfig myConfig;
+
+    public void foo { 
+       String configStr  = myConfig.getAttributeName();
+       SubConfig subConfig = myConfig.getSub();
+    }
+}</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="GlassfishV3Final_hk2_overview-4.1.6ConfigurationViews"></a>4.1.6 Configuration Views</h3> <p>Because the configuration is represented with plain Java interfaces, it's pretty easy using the JDK proxy facilities to front end these interfaces with different implementations. In hk2, such implementations are called Views. Although most developers will never have to knowingly switch views, there are 3 types of views currently available, also remember that this is an extensible model, new Views can be added if necessary. </p> 
+     <ol> 
+      <li>TranslatedView</li> 
+     </ol> <p>This is the default view people get when injected with configured components. This view allow for a translated access to the configuration data, translation mean that configuration data of the form ${com.sun.aas.instanceRoot} will be translated using the current value for that system property. The translation is done through a service lookup hence it's also pluggable. Note that this view will only give you access to get accessors of the configured data, you cannot mutate in any way the configuration using a TranslatedView, this is essentially a read-only view.</p> 
+     <ol> 
+      <li>RawView</li> 
+     </ol> <p>RawView is still a read-only view, however translation will not be applied therefore attributes with a system property will be returned as is. This is useful when people want to have access to the raw configuration rather than its meaning.</p> 
+     <ol> 
+      <li>WritableView</li> 
+     </ol> <p>WriteableView can only be created by the system (see Transaction below) and will give access to the set accessors making it possible to mutate the underlying configuration. WriteableViews are meant to be short lived objects allowing code to modify configuration within the semantics of a transaction.</p> <h4><a name="GlassfishV3Final_hk2_overview-4.1.5Transactionsupport"></a>4.1.5 Transaction support</h3> <p>As mentioned above, in order to mutate configuration, code has to start a Transaction within which he is guaranteed that all or none of his changes will be applied. By no means, transactions are meant to follow the ACID standards, this is conceptually just an object locking mechanism to ensure that concurrent access to the same configuration data is impossible. </p> <p>For example, let's take the following @Configured interface </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Configured
+public interface SomeConfig {
+
+    @Attribute
+    public String getAttr();
+    public void setAttr(String attr);
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>Now let's imagine some code needs to change the value of "attr", the low level APIs (which nobody uses looks like this) </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Inject
+    SomeConfig target;
+
+    Transaction t = new Transaction();
+    WritableView&lt;SomeConfig&gt; wTarget = ConfigSupport.getWritableView(target);
+    wTarget.joint(t);
+
+    wTarget.setAttr("New Value");
+    try { 
+        t.commit();
+        // it passed.
+    } catch(TransactionException e) {
+        // it failed
+    }</pre> 
+       </div> 
+      </div>
+     </div> <p>However using some simpler pattern, the code can be reduced to : </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Inject
+    SomeConfig target;
+
+    ConfigSupport.apply(new SingleConfigCode&lt;SomeConfig&gt;() {
+         public Object run(SomeConfig wTarget) {
+             wTarget.setAttr("Some Value");
+         } 
+    }</pre> 
+       </div> 
+      </div>
+     </div> <p>Each transaction is then synchronously processed by the transaction manager where each object is validated then the new configuration is written to the configuration file ensuring the following : </p> 
+     <ol> 
+      <li>all or none of the configuration will succeed.</li> 
+      <li>the configuration file will be written synchronously ensure than several concurrent transactions cannot threaten the configuration file integrity.</li> 
+      <li>several objects can be part of the same transactions, all these objects modification will be applied as one single transaction.</li> 
+      <li>while in a transaction, developer is guaranteed than no other transaction on the same objects can be started, the lock on the object is exclusive, however the transaction system will allow concurrent modification of unrelated configuration data.</li> 
+     </ol> <p>Code can register <a href="https://hk2.java.net/nonav/config/apidocs/org/jvnet/hk2/config/ObservableBean.html">interest</a> in changes so it can veto such changes before the transaction is committed. Such veto will make the transaction rollback and all related changes will be discarded. After the transaction is successfully committed, transaction events are sent to notify of such changes but those events are informational only, no rollback is possible at that point. </p> <h4><a name="GlassfishV3Final_hk2_overview-4.1.6TransactionEvents"></a>4.1.6 Transaction Events</h3> <p>Transaction success will trigger a number of events to be sent to listeners. Listeners are notified (so far asynchronously but a synchronous mode will be added and will become the default to be compatible with v2). Such events are just plain java beans events delivered to implementors of the <a href="https://hk2.java.net/nonav/config/apidocs/org/jvnet/hk2/config/ConfigListener.html">ConfigListener</a> interface.</p> <h4><a name="GlassfishV3Final_hk2_overview-4.1.5Validation"></a>4.1.5 Validation</h3> <p>Validation is also possible within the semantics of a transaction, validator are called as part of the transaction commit of they have a chance to cause the transaction failure if the invariants are not respected.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Configured(validator=SomeConfigValidator.class)
+public interface SomeConfig extends ConfigBean {
+
+    @Attribute
+    public String getAttr();
+    public String setAttr();
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>and the validator looks like : </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Service
+public class SomeConfigValidator implements Validator&lt;SomeConfig&gt; {
+
+    public void validate(SomeConfig target) throws PropertyVetoException {
+        if (!target.getAttr().matches(myRegex)) {
+           throw new PropertyVetoException("Value is not a US-phone number");
+        }
+    }
+}</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="GlassfishV3Final_hk2_overview-4.1.6Extensibility"></a>4.1.6 Extensibility</h3> <p>The configuration is extensible through some predefined hooks (complete list tbd), external users or extensions can leverage such hooks to have their configuration automatically added to the configuration tree. </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Configured
+public interface Config {
+
+    /**
+     * list of extension container configuration, will be replicated automatically following
+     * glassfish clustering rules.
+     */
+    @Element("*")
+    public List&lt;Container&gt; containers;
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>An extension can then define is configuration with the following pattern : </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Configured
+public interface MyContainerConfig extends Container {
+
+    @Attribute 
+    public int threadPoolSize()
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>The resulting domain.xml will then look like that </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;domain&gt;
+    &lt;configs&gt;
+       ....
+       &lt;config&gt;
+            &lt;my-container-config thread-pool-size=10/&gt;
+       &lt;/config&gt;
+       ....
+    &lt;/config&gt;
+&lt;/domain&gt;</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="GlassfishV3Final_hk2_overview-4.1.6Genericcommandsupport"></a>4.1.6 Generic command support</h3> <p>It will be possible to attach generic command support to add, list or delete elements of the configuration. To trigger command generation, code should be annotated with @Operations </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Configured
+public interface Http-Service extends ConfigBeanProxy {
+
+    @Element
+    @Operations(create="create-http-listener, delete="delete-http-listener, list="list-http-listener")
+    public List&lt;Http-Listener&gt; getHttpListeners();
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>Parameters for the different commands will follow this simple rules : </p> 
+     <ul> 
+      <li>scoping : overall scoping will be used with --domain --config to identify which configuration the command is applying to.</li> 
+      <li>create : all @Attribute annotated definition of the created Configured object will be used as a parameter to the command, the presence of a default-value on the attribute makes the attribute an optional command parameter.</li> 
+      <li>delete : the @Attribute denoted with the key annotation attribute will be used to identify the element</li> 
+      <li>list : no parameters so far. (future : --detailLevel ?)</li> 
+     </ul> <h4><a name="GlassfishV3Final_hk2_overview-4.2.5OSGimapping"></a>4.2.5 OSGi mapping</h3> <p>Singleton hk2 services will be registered in the OSGi service registry for availability to plain OSGi bundles. Conversely, the OSGi services are available in the Habitat as singleton services and can be used/injected like any other HK2 service.</p> <h4><a name="GlassfishV3Final_hk2_overview-4.2.Bug%2FRFENumber%28s%29%3A"></a>4.2. Bug/RFE Number(s):</h2> <p>none</p> <h4><a name="GlassfishV3Final_hk2_overview-4.3.InScope%3A"></a>4.3. In Scope:</h2> <h4><a name="GlassfishV3Final_hk2_overview-4.4.OutofScope%3A"></a>4.4. Out of Scope:</h2> <h4><a name="GlassfishV3Final_hk2_overview-4.5.Interfaces%3A"></a>4.5. Interfaces:</h2> <h4><a name="GlassfishV3Final_hk2_overview-4.5.1ExportedInterfaces"></a>4.5.1 Exported Interfaces</h3> <p>All exported interfaces are tagged as Evolving</p> <p><a href="https://hk2.java.net/nonav/hk2/apidocs/com/sun/enterprise/module/package-frame.html">Modules infrastructure classes</a></p> <p><a href="https://hk2.java.net/nonav/auto-depends/apidocs">Component classes</a></p> <p><a href="https://hk2.java.net/nonav/config/apidocs">Configuration classes</a></p> <h4><a name="GlassfishV3Final_hk2_overview-4.5.2Importedinterfaces"></a>4.5.2 Imported interfaces</h3> <p>JDK 5 dependencies :</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;groupId&gt;javax.xml.stream&lt;/groupId&gt;
+            &lt;artifactId&gt;stax-api&lt;/artifactId&gt;
+            &lt;version&gt;1.0-2&lt;/version&gt;
+            &lt;scope&gt;provided&lt;/scope&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>All JDK dependencies :</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;groupId&gt;com.sun.enterprise&lt;/groupId&gt;
+            &lt;artifactId&gt;tiger-types-osgi&lt;/artifactId&gt;
+            &lt;version&gt;$\{project.version}&lt;/version&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>OSGi mapping service (optional, used in GlassFish) :</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;dependency&gt;
+            &lt;groupId&gt;org.osgi&lt;/groupId&gt;
+            &lt;artifactId&gt;osgi_R4_core&lt;/artifactId&gt;
+            &lt;version&gt;1.0&lt;/version&gt;
+            &lt;scope&gt;provided&lt;/scope&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.osgi&lt;/groupId&gt;
+            &lt;artifactId&gt;osgi_R4_compendium&lt;/artifactId&gt;
+            &lt;version&gt;1.0&lt;/version&gt;
+            &lt;scope&gt;provided&lt;/scope&gt;
+        &lt;/dependency&gt;</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="GlassfishV3Final_hk2_overview-4.5.3Otherinterfaces%28Optional%29"></a>4.5.3 Other interfaces (Optional)</h3> <h4><a name="GlassfishV3Final_hk2_overview-4.6.DocImpact%3A"></a>4.6. Doc Impact:</h2> <p>Extensibility guide, GlassFish developer's guide.</p> <h4><a name="GlassfishV3Final_hk2_overview-4.7.Admin%2FConfigImpact%3A"></a>4.7. Admin/Config Impact:</h2> <p>Extensively, HK2 is implementing the low level binding between the repository (domain.xml) and memory, using the stax interfaces and a set of generic objects based on annotations described in 4.1.3</p> <p>Identify changes to GUIs, CLI, agents, plugins...<br> none</p> <h4><a name="GlassfishV3Final_hk2_overview-4.8.HAImpact%3A"></a>4.8. HA Impact:</h2> <p>none</p> <h4><a name="GlassfishV3Final_hk2_overview-4.9.I18N%2FL10NImpact%3A"></a>4.9. I18N/L10N Impact:</h2> <p>none</p> <h4><a name="GlassfishV3Final_hk2_overview-4.10.Packaging%26Delivery%3A"></a>4.10. Packaging &amp; Delivery:</h2> <p>What packages, clusters or metaclusters does this proposal impact? What is its impact on install/upgrade?</p> <h4><a name="GlassfishV3Final_hk2_overview-4.11.SecurityImpact%3A"></a>4.11. Security Impact:</h2> <p>How does this proposal interact with security-related APIs or interfaces? Does it rely on any Java policy or platform user/permissions implication? If the feature exposes any new ports, Or any similar communication points which may have security implications, note these here.</p> <h4><a name="GlassfishV3Final_hk2_overview-4.12.CompatibilityImpact"></a>4.12. Compatibility Impact</h2> <p>Incompatible changes to interfaces that others expect to be stable may cause other parts of application server or<br> other dependent products to break. </p> <p>Discuss changes to the imported or exported interfaces.Describe how an older version of the interface would<br> be handled.</p> <p>List any requirements on upgrade tool and migration tool.</p> <h4><a name="GlassfishV3Final_hk2_overview-4.13.Dependencies%3A"></a>4.13. Dependencies:</h2> <p>List all dependencies that this proposal has on other proposals, components or products. Include interface<br> specifics above in the interfaces section; LIST dependency component version requirements here.</p> <h4><a name="GlassfishV3Final_hk2_overview-5.ReferenceDocuments%3A"></a>5. Reference Documents:</h1> <p>List of related documents, if any (BugID's, RFP's, papers).</p> <p>Explain how/where to obtain the documents, and what each contains, not just their titles. </p> <h4><a name="GlassfishV3Final_hk2_overview-6.Schedule%3A"></a>6. Schedule:</h1> <h4><a name="GlassfishV3Final_hk2_overview-6.1.ProjectedAvailability%3A"></a>6.1. Projected Availability:</h2> <p>Dates in appropriate precision (quarters, years)</p> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Sep 24, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:44.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

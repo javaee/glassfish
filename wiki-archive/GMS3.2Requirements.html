@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GMS3.2Requirements</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p><em>v1.0</em></p> <h4><a name="GMS3.2Requirements-"></a></h3> <h4><a name="GMS3.2Requirements-1.0GroupManagementService%28GMS%29moduleRequirements"></a>1.0 Group Management Service(GMS) module Requirements</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Feature # </th> 
+         <th class="confluenceTh"> Priority </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> Comments </th> 
+         <th class="confluenceTh"> Milestone <br class="atl-forced-newline"> </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-1.0.01 </td> 
+         <td class="confluenceTd"> P4 </td> 
+         <td class="confluenceTd"> Administrators shall be able to configure a GMS group discovery mechanism for a site. Probably being replaced by environment-based automated generation of VIRTUAL_MULTICAST_URI_LIST. </td> 
+         <td class="confluenceTd"> Mechanism is used to enable a GMS cluster when UDP multicast is unavailable between clustered instances. <br class="atl-forced-newline"> Provide CLI to install a group discovery service as an OS service at a Well Known Address. <br class="atl-forced-newline"> Provide CLI to configure VM template to reference a site-wide group discovery mechanism. <br class="atl-forced-newline"> Provide CLI to configure S3-based group discovery. <br class="atl-forced-newline"> (Derived from GlassFish 3.2 PRD Feature ID CLUST-1) <br class="atl-forced-newline"> (See <a href="https://github.com/javaee/glassfish/issues/3636">GF-3636 </a> for issue that GMS requires UDP multicast.) <br class="atl-forced-newline"> <a href="https://github.com/javaee/glassfish/issues/16413">https://github.com/javaee/glassfish/issues/16413</a> <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> 4 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-1.0.02 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Administrator shall be able to configure a cluster to not require UDP multicast. <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Provide new Cluster properties to asadmin create-cluster subcommand to use non-multicast rather than default of UDP multicast. <br class="atl-forced-newline"> (Derived from GlassFish 3.2 PRD Feauture ID CLUST-1) <br class="atl-forced-newline"> <a href="https://github.com/javaee/glassfish/issues/16414">https://github.com/javaee/glassfish/issues/16414</a> <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> 3 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-1.0.03 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Administrator shall be able to configure GMS TCP point to point messages to use SSL. <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Enable administrator to secure application session data when it is being replicated due to availability of session data being enabled. <br class="atl-forced-newline"> Reuse existing ssl element defined in domain.xml and use it to configure SLLConfig object to use with Grizzly 2.0 filter. <br class="atl-forced-newline"> See <a href="https://github.com/javaee/glassfish/issues/14664">GF-14664 </a> <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> 5 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-1.0.04 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Administrators shall be able to configure clustered instances to potentially be separated by a firewall. <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Support for hybrid cloud (part private and part public cloud). <br class="atl-forced-newline"> Default heartbeat failure detection configuration will require adjustment to account for potentially slower network throughput across the firewall. <br class="atl-forced-newline"> <a href="https://github.com/javaee/glassfish/issues/16415">https://github.com/javaee/glassfish/issues/16415</a> <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> 6 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-1.0.05 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> (previously deleted) <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-1.0.06 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> GMS Monitoring Stats Provider <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Monitor GMS messaging by target component. <br class="atl-forced-newline"> Monitor heartbeat overhead. <br class="atl-forced-newline"> Monitor GMS notifications and how often a rebroadcast was necessary due to a dropped UDP multicast message. <br class="atl-forced-newline"> See <a href="https://github.com/javaee/glassfish/issues/12194">GF-12194 </a>. <br class="atl-forced-newline"> Task will be ongoing. Some stats will be ready earlier -- milestone date is for all stats. <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> 5 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-1.0.07 </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> Administrator shall be able to create up to 10 instances in a cluster <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> No known issues supporting this with or without multicast. <br class="atl-forced-newline"> <br class="atl-forced-newline"> GlassFish 3.1 GMS QE tests for 9 instances due to limited machine resources. <br class="atl-forced-newline"> (Derived from GlassFish 3.2 PRD Feauture ID CLUST-3 Scalable Clusters)&nbsp; <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-1.0.08 </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> Administrator shall be able to create 20 clusters in a domain. </td> 
+         <td class="confluenceTd"> This is a non-issue when DAS is not running and none of the clusters are experiencing high application load. <br class="atl-forced-newline"> <br class="atl-forced-newline"> However, if DAS is running and is master for all 20 clusters, need to investigate this scenario for both UDP multicast and non-multicast configurations. Redesign of centralized master processing may be needed to support this case properly. <br class="atl-forced-newline"> (Derived from GlassFish 3.2 PRD Feauture ID CLUST-3 Scalable Clusters) <br class="atl-forced-newline"> <br class="atl-forced-newline"> GlassFish 3.1 GMS QE has scenarios for 2 clusters. <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-1.0.09 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Administrator shall be able to configure heartbeats to be sent over UDP unicast transport when multicast is disabled. <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/16416">https://github.com/javaee/glassfish/issues/16416</a> <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> TBD </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-1.0.10 </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> asadmin get-health needs to work in self configuring(ad hoc clusters) cluster env <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Derived from Cluster Management Requirement 1.0.7. <br class="atl-forced-newline"> In GlassFish 3.1, this command only runs against the DAS and there is no DAS in self configuring cluster env. <br class="atl-forced-newline"> Other commands that run against the DAS (list-instance, start-cluster) are non-requirements. <br class="atl-forced-newline"> So need to evaluate if this command should be implemented for self-configuring cluster. <br class="atl-forced-newline"> <br class="atl-forced-newline"> Health info could be stored in GMS master. <br class="atl-forced-newline"> Command needs to be able to locate the master via cluster name. <br class="atl-forced-newline"> (investigate means to associate clustername with configuration info such as GMS_DISCOVERY_URI_LIST) <br class="atl-forced-newline"> (Derived from GF 3.2 PRD Feature ID CLUST-2 Ad Hoc Clusters) <br class="atl-forced-newline"> <a href="https://github.com/javaee/glassfish/issues/16417">https://github.com/javaee/glassfish/issues/16417</a> <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-1.0,11 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> New Heartbeat Failure Detection implementation optimized for non-multicast and no DAS <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Self-configuring cluster case.&nbsp; (Note: This item's priority should track priority of self-configuring cluster priority.) <br class="atl-forced-newline"> <a href="https://github.com/javaee/glassfish/issues/16418">https://github.com/javaee/glassfish/issues/16418</a> <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> 5 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-1.0.12 </td> 
+         <td class="confluenceTd"> P3&nbsp; </td> 
+         <td class="confluenceTd"> Support for OS configured with IPv6 only <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> When multicast is not disabled, an IPv4 format multicast address is being generated.&nbsp; This does not work in a IPv6 env. <br class="atl-forced-newline"> See workaround described in <a href="https://github.com/javaee/glassfish/issues/16103">GF-16103 </a>. <br class="atl-forced-newline"> (specify an explicit IPv6 multicastaddress using --mulicastaddress parameter to create-cluster)&nbsp; <br class="atl-forced-newline"> Typically, one runs in a dual stack environment and ipv4 mapped addresses over ipv6 <br class="atl-forced-newline"> sockets is the java default for working in these env. <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-1.0.13 </td> 
+         <td class="confluenceTd"> P2 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Virtual multicast optimization to send messages concurrently. <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Only reason to wait for completion of send is to be notified of failed delivery. <br class="atl-forced-newline"> With Grizzly 2.0 using async send, should be easy to have a nowait mode for delivery. <br class="atl-forced-newline"> Point 2 point messges could be sent synchronous and unicast sends that are <br class="atl-forced-newline"> part of a broadcast could be sent without waiting for send to complete. <br class="atl-forced-newline"> <a href="https://github.com/javaee/glassfish/issues/16419">https://github.com/javaee/glassfish/issues/16419</a> <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> 5 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-1.0.14 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> New GMS configuration info on cluster and group-management-service element in domain.xml <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Cluster properties DISCOVERY_REGISTRATION_URI_LIST, VIRTUAL_MULTICAST_URI_LIST <br class="atl-forced-newline"> New heartbeat failure detection implementation may need alternative configuration parameters. (given different algorithm) (unknown at this point) <br class="atl-forced-newline"> SSL configuration for GMS TCP. <br class="atl-forced-newline"> GMS Member authentication. <br class="atl-forced-newline"> (Impacts GMSAdapterImpl config processing, asadmin create-cluster subcommand parameters) <br class="atl-forced-newline"> If using S3 for group discovery, users will need to be able to specify AWS credentials as well. This should probably live in a separate file (e.g. a properties file in config directory). <br class="atl-forced-newline"> <a href="https://github.com/javaee/glassfish/issues/16420">https://github.com/javaee/glassfish/issues/16420</a> <br class="atl-forced-newline"> Can be done before MS4, but without GMS-1.0.01 there is nothing to test. <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> 3 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-1.0.15 </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> GMS Member authentication when member is joining. <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> See <a href="https://github.com/javaee/glassfish/issues/14663">GF-14663</a>.&nbsp; This would be an optional capability that would need to be configured by GlassFish administrator. <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-1.0.16 </td> 
+         <td class="confluenceTd"> P1 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Factor Shoal GMS grizzly transport dependent classes into shoal-gms-grizzly-1_9.jar and shoal-gms-grizzly-2_0.jar. <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Completes transition from grizzly 1.9 to grizzly 2.0 for shoal gms impl jar. When completed shoal-gms-grizzly-2_0.jar would be integrated into GlassFish 3.2 branch. Currently shoal gms grizzly transport support for both 1.9 and 2.0 are in shoal-gms-impl.jar integrated with glassfish 3.2 workspace. <br class="atl-forced-newline"> <a href="https://github.com/javaee/glassfish/issues/16421">https://github.com/javaee/glassfish/issues/16421</a> <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> 3 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-1.0.17 </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> Support secure communications with discovery service. <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> With our own REST implementation of the discovery service, it would be nice to have it be secured so that only GMS members can talk to it and the information is confidential. But this isn't necessary for having GMS work, and the service can live behind the firewall. The only information stored there is the location of the group master. <br class="atl-forced-newline"> With help from the Jersey team, this may be easy to implement. But it's lower priority than getting everything working. <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GMS3.2Requirements-1.1GMSmoduleNONREQUIREMENTS"></a>1.1 GMS module NON REQUIREMENTS</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> # </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-1.1.1 </td> 
+         <td class="confluenceTd"> Will not support network interface changes while cluster is running. <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Will be identifying IPV4 only, IPV6 only or dual stack at startup and work for that mode. <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-1.1.2 </td> 
+         <td class="confluenceTd"> Will not support network fragmentation that isolates group discovery service from clustered instances. <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> There should be a group discovery service per subnet if it is a concern that routers/network can fail. <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-1.1.3 </td> 
+         <td class="confluenceTd"> Will not support hybrid approach of using UDP multicast within subnets and unicast between subnets. <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Simplification to consider all members reachable by UDP multicast or to consider all members communicating via unicast. <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-1.1.4 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> For no DAS case (self-configuring clusters) when there are no instances running, <br class="atl-forced-newline"> supporting multiple GMS clustered instances all being started concurrently. <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> DAS always was first instance in cluster started and it would become master before any other clustered instances were started. <br class="atl-forced-newline"> Thus, GMS Master Collision Resolution technique has never been tested in glassfish environment. There are no existing tests for <br class="atl-forced-newline"> this case.&nbsp; To support this, tests would need to be written and this is the type of concurrent, non-repeatable testing scenario where <br class="atl-forced-newline"> something like this would work most of time and intermittently fail.&nbsp; Thus, this is a simplifying non-requirement request. If one simply <br class="atl-forced-newline"> ensures that after the first instance in cluster is started, that there is a 2 second delay before the next instance is started, it would <br class="atl-forced-newline"> avoid the chance of issues in the master collision resolution algorithm. <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-1.1.5 </td> 
+         <td class="confluenceTd"> Will not support hybrid list of master discovery services. <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> It is not expected that the GMS_DISCOVERY_REGISTRY_URI_LIST cluster property will contain the address of one or more REST discovery services <b>and</b> an Amazon S3 service. We will not try to synchronize our master discovery information with an S3 bucket. <br class="atl-forced-newline"> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GMS3.2Requirements-1.2GMSmoduleDependenciesonothersubsystems"></a>1.2 GMS module Dependencies on other subsystems</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> # </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-1.2.1 </td> 
+         <td class="confluenceTd"> Each instance name in a cluster must be unique. <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Providing a requirement for Self-configuring clusters. <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-1.2.2 </td> 
+         <td class="confluenceTd"> A DAS API to provide a UUID for a GlassFish domain. <br class="atl-forced-newline"> Provides scoping for cluster name when DAS is present. <br class="atl-forced-newline"> <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> In GlassFish 3.1, clusters are scoped to a domain. One can have the same cluster name across multiple domains. <br class="atl-forced-newline"> The intended use for this UUID is to provide a namespace scoping for clusters in the GMS Group Discovery mechanism. <br class="atl-forced-newline"> P1 issues GMS-1.0.1 and GMS-1.0.2 require this. <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-1.2.3 </td> 
+         <td class="confluenceTd"> A Self-Configuring Cluster API to provide a namespace scoping for cluster names. <br class="atl-forced-newline"> Scoping for cluster name when no DAS. <br class="atl-forced-newline"> <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Alternative is that the GMS group discovery URI provides the namespace context.&nbsp; For example, <br class="atl-forced-newline"> one would specify an option to "asadmin get-health" that would provide the context to evaluate <br class="atl-forced-newline"> the get-health clustername within. Using this approach, the Group Discovery service would not be able to be site wide. <br class="atl-forced-newline"> P1 issues GMS-1.0.1 and GMS-1.0.2 require this. <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-1.2.4 </td> 
+         <td class="confluenceTd"> Ability to associate GMS configuration info with cluster name for self-configuring clusters </td> 
+         <td class="confluenceTd"> Uncertain if this info belongs in VM template or is specified at <em>asadmin create-cluste</em>r time and associated with the cluster. <br class="atl-forced-newline"> When there is no multicast, there needs to be a GROUP_REGISTRATION_URI_LIST for GMS&nbsp; to dynamically locate its group. <br class="atl-forced-newline"> Additionally, default GMS heartbeat failure detection parameters may need adjusting in VM environment (to reflect additional <br class="atl-forced-newline"> processing or network latencies that may occur in virtual machine env.&nbsp; There was such an observation <br class="atl-forced-newline"> in the glassfish v2.1 timeframe (over jxta) See <a href="https://github.com/javaee/glassfish/issues/5827?focusedCommentId=147207&amp;page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel#action_147207">GF-5827 </a>for context.) <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-1.2.5 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Assistance from security team on how to incorporate GlassFish authentication into Shoal GMS&nbsp; membership join <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> High level thoughts are there is some authentication class and perhaps token passed in as a Shoal GMS property. <br class="atl-forced-newline"> Shoal GMS would use this info as a plugin authentication to authenticate a GMS member when it is trying to <br class="atl-forced-newline"> join group. <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-1.2.6 </td> 
+         <td class="confluenceTd"> Request a preference to not select GMS Master as instance to stop when elasticity manager is shrinking the cluster. <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Unsure if this request is achievable or not.&nbsp; The GMS Master is definitely not a single point of failure so if this recommendation can not be honored, it will not break anything.&nbsp; However, if GMS Master was always the longest running cluster member and the EC2 environment favored stopping the longest running instance, there would be thrashing <br class="atl-forced-newline"> of the GMS Master (constantly having to migrate GMS Master). <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-1.2.7 </td> 
+         <td class="confluenceTd"> Assistance from Jersey team. <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> We will need help from Jersey team for adding security to our discovery service implementation. May need help as well to implement the S3 API using Jersey so we don't depend on Amazon (3rd party) AWS client library. <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-1.2.8 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> In Virtual Environment, orderly shutdown of GF app server with GlassFish event PREPARE_SHUTDOWN being sent is required. <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> GMS registers a Glassfish event handler for PREPARE_SHUTDOWN that results in instance orderly leaving GMS group with GMS Notification of PLANNED_SHUTDOWN being sent to all running clustered instances.&nbsp; If the virtual machine is just shut down for the clustered instance AND the Glassfish event PREPARE_SHUTDOWN is not generated, GMS will probably detect the instance leaving as a FAILURE. (and the failure detection may take a while if attempting to create a TCP socket to a VM that was shutdown is similar to powering off a machine.) <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-1.2.9 </td> 
+         <td class="confluenceTd"> Some way to access AWS S3 credentials. <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> For working in AWS, users will need to be able to specify their credentials. Presumably, other subsystems besides GMS will need this kind of information. GMS will only need the S3 information: access key and secret key. (If no other system needs any user AWS information, then this data could be in a properties file in domain/config, but we would need to coordinate with the admin team on this.) <br class="atl-forced-newline"> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GMS3.2Requirements-2.0ListofMetrics"></a>2.0 List of Metrics</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Feature # </th> 
+         <th class="confluenceTh"> Priority </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-2.0.1 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Support for monitoring rebroadcasted UDP messages <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Aid administrator in identifying UDP buffer is too small. <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-2.0.X </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> To Be Identified <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> <br class="atl-forced-newline"> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GMS3.2Requirements-3.0ListofActionsthatcanbespecified%2Ftakenbyadministrator"></a>3.0 List of Actions that can be specified / taken by administrator</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Feature # </th> 
+         <th class="confluenceTh"> Priority </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-3.0.1 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Start and stop a group discovery service. <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-3.0.2 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Configure cluster to use group discovery service. <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Could be a Cluster property provided to <em>asadmin</em> subcommand <em>create-cluster</em>. <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-3.0.3 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> P2 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Configure UDP unicast to be used as virtual broadcast transport <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-3.0.4 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> P2 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Configure SSL for GMS TCP transport. <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Provides administrator capability to secure application session data when HA is enabled. <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-3.0.5 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> P2 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Validate GMS configuration using <em>"asadmin validate-gms-cluster"</em> <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Validate GMS configuration for instances in a cluster. Ensures that all cluster members are able to see each other. Relates to <a href="https://github.com/javaee/glassfish/issues/12056">GF-12056 </a> <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-3.0.6 </td> 
+         <td class="confluenceTd"> P2 <img class="emoticon" src="images/icons/emoticons/help_16.gif" height="16" width="16" align="absmiddle" alt="" border="0"><br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Configure GMS member authentication for a cluster. <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Configured at the cluster element level.&nbsp; Could be generic cluster properties or a child element of cluster. <br class="atl-forced-newline"> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GMS3.2Requirements-4.0SupportforGMSwithnomulticastonvariousVirtualizationProvidersandHostOperatingSystems"></a>4.0 Support for GMS with no multicast on various Virtualization Providers and Host Operating Systems</h3> <h4><a name="GMS3.2Requirements-PaaSCase"></a>PaaS Case</h4> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Provider </th> 
+         <th class="confluenceTh"> N/A <br class="atl-forced-newline"> </th> 
+         <th class="confluenceTh"> OEL 64 bit <br class="atl-forced-newline"> </th> 
+         <th class="confluenceTh"> Linux </th> 
+         <th class="confluenceTh"> Amazon Linux AMI_[1]_ <br class="atl-forced-newline"> </th> 
+         <th class="confluenceTh"> Solaris 11 <br class="atl-forced-newline"> </th> 
+         <th class="confluenceTh"> Windows <br class="atl-forced-newline"> </th> 
+         <th class="confluenceTh"> Mac <br class="atl-forced-newline"> </th> 
+         <th class="confluenceTh"> Aix <br class="atl-forced-newline"> </th> 
+         <th class="confluenceTh"> Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> No virtualization <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd"> P1 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> P1 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd"> P? <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> - <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd"> <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Oracle VM 2.2 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd"> <br class="atl-forced-newline"> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GMS3.2Requirements-WithAdHocClusters"></a>With Ad-Hoc Clusters</h4> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Provider </th> 
+         <th class="confluenceTh"> N/A <br class="atl-forced-newline"> </th> 
+         <th class="confluenceTh"> OEL 64 bit <br class="atl-forced-newline"> </th> 
+         <th class="confluenceTh"> Linux </th> 
+         <th class="confluenceTh"> Amazon Linux AMI_[1]_ <br class="atl-forced-newline"> </th> 
+         <th class="confluenceTh"> Solaris 11 <br class="atl-forced-newline"> </th> 
+         <th class="confluenceTh"> Windows <br class="atl-forced-newline"> </th> 
+         <th class="confluenceTh"> Mac <br class="atl-forced-newline"> </th> 
+         <th class="confluenceTh"> Aix <br class="atl-forced-newline"> </th> 
+         <th class="confluenceTh"> Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> No virtualization <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd"> P1 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> P1 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd"> P? <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> - <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd"> Will work with manually created bootstrap member list from user. <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Amazon EC2 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd"> P2 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd"> Will automatically generate bootstrap&nbsp;member list through EC2-specific mechanism. <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Oracle VM 2.2 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd"> Not supported except through manually created bootstrap&nbsp;member list if OVM supports static IP addresses or dynamic DNS. (Would work the same as "No virtualization" case above.) <br class="atl-forced-newline"> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p><em>[1]</em> - Amazon Linux 32/64 bit AMI with GlassFish 3.2 provisioned.&nbsp; (derived from EC2 AutoScale Requirements for Self-Configuring Clusters) </p> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on May 05, 2011 by 
+<font color="#0050B2">bbissett</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

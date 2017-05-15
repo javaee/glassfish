@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : M2GWASSharingTagFiles</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="M2GWASSharingTagFiles-WebSphere%3EGlassFish%3AMigratingextendedDocumentRoot"></a>WebSphere -&gt; GlassFish: Migrating extendedDocumentRoot</h1> <p>This entry is based on this GlassFish <a href="http://old.nabble.com/SessionListener-not-firing-td18017892.html">forum thread</a></p> <p>WebSphere v6.1 supports the JSP engine configuration parameter extendedDocumentRoot for sharing JSP files (e.g. tag files) between Web applications. However, extendedDocumentRoot is proprietary and is set in ibm-web-ext.xmi file. There are two ways to migrate extendedDocumentRoot to GlassFish.</p> <h4><a name="M2GWASSharingTagFiles-Method1%3AUseaJARfile"></a>Method1: Use a JAR file</h3> <p>Package the tag files into a JAR file. This jar file can then be placed in the WEB-INF/lib directory of each web application. JSP specification requires support for this mechanism and hence is portable across containers. Here is an example to illustrate the steps.</p> <p><b>Example</b></p> <p> 1. Construct jar file - <tt>mycustomtags.jar</tt></p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">META-INF/
+      mytags.tld
+      tags/
+        foo.tag 
+        bar.tag</pre> 
+       </div> 
+      </div>
+     </div> <p>The <tt>mytags.tld</tt> is required by the JSP specification. <tt>mytags.tld</tt> describes each of the tags using a &lt;tag-file&gt; element for each tag file. The &lt;tag-file&gt; contains a sub element &lt;path&gt;. The value of &lt;path&gt; element must begin with <tt>META-INF/tags</tt>.</p> <p>2. Add <tt>mycustomtags.jar</tt> in <tt>WEB-INF/lib</tt> directory of each web application.<br> 3. Use taglib directive with uri attribute to reference the jar file.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;%@ taglib prefix="t" uri="mycustomtags" %&gt;</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="M2GWASSharingTagFiles-Method2%3AUsealternatedocroot"></a>Method 2: Use alternatedocroot</h3> <p>Another approach is to use alternatedocroot to point to a directory containing the JSP tag files to be shared. For example (based on <a href="https://github.com/javaee/glassfish/issues/3210">https://github.com/javaee/glassfish/issues/3210</a>).</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: xml; gutter: false">&lt;!-- file: sun-web.xml --&gt;
+   &lt;sun-web-app&gt;
+     &lt;jsp-config&gt;
+       &lt;property name="alternatedocroot_1" value="from=/* dir=/tmp/vstest"&gt;
+         &lt;description&gt;/tmp/vstest&lt;/description&gt;
+       &lt;/property&gt;
+     &lt;/jsp-config&gt;
+   &lt;/sun-web-app&gt;
+
+   //Directory /tmp/vstest contains shared JSP tag files
+   .
+   ./WEB-INF
+   ./WEB-INF/tags
+   ./WEB-INF/tags/mytag.tag
+   ./x.jsp</pre> 
+       </div> 
+      </div>
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Dec 28, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

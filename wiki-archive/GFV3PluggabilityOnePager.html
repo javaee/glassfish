@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GFV3PluggabilityOnePager</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GFV3PluggabilityOnePager-GlassFishServerOpenSourceEditionv3PluggabilityOnePager"></a>GlassFish Server Open Source Edition v3 Pluggability One Pager</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#GFV3PluggabilityOnePager-GlassFishServerOpenSourceEditionv3PluggabilityOnePager">GlassFish Server Open Source Edition v3 Pluggability One Pager</a></li> 
+       <li><a href="#GFV3PluggabilityOnePager-1.Introduction">1. Introduction</a></li> 
+       <ul> 
+        <li><a href="#GFV3PluggabilityOnePager-1.1.Project%2FComponentWorkingName%3A">1.1. Project/Component Working Name:</a></li> 
+        <li><a href="#GFV3PluggabilityOnePager-1.2.Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier%3A">1.2. Name(s) and e-mail address of Document Author(s)/Supplier:</a></li> 
+        <li><a href="#GFV3PluggabilityOnePager-1.3.DateofThisDocument%3A">1.3. Date of This Document:</a></li> 
+       </ul> 
+       <li><a href="#GFV3PluggabilityOnePager-2.ProjectSummary">2. Project Summary</a></li> 
+       <ul> 
+        <li><a href="#GFV3PluggabilityOnePager-2.1.ProjectDescription%3A">2.1. Project Description:</a></li> 
+        <li><a href="#GFV3PluggabilityOnePager-2.2.RisksandAssumptions%3A">2.2. Risks and Assumptions:</a></li> 
+        <ul> 
+         <li><a href="#GFV3PluggabilityOnePager-2.2.1AdminConsole">2.2.1 Admin Console</a></li> 
+         <li><a href="#GFV3PluggabilityOnePager-2.2.2CLI">2.2.2 CLI</a></li> 
+         <li><a href="#GFV3PluggabilityOnePager-2.2.3Monitoring">2.2.3 Monitoring</a></li> 
+        </ul> 
+       </ul> 
+       <li><a href="#GFV3PluggabilityOnePager-3.ProblemSummary">3. Problem Summary</a></li> 
+       <ul> 
+        <li><a href="#GFV3PluggabilityOnePager-3.1.ProblemArea%3A">3.1. Problem Area:</a></li> 
+        <ul> 
+         <li><a href="#GFV3PluggabilityOnePager-3.1.1AdminConsole">3.1.1 Admin Console</a></li> 
+         <li><a href="#GFV3PluggabilityOnePager-3.1.2CLI">3.1.2 CLI</a></li> 
+         <li><a href="#GFV3PluggabilityOnePager-3.1.3Monitoring">3.1.3 Monitoring</a></li> 
+        </ul> 
+        <li><a href="#GFV3PluggabilityOnePager-3.2.Justification%3A">3.2. Justification:</a></li> 
+        <ul> 
+         <li><a href="#GFV3PluggabilityOnePager-3.2.1AdminConsole">3.2.1 Admin Console</a></li> 
+         <li><a href="#GFV3PluggabilityOnePager-3.2.2CLI">3.2.2 CLI</a></li> 
+         <li><a href="#GFV3PluggabilityOnePager-3.2.3Monitoring">3.2.3 Monitoring</a></li> 
+        </ul> 
+       </ul> 
+       <li><a href="#GFV3PluggabilityOnePager-4.TechnicalDescription%3A">4. Technical Description:</a></li> 
+       <ul> 
+        <li><a href="#GFV3PluggabilityOnePager-4.1.Details%3A">4.1. Details:</a></li> 
+        <ul> 
+         <li><a href="#GFV3PluggabilityOnePager-4.1.1AdminConsole">4.1.1 Admin Console</a></li> 
+         <li><a href="#GFV3PluggabilityOnePager-4.1.2CLI">4.1.2 CLI</a></li> 
+         <li><a href="#GFV3PluggabilityOnePager-4.1.3Monitoring">4.1.3 Monitoring</a></li> 
+         <li><a href="#GFV3PluggabilityOnePager-4.1.4OEMAdminConsole%2FSkinsCustomization">4.1.4 OEM - Admin Console / Skins Customization</a></li> 
+         <li><a href="#GFV3PluggabilityOnePager-4.1.5OEMNonGUICustomization">4.1.5 OEM - Non GUI Customization</a></li> 
+        </ul> 
+        <li><a href="#GFV3PluggabilityOnePager-4.2.Bug%2FRFENumber%28s%29%3A">4.2. Bug/RFE Number(s):</a></li> 
+        <li><a href="#GFV3PluggabilityOnePager-4.3.InScope%3A">4.3. In Scope:</a></li> 
+        <ul> 
+         <li><a href="#GFV3PluggabilityOnePager-4.3.1AdminConsole">4.3.1 Admin Console</a></li> 
+         <li><a href="#GFV3PluggabilityOnePager-4.3.2CLI">4.3.2 CLI</a></li> 
+         <li><a href="#GFV3PluggabilityOnePager-4.3.3Monitoring">4.3.3 Monitoring</a></li> 
+        </ul> 
+        <li><a href="#GFV3PluggabilityOnePager-4.4.OutofScope%3A">4.4. Out of Scope:</a></li> 
+        <ul> 
+         <li><a href="#GFV3PluggabilityOnePager-4.4.1AdminConsole">4.4.1 Admin Console</a></li> 
+         <li><a href="#GFV3PluggabilityOnePager-4.4.2Monitoring">4.4.2 Monitoring</a></li> 
+        </ul> 
+        <li><a href="#GFV3PluggabilityOnePager-4.5.Interfaces%3A">4.5. Interfaces:</a></li> 
+        <ul> 
+         <li><a href="#GFV3PluggabilityOnePager-4.5.1ExportedInterfaces">4.5.1 Exported Interfaces</a></li> 
+         <li><a href="#GFV3PluggabilityOnePager-4.5.1.1AdminConsole">4.5.1.1 Admin Console</a></li> 
+         <li><a href="#GFV3PluggabilityOnePager-4.5.1.2CLI">4.5.1.2 CLI</a></li> 
+         <li><a href="#GFV3PluggabilityOnePager-4.5.1.3Monitoring">4.5.1.3 Monitoring</a></li> 
+         <li><a href="#GFV3PluggabilityOnePager-4.5.2Importedinterfaces">4.5.2 Imported interfaces</a></li> 
+         <li><a href="#GFV3PluggabilityOnePager-4.5.2.1AdminConsole">4.5.2.1 Admin Console</a></li> 
+         <li><a href="#GFV3PluggabilityOnePager-4.5.2.2CLI">4.5.2.2 CLI</a></li> 
+         <li><a href="#GFV3PluggabilityOnePager-4.5.2.3Monitoring">4.5.2.3 Monitoring</a></li> 
+         <li><a href="#GFV3PluggabilityOnePager-4.5.3Otherinterfaces%28Optional%29">4.5.3 Other interfaces (Optional)</a></li> 
+        </ul> 
+        <li><a href="#GFV3PluggabilityOnePager-4.6.DocImpact%3A">4.6. Doc Impact:</a></li> 
+        <ul> 
+         <li><a href="#GFV3PluggabilityOnePager-4.6.1AdminConsole">4.6.1 Admin Console</a></li> 
+         <li><a href="#GFV3PluggabilityOnePager-4.6.2CLI">4.6.2 CLI</a></li> 
+         <li><a href="#GFV3PluggabilityOnePager-4.6.3Monitoring">4.6.3 Monitoring</a></li> 
+        </ul> 
+        <li><a href="#GFV3PluggabilityOnePager-4.7.Admin%2FConfigImpact%3A">4.7. Admin/Config Impact:</a></li> 
+        <ul> 
+         <li><a href="#GFV3PluggabilityOnePager-4.7.1AdminConsole">4.7.1 Admin Console</a></li> 
+         <li><a href="#GFV3PluggabilityOnePager-4.7.2CLI">4.7.2 CLI</a></li> 
+         <li><a href="#GFV3PluggabilityOnePager-4.7.3Monitoring">4.7.3 Monitoring</a></li> 
+        </ul> 
+        <li><a href="#GFV3PluggabilityOnePager-4.8.HAImpact%3A">4.8. HA Impact:</a></li> 
+        <li><a href="#GFV3PluggabilityOnePager-4.9.I18N%2FL10NImpact%3A">4.9. I18N/L10N Impact:</a></li> 
+        <ul> 
+         <li><a href="#GFV3PluggabilityOnePager-4.9.1AdminConsole">4.9.1 Admin Console</a></li> 
+         <li><a href="#GFV3PluggabilityOnePager-4.9.2CLI">4.9.2 CLI</a></li> 
+         <li><a href="#GFV3PluggabilityOnePager-4.9.3Monitoring">4.9.3 Monitoring</a></li> 
+        </ul> 
+        <li><a href="#GFV3PluggabilityOnePager-4.10.Packaging%26Delivery%3A">4.10. Packaging &amp; Delivery:</a></li> 
+        <ul> 
+         <li><a href="#GFV3PluggabilityOnePager-4.10.1AdminConsole">4.10.1 Admin Console</a></li> 
+         <li><a href="#GFV3PluggabilityOnePager-4.10.2CLI">4.10.2 CLI</a></li> 
+         <li><a href="#GFV3PluggabilityOnePager-4.10.3Monitoring">4.10.3 Monitoring</a></li> 
+        </ul> 
+        <li><a href="#GFV3PluggabilityOnePager-4.11.SecurityImpact%3A">4.11. Security Impact:</a></li> 
+        <ul> 
+         <li><a href="#GFV3PluggabilityOnePager-4.11.1AdminConsole">4.11.1 Admin Console</a></li> 
+         <li><a href="#GFV3PluggabilityOnePager-4.11.2CLI">4.11.2 CLI</a></li> 
+         <li><a href="#GFV3PluggabilityOnePager-4.11.3Monitoring">4.11.3 Monitoring</a></li> 
+        </ul> 
+        <li><a href="#GFV3PluggabilityOnePager-4.12.CompatibilityImpact">4.12. Compatibility Impact</a></li> 
+        <ul> 
+         <li><a href="#GFV3PluggabilityOnePager-4.12.1AdminConsole">4.12.1 Admin Console</a></li> 
+         <li><a href="#GFV3PluggabilityOnePager-4.12.2CLI">4.12.2 CLI</a></li> 
+         <li><a href="#GFV3PluggabilityOnePager-4.12.3Monitoring">4.12.3 Monitoring</a></li> 
+        </ul> 
+        <li><a href="#GFV3PluggabilityOnePager-4.13.Dependencies%3A">4.13. Dependencies:</a></li> 
+        <ul> 
+         <li><a href="#GFV3PluggabilityOnePager-4.13.1AdminConsole">4.13.1 Admin Console</a></li> 
+         <li><a href="#GFV3PluggabilityOnePager-4.13.2CLI">4.13.2 CLI</a></li> 
+         <li><a href="#GFV3PluggabilityOnePager-4.13.3Monitoring">4.13.3 Monitoring</a></li> 
+        </ul> 
+       </ul> 
+       <li><a href="#GFV3PluggabilityOnePager-5.ReferenceDocuments%3A">5. Reference Documents:</a></li> 
+       <li><a href="#GFV3PluggabilityOnePager-6.Schedule%3A">6. Schedule:</a></li> 
+       <ul> 
+        <li><a href="#GFV3PluggabilityOnePager-6.1.ProjectedAvailability%3A">6.1. Projected Availability:</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="GFV3PluggabilityOnePager-1.Introduction"></a>1. Introduction</h1> <h4><a name="GFV3PluggabilityOnePager-1.1.Project%2FComponentWorkingName%3A"></a>1.1. Project/Component Working Name: </h2> <p>Pluggability/Extensibility and Branding.</p> <h4><a name="GFV3PluggabilityOnePager-1.2.Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier%3A"></a>1.2. Name(s) and e-mail address of Document Author(s)/Supplier:</h2> <p>Sreenivas Munnangi, sreenivas.munnangi@sun.com: authored extensions for monitoring<br> Ken Paulsen, Ken.Paulsen@Sun.COM: authored extensions for admin console<br> Hong Zhang, Hong.Zhang@Sun.COM: authored extensions for deployment</p> <h4><a name="GFV3PluggabilityOnePager-1.3.DateofThisDocument%3A"></a>1.3. Date of This Document:</h2> <p>06/24/08</p> <h4><a name="GFV3PluggabilityOnePager-2.ProjectSummary"></a>2. Project Summary</h1> <h4><a name="GFV3PluggabilityOnePager-2.1.ProjectDescription%3A"></a>2.1. Project Description:</h2> <p>Enable the extensibility of application server by providing for plug-in capabilities. The newly added module should be able to expose its configuration, management, and monitoring like any other native module. It should also be possible to access configuration, management and monitoring thru common interfaces like CLI, and GUI.</p> <p>In this release for Prelude, we are planning to expose Pluggability infrastructure only for CLI, GUI, Deployment and Monitoring. </p> <p>Enable GF V3 to be OEM'd by external vendors, such as ISVs, OEMs, System Integrators.</p> <p>Please refer to </p> 
+     <ul> 
+      <li><a href="Deploymentv3PreludeOnePager.html" title="Deploymentv3PreludeOnePager">Deployment one-pager</a> for deployment pluggability.</li> 
+      <li><a href="AdminCommandSPI.html" title="AdminCommandSPI">Admin Command SPI</a> for CLI pluggability.</li> 
+     </ul> <h4><a name="GFV3PluggabilityOnePager-2.2.RisksandAssumptions%3A"></a>2.2. Risks and Assumptions:</h2> <p>Note any risks, and assumptions that must be considered along with the proposal. Include technical risks. </p> <p>Complete this for each of the pluggable extensions.</p> <h4><a name="GFV3PluggabilityOnePager-2.2.1AdminConsole"></a>2.2.1 Admin Console</h3> <p>Specific Integration Points for the GlassFish Admin Console may depend on Woodstock and / or JavaServer Faces. Woodstock does not have dedicate staff, which could make support difficult for developers as well as for obtaining bug fixes. JavaServer Faces, while adequately supported, is not the development platform of choice for all users wishing to integrate with the admin console. Exposure to these dependencies will be minimized as much as possible in this release, however, there is the potential that this cannot be completely eliminated.</p> <p>Pluggability in the Admin Console requires the admin console application to be able to load classes from plugins, as well as for plugins to be able to access shared utility classes. These classes should be isolated to ensure they do not have side effects on applications besides the Admin Console.</p> <h4><a name="GFV3PluggabilityOnePager-2.2.2CLI"></a>2.2.2 CLI</h3> <p>The admin command SPI referred above assumes that all commands reside on the server and can be discovered at runtime. There are certain local commands, similar to create-domain which do not reside on the server. Further it is possible that there can be multiple services impleneting the same command name. If there are multiple commands with the same name, the first one is picked at random. For the subsequent commands, a warning or similar message needs to be logged and this is expected post prelude.</p> <h4><a name="GFV3PluggabilityOnePager-2.2.3Monitoring"></a>2.2.3 Monitoring</h3> <p>It is assumed that the pluggable module will implement provider interface for exposing its' monitoring objects. Otherwise it has to be done in a non-provider way by instrumenting just method entry and exit which will be availoable post prelude.</p> <h4><a name="GFV3PluggabilityOnePager-3.ProblemSummary"></a>3. Problem Summary</h1> <h4><a name="GFV3PluggabilityOnePager-3.1.ProblemArea%3A"></a>3.1. Problem Area:</h2> <p>Provides for extending the functionality and capabilities of application server by community similar to FireFox addons.</p> <p>Complete this for each of the pluggable extensions.</p> <h4><a name="GFV3PluggabilityOnePager-3.1.1AdminConsole"></a>3.1.1 Admin Console</h3> <p>The Admin Console will provide the ability to add functionality to the console through plugins. The console application itself will consist of some core infrastructure code and a set of plugins. Additional plugins may be created via the GlassFish project, or by 3rd party projects. Plugins may be distributed and installed/upgraded by the Update Center, or manually installed.</p> <p>Admin Console Plugins will be OSGi bundles which provide additional pages and/or Java code in order to extend the functionality of the Admin Console application. This means an Admin Console Plugin is delivered as a single OSGi bundle. The following use cases will be supported:</p> 
+     <ul> 
+      <li>Addition of TreeNodes in the navigation tree</li> 
+      <li>Addition of new Pages to the application</li> 
+      <li>Addition of additional images, JavaScript, or other resources</li> 
+      <li>Addition of new tabs to tabsets</li> 
+      <li>Addition of new help content</li> 
+      <li>Integration with page-specific functionality (e.g. add new deployment types, add log levels)</li> 
+      <li>Changes which effect the "branding" or "theme" of the application</li> 
+     </ul> <p>Each specific supported instances of the above use cases will be documented at <a href="V3IntegrationPoint.html" title="V3IntegrationPoint">V3IntegrationPoint</a>. These use cases are intended to allow arbitrary additions to the Admin Console, as well as the ability to alter the existing look and feel.</p> <p>Plugins will leverage the Update Center in order to deliver or upgrade plugins. The Update Center will manage plugin dependencies and compatibility with other plugins. Plugin bundles may also be installed manually by placing the bundle in the modules directory of the server. When plugins are upgraded or first installed, the Admin Console application will need to be reloaded.</p> <h4><a name="GFV3PluggabilityOnePager-3.1.2CLI"></a>3.1.2 CLI</h3> <p>It should be possible to discover the commands dynamically as the modular archcitecture supports the addition of modules at runtime.</p> <h4><a name="GFV3PluggabilityOnePager-3.1.3Monitoring"></a>3.1.3 Monitoring</h3> <p>Dynamically added modules would like to manage and monitor its' data similar to native modules. For example. JRuby would like to monitor runtime pool for optimizing performance. Similarly Portal Container, JBI and other modules would like to monitor their data to observe runtime behavior and tweak it. These modules need a pluggable infrastructure to expose its monitoring.</p> <h4><a name="GFV3PluggabilityOnePager-3.2.Justification%3A"></a>3.2. Justification:</h2> <p>GlassFish V3 is based on OSGI modular architecture and this is done deliberately to facilitate the addition of incremental modules/features as they are needed.</p> <p>Complete this for each of the pluggable extensions.</p> <h4><a name="GFV3PluggabilityOnePager-3.2.1AdminConsole"></a>3.2.1 Admin Console</h3> <p>The GlassFish Admin Console provides administration capabilities to all the features of GlassFish. In GlassFish v3, the functionality provided by the server is not static, therefor the GlassFish Admin Console must adapt to the reflect the functionality provided by the server. The plugin features planned for the GlassFish v3 Admin Console will allow admin content to be bundled with features that are added to the server. This will enable anyone adding features to GlassFish to provide administration capabilities for those features – this is must-have functionality for GlassFish v3. An additional benefit of this modularity is the decoupling of the Administration Console from the release of the GlassFish distributions. This will allow us to do asynchronous updates of portions of the application, or even the application itself.</p> <h4><a name="GFV3PluggabilityOnePager-3.2.2CLI"></a>3.2.2 CLI</h3> <p>Provides for administration of dynamically added modules thru a common framework which is AdminCommand SPI.</p> <h4><a name="GFV3PluggabilityOnePager-3.2.3Monitoring"></a>3.2.3 Monitoring</h3> <p>Monitoring is a critical part of runtime management to maintain the desired/optimum performance of a given container/application. The pluggable modules like JRuby, JBI and Portal Container would like to expose its' monitoring data natively (similar to Web Container) thru the same GUI/CLI interface for a uniform experience. This enables the system administrator browse a common interface, monitor the data and resolve the issues in advance to maintain desired performance.</p> <h4><a name="GFV3PluggabilityOnePager-4.TechnicalDescription%3A"></a>4. Technical Description:</h1> <h4><a name="GFV3PluggabilityOnePager-4.1.Details%3A"></a>4.1. Details:</h2> <p>To the extent known, how is this project going to be done? This information is used by the reviewer to get a feel for the<br> complexity and risk involved, and the architectural constraints that this project is working under. Try to present alternatives and show relationships to existing or proposed projects/standards.</p> <p>Complete this for each of the pluggable extensions.</p> <h4><a name="GFV3PluggabilityOnePager-4.1.1AdminConsole"></a>4.1.1 Admin Console</h3> <p><span class="error">Cannot resolve external resource into attachment.</span></p> 
+     <ul> 
+      <li><b>Console Plugin Service</b><br> The Console Plugin Service is the HK2 @Service responsible for acting as a facade to the all GlassFish v3 Admin Console Plugins. This enables the Admin Console to query Integration Points (see below) so it may perform the necessary actions for the integration (e.g. add a tree node, new tab, etc.). The Console Plugin Service provides the following API's: 
+       <ul> 
+        <li><tt>public void addIntegrationPoints(List&lt;IntegrationPoint&gt; points, String id)</tt></li> 
+        <li><tt>public void addIntegrationPoint(IntegrationPoint point, String id)</tt></li> 
+        <li><tt>public List&lt;IntegrationPoint&gt; getIntegrationPoints(String type)</tt></li> 
+        <li><tt>public ClassLoader getModuleClassLoader(String moduleName)</tt></li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li><b>Console Provider</b><br> Console Provider is an HK2 @Contract and interface which must be implemented by all Admin Console Plugins as an HK2 @Service. This allows the GlassFish v3 runtime to efficiently locate all plugins. It also defines the interface in which plugins define their IntegrationPoints. The Console Plugin Service queries each Console Provider implementation for its Integration Points. The following API is declared by the Console Provider interface: 
+       <ul> 
+        <li><tt>public URL getConfiguration()</tt></li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li><b>console-config.xml</b><br> This file is provided via a URL from each Console Provider. It acts as the interface for declaring Integration Points (see below). It is read into an Integration Point @Configured Object by the HK2 infrastructure. The following is an example of a simple console-config.xml file which declares a single Integration Point: 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;console-config id="javaone"&gt;
+&lt;integration-point
+	  id="JavaOneNode"
+	  type="tree"
+	  priority="210"
+	  parentId="tree"
+	  content="treenode-ex1.json" /&gt;
+&lt;/console-config&gt;</pre> 
+         </div> 
+        </div>
+       </div> <p>The "id" is intended to identify this particular integration point, this may be used in some cases for locating an Integration Point from another Integration Point. Type "type" of Integration Point is used to target what this Integration Point should effect, for example type="tree" will target the navigation tree. "priority" and "parentId" are used to locate where the integration should occur within a page, or to provide other integration-specific details to help consume this Integration Point. The "content" attribute must point to a resource which describes the content to add, or use the content attribute's String value to directly define the new content. The meaning of all these fields may be "type" specific, this will be documented at <a href="V3IntegrationPoint.html" title="V3IntegrationPoint">V3IntegrationPoint</a>.</p></li> 
+     </ul> 
+     <ul> 
+      <li><b>Integration Point</b><br> Integration Points are specified in the console-config.xml files of each GlassFish Admin Console Plugin bundle. They are consumed by the Admin Console application code, or other plugins. Integration Points for a particular type can be retrieved via the Console Plugin Service. Integration Points are objects which describe what should happen for a particular "type" of integration with the Admin Console. Integration points which are supported are documented on the following Wiki page: <a href="V3IntegrationPoint.html" title="V3IntegrationPoint">V3IntegrationPoint</a>. In addition to the fields provided via the console-config.xml file, the Integration Point instances provide access to the console-config.xml file "id" which declared the Integration Point. This may be used to look for resources relative to the plugin in which it was defined (i.e. via the Console Plugin Service's <tt>getModuleClassLoader(String)</tt> method). Integration Points provide the following API: 
+       <ul> 
+        <li><tt>public String getId()</tt></li> 
+        <li><tt>public String getType()</tt></li> 
+        <li><tt>public String getParentId()</tt></li> 
+        <li><tt>public String getContent()</tt></li> 
+        <li><tt>public int getPriority()</tt></li> 
+        <li><tt>public String getConsoleConfigId()</tt></li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li><b>Re-branding / Theming</b><br> As part of the plugin support in the GlassFish v3 Admin Console, a set of Integration Points will be defined specifically to effect the branding and theme (CSS / Images) of the console. The login screen, images which define the identity of the server will be customizable via Integration Points. CSS and Images which effect the global look and feel of the application will be changeable via Woodstock's Theming feature (see: <a href="https://woodstock.java.net/docs/specs/ThemeFS.html">https://woodstock.java.net/docs/specs/ThemeFS.html</a>) NOTE: In a future release of GlassFish, Woodstock theming support may be replaced by a different interface.</li> 
+     </ul> 
+     <ul> 
+      <li><b>Class Loading / OSGi</b><br> OSGi bundles are used in order to provide the modularity described by this feature in the Admin Console. This allows the Admin Console to leverage the class loading features provided by OSGi to detect and load classes from plugins that are placed in the "modules" directory of GlassFish. OSGi also ensures only 1 version of the classes are loaded, can check dependencies, and keep track of bundle versions. Without this capability, the Web Application class loader could not be made aware of plugin Java code, configuration files (such as the faces-config.xml files), or resources provided by plugins.<br> Below is a diagram which attempts to illustrate the interaction between the Admin Console application and its dependencies:<br> <span class="error">Cannot resolve external resource into attachment.</span><br> The first key piece of functionality to make this work is an HK2 feature which allows the Admin Console to add the following to its MANIFEST.MF file: 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">Glassfish-require-services: org.glassfish.api.admingui.ConsoleProvider</pre> 
+         </div> 
+        </div>
+       </div> <p>This line causes the Admin Console application to have visibility into all OSGi bundles which implement the ConsoleProvider @Contract. This solves the issue of locating config files such as the faces-config.xml file, as well as executing plugin Java code directly from the Admin Console.<br> Another piece of the puzzle is solved by a JSFTemplating feature which enables resolution of pages and resources via a custom class loader. The GlassFish v3 Admin Console takes advantage of this by providing a class loader which is capable of locating specific plugin module class loaders by the prefix of the resource request. This enables resources belonging to a specific plugin to be accurately be loaded. For example, the following URL loads the "test.jsf" page from the "my" plugin (NOTE: "my" is the plugin's console-config.xml "id" attribute value):</p> 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">http://localhost:4848/my/test.jsf</pre> 
+         </div> 
+        </div>
+       </div> <p>This area of the plugin design has been the most difficult part to figure out as there are no standards in this area of Java EE (in fact the idea of going outside the web application for class loading seems to go against Java EE web application design). As such, we should NOT share any OSGi bundles which maintain state for the application, or bundles in which the console requires a specific version.</p></li> 
+     </ul> 
+     <ul> 
+      <li><b>Update Center Integration</b><br> The Update Center will be critical both in delivery of the GlassFish Admin Console application itself, but also its dependencies. The Update Center may be used to initially download the GlassFish Admin Console. Its API's will then be used by the Admin Console so that updates and new bundles can be detected and presented to the user. If the user chooses to install updates or new plugin bundles, they will be downloaded and installed for the user. The Update Center will provide the ability to track versions of plugin bundles, and declare dependencies between plugin bundles.</li> 
+     </ul> <h4><a name="GFV3PluggabilityOnePager-4.1.2CLI"></a>4.1.2 CLI</h3> <p>Please refer to <a href="AdminCommandSPI.html" title="AdminCommandSPI">AdminCommandSPI</a> for details.</p> <h4><a name="GFV3PluggabilityOnePager-4.1.3Monitoring"></a>4.1.3 Monitoring</h3> <p>V3 Monitoring solution is being architected in a pluggable manner so that even the native modules like Web Container use same pluggable infrastructure which we expose to pluggable modules like JRuby, Portal Container, JBI, etc. We expect these modules to use the same pluggable monitoring infrastructure which is used for native modules.</p> <p>To start with, the pluggable module has monitoring data which is being gathered during run time. It is possible for the module to use probes infrastructure if needed. The probes infrastructure enables the module to define its basic probes using provider interface. If the monitoring requirement is simple, probes infrastructure can define the default probes (post prelude) for the module. Once the probes are available, it is possible to register a listener and start monitoring the probes and populate the monitoring data objects. These monitoring data objects form the basis for reporting monitoring, which is discussed below.</p> <p>Please refer to <a href="GFV3MonitoringOnePager.html" title="GFV3MonitoringOnePager">Monitoring Onepager</a> for details.</p> <p>The module will expose the monitoring data through hk2 service by implementing monitoring contract, for example.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">import org.jvnet.hk2.annotations.Contract;
+import javax.management.j2ee.statistics;
+@Contract
+public interface Monitor {
+    public Statistic getMonitorData(String monitorAttr);
+    public String toString();
+}</pre> 
+       </div> 
+      </div>
+     </div> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">import org.jvnet.hk2.annotations.Service;
+import javax.management.j2ee.statistics;
+@Service (name="JRuby")
+@Scoped(Singleton.class)
+public class JRubyMonitor implements Monitor {
+    public Statistic getMonitorData(String monitorAttr) {
+       // process and return the requested data
+    }
+    public String toString() {
+        // return formatted monitoring data
+        final ActionReport report = context.getActionReport();
+        // append titles        
+        report.setMessage("Response Time     Runtime Pool Count");
+        // append data for each row
+        for (each row of data) {
+            report.getTopMessagePart().setChildrenType("");
+            ActionReport.MessagePart part = 
+                     report.getTopMessagePart().addChild();
+            part.setMessage(respTime + "          " + poolCount);
+        }
+        report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
+    }
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>When V3 runtime comes up, the above service 'JRubyMonitor' is available in the habitat and one could query directly for the service by name 'JRubyMonitor' or by contarct type 'Monitor'. It is possible that multiple services implement the same contract.</p> <p>Let us see how this works with GlassFish V2 asadmin monitor command.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&gt; asadmin monitor --type jruby server
+
+    JRuby Monitoring Data
+
+Response      Runtime
+Time (ms)      Pool
+    2            5</pre> 
+       </div> 
+      </div>
+     </div> <p>The above command is passed to the admin adapter on the server side, which determines that it is a monitoring command based on sub command 'monitor'. Based on this information it looks for corresponding service "JRuby" in the habitat which implements "Monitor" contract. </p> <p>There are 2 versions possible for implementing the Service. The first one is based on method processing and the second one is based on annotations. For example, to return the monitor attribute JRubyContainerStats.CurrentRequestData.ProcessingTime. two implementation will be as follows.</p> <p>First version using method processing:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">import org.jvnet.hk2.annotations.Service;
+@Service (name="JRuby")
+@Scoped(Singleton.class)
+public class JRubyMonitor implements Monitor {
+
+    public Object getMonitorData(String monitorAttr) {
+       if (monitorAttr.startsWith("JRubyContainerStats")) {
+
+          // get hold of JRubyContainerStats
+          // pass the command to JRubyContainerStats object
+          // return the value
+
+          // JRubyContainerStats object may do some thing similar to this for
+          // getting hold of the final monitor attribute requested and return it
+
+       } else if (monitorAttr.equals("JRubyContainerStats.CurrentRequestData")) {
+       } else if (monitorAttr.equals("JRubyContainerStats.CurrentRequestData.ProcessingTime")) {
+       } else {
+       }
+    }
+
+    public String toString() {
+        return ("Formatted JRuby monitoring data ...");
+    }
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>Second version using annotations:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">import org.jvnet.hk2.annotations.Service;
+@Service (name="JRuby")
+@Scoped(Singleton.class)
+public class JRubyMonitor implements Monitor {
+
+    @MonitorData (name="JRubyContainerStats")  
+    JRubyContainerStats jrcs;
+   
+    public Object getMonitorData(String monitorAttr) {
+       // parse monitorAttr into components, for ex.
+       // JRubyContainerStats, CurrentRequestData and ProcessingTime
+       //
+       // get the annotation for the first component which is JRubyContainerStats
+       // and the corresponding object instance is jrcs
+       //
+       // get the object corresponding to next component which is "CurrentRequestData"
+       // jrcs.getMonitorData("CurrentRequestData") which is crd
+       //
+       // repeat the above for last component "ProcessingTime"
+       // which returns pt
+       //
+       // return pt;
+    }
+    ...
+}
+
+public class JRubyContainerStats {  
+    @MonitorData (name="CurrentRequestData")
+    CurrentRequestData crd;
+
+    public  Object getMonitorData(String monitorAttr) {
+       return crd;
+    }
+    ...
+}
+
+public class JRubyContainerStats {  
+    @MonitorData (name="ProcessingTime")
+    ProcessingTime pt;
+
+    public  CurrentRequestData getMonitorData(String monitorAttr) {
+       return pt;
+    }
+    ...
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>To maintain V2 compatibility, the monitoring data will be exposed thru JMX/AMX.</p> <p><b>Exposing monitor data through the GlassFish Admin Console:</b></p> <p>Please refer to the <a href="http://sites.google.com/site/glassfishconsole/v3-one-pager">GlassFish v3 Admin Console specification</a> for details on exposing monitor data through the Admin Console.</p> <h4><a name="GFV3PluggabilityOnePager-4.1.4OEMAdminConsole%2FSkinsCustomization"></a>4.1.4 OEM - Admin Console / Skins Customization</h3> <p>Please see Re-branding / Theming section of 4.1.1 for details.</p> <h4><a name="GFV3PluggabilityOnePager-4.1.5OEMNonGUICustomization"></a>4.1.5 OEM - Non GUI Customization</h3> <p>Apart from GUI and skins, OEM customization is needed wherever the OEM specific information is displayed. For example, the application server version, OEM specific information in the server.log, etc.</p> <p>Version command should return OEM specific values though OEM is expected to step lock with the application server versions.</p> <p>At present the java class ./common/common-util/src/main/java/com/sun/appserv/server/util/Version.java returns version info. The class expects version properties files under com/sun/enterprise/ee/server/Version.properties or com/sun/enterprise/server/Version.properties.</p> <p>We plan to extend this by coming up with a branding module which will be dropped under glassfish/lib/modules. The branding module consists of an implementation of Branding contract which is deployed into the habitat at server startup. When the Version class is consulted for version info, it first looks for Branding implementation in the habitat. if the implementation is not find it uses default info from the Version class. Branding module is expected to be a single module for gathering all brand/skin related artifacts into one place.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">import org.jvnet.hk2.annotations.Contract;
+@Contract
+public interface Branding {
+    public String getVersion();
+    public String getFullVersion();
+    public String getAbbreviatedVersion();
+    ...
+}
+
+
+import org.jvnet.hk2.annotations.Service; 
+@Service
+@Scoped(Singleton.class) 
+public class GlassFishBranding implements Branding { 
+    public String getVersion();
+    public String getFullVersion();
+    public String getAbbreviatedVersion();
+    ...
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>OEM implements the Service of contract type Branding which will be available thru the habitat when the branding jar is made available under glassfish/lib/modules. When some one queries for version info, first the habitat will be looked up to see if any OEM info is available otherwise, it falls back to default behavior.</p> <p>Corresponding to V3 version info, following properties are available.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">PRODUCT_NAME = "product.name";
+ABBREV_PRODUCT_NAME = "abbrev.product.name";
+FULL_VERSION = "full.version";
+MAJOR_VERSION = "major.version";
+MINOR_VERSION = "minor.version";
+BUILD_ID = "build.id";</pre> 
+       </div> 
+      </div>
+     </div> <p>In addition, so as to enable the display of OEM specific info, we may want to capture the following.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">LEGAL_COPYRIGHT                "Copyright 2008-2009"
+LEGAL_COMPANY_NAME             "Sun Microsystems, Inc."
+LEGAL_RIGHTS                   "All rights reserved."
+SIMPLE_COMPANY_NAME            "Sun"
+COMPANY_CONTACT_URL            "http://www.sun.com"
+PRODUCT_TRADEMARKS             "GlassFish V3 is a trademark of Sun."</pre> 
+       </div> 
+      </div>
+     </div> <p>The server.log displays OEM specific information for each entry, for example GlassFish10.0. If an OEM is present then it should display the name corresponding to OEM otherwise use the default. </p> <h4><a name="GFV3PluggabilityOnePager-4.2.Bug%2FRFENumber%28s%29%3A"></a>4.2. Bug/RFE Number(s):</h2> <p>List any Bug(s)/RFE(s) which will be addressed by this proposed change.</p> <p>Provide links to the Issue tracker Bug(s)/RFE(s)where possible</p> <h4><a name="GFV3PluggabilityOnePager-4.3.InScope%3A"></a>4.3. In Scope:</h2> <p>Aspects that are in scope of this proposal if not obvious from above.</p> <p>Complete this for each of the pluggable extensions.</p> <h4><a name="GFV3PluggabilityOnePager-4.3.1AdminConsole"></a>4.3.1 Admin Console</h3> <p>The following use-cases are covered by the scope of the v3 Admin Console Pluggability Support:</p> 
+     <ul> 
+      <li>Addition of TreeNodes in the navigation tree</li> 
+      <li>Addition of new pages to the application (JSF or non-JSF pages)</li> 
+      <li>Addition of additional images, JavaScript, or other resources</li> 
+      <li>Addition of new help content</li> 
+      <li>Integration with page-specific functionality (e.g. add new deployment types, add log levels)</li> 
+      <li>Changes which effect the "branding" or "theme" of the application</li> 
+     </ul> <h4><a name="GFV3PluggabilityOnePager-4.3.2CLI"></a>4.3.2 CLI</h3> <p>Support for help, man pages and validation.</p> <h4><a name="GFV3PluggabilityOnePager-4.3.3Monitoring"></a>4.3.3 Monitoring</h3> <p>As specified in 4.1.3.</p> <h4><a name="GFV3PluggabilityOnePager-4.4.OutofScope%3A"></a>4.4. Out of Scope:</h2> <p>Pluggability for Configuration, AMX, Runtime and JRuby Container Monitoring.</p> <h4><a name="GFV3PluggabilityOnePager-4.4.1AdminConsole"></a>4.4.1 Admin Console</h3> <p>The GlassFish v3 Admin Console will not support extensions to parts of the application which are not documented at: <a href="V3IntegrationPoint.html" title="V3IntegrationPoint">V3IntegrationPoint</a></p> <h4><a name="GFV3PluggabilityOnePager-4.4.2Monitoring"></a>4.4.2 Monitoring</h3> <p>Following items are out of scope for prelude: runtime mbeans, pluggability for amx, pluggability for config, pluggability for online-help, and jruby container monitoring.</p> <h4><a name="GFV3PluggabilityOnePager-4.5.Interfaces%3A"></a>4.5. Interfaces:</h2> <p>Interfaces are a major part of Architectural review.<br> Commands, Files, Directory Layout, Ports, DTD/Schema, admin tools, <br> config files, APIs, CLIs, and almost anything that is externally <br> observable is an interface. In 1-Pager it is necessary to document <br> any interface that can be used by external projects and products. <br> Documented public interfaces must be assigned a stability level.<br> Some commonly used Stability levels in prior projects are: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Stable    : Widely used public interface. changed very rarely.
+Standard  : Defined by a standards body (e.g: JDBCv3). Rare but 
+                 incompatible clarifications and changes could occur 
+                 in a standard. Product will specify version of std 
+                 supported. J2SE, J2EE and WS* are classified 
+                 as Standard.
+Evolving  : Subject to carefully controlled but possibly 
+                 incompatible change at a major or minor release. 
+                 When a change is made all efforts will be made 
+                 to address incompatiblity and migration. All 
+                 incompatibilities will need to be reviewed 
+                 and approved by as-ccc@sun.com. 
+Unstable  : Early access, subject to unrestricted degree of 
+                 change. A few App Server interfaces are classified 
+                 as Unstable. Docs must call out exported unstable 
+                 interfaces. Be wary of importing Unstable interfaces.
+External  : Defined external to GlassFish Application Server, 
+                 but not by a Standards body. Suitable for describing
+                 other freeware, open source interfaces.
+[http://www.opensolaris.org/os/community/arc/policies/interface-taxonomy/] describes the permitted interface taxonomy.</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="GFV3PluggabilityOnePager-4.5.1ExportedInterfaces"></a>4.5.1 Exported Interfaces</h3> <p>Complete this for each of the pluggable extensions.</p> <h4><a name="GFV3PluggabilityOnePager-4.5.1.1AdminConsole"></a>4.5.1.1 Admin Console</h3> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Service public class ConsolePluginService
+    public void addIntegrationPoints(List points, String id)
+	public void addIntegrationPoint(IntegrationPoint point, String id)
+	public List getIntegrationPoints(String type)
+	public ClassLoader getModuleClassLoader(String moduleName)</pre> 
+       </div> 
+      </div>
+     </div> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Contract public interface ConsoleProvider
+	public URL getConfiguration()</pre> 
+       </div> 
+      </div>
+     </div> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Configured public class IntegrationPoint implements Serializable
+	public String getId()
+	public String getType()
+	public String getParentId()
+	public String getContent()
+	public int getPriority()
+	public String getConsoleConfigId()</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li><tt>console-config.xml</tt> 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">&lt;!ELEMENT console-config (integration-point*)&gt;
+&lt;!ATTLIST
+&lt;!-- This is the "id" which identifies the plugin --&gt;
+id          CDATA       #REQUIRED&gt;
+&lt;!ELEMENT integration-point EMPTY&gt;
+&lt;!ATTLIST
+id          CDATA       #REQUIRED
+type        CDATA       #REQUIRED
+priority    CDATA       #IMPLIED
+parentId    CDATA       #IMPLIED
+content     CDATA       #IMPLIED
+&gt;</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ul> 
+     <ul> 
+      <li>Integration Point id's documented at: <a href="V3IntegrationPoint.html" title="V3IntegrationPoint">V3IntegrationPoint</a></li> 
+     </ul> <h4><a name="GFV3PluggabilityOnePager-4.5.1.2CLI"></a>4.5.1.2 CLI</h3> <p>Please refer to <a href="AdminCommandSPI.html" title="AdminCommandSPI">AdminCommandSPI</a> for details.</p> <h4><a name="GFV3PluggabilityOnePager-4.5.1.3Monitoring"></a>4.5.1.3 Monitoring</h3> 
+     <ul> 
+      <li>Interface:</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Service
+public class JRubyMonitor implements Monitor {
+    public Statistic getMonitorData(String monitorAttr);
+    public String toString();
+}
+Monitoring attributes in dotted notation, for details, please refer to Monitoring one-pager.</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>Stability: unstable</li> 
+      <li>Comments: Early access, subject to unrestricted degree of change</li> 
+     </ul> 
+     <ul> 
+      <li>Interface: JMX/AMX Monitoing MBeans</li> 
+      <li>Stability: compatible with V2</li> 
+     </ul> <h4><a name="GFV3PluggabilityOnePager-4.5.2Importedinterfaces"></a>4.5.2 Imported interfaces</h3> <p>Complete this for each of the pluggable extensions.</p> <h4><a name="GFV3PluggabilityOnePager-4.5.2.1AdminConsole"></a>4.5.2.1 Admin Console</h3> <p>Please refer to <a href="http://sites.google.com/site/glassfishconsole/v3-one-pager">GlassFish v3 Admin Console specification</a> for details.</p> <h4><a name="GFV3PluggabilityOnePager-4.5.2.2CLI"></a>4.5.2.2 CLI</h3> <p>Please refer to <a href="AdminCommandSPI.html" title="AdminCommandSPI">AdminCommandSPI</a> for details.</p> <h4><a name="GFV3PluggabilityOnePager-4.5.2.3Monitoring"></a>4.5.2.3 Monitoring</h3> 
+     <ul> 
+      <li>Interface:</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Contract 
+public interface Monitor {
+    public Statistic getMonitorData(String monitorAttr);
+    public String toString();
+}
+
+@Service
+public class JRubyMonitor implements Monitor {
+    public Statistic getMonitorData(String monitorAttr);
+    public String toString();
+}</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>Stability: unstable</li> 
+      <li>Exporting Project: Name, Specification or other Link: HK2</li> 
+     </ul> <h4><a name="GFV3PluggabilityOnePager-4.5.3Otherinterfaces%28Optional%29"></a>4.5.3 Other interfaces (Optional)</h3> <p>Complete this for each of the pluggable extensions.</p> <h4><a name="GFV3PluggabilityOnePager-4.6.DocImpact%3A"></a>4.6. Doc Impact:</h2> <p>List any Documentation (man pages, manuals, service guides...) that will be impacted by this proposal.</p> <p>Complete this for each of the pluggable extensions.</p> <h4><a name="GFV3PluggabilityOnePager-4.6.1AdminConsole"></a>4.6.1 Admin Console</h3> <p>Documentation will need to be modularized to be capable of delivering different groups of "help" information based on the content of a particular release. The console shall provide a way for 3rd party plugins to provide their own help content as well (NOTE: this may not be integrated with the documentation shipped with the product.)</p> <h4><a name="GFV3PluggabilityOnePager-4.6.2CLI"></a>4.6.2 CLI</h3> <p>Every new command should provide corresponding help and man-page in given format.</p> <h4><a name="GFV3PluggabilityOnePager-4.6.3Monitoring"></a>4.6.3 Monitoring</h3> <p>Please refer to 4.1.3 for input on documentation.</p> <h4><a name="GFV3PluggabilityOnePager-4.7.Admin%2FConfigImpact%3A"></a>4.7. Admin/Config Impact:</h2> <p>How will this change impact the administration of the product?</p> <p>Identify changes to GUIs, CLI, agents, plugins...</p> <p>Complete this for each of the pluggable extensions.</p> <h4><a name="GFV3PluggabilityOnePager-4.7.1AdminConsole"></a>4.7.1 Admin Console</h3> <p>The ability to add plugins to the server will enhance users' ability to support GlassFish features or upgrade (or develop) enhanced versions of plugins which offer better administration support.</p> <h4><a name="GFV3PluggabilityOnePager-4.7.2CLI"></a>4.7.2 CLI</h3> <p>By nature CLI is itself an admin command infrastructure. Related CLI commands will update the configuraton such as set/get, dotted names and certain CLI commands.</p> <h4><a name="GFV3PluggabilityOnePager-4.7.3Monitoring"></a>4.7.3 Monitoring</h3> <p>The pluggability is expected to be acheived with existing infrastructure.</p> <h4><a name="GFV3PluggabilityOnePager-4.8.HAImpact%3A"></a>4.8. HA Impact:</h2> <p>What new requirements does this proposal place on the High Availability or Clustering aspects of the component?</p> <p>Need to be reviewed later.</p> <h4><a name="GFV3PluggabilityOnePager-4.9.I18N%2FL10NImpact%3A"></a>4.9. I18N/L10N Impact:</h2> <p>Does this proposal impact internationalization or localization?</p> <p>Complete this for each of the pluggable extensions.</p> <h4><a name="GFV3PluggabilityOnePager-4.9.1AdminConsole"></a>4.9.1 Admin Console</h3> <p>I18N deliverables will need to be broken into individual files which correspond with the modules in which they belong.</p> <h4><a name="GFV3PluggabilityOnePager-4.9.2CLI"></a>4.9.2 CLI</h3> <p>Please refer to <a href="AdminCommandSPI.html" title="AdminCommandSPI">AdminCommandSPI</a> for details.</p> <h4><a name="GFV3PluggabilityOnePager-4.9.3Monitoring"></a>4.9.3 Monitoring</h3> <p>Details to be identified during design phase.</p> <h4><a name="GFV3PluggabilityOnePager-4.10.Packaging%26Delivery%3A"></a>4.10. Packaging &amp; Delivery:</h2> <p>What packages, clusters or metaclusters does this proposal impact? What is its impact on install/upgrade?</p> <p>For prelude, the pluggable module is either an HK2 module or OSGi module. Module with all pluggability (GUI, CLI, etc.) can be released as one bundle, or the pluggability can be released as a separate bundle from core.</p> <h4><a name="GFV3PluggabilityOnePager-4.10.1AdminConsole"></a>4.10.1 Admin Console</h3> <p>The Update Center will be the delivery vehicle in which the GlassFish Admin Console may be installed.</p> <p>The Update Center will provide support for the GlassFish Admin Console to access information about the available packages which may be upgraded or installed. It will provide details about versions and descriptions of packages. The Update Center will also be responsible for providing a mechanism for tracking and resolving dependencies (including versions) between bundles.</p> <h4><a name="GFV3PluggabilityOnePager-4.10.2CLI"></a>4.10.2 CLI</h3> <p>Delivered as part of module either as an OSGI module or thru update center. Upgrade needs to be understood better.</p> <h4><a name="GFV3PluggabilityOnePager-4.10.3Monitoring"></a>4.10.3 Monitoring</h3> <p>Delivered as part of module.</p> <h4><a name="GFV3PluggabilityOnePager-4.11.SecurityImpact%3A"></a>4.11. Security Impact:</h2> <p>How does this proposal interact with security-related APIs or interfaces? Does it rely on any Java policy or platform user/permissions implication? If the feature exposes any new ports, Or any similar communication points which may have security implications, note these here.</p> <p>Complete this for each of the pluggable extensions.</p> <h4><a name="GFV3PluggabilityOnePager-4.11.1AdminConsole"></a>4.11.1 Admin Console</h3> <p>3rd-party plugins may introduce features which may compromise security, or even be intentionally malicious. Administrators will need to take care in ensuring they trust each installed plugin.</p> <p>OSGi bundles are shared. Care must be taken to isolate any OSGi bundles containing state information on which the Admin Console depends to ensure the Admin Console is the only application consuming these bundles.</p> <h4><a name="GFV3PluggabilityOnePager-4.11.2CLI"></a>4.11.2 CLI</h3> <p>Uses and confirms to the common security infrastructure provided by CLI and Java EE Containers/OSGI modules.</p> <h4><a name="GFV3PluggabilityOnePager-4.11.3Monitoring"></a>4.11.3 Monitoring</h3> <p>Utilizes the security provided by monitoring infrastructure.</p> <h4><a name="GFV3PluggabilityOnePager-4.12.CompatibilityImpact"></a>4.12. Compatibility Impact</h2> <p>Incompatible changes to interfaces that others expect to be stable may cause other parts of application server or<br> other dependent products to break. </p> <p>Discuss changes to the imported or exported interfaces. Describe how an older version of the interface would be handled.</p> <p>List any requirements on upgrade tool and migration tool.</p> <p>Complete this for each of the pluggable extensions.</p> <h4><a name="GFV3PluggabilityOnePager-4.12.1AdminConsole"></a>4.12.1 Admin Console</h3> <p>In order for plugins to be successful, particularly 3rd-party plugins, it will be important for version numbers to reflect any incompatible changes in the api. For example, if glassfish-api-10.0.0-rev6 provides a certain set of API's, if those api's continue to be backward compatible up to, but not including, glassfish-api-11.0, then a version range in which a plugin is compatible may be specified. However, if incompatible changes are randomly made to version numbers, it will be impossible for ranged version numbers to be used reliably. This will tie a build of GlassFish to a build of a particular plugin making it unportable to other versions of GlassFish, even if those versions are compatible.</p> <p>The Integration Points supported in GlassFish v3 Prelude may be altered to mitigate exposure to Woodstock and JavaServer Faces. This will break compatibility is some Integration Points.</p> <h4><a name="GFV3PluggabilityOnePager-4.12.2CLI"></a>4.12.2 CLI</h3> <p>This is the first implementation.</p> <h4><a name="GFV3PluggabilityOnePager-4.12.3Monitoring"></a>4.12.3 Monitoring</h3> <p>This is the first version of pluggability.</p> <h4><a name="GFV3PluggabilityOnePager-4.13.Dependencies%3A"></a>4.13. Dependencies:</h2> <p>List all dependencies that this proposal has on other proposals, components or products. Include interface<br> specifics above in the interfaces section; LIST dependency component version requirements here.</p> <p>Complete this for each of the pluggable extensions.</p> <h4><a name="GFV3PluggabilityOnePager-4.13.1AdminConsole"></a>4.13.1 Admin Console</h3> 
+     <ul> 
+      <li>OSGi - class loading</li> 
+      <li>HK2 - XML Parsing, Annotations</li> 
+      <li>UpdateCenter 2.0 - Delivery of Admin Console and Plugins; Querying of Plugins</li> 
+      <li>JavaServer Faces / JSFTemplating - Serving Resources; Configuration of Managed Beans; Pages; etc. (NOTE: exposure to plugin authors will be limited, use of these will be optional in most cases)</li> 
+      <li>Woodstock - Components and Theme Support (NOTE: exposure to plugin authors will be limited, use of these will be optional in most cases)</li> 
+      <li>jMaki - Charting, RSS Feeds (NOTE: exposure to plugin authors will be limited, use of these will be optional in most cases)</li> 
+      <li>Help - HTML content provided by GlassFish documentation authors</li> 
+     </ul> <h4><a name="GFV3PluggabilityOnePager-4.13.2CLI"></a>4.13.2 CLI</h3> <p>Depends on <a href="AdminCommandSPI.html" title="AdminCommandSPI">Admin Command SPI</a>.</p> <h4><a name="GFV3PluggabilityOnePager-4.13.3Monitoring"></a>4.13.3 Monitoring</h3> <p>Depends on HK2 and GlassFish V3 infrastructure including monitoring infrastructure.</p> <h4><a name="GFV3PluggabilityOnePager-5.ReferenceDocuments%3A"></a>5. Reference Documents:</h1> <p>List of related documents, if any (BugID's, RFP's, papers).</p> <p>Explain how/where to obtain the documents, and what each contains, not just their titles. </p> 
+     <ul> 
+      <li><a href="AdminCommandSPI.html" title="AdminCommandSPI">Admin Command SPI</a>.</li> 
+      <li>Admin Console Integration Point Documentation: <a href="V3IntegrationPoint.html" title="V3IntegrationPoint">V3IntegrationPoint</a></li> 
+      <li>Woodstock Theming Specification: <a href="https://woodstock.java.net/docs/specs/ThemeFS.html">https://woodstock.java.net/docs/specs/ThemeFS.html</a></li> 
+      <li>Admin Console Onepager: <a href="GFV3AdminGUIOnePager.html" title="GFV3AdminGUIOnePager">GFV3AdminGUIOnePager</a></li> 
+      <li><a href="GFV3MonitoringOnePager.html" title="GFV3MonitoringOnePager">Monitoring Onepager</a></li> 
+     </ul> <h4><a name="GFV3PluggabilityOnePager-6.Schedule%3A"></a>6. Schedule:</h1> <h4><a name="GFV3PluggabilityOnePager-6.1.ProjectedAvailability%3A"></a>6.1. Projected Availability:</h2> <p>Dates in appropriate precision (quarters, years)</p> <p>Basic pluggability infrastructure as specificed above (excpting the items specified under out-of-scope) are expected to be provided for prelude release.</p> 
+     <hr> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875116/21364923.gif">pluginDesign.gif</a> (image/gif) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875116/21364922.gif">classloading.gif</a> (image/gif) 
+      <br> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:44.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

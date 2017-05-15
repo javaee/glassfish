@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : FaqMonitorGlassFishJa</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="FaqMonitorGlassFishJa-GlassFish%E3%82%92%E7%9B%A3%E8%A6%96%E3%81%99%E3%82%8B%E3%83%A6%E3%83%BC%E3%83%86%E3%82%A3%E3%83%AA%E3%83%86%E3%82%A3%E3%81%AF%EF%BC%9F"></a>GlassFish を監視するユーティリティは？</h2> <p>users@glassfish メーリングリストより:</p> <p><b>質問</b> GlassFish の Web 層をモニターするユーティリティかツールはありますか？例えば、GlassFish<br> とクライアントの間で動作するプロキシのようなもので、リクエストやその完了にかかる時間の統計情報<br> を収集するようなものです。リクエストやメモリーや接続や JMS などなどの状態をその場や一日の終わりに<br> 見ることができるオールインワンのモニタリングアプリケーションを探しているんです。そんなツールは<br> ありませんか？</p> <p><b>回答</b> </p> <p><em>Witold Szczerba</em>: JVM などの基本的な情報は JMX によって出力され、Sun Java 6 のモニタリングおよび<br> 管理コンソールで見ることができます – これは JDK 1.5 以降かもしかしたらその前からデフォルトで入って<br> います(JRE に入っているかどうかは定かじゃないけど、JDK には入ってます)。実行ファイルは jconsole<br> です。メモリー/CPU の使用量やスレッドカウントを見られるし、ガベージコレクタを呼んだり<br> JMS の統計情報なども見ることもできますので、私は気に入ってます。</p> <p><em>Chris Fleischmann</em>: もしかしたら GlassBox なんかが気に入ってもらえるかもしれませんね。<br> (前に述べられている JMX コンソール (jconsole) もだけど)</p> 
+     <ul> 
+      <li><a href="http://weblogs.java.net/blog/maxpoon/archive/javaone/index.html">JavaOne2007 Hands-on Lab 1420</a></li> 
+      <li><a href="http://developers.sun.com/learning/javaoneonline/j1lab.jsp?lab=LAB-1420&amp;yr=2007&amp;track=5">Monitoring and Troubleshooting using JMX and JConsole Lab</a></li> 
+     </ul> <p><em>Gabor Szokoli</em>: <a href="http://munin.projects.linpro.no/">Munin</a> は、カウンターやグラフ化の良いツールだと<br> 思うし、JMX プラグインがあります。</p> 
+     <hr> <p>日本語翻訳: <a href="http://blogs.oracle.com/shioda">shioda</a></p> <p><a href="FaqMonitorGlassFish.html" title="FaqMonitorGlassFish">英文 </a> (翻訳したバージョン: 2)</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 03, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:44.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

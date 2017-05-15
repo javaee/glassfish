@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : V3UpgradeDashboard</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="V3UpgradeDashboard-GlassFishv3Upgrade"></a>GlassFish v3 Upgrade</h1> <h4><a name="V3UpgradeDashboard-Goal"></a>Goal</h2> <p>Seamless side-by-side upgrade from</p> 
+     <ul> 
+      <li><a href="https://glassfish.java.net/downloads/v2-b58g.html">GlassFish v2 Developer Profile</a> (9.1 UR2, Gfv2 UR2)</li> 
+      <li><a href="https://glassfish.java.net/downloads/v2.1-b60e.html">GlassFish v2.1 Developer Profile</a></li> 
+      <li><a href="https://glassfish.java.net/downloads/v3-prelude.html">GlassFish v3 Prelude</a></li> 
+     </ul> <h4><a name="V3UpgradeDashboard-Performinganupgrade"></a>Performing an upgrade</h2> <p>Given a source domain and a v3 target server, run the following. The -s param is optional (you can specify the source domain in the GUI), but it will save you a step. Assuming your domain is called </p>
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">domain1</pre> 
+       </div> 
+      </div>
+     </div>:<p></p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;GFv3_root&gt;/bin/asupgrade -s &lt;source_gf&gt;/domains/domain1</pre> 
+       </div> 
+      </div>
+     </div> <p>This will copy the source domain into the v3 domains directory, copy non-GlassFish jars from the source lib directory to the target lib directory, and then call </p>
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">asadmin start-domain --upgrade domain1</pre> 
+       </div> 
+      </div>
+     </div> to perform the actual upgrade. If you already have a domain1 in the target server's domains directory, the tool rename it for you unless you cancel when prompted. <b>Note:</b> the original domain in the source server is untouched; it is copied over for you and the copy is upgraded.<p></p> <p><b>For GF developers:</b> If you're working on an upgrade service-related bug, it may be simpler for you to perform the upgrade without using the asupgrade tool. Copy the source domain (e.g., 'v2domain') into v3/domains and run:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">java -jar modules/glassfish.jar -upgrade true -domain v2domain</pre> 
+       </div> 
+      </div>
+     </div> <p>This allows you to use </p>
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">-Xdebug</pre> 
+       </div> 
+      </div>
+     </div> options when starting the server.<p></p> <h4><a name="V3UpgradeDashboard-Ifyouusejavadbasyourdatabase"></a>If you use javadb as your database</h2> <p>Remember that the database you use is separate from the application server. So if you use javadb and start it with </p>
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">asadmin start-database</pre> 
+       </div> 
+      </div>
+     </div> without other options then by default your database library will be stored in gf_home/databases. If you do an upgrade from v2 to v3, your databases aren't copied over as well. So you can do one of these to make sure the application finds your tables:<p></p> 
+     <ol> 
+      <li>Use the original database with the new server. For instance: 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">gfv2_home/bin/asadmin start-database</pre> 
+         </div> 
+        </div>
+       </div> followed by 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">gfv3_home/bin/asadmin start-server</pre> 
+         </div> 
+        </div>
+       </div></li> 
+      <li>Move the database information over to the new javadb instance you want to use. You can copy the folders from one gf_home/databases location to another. Databases created by javadb are portable across instances of javadb.</li> 
+      <li>Tell the v3 asadmin script where your databases are with the derby.system.home property. Use this option with asadmin to do so: 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">start-database --dbhome &lt;path to db/log location&gt;</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ol> <p>In a production environment, the database information usually wouldn't be stored under your app server's installation directory, but since that's the default for development and testing, you may run into this issue working on upgrades. If you use NetBeans to start/stop javadb then you can edit the javadb properties to tell it which javadb installation to use and separately where to keep your databases. This is a good practice. See image.<br> <span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20875073/21364924.png" style="border: 0px solid black"></span></p> <h4><a name="V3UpgradeDashboard-Currentissues"></a>Current issues</h2> <p><a href="https://glassfish.java.net/issues/buglist.cgi?Submitquery=Submitquery&amp;component=glassfish&amp;subcomponent=upgrade_tool&amp;issue_status=UNCONFIRMED&amp;issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED&amp;version=V3&amp;version=V3.1&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=fulltext&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=&amp;cmdtype=doit&amp;newqueryname=&amp;order=Reusesamesortaslasttime">Link to v3 upgrade issues on java.net.</a></p> <h4><a name="V3UpgradeDashboard-Dashboard"></a>Dashboard</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Module </th> 
+         <th class="confluenceTh"> Owner </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> Start Date </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Deployment </td> 
+         <td class="confluenceTd"> Hong Zhang </td> 
+         <td class="confluenceTd"> Transform applications and its sub-elements (Note: custom MBeans are going to be ignored and a log statement will be recorded in upgrade.log – Talk to km@dev.java.net if you need to know more) and redeploy the applications </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 08/24 </td> 
+         <td class="confluenceTd">Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Launcher </td> 
+         <td class="confluenceTd"> Byron Nevins </td> 
+         <td class="confluenceTd"> Handle changes to default values in java-config element </td> 
+         <td class="confluenceTd"> August 21 </td> 
+         <td class="confluenceTd"> August 24 </td> 
+         <td class="confluenceTd"> Done – at least I remove the 5 jvm-options above and add the other 4. I can not get upgrade to work even if I do it manually though. V3 just hangs forever with prser errors. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Admin </td> 
+         <td class="confluenceTd"> Kedar Mhaswade </td> 
+         <td class="confluenceTd"> Handle changes to admin-service element, deprecation of auth-realm at jmx-connector </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Backward compatibility handled in code. Both old and new configuration works. No need to upgrade </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Security Service </td> 
+         <td class="confluenceTd"> Kumar Jayanti </td> 
+         <td class="confluenceTd"> Keystore and Truststore files </td> 
+         <td class="confluenceTd"> 4/8 </td> 
+         <td class="confluenceTd"> 20/8 </td> 
+         <td class="confluenceTd"> DONE: The files from the source domain need to be retained and this is happening by default. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Infrastructure </td> 
+         <td class="confluenceTd"> Sahoo </td> 
+         <td class="confluenceTd"> Handle changes to OSGI cache (Prelude to v3 only) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> I don't expect any work in this area? Are you facing any issues? if so, let me know what they are and I shall look into them. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Web Container </td> 
+         <td class="confluenceTd"> Jan Luehe </td> 
+         <td class="confluenceTd"> Changes to default-web.xml </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">There is no work involved here. Upgraded web applications will inherit the latest default-web.xml contents during their redeployment. A virtual server's dummy web module will inherit the latest default-web.xml contents during server restart. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Logging </td> 
+         <td class="confluenceTd"> Carla Mott </td> 
+         <td class="confluenceTd"> Changes to log-service and its sub-elements, domain level logging attributes </td> 
+         <td class="confluenceTd"> March 09 </td> 
+         <td class="confluenceTd"> July 29 </td> 
+         <td class="confluenceTd"> Done. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Monitoring </td> 
+         <td class="confluenceTd"> Sreenivas Munnangi </td> 
+         <td class="confluenceTd"> Changes to monitoring related configuration </td> 
+         <td class="confluenceTd"> 18aug09 </td> 
+         <td class="confluenceTd"> 20aug09 </td> 
+         <td class="confluenceTd">Completed. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Security </td> 
+         <td class="confluenceTd"> Kumar Jayanti </td> 
+         <td class="confluenceTd"> Changes to security-service and its sub-elements, File realm files, Web Service Security configuration </td> 
+         <td class="confluenceTd"> 4/8 </td> 
+         <td class="confluenceTd"> 20/8 </td> 
+         <td class="confluenceTd">DONE: All of the security-service from the source domain needs to be retained which happens by default. I have added a new SecurityUpgradeService which adds a new JACC provider configuration. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Grizzly </td> 
+         <td class="confluenceTd"> Justin Lee </td> 
+         <td class="confluenceTd"> Changes to http-service and its sub-elements </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Jan/Feb 09 </td> 
+         <td class="confluenceTd"> Completed and integrated </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JBI </td> 
+         <td class="confluenceTd"> Bhavani/Mohit Gupta </td> 
+         <td class="confluenceTd"> Warn users about JBI no longer being available, offer to do upgrade of non-JBI content </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> For Service Engine, upgrade will be taken care by the GlassFish ESB. GlassFish upgrade tool need not do anything. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> CMP </td> 
+         <td class="confluenceTd"> Mitesh Meswani </td> 
+         <td class="confluenceTd"> CMP remove depricated element persistence-manager-factory-resource from domain.xml. If a user's app was using the element from its sun-ejb-jar.xml, it needs to be changed to point to corresponding jdbc-resource element. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 09/22 </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> CMP </td> 
+         <td class="confluenceTd"> Mitesh Meswani </td> 
+         <td class="confluenceTd"> CMP has changed code gen from V2 to adapt to V3 changes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Applications are going to be redeployed. This would be taken care of as part of redeployment. No action required. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JPA </td> 
+         <td class="confluenceTd"> Mitesh Meswani </td> 
+         <td class="confluenceTd"> changed the default JPA provider from TopLink Essentials to EclipseLink. User's persistence.xml if referring to toplink.* properties would need to be changed to use eclipselink.* properties </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> In Progress </td> 
+         <td class="confluenceTd"> Discussed this at today's (08/18) dev meeting. Jerome agreed that this upgrade may not be practical to implement. He directed to discuss this further at as-ccc. The discussion at as-ccc is in progress. &lt;BR&gt; Update from as-ccc meeting on (08/26). The translation of properties will be implemented inside EclipseLink. No work required on Upgrade side for this. Currently in discussion with EclipseLink team about details of the work. Expect to have an update on the discussion by 09/04 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> EJB </td> 
+         <td class="confluenceTd"> Marina Vatkina </td> 
+         <td class="confluenceTd"> EJB Timer service changes : only timer db schema changes (v2 Timer app will be removed by deployment code) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 10/07 </td> 
+         <td class="confluenceTd">Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JDBC/Connector </td> 
+         <td class="confluenceTd"> Shalini M, Jagadish Ramu </td> 
+         <td class="confluenceTd"> Connection pool compatibility changes : Connection validation method and wrap jdbc objects default values are changed in v3. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> No specific upgrade work is needed. V2's resources configuration will work fine in v3 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> CORBA/IIOP </td> 
+         <td class="confluenceTd"> Ken Cavanaugh </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> No upgrade required. All legacy integration / version management is handled at runtime. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JMS (MQ) </td> 
+         <td class="confluenceTd"> Ed Bratt / Linda Schneider </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> MQ performs its own upgrade and will not be invoked as part of this feature </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JSF </td> 
+         <td class="confluenceTd"> Ryan Lubke </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> No action necessary. JSF library is self-contained and has no domain specific requirements. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="V3UpgradeDashboard-RelatedDocuments"></a>Related Documents</h2> 
+     <ul> 
+      <li><a href="UpgradeCompatibilityRequirements.html" title="UpgradeCompatibilityRequirements">Upgrade Compatibility Requirements document</a></li> 
+      <li><a href="V3FunctionalSpecs.html" title="V3FunctionalSpecs">V3 Upgrade Tool spec</a></li> 
+      <li><a href="http://tinyurl.com/n3e7nr">Service declaration</a></li> 
+      <li>Upgrade Tool alias: gfv3upgrade-team@sun.com</li> 
+      <li>discussion alias: dev@glassfish.java.net</li> 
+      <li><a href="http://download.java.net/glassfish/wiki-archive/attachments/20875073/21364925.pdf">Upgrade Service TOI </a></li> 
+     </ul> 
+     <hr> <h4><a name="V3UpgradeDashboard-Usagescenarios"></a>Usage scenarios</h2> <p><a href="UsageScenarios.html" title="UsageScenarios">This page</a> will keep track of all the use cases tested by the dev and sqe teams.</p> <h4><a name="V3UpgradeDashboard-Working%28Temporary%29Documents"></a>Working (Temporary) Documents</h2> 
+     <ul> 
+      <li><a href="ManualUpgradeNotes.html" title="ManualUpgradeNotes">Notes on manual upgrade</a></li> 
+     </ul> <h4><a name="V3UpgradeDashboard-Issuesrelatedtosimpleupgradeofanemptyv2.1domain.TheoriginalversionofthisworkaroundisstillonthemanualupgradenotesManualUpgradeNotespage.Thislistreflectsthestatusasofrevision31351"></a><b>Issues related to simple upgrade of an empty v2.1 domain.</b> The original version of this workaround is still on the <a href="ManualUpgradeNotes.html" title="ManualUpgradeNotes">manual upgrade notes</a> page. This list reflects the status as of revision <b>31351</b></h3> 
+     <ol> 
+      <li><b>FIXED:</b> Was: "Remove the DTD from the beginning of the file." <a href="https://github.com/javaee/glassfish/issues/9127">Issue 9127</a>.</li> 
+      <li><b>FIXED:</b> Was: "Remove all the elements under /domain/applications and resources"</li> 
+      <li><b>FIXED:</b> Was: "Remove the following jvm-options element..." <a href="https://github.com/javaee/glassfish/issues/9531">Issue 9531</a>.</li> 
+      <li><b>FIXED:</b> Was: "The following jvm-options should also be added..."</li> 
+      <li><b>FIXED:</b> Was: "Remove the elements under thread-pools..." <a href="https://github.com/javaee/glassfish/issues/9530">Issue 9530</a>.</li> 
+      <li><b>FIXED:</b> Was: "Add the following under admin-service element..." <a href="https://github.com/javaee/glassfish/issues/9529">Issue 9529</a>. 
+       <hr> </li>
+     </ol> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875073/21364925.pdf">UpgradeTool_V3_TOI.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875073/21364924.png">javadb_props.png</a> (image/png) 
+      <br> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Nov 07, 2011 by 
+<font color="#0050B2">bbissett</font>. Exported from wikis.oracle.com on May 27, 2015 20:48.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

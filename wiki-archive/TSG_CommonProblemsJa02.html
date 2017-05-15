@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : TSG_CommonProblemsJa02</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="TSG_CommonProblemsJa02-%E5%86%8D%E8%B5%B7%E5%8B%95%E6%99%82%E3%81%AB%E3%83%89%E3%83%A1%E3%82%A4%E3%83%B3%E3%82%84%E3%83%8E%E3%83%BC%E3%83%89%E3%81%8C%E8%87%AA%E5%8B%95%E7%9A%84%E3%81%AB%E5%86%8D%E5%A7%8B%E5%8B%95%E3%81%95%E3%82%8C%E3%82%8B"></a>再起動時にドメインやノードが自動的に再始動される </h2> <p>ドメインやノードエージェントが予期せずに停止した場合（例えば、マシンを再起動した場合など）、リブート時にドメインやノードエージェントを自動的に再起動するようシステムを設定できます。</p> 
+     <ul> 
+      <li>UNIX プラットフォーム上で自動的に再起動</li> 
+      <li>Microsoft Windows プラットフォーム上で自動的に再起動</li> 
+     </ul> <h4><a name="TSG_CommonProblemsJa02-UNIX%E3%83%97%E3%83%A9%E3%83%83%E3%83%88%E3%83%95%E3%82%A9%E3%83%BC%E3%83%A0%E4%B8%8A%E3%81%A7%E8%87%AA%E5%8B%95%E7%9A%84%E3%81%AB%E5%86%8D%E8%B5%B7%E5%8B%95"></a>UNIX プラットフォーム上で自動的に再起動</h3> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li>ドメインの再起動*<br> \UNIX プラットフォームでドメインを再起動するには、<tt>/etc/inittab</tt> ファイルに適切な <tt>asadmin start-domain</tt> コマンドを含む行を追加します。もしそのマシンが <tt>/etc/rc.local</tt> を使っているならば、<tt>/etc/rc.local</tt> に適切な <tt>asadmin</tt> コマンドを入れます。<br> \ 例えば、<tt>/opt/SUNWappserver</tt> ディレクトリにインストールされた管理サーバーの <tt>domain1</tt> を再起動する場合、<tt>password.txt</tt> パスワードファイルを使って、次の行を <tt>/etc/inittab</tt> か <tt>/etc/rc.local</tt> に追加します:\\\\\~UWC_TOKEN_START~1278691907324~UWC_TOKEN_END<br> \このテキストは１行にするよう気をつけてください。最初の３文字はプロセス固有のもので、変更できます。</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li><b>ノードエージェントの再起動</b><br> \ノードエージェントを再起動する方法は、上のやり方に似ています。例えば、<tt>/opt/SUNWappserver</tt> ディレクトリにインストールされ、パスワードファイルに <tt>password.txt</tt> を使っているアプリケーションサーバーの <tt>agent1</tt> を再起動するには、次の行を <tt>/etc/inittab</tt> か <tt>/etc/rc.local</tt> に追加します:<br> {code}das:3:respawn:/opt/SUNWappserver/bin/asadmin start-node-agent --user admin <br> --passwordfile /opt/SUNWappserver/password.txt agent1
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">h3. Microsoft Windows プラットフォーム上で自動的に再起動
+
+マイクロソフト Windows 上で自動的に再起動するには、Windows サービスを作成します。Sun Java System Application Server に入っている {{appservService.exe}} と {{appserverAgentService.exe}} を、マイクロソフトが用意しているサービスコントロールコマンド ({{sc.exe}}) と一緒に使います。
+
+* {{sc.exe}} コマンドは Windows XP に入っていて、{{C:\windows\system32}} もしくは {{C:\winnt\system32}} ディレクトリにあります。 
+
+* これを執筆している時点では、Windows 2000 用の {{sc.exe}} は、次の所からダウンロードできます: [ftp://ftp.microsoft.com/reskit/win2000/sc.zip|ftp://ftp.microsoft.com/reskit/win2000/sc.zip]. {{sc.exe}} を使う上での情報は、次の URL をご覧ください: \\\\\[http://msdn.microsoft.com/library/default.asp?url=/library/en-us/dndllpro/html/msdn_scmslite.asp|http://msdn.microsoft.com/library/default.asp?url=/library/en-us/dndllpro/html/msdn_scmslite.asp].
+\{{appservService.exe}} と {{appservAgentService.exe}} は次のように使います:\</pre> 
+         </div> 
+        </div>
+       </div>C:\winnt\system32\sc.exe create service_name binPath="appservService.exe の絶対パス" "asadmin.bat 起動コマンドの絶対パス" "asadmin.bat 停止コマンドの絶対パス"" start=auto DisplayName="display_name"
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">** ドメインの起動と停止*
+\パスワードファイル {{C:\Sun\AppServer\password.txt}} を使って {{domain1}} を起動・停止する {{SunJavaSystemAppServer DOMAIN1}} というサービスを作成するには、次のコマンドを実行します:\</pre> 
+         </div> 
+        </div>
+       </div>C:\windows\system32\sc.exe create domain1 binPath="C:\Sun\AppServer\lib\appservService.exe "C:\Sun\AppServer\bin\asadmin.bat start-domain --user admin --passwordfile C:\Sun\AppServer\password.txt domain1" "C:\Sun\AppServer\bin\asadmin.bat stop-domain domain1"" start=auto DisplayName="SunJavaSystemAppServer DOMAIN1"
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">** ノードエージェントの起動と停止t*
+\ノードエージェント {{agent1}} を起動・停止するサービスを作成するには、次のコマンドを実行します:\\\\\~UWC_TOKEN_START~1278691907328~UWC_TOKEN_END
+\*注意:* {{binPath=}} に入れる{{起動}}および{{停止}}コマンドのパラメーターは正しい文法でなければなりません。これをテストするには、コマンドプロンプトからコマンドを実行してみてください。もしドメインやノードエージェントを起動・停止できなければ、サービスは正しく動きません。
+\また、{{asadmin start}} および {{stop}} コマンドと {{service start}} および {{stop}} コマンドを混在させて使わないでください。これらを混在させると、サーバーの状態がきちんと同期されません。例えば、コンポーネントが動作していないのに起動していると表示されたりすることがあります。こういった状況を避けるため、サービスを使うときには常に {{sc.exe} コマンドを使ってコンポーネントを起動・停止してください。}}
+{{}}
+{{** 自動再起動のセキュリティ*\\\\\次の方法のどれかで起動する場合、パスワードとマスターパスワードを扱う必要があります:\}}
+{{** マイクロソフト Windows 上で、サービス実行時にユーザーにパスワードを入れるよう設定する。}}
+{{\}}
+{{*** コントロールパネルのサービスで、作成したサービスをダブルクリックします。}}
+{{\}}
+{{*** プロパティウィンドウで、ログオンタブをクリックします。}}
+{{\}}
+{{*** 「デスクトップとの対話をサービスに許可」をチェックし、コンポーネントの起動時にパスワードを要求するようにします。\\\\\プロンプトはログインすると表示され、タイプしたパスワードはエコーされません。この方法はサービスを使う上でもっともセキュアな方法ですが、サービスを使用可能にする前に、人による操作が必要となります。}}
+{{\「デスクトップとの対話をサービスに許可」オプションを設定しない場合は、サービスは「遅延開始」の状態となり、ハングします。この状態になった場合は、サービスプロセスを Kill してください。}}
+{{\}}
+{{** Windows もしくは UNIX 上で, {{--savemasterpassword=true}} オプションを使ってドメインを作成し、管理者パスワードを保存するパスワードファイルを作成します。コンポーネントを起動する場合は、{{--passwordfile}} オプションを使ってパスワードが格納されているファイルを指定します。管理者パスワードは、{{asadmin start}} コマンドの {{--password}} オプションで指定することもできます。この方法の場合は、管理者パスワードが通常のテキストとして格納されるのであまりセキュアではありません。\\\\\例:\
+*** 保存されたマスターパスワードでドメインを作成する。この方法だと、管理者パスワードとマスターパスワードの入力を求められます:\\\\\~UWC_TOKEN_START~1278691907329~UWC_TOKEN_END
+\
+*** Windows 上で、{{管理者}}パスワードをパスワードファイルから指定してサービスを作成する場合:\\\\\~UWC_TOKEN_START~1278691907330~UWC_TOKEN_END
+\パスワードファイル {{password.txt}} のパスは {{C:\Sun\AppServer\password.txt}} です。このファイルには次のフォーマットでパスワードが格納されます:\\\\\~UWC_TOKEN_START~1278691907331~UWC_TOKEN_END
+\例: {{adminadmin}} がパスワードの場合: \\\\\~UWC_TOKEN_START~1278691907332~UWC_TOKEN_END
+\
+*** UNIX 上で、 {{--passwordfile}} オプションを使って {{inittab}} ファイル に追加する場合:\\\\\~UWC_TOKEN_START~1278691907333~UWC_TOKEN_END
+\パスワードファイル {{password.txt}} のパスは {{/opt/SUNWappserver/password.txt}} です。このファイルには次のフォーマットでパスワードが格納されます:\\\\\~UWC_TOKEN_START~1278691907334~UWC_TOKEN_END
+\例: パスワードが {{adminadmin}} の場合:\\\\\~UWC_TOKEN_START~1278691907335~UWC_TOKEN_END
+\
+** コマンドラインオプションにパスワードを入力してサービスを作成する場合:\</pre> 
+         </div> 
+        </div>
+       </div>C:\windows\system32\sc.exe create domain1 binPath="C:\Sun\AppServer\lib\appservService.exe" C:\Sun\AppServer\bin\asadmin.bat start-domain --user admin --password adminadmin domain1" "C:\Sun\AppServer\bin\asadmin.bat stop-domain domain1"" start=auto DisplayName="SJESAS_PE8.1 DOMAIN1"
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false"></pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ul> <p><sup><a href="./TSG_CommonProblemsJa.html">戻る</a></sup></p> 
+     <hr> <p>日本語翻訳: <a href="http://blogs.oracle.com/shioda">shioda</a></p> <p><a href="TSG_CommonProblems.html" title="TSG_CommonProblems">英文 </a> (翻訳したバージョン: 104)</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 09, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

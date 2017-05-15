@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : TSG_Overview</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p><a href="TroubleshootingGuide.html" title="TroubleshootingGuide">Main</a> <a href="TSG_CommonProblems.html" title="TSG_CommonProblems">Next</a></p> <h4><a name="TSG_Overview-Overview"></a>Overview</h1> <p>This chapter provides a description of the tools, methods, and information sources available for troubleshooting the Sun Java System Application Server Server 9.1. Guidelines for evaluating and investigating a problem are included.</p> <style type="text/css">/*<![CDATA[*/
+div.rbtoc1278813101659 {margin-left: 1.5em;padding: 0px;}
+div.rbtoc1278813101659 ul {list-style: disc;margin-left: 0px;}
+div.rbtoc1278813101659 li {margin-left: 0px;padding-left: 0px;}
+
+/*]] >*/</style>
+     <div class="rbtoc1278813101659"> 
+      <ul> 
+       <li><a href="#TSG_Overview-Overview">Overview</a></li> 
+       <ul> 
+        <li><a href="#TSG_Overview-PlanningAhead">Planning Ahead</a></li> 
+        <ul> 
+         <li><a href="#TSG_Overview-Tobackupandrestoreaserverconfiguration">To back up and restore a server configuration</a></li> 
+        </ul> 
+        <li><a href="#TSG_Overview-IdentifyingtheProblem">Identifying the Problem</a></li> 
+        <ul> 
+         <li><a href="#TSG_Overview-Toverifyconfigurationinformation">To verify configuration information</a></li> 
+        </ul> 
+        <li><a href="#TSG_Overview-SeekingaSolution">Seeking a Solution</a></li> 
+        <ul> 
+         <li><a href="#TSG_Overview-VerifySystemConfiguration">Verify System Configuration</a></li> 
+         <li><a href="#TSG_Overview-EvaluateMessages">Evaluate Messages</a></li> 
+         <li><a href="#TSG_Overview-TypesofMessages">Types of Messages</a></li> 
+         <li><a href="#TSG_Overview-ErrorMessages">Error Messages</a></li> 
+         <li><a href="#TSG_Overview-ExamineLogFiles">Examine Log Files</a></li> 
+         <li><a href="#TSG_Overview-LogLevels">Log Levels</a></li> 
+         <li><a href="#TSG_Overview-LogOptions">Log Options</a></li> 
+         <li><a href="#TSG_Overview-ClientSideLogging">Client Side Logging</a></li> 
+         <li><a href="#TSG_Overview-ObtainingaThreadDump">Obtaining a Thread Dump</a></li> 
+         <li><a href="#TSG_Overview-SeeiftheProblemhasbeenSolvedBefore">See if the Problem has been Solved Before</a></li> 
+         <li><a href="#TSG_Overview-SearchtheProductDocumentation">Search the Product Documentation</a></li> 
+         <li><a href="#TSG_Overview-SearchtheKnowledgeBase">Search the Knowledge Base</a></li> 
+         <li><a href="#TSG_Overview-SearchorParticipateintheOnlineForum">Search or Participate in the Online Forum</a></li> 
+         <li><a href="#TSG_Overview-ContactSupport">Contact Support</a></li> 
+        </ul> 
+       </ul> 
+      </ul>
+     </div> 
+     <hr> <h4><a name="TSG_Overview-PlanningAhead"></a>Planning Ahead</h2> <p>As applications get deployed, undeployed, and redeployed, and as you experiment with different server configuration settings, there may be times when your server gets into a confused or unstable state. In such cases, it is useful to have a previously saved working configuration on which to fall back. This is not problem solving, per se, but rather a way to avoid problems in the first place.</p> <p>The Application Server asadmin command includes a backup-domain option that backs up the domain(s) you specify. Use this option to take periodic “snapshots” of your server configuration. Then, if necessary, use the restore-domain option to restore one or more domains to a known working state.</p> <p>Refer to the Application Server Administration Guide for complete instructions on using the asadmin backup-domain and restore-domain options. Briefly, however, for the purposes of this Troubleshooting Guide, use the following procedure to backup and restore a server configuration:</p> <h4><a name="TSG_Overview-Tobackupandrestoreaserverconfiguration"></a>To back up and restore a server configuration</h3> 
+     <ol> 
+      <li>Start the Application Server.\\\\\~UWC_TOKEN_START~1278691907015~UWC_TOKEN_END\</li> 
+      <li>Stop the domain.\\\\\~UWC_TOKEN_START~1278691907016~UWC_TOKEN_END\</li> 
+      <li>Back up the domain.\\\\\~UWC_TOKEN_START~1278691907017~UWC_TOKEN_END<br> Backed up directories are stored by default in the <tt>install_dir/backups</tt> directory.<br> \</li> 
+      <li>Make changes to the Application Server configuration and/or domain(s), as desired.<br> \</li> 
+      <li>If necessary, restore the server and/or domain configuration to the state saved in Step 3, above.<br> {code}install_dir/bin/asadmin restore-domain --filename backup_file domain_name
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false"></pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ol> 
+     <hr> <p><sup><a href="./TSG_Overview.html">Top of Page</a></sup></p> <h4><a name="TSG_Overview-IdentifyingtheProblem"></a>Identifying the Problem</h2> <p>J2EE application servers are typically deployed in complex and highly sophisticated operating environments. The Sun Java System Application Server covers a broad range of technologies, including Java, Java servlets, XML, JSP, JDBC data sources, EJB technology, and more. Other products and tools associated with the Application Server are LDAP, Web Server, SunONE Message Queue, deployment and migration tools, and so on. Understanding and diagnosing complex issues involving so many disparate components requires thorough knowledge and a careful diagnostic process.</p> <p>Gathering any or all of the following information will make it easier to classify a problem and search for solutions. Note that operating system utilities, such as pkginfo and showrev on Solaris and rpm on Linux, are helpful in gathering system information.</p> <h4><a name="TSG_Overview-Toverifyconfigurationinformation"></a>To verify configuration information</h3> 
+     <ol> 
+      <li>What are the exact version numbers of the operating system and products installed?<br> \</li> 
+      <li>Have any patches been applied? If so, specify product and operating system patch numbers.<br> \</li> 
+      <li>How is the system configured?<br> \</li> 
+      <li>What system resources does the system have (memory, disk, swap space, and so on)?<br> \</li> 
+      <li>How many application servers, web servers, and directory servers are installed?<br> \</li> 
+      <li>How is the web server connected to Application Server? On the same machine or not?<br> \</li> 
+      <li>How is the Application Server connected to the directory server?<br> \</li> 
+      <li>Are application servers in a cluster or not?<br> \</li> 
+      <li>Was any upgrade done? If so, what were source and target versions?<br> \</li> 
+      <li>Was a migration done? If so, what were source and target versions?<br> \</li> 
+      <li>Have any new applications been deployed?<br> \</li> 
+      <li>Is SSL enabled or not?<br> \</li> 
+      <li>What versions of the HADB and the backend database are being used?<br> \</li> 
+      <li>What JDBC driver is being used to access the database?<br> \</li> 
+      <li>What JDK version is being used?<br> \</li> 
+      <li>What are the JVM heap, stack, and garbage collection-related parameters set to?<br> \</li> 
+      <li>What are the JVM options?<br> \</li> 
+      <li>What third-party technologies are being used in the installation?<br> \</li> 
+      <li>Are the interoperating component versions in compliance with the compatibility matrix specified in the release notes?<br> \</li> 
+     </ol> <p>After gathering this information:</p> 
+     <ul> 
+      <li>Collect web server error and access log data (web server instance-specific).</li> 
+     </ul> 
+     <ul> 
+      <li>Collect any Application Server stack traces. Note that a fresh set of logs associated with the specific problem should be run. This avoids scanning gigabytes of irrelevant log information.</li> 
+     </ul> 
+     <ul> 
+      <li>Determine the sequence of events that occurred when the problem first appeared, including any steps that may already have been taken to resolve the problem.</li> 
+     </ul> 
+     <hr> <p><sup><a href="./TSG_Overview.html">Top of Page</a></sup></p> <h4><a name="TSG_Overview-SeekingaSolution"></a>Seeking a Solution</h2> <p>After identifying the problem and formulating a preliminary hypothesis of what may be<br> wrong, you are ready to do some investigation.</p> <p>The following topics are addressed in this section:</p> 
+     <ul> 
+      <li>Verify System Configuration</li> 
+      <li>Evaluate Messages</li> 
+      <li>Examine Log Files</li> 
+      <li>See if the Problem has been Solved Before</li> 
+      <li>Search the Product Documentation</li> 
+      <li>Search the Knowledge Base</li> 
+      <li>Search or Participate in the Online Forum</li> 
+      <li>Contact Support</li> 
+     </ul> <h4><a name="TSG_Overview-VerifySystemConfiguration"></a>Verify System Configuration</h3> <p>Sometimes the most obvious solutions are overlooked, and so the first step is to verify the system configuration. Refer to the Sun Java System Application Server 9.1 Release Notes for the most up-to-date system requirements and dependencies.</p> <h4><a name="TSG_Overview-EvaluateMessages"></a>Evaluate Messages</h3> <p>Messages generally include information about the attempted action, the outcome of the action, and, if applicable, the cause of jeopardy or failure.</p> <h4><a name="TSG_Overview-TypesofMessages"></a>Types of Messages</h3> <p>The log files contain the following general types of message entries:</p> 
+     <ul> 
+      <li><b>Error:</b> These messages mark critical failures that cause status to be reported as Failed. Error messages generally provide detailed information about the nature and the cause of the problem that occurred.</li> 
+     </ul> 
+     <ul> 
+      <li><b>Warning:</b> These messages mark non-critical failures. Warning messages generally contain information about the cause and the nature of the failure, and also provide possible remedies.</li> 
+     </ul> 
+     <ul> 
+      <li><b>Information:</b> These messages mark normal completion of particular tasks.</li> 
+     </ul> <h4><a name="TSG_Overview-ErrorMessages"></a>Error Messages</h3> <p>A problem is often accompanied by an error message that prevents the application from proceeding.</p> 
+     <ul> 
+      <li>In some cases, the message is very clear about what is wrong and what needs to be done, if anything, to fix it. For example, if you start a domain using the asadmin start-domain command, then inadvertently issue the same command again after the domain has started, the following message is displayed:\\\\\~UWC_TOKEN_START~1278691907019~UWC_TOKEN_END<br> \In this case, the message gives clear guidance and the problem can be disregarded.</li> 
+     </ul> 
+     <ul> 
+      <li>Sometimes an error message gives only general information about the problem or solution, or suggests multiple possibilities. For example:\\\\\~UWC_TOKEN_START~1278691907020~UWC_TOKEN_END<br> \In this case, the problem is not obvious, or there might be multiple things wrong. You might have to consider various possibilities and perhaps a number of solutions. If the proposed fix is time consuming or costly, take steps to ensure that the fix is likely to be correct before actually doing anything.</li> 
+     </ul> 
+     <ul> 
+      <li>Some error messages are either not helpful or provide little guidance; for example:\\\\\~UWC_TOKEN_START~1278691907021~UWC_TOKEN_END<br> \In this case, there is very little information to go on. It is especially important to identify the exact situation that caused the error, and what the symptoms are before proceeding.</li> 
+     </ul> <p>For descriptions of all the Application Server error messages, refer to the <a href="./ErrorMessageReference.html">Sun Java System Application Server 9.1 Error Message Reference</a> Wiki.</p> <h4><a name="TSG_Overview-ExamineLogFiles"></a>Examine Log Files</h3> <p>A number of the Application Server subsystems create log files and log their events to these files. The primary purpose of these log files is to provide troubleshooting information.</p> <p>In addition to the message text, a logged message provides the following information:</p> 
+     <ul> 
+      <li>Date and time of the event</li> 
+      <li>Log level for the event — Application Server-specified log level ID or name</li> 
+      <li>Process identifier (PID) — PID of the Application Server process</li> 
+      <li>(optional) Virtual server identifier (VSID) — VSID that generated the message</li> 
+      <li>Message identifier (MID) — subsystem and a four digit integer</li> 
+      <li>Message data</li> 
+     </ul> <p>The specific logs associated with each Application Server problem area are discussed in the associated chapters of this manual.</p> <h4><a name="TSG_Overview-LogLevels"></a>Log Levels</h3> <p>The Application Server has many log levels that can be set in the Administration GUI (<tt>FINEST</tt>, <tt>FINER</tt>, <tt>FINE</tt>, <tt>CONFIG</tt>, <tt>INFO</tt>, <tt>WARNING</tt>, <tt>SEVERE</tt>, <tt>ALERT</tt>, and <tt>FATAL</tt>). All messages are logged when the log level is set to <tt>FINEST</tt> and only serious error messages appear if the log level is set to <tt>FATAL</tt>.</p> <p>Note that the more detailed log levels (<tt>FINEST</tt>, <tt>FINER</tt>, <tt>FINE</tt>) can generate high volumes of log information for certain events, which may make it appear at first glance that there is an error condition when in fact there is not.</p> <p>All messages with a log level less than the default level of <tt>INFO</tt> (<tt>FINEST</tt>, <tt>FINER</tt>, <tt>FINE</tt>, and <tt>CONFIG</tt>) provide information related to debugging and must be specifically enabled. Instructions for doing this are contained in the <em>Sun Java System Application Server Administrator's Guide</em>.</p> <p>In addition to the standard JDK log levels, the Application Server has added log levels designed to map more intuitively to the Application Server log file (<tt>server.log</tt>) and to tightly integrate with Solaris. The log levels <tt>ALERT</tt> and <tt>FATAL</tt> are specific to the Application Server and are not implemented in the JDK1.4 logging API.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Note</th> 
+         <td class="confluenceTd">For information on the event log mechanism used in the Microsoft Windows operating environment, refer to the Windows help system index using the keywords <tt>Event Logging</tt>. If you choose to send logs to the Windows <tt>server.log</tt> file, only messages with a log level of <tt>INFO</tt>, <tt>WARNING</tt>, <tt>SEVERE</tt>, <tt>ALERT</tt>, or <tt>FATAL</tt> are logged to the Windows Event Log. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="TSG_Overview-LogOptions"></a>Log Options</h3> <p>The Administration GUI provides the following two logging options:</p> 
+     <ul> 
+      <li><b>Option 1:</b> Log stdout (<tt>System.out.print</tt>) content to the event log</li> 
+      <li><b>Option 2:</b> Log stderr (<tt>System.err.print</tt>) content to the event log</li> 
+     </ul> <p>When these options are set, <tt>stdout</tt> and <tt>stderr</tt> messages are written to the <tt>server.log</tt> file. (The event log is a syslog daemon on Solaris and Event Log on Microsoft Windows.)</p> <p>If the above options are not set:</p> 
+     <ul> 
+      <li>Anything written to stdout or <tt>stderr</tt> (that is, using <tt>System.out</tt> or <tt>System.err</tt>) will not appear in the logs.</li> 
+     </ul> 
+     <ul> 
+      <li>Messages logged with the JDK logger will appear in the logs.</li> 
+     </ul> 
+     <ul> 
+      <li>Messages written to stdout or <tt>stderr</tt> appear with the <tt>INFO</tt> level, but do not have a message ID.</li> 
+     </ul> <h4><a name="TSG_Overview-ClientSideLogging"></a>Client Side Logging</h3> <p>The Application Client Container (ACC) has its own log service and can only log to a local file. The ACC typically runs in its own process, on a different host from the Application Server. It has its own logging infrastructure and its own log file. The <tt>sun-acc.xml</tt> file contains the ACC configuration. Refer to the <em><a href="http://docs.sun.com/app/docs/doc/819-3672">Sun Java System Application Server 9.1 Developer's Guide</a></em> for more information.</p> <h4><a name="TSG_Overview-ObtainingaThreadDump"></a>Obtaining a Thread Dump</h3> <p>This section explains how to obtain a thread dump for Application Server 9.1. By default, the server dumps a core file and restarts with the <tt>-Xrs java-option</tt> flag in the <tt>server.xml</tt> file.</p> 
+     <ul> 
+      <li><b>To obtain a server thread dump on UNIX</b></li> 
+     </ul> 
+     <ol> 
+      <li>Verify that the <tt>server.xml</tt> file for the affected server instance does not include the <tt>-Xrs java-option</tt> flag.<br> \Remove the <tt>-Xrs java-option</tt> flag if it exists.<br> \</li> 
+      <li>If the option is changed, restart the server instance.<br> \</li> 
+      <li>Use the <tt>ps</tt> command to determine the java and/or appservDAS processes under which the application server is running.<br> \</li> 
+      <li>Run the following command on the application server instance:\\\\\~UWC_TOKEN_START~1278691907022~UWC_TOKEN_END<br> The <tt>kill</tt> command redirects the thread dump to the <tt>server.log</tt> file for server the instance.</li> 
+     </ol> 
+     <ul> 
+      <li><b>To obtain a server thread dump on Windows</b></li> 
+     </ul> 
+     <ol> 
+      <li>Verify that the <tt>server.xml</tt> file for your server instance does not include the <tt>-Xrs java-option</tt> flag. Remove the -Xrs java-option flag if it exists.<br> \</li> 
+      <li>If the option was changed, restart your Application Server.<br> \</li> 
+      <li>Type <em>Ctrl+Break</em> in the Application Server window. The thread dump will be redirected to the <tt>server.log</tt> file for the instance.</li> 
+     </ol> <h4><a name="TSG_Overview-SeeiftheProblemhasbeenSolvedBefore"></a>See if the Problem has been Solved Before</h3> <p>A good initial step is to scan this Troubleshooting Guide to see if the problem is addressed here. If so, select the appropriate solution. Many of the solutions contain references to other documents in the Application Server document collection for additional details, explanations, or examples.</p> <h4><a name="TSG_Overview-SearchtheProductDocumentation"></a>Search the Product Documentation</h3> <p>Start by reading the <a href="./GlassFishDocs.html">documentation set</a></p> <h4><a name="TSG_Overview-SearchtheKnowledgeBase"></a>Search the Knowledge Base</h3> <p>The Knowledge Base is a collection of articles on product issues that provide information helpful for troubleshooting. To access the Knowledge Base:</p> 
+     <ul> 
+      <li><b>To search the Knowledge Base</b></li> 
+     </ul> 
+     <ol> 
+      <li>Go to <a href="http://sunsolve.sun.com">SunSolve</a>.<br> \</li> 
+      <li>Under SunSolve Collections, click the Search Collections link.<br> \</li> 
+      <li>Select the checkbox for the collection(s) to search.<br> \</li> 
+      <li>Click Next.<br> \</li> 
+      <li>Enter the search criteria.<br> \</li> 
+      <li>Click Go.</li> 
+     </ol> <h4><a name="TSG_Overview-SearchorParticipateintheOnlineForum"></a>Search or Participate in the Online Forum</h3> <p>Browse directly in any of the online forums, or log in and register to start posting messages. The Application Server online forum is available at: <a href="http://forum.java.sun.com/index.jspa">http://forum.java.sun.com/index.jspa</a></p> <h4><a name="TSG_Overview-ContactSupport"></a>Contact Support</h3> <p>When necessary, gather together the information you have acquired and contact technical support at <a href="http://www.sun.com/service/contacting">http://www.sun.com/service/contacting</a>.</p> 
+     <hr> <p><a href="TroubleshootingGuide.html" title="TroubleshootingGuide">Main</a> <a href="TSG_CommonProblems.html" title="TSG_CommonProblems">Next</a></p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 10, 2010 by 
+<font color="#0050B2">wombat</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

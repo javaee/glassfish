@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : ReinstateCreateDomainV3</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   
+     <div> 
+      <ul> 
+       <li><a href="#ReinstateCreateDomainV3-ReinstatetheCreationofDomainforGlassFishV3">Reinstate the Creation of Domain for GlassFish V3</a></li> 
+       <ul> 
+        <li><a href="#ReinstateCreateDomainV3-Introduction">Introduction</a></li> 
+        <li><a href="#ReinstateCreateDomainV3-Taskstobedone">Tasks to be done</a></li> 
+        <ul> 
+         <li><a href="#ReinstateCreateDomainV3-IntroducingTemplates%28Done%3FNo%29">Introducing Templates (Done? - No)</a></li> 
+         <li><a href="#ReinstateCreateDomainV3-FinalizetheSyntax%28Done%3FNo%29">Finalize the Syntax (Done? - No)</a></li> 
+         <li><a href="#ReinstateCreateDomainV3-FinalizetheTokensusedindomain.xml.template%28Done%3FNo%29">Finalize the Tokens used in domain.xml.template (Done? - No)</a></li> 
+         <li><a href="#ReinstateCreateDomainV3-ChangetheFileLayouttomatchtheabove%28Done%3FNo%29">Change the FileLayout to match the above (Done? - No)</a></li> 
+         <li><a href="#ReinstateCreateDomainV3-CoordinatewithPaulDavies%2FDocteamaboutindex.htmlandabout.html%28Done%3FNo%29">Coordinate with Paul Davies/Doc team about index.html and about.html (Done? - No)</a></li> 
+         <li><a href="#ReinstateCreateDomainV3-Finalizethedomain%27sdirectorystructure%2Flayout%28Done%3FNo%29">Finalize the domain's directory structure/layout (Done? - No)</a></li> 
+         <li><a href="#ReinstateCreateDomainV3-ActualTasks%28Done%3FNo%29">Actual Tasks (Done? - No)</a></li> 
+         <li><a href="#ReinstateCreateDomainV3-ConsiderInteractivity%28Done%3FNo%29">Consider Interactivity (Done? - No)</a></li> 
+         <li><a href="#ReinstateCreateDomainV3-Othertidbits%28Done%3FNo%29">Other tidbits (Done? - No)</a></li> 
+        </ul> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="ReinstateCreateDomainV3-ReinstatetheCreationofDomainforGlassFishV3"></a>Reinstate the Creation of Domain for GlassFish V3</h1> <h4><a name="ReinstateCreateDomainV3-Introduction"></a>Introduction</h2> <p>The way V3 (TP2) works is, a basic domain is created as part of distribution. The "formal" create-domain process is not available. Some snapshot of domain.xml and other files is taken and the domain's directory structure is created. The file-layout of the domain remains intact. It is as if some domain was created with config, config/domain.xml, config/server.policy, etc. at some point in time and it was zipped up as a base glassfish-10.0 <b>distribution</b>.<br> We need to reinstate the create-domain command that creates this basic configuration with some flexibility. For TP-2, since we are having web-bundle, we can use the developer profile domain.xml template and apply certain token replacement to it to get the desired configuration. More configuration options are welcome.</p> <h4><a name="ReinstateCreateDomainV3-Taskstobedone"></a>Tasks to be done</h2> <h4><a name="ReinstateCreateDomainV3-IntroducingTemplates%28Done%3FNo%29"></a>Introducing Templates (Done? - No)</h3> <p>Currently, if you see the distributions, &lt;ws&gt;/v3/distributions/target/glassfish/lib does not contain templates. We need to introduce at least something like following structure (<b>Note: This should evolve</b>):</p> 
+     <div class="panel" style="background-color: lightgray;border-width: 1px;">
+      <div class="panelContent" style="background-color: lightgray;"> 
+       <p><font color="maroon"></font></p>
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent">
+         <font color="maroon"> 
+          <div id="root"> 
+           <pre class="theme: Confluence; brush: java; gutter: false">|---- lib
+      |---- templates
+               |---- common
+                        |---- domain.xml.template (a template for TP-2. We will discuss that should stay and how should it be, for now copy V2/dev profile).
+                        |---- default-web.xml (default web-tier configuration)
+                        |---- cacerts.jks (server's default trusted ca's -- these are standard, just copy from V2)
+                        |---- logging.properties (this is new).
+                        |---- docroot
+                                      |---- en (locale, en being default)
+                                             |---- index.html (much improved as compared to V2, talk to docs people and work with them).
+                                             |---- about.html (tells more about the product, lots of room for creativity here).
+                                      |---- ja ...</pre> 
+          </div> </font>
+        </div>
+       </div>
+       <p></p> 
+      </div>
+     </div> <h4><a name="ReinstateCreateDomainV3-FinalizetheSyntax%28Done%3FNo%29"></a>Finalize the Syntax (Done? - No)</h3> <p>As far as possible, the syntax should be kept the same. There is again, lot of room for introducing something that was missing in earlier command. One thing I'd definitely keep is --profile as it gives us some flexibility to choose a particular template. The current syntax is:</p> 
+     <div class="panel" style="background-color: lightgray;border-width: 1px;">
+      <div class="panelContent" style="background-color: lightgray;"> 
+       <p><font color="maroon"></font></p>
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent">
+         <font color="maroon"> 
+          <div id="root"> 
+           <pre class="theme: Confluence; brush: java; gutter: false">Usage: create-domain [--user admin] [--adminport port_number] [--terse=false] [--echo=false] [--interactive=true] 
+[--domaindir domain_directory] [--profile profile_name] [--template domain_template]  [--passwordfile filename ] 
+[--instanceport port_number] [--savemasterpassword=false] [--domainproperties (name=value)[:name=value]*] 
+[--portbase portbase] [--savelogin=false] [--checkports=true] domain_name</pre> 
+          </div> </font>
+        </div>
+       </div>
+       <p></p> 
+      </div>
+     </div> <p>I think we can retain most of these and introduce more.</p> <h4><a name="ReinstateCreateDomainV3-FinalizetheTokensusedindomain.xml.template%28Done%3FNo%29"></a>Finalize the Tokens used in domain.xml.template (Done? - No)</h3> <p>Massage the domain.xml.template to decide on some of the tokens used, e.g. %</p>
+     <div class="panel" style="border-width: 1px;">
+      <div class="panelContent"> 
+       <p>T</p> 
+       <hr> 
+       <p>Jspwiki style: ADMIN_POR</p> 
+      </div>
+     </div>%.<p></p> <h4><a name="ReinstateCreateDomainV3-ChangetheFileLayouttomatchtheabove%28Done%3FNo%29"></a>Change the FileLayout to match the above (Done? - No)</h3> <p>Reach a situation where existing (V2) PEFileLayout (rename it to DomainFileLayout or something more appropriate) can be retrofitted to the above structure. You can get rid of most of the unwanted things.</p> <h4><a name="ReinstateCreateDomainV3-CoordinatewithPaulDavies%2FDocteamaboutindex.htmlandabout.html%28Done%3FNo%29"></a>Coordinate with Paul Davies/Doc team about index.html and about.html (Done? - No)</h3> <p>These go to the docroot of the created domain. We can consider some token replacement in these files. Look at how we can make these files really useful and very informative.</p> <h4><a name="ReinstateCreateDomainV3-Finalizethedomain%27sdirectorystructure%2Flayout%28Done%3FNo%29"></a>Finalize the domain's directory structure/layout (Done? - No)</h3> 
+     <div class="panel" style="background-color: lightgray;border-width: 1px;">
+      <div class="panelContent" style="background-color: lightgray;"> 
+       <p><font color="maroon"></font></p>
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent">
+         <font color="maroon"> 
+          <div id="root"> 
+           <pre class="theme: Confluence; brush: java; gutter: false">---- domain-folder
+           | ---- config
+                    | ---- domain.xml
+                    | ---- default-web.xml
+                    | ---- keyfile
+                    | ---- admin-keyfile
+                    | ---- server.policy
+                    | ---- logging.properties
+           | ---- bin
+           | ---- logs
+           | ---- docroot
+           | ---- applications (don't create the V2-like structure underneath)
+           | ---- autodeploy</pre> 
+          </div> </font>
+        </div>
+       </div>
+       <p></p> 
+      </div>
+     </div> <h4><a name="ReinstateCreateDomainV3-ActualTasks%28Done%3FNo%29"></a>Actual Tasks (Done? - No)</h3> 
+     <ol> 
+      <li>Create the directory structure for the domain.</li> 
+      <li>Pick the right templates, token-replace if required and copy them across to domain. The template chosen should be profile aware. You can reinstate XSLT-support if desired, but it is not required at the moment.</li> 
+      <li>Talk to Security Team about keyfile. The admin-keyfile should contain the secure one-way hash of the admin user and admin password. Refactor that logic to depend on security code. We depend on FileRealm class in security code. This would give rise to appropriate dependencies.</li> 
+      <li>Bonus: Create a new server certificate. This requires quite some refactoring. Basically, we copy cacerts.jks as-is and generate the server certificate that goes to keystore.jks <b>anew every time</b>. I can help you with this one.</li> 
+      <li>Make sure that domain starts.</li> 
+      <li>Add unit tests to the build itself.</li> 
+     </ol> <h4><a name="ReinstateCreateDomainV3-ConsiderInteractivity%28Done%3FNo%29"></a>Consider Interactivity (Done? - No)</h3> <p>This is mostly for later, but this calls for asking the user in case we want some input, when --interactive is on. Do it after TP-2.</p> <h4><a name="ReinstateCreateDomainV3-Othertidbits%28Done%3FNo%29"></a>Other tidbits (Done? - No)</h3> <p>Here is an example of where the pluggability would come into picture. Take the example of simple "index.html" that is served at <a href="http://host:port">http://host:port</a> when the server starts up. See <a href="http://forums.java.net/jive/thread.jspa?threadID=36663&amp;tstart=0">this thread</a> where the user was confused in V2, as different distributions of GlassFish did not identify themselves by default. All of the servers served "Sun Java System Application Server 9.1 bxx" as the content of their default index.html. Is it possible to distinguish the servers based on their distributions? This might be a pluggable aspect of create-domain functionality.</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 08, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

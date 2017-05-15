@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GMSDiscovery</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   
+     <div> 
+      <ul> 
+       <li><a href="#GMSDiscovery-GMSGroupDiscoveryinSupportedEnvironments">GMS Group Discovery in Supported Environments</a></li> 
+       <ul> 
+        <li><a href="#GMSDiscovery-GeneralArchitecture">General Architecture</a></li> 
+        <li><a href="#GMSDiscovery-GeneratingtheMulticastorBootstrap%26nbsp%3BListValues">Generating the Multicast or Bootstrap&nbsp;List Values</a></li> 
+        <ul> 
+         <li><a href="#GMSDiscovery-PaaSCase%28ClustersworkwithaDAS%29">PaaS Case (Clusters work with a DAS)</a></li> 
+         <li><a href="#GMSDiscovery-AdhocCase%28ClustersworkwithnoDAS%29">Ad-hoc Case (Clusters work with no DAS)</a></li> 
+        </ul> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="GMSDiscovery-GMSGroupDiscoveryinSupportedEnvironments"></a>GMS Group Discovery in Supported Environments</h1> <h4><a name="GMSDiscovery-GeneralArchitecture"></a>General Architecture</h2> <p>When a GMS member is started, it must contact an existing GMS member in order to join the group (or if it is the first member started, recognize that it's the only one and make itself the group master). When multicast is available, the member can broadcast a request and this request will reach the other group members, if any. Without multicast, the member must be given a list of running group members to contact individually. This document is concerned with obtaining/generating the configuration information needed to be passed into GMS for group discovery, and not the mechanics of dynamic GMS group formation.</p> <p>In the multicast case, GMS must obtain the multicast address and port from the GlassFish configuration. This information is already present in GlassFish 3.1. In the non-multicast case, GMS must be given a list of addresses of existing members. For this list, we are adding a configuration property. In this document, I'll call it the "bootstrap list" of members.</p> <p><b>Multicast address/port notes:</b></p> 
+     <ul> 
+      <li>Must be the same for each instance in the cluster. (The multicast address is not the address of the instance, but is more like a GMS Topic or CB radio channel.)</li> 
+     </ul> <p><b>Bootstrap list notes:</b></p> 
+     <ul> 
+      <li>It does not need to be a <em>complete</em> list of group members.</li> 
+      <li>It does not need to be a <em>correct</em> list of group members (an instance could fail while a new one is starting).</li> 
+      <li>It does not need to contain the group master. For 3.2, we will make GMS work so that master requests can be forwarded from a non-master to the master.</li> 
+      <li>The bootstrap list could contain address and port information, but we need to be able to work without a specified port (see below). For this reason, GMS needs a consistent port available for each instance. Port 9090... <b>TODO</b></li> 
+     </ul> <p><b>Notes on using the multicast or bootstrap list parameters:</b></p> 
+     <ul> 
+      <li>The multicast params (address/port) and bootstrap list info are mutually exclusive. It is an error to have both specified in domain.xml. GMS uses the presence of one or the other to know in what type of environment it will be running.</li> 
+      <li>If neither are specified, one is automatically generated by the gms-adapter code in GF before starting GMS. To be consistent with 3.1,&nbsp;the default will be multicast address/port.</li> 
+      <li>To specify that the bootstrap&nbsp;list should be created instead of the multicast information, we need to add something. The way generation works is dependent on the environment in which we're running (PaaS anywhere, ad-hoc only in EC2 – see below), so this could be specified along with the new option. For instance, a param on <tt>asadmin create-cluster</tt> such as: 
+       <ol> 
+        <li>A <tt>--nomulticast</tt> param with no other information (or pass in an empty bootstrap list). In this case, gms-adapter could query some environment variable to determine whether running in EC2 or not. <b>TBD</b> if this is possible or not. It could also check if AWS credentials are present in some known location.</li> 
+        <li>A <tt>--memberlistgenerator &lt;das|ec2&gt;</tt> parameter that specifies the generator used to create the member bootstrap&nbsp;list.</li> 
+        <li>A <tt>memberlistgenerator</tt> property that can be passed in with the current <tt>--properties</tt> param.</li> 
+       </ol> </li> 
+     </ul> <p>(We're not married to any of the above names.)</p> <h4><a name="GMSDiscovery-GeneratingtheMulticastorBootstrap%26nbsp%3BListValues"></a>Generating the Multicast or Bootstrap&nbsp;List Values</h2> <p>These sections document how the multicast information or existing member (bootstrap list) locations will be generated based on the type of cluster and network options. This information is generated by the gms-adapter code in GlassFish, and then is passed to GMS at startup. Note that the multicast option is the same for both cases. The information below is only generated if not specified by the user.</p> <p>In an environment in which we cannot support generation of these properties, <b>a user can still set a property manually to run in an environment that would otherwise be unsupported</b>. For an example, see the the ad-hoc, no multicast case below.</p> <h4><a name="GMSDiscovery-PaaSCase%28ClustersworkwithaDAS%29"></a>PaaS Case (Clusters work with a DAS)</h3> <h4><a name="GMSDiscovery-Whenmulticastisavailable%3A"></a>When multicast is available:</h4> <p>When <tt>asadmin create-cluster</tt> is run, these values are generated randomly by the gms-adapter code. The multicast address and port must be the same for all members in the group (instances/DAS in the cluster). These values should be different for different clusters. This is already the case in GlassFish 3.1.</p> <h4><a name="GMSDiscovery-Whenmulticastisnotavailable%3A"></a>When multicast is not available:</h4> <p>The cluster instances will be known by the DAS, and this information will be available to a starting instance through the domain configuration information. When a cluster instance is started, it will be synchronized with the DAS in order to have this information available. The gms-adapter can iterate through the nodes listed in the domain in order to obtain the instance addresses and create the list (either IP address or host names). The GMS listener for each instance will have to be running on a known port.</p> <p>When this list is created and passed to GMS, it is not written back to the domain config. This would force the list to be static and stop generation going forward. Rather, the bootstrap&nbsp;list is generated each time an instance starts based on the current list of nodes in the cluster.</p> <h4><a name="GMSDiscovery-AdhocCase%28ClustersworkwithnoDAS%29"></a>Ad-hoc Case (Clusters work with no DAS)</h3> <h4><a name="GMSDiscovery-Whenmulticastisavailable%3A"></a>When multicast is available:</h4> <p>When <tt>asadmin create-cluster</tt> is run, these values are generated randomly by the gms-adapter code. The multicast address and port must be the same for all members in the group (instances/DAS in the cluster). These values should be different for different clusters. This is already the case in GlassFish 3.1.</p> <h4><a name="GMSDiscovery-Whenmulticastisnotavailable%3A"></a>When multicast is not available:</h4> <p>When running in EC2, including any EC2 subset of environments, we can use the AWS API for obtaining running instances belonging to the current user. Given a set of AWS credentials, the API allows access to all running instances or to specific sets of them, for instance within an AutoScale group (effectively, a cluster).</p> <p>This is still being researched, but there may be EC2 environment specific ways to obtain this info as well without resorting to using the AWS API. For instance, environment variables accessible to GlassFish. Still researching this. There's also the option to manually store/retrieve this information from S3, but we shouldn't have to do this.</p> <p>Similarly to the PaaS case, when this list is created and passed to GMS, it is not written back to the domain config. This would force the list to be static and stop generation going forward. Rather, the bootstrap&nbsp;list is generated each time an instance starts based on the current list of running instances obtained from EC2.</p> <p>Note that we could have a dependency on the AWS credentials of the user, and there should hopefully be some standard way to access these within GlassFish. (Some AWS environments let the user set these as environment variables through the AWS console.)</p> <p>For OVM, we cannot support generating the bootstrap&nbsp;list automatically if there is no DAS and no multicast.</p> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on May 10, 2011 by 
+<font color="#0050B2">bbissett</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

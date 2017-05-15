@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : JMakiOnRailsForDummies_Ja</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="JMakiOnRailsForDummies_Ja-jMakionRailsForDummies"></a>jMaki on Rails For Dummies</h1> <p>Craig announced jMaki on Rails. Here I provide detailed steps to read data from a MySQL database and display it in a jMaki-wrapped Yahoo DataTable widget.</p> <p>1. Download NetBeans 6.0 M9 (Full version) and configured to install only "Base IDE", "Java IDE", "Web and Java EE" and "Ruby" modules. A cutting-edge build can be obtained from the hudson build.</p> <p>2. Download and install jMaki plug-in in NetBeans update center. </p> 
+     <ul> 
+      <li>1. In NetBeans 'Tools', 'Plugins', select 'Downloaded', click on 'Add Plugins ...'.</li> 
+      <li>2. Select the downloaded .NBM module, click on 'Install'. This will install the jMaki plug-in and restart the IDE.</li> 
+      <li>3. To verify, go to 'Tools', 'Plugins', select 'Installed'. It should show 'jMaki Ajax support' with '1.6.9.7' version number.</li> 
+     </ul> <p>3. Create a new "Ruby on Rails Application" Project, lets say named 'jmaki_ror'.<br> 4. Create a new controller by right-clicking the project, select 'Generate ...', select 'controller', specify the Name as 'jmaki' and Views as 'yahoo'.<br> 5. jMaki-enable the Rails app </p> 
+     <ul> 
+      <li>1. Open a command prompt and go to your application directory. Make sure you have a SVN client configured on your machine. Then invoke the following commands:</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">script/plugin source http://jmaki-goodies.googlecode.com/svn/trunk/rails_plugins
+script/plugin install jmaki_core
+script/plugin install jmaki_yahoo</pre> 
+       </div> 
+      </div>
+     </div> <p>The first step adds the plug-in registry to the list of registries used for searching plug-ins. The second two steps install the core and yahoo plug-ins.</p> 
+     <ul> 
+      <li>2. Expand 'Views', right-click on 'layouts', select 'New', select 'Empty RHTML (Embedded Ruby) file ...'. Enter the 'File Name' as 'standard'. This will add 'standard.rhtml' in layouts sub-tree. Enter the following fragment before &lt;body&gt;:</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;head&gt;
+  &lt;%= stylesheet_link_tag "jmaki-standard", :media =&gt; "all" -%&gt;
+  &lt;%= javascript_include_tag "jmaki" -%&gt;
+  &lt;%= jmaki_setup -%&gt;
+&lt;/head&gt;</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>3. Within &lt;body&gt;, add the following fragment:</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;%= @content_for_layout %&gt;</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>4. In 'Controllers', 'jmaki_controller.rb', add the following fragment before 'def yahoo' line:</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">layout "standard"</pre> 
+       </div> 
+      </div>
+     </div> <p>6. Configure the MySQL database</p> 
+     <ul> 
+      <li>1. Create database using the command: 'mysqladmin -u root create jmaki_ror_development'. You need to make sure that the database name in this script is changed to match the project name.</li> 
+      <li>2. Right select the NetBeans project, select 'Generate', select 'model', specify the arguments as 'grid', click 'OK'. This will generate, in NetBeans project, Database Migrations, migrate, 001_create_grids.rb.</li> 
+      <li>3. Open 001_create_grids.rb, change self.up helper method such that it looks like:</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">def self.up
+  create_table :grids do |t|
+    t.column :company, :string
+    t.column :price, :float
+    t.column :change, :float
+    t.column :percent_change, :float
+    t.column :last_updated, :string
+  end
+end</pre> 
+       </div> 
+      </div>
+     </div> <p>4. Right-select NetBeans project, select 'Run Rake Target', 'db', 'migrate'. This generates the database table. Execute the following query to insert data into the table:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">insert into grids values (1, 'A Co', 71.72, 0.02, 0.03, 'Jan 1, 2007, 10:00am' );
+insert into grids values (2, 'B Inc', 29.01, 0.42, 1.47, 'Feb 1, 2007, 10:00am' );
+insert into grids values (3, 'C Group Inc', 83.81, 0.28, 0.34, 'Mar 1, 2007, 10:00am' );
+insert into grids values (4, 'D Company', 52.55, 0.01, 0.02, 'Apr 1, 2007, 10:00am' );</pre> 
+       </div> 
+      </div>
+     </div> <p>5. Add jMaki-wrapped Yahoo DataTable widget</p> 
+     <ul> 
+      <li>1. In NetBeans project, in 'Views', 'jmaki', 'yahoo.rhtml', drag-and-drop 'Data Table' widget from the 'Yahoo' category of jMaki palette.</li> 
+     </ul> <p>Until the jMaki data model for grid and data widgets is consistent between Java and JRuby, you need to replace the generated code in 'yahoo.rhtml' with the following:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;%= jmaki_widget 'yahoo.dataTable',
+    :args =&gt; {
+        :columns =&gt; [
+            { :title =&gt; 'Company', :width =&gt; 200, :locked =&gt; false },
+            { :title =&gt; 'Price', :width =&gt; 75, :renderer =&gt; 'usMoney' },
+            { :title =&gt; 'Change', :width =&gt; 75, :renderer =&gt; 'change' },
+            { :title =&gt; '% Change', :width =&gt; 75, :renderer =&gt; 'pctChange' },
+            { :title =&gt; 'Last Updated', :width =&gt; 85, :renderer =&gt; 'italic' }
+        ]
+    },
+:value =&gt; @table_data
+-%&gt;</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>2. '@table_data' is defined in 'jmaki_controller' in 'def yahoo' as:</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">def yahoo
+    @table_data = []
+    Grid.find_all().each do |data|
+      @table_data &lt;&lt; [ data.company, data.price, data.change, data.percent_change, data.last_updated]
+    end
+end</pre> 
+       </div> 
+      </div>
+     </div> <p>8. That's it, run your app and view the page at 'http://localhost:3000/jmaki/yahoo'. Now jMaki-wrapped Yahoo DataTable widget is picking data from the MySQL database.</p> <p>And as a next step, you can WAR'up this RoR application and deploy it on GlassFish V2 using these instructions.</p> 
+     <hr> <p>日本語翻訳: <a href="http://apercu-j.blogspot.com/">Kana</a></p> <p><a href="http://blogs.oracle.com/arungupta/entry/jmaki_on_rails_for_dummies">原文</a> </p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 09, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

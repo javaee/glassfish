@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : 3.1JMX</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="3.1JMX-GlassFishServerOpenSourceEdition3.1JMX"></a>GlassFish Server Open Source Edition 3.1 - JMX</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#3.1JMX-GlassFishServerOpenSourceEdition3.1JMX">GlassFish Server Open Source Edition 3.1 - JMX</a></li> 
+       <ul> 
+        <li><a href="#3.1JMX-Introduction">Introduction</a></li> 
+        <li><a href="#3.1JMX-Scope">Scope</a></li> 
+        <li><a href="#3.1JMX-FeatureOverview">Feature Overview</a></li> 
+        <li><a href="#3.1JMX-DesignDocument">Design Document</a></li> 
+        <li><a href="#3.1JMX-MilestoneSchedule">Milestone Schedule</a></li> 
+        <li><a href="#3.1JMX-TaskList">Task List</a></li> 
+        <li><a href="#3.1JMX-DevTests">Dev Tests</a></li> 
+        <li><a href="#3.1JMX-References">References</a></li> 
+        <li><a href="#3.1JMX-EmailAlias">Email Alias</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="3.1JMX-Introduction"></a>Introduction</h2> <p>Coming soon</p> <h4><a name="3.1JMX-Scope"></a>Scope</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Feature ID </th> 
+         <th class="confluenceTh"> Priority </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> Eng Response </th> 
+         <th class="confluenceTh"> Owner(s) </th> 
+         <th class="confluenceTh"> Estimate (Man Days) </th> 
+         <th class="confluenceTh"> Source of Requirement </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JMX-001 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Support for <a href="http://jcp.org/en/jsr/summary-77">JSR 77 </a> </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Prasad /Naman <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> 25 </td> 
+         <td class="confluenceTd"> Feature parity </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JMX-002 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> SSL support for JMX connectors </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Prasad <br class="atl-forced-newline"> <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> 10 </td> 
+         <td class="confluenceTd"> Feature parity </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JMX-003 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Reduce the number of jars loaded for AMX </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Prasad /Naman <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> 7 </td> 
+         <td class="confluenceTd"> Feature parity </td> 
+         <td class="confluenceTd"> No server startup performance cost </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JMX-004 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Support AMX in a clustered environment </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Prasad/Naman </td> 
+         <td class="confluenceTd"> 25 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Feature parity </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JMX-005 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Keep AMX interfaces up-to-date with config API changes </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Prasad /Naman <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Ongoing <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Feature parity </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JMX-006 </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> Provide documentation with examples on how to migrate AMX APIs from v2.x to v3.x </td> 
+         <td class="confluenceTd"> Maybe </td> 
+         <td class="confluenceTd"> Naman </td> 
+         <td class="confluenceTd"> 25 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> v2 to v3 AMX API upgrade tutorial </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.1JMX-FeatureOverview"></a>Feature Overview</h2> 
+     <ul> 
+      <li>JMX support already exists in GlassFish v3. The work in this release centres around</li> 
+     </ul> 
+     <ol> 
+      <li>adding AMX support for the clustering objects introduced in this release</li> 
+      <li>Adding SSL support for JMX connectors</li> 
+      <li>Providing support for AMX in a clustered setup ( as per the new clustering architecture)</li> 
+      <li>( depending upon the time available) Provide a migration path from AMX in GlassFishv2 to AMX in GlassFish v3. This feature is mainly aimed at users who would need to re-write the AMX clients that they have been using with GlassFish v2, while moving to GlassFish v3.</li> 
+     </ol> <h4><a name="3.1JMX-DesignDocument"></a>Design Document</h2> 
+     <ul> 
+      <li>The <a href="./3.1AMXOnePager.html">one-pager for JMX/AMX support in GlassFish v3.1</a></li> 
+     </ul> <h4><a name="3.1JMX-MilestoneSchedule"></a>Milestone Schedule</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> One pager </td> 
+         <td class="confluenceTd"> Milestone 1 </td> 
+         <td class="confluenceTd"> All </td> 
+         <td class="confluenceTd"> One pager with the scope definition of the work </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JMX002-1 : SSL Support <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Milestone 4 </td> 
+         <td class="confluenceTd"> JMX002 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Work in Progress <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JMX003-1 : Reduction on no. of jars </td> 
+         <td class="confluenceTd"> Milestone 3 </td> 
+         <td class="confluenceTd"> JMX003 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Done <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JMX004-1 : AMX management in clusters <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Milestone 5 </td> 
+         <td class="confluenceTd"> JMX004 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JMX004-2 :AMX based monitoring support for remote instances <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Milestone 5 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> JMX004 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JMX001-1 :JSR77 support in a Cluster <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Milestone 4 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> JMX001 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JMX005-1 : Update Config changes in AMX interfaces <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Milestone 6 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> JMX005 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.1JMX-TaskList"></a>Task List</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task </th> 
+         <th class="confluenceTh"> Target Milestone </th> 
+         <th class="confluenceTh"> Start </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Owner(s) </th> 
+         <th class="confluenceTh"> Feature ID </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> One pager </td> 
+         <td class="confluenceTd"> Milestone 1 </td> 
+         <td class="confluenceTd"> 5/14/2010 </td> 
+         <td class="confluenceTd"> 5/24/2010 </td> 
+         <td class="confluenceTd"> Prasad </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Initial Draft ready. Asarch review scheduled for 7/28 <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Investigate work on clustering side </td> 
+         <td class="confluenceTd"> Milestone 2 </td> 
+         <td class="confluenceTd"> 5/14/2010 </td> 
+         <td class="confluenceTd"> 6/21/2010 </td> 
+         <td class="confluenceTd"> Naman, Prasad </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Done. One pager to have details of support. <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Setup Hudson with Dev Tests for AMX <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Milestone 3 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> 7/1/2010 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> 7/8/2010 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Naman <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> - <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Done <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Investigate SSL Support <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Milestone 4 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> 6/29/2010 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> 7/6/2010 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Prasad <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> JMX002 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Done <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Dev task for SSL support <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Milestone 4 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> 7/7/2010 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> 7/12/2010 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Prasad <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> JMX002 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> WIP : held up by a Grizzly issue which was fixed and integrated in 1.19-beta7 <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Dev Tests for SSL <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Milestone 5 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> 7/13/2010 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> 7/15/2010 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Prasad <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> JMX002 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Yet to start <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Reduction of no of Jars for AMX <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Milestone 3 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> 7/9/2010 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> 7/14/2010 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Naman <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> JMX003 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Done <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> AMX support in a cluster environment <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Milestone 5 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Naman <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> JMX004 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Yet to start : End date to be determined. <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> AMX monitoring in remote instances <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Milestone 5 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Naman <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> JMX 004 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Yet to start : End date to be determined. <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Investigate the behaviour of JSR 77 artifacts in a cluster </td> 
+         <td class="confluenceTd"> Milestone 4 </td> 
+         <td class="confluenceTd"> 7/21/2010 </td> 
+         <td class="confluenceTd"> 8/3/2010 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Prasad </td> 
+         <td class="confluenceTd"> JMX001 </td> 
+         <td class="confluenceTd"> WIP <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Support loading of JSR 77 Mbeans in a instance other than DAS <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Milestone 4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Naman </td> 
+         <td class="confluenceTd"> JMX001 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Support MEJB loading in remote instances <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Milestone 4 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Naman </td> 
+         <td class="confluenceTd"> JMX001 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.1JMX-DevTests"></a>Dev Tests</h2> 
+     <ul> 
+      <li>The Dev test for AMX exist within the v3/admin/amx-* modules . These are run daily in a Hudson job.</li> 
+     </ul> <h4><a name="3.1JMX-References"></a>References</h2> 
+     <ul> 
+      <li><a href="http://docs.sun.com/app/docs/doc/821-0179/6nl8hchmr?l=en&amp;a=expand">GlassFish v2.x CLI Commands</a></li> 
+      <li><a href="GlassFishV2Architecture.html" title="GlassFishV2Architecture">GlassFish v2 Cluster Architecture </a></li> 
+     </ul> <h4><a name="3.1JMX-EmailAlias"></a>Email Alias</h2> 
+     <ul> 
+      <li>Please contact us at dev@glassfish.java.net</li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Aug 03, 2010 by 
+<font color="#0050B2">prasads</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

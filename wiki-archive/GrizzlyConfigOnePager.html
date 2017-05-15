@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GrizzlyConfigOnePager</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GrizzlyConfigOnePager-GrizzlyConfigOnePager"></a>GrizzlyConfig One Pager</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#GrizzlyConfigOnePager-GrizzlyConfigOnePager">GrizzlyConfig One Pager</a></li> 
+       <li><a href="#GrizzlyConfigOnePager-1.Introduction">1. Introduction</a></li> 
+       <ul> 
+        <li><a href="#GrizzlyConfigOnePager-1.1.Project%2FComponentWorkingName%3A">1.1. Project/Component Working Name:</a></li> 
+        <li><a href="#GrizzlyConfigOnePager-1.2.Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier%3A">1.2. Name(s) and e-mail address of Document Author(s)/Supplier:</a></li> 
+        <li><a href="#GrizzlyConfigOnePager-1.3.DateofThisDocument%3A">1.3. Date of This Document:</a></li> 
+       </ul> 
+       <li><a href="#GrizzlyConfigOnePager-2.ProjectSummary">2. Project Summary</a></li> 
+       <ul> 
+        <li><a href="#GrizzlyConfigOnePager-2.1.ProjectDescription%3A">2.1. Project Description:</a></li> 
+        <li><a href="#GrizzlyConfigOnePager-2.2.RisksandAssumptions%3A">2.2. Risks and Assumptions:</a></li> 
+        <ul> 
+         <li><a href="#GrizzlyConfigOnePager-2.2.1CoordinationisrequiredwithboththeadminCLIandGUIteamswhichwillcomplicatescheduling.">2.2.1 Coordination is required with both the admin CLI and GUI teams which will complicate scheduling.</a></li> 
+        </ul> 
+       </ul> 
+       <li><a href="#GrizzlyConfigOnePager-3.ProblemSummary">3. Problem Summary</a></li> 
+       <ul> 
+        <li><a href="#GrizzlyConfigOnePager-3.1.ProblemArea%3A">3.1. Problem Area:</a></li> 
+        <li><a href="#GrizzlyConfigOnePager-3.2.Justification%3A">3.2. Justification:</a></li> 
+       </ul> 
+       <li><a href="#GrizzlyConfigOnePager-4.TechnicalDescription%3A">4. Technical Description:</a></li> 
+       <ul> 
+        <li><a href="#GrizzlyConfigOnePager-4.1.Details%3A">4.1. Details:</a></li> 
+        <li><a href="#GrizzlyConfigOnePager-4.2.Bug%2FRFENumber%28s%29%3A">4.2. Bug/RFE Number(s):</a></li> 
+        <li><a href="#GrizzlyConfigOnePager-4.3.InScope%3A">4.3. In Scope:</a></li> 
+        <li><a href="#GrizzlyConfigOnePager-4.4.OutofScope%3A">4.4. Out of Scope:</a></li> 
+        <li><a href="#GrizzlyConfigOnePager-4.5.Interfaces%3A">4.5. Interfaces:</a></li> 
+        <ul> 
+         <li><a href="#GrizzlyConfigOnePager-4.5.1ExportedInterfaces">4.5.1 Exported Interfaces</a></li> 
+         <li><a href="#GrizzlyConfigOnePager-4.5.2Importedinterfaces">4.5.2 Imported interfaces</a></li> 
+         <li><a href="#GrizzlyConfigOnePager-4.5.3Otherinterfaces%28Optional%29">4.5.3 Other interfaces (Optional)</a></li> 
+        </ul> 
+        <li><a href="#GrizzlyConfigOnePager-4.6.DocImpact%3A">4.6. Doc Impact:</a></li> 
+        <li><a href="#GrizzlyConfigOnePager-4.7.Admin%2FConfigImpact%3A">4.7. Admin/Config Impact:</a></li> 
+        <li><a href="#GrizzlyConfigOnePager-4.8.HAImpact%3A">4.8. HA Impact:</a></li> 
+        <li><a href="#GrizzlyConfigOnePager-4.9.I18N%2FL10NImpact%3A">4.9. I18N/L10N Impact:</a></li> 
+        <li><a href="#GrizzlyConfigOnePager-4.10.Packaging%26Delivery%3A">4.10. Packaging &amp; Delivery:</a></li> 
+        <li><a href="#GrizzlyConfigOnePager-4.11.SecurityImpact%3A">4.11. Security Impact:</a></li> 
+        <li><a href="#GrizzlyConfigOnePager-4.12.CompatibilityImpact">4.12. Compatibility Impact</a></li> 
+        <li><a href="#GrizzlyConfigOnePager-4.12.1OpenIssues">4.12.1 Open Issues</a></li> 
+        <li><a href="#GrizzlyConfigOnePager-4.13.Dependencies%3A">4.13. Dependencies:</a></li> 
+       </ul> 
+       <li><a href="#GrizzlyConfigOnePager-5.ReferenceDocuments%3A">5. Reference Documents:</a></li> 
+       <li><a href="#GrizzlyConfigOnePager-6.Schedule%3A">6. Schedule:</a></li> 
+       <ul> 
+        <li><a href="#GrizzlyConfigOnePager-6.1.ProjectedAvailability%3A">6.1. Projected Availability:</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="GrizzlyConfigOnePager-1.Introduction"></a>1. Introduction</h1> <h4><a name="GrizzlyConfigOnePager-1.1.Project%2FComponentWorkingName%3A"></a>1.1. Project/Component Working Name: </h2> <p>Grizzly Configuration</p> <h4><a name="GrizzlyConfigOnePager-1.2.Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier%3A"></a>1.2. Name(s) and e-mail address of Document Author(s)/Supplier:</h2> <p>The individuals who contributed to this document are:</p> <p>Name: Jeanfrancois.Arcand@Sun.COM, Oleksiy.Stashok@Sun.COM, Dhiru.Pandey@Sun.COM, Justin.Lee@Sun.com</p> <h4><a name="GrizzlyConfigOnePager-1.3.DateofThisDocument%3A"></a>1.3. Date of This Document:</h2> <p>06/30/08<br> 12/08/08</p> <h4><a name="GrizzlyConfigOnePager-2.ProjectSummary"></a>2. Project Summary</h1> <h4><a name="GrizzlyConfigOnePager-2.1.ProjectDescription%3A"></a>2.1. Project Description:</h2> <p>Grizzly configuration specifies the schema of the element (or file in case of standalone) used by Grizzly to configure the network services (transport, protocol and listeners)</p> <h4><a name="GrizzlyConfigOnePager-2.2.RisksandAssumptions%3A"></a>2.2. Risks and Assumptions:</h2> <h4><a name="GrizzlyConfigOnePager-2.2.1CoordinationisrequiredwithboththeadminCLIandGUIteamswhichwillcomplicatescheduling."></a>2.2.1 Coordination is required with both the admin CLI and GUI teams which will complicate scheduling.</h3> <h4><a name="GrizzlyConfigOnePager-3.ProblemSummary"></a>3. Problem Summary</h1> <h4><a name="GrizzlyConfigOnePager-3.1.ProblemArea%3A"></a>3.1. Problem Area:</h2> <p>Previous versions of GlassFish application server handled HTML/HTTP requests from within the web container. Modular architecture of V3 requires that this behavior be changed so that these requests can now be handled by the barebone V3 nucleus even before any of the containers have been started. As a result, grizzly configuration which was earlier part of the web container configuration needs to be separated out into its own configuration element.</p> <p>There may be situations where Grizzly may need to be configured in the absence of GlassFish. The configuration should be able to handle such scenarios as well.</p> <p>In domain.xml <a href="http://weblogs.java.net/blog/jfarcand/archive/2007/10/22_unpublished.html">System properties</a> where widely used to tune the performance, so it was very difficult to have a different configuration for a different listeners.<br> Grizzly-config is less dependent on system properties and property elements. Most of the transport related properties from domain.xml, in grizzly-config become XML elements and attributes.</p> <h4><a name="GrizzlyConfigOnePager-3.2.Justification%3A"></a>3.2. Justification:</h2> <p>This project provides the necessary infrastructural support for modularity - one of the main features of V3 release.<br> Additionally the configuration schema provides the necessary plug-in points for extensibility in terms of protocol handling.</p> <h4><a name="GrizzlyConfigOnePager-4.TechnicalDescription%3A"></a>4. Technical Description:</h1> <h4><a name="GrizzlyConfigOnePager-4.1.Details%3A"></a>4.1. Details:</h2> <p>As stated above, Grizzly is now part of the nucleus of GlassFish V3. In earlier versions of GlassFish, Grizzly was configured via the http-service element of domain.xml to field the HTTP traffic. In V3, because of this change, HTTP traffic can be handled by the nucleus and so the configuration of Grizzly needs to be separated out to its own configuration element in domain.xml.</p> <p>The schema for the Grizzly configuration is described here. The new <b>network-config</b> element would be added to config element of sun-domain.dtd as shown below:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;!ELEMENT config
+    (network-config, http-service, iiop-service, admin-service, connector-service?,            
+    web-container, ejb-container, mdb-container, jms-service?, log-service,    
+    security-service, transaction-service, monitoring-service,                 
+    diagnostic-service?, java-config, availability-service?, thread-pools,     
+    alert-service?, group-management-service?, management-rules?,              
+    system-property*, property*)&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>Any network-specific configuration under &lt;code&gt;http-service&lt;/code&gt; in &lt;code&gt;domain.xml&lt;/code&gt; will be deprecated and mapped to the new &lt;code&gt;network-config&lt;/code&gt; element. However, any HTTP protocol specific configuration will be retained under it. Additionally, Grizzly configuration done in earlier versions of GlassFish using the -D properties will also be deprecated. Backward compatibility in V3 runtime will be maintained to support these by intelligently creating the network-config runtime bean in the admin infrastructure that will read values from these deprecated elements (use defaults where required) and populate the new network-config runtime bean which is then used to bootstrap Grizzly.</p> <p>The same schema will also be used to configure Grizzly in standalone mode i.e. in the absence of GlassFish. Currently, Grizzly in standalone mode is configured programmatically. The javadoc for the new grizzly classes are attached and should be considered the authoritative documentation. An example grizzly configuration file can be found <a href="https://grizzly.java.net/source/browse/*checkout*/grizzly/trunk/code/modules/grizzly-config/src/test/resources/grizzly-config.xml?content-type=text%2Fplain">here</a>. <a href="https://grizzly.java.net/source/browse/*checkout*/grizzly/trunk/code/modules/grizzly-config/src/main/resources/domain.xml?content-type=text%2Fplain">Here</a> is a migrated version of a v3 domain.xml that reflects the proposed changes.</p> <p>The relevant changed portions are highlighted below:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;network-config&gt;
+   &lt;transports&gt;
+       &lt;transport name="http"/&gt;
+   &lt;/transports&gt;
+   &lt;protocols&gt;
+       &lt;protocol name="http"&gt;
+           &lt;http default-virtual-server="server" header-buffer-length-bytes="8192"&gt;
+               &lt;file-cache enabled="false"/&gt;
+           &lt;/http&gt;
+       &lt;/protocol&gt;
+       &lt;protocol name="http-admin"&gt;
+           &lt;http default-virtual-server="__asadmin"/&gt;
+       &lt;/protocol&gt;
+       &lt;protocol name="https" security-enabled="true"&gt;
+           &lt;ssl ssl3-enabled="false" cert-nickname="s1as"/&gt;
+       &lt;/protocol&gt;
+   &lt;/protocols&gt;
+   &lt;network-listeners&gt;
+       &lt;thread-pool thread-pool-id="http-threads" min-thread-pool-size="2" max-thread-pool-size="20"/&gt;
+       &lt;network-listener name="http-listener-1" transport="http" protocol="http" address="0.0.0.0" port="8080"/&gt;
+       &lt;network-listener name="http-listener-2" transport="http" protocol="https" address="0.0.0.0" port="8181"/&gt;
+       &lt;network-listener name="admin-listener" transport="http" protocol="http-admin" address="0.0.0.0" port="4848"/&gt;
+   &lt;/network-listeners&gt;
+&lt;/network-config&gt;
+&lt;http-service&gt;
+    &lt;access-log rotation-interval-in-minutes="15" rotation-suffix="yyyy-MM-dd"/&gt;
+    &lt;virtual-server id="server" network-listeners="http-listener-1,http-listener-2"/&gt;
+    &lt;virtual-server id="__asadmin" network-listeners="admin-listener"/&gt;
+&lt;/http-service&gt;</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="GrizzlyConfigOnePager-4.2.Bug%2FRFENumber%28s%29%3A"></a>4.2. Bug/RFE Number(s):</h2> <h4><a name="GrizzlyConfigOnePager-4.3.InScope%3A"></a>4.3. In Scope:</h2> <p>Standalone Grizzly runtime would also use the same configuration schema to bootstrap.</p> <h4><a name="GrizzlyConfigOnePager-4.4.OutofScope%3A"></a>4.4. Out of Scope:</h2> <h4><a name="GrizzlyConfigOnePager-4.5.Interfaces%3A"></a>4.5. Interfaces:</h2> <p>Refer to the javadoc for the configuration element specified above in section 4.1.</p> <h4><a name="GrizzlyConfigOnePager-4.5.1ExportedInterfaces"></a>4.5.1 Exported Interfaces</h3> <p>Disclose all interfaces that this project exports.</p> 
+     <ul> 
+      <li>Interface: network-config element described in the javadoc</li> 
+      <li>Stability: Committed</li> 
+      <li>Former Stability (if changing):</li> 
+      <li>Comments:</li> 
+     </ul> <h4><a name="GrizzlyConfigOnePager-4.5.2Importedinterfaces"></a>4.5.2 Imported interfaces</h3> <p>None</p> <h4><a name="GrizzlyConfigOnePager-4.5.3Otherinterfaces%28Optional%29"></a>4.5.3 Other interfaces (Optional)</h3> <p>None</p> <h4><a name="GrizzlyConfigOnePager-4.6.DocImpact%3A"></a>4.6. Doc Impact:</h2> <p>Product manuals/guides will need to be modified to incorporate changes related to administering and using network (Grizzly) configuration</p> <h4><a name="GrizzlyConfigOnePager-4.7.Admin%2FConfigImpact%3A"></a>4.7. Admin/Config Impact:</h2> <p>Admin console and cli would need to support this new configuration schema.</p> <h4><a name="GrizzlyConfigOnePager-4.8.HAImpact%3A"></a>4.8. HA Impact:</h2> <p>No impact.</p> <h4><a name="GrizzlyConfigOnePager-4.9.I18N%2FL10NImpact%3A"></a>4.9. I18N/L10N Impact:</h2> <p>I18N/L10N impact would be on the Admin Console/CLI used to configure this element</p> <h4><a name="GrizzlyConfigOnePager-4.10.Packaging%26Delivery%3A"></a>4.10. Packaging &amp; Delivery:</h2> <p>In GlassFish V3, this will be an element in domain.xml and will be part of the V3 distribution. It will also be part of the standalone Grizzly distribution.</p> <h4><a name="GrizzlyConfigOnePager-4.11.SecurityImpact%3A"></a>4.11. Security Impact:</h2> <p>For V3 Transport Level Security (TLS) for HTTP protocol would be configured using this. In earlier releases of GlassFish the same information was picked up from a various protocol listener elements which were part of the protocol service elements for e.g. <br> &lt;http-listener&gt; element specified in &lt;http-service&gt; element of domain.xml. To maintain backward compatibility, V3 runtime would also be able to use the TLS related configuration specified in the protocol listener elements which were part of the protocol service elements of the V2 domain.dtd.</p> <h4><a name="GrizzlyConfigOnePager-4.12.CompatibilityImpact"></a>4.12. Compatibility Impact</h2> <p>Any network-specific configuration under &lt;code&gt;http-service&lt;/code&gt; in &lt;code&gt;domain.xml&lt;/code&gt; will be deprecated and mapped to the new &lt;code&gt;network-config&lt;/code&gt; element. However, any HTTP protocol specific configuration will be retained under it. Additionally, Grizzly configuration done in earlier versions of GlassFish using the -D properties will also be deprecated. Backward compatibility in V3 runtime will be maintained to support these by intelligently creating the network-config runtime bean in the admin infrastructure that will read values from these deprecated elements (use defaults where required) and populate the new network-config runtime bean which is then used to bootstrap Grizzly.</p> <p>Below we propose migration map for http-service children elements and attributes. Where &lt;code&gt;http-service&lt;/code&gt; elements or attributes have been mapped to corresponding &lt;code&gt;network-config&lt;/code&gt; elements or attributes, respectively, their new dotted names are derived from the mappings. Items below marked as "not supported" are not currently used by the system and will be dropped during the migration. A warning will be logged in the process.</p> <p>1) http-listener</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> GFv2 </th> 
+         <th class="confluenceTh"> GFv3 </th> 
+         <th class="confluenceTh"> Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ssl </td> 
+         <td class="confluenceTd"> Map to: network-config&gt;protocols&gt;protocol&gt;ssl </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> id </td> 
+         <td class="confluenceTd"> N/A </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> address </td> 
+         <td class="confluenceTd"> Map to: network-config&gt;network-listeners&gt;network-listener#address </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> port </td> 
+         <td class="confluenceTd"> Map to: network-config&gt;network-listeners&gt;network-listener#port </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> external-port </td> 
+         <td class="confluenceTd"> not supported </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> family </td> 
+         <td class="confluenceTd"> not supported </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> blocking-enabled </td> 
+         <td class="confluenceTd"> not supported </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> acceptor-threads </td> 
+         <td class="confluenceTd"> Map to: network-config&gt;transports&gt;transport#acceptor-threads </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> security-enabled </td> 
+         <td class="confluenceTd"> Map to: network-config&gt;protocols&gt;protocol#security-enabled </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> default-virtual-server </td> 
+         <td class="confluenceTd"> Map to: network-config&gt;protocols&gt;protocol&gt;http#default-virtual-server </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> server-name </td> 
+         <td class="confluenceTd"> Map to: network-config&gt;protocols&gt;protocol&gt;http#server-name </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> redirect-port </td> 
+         <td class="confluenceTd"> Map to: network-config&gt;protocols&gt;protocol&gt;http#redirect-port </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> xpowered-by </td> 
+         <td class="confluenceTd"> Map to: network-config&gt;protocols&gt;protocol&gt;http#xpowered-by </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> enabled </td> 
+         <td class="confluenceTd"> Map to: network-config&gt;network-listeners&gt;network-listener#enabled </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> This element will then be removed </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>2) http-protocol</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> GFv2 </th> 
+         <th class="confluenceTh"> GFv3 </th> 
+         <th class="confluenceTh"> Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> version </td> 
+         <td class="confluenceTd"> Map to: network-config&gt;protocols&gt;protocol&gt;http#version </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> dns-lookup-enabled </td> 
+         <td class="confluenceTd"> not supported </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> forced-response-type </td> 
+         <td class="confluenceTd"> Map to: network-config&gt;protocols&gt;protocol&gt;http#forced-response-type </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> default-response-type </td> 
+         <td class="confluenceTd"> Map to: network-config&gt;protocols&gt;protocol&gt;http#default-response-type </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ssl-enabled </td> 
+         <td class="confluenceTd"> not supported </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> This element will then be removed </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>3) http-service</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> GFv2 </th> 
+         <th class="confluenceTh"> GFv3 </th> 
+         <th class="confluenceTh"> Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> http-listener </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> will be removed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> http-protocol </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> will be removed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> connection-pool </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> will be removed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> keep-alive </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> will be removed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> http-file-cache </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> Map to: network-config&gt;protocols&gt;protocol&gt;http&gt;file-cache </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> These are being remapped as noted elsewhere and are no longer necessary under the new schema. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Per anissa, the "accessLoggingEnabled" property will be pushed down to virtual-server#access-logging-enabled </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>4) request-processing</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> GFv2 </th> 
+         <th class="confluenceTh"> GFv3 </th> 
+         <th class="confluenceTh"> Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> thread-count </td> 
+         <td class="confluenceTd"> Map to: network-config&gt;network-listeners&gt;thread-pool#max-thread-pool-size </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> initial-thread-count </td> 
+         <td class="confluenceTd"> Map to: network-config&gt;network-listeners&gt;thread-pool#min-thread-pool-size </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> thread-increment </td> 
+         <td class="confluenceTd"> Map to: network-config&gt;network-listeners&gt;thread-pool#thread-increment </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> header-buffer-length-in-bytes </td> 
+         <td class="confluenceTd"> Map to: network-config&gt;protocols&gt;protocol&gt;http#header-buffer-length-bytes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">remove element </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>5) connection-pool</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> GFv2 </th> 
+         <th class="confluenceTh"> GFv3 </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> queue-size-in-bytes </td> 
+         <td class="confluenceTd"> Map to: network-config&gt;network-listeners&gt;thread-pool#max-queue-size </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> max-pending-count </td> 
+         <td class="confluenceTd"> Map to: network-config&gt;transports&gt;transport#max-connections-count </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> receive-buffer-size-in-bytes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> remove since this is duplicated with max-post-size-bytes </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> send-buffer-size-in-bytes </td> 
+         <td class="confluenceTd"> Map to: network-config&gt;protocols&gt;protocol&gt;http#send-buffer-size </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> remove element </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>6) virtual-server</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> GFv2 </th> 
+         <th class="confluenceTh"> GFv3 </th> 
+         <th class="confluenceTh"> Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> http-listeners </td> 
+         <td class="confluenceTd"> network-listeners </td> 
+         <td class="confluenceTd"> just mapping to http-listener's replacement instead </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> per anissa, docRoot, accessLog, and sso-enabled properties will be pushed up to proper attributes </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>7) keep-alive</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> GFv2 </th> 
+         <th class="confluenceTh"> GFv3 </th> 
+         <th class="confluenceTh"> Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> thread-count </td> 
+         <td class="confluenceTd"> remove </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> max-connections </td> 
+         <td class="confluenceTd"> Map to: network-config&gt;protocols&gt;protocol&gt;http#max-connections </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> timeout-in-seconds </td> 
+         <td class="confluenceTd"> Map to: network-config&gt;protocols&gt;protocol&gt;http#timeout </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> remove element </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>8) http-file-cache</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> GFv2 </th> 
+         <th class="confluenceTh"> GFv3 </th> 
+         <th class="confluenceTh"> Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> globally-enabled </td> 
+         <td class="confluenceTd"> remove </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> file-caching-enabled </td> 
+         <td class="confluenceTd"> Map to: network-config&gt;protocols&gt;protocol&gt;http&gt;file-cache#enabled </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> max-age-in-seconds </td> 
+         <td class="confluenceTd"> Map to: network-config&gt;protocols&gt;protocol&gt;http&gt;file-cache#max-age </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> medium-file-size-limit-in-bytes </td> 
+         <td class="confluenceTd"> remove </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> medium-file-space-in-bytes </td> 
+         <td class="confluenceTd"> Map to: network-config&gt;protocols&gt;protocol&gt;http&gt;file-cache#max-cache-size </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> small-file-size-limit-in-bytes </td> 
+         <td class="confluenceTd"> remove </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> small-file-space-in-bytes </td> 
+         <td class="confluenceTd"> remove </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> file-transmission-enabled </td> 
+         <td class="confluenceTd"> remove </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> max-files-count </td> 
+         <td class="confluenceTd"> Map to: network-config&gt;protocols&gt;protocol&gt;http&gt;file-cache#max-files-count </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> hash-init-size </td> 
+         <td class="confluenceTd"> remove </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> element moved to http&gt;file-cache </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>9) thread-pool</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> GFv2 </th> 
+         <th class="confluenceTh"> GFv3 </th> 
+         <th class="confluenceTh"> Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> num-work-queues </td> 
+         <td class="confluenceTd"> not supported </td> 
+         <td class="confluenceTd"> no code uses this </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> thread-increment </td> 
+         <td class="confluenceTd"> not supported </td> 
+         <td class="confluenceTd"> corba doesn't want it. grizzly doesn't use it any more. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> we can use a common definition if we can clean up this definition. otherwise we'll need to use specific thread pool definitions </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>10) The following properties will need to be intercepted and mapped accordingly. This will likely mean adding logic to catch these properties when using asadmin set-jvm-property and migrating existing instances in domain.xml to the appropriate xml element.<br> Note for v2 migrations: if you are using GlassFish v3, all properties start with com.sun.enterprise.web.connector.grizzly instead of com.sun.grizzly</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Property </th> 
+         <th class="confluenceTh"> GFv3 </th> 
+         <th class="confluenceTh"> Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> com.sun.grizzly.selector.timeout </td> 
+         <td class="confluenceTd"> Map to: network-config&gt;network-listeners&gt;network-listener&gt;transport#selector-poll-timeout </td> 
+         <td class="confluenceTd"> The time, in milliseconds, a NIO Selector will block waiting for events (users requests). By default it blocks 1000 (1 second). In some environment, increasing the value will reduce the CPU usage, but changes to that value aren't recommended unless you are seeing high CPU, most probably when your server doesn't have enough ram. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> com.sun.grizzly.displayConfiguration </td> 
+         <td class="confluenceTd"> Map to: network-config&gt;network-listeners&gt;network-listener&gt;transport#display-configuration </td> 
+         <td class="confluenceTd"> flush Grizzly's internal configuration to the server logs (like number of threads created, how many polled objects, etc.) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> v3.grizzly.enableCometSupport </td> 
+         <td class="confluenceTd"> Map to: network-config&gt;network-listeners&gt;network-listener#comet-support-enabled </td> 
+         <td class="confluenceTd"> enable Comet support for all http-listener, including the Admin-gui. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> com.sun.grizzly.enableSnoop </td> 
+         <td class="confluenceTd"> Map to: network-config&gt;network-listeners&gt;network-listener&gt;transport#enable-snoop </td> 
+         <td class="confluenceTd"> dump the requests/response information in server.log. Useful for debugging purpose, but significantly reduce performance as the request/response bytes are translated to String. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> com.sun.grizzly.readTimeout </td> 
+         <td class="confluenceTd"> Map to: network-config&gt;network-listeners&gt;network-listener&gt;transport#read-timeout </td> 
+         <td class="confluenceTd"> this value currently gets pushed to a static method. this will be changed to be instance specific </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> com.sun.grizzly.writeTimeout </td> 
+         <td class="confluenceTd"> Map to: network-config&gt;network-listeners&gt;network-listener&gt;transport#write-timeout </td> 
+         <td class="confluenceTd"> this value currently gets pushed to a static method. this will be changed to be instance specific </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>The following table lists properties currently being processed under the &lt;http-listener&gt; element that will be remapped:</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> GFv2 </th> 
+         <th class="confluenceTh"> GFv3 </th> 
+         <th class="confluenceTh"> Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> bufferSize </td> 
+         <td class="confluenceTd">add transport-&gt;buffer-size </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> use-nio-direct-bytebuffer </td> 
+         <td class="confluenceTd">same as transport-&gt;byte-buffer-type (HEAP/DIRECT values are supported) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> maxKeepAliveRequests </td> 
+         <td class="confluenceTd">http-&gt;max-connections </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> authPassthroughEnabled </td> 
+         <td class="confluenceTd">http-&gt;auth-pass-through-enabled </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> compression </td> 
+         <td class="confluenceTd">http-&gt;compression </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> compressableMimeType </td> 
+         <td class="confluenceTd">http-&gt;compressable-mime-type </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> noCompressionUserAgents </td> 
+         <td class="confluenceTd">http-&gt;no-compression-user-agents </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> compressionMinSize </td> 
+         <td class="confluenceTd">http-&gt;compression-min-size </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> restrictedUserAgents </td> 
+         <td class="confluenceTd">http-&gt;restricted-user-agents </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> rcmSupport </td> 
+         <td class="confluenceTd">http-&gt;rcm-support-enabled </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> cometSupport </td> 
+         <td class="confluenceTd">http-&gt;comet-support-enabled </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> connectionUploadTimeout </td> 
+         <td class="confluenceTd">http-&gt;connection-upload-timeout </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> disableUploadTimeout </td> 
+         <td class="confluenceTd">http-&gt;upload-timeout-enabled </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> proxiedProtocols </td> 
+         <td class="confluenceTd"> to be removed/unsupported </td> 
+         <td class="confluenceTd">will be replaced with port-unification </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> chunkingDisabled </td> 
+         <td class="confluenceTd">http-&gt;chunking-enabled </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> chunking-disabled </td> 
+         <td class="confluenceTd">http-&gt;chunking-enabled </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> crlFile </td> 
+         <td class="confluenceTd">ssl-&gt;crl-file </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> trustAlgorithm </td> 
+         <td class="confluenceTd">ssl-&gt;trust-algorithm </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> trustMaxCertLength </td> 
+         <td class="confluenceTd">ssl-&gt;trust-max-cert-length </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> uriEncoding </td> 
+         <td class="confluenceTd">http-&gt;uri-encoding </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jkEnabled </td> 
+         <td class="confluenceTd"> to be removed/unsupported? </td> 
+         <td class="confluenceTd">Seems we don't need this anymore for grizzly config. (from Alexey) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> tcpNoDelay </td> 
+         <td class="confluenceTd">transport-&gt;tcp-no-delay </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> traceEnabled </td> 
+         <td class="confluenceTd"> http-&gt;trace-enabled </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>The following table lists properties currently being processed under the &lt;virtual-server&gt; element that will be promoted to attributes on the elements rather than properties:</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> property </th> 
+         <th class="confluenceTh"> attribute </th> 
+         <th class="confluenceTh"> comment </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> virtual-server#docroot </td> 
+         <td class="confluenceTd"> virtual-server#docroot </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> virtual-server#accesslog </td> 
+         <td class="confluenceTd"> virtual-server#access-log </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> virtual-server#sso-enabled </td> 
+         <td class="confluenceTd"> virtual-server#sso-enabled </td> 
+         <td class="confluenceTd"> takes true/false/inherit to interop with the http-service settings </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> http-service#accessLoggingEnabled </td> 
+         <td class="confluenceTd"> http-service#access-logging-enabled </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> http-service#accessLogBufferSize </td> 
+         <td class="confluenceTd"> access-log#buffer-size-bytes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> http-service#accessLogWriterInterval </td> 
+         <td class="confluenceTd"> access-log#log-writer-interval </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> http-service#sso-enabled </td> 
+         <td class="confluenceTd"> http-service#sso-enabled </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>Glassfish admin commands.</p> <p>1) Update existing commands.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> GFv2 </th> 
+         <th class="confluenceTh"> GFv3 </th> 
+         <th class="confluenceTh"> Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-ssl </td> 
+         <td class="confluenceTd"> Command has type parameter with following possible values: http-listener, iiop-listener, iiop-service. We should add one more possible type value: network-listener. We can still support http-listener type, but instead of adding ssl element under http-listener - it should be added under corresponding network-listener. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> delete-ssl </td> 
+         <td class="confluenceTd"> ... </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-thread </td> 
+         <td class="confluenceTd"> According to the schema, proposed above, network config requires additional parameters to be added to the command: max-queue-size, classname (optional). </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-http-listener </td> 
+         <td class="confluenceTd"> ... </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> delete-http-listener </td> 
+         <td class="confluenceTd"> ... </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-http-listeners </td> 
+         <td class="confluenceTd"> ... </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-virtual-server </td> 
+         <td class="confluenceTd"> ... </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> delete-virtual-server </td> 
+         <td class="confluenceTd"> ... </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-virtual-servers </td> 
+         <td class="confluenceTd"> ... </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> set </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> intercept set of old properties and redirect to appropriate command. just give a message and stop? or automatically make the switch? message+stop would be simplest since it could be done with a simple blacklist </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>2) Add following commands:</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Commands </th> 
+         <th class="confluenceTh"> Parameters </th> 
+         <th class="confluenceTh"> Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-transport </td> 
+         <td class="confluenceTd"> name, acceptor-threads, max-connections-count, classname </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> delete-transport </td> 
+         <td class="confluenceTd"> name </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-transports </td> 
+         <th class="confluenceTh">&nbsp;</th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-protocol </td> 
+         <td class="confluenceTd"> name, security-enabled, max-selectors, byte-buffer-type, read-timeout, write-timeout, oob-inline </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> delete-protocol </td> 
+         <td class="confluenceTd"> name </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-protocols </td> 
+         <th class="confluenceTh">&nbsp;</th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-network-listener </td> 
+         <td class="confluenceTd"> name, transport, protocol, thread-pool, host, port </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> delete-network-listener </td> 
+         <td class="confluenceTd"> name </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-network-listeners </td> 
+         <th class="confluenceTh">&nbsp;</th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-protocol-filter </td> 
+         <td class="confluenceTd"> protocol-id, name, classname </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> delete-protocol-filter </td> 
+         <td class="confluenceTd"> name </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-protocol-filter </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>GUI Updates</p> 
+     <ol> 
+      <li>Though a network-listener can have different transports defined, exposing that level of detail right now might be more detail than is useful. I'd recommend inferring a standard transport with default values. The admin gui would not change the transport reference, however, should a more advanced user manually edit domain.xml with custom transport definitions/configurations. Without port unification, exposing transports just for http usage seems a little overkill.</li> 
+      <li>The HTTP Listener page can probably remain relatively unchanged. Some fields will need to be remapped to different properties, perhaps, but I don't see any conflicting values with the exception of acceptorThreads.</li> 
+     </ol> <p>Migration</p> 
+     <ol> 
+      <li>Migrate existing v2 domain.xml files to the new schema. Fold in grizzly properties to appropriate xml structures</li> 
+      <li>dotted properties will need to be mapped. There are doubtless scripts out there setting using "asadmin set foo.bar=bob" these so we'll need to handle those appropriately. Do we handle set-jvm-property similarly? Try to align with work done for logging.</li> 
+     </ol> <h4><a name="GrizzlyConfigOnePager-4.12.1OpenIssues"></a>4.12.1 Open Issues</h2> 
+     <ol> 
+      <li>notes from migration/admin team (rebecca? kedar?) 
+       <ol> 
+        <li>admin gui impact assessment</li> 
+       </ol> </li> 
+      <li>dotted property name mapping (kedar?)</li> 
+     </ol> <h4><a name="GrizzlyConfigOnePager-4.13.Dependencies%3A"></a>4.13. Dependencies:</h2> 
+     <ul> 
+      <li>Admin infrastructure</li> 
+      <li>Admin GUI</li> 
+      <li>CLI</li> 
+     </ul> <h4><a name="GrizzlyConfigOnePager-5.ReferenceDocuments%3A"></a>5. Reference Documents:</h1> <p><a href="http://grizzly.java.net">Project Grizzly</a></p> <h4><a name="GrizzlyConfigOnePager-6.Schedule%3A"></a>6. Schedule:</h1> <h4><a name="GrizzlyConfigOnePager-6.1.ProjectedAvailability%3A"></a>6.1. Projected Availability:</h2> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 07, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFishV2Architecture</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GlassFishV2Architecture-ClusterSupportinGlassFishV2"></a>Cluster Support in GlassFish V2</h1> <p>This document describes the high-level concepts and architecture for Clustering support in GlassFish V2</p> <p>An installation of GlassFish consists of one or more <em>administration domains</em>. Each domain consists of one or more server <em>instances</em>. GlassFish supports <em>clusters</em> of server instances in which each instance in the cluster shares the same set<br> of applications and configuration information. </p> <p>Entities within instances, the instances themselves, and clusters of instances are all <em>manageable resources</em> that can be manipulated by the administration infrastructure through its browser based and command line clients. All administration will also be possible via JMX MBeans.</p> <h4><a name="GlassFishV2Architecture-OverallArchitecture"></a>Overall Architecture</h2> <p>The architecture diagram below, showing a sample GlassFish installation (a single domain), will be used to illustrate the basic concepts.</p> <p><span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20875527/21364872.jpg" style="border: 0px solid black"></span></p> <p>The architecture consists of the following components:</p> 
+     <ul> 
+      <li><b>Domain Administration Server (DAS)</b>. The DAS, a fully functional Java EE 5 server instance, facilitates administration for the Domain. All administrative operations (e.g. initiated via the CLI, GUI, NetBeans IDE, and other tools) are routed to the DAS rather than to server instances directly. For aggregate operations that encompass more than one server instance, the DAS will be responsible for broadcasting administration requests to instances. DAS is able to administer instances running on remote hosts. When the DAS is not running administative operations are not possible. No special efforts are made to make the DAS highly available except for simple watchdog and restart capability. Instances and clusters in the domain can function normally even if the DAS is not running.</li> 
+     </ul> 
+     <ul> 
+      <li><b>Administrative Client Applications (CLI, JSR 77, AMX)</b>. Administrative clients include the asadmin CLI (command line interface) utility, and modules that plug into the Studio. These applications reside either inside or outside the<br> firewall and communicate exclusively with the Domain Admin Server (and not server instances directly). All application deployment makes use of the JSR 88 APIs. Configuration and application deployment are done exclusively via JMX MBeans (some of which are standardized by JSR 77). These clients clients use JSR160 JMX connectors to access the DAS. To cross firewalls, the protocol of choice implemented in the connector is HTTP(S).&nbsp; There is also an MBEan interface called AMX that exposes all the functionality through<br> API.</li> 
+     </ul> 
+     <ul> 
+      <li><b>Browser Based Administrative GUI</b>. The browser based administrative GUI (graphical user interface) application is deployed in the Java EE 5 instance hosting the Domain Admin Server. This forms the administration "console" of the application server.</li> 
+     </ul> 
+     <ul> 
+      <li><b>Web Client Applications</b> (web clients, web services clients). A web client communicates with the server instance using http via a web browser or a web service invocation. In clustered configurations all web clients are optionally routed through the load balancing tier which performs load balancing and optionally some level of failover (Failover functionality is under development for GlassFish).</li> 
+     </ul> 
+     <ul> 
+      <li><b>Rich client (RMI/IIOP) applications</b>. A rich client runs in a process remote from the server instances and communicates with the server instances via a generated client stub over the RMI/IIOP protocol. The rich client may be hosted in the server's Application Client Container (ACC) in which case it has access to all JNDI resources defined in the server, or it may be running as a stand alone RMI/IIOP client relying purely on the client side ORB. Rich clients typically reside within the firewall boundary, but the architecture should not limit this. Like web clients, rich clients should be load balanced to lightly loaded server instances and should be able to failover if the server instance to<br> which they are communicating fails.</li> 
+     </ul> 
+     <ul> 
+      <li><b>Load Balancers (LB)</b>. The load balancer is responsible for directing new incoming requests to the least loaded host machine, recognizing failed nodes, retrying operations if necessary, and maintaining affinity (stickiness) with a particular host on which a session has been established. There are a wide variety of load balancing solutions in addition to the software load balancer.</li> 
+     </ul> 
+     <ul> 
+      <li><b>Node Agent (NA)</b>. A lightweight agent (e.g. hosting a JMX runtime only) will be needed on each node in the domain to facilitate remote lifecycle management of instances. Its primary purpose will be to start, stop, and create server instances as instructed by the DAS. The Node Agent will also act as a watchdog and restart failed processes (e.g. in the<br> absence of web core). Like the DAS, the Node Agent should only be required for certain administrative operations and should not be expected to be highly available. However, the NA is an "always on" component, and will be configured to be started by the native O/S node bootstrap (e.g. Solaris/Linux inetd, or as a Windows service). A Node Agent is not required for the DAS, and as such GlassFish installations will not contain a Node Agent.</li> 
+     </ul> 
+     <ul> 
+      <li><b>Server Instance (SI)</b>. An instance is a Java VM hosting a Java EE 5 application server. Bi-directional communication between the server instances and the DAS relies on remote MBean method invocations via JSR160. The standard JSR 160 RMI connector is used for all server to DAS communication. This means that the DAS will host two JSR160 JMX connectors – a proprietary HTTP connector for crossing firewalls for use by the admin CLI and the standard RMI connector.</li> 
+     </ul> 
+     <ul> 
+      <li><b>Administration API</b>. A subset of the administration JMX Mbeans in the DAS will be exposed and made available to customers. These interfaces will communicate with the DAS using the standard JSR 160 RMI connector.</li> 
+     </ul> 
+     <ul> 
+      <li><b>Central Repository</b>. There are 2 main repositories storing information shared by all instances in the domain. The configuration repository contains domain configuration information, and the application repository contains deployed J2EE applications. The central repository is maintained and written to only by the DAS using an API (configuration MBeans) and persisted on the file system. The central repository will typically be rooted under a single directory and as such can easily be backed up and restored.</li> 
+     </ul> 
+     <ul> 
+      <li><b>Local Repository Cache</b>. To avoid forcing high availability constraints on the DAS, and speedier startup, each instance maintains, on its local file system, a cache of its configuration from the Central Repository. The cache will be synchronized with the Central Repository each time the instance restarts. The cache will be a subset of the Central Repository (e.g. since an instance only needs the referenced subset of applications in the domain).</li> 
+     </ul> 
+     <ul> 
+      <li><b>JMX Runtime</b>. The JMX infrastructure provides the administrative infrastructure used to carry out administration and configuration operations. The JMX runtime includes the agent services (MBean server, timer service, monitoring service, etc.), the MBean instrumentation level, as well as distributed devices such as connectors (JSR160) that are used for virtually all inter-server and client communication. All server instances, Node Agents, and the DAS itself host JMX runtimes.</li> 
+     </ul> <h4><a name="GlassFishV2Architecture-Herearesomeimportanttermsandconcepts%3A"></a>Here are some important terms and concepts:</h2> 
+     <ul> 
+      <li><b>Node</b>: In this document a node represents a single host machine. Note that a large machine may be partitioned into multiple independent nodes.</li> 
+     </ul> 
+     <ul> 
+      <li><b>Administration Domain</b> : A domain provides a common authentication and administration point for a collection of zero or more server instances. The administration domain encompasses several manageable resources, including instances, clusters, and their individual resources. A manageable resource, such as a server instance, may belong to exactly<br> one domain. We may simply use the word domain to mean administrative domain.</li> 
+     </ul> 
+     <ul> 
+      <li><b>Application</b>: A domain hosts a number of Java EE applications deployed to the domain as standard Java EE ear, war, and ejb-jar files. The applications deployed to the domain can be made available to any or all instances or clusters.</li> 
+     </ul> 
+     <ul> 
+      <li><b>Resource</b>: Java EE applications use resources which represent entities external to the application, and are referenced by a JNDI name. Sample resources include jdbc, javamail, jms, and connectors to Enterprise Information Systems. . Like applications, resources are created in the domain and can be made available to any instance(s) or cluster(s) in the domain.</li> 
+     </ul> 
+     <ul> 
+      <li><b>Configuration</b>: A configuration is a named collection of server configuration information. It includes for example the definition and configuration of http listeners, orb/iiop listeners, jms brokers, the ejb container, security, logging, and monitoring. Like applications and resources, configurations are created in the domain and can be used by any or all<br> instances or clusters.</li> 
+     </ul> 
+     <ul> 
+      <li><b>Server Instance</b>: The server instance is a single Java SE 5 (or possibly Java SE 6) compatible Java VM hosting a Java EE 5 Application Server on a single node. Each server instance has a unique name in the domain.A <em>clustered server instance</em> is a member of a cluster and receives all of its application, resource, and configuration from its parent cluster, ensuring that all instances in the cluster are homogenous. An <em>unclustered server instance</em> does not belong<br> to a cluster and as such has an independent set of applications, resources, and configuration.</li> 
+     </ul> 
+     <ul> 
+      <li><b>Cluster</b>: A cluster is a named collection of server instances sharing the same set of applications, resources, and configuration information. A server instance can belong to exactly one cluster. A cluster facilitates server instance load balancing and high availability through instance level failover. From an administrative perspective a cluster<br> respresents a virtualized entity in which operations on a cluster (e.g. deployment of an application) act on all instances that make up the cluster.</li> 
+     </ul> 
+     <ul> 
+      <li><b>Sharing Scope</b> : Applications, resources, and configurations are domain scoped_ entities shared by multiple clusters or stand-alone servers. Changes made to an application, resource, or configuration will affect (i.e. be seen by) all server instances or clusters referencing it.</li> 
+     </ul> 
+     <ul> 
+      <li><b>Manageable Resource</b> : This is an implementation of a manageable entity within the application server. A manageable resource is of a particular type, and each such resource type can expose a set of attributes (that may or may not be<br> mutable), as well as administrative operations that can change its state. Note: JSR77 calls managed resources "managed objects", a synonymous term. Manageable resources of the domain are exposed as JMX Mbeans.</li> 
+     </ul> <h4><a name="GlassFishV2Architecture-FurtherClarificationOfTheConceptualModel"></a>Further Clarification Of The Conceptual Model</h3> <p>The PE (non-clustered mode) will consist of a single server instance residing on a single machine. In this case, entities such as cluster and node will neither be necessary nor exposed to the end user.</p> <p><b>Domain</b><br> A domain provides a common authentication and administration point for a collection of zero or more server instances and clusters. An installation of GlassFish may consist of multiple domains; however each domain can be thought of as an independently managed silo. PE restricts the developer to one instance per domain. However, even in PE there are no restriction to creating multiple domains.</p> <p>Nothing is shared across domains. Domains can be owned and operated by independent administrative users (e.g. with different user ids, user names, and passwords) and as such administrative tools such as asadmin (the command line interface) and the browser based administrative GUI authenticate with and operate on only a single domain.</p> <p><b>Application</b><br> An application represents a Java EE application or deployable module (Java EE applications, web modules, connector modules, ejb modules). Each application has a unique name in the domain. An unclustered instance or cluster may reference zero or more applications. Furthermore, an application may be deployed to the domain, but referrenced by no server instances. This places the application in a staged state in which server instances and clusters can quickly and easily reference it. Since there is only one copy of an applications binaries, any change made to it will affect all unclustered server instances and clusters referencing the application.</p> <p><b>Resource</b><br> The Java EE deployment descriptors of applications reference external resources such as JDBC database resources and their associated connection pools, CMP persistence managers, JMS resources, java mail resources, custom JNDI resources, and connector resources. Like an application, each resource has a JNDI name which is unique across the domain. An unclustered server instance or cluster can reference zero or more resources, and a resource can be staged in which case it is referenced by no server instances.</p> <p><b>Configuration</b><br> A configuration represents a collection of configuration information and parameters identified by a name which is unique in the domain. A named configuration can be referenced by stand-alone servers and cluster(s) The same configuation may be referenced by multple server(s)/cluster(s). At most one configuration may be referenced by any given server/cluster.</p> <p>Aside from applications and resources, every other configurable element of a server instance (e.g. HTTP listeners, JMS broker, security, monitoring, EJC container) is defined through a reference to exactly one configuration.</p> <p><b>Clusters</b><br> A cluster defines a collection of zero or more homogenous server instances all of which have exactly the same applications, resources, and configuration. In other words, a clustered server instance inherits everything from its parent cluster. Here are some properties of clusters and clustered server instances.</p> 
+     <ol> 
+      <li>A server instance can belong to at most one cluster.</li> 
+      <li>For load balancing and failover purposes, the instances in a cluster are associated with the same set of applications and resources. This means that a load balancer can target a HTTP, MDB or RMI/IIOP request, to any of it's instances.</li> 
+      <li>For availability and failover purposes, the instances in the cluster are associated with the same configuration. For example, all instances in the cluster must access the same Message Broker(s), SSL configuration, http listeners, virtual<br> servers, transaction manager configuration, JAAS realm configuration, and share the same HADB repository. This is a side effect of sharing a common named configuration across the cluster. Homogenity ensures that resources and conversatoinal state is available to <em>all</em> instances in the cluster, should an instance fail.</li> 
+      <li>A cluster is an important administration entity. For example, an application can be deployed to a cluster in one aggregate operation without having to deploy the application to each instance in the cluster. Likewise a JDBC resource<br> or http listener can be added to all instances in the cluster with a single administrative operation.</li> 
+     </ol> <h4><a name="GlassFishV2Architecture-ConfigurationAndCentralRepository"></a>Configuration And Central Repository</h2> <p>At the highest level GlassFish configuration information (including Java EE applications and resources) for a domain are stored in a <em>Central Repository</em> that is shared by all instances in the domain. The Central Repository is written to, by a single entity - the DAS (Domain Administration Server).</p> <p>All applications and resources deployed to a domain are stored in the central repository. They are also locally cached at each instance. In the case of PE, there is no distinction between local cache and central repository.</p> <p>Each server instance maintains it's own local cache of the central repository that serves two important purposes: to allow the instance to read its configuration in the absence of the DAS and for performance purposes (e.g. class loaders reading from the local file system are much more efficient). The server instance must <em>synchronize</em> it's state with that of the Central Repository in two cases: incrementally as configuration changes are made to the Central Repository and at<br> instance startup time (e.g. because an instance might miss configuration changes when it is down).</p> <p>Configuration information in the repository will be made available via JMX MBeans. These configuration MBeans will delegate to a <em>Configuration API</em> to read and write configuration data from the repository. This configuration API should be considered private and is intended to abstract out the physical persistence of the repository.</p> <h4><a name="GlassFishV2Architecture-ServerAdministration"></a>Server Administration</h2> <p>The section below describes the high level components and concepts related to GlassFish (cluster mode) administration.</p> <h4><a name="GlassFishV2Architecture-Domain"></a>Domain</h3> <p>An Administrative Domain (domain) is a unified point of management for any number of independent clusters or unclustered server instances and has the following properties:</p> 
+     <ul> 
+      <li>Exactly one Administrative Server (Domain Admin Server or DAS) is the source for all configuration and deployment operations for clusters and unclustered instances in the domain. In general, the DAS will facilitate management of a single domain only (e.g. so that aggregate operations such as the deployment of an application across 2 domains will not be initially supported)</li> 
+      <li>The domain contains a master configuration repository (the Central Configuration Repository) containing configuration data for the domain, all managed instances, and all clusters in the domain.</li> 
+      <li>The domain contains a master deployment repository (the Central Deployment Repository) containing J2EE applications and<br> services deployed to the DAS, all managed instances, and all clusters in the domain.</li> 
+      <li>The domain acts as a single point of administrative authentication and authorization.</li> 
+      <li>The domain consists of zero or more server instances.</li> 
+      <li>The domain consists of zero or more clusters.</li> 
+     </ul> <h4><a name="GlassFishV2Architecture-Cluster"></a>Cluster</h3> <p>A cluster is a set of server instance which together provide scalability and optionally high availability for one or more services. The notion of a cluster is specific to EE (with the differentiation being availability). It has the following properties:</p> 
+     <ul> 
+      <li>A cluster belongs to exactly one domain.</li> 
+      <li>Services and applications within the cluster appear to clients as a single entity. The client need not be aware whether there are 1,2, or N instances providing the service.</li> 
+      <li>A cluster is horizontally scalable by simply adding additional server instances. These instances can be spread over any number of heterogeneous machines.</li> 
+      <li>It is optionally highly available (This feature is under development in GlassFish) It is available in Sun's Application Server Enterprise Edition 8.1 product</li> 
+      <li>Each instance in the cluster hosts the same set of services and application i.e. clusters are homogeneous.</li> 
+      <li>A server instance may belong to at most 1 cluster.</li> 
+     </ul> <h4><a name="GlassFishV2Architecture-DomainAdministrationServer%28DAS%29"></a>Domain Administration Server (DAS)</h3> <p>The DAS is the central point for all domain administration and has the following properties:</p> 
+     <ul> 
+      <li>Is itself a full Java EE 5 server instance implying that it will host MBeans through its JMX runtime and can host web and j2ee applications from both the web and rich clients.</li> 
+      <li>The DAS will be the target for all asadmin CLI and other administrative commands.</li> 
+      <li>The DAS will be responsible for all write operations to the Central Repository. The DAS will then notify server instances upon configuration changes. Server instances may write configuration changes, but only to their local<br> configuration cache.</li> 
+      <li>Will host the administrative GUI applications, any servlets required by the CLI, and any other administrative modules.</li> 
+      <li>Must be able to be co-located within a server instance.</li> 
+      <li>We do not want to make any availability assumptions about the DAS other than it must be running to perform domain administration. It will not be required in a configured and running production environment.</li> 
+      <li>It must be possible to have a failover plan for the DAS for example if the node on which it is running fails. This will include the ability to backup the Central Repository and and restore it onto a newly created DAS.</li> 
+     </ul> <h4><a name="GlassFishV2Architecture-ServerInstance"></a>Server Instance</h3> <p>The server instance is the execution engine for client requests. Here are some high level design goals and considerations that we must adhere to:</p> 
+     <ul> 
+      <li>As defined by Java EE 5, each instance will be running a JMX MBean server and will expose a JSR 77 MBean hierarchy and an MEJB (Managed EJB which facilitates remote management without the use of a JMX connector), though in practice, it<br> may be only the DAS which hosts the MEJB. The JMX MBeans will be the primary vehicle for administration and configuration of the server. At the highest level, a JSR 160 JMX connector on http seems to be the best approach for crossing firewall boundaries; although this release may be limited to the standard JSR 160 tcp connector. Also related to JSR 77:</li> 
+     </ul> 
+     <ul> 
+      <li>Event notification mechanism is based on JMX. For example, notifications need to be sent out when an application is deployed/undeployed or instance's response times are slowing down or when an instance is in an exceptional state. Again in JSR77 Event support (especially distributed in nature) is optional and can server as a differentiation point.</li> 
+     </ul> 
+     <ul> 
+      <li>JSR 77 also introduces an optional model for state management (e.g. starting and stopping and a state transition diagram). If possible, we will adhere to this model.</li> 
+     </ul> <h4><a name="GlassFishV2Architecture-NodeAgent%28NA%29"></a>Node Agent (NA)</h3> <p>There will be at least one Node Agent (NA) running on each machine in the domain hosting server instances. The need for an Node Agent stems from the fact that DAS cannot start or create server instances on a remote machine without an agent running on that machine. The properties of the NA are as follows:</p> 
+     <ul> 
+      <li>The functionality of the NA is kept to a minimum. The Node Agent is responsible for:</li> 
+      <li>create, deleting, starting, and stopping server instances</li> 
+      <li>watchdogging and restarting failed server instances</li> 
+      <li>providing the ability to view a downed or failed servers log file.</li> 
+      <li>There is at least one NA on each machine, and an NA must be able to start all server instances on the machine (independent of the clusters to which the instances belong).</li> 
+      <li>There can be multiple Node Agents on a machine for different versions of the product or in cases where the instances on the machine reside in multiple domains.</li> 
+      <li>Failure of the Node Agent should not affect a running production system, and the ramifications of loosing the NA will be minimized (e.g. loss in the ability to start instances via the admin applications).</li> 
+      <li>The NA runs in a Java VM with a JMX runtime.</li> 
+     </ul> 
+     <hr> <p>I think it is better to show the architecture as a picture as such block diagram or any UML static diagrams.</p> <p>--<a href="http://null">Jagadesh</a>, 21-Sep-2006</p> 
+     <hr> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875527/21364872.jpg">cluster-arch.jpg</a> (image/pjpeg) 
+      <br> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 07, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:44.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

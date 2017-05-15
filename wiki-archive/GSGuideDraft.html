@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GSGuideDraft</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GSGuideDraft-JRubyonGlassfishGettingStartedGuide"></a>JRuby on Glassfish - Getting Started Guide</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#GSGuideDraft-JRubyonGlassfishGettingStartedGuide">JRuby on Glassfish - Getting Started Guide</a></li> 
+       <li><a href="#GSGuideDraft-IntroductiontoJRubyonGlassFish">Introduction to JRuby on GlassFish</a></li> 
+       <ul> 
+        <li><a href="#GSGuideDraft-WhatisRuby%3F">What is Ruby?</a></li> 
+        <li><a href="#GSGuideDraft-WhatisRails%3F">What is Rails?</a></li> 
+        <li><a href="#GSGuideDraft-JRubyonGlassFish">JRuby on GlassFish</a></li> 
+        <li><a href="#GSGuideDraft-TheJRubyGEM">The JRuby GEM</a></li> 
+       </ul> 
+       <li><a href="#GSGuideDraft-GettingStartedUsingJRubyonGlassFish">Getting Started Using JRuby on GlassFish</a></li> 
+       <li><a href="#GSGuideDraft-GlassFishv3">GlassFish v3</a></li> 
+       <ul> 
+        <li><a href="#GSGuideDraft-Prerequisite">Prerequisite</a></li> 
+        <li><a href="#GSGuideDraft-Installation">Installation</a></li> 
+        <ul> 
+         <li><a href="#GSGuideDraft-DownloadandinstallJRuby.">Download and install JRuby.</a></li> 
+         <li><a href="#GSGuideDraft-DownloadandinstallthelatestGlassFishv3gem.">Download and install the latest GlassFish v3 gem.</a></li> 
+        </ul> 
+        <li><a href="#GSGuideDraft-Createanapplication">Create an application</a></li> 
+        <ul> 
+         <li><a href="#GSGuideDraft-Createatemplateapplication">Create a template application</a></li> 
+         <li><a href="#GSGuideDraft-Createacontrollerandviewas%3A">Create a controller and view as:</a></li> 
+         <li><a href="#GSGuideDraft-Editcontroller">Edit controller</a></li> 
+         <li><a href="#GSGuideDraft-Editviewas%3A">Edit view as:</a></li> 
+        </ul> 
+        <li><a href="#GSGuideDraft-Runapplication">Run application</a></li> 
+        <ul> 
+         <li><a href="#GSGuideDraft-Runthehelloapplicationcreatedearlier">Run the <b>hello</b> application created earlier</a></li> 
+         <li><a href="#GSGuideDraft-Torunanexistingapplication">To run an existing application</a></li> 
+        </ul> 
+       </ul> 
+      </ul>
+     </div> 
+     <ol> 
+      <li>Introduction to JRuby on GlassFish</li> 
+     </ol> <p> 1. What is Ruby?<br> 2. What is Rails?<br> 3. What is JRuby?<br> 4. Advantages of JRuby over other Ruby implementations<br> 5. JRuby on Glassfish and the JRuby GEM </p> 
+     <ol> 
+      <li>Getting Started with JRuby on GlassFish V3</li> 
+     </ol> <p> 1. Setting up JRuby<br> 1. Download and install JRUby<br> 2. Specify JRUBY_HOME <br> 2. Installing Rails<br> 3. Setting up the GF V3 GEM </p> 
+     <ol> 
+      <li>Running a prepared RoR application on GF.</li> 
+      <li>Creating a Rails appplication</li> 
+     </ol> <p> 1. Generating a Controller<br> 2. Create scaffolding<br> 3. Bundle Rails as a WAR file </p> 
+     <ol> 
+      <li>Running a Rails app on GF</li> 
+     </ol> <p> 1. Host app on V3 GEM<br> 2. Deploy app on GF </p> 
+     <ol> 
+      <li>Accessing a Java EE component from a Rails app using jRuby</li> 
+     </ol> <h4><a name="GSGuideDraft-IntroductiontoJRubyonGlassFish"></a>Introduction to JRuby on GlassFish</h1> <p>Before going into what JRuby is and why you should use it with GlassFish, let's briefly go over what are Ruby and Rails.</p> <h4><a name="GSGuideDraft-WhatisRuby%3F"></a>What is Ruby?</h2> <p>Ruby is an open-source, interpreted programming language that has a simple syntax and allows for greater productivity than many other languages do. </p> <h4><a name="GSGuideDraft-WhatisRails%3F"></a>What is Rails?</h2> <p>Many programmers use Ruby in the context of Rails, which is a web application framework based on Ruby. Rails leverages the Ruby language to allow developers to create database-backed web applications quickly and easily by eliminating much of the repetition and configuration required in other programming environments. An application written in Ruby and created using the Rails framework is called a Ruby-on-Rails application.</p> <h4><a name="GSGuideDraft-JRubyonGlassFish"></a>JRuby on GlassFish</h2> <p>JRuby is a 100 % pure Java implementation of Ruby. By using JRuby, you get the simplicity and productivity offered by Ruby and the access to Java libraries offered by the Java platform.</p> <p>Developing and Deploying your JRuby application on GlassFish has many advantages over using another web server, including:</p> 
+     <ul> 
+      <li>Provides a simple, integrated development and deployment environment</li> 
+      <li>Enables you to deploy multiple Rails applicatons to one GlassFish instance</li> 
+      <li>Allows your Rails application to handle multiple requests in an efficienct manner</li> 
+     </ul> <p>For more details on these and other advantages of using GlassFish for your JRuby on Rails applications, see <a href="http://developers.sun.com/appserver/reference/techart/rails_gf/#advantages">Advantages of JRuby-on-Rails With the GlassFish Application Server</a> from the article <a href="http://developers.sun.com/appserver/reference/techart/rails_gf/">Rails Powered by the GlassFish Application Server</a></p> <h4><a name="GSGuideDraft-TheJRubyGEM"></a>The JRuby GEM</h2> <p>In Ruby on Rails terminology, a GEM is a Ruby package that contains a library or an application. In fact, Rails itself is a GEM that you install on top of Ruby. </p> <p>One way to work with JRuby on GlassFish V3 TP2 is to install the GlassFish V3 GEM on top of your JRuby installation. The GlassFish V3 GEM is just a GlassFish server and a Grizzly connector for JRuby. When you install it on top of JRuby, you have GlassFish embedded in the JRuby virtual machine. </p> <h4><a name="GSGuideDraft-GettingStartedUsingJRubyonGlassFish"></a>Getting Started Using JRuby on GlassFish</h1> <p>You have three options for developing and deploying JRuby on GlassFish:</p> <p>Deploy an existing Ruby on Rails application using the asadmin command.<br> Bundle a Ruby on Rails application as a WAR file and deploy the WAR file to GlassFish</p> <h4><a name="GSGuideDraft-GlassFishv3"></a>GlassFish v3</h1> <h4><a name="GSGuideDraft-Prerequisite"></a>Prerequisite</h2> 
+     <ul> 
+      <li><a href="http://dist.codehaus.org/jruby/">JRuby installation</a></li> 
+      <li><a href="http://rubyforge.org/projects/glassfishgem/">GlassFish Gem</a></li> 
+     </ul> <h4><a name="GSGuideDraft-Installation"></a>Installation</h2> <h4><a name="GSGuideDraft-DownloadandinstallJRuby."></a>Download and install JRuby. </h3> <p>It is recommended to use the latest version. Please refer to the following guides to get more information :</p> 
+     <ul> 
+      <li><a href="http://wiki.jruby.org/wiki/Getting_Started">JRuby Getting Started Guide</a></li> 
+      <li><a href="http://wiki.jruby.org/wiki/JRuby_on_Rails">Rails and JRuby </a></li> 
+     </ul> <h4><a name="GSGuideDraft-DownloadandinstallthelatestGlassFishv3gem."></a>Download and install the latest GlassFish v3 gem. </h3> <p>After you have installed JRuby and Rails on JRuby, install the GlassFish V3 gem by using the command </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">gem install glassfish</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="GSGuideDraft-Createanapplication"></a>Create an application</h2> <h4><a name="GSGuideDraft-Createatemplateapplication"></a>Create a template application</h3> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">jruby -S rails hello</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="GSGuideDraft-Createacontrollerandviewas%3A"></a>Create a controller and view as:</h3> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">cd hello
+jruby script/generate controller say hello</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="GSGuideDraft-Editcontroller"></a>Edit controller </h3> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">vi app/controllers/say_controller.rb</pre> 
+       </div> 
+      </div>
+     </div> <p>and add the following variable in hello helper method</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@hello_string = "v3 Gem is getting polished!"</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="GSGuideDraft-Editviewas%3A"></a>Edit view as:</h3> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">vi app/views/say/hello.rhtml</pre> 
+       </div> 
+      </div>
+     </div> <p>and add the following string at the bottom:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;%= @hello_string %&gt;</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="GSGuideDraft-Runapplication"></a>Run application</h2> <h4><a name="GSGuideDraft-Runthehelloapplicationcreatedearlier"></a>Run the <b>hello</b> application created earlier</h3> <p>To run the application created earlier :</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">cd ..
+jruby -S glassfish_rails hello</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="GSGuideDraft-Torunanexistingapplication"></a>To run an existing application </h3> <p>If you would like to use GlassFish v3 gem with an existing application e.g. mephisto that is present on our machine at /export/home/samples/mephisto follow these steps :<br> And launch the GlassFish v3 gem as :</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">cd /export/home/samples
+jruby -S glassfish_rails mephisto</pre> 
+       </div> 
+      </div>
+     </div> <p>By running the above command, you have now launched the GlassFish v3 server embedded in the same VM space as the JRuby process. Also the application hello is now ready to accept requests which would be served by the GlassFish V3 server.</p> <p>Effective from v0.1.1 there are additional parameters that could be specified on the command prompt.<br> To get a list of all the options supported by the gem, use the command :</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">jruby -S glassfish_rails -h</pre> 
+       </div> 
+      </div>
+     </div> <p><span class="error">Cannot resolve external resource into attachment.</span></p> <p>For e.g to be able to satisfy 2 concurrent requests you would need to start 2 Rails instances within the GlassFish V3 server and this can be achived by issuing the command :</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">jruby -S glassfish_rails mephisto -n 2</pre> 
+       </div> 
+      </div>
+     </div> <p>The console output of the above command<br> <span class="error">Cannot resolve external resource into attachment.</span></p> <p>The application is deployed at *_<a href="http://localhost:3000/*_">http://localhost:3000/*_</a> and ready to accept requests</p> <p>Sample output of the application as it appears in the browser :</p> <p><span class="error">Cannot resolve external resource into attachment.</span></p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:48.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

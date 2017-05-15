@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFishv3.1EJBOnePager</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GlassFishv3.1EJBOnePager-GlassFishServerOpenSourceEdition3.1EJBOnePager"></a>GlassFish Server Open Source Edition 3.1 - EJB One Pager</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#GlassFishv3.1EJBOnePager-GlassFishServerOpenSourceEdition3.1EJBOnePager">GlassFish Server Open Source Edition 3.1 - EJB One Pager</a></li> 
+       <li><a href="#GlassFishv3.1EJBOnePager-1.Introduction">1. Introduction</a></li> 
+       <ul> 
+        <li><a href="#GlassFishv3.1EJBOnePager-1.1.Project%2FComponentWorkingName%3A">1.1. Project/Component Working Name:</a></li> 
+        <li><a href="#GlassFishv3.1EJBOnePager-1.2.Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier%3A">1.2. Name(s) and e-mail address of Document Author(s)/Supplier:</a></li> 
+        <li><a href="#GlassFishv3.1EJBOnePager-1.3.DateofThisDocument%3A">1.3. Date of This Document:</a></li> 
+       </ul> 
+       <li><a href="#GlassFishv3.1EJBOnePager-2.ProjectSummary">2. Project Summary</a></li> 
+       <ul> 
+        <li><a href="#GlassFishv3.1EJBOnePager-2.1.ProjectDescription%3A">2.1. Project Description:</a></li> 
+        <li><a href="#GlassFishv3.1EJBOnePager-2.2.RisksandAssumptions%3A">2.2. Risks and Assumptions:</a></li> 
+       </ul> 
+       <li><a href="#GlassFishv3.1EJBOnePager-3.ProblemSummary">3. Problem Summary</a></li> 
+       <ul> 
+        <li><a href="#GlassFishv3.1EJBOnePager-3.1.ProblemArea%3A">3.1. Problem Area:</a></li> 
+        <li><a href="#GlassFishv3.1EJBOnePager-3.2.Justification%3A">3.2. Justification:</a></li> 
+       </ul> 
+       <li><a href="#GlassFishv3.1EJBOnePager-4.TechnicalDescription%3A">4. Technical Description:</a></li> 
+       <ul> 
+        <li><a href="#GlassFishv3.1EJBOnePager-4.1.Details%3A">4.1. Details:</a></li> 
+        <li><a href="#GlassFishv3.1EJBOnePager-4.2.Bug%2FRFENumber%28s%29%3A">4.2. Bug/RFE Number(s):</a></li> 
+        <li><a href="#GlassFishv3.1EJBOnePager-4.3.InScope%3A">4.3. In Scope:</a></li> 
+        <li><a href="#GlassFishv3.1EJBOnePager-4.4.OutofScope%3A">4.4. Out of Scope:</a></li> 
+        <li><a href="#GlassFishv3.1EJBOnePager-4.5.Interfaces%3A">4.5. Interfaces:</a></li> 
+        <ul> 
+         <li><a href="#GlassFishv3.1EJBOnePager-4.5.1PublicInterfaces">4.5.1 Public Interfaces</a></li> 
+         <li><a href="#GlassFishv3.1EJBOnePager-4.5.2PrivateInterfaces">4.5.2 Private Interfaces</a></li> 
+         <li><a href="#GlassFishv3.1EJBOnePager-4.5.3Deprecated%2FRemovedInterfaces%3A">4.5.3 Deprecated/Removed Interfaces:</a></li> 
+        </ul> 
+        <li><a href="#GlassFishv3.1EJBOnePager-4.6.DocImpact%3A">4.6. Doc Impact:</a></li> 
+        <li><a href="#GlassFishv3.1EJBOnePager-4.7.Admin%2FConfigImpact%3A">4.7. Admin/Config Impact:</a></li> 
+        <li><a href="#GlassFishv3.1EJBOnePager-4.8.HAImpact%3A">4.8. HA Impact:</a></li> 
+        <li><a href="#GlassFishv3.1EJBOnePager-4.9.I18N%2FL10NImpact%3A">4.9. I18N/L10N Impact:</a></li> 
+        <li><a href="#GlassFishv3.1EJBOnePager-4.10.Packaging%2CDelivery%26Upgrade%3A">4.10. Packaging, Delivery &amp; Upgrade:</a></li> 
+        <ul> 
+         <li><a href="#GlassFishv3.1EJBOnePager-4.10.1.Packaging">4.10.1. Packaging</a></li> 
+         <li><a href="#GlassFishv3.1EJBOnePager-4.10.2.Delivery">4.10.2. Delivery</a></li> 
+         <li><a href="#GlassFishv3.1EJBOnePager-4.10.3.UpgradeandMigration%3A">4.10.3. Upgrade and Migration:</a></li> 
+        </ul> 
+        <li><a href="#GlassFishv3.1EJBOnePager-4.11.SecurityImpact%3A">4.11. Security Impact:</a></li> 
+        <li><a href="#GlassFishv3.1EJBOnePager-4.12.CompatibilityImpact">4.12. Compatibility Impact</a></li> 
+        <li><a href="#GlassFishv3.1EJBOnePager-4.13.Dependencies%3A">4.13. Dependencies:</a></li> 
+        <ul> 
+         <li><a href="#GlassFishv3.1EJBOnePager-4.13.1InternalDependencies">4.13.1 Internal Dependencies</a></li> 
+         <li><a href="#GlassFishv3.1EJBOnePager-4.13.2ExternalDependencies">4.13.2 External Dependencies</a></li> 
+        </ul> 
+        <li><a href="#GlassFishv3.1EJBOnePager-4.14.TestingImpact%3A">4.14. Testing Impact:</a></li> 
+       </ul> 
+       <li><a href="#GlassFishv3.1EJBOnePager-5.ReferenceDocuments%3A">5. Reference Documents:</a></li> 
+       <li><a href="#GlassFishv3.1EJBOnePager-6.Schedule%3A">6. Schedule:</a></li> 
+       <ul> 
+        <li><a href="#GlassFishv3.1EJBOnePager-6.1.ProjectedAvailability%3A">6.1. Projected Availability:</a></li> 
+       </ul> 
+       <li><a href="#GlassFishv3.1EJBOnePager-Review">Review</a></li> 
+      </ul>
+     </div> <h4><a name="GlassFishv3.1EJBOnePager-1.Introduction"></a>1. Introduction</h1> <h4><a name="GlassFishv3.1EJBOnePager-1.1.Project%2FComponentWorkingName%3A"></a>1.1. Project/Component Working Name: </h2> <p>EJB Container</p> <h4><a name="GlassFishv3.1EJBOnePager-1.2.Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier%3A"></a>1.2. Name(s) and e-mail address of Document Author(s)/Supplier:</h2> <p>Marina Vatkina : marina.vatkina@oracle.com</p> <h4><a name="GlassFishv3.1EJBOnePager-1.3.DateofThisDocument%3A"></a>1.3. Date of This Document:</h2> <p>...</p> <h4><a name="GlassFishv3.1EJBOnePager-2.ProjectSummary"></a>2. Project Summary</h1> <h4><a name="GlassFishv3.1EJBOnePager-2.1.ProjectDescription%3A"></a>2.1. Project Description:</h2> <p>Enterprise Java Beans features for GlassFish Server Open Source Edition 3.1. </p> 
+     <ul> 
+      <li>SFSB Checkpointing</li> 
+      <li>EJB Timer Clustering / Failover</li> 
+      <li>(Dropped) Support Weblogic EJB descriptor</li> 
+      <li>Full EJB 3.1 feature support in Embeddable EJB API</li> 
+      <li>Retain SFSB / EJB Timer state across redeployment</li> 
+      <li>User-specified thread pools for EJB timer and async callbacks</li> 
+      <li>Option to disable V2 vendor-specific JNDI names</li> 
+      <li>(Dropped) Additional DTrace probes</li> 
+     </ul> <h4><a name="GlassFishv3.1EJBOnePager-2.2.RisksandAssumptions%3A"></a>2.2. Risks and Assumptions:</h2> <p>The highest priority features are SFSB checkpointing and EJB Timer Clustering / Failover. These depend on the core admin / deployment clustering support, as well as on GMS. Delays in availability of this functionality will affect the delivery of the EJB clustering features. </p> <p>The assumption is that an application deployed to the cluster will have the same 'appID / containerID' in each instance. </p> <h4><a name="GlassFishv3.1EJBOnePager-3.ProblemSummary"></a>3. Problem Summary</h1> <h4><a name="GlassFishv3.1EJBOnePager-3.1.ProblemArea%3A"></a>3.1. Problem Area:</h2> <p>This work will provide the necessary EJB container updates to achieve high availability and failover within the V3.1 release. Time allowing, it will also add some requested features that could not be achieved in the V3 release. </p> <h4><a name="GlassFishv3.1EJBOnePager-3.2.Justification%3A"></a>3.2. Justification:</h2> <p>The main drivers for this work are the HA/failover requirements in V3.1. Clustering and failover of Java EE applications means support is needed for Stateful Session bean high availability, EJB timer high availability, and Remote EJB load balancing and failover over IIOP(covered in a separate document). </p> 
+     <ul> 
+      <li>SFSB Checkpointing</li> 
+     </ul> <p>Feature parity with V2. Also part of the top-priority feature set for V3.1</p> 
+     <ul> 
+      <li>EJB Timer Clustering / Failover</li> 
+     </ul> <p>Feature parity with V2. Also part of the top-priority feature set for V3.1</p> 
+     <ul> 
+      <li>(Dropped) Support Weblogic EJB descriptor</li> 
+     </ul> <p>Enable WebLogic applications developed by ISVs to run on GlassFish.<br> Enable users to develop applications with simple WebLogic extensions on Glassfish and then run on WebLogic.</p> 
+     <ul> 
+      <li>Full EJB 3.1 feature support in Embeddable EJB API</li> 
+     </ul> <p>Improves ease of development by allowing a larger set of EJB applications to be portably tested outside of the server.</p> 
+     <ul> 
+      <li>Retain SFSB / EJB Timer state across redeployment</li> 
+     </ul> <p>Ease of development</p> 
+     <ul> 
+      <li>User-specified thread pools for EJB timer and async callbacks</li> 
+     </ul> <p>Better performance for applications using the new EJB 3.1 features</p> 
+     <ul> 
+      <li>Option to disable V2 vendor-specific JNDI names</li> 
+     </ul> <p>Ease of use</p> 
+     <ul> 
+      <li>(Dropped) Additional DTrace probes</li> 
+     </ul> <p>Better monitoring support</p> <h4><a name="GlassFishv3.1EJBOnePager-4.TechnicalDescription%3A"></a>4. Technical Description:</h1> <h4><a name="GlassFishv3.1EJBOnePager-4.1.Details%3A"></a>4.1. Details:</h2> <p>All EJB clustering and high availability behavior from GlassFish V2 will be fully backward compatible within V3. For the most part this will be accomplished by porting the existing V2 code to V3. The one new feature in the HA area is support for cluster-based automatic timer creation. Automatic timer creation is a new feature of the EJB 3.1<br> specification and first appeared in GlassFish V3. </p> <p>Feature list :</p> <p>4.1.1. SFSB Checkpointing</p> <p>Support high availability of stateful session bean state in the cluster. This requires checkpointing the state to a backing store. The details of the backing store implementation are hidden from the container. All interactions with the store are made through the new SPI provided by 'ha-api' module. All behavior will be identical to V2. This work also includes support for handling the serialization / deserialization of EJB reference objects stored in Stateful Session beans and HTTP Sessions. Configuration of this behavior will be identical to V2. </p> <p>4.1.2. EJB Timer Clustering / Failover</p> <p>Support correct timer semantics in the cluster, as well as timer high availability. The basic rule governing timer semantics in a cluster is that for each unique EJB timer, each timer callback happens on exactly one server instance. The application is not dependent on which server instance is chosen, nor is there any assumption that the same server instance will be chosen for multiple callbacks of the same timer. All V2 functionality will be supported. The only new functionality is support for EJB 3.1 automatic timer creation. Configuration of this behavior will be identical to V2.</p> <p>4.1.3. (Dropped) Support Weblogic EJB descriptor</p> <p>Support Weblogic dtd elements marked as "low" impact during initial analysis. These are the elements that have straightforward direct mapping to existing glassfish behavior.</p> <p>4.1.4 Full EJB 3.1 feature support in Embeddable EJB API</p> <p>The EJB 3.1 spec only requires the Embeddable EJB API implementation to support at minimum the portion of the EJB API covered by EJB 3.1 Lite (essentially local session beans and container-managed transactions). The GlassFish V3 implementation went beyond that subset a bit to support asynchronous invocations and the remote view. However, more work is needed to support the entire EJB 3.1 API within the embeddable EJB 3.1 container. Missing features are : message-driven beans, web service endpoints, remote EJBs with non-default IIOP ports, and the timer service.</p> <p>4.1.5 Retain SFSB / EJB Timer state across redeployment</p> <p>This will allow Stateful session bean instances and persistently created EJB timers to be retained between redeployments. A similar feature was added in GlassFish V3 for HTTP Session retention. The existing default behavior of no retention will still apply in GlassFish V3. </p> <p>Certain restrictions governing the allowable changes to an application between redeployments will need to be put in place for this feature to work. For example, no changes to the set of instance variables in the SFSB bean class. </p> <p>User-level configuration will be controlled by a new <em>--keepState</em> option on the asadmin --redeploy command, and a new element in <em>glassfish-ejb-jar.xml</em>. The latter will allow to specify the option for autodeployment. Explicit CLI option will override deployment descriptor setting if any. The default for deployment descriptor false, and for CLI option it will be not set. This combination will always default to no state preservation.</p> <p>4.1.6 User-specified thread pools for EJB timer and async callbacks</p> <p>Threads used for EJB timer callbacks and asynchronous invocation dispatches are currently taken from thread pools private to the container that have hard-coded configuration values. This feature provides the option to specify a glassfish-configured thread pool whose threads should be used for these callbacks. </p> <p>We should be able to reuse 'use-thread-pool-id' element in the gf-ejb-jar.xml. If set, all asynchronous invocation callbacks or timer callbacks of components in the associated module will use the glassfish thread pool associated with the given thread pool ID. </p> <p>4.1.7 Option to disable V2 vendor-specific JNDI names </p> <p>Now that the EJB 3.1 specification defines portable EJB JNDI names, there is less need for the old vendor-specific JNDI. By default in V3, GlassFish-specific default JNDI names are applied automatically for backward compatibility, but that can lead to some ease-of-use issues. For example, deploying two different applications containing a Remote EJB component that exposes the same remote interface will cause a conflict between the default JNDI names. The default GlassFish-specific JNDI name behavior will stay the same in V3.1, but a new boolean element called 'disable-nonportable-jndi-names' will be added to gf-ejb-jar.xml and available as a global property under the ejb-container configuration.</p> <p>4.1.8 (Dropped) Additional DTrace Probes<br> Add more monitoring probes, especially covering the invocation of javax.ejb.* APIs.</p> <h4><a name="GlassFishv3.1EJBOnePager-4.2.Bug%2FRFENumber%28s%29%3A"></a>4.2. Bug/RFE Number(s):</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Feature</th> 
+         <th class="confluenceTh">RFE </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.1.1 </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/12200">12200 </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.1.2 </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/12201">12201 </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.1.4 </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/12202">12202 </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.1.5 </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/12203">12203 </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.1.6 </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/7138">7138 </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.1.7 </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/11729">11729 </a> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishv3.1EJBOnePager-4.3.InScope%3A"></a>4.3. In Scope:</h2> <p>Aspects that are in scope of this proposal if not obvious from above and not marked as dropped.</p> <h4><a name="GlassFishv3.1EJBOnePager-4.4.OutofScope%3A"></a>4.4. Out of Scope:</h2> 
+     <ul> 
+      <li>Inhancements to EJB Timer Service setup in a cluster</li> 
+      <li>Dropped Features: 
+       <ul> 
+        <li>Support Weblogic EJB descriptor</li> 
+        <li>Additional DTrace Probes</li> 
+       </ul> </li> 
+     </ul> <h4><a name="GlassFishv3.1EJBOnePager-4.5.Interfaces%3A"></a>4.5. Interfaces:</h2> <h4><a name="GlassFishv3.1EJBOnePager-4.5.1PublicInterfaces"></a>4.5.1 Public Interfaces</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Interface</th> 
+         <th class="confluenceTh">Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> New asadmin redeploy option <em>--keepState</em> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> New ejb-container configuration property : <em>disable-nonportable-jndi-names</em> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishv3.1EJBOnePager-4.5.2PrivateInterfaces"></a>4.5.2 Private Interfaces</h3> <p>N/A.</p> <h4><a name="GlassFishv3.1EJBOnePager-4.5.3Deprecated%2FRemovedInterfaces%3A"></a>4.5.3 Deprecated/Removed Interfaces:</h3> <p>NONE.</p> <h4><a name="GlassFishv3.1EJBOnePager-4.6.DocImpact%3A"></a>4.6. Doc Impact:</h2> <p>The EJB portion of existing cluster/HA documentation can be reused as is. <br> A man page update will be needed for the new asadmin redeploy option, and the new gf-ejb-jar.xml elements will need to be documented in the developer guide. </p> <h4><a name="GlassFishv3.1EJBOnePager-4.7.Admin%2FConfigImpact%3A"></a>4.7. Admin/Config Impact:</h2> 
+     <ul> 
+      <li>CLI</li> 
+     </ul> <p>Add --keepState option to asadmin redeploy command.</p> <p>Support v2 asadmin listTimers '--target' and migrateTimers commands.</p> 
+     <ul> 
+      <li>GUI</li> 
+     </ul> <p>Enable manual timer migration through GUI.</p> <h4><a name="GlassFishv3.1EJBOnePager-4.8.HAImpact%3A"></a>4.8. HA Impact:</h2> <p>HA functionality is covered by the SFSB checkpointing and clustered EJB timer features.</p> <h4><a name="GlassFishv3.1EJBOnePager-4.9.I18N%2FL10NImpact%3A"></a>4.9. I18N/L10N Impact:</h2> <p>NONE.</p> <h4><a name="GlassFishv3.1EJBOnePager-4.10.Packaging%2CDelivery%26Upgrade%3A"></a>4.10. Packaging, Delivery &amp; Upgrade:</h2> <h4><a name="GlassFishv3.1EJBOnePager-4.10.1.Packaging"></a>4.10.1. Packaging</h3> <p>N/A</p> <h4><a name="GlassFishv3.1EJBOnePager-4.10.2.Delivery"></a>4.10.2. Delivery</h3> <p>N/A</p> <h4><a name="GlassFishv3.1EJBOnePager-4.10.3.UpgradeandMigration%3A"></a>4.10.3. Upgrade and Migration:</h3> <p>N/A</p> <h4><a name="GlassFishv3.1EJBOnePager-4.11.SecurityImpact%3A"></a>4.11. Security Impact:</h2> <p>N/A</p> <h4><a name="GlassFishv3.1EJBOnePager-4.12.CompatibilityImpact"></a>4.12. Compatibility Impact</h2> <p>No incompatible changes.</p> <h4><a name="GlassFishv3.1EJBOnePager-4.13.Dependencies%3A"></a>4.13. Dependencies:</h2> <h4><a name="GlassFishv3.1EJBOnePager-4.13.1InternalDependencies"></a>4.13.1 Internal Dependencies </h3> 
+     <ul> 
+      <li>Admin / Deployment clustering support</li> 
+      <li>GMS</li> 
+      <li>HA backing store</li> 
+     </ul> <h4><a name="GlassFishv3.1EJBOnePager-4.13.2ExternalDependencies"></a>4.13.2 External Dependencies </h3> <p>NONE.</p> <h4><a name="GlassFishv3.1EJBOnePager-4.14.TestingImpact%3A"></a>4.14. Testing Impact:</h2> <p>All existing V2 clustering tests that cover SFSB state or EJB timers can be reused. Additional tests in those areas will need to written to improve coverage. New tests will need to be written for automatic timer creation and the other new features. All tests should be capable of being automated.</p> <h4><a name="GlassFishv3.1EJBOnePager-5.ReferenceDocuments%3A"></a>5. Reference Documents:</h1> <p><a href="SupportWLDDInContainers.html" title="SupportWLDDInContainers">Support for WebLogic Deployment Descriptors in GlassFish 3.1</a></p> <p><a href="GlassFish3.1HAOnePager.html#GlassFish3.1HAOnePager-sectionGlassFis1HAOnePager4.5.Interfaces">HA Spec for the BackingStore SPI</a></p> <h4><a name="GlassFishv3.1EJBOnePager-6.Schedule%3A"></a>6. Schedule:</h1> <h4><a name="GlassFishv3.1EJBOnePager-6.1.ProjectedAvailability%3A"></a>6.1. Projected Availability:</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Feature</th> 
+         <th class="confluenceTh">Integrated</th> 
+         <th class="confluenceTh">Feature Complete </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> SFSB Checkpointing </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd">MS3 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> EJB Timer clustering / failover </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd">MS3 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Full EJB 3.1 feature support in Embeddable EJB API </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd">MS4 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Retain SFSB/EJB Timer state across redeployment </td> 
+         <td class="confluenceTd"> MS5 </td> 
+         <td class="confluenceTd">MS5 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> User-specified thread pools for EJB timer / async callbacks </td> 
+         <td class="confluenceTd"> MS5 </td> 
+         <td class="confluenceTd">MS5 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Option to disable V2 vendor-specific JNDI names </td> 
+         <td class="confluenceTd"> MS5 </td> 
+         <td class="confluenceTd">MS5 </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishv3.1EJBOnePager-Review"></a>Review</h1> <p><a href="GlassFishv3.1EJBOnePagerReview.html" title="GlassFishv3.1EJBOnePagerReview">Review comments</a></p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 09, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

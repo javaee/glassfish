@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : V3AdminCommands</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="V3AdminCommands-Commandssupported"></a>Commands supported</h2> <p><font color="maroon"><b>Note: A more complete list for TP-2 is <a href="./CLICommandsForGlassFishV3TP2.html">here</a>.</b></font></p> <p><del>So far we only support the following administrative commands : deploy, undeploy, list-applications, list-containers, list-modules stop-domain, start-domain, version, list-commands</del></p> <p>a command follows the pattern to construct the http request</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">http://&lt;host&gt;:&lt;port&gt;/__asadmin/&lt;commandName&gt;?&lt;param1&gt;=...</pre> 
+       </div> 
+      </div>
+     </div> <p>so to get the list of deployed applications, just do </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">http://localhost:8080/__asadmin/list-applications</pre> 
+       </div> 
+      </div>
+     </div> <p>The current working commands are listed below.</p> <h4><a name="V3AdminCommands-deployCommand"></a>deploy Command</h3> <p>Deploys a new application to the application server</p> <p>Parameters :</p> 
+     <ul> 
+      <li><b>path</b> (operand) : path/filename to/of the application bits. This is a required parameter/operand,</li> 
+      <li><b>name</b> : name of the application (defaulted to directory or jar file name)</li> 
+      <li><b>upload</b> : true if upload file to server. defaults to true</li> 
+      <li><b>force</b> : ff set to true, makes sure application is redeployed even if the specified component has already been deployed. The default is false.</li> 
+      <li><b>virtualservers</b> : virtual servers separated by commas</li> 
+      <li><b>contextroot</b> : application root at the unique URL based. defaults to the archive name without the extension.</li> 
+      <li><b>precompilejsp</b> : true if compile JSP during deploy time, otherwise JSPs are compiled during runtime. defaults to false</li> 
+      <li><b>enabled</b> : true to enable the application so that it's accessible by the user. defaults to true <h4><a name="V3AdminCommands-undeployCommand"></a>undeploy Command</h3></li> 
+     </ul> <p>Undeploys an application.</p> <p>Parameters :</p> 
+     <ul> 
+      <li><b>name</b> (operand) : name of the application to undeploy. This is a required paramter/operand.</li> 
+     </ul> <h4><a name="V3AdminCommands-redeployCommand"></a>redeploy Command</h3> <p>Redeploys a previously deployed application.</p> <p>Parameters :</p> 
+     <ul> 
+      <li><b>name</b> : name of the application to redeploy. This is required parameter.</li> 
+      <li><b>path</b> (operand) : path to the application bits. If this parameter is not specified and previously deployed from a directory, then path is retrieved from domain.xml If previously deployed from a file, then this is a required parameter/operand.</li> 
+      <li><b>virtualservers</b> : virtual servers separated by commas</li> 
+      <li><b>contextroot</b> : application root at the unique URL based. defaults to the archive name without the extension.</li> 
+      <li><b>precompilejsp</b> : true if compile JSP during deploy time, otherwise JSPs are compiled during runtime. defaults to false <h4><a name="V3AdminCommands-deploydirCommand"></a>deploydir Command</h3> <p>Deploys an application directly from a development directory<br> This is deprecated command in V3. Instead, use deploy command.</p></li> 
+     </ul> <p>Paramters :<br> See deploy command</p> <h4><a name="V3AdminCommands-listcomponentsCommand"></a>list-components Command</h3> <p>list of the deployed applications. </p> <p>Parameters : </p> 
+     <ul> 
+      <li><b>type</b> : optional type of the application to be listed <h4><a name="V3AdminCommands-listapplicationsCommand"></a>list-applications Command</h3></li> 
+     </ul> <p>list of the deployed applications. </p> <p>Parameters : </p> 
+     <ul> 
+      <li><b>type</b> : optional type of the applications to be listed <h4><a name="V3AdminCommands-listcontainersCommand"></a>list-containers Command</h3></li> 
+     </ul> <p>list of the currently know containers and their status.</p> <p>No Parameters</p> <h4><a name="V3AdminCommands-listmodulesCommand"></a>list-modules Command</h3> <p>list of the modules known to the module subsystem and their status.</p> <p>No Parameters</p> <h4><a name="V3AdminCommands-stopdomainCommand"></a>stop-domain Command</h3> <p>stops domain server</p> <p>No Parameters</p> <h4><a name="V3AdminCommands-startdomainCommand"></a>start-domain Command</h3> <p>starts domain server</p> <p>Parameters :</p> 
+     <ul> 
+      <li><b>verbose</b> : true if start server in the same VM. false, starts server in a separate VM. <h4><a name="V3AdminCommands-versionCommand"></a>version Command</h3></li> 
+     </ul> <p>GFv3 version.</p> <p>No Parameters</p> <h4><a name="V3AdminCommands-listcommandsCommand"></a>list-commands Command</h3> <p>List all remote commands.</p> <p>No Parameters</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 09, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

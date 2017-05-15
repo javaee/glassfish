@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : Gui30Aug07</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="Gui30Aug07-MeetingminuteforAug30%2C2007"></a>Meeting minute for Aug 30, 2007</h2> <h4><a name="Gui30Aug07-Attendes%3A"></a>Attendes:</h2> <p>Anissa, Ken Paulsen, Mark Basler, Steve Wolf, Senthil, Mike Wright, Priti</p> <h4><a name="Gui30Aug07-Agendafor8%2F30"></a>Agenda for 8/30</h2> 
+     <ul> 
+      <li>Issues relating to Admin Console running on Woodstock 4.1 release build 10.</li> 
+      <li>Bugs targeted for 9.1 UR1 release</li> 
+      <li>Clarify the different future release, 9.1 ur1, 9.1.1, V3</li> 
+      <li>Discuss the new JBI screens/features</li> 
+     </ul> <h4><a name="Gui30Aug07-Woodstock4.1upgradeissues"></a>Woodstock 4.1 upgrade issues</h3> 
+     <ul> 
+      <li>Ran into 2 main issues with Woodstock 4.1 build 10 release.</li> 
+      <li>Javascript source is shown in the navigation tree for some of the tree nodes. This is observed on Netscape brower. Didn't see this before with this browser.</li> 
+      <li>Seems to be performance problem. Navigating to other pages takes significantly longer time than before.</li> 
+      <li>Since we are not waiting for any bug fix from 4.1 release, we will not be upgrading to 4.1 release for 9.1 UR1 release.</li> 
+     </ul> <h4><a name="Gui30Aug07-Bugstargetedfor9.1UR1release"></a>Bugs targeted for 9.1 UR1 release</h3> 
+     <ul> 
+      <li>All bugs targeted for 9.1 release should put 9.1ur1 as the Target release.</li> 
+      <li>All these bugs needs to have approval from Mark Basler, and marked 91ur1Approved to hook4.</li> 
+      <li>JBI team has opened up some of the bugs/rfe for 9.1 UR1 release, and marking that as the Target release.</li> 
+     </ul> <h4><a name="Gui30Aug07-Clarifythedifferentfuturerelease%2C9.1ur1%2C9.1.1%2CV3"></a>Clarify the different future release, 9.1 ur1, 9.1.1, V3</h3> 
+     <ul> 
+      <li>9.1 UR1 release has soft code freeze in Oct, and Hard code freeze in Nov.,</li> 
+      <li>SJSAS91_UR1_BRANCH will be created from the FCS branch.</li> 
+      <li>9.1.1 is the SAILFIN release, expect BETA in May. This is the SAILFIN_BRANCH.</li> 
+      <li>V3 is at design stage. codes for V3 should go to the tip.</li> 
+     </ul> <h4><a name="Gui30Aug07-JBIintendedchanges"></a>JBI intended changes</h3> 
+     <ul> 
+      <li>Mike talked about some of the intended changes for JBI. This included</li> 
+     </ul> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li>support for component upgrade</li> 
+        <li>validation code for upgrading component for specifying different alert.</li> 
+        <li>integrate context sensitive help for this new feature.</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li>Mark Basler wants to have something writen up, including:</li> 
+     </ul> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li>outline of new features</li> 
+        <li>risk level</li> 
+        <li>detail schedule</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li>Mark Basler expects to get recommendation from Ken and Anissa regarding the approval of JBI changes.</li> 
+     </ul> <h4><a name="Gui30Aug07-BacktoAdminConsoleiteamAdminGUI"></a><a href="AdminGUI.html" title="AdminGUI">Back to Admin Console iteam </a></h2> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 08, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

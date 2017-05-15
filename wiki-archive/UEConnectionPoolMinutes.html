@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : UEConnectionPoolMinutes</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="UEConnectionPoolMinutes-UserExperience%3AConnectionPool"></a>User Experience: Connection Pool</h2> <p><b>Attendees:</b><br> Kshitiz Saxena, Jagadish Ramu, Jane Young, Scott Oaks, Steve Essery (UK), Stephen Wolf, Tony (Bangalore), Siraj Ghaffar, Anissa Lam, Vince Kraemer, Nazrul Islam </p> <p><b>Summary:</b></p> 
+     <ul> 
+      <li><b>GlassFish v1 has 5 new features (<span class="error">[slide 9|^/gfwiki/attach/OnePagersOrFunctionalSpecs/ConnectionPool-UserExperience-Aug29.pdf]</span>)</b> 
+       <ul> 
+        <li>Validation - Validates each connection before handing out the connection.</li> 
+        <li>Fail Connections - Fails all connections when pool detects an invalid connection.</li> 
+        <li>Lazy Connection Enlishment - If true, a connection is not enlisted in a transaction until it is used. If false, any connection object available to a transaction is enlisted in the transaction.</li> 
+        <li>Lazy Connection Association - If true, a physical connection is not associated with a logical connection until it is used. If false, a physical connection is associated with a logical connection even before it is used.</li> 
+        <li>Association With Thread - If true, allows a connection to be saved as a ThreadLocal in the calling thread. This connection gets reclaimed only when the calling thread dies or when the calling thread is not in use and the pool has run out of connections.</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li><b>GlassFish v2 Features</b> 
+       <ul> 
+        <li><b>Merging Resource and Connection Pool (<span class="error">[slide 17|^/gfwiki/attach/OnePagersOrFunctionalSpecs/ConnectionPool-UserExperience-Aug29.pdf]</span>)</b> 
+         <ul> 
+          <li>Allow user to create a resource without a pool (ex. JAXR-RA).</li> 
+          <li>Ability to create resource and pool in one command (slide 18). The <font color="maroon">suggested CLI command on slide 18 seems to be confusing</font>. It is trying to create both the pool and resource. connectionpoolid can be a coma separated list (slide 13) for clustered-pool feature. What happens when user specify two connection pool ids?</li> 
+         </ul> </li> 
+        <li><b>Clustered Pools</b> 
+         <ul> 
+          <li>Load balancing and fail over support (ex. Oracle RealApplicationCluster)</li> 
+          <li>In v2, only round robin load balancing support will be provided.</li> 
+          <li>It was not clear how fail over is achieved since validation of connection is not turned on by default.</li> 
+         </ul> </li> 
+        <li>Differentiate mandatory, sun specific and driver specific properties.</li> 
+        <li>Switch off connection pooling in Application Client Container. ACC typically has single client.</li> 
+        <li>Ability to <b>detect connection leaks</b>. 
+         <ul> 
+          <li>It was not clear why we need to introduce Connection Leak Timeout attribute when we have Max-Wait Timeout.</li> 
+          <li>It was not clear how the information will be presented to the user. Are we going to dump the stack traces to the server log?</li> 
+         </ul> </li> 
+        <li>Retry (attempts, interval) for connection creation failures.</li> 
+        <li>Validate atmost period to avoid overhead.</li> 
+        <li>Statement timeout for long running SQL queries.</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li><b>Suggested Features</b> 
+       <ul> 
+        <li><b>Auto Deploy from Templates</b> - Provide templates for different databases and support auto-deploy from templates. User should be able to provide required information (ex. user/password) and copy one the templates to the auto-deploy directory to create the resources.</li> 
+        <li><b>Mark a bad connection</b> - When application gets a bad connection, there is no way to tell the application server to get rid of it. Call to close method returns the bad connection to the pool.</li> 
+        <li><b>Oracle 10g</b> has load monitoring stats and requires some integration work from client. We should look into providing that from Application Server.</li> 
+       </ul> </li> 
+     </ul> <p><b>Open Issues/Action Items:</b></p> 
+     <ul> 
+      <li><a href="https://glassfish.java.net/javaee5/docs/DocsIndex.html">GlassFish v1 docs</a> does not give any guidance to the user about how the new v1 features should be used. - Hanan Lang, Jagadish, Kshitiz</li> 
+      <li>No monitoring information seems to be available for the v1 and v2 features. - Siraj, Jagadish, Kshitiz</li> 
+      <li>Clarify CLI syntax for merging resource and pool creation - Jane, Jagadish, Kshitiz</li> 
+      <li>Blog about clustered pool feature and clarify how (loadbalancing &amp;) failover works - Jagadish, Kshitiz</li> 
+      <li>Blog about how connection leak detection feature will work - Jagadish, Kshitiz</li> 
+      <li>Investigate auto-deploy from templates - Jagadish, Kshitiz</li> 
+      <li>Look into Oracle 10g integration - Jagadish, Kshitiz</li> 
+     </ul> <h4><a name="UEConnectionPoolMinutes-comments"></a>comments</h2> <p>It seems like the default state of the validation flag was an open issue.</p> <p>jane raised a question about how a user would see that a JDBC resource was associated with multiple pools...</p> <p>On slide 14, it seemed like there was mention of dumping a bunch of stacks into the server log if the MAX-WAIT-TIMEOUT passed without a freed up connection. Based on the numerous forum postings about useless stack traces, this may not be the best choice.</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 08, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

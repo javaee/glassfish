@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : V3EngineersGuide</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   
+     <div class="panel" style="border-width: 1px;">
+      <div class="panelContent"> 
+       <h4><a name="V3EngineersGuide-Glassfishv3EngineersGuide"></a>Glassfish v3 Engineers Guide</h1> 
+       <p>Rev 0.3.5<br> Jerome Dochez</p> 
+       <hr> 
+       <p>Jspwiki style: center</p> 
+      </div>
+     </div> <p>This document is basically a brain dump of how V3 is organized today with some insights on how it could be re-architected along the V3 engineering effort.</p> 
+     <div> 
+      <ul> 
+       <li><a href="#V3EngineersGuide-Glassfishv3EngineersGuide">Glassfish v3 Engineers Guide</a></li> 
+       <ul> 
+        <li><a href="#V3EngineersGuide-1Modules">1 Modules</a></li> 
+        <ul> 
+         <li><a href="#V3EngineersGuide-1.1WhatisaModule%3F">1.1 What is a Module?</a></li> 
+         <li><a href="#V3EngineersGuide-1.2HowtodefineaModule%3F">1.2 How to define a Module?</a></li> 
+         <li><a href="#V3EngineersGuide-1.3Moduledefinition">1.3 Module definition</a></li> 
+        </ul> 
+        <li><a href="#V3EngineersGuide-2ModulesManagement">2 Modules Management</a></li> 
+        <ul> 
+         <li><a href="#V3EngineersGuide-2.1GlassfishDistributions">2.1 Glassfish Distributions</a></li> 
+         <li><a href="#V3EngineersGuide-2.2Buildingamodule">2.2 Building a module</a></li> 
+         <li><a href="#V3EngineersGuide-2.3pom.xmlstructure">2.3 pom.xml structure</a></li> 
+         <li><a href="#V3EngineersGuide-2.3.1addingadeveloper">2.3.1 adding a developer</a></li> 
+         <li><a href="#V3EngineersGuide-2.3.2Addingadependency">2.3.2 Adding a dependency</a></li> 
+         <li><a href="#V3EngineersGuide-2.4Licenses">2.4 Licenses</a></li> 
+         <li><a href="#V3EngineersGuide-2.5Sourcecodemanagement">2.5 Source code management</a></li> 
+         <li><a href="#V3EngineersGuide-2.6Buildmagic">2.6 Build magic</a></li> 
+         <li><a href="#V3EngineersGuide-2.6.1Mavenplugins">2.6.1 Maven plugins</a></li> 
+         <li><a href="#V3EngineersGuide-2.6.2ant">2.6.2 ant</a></li> 
+         <li><a href="#V3EngineersGuide-2.6.3javadoc">2.6.3 javadoc</a></li> 
+         <li><a href="#V3EngineersGuide-2.7DistributionDashboard">2.7 Distribution Dashboard</a></li> 
+         <li><a href="#V3EngineersGuide-2.8ContributorsDashboard">2.8 Contributors Dashboard</a></li> 
+        </ul> 
+        <li><a href="#V3EngineersGuide-3Runtime">3 Runtime</a></li> 
+        <ul> 
+         <li><a href="#V3EngineersGuide-3.1Startupsequence">3.1 Startup sequence</a></li> 
+         <li><a href="#V3EngineersGuide-3.2Services">3.2 Services</a></li> 
+         <li><a href="#V3EngineersGuide-3.2.1Servicesdefined">3.2.1 Services defined</a></li> 
+         <li><a href="#V3EngineersGuide-3.2.2AddanewtypeofContract">3.2.2 Add a new type of Contract</a></li> 
+         <li><a href="#V3EngineersGuide-3.2.3AddanewServiceimplementation">3.2.3 Add a new Service implementation</a></li> 
+         <li><a href="#V3EngineersGuide-3.2.4Configuration">3.2.4 Configuration</a></li> 
+         <li><a href="#V3EngineersGuide-3.2.5Existingservices">3.2.5 Existing services</a></li> 
+         <li><a href="#V3EngineersGuide-3.3Applicationdeployment">3.3 Application deployment</a></li> 
+        </ul> 
+        <li><a href="#V3EngineersGuide-4Persistence">4 Persistence</a></li> 
+        <ul> 
+         <li><a href="#V3EngineersGuide-4.1JavaSEMode">4.1 Java SE Mode</a></li> 
+         <li><a href="#V3EngineersGuide-4.1.1case1">4.1.1 case 1</a></li> 
+         <li><a href="#V3EngineersGuide-4.1.2case2and3">4.1.2 case 2 and 3</a></li> 
+         <li><a href="#V3EngineersGuide-4.2JavaEEmode">4.2 Java EE mode</a></li> 
+         <li><a href="#V3EngineersGuide-4.2.1case4">4.2.1 case 4</a></li> 
+         <li><a href="#V3EngineersGuide-4.2.2case5">4.2.2 case 5</a></li> 
+         <li><a href="#V3EngineersGuide-4.2.3case6%2C7">4.2.3 case 6,7</a></li> 
+        </ul> 
+        <li><a href="#V3EngineersGuide-5Containerpluggability">5 Container pluggability</a></li> 
+        <li><a href="#V3EngineersGuide-6AdminCLI">6 Admin CLI</a></li> 
+        <li><a href="#V3EngineersGuide-7Building">7 Building</a></li> 
+        <ul> 
+         <li><a href="#V3EngineersGuide-7.1Sourcecodemanagement">7.1 Source code management</a></li> 
+         <li><a href="#V3EngineersGuide-7.2Modules">7.2 Modules</a></li> 
+         <li><a href="#V3EngineersGuide-7.3FunctionalAreas">7.3 Functional Areas</a></li> 
+         <li><a href="#V3EngineersGuide-7.4Building">7.4 Building</a></li> 
+         <li><a href="#V3EngineersGuide-7.5Movingcode">7.5 Moving code</a></li> 
+         <li><a href="#V3EngineersGuide-7.6Distributions">7.6 Distributions</a></li> 
+         <li><a href="#V3EngineersGuide-7.7HK2">7.7 HK2</a></li> 
+         <li><a href="#V3EngineersGuide-7.7.1sources">7.7.1 sources</a></li> 
+         <li><a href="#V3EngineersGuide-7.7.2ModuleSubsystemdocumentation">7.7.2 Module Subsystem documentation</a></li> 
+        </ul> 
+       </ul> 
+      </ul>
+     </div> <p><b>Change History</b></p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Version </th> 
+         <th class="confluenceTh"> Comments </th> 
+         <th class="confluenceTh"> Owner </th> 
+         <th class="confluenceTh"> Wiki Revisions </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 0.1 </td> 
+         <td class="confluenceTd"> Initial version </td> 
+         <td class="confluenceTd"> Jerome Dochez </td> 
+         <td class="confluenceTd"> 1 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 0.2 </td> 
+         <td class="confluenceTd"> Additional sections added </td> 
+         <td class="confluenceTd"> Jerome Dochez </td> 
+         <td class="confluenceTd"> 1 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 0.3 </td> 
+         <td class="confluenceTd"> Included feedback from community. Minor formatting changes. Additional hyperlinks. </td> 
+         <td class="confluenceTd"> Paul Sterk </td> 
+         <td class="confluenceTd"> 2-11 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 0.35 </td> 
+         <td class="confluenceTd"> Included new subversion repository information </td> 
+         <td class="confluenceTd"> Jerome Dochez </td> 
+         <td class="confluenceTd"> 6-11 </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="V3EngineersGuide-1Modules"></a>1 Modules</h2> <p>GlassFish v3 is built around a Module subsystem specified by the <a href="http://hk2.java.net">Hundred Kilobyte Kernel (HK2)</a> project. Subsystem functionalities are declared through a <a href="https://hk2.java.net/auto-depends/apidocs/org/jvnet/hk2/annotations/Contract.html">Contract</a>/<a href="https://hk2.java.net/auto-depends/apidocs/org/jvnet/hk2/annotations/Service.html">Service</a> implementation paradigm. HK2 Contracts identify and describe the building blocks or the extension points of an application. HK2 Services implement the Contracts. See <a href="https://hk2.java.net/components.html">HK2 Components</a>for more details.</p> <h4><a name="V3EngineersGuide-1.1WhatisaModule%3F"></a>1.1 What is a Module?</h3> <p>A <a href="https://hk2.java.net/modules.html">Module</a> is an encapsulated definition of reusable code. It offers <a href="https://hk2.java.net/auto-depends/apidocs/org/jvnet/hk2/annotations/Service.html">Services</a>, declares a Modules's dependencies on other Services, has public APIs, and a private set of classes implementing these APIs. To summarize, a Module :</p> 
+     <ul> 
+      <li>is a set of java classes</li> 
+      <li>offers Services or a public API or both</li> 
+      <li>implements those public interfaces with a set of private classes.</li> 
+      <li>requires other Modules (dependencies)</li> 
+     </ul> <h4><a name="V3EngineersGuide-1.2HowtodefineaModule%3F"></a>1.2 How to define a Module?</h3> <p>Defining a <a href="https://hk2.java.net/modules.html">Module</a> is not always easy and will in most cases be an iterative process. Answering the following questions help to define a Module:</p> 
+     <ul> 
+      <li>Is my code offering very different kind of services?</li> 
+      <li>Is my code offering some services independently of other services it supports?</li> 
+      <li>Is my code used by more than one Module?</li> 
+     </ul> <p>If you answer 'yes' to any of the above questions, the code should be encapsulated in a Module.</p> <p>The easiest starting point is to check if your code offers more than one service. For instance, the current connector container offers 2 services to GlassFish v2: the JDBC driver container and the Java EE resource adapter container. These services could be defined as two Modules so they can be used independently.</p> <p>From there, you also need to look into other services that your "code" offers to GlassFish. Don't create a Module just for the fun of it. One should create a Module only if it contains reusable code that can be used independently by other components (or just like above to make things more encapsulated/efficient).</p> <h4><a name="V3EngineersGuide-1.3Moduledefinition"></a>1.3 Module definition</h3> <p>Once you have determined a set of classes that you want to offer as a <a href="https://hk2.java.net/modules.html">Module</a>, you need to start thinking about its definition. The definition is a name and a version that will be used by other modules to identify their dependency on your module.</p> <p>The next aspect of modularization is to figure out the exact dependencies that your modules have. For instance, you may depend on the com.sun.enterprise:config-api. Note: the name of the module is constructed from a maven pom.xml using a <a href="http://maven.apache.org/pom.html#Maven_Coordinates">group id and artifact id</a>). What else ?</p> <p>It is quite important to understand those dependencies, not only to successfully compile your Module(s), but also to understand what runtime Services are necessary for your module to function properly.</p> <p>So, here are suggested steps on how to define code into a Module:</p> 
+     <ul> 
+      <li>look at how many Modules you want to split your code into using the following criteria: 
+       <ul> 
+        <li>re-usability</li> 
+        <li>isolation (can I use a feature without the others?)</li> 
+        <li>efficiency (should I load 3Mb of jar files when only 100K of classes is used 95% of the time?)</li> 
+       </ul> </li> 
+      <li>figure out the exact dependencies for each identified Module</li> 
+     </ul> <p>Once you have that information, even in an initial raw format, you can start thinking about refactoring the code or reduce the dependency trail and so on.</p> <h4><a name="V3EngineersGuide-2ModulesManagement"></a>2 Modules Management</h2> <h4><a name="V3EngineersGuide-2.1GlassfishDistributions"></a>2.1 Glassfish Distributions</h3> <p>GlassFish V3 is built as a distribution artifact. A distribution (distro) is a collection of Modules, and an artifact is the file that contains the distro. There will be various distributions of GlassFish V3 each providing a unique set of features. For example, there will be a distro of just the core Modules, currently called Nucleus, that will be targeted at OEMs. Also planned are Web, J2EE and other distros.</p> <p>Elements of a distribution are integrated using <a href="http://maven.apache.org/repository/index.html">maven2 repositories</a>. So, adding a <a href="https://hk2.java.net/modules.html">Module</a> to a GlassFish v3 distribution requires three steps:</p> 
+     <ol> 
+      <li><a href="http://maven.apache.org/guides/getting-started/index.html#How_do_I_compile_my_application_sources">compile the Module</a> and create the jar file with the necessary <a href="https://hk2.java.net/source/browse/hk2/trunk/hk2/core/src/java/com/sun/enterprise/module/ManifestConstants.java?view=markup">hk2 manifest entries</a></li> 
+      <li><a href="http://maven.apache.org/guides/getting-started/index.html#How_do_I_create_a_JAR_and_install_it_in_my_local_repository">publish the Module artifacts</a> to a maven repository.</li> 
+      <li>add the Module's identification to the distribution list.</li> 
+     </ol> <p>Distributions are constructed from binary files procured from a maven repository. There is a complete separation between how to produce a particular Module versus how this Module is integrated into a distribution.</p> <h4><a name="V3EngineersGuide-2.2Buildingamodule"></a>2.2 Building a module</h3> <p>Each <a href="https://hk2.java.net/modules.html">Module</a> can be integrated in various distributions. Hence, there cannot be any distribution specific knowledge introduced during the Module's build.</p> <p>Although a Module could be potentially built with other tools, it is highly recommended that a Module be built with maven2. The <a href="http://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html">Maven2 build environment</a> gives us the ability to run a number of maven plugins that can do some of the boiler plate activities such as HK2 manifest entries, components definition and so on.</p> <p>A Module's source is usually comprised of the following artifacts (note: the directories shown below conform to the <a href="http://maven.apache.org/guides/introduction/introduction-to-the-standard-directory-layout.html">Maven Standard Directory Layout</a> :</p> 
+     <ul> 
+      <li>source code usually located in src/main/java</li> 
+      <li>resources usually located in src/main/resources</li> 
+      <li>a maven 2 <a href="http://maven.apache.org/guides/introduction/introduction-to-the-pom.html">pom.xml</a> defining the Module's compilation process and the dependencies.</li> 
+     </ul> <p>Although it is helpful to know more about the <a href="http://maven.apache.org/guides/introduction/introduction-to-the-pom.html">Maven2 pom.xml file</a>, in most cases, it is not necessary to understand all the features of Maven to build a Module.</p> <h4><a name="V3EngineersGuide-2.3pom.xmlstructure"></a>2.3 pom.xml structure</h3> <p>The basic structure of a <a href="http://maven.apache.org/guides/introduction/introduction-to-the-pom.html">pom.xml</a> is as follows:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         http://maven.apache.org/maven-v4_0_0.xsd"&gt;
+
+    &lt;parent&gt;
+        &lt;artifactId&gt;bootstrap&lt;/artifactId&gt;
+        &lt;groupId&gt;com.sun.enterprise.glassfish&lt;/groupId&gt;
+        &lt;version&gt;10.0-SNAPSHOT&lt;/version&gt;
+    &lt;/parent&gt;
+    &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+    &lt;groupId&gt;org.jvnet.glassfish&lt;/groupId&gt;
+    &lt;artifactId&gt;glassfish-api&lt;/artifactId&gt;
+    &lt;packaging&gt;hk2-jar&lt;/packaging&gt;
+    &lt;version&gt;${project.parent.version}&lt;/version&gt;
+    &lt;name&gt;Public APIs of Glassfish V3&lt;/name&gt;
+
+    &lt;developers&gt;
+	&lt;!-- information on the module's developers --&gt;
+    &lt;/developers&gt;
+    &lt;dependencies&gt;
+	&lt;!-- Dependencies on other modules/jars --&gt;
+    &lt;/dependencies&gt;
+    &lt;!-- Note: glassfish/bootstrap has java sources
+         at src/java. Include these elements to
+         comform to the Maven Standard Directory Layout --&gt;
+    &lt;build&gt;
+      &lt;sourceDirectory&gt;src/main/java&lt;/sourceDirectory&gt;
+    &lt;/build&gt;
+&lt;/project&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>The parent definition is important as it includes all the system wide properties like version identification, compilation and packaging rules for your Module.</p> <p>Other important information :</p> 
+     <ol> 
+      <li>the name of your Module is the Maven2 groupId:artifactId tuple, here org.jvnet.glassfish:glassfish-api.</li> 
+      <li>the version is coming from the parent pom.xml which in this case is 10.0</li> 
+      <li>packaging is hk2-jar which makes this created bundle an HK2 jar with the right manifest entries and components definition.</li> 
+     </ol> <h4><a name="V3EngineersGuide-2.3.1addingadeveloper"></a>2.3.1 adding a developer</h3> <p>Adding a developer to the module is defined at <a href="http://maven.apache.org/pom.html#Developers">pom.xml:developers</a>, but here is an example of adding myself as the Module owner (lead) and developer.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;developers&gt;
+    &lt;developer&gt;
+        &lt;id&gt;dochez&lt;/id&gt;
+        &lt;name&gt;Jerome Dochez&lt;/name&gt;
+        &lt;url&gt;http://blogs.oracle.com/dochez&lt;/url&gt;
+        &lt;organization&gt;Sun Microsystems, Inc.&lt;/organization&gt;
+        &lt;roles&gt;
+            &lt;role&gt;lead&lt;/role&gt;
+            &lt;role&gt;developer&lt;/role&gt;
+        &lt;/roles&gt;
+    &lt;/developer&gt;
+&lt;/developers&gt;</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="V3EngineersGuide-2.3.2Addingadependency"></a>2.3.2 Adding a dependency</h3> <p>Once your Module uses other Modules to compile properly, you need to add a dependency declaration to the pom.xml</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;dependencies&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;com.sun.enterprise&lt;/groupId&gt;
+        &lt;artifactId&gt;hk2&lt;/artifactId&gt;
+        &lt;version&gt;${hk2.version}&lt;/version&gt;
+    &lt;/dependency&gt;
+&lt;/dependencies&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>In the example above you can see that the module is using some <a href="https://hk2.java.net">HK2</a> core APIs. Whether you depend on a Module (hk2-jar) or a normal jar file does not change how you declare a dependency. The system will figure out the complete lists of dependencies.</p> <h4><a name="V3EngineersGuide-2.4Licenses"></a>2.4 Licenses</h3> <p>Modules inherit the parent Module's licenses information, but if your Module is not part of GlassFish's source license agreements, you should add the following declaration to your pom.xml</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;licenses&gt;
+  &lt;license&gt;
+    &lt;name&gt;Apache 2&lt;/name&gt;
+    &lt;url&gt;http://www.apache.org/licenses/LICENSE-2.0.txt&lt;/url&gt;
+    &lt;distribution&gt;repo&lt;/distribution&gt;
+    &lt;comments&gt;A business-friendly OSS license&lt;/comments&gt;
+  &lt;/license&gt;
+&lt;/licenses&gt;</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="V3EngineersGuide-2.5Sourcecodemanagement"></a>2.5 Source code management</h3> <p>Each Module has a high degree of freedom on where to host its source code. The only condition for a Module to be included in a GlassFish distribution is to publish the Module binaries to a maven repository. If a Module is hosted by a different java.net project than glassfish.java.net, its pom.xml should include a source code management entry and a issue tracker management entry like this:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;scm&gt;
+        &lt;connection&gt;scm:hg:http://mercurial.sfbay.sun.com/glassfish_v3&lt;/connection&gt;
+    &lt;/scm&gt;
+    &lt;issueManagement&gt;
+        &lt;system&gt;IssueTracker&lt;/system&gt;
+        &lt;url&gt;https://glassfish.java.net/servlets/ProjectIssues&lt;/url&gt;
+    &lt;/issueManagement&gt;</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="V3EngineersGuide-2.6Buildmagic"></a>2.6 Build magic</h3> <h4><a name="V3EngineersGuide-2.6.1Mavenplugins"></a>2.6.1 Maven plugins</h3> <p>A number of <a href="http://maven.apache.org/guides/plugin/guide-java-plugin-development.html">maven plugins</a> have been developed to help the task of building Modules. These plugins will use the <a href="http://maven.apache.org/guides/introduction/introduction-to-the-pom.html">pom.xml</a> or the annotated classes to generate the metadata associated with a module like its HK2 manifest entries as well as its components definition. These plugins are declared in the GlassFish bootstrap pom.xml (used as a parent for each module pom.xml) therefore relieving the module owner from having to call the plugins themselves or create the metadata by hand.</p> <h4><a name="V3EngineersGuide-2.6.2ant"></a>2.6.2 ant</h3> <p>It is still sometimes useful to call <a href="http://ant.apache.org/manual/anttaskslist.html">ant tasks</a> while building your Module, here is an example on how to do that :</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;plugin&gt;
+    &lt;artifactId&gt;maven-antrun-plugin&lt;/artifactId&gt;
+    &lt;executions&gt;
+        &lt;execution&gt;
+            &lt;phase&gt;process-sources&lt;/phase&gt;
+            &lt;configuration&gt;
+                &lt;tasks&gt;
+                    &lt;copy file="jsp-api.mf"
+                          toFile="${project.build.directory}/manifest.mf"&gt;
+                         &lt;filterset&gt;
+                             &lt;filter token="VERSION" value="${jsp.spec.version}"/&gt;
+                         &lt;/filterset&gt;
+                    &lt;/copy&gt;
+                &lt;/tasks&gt;
+            &lt;/configuration&gt;
+            &lt;goals&gt;
+               &lt;goal&gt;run&lt;/goal&gt;
+            &lt;/goals&gt;
+        &lt;/execution&gt;
+    &lt;/executions&gt;
+&lt;/plugin&gt;</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="V3EngineersGuide-2.6.3javadoc"></a>2.6.3 javadoc</h3> <p>Javadocs can be automatically created by calling <tt>mvn javadoc:javadoc</tt>. You can also influence how the javadoc will be created by customizing the plugin that calls the javadoc tool.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;plugin&gt;
+    &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
+    &lt;artifactId&gt;maven-javadoc-plugin&lt;/artifactId&gt;
+    &lt;executions&gt;
+        &lt;execution&gt;
+            &lt;phase&gt;javadoc&lt;/phase&gt;
+            &lt;goals&gt;
+                &lt;goal&gt;javadoc&lt;/goal&gt;
+            &lt;/goals&gt;
+            &lt;configuration&gt;
+                &lt;groups&gt;
+                    &lt;group&gt;
+                        &lt;title&gt;JavaServer Pages API Documentation&lt;/title&gt;
+                        &lt;packages&gt;javax.servlet.jsp&lt;/packages&gt;
+                    &lt;/group&gt;
+                &lt;/groups&gt;
+                &lt;bottom&gt;Portions Copyright &amp;amp;copy; 1999-2002 The Apache Software Foundation.
+                        All Rights Reserved. Portions Copyright &amp;amp;copy; 2005-2006 Sun Microsystems Inc.
+                        All Rights Reserve
+                &lt;/bottom&gt;
+            &lt;/configuration&gt;
+        &lt;/execution&gt;
+    &lt;/executions&gt;
+&lt;/plugin&gt;</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="V3EngineersGuide-2.7DistributionDashboard"></a>2.7 Distribution Dashboard</h3> <p>Each distribution will have a dashboard wiki page (see <a href="./pe-10.0-SNAPSHOT.html">pe-10.0-SNAPSHOT</a> for instance) which will extract information from all the Modules of the distribution. The information in the pom.xml of each module is used to create the dashboard hence it is important to keep the information as up to date and complete as possible.</p> <h4><a name="V3EngineersGuide-2.8ContributorsDashboard"></a>2.8 Contributors Dashboard</h3> <p>Each distribution will have a contributors dashboard where all contributors per module will be present. The information will be extracted from the pom.xml information as specified in 2.3.1.</p> <h4><a name="V3EngineersGuide-3Runtime"></a>3 Runtime</h2> <h4><a name="V3EngineersGuide-3.1Startupsequence"></a>3.1 Startup sequence</h3> <p>GlassFish is now an <a href="http://hk2.java.net">HK2</a> executable. This means:</p> 
+     <ul> 
+      <li>it has no main() or Main class</li> 
+      <li>it is implemented as a set of Modules.</li> 
+      <li>the first code to be executed (often referenced as the bootstrap module) is a small jar file called glassfish-{Version}.jar</li> 
+     </ul> <p>The bootstrap module (not an <a href="https://hk2.java.net/modules.html">HK2 Module</a> since it is loaded by the application class loader) has the following responsibilities :</p> 
+     <ol> 
+      <li>identify the first HK2 Module that will be loaded by the Module subsystem. That Module must be an HK2 Module and must have a <a href="https://hk2.java.net/nonav/hk2/apidocs/com/sun/enterprise/module/bootstrap/ModuleStartup.html">ModuleStartup</a> interface implementation. This module is identified as the unique import of the bootstrap module, therefore the bootstrap module cannot have more than one dependency declared in its manifest.</li> 
+      <li>optionally set up the parent class loader of all the Modules loaded by the HK2 module subsystem.</li> 
+     </ol> <p>Once the bootstrap jar has identified, the first Glassfish V3 module called com.sun.enterprise:v3-core, the Module will be loaded and the ModuleStartup contract implementation will be instantiated and constructed according to <a href="https://hk2.java.net/components.html">HK2 component model</a>.</p> <p>When embedded, GlassFish V3 startup sequence is essentially unchanged. The outer Java environment decides with which classloader the V3 bootstrap module should be loaded, essentially defining the parent classloader for V3.</p> <p>At the end of this startup sequence, this is how the classloader hierarchy is established in V3 :</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Classloader </th> 
+         <th class="confluenceTh"> Classes Loaded </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> System Class Loader </td> 
+         <td class="confluenceTd"> JDK classes </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Application Class Loader </td> 
+         <td class="confluenceTd"> all jar files present in the <del>cp parameter during the jvm invocation, or, in the embedded case, the classloader used to load the glassfish</del>{version}.jar file. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> MaskingClassLoader </td> 
+         <td class="confluenceTd"> Parent classloader for all V3 modules, initialized by the glassfish-{version}.jar, its main responsibility is to mask the jdk classes. This means newer implementations of JDK bundled versions can be used without mechanisms such as the endorsed directories. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> com.sun.enterprise:v3-core class loader </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="V3EngineersGuide-3.2Services"></a>3.2 Services</h3> <h4><a name="V3EngineersGuide-3.2.1Servicesdefined"></a>3.2.1 Services defined</h3> <p>Although programming with <a href="https://hk2.java.net/modules.html">Modules</a> can be challenging, GlassFish cannot run efficiently based on user's actions alone. For example, if all the Modules forming a GlassFish distribution referenced each other, the entire set of Modules would be loaded at startup. This erases all the potential advantages of modularization.</p> <p>To isolate the engineers from programming with Modules directly, there is a concept of <a href="https://hk2.java.net/components.html">Services</a> in glassfish. These services are usually Plain Old Java Objects (POJOs) implementing an interface. At runtime, glassfish relies on a Services implementation lookup to find the Services for a particular interface (called a <a href="https://hk2.java.net/components.html">Contract</a>).</p> <p>Let's take an example. The <tt>com.sun.enterprise:appserv-api</tt> Module contains all GlassFish V3 public APIs. It contains an interface called <a href="http://fisheye5.cenqua.com/browse/glassfish/appserv-api/src/java/org/jvnet/glassfish/api/Startup.java">Startup</a>. That interface defines code that must be run when GlassFish is started (somewhat equivalent to the Lifecycle implementations in V2). Any Modules in the GlassFish distribution can have one-to-many implementations of the Startup interfaces called startup services.</p> <p>When glassfish is started, the Startup implementation code from the com.sun.enterprise:v3-core Module described earlier will do the following HK2 lookup :</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Collection&lt;Startup&gt; startups = habitat.getAllByContract(Startup.class);</pre> 
+       </div> 
+      </div>
+     </div> <p>Even if v3-core Module does not directly import the Modules implementing the startup Services, the collection returned by the above code will contain those implementations. This is an implicit import of instances from one Module to another while the classloaders are not directly referencing each other.</p> <p>Each Module containing one-to-many Startup implementations can also bring up other Modules through the dependency mechanisms. For instance the HttpService module which contains a Startup service can declare its dependency on the Grizzly Module. Once the Startup services have run successfully, this is how the classloader hierarchy will look like.</p> 
+     <hr> <p><span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20873597/21365619.gif" style="border: 0px solid black"></span></p> 
+     <hr> <p>Figure 1</p> <p>In the example above, please note the following :</p> 
+     <ul> 
+      <li>v3-core imports admin-cli and logger Modules.</li> 
+      <li>This is a direct dependency from v3-core to those Modules because v3-core uses directly classes that are packaged in these modules</li> 
+     </ul> <p>v3-core does not imports HttpService or DeploymentService Modules</p> 
+     <ul> 
+      <li>At runtime, v3-core just looks up the <a href="http://fisheye5.cenqua.com/browse/glassfish/appserv-api/src/java/org/jvnet/glassfish/api/Startup.java">Startup</a> implementations. HttpService and DeploymentServices both offers Startup services implementation which are looked up by HK2 component manager, instantiated, injected and returned to the v3-core.</li> 
+      <li>All modules have the same parent class loader.</li> 
+     </ul> <p>appserv-api module defines the Startup interface which is the contract for the service and is imported by both the v3-core and the modules containing a Startup implementation.</p> <h4><a name="V3EngineersGuide-3.2.2AddanewtypeofContract"></a>3.2.2 Add a new type of Contract</h3> <p>A new type of <a href="https://hk2.java.net/components.html">Service</a> or <a href="https://hk2.java.net/components.html">Contract</a> is just a plain java interface annotated with the <a href="https://hk2.java.net/nonav/auto-depends/apidocs/org/jvnet/hk2/annotations/Contract.html">@Contract</a> interface.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Contract
+public interface Startup {
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>Remember that @Contract annotated classes must be accessible from the Modules implementing the Contract (Service providers) as well as the Modules looking up such implementations. In the example above, the <a href="http://fisheye5.cenqua.com/browse/glassfish/appserv-api/src/java/org/jvnet/glassfish/api/Startup.java">Startup</a> interface is defined in the appserv-api module and is imported by both the v3-core module which requests all Startup implementations and by the modules defining the implementations (HttpService module)</p> <h4><a name="V3EngineersGuide-3.2.3AddanewServiceimplementation"></a>3.2.3 Add a new Service implementation</h3> <p>Adding a new <a href="https://hk2.java.net/components.html">Service</a> is as easy as defining a new POJO that implements a Contract and is annotated with the <a href="https://hk2.java.net/nonav/auto-depends/apidocs/org/jvnet/hk2/annotations/Service.html">@Service</a> interface.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Service
+public class RandomService implements Startup, PostConstruct {
+
+	public void postConstruct() {
+		logger.info("I am not that useful yet");
+	}
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>The above example shows how to implement a Service by implementing the <a href="http://fisheye5.cenqua.com/browse/glassfish/ejb-api/src/share/classes/javax/ejb/PostConstruct.java">PostConstruct</a> ejb interface. Service implementations can be located in any module packaged in the distribution.</p> <h4><a name="V3EngineersGuide-3.2.4Configuration"></a>3.2.4 Configuration</h3> <p>Configuration of a <a href="https://hk2.java.net/components.html">Service</a> can come from either the configuration file (domain.xml) or other component implementations. When a Service needs to be configured from the domain.xml, it should declare itself with the <a href="https://hk2.java.net/source/browse/hk2/trunk/hk2/config/src/java/org/jvnet/hk2/config/Configured.java?view=markup">@Configured</a> interface.<br> The combination of <a href="https://hk2.java.net/source/browse/hk2/trunk/hk2/config/src/java/org/jvnet/hk2/config/Attribute.java?view=markup">@Attribute</a> and <a href="https://hk2.java.net/source/browse/hk2/trunk/hk2/config/src/java/org/jvnet/hk2/config/Element.java?view=markup">@Element</a> to bind to xml attributes and elements can be used to denote which information should be fetched from the configuration file.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Configured
+public class HttpService
+        implements Serializable {
+
+    @Element
+    protected AccessLog accessLog;
+    @Element(required=true)
+    protected List&lt;HttpListener&gt; httpListener = new ArrayList();
+...
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>Although it could be conceivable that an annotated @Configured class is also a Service implementation, this sort of converged @Configured plus @Service component is discouraged. Most @Configured objects need to be available and be configured without an associated runtime (so the admin-gui can configure the http-service in the example used above without necessarily starting the http service). It is therefore recommended to split the configuration from the behavior into two POJOs and implement the following pattern using <a href="https://hk2.java.net/source/browse/hk2/trunk/hk2/config/src/java/org/jvnet/hk2/config/ConfiguredBy.java?view=markup">@ConfiguredBy</a>:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Service
+@ConfiguredBy(HttpService.class)
+public void GrizzlyService implements Startup {
+
+	@Inject
+	private HttpService config;
+
+...
+}</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="V3EngineersGuide-3.2.5Existingservices"></a>3.2.5 Existing services</h3> <p>A subset of services have already been identified and added to the org.jvnet.glassfish:appserv-api Module which represents the public APIs of the GlassFish implementation. Below is a brief introduction of these services. See later sections for more details:</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Service </th> 
+         <th class="confluenceTh"> Description </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Startup </td> 
+         <td class="confluenceTd"> services which are run upon GlassFish startup. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Sniffer </td> 
+         <td class="confluenceTd"> services responsible for identifying deployment artifacts and setting up associated containers. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ArchiveHandler </td> 
+         <td class="confluenceTd"> services that recognize application bundle types (WAR, EAR...) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Deployer </td> 
+         <td class="confluenceTd"> services responsible for deploying artifacts to a particular container </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> AdminCommand </td> 
+         <td class="confluenceTd"> services which represent a CLI administrative command </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="V3EngineersGuide-3.3Applicationdeployment"></a>3.3 Application deployment</h3> <p>GlassFish v3 needs to support the convergence model for applications where users can ship application bits targeted to different containers all in the same package. This is a break from how we have traditionally considered application delivery in the Java EE world where each container had a dedicated bundle format. For instance, web containers expect war files, ejb containers expect jar files.</p> <p>In v3, several types of applications can be co-packaged in the same bundle while still requiring some form of cooperation among the application parts (requiring a single class loader to load the application bits to be shared by all containers). There cannot be an assumption on the format of the bundle where a container can load the application bits from, therefore the containers do not control how the class loader for the applications bits are created, this is handled through another type of deployment service called ArchiveHandler.</p> <p>There can be only one ArchiveHandler for a particular bundle type. The archive handler implementation will be responsible for creating an appropriate application class loader that can successfully load classes and resources from that bundle type. GlassFish V3 will create a parent classloader to be used by the ArchiveHandler when creating the application class loader. This parent class loader will allow the Glassfish runtime to dynamically add imports to the application (see below). Each Sniffer implementation has the ability to setup their associated containers, if the bundle appears to contain components they support. Once the sniffers have run successfully, all Deployer services currently found by HK2 will have a chance to deploy bits of the bundle to their associated containers.</p> <p>Deployers will either claim part of the application bits or not. If a particular deployer instance successfully process a deployment request using the class loader created by the ArchiveHandler. the public APIs associated with that container (eg the Java EE APIs) will be added to the parent class loader (create above for that purpose).</p> <p>Remember that supporting different bundle types is a desired feature. Therefore, power users can have the ability to create/register new ArchiveHandlers. Since ArchiveHandlers are responsible for creating the classloaders, there is no possibility to directly add the container's public API to these classloaders. This is because the ArchiveHandlers are simple java.lang.ClassLoader implementations. This is the reason behind the creation of this dynamic parent class loader.</p> <p>However, there is a slight limitation to this scheme: the ClassLoader implementation returned by the ArchiveHandler should support the registration of java.lang.instrument.ClassFileTransformer instances. This supports bytecode enhancement dependent technologies like JPA. The EjbClassLoader and WebClassLoader that we ship with V3 both support such a registration.</p> <p>In the diagram below, we have two containers: one application being deployed to both containers and one random library module used by one of the container. Note the following :</p> 
+     <ol> 
+      <li>the application bits are loaded from the bundle using the "Application Class Loader". This is created by the ArchiveHandler that handles this bundle type.</li> 
+      <li>the parent class loader of that "Application Class Loader", created by GlassFish v3, is a Module class loader. This loader can import Modules on-the-fly as container's deployers declare their support for part (or the whole) application components.</li> 
+      <li>the private classes of each container are not accessible by the parent class loader (2).</li> 
+      <li>the public API of each container is usually the APIs used by the components (e.g., javax.ejb) plus any other classes that may be required by the generated code (e.g., stubs).</li> 
+     </ol> <p>In the second diagram, you will see a simplified version of the first diagram showing the relationships between two applications and the containers into which they are successfully deployed. Note the following :</p> 
+     <ol> 
+      <li>AppA is deployed to containerX and Y</li> 
+      <li>AppB is deployed to containerY, Z and T</li> 
+      <li>Each application has a class loader (created by the ArchiveHandler) and a parent class loader. The parent loader is a Module class loader created by GlassFish that provides the application with all the necessary public APIs.</li> 
+      <li>Each container is a set of public and private Modules.</li> 
+     </ol> 
+     <hr> <p><span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20873597/21365616.gif" style="border: 0px solid black"></span></p> 
+     <hr> <p>Figure 2</p> 
+     <hr> <p><span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20873597/21365617.gif" style="border: 0px solid black"></span></p> 
+     <hr> <p>Figure 3</p> <h4><a name="V3EngineersGuide-4Persistence"></a>4 Persistence</h2> <p>Implementing persistence in V3 involves several challenges due to the following:</p> 
+     <ul> 
+      <li>age and usage patterns of some JDBC classes</li> 
+      <li>multiple implementations of the javax.persistence APIs</li> 
+      <li>the capacity of these implementations for running in Java SE mode (even embedded in GlassFish) or in Java EE mode.</li> 
+     </ul> <p>The following patterns have been identified :</p> 
+     <ol> 
+      <li>Applications can do a Class.forName() call to load a JDBC driver and make direct calls through the JDBC APIs to the underlying database. Applications do not need to identify special interest in such drivers. There is also no indication they will use such low level access APIs.</li> 
+      <li>Applications can decide to use the default JPA provider, letting GlassFish choose which one to use.</li> 
+      <li>In Java SE mode, appplications can use the PersistenceProvider.createEntityManagerFactory() call to get a specific persistence provider (name extracted from the peristence.xml).</li> 
+      <li>In Java EE mode, GlassFish is responsible for loading the persistence.xml file, and looking up the expected persistence provider according the its settings (potentially defaulting the provider name).</li> 
+      <li>In Java EE mode, GlassFish is responsible for identifying the connection pool to be used with the entity manager. This resource adapter is retrieved at deployment time from the JNDI name space and wired up with the persistence provider to create the entity manager.</li> 
+     </ol> <p>The Stranger pattern is not necessarily supported by the JPA or Java EE specs.</p> 
+     <ol> 
+      <li>A Java EE application can co-bundle a persistence provider. This is usually done for applications targeted to Tomcat, and therefore it is quite possible to find such packaging.</li> 
+      <li>Some Java EE components like entity beans can be installed in shared environment that should be accessible by all deployed applications.</li> 
+     </ol> <p>To resolve the above problems, a shared library Module will be introduced. This Module will load all jar files located in the glassfish/lib and glassfish/javadb/lib directories (remember that v3 modules and jars will be relocated somewhere else). This shared library will have access to the JDBC drivers as well as javadb runtime.</p> <p>The solution described above is illustrated by Figure 4 below. The number in parentheses indicates which class loader relationship that will satisfy the requirement.</p> <h4><a name="V3EngineersGuide-4.1JavaSEMode"></a>4.1 Java SE Mode</h3> <h4><a name="V3EngineersGuide-4.1.1case1"></a>4.1.1 case 1</h3> <p>Applications can load JDBC drivers using the Class.forName() API. The parent class loader of the application class loader (named the application container class loader) will include the shared library class loader. It also will give access to the public APIs of an application (1)</p> <h4><a name="V3EngineersGuide-4.1.2case2and3"></a>4.1.2 case 2 and 3</h3> <p>In Java SE mode, applications use javax.persistence.PersistenceProvider.createEntityManagerFactory() API to create an entity manager. Applications use a persistenceUnitName parameter to identify the provider in the persistence.xml file. HK2 will make the META-INF/services resolution for the PersistenceProvider.java implementation and JPA will be loaded like any other HK2 service.</p> <p>The JDBC driver is provided by some non-portable persistence.xml properties and is loaded directly by the persistence provider (2)</p> <h4><a name="V3EngineersGuide-4.2JavaEEmode"></a>4.2 Java EE mode</h3> <p>In Java EE, there is a need to add ClassFileTransformers to the application class loader. This is a bit tricky as we don't necessarily provide the class loader for the application bits (see Deployment above). JPA infrastructure will have a Deployer implementation, therefore the prepare phase should be used by the JPADeployer to pre-load classes that may require bytecode enhancements. During the prepare phase, the JPADeployer should also add some java.lang.intrument.ClassFileTransformers) instances to the DeploymentContext. The Deployment backend will then recreate a new class loader, register all installed ClassFileTransformers in this new class loader instances and will invoke the load phase with the new classloader.</p> <h4><a name="V3EngineersGuide-4.2.1case4"></a>4.2.1 case 4</h3> <p>Normal HK2 Service resolution should suffice to resolve the JPA provider based on the META-INF/services entries.</p> <h4><a name="V3EngineersGuide-4.2.2case5"></a>4.2.2 case 5</h3> <p>Naming Service will be available though the HK2 Service Resolution Mechanism, from which the connection pool can be looked up. After wiring up the connection pool with the JPA provider, the entity manager can be created by the deployment code and injected in the application code.</p> <h4><a name="V3EngineersGuide-4.2.3case6%2C7"></a>4.2.3 case 6,7</h3> <p>Normal class loading delegation should be enough to support such use cases.</p> 
+     <hr> <p><span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20873597/21365618.gif" style="border: 0px solid black"></span></p> 
+     <hr> <p>Figure 4</p> <h4><a name="V3EngineersGuide-5Containerpluggability"></a>5 Container pluggability</h2> <p>Containers are entities that can run applications (e.e., web container, ejb, etc.). Since such containers can be installed or removed from a GlassFish V3 installation, there is no special code referencing different application containers like Switch.java in V2.</p> <p>Containers have the ability to install themselves in an existing GlassFish installation with the following Services implementations :</p> 
+     <ul> 
+      <li>Sniffer : Invoked during a deployment operation (or server restart). Sniffers will have the ability to recognize part (or whole) application bundles. Once a sniffer has positively identified parts of the application, its Setup method will be called to have a chance to setup the container for usage during that server instance lifetime.</li> 
+      <li>ContainerProvider: Called each time a container is started or stopped. A container is started once when the first application using it is deployed. It will remain started until it is stopped when the last application using it was undeployed or stopped.</li> 
+      <li>Deployer: Called to deploy/undeploy applications to a container</li> 
+      <li>AdminCommand : Containers can come with special set of CLI commands that should only be available once the container has been successfully installed in a GlassFish V3 installation. These commands should be used to configure the container's features.</li> 
+      <li>TBD : there will also be a AdminGUI pluggability layer but it has not been designed yet</li> 
+     </ul> <h4><a name="V3EngineersGuide-6AdminCLI"></a>6 Admin CLI</h2> <p>Like everything in V3, we rely on <a href="http://hk2.java.net">HK2</a> components to identify administrative commands. So, in this case, the AdminCommand interface is annotated with @Contract. As a result, to add a new command to GlassFish V3 is to create a Service implementing the AdminCommand interface and the runtime will find it :</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">package com.foo.bar;
+
+@Service(name="super")
+public class MySuperCommand implements AdminCommand {
+...
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>Now this is nice but we can do better. Since admin commands are Services, we can use injection. So, if you want to have access to the domain configuration, you do the following:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Inject
+Domain domain;</pre> 
+       </div> 
+      </div>
+     </div> <p>and the domain information will be injected in the instance field before the command execute() is invoked. That's nice, but why not extend this to the command parameters. Too many times, I have seen command implementation code just ensure that all mandatory parameters to the command are present, values are correct, and extraction from the String[] representation.</p> <p>This is where the new annotation @Param becomes useful. It can annotate any instance field of the command implementation with the @Param annotation to make it a command parameter. So for instance adding the following:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Param
+String name</pre> 
+       </div> 
+      </div>
+     </div> <p>adds a name parameter to the command. Of course, parameters can be optional</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Param(optional=true)
+String myoptionalparam</pre> 
+       </div> 
+      </div>
+     </div> <p>or the default parameter (but there can only be one of course)</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Param(default=true)
+String path</pre> 
+       </div> 
+      </div>
+     </div> <p>so you can now do :</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">asadmin deploy --path foo.war</pre> 
+       </div> 
+      </div>
+     </div> <p>or</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">asadmin deploy foo.war</pre> 
+       </div> 
+      </div>
+     </div> <p>Also, the @Param tag is automatically linked to the required LocalStrings.properties resource file of your classloader. So, when you add the</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">com.sun.foo.bar.mysupercommand=Some random super command
+com.sun.foo.bar.mysupercommand.path=path to the file the command applies to.</pre> 
+       </div> 
+      </div>
+     </div> <p>strings to your LocalStrings.properties, the system will find them and use it for any type of error checking or help :</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">$prompt&gt;asadmin super
+FAILURE : super command requires the path parameter : path to the file the command applies to.
+
+$prompt&gt;asadmin super --help
+Some random super command
+
+Parameters :
+	path : path to the file the command applies to.</pre> 
+       </div> 
+      </div>
+     </div> <p>The above behaviours are completely handled by the system. The command will not be executed as long as all mandatory parameters are provided by the users. There is more to do, of course, like automatic help page and localized page creation. Also, there should be some maven 2 plugins developed to automate page creation and ensure that all strings are properly localized.</p> <h4><a name="V3EngineersGuide-7Building"></a>7 Building</h2> <p>Although this information will most likely change and is not entirely implemented, this is an introduction to how we will organize the source code in V3.</p> <p>The bootstrap directory is not going to be moved forward, but we will use a directory layout to separate and represent modules segments. Functionalities linked to packaging are moved to the distribution modules.</p> <h4><a name="V3EngineersGuide-7.1Sourcecodemanagement"></a>7.1 Source code management</h3> <p>Source code is managed using <a href="http://wiki.glassfish.java.net/attach/V3BrownBags/subversion_new.sxi">Subversion</a> for now. However, we plan to move to mercurial at some point. The Subversion workspace is organized to follow the module infrastructure that we will be using in V3.</p> <p>To checkout the entire glassfish workspace that are not yet used by the V3 runtime (and therefore were not moved to a corresponding module directory), you can do the following :</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">svn checkout https://svn.java.net/svn/glassfish-svn/trunk/v2</pre> 
+       </div> 
+      </div>
+     </div> <p>However, unless you plan to move code from the old modules to the new structure, you do not need to checkout the entire workspace, in general, you can just check out the code currently used in V3 by doing :</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">svn checkout https://svn.java.net/svn/glassfish-svn/trunk/v3</pre> 
+       </div> 
+      </div>
+     </div> <p>To subscribe to the svn notifications for the changes, send an e-mail to commits-subscribe@glassfish-svn.java.net</p> <h4><a name="V3EngineersGuide-7.2Modules"></a>7.2 Modules</h3> <p>Modules are organized following the <a href="http://maven.apache.org/guides/introduction/introduction-to-the-standard-directory-layout.html">maven best practice pattern</a>.</p> <p>Although each module can use a dedicated scm repository, it is important to follow that structure for consistency and tool support.</p> <p>See <a href="V3WorkspaceStructure.html" title="V3WorkspaceStructure">V3 module structure</a> for a complete description. However, for the most simple cases, it should be the following files/directories:</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> File </th> 
+         <th class="confluenceTh"> Description </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> pom.xml </td> 
+         <td class="confluenceTd"> maven build file </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> src/main/java </td> 
+         <td class="confluenceTd"> module's sources </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> src/main/resources </td> 
+         <td class="confluenceTd"> module's resources like localized strings, xml... </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> src/tests/... </td> 
+         <td class="confluenceTd"> module's unit tests </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="V3EngineersGuide-7.3FunctionalAreas"></a>7.3 Functional Areas</h3> <p>In V2, the workspace was organized with sub-modules, each sub-module could be independently checked out or if you wanted to checkout the entire workspace, you would do so from the bootstrap module. For instance this is a simplified view of the V2 CVS workspace</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Module </th> 
+         <th class="confluenceTh"> Description </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> bootstrap </td> 
+         <td class="confluenceTd"> contains all project wide settings, main build scripts etc. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> appserv-commons </td> 
+         <td class="confluenceTd"> contains code shared by the different GlassFish sub components (Web Container, Deployment, EJB container...) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> admin-core/config-api </td> 
+         <td class="confluenceTd"> contains the domain.xml binding classes generated from schema2beans </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ejb-api </td> 
+         <td class="confluenceTd"> EJB 3.0 javax.ejb API sources </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>In the current V3 workspace, the sources which are currently used by the V3 runtime have been moved to a new location that reflect the module in which the .class files are packaged. The workspace is also organized in a tree like structure (as opposed to mainly flat like in V2 with all modules at the top-level).</p> <p>Modules will be grouped into functional areas and moved under specific directories. A user that wishes to checkout the entire V3 workspace should do so by issuing the command described in IV.1. However, developers that wish to only work in a specific area should checkout the set of Modules that are identified in that area.</p> <p>The following areas have been already identified. This will evolve over time:</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Directory </th> 
+         <th class="confluenceTh"> Description </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> v3/web </td> 
+         <td class="confluenceTd"> web related technologies (jsp, jsf...) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> v3/ejb </td> 
+         <td class="confluenceTd"> ejb related technologies </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> v3/core </td> 
+         <td class="confluenceTd"> v3 core infrastructures </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> v3/admin </td> 
+         <td class="confluenceTd"> administration related modules </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> v3/extras </td> 
+         <td class="confluenceTd"> adminGUI and other tools </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> v3/api </td> 
+         <td class="confluenceTd"> Java EE APIS </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> v3/build </td> 
+         <td class="confluenceTd"> Build related tools like maven plugins </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>For instance, under glassfish_v3/web, you will find subdirectories for each module that are part of our web profile. Now, let's say you need to move some code from appserv-core to the new V3 module structure (in say web/appserv-webtier module), you could only checkout the appropriate modules :</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">svn checkout https://svn.java.net/svn/glassfish-svn/trunk/v3/appserv-core
+svn checkout https://svn.java.net/svn/glassfish-svn/trunk/v3/web/appserv-webtier</pre> 
+       </div> 
+      </div>
+     </div> <p>Once we will complete the switch to Mercurial, such tree based organization does not support checking out part of the tree. So, we will most likely move each sub-directory under glassfish_v3 to a new Hg repository.</p> <p>Modules are grouped using a groupId as defined in the module's pom.xml. All GlassFish module should follow this consistent naming and directory structure</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Main groupId </th> 
+         <th class="confluenceTh"> Function Area </th> 
+         <th class="confluenceTh"> Module name </th> 
+         <th class="confluenceTh"> Resulting maven Id </th> 
+         <th class="confluenceTh"> source location </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> org.glassfish </td> 
+         <td class="confluenceTd"> web </td> 
+         <td class="confluenceTd"> appserv-webtier </td> 
+         <td class="confluenceTd"> org.glassfish.web:appserv-webtier </td> 
+         <td class="confluenceTd"> v3/web/appserv-webtier </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> org.glassfish </td> 
+         <td class="confluenceTd"> admin </td> 
+         <td class="confluenceTd"> config-api </td> 
+         <td class="confluenceTd"> org.glassfish.admin:config-api </td> 
+         <td class="confluenceTd"> v3/admin/config-api </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> org.glassfish </td> 
+         <td class="confluenceTd"> core </td> 
+         <td class="confluenceTd"> kernel </td> 
+         <td class="confluenceTd"> org.glassfish.core:kernel </td> 
+         <td class="confluenceTd"> v3/core/kernel </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="V3EngineersGuide-7.4Building"></a>7.4 Building</h3> <p>Basic understanding of maven and maven repositories is necessary to build V3. Also, at each level, users are able to do a mvn command to build a Module, create a functional set of Modules, or the entire V3 workspace.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Command </th> 
+         <th class="confluenceTh"> Description </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> mvn clean </td> 
+         <td class="confluenceTd"> cleans the binary outputs (.class, and .jar files) from the module target directory. Does not remove the Module artifact from the local maven repository. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> mvn install </td> 
+         <td class="confluenceTd"> builds and install the binary artifact in the local maven repository. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> mvn javadoc:javadoc </td> 
+         <td class="confluenceTd"> creates javadoc </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>So for instance if I run mvn install from the v3 directory, I will build the entire GlassFish V3, if I build under v3/web I will build all the web related modules, if I build v3/web/appserv-webtier, I only build the appserv-webtier module.</p> <p>Artifacts cannot be published directly to the global HTTP maven repositories because a certain number of integration tests need to happen. When a developer feels confident that his code is robust and has made enough integration tests on his local machine (by building a distribution and running tests), he will check in the sources. Hudson, the continuous building system, will monitor checkins and will trigger a build/test/publish cycle each time a developer checks in a change set.</p> <h4><a name="V3EngineersGuide-7.5Movingcode"></a>7.5 Moving code</h3> <p>One of the big activity of V3 will be to move code from their current module to a new directory that reflect the runtime module in which the .class will be packaged. How can you move files without loosing history :</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">svn checkout https://svn.java.net/svn/glassfish-svn/trunk/v2/appserv-core
+svn checkout https://svn.java.net/svn/glassfish-svn/trunk/v3/web/appserv-webtier</pre> 
+       </div> 
+      </div>
+     </div> <p>assuming you are located in your home directory, you now have 2 subdirectories, appserv-core and v3</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">cd ~/v3/web/appserv-webtier/src/main/java/com/sun/entreprise
+svn mv ~/v2/appserv-core/src/java/com/sun/enterprise/FooBar.java .</pre> 
+       </div> 
+      </div>
+     </div> <p>and commit to have the old file deleted from appserv-core and the new addition to v3/web/appserv-webtier without loosing the commit history. You can also move entire directories following the same pattern as above. Do not do svn rm and svn add as you would loose the SCM history associated with the file you are trying to move.</p> <h4><a name="V3EngineersGuide-7.6Distributions"></a>7.6 Distributions</h3> <p>Distributions are created by assembling jars and other artifacts. There is a flexible distribution description mechanism based on maven pom file for binary dependencies and ant scripts for the other types of artifacts. For more details about this process, refer to <a href="V3DistributionAssembly.html" title="V3DistributionAssembly">V3DistributionAssembly</a></p> <h4><a name="V3EngineersGuide-7.7HK2"></a>7.7 HK2</h3> <p>HK2, the java.net project for our module subsystem and lightweight component model, has a separate java.net project located at <a href="http://hk2.java.net">hk2.java.net</a>.</p> <h4><a name="V3EngineersGuide-7.7.1sources"></a>7.7.1 sources</h3> <p>HK2 sources are stored in a Subversion repository, so checking out sources is usually done with</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">svn checkout https://hk2.java.net/svn/hk2/trunk</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="V3EngineersGuide-7.7.2ModuleSubsystemdocumentation"></a>7.7.2 Module Subsystem documentation</h3> <p>TBD</p> 
+     <hr> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20873597/21365619.gif">v3ClassloaderHierarchy.gif</a> (image/gif) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20873597/21365616.gif">v3ContainerAppRelationships.gif</a> (image/gif) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20873597/21365617.gif">v3ContainerAppRelationships2.gif</a> (image/gif) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20873597/21365618.gif">v3ContainerAppRelationships3.gif</a> (image/gif) 
+      <br> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Aug 18, 2011 by 
+<font color="#0050B2">dipol</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

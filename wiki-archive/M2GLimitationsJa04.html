@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : M2GLimitationsJa04</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="M2GLimitationsJa04-GlassFish%E3%82%A2%E3%83%97%E3%83%AA%E3%82%B1%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%83%BB%E3%82%B5%E3%83%BC%E3%83%90%E3%83%BC%E3%81%AE%E7%9B%B8%E9%81%95%E7%82%B9"></a>GlassFish アプリケーション・サーバーの相違点</h2> <p>このセクションでは、ソースと対象の GlassFish アプリケーション・サーバーとの間での、 Java EE インプリメンテーションにおける相違に関する情報を記載しています。</p> 
+     <ul> 
+      <li>WebLogic 6.x と GlassFish アプリケーション・サーバーとの間での、 <tt>&lt;ejb-ref&gt;</tt> の実装の相違</li> 
+     </ul> <p> <tt>ejb-jar.xml</tt> ファイル内に記載されている、セッション又は、エンティティビーンの説明は、オプションの <tt>&lt;ejb-ref&gt;</tt> にエントリーすることができます。この <tt>ejb-ref</tt> タグは、オプションの <tt>&lt;ejb-link&gt;</tt> タグを順に保管します。WebLogic 6.x は、 <tt>ejb-ref</tt> タグのエントリーである強制的な <tt>&lt;ejb-ref-name&gt;</tt> よりも <tt>&lt;ejb-link&gt;</tt> タグを優先します。これは、ある特定のビーンとマッチしない <tt>weblogic-ejb-jar.xml</tt> と <tt>ejb-jar.xml</tt> ファイルに <tt>ejb-ref-name</tt> がエントリーされている場合に発生します。 より詳細な <tt>ejb-jar.xml</tt> ファイル 内における <tt>ejb-link</tt> タグの記述位置は、 WebLogic 6.x では <tt>weblogic-ejb-jar.xml</tt> 内における <tt>ejb-ref-name</tt> のエントリーを不適切にします。マイグレーションツールは、 <tt>weblogic-ejb-jar.xml</tt> ファイルから、 <tt>sun-ejb-jar.xml</tt> ファイルを生成します。生成された <tt>sun-ejb-jar.xml</tt> ファイルの利用は、 GlassFish アプリケーション・サーバー上に、モジュールを展開することの妨げとなります。 次の例では、 WebLogic 6.x とマッチしない <tt>ejb-ref-name</tt> エントリーの場所を見せています。因みに、 WebLogic 6.x では有効な、 DD の設定内容があります。 <tt>ejb-jar.xml</tt> ファイルの設定内容は次のとおり :</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;session&gt;
+      &lt;description&gt;This is the Cart ejb &lt;/description&gt;
+      &lt;display-name&gt;The Cart &lt;/display-name&gt;
+      &lt;ejb-name&gt;TheCart&lt;/ejb-name&gt;
+      &lt;home&gt;com.sun.j2ee.blueprints.shoppingcart.cart.ejb.ShoppingCartHome&lt;/home&gt;
+      &lt;remote&gt;com.sun.j2ee.blueprints.shoppingcart.cart.ejb.ShoppingCart&lt;/remote&gt;
+      &lt;ejb-class&gt;com.sun.j2ee.blueprints.shoppingcart.cart.ejb.ShoppingCartEJB
+      &lt;/ejb-class&gt;
+      &lt;session-type&gt;Stateful&lt;/session-type&gt;
+      &lt;transaction-type&gt;Container&lt;/transaction-type&gt;
+      &lt;ejb-ref&gt;
+        &lt;ejb-ref-name&gt;ejb/catalog/Catalog&lt;/ejb-ref-name&gt;
+        &lt;ejb-ref-type&gt;Session&lt;/ejb-ref-type&gt;
+        &lt;home&gt;com.sun.j2ee.blueprints.shoppingcart.catalog.ejb.CatalogHome&lt;/home&gt;
+        &lt;remote&gt;com.sun.j2ee.blueprints.shoppingcart.catalog.ejb.Catalog&lt;/remote&gt;
+        &lt;ejb-link&gt;TheCatalog&lt;/ejb-link&gt;
+      &lt;/ejb-ref&gt;
+&lt;/session&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p> <tt>weblogic-ejb-jar.xml</tt> ファイルのコンテンツについては次のとおりです。Note the differences shown in bol;dface.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;weblogic-enterprise-bean&gt;
+                &lt;ejb-name&gt;TheCart&lt;/ejb-name&gt;
+                &lt;stateful-session-descriptor/&gt;
+                &lt;reference-descriptor&gt;
+                        &lt;ejb-reference-description&gt;
+                                &lt;ejb-ref-name&gt;ejb/catalog&lt;/ejb-ref-name&gt;
+                                &lt;jndi-name&gt;estore/catalog&lt;/jndi-name&gt;
+                        &lt;/ejb-reference-description&gt;
+                 &lt;/reference-descriptor&gt;
+                &lt;jndi-name&gt;estore/cart&lt;/jndi-name&gt;
+&lt;/weblogic-enterprise-bean&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p> この制約にからの回避方法は、 この問題に対して適切に、ソース側の DDs または、 生成された <tt>sun-ejb-jar.xml</tt> ファイルを修正することです。</p> 
+     <ul> 
+      <li>GlassFish アプリケーション・サーバーへの、アプリケーション移行の為の、Java EE レファレンス実装からの、管理コンテナ関連 (CMR) の利用。</li> 
+     </ul> <p> Java EE RI において、全ての CMRs が、 LINK テーブルへのアプローチを利用することを、永続化されます。また一方で、 GlassFish アプリケーション・サーバーにおいて、 LINK テーブルは、 many-to-many の関連性を利用する必要があります。その他全ての場合、外部参照キーへのアプローチは、 関連性の永続化によって、要求されます。 もしソース側のアプリケーションが、one-to-many の関連をもつユーザーの LINK テーブルへのアプローチを持っていた場合、マイグレーションツールは、 LINK テーブルへのアプローチが損なわれないように保持して、アプリケーションを移行します。結果として、GlassFish アプリケーション・サーバー上には、期待された機能を持たないアプリケーションが移行されます。 この制約を克服する為に、アプリケーション移行前に、 外部参照キーへのアプローチによる LINK テーブルへのアプローチを変更します。これら変更は、アプリケーション向けに、データベーススキーマへ反映されなければなりません。</p> 
+     <ul> 
+      <li>サーブレットと JSP の移行における、レスポンスバッファサイズの変化</li> 
+     </ul> <p> サーブレット / JSP では、ヘッダー情報は、出力ストリームによって確定された、レスポンスのボディ部の後にセットされる必要があります。また、これは、 cookie/session 管理によって、 ヘッダー情報の一部として、正しく保持します。もし cookie/session オブジェクトが、いくつかの HTML が、出力ストリームに確定された後で、操作 / 更新された場合、これは、喪失され、要求された見えなくなっている情報を更新します。これは概ね、 GlassFish アプリケーション・サーバーでは、 <tt>response</tt> オブジェクトのデフォルトバッファサイズによって決まります。例では、サーブレットよりも下位から用いられた、コードの一部分とみなしています。太字のコメントに注意を払ってください。<br> オリジナルコードは次のとおり。</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">public void service(HttpServletRequest req, HttpServletResponse res)  
+throws IOException  
+{
+    boolean cookieFound = false;
+    Cookie thisCookie = null;
+
+    res.setContentType("text/html");
+    PrintWriter out = res.getWriter();
+
+    Cookie[] cookies = req.getCookies();          //Get Cookie information
+    for(int i=0; i &lt; cookies.length; i++) {
+      thisCookie = cookies[i];
+      if (thisCookie.getName().equals("CookieCount")) {
+        cookieFound = true;
+        break;
+      }
+    }
+    
+if (cookieFound == false) {
+      thisCookie = new Cookie("CookieCount", "1");
+      thisCookie.setMaxAge(60*1);
+      res.addCookie(thisCookie);
+}    
+
+out.println("&lt;html&gt;&lt;head&gt;\n" +              //Writing some html response
+      "&lt;title&gt;Cookie Counter&lt;/title&gt;\n" +
+      "&lt;/head&gt;\n" +
+      "&lt;body bgcolor=#ffffff&gt; &lt;font face=\"Comic Sans MS\" size+=4 color=red&gt;" +
+      "&lt;center&gt;&lt;h1&gt;Cookie Counter&lt;/h1&gt;&lt;/center&gt;");    
+pageCount++;    
+out.println("&lt;p&gt;&lt;img src=\"/images/cookie.jpg\" align=left&gt;");    
+out.println("&lt;font color=blue&gt;");    
+out.println("&lt;p&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;This page has been visited " + pageCount +
+       (pageCount==1?" time":" times") +
+       " before.\n");    
+if (cookieFound) {                          //Manipulating Cookie again!      int cookieCount = Integer.parseInt(thisCookie.getValue());
+      cookieCount++;
+      thisCookie.setValue(String.valueOf(cookieCount));
+                                                //Updating Cookie information after
+                                                //some response has been written to
+                                                //the response buffer!Bad move.
+      thisCookie.setMaxAge(10);
+          res.addCookie(thisCookie);
+
+      out.println("&lt;p&gt;You have visited this page " +
+                  thisCookie.getValue() +
+                  (cookieCount==1?" time":" times") +
+                  " within the past 10 seconds.\n");    
+    } else {
+      out.println("&lt;p&gt;Either you haven't visited this page recently, "+
+                  "or your browser doesn't like cookies!\n");
+    }
+    out.println("&lt;/body&gt;&lt;/html&gt;");  
+}</pre> 
+       </div> 
+      </div>
+     </div> <p> このコードは、異なるアプリケーション・サーバーで実行されている場合に、矛盾した機能を見せています。 この原因は、次の理由のとおり :</p> 
+     <ul> 
+      <li>ある特定のアプリケーション・サーバーのデフォルトレスポンスバッファサイズが、出力される、レスポンスバッファサイズよりも大きかった場合、コードの動作による、反映されるレスポンスの出力の後で、クッキー情報が更新されます。WebLogic 5.1 と WebSphere Application Server 4.0 でのデフォルトバッファサイズは、それぞれ、 8 KB と 4 KB です。とはいえ、それらアプリケーション・サーバー上でコードが作業する上で (4 KB 以下の Cookie オブジェクトが更新される以前に、このコードによってレスポンスを出力するバッファサイズ )、レスポンスの出力バッファサイズがデフォルトバッファサイズを超える場合、そのコードは他の例では有効的ではありません。</li> 
+      <li>ある特定のアプリケーション・サーバーのデフォルトレスポンスサイズが、レスポンス出力バッファサイズよりも低い場合、 Cookie 情報は、出力レスポンスを消失した後で更新されます。 これはなぜなら、レスポンスがクライアントブラウザへ確定された後では、ヘッダー情報は設定できないからです。Sun ONE Application Server 6.5 でのデフォルトバッファサイズは、 0 KB です。そのため、このコードは、 GlassFish アプリケーションサーバ上で、整合性の取れた動作はしません。</li> 
+     </ul> <p> この制約を解決するため、バッファへ出力する前に、全てのヘッダを操作し、更新するように、サーブレット /JSP コードを修正します。 これは、サーブレット /JSP 仕様で解説されているとおり、正しい慣例です。次は、ひとつ前の例を修正したコードです。太字でハイライトされている部分が、修正の留意点です。</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">public void service(HttpServletRequest req, HttpServletResponse res)  
+throws IOException  
+{
+    boolean cookieFound = false;
+    Cookie thisCookie = null;
+
+    res.setContentType("text/html");
+    PrintWriter out = res.getWriter();
+
+    Cookie[] cookies = req.getCookies();                //Get Cookie information
+    for(int i=0; i &lt; cookies.length; i++) {
+      thisCookie = cookies[i];
+      if (thisCookie.getName().equals("CookieCount")) {
+        cookieFound = true;
+        break;
+      }
+    }
+
+    if (cookieFound == false) {                          //Manipulating Cookie
+      thisCookie = new Cookie("CookieCount", "1");
+      thisCookie.setMaxAge(60*1);
+      res.addCookie(thisCookie);
+    }
+                int cookieCount = 0;
+    if (cookieFound) {
+      cookieCount = Integer.parseInt(thisCookie.getValue());
+      cookieCount++;
+      thisCookie.setValue(String.valueOf(cookieCount));
+                                                //Update Cookie information before
+                                                //some response is written to
+                                                //the response buffer.
+                                                //Good move!Truly portable code
+      thisCookie.setMaxAge(10);
+      res.addCookie(thisCookie);
+        }
+
+    out.println("&lt;html&gt;&lt;head&gt;\n" +       //Now Write your response
+         "&lt;title&gt;Cookie Counter&lt;/title&gt;\n" +
+         "&lt;/head&gt;\n" +
+         "&lt;body bgcolor=#ffffff&gt; +
+                 "&lt;font face=\"Comic Sans MS\" size+=4 color=red&gt;" +
+         "&lt;center&gt;&lt;h1&gt;Cookie Counter&lt;/h1&gt;&lt;/center&gt;");
+    pageCount++;
+    out.println("&lt;p&gt;&lt;img src=\""+req.getContextPath()+
+                "/images/cookie.jpg\" align=left&gt;");
+    out.println("&lt;font color=blue&gt;");
+    out.println("&lt;p&gt;&lt;br&gt;&lt;br&gt; +
+                 "&lt;br&gt;This page has been visited " + pageCount +
+                (pageCount==1?" time":" times") +
+                " before.\n");
+
+    if (cookieFound) {
+      out.println("&lt;p&gt;You have visited this page " +
+                  thisCookie.getValue() +
+                  (cookieCount==1?" time":" times") +
+                  " within the past 10 seconds.\n");
+    } else {
+      out.println("&lt;p&gt;Either you haven't visited this page recently, "+
+                  "or your browser doesn't like cookies!\n");
+    }
+    out.println("&lt;/body&gt;&lt;/html&gt;");
+    out.close();
+  }</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>WLS5.1/6.x/Sun ONE Application Server 6.5 とGlassFish アプリケーション・サーバー間での <tt>HttpServletRequest</tt> の実装に関する相違点</li> 
+     </ul> <p> <tt>HttpServletRequest</tt> インターフェースにある、 <tt>getCookies()</tt> メソッドは、 WLS5.1/WLS 6.x/Sun ONE Application Server 6.5 と GlassFish アプリケーション・サーバーでは、実装が異なります。このことは、次のサンプルコードと似たような、当メソッド呼び出すコードを包含した、サーバーサイドコンポーネントによって、一貫性の無い機能をもたらします。<br> サンプルコードを見る前に、サーブレット使用で定義されているこのメソッドがどんなものか、試してみましょう。J2EE 標準の WLS5.1 と Sun ONE Application Server 6.5 による J2EE 1.2.x と、J2EE 標準の WLS 6.x による J2EE 1.3.x の両方のドキュメンテーションに通じる API <tt>HttpServletRequest</tt> インターフェースにある <tt>getCookies()</tt> メソッドについては、次のとおり :</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">getCookies
+
+        public Cookie[] getCookies()
+
+                クライアントがこの要求とともに送信したすべての Cookie オブジェクトを格納した配列を返します。クッキーが送信されなかった場合、このメソッドは null を返します。
+
+                戻り値:
+                この要求に含まれるすべての Cookie の配列。要求にクッキーがない場合は null</pre> 
+       </div> 
+      </div>
+     </div> <p> これは、まず最初に <tt>getCookies()</tt> メソッドを呼び出すと言うニュアンスで、 ( クッキーが存在しなかった場合 ) 、結果として <tt>null</tt> が返却されることを、以下のコードで示しています。このことは言い換えれば、 <tt>getCookies()</tt> メソッドを呼び出した次のラインの実行で、 NullPointerException と言う結果をもたらします。</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Cookie[] cookies = req.getCookies();        &lt;-----&gt; Problem    
+for(int i=0; i &lt; cookies.length; i++) {            &lt;-----&gt; NullPointerException here
+      thisCookie = cookies[i];
+      if (thisCookie.getName().equals("CookieCount")) {
+        cookieFound = true;
+        break;
+      }
+    }</pre> 
+       </div> 
+      </div>
+     </div> <p>注意点 - また一方で、 WLS 5.1/6.x 及び Sun ONE AS 6.5 の一部で異常を出力します。言い換えると、 上記サンプルコードが、それらアプリケーション・サーバー上で動作することで、 <tt>getCookies()</tt> メソッドを最初に呼び出し、 <tt>null</tt> の変わりに( ドキュメンテーションに法る仕様として ) 空の配列が返却されるようにします。 ( 要素 0 の配列 ) GlassFish アプリケーション・サーバーでは、そういったケースが無いため、コードのこの部分が Java EE ドキュメンテーションにおける振る舞いで、 NullPointerException をスローしています。<br> この制約を解決する為、デプロイする前に、次のようにコードを手作業で修正する必要があります。</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Cookie[] cookies = req.getCookies();            
+if(cookies != null)              &lt;-----&gt; Escape NullPointerException here
+    {
+        for(int i=0; i &lt; cookies.length; i++) {            
+                     thisCookie = cookies[i];
+                     if (thisCookie.getName().equals("CookieCount")) {
+                             cookieFound = true;
+                             break;
+                     }
+        }
+    }</pre> 
+       </div> 
+      </div>
+     </div> <p>日本語翻訳: <a href="http://www3.atword.jp/jacksparrow/2008/07/23/omegat%e3%81%af%e7%b4%a0%e6%99%b4%e3%82%89%e3%81%97%e3%81%84%e7%bf%bb%e8%a8%b3%e3%83%a1%e3%83%a2%e3%83%aa%e3%83%bc%ef%bc%81/">jack spallaw</a></p> <p><a href="M2GLimitations.html" title="M2GLimitations">英文 </a> (翻訳したバージョン: 5)</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 08, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

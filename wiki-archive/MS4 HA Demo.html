@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : MS4 HA Demo</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="MS4HADemo-WebcontainerandEJBHighavailabilitydemo"></a>Web container and EJB High availability demo</h2> <p>This demo is aimed show casing the high availability features in GlassFish 3.1 open source edition. The demo will show modified attribute http session replication as well as transaction check pointing in EJBs. For purpose of this demo the following script will create a 4 instance cluster on the same node.</p> <h4><a name="MS4HADemo-Team"></a>Team</h2> 
+     <ul> 
+      <li>Mahesh Kannan</li> 
+      <li>Rajiv Mordani</li> 
+      <li>Shing Wai Chan</li> 
+     </ul> <h4><a name="MS4HADemo-Clustercreation"></a>Cluster creation</h2> <p>The following shell script can be used to create the cluster or the cluster can be created via the Admin Console as is demoed in this milestone (MS4). You must set GF_HOME environment variable and the &lt;system ip address&gt; in the script below before invoking the script.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">#!/bin/sh +x
+
+$GF_HOME/bin/asadmin start-domain
+echo "domain started"
+
+GF_CLUSTER_NAME=`uname -n`-cluster
+echo Cluster name is $GF_CLUSTER_NAME
+$GF_HOME/bin/asadmin create-cluster --multicastport 2231 --multicastaddress 228.9.1.3 ${GF_CLUSTER_NAME}
+
+# how to turn on ShoalLogger to FINE logging using CLI.  The names below are subject to change in future but what will work now.
+#$GF_HOME/bin/asadmin set-log-level ShoalLogger=FINE:javax.org.glassfish.gms.org.glassfish.gms=FINE:
+
+# need to set unique GMS_LISTENER_PORT when running multiple instances on same machine.
+# no need to set GMS_LISTENER_PORT when running one instance on each machine (includes DAS running on its own machine)
+
+GF_DAS_HOST=localhost
+GF_DAS_PORT=4848
+
+for GF_INSTANCE_ID in 1 2 3 4
+do 
+$GF_HOME/bin/asadmin --host ${GF_DAS_HOST} --port ${GF_DAS_PORT} create-local-instance 
+--cluster ${GF_CLUSTER_NAME} --systemproperties  ASADMIN_LISTENER_PORT=${GF_INSTANCE_ID}4848:HTTP_LISTENER_PORT=${GF_INSTANCE_ID}8080:
+HTTP_SSL_LISTENER_PORT=${GF_INSTANCE_ID}8181:JMS_PROVIDER_PORT=${GF_INSTANCE_ID}7676:
+IIOP_LISTENER_PORT=${GF_INSTANCE_ID}3700:IIOP_SSL_LISTENER_PORT=${GF_INSTANCE_ID}3820:
+IIOP_SSL_MUTUALAUTH_PORT=${GF_INSTANCE_ID}3920:JMX_SYSTEM_CONNECTOR_PORT=${GF_INSTANCE_ID}8686:
+BIND_INTERFACE_ADDRESS=&lt;System IP address&gt;:GMS_LISTENER_PORT-${GF_CLUSTER_NAME}=${GF_INSTANCE_ID}9490 inst${GF_INSTANCE_ID}
+
+done
+
+$GF_HOME/bin/asadmin start-cluster ${GF_CLUSTER_NAME}
+
+echo Cluster created and started.
+$GF_HOME/bin/asadmin list-instances</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="MS4HADemo-ClusterSSOsetup"></a>Cluster SSO setup</h2> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">echo AS_ADMIN_USERPASSWORD=javaee &gt; x.pwd
+asadmin create-file-user --target ${GF_CLUSTER_NAME} --authrealmname file --passwordfile x.pwd --groups javaee javaee
+asadmin set ${GF_CLUSTER_NAME}.http-service.virtual-server.server.sso-enabled=true
+asadmin set ${GF_CLUSTER_NAME}.availability-service.web-container-availability.sso-failover-enabled=true</pre> 
+       </div> 
+      </div>
+     </div> <p>Note that one need to restart the cluster here. We suspect this is a dynamic reconfiguration bug. </p> <p>Once you have setup the cluster with SSO, you can deploy two secured applications for SSO with availabilityenabled as follows:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">asadmin deploy --target ${GF_CLUSTER_NAME} --availabilityenabled=true a.war
+asadmin deploy --target ${GF_CLUSTER_NAME} --availabilityenabled=true b.war</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="MS4HADemo-HASSODemonstration"></a>HA SSO Demonstration</h2> 
+     <ul> 
+      <li>Access <a href="http://localhost:18080/a">http://localhost:18080/a</a> and login as javaee/javaee.</li> 
+      <li>Access <a href="http://localhost:18080/b">http://localhost:18080/b</a> and there is no need to login due to SSO.</li> 
+      <li>Stop the inst1 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">asadmin stop-instance inst1</pre> 
+         </div> 
+        </div>
+       </div></li> 
+      <li>Access <a href="http://localhost:28080/b">http://localhost:28080/b</a> and see that the counter is incremented without requiring login again.</li> 
+      <li>Access <a href="http://localhost:28080/a">http://localhost:28080/a</a> and see that the counter is incremented without requiring login again.</li> 
+     </ul> <p>Once you have the cluster setup - deploy the attached application to the cluster with the availabilityenabled parameter set to true as shown below.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">asadmin deploy --target &lt;target-cluster-name&gt; --availabilityenabled=true SFSBDriver.war</pre> 
+       </div> 
+      </div>
+     </div> <p>The application SFSBDriver is what shows the HA features in MS3. To start the demo - point your browser to </p> <p><a href="http://localhost:18080/SFSBDriver/SFSBDriverServlet">http://localhost:18080/SFSBDriver/SFSBDriverServlet</a> (we are pointing to instance 1 but you could use any instance. Also replace localhost appropriately)</p> <p>The application puts the following attributes in the HTTP session - </p> <p>an Integer value <br> a String<br> and two stateful session bean references.</p> <p>When the application is loaded on the browser hit refresh a few times and you will see that the counter is incremented.<br> Now shutdown the instance on which you were loading the page, in our case instance 1 as follows - </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">asadmin stop-instance inst1</pre> 
+       </div> 
+      </div>
+     </div> <p>Get the session id for the cookie from the browser (on firefox right click on the page and select Page Info and you will get the session id).</p> <p>Now redirect the browser to go to instance 3 - passing it the JSESSIONID=&lt;session id&gt; in the url. </p> <p>So the url will be </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">http://localhost:38080/SFSBDriver/SFSBDriverServlet?JSESSIONID=&lt;session id&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>You will observe that the counter increment continues from where you left off on instance1. The session data is replicated to inst3 and the state is preserved.</p> <p>The <span class="error">[^SFSBDriver.war]</span> is attached (sources will also be put up shortly). Click on Tools on the top right corner of this page to get to the attachments.</p> <h4><a name="MS4HADemo-HighAvailabilityofStatefulEJBsusingMethodCheckpointing"></a>High Availability of Stateful EJBs using Method Checkpointing</h2> <p>Once you have the cluster setup - deploy the attached application to the cluster with the availabilityenabled parameter set to true as shown below.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">asadmin deploy --target &lt;target-cluster-name&gt; --availabilityenabled=true SFSBMethodCheckpointDriver.war</pre> 
+       </div> 
+      </div>
+     </div> <p>To start the demo - point your browser to </p> <p><a href="http://localhost:18080/SFSBMethodcheckpointDriver/SFSBDriverServlet">http://localhost:18080/SFSBMethodcheckpointDriver/SFSBDriverServlet</a> (we are pointing to instance 1 but you could use any instance. Also replace localhost appropriately)</p> <p>The application puts the following attributes in the HTTP session - </p> <p>an Integer value <br> a String<br> and two stateful session bean references. The first bean has a method called incrementCounter() which has a (default) transaction attribute (TX_REUQIRED). This causes the bean's state to be checkpointed at the end of Tx. The second bean has the same method incrementCounter() but that method has a transaction attribnute TX_NEVER. This means that invoking the icnrementCountER() will not cause the bean's state to be captured. In order to do this we have another method called doCheckpoint(). The method has been marked as checkpointed method using sun-ejb-jar.xml.</p> <p>When the application is loaded on the browser hit refresh a few times and you will see that the counter is incremented.</p> <p>Get the session id for the cookie from the browser (on firefox right click on the page and select Page Info and you will get the session id).</p> <p>Now redirect the browser to go to instance 3 - passing it the JSESSIONID=&lt;session id&gt; in the url. </p> <p>So the url will be </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">http://localhost:38080/SFSBMethodCheckpointDriver/SFSBDriverServlet?JSESSIONID=&lt;session id&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>You will observe that the counter increment continues for sfsb1 from where you left off on instance1. But the counter for SFSB2 starts from 3 since that bean's state never got checkpointed after the thrird access.</p> <p>The <span class="error">[^SFSBMethodCheckpointDriver.war]</span> is attached (sources will also be put up shortly). Click on Tools on the top right corner of this page to get to the attachments.</p> <p>Acknowledgement: I would like to thank Cheng Fang for his valuable help in getting this feature done. Many thanks for Joe Fialli, Bobby and Seteve (HA team) for their help.</p> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Aug 23, 2010 by 
+<font color="#0050B2">mkan</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

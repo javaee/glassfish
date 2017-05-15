@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : Gfpik.txt</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="Gfpik.txt-DevelopingtheSIPServlet"></a>Developing the SIP Servlet</h3> <p>The SIP servlet is called SimpleProxyServlet, and extends the base SipServlet class and<br> implements the SipErrorListener and Servlet interfaces.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">package com.ericsson.sip.servlet.example;
+
+import java.io.IOException;
+import javax.servlet.Servlet;
+import javax.servlet.ServletException;
+import javax.servlet.sip.Proxy;
+import javax.servlet.sip.SipErrorEvent;
+import javax.servlet.sip.SipErrorListener;
+import javax.servlet.sip.SipServlet;
+import javax.servlet.sip.SipServletRequest;
+import javax.servlet.sip.SipServletResponse;
+
+
+
+public class SimpleProxyServlet 
+            extends SipServlet 
+            implements SipErrorListener,Servlet {
+    
+    /** Creates a new instance of SimpleProxyServlet */
+    public SimpleProxyServlet() {
+    }
+    
+    
+    protected void doInvite(SipServletRequest request) 
+        throws ServletException, IOException {
+    	 
+        if (request.isInitial()) {
+
+           Proxy proxy = request.getProxy();
+           proxy.setRecordRoute(true);
+	   proxy.setSupervised(true);
+	   proxy.proxyTo(request.getRequestURI()); // bobs uri
+          
+        }
+        
+        System.out.println("SimpleProxyServlet: Got request:\n" + request);
+    }
+    
+    
+    protected void doBye(SipServletRequest request) throws 
+				ServletException, IOException {
+        
+        System.out.println("SimpleProxyServlet: Got BYE request:\n" + request);
+        super.doBye(request);
+    }
+    
+    
+    protected void doResponse(SipServletResponse response) 
+        throws ServletException, IOException {
+        
+        System.out.println("SimpleProxyServlet: Got response:\n" + response);
+ 	super.doResponse(response);
+    }
+    
+    
+    // SipErrorListener
+    
+    public void noAckReceived(SipErrorEvent ee) {
+         
+        System.out.println("SimpleProxyServlet: Error: noAckReceived.");
+    }
+    
+    public void noPrackReceived(SipErrorEvent ee) {
+        
+	System.out.println("SimpleProxyServlet: Error: noPrackReceived.");
+    }
+    
+}</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="Gfpik.txt-SIPMethods"></a>SIP Methods</h3> <p>In SimpleProxyServlet, you override several methods to respond to the main SIP methods.</p> 
+     <ul> 
+      <li>doInvite- responds to INVITE requests.</li> 
+     </ul> <p>In SimpleProxyServlet, upon receiving an INVITE request the servlet will create a javax.servlet.sip.Proxy instance, set some options, and proxy the request to the target SIP server.</p> 
+     <ul> 
+      <li>doBye- responds to BYTE requests.</li> 
+     </ul> <p>In SimpleProxyServlet, the servlet logs a message upon receiving a BYE message, and calls the doBye method of the parent class (javax.servlet.sip.SipServlet).</p> <h4><a name="Gfpik.txt-SipErrorListenerMethods"></a>SipErrorListener Methods</h3> <p>Because SimpleProxyServlet implements the SipErrorListener interface, it must implement the following methods:</p> 
+     <ul> 
+      <li>noAckReceived is invoked to notify the application that no ACK message was received for an INVITE transaction.</li> 
+     </ul> 
+     <ul> 
+      <li>noPrackReceived is invoked when no PRACK message was received for a previously sent response.</li> 
+     </ul> <p><span class="error">[Previous|^gfpcy.txt]</span> <span class="error">[Next|^gfpnl.txt]</span></p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:48.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

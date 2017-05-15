@@ -1,0 +1,3520 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFish Server 4.0 asadmin Subcommands</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>This page contains the list of subcommands in GlassFish Server 4.0.</p> <p>The list includes:</p> 
+     <ul> 
+      <li>Subcommands that are part of the public user interface.</li> 
+      <li>Subcommands that are internal and are not intended to be run directly by users.<br> The name of an internal subcommand starts with an underscore (_).</li> 
+     </ul> <p>For each subcommand, the following information is provided:</p> 
+     <ul> 
+      <li><b>Subcommand</b>. The name of the subcommand.</li> 
+      <li><b>Mode</b>. The mode of the subcommand: local or remote.</li> 
+      <li><b>Path</b>. The location of the subcommand beneath trunk/main/ for source code and beneath trunk/main-docs/man/ for the man page.</li> 
+      <li><b>Package</b>. The package in which the subcommand is delivered.</li> 
+      <li><b>main-docs Module</b>. The module in which the man page for the subcommand is delivered.</li> 
+      <li><b>Release</b>. The release when the command was supplied: 
+       <ul> 
+        <li><b>3.1.2</b>. The subcommand was supplied in the 3.1.2 release.</li> 
+        <li><b>4.0</b>. The subcommand is new in the 4.0 release.</li> 
+       </ul> </li> 
+      <li><b>Notes</b>. Any notes relating to the subcommand.</li> 
+     </ul> <p>The value "TBR" means "to be researched"; a prefatory "OOD:" means "out of date", indicating that the following value is not current.</p> <p> </p>
+     <div class="table-wrap"> 
+      <table id="TBL1430383168723" class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Subcommand </th> 
+         <th class="confluenceTh"> Mode </th> 
+         <th class="confluenceTh"> Path </th> 
+         <th class="confluenceTh"> Package </th> 
+         <th class="confluenceTh"> main-docs Module </th> 
+         <th class="confluenceTh"> Release </th> 
+         <th class="confluenceTh"> Notes </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> add-library </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/deployment/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.deployment.admin </td> 
+         <td class="confluenceTd"> deployment-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> add-resources </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/admin/util/ </td> 
+         <td class="confluenceTd"> org.glassfish.admin.cli.resources </td> 
+         <td class="confluenceTd"> admin-util-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> apply-http-lb-changes </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/load-balancer/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.loadbalancer.admin.cli </td> 
+         <td class="confluenceTd"> load-balancer-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> attach </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/core/kernel/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.v3.admin.commands </td> 
+         <td class="confluenceTd"> kernel-manpage </td> 
+         <td class="confluenceTd"> 4.0 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> backup-domain </td> 
+         <td class="confluenceTd"> local </td> 
+         <td class="confluenceTd"> appserver/admin/cli-optional/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.admin.cli.optional </td> 
+         <td class="confluenceTd"> cli-optional-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> change-admin-password </td> 
+         <td class="confluenceTd"> local </td> 
+         <td class="confluenceTd"> nucleus/admin/server-mgmt/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.admin.servermgmt.cli </td> 
+         <td class="confluenceTd"> server-mgmt-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> change-master-broker </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/jms/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.jms.admin.cli </td> 
+         <td class="confluenceTd"> jms-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> change-master-password </td> 
+         <td class="confluenceTd"> local </td> 
+         <td class="confluenceTd"> nucleus/admin/server-mgmt/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.admin.servermgmt.cli </td> 
+         <td class="confluenceTd"> server-mgmt-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> collect-log-files </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/core/logging/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.server.logging.commands </td> 
+         <td class="confluenceTd"> logging-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> configure-jms-cluster </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/jms/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.jms.admin.cli </td> 
+         <td class="confluenceTd"> jms-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> configure-lb-weight </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/load-balancer/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.loadbalancer.admin.cli </td> 
+         <td class="confluenceTd"> load-balancer-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> configure-ldap-for-admin </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/security/core/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.security.cli </td> 
+         <td class="confluenceTd"> security-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> configure-managed-jobs </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/core/kernel/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.v3.admin.commands </td> 
+         <td class="confluenceTd"> kernel-manpage </td> 
+         <td class="confluenceTd"> 4.0 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> copy-config </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/cluster/admin/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.v3.admin.cluster </td> 
+         <td class="confluenceTd"> cluster-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-admin-object </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/connectors/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.connectors.admin.cli </td> 
+         <td class="confluenceTd"> connectors-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-application-ref </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/deployment/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.deployment.admin </td> 
+         <td class="confluenceTd"> deployment-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-audit-module </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/security/core/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.security.cli </td> 
+         <td class="confluenceTd"> security-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-auth-realm </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/security/core/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.security.cli </td> 
+         <td class="confluenceTd"> security-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-cluster </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/admin/config-api/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.config.serverbeans </td> 
+         <td class="confluenceTd"> config-api-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-connector-connection-pool </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/connectors/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.connectors.admin.cli </td> 
+         <td class="confluenceTd"> connectors-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-connector-resource </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/connectors/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.connectors.admin.cli </td> 
+         <td class="confluenceTd"> connectors-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-connector-security-map </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/connectors/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.connectors.admin.cli </td> 
+         <td class="confluenceTd"> connectors-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-connector-work-security-map </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/connectors/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.connectors.admin.cli </td> 
+         <td class="confluenceTd"> connectors-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-context-service </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/concurrent/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.concurrent.admin </td> 
+         <td class="confluenceTd"> concurrent-admin-manpage </td> 
+         <td class="confluenceTd"> 4.0 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-custom-resource </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/connectors/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.connectors.admin.cli </td> 
+         <td class="confluenceTd"> connectors-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-domain </td> 
+         <td class="confluenceTd"> local </td> 
+         <td class="confluenceTd"> nucleus/admin/server-mgmt/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.admin.servermgmt.cli </td> 
+         <td class="confluenceTd"> server-mgmt-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-file-user </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/security/core/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.security.cli </td> 
+         <td class="confluenceTd"> security-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-http </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/web/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.web.admin.cli </td> 
+         <td class="confluenceTd"> web-cli-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-http-health-checker </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/load-balancer/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.loadbalancer.admin.cli </td> 
+         <td class="confluenceTd"> load-balancer-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-http-lb </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/load-balancer/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.loadbalancer.admin.cli </td> 
+         <td class="confluenceTd"> load-balancer-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-http-lb-config </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/admin/config-api/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.config.serverbeans </td> 
+         <td class="confluenceTd"> config-api-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-http-lb-ref </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/load-balancer/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.loadbalancer.admin.cli </td> 
+         <td class="confluenceTd"> load-balancer-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-http-listener </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/web/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.web.admin.cli </td> 
+         <td class="confluenceTd"> web-cli-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-http-redirect </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/web/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.web.admin.cli </td> 
+         <td class="confluenceTd"> web-cli-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-iiop-listener </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/orb/orb-connector/ </td> 
+         <td class="confluenceTd"> org.glassfish.orb.admin.cli </td> 
+         <td class="confluenceTd"> orb-connector-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-instance </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/cluster/admin/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.v3.admin.cluster </td> 
+         <td class="confluenceTd"> cluster-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-jacc-provider </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/security/core/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.security.cli </td> 
+         <td class="confluenceTd"> security-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-javamail-resource </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/connectors/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.connectors.admin.cli </td> 
+         <td class="confluenceTd"> connectors-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-jdbc-connection-pool </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/jdbc/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.jdbc.admin.cli </td> 
+         <td class="confluenceTd"> jdbc-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-jdbc-resource </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/jdbc/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.jdbc.admin.cli </td> 
+         <td class="confluenceTd"> jdbc-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-jmsdest </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/jms/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.jms.admin.cli </td> 
+         <td class="confluenceTd"> jms-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-jms-host </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/jms/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.jms.admin.cli </td> 
+         <td class="confluenceTd"> jms-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-jms-resource </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/jms/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.jms.admin.cli </td> 
+         <td class="confluenceTd"> jms-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-jndi-resource </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/connectors/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.connectors.admin.cli </td> 
+         <td class="confluenceTd"> connectors-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-jvm-options </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/core/kernel/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.v3.admin.commands </td> 
+         <td class="confluenceTd"> kernel-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-lifecycle-module </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/deployment/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.deployment.admin </td> 
+         <td class="confluenceTd"> deployment-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-local-instance </td> 
+         <td class="confluenceTd"> local </td> 
+         <td class="confluenceTd"> nucleus/cluster/cli/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.admin.cli.cluster </td> 
+         <td class="confluenceTd"> cluster-cli-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-managed-executor-service </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/concurrent/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.concurrent.admin </td> 
+         <td class="confluenceTd"> concurrent-admin-manpage </td> 
+         <td class="confluenceTd"> 4.0 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-managed-scheduled-executor-service </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/concurrent/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.concurrent.admin </td> 
+         <td class="confluenceTd"> concurrent-admin-manpage </td> 
+         <td class="confluenceTd"> 4.0 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-managed-thread-factory </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/concurrent/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.concurrent.admin </td> 
+         <td class="confluenceTd"> concurrent-admin-manpage </td> 
+         <td class="confluenceTd"> 4.0 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-message-security-provider </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/security/core/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.security.cli </td> 
+         <td class="confluenceTd"> security-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-module-config </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/admin/config-api/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.config.modularity.command </td> 
+         <td class="confluenceTd"> config-api-manpage </td> 
+         <td class="confluenceTd"> 4.0 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-network-listener </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/web/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.web.admin.cli </td> 
+         <td class="confluenceTd"> web-cli-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-node-config </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/cluster/admin/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.v3.admin.cluster </td> 
+         <td class="confluenceTd"> cluster-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-node-dcom </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/cluster/admin/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.v3.admin.cluster.dcom </td> 
+         <td class="confluenceTd"> cluster-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-node-ssh </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/cluster/admin/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.v3.admin.cluster </td> 
+         <td class="confluenceTd"> cluster-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-password-alias </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/security/core/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.security.cli </td> 
+         <td class="confluenceTd"> security-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-profiler </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/core/kernel/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.v3.admin </td> 
+         <td class="confluenceTd"> kernel-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-protocol </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/web/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.web.admin.cli </td> 
+         <td class="confluenceTd"> web-cli-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-protocol-finder </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/web/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.web.admin.cli </td> 
+         <td class="confluenceTd"> web-cli-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-resource-adapter-config </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/connectors/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.connectors.admin.cli </td> 
+         <td class="confluenceTd"> connectors-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-resource-ref </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/admin/util/ </td> 
+         <td class="confluenceTd"> org.glassfish.admin.cli.resources </td> 
+         <td class="confluenceTd"> admin-util-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-service </td> 
+         <td class="confluenceTd"> local </td> 
+         <td class="confluenceTd"> nucleus/admin/server-mgmt/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.admin.servermgmt.cli </td> 
+         <td class="confluenceTd"> server-mgmt-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-ssl </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/core/kernel/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.v3.admin </td> 
+         <td class="confluenceTd"> kernel-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-system-properties </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/core/kernel/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.v3.admin </td> 
+         <td class="confluenceTd"> kernel-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-threadpool </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/core/kernel/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.v3.admin.commands </td> 
+         <td class="confluenceTd"> kernel-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-transport </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/web/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.web.admin.cli </td> 
+         <td class="confluenceTd"> web-cli-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-virtual-server </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/web/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.web.admin.cli </td> 
+         <td class="confluenceTd"> web-cli-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> delete-admin-object </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/connectors/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.connectors.admin.cli </td> 
+         <td class="confluenceTd"> connectors-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> delete-application-ref </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/deployment/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.deployment.admin </td> 
+         <td class="confluenceTd"> deployment-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> delete-audit-module </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/security/core/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.security.cli </td> 
+         <td class="confluenceTd"> security-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> delete-auth-realm </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/security/core/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.security.cli </td> 
+         <td class="confluenceTd"> security-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> delete-cluster </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/admin/config-api/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.config.serverbeans </td> 
+         <td class="confluenceTd"> config-api-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> delete-config </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/cluster/admin/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.v3.admin.cluster </td> 
+         <td class="confluenceTd"> cluster-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> delete-connector-connection-pool </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/connectors/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.connectors.admin.cli </td> 
+         <td class="confluenceTd"> connectors-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> delete-connector-resource </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/connectors/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.connectors.admin.cli </td> 
+         <td class="confluenceTd"> connectors-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> delete-connector-security-map </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/connectors/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.connectors.admin.cli </td> 
+         <td class="confluenceTd"> connectors-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> delete-connector-work-security-map </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/connectors/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.connectors.admin.cli </td> 
+         <td class="confluenceTd"> connectors-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> delete-context-service </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/concurrent/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.concurrent.admin </td> 
+         <td class="confluenceTd"> concurrent-admin-manpage </td> 
+         <td class="confluenceTd"> 4.0 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> delete-custom-resource </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/connectors/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.connectors.admin.cli </td> 
+         <td class="confluenceTd"> connectors-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> delete-domain </td> 
+         <td class="confluenceTd"> local </td> 
+         <td class="confluenceTd"> nucleus/admin/server-mgmt/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.admin.servermgmt.cli </td> 
+         <td class="confluenceTd"> server-mgmt-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> delete-file-user </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/security/core/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.security.cli </td> 
+         <td class="confluenceTd"> security-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> delete-http </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/web/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.web.admin.cli </td> 
+         <td class="confluenceTd"> web-cli-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> delete-http-health-checker </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/load-balancer/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.loadbalancer.admin.cli </td> 
+         <td class="confluenceTd"> load-balancer-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> delete-http-lb </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/admin/config-api/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.config.serverbeans </td> 
+         <td class="confluenceTd"> config-api-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> delete-http-lb-config </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/admin/config-api/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.config.serverbeans </td> 
+         <td class="confluenceTd"> config-api-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> delete-http-lb-ref </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/load-balancer/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.loadbalancer.admin.cli </td> 
+         <td class="confluenceTd"> load-balancer-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> delete-http-listener </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/web/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.web.admin.cli </td> 
+         <td class="confluenceTd"> web-cli-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> delete-http-redirect </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/web/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.web.admin.cli </td> 
+         <td class="confluenceTd"> web-cli-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> delete-iiop-listener </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/orb/orb-connector/ </td> 
+         <td class="confluenceTd"> org.glassfish.orb.admin.cli </td> 
+         <td class="confluenceTd"> orb-connector-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> delete-instance </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/cluster/admin/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.v3.admin.cluster </td> 
+         <td class="confluenceTd"> cluster-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> delete-jacc-provider </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/security/core/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.security.cli </td> 
+         <td class="confluenceTd"> security-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> delete-javamail-resource </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/connectors/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.connectors.admin.cli </td> 
+         <td class="confluenceTd"> connectors-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> delete-jdbc-connection-pool </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/jdbc/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.jdbc.admin.cli </td> 
+         <td class="confluenceTd"> jdbc-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> delete-jdbc-resource </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/jdbc/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.jdbc.admin.cli </td> 
+         <td class="confluenceTd"> jdbc-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> delete-jmsdest </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/jms/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.jms.admin.cli </td> 
+         <td class="confluenceTd"> jms-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> delete-jms-host </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/jms/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.jms.admin.cli </td> 
+         <td class="confluenceTd"> jms-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> delete-jms-resource </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/jms/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.jms.admin.cli </td> 
+         <td class="confluenceTd"> jms-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> delete-jndi-resource </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/connectors/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.connectors.admin.cli </td> 
+         <td class="confluenceTd"> connectors-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> delete-jvm-options </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/core/kernel/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.v3.admin.commands </td> 
+         <td class="confluenceTd"> kernel-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> delete-lifecycle-module </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/deployment/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.deployment.admin </td> 
+         <td class="confluenceTd"> deployment-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> delete-local-instance </td> 
+         <td class="confluenceTd"> local </td> 
+         <td class="confluenceTd"> nucleus/cluster/cli/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.admin.cli.cluster </td> 
+         <td class="confluenceTd"> cluster-cli-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> delete-managed-executor-service </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/concurrent/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.concurrent.admin </td> 
+         <td class="confluenceTd"> concurrent-admin-manpage </td> 
+         <td class="confluenceTd"> 4.0 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> delete-managed-scheduled-executor-service </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/concurrent/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.concurrent.admin </td> 
+         <td class="confluenceTd"> concurrent-admin-manpage </td> 
+         <td class="confluenceTd"> 4.0 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> delete-managed-thread-factory </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/concurrent/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.concurrent.admin </td> 
+         <td class="confluenceTd"> concurrent-admin-manpage </td> 
+         <td class="confluenceTd"> 4.0 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> delete-message-security-provider </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/security/core/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.security.cli </td> 
+         <td class="confluenceTd"> security-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> delete-module-config </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/admin/config-api/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.config.modularity.command </td> 
+         <td class="confluenceTd"> config-api-manpage </td> 
+         <td class="confluenceTd"> 4.0 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> delete-network-listener </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/web/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.web.admin.cli </td> 
+         <td class="confluenceTd"> web-cli-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> delete-node-config </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/cluster/admin/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.v3.admin.cluster </td> 
+         <td class="confluenceTd"> cluster-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> delete-node-dcom </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/cluster/admin/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.v3.admin.cluster.dcom </td> 
+         <td class="confluenceTd"> cluster-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> delete-node-ssh </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/cluster/admin/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.v3.admin.cluster </td> 
+         <td class="confluenceTd"> cluster-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> delete-password-alias </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/security/core/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.security.cli </td> 
+         <td class="confluenceTd"> security-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> delete-profiler </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/core/kernel/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.v3.admin </td> 
+         <td class="confluenceTd"> kernel-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> delete-protocol </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/web/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.web.admin.cli </td> 
+         <td class="confluenceTd"> web-cli-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> delete-protocol-finder </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/web/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.web.admin.cli </td> 
+         <td class="confluenceTd"> web-cli-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> delete-resource-adapter-config </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/connectors/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.connectors.admin.cli </td> 
+         <td class="confluenceTd"> connectors-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> delete-resource-ref </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/admin/util/ </td> 
+         <td class="confluenceTd"> org.glassfish.admin.cli.resources </td> 
+         <td class="confluenceTd"> admin-util-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> delete-ssl </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/core/kernel/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.v3.admin </td> 
+         <td class="confluenceTd"> kernel-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> delete-system-property </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/core/kernel/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.v3.admin </td> 
+         <td class="confluenceTd"> kernel-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> delete-threadpool </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/core/kernel/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.v3.admin.commands </td> 
+         <td class="confluenceTd"> kernel-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> delete-transport </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/web/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.web.admin.cli </td> 
+         <td class="confluenceTd"> web-cli-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> delete-virtual-server </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/web/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.web.admin.cli </td> 
+         <td class="confluenceTd"> web-cli-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> deploy </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/deployment/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.deployment.admin </td> 
+         <td class="confluenceTd"> deployment-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> deploydir </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/deployment/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.deployment.admin </td> 
+         <td class="confluenceTd"> deployment-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> disable </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/deployment/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.deployment.admin </td> 
+         <td class="confluenceTd"> deployment-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> disable-http-lb-application </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/load-balancer/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.loadbalancer.admin.cli </td> 
+         <td class="confluenceTd"> load-balancer-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> disable-http-lb-server </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/load-balancer/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.loadbalancer.admin.cli </td> 
+         <td class="confluenceTd"> load-balancer-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> disable-monitoring </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/flashlight/framework/ </td> 
+         <td class="confluenceTd"> org.glassfish.flashlight.cli </td> 
+         <td class="confluenceTd"> flashlight-framework-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> disable-secure-admin </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/security/core/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.security.admin.cli </td> 
+         <td class="confluenceTd"> security-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> disable-secure-admin-internal-user </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/admin/config-api/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.config.serverbeans </td> 
+         <td class="confluenceTd"> config-api-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> disable-secure-admin-principal </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/admin/config-api/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.config.serverbeans </td> 
+         <td class="confluenceTd"> config-api-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> enable </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/deployment/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.deployment.admin </td> 
+         <td class="confluenceTd"> deployment-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> enable-http-lb-application </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/load-balancer/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.loadbalancer.admin.cli </td> 
+         <td class="confluenceTd"> load-balancer-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> enable-http-lb-server </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/load-balancer/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.loadbalancer.admin.cli </td> 
+         <td class="confluenceTd"> load-balancer-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> enable-monitoring </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/flashlight/framework/ </td> 
+         <td class="confluenceTd"> org.glassfish.flashlight.cli </td> 
+         <td class="confluenceTd"> flashlight-framework-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> enable-secure-admin </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/security/core/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.security.admin.cli </td> 
+         <td class="confluenceTd"> security-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> enable-secure-admin-internal-user </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/admin/config-api/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.config.serverbeans </td> 
+         <td class="confluenceTd"> config-api-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> enable-secure-admin-principal </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/admin/config-api/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.config.serverbeans </td> 
+         <td class="confluenceTd"> config-api-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> export </td> 
+         <td class="confluenceTd"> local </td> 
+         <td class="confluenceTd"> nucleus/admin/cli/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.admin.cli </td> 
+         <td class="confluenceTd"> admin-cli-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> export-http-lb-config </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/load-balancer/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.loadbalancer.admin.cli </td> 
+         <td class="confluenceTd"> load-balancer-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> export-sync-bundle </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/cluster/admin/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.v3.admin.cluster </td> 
+         <td class="confluenceTd"> cluster-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd"> In different module from import-sync-bundle </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> flush-connection-pool </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/connectors/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.connectors.admin.cli </td> 
+         <td class="confluenceTd"> connectors-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> flush-jmsdest </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/jms/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.jms.admin.cli </td> 
+         <td class="confluenceTd"> jms-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> freeze-transaction-service </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/transaction/jta/ </td> 
+         <td class="confluenceTd"> org.glassfish.jta.admin.cli </td> 
+         <td class="confluenceTd"> jta-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> generate-domain-schema </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> OOD: in admin/cli at 3.1.2 </td> 
+         <td class="confluenceTd"> OOD: in at 3.1.2 </td> 
+         <td class="confluenceTd"> tbr </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd"> Not officially supported in 4.0 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> generate-jvm-report </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/core/kernel/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.v3.admin.commands </td> 
+         <td class="confluenceTd"> kernel-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> get </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/core/kernel/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.v3.admin </td> 
+         <td class="confluenceTd"> kernel-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> get-active-module-config </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/admin/config-api/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.config.modularity.command </td> 
+         <td class="confluenceTd"> config-api-manpage </td> 
+         <td class="confluenceTd"> 4.0 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> get-client-stubs </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/appclient/server/core/ </td> 
+         <td class="confluenceTd"> org.glassfish.appclient.server.core </td> 
+         <td class="confluenceTd"> appclient-server-core-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> get-health </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/cluster/admin/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.v3.admin.cluster </td> 
+         <td class="confluenceTd"> cluster-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> help </td> 
+         <td class="confluenceTd"> local </td> 
+         <td class="confluenceTd"> appserver/admin/cli/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.admin.cli </td> 
+         <td class="confluenceTd"> appserver-cli-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd"> Displays asadmin(1M) man page </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> import-sync-bundle </td> 
+         <td class="confluenceTd"> local </td> 
+         <td class="confluenceTd"> nucleus/cluster/cli/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.admin.cli.cluster </td> 
+         <td class="confluenceTd"> cluster-cli-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd"> In different module from export-sync-bundle </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> install-node </td> 
+         <td class="confluenceTd"> local </td> 
+         <td class="confluenceTd"> nucleus/cluster/cli/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.admin.cli.cluster </td> 
+         <td class="confluenceTd"> cluster-cli-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> install-node-dcom </td> 
+         <td class="confluenceTd"> local </td> 
+         <td class="confluenceTd"> nucleus/cluster/cli/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.admin.cli.cluster </td> 
+         <td class="confluenceTd"> cluster-cli-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> install-node-ssh </td> 
+         <td class="confluenceTd"> local </td> 
+         <td class="confluenceTd"> nucleus/cluster/cli/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.admin.cli.cluster </td> 
+         <td class="confluenceTd"> cluster-cli-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jms-ping </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/jms/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.jms.admin.cli </td> 
+         <td class="confluenceTd"> jms-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/core/kernel/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.v3.admin </td> 
+         <td class="confluenceTd"> kernel-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-admin-objects </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/connectors/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.connectors.admin.cli </td> 
+         <td class="confluenceTd"> connectors-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-application-refs </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/deployment/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.deployment.admin </td> 
+         <td class="confluenceTd"> deployment-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-applications </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/deployment/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.deployment.admin </td> 
+         <td class="confluenceTd"> deployment-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-audit-modules </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/security/core/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.security.cli </td> 
+         <td class="confluenceTd"> security-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-auth-realms </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/security/core/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.security.cli </td> 
+         <td class="confluenceTd"> security-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-backups </td> 
+         <td class="confluenceTd"> local </td> 
+         <td class="confluenceTd"> appserver/admin/cli-optional/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.admin.cli.optional </td> 
+         <td class="confluenceTd"> cli-optional-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-batch-jobs </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/batch/batch-connector/ </td> 
+         <td class="confluenceTd"> org.glassfish.batch </td> 
+         <td class="confluenceTd"> batch-connector-manpage </td> 
+         <td class="confluenceTd"> 4.0 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-batch-runtime-configuration </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/batch/batch-connector/ </td> 
+         <td class="confluenceTd"> org.glassfish.batch </td> 
+         <td class="confluenceTd"> batch-connector-manpage </td> 
+         <td class="confluenceTd"> 4.0 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-clusters </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/cluster/admin/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.v3.admin.cluster </td> 
+         <td class="confluenceTd"> cluster-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-commands </td> 
+         <td class="confluenceTd"> local </td> 
+         <td class="confluenceTd"> nucleus/admin/cli/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.admin.cli </td> 
+         <td class="confluenceTd"> admin-cli-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-commands </td> 
+         <td class="confluenceTd"> local </td> 
+         <td class="confluenceTd"> nucleus/admin/cli/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.admin.cli </td> 
+         <td class="confluenceTd"> admin-cli-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-components </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/deployment/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.deployment.admin </td> 
+         <td class="confluenceTd"> deployment-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-configs </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/cluster/admin/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.v3.admin.cluster </td> 
+         <td class="confluenceTd"> cluster-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-connector-connection-pools </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/connectors/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.connectors.admin.cli </td> 
+         <td class="confluenceTd"> connectors-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-connector-resources </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/connectors/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.connectors.admin.cli </td> 
+         <td class="confluenceTd"> connectors-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-connector-security-maps </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/connectors/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.connectors.admin.cli </td> 
+         <td class="confluenceTd"> connectors-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-connector-work-security-maps </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/connectors/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.connectors.admin.cli </td> 
+         <td class="confluenceTd"> connectors-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-containers </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/core/kernel/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.v3.admin </td> 
+         <td class="confluenceTd"> kernel-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-context-services </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/concurrent/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.concurrent.admin </td> 
+         <td class="confluenceTd"> concurrent-admin-manpage </td> 
+         <td class="confluenceTd"> 4.0 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-custom-resources </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/connectors/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.connectors.admin.cli </td> 
+         <td class="confluenceTd"> connectors-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-domains </td> 
+         <td class="confluenceTd"> local </td> 
+         <td class="confluenceTd"> nucleus/admin/server-mgmt/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.admin.servermgmt.cli </td> 
+         <td class="confluenceTd"> server-mgmt-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-file-groups </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/security/core/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.security.cli </td> 
+         <td class="confluenceTd"> security-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-file-users </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/security/core/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.security.cli </td> 
+         <td class="confluenceTd"> security-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-http-lb-configs </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/load-balancer/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.loadbalancer.admin.cli </td> 
+         <td class="confluenceTd"> load-balancer-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-http-lbs </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/admin/config-api/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.config.serverbeans </td> 
+         <td class="confluenceTd"> config-api-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-http-listeners </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/web/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.web.admin.cli </td> 
+         <td class="confluenceTd"> web-cli-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-iiop-listeners </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/orb/orb-connector/ </td> 
+         <td class="confluenceTd"> org.glassfish.orb.admin.cli </td> 
+         <td class="confluenceTd"> orb-connector-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-instances </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/cluster/admin/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.v3.admin.cluster </td> 
+         <td class="confluenceTd"> cluster-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-jacc-providers </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/security/core/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.security.cli </td> 
+         <td class="confluenceTd"> security-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-javamail-resources </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/connectors/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.connectors.admin.cli </td> 
+         <td class="confluenceTd"> connectors-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-jdbc-connection-pools </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/jdbc/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.jdbc.admin.cli </td> 
+         <td class="confluenceTd"> jdbc-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-jdbc-resources </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/jdbc/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.jdbc.admin.cli </td> 
+         <td class="confluenceTd"> jdbc-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-jmsdest </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/jms/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.jms.admin.cli </td> 
+         <td class="confluenceTd"> jms-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-jms-hosts </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/jms/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.jms.admin.cli </td> 
+         <td class="confluenceTd"> jms-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-jms-resources </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/jms/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.jms.admin.cli </td> 
+         <td class="confluenceTd"> jms-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-jndi-entries </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/admin/monitor/ </td> 
+         <td class="confluenceTd"> org.glassfish.admin.monitor.cli </td> 
+         <td class="confluenceTd"> monitoring-core-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-jndi-resources </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/connectors/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.connectors.admin.cli </td> 
+         <td class="confluenceTd"> connectors-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-jobs </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/core/kernel/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.v3.admin.commands </td> 
+         <td class="confluenceTd"> kernel-manpage </td> 
+         <td class="confluenceTd"> 4.0 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-jvm-options </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/core/kernel/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.v3.admin.commands </td> 
+         <td class="confluenceTd"> kernel-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-libraries </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/deployment/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.deployment.admin </td> 
+         <td class="confluenceTd"> deployment-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-lifecycle-modules </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/deployment/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.deployment.admin </td> 
+         <td class="confluenceTd"> deployment-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-log-attributes </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/core/logging/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.server.logging.commands </td> 
+         <td class="confluenceTd"> logging-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-loggers </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/core/logging/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.server.logging.commands </td> 
+         <td class="confluenceTd"> logging-manpage </td> 
+         <td class="confluenceTd"> 4.0 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-log-levels </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/core/logging/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.server.logging.commands </td> 
+         <td class="confluenceTd"> logging-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-managed-executor-services </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/concurrent/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.concurrent.admin </td> 
+         <td class="confluenceTd"> concurrent-admin-manpage </td> 
+         <td class="confluenceTd"> 4.0 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-managed-scheduled-executor-services </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/concurrent/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.concurrent.admin </td> 
+         <td class="confluenceTd"> concurrent-admin-manpage </td> 
+         <td class="confluenceTd"> 4.0 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-managed-thread-factories </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/concurrent/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.concurrent.admin </td> 
+         <td class="confluenceTd"> concurrent-admin-manpage </td> 
+         <td class="confluenceTd"> 4.0 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-message-security-providers </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/security/core/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.security.cli </td> 
+         <td class="confluenceTd"> security-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-modules </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/core/kernel/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.v3.admin </td> 
+         <td class="confluenceTd"> kernel-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-network-listeners </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/web/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.web.admin.cli </td> 
+         <td class="confluenceTd"> web-cli-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-nodes </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/cluster/admin/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.v3.admin.cluster </td> 
+         <td class="confluenceTd"> cluster-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-nodes-config </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/cluster/admin/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.v3.admin.cluster </td> 
+         <td class="confluenceTd"> cluster-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-nodes-dcom </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/cluster/admin/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.v3.admin.cluster.dcom </td> 
+         <td class="confluenceTd"> cluster-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-nodes-ssh </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/cluster/admin/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.v3.admin.cluster </td> 
+         <td class="confluenceTd"> cluster-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-password-aliases </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/security/core/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.security.cli </td> 
+         <td class="confluenceTd"> security-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-persistence-types </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/cluster/admin/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.v3.admin.cluster </td> 
+         <td class="confluenceTd"> cluster-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-protocol-filters </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/web/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.web.admin.cli </td> 
+         <td class="confluenceTd"> web-cli-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-protocol-finders </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/web/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.web.admin.cli </td> 
+         <td class="confluenceTd"> web-cli-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-protocols </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/web/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.web.admin.cli </td> 
+         <td class="confluenceTd"> web-cli-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-resource-adapter-configs </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/connectors/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.connectors.admin.cli </td> 
+         <td class="confluenceTd"> connectors-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-resource-refs </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/admin/util/ </td> 
+         <td class="confluenceTd"> org.glassfish.admin.cli.resources </td> 
+         <td class="confluenceTd"> admin-util-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-secure-admin-internal-users </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/admin/config-api/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.config.serverbeans </td> 
+         <td class="confluenceTd"> config-api-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-secure-admin-principals </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/admin/config-api/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.config.serverbeans </td> 
+         <td class="confluenceTd"> config-api-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-sub-components </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/deployment/javaee-core/ </td> 
+         <td class="confluenceTd"> org.glassfish.javaee.core.deployment </td> 
+         <td class="confluenceTd"> deployment-javaee-core-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-supported-cipher-suites </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/security/core/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.security.cli </td> 
+         <td class="confluenceTd"> security-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-system-properties </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/core/kernel/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.v3.admin </td> 
+         <td class="confluenceTd"> kernel-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-threadpools </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/core/kernel/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.v3.admin.commands </td> 
+         <td class="confluenceTd"> kernel-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-timers </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/ejb/ejb-container/ </td> 
+         <td class="confluenceTd"> org.glassfish.ejb.admin.cli </td> 
+         <td class="confluenceTd"> ejb-container-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-transports </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/web/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.web.admin.cli </td> 
+         <td class="confluenceTd"> web-cli-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-virtual-servers </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/web/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.web.admin.cli </td> 
+         <td class="confluenceTd"> web-cli-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-web-context-param </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/web/gui-plugin-common/ </td> 
+         <td class="confluenceTd"> org.glassfish.web.plugin.common </td> 
+         <td class="confluenceTd"> web-gui-plugin-common-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-web-env-entry </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/web/gui-plugin-common/ </td> 
+         <td class="confluenceTd"> org.glassfish.web.plugin.common </td> 
+         <td class="confluenceTd"> web-gui-plugin-common-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> login </td> 
+         <td class="confluenceTd"> local </td> 
+         <td class="confluenceTd"> nucleus/admin/cli/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.admin.cli </td> 
+         <td class="confluenceTd"> admin-cli-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> migrate-timers </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/ejb/ejb-container/ </td> 
+         <td class="confluenceTd"> org.glassfish.ejb.admin.cli </td> 
+         <td class="confluenceTd"> ejb-container-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> monitor </td> 
+         <td class="confluenceTd"> local </td> 
+         <td class="confluenceTd"> nucleus/admin/server-mgmt/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.admin.servermgmt.cli </td> 
+         <td class="confluenceTd"> server-mgmt-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> multimode </td> 
+         <td class="confluenceTd"> local </td> 
+         <td class="confluenceTd"> nucleus/admin/cli/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.admin.cli </td> 
+         <td class="confluenceTd"> admin-cli-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> osgi </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/osgi-platforms/osgi-cli-remote/ </td> 
+         <td class="confluenceTd"> org.glassfish.osgi.cli.remote </td> 
+         <td class="confluenceTd"> osgi-cli-remote-manpage </td> 
+         <td class="confluenceTd"> 4.0 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ping-connection-pool </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/connectors/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.connectors.admin.cli </td> 
+         <td class="confluenceTd"> connectors-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ping-node-dcom </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/cluster/admin/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.v3.admin.cluster.dcom </td> 
+         <td class="confluenceTd"> cluster-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ping-node-ssh </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/cluster/admin/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.v3.admin.cluster </td> 
+         <td class="confluenceTd"> cluster-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> recover-transactions </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/transaction/jts/ </td> 
+         <td class="confluenceTd"> org.glassfish.jts.admin.cli </td> 
+         <td class="confluenceTd"> jts-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> redeploy </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/deployment/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.deployment.admin </td> 
+         <td class="confluenceTd"> deployment-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> remove-library </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/deployment/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.deployment.admin </td> 
+         <td class="confluenceTd"> deployment-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> restart-domain </td> 
+         <td class="confluenceTd"> local </td> 
+         <td class="confluenceTd"> nucleus/admin/server-mgmt/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.admin.servermgmt.cli </td> 
+         <td class="confluenceTd"> server-mgmt-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> restart-instance </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/cluster/admin/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.v3.admin.cluster </td> 
+         <td class="confluenceTd"> cluster-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> restart-local-instance </td> 
+         <td class="confluenceTd"> local </td> 
+         <td class="confluenceTd"> nucleus/cluster/cli/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.admin.cli.cluster </td> 
+         <td class="confluenceTd"> cluster-cli-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> restore-domain </td> 
+         <td class="confluenceTd"> local </td> 
+         <td class="confluenceTd"> appserver/admin/cli-optional/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.admin.cli.optional </td> 
+         <td class="confluenceTd"> cli-optional-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> rollback-transaction </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/transaction/jta/ </td> 
+         <td class="confluenceTd"> org.glassfish.jta.admin.cli </td> 
+         <td class="confluenceTd"> jta-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> rotate-log </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/core/logging/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.server.logging.commands </td> 
+         <td class="confluenceTd"> logging-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> set </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/core/kernel/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.v3.admin </td> 
+         <td class="confluenceTd"> kernel-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> set-log-attributes </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/core/logging/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.server.logging.commands </td> 
+         <td class="confluenceTd"> logging-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> set-log-file-format </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/core/logging/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.server.logging.commands </td> 
+         <td class="confluenceTd"> logging-manpage </td> 
+         <td class="confluenceTd"> 4.0 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> set-log-levels </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/core/logging/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.server.logging.commands </td> 
+         <td class="confluenceTd"> logging-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> setup-local-dcom </td> 
+         <td class="confluenceTd"> local </td> 
+         <td class="confluenceTd"> nucleus/cluster/cli/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.admin.cli.cluster </td> 
+         <td class="confluenceTd"> cluster-cli-manpage </td> 
+         <td class="confluenceTd"> 4.0 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> setup-ssh </td> 
+         <td class="confluenceTd"> local </td> 
+         <td class="confluenceTd"> nucleus/cluster/cli/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.admin.cli.cluster </td> 
+         <td class="confluenceTd"> cluster-cli-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> set-web-context-param </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/web/gui-plugin-common/ </td> 
+         <td class="confluenceTd"> org.glassfish.web.plugin.common </td> 
+         <td class="confluenceTd"> web-gui-plugin-common-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> set-web-env-entry </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/web/gui-plugin-common/ </td> 
+         <td class="confluenceTd"> org.glassfish.web.plugin.common </td> 
+         <td class="confluenceTd"> web-gui-plugin-common-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> show-component-status </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/deployment/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.deployment.admin </td> 
+         <td class="confluenceTd"> deployment-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> start-cluster </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/cluster/admin/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.v3.admin.cluster </td> 
+         <td class="confluenceTd"> cluster-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> start-database </td> 
+         <td class="confluenceTd"> local </td> 
+         <td class="confluenceTd"> appserver/admin/cli-optional/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.admin.cli.optional </td> 
+         <td class="confluenceTd"> cli-optional-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> start-domain </td> 
+         <td class="confluenceTd"> local </td> 
+         <td class="confluenceTd"> nucleus/admin/server-mgmt/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.admin.servermgmt.cli </td> 
+         <td class="confluenceTd"> server-mgmt-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> start-instance </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/cluster/admin/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.v3.admin.cluster </td> 
+         <td class="confluenceTd"> cluster-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> start-local-instance </td> 
+         <td class="confluenceTd"> local </td> 
+         <td class="confluenceTd"> nucleus/cluster/cli/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.admin.cli.cluster </td> 
+         <td class="confluenceTd"> cluster-cli-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> stop-cluster </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/cluster/admin/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.v3.admin.cluster </td> 
+         <td class="confluenceTd"> cluster-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> stop-database </td> 
+         <td class="confluenceTd"> local </td> 
+         <td class="confluenceTd"> appserver/admin/cli-optional/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.admin.cli.optional </td> 
+         <td class="confluenceTd"> cli-optional-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> stop-domain </td> 
+         <td class="confluenceTd"> local </td> 
+         <td class="confluenceTd"> nucleus/admin/server-mgmt/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.admin.servermgmt.cli </td> 
+         <td class="confluenceTd"> server-mgmt-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> stop-instance </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/cluster/admin/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.v3.admin.cluster </td> 
+         <td class="confluenceTd"> cluster-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> stop-local-instance </td> 
+         <td class="confluenceTd"> local </td> 
+         <td class="confluenceTd"> nucleus/cluster/cli/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.admin.cli.cluster </td> 
+         <td class="confluenceTd"> cluster-cli-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> undeploy </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/deployment/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.deployment.admin </td> 
+         <td class="confluenceTd"> deployment-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> unfreeze-transaction-service </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/transaction/jta/ </td> 
+         <td class="confluenceTd"> org.glassfish.jta.admin.cli </td> 
+         <td class="confluenceTd"> jta-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> uninstall-node </td> 
+         <td class="confluenceTd"> local </td> 
+         <td class="confluenceTd"> nucleus/cluster/cli/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.admin.cli.cluster </td> 
+         <td class="confluenceTd"> cluster-cli-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> uninstall-node-dcom </td> 
+         <td class="confluenceTd"> local </td> 
+         <td class="confluenceTd"> nucleus/cluster/cli/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.admin.cli.cluster </td> 
+         <td class="confluenceTd"> cluster-cli-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> uninstall-node-ssh </td> 
+         <td class="confluenceTd"> local </td> 
+         <td class="confluenceTd"> nucleus/cluster/cli/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.admin.cli.cluster </td> 
+         <td class="confluenceTd"> cluster-cli-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> unset </td> 
+         <td class="confluenceTd"> local </td> 
+         <td class="confluenceTd"> nucleus/admin/cli/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.admin.cli </td> 
+         <td class="confluenceTd"> admin-cli-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> unset-web-context-param </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/web/gui-plugin-common/ </td> 
+         <td class="confluenceTd"> org.glassfish.web.plugin.common </td> 
+         <td class="confluenceTd"> web-gui-plugin-common-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> unset-web-env-entry </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/web/gui-plugin-common/ </td> 
+         <td class="confluenceTd"> org.glassfish.web.plugin.common </td> 
+         <td class="confluenceTd"> web-gui-plugin-common-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> update-connector-security-map </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/connectors/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.connectors.admin.cli </td> 
+         <td class="confluenceTd"> connectors-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> update-connector-work-security-map </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> appserver/connectors/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.connectors.admin.cli </td> 
+         <td class="confluenceTd"> connectors-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> update-file-user </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/security/core/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.security.cli </td> 
+         <td class="confluenceTd"> security-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> update-node-config </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/cluster/admin/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.v3.admin.cluster </td> 
+         <td class="confluenceTd"> cluster-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> update-node-dcom </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/cluster/admin/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.v3.admin.cluster.dcom </td> 
+         <td class="confluenceTd"> cluster-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> update-node-ssh </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/cluster/admin/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.v3.admin.cluster </td> 
+         <td class="confluenceTd"> cluster-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> update-password-alias </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/security/core/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.security.cli </td> 
+         <td class="confluenceTd"> security-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> uptime </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/core/kernel/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.v3.admin </td> 
+         <td class="confluenceTd"> kernel-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> validate-dcom </td> 
+         <td class="confluenceTd"> remote </td> 
+         <td class="confluenceTd"> nucleus/cluster/admin/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.v3.admin.cluster </td> 
+         <td class="confluenceTd"> cluster-admin-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> validate-multicast </td> 
+         <td class="confluenceTd"> local </td> 
+         <td class="confluenceTd"> nucleus/cluster/cli/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.admin.cli.cluster </td> 
+         <td class="confluenceTd"> cluster-cli-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> verify-domain-xml </td> 
+         <td class="confluenceTd"> local </td> 
+         <td class="confluenceTd"> nucleus/admin/server-mgmt/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.admin.servermgmt.cli </td> 
+         <td class="confluenceTd"> server-mgmt-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> version </td> 
+         <td class="confluenceTd"> local </td> 
+         <td class="confluenceTd"> nucleus/admin/cli/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.admin.cli </td> 
+         <td class="confluenceTd"> admin-cli-manpage </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> __anonymous-user-enabled </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> nucleus/admin/rest/rest-service/ </td> 
+         <td class="confluenceTd"> org.glassfish.admin.rest.cli </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> __create-principal </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> OOD: in admin/rest/ at 3.1.2 </td> 
+         <td class="confluenceTd"> OOD: in org.glassfish.admin.rest.cli at 3.1.2 </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd"> Not in 4.0? </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> __create-user-group </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> OOD: in admin/rest/ at 3.1.2 </td> 
+         <td class="confluenceTd"> OOD: in org.glassfish.admin.rest.cli at 3.1.2 </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd"> Not in 4.0? </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> __delete-principal </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> OOD: in admin/rest/ at 3.1.2 </td> 
+         <td class="confluenceTd"> OOD: in org.glassfish.admin.rest.cli at 3.1.2 </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd"> Not in 4.0? </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> __delete-user-group </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> OOD: in admin/rest/ at 3.1.2 </td> 
+         <td class="confluenceTd"> OOD: in org.glassfish.admin.rest.cli at 3.1.2 </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd"> Not in 4.0? </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> __get-jmsdest </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> appserver/jms/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.jms.admin.cli </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> __list-group-names </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> nucleus/admin/rest/rest-service/ </td> 
+         <td class="confluenceTd"> org.glassfish.admin.rest.cli </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> __list-predefined-authrealm-classnames </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> nucleus/admin/rest/rest-service/ </td> 
+         <td class="confluenceTd"> org.glassfish.admin.rest.cli </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> __list-webservices </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> appserver/webservices/jsr109-impl/ </td> 
+         <td class="confluenceTd"> org.glassfish.webservices.cli </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> __locations </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> nucleus/core/kernel/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.v3.admin </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> __resolve-tokens </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> nucleus/admin/rest/rest-service/ </td> 
+         <td class="confluenceTd"> org.glassfish.admin.rest.cli </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> __supports-user-management </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> nucleus/admin/rest/rest-service/ </td> 
+         <td class="confluenceTd"> org.glassfish.admin.rest.cli </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> __synchronize-realm-from-config </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> nucleus/admin/rest/rest-service/ </td> 
+         <td class="confluenceTd"> org.glassfish.admin.rest.cli </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> __update-jmsdest </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> appserver/jms/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.jms.admin.cli </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> _bootstrap-secure-admin </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> nucleus/cluster/admin/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.v3.admin.cluster </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> _change-master-password-das </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> nucleus/admin/server-mgmt/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.admin.servermgmt.cli </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> _change-master-password-node </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> nucleus/cluster/cli/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.admin.cli.cluster </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> _create-config </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> OOD: in config/api/ at 3.1.2 </td> 
+         <td class="confluenceTd"> OOD: in com.sun.enterprise.config.serverbeans at 3.1.2 </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd"> Not in 4.0? </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> _create-instance-filesystem </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> nucleus/cluster/cli/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.admin.cli.cluster </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> _create-node </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> OOD: in admin/config-api/ at 3.1.2 </td> 
+         <td class="confluenceTd"> OOD: in com.sun.enterprise.config.serverbeans at 3.1.2 </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd"> Not in 4.0? </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> _create-node-implicit </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> nucleus/cluster/admin/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.v3.admin.cluster </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> _delete-instance-filesystem </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> nucleus/cluster/cli/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.admin.cli.cluster </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> _delete-node </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> OOD: in admin/config-api/ at 3.1.2 </td> 
+         <td class="confluenceTd"> OOD: in com.sun.enterprise.config.serverbeans at 3.1.2 </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd"> Not in 4.0? </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> _delete-service </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> OOD: in admin/cli-optional/ at 3.1.2 </td> 
+         <td class="confluenceTd"> OOD: in com.sun.enterprise.admin.cli.optional at 3.1.2 </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd"> Not in 4.0? </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> _deploy </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> nucleus/deployment/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.deployment.admin </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> _dump-hk2 </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> nucleus/core/kernel/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.v3.admin </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> _get-activation-spec-class </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> appserver/connectors/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.connectors.admin.cli.internal </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> _get-admin-object-class-names </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> appserver/connectors/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.connectors.admin.cli.internal </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> _get-admin-object-config-properties </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> appserver/connectors/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.connectors.admin.cli.internal </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> _get-admin-object-interface-names </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> appserver/connectors/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.connectors.admin.cli.internal </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> _get-application-launch-urls </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> nucleus/deployment/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.deployment.admin </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> _get-built-in-custom-resources </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> appserver/connectors/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.connectors.admin.cli.internal </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> _get-connection-definition-names </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> appserver/connectors/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.connectors.admin.cli.internal </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> _get-connection-definition-properties-and-defaults </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> appserver/connectors/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.connectors.admin.cli.internal </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> _get-connector-config-java-beans </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> appserver/connectors/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.connectors.admin.cli.internal </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> _get-context-root </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> appserver/deployment/javaee-core/ </td> 
+         <td class="confluenceTd"> org.glassfish.javaee.core.deployment </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> _get-database-vendor-names </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> appserver/jdbc/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.jdbc.admin.cli.internal </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> _get-deployment-configurations </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> nucleus/deployment/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.deployment.admin </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> _get-habitat-info </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> nucleus/core/kernel/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.v3.admin </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> _get-host-and-port </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> nucleus/deployment/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.deployment.admin </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> _get-jdbc-driver-class-names </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> appserver/jdbc/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.jdbc.admin.cli.internal </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> _get-log-file </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> nucleus/core/logging/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.server.logging.commands </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> _get-mcf-config-properties </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> appserver/connectors/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.connectors.admin.cli.internal </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> _get-message-listener-config-properties </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> appserver/connectors/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.connectors.admin.cli.internal </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> _get-message-listener-config-property-types </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> appserver/connectors/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.connectors.admin.cli.internal </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> _get-message-listener-types </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> appserver/connectors/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.connectors.admin.cli.internal </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> _get-payload </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> nucleus/core/kernel/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.v3.admin.commands </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> _get-relative-jws-uri </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> appserver/appclient/server/core/ </td> 
+         <td class="confluenceTd"> org.glassfish.appclient.server.admin </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> _get-resource-adapter-config-properties </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> appserver/connectors/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.connectors.admin.cli.internal </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> _get-rest-admin-config </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> nucleus/admin/rest/rest-service/ </td> 
+         <td class="confluenceTd"> org.glassfish.admin.rest.cli </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> _get-restart-required </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> nucleus/core/kernel/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.v3.admin </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> _get-runtime-info </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> nucleus/core/kernel/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.v3.admin </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> _get-system-rars-allowing-pool-creation </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> appserver/connectors/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.connectors.admin.cli.internal </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> _get-targets </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> nucleus/deployment/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.deployment.admin </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> _get-validation-class-names </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> appserver/jdbc/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.jdbc.admin.cli.internal </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> _get-validation-table-names </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> appserver/jdbc/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.jdbc.admin.cli.internal </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> _gms-announce-after-start-cluster-command </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> nucleus/cluster/gms-adapter/ </td> 
+         <td class="confluenceTd"> org.glassfish.gms.admin </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> _gms-announce-after-stop-cluster-command </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> nucleus/cluster/gms-adapter/ </td> 
+         <td class="confluenceTd"> org.glassfish.gms.admin </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> _gms-announce-before-start-cluster-command </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> nucleus/cluster/gms-adapter/ </td> 
+         <td class="confluenceTd"> org.glassfish.gms.admin </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> _gms-announce-before-stop-cluster-command </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> nucleus/cluster/gms-adapter/ </td> 
+         <td class="confluenceTd"> org.glassfish.gms.admin </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> _instanceValidateRemoteDirDeployment </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> nucleus/deployment/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.deployment.admin </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> _is-sniffer-user-visible </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> nucleus/deployment/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.deployment.admin </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> _lifecycle </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> nucleus/deployment/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.deployment.admin </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> _list-app-refs </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> nucleus/deployment/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.deployment.admin </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> _list-resources </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> appserver/connectors/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.connectors.admin.cli </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> _load-default-log-attributes </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> nucleus/core/logging/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.server.logging.commands </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> _load-default-log-levels </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> nucleus/core/logging/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.server.logging.commands </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> _mt-deploy </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> nucleus/deployment/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.deployment.admin </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> _mt-provision </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> nucleus/deployment/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.deployment.admin </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> _mt-undeploy </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> nucleus/deployment/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.deployment.admin </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> _mt-unprovision </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> nucleus/deployment/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.deployment.admin </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> _postdeploy </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> nucleus/deployment/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.deployment.admin </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> _postdisable </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> nucleus/deployment/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.deployment.admin </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> _postenable </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> nucleus/deployment/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.deployment.admin </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> _post-register-instance </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> nucleus/cluster/admin/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.v3.admin.cluster </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> _postundeploy </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> nucleus/deployment/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.deployment.admin </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> _post-unregister-instance </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> nucleus/cluster/admin/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.v3.admin.cluster </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> _recover-transactions-internal </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> appserver/transaction/jts/ </td> 
+         <td class="confluenceTd"> org.glassfish.jts.admin.cli </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> _register-instance </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> OOD: in config/api/ at 3.1.2 </td> 
+         <td class="confluenceTd"> OOD: in com.sun.enterprise.config.serverbeans at 3.1.2 </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd"> Not in 4.0? </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> _register-instance-at-instance </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> nucleus/cluster/admin/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.v3.admin.cluster </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> _restart-instance </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> nucleus/cluster/admin/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.v3.admin.cluster </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> _set-rest-admin-config </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> nucleus/admin/rest/rest-service/ </td> 
+         <td class="confluenceTd"> org.glassfish.admin.rest.cli </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> _setup-ssh </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> nucleus/cluster/admin/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.v3.admin.cluster </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> _stop-instance </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> nucleus/cluster/admin/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.v3.admin.cluster </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> _synchronize-files </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> nucleus/cluster/admin/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.v3.admin.cluster </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> _synchronize-instance </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> nucleus/cluster/cli/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.admin.cli.cluster </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> _unregister-instance </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> OOD: in admin/config-api/ at 3.1.2 </td> 
+         <td class="confluenceTd"> OOD: in com.sun.enterprise.config.serverbeans at 3.1.2 </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> 3.1.2 </td> 
+         <td class="confluenceTd"> Not in 4.0? </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> _update-node </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> nucleus/cluster/admin/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.v3.admin.cluster </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> _validate-das-options </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> nucleus/cluster/cli/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.admin.cli.cluster </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> _validate-node </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> nucleus/cluster/admin/ </td> 
+         <td class="confluenceTd"> com.sun.enterprise.v3.admin.cluster </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> _validateRemoteDirDeployment </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd"> nucleus/deployment/admin/ </td> 
+         <td class="confluenceTd"> org.glassfish.deployment.admin </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> TBR </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <script type="text/javascript"> <!-- 
+//Copyright(c)2005,2010 Bob Swift and other contributors. All rights reserved. 
+function getElementInnerText(element){var str="";for(var i=0;i<element.childNodes.length;i++){switch(element.childNodes.item(i).nodeType){case 1:str+=getElementInnerText(element.childNodes.item(i));break;case 3:str+=element.childNodes.item(i).nodeValue;break;}}return str;}
+function trimSafe(v){return((v==undefined)||(v==null))?"":v.Trim();}String.prototype.Trim=new Function("return this.replace(/^\\s+|\\s+$/g,'')");
+function compareNumber(v1,v2){if(isNaN(v2)){if(isNaN(v1))return 0;return-1;}if(v1<v2)return-1;if(v1==v2)return 0;return 1;}
+function compareSeparatedNumber(v1,v2){for(i=0;(i<v1.length)&&(i<v2.length);i++){var result=compareNumber(parseInt(v1[i]),parseInt(v2[i]));if(result!=0)return result;}if(v1.length<v2.length)return-1;if(v2.length<v1.length)return 1;return 0;}
+function sortByCell(sortCell,firstDataRowIndex,footingCount){var compareFunction;var valueParser;compareFunction=compareNumber;if(sortCell.columnType=="I"){valueParser=function(value){return parseInt(getElementInnerText(value));};}else if(sortCell.columnType=="F"){valueParser=function(value){return parseFloat(getElementInnerText(value));};}else if(sortCell.columnType=="C"){valueParser=function(value){return parseFloat(getElementInnerText(value).replace(/[^\d\.\,\-]*([\d\.\,\-*]*).*/,'$1'));};}else if(sortCell.columnType.charAt(0)=='D'){if(Date.parseString){valueParser=function(value){var date=Date.parseString(trimSafe(getElementInnerText(value)),sortCell.columnType.substring(1));return((date==null)?NaN:date.getTime());};}else{valueParser=function(value){return Date.parse(getElementInnerText(value));};}}else if((sortCell.columnType=="/")||(sortCell.columnType==".")||(sortCell.columnType=="-")||(sortCell.columnType==":")){compareFunction=compareSeparatedNumber;valueParser=function(value){return getElementInnerText(value).split(sortCell.columnType);};}else if(sortCell.columnType=="A"){valueParser=function(value){return 0;};}else{compareFunction=function(v1,v2){if(v1<v2)return-1;if(v1==v2)return 0;return 1;};valueParser=function(value){return trimSafe(getElementInnerText(value)).toUpperCase();};}var headRowCount=(sortCell.sortTable.tHead==null)?0:sortCell.sortTable.tHead.rows.length;firstDataRowIndex=firstDataRowIndex-headRowCount;var table=sortCell.sortTable.tBodies[0];var rowCount=table.rows.length-firstDataRowIndex-footingCount;var map=Array(rowCount);var values=Array(rowCount);var compareTest=(sortCell.sortDescending?-1:1);sortCell.sortDescending=!sortCell.sortDescending;var firstCell=(((sortCell.sortTable.tHead==null)||(sortCell.sortTable.tHead.rows.length==0))?table.rows[0].cells[sortCell.columnIndex]:sortCell.sortTable.tHead.rows[0].cells[sortCell.columnIndex]);if((firstCell!=null)&&(firstCell.sortTable!=null)&&(firstCell.sortTable!=undefined)&&(firstCell.sortTable.sortImage!=null)&&(firstCell.sortTable.sortImage!=undefined)){firstCell.sortTable.sortImage.setAttribute("src",firstCell.sortDescending?firstCell.sortTable.sortAttributeDescending:firstCell.sortTable.sortAttributeAscending);firstCell.appendChild(firstCell.sortTable.sortImage);}var i;for(i=0;i<rowCount;i++){map[i]=sortCell.sortFirstTime?i:(rowCount-1-i);var row=table.rows[i+firstDataRowIndex];var cellValue=row.cells[sortCell.columnIndex];values[i]=valueParser(cellValue);}sortCell.sortFirstTime=false;var didSwap;do{didSwap=false;for(i=0;i<rowCount-1;i++){if(compareFunction(values[map[i]],values[map[i+1]])==compareTest){saveIndex=map[i];map[i]=map[i+1];map[i+1]=saveIndex;didSwap=true;}}}while(didSwap);var tableRows=new Array();for(i=0;i<rowCount+footingCount;i++){tableRows.push(table.rows[i+firstDataRowIndex]);}for(i=0;i<rowCount+footingCount;i++){table.removeChild(tableRows[i]);}for(i=0;i<rowCount;i++){var row=tableRows[map[i]];table.appendChild(row);if(row.autoNumber){row.cells[0].innerHTML=i+1;}}for(i=0;i<footingCount;i++){table.appendChild(tableRows[i+rowCount]);}}
+function enableSortOnCell(cell,columnIndex,table,columnTypes,customize){cell.style.cursor="pointer";cell.sortTable=table;cell.sortFirstTime=true;cell.sortDescending=false;cell.columnIndex=(customize.autoNumber?(columnIndex+1):columnIndex);if(columnIndex==-1){cell.columnType="I";}else{cell.columnType=(columnTypes&&columnTypes[columnIndex])?columnTypes[columnIndex]:"S";}if(cell.columnType!="X"){cell.onmouseover=function(){this.saveTitle=this.getAttribute('title');this.setAttribute('title',customize.sortTip+" "+((this.saveTitle!=null)&&(this.saveTitle!=undefined)?this.saveTitle:''));};cell.onmouseout=function(){this.setAttribute('title',this.saveTitle);};cell.onclick=function(){sortByCell(this,customize.firstDataRowIndex,customize.footingCount);};}else{cell.columnType=cell.columnType.substring(1);}}
+function sumColumn(table,index,firstDataRowIndex,columnType){var total=0;for(var i=firstDataRowIndex;i<table.rows.length;i++){var cell=table.rows[i].cells[index];var value;if(cell){if(columnType=='C'){value=parseFloat(getElementInnerText(cell).replace(/[^\d\.\,\-]*([\d\.\,\-*]*).*/,'$1'))}else{value=parseFloat(getElementInnerText(cell));}if(!isNaN(value)){total=total+value;}}}return total;}
+function appendTotalRow(table,columnTypes,firstDataRowIndex){var row=document.createElement('tr');var table=table.tBodies[0];var columnCount=(0<table.rows.length)?table.rows[table.rows.length-1].cells.length:0;for(var columnIndex=0;columnIndex<columnCount;columnIndex++){var column=document.createElement('th');column.className='confluenceTh';column.innerHTML=(columnIndex<columnTypes.length&&((columnTypes[columnIndex]=='I')||(columnTypes[columnIndex]=='F')||(columnTypes[columnIndex]=='C')))?sumColumn(table,columnIndex,firstDataRowIndex,columnTypes[columnIndex]):'';row.appendChild(column);}table.appendChild(row);}
+function handleRow(table,row,rowIndex,customize){var columnCount=row.cells.length;for(var i=0;i<columnCount;i++){if(customize.enableSorting&&(rowIndex<=customize.lastClickableRow)){enableSortOnCell(row.cells[i],i,table,customize.columnTypes,customize);}if((rowIndex==0)&&(customize.sortColumn!='')&&(customize.sortCell==null)&&(((i+1).toString()==customize.sortColumn)||(trimSafe(getElementInnerText(row.cells[i]))==customize.sortColumn)||(trimSafe(row.cells[i].getAttribute('title'))==customize.sortColumn))){customize.sortCell=row.cells[i];}if(customize.firstDataRowIndex<=rowIndex){if((customize.columnTypes[i]=="I")||(customize.columnTypes[i]=="F")||(customize.columnTypes[i]=="C")){row.cells[i].style.textAlign="right";}}if(customize.columnTypes[i]=="H"){row.cells[i].style.display="none";}if(customize.enableHeadingAttributes||(customize.firstDataRowIndex<=rowIndex)){if(i<customize.attrList.length){for(var j=0;j<customize.attrList[i].length;j++){var attr=customize.attrList[i][j].Trim().split("=");if(1<attr.length){var aName=attr[0].Trim();var aValue=attr[1].Trim();if((aName.toLowerCase()=="style")&&(2<aValue.length)){if((aValue.charAt(0)=='"')){aValue=aValue.substring(1,aValue.length-1);}row.cells[i].style.cssText=aValue;}else{row.cells[i].setAttribute(aName,aValue);}}}}}}if(customize.autoNumber){var column=document.createElement(!customize.autoNumberSort||(rowIndex<customize.firstDataRowIndex)?'th':'td');column.className=(!customize.autoNumberSort||(rowIndex<customize.firstDataRowIndex)?'confluenceTh':'confluenceTd');column.innerHTML=((rowIndex<customize.firstDataRowIndex)||(customize.totalRowCount-customize.firstDataRowIndex-customize.footingCount<rowIndex)?'':customize.dataRowCount++);column.setAttribute('align','right');row.autoNumber=!customize.autoNumberSort;row.insertBefore(column,row.cells[0]);if(customize.enableSorting&&customize.autoNumberSort&&(rowIndex<=customize.lastClickableRow)){enableSortOnCell(column,-1,table,null,customize);}}if((customize.highlightColor!="")&&(customize.firstDataRowIndex<=rowIndex)){row.onmouseover=function(){this.tableHighLightRowColor=this.bgColor;this.bgColor=customize.highlightColor;};row.onmouseout=function(){this.bgColor=this.tableHighLightRowColor;this.tableHighLightRowColor=null;};}}
+function customizeMacroTable(tableId,columnTypes,firstDataRowIndex,highlightColor,enableSorting,sortTip,sortColumn,sortDescending,autoNumber,autoNumberSort,enableHeadingAttributes,footingCount,autoTotal,iconLocation){var customize=new Object;customize.columnTypes=columnTypes;customize.firstDataRowIndex=firstDataRowIndex;customize.highlightColor=highlightColor;customize.enableSorting=enableSorting;customize.sortTip=sortTip;customize.sortColumn=sortColumn;customize.sortDescending=sortDescending;customize.autoNumber=autoNumber;customize.autoNumberSort=autoNumberSort;customize.enableHeadingAttributes=enableHeadingAttributes;customize.footingCount=footingCount;customize.autoTotal=autoTotal;customize.iconLocation=iconLocation;var table=(typeof(tableId)=="string")?document.getElementById(tableId):null;if(table){if(customize.autoTotal){appendTotalRow(table,customize.columnTypes,customize.firstDataRowIndex);customize.footingCount++;}if(customize.iconLocation!=""){table.sortAttributeAscending=contextPath+customize.iconLocation+"down.gif";table.sortAttributeDescending=contextPath+customize.iconLocation+"up.gif";table.sortImage=document.createElement("IMG");}customize.lastClickableRow=customize.firstDataRowIndex-1;if(customize.lastClickableRow<0){customize.lastClickableRow=0;}customize.sortCell=null;customize.dataRowCount=1;var colAttrs=columnAttributes.split(",");customize.attrList=Array(colAttrs.length);for(var i=0;i<colAttrs.length;i++){customize.attrList[i]=colAttrs[i].Trim().split(";;");}var rowIndex=0;var headRowCount=(table.tHead==null)?0:table.tHead.rows.length;var footRowCount=(table.tFoot==null)?0:table.tFoot.rows.length;var bodyRowCount=table.tBodies[0].rows.length;customize.totalRowCount=headRowCount+footRowCount+bodyRowCount;for(var i=0;i<headRowCount;i++){var row=table.tHead.rows[i];handleRow(table,row,rowIndex,customize);rowIndex++;}for(var i=0;i<bodyRowCount;i++){var row=table.tBodies[0].rows[i];handleRow(table,row,rowIndex,customize);rowIndex++;}for(var i=0;i<footRowCount;i++){var row=table.tFoot.rows[i];handleRow(table,row,rowIndex,customize);rowIndex++;}if(customize.sortCell!=null){customize.sortCell.sortDescending=customize.sortDescending;sortByCell(customize.sortCell,customize.firstDataRowIndex,customize.footingCount);}}return table;}
+
+var columnTypes = ['S'];
+var columnAttributes = '';
+customizeMacroTable('TBL1430383168723', columnTypes, 1, 'lightgoldenrodyellow', true, 'Click to sort', '1', false, false, false, true, 0, false, '/download/resources/org.swift.confluence.table:table-plus/img/' );
+//-->
+ </script> <p></p> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Mar 08, 2013 by 
+<font color="#0050B2">23983</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : SjsuRadkRESTfulWsModule</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p><a href="./SjsuRadkProjectsummary.html">RADK Project</a></p> 
+     <hr> 
+     <div> 
+      <ul> 
+       <li><a href="#SjsuRadkRESTfulWsModule-RESTfulwebservicesmodule">RESTful web services module</a></li> 
+       <ul> 
+        <li><a href="#SjsuRadkRESTfulWsModule-GET">GET</a></li> 
+        <li><a href="#SjsuRadkRESTfulWsModule-POST">POST</a></li> 
+        <li><a href="#SjsuRadkRESTfulWsModule-PUT">PUT</a></li> 
+        <li><a href="#SjsuRadkRESTfulWsModule-DELETE">DELETE</a></li> 
+        <li><a href="#SjsuRadkRESTfulWsModule-ListofHTTPresponsesthatcanbereturnedbytheRESTfulWebServices%3A">List of HTTP responses that can be returned by the RESTful Web Services:</a></li> 
+       </ul> 
+      </ul>
+     </div> 
+     <hr> <h4><a name="SjsuRadkRESTfulWsModule-RESTfulwebservicesmodule"></a>RESTful web services module</h1> 
+     <hr> <p>RESTful is not only over HTTP, it is independent of the protocol...</p> <p>There are some API's to do RESTful: REST.API, Restlet, Jersey, etc. The solution provided in this project is using Jersey.</p> <p>This module will generate automatically the RESTful web services according to the tables selected from the database schema.</p> <p>It will generate one function for each HTTP method: GET, PUT, POST and DELETE for each selected table</p> 
+     <hr> <h4><a name="SjsuRadkRESTfulWsModule-GET"></a>GET</h3> <p>The GET method is implemented to fetch data from the tables and send it to the client in json and xml format, it will receive the requirement from the web client in the URIs: <br> </p>
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">http://sample.com/myapplication/RestMytable/mytable/{myId}/format  
+ http://sample.com/myapplication/RestMytable/mytable/{myId}/
+ http://sample.com/myapplication/RestMytable/mytables
+e.g.
+   http://sample.com/RADKuniversity/RestStudent/student/005801234/json
+   http://sample.com/RADKuniversity/RestStudent/student/005801234/xml
+   http://sample.com/RADKuniversity/RestStudent/student/005801234/
+   http://sample.com/RADKuniversity/RestStudent/students</pre> 
+       </div> 
+      </div>
+     </div>.<p></p> <p>Where RADKuniversity is the name of the project, univ is the name of the database, student is the name of the table, 005801234 is the primary key value (in this case may be student_id and json is the format that tells the content the web service is returning by default, it can be <em>json</em> and <em>xml</em> by now when GET returns one record and <em>json</em> only when GET returns all the records). Future implementations will support returning query_string and Object.<br> In the sample, it will return a Json string with the data from the database.<br> json format:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">{"Table": {"httpStatus":"200","primary_key": "val1","key1": "value1","key2": "value2"}}</pre> 
+       </div> 
+      </div>
+     </div> <p>or in xml format:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;tables&gt;
+  &lt;httpStatus value="200"/&gt;
+  &lt;table primary_key="val1" key1="value1" key2="value2" /&gt;
+ &lt;/tables&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>where Table is the name of the class corresponding to the table table, httpStatus is the correpsondent number to the successful execution of the method, ke1...key<img class="emoticon" src="images/icons/emoticons/thumbs_down.gif" height="19" width="19" align="absmiddle" alt="" border="0"> are the names of the corresponding columns and val1 ... val<img class="emoticon" src="images/icons/emoticons/thumbs_down.gif" height="19" width="19" align="absmiddle" alt="" border="0"> are the values read from the table table.</p> <p>For example</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">{"Student": {"httpStatus":"200","student_id": "005802615","name": "Edison Lascano","address": "2199 McLaughlin Ave"}}</pre> 
+       </div> 
+      </div>
+     </div> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;students&gt;
+  &lt;httpStatus value="200"/&gt;
+  &lt;student student_id="005802615" name="Edison Lascano" address="McLaughlin" /&gt;
+ &lt;/students&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>When the web service does not find the record, it will return some response similar to the following:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">{"Student",{"httpStatus":"404","Exception:"java.lang.NullPointerException"}}</pre> 
+       </div> 
+      </div>
+     </div> <p>where "HTTP Status 404" means that the web service was not able to find the current record and "java.lang.NullPointerException" represents the Exception thrown by calling the session beans that process the request.</p> <p>(Finally, the web client will parse it and write it on the web page).<br> Other use of the GET method is returning all the records from a table (no pagination is done in the current version)<br> </p>
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">http://sample.com/myapplication/database/mytables/  
+ e.g. 
+   http://sample.com/RADKUniversity/RestStudent/students/</pre> 
+       </div> 
+      </div>
+     </div>.<p></p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">{"students": [
+	{"student_id":"5802615", "name":"Edison Lascano", "address":"McLaughlin"},
+	{"student_id":"5802618", "name":"Melody Lascano", "address":"2199 McLaughlin Ave"},
+	{"student_id":"5802619", "name":"Caty Lascano", "address":"2199 McLaughlin Ave"},
+	{"student_id":"5802620", "name":"Edisito /\" Ã'aÃ'o &amp; #!@$^&amp;*()_+ ", "address":"One Washington Square"},
+	{"student_id":"5802621", "name":"Melody", "address":"USA"},
+	{"student_id":"5802623", "name":"Edisito", "address":"One Washington Square"},
+	{"student_id":"5802627", "name":"Edisito", "address":"One Washington Square"},
+	{"student_id":"5802631", "name":"Edisito", "address":"One Washington Square"},
+	{"student_id":"58026299", "name":"pepito", "address":"quito"}
+  ]
+}</pre> 
+       </div> 
+      </div>
+     </div> 
+     <hr> <h4><a name="SjsuRadkRESTfulWsModule-POST"></a>POST</h3> <p>The POST method is used to create a new record in the database table, it will receive the data (QUERY_STRING in the body: non visible on the URL) from the correspondent inputs in the web form and parse it before create the record in the database. (Simple conversion of hexadecimal %XX is processed)</p> <p></p>
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">http://sample.com/myapplication/RestMytable/mytable/   e.g. http://sample.com/RADKuniversity/RestStudent/student/</pre> 
+       </div> 
+      </div>
+     </div>.<br> The data will be passed in form of QUERY_STRING<p></p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">key1=val1&amp;key2=val2&amp;key3=val3    e.g.   student_id=005802624&amp;name=Edisito&amp;address=One+Washington+Square</pre> 
+       </div> 
+      </div>
+     </div> <p>If the record is successfully created, then the web service will return text/html:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">201 &lt;br/&gt; success Creating table: id&lt;br/&gt; &lt;a href="http://localhost:8080/myapplication/RestMytable/table/{id}/xml"&gt;http://localhost:8080/myaaplication/RestMytable/mytable/{id}/xml&lt;/a&gt;&lt;p/&gt;&lt;A HREF="javascript:history.go(-1)"&gt;Go back&lt;/A&gt;   e.g.
+   201 &lt;br/&gt; success Creating student: 23&lt;br/&gt; &lt;a href="http://localhost:8080/WebRestfulTests/RestStudent/student/23/xml"&gt;http://localhost:8080/WebRestfulTests/RestStudent/student/23/xml&lt;/a&gt;&lt;p/&gt;&lt;A HREF="javascript:history.go(-1)"&gt;Go back&lt;/A&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>If the record already exists with the same primary key, the Web Service may return a message like the following:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Error Creating student: 23 
+nested exception is: java.rmi.ServerException: RemoteException occurred in server thread; nested exception is: java.rmi.RemoteException: null; nested exception is: javax.persistence.EntityExistsException: Exception Description: Cannot persist detached object [entities.Student[studentId=23]]. Class&gt; entities.Student Primary Key&gt; [23]
+Try again</pre> 
+       </div> 
+      </div>
+     </div> 
+     <hr> <h4><a name="SjsuRadkRESTfulWsModule-PUT"></a>PUT</h3> <p>The PUT method is used to update a record in the database table, it will receive the data in a hidden input field called content to read the QUERY_STRING and parse it.<br> </p>
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">http://sample.com/myapplication/RestMytable/mytable/  e.g. http://sample.com/RADKproject1/RestStudent/student/</pre> 
+       </div> 
+      </div>
+     </div>.<p></p> <p>If the record is successfully updated, then the web service will return:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">201 &lt;br/&gt; success Creating table: id&lt;br/&gt; &lt;a href="http://localhost:8080/myapplication/RestMytable/table/{id}/xml"&gt;http://localhost:8080/myapplication/RestMytable/table/{id}/xml&lt;/a&gt;&lt;p/&gt;&lt;A HREF="javascript:history.go(-1)"&gt;Go back&lt;/A&gt;   
+e.g.
+   201 &lt;br/&gt; success Creating student: 24&lt;br/&gt; &lt;a href="http://localhost:8080/WebRestfulTests/RestStudent/student24/xml"&gt;http://localhost:8080/WebRestfulTests/RestStudent/student24/xml&lt;/a&gt;&lt;p/&gt;&lt;A HREF="javascript:history.go(-1)"&gt;Go back&lt;/A&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>otherwise:<br> it will send a message like:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Error Creating student: 1
+&lt;br/&gt;null&lt;p/&gt;
+&lt;A HREF="javascript:history.go(-1)"&gt;Try again&lt;/A&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>or like:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Error Creating student: 20
+&lt;br/&gt;nested exception is: java.rmi.ServerException: RemoteException occurred in server thread; nested exception is: 
+	java.rmi.RemoteException: null; nested exception is: 
+	javax.persistence.EntityExistsException: 
+Exception Description: Cannot persist detached object [entities.Student[studentId=20]]. 
+Class&gt; entities.Student Primary Key&gt; [20]&lt;p/&gt;
+&lt;A HREF="javascript:history.go(-1)"&gt;Try again&lt;/A&gt;</pre> 
+       </div> 
+      </div>
+     </div> 
+     <hr> <h4><a name="SjsuRadkRESTfulWsModule-DELETE"></a>DELETE</h3> <p>Using the URI </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">http://sample.com/myapplication/RestMytable/mytable/{myId} e.g. http://sample.com/RADKUniversity/PostStudent/student/123</pre> 
+       </div> 
+      </div>
+     </div> <p>the method DELETE is used to remove the correspondent record from the database table.</p> <p>If the record was found and deleted, In the case that the record is successfully removed, the method will return:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">{"Student": {"httpStatus":"200"}}</pre> 
+       </div> 
+      </div>
+     </div> <p>in the case that the method is not able to remove it, it will return the HTTP Status 404, accompanied with the correspondent exception content.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">{"Student",{"httpStatus":"404","Exception:"javax.ejb.EJBException: nested except
+ion is: java.rmi.ServerException: RemoteException occurred in server thread; nested exception is:
+        java.rmi.RemoteException: null; nested exception is:
+        java.lang.IllegalArgumentException: Object: null is not a known entity type."}}</pre> 
+       </div> 
+      </div>
+     </div> <p>where "HTTP Status 404" means there is nothing to erase or some database constraint does not allow to delete the current record and the second element of the json array is the content of the Exception in case of there is some other reason for this action to fail.</p> 
+     <hr> <p><a href="./SjsuRadkProjectsummary.html">RADK Project</a></p> 
+     <hr> <p>There are some ways to test RESTful web swervices</p> 
+     <ul> 
+      <li>cUrl</li> 
+      <li>FireFox REST plugin</li> 
+      <li>JavaScript</li> 
+      <li>jsp</li> 
+     </ul> <p>Here some curl samples with an actual web service and database to test.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">C:\Users\elascano&gt;curl -X GET http://localhost:8080/WebRestfulTests/RestStudent/
+student/0058026234/json
+{"Student",{"httpStatus":"404","Exception:"java.lang.NullPointerException"}}
+
+C:\Users\elascano&gt;curl -X GET http://localhost:8080/WebRestfulTests/RestStudent/
+student/005802615/json
+{"Student",{"httpStatus":"404","Exception:"java.lang.RuntimeException: javax.nam
+ing.NameNotFoundException: sessionbeans.StudentFacadeRemote#sessionbeans.Student
+FacadeRemote not found"}}
+
+C:\Users\elascano&gt;curl -X GET http://localhost:8080/WebRestfulTests/RestStudent/
+student/005802615/json
+{"Student": {"httpStatus":"200","student_id": "005802615","name": "Edison Lascan
+o","address": "2199 McLaughlin Ave"}}
+
+C:\Users\elascano&gt;curl -X DELETE http://localhost:8080/WebRestfulTests/RestStude
+nt/student/005802624
+{"Student": {"httpStatus":"200"}}
+
+C:\Users\elascano&gt;curl -X DELETE http://localhost:8080/WebRestfulTests/RestStude
+nt/student/005802624
+{"Student",{"httpStatus":"404","Exception:"javax.ejb.EJBException: nested except
+ion is: java.rmi.ServerException: RemoteException occurred in server thread; nes
+ted exception is:
+        java.rmi.RemoteException: null; nested exception is:
+        java.lang.IllegalArgumentException: Object: null is not a known entity t
+ype."}}
+
+C:\Users\elascano&gt;curl -X POST http://localhost:8080/WebRestfulTests/RestStudent
+/ -d "student_id=005802631&amp;name=Edisito&amp;address=One+Washington+Square"
+{"Student",{"httpStatus":"200","baseUri":"http://localhost:8080/WebRestfulTests/
+RestStudent/","content":"student_id=005802631&amp;name=Edisito&amp;address=One+Washingto
+n+Square"}}
+
+C:\Users\elascano&gt;curl -X POST http://localhost:8080/WebRestfulTests/RestStudent
+/ -d "student_id=005802631&amp;name=Edisito&amp;address=One+Washington+Square"
+{"Student",{"httpStatus":"400","Exception":"javax.ejb.EJBException: nested excep
+tion is: java.rmi.ServerException: RemoteException occurred in server thread; ne
+sted exception is:
+        java.rmi.RemoteException: null; nested exception is:
+        javax.persistence.EntityExistsException:
+Exception Description: Cannot persist detached object [entities.Student[studentI
+d=5802631]].
+Class&gt; entities.Student Primary Key&gt; [5802631]"}}</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="SjsuRadkRESTfulWsModule-ListofHTTPresponsesthatcanbereturnedbytheRESTfulWebServices%3A"></a>List of HTTP responses that can be returned by the RESTful Web Services:</h3> 
+     <ul> 
+      <li>Successful Codes (2XX): 
+       <ul> 
+        <li>200 OK</li> 
+        <li>201 Created</li> 
+        <li>202 Accepted</li> 
+        <li>204 No Content</li> 
+       </ul> </li> 
+      <li>Redirection Codes (3XX): 
+       <ul> 
+        <li>301 Moved Permanently</li> 
+        <li>304 Not Modified</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li>Client Error (4xx) 
+       <ul> 
+        <li>400 Bad Request</li> 
+        <li>401 Unauthorized</li> 
+        <li>403 Forbidden</li> 
+        <li>404 Not Found</li> 
+        <li>405 Method Not Allowed</li> 
+       </ul> </li> 
+      <li>Server Errors (5xx) 
+       <ul> 
+        <li>500 Internal Server Error</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li>e.g. of uses: 
+       <ul> 
+        <li>400 for garbage on the Url</li> 
+        <li>500 for run out memory</li> 
+        <li>401 for deletion not allowed</li> 
+        <li>404 we dont have nothing to erase...</li> 
+       </ul> </li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:49.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

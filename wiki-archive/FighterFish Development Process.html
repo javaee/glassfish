@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : FighterFish Development Process</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   
+     <div> 
+      <ul> 
+       <li><a href="#FighterFishDevelopmentProcess-Title">Title</a></li> 
+       <li><a href="#FighterFishDevelopmentProcess-Introduction">Introduction</a></li> 
+       <li><a href="#FighterFishDevelopmentProcess-DevelopmentTools">Development Tools</a></li> 
+       <li><a href="#FighterFishDevelopmentProcess-WorkspaceDetails">Workspace Details</a></li> 
+       <ul> 
+        <li><a href="#FighterFishDevelopmentProcess-SourceCodeLayout">Source Code Layout</a></li> 
+        <li><a href="#FighterFishDevelopmentProcess-MavenPOMSetup">Maven POM Setup</a></li> 
+        <li><a href="#FighterFishDevelopmentProcess-DependencyManagement">Dependency Management</a></li> 
+        <li><a href="#FighterFishDevelopmentProcess-VersioningScheme">Versioning Scheme</a></li> 
+       </ul> 
+       <li><a href="#FighterFishDevelopmentProcess-HowtoBuild%3F">How to Build?</a></li> 
+       <li><a href="#FighterFishDevelopmentProcess-TestDetails">Test Details</a></li> 
+       <ul> 
+        <li><a href="#FighterFishDevelopmentProcess-IntegrationTests">Integration Tests</a></li> 
+        <ul> 
+         <li><a href="#FighterFishDevelopmentProcess-TestLayout">Test Layout</a></li> 
+         <li><a href="#FighterFishDevelopmentProcess-TestSetup">Test Setup</a></li> 
+         <li><a href="#FighterFishDevelopmentProcess-Howtoexecutetests%3F">How to execute tests?</a></li> 
+         <li><a href="#FighterFishDevelopmentProcess-Howtotestmodulebeingdeveloped%3F">How to test module being developed?</a></li> 
+         <li><a href="#FighterFishDevelopmentProcess-HowtoruntestsonEquinox%3F">How to run tests on Equinox?</a></li> 
+         <li><a href="#FighterFishDevelopmentProcess-Howtodebugatest%3F">How to debug a test?</a></li> 
+         <li><a href="#FighterFishDevelopmentProcess-Howtorunasingletest%3A">How to run a single test:</a></li> 
+         <li><a href="#FighterFishDevelopmentProcess-HowtoruntestonIBMJDK%3A">How to run test on IBM JDK:</a></li> 
+        </ul> 
+        <li><a href="#FighterFishDevelopmentProcess-OSGiComplianceTests">OSGi Compliance Tests</a></li> 
+       </ul> 
+       <li><a href="#FighterFishDevelopmentProcess-ContinuousIntegrationJobs">Continuous Integration Jobs</a></li> 
+       <li><a href="#FighterFishDevelopmentProcess-Release%28Promotion%29Process">Release (Promotion) Process</a></li> 
+       <ul> 
+        <li><a href="#FighterFishDevelopmentProcess-Overview">Overview</a></li> 
+        <li><a href="#FighterFishDevelopmentProcess-ReleaseJobs">Release Jobs</a></li> 
+        <li><a href="#FighterFishDevelopmentProcess-ReleaseTagLocation">Release Tag Location</a></li> 
+        <li><a href="#FighterFishDevelopmentProcess-ArtifactDeployment">Artifact Deployment</a></li> 
+        <li><a href="#FighterFishDevelopmentProcess-HowtoRelease%3F">How to Release?</a></li> 
+        <li><a href="#FighterFishDevelopmentProcess-Howtoteststagedartifacts%3F">How to test staged artifacts?</a></li> 
+        <li><a href="#FighterFishDevelopmentProcess-HowtoRollback%3F">How to Rollback?</a></li> 
+       </ul> 
+       <li><a href="#FighterFishDevelopmentProcess-MailingLists">Mailing Lists</a></li> 
+       <li><a href="#FighterFishDevelopmentProcess-IssueTracking">Issue Tracking</a></li> 
+       <li><a href="#FighterFishDevelopmentProcess-CheckinGuidelines">Check-in Guidelines</a></li> 
+       <li><a href="#FighterFishDevelopmentProcess-FAQ">FAQ</a></li> 
+       <li><a href="#FighterFishDevelopmentProcess-Contact%3A">Contact:</a></li> 
+       <li><a href="#FighterFishDevelopmentProcess-MoreComing%3A">More Coming:</a></li> 
+      </ul>
+     </div> <h4><a name="FighterFishDevelopmentProcess-Title"></a>Title</h1> <p>FighterFish Development Process</p> <p>By: Sanjeeb Sahoo</p> <h4><a name="FighterFishDevelopmentProcess-Introduction"></a>Introduction</h1> <p>This page is for FighterFish development team members. It contains information related to building and testing of FighterFish. If you are interested in using FighterFish, then you should look at <a href="http://glassfish.java.net/public/GF-OSGi-Features.pdf">our users' guide</a> instead.</p> <h4><a name="FighterFishDevelopmentProcess-DevelopmentTools"></a>Development Tools</h1> <p><b>svn:</b><br> If you don't have svn, please download it <a href="http://subversion.tigris.org/getting.html">here</a>.</p> <p><b>Maven:</b><br> You can use Maven 3.0 or Maven 2, you must use version 2.2.1, as previous versions of MAVEN have led to issues building FighterFish modules. We recommend using maven 3.0.4 or higher as we internally use this version. If you don't have Maven installed, download it <a href="http://maven.apache.org/download.html">here</a>.</p> <p><b>Java:</b><br> You must use JDK 1.6 Update Release 4 or above to build FighterFish and make sure that it's in the PATH. Even if you use JDK 1.7, FighterFish modules are built with a target=1.6 to remain compatible with GlassFish 3.x series.</p> <h4><a name="FighterFishDevelopmentProcess-WorkspaceDetails"></a>Workspace Details</h1> <p>FighterFish source code is kept in a top level folder called <a href="https://svn.java.net/svn/glassfish~svn/trunk/fighterfish">fighterfish</a> in GlassFish svn server. To checkout, run:</p> 
+     <div class="preformatted panel" style="border-width: 1px;">
+      <div class="preformattedContent panelContent"> 
+       <pre>svn checkout https://svn.java.net/svn/glassfish~svn/trunk/fighterfish
+</pre> 
+      </div>
+     </div> <h4><a name="FighterFishDevelopmentProcess-SourceCodeLayout"></a>Source Code Layout</h2> <p>The workspace is organized as shown below:</p> 
+     <div class="preformatted panel" style="border-width: 1px;">
+      <div class="preformattedContent panelContent"> 
+       <pre>fighterfish/
+         module/                      - Contains source code for various FighterFish modules.
+               osgi-javaee-base/      - Base module for all OSGi/JavaEE integration modules
+               osgi-ejb-container/    - OSGi/EJB integration
+               osgi-web-container/    - OSGi/Web integration (OSGi spec based)
+               osgi-http/             - OSGi/HTTP Service integration (OSGi spec based)
+               osgi-jta/              - OSGi/JTA integration (OSGi spec based)
+               osgi-jpa/              - OSGi/JPA integration
+               osgi-jpa-extension/    - OSGi/JPA extension to fix some inherent issues in JPA implementations while running in OSGi
+               osgi-cdi-api/          - GlassFish OSGi/CDI Extension API
+               osgi-cdi/              - GlassFish OSGi/CDI Extension
+               osgi-jdbc/             - OSGi/JDBC integration
+               osgi-ee-resources/     - OSGi/Java EE resource integration (generic)
+         sample/                      - Contains samples (there are lots of samples available)
+         test/                        - Contains testing related code
+               util/                  - Contains FighterFish Testing Framework - based on PAX EXAM
+               app/                   - Actual test applications used by integration tests
+               it/                    - Integration Tests (JUnit test classes)
+         doc/                         - Documentation folder
+         scripts/                     - Scripts used during build, test, release cycle
+         distro/                      - Builds various distributions like zip-based, ips packages, sample-only, etc.
+
+</pre> 
+      </div>
+     </div> <h4><a name="FighterFishDevelopmentProcess-MavenPOMSetup"></a>Maven POM Setup</h2> <p>We consistently use org.glassfish.fighterfish as the groupId.<br> We try to use path from fighterfish dir with file separator replaced by '.' as the artifactId except for modules which historically used the directory name as the artifactId.<br> Every leaf module is released separately, so they are all set up with correct scm configuration in their pom.xml.<br> We don't use aggregator module as parent. This is against maven prescribed policy, but I don't believe it is a good idea to make the aggregator as the parent. Moreover, we never have to release the aggregator module. It is purely existing for use in continuous environment for facilitating whole workspace build.</p> <h4><a name="FighterFishDevelopmentProcess-DependencyManagement"></a>Dependency Management</h2> <p>We have a highly modular setup, so it is almost never necessary to build the whole workspace as an individual developer. There is no SNAPSHOT relationships between any two modules, so don't be surprised if you change something in osgi-javaee-base and it does not get reflected when you build a dependent module like osgi-web-container. In such a case, you have to temporarily update the dependency version in dependent module's pom.</p> <p>All the plugins and dependencies are available in maven central repository, so there is no reason to use any additional repository.</p> <p>Whenever we depend on GlassFish artifacts, we use 3.1.x versions as much as possible to stay compatible with GlassFish 3.1.x series. This avoid having to maintain different versions for different GlassFish versions. It has so far worked very well for us. We are in the process of setting up continuous integration jobs to test compatibility of our artifacts against various GlassFish versions. (<b>TODO</b>)</p> <h4><a name="FighterFishDevelopmentProcess-VersioningScheme"></a>Versioning Scheme</h2> <p>We use OSGi sematic versioning scheme.</p> <h4><a name="FighterFishDevelopmentProcess-HowtoBuild%3F"></a>How to Build?</h1> <p>There is hardly any reason to build the whole workspace as an individual developer. At any given point of time you are working in one or two modules, so it is enough to just build those one or two modules. To build any module, just do:</p> 
+     <div class="preformatted panel" style="border-width: 1px;">
+      <div class="preformattedContent panelContent"> 
+       <pre>mvn clean install -f &lt;Path to your module's pom.xml&gt;
+</pre> 
+      </div>
+     </div> <p>All the artifacts and plugins that the build depends on are in maven's official central repository, so there is no reason to use any special repository. When you are inside corporate firewall, please add a suitable mirror server in <b>~/.m2/settings.xml</b>. The example below applies to the company I am currently employed at:</p> 
+     <div class="preformatted panel" style="border-width: 1px;">
+      <div class="preformattedContent panelContent"> 
+       <pre>&lt;mirrors&gt;
+&lt;mirror&gt;
+&lt;id&gt;internal-glassfish-nexus&lt;/id&gt;
+&lt;url&gt;http://gf-maven.us.oracle.com/nexus/content/groups/internal-gf-nexus/&lt;/url&gt;
+&lt;mirrorOf&gt;*&lt;/mirrorOf&gt;
+&lt;/mirror&gt;
+&lt;/mirrors&gt;
+</pre> 
+      </div>
+     </div> <p><b>SPECIAL NOTES</b></p> 
+     <ol> 
+      <li>There is no SNAPSHOT relationships between any two modules, so don't be surprised if you change something in osgi-javaee-base and it does not get reflected when you build a dependent module like osgi-web-container. In such a case, you have to temporarily update the dependency version in dependent module's pom.</li> 
+      <li>If your code change impacts other modules, it is recommended that you do a "clean" build of the other modules. I don't think these modern build tools invented handle build dependencies as well as good old "makefile" did.</li> 
+     </ol> <h4><a name="FighterFishDevelopmentProcess-TestDetails"></a>Test Details</h1> <h4><a name="FighterFishDevelopmentProcess-IntegrationTests"></a>Integration Tests</h2> <h4><a name="FighterFishDevelopmentProcess-TestLayout"></a>Test Layout</h3> <p>FighterFish testing related code is kept under fighterfish/test directory. This is a brief description of the this directory structure:</p> <p>*test/util: contains a small wrapper/utility/framework based on PAX EXAM to write tests against GlassFish even easier. We leverage this utility in our test.</p> <p>*test/app: A number of Java EE and JavaEE/OSGi applications are used during testing.</p> <p>*test/it: This is the *i*ntegration *t*esting (it) module which contains only JUnit test classes. If you look at its pom.xml, you shall notice that this module has a dependency on fighterfish/sample and fighterfish/test/app modules, because the unit tests actually provision them. Since we never use SNAPSHOT versions of any module and all our modules are released to central repo, there is no requirement to build any other module before building this module. This is a change since Jan 2013. Prior to that, we had to first build sample and test/app.</p> <h4><a name="FighterFishDevelopmentProcess-TestSetup"></a>Test Setup</h3> <p>The tests need a glassfish full profile installation. We are in the process of making this step optional as we can automate the process of downloading and installing GlassFish server. (TODO)</p> <p>During testing, GlassFish server is provisioned on a chosen OSGi platform which is embedded in the same surefire/failsafe JVM executing tests. This allows one to see everything in same console output and debug just one process.</p> <p>While invoking the tests, please pass the location of glassfish dir using glassfish.home property. It must point to glassfish3/glassfish/ dir in installation.</p> <p>There is a Proxy profile setup in the pom.xml to use a proxy server in case some tests require Internet connection which is otherwise forbidden by corporate firewall. Don't use this profile unless you see network connection related issues.</p> <h4><a name="FighterFishDevelopmentProcess-Howtoexecutetests%3F"></a>How to execute tests?</h3> <p>We recommend using a new GlassFish domain just in case there are left over changes from previous execution<br> We are going to fix the test to create a new domain everytime. (TODO)</p> 
+     <div class="preformatted panel" style="border-width: 1px;">
+      <div class="preformattedContent panelContent"> 
+       <pre>asadmin delete-domain domain1 &amp;&amp; asadmin create-domain domain1
+</pre> 
+      </div>
+     </div> <p>Following command checksout and executes all tests:</p> 
+     <div class="preformatted panel" style="border-width: 1px;">
+      <div class="preformattedContent panelContent"> 
+       <pre>svn co https://svn.java.net/svn/glassfish~svn/trunk/fighterfish/test/it
+cd it
+mvn clean test -Dglassfish.home=path/to/glassfish[34]/glassfish/
+</pre> 
+      </div>
+     </div> <h4><a name="FighterFishDevelopmentProcess-Howtotestmodulebeingdeveloped%3F"></a>How to test module being developed?</h3> <p>The tests are run against the given GlassFish installation, so they don't use the FighterFish modules that you would have built. If you want your FighterFish modules to be tested, then you must overwrite the FighterFish module found in glassfish/modules/autostart/ dir by the jar produced by your build.</p> <h4><a name="FighterFishDevelopmentProcess-HowtoruntestsonEquinox%3F"></a>How to run tests on Equinox?</h3> <p>By default, tests use Felix OSGi runtime. To run tests on Equinox, use Equinox profile as shown below (Note you have to disable Felix profile by using <b><del>P</del></b> syntax)</p> 
+     <div class="preformatted panel" style="border-width: 1px;">
+      <div class="preformattedContent panelContent"> 
+       <pre>mvn clean test&nbsp; -P-Felix -PEquinox -Dglassfish.home=path/to/glassfish3/glassfish/
+</pre> 
+      </div>
+     </div> <h4><a name="FighterFishDevelopmentProcess-Howtodebugatest%3F"></a>How to debug a test?</h3> <p>There is a Debug profile available which will cause the test JVM to wait for a debugger to attach on port 9009. So, you need to invoke:</p> 
+     <div class="preformatted panel" style="border-width: 1px;">
+      <div class="preformattedContent panelContent"> 
+       <pre>mvn clean test -PDebug -Dglassfish.home=path/to/glassfish3/glassfish
+</pre> 
+      </div>
+     </div> <h4><a name="FighterFishDevelopmentProcess-Howtorunasingletest%3A"></a>How to run a single test:</h3> <p>Because of a limitation in PAX EXAM, you can't select a single test method using -Dtest=testClass#testMethod syntax, so you have to select the entire test class.</p> <p>For faster execution of tests, we configure PAX EXAM to use EagerSingleStagedReactorFactory, which mean it uses the same framework instance and hence same instance of embedded GlassFish to run all test methods found in a test class. The test methods are designed to be isolated from each other. So, if you want to run only one test method, we recommend copying and pasting it in a separate test class and running that test class alone. For this reason, we provide a dummy SingleTest.java. So, you can do something like this:</p> 
+     <div class="preformatted panel" style="border-width: 1px;">
+      <div class="preformattedContent panelContent"> 
+       <pre>mvn clean test -Dtest=SingleTest -Dglassfish.home=path/to/glassfish3/glassfish
+</pre> 
+      </div>
+     </div> <h4><a name="FighterFishDevelopmentProcess-HowtoruntestonIBMJDK%3A"></a>How to run test on IBM JDK:</h3> <p>The embedded Java process needs a slightly different configuration for embedded GlassFish to work correctly when IBM J9 JVM is used. This is captured in IBM-J9-VM profile in the pom.xml.</p> <p>The pom.xml has the ability to select appropriate profile based on the JVM that's used to invoke maven. So, just have the right Java in your path and you are done.</p> <h4><a name="FighterFishDevelopmentProcess-OSGiComplianceTests"></a>OSGi Compliance Tests</h2> <p>Please checkout <a href="https://svn.java.net/svn/glassfish~svn/trunk/fighterfish/test/ct">https://svn.java.net/svn/glassfish~svn/trunk/fighterfish/test/ct</a> and follow the instructions in <a href="https://svn.java.net/svn/glassfish~svn/trunk/fighterfish/test/ct/README.txt">README.txt</a> there in. The steps are very simple, it's just that not everyone has access to OSGi CT which is maintained in OSGi Alliance source code repository. We have continuous integration jobs set up to run compliance tests against every new GlassFish build.</p> <h4><a name="FighterFishDevelopmentProcess-ContinuousIntegrationJobs"></a>Continuous Integration Jobs</h1> <p>We have following CI jobs: (add job details)</p> <p>OSGi Compliance Test using latest GlassFish Trunk builds</p> <p>FighterFish Integration Tests using latest GlassFish Trunk builds</p> <p>FighterFish Integration Tests using latest GlassFish Trunk builds and latest FighterFish builds</p> <p>FighterFish Integration Tests using latest supported release of GlassFish 3.1.x and latest FighterFish builds</p> <h4><a name="FighterFishDevelopmentProcess-Release%28Promotion%29Process"></a>Release (Promotion) Process</h1> <h4><a name="FighterFishDevelopmentProcess-Overview"></a>Overview</h2> <p>Modules are released individually. We have hardly a reason to release multiple modules simultaneously unless we are releasing samples or test applications.<br> The release process is a multistep process most part of which has been automated and greatly simplified by using <b>maven-release-plugin</b>.</p> <p>In order to maintain a consistent release process, we have checked in a script called scripts/promote.sh containing the commands that take care of building, tagging and deploying. As you can see from that script, it is effectively a two line script which calls maven-release-plugin:prepare and maven-release-plugin:perform goals. For record keeping purpose, the script creates a new directory for each invocation of release plugin. This directory comes in handy during rollback process as discussed later.</p> <h4><a name="FighterFishDevelopmentProcess-ReleaseJobs"></a>Release Jobs</h2> <p>Since maven central requires the artifacts to be signed by an authorised person, we don't release the artifacts from any random developer's environment. Otherwise, the release process actually has no dependency on specific environment. For consistency, sanity and authenticity reasons, we use GlassFish Release Engineering environment only to release artifacts. We have a job configured in GlassFish release engineering Hudson server called <b>fighterfish-promotion</b> which has two tasks called promotion-task and rollback-task for promotion and rollback respectively. The job is configured such that promotion process uses RE's credentials to update svn and RE's gpg-passphrase to sign the artifacts.</p> <h4><a name="FighterFishDevelopmentProcess-ReleaseTagLocation"></a>Release Tag Location</h2> <p>Every released artifact source is found under <a href="https://svn.java.net/svn/glassfish~svn/tags/fighterfish-releases">https://svn.java.net/svn/glassfish~svn/tags/fighterfish-releases</a>. Except a few artifacts, all our released artifacts use one consistent tag format. Because some of the modules don't specify tag details correctly in pom.xml, to ensure correct tag location, while invoking release plugin, we pass the following argument to tag the source code:</p> 
+     <div class="preformatted panel" style="border-width: 1px;">
+      <div class="preformattedContent panelContent"> 
+       <pre>-DtagBase=https://svn.java.net/svn/glassfish~svn/tags/fighterfish-releases -DtagNameFormat=@{project.groupId}.@{project.artifactId}-@{project.version}
+</pre> 
+      </div>
+     </div> <h4><a name="FighterFishDevelopmentProcess-ArtifactDeployment"></a>Artifact Deployment</h2> <p>In the spirit of maven, we also make use of <b>Nexus</b> staging repository in our release process. Our artifact deployment is therefore a two step process. First the artifact is deployed to <a href="https://maven.java.net/service/local/staging/deploy/maven2/">java.net nexus staging repository</a>. It then undergoes additional testing before being released to maven central repository. release:perform goal deploys the artifacts to staging repo only. The staging repository is configured for all in distributionManagement section of net.java:jvnet-parent:pom:3 which is the root of POM hierarchy in our case.</p> <h4><a name="FighterFishDevelopmentProcess-HowtoRelease%3F"></a>How to Release?</h2> 
+     <ol> 
+      <li>Update the module names to be released in scripts/promote.sh and check in the script.</li> 
+      <li>Login to GlassFish RE Hudson server and go to <a href="http://gf-hudson.us.oracle.com/hudson/view/GlassFish/view/FighterFish/job/fighterfish-promotion">fighterfish-promotion</a> job.</li> 
+      <li>Visit the tasks link and execute "promotion" task.</li> 
+      <li>Each promotion uses a new timestamped directory for record keeping purpose. See the task output for the directory name. You will need this if you have to rollback the release for whatever reason.</li> 
+     </ol> <h4><a name="FighterFishDevelopmentProcess-Howtoteststagedartifacts%3F"></a>How to test staged artifacts?</h2> <p>It is a good idea to test the artifacts while they are in staging repo. If they have bugs, then we have a chance to drop them and re-release them. Note down the staging repository URL by logging into <a href="https://maven.java.net/index.html#stagingRepositories">java.net nexus staging repository</a> using your java.net credentials. Create a staging profile in your ~/.m2/settings.xml and add the repository details as shown below:</p> 
+     <div class="preformatted panel" style="border-width: 1px;">
+      <div class="preformattedContent panelContent"> 
+       <pre>  &lt;profiles&gt;
+    &lt;profile&gt;
+      &lt;id&gt;staging&lt;/id&gt;
+      &lt;repositories&gt;
+        &lt;repository&gt;
+          &lt;snapshots&gt;
+            &lt;updatePolicy&gt;never&lt;/updatePolicy&gt;
+          &lt;/snapshots&gt;
+          &lt;id&gt;jvnet-nexus-staging-repo&lt;/id&gt;
+          &lt;name&gt;Java.net Nexus Staging Repository&lt;/name&gt;
+          &lt;url&gt;http://maven.java.net/content/repositories/orgglassfish-137/&lt;/url&gt;
+        &lt;/repository&gt;
+      &lt;/repositories&gt;
+    &lt;/profile&gt;
+  &lt;/profiles&gt;
+
+  &lt;mirror&gt;
+    &lt;id&gt;internal-glassfish-nexus&lt;/id&gt;
+    &lt;url&gt;http://gf-maven.us.oracle.com/nexus/content/groups/internal-gf-nexus/&lt;/url&gt;
+    &lt;mirrorOf&gt;*,!jvnet-nexus-staging-repo&lt;/mirrorOf&gt;
+  &lt;/mirror&gt;
+
+</pre> 
+      </div>
+     </div> <p>Then use this profile to be able to use the staged artifacts. If the artifacts are not release-worthy, then follow the instructions in the next section to rollback the release.</p> <h4><a name="FighterFishDevelopmentProcess-HowtoRollback%3F"></a>How to Rollback?</h2> <p>There are two reasons to rollback a release:</p> 
+     <ol> 
+      <li>The release artifacts were found to be not release worthy.</li> 
+      <li>The release process failed to complete.<br> In a complex environment involving so many servers, there are many failure points in the system. I have lately suffered from svn failures to proxy failures to nexus issues. So, we have to have a process in place for cleaning up the mess left behind by an unsuccessful release.</li> 
+     </ol> <p><b>NEVER ROLLBACK A RELEASE THAT'S ALREADY PUSHED/RELEASED OUT OF NEXUS</b></p> <p>Follow the steps below to rollback a release. No. of steps that need to be executed depends on how far the release process had progressed. If promotion-task has completed release:perform goal successfully, we can't rollback the release using rollback task, because the release plugin would have cleaned up backup pom.xml. In that case, we have to manually rollback the pom.xml in addition to removing the scm tag and dropping the artifact from staging repository.</p> 
+     <ol> 
+      <li>Update the DIRNAME and MODULE_NAME property in scripst/rollback.sh and check it in.</li> 
+      <li>Login to GlassFish RE Hudson server and go to fighterfish-promotion job.</li> 
+      <li>Visit the tasks link and execute "rollback" task.</li> 
+      <li>Remove the scm tags if prepare phase had created it. This is needed due to an unimplemented feature (<a href="http://jira.codehaus.org/browse/MRELEASE-229">MRELEASE-229</a>) in maven-release-plugin.</li> 
+      <li>Drop the artifact from nexus if it has been deployed by release:perform goal.</li> 
+      <li>Remove the artifact from maven-local-repo if it exists there. See FAQ for details.</li> 
+     </ol> <h4><a name="FighterFishDevelopmentProcess-MailingLists"></a>Mailing Lists</h1> <p>FighterFish developers use <a href="mailto:dev@glassfish.java.net">dev@glassfish.java.net</a> mailing list.</p> <p>FighterFish users use <a href="mailto:users@glassfish.java.net">users@glassfish.java.net</a> mailing list or <a href="http://www.java.net/forums/glassfish/glassfish">GlassFish forum</a>.</p> <h4><a name="FighterFishDevelopmentProcess-IssueTracking"></a>Issue Tracking</h1> <p>We use <a href="http://java.net/jira/browse/GLASSFISH">GlassFish JIRA</a> for our issue tracking, because GlassFish is the primary delivery vehicle for these modules. Choose component as <b>OSGi</b> or <b>OSGi-JavaEE</b> depending on issue type.</p> <p>Resolution of an issue requires two separate steps as described below:</p> 
+     <ol> 
+      <li>You first fix the issue in appropriate module in FighterFish workspace.</li> 
+      <li>Update JIRA with your svn commit details, but don't mark the issue as RESOLVED. This is because GlassFish integrates specific versions of FihterFish modules. The issue can't be resolved until you have integrated the version of your module containing the fix with GlassFish. Refer to "release process" for details about how to release a module.</li> 
+     </ol> <h4><a name="FighterFishDevelopmentProcess-CheckinGuidelines"></a>Check-in Guidelines</h1> <p>We don't like more than issue to be fixed in one svn transaction nor do we like one svn transaction to contain partial fix.<br> We recommend you to follow the following format in your comment:</p> <p><em>Issue ID - Issue Synopsys followed by details</em></p> <p>Each module has a RELEASENOTE.txt. Please update it immediately after fixing a bug. We hope to be able to automate this at some point, but it's not done yet.</p> <h4><a name="FighterFishDevelopmentProcess-FAQ"></a>FAQ</h1> 
+     <ol> 
+      <li>Why don't we perform multi-module release using aggregator pom?<br> We adopt a modular We have hardly a reason to release all the modules under a given directory at once. Since every released artifact is independently of others, we also like each of them to be tagged a uniform way. Our experience shows that when a aggregator module is built, the submodules are tagged under the aggregator module thus violating our uniform tagging requirement.</li> 
+      <li>When do I have to ever remove something from local repo?<br> Typically prepare goal executes "clean verify" phases, so a failed prepare goal is not likely to cause the artifact to find its way to local repo. The perform goal installs the artifacts in local repo, so if it has run, then clean the artifact from local repo. It's for this reason, we are thinking of configuring the release process to use its own maven local repository. If you have tested with an artifact that's going to be dropped, then it might have been downloaded to your local repo. In that case, you have to remove it as well. This is where I think the improvement about artifact resolution based on repository settings that has gone into maven 3 helps. If an artifact has been downloaded from a staging repo, it is unlikely to be used when you are not using staging profile.</li> 
+     </ol> <h4><a name="FighterFishDevelopmentProcess-Contact%3A"></a>Contact:</h1> <p>If you have questions or comments that are not suitable for mailing list discussion, please contact Sahoo who is the author of this document as well as leading the FighterFish development effort.</p> <h4><a name="FighterFishDevelopmentProcess-MoreComing%3A"></a>More Coming:</h1> <p>Test description<br> Test framework description<br> Submodule details<br> Design Documents<br> Road Map</p> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Mar 11, 2013 by 
+<font color="#0050B2">16764</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFishV3DocPlanQuickStart</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>&lt;h1&gt;GlassFish v3 <em>Quick Start Guide</em> Document Plan&lt;/h1&gt;</p> 
+     <div> 
+      <ul> 
+       <li><a href="#GlassFishV3DocPlanQuickStart-PeopleandRoles">People and Roles</a></li> 
+       <li><a href="#GlassFishV3DocPlanQuickStart-Audience">Audience</a></li> 
+       <li><a href="#GlassFishV3DocPlanQuickStart-PurposeandDescription">Purpose and Description</a></li> 
+       <li><a href="#GlassFishV3DocPlanQuickStart-StatementofWork">Statement of Work</a></li> 
+       <ul> 
+        <li><a href="#GlassFishV3DocPlanQuickStart-FCSStatementofWork">FCS Statement of Work</a></li> 
+       </ul> 
+       <li><a href="#GlassFishV3DocPlanQuickStart-OverallContentOutline">Overall Content Outline</a></li> 
+       <li><a href="#GlassFishV3DocPlanQuickStart-Reviewers">Reviewers</a></li> 
+       <li><a href="#GlassFishV3DocPlanQuickStart-DeliveryMethods">Delivery Methods</a></li> 
+       <li><a href="#GlassFishV3DocPlanQuickStart-RelatedInformation">Related Information</a></li> 
+      </ul>
+     </div> <h4><a name="GlassFishV3DocPlanQuickStart-PeopleandRoles"></a>People and Roles</h1> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Name</th> 
+         <th class="confluenceTh">Role </th> 
+         <th class="confluenceTh">Location</th> 
+         <th class="confluenceTh">Time Zone </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Gail Risdal </td> 
+         <td class="confluenceTd"> Document Owner </td> 
+         <td class="confluenceTd"> Bellevue, WA, USA </td> 
+         <td class="confluenceTd"> US, Pacific </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Julie Bettis </td> 
+         <td class="confluenceTd"> Editor </td> 
+         <td class="confluenceTd"> Broomfield, CO, USA </td> 
+         <td class="confluenceTd"> US, Mountain </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> See Reviewers below </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3DocPlanQuickStart-Audience"></a>Audience</h1> <p>The audience for this guide is a wide range of users who have downloaded and installed GlassFish v3. </p> <p>The guide provides fundamental information for users who have never used GlassFish, but is also of value to more experienced users who want the latest release information and pointers to specific resources. </p> <h4><a name="GlassFishV3DocPlanQuickStart-PurposeandDescription"></a>Purpose and Description</h1> <p>The purpose of this guide is to provide a short document that enables users to quickly learn the basics about key GlassFish v3 features. Step-by-step procedures introduce basic product features and enable users to learn about and use them immediately.</p> <h4><a name="GlassFishV3DocPlanQuickStart-StatementofWork"></a>Statement of Work</h1> <p>This section describes in detail for each milestone the work that is needed on the document, such as changes, addition of new material, relocation of existing material, and removal of existing material. Work might result from new features, changes to existing features, bug fixes, RFEs, and editorial enhancements.</p> <p>Documentation Impact:</p> 
+     <ul> 
+      <li>None</li> 
+      <li>Minor</li> 
+      <li>Moderate</li> 
+      <li>Major</li> 
+      <li>New</li> 
+     </ul> <h4><a name="GlassFishV3DocPlanQuickStart-FCSStatementofWork"></a>FCS Statement of Work</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Section</th> 
+         <th class="confluenceTh">Documentation Impact</th> 
+         <th class="confluenceTh">Description of Change </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> All </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Update release name throughout </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> All </td> 
+         <td class="confluenceTd"> Minor to Moderate </td> 
+         <td class="confluenceTd"> Verify and update existing procedures and other content for FCS </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> First part of book </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Add two new sections: Default Administration Values and Variable Names and Default Paths </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> All </td> 
+         <td class="confluenceTd"> Minor to Moderate </td> 
+         <td class="confluenceTd"> Determine what if any content from <a href="http:--docs.sun.com-app-docs-doc-819-3193">v2 </a> or <a href="http://docs.sun.com/app/docs/doc/820-4334">v2.1 </a> QSG needs to be added back in; add it </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Intro </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Update bulleted feature list to showcase v3 final </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> For More Information, general </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Update pointers and content; add info about Java EE Tutorial, Volume II </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Create screencast </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3DocPlanQuickStart-OverallContentOutline"></a>Overall Content Outline</h1> 
+     <ol> 
+      <li>How This Quick Start Guide Works</li> 
+      <li>Default Paths and File Names (<em>from common Preface</em>)</li> 
+      <li>Default Administration Values (<em>from v3 Admin Guide</em>)</li> 
+      <li>Starting and Stopping the Default Domain 
+       <ol> 
+        <li>To Start the Default Domain</li> 
+        <li>To Stop the Default Domain</li> 
+       </ol> </li> 
+      <li>Starting and Stopping the Database Server 
+       <ol> 
+        <li>To Start the Sun GlassFish Java DB Server</li> 
+        <li>To Stop the Java DB Server</li> 
+       </ol> </li> 
+      <li>Starting the Administration Console 
+       <ol> 
+        <li>To Launch the Administation Console</li> 
+       </ol> </li> 
+      <li>Deploying and Undeploying Applications 
+       <ol> 
+        <li>Obtaining a Sample Application 
+         <ol> 
+          <li>To Obtain a Sample Application</li> 
+         </ol> </li> 
+        <li>Deploying an Application from the Command Line 
+         <ol> 
+          <li>To Deploy the Sample Application from the Command Line</li> 
+          <li>To List Deployed Applications from the Command Line</li> 
+          <li>To Undeploy the Sample Application from the Command Line</li> 
+         </ol> </li> 
+        <li>Deploying an Application by Using the Administration Console 
+         <ol> 
+          <li>To Deploy the Sample Application from the Administration Console</li> 
+          <li>To View Deployed Applications in the Administration Console</li> 
+          <li>To Undeploy the Sample Application from the Administration Console</li> 
+         </ol> </li> 
+        <li>Deploying an Application Automatically 
+         <ol> 
+          <li>To Deploy the Sample Application Automatically</li> 
+          <li>To Undeploy the Sample Application Automatically</li> 
+         </ol> </li> 
+       </ol> </li> 
+      <li>Updating and Extending an Existing Installation 
+       <ol> 
+        <li>To Access Update Tool Using the Administration Console</li> 
+       </ol> </li> 
+      <li>Removing Enterprise Server v3 Preview Software 
+       <ol> 
+        <li>To Remove Enterprise Server Software</li> 
+       </ol> </li> 
+      <li>For More Information 
+       <ol> 
+        <li>Product Documentation</li> 
+        <li>GlassFish Communities</li> 
+        <li>Tutorials</li> 
+        <li>Java EE 6 Samples</li> 
+       </ol> </li> 
+     </ol> <h4><a name="GlassFishV3DocPlanQuickStart-Reviewers"></a>Reviewers</h1> <p>The reviewers of this document are listed in the following table. Reviewers are responsible for reviewing the entire guide (it's quite short).</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Reviewers</th> 
+         <th class="confluenceTh">Final Done </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Sathyan Catari </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Judy Tang </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Nolan Luu </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Alex Pineda </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Abhijit Kumar </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Jerome Dochez </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> John Clingan </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Carla Carlson </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Alexis Moussine-Pouchkine </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> admin, users, dev, docs, quality aliases </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3DocPlanQuickStart-DeliveryMethods"></a>Delivery Methods</h1> <p>The <em>Quick Start Guide</em> will be delivered as follows:</p> 
+     <ul> 
+      <li>On the <a href="http://docs.sun.com/app/docs/prod/gf.ent.svr#hic">docs.sun.com</a><sup>SM</sup> site</li> 
+      <li>Bundled with the product</li> 
+     </ul> <h4><a name="GlassFishV3DocPlanQuickStart-RelatedInformation"></a>Related Information</h1> <p>Previous versions: </p> 
+     <ul> 
+      <li><em><a href="http://docs.sun.com/doc/820-7689">Sun GlassFish Enterprise Server v3 Preview Quick Start Guide</a></em></li> 
+      <li><em><a href="http://docs.sun.com/doc/820-4836">Sun GlassFish Enterprise Server v3 Prelude Quick Start Guide</a></em></li> 
+      <li><em><a href="http://docs.sun.com/app/docs/doc/820-4334">Sun GlassFish Enterprise Server 2.1 Quick Start Guide</a></em></li> 
+      <li><em><a href="http://docs.sun.com/app/docs/doc/819-3193">Sun Java System Application Server 9.1 Quick Start Guide</a></em></li> 
+     </ul> <p>Email aliases:</p> 
+     <ul> 
+      <li><span class="error">[admin@glassfish.java.net]</span></li> 
+      <li><span class="error">[users@glassfish.java.net]</span></li> 
+      <li><span class="error">[docs@glassfish.java.net]</span></li> 
+      <li><span class="error">[quality@glassfish.java.net]</span><br> \</li> 
+     </ul> <p><a href="GlassFishV3DocPlan.html" title="GlassFishV3DocPlan">GlassFish v3 Doc Plan</a></p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 02, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

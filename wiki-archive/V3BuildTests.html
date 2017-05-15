@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : V3BuildTests</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="V3BuildTests-LatestV3Workspace%2FBuildStatus%3A"></a>Latest V3 Workspace/Build Status:</h2> <p><b>V3 Build Status</b>:</p> <p>No matter how hard you try, you are bound to make mistakes, and that's life. So please try to monitor the builds, especially after check-ins, to make sure it's still working. You can monitor V3 build status on Hudson at the following locations:</p> <p><a href="http://gf-hudson.us.oracle.com/hudson/job/gf-trunk-build-continuous/">GlassFish V3 Continuous Build</a> (for making sure that your commits didn't cause build and unit tests to fail. this runs very fast.)</p> <p>These jobs are also <a href="http://hudson.glassfish.org/job/gf-trunk-build-continuous/">published externally</a>, although they are read-only and their configurations cannot be changed.<br> Beside these, you'll get e-mails if a build that includes your change breaks. You can also use RSS readers to subscribe to builds.</p> <p><b>V3 Module Owners</b>:</p> <p>The list of module owners : web-10.0-SNAPSHOT</p> <p><a href="V3BuildFAQ.html" title="V3BuildFAQ">V3 Build FAQ</a></p> <h4><a name="V3BuildTests-V3CheckinProcess%3A"></a>V3 Checkin Process :</h2> <p><b>General Check-in Procedures</b> :</p> 
+     <ul> 
+      <li>Have your code reviewed by appropriate engineer(s)</li> 
+      <li>If you change code outside of your area, you must discuss the changes with the corresponding module owners/tech leads (see the module owner list)</li> 
+      <li>Before commiting your change into V3 workspace, here are the steps to follow to make sure your change is not going to break the build 
+       <ul> 
+        <li>cd path/to/v3 (come to v3 root workspace)</li> 
+        <li>svn update</li> 
+        <li>mvn -U clean install</li> 
+        <li>cd distributions/web/target</li> 
+        <li>unzip web.zip</li> 
+        <li>Run <a href="#V3BuildTests-ql">Quicklook Tests</a> using "V3 Installation" as distributions/web/target/glassfish</li> 
+       </ul> </li> 
+      <li>Monitor Continuous Builds at Hudson for a successful build that includes your change : <a href="http://hudson.glassfish.org/job/gf-trunk-build-continuous/">GlassFish V3 Continuous Build</a></li> 
+     </ul> <p>In addition, please consider the following tips as well:</p> 
+     <ul> 
+      <li>Run appropriate set of tests based on the scope and riskiness of your change. You are responsible for figuring out the right set of tests to run before check-ins. Quicklook may not be sufficient for some checkins. Consult your module owner/tech lead if necessary. These are the regression tests: 
+       <ul> 
+        <li>Developer unit tests (strongly encouraged, required for some teams)</li> 
+       </ul> </li> 
+      <li>Include the following information in the commit message: 
+       <ul> 
+        <li>Description (and bugid if it's a bug fix)</li> 
+        <li>Code reviewer(s)</li> 
+        <li>Which tests have been run</li> 
+       </ul> </li> 
+      <li>Make sure there is sufficient test coverage for your change. Consider running the developer unit tests. Is the appropriate SQE engineer aware of this change?</li> 
+      <li>If it's a new feature or there is documentation impact, please send email to the documentation team.</li> 
+     </ul> <p>&lt;a name="ql"&gt;<b>V3 QuickLook</b>&lt;/a&gt; :</p> <p>Latest Status : <a href="http://hudson.glassfish.org/job/gf-trunk-build-continuous">http://hudson.glassfish.org/job/gf-trunk-build-continuous</a></p> 
+     <ul> 
+      <li>Checkout QuickLook Tests: 
+       <ul> 
+        <li>svn checkout <a href="https://svn.java.net/svn/glassfish~svn/trunk/v3/tests/quicklook">https://svn.java.net/svn/glassfish~svn/trunk/v3/tests/quicklook</a></li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li>Run QuickLook Tests against V3 glassfish distribution: 
+       <ul> 
+        <li>cd quicklook</li> 
+        <li>mvn -Dglassfish.home={V3 Installation Dir} test | tee run.log</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li>Run QuickLook Tests against V3 web distribution: 
+       <ul> 
+        <li>mvn -Dglassfish.home={V3 Installation Dir} -P test_wd test | tee run.log</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li>Run QuickLook Tests against V3 glassfish distribution with turning on security manager: 
+       <ul> 
+        <li>mvn -Dglassfish.home={V3 Installation Dir} -P test_gd_security test | tee run.log</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li>Run QuickLook Tests against V3 web distribution with turning on security manager: 
+       <ul> 
+        <li>mvn -Dglassfish.home={V3 Installation Dir} -P test_wd_security test | tee run.log</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li>Test Report: 
+       <ul> 
+        <li>Test report is generated at: quicklook/test-output/index.html</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li>For detailed QuickLook instructions and how to add tests to QuickLook, please see quicklook/QuickLook_Test_Instructions.html in workspace.</li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jan 04, 2012 by 
+<font color="#0050B2">10193</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

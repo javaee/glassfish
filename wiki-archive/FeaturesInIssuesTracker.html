@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : FeaturesInIssuesTracker</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="FeaturesInIssuesTracker-GuidelinesformanagingfeaturesinIssueTracker."></a>Guidelines for managing features in Issue Tracker.</h1> <p>Use the following guidelines when creating issues to track enhancements and features using Issue Tracker.</p> <h4><a name="FeaturesInIssuesTracker-IssueGranularity"></a>Issue Granularity</h2> <p>Each team should decide at what level of granularity "feature" issues<br> should be created and managed.</p> <p>Our goal is to track feature development into the specific [GlassFish<br> milestones|^GlassFishV3Schedule#section-GlassF%20ishV3Schedule-GlassFishServerOpenSourceEdition3.1] so consider a granularity that allows us to achieve this.<br> Issues do not need to be filed for every task - but could do so if the project wished to track work by developer and milestone.</p> <p>Consider a granularity defined by the "Feature ID" as identified in the<br> Scope section of the project wiki as a good starting point for feature<br> issues that need to be created.</p> <p>If the feature is large with major components of the feature being<br> delivered into multiple milestones the work for each milestone<br> should be represented as seperate issues. An umbrella issue<br> can be created to group the related issues together. For example:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">111 Cluster support
+   222 Cluster lifecycle support
+   333 Cluster configuration
+   444 Dev Tests for Cluster Support</pre> 
+       </div> 
+      </div>
+     </div> <p>In the above example issues 222, 333, 444 can be targeted to different milestones. Issue<br> 111 can be closed when its dependencies have been resolved.</p> <h4><a name="FeaturesInIssuesTracker-Type"></a>Type</h2> <p>Issue should use one of these three types:</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Type </th> 
+         <th class="confluenceTh"> Descripton </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Enhancement </td> 
+         <td class="confluenceTd"> An improvement to an existing feature. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Feature </td> 
+         <td class="confluenceTd"> An addition to the software to add a piece of functionality that does not yet exist. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Task </td> 
+         <td class="confluenceTd"> An activity to be done on behalf or in support of a feature or enhancement. Tasks do not typically require direct changes to the code base. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="FeaturesInIssuesTracker-Priority"></a>Priority</h2> <p>Use the priority assigned to the feature ID from the project wiki page. Generally P1, P2 or P3.</p> <h4><a name="FeaturesInIssuesTracker-FoundinVersion"></a>Found in Version</h2> <p>For features targetted for 3.1 use 3.1.</p> <h4><a name="FeaturesInIssuesTracker-AssignTo"></a>Assign To</h2> <p>Assign the issue to the primary developer who will do the implementation.</p> <h4><a name="FeaturesInIssuesTracker-Summary"></a>Summary</h2> <p>Provide a useful summary. This can by copied from the project's wiki.</p> <p>For example: INFRA-005: Support create/delete/list-cluster</p> <h4><a name="FeaturesInIssuesTracker-Description"></a>Description</h2> <p>At a minimum provide a link to the project's wiki. For example:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">For details of this feature see:
+    3.1XYZ</pre> 
+       </div> 
+      </div>
+     </div> <p>A better description would be to provide details of the feature in the issue's description field with a link to the wiki for additional details. </p> <h4><a name="FeaturesInIssuesTracker-Postsubmittal"></a>Post-submittal</h2> <p>After the issue has been submitted the following fields should be updated.</p> <h4><a name="FeaturesInIssuesTracker-TargetMilestone"></a>Target Milestone</h3> <p>Update the Target Milestone. Choose one of the<br> 3.1 milestones provided in the drop-down list (e.g. 3.1_ms02, 3.1_ms03, etc).</p> <h4><a name="FeaturesInIssuesTracker-Dependencies"></a>Dependencies</h3> <p>Is the issue depends on other work being completed. Update the<br> "Issue NNNNN depends on:" field with the id's of the issues this<br> issue depends on.</p> <h4><a name="FeaturesInIssuesTracker-UpdateProjectWikiPage"></a>Update Project Wiki Page</h2> <p>As the "feature" issues are created update the project's wiki page with<br> the pointers to the issues. This information can be maintain in the<br> Milestone Schedule table.</p> <h4><a name="FeaturesInIssuesTracker-ValueAddFeatures"></a>Value Add Features</h2> <p>We are currently investigating the best tool to use to track these items. </p> <h4><a name="FeaturesInIssuesTracker-Otherjava.netprojects%28e.g.MQ%29"></a>Other java.net projects (e.g. MQ)</h2> <p>The above guidelines can be utilized for tracking features for other non-GlassFish projects as well. </p> <p>Separate reports will be generated for these projects.</p> <p>Projects in this category are: MQ, UpdateCenter</p> <h4><a name="FeaturesInIssuesTracker-References"></a>References</h2> 
+     <ul> 
+      <li><a href="https://github.com/javaee/glassfish/issues/12017">Example feature issue</a></li> 
+      <li><a href="http://wiki.glassfish.java.net/attach/3.1EngMeeting/gf-issuetracker.pdf">Using Issue Tracker to Track Features</a></li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 02, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:44.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

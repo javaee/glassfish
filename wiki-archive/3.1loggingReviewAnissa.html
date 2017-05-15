@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : 3.1loggingReviewAnissa</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="3.1loggingReviewAnissa-LoggingandDiagnosticReview"></a>Logging and Diagnostic Review</h1> <h4><a name="3.1loggingReviewAnissa-Document%3A"></a>Document: <a href="http://wiki.glassfish.java.net/attach/V3FunctionalSpecs/GFv3.1Logging-onepager.html">http://wiki.glassfish.java.net/attach/V3FunctionalSpecs/GFv3.1Logging-onepager.html</a></h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item </th> 
+         <th class="confluenceTh"> Section </th> 
+         <th class="confluenceTh"> Comment </th> 
+         <th class="confluenceTh"> Response </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> anissa-1 </td> 
+         <td class="confluenceTd"> General </td> 
+         <td class="confluenceTd"> many occurrence of v3.1, this should be changed to 3.1. 'v' is dropped for 3.1 release </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> anissa-2 </td> 
+         <td class="confluenceTd"> 4.1 <em>Provide CLI that collects all the logs files for a cluster and returns as a zip file</em> </td> 
+         <td class="confluenceTd"> GUI may provide a button for user to download this zip file. Will need you to support that </td> 
+         <td class="confluenceTd"> The zip file is available under GF home. So no need of button as of now. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> anissa-3 </td> 
+         <td class="confluenceTd"> 4.1 <em>There should be wiki page mentainted for all diagnostic info</em> </td> 
+         <td class="confluenceTd"> who is responsible for creating and maintaining this wiki page ? docs ? logging module or the other sub-project itself </td> 
+         <td class="confluenceTd"> Already sent mail to Paul (doc team) and you. As per paul 'Keeping the content of the wiki and LogStrings.properties files would be a major maintenance effort.' </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> anissa-4 </td> 
+         <td class="confluenceTd"> 4.7 <em>New search options need to be added as part of Log Viewer.</em> </td> 
+         <td class="confluenceTd"> What are the new serach options that you want ? There are many search options available already. Are you talking about based on instance ? Please list out the new search options </td> 
+         <td class="confluenceTd"> That I need to check with community and based on that I can decide so update this later on. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> anissa-5 </td> 
+         <td class="confluenceTd"> 4.7 <em>New CLI commands need to be added from previous release of GlassFish 2.1 to support backward compatibility.</em> </td> 
+         <td class="confluenceTd"> What are the CLI commands that will be added back ? Please list it out here </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> anissa-6 </td> 
+         <td class="confluenceTd"> 5 Reference Document </td> 
+         <td class="confluenceTd"> Please link your project task page to here so info can be accessed easily </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> anissa-7 </td> 
+         <td class="confluenceTd"> General </td> 
+         <td class="confluenceTd"> In v3, GUI gets the list of logs through AMX mbean. You need to provide a REST API for GUI to retrieve the logs, based on the instance name and other search criteria. You may want to work with Ludo/Jason on this. </td> 
+         <td class="confluenceTd"> Going to check with them and update you later on this. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> anissa-8 </td> 
+         <td class="confluenceTd"> General </td> 
+         <td class="confluenceTd"> Will user have access to the logs if the instance is not running ? </td> 
+         <td class="confluenceTd"> It is based on above requirement. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> vbk-1 </td> 
+         <td class="confluenceTd"> general </td> 
+         <td class="confluenceTd"> my comments are the result of reviewing revision 6 of this document </td> 
+         <td class="confluenceTd"> Ok </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> vbk-2 </td> 
+         <td class="confluenceTd"> general </td> 
+         <td class="confluenceTd"> putting this document in native wiki markup would make it easier to review and collaborate on </td> 
+         <td class="confluenceTd"> Will do it later on if time permits </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> vbk-3 </td> 
+         <td class="confluenceTd"> 3.1 </td> 
+         <td class="confluenceTd"> will the new CLI that creates a ZIP for a cluster also work for stand-alone instances? </td> 
+         <td class="confluenceTd"> No </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> vbk-4 </td> 
+         <td class="confluenceTd"> missing </td> 
+         <td class="confluenceTd"> what is the syntax of the new 'collect and zip' command? </td> 
+         <td class="confluenceTd"> ./asadmin collect-log-files --target server/cluster. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> vbk-5 </td> 
+         <td class="confluenceTd"> 4.1 </td> 
+         <td class="confluenceTd"> the 'collect and zip' command needs to be able to write the data locally... not is the home directory of a remote server... The GUI will also need a way to say where to put the file. </td> 
+         <td class="confluenceTd"> Not yet finalized. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> vbk-6 </td> 
+         <td class="confluenceTd"> 4.5.1 </td> 
+         <td class="confluenceTd"> are these new interfaces or changed interfaces? </td> 
+         <td class="confluenceTd"> Existing interface with new APIs </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> vbk-7 </td> 
+         <td class="confluenceTd"> 4.5.1 </td> 
+         <td class="confluenceTd"> the new search options need to be added to this list somehow? </td> 
+         <td class="confluenceTd"> Not yet finalized. Send mail to dev alias but not received any response yet. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> vbk-8 </td> 
+         <td class="confluenceTd"> missing from 4.5.1 </td> 
+         <td class="confluenceTd"> need REST api to get log data from a running server to support log view improvements in NetBeans and Eclipse. </td> 
+         <td class="confluenceTd"> Stated discussion with Ludo and Jasson and assigned bug to them for the same. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

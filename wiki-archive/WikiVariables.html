@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : WikiVariables</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   
+     <div class="panel" style="border-width: 1px;">
+      <div class="panelContent"> 
+       <p><b>Variable evaluation order</b></p> 
+       <p>The variables are evaluated in the following order:</p> 
+       <ol> 
+        <li>'Preset' variables (or constants), as those listed on this page.</li> 
+        <li>'Context' variables, as those set by plugins and tags.</li> 
+        <li>'Property' variables, like those set in jspwiki.properties.</li> 
+        <li>'Page' variables, like those set using the "SET" directive.</li> 
+       </ol> 
+      </div>
+     </div> <p>In JSPWiki 2.2, the variable system has been enhanced somewhat. You can use the "SET" -directive on any of your own pages to set a variable that exists only in the page.</p> <p>For example:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">[{SET foo='bar'}]</pre> 
+       </div> 
+      </div>
+     </div> <p>creates you a variable called "foo", which has the value of "bar". You can access this value anywhere on your page by using the shorthand "[{$foo}]".</p> <p>JSPWiki also defines all kinds of other variables, and tags and plugins can also add their own variables. For example, see the <a href="Counter.html" title="Counter">Counter</a> plugin. The following variable are preset by <a href="http://www.jspwiki.org/Wiki.jsp?page=">http://www.jspwiki.org/Wiki.jsp?page=</a></p> <h4><a name="WikiVariables-applicationname"></a>applicationname</h3> <p>This is the name of this Wiki. It has been set by the administrator in "jspwiki.properties". This Wiki is called <em>(_applicationname)</em>.</p> <h4><a name="WikiVariables-baseurl"></a>baseurl</h3> <p>The base URL address for this wiki.</p> <h4><a name="WikiVariables-encoding"></a>encoding</h3> <p>Describes the character encoding used in this Wiki. An encoding of "UTF-8" means that the Wiki accepts any character, including Chinese, Japanese, etc. Encoding "ISO-8859-1" means that only western languages are supported. This wiki uses the <em>(_encoding)</em> encoding.</p> <h4><a name="WikiVariables-inlinedimages"></a>inlinedimages</h3> <p>Lets you know which image types are being inlined.</p> <h4><a name="WikiVariables-interwikilinks"></a>interwikilinks</h3> <p>Writes HTML code for supported InterWiki links.</p> <h4><a name="WikiVariables-jspwikiversion"></a>jspwikiversion</h3> <p>Inserts the version number of the JSPWiki engine. For example, this version is <em>(_jspwikiversion)</em>.</p> <h4><a name="WikiVariables-loginstatus"></a>loginstatus</h3> <p>Shows how the current user has logged in. For example, you are <em>(_loginstatus)</em>.</p> <h4><a name="WikiVariables-uptime"></a>uptime</h3> <p>Inserts the amount of time since this Wiki has been last restarted. This wiki has been up for <em>(_uptime)</em>.</p> <h4><a name="WikiVariables-pagename"></a>pagename</h3> <p>Inserts the current page name. Example: This page is called <em>(_pagename)</em>.</p> <h4><a name="WikiVariables-pageprovider"></a>pageprovider</h3> <p>The current PageProvider.</p> <h4><a name="WikiVariables-pageproviderdescription"></a>pageproviderdescription</h3> <p>A verbose, HTML description about the currently used page provider.</p> <h4><a name="WikiVariables-requestcontext"></a>requestcontext</h3> <p>The current RequestContext. For example, this is the <em>(_requestcontext)</em> context.</p> <h4><a name="WikiVariables-totalpages"></a>totalpages</h3> <p>The total number of pages available in this Wiki.</p> <h4><a name="WikiVariables-username"></a>username</h3> <p>Inserts the current user name: For example, you are now logged in as <em>(_username)</em>.</p> <h4><a name="WikiVariables-InsertingJSPWikiproperties"></a>Inserting JSPWiki properties</h3> <p>You can also access some of the JSPWiki properties (that have been defined by the site maintainer) by using their property names directly. See <a href="SystemInfo.html" title="SystemInfo">SystemInfo</a> for an example.<br> Note that some properties might not be accessible due to security reasons.</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:49.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

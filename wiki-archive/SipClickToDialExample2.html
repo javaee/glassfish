@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : SipClickToDialExample2</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="SipClickToDialExample2-SipServletClicktoDialexample"></a>Sip Servlet Click-to-Dial example</h2> <p>This is an example of a click-to-dial application using Sip Servlets. Two users register softphones, and may call each other by clicking on a web site.</p> <p>The example code is available for download <a href="http://wiki.glassfish.java.net/attach/SipClickToDialExample2/ClickToDial.zip">here</a>.</p> 
+     <div> 
+      <ul> 
+       <ul> 
+        <li><a href="#SipClickToDialExample2-SipServletClicktoDialexample">Sip Servlet Click-to-Dial example</a></li> 
+       </ul> 
+       <li><a href="#SipClickToDialExample2-Abouttheexample">About the example</a></li> 
+       <ul> 
+        <ul> 
+         <li><a href="#SipClickToDialExample2-RegistrarSIPServlet">Registrar SIP Servlet</a></li> 
+         <li><a href="#SipClickToDialExample2-PlaceCallHTTPServlet">PlaceCall HTTP Servlet</a></li> 
+         <li><a href="#SipClickToDialExample2-CallSIPServlet">Call SIP Servlet</a></li> 
+        </ul> 
+       </ul> 
+       <li><a href="#SipClickToDialExample2-Installingtheexample">Installing the example</a></li> 
+       <li><a href="#SipClickToDialExample2-Runningtheexample">Running the example</a></li> 
+       <ul> 
+        <ul> 
+         <li><a href="#SipClickToDialExample2-1.Browsetotheloginscreen">1. Browse to the login screen</a></li> 
+         <li><a href="#SipClickToDialExample2-2.LoginasBob">2. Log in as Bob</a></li> 
+         <li><a href="#SipClickToDialExample2-3.SetupBob%27sSoftphone">3. Setup Bob's Softphone</a></li> 
+         <li><a href="#SipClickToDialExample2-4.LoginasAlice">4. Log in as Alice</a></li> 
+         <li><a href="#SipClickToDialExample2-5.SetupthexliteSoftphone.Sameasabove%2CbutconfiguredforAlice.">5. Setup the x-lite Softphone. Same as above, but configured for Alice.</a></li> 
+         <li><a href="#SipClickToDialExample2-6.PlaceaCall">6. Place a Call</a></li> 
+        </ul> 
+        <li><a href="#SipClickToDialExample2-ForMoreInformation">For More Information</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="SipClickToDialExample2-Abouttheexample"></a>About the example</h1> <p>This simple example shows how SIP Servlets can be used along with HTTP servlets to place calls from a web page. This example consists of the following steps:</p> 
+     <ol> 
+      <li>Alice and Bob each log in to the web application</li> 
+      <li>Alice and Bob each register a SIP Softphone</li> 
+      <li>Alice clicks on the "Call" link to place a call to Bob</li> 
+      <li>Alice's phone rings</li> 
+      <li>When Alice picks up her phone, Bob's phone rings</li> 
+      <li>When Bob answers his phone, the call is connected</li> 
+      <li>When one of them hangs up, the other one is also disconnected</li> 
+     </ol> <p>Here are the SIP messages that are exchanged in this process:</p> <p><span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20875118/21364964.png" style="border: 0px solid black"></span></p> <p>To handle these messages, we use two SIP Servlets and one HTTP Servlet. An overview of these servlets is given below.</p> <h4><a name="SipClickToDialExample2-RegistrarSIPServlet"></a>Registrar SIP Servlet</h3> <p>The first servlet is a SIP Servlet that handles softphone registration. When Alice or Bob launches their softphone, it registers the softphone address with a SIP proxy. We will record the softphone contact information using Java Persistence API. It will be used later to call Alice or Bob. </p> <p>Below is pseudocode for clicktodial.sip.RegistrarServlet. The full code can be found in the <a href="http://wiki.glassfish.java.net/attach/SipClickToDialExample2/ClickToDial.zip">download bundle</a>.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">/** A SIP Servlet to handle SIP REGISTER requests. */
+public class RegistrarServlet extends SipServlet {
+
+    // inject the SipFactory
+    @Resource(mappedName="sip/ClickToDial")
+    private SipFactory sf;
+    
+    /** Handle a SIP Register request. */
+    protected void doRegister(SipServletRequest req) 
+        throws ServletException, IOException 
+    {
+        int response;
+
+        // Figure out the name the user is registering with.  This is the
+        // user portion of the SIP URI, e.g. "Bob" in "sip:Bob@x.y.z:port"
+        String username = ...
+        
+        // get the Person object from the database
+        Person p = mf.getPerson(username);
+        if (p == null) {
+            // no person found in the database
+            response = SipServletResponse.SC_NOT_FOUND;
+        } else {
+            // the Expires header tells us if this is a registration or
+            // unregistration attempt.
+            int expires = Integer.parseInt(req.getHeader("Expires"));
+
+            if (expires == 0) {
+                // unregister
+                response = handleUnregister(req, p);
+            } else {
+                // register
+                response = handleRegister(req, p);
+            }
+        }
+
+        // send the response
+        SipServletResponse resp = req.createResponse(response);
+        resp.send();
+    }
+    
+    /** Handle a registration request */
+    private int handleRegister(SipServletRequest req, Person p)
+        throws ServletException
+    {
+
+        // Get the contact address from the request.  Prefer the
+        // "Contact" address if given, otherwise use the "To" address
+        Address addr = sf.createAddress(req.getHeader("Contact"));
+
+        // store the contact address in the database
+        p.setTelephone(addr.getURI().toString());
+        
+        ModelFacade mf = (ModelFacade) getServletContext().getAttribute("Model");
+        mf.updatePerson(p);
+        
+        return SipServletResponse.SC_OK;
+    }    
+}</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="SipClickToDialExample2-PlaceCallHTTPServlet"></a>PlaceCall HTTP Servlet</h3> <p>The PlaceCall HTTP Servlet receives an HTTP post when Alice clicks on the "Call" link in her browser. It sends the initial SIP INVITE request to Alice and stores Bob's address in the SipSession. Below is pseudocode for clicktodial.web.PlaceCallServlet.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">/** Place a phone call when a user clicks */
+public class PlaceCallServlet extends HttpServlet {
+    
+    // inject the SipFactory
+    @Resource(mappedName="sip/ClickToDial")
+    private SipFactory sf;
+    
+    /** Processes requests for HTTP POST method. */
+    protected void processRequest(HttpServletRequest request, 
+                                  HttpServletResponse response)
+        throws ServletException, IOException 
+    {
+        // get the source and target from the request
+        String sourceUserName = request.getParameter("source");
+        String targetUserName = request.getParameter("target");
+        
+        // look up the relevant Person objects in the database
+        ModelFacade mf = (ModelFacade) getServletContext().getAttribute("Model");
+        Person source = mf.getPerson(sourceUserName);
+        Person target = mf.getPerson(targetUserName);
+
+        // get the phone numbers as SIP Addresses
+        SipApplicationSession appSession = sf.createApplicationSession();
+        Address to = sf.createAddress(source.getTelephone());
+        Address from = sf.createAddress(target.getTelephone());
+        
+        // create an INVITE request to the first party from the second
+        SipServletRequest req = sf.createRequest(appSession, "INVITE", from, to);
+        
+        // store the second party's address in the sip session
+        req.getSession().setAttribute("SecondPartyAddress", from);
+        
+        // send the INVITE request            
+        req.send();
+    }   
+}</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="SipClickToDialExample2-CallSIPServlet"></a>Call SIP Servlet</h3> <p>The Call SIP servlet handles the OK response to the INVITE sent by the PlaceCall servlet above. Once an OK is received from Alice, this servlet sends an INVITE to Bob, specifying Alice's media preferences. When an OK is received from Bob, it sends an ACK to both parties. It also handle the BYE and call tear down.</p> <p>Pseudocode for clicktodial.sip.CallSipServlet is below.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">/** A SIP Serlvet that handles responses to click-to-dial invites
+ */
+public class CallSipServlet extends SipServlet implements SipSessionListener {
+
+    // inject the SipFactory
+    @Resource(mappedName="sip/ClickToDial")
+    private SipFactory sf;
+    
+    
+    /** Handle an OK response. */  
+    protected void doSuccessResponse(SipServletResponse resp)
+        throws ServletException, IOException 
+    {
+        SipSession session = resp.getSession();
+                
+        // if the response was OK, invite the other party
+        if (resp.getStatus() == SipServletResponse.SC_OK) {
+            
+            // we are in one of two states here.  Either this OK is from
+            // the original invitee, meaning they answered and it is time
+            // to ring the second pa
+2000
+rty, or the OK is from the second
+            // party, and we should acknowlege the call with both sides
+            
+            
+            // check for the first case, where this OK is from the original
+            // invitee
+            Address secondPartyAddress = 
+                    (Address) resp.getSession().getAttribute("SecondPartyAddress");  
+            if (secondPartyAddress != null) {
+                
+
+                // invite the second party
+                SipServletRequest invite = sf.createRequest(resp.getApplicationSession(),
+                        "INVITE", session.getRemoteParty(), secondPartyAddress);
+                
+                // get the SDP from the OK message
+                if (resp.getContentType().equals("application/sdp")) {
+                    invite.setContent(resp.getContent(), "application/sdp");
+                }        
+                
+                // send the invite
+                invite.send();
+            } else {
+                // send acks
+                SipServletRequest secondPartyAck = resp.createAck();
+                SipServletRequest firstPartyAck = 
+                        (SipServletRequest) resp.getSession().getAttribute("FirstPartyAck");
+            
+                // get the SDP from the second party's OK message
+                if (resp.getContentType().equals("application/sdp")) {
+                    firstPartyAck.setContent(resp.getContent(), "application/sdp");
+                }
+                
+                firstPartyAck.send();
+                secondPartyAck.send();
+            }
+        }
+    }
+}</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="SipClickToDialExample2-Installingtheexample"></a>Installing the example</h1> <p>Please follow the following steps to install and start the server</p> 
+     <ol> 
+      <li><a href="https://sailfin.java.net/downloads/downloads.html">Download and install SailFin.</a>.</li> 
+      <li>The example is distributed as a NetBeans project. You can build and deploy it directly from <a href="http://www.netbeans.org/">NetBeans</a> to a <a href="http://sailfin.java.net">SailFin</a> container. You can also use the <a href="http://blogs.oracle.com/vkraemer/entry/sip_servlet_development_support_and">SIP Application Development Module for NetBeans </a> to develop new SIP Application projects.</li> 
+      <li>Start SailFin (SF_HOME/bin/asadmin start-domain)</li> 
+      <li>Start JavaDB (SF_HOME/bin/asadmin start-database)</li> 
+     </ol> <p>Follow the steps below to the application</p> 
+     <ol> 
+      <li>Unzip the <a href="http://wiki.glassfish.java.net/attach/SipClickToDialExample2/ClickToDial.zip">download bundle</a></li> 
+      <li>Open the project in NetBeans</li> 
+      <li>In the project properties, under "Run" make sure SailFin is selected as the server</li> 
+      <li>Right click on the project and select "Run"</li> 
+     </ol> <p>Alternatively, you can skip NetBeans and use the &lt;b&gt;ant&lt;/b&gt; scripts. There is a &lt;b&gt;build.xml&lt;/b&gt; in the top level directory that will automatically build it and generate a deployable archive in &lt;b&gt;dist/ClickToDial.war&lt;/b&gt;. You can deploy using &lt;b&gt;asadmin deploy dist/ClickToDIal.war&lt;/b&gt;.</p> <p>Before you deploy, create a JDBC resource called jdbc/sample. You can do that by logging into the Admin console (<a href="http://localhost:4848">http://localhost:4848</a>) and clicking on the little triangle to expand &lt;b&gt;Resources&lt;/b&gt;. Click on &lt;b&gt;JDBC&lt;/b&gt;. Click on &lt;JDBC Resources&lt;/b&gt;. You will see a list of already existing JDBC resources. If you do not see &lt;b&gt;jdbc/sample&lt;/b&gt;,you can create it by clicking on &lt;b&gt;New&lt;/b&gt; button. Use &lt;b&gt;jdbc/sample&lt;/b&gt; for name and choose the pre-defined &lt;b&gt;DerbyPool&lt;/b&gt; for the database connection pool. Click &lt;b&gt;OK&lt;/b&gt;. </p> <h4><a name="SipClickToDialExample2-Runningtheexample"></a>Running the example</h1> <p>You can test this example using any SIP-based software phone. Instructions are provided for freely available X-Lite softphones: <a href="http://www.counterpath.com/index.php?menu=Products&amp;smenu=xlite">x-lite</a> </p> <h4><a name="SipClickToDialExample2-1.Browsetotheloginscreen"></a>1. Browse to the login screen</h3> <p>In your web browser, open <a href="http://localhost:8080/ClickToDial">http://hostname:8080/ClickToDial</a>, where <em>hostname</em> is the name of the host where SailFin is running.</p> <p><span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20875118/21364948.png" style="border: 0px solid black"></span></p> <h4><a name="SipClickToDialExample2-2.LoginasBob"></a>2. Log in as Bob </h3> <p>Start off by logging in as Bob. Select 'Bob' in the drop-down menu and click Login. This should bring up Bob's home page, with no softphone registered:</p> <p><span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20875118/21364966.png" style="border: 0px solid black"></span></p> <h4><a name="SipClickToDialExample2-3.SetupBob%27sSoftphone"></a>3. Setup Bob's Softphone</h3> <p>X-Lite is a freely available softphone for many platforms. To set up Bob's softphone, I used the settings below, where 129.148.173.187 is the IP address of my SailFin server. It is running on port 5060.</p> <p><span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20875118/21364967.png" style="border: 0px solid black"></span></p> <p>With X-Lite setup, enable the account to perform the registration to SailFin server which is acting as a registrar. You should see a message like the following in the SailFin log:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Received register request: "Bob"&lt;sip:Bob@192.168.2.103&gt;
+Register address: "Bob"&lt;sip:Bob@192.168.2.103:9990;transport=udp&gt;;expires=3600</pre> 
+       </div> 
+      </div>
+     </div> <p>X-Lite also will show a message: &lt;b&gt;You are logged in as Bob&lt;/b&gt;. Once X-Lite successfully registers, you can reload Bob's Login web page to get more information about his registration:</p> <p><span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20875118/21364946.png" style="border: 0px solid black"></span></p> <h4><a name="SipClickToDialExample2-4.LoginasAlice"></a>4. Log in as Alice</h3> <p>On another computer, navigate to the login page and login as Alice.</p> <h4><a name="SipClickToDialExample2-5.SetupthexliteSoftphone.Sameasabove%2CbutconfiguredforAlice."></a>5. Setup the x-lite Softphone. Same as above, but configured for Alice.</h3> <p>After Alice's phone registers, you should be able to reload the page and see both softphone registered and ready:</p> <p><span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20875118/21364941.png" style="border: 0px solid black"></span></p> <h4><a name="SipClickToDialExample2-6.PlaceaCall"></a>6. Place a Call</h3> <p>Now we are all set up to have Alice place a call to Bob (or Bob to Alice). When Alice clicks on the "Call" link next to Bob's name, her softphone should ring. When she picks up, Bob's sofphone should ring. When he answers, the call is connected. Either can disconnect first and the other is automatically disconnected by CallServlet.</p> <p>Make sure, you do the web login first. If the SIP Soft Phone connects to SailFin before the web login, Registration will fail. The sample can be modified to remove this limitation, if you wish.</p> <h4><a name="SipClickToDialExample2-ForMoreInformation"></a>For More Information</h2> <p>See the <a href="http://sailfin.java.net">SailFin</a> site as well as the <a href="Sip.html" title="Sip">Sip wiki page</a>.</p> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875118/21364964.png">SipMessage.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875118/21364967.png">BobProp.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875118/21364963.png">Alice.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875118/21364948.png">Login.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875118/21364946.png">BobRegistered.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875118/21364945.png">ekiga.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875118/21364942.png">AliceRegistered.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875118/21364947.png">xtenbob.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875118/21364966.png">Bob1.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875118/21364965.png">bobready.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875118/21364941.png">BothLoggedIn.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875118/21364944.png">xten.png</a> (image/png) 
+      <br> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Dec 02, 2011 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

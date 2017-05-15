@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : EJB Timer Service Demo for GlassFish 3.1 MS4</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="EJBTimerServiceDemoforGlassFish3.1MS4-EJBTimerServiceDemo"></a>EJB Timer Service Demo</h2> <p>This demo is shows creating automatic (i.e. defined by @Schedule annotation) EJB timer in a cluster and automatic (i.e. as a result of a GMS notification) timer migration if an instance that owns EJB Timers in a cluster is stopped.</p> <p>The demo uses ejb devtest </p>
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">v2/appserv-tests/devtests/ejb/ee/timer/autotimer</pre> 
+       </div> 
+      </div>
+     </div> to step through various stages<p></p> <h4><a name="EJBTimerServiceDemoforGlassFish3.1MS4-Team"></a>Team</h2> 
+     <ul> 
+      <li>Marina Vatkina</li> 
+     </ul> <h4><a name="EJBTimerServiceDemoforGlassFish3.1MS4-SetupandClustercreation"></a>Setup and Cluster creation</h2> <p><b><ins>Important: if you execute this test on MS4 build, copy _<em>war/MyBean.java.ms4</em>_ to _<em>war/MyBean.java</em>_</ins></b></p> 
+     <ol> 
+      <li>Compile the classes and create the WAR file to be deployed:</li> 
+     </ol> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">ant build</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ol> 
+      <li>Setup: 
+       <ol> 
+        <li>Start JavaDB database</li> 
+        <li>Start DAS.</li> 
+        <li>Create a resource that can be shared by all instances in the cluster (_<em>jdbc/mypool</em>_)</li> 
+        <li>Register this resource as the _<em>ejb-timer-service.timer-datasource</em>_ with the _<em>default-config</em>_.</li> 
+        <li>Create and start the cluster of 2 instances</li> 
+       </ol> </li> 
+     </ol> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">ant setup</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="EJBTimerServiceDemoforGlassFish3.1MS4-Deployingtheapplicationandstartingautomatictimer"></a>Deploying the application and starting automatic timer</h2> 
+     <ol> 
+      <li>Deploy the application:</li> 
+     </ol> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">ant deploy</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ol> 
+      <li>You can notice that the timeouts are delivered only on one (randomly picked) instance out of two that belong to the cluster. Check instance logs _<em>glassfishv3/glassfish/nodes/localhost/in1/logs/server.log</em>_ and _<em>glassfishv3/glassfish/nodes/localhost/in2/logs/server.log</em>_ to see the following output only on one instance:</li> 
+     </ol> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">[#|2010-08-23T17:26:39.640-0700|INFO|glassfish3.1|javax.enterprise.system.tools.admin.org.glassfish.deployment.admin|_ThreadID=15;_ThreadName=Thread-1;|ejb-ee-autotimer-web was successfully deployed in 9,901 milliseconds.|#]</pre> 
+       </div> 
+      </div>
+     </div> <p>and</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">[#|2010-08-23T17:26:48.044-0700|INFO|glassfish3.1|javax.enterprise.system.tools.admin.org.glassfish.deployment.admin|_ThreadID=15;_ThreadName=Thread-1;|ejb-ee-autotimer-web was successfully deployed in 8,254 milliseconds.|#]
+
+[#|2010-08-23T17:26:48.950-0700|SEVERE|glassfish3.1|null|_ThreadID=15;_ThreadName=Thread-1;|In ___MyBean:timeout___ timer01 - persistent: true|#]
+
+[#|2010-08-23T17:26:50.043-0700|SEVERE|glassfish3.1|null|_ThreadID=15;_ThreadName=Thread-1;|In ___MyBean:timeout___ timer01 - persistent: true|#]
+
+[#|2010-08-23T17:26:55.024-0700|SEVERE|glassfish3.1|null|_ThreadID=15;_ThreadName=Thread-1;|In ___MyBean:timeout___ timer01 - persistent: true|#]</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="EJBTimerServiceDemoforGlassFish3.1MS4-StoppingautomatictimeronMS4buildandcreatingprogrammatictimer"></a>Stopping automatic timer on MS4 build and creating programmatic timer</h2> 
+     <ol> 
+      <li>On MS4 build, the automatic timer needs to be cancelled (MS4 build does not support ustomatic timer failover, but any MS5 builds do).</li> 
+      <li>Programmatic timer is started on each instance in the cluster:</li> 
+     </ol> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">ant run-test</pre> 
+       </div> 
+      </div>
+     </div> <p>The corresponding log files will contain (there will be no _<em>MyBean: cancelling timer</em>_ message and 2 timers migrated from _<em>in2</em>_ to _<em>in1</em>_ on MS5 build):</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">[#|2010-08-23T17:27:43.432-0700|SEVERE|glassfish3.1|null|_ThreadID=15;_ThreadName=Thread-1;|In ___MyBean:timeoutReceived___ 0 times|#]
+
+[#|2010-08-23T17:27:43.432-0700|SEVERE|glassfish3.1|null|_ThreadID=15;_ThreadName=Thread-1;|In ___MyBean: cancelling timer01|#]
+
+[#|2010-08-23T17:27:44.573-0700|SEVERE|glassfish3.1|null|_ThreadID=15;_ThreadName=Thread-1;|In ___MyBean:timeout___ timer02 28080 - persistent: true|#]
+
+[#|2010-08-23T17:27:49.481-0700|SEVERE|glassfish3.1|null|_ThreadID=15;_ThreadName=Thread-1;|In ___MyBean:timeout___ timer02 28080 - persistent: true|#]</pre> 
+       </div> 
+      </div>
+     </div> <p>and</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">[#|2010-08-23T17:27:43.925-0700|SEVERE|glassfish3.1|null|_ThreadID=15;_ThreadName=Thread-1;|In ___MyBean: cancelling timer01|#]
+
+[#|2010-08-23T17:27:45.042-0700|SEVERE|glassfish3.1|null|_ThreadID=15;_ThreadName=Thread-1;|In ___MyBean:timeout___ timer02 28081 - persistent: true|#]
+
+[#|2010-08-23T17:27:49.970-0700|SEVERE|glassfish3.1|null|_ThreadID=15;_ThreadName=Thread-1;|In ___MyBean:timeout___ timer02 28081 - persistent: true|#]</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="EJBTimerServiceDemoforGlassFish3.1MS4-Stoppingoneinstance"></a>Stopping one instance</h2> <p>In our test _<em>in2</em>_ was the original instance with the timer:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">asadmin stop-instance in2</pre> 
+       </div> 
+      </div>
+     </div> <p>Will result in these messages in the corresponding logs:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">[#|2010-08-23T17:28:34.479-0700|SEVERE|glassfish3.1|null|_ThreadID=15;_ThreadName=Thread-1;|In ___MyBean:timeout___ timer02 28080 - persistent: true|#]
+
+[#|2010-08-23T17:28:38.451-0700|INFO|glassfish3.1|ShoalLogger|_ThreadID=15;_ThreadName=Thread-1;|GMS View Change Received for group c1 : Members in view for PEER_STOP_EVENT(before change analysis) are :
+1: MemberId: server, MemberType: SPECTATOR, Address: 10.132.180.145:9090:28395:c1:server
+2: MemberId: in1, MemberType: CORE, Address: 10.132.180.145:9091:28395:c1:in1
+|#]
+
+[#|2010-08-23T17:28:38.451-0700|INFO|glassfish3.1|ShoalLogger|_ThreadID=15;_ThreadName=Thread-1;|Analyzing new membership snapshot received as part of event : PEER_STOP_EVENT for Member: in2 of Group: c1|#]
+
+[#|2010-08-23T17:28:38.464-0700|INFO|glassfish3.1|ShoalLogger|_ThreadID=15;_ThreadName=Thread-1;|Received PlannedShutdownEvent Announcement from Instance in2 with Shutdown type = INSTANCE_SHUTDOWN of Group: c1|#]
+
+[#|2010-08-23T17:28:38.492-0700|INFO|glassfish3.1|ShoalLogger|_ThreadID=15;_ThreadName=Thread-1;|Sending PlannedShutdownSignals to registered Actions for shutdownType INSTANCE_SHUTDOWN Member: in2...|#]
+
+[#|2010-08-23T17:28:38.516-0700|INFO|glassfish3.1|javax.enterprise.system.container.ejb.com.sun.ejb.containers|_ThreadID=15;_ThreadName=Thread-1;|[DistributedEJBTimerServiceImpl] migrating timers from in2|#]
+
+[#|2010-08-23T17:28:38.516-0700|INFO|glassfish3.1|javax.enterprise.system.container.ejb.com.sun.ejb.containers|_ThreadID=15;_ThreadName=Thread-1;|Beginning timer migration process from owner in2 to in1|#]
+
+[#|2010-08-23T17:28:38.550-0700|INFO|glassfish3.1|javax.enterprise.system.container.ejb.com.sun.ejb.containers|_ThreadID=15;_ThreadName=Thread-1;|Timer migration phase 1 complete. Changed ownership of 1 timers.  Now reactivating timers...|#]
+
+[#|2010-08-23T17:28:39.577-0700|SEVERE|glassfish3.1|null|_ThreadID=15;_ThreadName=Thread-1;|In ___MyBean:timeout___ timer02 28080 - persistent: true|#]
+
+[#|2010-08-23T17:28:39.971-0700|SEVERE|glassfish3.1|null|_ThreadID=15;_ThreadName=Thread-1;|In ___MyBean:timeout___ timer02 28081 - persistent: true|#]
+
+[#|2010-08-23T17:28:44.481-0700|SEVERE|glassfish3.1|null|_ThreadID=15;_ThreadName=Thread-1;|In ___MyBean:timeout___ timer02 28080 - persistent: true|#]
+
+[#|2010-08-23T17:28:44.969-0700|SEVERE|glassfish3.1|null|_ThreadID=15;_ThreadName=Thread-1;|In ___MyBean:timeout___ timer02 28081 - persistent: true|#]</pre> 
+       </div> 
+      </div>
+     </div> <p>and </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">[#|2010-08-23T17:28:34.970-0700|SEVERE|glassfish3.1|null|_ThreadID=15;_ThreadName=Thread-1;|In ___MyBean:timeout___ timer02 28081 - persistent: true|#]
+
+[#|2010-08-23T17:28:37.300-0700|INFO|glassfish3.1|javax.enterprise.system.tools.admin.com.sun.enterprise.v3.admin.cluster|_ThreadID=15;_ThreadName=Thread-1;|Server shutdown initiated|#]
+
+[#|2010-08-23T17:28:37.322-0700|INFO|glassfish3.1|org.jvnet.hk2.osgiadapter|_ThreadID=15;_ThreadName=Thread-1;|Stopping com.sun.enterprise.v3.server.AppServerStartup@13eaab|#]
+
+[#|2010-08-23T17:28:37.384-0700|INFO|glassfish3.1|javax.enterprise.system.container.ejb.com.sun.ejb.containers|_ThreadID=15;_ThreadName=Thread-1;|[TimerBeanContainer] Shutdown() called....|#]</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="EJBTimerServiceDemoforGlassFish3.1MS4-Cleanup"></a>Cleanup</h2> <p>To undeploy the application, stop and remove the cluster do:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">and undeploy unsetup</pre> 
+       </div> 
+      </div>
+     </div> <p>This is the end of the demo and the test.</p> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Aug 23, 2010 by 
+<font color="#0050B2">-marina</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : ResponseFilesOnSolaris</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>relchiricle</p> <h4><a name="ResponseFilesOnSolaris-SolarispackageresponsefilesupportinopenInstaller"></a>Solaris package response file support in openInstaller</h2> 
+     <hr> <p>This page details the design for adding support for installation of packages with interactive request scripts, using non-interactive response files, in openInstaller 1.x.</p> 
+     <div> 
+      <ul> 
+       <li><a href="#ResponseFilesOnSolaris-SolarispackageresponsefilesupportinopenInstaller">Solaris package response file support in openInstaller</a></li> 
+       <ul> 
+        <li><a href="#ResponseFilesOnSolaris-Responsefileoverview">Response file overview</a></li> 
+        <li><a href="#ResponseFilesOnSolaris-Responsefilecontents">Response file contents</a></li> 
+        <li><a href="#ResponseFilesOnSolaris-RelationshiptoopenInstallerconfiguration">Relationship to openInstaller configuration</a></li> 
+        <li><a href="#ResponseFilesOnSolaris-DesignofopenInstallerfeature">Design of openInstaller feature</a></li> 
+       </ul> 
+      </ul>
+     </div> 
+     <hr> <h4><a name="ResponseFilesOnSolaris-Responsefileoverview"></a>Response file overview</h3> <p>See <a href="http://docs.sun.com/app/docs/doc/817-0406/6mg76sten?a=view">Solaris Application Packaging Developer's Guide: Creating Installation Scripts</a> for information on how request scripts are written by package maintainers.</p> <p>Packages that contain interactive request scripts are normally interactive when they are installed (using <tt>pkgadd</tt>). The job of the request script is to prompt the user for questions, and write out their answers to <tt>$1</tt> (e.g. <tt>echo SETTING=$answer &gt;&gt; $1</tt>). This interaction is bad for installers because it causes installation to hang (as there is no "console" to answer the questions during install). Therefore, a package administrator can provide a <em>response</em> file which is used instead of running the <em>request</em> script. The <em>response</em> file represents the answers that would have been written out by the <em>request</em> script. The package is installed in a non-interactive mode (<tt>pkgadd -n</tt>) passing the <em>response</em> file using the <tt>-r response_file</tt> option.</p> 
+     <hr> <h4><a name="ResponseFilesOnSolaris-Responsefilecontents"></a>Response file contents</h3> <p>The contents of a response file, as outlined above, is a set of <tt>NAME=VALUE</tt> pairs which represent environment variables that are available during the installation of a package. For example, a package's <tt>postinstall</tt> script may refer to the value of one or more of the variables. The underlying packaging tools use the response file to fill out the system environment during package installation.</p> <p>The values found in a response file are specific to the package (or product in which the package resides). The values found typically represent user-supplied configuration information or other dynamic variables that cannot be hard-coded at the time the package is built. Normally, the values are determined through the<br> package's interactive <em>request</em> script, but a <em>response</em> file can be used instead. However, the values are still typically determined by an interactive<br> higher-level installer, such as openInstaller. Therefore, there needs to be a way to transfer user-supplied values to the underlying packages via the <em>response</em> file.</p> 
+     <hr> <h4><a name="ResponseFilesOnSolaris-RelationshiptoopenInstallerconfiguration"></a>Relationship to openInstaller configuration</h3> <p>openInstaller's configuration architecture is such that each individual product to be installed by openInstaller can describe their configuration in the form of a <em>configuration schema</em> (also called an OOR file, as it is based on the openOffice Registry format). This file describes the configuration parameters that a product<br> can use to configure itself during installation, upgrade, or unconfiguration during uninstall. Here is a sample snippet from a configuration schema:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;group oor:name="Administration"&gt;
+        &lt;prop oor:name="WS_ADMIN_HOST" oor:type="xs:string" oor:nillable="false"&gt;
+           &lt;value if:eval=":[target:sys.hostName]"&gt;localhost&lt;/value&gt;
+        &lt;/prop&gt;
+        &lt;prop oor:name="WS_CONFIG_NAME" oor:type="xs:string" oor:nillable="false"&gt;
+           &lt;value if:eval=":[target:sys.hostName]"&gt;localhost&lt;/value&gt;
+        &lt;/prop&gt;
+   &lt;/group&gt;
+ &lt;/component&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>This defines that this particular product has two configuration parameters, <tt>WS_ADMIN_HOST</tt>, and <tt>WS_CONFIG_NAME</tt>, and both are strings,<br> grouped into the <tt>Administration</tt> group.</p> <p>The <em>response</em> files that products use in most cases need to know one or more of the configuration values that the <em>configuration schema</em> (OOR) file describes. Therefore, a 1-1 mapping in <b>most</b> cases would work. That is, each configuration parameter in the <em>configuration schema</em> file should also be put into the response file when a package from that product is installed. This is exactly what this design document details.</p> 
+     <hr> <h4><a name="ResponseFilesOnSolaris-DesignofopenInstallerfeature"></a>Design of openInstaller feature</h3> <p>The following points provide a summary of the proposed behavior of openInstaller:</p> 
+     <ul> 
+      <li>By default, all packages that are part of a product which has defined a configuration schema (OOR) file will be passed a response file.</li> 
+      <li>The response file, by default, will contain <tt>NAME=VALUE</tt> pairs for each and every configuration parameter defined in the configuration schema (OOR) file. The <tt>VALUE</tt> of each pair will be the current value as computed by the openInstaller engine (the same value that is passed to the product's <tt>init-config</tt> configurator).</li> 
+      <li>For products that are not configurable (those that do not have a configuration schema which a name which matches the product name) will have no changes. They will not be passed a response file.</li> 
+     </ul> <p>This will cover 80-90% of the use cases for response files. However, there are two slightly more complex scenarios for which we provide additional support for. The design behavior is:</p> 
+     <ul> 
+      <li>Names of parameters used in response files may be different than names used in the <em>configuration schema</em>. In this case, the user must specify the mapping in the component's <em>dependency descriptor</em> file (where the package names are declared).</li> 
+      <li>Values of parameters may be dynamically specified instead of being taken from the current value of the configuration parameter.</li> 
+     </ul> <p>These two additional behaviors are explained below:</p> <p><b>1.</b> Names of parameters used in response files may be different than names used in the <em>configuration schema</em>.</p> <p>In this scenario, the openInstaller installer developer has chosen to use different names in their <em>configuration schema</em> file vs. the names that are expected by the packages themselves. For example, a package may be expecting <tt>PORTAL_HOSTNAME=some hostname</tt> but the install developer has chosen to use <tt>PS_HOSTNAME</tt> in their configuration schema because this value is expected by the product's configurator itself or the name was chosen for some other unknown reason.</p> <p>In this case, a way to map one name to another is necessary. This can be specified in the dependency descriptor as is done in the following example:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;Realization&gt;
+        &lt;OS&gt;
+          ...
+        &lt;/OS&gt;
+        &lt;InstallableUnit&gt;SUNWwbsvr7&lt;/InstallableUnit&gt;
+          ...
+        &lt;ParameterMap real_name="OOR_NAME1" mapped_name="RESPONSE_NAME1"/&gt;
+        &lt;ParameterMap real_name="OOR_NAME2" mapped_name="RESPONSE_NAME2"/&gt;
+          ...
+      &lt;/Realization&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>In this example, the OOR configuration schema name is <tt>OOR_NAME1</tt>, but the name expected in the response file is <tt>RESPONSE_NAME1</tt>. When the package is<br> 2000<br> installed, a response file will be generated with all of the name/value pairs as defined in the <em>configuration schema</em> file, but any occurance of a parameter with the name <tt>OOR_NAME1</tt> will be substituted with a parameter by the name of <tt>RESPONSE_NAME1</tt>. The value however will be the same. <b>If no variable by the name <tt>OOR_NAME1</tt> is present</b> in the <em>configuraiton schema</em> file, <b>then no substitution will be made</b> and the contents of the response file will be the same as if this XML Parameter element were deleted.</p> <p><b>2.</b> Values of parameters may be dynamically specified</p> <p>In other cases, the value of a particular response file parameter passed to <tt>pkgadd</tt> is the combination of two or more other configuration parameters. In this case, a dynamic calculation of the value must be made. There are actually two ways to accomplish this:</p> 
+     <ul> 
+      <li>2a. The first way is already possible in openInstaller. You simply define a new parameter in your <em>configuration schema</em> file which has a dynamic default value, using existing substitution syntax. This new parameter's value is computed and the value is passed in the response file along with all other parameters. Here is an example of a dynamic configuration parameter:</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;prop oor:name="SERVER_NAME" oor:type="xs:string"&gt;
+ &lt;value if:eval=":[component:accessmgr:Configuration:AM_SERVER_NAME]"&gt;localhost&lt;/value&gt;
+ &lt;info&gt;
+   &lt;desc xml:lang="en-US"&gt;Name of the host on which the Access Manager server has been or will be deployed&lt;/desc&gt;
+ &lt;/info&gt;
+&lt;/prop&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>This defines a new parameter named <tt>SERVER_NAME</tt> which will take on the value of another configuration parameter, <tt>accessmgr.Configuration.AM_SERVER_NAME</tt>. This substitution syntax can be used any number of times in a single expression, and can refer to other component variables, OI engine options, machine data (e.g. ip address, hostname), and a host of other dynamic info. For more detail on the possible values, see the <a href="https://openinstaller.java.net/docs/index.html">openInstaller Configuration Architecture Specification</a> in the <a href="https://openinstaller.java.net/docs/index.html">openInstaller Documentation Depot</a></p> 
+     <ul> 
+      <li>2b. The second way, which is defined here, is to define a new parameter using the &lt;Parameter&gt; element in the <em>dependency descriptor</em>. This defines a new parameter which is <b>not</b> present in the <em>configuration schema</em> (OOR) file, but is used during <tt>pkgadd</tt> to pass a new response file parameter. Here is an example:</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;Realization&gt;
+        &lt;OS&gt;
+          ...
+        &lt;/OS&gt;
+        &lt;InstallableUnit&gt;SUNWwbsvr7&lt;/InstallableUnit&gt;
+          ...
+        &lt;Parameter name="NEW_PARAM1"&gt;:[component:accessmgr:conf:AM_SERVER_NAME]&amp;:[component:accessmgr:conf:AM_SERVER_PORT]&lt;/Parameter&gt;
+        &lt;Parameter name="NEW_PARAM2"&gt;:[target:sys.hostName]&amp;:[component:accessmgr:conf:AM_SERVER_PORT]&lt;/Parameter&gt;
+          ...
+      &lt;/Realization&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>In this example, a two new parameters named <tt>NEW_PARAM1</tt> and <tt>NEW_PARAM2</tt> are defined for passing to the package during <tt>pkgadd</tt>. The value passed is the dynamically calculated value using the specified component substitution values. In this example, you also see a different substitution parameter <tt>:[target:sys.hostName]</tt>. This is substituted with the running machine's hostname. At <tt>pkgadd</tt>-time, a response file is generated with all of the parameters specified in the <em>configuraiton schema</em> file, <b>and in addition, these two new parameters are included</b>. For example, the values for these two new parameters may appear as:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">NEW_PARAM1=amserver.sfbay.sun.com&amp;8080
+NEW_PARAM2=installsvr.sfbay.sun.com&amp;8080</pre> 
+       </div> 
+      </div>
+     </div> <p>This option provides a way for an install author to specify additional parameters that aren't present in the <em>configuration schema</em> (OOR) file.</p> <p><b>Specifying <em>Parameter</em>/<em>ParameterMap</em> elements at the <em>CompositeUnit</em> level</b></p> <p>In the above examples, the &lt;Parameter&gt; and &lt;ParameterMap&gt; elements were specified under the &lt;Realization&gt; element. This meant that the parameters only applied to the individual realization. When other realizations are installed (e.g. on other platforms), these parameters would not be passed to the package being installed. In some cases, it is desirable to pass the same values to multiple realizations (e.g. on Solaris/sparc and Solaris/x86). To do this, one can specify the parameters as part of a higher-level element (the &lt;CompositeUnit&gt;). An example is shown below:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;Payload&gt;
+    &lt;CompositeUnit&gt;
+      &lt;Name&gt;core&lt;/Name&gt;
+      &lt;Parameters&gt;
+        &lt;Parameter name="TestProductACompositeLevelParameter"&gt;TestProductACompositeLevelParameterValue&lt;/Parameter&gt;
+      &lt;/Parameters&gt;
+      &lt;Realization&gt;
+        ...
+      &lt;/Realization&gt;
+    &lt;/CompositeUnit&gt;
+  &lt;/Payload&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>In this example, a new parameter called <tt>TestProductACompositeLevelParameter</tt> is defined at the CompositeUnit level. This means that the parameter applies to <b>all</b> realizations of this CompositeUnit. Similarly, &lt;ParameterMap&gt; can be used in this way.</p> <p><b>Precedence rules</b></p> <p>In the above example, a Parameter was declared at the <em>CompositeUnit</em> level. In addition, parameters can be specified at the <em>Realization</em> level. <b>When two parameters conflict, the parameter defined at the Realization level takes precedence.</b> This allows developers to specify a generic set of parameters and values at the <em>CompositeUnit</em> level, and then override their values (or their name mappings) . For example:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;Payload&gt;
+    &lt;CompositeUnit&gt;
+      &lt;Name&gt;core&lt;/Name&gt;
+      &lt;Parameters&gt;
+        &lt;Parameter name="TestProductASetting"&gt;TestProductASettingValue&lt;/Parameter&gt;
+        &lt;ParameterMap real_name="TestProductAOtherSetting" mapped_name="MappedName"/&gt;
+      &lt;/Parameters&gt;
+      &lt;Realization&gt;
+        &lt;OS&gt;
+          ...
+        &lt;/OS&gt;
+        &lt;InstallableUnit&gt;SUNWfoo&lt;/InstallableUnit&gt;
+        &lt;Parameters&gt;
+          &lt;Parameter name="TestProductASetting"&gt;TestProductASomeOtherValue&lt;/Parameter&gt;
+          &lt;Parameter name="TestProductAOtherSetting"&gt;TestProductASomeValue&lt;/Parameter&gt;
+        &lt;/Parameters&gt;
+      &lt;/Realization&gt;
+    &lt;/CompositeUnit&gt;
+  &lt;/Payload&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>In this example, the developer has declared a setting using the same name <tt>TestProductASetting</tt>. When SUNWfoo is installed, the value of this setting will be taken from the <em>Realization</em> declaration, so the value will be <tt>TestProductASomeOtherValue</tt>.</p> <p>You will also notice at the <em>CompositeUnit</em> level, a declaration of a map for the <tt>TestProductAOtherSetting</tt>. Then, at the <em>Realization</em>, a parameter is defined using the same name. In this case, the Parameter at the Realization level takes precedence, and the mapping defined at the CompositeUnit level is <b>not</b> applied (it is essentially invisible, <em>masked</em> by the declaration at the <em>Realization</em> level).</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:49.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

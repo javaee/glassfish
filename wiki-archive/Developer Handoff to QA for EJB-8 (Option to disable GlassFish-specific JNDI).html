@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : Developer Handoff to QA for EJB-8 (Option to disable GlassFish-specific JNDI)</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>This is a description of EJB-8 feature and steps to verify the expected behavior.&nbsp; We already went over some of it during last week's iteam.&nbsp; I'd like to propose this as the formal QA/Doc Handoff document.&nbsp; If anyone, especially QA and Doc, have questions, feel free to raise it in iteam.</p> <p>description:<br> ==========<br> Now that the EJB 3.1 specification defines portable EJB JNDI names, there is less need for the old vendor-specific JNDI. By default in V3, GlassFish-specific default JNDI names are applied automatically for backward compatibility, but that can lead to some ease-of-use issues. For example, deploying two different applications containing a Remote EJB component that exposes the same remote interface will cause a conflict between the default JNDI names.</p> <p>By default, vendor-specific default JNDI names are applied automatically for backward compatibility.&nbsp; GlassFish-specific JNDI names can be disabled in one of 2 ways:</p> <p>(1), set the property disable-nonportable-jndi-names to true under &lt;ejb-container&gt; element in domain.xml.&nbsp; This will take effect for all EJBs deployed to the server, unless overridden by means of (2).&nbsp; For example,</p> <p>asadmin set server.ejb-container.property.disable-nonportable-jndi-names="true"<br> server.ejb-container.property.disable-nonportable-jndi-names=true</p> <p>Command set executed successfully.</p> <p>(2), set the property disable-nonportable-jndi-names to true under &lt;glassfish-ejb-jar&gt; element in glassfish-ejb-jar.xml.&nbsp; For example, the following is a complete glassfish-ejb-jar.xml with this property set to true.&nbsp; This will take effect for all EJBs packaged inside the current ejb-jar file:</p> <p>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br> &lt;!DOCTYPE glassfish-ejb-jar PUBLIC "-//GlassFish.org//DTD GlassFish Application Server 3.1 EJB 3.1//EN" <a href="http://glassfish.org/dtds/glassfish-ejb-jar_3_1-1.dtd">"http://glassfish.org/dtds/glassfish-ejb-jar_3_1-1.dtd"</a>&gt;<br> &lt;glassfish-ejb-jar&gt;<br> &nbsp;&nbsp;&nbsp; &lt;disable-nonportable-jndi-names&gt;true&lt;/disable-nonportable-jndi-names&gt;<br> &lt;/glassfish-ejb-jar&gt;</p> <p>Both properties default to false.&nbsp; Acceptable values are "true" or "false".&nbsp; The property in glassfish-ejb-jar.xml, if explicitly set, overrides the one in domain.xml.</p> <p>devtest:<br> ======<br> cd trunk/v2/appserv-tests<br> svn update<br> cd trunk/v2/appserv-tests/devtests/ejb/ejb31/full/disable_nonportable_jndi<br> ant all</p> <p>This devtest verifies the expected behavior by looking up a GlassFish-specific jndi name of a stateless bean that should not exist since it has been disabled.&nbsp; The test passes if the lookup failed with javax.naming.NamingException.</p> <p>manual test:<br> ==========<br> To visually verify it, one can first set the property in either one of the two ways, deploy a ejb module, or an EAR containing ejb, then run:</p> <p>$ asadmin list-jndi-entries<br> UserTransaction: com.sun.enterprise.transaction.TransactionNamingProxy$UserTransactionProxy<br> java:global: com.sun.enterprise.naming.impl.TransientContext<br> jdbc: com.sun.enterprise.naming.impl.TransientContext<br> ejb: com.sun.enterprise.naming.impl.TransientContext<br> com.sun.enterprise.container.common.spi.util.InjectionManager: com.sun.enterprise.container.common.impl.util.InjectionManagerImpl</p> <p>The output should not contain any GlassFish-specific jndi names for the deployed application.</p> <p>resources:<br> =========<br> EJB 3.1 one pager / function spec:</p> <p><a href="./GlassFishv3.1EJBOnePager.html">http://wikis.sun.com/display/GlassFish/GlassFishv3.1EJBOnePager</a></p> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Oct 04, 2010 by 
+<font color="#0050B2">cheng.fang</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

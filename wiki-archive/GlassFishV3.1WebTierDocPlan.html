@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFishV3.1WebTierDocPlan</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GlassFishV3.1WebTierDocPlan-WebTierDocumentationPlanforGlassFishServerOpenSourceEdition3.1"></a><em>Web Tier</em> Documentation Plan for GlassFish Server Open Source Edition 3.1</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#GlassFishV3.1WebTierDocPlan-WebTierDocumentationPlanforGlassFishServerOpenSourceEdition3.1"> <em>Web Tier</em> Documentation Plan for GlassFish Server Open Source Edition 3.1</a></li> 
+       <ul> 
+        <li><a href="#GlassFishV3.1WebTierDocPlan-PeopleandRoles">People and Roles</a></li> 
+        <li><a href="#GlassFishV3.1WebTierDocPlan-Audience">Audience</a></li> 
+        <li><a href="#GlassFishV3.1WebTierDocPlan-SummaryoftheFeatureFromaUser%27sPerspective">Summary of the Feature From a User's Perspective</a></li> 
+        <li><a href="#GlassFishV3.1WebTierDocPlan-Availability">Availability</a></li> 
+        <li><a href="#GlassFishV3.1WebTierDocPlan-StatementofWork">Statement of Work</a></li> 
+        <ul> 
+         <li><a href="#GlassFishV3.1WebTierDocPlan-ChangestoBooks">Changes to Books</a></li> 
+         <ul> 
+          <li><a href="#GlassFishV3.1WebTierDocPlan-AdministrationGuideChanges"> <em>Administration Guide</em> Changes</a></li> 
+          <li><a href="#GlassFishV3.1WebTierDocPlan-DevelopmentGuideChanges"> <em>Development Guide</em> Changes</a></li> 
+          <li><a href="#GlassFishV3.1WebTierDocPlan-DomainFileFormatReferenceChanges"> <em>Domain File Format Reference</em> Changes</a></li> 
+          <li><a href="#GlassFishV3.1WebTierDocPlan-HighAvailabilityAdministrationGuideChanges"> <em>High Availability Administration Guide</em> Changes</a></li> 
+         </ul> 
+         <li><a href="#GlassFishV3.1WebTierDocPlan-ChangestoOnlineHelp">Changes to Online Help</a></li> 
+         <li><a href="#GlassFishV3.1WebTierDocPlan-ChangestoManPages">Changes to Man Pages</a></li> 
+        </ul> 
+        <li><a href="#GlassFishV3.1WebTierDocPlan-ReviewSchedule">Review Schedule</a></li> 
+        <li><a href="#GlassFishV3.1WebTierDocPlan-RelatedInformation">Related Information</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="GlassFishV3.1WebTierDocPlan-PeopleandRoles"></a>People and Roles</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Name </th> 
+         <th class="confluenceTh"> Role </th> 
+         <th class="confluenceTh"> Location </th> 
+         <th class="confluenceTh"> Time Zone </th> 
+         <th class="confluenceTh"> Email </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Mike Fitch </td> 
+         <td class="confluenceTd"> Documentation Feature Owner </td> 
+         <td class="confluenceTd"> CA, USA </td> 
+         <td class="confluenceTd"> US/Pacific </td> 
+         <td class="confluenceTd"> <tt>oncered@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Rajiv Mordani </td> 
+         <td class="confluenceTd"> Software Engineer </td> 
+         <td class="confluenceTd"> Santa Clara CA, USA </td> 
+         <td class="confluenceTd"> US/Pacific </td> 
+         <td class="confluenceTd"> <tt>@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Shing-Wai Chan </td> 
+         <td class="confluenceTd"> Software Engineer </td> 
+         <td class="confluenceTd"> Santa Clara CA, USA </td> 
+         <td class="confluenceTd"> US/Pacific </td> 
+         <td class="confluenceTd"> <tt>swchan2@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Amy Roh </td> 
+         <td class="confluenceTd"> Software Engineer </td> 
+         <td class="confluenceTd"> Santa Clara CA, USA </td> 
+         <td class="confluenceTd"> US/Pacific </td> 
+         <td class="confluenceTd"> <tt>amyroh@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Dhiru Pandey </td> 
+         <td class="confluenceTd"> Software Engineer </td> 
+         <td class="confluenceTd"> Santa Clara CA, USA </td> 
+         <td class="confluenceTd"> US/Pacific </td> 
+         <td class="confluenceTd"> <tt>@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Kin-Man Chung </td> 
+         <td class="confluenceTd"> Software Engineer </td> 
+         <td class="confluenceTd"> Santa Clara CA, USA </td> 
+         <td class="confluenceTd"> US/Pacific </td> 
+         <td class="confluenceTd"> <tt>kchung@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Justin Lee </td> 
+         <td class="confluenceTd"> Software Engineer </td> 
+         <td class="confluenceTd"> New York NY, USA </td> 
+         <td class="confluenceTd"> US/Eastern </td> 
+         <td class="confluenceTd"> <tt>@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Sudipa Bhattacharya </td> 
+         <td class="confluenceTd"> QA Engineer </td> 
+         <td class="confluenceTd"> Santa Clara CA, USA </td> 
+         <td class="confluenceTd"> US/Pacific </td> 
+         <td class="confluenceTd"> <tt>@dev.java.net</tt> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3.1WebTierDocPlan-Audience"></a>Audience</h2> <p>Developers of Java EE application use the various APIs provided by the Web Tier services.</p> <p>GlassFish administrators configure and manage the services provided by the Web Tier.</p> <h4><a name="GlassFishV3.1WebTierDocPlan-SummaryoftheFeatureFromaUser%27sPerspective"></a>Summary of the Feature From a User's Perspective</h2> <p>The Web Tier provides the required Java EE 6 functionality for the web container.</p> <h4><a name="GlassFishV3.1WebTierDocPlan-Availability"></a>Availability</h2> <p>The Web Tier is available in both the web and full GlassFish Server distributions. </p> <h4><a name="GlassFishV3.1WebTierDocPlan-StatementofWork"></a>Statement of Work</h2> <p>This section describes in detail for each document the work that is required by the introduction of the feature, such as changes, addition of new material, relocation of existing material, and removal of existing material.</p> 
+     <div class="panelMacro">
+      <table class="infoMacro">
+       <colgroup>
+        <col width="24">
+        <col>
+       </colgroup>
+       <tbody>
+        <tr>
+         <td valign="top"><img src="images/icons/emoticons/information.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td>
+         <td><b>Note</b><br>Support of WebLogic deployment descriptors and the renaming of <tt>sun-web.xml</tt> to <tt>glassfish-web.xml</tt> are covered in the <a href="GlassFishV3.1DeploymentDocPlan.html" title="GlassFishV3.1DeploymentDocPlan">Deployment Documentation Plan</a>.</td>
+        </tr>
+       </tbody>
+      </table>
+     </div> <p>Documentation Impact:</p> 
+     <ul> 
+      <li>None</li> 
+      <li>Minor</li> 
+      <li>Moderate</li> 
+      <li>Major</li> 
+      <li>New</li> 
+     </ul> <h4><a name="GlassFishV3.1WebTierDocPlan-ChangestoBooks"></a>Changes to Books</h3> <h4><a name="GlassFishV3.1WebTierDocPlan-AdministrationGuideChanges"></a><em>Administration Guide</em> Changes</h4> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Section</th> 
+         <th class="confluenceTh">Documentation Impact</th> 
+         <th class="confluenceTh">Writer</th> 
+         <th class="confluenceTh">Reviewers</th> 
+         <th class="confluenceTh">Description of Change </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 16, "Administering Internet Connectivity" </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Mike Fitch </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Reinstate clustering information from v2. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> "Administering HTTP Protocols" in Chapter 16, "Administering Internet Connectivity" </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Mike Fitch </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Add procedures for creating, deleting and listing protocol filters and finders.</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3.1WebTierDocPlan-DevelopmentGuideChanges"></a><em>Development Guide</em> Changes</h4> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Section</th> 
+         <th class="confluenceTh">Documentation Impact</th> 
+         <th class="confluenceTh">Writer</th> 
+         <th class="confluenceTh">Reviewers</th> 
+         <th class="confluenceTh">Description of Change </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 8, "Developing Web Applications" </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Mike Fitch </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Reinstate clustering information from v2. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> "Creating and Managing Sessions" in Chapter 8, "Developing Web Applications" </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Mike Fitch </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Document <tt>StrategyBuilder</tt> interface. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3.1WebTierDocPlan-DomainFileFormatReferenceChanges"></a><em>Domain File Format Reference</em> Changes</h4> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Section</th> 
+         <th class="confluenceTh">Documentation Impact</th> 
+         <th class="confluenceTh">Writer</th> 
+         <th class="confluenceTh">Reviewers</th> 
+         <th class="confluenceTh">Description of Change </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> "H" </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Mike Fitch </td> 
+         <td class="confluenceTd"> Justin Lee </td> 
+         <td class="confluenceTd"> Document <tt>http-redirect</tt> element. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3.1WebTierDocPlan-HighAvailabilityAdministrationGuideChanges"></a><em>High Availability Administration Guide</em> Changes</h4> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Section</th> 
+         <th class="confluenceTh">Documentation Impact</th> 
+         <th class="confluenceTh">Writer</th> 
+         <th class="confluenceTh">Reviewers</th> 
+         <th class="confluenceTh">Description of Change </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> "HTTP Session Failover" in Chapter 9, "Configuring High Availability Session<br> Persistence and Failover" </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Mike Fitch </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Reinstate from v2. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3.1WebTierDocPlan-ChangestoOnlineHelp"></a>Changes to Online Help</h3> <p><b><em>Administration Console Common Online Help</em> Changes</b></p> <p>See the <a href="GlassFishV3.1AdminConsoleDocPlan.html" title="GlassFishV3.1AdminConsoleDocPlan">Administration Console Documentation Plan</a>.</p> <h4><a name="GlassFishV3.1WebTierDocPlan-ChangestoManPages"></a>Changes to Man Pages</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Man Page Name and Section</th> 
+         <th class="confluenceTh">Documentation Impact</th> 
+         <th class="confluenceTh">Writer</th> 
+         <th class="confluenceTh">Reviewers</th> 
+         <th class="confluenceTh">Description of Change </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>create-virtual-server</tt>, <tt>delete-virtual-server</tt>, <tt>list-virtual-servers</tt>, <tt>create-http</tt>, <tt>delete-http</tt>, <tt>create-http-listener</tt>, <tt>delete-http-listener</tt>, <tt>list-http-listeners</tt>, <tt>create-threadpool</tt>, <tt>delete-threadpool</tt>, <tt>list-threadpools</tt>, <tt>create-ssl</tt>, <tt>delete-ssl</tt>, <tt>create-protocol</tt>, <tt>delete-protocol</tt>, <tt>list-protocols</tt>, <tt>create-transport</tt>, <tt>delete-transport</tt>, <tt>list-transports</tt>, <tt>create-network-listener</tt>, <tt>delete-network-listener</tt>, <tt>list-network-listeners</tt> </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Mike Fitch </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Reinstate <tt>--target</tt> option. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>create-protocol-filter</tt>, <tt>delete-protocol-filter</tt>, <tt>list-protocol-filters</tt>, <tt>create-protocol-finder</tt>, <tt>delete-protocol-finder</tt>, <tt>list-protocol-finders</tt> </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Mike Fitch </td> 
+         <td class="confluenceTd"> Justin Lee </td> 
+         <td class="confluenceTd"> Add these Man Pages </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3.1WebTierDocPlan-ReviewSchedule"></a>Review Schedule</h2> <p>The review schedule for the documentation items that are affected by this feature is provided in the following table.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Item</th> 
+         <th class="confluenceTh">Review Start Date</th> 
+         <th class="confluenceTh">Review End Date </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <em>Administration Guide</em> changes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <em>Development Guide</em> changes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <em>High Availability Administration Guide</em> changes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <em>Administration Console Common Online Help</em> changes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Man Page changes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>Reviewers are listed in the <em>Statement of Work</em>.</p> <h4><a name="GlassFishV3.1WebTierDocPlan-RelatedInformation"></a>Related Information</h2> 
+     <ul> 
+      <li><a href="WebTier.html" title="WebTier">Engineering one-pager</a> for the 3.1 Web Tier effort</li> 
+      <li><a href="WebTierv3.1.html" title="WebTierv3.1">Engineering project page</a> for the 3.1 Web Tier effort</li> 
+      <li>User task analysis</li> 
+      <li>Design document</li> 
+     </ul> <p>Email aliases:</p> 
+     <ul> 
+      <li><a href="mailto:admin@glassfish.java.net">admin@glassfish.java.net</a></li> 
+      <li><a href="mailto:users@glassfish.java.net">users@glassfish.java.net</a></li> 
+      <li><a href="mailto:docs@glassfish.java.net">docs@glassfish.java.net</a></li> 
+     </ul> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Aug 15, 2011 by 
+<font color="#0050B2">sb_2011</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

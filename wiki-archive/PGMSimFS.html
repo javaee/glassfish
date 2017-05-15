@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : PGMSimFS</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>Template version : v0.5 &lt;01/2009&gt;</p> <h4><a name="PGMSimFS-CafePresenceSimulatorOnePager"></a>Cafe Presence Simulator One Pager</h1> <p>[</p> 
+     <div class="error">
+      <span class="error">Unknown macro: {TableOfContents title=' '}</span> 
+     </div> <p>|(TableOfContentstitle='')]</p> <h4><a name="PGMSimFS-1.Introduction"></a>1. Introduction</h1> <h4><a name="PGMSimFS-1.1.Project%2FComponentWorkingName%3A"></a>1.1. Project/Component Working Name: </h2> <p>Cafe Presence Simulator</p> <h4><a name="PGMSimFS-1.2.Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier%3A"></a>1.2. Name(s) and e-mail address of Document Author(s)/Supplier:</h2> <p>Erik: erik.van.der.velden@ericsson.com</p> <h4><a name="PGMSimFS-1.3.DateofThisDocument%3A"></a>1.3. Date of This Document:</h2> <p>24/02/2010</p> <h4><a name="PGMSimFS-2.ProjectSummary"></a>2. Project Summary</h1> <h4><a name="PGMSimFS-2.1.ProjectDescription%3A"></a>2.1. Project Description:</h2> <p>The Cafe Presence Simulator will offer a designer the possibility to do (limited) testing of application using the presence related user procedures.<br> This way converged applications that use presence can be created and tested. The simulator is installed together with the Cafe-addon and does not require any configuration.<br> The simulator includes an XCAP/XDM server for RLS, shared XDM and presence XDM. It also includes a presence server, handling the publications and subscriptions.</p> <p>Although the simulator tries to mimic the workings of a IMS network, not all the capabilities and performance of a real IMS network is guaranteed.</p> <p>See below for a longer, more detailed technical description.</p> <h4><a name="PGMSimFS-2.2.RisksandAssumptions%3A"></a>2.2. Risks and Assumptions:</h2> <p>The simulator is just that, a simulator. There is no solid guarantee that a service will work equally well in a real IMS network.</p> <p>The simulator implements a subset of the full capabilities of an IMS network, i.e., the subset used by the presence related user procedures.<br> For example, aggregation and throttling is not supported.<br> However, the way it is designed, it could be used as a standalone simulator as well, for non-CAFE applications. Provided they conform to the mentioned subset of functionality.</p> <h4><a name="PGMSimFS-3.ProblemSummary"></a>3. Problem Summary</h1> <h4><a name="PGMSimFS-3.1.ProblemArea%3A"></a>3.1. Problem Area:</h2> <p>Easy testing of cafe applications without the need to setup external network elements (like an openIMS network, or external presence server).</p> <h4><a name="PGMSimFS-3.2.Justification%3A"></a>3.2. Justification:</h2> <p>To lower the threshold for application developers to design and test services.</p> <h4><a name="PGMSimFS-4.TechnicalDescription%3A"></a>4. Technical Description:</h1> <h4><a name="PGMSimFS-4.1.Details%3A"></a>4.1. Details:</h2> <h4><a name="PGMSimFS-4.1.1Overview"></a>4.1.1 Overview</h3> <p>The Simulator is developed as a separate application, packaged as a WAR.<br> The Simulator has two servlets;</p> 
+     <ul> 
+      <li>The <b>XCAPServlet</b> - an HTTPServlet handling the XCAP requests</li> 
+      <li>The <b>PGMServlet</b> - an SIPServlet handling subscribe, publish and option requests</li> 
+     </ul> <p>The XCAP related data is stored in memory.<br> The PGM related data is stored in various SipApplicationSessions.</p> <h4><a name="PGMSimFS-4.1.2XCAPhandling"></a>4.1.2 XCAP handling</h3> <p>XCAP at its core can be seen as a document management system with versioning and specified access (read/write/delete) to parts of documents.<br> In a sense it is a REST architecture, where resources are documents or parts of documents.</p> <p>XCAP handling is done using the xpath library which is already a part of CAFE.<br> In order to access parts of documents xpath is used.</p> <p>In the architecure, the various XCAP documents are stored using a DAO pattern, without any intepretation of the content of these documents.<br> However, for several usages an interceptor can be registered.<br> Such an interceptor will interpret the stored, deleted or updated XCAP document as e.g., a shared list, a presence list or a rules document.<br> These interceptors will store the interpreted documents using their own respective DAOs and also will notify any PGM sessions that are affected by the change.<br> These notifications are done using SAS-targeted OPTIONS methods.</p> <h4><a name="PGMSimFS-4.1.3PGMhandling"></a>4.1.3 PGM handling</h3> <p>The Presence and Group Management handling involves the SIP handling part of the simulator.<br> The following Application Sessions are represented.</p> <p><b>group subscription</b><br> Represented by a Sip Application Session.<br> This lives as long as there are live subscriptions for this group.<br> For each incoming subscription there are multiple outgoing subscriptions, one for each member in the group.</p> <p><b>user</b><br> Represented by a SAS.<br> This lives as long as there are incoming user subscriptions or active publications.</p> <p><b>user subscription</b><br> Either a direct subscription or an indirect subscription (via the group subscription).<br> The first type is not yet supported by CAFE, but the simulator allows for it.<br> This is represented as a Sip Session and a Servlet Timer to guard the duration.</p> <p><b>user publication</b><br> An active publication is represented by a servlet timer and the published data.</p> <p><b>rules</b><br> Rules are not represented by any SIP artifact, but a cached version of the rules is present in the user object.</p> <p>The following relations are there:</p> 
+     <ul> 
+      <li>rules document and user</li> 
+     </ul> <p>When a rules document changes (noticed by the interceptor) the corresponding user object (if any) is notified.<br> The user objects need to re-evaluate the subscriptions, to see if all the subscriptions are still allowed and get the correct notifications.<br> (e.g., a rules change might put somebody that has an active subscription on the blocked list, meaning that the subscription has to be terminated).</p> 
+     <ul> 
+      <li>presence list and group subscription</li> 
+     </ul> <p>When a presence list is modified the corresponding group subscription object is notified using an OPTIONS message.<br> The change might impact the set of users in the list, so some outgoing user subscription might have to be removed or added.<br> Or the group is removed, in which case the group subscription has to be terminated.</p> 
+     <ul> 
+      <li>shared list and user and group</li> 
+     </ul> <p>The changes to the shared lists are the worst, since this can influence both the rules (which can refer to lists) and the presence list (which refers to lists)<br> So in case of a shared list both types of objects are notified and the above actions can be taken.</p> <h4><a name="PGMSimFS-4.2.Bug%2FRFENumber%28s%29%3A"></a>4.2. Bug/RFE Number(s):</h2> <h4><a name="PGMSimFS-4.2.1Bug%2FRFENumbersfromIssueTracker"></a>4.2.1 Bug/RFE Numbers from Issue Tracker</h3> <p>N.A.</p> <h4><a name="PGMSimFS-4.2.2RequirememtIdsthatarebeingaddressedasapartofthisproposal."></a>4.2.2 Requirememt Ids that are being addressed as a part of this proposal.</h3> <p>N.A.</p> <h4><a name="PGMSimFS-4.3.InScope%3A"></a>4.3. In Scope:</h2> <p>Basic simulator for XCAP and Presence.</p> <h4><a name="PGMSimFS-4.4.OutofScope%3A"></a>4.4. Out of Scope:</h2> <p>Not all the functionality of a real IMS network is implemented.<br> Among others the following is missing:</p> 
+     <ul> 
+      <li>throttling/combination of notifications</li> 
+      <li>aggregation of different presence sources (although the basics are there)</li> 
+      <li>default presence document configuration</li> 
+      <li>any configuration of any type</li> 
+      <li>persistency of the information over restarts</li> 
+      <li>watcherinfo subscriber handling (there is preparation for this though).</li> 
+     </ul> <p>At the time of writing the simulator CAFE did not support this.</p> 
+     <ul> 
+      <li>no filtering support</li> 
+     </ul> <h4><a name="PGMSimFS-4.5.Interfaces%3A"></a>4.5. Interfaces:</h2> <p>The following standards are supported. All are quite stable.</p> <h4><a name="PGMSimFS-4.5.1ExportedInterfaces"></a>4.5.1 Exported Interfaces</h3> <p>Disclose all interfaces that this project exports.</p> 
+     <ul> 
+      <li>Interface: RFC3903</li> 
+      <li>Stability: standard</li> 
+      <li>Former Stability (if changing):</li> 
+      <li>Comments:</li> 
+     </ul> 
+     <ul> 
+      <li>Interface:RFC4826</li> 
+      <li>Stability: standard</li> 
+      <li>Former Stability (if changing):</li> 
+      <li>Comments:</li> 
+     </ul> 
+     <ul> 
+      <li>Interface:RFC5025</li> 
+      <li>Stability: standard</li> 
+      <li>Former Stability (if changing):</li> 
+      <li>Comments:</li> 
+     </ul> 
+     <ul> 
+      <li>Interface:RFC4662</li> 
+      <li>Stability: standard</li> 
+      <li>Former Stability (if changing):</li> 
+      <li>Comments:</li> 
+     </ul> 
+     <ul> 
+      <li>Interface:4825</li> 
+      <li>Stability: standard</li> 
+      <li>Former Stability (if changing):</li> 
+      <li>Comments:</li> 
+     </ul> <h4><a name="PGMSimFS-4.5.2Importedinterfaces"></a>4.5.2 Imported interfaces</h3> <p>Disclose interfaces this project imports. </p> 
+     <ul> 
+      <li>Interface: XCAP client API library</li> 
+      <li>Stability: Stable</li> 
+      <li>Exporting Project: Sailfin CAFE</li> 
+      <li>Comments:</li> 
+     </ul> 
+     <ul> 
+      <li>Interface: JAXB2</li> 
+      <li>Stability: stable</li> 
+      <li>Exporting Project: JSE/JEE</li> 
+      <li>Comments:</li> 
+     </ul> <h4><a name="PGMSimFS-4.6.DocImpact%3A"></a>4.6. Doc Impact:</h2> <p>Developers guide.</p> <h4><a name="PGMSimFS-4.7.Admin%2FConfigImpact%3A"></a>4.7. Admin/Config Impact:</h2> <p>None.</p> <h4><a name="PGMSimFS-4.7.1Configurationchangesneeded"></a>4.7.1 Configuration changes needed</h3> <h4><a name="PGMSimFS-4.7.2CLI%2FGUIimpactifany"></a>4.7.2 CLI / GUI impact if any</h3> <h4><a name="PGMSimFS-4.8.HAImpact%3A"></a>4.8. HA Impact:</h2> <p>First of all, this is a simulator, and it is not the intention that this is used for real traffic.</p> <p>The PGM component is created based on the Sip Application Sessions, so it will benefit from the HA-features of SIP.</p> <p>The XCAP data (both unparsed and parsed) is currently not stored in a cluster-wide manner, but in memory on the instance where the HTTP request was routed.<br> This will not work correctly in a cluster in the current implementation.<br> (in the notifications to the user and group objects the data itself is not included, but it is just a trigger for the object to invalidate its cached data).<br> A solution would be to either store this data in a real database or make it accessible in the cluster, loosing the data in case of a cluster failure/restart.</p> <p>The decision to model a publication as data associated with a sip application session related to a servlet timer means that the publication data is not persisted.</p> <h4><a name="PGMSimFS-4.9.I18N%2FL10NImpact%3A"></a>4.9. I18N/L10N Impact:</h2> <p>No</p> <h4><a name="PGMSimFS-4.10.Packaging%26Delivery%3A"></a>4.10. Packaging &amp; Delivery:</h2> <p>The simulator is packaged as a war, which is deployed on system level.<br> It could be delivered and used standalone from sailfin CAFE, but currently will install together with the addon.</p> <h4><a name="PGMSimFS-4.10.1Binariesinwhichthecodeisdelivered"></a>4.10.1 Binaries in which the code is delivered</h3> <p>PresenceAndGroupManagementSimulator.war</p> <h4><a name="PGMSimFS-4.11.SecurityImpact%3A"></a>4.11. Security Impact:</h2> <p>Security is NOT implemented in the simulator.</p> <h4><a name="PGMSimFS-4.12.CompatibilityImpact"></a>4.12. Compatibility Impact</h2> <p>None.</p> <h4><a name="PGMSimFS-4.13.Dependencies%3A"></a>4.13. Dependencies:</h2> <p>The functionality of the simulator is indirectly linked to the functionality of the user procedures in sailfin cafe.</p> <h4><a name="PGMSimFS-4.13.1ChangesrequiredinGlassFish"></a>4.13.1 Changes required in GlassFish</h3> <p>No</p> <h4><a name="PGMSimFS-4.13.2ThirdPartyAPIs"></a>4.13.2 Third Party APIs </h3> <p>None.</p> <h4><a name="PGMSimFS-4.14Miscellaneous"></a>4.14 Miscellaneous</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <td class="confluenceTd"> Will this component work with Ipv6 addresses </td> 
+         <td class="confluenceTd"> Yes </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Will this component work with JDK 64bit </td> 
+         <td class="confluenceTd"> Yes </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Will this component require configuration using a sun-specific deployment descriptor.If yes, please specify below that configuration elements needed </td> 
+         <td class="confluenceTd"> No </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="PGMSimFS-5.OpenIssues"></a>5. Open Issues</h1> <p>Please list areas of the design and requirement which are not clear and need a discussion or clarification</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Issue No </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> Comments </th> 
+         <th class="confluenceTh"> Resolution </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="PGMSimFS-6.ReferenceDocuments%3A"></a>6. Reference Documents:</h1> <p>None.</p> <h4><a name="PGMSimFS-7.Schedule%3A"></a>7. Schedule:</h1> <h4><a name="PGMSimFS-7.1.ProjectedAvailability%3A"></a>7.1. Projected Availability:</h2> <p>A first version is available.<br> Planned improvements include support for watcherinfo subscriber and aggregation.</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 02, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

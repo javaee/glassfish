@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : SIPToolingInNetBeans</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="SIPToolingInNetBeans-Projectmeetingdetails"></a>Project meeting details</h1> 
+     <ul> 
+      <li>Sunday night: 9:30 pm PT<br> Vince and Binod one-on-one</li> 
+      <li>Monday morning: after 8:15 am PT<br> Vince, Yvo and other interested parties<br> send Vince an e-mail for dial-in details</li> 
+     </ul> <h4><a name="SIPToolingInNetBeans-SIPToolingForNetBeansProjectMeetingMinutesST4NBMeetingMinutes"></a><a href="ST4NBMeetingMinutes.html" title="ST4NBMeetingMinutes">SIP Tooling For NetBeans Project Meeting Minutes</a></h2> <p>The minutes are written reverse chronological order as a single file. This helps prevent a file explosion which makes creating a new wiki name harder. each meeting entry should have a summary at the top, with details filled in as needed. This page also provides a space to fill in the agenda for upcoming meetings. the agenda should be "final" about 24 hours before the meeting.</p> <p><a href="ToolingFunctionalSpecForNetBeans.html" title="ToolingFunctionalSpecForNetBeans">ToolingFunctionalSpecForNetBeans</a></p> <p><a href="ToolingForNetBeansTestSpec.html" title="ToolingForNetBeansTestSpec">ToolingForNetBeansTestSpec</a></p> <p><a href="ToolingForNetBeansTaskList.html" title="ToolingForNetBeansTaskList">ToolingForNetBeansTaskList</a></p> <p><a href="SIPToolingForNBBuildInstructions.html" title="SIPToolingForNBBuildInstructions">SIPToolingForNBBuildInstructions</a></p> <h4><a name="SIPToolingInNetBeans-RandomNotes"></a>Random Notes</h1> 
+     <ul> 
+      <li><em>Versionning the test agent dependencies</em><br> the test agent depends on a number of library wrappers. Some of these libraries are set in stone.. like javaee.jar. Others are much more fluid at this time like ssa-api.jar and sip-stack.jar. It would be nice to have the specification version for these two wrapper modules provide a pointer back towards the "source" of these jars. To provide a pointer, we will append the build number to the spec version. So, the spec version for the ssa-api library wrapper will be &lt;sip-servlet-spec-version&gt;.&lt;build number&gt; or 1.1.&lt;build-number&gt; and the sip-stack wrapper would be &lt;sailfin version&gt;.&lt;build-number&gt; or 1.0.&lt;build-number&gt;. The build number is based on the build number that the jar file was extracted from. </li> 
+     </ul> <p><a href="C2DInNB6WithSipToolingSuite.html" title="C2DInNB6WithSipToolingSuite">Another Look At ClickToDial</a> </p> <h4><a name="SIPToolingInNetBeans-Projectopenissues"></a>Project open issues</h1> <p><del>License headers for the code in sailfin/tools</del>... resolved by email with Binod with sample</p> <p><del>build instructions written for developers</del>... there is really only one developer for the dev module and one developer for the test agent module, so this isn't critical.</p> <p>build integrated with larger sailfin build</p> <p><del>where will users get the plugin from. A NetBeans update center.. but which one: one of the NB update centers or an update center "hosted" by the sailfin project or</del>...... Currently releasing this from the sailfin files repository.</p> <p>Documentation for the tooling. the text for Help buttons. The on-line help. A developers guide? A tutorial? who will be writing it... need to talk to Ian</p> <p>release engineering for the plugin/modules. do we have someone that is going to build and stage the plugin/modules?...</p> <p>QA for the tooling. Do we have enough? can we get more from a community based approach. Do we have a community of users to draw from... or do we need to generate that user base also....</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:49.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

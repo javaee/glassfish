@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : TSG_HADBProblemsJa01</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="TSG_HADBProblemsJa01-HADB%E3%83%87%E3%83%BC%E3%82%BF%E3%83%99%E3%83%BC%E3%82%B9%E7%94%9F%E6%88%90%E3%81%AE%E5%A4%B1%E6%95%97"></a>HADB データベース生成の失敗</h2> <p>データベース生成は、次のエラーで失敗します。 :</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">failed to start database : HADB Database creation failed</pre> 
+       </div> 
+      </div>
+     </div> <p>その問題の原因を見つけ出すには、ログビューワを利用するかあるいは、 <tt>install_dir/hadb/4/log</tt> ディレクトリを検査します。想定されるいくつかのエラーとしては次のとおりです。 :</p> 
+     <ul> 
+      <li>共有メモリーに関連する問題</li> 
+      <li>セマフォの不足</li> 
+      <li>データベースノードに到達できない、あるいは、データベースが有効ではない</li> 
+      <li>管理エージェントがドメインを確立できなかった</li> 
+      <li><tt>hadbm create</tt> 又は、 <tt>hadbm addnodes</tt> コマンドがハングアップしている</li> 
+      <li><tt>ma</tt> ( 管理エージェントプロセス ) が破損している</li> 
+     </ul> <h4><a name="TSG_HADBProblemsJa01-%E5%85%B1%E6%9C%89%E3%83%A1%E3%83%A2%E3%83%AA%E3%83%BC%E3%81%AB%E9%96%A2%E9%80%A3%E3%81%99%E3%82%8B%E5%95%8F%E9%A1%8C"></a>共有メモリーに関連する問題</h3> 
+     <ul> 
+      <li><b>解説</b><br> \この問題は、種々の理由のいずれかに起因して発生します。 :</li> 
+     </ul> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li>原因 1*<br> \共有メモリーが設定されていない、又は、設定が有効となっていない。</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li><b>解決方法 1</b><br> \次の指示内容が、 <a href="./InstallationGuide.html">Sun Java System Application Server 9.1 インストールガイド</a> に掲載されています。共有メモリーの設定をした後、システムを再起動することを覚えておいてください。</li> 
+     </ul> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li>原因 2*<br> \物理メモリーが、ノードの要求を満たすほど十分ではない。次のエラーメッセージが表示される。 :\ 
+         <div class="code panel" style="border-width: 1px;">
+          <div class="codeContent panelContent"> 
+           <div id="root"> 
+            <pre class="theme: Confluence; brush: java; gutter: false">HADB-S-05512: Attaching shared memory segment with key &lt;xx\&gt; failed, 
+OS status=12 OS message: Not enough space.</pre> 
+           </div> 
+          </div>
+         </div></li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li><b>解決方法 2</b>\\\\\上記のように、共有メモリーが設定されていて、設定が有効化されているかを確認してください。\\\\\システム本番環境では、ホスト上のノード数を減らすか又は、物理メモリーを増設してください。<br> \システム開発 / テスト環境では、 <tt>LogBufferSize</tt> と <tt>DataBufferPoolSize</tt> によって設定されている、共有メモリーの使用量を、デフォルト値の、 <tt>48</tt> と <tt>200MB</tt> よりも低い値をそれぞれ設定することで、共有メモリーの使用量を減らしてください。それら変数に許容される最小値は、それぞれ <tt>32</tt> と <tt>64</tt> MB です。</li> 
+     </ul> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li>原因 3*\\\\\共有メモリーセグメントサイズが、最大値の許容範囲を超えた<br> {code}HADB-S-05510: Getting shared memory segment with key &lt;xx\&gt; failed, OS message: Invalid argument.
+         <div class="code panel" style="border-width: 1px;">
+          <div class="codeContent panelContent"> 
+           <div id="root"> 
+            <pre class="theme: Confluence; brush: java; gutter: false">* *解決方法 3*\\\\\上記のように、共有メモリーが設定されていて、設定が有効化されているかを確認してください。
+\共有メモリーが正しく設定されていた場合は、システム定義ファイル (Solaris では、 {{/etc/system}} にある {{shmsys:shminfo_shmmax}}) の操作によって設定されているシステム設定上の最大値よりも、共有メモリーセグメントサイズ ({{LogBufferSize}} 又は {{DataBufferPoolSize}}) が大きく指定されていないかチェックしてください。
+
+** 原因 4*
+\指定した識別子が、既に共有メモリーセグメントを生成していた :\</pre> 
+           </div> 
+          </div>
+         </div>HADB-S-05515: Shared memory segment with key &lt;segment_key\&gt; exists already.
+         <div class="code panel" style="border-width: 1px;">
+          <div class="codeContent panelContent"> 
+           <div id="root"> 
+            <pre class="theme: Confluence; brush: java; gutter: false"></pre> 
+           </div> 
+          </div>
+         </div></li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li><b>解決方法 4</b><br> \共有メモリーセグメントを参照し、チェックしてください。UNIX では、 <tt>ipcs</tt> コマンドで、セグメントの使用状況を参照できます。Windows では、共有メモリーに対して、メモリーマップトファイルを利用します。<br> \HADB は、 <tt>f_segmentid</tt> の様に命名されたそれらファイルが登録されている、システムで定義された一時ディレクトリを取得する、システムコール、 <tt>getTempPath</tt> を利用します。<br> \この識別子で、既に他の動作中データベースまたは、プログラムが、共有メモリーセグメントを使用していないかチェックしてください。もしそうならば、他のポートを使用してデータベースを生成して下さい。もしそうならば、他のポートを使用してデータベースを生成して下さい。もしこのセグメントを利用しているデータベース、あるいはプログラムが存在しなかった場合、 <tt>hadbm delete unused_database</tt> によってセグメントを開放してください。<br> \セグメントが開放されたかどうか、チェックしてください。もしも未だそれらが存在した場合は、取り除いてください。 (UNIX では <tt>ipcrm</tt> を、 Windows では <tt>$TMP/f_*</tt> を利用し、そして削除 ) そのファイル名は、プレフィックスの <tt>f_</tt> に続いて、 16 進数へ変換された、 <tt>segment_key</tt> から成り立っています。 たとえば、エラーメッセージが指し示すセグメントキー、 <tt>15201</tt> を出力した場合、一時ファイル名は <tt>f_3B61</tt> となります。</li> 
+     </ul> <h4><a name="TSG_HADBProblemsJa01-%E3%82%BB%E3%83%9E%E3%83%95%E3%82%A9%E3%81%AE%E4%B8%8D%E8%B6%B3"></a>セマフォの不足</h3> 
+     <ul> 
+      <li><b>解説</b>\\\\\~UWC_TOKEN_START~1278691907376~UWC_TOKEN_END<br> \これは、セマフォの数が少なすぎることが原因となります。セマフォが、オペレーティングシステムによって、グローバルリソースとして供給される為、その設定は、 HADB に限らず、ホスト上で動作している全てのプロセスに依存します。これは、 HADB 起動中もしくは、実行している間の両方で、発生し得ます。</li> 
+     </ul> 
+     <ul> 
+      <li><b>解決方法</b><br> <tt>/etc/system</tt> ファイルを修正することによって、セマフォの設定を行ってください。使用説明書とガイドラインは、 <a href="./InstallationGuide.html">Sun Java System Application Server インストールガイド</a>の、 HADB セットアップチャプターで用意されている、共有メモリーとセマフォの設定セクションに掲載されています。</li> 
+     </ul> <h4><a name="TSG_HADBProblemsJa01-%E3%83%87%E3%83%BC%E3%82%BF%E3%83%99%E3%83%BC%E3%82%B9%E3%83%8E%E3%83%BC%E3%83%89%E3%81%AB%E5%88%B0%E9%81%94%E3%81%A7%E3%81%8D%E3%81%AA%E3%81%84%E3%80%81%E3%81%82%E3%82%8B%E3%81%84%E3%81%AF%E3%80%81%E3%83%87%E3%83%BC%E3%82%BF%E3%83%99%E3%83%BC%E3%82%B9%E3%81%8C%E6%9C%89%E5%8A%B9%E3%81%A7%E3%81%AF%E3%81%AA%E3%81%84"></a>データベースノードに到達できない、あるいは、データベースが有効ではない</h3> 
+     <ul> 
+      <li><b>解決方法</b><br> \ホストを指す IP アドレスを、確定する必要があります。HADB は、データベース生成時に、存在する固定化された IP アドレスを使用します。なので、本番システム環境では、動的 IP アドレス (DHCP) は利用できません。</li> 
+     </ul> <h4><a name="TSG_HADBProblemsJa01-%E7%AE%A1%E7%90%86%E3%82%A8%E3%83%BC%E3%82%B8%E3%82%A7%E3%83%B3%E3%83%88%E3%81%8C%E3%83%89%E3%83%A1%E3%82%A4%E3%83%B3%E3%82%92%E7%A2%BA%E7%AB%8B%E3%81%A7%E3%81%8D%E3%81%AA%E3%81%8B%E3%81%A3%E3%81%9F"></a>管理エージェントがドメインを確立できなかった</h3> 
+     <ul> 
+      <li><b>解説</b><br> \HADB 管理システムは、マルチキャストアドレス <tt>228.8.8.8</tt> 上の、 UDP マルチキャストメッセージに依存しています。これらメッセージを送信することが出来ない場合は、次のメッセージによって、ドメイン生成コマンドが失敗しています。 :\\\\\~UWC_TOKEN_START~1278691907377~UWC_TOKEN_END<br> \想定しうる原因は以下があります。 :\ 
+       <ul> 
+        <li>クライアントエージェントが、異なるサブネット上で、それぞれのネットワークインターフェースによって、ホスト上で動作している。<br> \</li> 
+        <li>マルチキャストメッセージを転送しないネットワーク上のスイッチが存在する。<br> \</li> 
+        <li>アドレス 228.8.8.8 によって、マルチキャストメッセージをルーティングしない、ネットワークルーターの存在がある。<br> \</li> 
+        <li>マルチキャストメッセージがオペレーティングシステム上で使用できない。 ( 例 Solaris 10)</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li><b>解決方法 1</b><br> \ホストが、異なるサブネット各々のネットワークインターフェースを持っていた場合、管理エージェントは、サブネットのうちのひとつを利用するように設定される必要があります。<tt>ma.server.mainternal.interfaces</tt> 属性を設定してください。</li> 
+     </ul> 
+     <ul> 
+      <li><b>解決方法 2</b><br> \マルチキャストメッセージをサポートする、ネットワーク基盤を更正する必要があります。</li> 
+     </ul> <h4><a name="TSG_HADBProblemsJa01-%7B%7Bhadbmcreate%7D%7Dor%7B%7Bhadbmaddnodes%7D%7DCommandHangs"></a><tt>hadbm create</tt> or <tt>hadbm addnodes</tt> Command Hangs</h3> 
+     <ul> 
+      <li><b>解説</b><br> \ホストの一覧にあるいくつかのホストは、 hadbm create 又は、 addnodes へ、多重のネットワークインターフェースを持たせるので、ただひとつでも、ほかのホストが掴んでいると、 hadbm create/addnodes コマンドは、ハングアップします。</li> 
+     </ul> 
+     <ul> 
+      <li><b>解決方法</b><br> \多重のネットワークインターフェースを持っているホストに対して、 <tt>hadbm create</tt>/<tt>addnodes</tt> コマンドを発行している時、 hadb に使用させるために、ネットワークインターフェースに点在する IP アドレス ( 例 <tt>129.241.111.23</tt>) を特定します。もしホスト名が、 IP アドレスの代わりに使用されている場合は、ホストの一番目に登録されたインターフェースが利用され、そのノードが通信可能である保障はありません。</li> 
+     </ul> <h4><a name="TSG_HADBProblemsJa01-%7B%7Bma%7D%7D%28%E7%AE%A1%E7%90%86%E3%82%A8%E3%83%BC%E3%82%B8%E3%82%A7%E3%83%B3%E3%83%88%E3%83%97%E3%83%AD%E3%82%BB%E3%82%B9%29%E3%81%AE%E7%A0%B4%E6%90%8D"></a><tt>ma</tt> ( 管理エージェントプロセス ) の破損</h3> 
+     <ul> 
+      <li><b>解説</b><br> <tt>ma</tt> ( 管理エージェントプロセス ) は、さまざまな原因によって破損します。</li> 
+     </ul> 
+     <ul> 
+      <li><b>解決方法</b><br> <tt>hadbm listdomain</tt> を利用することによって、診断情報が表示されます。 大体は、失敗したエージェントの再起動で改善されます。もしもヘルプがない場合は、全てのエージェントを順々に再起動してください。</li> 
+     </ul> <p><sup><a href="./TSG_HADBProblemsJa.html">Back</a></sup></p> <p>日本語翻訳: <a href="http://www3.atword.jp/jacksparrow/2008/08/11/mac-os-x-%e3%81%a7-gfv2-%e3%82%92%e4%bd%bf%e3%81%86%ef%bc%81%ef%bc%81/">jack spallaw</a></p> <p><a href="./TSG_HADBProblems.html">英文</a> (翻訳したバージョン: 49)</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 09, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

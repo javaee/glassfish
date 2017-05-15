@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : M2GPostRunJa02</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="M2GPostRunJa02-%E9%81%A9%E5%88%87%E3%81%AA%E8%A8%AD%E5%AE%9A%E3%83%91%E3%83%A9%E3%83%A1%E3%82%BF%E3%81%AE%E6%89%8B%E4%BD%9C%E6%A5%AD%E3%81%A7%E3%81%AE%E7%A7%BB%E8%A1%8C"></a>適切な設定パラメタの手作業での移行</h2> <p>マイグレーションツールへの入力に <tt>weblogic.properties</tt>, <tt>server-cfg.xml</tt>, <tt>config.xml</tt>, <tt>resource.properties</tt>, <tt>regwin.dat</tt>, <tt>reg.dat</tt> といった<br> ファイルが入っている場合、WebLogic 5.1/6.0/6.1 の DataSources と StartupClass <br> 設定パラメータは、生成されたビルドスクリプトを実行した後に移行されます。<br> スクリプトで登録される DataSources を使っているアプリケーションの場合ですが、<br> DataSources で定義されているデータベースドライバーをアプリケーションサーバー<br> に登録してください。コンパイル時にマイグレーションツールが生成するテキスト<br> ファイルに登録するデータベースドライバーと、スレッドプールの設定といった<br> その他の設定パラメータに関する情報が書かれています。テキストファイルの名前<br> は、選択されたソースとターゲットのアプリケーションサーバーで決まります。</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Source Server </th> 
+         <th class="confluenceTh">Generated File </th> 
+         <th class="confluenceTh">&nbsp;</th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JBoss 3.0 </td> 
+         <td class="confluenceTd"> <tt>JBoss30_J2EERIB2ConfigOut.txt</tt> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> WebLogic 5.1 </td> 
+         <td class="confluenceTd"> <tt>WLS510_J2EERIB2ConfigOut.txt</tt> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> WebLogic 6.0 </td> 
+         <td class="confluenceTd"> <tt>WLS6x_J2EERIB2ConfigOut.txt</tt> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> WebLogic 6.1 </td> 
+         <td class="confluenceTd"> <tt>WLS6x_J2EERIB2ConfigOut.txt</tt> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> WebSphere 4.0 </td> 
+         <td class="confluenceTd"> <tt>WASConfigOut.txt</tt> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Sun ONE App Server 6.x </td> 
+         <td class="confluenceTd"> <tt>IAS65_J2EERIB2ConfigOut.txt</tt> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> J2EE RI 1.3 </td> 
+         <td class="confluenceTd"> <tt>RI13_J2EERIB2ConfigOut.txt</tt> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> J2EE RI 1.4 </td> 
+         <td class="confluenceTd"> <tt>RI14_J2EERIB2ConfigOut.txt</tt> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>これらのファイルのパスはマイグレーションレポートに書かれてます。</p> 
+     <hr> <p>日本語翻訳: <a href="http://blogs.oracle.com/shioda">shioda</a></p> <p><a href="M2GPostRun.html" title="M2GPostRun">英文 </a> (翻訳したバージョン: 5)</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:49.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

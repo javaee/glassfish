@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFishV3DocPlanAppDepGuide</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>&lt;h1&gt;GlassFish v3 <em>Application Deployment Guide</em> Document Plan&lt;/h1&gt;</p> 
+     <div> 
+      <ul> 
+       <li><a href="#GlassFishV3DocPlanAppDepGuide-PeopleandRoles">People and Roles</a></li> 
+       <li><a href="#GlassFishV3DocPlanAppDepGuide-Audience">Audience</a></li> 
+       <li><a href="#GlassFishV3DocPlanAppDepGuide-PurposeandDescription">Purpose and Description</a></li> 
+       <li><a href="#GlassFishV3DocPlanAppDepGuide-StatementofWork">Statement of Work</a></li> 
+       <ul> 
+        <li><a href="#GlassFishV3DocPlanAppDepGuide-TP2%2FPreludeStatementofWork">TP2/Prelude Statement of Work</a></li> 
+        <li><a href="#GlassFishV3DocPlanAppDepGuide-JavaONEPreviewStatementofWork">Java ONE Preview Statement of Work</a></li> 
+        <li><a href="#GlassFishV3DocPlanAppDepGuide-FCSStatementofWork">FCS Statement of Work</a></li> 
+       </ul> 
+       <li><a href="#GlassFishV3DocPlanAppDepGuide-ReviewerDashboard">Reviewer Dashboard</a></li> 
+       <li><a href="#GlassFishV3DocPlanAppDepGuide-DeliveryMethods">Delivery Methods</a></li> 
+       <li><a href="#GlassFishV3DocPlanAppDepGuide-RelatedInformation">Related Information</a></li> 
+      </ul>
+     </div> <h4><a name="GlassFishV3DocPlanAppDepGuide-PeopleandRoles"></a>People and Roles</h1> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Name</th> 
+         <th class="confluenceTh">Role </th> 
+         <th class="confluenceTh">Location</th> 
+         <th class="confluenceTh">Time Zone</th> 
+         <th class="confluenceTh">Email </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Dixie Pine </td> 
+         <td class="confluenceTd"> Document Owner </td> 
+         <td class="confluenceTd"> SCA14-2402 </td> 
+         <td class="confluenceTd"> PDT </td> 
+         <td class="confluenceTd">dixiep@dev.java.net </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Julie Bettis </td> 
+         <td class="confluenceTd"> Editor </td> 
+         <td class="confluenceTd"> BRM </td> 
+         <td class="confluenceTd"> MDT </td> 
+         <td class="confluenceTd">julie.bettis@sun.com </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3DocPlanAppDepGuide-Audience"></a>Audience</h1> <p>The <em>Application Deployment Guide</em> is primarily used by administrators, but also by developers.</p> <h4><a name="GlassFishV3DocPlanAppDepGuide-PurposeandDescription"></a>Purpose and Description</h1> <p>The <em>Application Deployment Guide</em> describes how to verify and deploy modules and applications, including instructions on using the deployment descriptors specific to the GlassFish Enterprise Server. Assembly is not addressed.</p> <h4><a name="GlassFishV3DocPlanAppDepGuide-StatementofWork"></a>Statement of Work</h1> <p>There are three phases in the GlassFish v3 project: Prelude (June 2008), Preview (June 2009), and FCS (September 2009).</p> <h4><a name="GlassFishV3DocPlanAppDepGuide-TP2%2FPreludeStatementofWork"></a>TP2/Prelude Statement of Work</h2> <p>(Writer: June Parks) For Prelude, the <em>Application Deployment Guide</em> will include only information on developing web modules. The verifier utility will not be not included.<br> Table of contents:</p> 
+     <ul> 
+      <li>Chapter 1 Assembling and Deploying Applications</li> 
+      <li>Appendix A Deployment Descriptor Files</li> 
+     </ul> <h4><a name="GlassFishV3DocPlanAppDepGuide-JavaONEPreviewStatementofWork"></a>Java ONE Preview Statement of Work</h2> <p>For JavaONE Preview, content for applications and other module types will be restored. New writer (June handoff to Dixie) will reorganize the document in a task-based model. All asadmin commands associated with application deployment will be moved from the <em>Administration Guide</em> to this guide. The verifier utility will not be included.<br> Table of contents:</p> 
+     <ul> 
+      <li>Chapter 1 Overview of Application Deployment</li> 
+      <li>Chapter 2 Deploying Applications</li> 
+      <li>Appendix A The asadmin Application Deployment Commands</li> 
+      <li>Appendix B Enterprise Server Deployment Descriptor Files</li> 
+      <li>Appendix C Elements of the nterprise Server Deployment Descriptors</li> 
+     </ul> <h4><a name="GlassFishV3DocPlanAppDepGuide-FCSStatementofWork"></a>FCS Statement of Work</h2> <p>For FCS, application start/stop, changing of servlet init parameters, and changing of env variables will be included. The verifier utility is in question.<br> Table of contents:</p> 
+     <ul> 
+      <li>Chapter 1 Overview of Application Deployment</li> 
+      <li>ADD Chapter 2 Verifying Applications</li> 
+      <li>Chapter 3 Deploying Applications</li> 
+      <li>Appendix A The asadmin Application Deployment Commands</li> 
+      <li>Appendix B Enterprise Server Deployment Descriptor Files</li> 
+      <li>Appendix C Elements of the nterprise Server Deployment Descriptors</li> 
+     </ul> <h4><a name="GlassFishV3DocPlanAppDepGuide-ReviewerDashboard"></a>Reviewer Dashboard</h1> <p>The key reviewers of this document are listed in he following table.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Reviewer</th> 
+         <th class="confluenceTh">Prelude</th> 
+         <th class="confluenceTh">Preview</th> 
+         <th class="confluenceTh">FCS </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Tim Quinn, developer </td> 
+         <td class="confluenceTd"> yes </td> 
+         <td class="confluenceTd"> 5/26/9 </td> 
+         <td class="confluenceTd">11/25/9 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Hong Zang, developer </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 5/18/9 </td> 
+         <td class="confluenceTd"> 11/25/9 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Jane Young, developer </td> 
+         <td class="confluenceTd"> yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Jan Luehe, developer </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">12/19 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Bhakti Mehta, developer </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">12/19 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Lida Marchioni, QA </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">11/25/9 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> June Parks, doc peer reviewer </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 5/13/9 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Julie Bettis, editor </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 5/1/09 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>Additional reviwers for Prelude: Anissa, chengfang, Mahesh Kannan, Mitesh Meswani<br> Additional reviewers for Preview: Marina Vatkina 5/20/9,Jagadish Ramu 5/22/9, Ken Saks 5/19/9</p> <h4><a name="GlassFishV3DocPlanAppDepGuide-DeliveryMethods"></a>Delivery Methods</h1> <p>The <em>Application Deployment Guide</em> will be published on the docs.sun.com^SM^ site in PDF and HTML formats.</p> <h4><a name="GlassFishV3DocPlanAppDepGuide-RelatedInformation"></a>Related Information</h1> <p>Comments wiki (latest PDF): <a href="ApplicationDeplyomentGuide.html" title="ApplicationDeplyomentGuide">ApplicationDeplyomentGuide</a><br> Previous published version (HTML): <a href="http://docs.sun.com/doc/820-4502">Application Deployment Guide</a></p> <p>Email aliases:</p> 
+     <ul> 
+      <li><span class="error">[admin@glassfish.java.net]</span></li> 
+      <li><span class="error">[users@glassfish.java.net]</span></li> 
+      <li><span class="error">[docs@glassfish.java.net]</span></li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 02, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

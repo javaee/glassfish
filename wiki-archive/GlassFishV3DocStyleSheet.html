@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFishV3DocStyleSheet</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GlassFishV3DocStyleSheet-GlassFishDocumentationStyleSheet"></a>GlassFish Documentation Style Sheet</h1> <p>The purpose of the style sheet is to help people who are writing or editing material for this release to maintain consistency across the documentation. Here's where we keep track of special spellings, terminology, capitalization, trademarking, and acronyms commonly used in this documentation set.</p> <p>For general editorial style guidelines, see <em>Documentation Style Guide for OpenSolaris</em> <a href="http://opensolaris.org/os/community/documentation/files/OSOLDOCSG.pdf">(PDF)</a>.</p> <p>Use the following abbreviations to help clarify how the term should be used: (n) noun, (v) verb, (adj) adjective. If you add terms to this list, please add them in alphabetical order.</p> <h4><a name="GlassFishV3DocStyleSheet-ABC"></a>ABC</h3> 
+     <ul> 
+      <li>annotate (v) - do not use decorate.</li> 
+      <li>annotation (n)</li> 
+      <li>add-on component (n,adj) not plugin, not module</li> 
+      <li>(the) Administration Console(n,adj) referring to the graphical console</li> 
+      <li>Admin Console, GUI--Don't use. Use the Administration Console.</li> 
+      <li>Administration Console online help</li> 
+      <li>Administration Server. Don't use. See DAS.</li> 
+      <li>application server(n,adj) referring to a generic application server</li> 
+      <li>application server instance. Don't use. See server instance.</li> 
+      <li>Application Server Management eXtension (AMX)</li> 
+      <li>(the) <tt>asadmin</tt> utility, example of referring to a utility</li> 
+      <li>(the) <tt>asadmin list --user adminuser</tt> command when referring to a command</li> 
+      <li>CLI. Don't use. Instead use the asadmin (or command-line) utility, the <tt>asadmin</tt> commands, or command-line as an adjective.</li> 
+      <li>client-side(adj)</li> 
+      <li>command-line(adj) for example, command-line interface</li> 
+      <li>command line (n) for example, on the command line</li> 
+      <li>Common Object Request Broker Architecture (CORBA)</li> 
+      <li>container managed persistence (CMP)</li> 
+     </ul> <h4><a name="GlassFishV3DocStyleSheet-DEF"></a>DEF</h3> 
+     <ul> 
+      <li>Derby. Do not use. See Java DB.</li> 
+      <li>decorate. Do not use. See annotate.</li> 
+      <li>diagnostic service(n,adj)</li> 
+      <li>Document Type Definition (DTD)</li> 
+      <li>(the) domain administration server (DAS)</li> 
+      <li>(the) <tt>domain.xml</tt> file, example of referring to a file</li> 
+      <li>EJB. See TradeMarked Terms below.</li> 
+      <li>enterprise archive (EAR)</li> 
+      <li>Enterprise Server(n,adj), not the Enterprise Server; referring to Prelude product name (formerly Application Server)</li> 
+     </ul> <h4><a name="GlassFishV3DocStyleSheet-GHI"></a>GHI</h3> 
+     <ul> 
+      <li>GlassFish. See Trademarked Terms below. Use uppercase F - GlassFish not Glassfish. See also version.</li> 
+      <li>gem (n). Note lack of capitals.</li> 
+      <li>high availability(n,adj)</li> 
+      <li>Hundred-Kilobyte Kernel (HK2)</li> 
+      <li>(the) High Availability Database (HADB)</li> 
+      <li>host (n,adj) referring to a physical machine</li> 
+      <li>install(v), installation(n,adj)</li> 
+      <li>Internet Inter-ORB Protocol (IIOP)</li> 
+     </ul> <h4><a name="GlassFishV3DocStyleSheet-JK"></a>JK</h3> 
+     <ul> 
+      <li>Java. See Trademarked Terms below.</li> 
+      <li>Java APIs for XML processing (JAXP)</li> 
+      <li>Java APIs for XML registries (JAXR)</li> 
+      <li>Java APIs for remote procedure calls (JAX-RPC)</li> 
+      <li>Java archive (JAR) (adj), a JAR file</li> 
+      <li>Java Authorization Contract for Containers (JACC)</li> 
+      <li>Java Business Integration (JBI)</li> 
+      <li>(the) Java DB database(n,adj), replaces Derby</li> 
+      <li>Java Data Base Connectivity (JDBC)</li> 
+      <li>Java Message Service (JMS)</li> 
+      <li>JavaMail</li> 
+      <li>Java Monitoring and Management Console (jConsole)</li> 
+      <li>Java Naming and Directory Interface (JNDI)</li> 
+      <li>Java Secure Socket Extension (JSSE)</li> 
+      <li>Java servlet</li> 
+      <li>JSP. See Trademarked Terms below.</li> 
+      <li>JVM. On first usage: Virtual Machine for the Java(tm) platform (Java Virtual Machine or JVM(tm) machine). See also Trademarked Terms below.</li> 
+      <li>JRuby-on-Rails</li> 
+     </ul> <h4><a name="GlassFishV3DocStyleSheet-LMN"></a>LMN</h3> 
+     <ul> 
+      <li>lifecycle(n,adj)</li> 
+      <li>machine. Don't use. See host.</li> 
+      <li>man page, not manpage(n,adj)</li> 
+      <li>managed bean (MBean)</li> 
+      <li>node(n,adj) referring to software, such as node agent</li> 
+      <li>Network Security Services (NSS)</li> 
+     </ul> <h4><a name="GlassFishV3DocStyleSheet-OPQR"></a>OPQR</h3> 
+     <ul> 
+      <li>Object Request Broker (ORB)</li> 
+      <li>open-source (adj). For example: open-source software.</li> 
+      <li>OSGi bundle - note the lowercase "i". Also note that OSGi is not an initialism and so no expanded form of it exists. In other wores, there is no definition.</li> 
+      <li>plain old java object (POJO)</li> 
+      <li>plug in (v) two words - acceptable for describing the act of plugging in an add-on component</li> 
+      <li>plugin (n) Don't use if referring to add-on component for GlassFish.</li> 
+      <li>Production Web Container (PWC)</li> 
+      <li>Red Hat (2 words, initial capitals)</li> 
+      <li>Remote Method Invocation (RMI)</li> 
+     </ul> <h4><a name="GlassFishV3DocStyleSheet-ST"></a>ST</h3> 
+     <ul> 
+      <li>Secure Sockets Layer (SSL)</li> 
+      <li>server-side(adj)</li> 
+      <li>server instance not application server instance</li> 
+      <li>service-oriented architecture (SOA)</li> 
+      <li>setup(n), set up(v)</li> 
+      <li>Simple Oject Access Protocol (SOAP)</li> 
+      <li>Simple Mail Transfer Protocol (SMTP)</li> 
+      <li>SOAP with Attachments API for Java (SAAJ)</li> 
+      <li>system(n,adj) referring to a collection of software and hardware</li> 
+     </ul> <h4><a name="GlassFishV3DocStyleSheet-UVW"></a>UVW</h3> 
+     <ul> 
+      <li>update release. Use UR# (UR1) not Update 1 or Update Release 1</li> 
+      <li>Universal Description, Discover, and Integration (UDDI)</li> 
+      <li>Update Tool (n, adj) not the Update Tool</li> 
+      <li>version of product. Use lowercase v, not spelled out (GlassFish v3) not GlassFish V3 or GlassFish version 3</li> 
+      <li>web application(n,adj)</li> 
+      <li>web archive (WAR) (adj), a WAR file</li> 
+      <li>web module(n,adj)</li> 
+      <li>web service(n,adj)</li> 
+      <li>Web Services Description Language (WSDL)</li> 
+     </ul> <h4><a name="GlassFishV3DocStyleSheet-XYXNumbers"></a>XYX Numbers</h3> 
+     <ul> 
+      <li>eXtensible Markup Language (XML)</li> 
+     </ul> 
+     <hr> <h4><a name="GlassFishV3DocStyleSheet-TrademarkedTerms"></a>Trademarked Terms</h2> <p>Enterprise JavaBeanstm (EJBtm) Can be used as EJB(adj) after first usage.<br> GlassFish(tm) project<br> Java(tm)<br> JavaServer Pages (JSPtm)<br> JVM(tm): On first usage: Virtual Machine for the Java(tm) platform (Java Virtual Machine or JVM(tm) machine) Can be used as JVM(adj) after first usage.<br> MySQL(tm) database</p> <h4><a name="GlassFishV3DocStyleSheet-SpecialFontConventions"></a>Special Font Conventions</h2> <p>The following should be rendered in monospace font: file names, program names, command names, environment variables, parameters, code samples.</p> <p>Variables (replaceables) should be rendered as italic, without brackets.</p> <h4><a name="GlassFishV3DocStyleSheet-AbbreviationsandShortNames"></a>Abbreviations and Short Names</h2> <p>GlassFish v3 Enterprise Server can be referred to as Enterprise Server after first usage.<br> High Availability Database can be referred to as HADB after first usage.<br> Java DB database can be referred as Java DB after first usage</p> <h4><a name="GlassFishV3DocStyleSheet-PathVariableConventions"></a>Path Variable Conventions</h2> <p>The path variables listed in the <a href="http://docs.sun.com/doc/819-3671/6n5si4but?a=view">Default Paths and File Names</a> section of the standard preface should be used consistently in all documents.</p> <p>DO NOT list the domain root directory as <em>as-install</em>/domains or <em>as-install</em>/<em>domain-root-dir</em> unless you are describing a specific operating system and version that you know has this structure. The domain root is NOT under the installation directory in several operating systems.</p> <p>Incorrect alternatives to <em>as-install</em> are very common and should be corrected. Here is a non-exhaustive list: <em>install</em>, $INSTALL, &lt;install&gt;, &lt;<em>install</em>&gt;, &lt;INSTALL&gt;, installdir, <em>installdir</em>, INSTALLDIR, $INSTALLDIR, &lt;installdir&gt;, &lt;<em>installdir</em>&gt;, &lt;INSTALLDIR&gt;, &lt;$INSTALLDIR&gt;, install-dir, <em>install-dir</em>, INSTALL-DIR, $INSTALL-DIR, &lt;install-dir&gt;, &lt;<em>install-dir</em>&gt;, &lt;INSTALL-DIR&gt;, &lt;$INSTALL-DIR&gt;, install_dir, <em>install_dir</em>, INSTALL_DIR, $INSTALL_DIR, &lt;install_dir&gt;, &lt;<em>install_dir</em>&gt;, &lt;INSTALL_DIR&gt;, &lt;$INSTALL_DIR&gt;, install-root, <em>install-root</em>, INSTALL-ROOT, $INSTALL-ROOT, &lt;install-root&gt;, &lt;<em>install-root</em>&gt;, &lt;INSTALL-ROOT&gt;, &lt;$INSTALL-ROOT&gt;, install_root, <em>install_root</em>, INSTALL_ROOT, $INSTALL_ROOT, &lt;install_root&gt;, &lt;<em>install_root</em>&gt;, &lt;INSTALL_ROOT&gt;, &lt;$INSTALL_ROOT&gt;, as-install, &lt;<em>as-install</em>&gt;, appserver-install, <em>appserver-install</em>, &lt;<em>appserver-install</em>&gt;, AS_HOME, $AS_HOME, $AS91_HOME, as91_home, as91-home, server-root, <em>server-root</em>, &lt;server-root&gt;, &lt;<em>server-root</em>&gt;, SERVER-ROOT, $SERVER-ROOT, &lt;SERVER-ROOT&gt;, &lt;$SERVER-ROOT&gt;, server_root, <em>server_root</em>, &lt;server_root&gt;, &lt;<em>server_root</em>&gt;, SERVER_ROOT, $SERVER_ROOT, &lt;SERVER_ROOT&gt;, &lt;$SERVER_ROOT&gt;, etc.</p> <p>Why are so many examples included in this still non-exhaustive list, when just a few would make the point? Because all of these have appeared in the docs. Such "variety" is potentially very confusing to readers. </p> <h4><a name="GlassFishV3DocStyleSheet-Miscellaneous"></a>Miscellaneous</h2> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 06, 2010 by 
+<font color="#0050B2">pauldavies</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

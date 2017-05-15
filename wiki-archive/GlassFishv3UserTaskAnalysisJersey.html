@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFishv3UserTaskAnalysisJersey</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>&lt;h1&gt;GlassFish v3 User Task Analysis for Jersey&lt;/h1&gt;</p> <p>Back to <a href="GlassFishV3UserTaskAnalyses.html" title="GlassFishV3UserTaskAnalyses">GlassFish v3 User Task Analyses</a></p> <p>3/3/08 Attendees: Paul,Jakub, Facilitator: Jennifer, Recorder: Dixie</p> 
+     <div> 
+      <ul> 
+       <li><a href="#GlassFishv3UserTaskAnalysisJersey-Scope">Scope</a></li> 
+       <li><a href="#GlassFishv3UserTaskAnalysisJersey-RelatedInformation">Related Information</a></li> 
+       <li><a href="#GlassFishv3UserTaskAnalysisJersey-Listoftasks">List of tasks</a></li> 
+       <li><a href="#GlassFishv3UserTaskAnalysisJersey-AssociatedConcepts">Associated Concepts</a></li> 
+       <li><a href="#GlassFishv3UserTaskAnalysisJersey-Resources">Resources</a></li> 
+      </ul>
+     </div> <h4><a name="GlassFishv3UserTaskAnalysisJersey-Scope"></a>Scope</h1> <p>To identify the tasks that a developer must perform to develop and deploy RESTful web services by using Jersey. (There are no admin tasks associated.)</p> <h4><a name="GlassFishv3UserTaskAnalysisJersey-RelatedInformation"></a>Related Information</h1> <h4><a name="GlassFishv3UserTaskAnalysisJersey-Listoftasks"></a>List of tasks</h1> 
+     <ol> 
+      <li>Installing (<a href="http://docs.sun.com/app/docs/doc/820-4867/ggnxe?a=view">http://docs.sun.com/app/docs/doc/820-4867/ggnxe?a=view</a>) 
+       <ol> 
+        <li>Download Jersey from the update center</li> 
+        <li>Install Jersey on top of GF.</li> 
+        <li>Install Jersey on top of NetBeans</li> 
+       </ol> </li> 
+      <li>Creating a RESTful resource class (<a href="http://docs.sun.com/app/docs/doc/820-4867/ggnxo?a=view">http://docs.sun.com/app/docs/doc/820-4867/ggnxo?a=view</a>) 
+       <ol> 
+        <li>Identify the URI path of the resource in the resource class with the URI annotation.</li> 
+        <li>Identify the methods the resource supports using the HttpMethod annotation.</li> 
+        <li>Identify the content type of the response using the ProduceMime annotation.</li> 
+        <li>Write the supported methods in the resource class.</li> 
+       </ol> </li> 
+      <li>Deploying and Testing (<a href="http://docs.sun.com/app/docs/doc/820-4867/ggnxs?a=view">http://docs.sun.com/app/docs/doc/820-4867/ggnxs?a=view</a>) 
+       <ol> 
+        <li>Deploy a Jersey app to a GF servlet container</li> 
+        <li>Deploy a Jersey app to Grizzly (not included)</li> 
+        <li>Deploy a Jersey app to the Java 6 lightweight web server (not included)</li> 
+        <li>Run the application in a browser.</li> 
+        <li>Run the application at the command line using curl (not included)</li> 
+       </ol> </li> 
+      <li>Customizing Your Representations (In Progress) 
+       <ol> 
+        <li>Use message providers to read and write JSON objects or XML with JAXB. 
+         <ol> 
+          <li>Create a Class</li> 
+          <li>Implement an Interface</li> 
+          <li>Annotate Your Class With Provider</li> 
+          <li>(Optional) Annotate With Producemine and Consumemime</li> 
+         </ol> </li> 
+        <li>Use message providers to read and write ATOM and RSS feeds with Apdera.</li> 
+        <li>Create your own message provider to support reading and writing other Java types.</li> 
+       </ol> </li> 
+      <li>Developing With Databases (In Progress) 
+       <ol> 
+        <li>Use JPA to expose contents of a database table as a RESTful web resource.</li> 
+        <li>Generate RESTful web services from JPA entities.</li> 
+       </ol> </li> 
+      <li>Advanced Topics 
+       <ol> 
+        <li>Integrating with framework, such as Spring or Juice.</li> 
+        <li>Using polymorphism with resources and view that jsp</li> 
+        <li>Showing precondition support for get and put.</li> 
+        <li>Using Jersey with jMaki.</li> 
+        <li>Running the Jersey API using Jersey client-side API.</li> 
+       </ol> </li> 
+     </ol> <h4><a name="GlassFishv3UserTaskAnalysisJersey-AssociatedConcepts"></a>Associated Concepts</h1> 
+     <ul> 
+      <li>About RESTful web services</li> 
+      <li>About JAX-RS</li> 
+      <li>About Jersey</li> 
+     </ul> <h4><a name="GlassFishv3UserTaskAnalysisJersey-Resources"></a>Resources</h1> 
+     <ul> 
+      <li><a href="http://jersey.java.net">Jersey project site</a></li> 
+      <li>Jersey team alias: rest-dev@sun.com</li> 
+     </ul> 
+     <ul class="alternate" type="square"> 
+      <li>Create a Jersey FAQ (request from Paul)</li> 
+     </ul> <p>Back to <a href="GlassFishV3UserTaskAnalyses.html" title="GlassFishV3UserTaskAnalyses">GlassFish v3 User Task Analyses</a></p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 09, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:44.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

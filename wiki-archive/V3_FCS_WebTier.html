@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : V3_FCS_WebTier</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="V3_FCS_WebTier-Tasklist"></a>Task list</h2> <p><a href="./GlassFishV3Schedule.html">GlassFish v3 draft schedule</a></p> 
+     <ul> 
+      <li>Java EE 6 Specifications 
+       <ul> 
+        <li>Servlet 3.0 
+         <ul> 
+          <li>'Expect: 100-continue' requests (TBD pending EG resolution) 
+           <ul> 
+            <li>Spec (Rajiv)</li> 
+            <li>RI (Jean-Francois)</li> 
+           </ul> </li> 
+          <li>SessionCookieConfig <b>DONE</b> 
+           <ul> 
+            <li>Spec (Rajiv/Jan) <b>DONE</b></li> 
+            <li>RI (Jan) <b>DONE</b> 
+             <ul> 
+              <li>DOL (Shing-Wai) <b>DONE</b></li> 
+             </ul> </li> 
+           </ul> </li> 
+          <li>HttpOnly <b>DONE</b> 
+           <ul> 
+            <li>Spec (Rajiv/Jan) <b>DONE</b></li> 
+            <li>RI (Jan) <b>DONE</b> 
+             <ul> 
+              <li>DOL (Shing-Wai) <b>DONE</b></li> 
+             </ul> </li> 
+           </ul> </li> 
+          <li>SessionTrackingModes <b>DONE</b> 
+           <ul> 
+            <li>Spec (Rajiv/Jan) <b>DONE</b></li> 
+            <li>RI (Jan) <b>DONE</b> 
+             <ul> 
+              <li>DOL (Shing-Wai) <b>DONE</b></li> 
+             </ul> </li> 
+           </ul> </li> 
+          <li>Async <b>DONE</b> 
+           <ul> 
+            <li>Spec (Rajiv/Jan) <b>DONE</b> 
+             <ul> 
+              <li>Annotations <b>DONE</b></li> 
+              <li>Schema changes <b>DONE</b></li> 
+              <li>API <b>DONE</b></li> 
+             </ul> </li> 
+            <li>RI <b>DONE</b> 
+             <ul> 
+              <li>Web container (Jan)</li> 
+              <li>Grizzly (Jean-Francois) <b>DONE</b></li> 
+              <li>Grizzly 1.9.0 integration (Jean-Francois) <b>DONE</b></li> 
+              <li>DOL (annotations) (Shing-Wai) <b>DONE</b></li> 
+              <li>DOL (schema changes) (Shing-Wai) <b>DONE</b></li> 
+             </ul> </li> 
+           </ul> </li> 
+          <li>Pluggability <b>DONE</b> 
+           <ul> 
+            <li>Annotations <b>DONE</b> 
+             <ul> 
+              <li>Spec (Rajiv) <b>DONE</b></li> 
+              <li>RI (Shing-Wai) <b>DONE</b></li> 
+             </ul> </li> 
+            <li>Programmatic 
+             <ul> 
+              <li>Spec (Rajiv/Jan) <b>DONE</b></li> 
+              <li>RI (Jan/Amy) <b>DONE</b></li> 
+             </ul> </li> 
+            <li>Deployment descriptor fragments 
+             <ul> 
+              <li>Spec (Rajiv) <b>DONE</b></li> 
+              <li>RI 
+               <ul> 
+                <li>Discovery and Assembly (Shing-Wai) <b>DONE</b></li> 
+                <li>Ordering (DOL changes) (Shing-Wai) <b>DONE</b></li> 
+                <li>Impact on Jasper (Kin-man) (<b>0% DONE</b>) <b>REVISIT WITH EG NOW THAT JSPs MAY BE STORED IN FRAGMENT'S META-INF/RESOURCES</b></li> 
+               </ul> </li> 
+             </ul> </li> 
+            <li>Factories <b>DONE</b> 
+             <ul> 
+              <li>Servlet container initializer <b>DONE</b> 
+               <ul> 
+                <li>Spec (Rajiv) <b>DONE</b></li> 
+                <li>RI (Vijay) <b>DONE</b></li> 
+               </ul> </li> 
+             </ul> </li> 
+            <li>War file overlay <b>DONE</b> 
+             <ul> 
+              <li>Spec (Rajiv/Jan) <b>DONE</b></li> 
+              <li>RI <b>DONE</b></li> 
+             </ul> </li> 
+           </ul> </li> 
+          <li>Security 
+           <ul> 
+            <li>Programmatic login/logout <b>DONE</b> 
+             <ul> 
+              <li>Spec (Ron Monzillo/Rajiv) <b>DONE</b></li> 
+              <li>RI (Shing-Wai) <b>DONE</b> (Need to fix auth-method type check to remove restriction on BASIC and FORM)</li> 
+             </ul> </li> 
+            <li>Encoding support <b>DEFERRED</b> 
+             <ul> 
+              <li>Spec (Rajiv/Ron Monzillo) (close by 2nd week of Dec) <b>LATE</b></li> 
+              <li>RI (Justin) (M3)</li> 
+             </ul> </li> 
+            <li>rolesAllowed/permitAll/denyAll/transportProtected <b>DONE</b> 
+             <ul> 
+              <li>Spec (Ron Monzillo/Rajiv) <b>DONE</b> (Need MR for JSR 250 to allow denyAll on class level and add support for transportProtected)</li> 
+              <li>RI (Shing-Wai) <b>DONE</b> 
+               <ul> 
+                <li>RolesAllowed/PermitAll/DenyAll (Shing Wai) <b>DONE</b></li> 
+                <li>TransportProtected (Shing Wai) <b>DONE</b></li> 
+               </ul> </li> 
+             </ul> </li> 
+           </ul> </li> 
+          <li>File upload 
+           <ul> 
+            <li>Spec (Rajiv/Amy) <b>95% DONE</b> (Schema changes pending)</li> 
+            <li>RI 
+             <ul> 
+              <li>API (Kin-man) <b>10% DONE</b></li> 
+              <li>DOL changes (Shing-Wai) <b>0% DONE</b></li> 
+             </ul> </li> 
+           </ul> </li> 
+         </ul> </li> 
+        <li>JSF 2.0 (See Enact document: Projects:Product_Groups:Software_Systems(SSG):J2EE R&amp;D:Web_Services:Java_Server_Faces:JSR-314-ENDGAME 
+         <ul> 
+          <li>Handle "top 5 JSR Charter" issues 
+           <ul> 
+            <li>Spec (Ed)</li> 
+            <li>RI (Ryan)</li> 
+           </ul> </li> 
+          <li>Handle "developer experience" issues 
+           <ul> 
+            <li>Spec (Roger)</li> 
+            <li>RI (Ryan)</li> 
+           </ul> </li> 
+          <li>Handle "EG Stakeholder" issues 
+           <ul> 
+            <li>Spec (Ed)</li> 
+            <li>RI (Ryan)</li> 
+           </ul> </li> 
+          <li>Handle "Misc" issues 
+           <ul> 
+            <li>Spec (Roger)</li> 
+            <li>RI (Ryan)</li> 
+           </ul> </li> 
+         </ul> </li> 
+        <li>EL MR (Kin-man) <b>DONE</b> 
+         <ul> 
+          <li>Spec (100%) <b>DONE</b></li> 
+          <li>RI (100%) <b>DONE</b></li> 
+         </ul> </li> 
+        <li>JSP MR (Kin-man) <b>DONE</b> 
+         <ul> 
+          <li>Spec (100%) <b>DONE</b></li> 
+          <li>RI (100%) <b>DONE</b></li> 
+         </ul> </li> 
+       </ul> </li> 
+      <li>Performance (Alexey) 
+       <ul> 
+        <li>Web container on top of Grizzly (Slim web) (Jean-Francois) (On hold)</li> 
+        <li>Async Http Write <b>DONE</b> (Implemented but not yet enabled, pending feedback from perf team)</li> 
+        <li>Expose OS Socket property <b>95% DONE</b></li> 
+        <li>Static Resource serviced by Grizzly directly (only if no filters or security constraints) <b>0% DONE</b></li> 
+       </ul> </li> 
+      <li>Grizzly config changes in domain.xml (Justin/Alexey) <b>95% DONE</b> (Some refinements needed) 
+       <ul> 
+        <li>asarch one-pager + review <b>DONE</b></li> 
+        <li>Implementation (Justin) <b>DONE</b></li> 
+       </ul> </li> 
+      <li>Monitoring Hudson devtests runs (Amy) <b>ONGOING</b> 
+       <ul> 
+        <li><a href="./DevTestStatus.html">Wiki</a> with issues filed for devtest failures</li> 
+        <li><a href="https://github.com/javaee/glassfish/issues/7018">Dynamic re-config http-listener - 7018</a> <b>DONE</b></li> 
+        <li>Remove sleep from unit tests after dynamic reconfig <a href="https://github.com/javaee/glassfish/issues/6648">6648</a> <b>DONE</b> 
+         <ul> 
+          <li>Dependency on 'asadmin set' and ConfigListener sync <b>DONE</b></li> 
+         </ul> </li> 
+       </ul> </li> 
+      <li>Deferred features 
+       <ul> 
+        <li>Dynamic reconfiguration for http-listener and virtual-server prior to WAR deployment <a href="https://github.com/javaee/glassfish/issues/6213">6213</a> (Alexey/Amy) <b>DONE</b></li> 
+        <li>Port unification (HTTP/HTTPS) (Alexey) 
+         <ul> 
+          <li>SOAP/TCP M2 - Depends on Grizzly Config</li> 
+         </ul> </li> 
+        <li>gfv3-prelude-excluded bugs 
+         <ul> 
+          <li><a href="https://glassfish.java.net/issues/buglist.cgi?issue_type=DEFECT&amp;issue_type=TASK&amp;component=glassfish&amp;subcomponent=web_container&amp;issue_status=UNCONFIRMED&amp;issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED&amp;version=V3&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=gfv3-prelude-excluded&amp;status_whiteboard_type=fulltext&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=&amp;cmdtype=doit&amp;newqueryname=&amp;order=Reusesamesortaslasttime&amp;Submitquery=Submitquery">gfv3-prelude-excluded bug query</a></li> 
+         </ul> </li> 
+        <li><a href="https://glassfish.java.net/issues/buglist.cgi?Submitquery=Submitquery&amp;issue_type=DEFECT&amp;component=glassfish&amp;subcomponent=web_container&amp;issue_status=UNCONFIRMED&amp;issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED&amp;priority=P1&amp;priority=P2&amp;priority=P3&amp;version=V3&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=fulltext&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=&amp;cmdtype=doit&amp;newqueryname=&amp;order=Reusesamesortaslasttime">v3 p1-p3 bugs</a></li> 
+       </ul> </li> 
+      <li>Web core <b>DEFERRED</b> 
+       <ul> 
+        <li>Move sources out of v3 and provide binary integration into v3 (Carla with help from Rajiv/Kin-man)</li> 
+        <li>Web pages (Carla with help from everyone)</li> 
+        <li>PR activities (annoucements etc.)</li> 
+        <li>Trademark approval (Dhiru)</li> 
+       </ul> </li> 
+      <li>Tomcat alignment 
+       <ul> 
+        <li>More complete support for context.xml (Amy) 
+         <ul> 
+          <li>WatchedResource <b>DONE</b></li> 
+          <li>context.xml packaged outside of WAR <a href="https://github.com/javaee/glassfish/issues/4996">4996</a> <b>DONE</b></li> 
+          <li>Application Management support</li> 
+         </ul> </li> 
+        <li>Porting of bug fixes from Tomcat (Shing-Wai/Jan) <em>ONGOING</em></li> 
+        <li>Evaluation of migration survey results (TBD)</li> 
+       </ul> </li> 
+      <li>Grizzly integration 
+       <ul> 
+        <li>Upgrade to Grizzly 1.9.x <b>DONE</b></li> 
+        <li>Re-use Grizzly OSGi bundle instead of repackaging <b>DONE</b></li> 
+        <li>openESB async support <b>ONGOING</b></li> 
+        <li>Support for scripting extensions (Jruby/Grails) <b>ONGOING</b></li> 
+        <li>Remove CoyoteRequest/GrizzlyRequest code duplication <b>DEFERRED</b></li> 
+       </ul> </li> 
+      <li>Atmosphere (Jean-Francois) 
+       <ul> 
+        <li>Version 0.1 <b>DONE</b></li> 
+        <li>V3 Update Center Integration <b>PENDING</b></li> 
+       </ul> </li> 
+      <li>Bayeux/Cometd (Jean-Francois/Shing-wai) 
+       <ul> 
+        <li>End chunk bug issue under load <b>DONE</b></li> 
+        <li>Non-echo Service (0%)</li> 
+       </ul> </li> 
+      <li>Embeddable web container 
+       <ul> 
+        <li>API Design (Jan, Rajiv, Jeanfrancois) <b>80% DONE</b></li> 
+        <li>Implementation (Amy)</li> 
+       </ul> </li> 
+      <li>Unrelated projects 
+       <ul> 
+        <li>SailFin (Jan/Jean-Francois)</li> 
+        <li>Logging (Carla)</li> 
+       </ul> </li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 09, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : M2GOverviewJa</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="M2GOverviewJa-%E3%83%97%E3%83%AD%E3%82%B8%E3%82%A7%E3%82%AF%E3%83%88GlassFish%E5%90%91%E3%81%91%E3%83%9E%E3%82%A4%E3%82%B0%E3%83%AC%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%83%84%E3%83%BC%E3%83%AB%E3%81%AE%E6%A6%82%E8%A6%81"></a>プロジェクト GlassFish 向けマイグレーションツールの概要</h1> <p>他社アプリケーションサーバーからアプリケーションを移行するには、マイグレーション・ツールを使用します。このツールは、旧バージョンのアプリケーションサーバからのアップグレード後に正しく配備できていないアプリケーションを移行する場合にも使用できます。</p> <p>マイグレーション・ツールは入力アーカイブ、またはソースコードに対して使用することが可能です。ソースアプリケーションのサーバー形式で書かれた実行時配備記述子はツールにより変換され、最新バージョンに準拠した実行時配備記述子が生成されます。また、 JSP および Java ソースコードファイル (ソースコード入力の場合) を解析し、特定のカスタム JSP タグやユーザー独自の API に必要な実行時サポートを提供します。</p> <h4><a name="M2GOverviewJa-%E3%82%B5%E3%83%9D%E3%83%BC%E3%83%88%E5%AF%BE%E8%B1%A1%E3%81%AE%E3%82%A2%E3%83%97%E3%83%AA%E3%82%B1%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%82%B5%E3%83%BC%E3%83%90"></a>サポート対象のアプリケーションサーバ</h2> <p>マイグレーション・ツールは、それ自体が Java のスタンドアロンアプリケーションとして動作し、以下のソース・プラットフォームから GlassFish への Java EE アプリケーションの移行を自動化します。</p> 
+     <ul> 
+      <li>Sun Java System Application Server 7.x, 8.x,</li> 
+      <li>Sun ONE Application Server 6.x</li> 
+      <li>J2EE リファレンス実装 1.3/1.4</li> 
+      <li>BEA WebLogic Application Server 5.1/6.0/6.1/8.1/9.0</li> 
+      <li>WebSphere Application Server 4.0/5.1</li> 
+      <li>JBoss Application Server 3.0</li> 
+      <li>Tomcat Web Server 4.1.12</li> 
+     </ul> <h4><a name="M2GOverviewJa-%E3%83%9E%E3%82%A4%E3%82%B0%E3%83%AC%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%81%AE%E4%BB%95%E7%B5%84%E3%81%BF"></a>マイグレーションの仕組み</h2> <p>J2EE 仕様はアプリケーションの要件を広く網羅してはいますが、現在も進化の途上にある標準です。アプリケーションのすべての側面について仕様が網羅されているわけではなく、また、実装の詳細がアプリケーション・プロバイダの裁量に委ねられているようなところもあります。</p> <p>このような事情もあり、アプリケーションサーバの構成あるいは Java EE モジュールのアプリケーションサーバへの配備形式には、どうしても製品による違いが生じてきます。特定のアプリケーションサーバでのみ使用可能な設定・配備ツールの存在も、こうしたギャップを生み出す要因の一つであるといえるでしょう。</p> <p>Java EE の仕様自体が絶え間なく変化し続けている事も、アプリケーション・サーバのプロバイダにとって頭の痛い問題です。個々のコンポーネントの API が個別に変更されれば、製品ごとに準拠の度合にばらつきが生じます。加えて、アプリケーション・サーバにはカスタム JSP タグや独自の Java API ライブラリといった付加的な機能やサービスが同梱されるのが一般的で、このような機能の利用もまた、アプリケーションの移植性を損なう原因となっています。</p> <p>マイグレーション・ツールを使用すると、 Java EE アプリケーションのソース、およびアーカイブのいずれをも移行することが可能です。アーカイブから移行を行う場合、ソースファイルが提供されていなければ、配備記述子のみが移行されます。またアプリケーションのソースが提供されている場合、ツールは以下のソースファイル類の移行を行います：</p> 
+     <ul> 
+      <li>構成パラメータファイル</li> 
+      <li>配備記述子（ XML ファイル）</li> 
+      <li>JSP ソースファイル</li> 
+      <li>Java ソースファイル</li> 
+     </ul> <p>上記ファイル類はそれぞれがアプリケーションの異なる側面を構成するもので、移行に際しては個々に異なる戦略・手順が必要となります。マイグレーション・ツールは、以下に示すカテゴリごとの一般的なガイドラインに従ってこれらのファイルを移行します。</p> <h4><a name="M2GOverviewJa-%E6%A7%8B%E6%88%90%E3%83%91%E3%83%A9%E3%83%A1%E3%83%BC%E3%82%BF%E3%83%BB%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB"></a>構成パラメータ・ファイル</h2> <p>マイグレーション・ツールはファイル名をもとに構成パラメータ・ファイルを検出します（ファイル名はマイグレーション・ツール上で指定できます）</p> <p>例 <tt>weblogic.properties</tt>、<tt>server-cfg.xml</tt> など</p> <p>アプリケーション・サーバの構成には、インストール先ディレクトリ、HTML ドキュメントや JSP 、サーブレット、エンタープライズ Bean などを配置するディレクトリといった各種パラメータの設定が含まれます。さらに、パフォーマンスやプーリング、クラスタ化、データベース接続に関するパラメータ類も、アプリケーション・サーバの構成に含まれます。</p> <p>構成パラメータの仕様に含まれる情報はどの製品でもほぼ同じですが、パラメータを特定するための書式は製品ごとに異なります。なお、移行先アプリケーション・サーバのインストールについては注意深く設定が行われている場合が少なくありません。そのため、マイグレーション・ツールは移行先に関する構成パラメータの上書きは行いません。移行先のパラメータのうち問題なく操作できるのは JDBC ソースのみで、マイグレーション・ツールはこの JDBC ソースのパラメータだけを自動的に移行します。ただし、関連のある構成パラメータの情報を含むファイルがマイグレーション・ツールにより作成されますので、システム管理者は移行先アプリケーション・サーバのインストール時にこれらのパラメータを手動で設定してください。</p> <p>メッセージ駆動型 Bean が JAR ファイル内に含まれる場合、マイグレーション・ツールは JMS に関連するスクリプトを作成します。これらの JMS スクリプトを使用すれば、移行先サーバに JMS のリソースを生成することができます。ツールが作成する JMS スクリプトは <tt>buildjms.sh</tt> (Solaris) または <tt>buildjms.cmd</tt> (Windows)という名前になります。また、ツールは移行先サーバに JMS の接続ファクトリ・リソースを生成するため、前述の JMS リソース生成用スクリプトと同じようなスクリプトを作成します。</p> <h4><a name="M2GOverviewJa-%E9%85%8D%E5%82%99%E8%A8%98%E8%BF%B0%E5%AD%90%28XML%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB%29"></a>配備記述子 ( XML ファイル)</h2> <p>アプリケーションの配備に関する情報は、エンタープライズ Bean ( EJB、 JAR ファイル)、フロント・エンドの Web コンポーネント (WAR ファイル)、およびエンタープライズアプリケーション (EAR ファイル) の配備記述子で指定します。マイグレーション・ツールは、ファイルの文書タイプ、もしくはファイル名をもとに DD ファイルを検出します（これらの情報はマイグレーション・ツール上から設定可能です）。ファイル名の一例として、 <tt>ejb-jar.xml</tt>、<tt>weblogic-ejb-jar.xml</tt>、 {{ibm-bnd.xmi}}などが挙げられます。</p> <p> Java EE コンポーネントやアプリケーションと外部要素との依存関係の解決にも、配備記述子を使用します。配備記述子に関する Java EE の仕様は、全てのアプリケーション・サーバ製品に共通です。ただし、アプリケーションの実装に依存するコンポーネントは Java EE 仕様ではカバーされておらず、これらについては製品固有の DD ファイルが追加で用いられます。こうした移行元の製品固有の DD ファイルが提供する情報は、マイグレーション・ツールにより、移行先のアプリケーション・サーバ固有の DD ファイルに移行されます。</p> <h4><a name="M2GOverviewJa-JSP%E3%82%BD%E3%83%BC%E3%82%B9%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB"></a>JSP ソースファイル</h2> <p>マイグレーション・ツールは、ファイル名につけられた .jsp という拡張子により JSP ファイルを検出します（この情報はマイグレーション・ツール上で設定可能です）。 JSP ファイルはアプリケーションのプレゼンテーション・レイヤ（フロント・エンド）を実装するのに使用されます。 </p> <p>Java EE にはカスタム・タグを追加して JSP を拡張する方法が規定されており、製品ベンダーは自社の製品に独自のJSP拡張を加えていることがあります。これにより開発者の作業は軽減されますが、反面、こうした製品固有のカスタムタグは JSP ファイルの移植性を損ないます。加えて、 JSP ファイルからは別の Java のソースファイルで定義されたメソッドを呼び出すことができますが、これも Java ソースファイルに関して同様の移植性低下の問題を引き起こします。マイグレーション・ツールには、移行元のアプリケーション・サーバのカスタム JSP タグの機能を提供する Java の実行時ライブラリが同梱されます。また、移植出来ない Java のメソッドは、次のセクションで述べる Java ソースファイルと同じ方法で処理されます。</p> <h4><a name="M2GOverviewJa-Java%E3%82%BD%E3%83%BC%E3%82%B9%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB"></a>Java ソースファイル</h2> <p>Java ソースファイルにはサーブレット、エンタープライズ Bean 、あるいはその他のヘルパ・クラスなどの種類があります。サーブレットとエンタープライズ Bean は標準の Java EE サービスを呼び出すことができ、加えてヘルパ・クラス内に定義されたメソッドを呼び出すこともできます。</p> <p>マイグレーション・ツールはJavaソースファイルをファイル名につけられた <tt>.java</tt> という拡張子により検出します。 Java ソースファイルには、たとえばアプリケーションのビジネス・レイヤを受け持つエンタープライズ Bean があります。通常、サーブレットはアプリケーションのプレゼンテーション・レイヤ（フロント・エンド）を担当しますが、サーブレットにビジネス・ロジックを実装することも可能です。</p> <p>なお、ベンダーは自社の製品に独自のサービスや固有の Java API を同梱している場合があります。こうした独自 API の使用が、アプリケーションの移植性を損なう主要な原因の一つともなっています。 Java EE は今なお進化の途上にあり、様々な製品がそれぞれに異なるバージョンのJava EE コンポーネント API をサポートしている可能性があります。移行に際してはこの点にも注意を払わなくてはなりません。</p> <p>マイグレーション・ツールには、固有 Java API （の選択されたサブセット）の機能を提供する Java の実行時ライブラリが同梱されています。 Java の実行時ライブラリは、実際のインタフェースを保持する形で記述されています。</p> <p>様々な製品の様々なバージョンに対応するため、各固有 API のパッケージ名には製品名、およびバージョンが接頭辞として付加されます。マイグレーション・ツールには、固有 API の存在を確認してパッケージ名に適切な接頭辞を付加するためのJavaパーサが含まれます。このため、アプリケーション・サーバ上で実行している間は、実行時Javaライブラリへの呼び出しが行われることになります。アプリケーションに含まれる JSP ファイルも、 Java ソースファイルと同じ Java パーサにより処理されます。なお、このパーサには Java EE コンポーネントのバージョン不適合を検出・修復する機能も搭載されています。</p> <p>注意 - 現行のマイグレーション・ツールは、こうした差分の修復に関してごく限定的なサポートのみを提供します。</p> <p>前へ <a href="M2GInstSetupJa.html" title="M2GInstSetupJa">次へ</a></p> 
+     <hr> <p>日本語翻訳: <a href="http://apercu-j.blogspot.com/">Kana. Kotake</a></p> <p><a href="M2GOverview.html" title="M2GOverview">英文 </a> (翻訳したバージョン: 5)</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 08, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

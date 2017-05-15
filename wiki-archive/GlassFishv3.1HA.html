@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFishv3.1HA</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GlassFishv3.1HA-GlassFishServerOpenSourceEdition3.1InmemorySessionReplication%3AHighAvailability"></a>GlassFish Server Open Source Edition 3.1 - In-memory Session Replication: High Availability</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#GlassFishv3.1HA-GlassFishServerOpenSourceEdition3.1InmemorySessionReplication%3AHighAvailability">GlassFish Server Open Source Edition 3.1 - In-memory Session Replication: High Availability</a></li> 
+       <ul> 
+        <li><a href="#GlassFishv3.1HA-ScopeoftheProject">Scope of the Project</a></li> 
+        <li><a href="#GlassFishv3.1HA-HighLevelFeatures">High Level Features</a></li> 
+        <li><a href="#GlassFishv3.1HA-HighLevelOverviewoftheproject">High Level Overview of the project</a></li> 
+        <li><a href="#GlassFishv3.1HA-FeatureOverview">Feature Overview</a></li> 
+        <ul> 
+         <li><a href="#GlassFishv3.1HA-HA1SessionPersistenceBackingStoreSPIportfromv2to3.1">HA-1 Session Persistence BackingStore SPI port from v2 to 3.1</a></li> 
+         <li><a href="#GlassFishv3.1HA-HA2ImplementBackingStoreinProjectShoalprovidingallofBackingStoreoperations">HA-2 Implement Backing Store in Project Shoal providing all of BackingStore operations</a></li> 
+         <li><a href="#GlassFishv3.1HA-HA3ImplementBackingStoreinProjectShoalprovidinggenericCRUDsemantics">HA-3 Implement Backing Store in Project Shoal providing generic CRUD semantics</a></li> 
+         <li><a href="#GlassFishv3.1HA-HA4MonitoringStatProviders">HA-4 Monitoring Stat Providers</a></li> 
+        </ul> 
+        <li><a href="#GlassFishv3.1HA-Onepager%2FFunctionalSpecification">One-pager / Functional Specification</a></li> 
+        <li><a href="#GlassFishv3.1HA-DevTests">Dev Tests</a></li> 
+        <li><a href="#GlassFishv3.1HA-Quality">Quality</a></li> 
+        <li><a href="#GlassFishv3.1HA-Documentation">Documentation</a></li> 
+        <li><a href="#GlassFishv3.1HA-MilestoneSchedule">Milestone Schedule</a></li> 
+        <li><a href="#GlassFishv3.1HA-TaskList">Task List</a></li> 
+        <li><a href="#GlassFishv3.1HA-References%2FLinks">References / Links</a></li> 
+        <li><a href="#GlassFishv3.1HA-EmailAlias">Email Alias</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="GlassFishv3.1HA-ScopeoftheProject"></a>Scope of the Project</h2> <p> The In-Memory replication feature allows session availability by replicating session state to other instances in the cluster. By replicating session data, when the instance that was serving the request fails, the session can be restored by retrieving the session data from the replica instance.</p> <p> Also, instead of letting the containers to directly interact with the in-memory replication layer, a BackingStore SPI has been defined. The advantages of using this SPI are:<br> 1. It defines a set of classes and interfaces that a service provider (file system, replication, database etc.) must implement<br> 2. It allows the containers to interact with different kinds of stores (like in-memory replication, file system, database etc.)</p> <p> In GlassFish Server Open Source Edition 3.1, we will implement the in-memory replication module as a service provider of BackingStore SPI.</p> <h4><a name="GlassFishv3.1HA-HighLevelFeatures"></a>High Level Features</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Desired Improvement </th> 
+         <th class="confluenceTh"> Priority </th> 
+         <th class="confluenceTh"> Comments </th> 
+         <th class="confluenceTh"> Milestone </th> 
+         <th class="confluenceTh"> Eng Response </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> HA-1 </td> 
+         <td class="confluenceTd"> Session Persistence BackingStore SPI port from v2 to 3.1 workspace </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Port V2 SPI functionality. </td> 
+         <td class="confluenceTd"> Milestone 1 </td> 
+         <td class="confluenceTd"> YES </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> HA-2 </td> 
+         <td class="confluenceTd"> Implement Replication Store in Project Shoal providing save(), remove() operations </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Allows session data to be persisteed and removed from store </td> 
+         <td class="confluenceTd"> Milestone 2 </td> 
+         <td class="confluenceTd"> YES </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> HA-3 </td> 
+         <td class="confluenceTd"> Implement load() operation to retrieve state from shoal replication store </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Allows session data to be retrieved from ReplicationStore </td> 
+         <td class="confluenceTd"> Milestone 3 </td> 
+         <td class="confluenceTd"> YES </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> HA-4 </td> 
+         <td class="confluenceTd"> Support load() and save() operations on a restarted instance </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Allows session data to be retrieved from ReplicationStore after a server restart </td> 
+         <td class="confluenceTd"> Milestone 4 </td> 
+         <td class="confluenceTd"> YES </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> HA-5 </td> 
+         <td class="confluenceTd"> Implement HA BackingStore SPI using shoal Replication store </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Allows Containers to interact with the shoal Replication store using the SPI </td> 
+         <td class="confluenceTd"> Milestone 2 </td> 
+         <td class="confluenceTd"> YES </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> HA-6 </td> 
+         <td class="confluenceTd"> Implement a No-Op HA BackingStore SPI </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Allows Metro to operate outside of GlassFish. Other containers may also use this approach when run in non-cluster mode. </td> 
+         <td class="confluenceTd"> Milestone 2 </td> 
+         <td class="confluenceTd"> YES </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> HA-7 </td> 
+         <td class="confluenceTd"> Retain v2.1 HA configuration elements and attributes in domain.xml </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Allows QA test scripts to enable &amp; disable HA </td> 
+         <td class="confluenceTd"> Milestone 2 </td> 
+         <td class="confluenceTd"> YES </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> HA-8 </td> 
+         <td class="confluenceTd"> Improved logging for tracking replication messages </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Provide better logging to track replication commands </td> 
+         <td class="confluenceTd"> Milestone 3 </td> 
+         <td class="confluenceTd"> YES </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> HA-9 </td> 
+         <td class="confluenceTd"> Monitoring Stat Providers </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Provide stats that be used for both monitoring and debugging </td> 
+         <td class="confluenceTd"> Milestone 4 </td> 
+         <td class="confluenceTd"> YES </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> HA-10 </td> 
+         <td class="confluenceTd"> Performance improvement work </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Improve performance </td> 
+         <td class="confluenceTd"> Milestone 4 </td> 
+         <td class="confluenceTd"> YES </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> HA-11 </td> 
+         <td class="confluenceTd"> Implement BatchBackingStore for EJB Container </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Feature parity </td> 
+         <td class="confluenceTd"> Milestone 3 </td> 
+         <td class="confluenceTd"> YES </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> HA-12 </td> 
+         <td class="confluenceTd"> Implement Local caching of state for passivated EJB </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Feature parity. Also, ensures that passivated EJB's state is available when a replica instance crashes </td> 
+         <td class="confluenceTd"> Milestone 3 </td> 
+         <td class="confluenceTd"> YES </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishv3.1HA-HighLevelOverviewoftheproject"></a>High Level Overview of the project</h2> <p>The general approach is to replicate session state from each instance in a cluster to a back-up / replica. Unlike V2, where HTTP and EJB sessions were replicated to the neighboring instance (buddy), the replication module will rely on an external object called ReplicaSelector to pick a replica. The input to the ReplicaSelector will be the SessionKey and the ReplicaSelector will return an instance name (that is alive) to which the data must be replicated. Each backup instance will store the replicated data in-memory. Upon a failure the instance now servicing the request (after failover) will either already have the necessary data or it will use the ReplicaSelector to locate the replica to obtain and take ownership of the data.</p> <p>Availability configuration will continue to work as it has for previous HA enabled releases. The existing persistence-type ("replicated") will continue to be supported. This will allow QA and performance tests to run as they do with V2.x.</p> <p>The replication layer itself will use the GMS communication APIs for transporting the data. We will use GMS's send() API to replicate data to a replica instance.</p> <p>The current plan is to leverage GMS for cluster group membership services including things like initial bootstrapping/startup and various cluster shape changes like instances being stopped and re-started, instances failing, new instances being added to the cluster, etc. Its is assumed that ReplicaSelector will register itself with GMS to know the current 'alive' members so that it can pick an 'alive' replica.</p> <p>Changes to Various Containers:</p> <p><b>1. EJB Container:</b></p> <p> The EJB Container uses the store to (a) passivate EJBs when the cache overflows and (b) to checkpoint EJBs at the end of business method (or at the end of Tx). The EJB Container currently does not use the SPI to talk to a store. The EJB Container needs to use the BackingStore SPI to talk to in-memory replication layer. Since, the interface used by EJB Container is very similar to the BackingStore SPI, it should not be a major change for the container to switch to the SPI.</p> <p><b>2. Web Container:</b></p> <p> The Web Container will continue to use the same BackingStore SPI to save session state. The Web Container persists session data using one of the two approaches: (a) Full session: The entire session will be saved to the BackingStore and (b) Modified Attributes: Only those HTTP Session attributes that were either deleted / added / updated will be saved. We will continue to support both approaches.</p> <p><b>3. Metro:</b></p> <p> Metro will use the BackingStore SPI. It will save the following data in BackingStore: (a) Message, (b) SAAJMessage and (c) ProtocolSourceMessage. The above three messages will be serialized and the resulting byte[] will be persisted into BackingStore.</p> <h4><a name="GlassFishv3.1HA-FeatureOverview"></a>Feature Overview</h2> <h4><a name="GlassFishv3.1HA-HA1SessionPersistenceBackingStoreSPIportfromv2to3.1"></a>HA-1 Session Persistence BackingStore SPI port from v2 to 3.1</h3> 
+     <ul> 
+      <li>Description</li> 
+     </ul> <p>Provides a session persistence abstraction to containers allowing GlassFish containers to be agnostic to the actual session persistence implementation. </p> 
+     <ul> 
+      <li>Sub-tasks</li> 
+     </ul> <p>(a) Create an OSGi module that contains the SPI classes and interfaces.</p> <p>(b) Make the BackingStoreFactory as a hk2 @Contract to allow containers to inject BackingStoreFactory.</p> <p>(c) This Module will also contain a no-op BackingStoreFactory and a no-op BackingStore.</p> 
+     <ul> 
+      <li>Owners: Mahesh</li> 
+     </ul> 
+     <ul> 
+      <li>Dependencies: None</li> 
+     </ul> <h4><a name="GlassFishv3.1HA-HA2ImplementBackingStoreinProjectShoalprovidingallofBackingStoreoperations"></a>HA-2 Implement Backing Store in Project Shoal providing all of BackingStore operations</h3> 
+     <ul> 
+      <li>Description</li> 
+     </ul> <p>The implementation will provide the basic load / save / remove operations and will use GMS APIs to replicate data to replica instance.</p> 
+     <ul> 
+      <li>Sub-tasks</li> 
+     </ul> <p>(a) Create a DataStore that will provide load / save / remove operations.</p> <p>(b) The DataStore will internally use a ConsistentHash algorithm to select a replica for a given key. The DataStore will also use the Consistent hash algorithm (along with a GMS API to obtain the previous view of the cluster) to locate replica location after a failover.</p> <p>(c) Implement various commands to replicate, remove and locate replica data.</p> <p>(d) Use GMS APIs to react to Cluster Shape changes to implement a simple consistent hash algorithm.</p> 
+     <ul> 
+      <li>Owners</li> 
+     </ul> <p>Mahesh &amp; Joe</p> 
+     <ul> 
+      <li>Dependencies</li> 
+     </ul> <p>(a) GMS APIs to provide cluster shape changes</p> <p>(b) GMS APIs to provide send and receive replication data and various command data.</p> <p>(a) GMS API to provide previous cluster state after a node failure / restart.</p> 
+     <ul> 
+      <li>Estimate TBD</li> 
+     </ul> <h4><a name="GlassFishv3.1HA-HA3ImplementBackingStoreinProjectShoalprovidinggenericCRUDsemantics"></a>HA-3 Implement Backing Store in Project Shoal providing generic CRUD semantics </h3> 
+     <ul> 
+      <li>Description</li> 
+     </ul> <p>Provides a backing store implementation with simple APIs to do CRUD operations and support querying. The store will be an OSGi module integrated into GlassFish periodically over the release time frame. </p> 
+     <ul> 
+      <li>Sub-tasks</li> 
+     </ul> <p>Implement save, load, findByCriteria, remove and support for partial updates such as updateTimeStamp of a session. </p> 
+     <ul> 
+      <li>Owner</li> 
+     </ul> <p>Mahesh</p> 
+     <ul> 
+      <li>Dependencies</li> 
+     </ul> <p>GMS for JoinedAndReady (instance start and restart), failure detection notifications and all Messaging pertaining to session replication.<br> DOL (possibly for deployment framework support to correctly handle automatic timer creation) &lt;br&gt;</p> 
+     <ul> 
+      <li>Estimate TBD</li> 
+     </ul> <h4><a name="GlassFishv3.1HA-HA4MonitoringStatProviders"></a>HA-4 Monitoring Stat Providers </h3> 
+     <ul> 
+      <li>Description</li> 
+     </ul> <p>Provide monitoring stats that will help with diagnosing session replication related issues for testers and end customers. </p> 
+     <ul> 
+      <li>Sub-tasks</li> 
+     </ul> <p>TBD</p> 
+     <ul> 
+      <li>Dependencies</li> 
+     </ul> 
+     <ul> 
+      <li>Owner</li> 
+     </ul> <p>Mahesh</p> 
+     <ul> 
+      <li>Estimate TBD</li> 
+     </ul> <h4><a name="GlassFishv3.1HA-Onepager%2FFunctionalSpecification"></a>One-pager / Functional Specification</h2> 
+     <ul> 
+      <li>Coming soon</li> 
+     </ul> <h4><a name="GlassFishv3.1HA-DevTests"></a>Dev Tests</h2> 
+     <ul> 
+      <li>14 junit tests. Run as part of "mvn install".</li> 
+      <li>Coming Soon - Information on HA dev tests will be posted on <a href="DeveloperTestDashboard.html" title="DeveloperTestDashboard">Dev Tests</a> page</li> 
+     </ul> <h4><a name="GlassFishv3.1HA-Quality"></a>Quality</h2> 
+     <ul> 
+      <li>Link to Test Plans</li> 
+     </ul> <h4><a name="GlassFishv3.1HA-Documentation"></a>Documentation</h2> 
+     <ul> 
+      <li><a href="GlassFish3.1HAOnePager.html" title="GlassFish3.1HAOnePager">(Draft) One Pager</a></li> 
+     </ul> <h4><a name="GlassFishv3.1HA-MilestoneSchedule"></a>Milestone Schedule </h2> <p>Please refer to the <a href="GlassFish3.1HAOnePager.html#GlassFish3.1HAOnePager-sectionGlassFis1HAOnePager6.Schedule">HA one pager</a> document</p> <h4><a name="GlassFishv3.1HA-TaskList"></a>Task List</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task </th> 
+         <th class="confluenceTh"> start date </th> 
+         <th class="confluenceTh"> end date </th> 
+         <th class="confluenceTh"> QA handoff </th> 
+         <th class="confluenceTh"> Target Milestone </th> 
+         <th class="confluenceTh"> Owner(s) </th> 
+         <th class="confluenceTh"> Feature ID </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Convert BackingStore SPI into an OSGi module </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> MS1 </td> 
+         <td class="confluenceTd"> NO </td> 
+         <td class="confluenceTd"> MS1 </td> 
+         <td class="confluenceTd"> Mahesh </td> 
+         <td class="confluenceTd"> HA-1 </td> 
+         <td class="confluenceTd"> DONE. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Provide no-op BackingStore and BackingSoreFactory for Metro </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd"> NO </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd"> Mahesh </td> 
+         <td class="confluenceTd"> HA-6 </td> 
+         <td class="confluenceTd"> Done. The persistence type for this BackingStoreFactory is 'noop' </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Retain v2.1 HA configuration elements and attributes in domain.xml </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 6/21 </td> 
+         <td class="confluenceTd"> NO </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd"> Mahesh </td> 
+         <td class="confluenceTd"> HA-7 </td> 
+         <td class="confluenceTd"> Done. No configuration changes are expected between v2.1 and v3.1 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Implement HA BackingStore SPI using shoal Replication store </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd"> NO </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd"> Mahesh </td> 
+         <td class="confluenceTd"> HA-5 </td> 
+         <td class="confluenceTd"> Done. shoal-backing-store module acts as the adapter. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Add File based SPi implementation </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd"> NO </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd"> Mahesh </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">Done. Ejb Container uses the file store through HA spi </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Provide store and remove operations in SHOAL replication store </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd"> NO </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd"> Mahesh </td> 
+         <td class="confluenceTd"> HA-2 </td> 
+         <td class="confluenceTd"> DONE. The shoal replication store already supports these operations. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Allow ReplicaSelector to listen for failure / join events </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd"> NO </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd"> Mahesh Kannan </td> 
+         <td class="confluenceTd"> HA-2 &amp; HA-4 </td> 
+         <td class="confluenceTd"> Done. Reacts to failure and join and ready events. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Implement a consistent hash algorithm to locate replica instance </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> NO </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> Mahesh </td> 
+         <td class="confluenceTd"> HA-2 &amp; HA - 4 </td> 
+         <td class="confluenceTd"> Done, but blocked by 12730 (which is an intermittent bug) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Implement load operation in SHOAL replication store </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> NO </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> Mahesh </td> 
+         <td class="confluenceTd"> HA-2 </td> 
+         <td class="confluenceTd">Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Implement load() operation to retrieve state from store </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> NO </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> Mahesh </td> 
+         <td class="confluenceTd"> HA-3 </td> 
+         <td class="confluenceTd">Done. Again blocked by 12730 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Implement updateTimeStamp method in BackingStore </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd"> NO </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd"> ?? </td> 
+         <td class="confluenceTd"> HA - 2 </td> 
+         <td class="confluenceTd"> Done. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Implement local caching of state in shoal replication store </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd"> NO </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd"> Mahesh </td> 
+         <td class="confluenceTd"> HA - 12 </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Support local caching of passivated EJBs. Ensure passivated EJB state is available after server crash. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd"> NO </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd"> Mahesh </td> 
+         <td class="confluenceTd"> HA - 12 </td> 
+         <td class="confluenceTd"> Started </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Implement BatchBackingStore for EJB </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd"> NO </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd"> Mahesh </td> 
+         <td class="confluenceTd"> HA-11 </td> 
+         <td class="confluenceTd"> Not started. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Work with Web container team &amp; LB team to support replicaLocation cookie. Ensure better performance after server crash </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd"> Mahesh </td> 
+         <td class="confluenceTd"> HA-11 </td> 
+         <td class="confluenceTd"> This is really a web container task. Working with Rajiv and Kshitiz </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Ensure that updates / save occur in the correct order in replica cache </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> MS5 </td> 
+         <td class="confluenceTd"> NO </td> 
+         <td class="confluenceTd"> MS5 </td> 
+         <td class="confluenceTd"> Joe Fialli </td> 
+         <td class="confluenceTd"> HA-2 </td> 
+         <td class="confluenceTd"> Not started. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Add support for batching replication messages using interceptors </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> MS5 </td> 
+         <td class="confluenceTd"> NO </td> 
+         <td class="confluenceTd"> MS5 </td> 
+         <td class="confluenceTd"> Mahesh </td> 
+         <td class="confluenceTd"> HA-10 </td> 
+         <td class="confluenceTd"> Not Started. Moving this from MS4 to MS5 as this is really a perf related feature </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Allow ReplicaSelector to rejoin events </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> MS5 </td> 
+         <td class="confluenceTd"> NO </td> 
+         <td class="confluenceTd"> MS5 </td> 
+         <td class="confluenceTd"> Joe Fialli </td> 
+         <td class="confluenceTd"> HA-2 &amp; HA-4 </td> 
+         <td class="confluenceTd"> Not yet started. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Improve log messages for easy debugging </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> MS5 </td> 
+         <td class="confluenceTd"> NO </td> 
+         <td class="confluenceTd"> MS5 </td> 
+         <td class="confluenceTd"> Mahesh &amp; Joe Fialli </td> 
+         <td class="confluenceTd"> HA-8 </td> 
+         <td class="confluenceTd"> Started. This is really an internal feature. Other modules will not directly depend on any of the log messages </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishv3.1HA-References%2FLinks"></a>References / Links</h2> 
+     <ul> 
+      <li>HA BackingStore SPI: <a href="http://fisheye4.atlassian.com/browse/glassfish-svn/trunk/v3/ha/ha-api/src/main/java/org/glassfish/ha/store/spi">http://fisheye4.atlassian.com/browse/glassfish-svn/trunk/v3/ha/ha-api/src/main/java/org/glassfish/ha/store/spi</a></li> 
+     </ul> 
+     <ul> 
+      <li>Functional spec:</li> 
+     </ul> 
+     <ul> 
+      <li>GMS Functional spec:</li> 
+     </ul> 
+     <ul> 
+      <li>GMS Milestone doc: <a href="GlassFishv3.1GMS.html" title="GlassFishv3.1GMS">GlassFishv3.1GMS</a></li> 
+     </ul> 
+     <ul> 
+      <li>SHOAL Replication store doc:</li> 
+     </ul> 
+     <ul> 
+      <li><a href="http://appserver.sfbay.sun.com/Wiki.jsp?page=GlassFish3.1Internal%2FEJB-DHQA-MS3">MS3: QA and DOC hand off doc describing save / load / load on restarted instance </a></li> 
+     </ul> <h4><a name="GlassFishv3.1HA-EmailAlias"></a>Email Alias</h2> 
+     <ul> 
+      <li>Please contact us at <a href="mailto:dev@shoal.java.net">dev@shoal.java.net</a></li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Aug 04, 2010 by 
+<font color="#0050B2">mkan</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

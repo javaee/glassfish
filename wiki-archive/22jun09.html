@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : 22jun09</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="22jun09-GlassFishV3AdminTeamMeetingMinutes22Mune2009"></a>GlassFish V3 Admin Team Meeting Minutes 22 Mune 2009</h1> <h4><a name="22jun09-Present"></a>Present</h2> <p>Byron, Dixie, Jennifer, Nandini, Paul, Prashanth, Rajeshwar, Sankar, Siraj, Sreeni </p> <h4><a name="22jun09-Reviewofactionitems"></a>Review of action items</h2> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li>Jennifer:* Provide a link to the <a href="GFv3FinalMS4.html" title="GFv3FinalMS4">Milestone 4 doc</a>.<br> <b>Complete.</b></li> 
+        <li>All* Update the MS4 doc.</li> 
+       </ul> </li> 
+     </ul> <h4><a name="22jun09-MS4%2FSCF7%2F13"></a>MS4/SCF 7/13</h2> <p>Covered in the updates by QA, documentation and development teams</p> <h4><a name="22jun09-UpdatebyQA%2CDocumentationandDevelopmentTeams"></a>Update by QA, Documentation and Development Teams</h2> <h4><a name="22jun09-QAUpdate"></a>QA Update</h3> <p>Tests will continue to be run on the v3 trunk until implementation of Milestone 4 features. </p> <p>Fixes to blocking issues <a href="https://github.com/javaee/glassfish/issues/7429">7429</a> and <a href="https://github.com/javaee/glassfish/issues/7430">7430 </a> are expected June 23.</p> <h4><a name="22jun09-DocumentationUpdate"></a>Documentation Update</h3> <p>Dixie to contact Prashanth with questions about monitoring.</p> <p>Paul to determine v3 final command list.</p> <h4><a name="22jun09-DevelopmentUpdate"></a>Development Update</h3> <p>The Milestone 4 document will provide clearer details of what will need to be tested and documented for Milestone 4.</p> <p>Status of individual engineering efforts is as follows:</p> 
+     <ul> 
+      <li>Monitoring: 
+       <ul> 
+        <li>Basic EE 6 functionality and v2 feature parity are to be implemented in Milestone 4.</li> 
+        <li>TOIs to other teams are complete.</li> 
+        <li>Uniform experience for all probe users is planned.</li> 
+        <li>Schedule is aggressive.</li> 
+        <li>End-to-end support for JDBC and web tier is expected on June 23.</li> 
+        <li>GMBL registration is being added this week. Conflict resolution with web services is required.</li> 
+        <li>The REST interface will be integrated in the trunk for milestone 4 with monitoring and configuration support. State management might not be in milestone 4. Security is to be addressed after milestone 4.</li> 
+        <li>Some connector commands will be added and updated.</li> 
+        <li>Adding Dtrace support is more involved than was originally thought.</li> 
+        <li>Client side scripting and monitoring are also to be added.</li> 
+       </ul> </li> 
+      <li>Embedded GlassFish Server: 
+       <ul> 
+        <li>JAR files are to be added to the promotions.</li> 
+        <li>Support for the Maven plugin is being added.</li> 
+        <li>New embedded APIs are being done.</li> 
+        <li>The use case document was reviewed by ASArch.</li> 
+       </ul> </li> 
+      <li>Configuration extensibility is being added. It affects the create domain task. Monitor <a href="http://blogs.oracle.com/dochez/">Jerome Dochez's blog</a> for more information. This information should be included in the <a href="http://docs.sun.com/doc/820-7727">Add-On Component Development Guide</a>.</li> 
+     </ul> <h4><a name="22jun09-OpenMic%2FIssues"></a>Open Mic/Issues</h2> <p>Due to increased scope of other work, anything related to the master password (for example, <tt>change-master-password</tt>) might not be implemented.</p> <h4><a name="22jun09-CustomerInteraction%2CArch.updateifany"></a>Customer Interaction, Arch. update if any</h2> <p>No updates this week.</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:48.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

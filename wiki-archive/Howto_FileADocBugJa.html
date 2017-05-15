@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : Howto_FileADocBugJa</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="Howto_FileADocBugJa-%E2%80%BB%E3%81%93%E3%81%AE%E3%83%9A%E3%83%BC%E3%82%B8%E3%81%AF%E7%BF%BB%E8%A8%B3%E4%B8%AD%E3%81%A7%E3%81%99%E3%80%82%E2%80%BB"></a>※このページは翻訳中です。※</h1> <h4><a name="Howto_FileADocBugJa-HowtoFileaDocumentationBug"></a>How to File a Documentation Bug</h1> <p>GlassFish uses <a href="https://glassfish.java.net/servlets/ProjectIssues">Issue Tracker</a> for bugs and RFEs (requests for enhancements). This page describes how to file a GlassFish documenation bug or RFE.</p> <p>Questions about this process as it applies to GlassFish documentation? Contact the <span class="error">[doc team]</span>.<br> \</p> <h4><a name="Howto_FileADocBugJa-BeforeYouBegin"></a>Before You Begin</h2> <p>You must be logged in to java.net to submit an issue. Information about how to get an account if you don't yet have one is provided below.<br> \</p> <h4><a name="Howto_FileADocBugJa-FilingaGlassFishDocumentationBug"></a>Filing a GlassFish Documentation Bug</h2> <p>1. Go to the <a href="https://glassfish.java.net/">GlassFish Community site</a> and click Login.</p> <p>2. In the Login page, log in with your java.net username or email and password. If you're a new user, follow the link to register for an account to receive a password and log in.</p> <p>3. After logging in, click Issue Tracker in the list on the left.</p> <p>4. <a href="https://glassfish.java.net/issues/query.cgi">Query the database</a> to make sure the bug or RFE doesn't already exist. ALWAYS search before reporting an issue to avoid duplication.</p> <p>5. If the issue has not been reported, click New on the <a href="https://glassfish.java.net/issues/query.cgi">query page</a> (if that's where you still are) or from the <a href="https://glassfish.java.net/servlets/ProjectIssues">main page</a> click Defect to file a bug or Enhancement to submit an RFE. If you don't see the option to add new bugs or RFEs, you're not logged in to java.net. You must be logged in to submit an issue.</p> <p>6. On the Enter Issue page, complete the fields:</p> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li>Found in Version.* Select the product version to which the documentation issue applies.</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li>Subcomponent.* Select docs.</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li>Platform.* Select the platform you were using when the problem occurred. If the issue applies to all platforms, select All (the default).</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li>OS.* Select the operating system you were using when the problem occurred. If the issue applies to all operating systems, select All (the default).</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li>Priority.* Indicate the urgency and severity of the issue. P1 indicates the greatest impact, P5 the least. This field defaults to P3. If in doubt, leave it set to P3. In very general terms, the meaning of each ranking is as follows: 
+         <ul> 
+          <li>P5 --* Non-critical problems that rarely affect anyone; fix is nice-to-have but not required</li> 
+          <li>P4 --* Non-critical or rarely occurring problems; fix is strongly desired but not required</li> 
+          <li>P3 --* Non-trivial problems that most likely affect a noticeable number of customers; fix is required</li> 
+          <li>P2 --* Severe problems that affect a significant number of customers; fix is required; rarely if ever used for docs</li> 
+          <li>P1 --* Severe, show-stopper issues; fix is required immediately; rarely if ever used for docs</li> 
+         </ul> </li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li>Issue Type.* Make sure the correct issue type is listed (DEFECT for bugs, ENHANCEMENT for RFEs).</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li>Assigned To.* Unless you know who the issue should be assigned to, leave this field blank. The bug will automatically be assigned to the subcomponent (docs) owner.</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li>CC.* If desired, enter a space-separated list of glassfish.java.net login names you want to be notified about any subsequent changes to the issue. You as the reporter will be notified automatically, so there's no need to add yourself. Arbitrary email addresses are not accepted by the system.</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li>URL.* If applicable, provide a URL that's relevant to the issue and will be helpful to whoever's looking at it.</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li>Summary.* Provide a brief (one sentence) description that makes it easy to recognize the issue, easy to find the issue (to check for duplicates), and easy to assess the issue's importance. A meaningful summary is very important. Remember: One issue per bug report! Do not include several problems in one report. File a separate report for each.</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li>Description.* Provide a detailed description that makes it easy for a person looking at the issue for the first time to understand what the issue is, where it occurs, and what needs to happen. Include all relevant information in the description. A complete description is very important.</li> 
+       </ul> </li> 
+     </ul> <p>7. When you've completed the form and are ready to submit the issue, click Submit Issue.<br> \</p> <h4><a name="Howto_FileADocBugJa-SeeAlso"></a>See Also</h2> 
+     <ul> 
+      <li>GlassFish <a href="https://glassfish.java.net/quality/portal/">Quality portal</a> and <a href="https://glassfish.java.net/quality/portal/bugguidelines.html">bug guidelines</a></li> 
+      <li>GlassFish <a href="CommunityDocs.html" title="CommunityDocs">Community Docs</a></li> 
+      <li>GlassFish documentation <a href="https://glassfish.java.net/javaee5/docs/DocsIndex.html">home page</a></li> 
+     </ul> <p>日本語翻訳: XXXXX </p> <p><a href="Howto_FileADocBug.html" title="Howto_FileADocBug">英文 </a> (翻訳したバージョン: 18)</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 08, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

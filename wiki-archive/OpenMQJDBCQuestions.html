@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : OpenMQJDBCQuestions</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="OpenMQJDBCQuestions-FAQforusingJDBCasthedatastoreforOpenMessageQueue%21https%3A%2F%2Fmq.java.net%2Fimages%2Fdukemqicon.gif%21"></a>FAQ for using JDBC as the data-store for Open Message Queue <span class="error">Cannot resolve external resource into attachment.</span></h1> <p>If you are interested in contributing to this FAQ, please read the <a href="MQWikiContributionGuidelines.html" title="MQWikiContributionGuidelines">Contribution Guidelines</a>.</p> 
+     <div class="panel" style="border-width: 1px;">
+      <div class="panelContent"> 
+       <p><a href="https://mq.java.net">Back to Open MQ</a></p> 
+       <hr> 
+       <p>Jspwiki style: center</p> 
+      </div>
+     </div> <h4><a name="OpenMQJDBCQuestions-GeneralJDBC"></a>General JDBC</h2> <p><b>Q: Can I only use High Availability Databases, to benefit from the High Availability features in Open MQ?</b></p> <p>A: The simple answer is No. Open MQ makes no special demands on the database that you configure it to use. If you have a sufficient level of availability to meet your application requirements, from your standard JDBC datasource, you can use that datasource and configure Open MQ to treat it as an HA database. If you have not redundancy in your database server, when it goes out, JMS service will stop. If you are using transactional messaging, there may be exceptions generated if the database is unavailable. However, messages should never be in an uncertain status. Open MQ is tested for HA use with GlassFish HADB (a component of the Enterprise Profile) and with Oracle. We have completed our tests and everything checked out so we will add support for <a href="http://mysql.com/products/database/cluster">MySQL Cluster Edition</a> in release 4.2. We have done bench level testing, using MySQL Community Edition with positive results. To configure MySQL for HA, read this <a href="https://mq.java.net/config-ha.html">Setup Information</a>. If you want redundancy and resiliancy to failure, you must install and configure a database that also has redundancy such as HADB, MySQL Cluster Edition, Etc. This allows your operations to continue even if there's a failure at one of the database server nodes.</p> <p><b>Q: How do I increase the number of database connections for the JDBC persistent store?</b></p> <p>A: You can increase the number of database connections from the default value of 5 by setting the broker's property:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">imq.persist.jdbc.connection.limit=5</pre> 
+       </div> 
+      </div>
+     </div> 
+     <hr> <h4><a name="OpenMQJDBCQuestions-UsingMySQL"></a>Using MySQL</h2> <p><b>Q: Is there a general guide for setting up MySQL with the NDB cluster enginer?</b></p> <p>A: We have started a guide which illustrates the minimal cluster setup. It also includes information for more advanced settings. This guide is available at this <a href="https://mq.java.net/OpenMQ_MySQLCluster_Setup_Guide.html">link</a>.</p> <p><b>Q: How do I configure a broker to use MySQL database as the JDBC-based persistence store?</b></p> <p>A: Do the following steps:</p> <p>1. Set the following JDBC-related properties in the broker's instance configuration file:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">imq.brokerid=&lt;alphanumeric_id&gt;
+imq.persist.store=jdbc
+imq.persist.jdbc.dbVendor=mysql
+imq.persist.jdbc.mysql.user=&lt;db_username&gt;
+imq.persist.jdbc.mysql.password=&lt;db_user_password&gt;
+imq.persist.jdbc.mysql.property.url=jdbc:mysql://&lt;hostname&gt;:&lt;port&gt;/&lt;database&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>2. Place a copy of MySQL Connector/J JDBC driver in the following location, depending on your platform:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Solaris: /usr/share/lib/imq/ext/
+
+Linux: /opt/sun/mq/share/lib/ext/
+
+Windows: IMQ_VARHOME\\lib\\ext</pre> 
+       </div> 
+      </div>
+     </div> <p>3. Create the database schema needed for Message Queue persistence using the <em>imqdbmgr create tbl</em> command.</p> <p>4. Start the broker.</p> <p>If you expect to have messages that are larger than 1 Megabytes (1m), make sure that you configure MySQL's default max_allowed_packet variable according to your need when starting the database.<br> For additional info, see B.1.2.10 Packet too large, Appendix B. Errors, Error Codes, and Common Problems of the MySQL 5.0 Reference Manual.</p> <p>For additional information, see <a href="http://docs.sun.com/app/docs/doc/819-7755/6n9m8u5bg?l=en&amp;a=view#aeodi">Configuring a Persistent Data Store</a>, Broker Configuration section of the Sun Java System Message Queue 4.1 Administration Guide. </p> <p><b>Q: Do I need to do any special configuration for MySQL Cluster?</b></p> <p>A: The broker by default is configured to use the the InnoDB Storage Engine because it provides MySQL with a transaction-safe (ACID compliant) storage engine. We do this by using the <em>ENGINE</em> option with the <em>CREATE TABLE</em> statement. To configure the broker to use the NDB Storage Engine, the storage engine that enables clustering in MySQL, you will need to do the following additional steps depending on which version of MQ you've downloaded:</p> <p>For MQ 4.2 RC 1 (build of 20080616), which contains a fix for <a href="http://bugs.sun.com/view_bug.do?bug_id=6713071">CR 6713071</a>:</p> <p>1. Follow the instructions as described above for configuring MySQL database as the JDBC-based persistence store with an additional property added to step 1:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">imq.persist.jdbc.mysql.tableoption=ENGINE=NDBCLUSTER</pre> 
+       </div> 
+      </div>
+     </div> <p>For prior version of MQ:</p> <p>1. Edit the broker's default configuration file (default.properties) from</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Solaris: /usr/share/lib/imq/props/broker/
+
+Linux: /opt/sun/mq/share/lib/props/broker/
+
+Windows: IMQ_VARHOME\\lib\\props\\brokerUWC_TOKEN_DBBS</pre> 
+       </div> 
+      </div>
+     </div> <p>2. Modify the attribute <em>ENGINE=InnoDB</em> from the table schema properties for MySQL to <em>ENGINE=NDB</em>.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">For example, change the table schema for the Version table from
+
+imq.persist.jdbc.mysql.table.MQVER41=\
+         CREATE TABLE ${name} (\
+             STORE_VERSION INT NOT NULL,\
+             LOCK_ID VARCHAR(100)) ENGINE=InnoDB
+
+to
+
+imq.persist.jdbc.mysql.table.MQVER41=\
+         CREATE TABLE ${name} (\
+             STORE_VERSION INT NOT NULL,\
+             LOCK_ID VARCHAR(100)) ENGINE=NDB</pre> 
+       </div> 
+      </div>
+     </div> <p>To avoid changing the broker's default.properties file, you can add the modified properties in the instance configuration file which will override the values specified in the default configuration file.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">.../instances/instanceName/props/config.properties</pre> 
+       </div> 
+      </div>
+     </div> <p>If the file does not yet exist, you must start the broker by using the -name instanceName option, so that Message Queue can create the file.</p> 
+     <hr> <h4><a name="OpenMQJDBCQuestions-UsingJavaDB%28Derby%29"></a>Using Java DB (Derby)</h2> <p><b>Q: How do I configure a broker to use Derby in Network Server mode as the JDBC-based persistence store?</b></p> <p>A: By default, the broker is configured to access a Derby database using the Embedded Derby JDBC driver, i.e. the database engine runs inside the same Java Virtual Machine (JVM) as the broker. The following steps will show you how to configure the broker to access a Derby database using the more familiar client/server mode, i.e. Derby Network Server.</p> <p>1. Set the following JDBC-related properties in the broker's instance configuration file:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">imq.brokerid=&lt;alphanumeric_id&gt;
+imq.persist.store=jdbc
+imq.persist.jdbc.dbVendor=derby
+imq.persist.jdbc.derby.driver=org.apache.derby.jdbc.ClientDriver
+imq.persist.jdbc.derby.opendburl=jdbc:derby://&lt;hostname&gt;:&lt;port&gt;/&lt;database&gt;;create=true
+imq.persist.jdbc.derby.closedburl=
+imq.persist.jdbc.derby.createdburl=</pre> 
+       </div> 
+      </div>
+     </div> <p>2. Place a copy of Derby Network Client JDBC driver (derbyclient.jar) that is necessary for communication with the Network Server in the following location, depending on your platform:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Solaris: /usr/share/lib/imq/ext/
+
+Linux: /opt/sun/mq/share/lib/ext/
+
+Windows: IMQ_VARHOME\\lib\\ext</pre> 
+       </div> 
+      </div>
+     </div> <p>3. Start the Network Server if it has not already been started.</p> <p>For additional information, see <a href="http://db.apache.org/derby/papers/DerbyTut/ns_intro.html">Derby Network Server</a>, Start Network Server section of the Derby Tutorial.</p> <p>4. Create the database schema needed for Message Queue persistence using the <em>imqdbmgr create tbl</em> command.</p> <p>5. Start the broker.</p> 
+     <hr> 
+     <hr> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875621/21365157.pdf">OpenMQ_MySQLCluster_Setup_Guide.html.pdf</a> (application/pdf) 
+      <br> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 02, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

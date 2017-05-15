@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFishV3.1InstallerDocPlan</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GlassFishV3.1InstallerDocPlan-InstallerDocumentationPlanforGlassFishServerOpenSourceEdition3.1"></a><em>Installer</em> Documentation Plan for GlassFish Server Open Source Edition 3.1</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#GlassFishV3.1InstallerDocPlan-InstallerDocumentationPlanforGlassFishServerOpenSourceEdition3.1"> <em>Installer</em> Documentation Plan for GlassFish Server Open Source Edition 3.1</a></li> 
+       <ul> 
+        <li><a href="#GlassFishV3.1InstallerDocPlan-PeopleandRoles">People and Roles</a></li> 
+        <li><a href="#GlassFishV3.1InstallerDocPlan-Audience">Audience</a></li> 
+        <li><a href="#GlassFishV3.1InstallerDocPlan-SummaryoftheFeatureFromaUser%27sPerspective">Summary of the Feature From a User's Perspective</a></li> 
+        <li><a href="#GlassFishV3.1InstallerDocPlan-Availability">Availability</a></li> 
+        <li><a href="#GlassFishV3.1InstallerDocPlan-StatementofWork">Statement of Work</a></li> 
+        <ul> 
+         <li><a href="#GlassFishV3.1InstallerDocPlan-ChangestoBooks">Changes to Books</a></li> 
+         <ul> 
+          <li><a href="#GlassFishV3.1InstallerDocPlan-InstallationGuideChanges"> <em>Installation Guide</em> Changes</a></li> 
+         </ul> 
+        </ul> 
+        <li><a href="#GlassFishV3.1InstallerDocPlan-ReviewSchedule">Review Schedule</a></li> 
+        <li><a href="#GlassFishV3.1InstallerDocPlan-RelatedInformation">Related Information</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="GlassFishV3.1InstallerDocPlan-PeopleandRoles"></a>People and Roles</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Name </th> 
+         <th class="confluenceTh"> Role </th> 
+         <th class="confluenceTh"> Location </th> 
+         <th class="confluenceTh"> Time Zone </th> 
+         <th class="confluenceTh"> Email </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Scott Fordin </td> 
+         <td class="confluenceTd"> Documentation Feature Owner </td> 
+         <td class="confluenceTd"> Burlington, MA, USA </td> 
+         <td class="confluenceTd"> US/Eastern </td> 
+         <td class="confluenceTd"> <tt>sfordin@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Paul Davies </td> 
+         <td class="confluenceTd"> Peer Reviewer </td> 
+         <td class="confluenceTd"> Santa Clara, CA, USA </td> 
+         <td class="confluenceTd"> US/Pacific </td> 
+         <td class="confluenceTd"> <tt>pauldavies@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Sathyan Catari </td> 
+         <td class="confluenceTd"> Feature Lead </td> 
+         <td class="confluenceTd"> Santa Clara, CA, USA </td> 
+         <td class="confluenceTd"> US/Pacific </td> 
+         <td class="confluenceTd"> <tt>scatari@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Tom Mueller </td> 
+         <td class="confluenceTd"> Software Engineer </td> 
+         <td class="confluenceTd"> Omaha, NE, USA </td> 
+         <td class="confluenceTd"> US/Central </td> 
+         <td class="confluenceTd"> <tt>tmueller@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Ludovic Champenois </td> 
+         <td class="confluenceTd"> Software Engineer </td> 
+         <td class="confluenceTd"> Santa Clara, CA, USA </td> 
+         <td class="confluenceTd"> US/Pacific </td> 
+         <td class="confluenceTd"> <tt>ludo@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Snjezana Sevo-Zenzerovic </td> 
+         <td class="confluenceTd"> Software Engineer </td> 
+         <td class="confluenceTd"> Santa Clara, CA, USA </td> 
+         <td class="confluenceTd"> US/pacific </td> 
+         <td class="confluenceTd"> <tt>snjezana_o@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Ming Dong </td> 
+         <td class="confluenceTd"> QA Engineer </td> 
+         <td class="confluenceTd"> Santa Clara, CA, USA </td> 
+         <td class="confluenceTd"> US/Pacific </td> 
+         <td class="confluenceTd"> <tt>ming@dev.java.net</tt> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3.1InstallerDocPlan-Audience"></a>Audience</h2> <p>This feature is aimed at system administrators and application developers.</p> <h4><a name="GlassFishV3.1InstallerDocPlan-SummaryoftheFeatureFromaUser%27sPerspective"></a>Summary of the Feature From a User's Perspective</h2> <p>The Installer components provide GUI and command-line tools for performing GlassFish installations and upgrades. As part of these features, the Installer supports custom and standard installations, and installations in standalone or clustered modes, including DAS and individual nodes.</p> <h4><a name="GlassFishV3.1InstallerDocPlan-Availability"></a>Availability</h2> <p>This feature is available in all GlassFish Server distributions.</p> <h4><a name="GlassFishV3.1InstallerDocPlan-StatementofWork"></a>Statement of Work</h2> <p>This section describes in detail for each document the work that is required by the introduction of the feature, such as changes, addition of new material, relocation of existing material, and removal of existing material.</p> <p>Documentation Impact:</p> 
+     <ul> 
+      <li>None</li> 
+      <li>Minor</li> 
+      <li>Moderate</li> 
+      <li>Major</li> 
+      <li>New</li> 
+     </ul> 
+     <hr> <p><b>Note -</b> If a document is task based (as opposed to reference), the changes should be determined from the user task analysis for the feature.</p> 
+     <hr> <h4><a name="GlassFishV3.1InstallerDocPlan-ChangestoBooks"></a>Changes to Books</h3> <h4><a name="GlassFishV3.1InstallerDocPlan-InstallationGuideChanges"></a><em>Installation Guide</em> Changes</h4> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Section </th> 
+         <th class="confluenceTh"> Documentation Impact </th> 
+         <th class="confluenceTh"> Writer </th> 
+         <th class="confluenceTh"> Reviewers </th> 
+         <th class="confluenceTh"> Description of Change </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Entire book </td> 
+         <td class="confluenceTd"> Major </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Sathyan </td> 
+         <td class="confluenceTd"> Installer GUI has changed significantly, so almost entire book needs to be rewritten.</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3.1InstallerDocPlan-ReviewSchedule"></a>Review Schedule</h2> <p>The review schedule for the documentation items that are affected by this feature is provided in the following table.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item </th> 
+         <th class="confluenceTh"> Review Start Date </th> 
+         <th class="confluenceTh"> Review End Date </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Installation Guide changes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>Reviewers are listed in the <em>Statement of Work</em>.</p> <h4><a name="GlassFishV3.1InstallerDocPlan-RelatedInformation"></a>Related Information</h2> 
+     <ul> 
+      <li><a href="./3.1Installer.html">Installer One-Pager</a></li> 
+      <li><a href="https://openinstaller.java.net/docs/index.html">Open Installer</a></li> 
+      <li><a href="http://www.gzip.org/zlib/">zlib</a></li> 
+      <li><a href="http://wiki.updatecenter.java.net/Wiki.jsp?page=UC20FSD.InitInterface">Update Center</a></li> 
+      <li><a href="./V3FunctionalSpecs.html">Product Functional Specifications</a></li> 
+      <li><a href="./3.1PackagingOnePager.html">Packaging One-Pager</a></li> 
+      <li><a href="GlassFishV3.1InstallationDocReview.html" title="GlassFishV3.1InstallationDocReview">Installation Guide Documentation Review</a></li> 
+     </ul> <p>Email aliases:</p> 
+     <ul> 
+      <li><a href="mailto:admin@glassfish.java.net">admin@glassfish.java.net</a></li> 
+      <li><a href="mailto:users@glassfish.java.net">users@glassfish.java.net</a></li> 
+      <li><a href="mailto:docs@glassfish.java.net">docs@glassfish.java.net</a></li> 
+     </ul> 
+     <hr> 
+     <div class="tabletitle"> 
+      <a name="comments"> <h4>Comments:</h2> </a> 
+     </div> 
+     <table border="0" width="100%"> 
+      <tbody>
+       <tr> 
+        <td> <a name="comment-20881478"></a> <font class="smallfont">
+          <div class="table-wrap"> 
+           <table class="confluenceTable">
+            <tbody> 
+             <tr> 
+              <th class="confluenceTh"> Comment ID<br class="atl-forced-newline"> </th> 
+              <th class="confluenceTh"> Section<br class="atl-forced-newline"> </th> 
+              <th class="confluenceTh"> Comment<br class="atl-forced-newline"> </th> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> PMD-001<br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> <em>Installation Guide</em> Changes, Chapter 1, Installing GlassFish Server 3.1 </td> 
+              <td class="confluenceTd"> If the 1st row is just preview of the remaining changes in Chapter 1, remove it.<br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> PMD-002<br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> <em>Installation Guide</em> Changes, Installation Overview </td> 
+              <td class="confluenceTd"> Look at the Deployment Planning Guide for release v2.1.1 to see if any of these topics are discussed there and, if so, just plan on cross-referencing from the Administration Guide. See also PMD-004.<br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> PMD-003 </td> 
+              <td class="confluenceTd"> <em>Installation Guide</em> Changes, Installation Requirements </td> 
+              <td class="confluenceTd"> I'm not sure that it's appropriate to link to the Oracle product support matrix from documentation for GlassFish Server Open Source Edition. Determine from product marketing how best to state the hardware and software requirements for the open-source edition.<br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> PMD-004<br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> <em>Installation Guide</em> Changes </td> 
+              <td class="confluenceTd"> State precisely where in Chapter 1 you plan to explain how to:<br class="atl-forced-newline"> 
+               <ul> 
+                <li>Choose between typical and custom installations.</li> 
+                <li>Perform standalone installations and clustered installations (including DAS and node).</li> 
+                <li>Specify Windows service options, database options, and Message Queue options.</li> 
+               </ul> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> PMD-005 </td> 
+              <td class="confluenceTd"> <em>Upgrade Guide</em> Changes<br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> None of the changes listed seems relevant to this section, which addresses compatibility issues that affect Java applications that run on earlier releases with which the current release is binary compatible. Delete this section form the doc plan, as the planned changes should not be made.<br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> PMD-006 </td> 
+              <td class="confluenceTd"> Related Information<br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> Fix the broken link to the Installer 1-pager.<br class="atl-forced-newline"> </td> 
+             </tr> 
+            </tbody>
+           </table> 
+          </div> </font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by pauldavies at Jul 28, 2010 10:45 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20880933"></a> <font class="smallfont">
+          <div class="table-wrap"> 
+           <table class="confluenceTable">
+            <tbody> 
+             <tr> 
+              <th class="confluenceTh"> Comment ID </th> 
+              <th class="confluenceTh"> Comment </th> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> PMD-001 </td> 
+              <td class="confluenceTd"> Removed row from table. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> PMD-002 </td> 
+              <td class="confluenceTd"> Changed entry to pointers to <em>Administration Guide</em>; correspondingly, new <em>Administration Guide</em> Changes table created. All chapters from 2.1.1 <em>Deployment Planning Guide</em> to be migrated to new Part I, "Deployment Planning" in 3.1 <em>Administration Guide</em>. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> PMD-003 </td> 
+              <td class="confluenceTd"> Changed wording in change description, kept Oracle link as question mark. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> PMD-004 </td> 
+              <td class="confluenceTd"> See my comments for PMD-002; new Part I proposed for <em>Administration Guide</em>. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> PMD-005 </td> 
+              <td class="confluenceTd"> Removed table for <em>Upgrade Guide</em>. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> PMD-006 </td> 
+              <td class="confluenceTd"> Link changed since initial publication of doc plan; updated link accordingly. </td> 
+             </tr> 
+            </tbody>
+           </table> 
+          </div> </font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by sfordin at Aug 06, 2010 16:14 
+         </div> </td> 
+       </tr> 
+      </tbody>
+     </table> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jan 18, 2011 by 
+<font color="#0050B2">sfordin</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

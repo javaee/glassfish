@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : FaqHttpRequestParameterEncodingZh</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="FaqHttpRequestParameterEncodingZh-%E5%A6%82%E4%BD%95%E6%8C%87%E5%AE%9AHTTP%E8%AF%B7%E6%B1%82%E5%8F%82%E6%95%B0%E7%9A%84%E7%BC%96%E7%A0%81%EF%BC%9F"></a>如何指定 HTTP 请求参数的编码？</h2> <p>GlassFish 处理请求的 URI 编码的方式与处理其参数的编码的方式是不同的。如果是 GET 请求，则会将查询参数附加到 URI（由 &lt;code&gt;?&lt;/code&gt; 分隔），而如果是 POST 请求，则会将其包含在请求主体内部。</p> <p>在不同的位置指定这两种类型的编码：</p> 
+     <ul> 
+      <li>可以将 URI 编码指定为 &lt;code&gt;domain.xml&lt;/code&gt; 中 &lt;code&gt;&lt;http-listener&gt;&lt;/code&gt; 元素的名为 &lt;code&gt;uriEncoding&lt;/code&gt; 的属性的值。该编码默认为 &lt;code&gt;UTF-8&lt;/code&gt;，适用于相应的 HTTP 侦听器接收到的任何请求 URI。</li> 
+     </ul> 
+     <ul> 
+      <li>另一方面，请求参数编码默认为 &lt;code&gt;ISO-8859-1&lt;/code&gt;，可以在以下两个位置之一进行覆盖：通过调用 ServletRequest 的 &lt;code&gt;setCharacterEncoding&lt;/code&gt; 方法以编程方式在 servlet 内部进行覆盖，或通过将参数编码指定为 &lt;code&gt;sun-web.xml&lt;/code&gt; 中 &lt;code&gt;&lt;parameter-encoding&gt;&lt;/code&gt; 元素的 &lt;code&gt;default-charset&lt;/code&gt; 属性的值以声明方式进行覆盖，如以下示例所示，这里将请求的参数编码设置为 &lt;code&gt;UTF-8&lt;/code&gt;：</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE sun-web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Sun ONE Application Server 8.0 Servlet 2.4//EN" "http://www.sun.com/software/sunone/appserver/dtds/sun-web-app_2_4-0.dtd"&gt;
+
+&lt;sun-web-app&gt;
+  &lt;locale-charset-info default-locale=""&gt;
+    &lt;locale-charset-map locale="" charset=""/&gt;
+    &lt;parameter-encoding default-charset="UTF-8"/&gt;
+  &lt;/locale-charset-info&gt;
+&lt;/sun-web-app&gt;</pre> 
+       </div> 
+      </div>
+     </div> 
+     <hr> <p><a href="FaqHttpRequestParameterEncoding.html" title="FaqHttpRequestParameterEncoding">英文 </a></p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 03, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:44.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

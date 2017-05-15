@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : FaqPostgresSequencesZh</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="FaqPostgresSequencesZh-%E8%83%BD%E5%90%A6%E5%9C%A8Postgres%E4%B8%AD%E4%BD%BF%E7%94%A8%E5%BA%8F%E5%88%97%EF%BC%9F"></a>能否在 Postgres 中使用序列？</h1> <p>是的，可以。不过，有个限制条件。</p> <p>在 V2 开发过程中，Postgres 中的序列历经了很大变化，而且大量介绍这些序列在 Glassfish 和 JPA 中使用方式的信息已过时。希望此页面可以成为这一主题的权威性资源。</p> <p>使用序列的最简单机制是对 GeneratedValue 注释使用 GenerationType.IDENTITY 策略：</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Id
+    @Column(name = "id", nullable = false)
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    private Integer id;</pre> 
+       </div> 
+      </div>
+     </div> <p>要使此操作生效，相关表中的列类型必须是 SERIAL。在此实例中，您透明地使用了 SEQUENCE，当定义 SERIAL 字段时 Postgres 数据库会自动创建 SEQUENCE。另一个好处是，如果您使用 Glassfish 中的工具创建部署表，则 Glassfish 会在生成的表中创建正确的 SERIAL 列。</p> <p>JPA 通过 GeneratedValue 注释上的 GenerationType.SEQUENCE 来规定序列的更具体用法。</p> <p>遗憾的是，Glassfish JPA 实现 Toplink 并不直接支持将此功能用于 Postgres。 </p> <p>Toplink 中有一个内部体系结构限制，即禁止特定数据库平台同时支持 IDENTITY 类型和 SEQUENCE 类型的生成器。</p> <p>Toplink 实现器已决定使用标准 Postgres DB 平台实现的 IDENTITY 类型来支持 Postgres SERIAL 列，这样将禁用 SEQUENCE 类型的生成器。</p> <p>不过，并非一切都会失去。Toplink 允许您指定用于运行应用程序的 DB 平台，而且 DB 平台的默认实现易于扩展。</p> <p>使用这种机制，可以创建支持 SEQUENCE 的新 Postgres 平台，就像 Oracle 所做的那样，而不是支持 SERIAL 列和 IDENTITY。</p> <p>为了执行此操作，必须创建一个新类。</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">// Code free for any use whatsoever.
+package faq.glassfish.postgres;
+
+import oracle.toplink.essentials.queryframework.ValueReadQuery;
+import oracle.toplink.essentials.sessions.DatabaseSession;
+
+public class PostgresPlatform 
+    extends oracle.toplink.essentials.platform.database.PostgreSQLPlatform {
+    
+    public PostgresPlatform() {
+        super();
+    }
+        
+    public boolean shouldNativeSequenceAcquireValueAfterInsert() {
+        return false;
+    }
+    
+    public ValueReadQuery buildSelectQueryForNativeSequence(String seqName, Integer size) {
+        ValueReadQuery selectQuery = new ValueReadQuery();
+        selectQuery.setSQLString("select nextval(\'"  + seqName + "\')");
+        return selectQuery;
+    }
+    
+    public void platformSpecificSequencingInitialization(DatabaseSession session) {
+    }
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>要构建此代码，您需要将 Glassfish 分发中的 toplink jar 添加到您的构建类路径中。</p> <p>它位于 $glassfish_install_dir/lib/toplink-essentials.jar 中。</p> <p>此代码将默认 Postgres DB 平台更改为切换到与 Oracle 类似的序列行为。</p> <p>只需将该类添加到项目，然后向 persistence.xml 文件添加一个属性：</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;property name="toplink.platform.class.name" 
+          value="faq.glassfish.postgres.PostgresPlatform"/&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>现在，在您的实体中使用序列：</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Id
+    @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="MYSEQUENCE")
+    @SequenceGenerator(name="MYSEQUENCE", sequenceName="mysequence")
+    @Column(name = "id", nullable = false)
+    private Integer id;</pre> 
+       </div> 
+      </div>
+     </div> <p>额外的好处是，也可以使用序列的 allocationSize 参数。您只需更改 Postgres 序列的增量值，以匹配分配大小。</p> <p>因此，如果将 allocationSize=10 添加到 SequenceGenerator 注释，则在您的数据库中只需：</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">ALTER SEQUENCE mysequence INCREMENT 10;</pre> 
+       </div> 
+      </div>
+     </div> 
+     <hr> <p><a href="FaqPostgresSequences.html" title="FaqPostgresSequences">英文 </a></p> 
+     <hr> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 02, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:44.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

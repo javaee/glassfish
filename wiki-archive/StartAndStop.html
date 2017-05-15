@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : StartAndStop</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   
+     <div class="sun-tabs"> 
+      <div id="sun-tab:9.1Changes" class="sun-tab"> 
+       <h4 id="tab:9.1Changes">9.1Changes</h1> 
+       <div class="sun-tab-content"> 
+        <ul> 
+         <li>asadmin no longer uses any scripts (i.e. startserv) to start and stop servers</li> 
+         <li>the startserv scripts are now fully functional and supported for use from a commandline</li> 
+         <li>the startserv scripts get the username and passwords directly from the user</li> 
+         <li>Any server can be started from arbitrary java code directly (look in the startserv script to see how)</li> 
+         <li>The domains are relocatable.</li> 
+         <li>Shutdown has been dramatically improved. It used to require between 2 and 6 external processes (for non-native and native respectively) to be started. Now it doesn't start any external processes so it is much faster.</li> 
+         <li>To compare the new launchhing times with the old you can start servers with the current build and then repeat with build 22</li> 
+         <li>To compare new with sort-of old, set <tt>OLD_LAUNCHER=true</tt> in your OS environment. In this case, the scripts will run in multiple processes as before but the scripts are pointing at new code instead of old code.</li> 
+        </ul> 
+        <h4><a name="StartAndStop-ComingSoon"></a>Coming Soon</h2> 
+        <ul> 
+         <li>Native launching fix</li> 
+         <li>I implemented changes that call ProcessLauncher directly from the asadmin VM rather than going through startserv script</li> 
+         <li>No security information (admin user and password, master password) is transmitted</li> 
+         <li>All previous behavior is intact. The same asadmin command is used to run Before and After. The only difference is that the After version sets <tt>-DNEW_LAUNCHER=true</tt> which the new code looks for.</li> 
+        </ul> 
+        <h4><a name="StartAndStop-Before"></a>Before</h2> 
+        <div class="code panel" style="border-width: 1px;">
+         <div class="codeContent panelContent"> 
+          <div id="root"> 
+           <pre class="theme: Confluence; brush: java; gutter: false">C:\jws\glassfish\admin\servermgmt&gt;asadmin start-domain
+Starting Domain domain1, please wait.
+Log redirected to c:\ee\domains\domain1\logs\server.log.
+Domain domain1 is ready to receive client requests. Additional services are being started in background.
+Domain [domain1] is running [Sun Java System Application Server Platform Edition 9.1 (build )] with its configuration and logs at: [c:\ee\domains].
+Admin Console is available at [http://localhost:4848].
+Use the same port [4848] for "asadmin" commands.
+User web applications are available at these URLs:
+[http://localhost:8080 https://localhost:8181 ].
+Following web-contexts are available:
+[/web1 /asadmin ].
+Standard JMX Clients (like JConsole) can connect to JMXServiceURL:
+[service:jmx:rmi:///jndi/rmi://hp:8686/jmxrmi] for domain management purposes.
+Domain listens on at least following ports for connections:
+[8080 8181 4848 3700 3820 3920 8686 ].
+
+
+Time to start domain: 15.8 seconds.</pre> 
+          </div> 
+         </div>
+        </div> 
+        <h4><a name="StartAndStop-After"></a>After</h2> 
+        <div class="code panel" style="border-width: 1px;">
+         <div class="codeContent panelContent"> 
+          <div id="root"> 
+           <pre class="theme: Confluence; brush: java; gutter: false">C:\jws\glassfish\admin\servermgmt&gt;cli start-domain
+Starting Domain domain1, please wait.
+Log redirected to c:\ee\domains\domain1\logs\server.log.
+Domain domain1 is ready to receive client requests. Additional services are being started in background.
+Domain [domain1] is running [Sun Java System Application Server Platform Edition 9.1 (build )] with its configuration and logs at: [c:\ee\domains].
+Admin Console is available at [http://localhost:4848].
+Use the same port [4848] for "asadmin" commands.
+User web applications are available at these URLs:
+[http://localhost:8080 https://localhost:8181 ].
+Following web-contexts are available:
+[/web1 /asadmin ].
+Standard JMX Clients (like JConsole) can connect to JMXServiceURL:
+[service:jmx:rmi:///jndi/rmi://hp:8686/jmxrmi] for domain management purposes.
+Domain listens on at least following ports for connections:
+[8080 8181 4848 3700 3820 3920 8686 ].
+
+
+Time to start domain: 1.5 seconds.</pre> 
+          </div> 
+         </div>
+        </div> 
+        <p>The following table shows timing results of New code versus Old code. Quick refers to the quick-startup option. Six trials were done and an average calculated. The data was generated on a Solaris 10 system with this command: <br> <tt><b>time asadmin start-domain (all readings in seconds)</b></tt><br> note: Script means running the startserv script itself, i.e. no asadmin involvement.</p> 
+        <div class="table-wrap"> 
+         <table class="confluenceTable">
+          <tbody> 
+           <tr> 
+            <th class="confluenceTh">Version</th> 
+            <th class="confluenceTh"> Quick</th> 
+            <th class="confluenceTh"> Trial 1</th> 
+            <th class="confluenceTh"> Trial 2</th> 
+            <th class="confluenceTh"> Trial 3</th> 
+            <th class="confluenceTh"> Trial 4</th> 
+            <th class="confluenceTh"> Trial 5</th> 
+            <th class="confluenceTh"> Trial 6</th> 
+            <th class="confluenceTh"> Average</th> 
+           </tr> 
+           <tr> 
+            <td class="confluenceTd">Old</td> 
+            <td class="confluenceTd"> Yes</td> 
+            <td class="confluenceTd"> 8.823</td> 
+            <td class="confluenceTd"> 7.498</td> 
+            <td class="confluenceTd"> 8.731</td> 
+            <td class="confluenceTd"> 6.811</td> 
+            <td class="confluenceTd"> 9.111</td> 
+            <td class="confluenceTd"> 7.480</td> 
+            <td class="confluenceTd"> 8.076</td> 
+           </tr> 
+           <tr> 
+            <td class="confluenceTd">New</td> 
+            <td class="confluenceTd"> Yes</td> 
+            <td class="confluenceTd"> 6.193</td> 
+            <td class="confluenceTd"> 6.031</td> 
+            <td class="confluenceTd"> 6.050</td> 
+            <td class="confluenceTd"> 6.532</td> 
+            <td class="confluenceTd"> 6.331</td> 
+            <td class="confluenceTd"> 5.854</td> 
+            <td class="confluenceTd"> 6.165</td> 
+           </tr> 
+           <tr> 
+            <td class="confluenceTd">Old</td> 
+            <td class="confluenceTd"> No</td> 
+            <td class="confluenceTd"> 25.214</td> 
+            <td class="confluenceTd"> 24.811</td> 
+            <td class="confluenceTd"> 25.371</td> 
+            <td class="confluenceTd"> 25.261</td> 
+            <td class="confluenceTd"> 24.992</td> 
+            <td class="confluenceTd"> 25.281</td> 
+            <td class="confluenceTd"> 25.155</td> 
+           </tr> 
+           <tr> 
+            <td class="confluenceTd">New</td> 
+            <td class="confluenceTd"> No</td> 
+            <td class="confluenceTd"> 24.452</td> 
+            <td class="confluenceTd"> 25.081</td> 
+            <td class="confluenceTd"> 25.021</td> 
+            <td class="confluenceTd"> 24.501</td> 
+            <td class="confluenceTd"> 24.471</td> 
+            <td class="confluenceTd"> 25.041</td> 
+            <td class="confluenceTd"> 24.761</td> 
+           </tr> 
+           <tr> 
+            <td class="confluenceTd">Script</td> 
+            <td class="confluenceTd"> No</td> 
+            <td class="confluenceTd"> 2.01</td> 
+            <td class="confluenceTd"> 1.997</td> 
+            <td class="confluenceTd"> 2.803</td> 
+            <td class="confluenceTd"> 2.184</td> 
+            <td class="confluenceTd"> 2.341</td> 
+            <td class="confluenceTd"> 2.119</td> 
+            <td class="confluenceTd"> 2.242</td> 
+           </tr> 
+          </tbody>
+         </table> 
+        </div> 
+        <p>The following table is from data collected from a Windows XP desktop system (1 GB RAM) <br> <tt><b>time asadmin start-domain</b></tt></p> 
+        <div class="table-wrap"> 
+         <table class="confluenceTable">
+          <tbody> 
+           <tr> 
+            <th class="confluenceTh">Version</th> 
+            <th class="confluenceTh"> Quick</th> 
+            <th class="confluenceTh"> Trial 1</th> 
+            <th class="confluenceTh"> Trial 2</th> 
+            <th class="confluenceTh"> Trial 3</th> 
+            <th class="confluenceTh"> Trial 4</th> 
+            <th class="confluenceTh"> Trial 5</th> 
+            <th class="confluenceTh"> Trial 6</th> 
+            <th class="confluenceTh"> Average</th> 
+           </tr> 
+           <tr> 
+            <td class="confluenceTd">Old</td> 
+            <td class="confluenceTd"> Yes</td> 
+            <td class="confluenceTd"> 18.146</td> 
+            <td class="confluenceTd"> 17.618</td> 
+            <td class="confluenceTd"> 12.787</td> 
+            <td class="confluenceTd"> 17.634</td> 
+            <td class="confluenceTd"> 12.842</td> 
+            <td class="confluenceTd"> 18.370</td> 
+            <td class="confluenceTd"> 16.233</td> 
+           </tr> 
+           <tr> 
+            <td class="confluenceTd">New</td> 
+            <td class="confluenceTd"> Yes</td> 
+            <td class="confluenceTd"> 10.226</td> 
+            <td class="confluenceTd"> 10.334</td> 
+            <td class="confluenceTd"> 10.343</td> 
+            <td class="confluenceTd"> 10.346</td> 
+            <td class="confluenceTd"> 10.321</td> 
+            <td class="confluenceTd"> 15.367</td> 
+            <td class="confluenceTd"> 11.156</td> 
+           </tr> 
+           <tr> 
+            <td class="confluenceTd">Script</td> 
+            <td class="confluenceTd"> Yes</td> 
+            <td class="confluenceTd"> 3.708</td> 
+            <td class="confluenceTd"> 4.393</td> 
+            <td class="confluenceTd"> 3.721</td> 
+            <td class="confluenceTd"> 3.713</td> 
+            <td class="confluenceTd"> 3.700</td> 
+            <td class="confluenceTd"> 3.702</td> 
+            <td class="confluenceTd"> 3.823</td> 
+           </tr> 
+          </tbody>
+         </table> 
+        </div> 
+       </div> 
+      </div> 
+      <div id="sun-tab:Background" class="sun-tab"> 
+       <h4 id="tab:Background">Background</h1> 
+       <div class="sun-tab-content"> 
+        <h4><a name="StartAndStop-StartingandStoppingServerInstances"></a>Starting and Stopping Server Instances</h1> 
+        <p>Ref: <a href="http://wikis.sun.com/download/attachments/211392120/admin-fs.html#pl">http://wikis.sun.com/download/attachments/211392120/admin-fs.html#pl</a></p> 
+        <p>The one-pager simplifies the process of starting and stopping servers. This article goes into a bit more depth.</p> 
+        <h4><a name="StartAndStop-AProcessViewofStarting%28nonnative%29"></a>A Process View of Starting (non-native)</h2> 
+        <ol> 
+         <li>Proc#1 VM#1 asadmin start-domain</li> 
+         <li>Proc#2 asadmin runs an external process for domain-dir/bin/startserv.bat</li> 
+         <li>Proc#3 VM#2 com.sun.enterprise.tools.launcher.ProcessLauncher</li> 
+         <li>Proc#4 VM#3 com.sun.enterprise.server.PELaunch (this is the instance's VM)</li> 
+        </ol> 
+        <h4><a name="StartAndStop-AProcessViewofStopping%28nonnative%29"></a>A Process View of Stopping (non-native)</h2> 
+        <ol> 
+         <li>Proc#1 VM#1 asadmin stop-domain</li> 
+         <li>Proc#2 asadmin runs an external process for domain-dir/bin/stopserv.bat</li> 
+         <li>Proc#3 VM#2 com.sun.enterprise.tools.launcher.ProcessLauncher</li> 
+         <li>Proc#4 VM#3 com.sun.enterprise.server.PELaunch!! Stopping an Instance</li> 
+        </ol> 
+        <h4><a name="StartAndStop-Startup"></a>Startup</h2> 
+        <p>The startup procedure is quite complex. It is extremely difficult to debug because of the extra JVM in the middle. The startserv script is potentially confusing to a user and is vulnerable if edited.</p> 
+        <p>For V2, the <em>middle</em> JVM will be eliminated. The instance JVM will be started directly by asadmin or by other running Java programs.<br> <b>Requirements</b></p> 
+        <ol> 
+         <li>Startserv script must work all by itself. I.e. running startserv script with no args will start appserver</li> 
+         <li>All current functionality, including native launcher, must stay exactly as is. I.e. the new startup methods are used when a new special argument is given to asadmin</li> 
+         <li>appserver can be started by any java program</li> 
+         <li>appserver can be started by AMX</li> 
+         <li>Threaddumps must be supported</li> 
+         <li>Nodeagent will use the new classes for starting instances<br> <b>Tasks</b></li> 
+        </ol> 
+        <p>1. Take over Middle VM responsibilities<br> The startserv script that lives under the domain directory has a few pieces of vital information that are domain-specific (the name of the domain, directory locations, etc.). ProcessLauncher (the middle VM) also assembles lots of information from domain.xml in order to create a proper java command for starting appserver. We will need to duplicate some of this code in new classes, and add code to the new classes for faster domain.xml parsing.</p> 
+        <p>2. Modify startserv script<br> Startserv script must be carefully modified. One will be able to simply run it with no arguments and appserver will start. Conversely it will still work as before for backward compatability. Note that running the script stand-alone will result in one VM for the new launch functionality followed by the final vm with the appserver.<br> <b>Tasks Details</b></p> 
+        <ol> 
+         <li>Copy ProcessLauncher.java in toto to a new java file</li> 
+         <li>Change the new java class to get information from domain.xml directly instead of from system properties</li> 
+        </ol> 
+        <h4><a name="StartAndStop-Shutdown"></a>Shutdown</h2> 
+        <p>This is a ripe area for improvement. The stopping of instances is far too complex. The starting code is super-complex and needs to be because the instance has to run in an elaborately configured JVM environment. E.g. special JVM options have to be parsed from domain.xml and used to start the instance-JVM. Stopping the instance, conversely, should be much simpler since its job is to shutdown running objects. It is not neccessary and a waste of time and resources to build intricately configured JVMs to stop an instance.</p> 
+        <p>This is a classic example of questionable <em>code reuse</em>. The super-complex starting code was reused to stop instances. Here is an example of how this approach can bite: <a href="https://github.com/javaee/glassfish/issues/949">https://github.com/javaee/glassfish/issues/949</a>. </p> 
+        <p>We propose simplifying stop and undoing the common code between start and stop.</p> 
+        <h4><a name="StartAndStop-VMCreationcommandissuedbyStartservscript"></a>VM Creation command issued by Startserv script</h2> 
+        <p>Note that all system properties are passed through to the final AS JVM except:</p> 
+        <ol> 
+         <li>In Windows, paths with are changed to /</li> 
+         <li>The lines starting with *** are missing</li> 
+        </ol> 
+        <div class="code panel" style="border-width: 1px;">
+         <div class="codeContent panelContent"> 
+          <div id="root"> 
+           <pre class="theme: Confluence; brush: java; gutter: false">"C:\jdk\bin\java" 
+-cp 
+"c:\ee\lib\appserv-rt.jar";"c:\ee\lib\appserv-admin.jar";"c:\ee\lib\javaee.jar" 
+*** -DCATALINA_OPTS="" %%
+-Dcom.sun.aas.configRoot="c:/ee/config" 
+-Dcom.sun.aas.installRoot="c:\ee" 
+-Dcom.sun.aas.instanceName="server" 
+-Dcom.sun.aas.instanceRoot="C:\ee\domains\domain1"  
+*** -Dcom.sun.aas.launcherReturn="return" 
+-Dcom.sun.aas.processLauncher="SE" 
+*** -Dcom.sun.aas.processName="as9-server" 
+-Dcom.sun.aas.promptForIdentity="true" 
+-Dcom.sun.enterprise.config.config_environment_factory_class=com.sun.enterprise.config.serverbeans.AppserverConfigEnvironmentFactory 
+-Ddomain.name="domain1" 
+-Djava.util.logging.manager=com.sun.enterprise.server.logging.ServerLogManager 
+-DJAVA_HOME="C:\jdk" 
+com.sun.enterprise.tools.launcher.ProcessLauncher start debug verbose</pre> 
+          </div> 
+         </div>
+        </div> 
+        <h4><a name="StartAndStop-VMCreationcommandissuedbyProcessLauncher"></a>VM Creation command issued by ProcessLauncher</h2> 
+        <div class="code panel" style="border-width: 1px;">
+         <div class="codeContent panelContent"> 
+          <div id="root"> 
+           <pre class="theme: Confluence; brush: java; gutter: false">C:/jdk\bin\java
+-client
+-Xdebug
+-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=9009
+-Xmx512m
+-XX:NewRatio=2
+-Dcom.sun.aas.classloader.appserverChainJars.ee=
+-Dcom.sun.aas.classloader.appserverChainJars=admin-cli.jar,admin-cli-ee.jar,dbschema.jar,j2ee-svc.jar
+-Dcom.sun.aas.classloader.optionalOverrideableChain.ee=
+-Dcom.sun.aas.classloader.optionalOverrideableChain=webservices-rt.jar,webservices-tools.jar,appserv-ws.jar,commons-logging.jar,commons-launcher.jar
+-Dcom.sun.aas.classloader.serverClassPath.ee=c:/ee/hadb/4.5.0-9/lib/hadbjdbc4.jar,c:/ee/lib/SUNWjdmk/5.1/lib/jdmkrt.jar,c:/ee/hadb/4.5.0-9/lib/dbstate.jar,c:/ee/hadb/4.5.0-9/lib/hadbm.jar,c:/ee/hadb/4.5.0-9/lib/hadbmgt.jar,c:/ee/lib/SUNWmfwk/lib/mfwk_instrum_tk.jar
+-Dcom.sun.aas.classloader.serverClassPath=c:/ee/lib/install/applications/jmsra/imqjmsra.jar,c:/ee/imq/lib/jaxm-api.jar,c:/ee/imq/lib/fscontext.jar,c:/ee/imq/lib/imqbroker.jar,c:/ee/imq/lib/imqjmx.jar,c:/ee/lib/ant/lib/ant.jar,c:/ee/lib/SUNWjdmk/5.1/lib/jdmkrt.jar
+-Dcom.sun.aas.classloader.sharedChainJars.ee=appserv-se.jar,appserv-ee.jar,c:/ee/hadb/4.5.0-9/lib/dbstate.jar,c:/ee/hadb/4.5.0-9/lib/hadbjdbc4.jar,jgroups-all.jar,c:/ee/lib/SUNWmfwk/lib/mfwk_instrum_tk.jar
+-Dcom.sun.aas.classloader.sharedChainJars=javaee.jar,C:/jdk/lib/tools.jar,install/applications/jmsra/imqjmsra.jar,commons-launcher.jar,c:/ee/imq/lib/jaxm-api.jar,c:/ee/imq/lib/fscontext.jar,c:/ee/imq/lib/imqbroker.jar,c:/ee/imq/lib/imqjmx.jar,c:/ee/imq/lib/imqxm.jar,c:/ee/lib/ant/lib/ant.jar,webservices-rt.jar,webservices-tools.jar,appserv-ws.jar,mail.jar,jsf-api.jar,jsf-impl.jar,appserv-jstl.jar,appserv-env.jar,jmxremote_optional.jar,c:/ee/lib/SUNWjdmk/5.1/lib/jdmkrt.jar,commons-logging.jar,activation.jar,appserv-rt.jar,appserv-admin.jar,appserv-cmp.jar
+-Dcom.sun.aas.ClassPathPrefix=c:/ee/lib/webservices-rt.jar;c:/ee/lib/webservices-tools.jar
+-Dcom.sun.aas.ClassPathSuffix=
+-Dcom.sun.aas.configName=server-config
+-Dcom.sun.aas.configRoot=c:/ee/config
+-Dcom.sun.aas.defaultLogFile=C:/ee/domains/domain1/logs/server.log
+-Dcom.sun.aas.domainName=domain1
+-Dcom.sun.aas.installRoot=c:/ee
+-Dcom.sun.aas.instanceName=server
+-Dcom.sun.aas.instanceRoot=C:/ee/domains/domain1
+-Dcom.sun.aas.jdwpOptions=transport=dt_socket,server=y,suspend=n,address=9009
+-Dcom.sun.aas.processLauncher=SE
+-Dcom.sun.aas.promptForIdentity=true
+-Dcom.sun.aas.ServerClassPath=
+-Dcom.sun.enterprise.config.config_environment_factory_class=com.sun.enterprise.config.serverbeans.AppserverConfigEnvironmentFactory
+-Dcom.sun.enterprise.overrideablejavaxpackages=javax.xml.bind,javax.help,javax.portlet
+-Dcom.sun.enterprise.taglibs=appserv-jstl.jar,jsf-impl.jar
+-Dcom.sun.enterprise.taglisteners=jsf-impl.jar
+-Dcom.sun.enterprise.websvc.useJAXWSRearch=true
+-Ddomain.name=domain1
+-Djava.endorsed.dirs=c:/ee/lib/endorsed
+-Djava.ext.dirs=C:/jdk/jre/lib/ext;C:/ee/domains/domain1/lib/ext;c:/ee/javadb/lib
+-Djava.library.path=c:\ee\lib;c:\ee\lib;C:\jdk\bin;.;C:\WINDOWS\system32;C:\WINDOWS;c:\ee\lib;c:\ee\bin;c:\jdk\bin;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;c:\bin;c:\bnbin;C:\DEV\MKS\bin;C:\DEV\MKS\bin\x11;C:\DEV\MKS\mksnt;c:\apps\cvs\bin;c:\batch;C:\Program Files\Common Files\Roxio Shared\DLLShared;C:\Apps\Executive Software\Diskeeper;c:\ee\bin;C:\dev\vc6\common\Tools\WinNT;C:\dev\vc6\common\MSDev98\Bin;C:\dev\vc6\common\Tools;C:\dev\vc6\VC98\bin;c:\dev\maven\bin;C:\Apps\Executive Software\Diskeeper;c:\dev\ant\bin;c:\temp\ee\bin
+-Djava.security.auth.login.config=C:/ee/domains/domain1/config/login.conf
+-Djava.security.policy=C:/ee/domains/domain1/config/server.policy
+-Djava.util.logging.manager=com.sun.enterprise.server.logging.ServerLogManager
+-Djavax.management.builder.initial=com.sun.enterprise.admin.server.core.jmx.AppServerMBeanServerBuilder
+-Djavax.net.ssl.keyStore=C:/ee/domains/domain1/config/keystore.jks
+-Djavax.net.ssl.trustStore=C:/ee/domains/domain1/config/cacerts.jks
+-Djdbc.drivers=org.apache.derby.jdbc.ClientDriver
+-Djmx.invoke.getters=true
+-Dsun.rmi.dgc.client.gcInterval=3600000
+-Dsun.rmi.dgc.server.gcInterval=3600000
+-cp
+;c:/ee/lib/appserv-launch.jar
+com.sun.enterprise.server.PELaunch
+start
+debug</pre> 
+          </div> 
+         </div>
+        </div> 
+        <h4><a name="StartAndStop-TimingResearch"></a>Timing Research</h2> 
+        <p>Time to start PE domain on my feeble HP system (Windows) via CLI</p> 
+        <p><b>10.9, 14.4, 14.4, 10.3, 13.8,15.0,15.3,14.4,15.3,14.6,9.9</b></p> 
+        <p>Time to start PE domain on my feeble HP system (Windows) via new improved startserv script</p> 
+        <p><b>6.0, 5.8, 5.9, 5.9, 5.8, 5.9, 5.9, 5.8, 5.8, 5.9, 5.9</b></p> 
+        <ul> 
+         <li>I implemented changes that call ProcessLauncher directly from the asadmin VM rather than going through startserv script</li> 
+         <li>No security information (admin user and password, master password) is transmitted</li> 
+         <li>All previous behavior is intact. The same asadmin command is used to run Before and After. The only difference is that the After version sets <tt>-DNEW_LAUNCHER=true</tt> which the new code looks for.</li> 
+        </ul> 
+        <h4><a name="StartAndStop-Before"></a>Before</h2> 
+        <div class="code panel" style="border-width: 1px;">
+         <div class="codeContent panelContent"> 
+          <div id="root"> 
+           <pre class="theme: Confluence; brush: java; gutter: false">C:\jws\glassfish\admin\servermgmt&gt;asadmin start-domain
+Starting Domain domain1, please wait.
+Log redirected to c:\ee\domains\domain1\logs\server.log.
+Domain domain1 is ready to receive client requests. Additional services are being started in background.
+Domain [domain1] is running [Sun Java System Application Server Platform Edition 9.1 (build )] with its configuration and logs at: [c:\ee\do
+mains].
+Admin Console is available at [http://localhost:4848].
+Use the same port [4848] for "asadmin" commands.
+User web applications are available at these URLs:
+[http://localhost:8080 https://localhost:8181 ].
+Following web-contexts are available:
+[/web1 /asadmin ].
+Standard JMX Clients (like JConsole) can connect to JMXServiceURL:
+[service:jmx:rmi:///jndi/rmi://hp:8686/jmxrmi] for domain management purposes.
+Domain listens on at least following ports for connections:
+[8080 8181 4848 3700 3820 3920 8686 ].
+
+
+Time to start domain: 15.8 seconds.</pre> 
+          </div> 
+         </div>
+        </div> 
+        <h4><a name="StartAndStop-After"></a>After</h2> 
+        <div class="code panel" style="border-width: 1px;">
+         <div class="codeContent panelContent"> 
+          <div id="root"> 
+           <pre class="theme: Confluence; brush: java; gutter: false">C:\jws\glassfish\admin\servermgmt&gt;cli start-domain
+Starting Domain domain1, please wait.
+Log redirected to c:\ee\domains\domain1\logs\server.log.
+Domain domain1 is ready to receive client requests. Additional services are being started in background.
+Domain [domain1] is running [Sun Java System Application Server Platform Edition 9.1 (build )] with its configuration and logs at: [c:\ee\d
+mains].
+Admin Console is available at [http://localhost:4848].
+Use the same port [4848] for "asadmin" commands.
+User web applications are available at these URLs:
+[http://localhost:8080 https://localhost:8181 ].
+Following web-contexts are available:
+[/web1 /asadmin ].
+Standard JMX Clients (like JConsole) can connect to JMXServiceURL:
+[service:jmx:rmi:///jndi/rmi://hp:8686/jmxrmi] for domain management purposes.
+Domain listens on at least following ports for connections:
+[8080 8181 4848 3700 3820 3920 8686 ].
+
+
+Time to start domain: 1.5 seconds.</pre> 
+          </div> 
+         </div>
+        </div> 
+        <p>The following table shows timing results of New code versus Old code. Quick refers to the quick-startup option. Six trials were done and an average calculated. The data was generated on a Solaris 10 system with this command: <br> <tt><b>time asadmin start-domain (all readings in seconds)</b></tt><br> note: Script means running the startserv script itself, i.e. no asadmin involvement.</p> 
+        <div class="table-wrap"> 
+         <table class="confluenceTable">
+          <tbody> 
+           <tr> 
+            <th class="confluenceTh">Version</th> 
+            <th class="confluenceTh"> Quick</th> 
+            <th class="confluenceTh"> Trial 1</th> 
+            <th class="confluenceTh"> Trial 2</th> 
+            <th class="confluenceTh"> Trial 3</th> 
+            <th class="confluenceTh"> Trial 4</th> 
+            <th class="confluenceTh"> Trial 5</th> 
+            <th class="confluenceTh"> Trial 6</th> 
+            <th class="confluenceTh"> Average</th> 
+           </tr> 
+           <tr> 
+            <td class="confluenceTd">Old</td> 
+            <td class="confluenceTd"> Yes</td> 
+            <td class="confluenceTd"> 8.823</td> 
+            <td class="confluenceTd"> 7.498</td> 
+            <td class="confluenceTd"> 8.731</td> 
+            <td class="confluenceTd"> 6.811</td> 
+            <td class="confluenceTd"> 9.111</td> 
+            <td class="confluenceTd"> 7.480</td> 
+            <td class="confluenceTd"> 8.076</td> 
+           </tr> 
+           <tr> 
+            <td class="confluenceTd">New</td> 
+            <td class="confluenceTd"> Yes</td> 
+            <td class="confluenceTd"> 6.193</td> 
+            <td class="confluenceTd"> 6.031</td> 
+            <td class="confluenceTd"> 6.050</td> 
+            <td class="confluenceTd"> 6.532</td> 
+            <td class="confluenceTd"> 6.331</td> 
+            <td class="confluenceTd"> 5.854</td> 
+            <td class="confluenceTd"> 6.165</td> 
+           </tr> 
+           <tr> 
+            <td class="confluenceTd">Old</td> 
+            <td class="confluenceTd"> No</td> 
+            <td class="confluenceTd"> 25.214</td> 
+            <td class="confluenceTd"> 24.811</td> 
+            <td class="confluenceTd"> 25.371</td> 
+            <td class="confluenceTd"> 25.261</td> 
+            <td class="confluenceTd"> 24.992</td> 
+            <td class="confluenceTd"> 25.281</td> 
+            <td class="confluenceTd"> 25.155</td> 
+           </tr> 
+           <tr> 
+            <td class="confluenceTd">New</td> 
+            <td class="confluenceTd"> No</td> 
+            <td class="confluenceTd"> 24.452</td> 
+            <td class="confluenceTd"> 25.081</td> 
+            <td class="confluenceTd"> 25.021</td> 
+            <td class="confluenceTd"> 24.501</td> 
+            <td class="confluenceTd"> 24.471</td> 
+            <td class="confluenceTd"> 25.041</td> 
+            <td class="confluenceTd"> 24.761</td> 
+           </tr> 
+           <tr> 
+            <td class="confluenceTd">Script</td> 
+            <td class="confluenceTd"> No</td> 
+            <td class="confluenceTd"> 2.01</td> 
+            <td class="confluenceTd"> 1.997</td> 
+            <td class="confluenceTd"> 2.803</td> 
+            <td class="confluenceTd"> 2.184</td> 
+            <td class="confluenceTd"> 2.341</td> 
+            <td class="confluenceTd"> 2.119</td> 
+            <td class="confluenceTd"> 2.242</td> 
+           </tr> 
+          </tbody>
+         </table> 
+        </div> 
+        <p>The following table is from data collected from a Windows XP desktop system (1 GB RAM) <br> <tt><b>time asadmin start-domain</b></tt></p> 
+        <div class="table-wrap"> 
+         <table class="confluenceTable">
+          <tbody> 
+           <tr> 
+            <th class="confluenceTh">Version</th> 
+            <th class="confluenceTh"> Quick</th> 
+            <th class="confluenceTh"> Trial 1</th> 
+            <th class="confluenceTh"> Trial 2</th> 
+            <th class="confluenceTh"> Trial 3</th> 
+            <th class="confluenceTh"> Trial 4</th> 
+            <th class="confluenceTh"> Trial 5</th> 
+            <th class="confluenceTh"> Trial 6</th> 
+            <th class="confluenceTh"> Average</th> 
+           </tr> 
+           <tr> 
+            <td class="confluenceTd">Old</td> 
+            <td class="confluenceTd"> Yes</td> 
+            <td class="confluenceTd"> 18.146</td> 
+            <td class="confluenceTd"> 17.618</td> 
+            <td class="confluenceTd"> 12.787</td> 
+            <td class="confluenceTd"> 17.634</td> 
+            <td class="confluenceTd"> 12.842</td> 
+            <td class="confluenceTd"> 18.370</td> 
+            <td class="confluenceTd"> 16.233</td> 
+           </tr> 
+           <tr> 
+            <td class="confluenceTd">New</td> 
+            <td class="confluenceTd"> Yes</td> 
+            <td class="confluenceTd"> 10.226</td> 
+            <td class="confluenceTd"> 10.334</td> 
+            <td class="confluenceTd"> 10.343</td> 
+            <td class="confluenceTd"> 10.346</td> 
+            <td class="confluenceTd"> 10.321</td> 
+            <td class="confluenceTd"> 15.367</td> 
+            <td class="confluenceTd"> 11.156</td> 
+           </tr> 
+           <tr> 
+            <td class="confluenceTd">Script</td> 
+            <td class="confluenceTd"> Yes</td> 
+            <td class="confluenceTd"> 3.708</td> 
+            <td class="confluenceTd"> 4.393</td> 
+            <td class="confluenceTd"> 3.721</td> 
+            <td class="confluenceTd"> 3.713</td> 
+            <td class="confluenceTd"> 3.700</td> 
+            <td class="confluenceTd"> 3.702</td> 
+            <td class="confluenceTd"> 3.823</td> 
+           </tr> 
+          </tbody>
+         </table> 
+        </div> 
+       </div> 
+      </div> 
+     </div> 
+     <fieldset class="hidden parameters"> 
+      <input type="hidden" id="sunTabsUpdateHash" value="true"> 
+     </fieldset> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Sep 29, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

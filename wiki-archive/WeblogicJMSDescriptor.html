@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : WeblogicJMSDescriptor</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="WeblogicJMSDescriptor-JMSdescriptorfilesusedbyWeblogicandhowtheymightbesupportedinGlassfish"></a>JMS descriptor files used by Weblogic and how they might be supported in Glassfish</h1> <h4><a name="WeblogicJMSDescriptor-SUMMARY"></a>SUMMARY</h2> <p>There is limited scope to support a Weblogic JMS descriptor file (<tt>*-jms.xml</tt>) in Glassfish. There is an obvious correspondence between these and the sun-resources.xml file supported by Glassfish, since both are XML documents that define resources that are created in the corresponding administration console. If support for the Weblogic JMS descriptor file were added to Glassfish then the processing of such a file might be similar to the way that a sun-resources.xml is currently handled and much of the analysis below is performed on that basis.</p> <p>Weblogic JMS descriptors may be deployed as globally "system modules", or as a named "package module" either standalone or packaged in an application, In contrast the sun-resources.xml file is rather like an asadmin script that simply creates global resources. If support for the Weblogic JMS descriptor file were added to Glassfish then these completely new concepts would need to be added to Glassfish (and supported directly via the admin console as well as via deployment descriptors).</p> <p>Note that although Jagadish Ramu has been looking at adding the ability for <tt>sun-resources.xml</tt> to define "application scoped resources" to Glassfish 3.1, this is not the same thing.</p> <p>There is a related concept in Weblogic called a "JDBC module". Supporting JDBC modules may impose similar requirements on Glassfish to those imposed by JMS modules.</p> <p>It should be possible to map a queue or topic in the Weblogic JMS descriptor to a queue or topic resource in Glassfish. However the only attributes that can be supported are JNDI name and physical destination names. All other attributes are weblogic-specific.</p> <p>The Weblogic JMS descriptor file includes definitions of a connection factories. However these are raw JMS connection factories; these have no equivalence in Glassfish, which only handles resource-adapter-managed connection factories. These are defined in weblogic as part of the resource adapter deployment descriptor <tt>weblogic-ra.xml</tt>. It might be appropriate to map these to Glassfish managed connection factories, as defined in sun-resources.xml. Jagadish Ramu is looking at what elements of weblogic-ra.xml might be supported.</p> <p>The remaining elements defined in the Weblogic JMS descriptor file are specific to Weblogic JMS (even if they configure functionality that is also supported by MQ), and it is not appropriate to try to support these directly.</p> <h4><a name="WeblogicJMSDescriptor-DETAIL"></a>DETAIL</h2> <p>The WebLogic JMS descriptor is an XML file used to define entities called "JMS Modules" in Weblogic's JNDI store. (You can also create JMS modules using the admin console). JMS descriptor files typically have a name ending with "<tt>-jms.xml</tt>".</p> <p>JMS descriptor files are used to define and configure JMS resources used by Weblogic applications. They can either be deployed in three ways:</p> 
+     <ul> 
+      <li>globally as "system modules" (this is the older technology),</li> 
+      <li>as named groups of resources called "application modules", which can be deployed either 
+       <ul> 
+        <li>"standalone" or</li> 
+        <li>"packaged" as part of an application.</li> 
+       </ul> </li> 
+     </ul> <p>Note that JMS descriptors are not intended for JMS server configuration. JMS servers are defined separately, in the Weblogic domain configuration file, and are not considered further here.</p> <p>Here's the schema of a JMS descriptor file:<br> <a href="http://www.oracle.com/technology/weblogic/10.3/weblogic-jms/1.0/weblogic-jms.xsd">http://www.oracle.com/technology/weblogic/10.3/weblogic-jms/1.0/weblogic-jms.xsd</a></p> <p>Here's a good place to start in the user guide:<br> <a href="http://download.oracle.com/docs/cd/E12839_01/web.1111/e13738/overview.htm#i1081492">http://download.oracle.com/docs/cd/E12839_01/web.1111/e13738/overview.htm#i1081492</a></p> <p>What can you define in a JMS module? Here are the main elements in the scheme:</p> 
+     <ul> 
+      <li>version</li> 
+      <li>notes</li> 
+      <li>quota</li> 
+      <li>template</li> 
+      <li>destination-key</li> 
+      <li>connection-factory</li> 
+      <li>foreign-server</li> 
+      <li>queue</li> 
+      <li>topic</li> 
+      <li>distributed-queue</li> 
+      <li>distributed-topic</li> 
+      <li>uniform-distributed-queue</li> 
+      <li>uniform-distributed-topic</li> 
+      <li>saf-imported-destinations</li> 
+      <li>saf-remote-context</li> 
+      <li>saf-error-handling</li> 
+     </ul> <p>How does this relate to Glassfish? What we have here is a way of configuring admin resources in an XML file that can either be deployed directly into the app server (either globally or as named modules) or bundled in an application. The obvious equivalent in Glassfish is the <tt>sun-resources.xml</tt> file: <a href="http://docs.sun.com/app/docs/doc/820-7693/giyhh?a=view">http://docs.sun.com/app/docs/doc/820-7693/giyhh?a=view</a> which can be used to define resources needed in an application. You can deploy it using asadmin or Netbeans, but you can't include it in an EAR file, and there is no concept in Glassfish of a JMS module, a named group of related JMS resources.</p> <h4><a name="WeblogicJMSDescriptor-Reviewofelements"></a>Review of elements</h1> <p>The configuration elements with the most obvious correspondence with Glassfish are</p> 
+     <ul> 
+      <li>queue</li> 
+      <li>topic</li> 
+     </ul> <p>in that they map a JNDI name to a defined physical queue or topic. However the correspondence ends here: in Glassfish (in <tt>sun-resources.xml</tt>) you can associate a JNDI name with the "physical destination name" used by MQ. However you can't use Glassfish to define any other properties of the destination. These need to be defined using MQ tools, notably imqadmin. Conversely, although Glassfish allows you to associate a destination with a resource adapter (jmsra by default) this doesn't seem possible in the Weblogic descriptor</p> <p>Note that even if Glassfish could be used to configure destination properties there isn't a one-to-one correspondence between MQ destination properties and Weblogic destination properties, making a direct mapping inappropriate.</p> <p>It is suggested that Glassfish does support the <tt>queue</tt> and <tt>topic</tt> elements in the Weblogic JMS descriptor, but only to map a JNDI name to a physical name. (That said, I haven't identified where the physical destination name is configured, but it must be defined somewhere).</p> <p>Another configuration element with a possible correspondence with Glassfish is</p> 
+     <ul> 
+      <li>connection-factory</li> 
+     </ul> <p>ConnectionFactory is a well-defined concept in JMS, and this descriptor defines numerous weblogic-specific connection-related properties such as flow control. However you can't define any properties related to connection pools. This is because Weblogic doesn't use a resource adapter by default, and if you do, any connection pools need to be configured in weblogic-ra.xml, not here.</p> <p>By contrast, when you define the corresponding resource in Glassfish (<tt>in sun-resources.xml</tt>) you are actually defining a JCA connection pool of connection factories created by a defined resource adapter. You can fully-define the connection pool, and you can specify connection factory properties exposed by the resource adapter. However you can't define properties of the underlying MQ connection factory (though the new options property does provide a way to do this).</p> <p>So we can't map a <tt>connection-factory</tt> element in the JMS descriptor <tt>*-jms.xml</tt> to anything.</p> <p>We might, however, map a connection factory (and connection pool) in weblogic-ra.xml to a connection factory in <tt>sun-resources.xml</tt>. Jagadish Ramu is looking at what support might be provided for elements in <tt>weblogic-ra.xml</tt>.</p> 
+     <ul> 
+      <li>version</li> 
+      <li>notes</li> 
+      <li>quota</li> 
+      <li>template</li> 
+      <li>destination-key</li> 
+      <li>foreign-server</li> 
+      <li>distributed-queue</li> 
+      <li>distributed-topic</li> 
+      <li>uniform-distributed-queue</li> 
+      <li>uniform-distributed-topic</li> 
+      <li>saf-imported-destinations</li> 
+      <li>saf-remote-context</li> 
+      <li>saf-error-handling</li> 
+     </ul> <p>The other configuration elements are used to configure specific features of Weblogic JMS. These cannot be supported by Glassfish for one or more of the following reasons:</p> 
+     <ul> 
+      <li>There is no equivalent in MQ (e.g. foreign server, distributed queues), not because of a limitation of MQ but because they are different products</li> 
+      <li>MQ has a similar concept but it is implemented differently so there is no correspondence of attributes (e.g. flow control)</li> 
+      <li>Any similar feature in MQ needs to be configured as a broker configuration option, and Glassfish does not currently provide general access to broker configuration options (e.g. destination quota)</li> 
+     </ul> <h4><a name="WeblogicJMSDescriptor-Highlevelroadmap"></a>High-level roadmap</h1> <p>The limited support for Weblogic JMS descriptor files suggested above might be implemented in stages as follows:<br> 1. Add generic support to allow Weblogic JMS descriptor files ending with "<tt>-jms.xml</tt>" to be parsed and used to create Glassfish admin resources, just like is currently possible with <tt>sun-resources.xml</tt>.<br> 2. Add code to handle those elements that can be supported and map them to appropriate Glassfish resources<br> This would give a certain amount of support for "system" JMS modules, the simplest kind of JMS module.<br> 3. Extend Glassfish to support named groups of JMS resources, corresponding to "standard" JMS modules in Weblogic. This would introduce a new type of entity to Glassfish; it would need to be possible to configure an application to specify which JMS modules it used so would affect multiple components including the admin console. Part of this work would involve parsing Weblogic JMS descriptor files to create standard JMS modules.<br> 4. Extend Glassfish to allow a group of JMS resources to be defined in an application archive, corresponding to "packaged" JMS modules in Weblogic. Again this would require changes to multiple Glassfish components.<br> Note that even when all four steps were completed only a small subset of a Weblogic JMS descriptor would be supported.</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 02, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:48.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

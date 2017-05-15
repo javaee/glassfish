@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : M2GPostRunJa05</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="M2GPostRunJa05-GlassFish%E3%82%A2%E3%83%97%E3%83%AA%E3%82%B1%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%83%BB%E3%82%B5%E3%83%BC%E3%83%90%E3%83%BC%E3%81%AB%E3%80%81%E3%83%93%E3%83%AB%E3%83%89%E3%81%95%E3%82%8C%E3%81%9F%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB%E3%82%92%E9%85%8D%E5%82%99%E3%81%99%E3%82%8B"></a>GlassFish アプリケーション・サーバー に、ビルドされたファイルを配備する</h2> <p>配備可能なユニットへ移行されたアプリケーションをビルドした後、 GlassFish アプリケーションサーバーへ、配備することができます。 :</p> 
+     <ul> 
+      <li>入力が、 EAR 、 WAR 、あるいは、 JAR ファイルの場合、マイグレーションツールは、移行プロセスを完了させて、 <em>&lt;output_directory&gt;</em><tt>/Input_Archives/asmtbuild</tt> ディレクトリでビルドされた EAR ファイルを配置する、ビルドスクリプトを自動的に一度だけ呼び出します。たとえ移行が成功したとしても、この EAR は、唯一ビルドされるでしょう。</li> 
+     </ul> <p> そのビルドは、自動的に生成されないかもしれません。たとえ :</p> 
+     <ul> 
+      <li>いずれにせよひとつのファイルが移行に失敗する。</li> 
+      <li>[ インストールとセットアップ |M2GInstSetup] が不適切である。</li> 
+      <li>Solaris において、移行されたソースコードが配置され、そして、 myunit{{.ear}} が、配備可能なユニット名であり、 /migrated_output が、出力ディレクトリである場合 :</li> 
+     </ul> <p> <tt>/migrated_output/asmtbuild</tt> ディレクトリに移動し、<br> <tt>asadmin</tt> コマンドを実行し、アーカイブを配備します。 :</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">% asadmin deploy -u &lt;username&gt; --passwordfile &lt;passwordfile&gt; -H &lt;hostname&gt; -p &lt;adminport&gt; myunit.ear</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>Windows において、移行されたソースコードが配置され、そして、 <tt>myunit.ear</tt> が、配備可能なユニット名であり、 <tt>C:\migrated_output</tt> が、出力ディレクトリである場合 :</li> 
+     </ul> <p> C:\migrated_output\asmtbuild ディレクトリに移動し、<br> <tt>asadmin</tt> コマンドを実行し、アーカイブを配備します。 :</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">PROMPT&gt; asadmin deploy -u &lt;username&gt;
+--passwordfile &lt;passwordfile&gt; -H &lt;hostname&gt;
+-p &lt;adminport&gt;
+myunit.ear</pre> 
+       </div> 
+      </div>
+     </div> <p>留意事項 - 生成されたビルドスクリプトに指定されている <tt>deploy</tt> 引数によって、アプリケーションのビルドと配備と言う複数のステップを、単一のステップに結合させることができます。このオプションを利用するために、ビルドスクリプトの生成 (Solaris と Linux 上でのマイグレーションツールの呼び出し、 Windows 上でのマイグレーションツールの呼び出し ) を実行することで、ステップを修正するには次のとおり :<br> Solaris では :</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">% sh build_ear.sh -Dw=&lt;passwordfile&gt; deploy</pre> 
+       </div> 
+      </div>
+     </div> <p>Windows では :</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">PROMPT&gt; build_ear -Dw=&lt;passwordfile&gt; deploy</pre> 
+       </div> 
+      </div>
+     </div> <p>ビルドスクリプトは、次のデフォルト値を引き継ぎます。 :</p> 
+     <ul> 
+      <li>ユーザー名は "admin" です。</li> 
+      <li>ホスト名は "localhost" です。</li> 
+      <li>管理ポートは "4848" です。</li> 
+     </ul> <p>次のコマンドにより、これらデフォルト値を継承できます。 :<br> Solaris では :</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">% sh build_ear.sh -Du=_&lt;username&gt;_ -DH=_&lt;hostname&gt;_ -Dp=_&lt;portno&gt;_ -Di=_&lt;instancename&gt;_ -Dw=_&lt;passwordfile&gt;_deploy</pre> 
+       </div> 
+      </div>
+     </div> <p>Windows では :</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">PROMPT&gt; sh build_ear.sh -Du=_&lt;username&gt;_ -DH=_&lt;hostname&gt;_ -Dp=_&lt;portno&gt;_ -Di=_&lt;instancename&gt;_ -Dw=_&lt;passwordfile&gt;_deploy</pre> 
+       </div> 
+      </div>
+     </div> <p>マイグレーションツールが、移行レポートファイルを生成した場合、追加の引数、 <tt>-Dp=y</tt> を、 <tt>deploy</tt> 引数に加えて指定する必要があります。</p> <p>日本語翻訳: <a href="http://www3.atword.jp/jacksparrow/2008/07/23/omegat%e3%81%af%e7%b4%a0%e6%99%b4%e3%82%89%e3%81%97%e3%81%84%e7%bf%bb%e8%a8%b3%e3%83%a1%e3%83%a2%e3%83%aa%e3%83%bc%ef%bc%81/">jack spallaw</a></p> <p><a href="M2GPostRun.html" title="M2GPostRun">英文 </a> (翻訳したバージョン: 5)</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:49.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

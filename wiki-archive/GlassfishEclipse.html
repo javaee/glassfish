@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassfishEclipse</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GlassfishEclipse-GlassFishforEclipseBundle"></a>GlassFish for Eclipse Bundle</h1> 
+     <hr> 
+     <div> 
+      <ul> 
+       <li><a href="#GlassfishEclipse-GlassFishforEclipseBundle">GlassFish for Eclipse Bundle</a></li> 
+       <ul> 
+        <li><a href="#GlassfishEclipse-Overview">Overview</a></li> 
+        <ul> 
+         <li><a href="#GlassfishEclipse-Logistics%3A">Logistics:</a></li> 
+        </ul> 
+        <li><a href="#GlassfishEclipse-Content">Content</a></li> 
+        <li><a href="#GlassfishEclipse-Automaticconfiguration">Automatic configuration</a></li> 
+        <li><a href="#GlassfishEclipse-Branding">Branding</a></li> 
+        <li><a href="#GlassfishEclipse-BuildSystem">Build System</a></li> 
+        <li><a href="#GlassfishEclipse-ProjectTracking">Project Tracking</a></li> 
+        <li><a href="#GlassfishEclipse-ReleaseChecklist">Release Checklist</a></li> 
+        <li><a href="#GlassfishEclipse-Schedule%28subjecttochange%29">Schedule (subject to change)</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="GlassfishEclipse-Overview"></a>Overview</h2> <h4><a name="GlassfishEclipse-Logistics%3A"></a>Logistics: </h3> 
+     <ul> 
+      <li><a href="EclipseLogistics.html" title="EclipseLogistics">Logistics for the Eclipse bundle. </a></li> 
+     </ul> <h4><a name="GlassfishEclipse-Content"></a>Content</h2> <p>The GlassFish for Eclipse bundle should be clearly targeting a Java EE 5 developer using both GlassFish V2 or V3 prelude as a runtime application server. The Eclipse IDE for Java EE Developers ganymede seems to contain too many components (PDE, MyLin, RSE,...) and too many server connectors (Tomcat, jBoss, Oracle,...) with very low level of quality compared to specific distros for jBoss or Oracle.</p> <p>The easiest way to create the distro for GlassFish would be to start from the Eclipse IDE for Java EE Developers distro and remove plugins like:</p> 
+     <ul> 
+      <li>org.eclipse.jst.server.generic.jonas , jboss, oc4j</li> 
+      <li>org.eclipse.jst.server.tomcat.*</li> 
+      <li>org.eclipse.jst.server.websphere.*</li> 
+      <li>org.eclipse.mylyn.*</li> 
+      <li>org.eclipse.pde.*</li> 
+      <li>org.eclipse.rse*</li> 
+      <li>Eclipse examples not Java EE related</li> 
+     </ul> <p>WTP will provide J2EE 1.4 and Java EE 5 features (JSP, JSF, JPA, EJBs,...)<br> Datatool will provide database tooling. We would need to preregister the JDBC drivers that come with V2 or V3 and the JAvaDB database out of the box.</p> <p>Then add plugins that are CDDL, EPL or Apache license compliant:</p> 
+     <ul> 
+      <li>GlassFish plugin Fro V1, V2, V3 Prelude (<a href="https://glassfishplugins.java.net">https://glassfishplugins.java.net</a>)</li> 
+      <li>jMaki plugin (<a href="https://ajax.java.net">https://ajax.java.net</a>)</li> 
+      <li>JMX Eclipse plugin? ( <a href="http://code.google.com/p/eclipse-jmx/">http://code.google.com/p/eclipse-jmx/</a> )</li> 
+      <li>Metro Eclipse plugin (<a href="http://metroplugineclipse.java.net/">http://metroplugineclipse.java.net/</a>)</li> 
+      <li>Portal Server plugins?</li> 
+      <li>Seam tooling? (JBoss tools EPL)</li> 
+      <li>Hibernate tooling (jBoss tools EPL)</li> 
+      <li>MySQL Tooling?</li> 
+      <li>Struts Tooling?</li> 
+      <li>IceFaces ? (<a href="http://www.icefaces.org/JForum/posts/list/6688.page">http://www.icefaces.org/JForum/posts/list/6688.page</a> <a href="http://www.icefaces.org/main/downloads/os-downloads.iface">http://www.icefaces.org/main/downloads/os-downloads.iface</a> license: <a href="http://www.icesoft.ca/downloads/license_community.html">http://www.icesoft.ca/downloads/license_community.html</a>)</li> 
+      <li>Subversion support (<a href="http://subclipse.tigris.org/">http://subclipse.tigris.org/</a>)</li> 
+      <li>Log file viewers (<a href="http://graysky.sourceforge.net/">http://graysky.sourceforge.net/</a> CPL)</li> 
+      <li>Apache Derby/Java DB: <a href="http://db.apache.org/derby/integrate/derby_plugin.html">http://db.apache.org/derby/integrate/derby_plugin.html</a></li> 
+     </ul> <h4><a name="GlassfishEclipse-Automaticconfiguration"></a>Automatic configuration</h2> <p>The value add of a co bundle is to be able to pre-configure the IDE for the developer. Pre configuration items include</p> 
+     <ul> 
+      <li>V2 server installed and registered</li> 
+      <li>V3 server installed and registered</li> 
+      <li>EclipseLink and Toplink registered as JPA providers in Dali</li> 
+      <li>JSF libraries registered</li> 
+      <li>JavaDB Driver registered</li> 
+      <li>JavaDB Sample DB created? and registered?</li> 
+      <li>Correct Update Centers registered</li> 
+      <li></li> 
+     </ul> <h4><a name="GlassfishEclipse-Branding"></a>Branding</h2> <p>Branding guidelines and rules are described in <a href="http://easyeclipse.cvs.sourceforge.net/viewvc/*checkout*/easyeclipse/easyeclipse/easyeclipse/org.nexb.easyeclipse.releng/branding/readme.txt?pathrev=BRANCH_P2_WIP_IN_BRANCH_ECLIPSE_34">this document</a></p> <h4><a name="GlassfishEclipse-BuildSystem"></a>Build System</h2> <p><a href="GlassfishEclipseBuildInstructions.html" title="GlassfishEclipseBuildInstructions">description</a></p> <h4><a name="GlassfishEclipse-ProjectTracking"></a>Project Tracking</h2> 
+     <ul> 
+      <li><a href="ProjectTracking.html" title="ProjectTracking">Project Tracking </a></li> 
+     </ul> <h4><a name="GlassfishEclipse-ReleaseChecklist"></a>Release Checklist</h2> 
+     <ul> 
+      <li>Update splash and text with new version number</li> 
+      <li>Update url for download and install button to FCS version of relevant GF</li> 
+     </ul> <h4><a name="GlassfishEclipse-Schedule%28subjecttochange%29"></a>Schedule (subject to change)</h2> 
+     <ul> 
+      <li>Initial basic bundle (no configuration, no customization) 2008-12-01 2008-12-24</li> 
+      <li>Integration of GlassFish plug-ins and settings customization 2008-12-29 2008-01-16</li> 
+      <li>Custom registration plug-in, integration of GlassFish branding 2008-01-19 2009-01-30</li> 
+      <li>Final integration, tests and polishing: final delivery 2009-02-02 2009-02-13</li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 02, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:44.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

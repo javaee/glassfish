@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : Gfv31ConnectorsJDBC</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="Gfv31ConnectorsJDBC-GlassFishServerOpenSourceEdition3.1Connectors%28JavaEEConnectorArchitecture%2CConnectionPooling%2CJDBCRA%29OnePager"></a>GlassFish Server Open Source Edition 3.1 - Connectors (JavaEE Connector Architecture, Connection Pooling, JDBC-RA) One Pager</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#Gfv31ConnectorsJDBC-GlassFishServerOpenSourceEdition3.1Connectors%28JavaEEConnectorArchitecture%2CConnectionPooling%2CJDBCRA%29OnePager">GlassFish Server Open Source Edition 3.1 - Connectors (JavaEE Connector Architecture, Connection Pooling, JDBC-RA) One Pager</a></li> 
+       <li><a href="#Gfv31ConnectorsJDBC-1.Introduction">1. Introduction</a></li> 
+       <ul> 
+        <li><a href="#Gfv31ConnectorsJDBC-1.1.Project%2FComponentWorkingName%3A">1.1. Project/Component Working Name:</a></li> 
+        <li><a href="#Gfv31ConnectorsJDBC-1.2.Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier%3A">1.2. Name(s) and e-mail address of Document Author(s)/Supplier:</a></li> 
+        <li><a href="#Gfv31ConnectorsJDBC-1.3.DateofThisDocument%3A">1.3. Date of This Document:</a></li> 
+        <li><a href="#Gfv31ConnectorsJDBC-1.4.RevisionHistory">1.4. Revision History</a></li> 
+       </ul> 
+       <li><a href="#Gfv31ConnectorsJDBC-2.ProjectSummary">2. Project Summary</a></li> 
+       <ul> 
+        <li><a href="#Gfv31ConnectorsJDBC-2.1.ProjectDescription%3A">2.1. Project Description:</a></li> 
+        <li><a href="#Gfv31ConnectorsJDBC-2.2.RisksandAssumptions%3A">2.2. Risks and Assumptions:</a></li> 
+       </ul> 
+       <li><a href="#Gfv31ConnectorsJDBC-3.ProblemSummary">3. Problem Summary</a></li> 
+       <ul> 
+        <li><a href="#Gfv31ConnectorsJDBC-3.1.ProblemArea%3A">3.1. Problem Area:</a></li> 
+        <li><a href="#Gfv31ConnectorsJDBC-3.2.Justification%3A">3.2. Justification:</a></li> 
+       </ul> 
+       <li><a href="#Gfv31ConnectorsJDBC-4.TechnicalDescription%3A">4. Technical Description:</a></li> 
+       <ul> 
+        <li><a href="#Gfv31ConnectorsJDBC-4.1.Details%3A">4.1. Details:</a></li> 
+        <li><a href="#Gfv31ConnectorsJDBC-4.1.1StatementleakdetectionandReclaim">4.1.1 Statement leak detection and Reclaim</a></li> 
+        <li><a href="#Gfv31ConnectorsJDBC-4.1.2Clusteringsupportforalltypesofresources">4.1.2 Clustering support for all types of resources</a></li> 
+        <li><a href="#Gfv31ConnectorsJDBC-4.1.3Applicationscopedresources">4.1.3 Application scoped resources</a></li> 
+        <li><a href="#Gfv31ConnectorsJDBC-4.1.4ReconfigurationandmonitoringsupportforDataSourceDefinitions">4.1.4 Reconfiguration and monitoring support for DataSource-Definitions</a></li> 
+        <li><a href="#Gfv31ConnectorsJDBC-4.1.5MonitoringsupportforvariousConnectionPoolandJDBCartifacts">4.1.5 Monitoring support for various Connection Pool and JDBC artifacts</a></li> 
+        <ul> 
+         <li><a href="#Gfv31ConnectorsJDBC-4.1.5.1Connectionsusageinapoolbyapplications">4.1.5.1 Connections usage in a pool by applications</a></li> 
+         <li><a href="#Gfv31ConnectorsJDBC-4.1.5.2SQLTracingtodisplayfrequentlyusedqueries">4.1.5.2 SQL Tracing to display frequently used queries</a></li> 
+         <li><a href="#Gfv31ConnectorsJDBC-4.1.5.3StatementCachehit%2FmissMonitoring">4.1.5.3 Statement Cache hit/miss Monitoring</a></li> 
+         <li><a href="#Gfv31ConnectorsJDBC-4.1.5.4Statementleakmonitoring">4.1.5.4 Statement leak monitoring</a></li> 
+        </ul> 
+        <li><a href="#Gfv31ConnectorsJDBC-4.1.6NewCustomValidationTemplates">4.1.6 New Custom Validation Templates</a></li> 
+        <li><a href="#Gfv31ConnectorsJDBC-4.1.7IntrospectJDBCDrivers">4.1.7 Introspect JDBC Drivers</a></li> 
+        <ul> 
+         <li><a href="#Gfv31ConnectorsJDBC-4.1.7.1IntrospectJDBCDriversOnRequest%28GUI%29">4.1.7.1 Introspect JDBC Drivers On Request (GUI)</a></li> 
+         <li><a href="#Gfv31ConnectorsJDBC-4.1.7.2IntrospectionofJDBCdriversinCLI">4.1.7.2 Introspection of JDBC drivers in CLI</a></li> 
+        </ul> 
+        <li><a href="#Gfv31ConnectorsJDBC-4.1.8OSGiRFCsupportfromJDBCmodule">4.1.8 OSGi RFC support from JDBC module</a></li> 
+        <li><a href="#Gfv31ConnectorsJDBC-4.1.9Transparentjdbcconnectionpoolreconfiguration">4.1.9 Transparent jdbc-connection-pool re-configuration</a></li> 
+        <li><a href="#Gfv31ConnectorsJDBC-4.2.Bug%2FRFENumber%28s%29%3A">4.2. Bug/RFE Number(s):</a></li> 
+        <li><a href="#Gfv31ConnectorsJDBC-4.3.InScope%3A">4.3. In Scope:</a></li> 
+        <li><a href="#Gfv31ConnectorsJDBC-4.4.OutofScope%3A">4.4. Out of Scope:</a></li> 
+        <li><a href="#Gfv31ConnectorsJDBC-4.5.Interfaces%3A">4.5. Interfaces:</a></li> 
+        <ul> 
+         <li><a href="#Gfv31ConnectorsJDBC-4.5.1ExportedInterfaces">4.5.1 Exported Interfaces</a></li> 
+         <li><a href="#Gfv31ConnectorsJDBC-4.5.2Importedinterfaces">4.5.2 Imported interfaces</a></li> 
+         <li><a href="#Gfv31ConnectorsJDBC-4.5.3Otherinterfaces%28Optional%29">4.5.3 Other interfaces (Optional)</a></li> 
+        </ul> 
+        <li><a href="#Gfv31ConnectorsJDBC-4.6.DocImpact%3A">4.6. Doc Impact:</a></li> 
+        <li><a href="#Gfv31ConnectorsJDBC-4.7.Admin%2FConfigImpact%3A">4.7. Admin/Config Impact:</a></li> 
+        <li><a href="#Gfv31ConnectorsJDBC-4.8.HAImpact%3A">4.8. HA Impact:</a></li> 
+        <li><a href="#Gfv31ConnectorsJDBC-4.9.I18N%2FL10NImpact%3A">4.9. I18N/L10N Impact:</a></li> 
+        <li><a href="#Gfv31ConnectorsJDBC-4.10.Packaging%2CDeliveryandUpgrade%3A">4.10. Packaging, Delivery and Upgrade:</a></li> 
+        <ul> 
+         <li><a href="#Gfv31ConnectorsJDBC-4.10.1Packaging">4.10.1 Packaging</a></li> 
+         <li><a href="#Gfv31ConnectorsJDBC-4.10.2Delivery">4.10.2 Delivery</a></li> 
+         <li><a href="#Gfv31ConnectorsJDBC-4.10.3UpgradeandMigration">4.10.3 Upgrade and Migration</a></li> 
+        </ul> 
+        <li><a href="#Gfv31ConnectorsJDBC-4.11.SecurityImpact%3A">4.11. Security Impact:</a></li> 
+        <li><a href="#Gfv31ConnectorsJDBC-4.12.CompatibilityImpact">4.12. Compatibility Impact</a></li> 
+        <li><a href="#Gfv31ConnectorsJDBC-4.13.Dependencies">4.13. Dependencies</a></li> 
+        <ul> 
+         <li><a href="#Gfv31ConnectorsJDBC-4.13.1InternalDependencies">4.13.1 Internal Dependencies</a></li> 
+         <li><a href="#Gfv31ConnectorsJDBC-4.13.2ExternalDependencies">4.13.2 External Dependencies</a></li> 
+        </ul> 
+        <li><a href="#Gfv31ConnectorsJDBC-4.14.TestingImpact">4.14. Testing Impact</a></li> 
+       </ul> 
+       <li><a href="#Gfv31ConnectorsJDBC-5.ReferenceDocuments%3A">5. Reference Documents:</a></li> 
+       <li><a href="#Gfv31ConnectorsJDBC-6.Schedule%3A">6. Schedule:</a></li> 
+       <ul> 
+        <li><a href="#Gfv31ConnectorsJDBC-6.1.ProjectedAvailability%3A">6.1. Projected Availability:</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="Gfv31ConnectorsJDBC-1.Introduction"></a>1. Introduction</h1> <h4><a name="Gfv31ConnectorsJDBC-1.1.Project%2FComponentWorkingName%3A"></a>1.1. Project/Component Working Name:</h2> <p>Connectors, Connection Pool, JDBC features in GlassFish Server Open Source Edition 3.1</p> <h4><a name="Gfv31ConnectorsJDBC-1.2.Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier%3A"></a>1.2. Name(s) and e-mail address of Document Author(s)/Supplier:</h2> <p>Jagadish Ramu: Jagadish.Ramu@Sun.COM</p> <p>Shalini Muthukrishnan: Shalini.Muthukrishnan@Sun.COM</p> <h4><a name="Gfv31ConnectorsJDBC-1.3.DateofThisDocument%3A"></a>1.3. Date of This Document:</h2> <p>14-May-10</p> <h4><a name="Gfv31ConnectorsJDBC-1.4.RevisionHistory"></a>1.4. Revision History</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Date </th> 
+         <th class="confluenceTh"> Change </th> 
+         <th class="confluenceTh"> Revision </th> 
+         <th class="confluenceTh"> Changes from previous version </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 15-June-10 </td> 
+         <td class="confluenceTd"> Changes to Application Scoped Resources after further analysis </td> 
+         <td class="confluenceTd"> 6 </td> 
+         <td class="confluenceTd"> <a href="http://wiki.glassfish.java.net/Diff.jsp?page=Gfv31ConnectorsJDBC&amp;r1=45&amp;r2=43">changes </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 04-June-10 </td> 
+         <td class="confluenceTd"> Added recommendations to Statement Leak detection and reclaim section based on comments from Siva </td> 
+         <td class="confluenceTd"> 5 </td> 
+         <td class="confluenceTd"> <a href="http://wiki.glassfish.java.net/Diff.jsp?page=Gfv31ConnectorsJDBC&amp;" title="r1=43&amp;r2=41">changes </a></td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 04-June-10 </td> 
+         <td class="confluenceTd"> Updating based on comments and further discussions with reviewer (Siva) </td> 
+         <td class="confluenceTd"> 4 </td> 
+         <td class="confluenceTd"> <a href="http://wiki.glassfish.java.net/Diff.jsp?page=Gfv31ConnectorsJDBC&amp;" title="r1=41&amp;r2=39">changes </a></td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 25-May-10 </td> 
+         <td class="confluenceTd"> Including a flag for <em>deploy</em> command </td> 
+         <td class="confluenceTd"> 3 </td> 
+         <td class="confluenceTd"> <a href="http://wiki.glassfish.java.net/Diff.jsp?page=Gfv31ConnectorsJDBC&amp;" title="r1=39&amp;r2=37">changes </a></td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 20-May-10 </td> 
+         <td class="confluenceTd"> Review ready </td> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd"> <a href="http://wiki.glassfish.java.net/Diff.jsp?page=Gfv31ConnectorsJDBC&amp;r1=37&amp;r2=2">changes </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 14-May-10 </td> 
+         <td class="confluenceTd"> Draft being written </td> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd">
+          <ul class="alternate" type="square"> 
+           <li></li> 
+          </ul> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="Gfv31ConnectorsJDBC-2.ProjectSummary"></a>2. Project Summary</h1> <h4><a name="Gfv31ConnectorsJDBC-2.1.ProjectDescription%3A"></a>2.1. Project Description:</h2> <p>This document describes the functionality changes and enhancements to Connectors, Connection Pooling, JDBC-RA</p> <h4><a name="Gfv31ConnectorsJDBC-2.2.RisksandAssumptions%3A"></a>2.2. Risks and Assumptions:</h2> 
+     <ul> 
+      <li>Risks: None.</li> 
+      <li>Assumptions: None.</li> 
+     </ul> <h4><a name="Gfv31ConnectorsJDBC-3.ProblemSummary"></a>3. Problem Summary</h1> <h4><a name="Gfv31ConnectorsJDBC-3.1.ProblemArea%3A"></a>3.1. Problem Area:</h2> <p>Following enhancements need to be introduced in GlassFish 3.1 to overcome or to provide :</p> 
+     <ul> 
+      <li>Absence of statement leak detection and reclaim support for JDBC applications</li> 
+      <li>Clustering support for all types of resources</li> 
+      <li>Application scoped resources to enable single click deployment of archive with resource definitions</li> 
+      <li>Reconfiguration support for datasource-definition</li> 
+      <li>Monitoring support to display : 
+       <ul> 
+        <li>Connections usage in a pool grouped by different applications</li> 
+        <li>Frequently executed SQL queries by applications</li> 
+        <li>Statement cache hit/miss statistics</li> 
+        <li>Statement leaks</li> 
+       </ul> </li> 
+      <li>Ease of use and configurability features</li> 
+      <li>Transparent reconfiguration of jdbc-connection-pool</li> 
+     </ul> <h4><a name="Gfv31ConnectorsJDBC-3.2.Justification%3A"></a>3.2. Justification:</h2> <p>Enhancements to existing Connectors, Pooling, JDBC-RA modules is very useful as the functionality offered by these modules are used widely among the user-base and based on the competitive appservers, these functionality improvements and changes would not only bring in performance improvements but also feature parity. The proposed features will enhance the user experience.</p> <h4><a name="Gfv31ConnectorsJDBC-4.TechnicalDescription%3A"></a>4. Technical Description:</h1> <h4><a name="Gfv31ConnectorsJDBC-4.1.Details%3A"></a>4.1. Details:</h2> <p>The Connectors, Pooling, JDBC-RA modules will have the following enhancements and features in this release</p> <h4><a name="Gfv31ConnectorsJDBC-4.1.1StatementleakdetectionandReclaim"></a>4.1.1 Statement leak detection and Reclaim</h2> <p>Statement leak detection is a feature to detect any statements that have not been closed by the applications for a specified time period. Applications might run out of cursors if the statement objects are not closed and hence detecting them as leaks can help developers and administrators to make sure that the statement objects are indeed closed after use. The stack trace of the caller that creates the statement will be logged when a statement leak is detected.</p> <p>Statement leak timeout can be enabled by setting a connection pool configuration attribute <b>statement-leak-timeout-in-seconds</b>. Default value of this attribute is zero, indicating that the statement leak detection is turned off. Leak detection is enabled when set to a positive non-zero value. After this timeout, the statement object is considered to be leaked.</p> <p>Statement leak reclaim can be enabled by setting a connection pool configuration attribute <b>statement-leak-reclaim</b>. By default, this attribute is set to false and the statement leak reclaim is disabled. For statement reclaim to work, statement leak timeout need to be enabled. Once a statement leak is detected, leaked statement will be reclaimed. During a statement reclaim, the leaked statement(s) is closed.</p> <p>Connection leak timeout should be greater than the Statement leak timeout. Statement Timeout should be lesser than the Statement leak timeout.</p> <p>Statement leak detection is done for all new connections got in an application for an active pool. Similarly, the monitoring statistics are collected for these new connections from which statements are created.</p> <h4><a name="Gfv31ConnectorsJDBC-4.1.2Clusteringsupportforalltypesofresources"></a>4.1.2 Clustering support for all types of resources</h2> <p>Clustering support for all types of resources will be provided for feature parity with V2.</p> <p>--target option will be supported to the following commands from V2.</p> 
+     <ul> 
+      <li>add-resources</li> 
+      <li>create-admin-object</li> 
+      <li>delete-admin-object</li> 
+      <li>create-connector-resource</li> 
+      <li>delete-connector-resource</li> 
+      <li>create-javamail-resource</li> 
+      <li>delete-javamail-resource</li> 
+      <li>create-jdbc-resource</li> 
+      <li>delete-jdbc-resource</li> 
+      <li>create-custom-resource</li> 
+      <li>delete-custom-resource</li> 
+      <li>create-jndi-resource</li> 
+      <li>delete-jndi-resource</li> 
+      <li>list-admin-objects</li> 
+      <li>list-connector-resources</li> 
+      <li>list-javamail-resources</li> 
+      <li>list-jdbc-resources</li> 
+      <li>list-custom-resources</li> 
+      <li>list-jndi-resources</li> 
+     </ul> <h4><a name="Gfv31ConnectorsJDBC-4.1.3Applicationscopedresources"></a>4.1.3 Application scoped resources</h2> 
+     <ul> 
+      <li>A feature using which applications can be deployed with resource definitions specified within the archive.</li> 
+      <li>Helps to achieve single-click deployment ability for complex archives with various type of resource requirements</li> 
+      <li>By being able to specify and hence process the resource definitions that are defined within the archive, this feature will avoid the need to redeploy the application archive that has embedded resource-adapters used by other modules within the archive.</li> 
+     </ul> <p><b>Scope of resources</b></p> 
+     <ul> 
+      <li>The resources are scoped to the applications that define them ie., they are available only to the applications that defines them.</li> 
+      <li>With the introduction of scope for the resource, application is assured that a scoped resource is not used by other applications and be free from unexpected resource starvation or delay in acquiring connections.</li> 
+      <li>These scoped resources cannot be referred or looked up by other applications.</li> 
+      <li>If the resource definition is provided within an archive (ie., <em>glassfish-resources.xml</em> within an .ear or other archives), they are assumed to be scoped resources 
+       <ul> 
+        <li>Application Scope : 
+         <ul> 
+          <li>glassfish-resources.xml bundled at top level of the archive (META-INF/glassfish-resources.xml or WEB-INF/glassfish-resources.xml for .war) are exported with "application" scope ie., they can be obtained by doing the lookup with prefix "java:app". These resources are available only to the application (and its modules) in which they are defined.</li> 
+         </ul> </li> 
+        <li>Module Scope : 
+         <ul> 
+          <li>glassfish-resources.xml(s) bundled at sub-archive (sub-module) level of the archive are exported with "module" scope ie., they can be obtained by doing the lookup with prefix "java:module". These resources are available only to the module in which they are defined.</li> 
+         </ul> </li> 
+       </ul> </li> 
+      <li>jndi-name for <em>application-scoped-resources</em> or <em>module-scoped-resources</em> are specified using the following format :<br> <em>java:app/jdbc/myDataSource</em> or <em>java:module/jdbc/myModuleLevelDataSource</em>. This is in accordance with the new naming scopes introduced in Java EE 6 Specification. Refer <em>Resources, Naming and Injection</em>, sub-section JNDI Naming Context of Java EE 6 Specification for more details. If the prefix "<em>java:app/</em>" or "<em>java:module/</em>" is not specified in the resource's name, they will be prefixed appropriately and persisted in domain.xml 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">A JDBC resource and connection pool persisted as application-scoped-resource with "java:app/" prefix and module scoped resources are persisted within the module with "java:module/" prefix.
+&lt;application name="myapplication.ear"&gt;
+ &lt;resources&gt;
+        &lt;jdbc-connection-pool max-pool-size="50" datasource-classname="org.apache.derby.jdbc.ClientDataSource" res-type="javax.sql.DataSource" name="java:app/jdbc/app-scoped-pool" pool-resize-quantity="20"&gt;
+          &lt;property name="user" value="APP" /&gt;
+          &lt;property name="PortNumber" value="1527" /&gt;
+          &lt;property name="password" value="APP" /&gt;
+          &lt;property name="ServerName" value="localhost" /&gt;
+          &lt;property name="databaseName" value="testdb" /&gt;
+        &lt;/jdbc-connection-pool&gt;
+        &lt;jdbc-resource pool-name="java:app/jdbc/app-scoped-pool" jndi-name="java:app/jdbc/app-scoped-resource" /&gt;
+      &lt;/resources&gt;
+      &lt;module name="mywar.war"&gt;
+            &lt;resources&gt;
+                 &lt;jdbc-connection-pool max-pool-size="50" datasource-classname="org.apache.derby.jdbc.ClientDataSource" res-type="javax.sql.DataSource" name="java:module/jdbc/module-scoped-pool" pool-resize-quantity="20"&gt;
+                       &lt;property name="user" value="APP" /&gt;
+                       &lt;property name="PortNumber" value="1527" /&gt;
+                       &lt;property name="password" value="APP" /&gt;
+                       &lt;property name="ServerName" value="localhost" /&gt;
+                       &lt;property name="databaseName" value="testdb" /&gt;
+                 &lt;/jdbc-connection-pool&gt;
+                 &lt;jdbc-resource pool-name="java:module/jdbc/module-scoped-pool" jndi-name="java:module/jdbc/module-scoped-resource" /&gt;
+            &lt;/resources&gt;
+        &lt;/module&gt;
+&lt;/application&gt;</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ul> 
+     <ul> 
+      <li>applications will refer these resources with "java:app/" prefix or "java:module/" prefix in the deployment descriptor appropriately.</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">A sample resource-ref in glassfish-ejb-jar.xml
+     &lt;resource-ref&gt;
+        &lt;res-ref-name&gt;jdbc/app-scoped-resource&lt;/res-ref-name&gt;
+        &lt;jndi-name&gt;java:app/jdbc/app-scoped-resource&lt;/jndi-name&gt;
+      &lt;/resource-ref&gt;</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>When an application tries to look up a scoped resource that does not belong to the application (defined in another application) or module (defined in another module), naming exception will be thrown.</li> 
+     </ul> <p><b>glassfish-resources.xml</b></p> 
+     <ul> 
+      <li>Resource definitions are specified via glassfish-resources.xml which should be a valid XML file that conforms to the glassfish-resources.dtd</li> 
+      <li>When used with glassfish-resources.xml, it provides EOU functionality such that resources are created/destroyed during application deploy/undeploy.</li> 
+      <li>All resources created using a glassfish-resources.xml within an application archive will be scoped.</li> 
+      <li>glassfish-resources.xml should be placed in META-INF directory of the archive (exception being <em>.war</em> where it should be placed within WEB-INF directory)</li> 
+      <li>glassfish-resources.xml can be defined in each sub-module (sub-archive) of an enteprise application (.ear).</li> 
+      <li>Scoping the resources also help to eliminate most of the conflicts of glassfish-resources.xml based applications against other applications or resources that already exist in the server.</li> 
+      <li>Existing add-resources command uses glassfish-resources.xml. Resources created using add-resources are global ie., they are not specific to any application.</li> 
+      <li>application/module-scoped-resources can be reconfigured using admin CLI, GUI. Refer Admin/Config Impact section for more details.</li> 
+     </ul> <p><b>Duplicates &amp; Conflicts</b></p> 
+     <ul> 
+      <li>Duplicate : 
+       <ul> 
+        <li>If there is a resource definition with same resource-name, resource-type, properties and attributes, it is assumed to be a duplicate.</li> 
+       </ul> </li> 
+      <li>Conflict : 
+       <ul> 
+        <li>A conflict occurs when two resource-definitions with different properties are made for the same resource-name and resource-type.</li> 
+       </ul> </li> 
+      <li>Duplicates &amp; Conflicts can occur at "app" level or "module" level of resource-definitions. 
+       <ul> 
+        <li>Duplicates will be logged as WARNING messages and deployment will continue.</li> 
+       </ul> </li> 
+      <li>Conflict will result in deployment failure. Administrator will have to resolve the conflicts.</li> 
+     </ul> <p><b>Deploy, re-deploy, undeploy</b></p> 
+     <ul> 
+      <li>When an application is undeployed, by default its (scoped) resources will be deleted.</li> 
+      <li>During redeployment of the application, resources will be destroyed and created based on the new resource definition in the archive.</li> 
+      <li>In order to preserve old resource definitions during redeploy (deploy --force=true), a new property <b>preserveAppScopedResources</b> can be used. 
+       <ul> 
+        <li><b>preserveAppScopedResources</b> property when set to true will keep existing resources and skip processing glassfish-resources.xml(s) in the archive.</li> 
+       </ul> </li> 
+     </ul> <p><b>Restriction on resource types in various application types</b></p> 
+     <ul> 
+      <li>Restriction on following artifacts will be applicable as they will affect the resource-adapter which can be used by other applications or global resources 
+       <ul> 
+        <li>resource-adapter-config 
+         <ul> 
+          <li>resource-adapter-config can be specified in a glassfish-resources.xml of corresponding connector module only (standalone RAR). In case of EAR, resource-adapter-config for the embedded RAR can be specified in the bundled glassfish-resources.xml RAR. It is not allowed to have resource-adapter-config for a RAR in an EAR where the RAR is not part of the EAR.</li> 
+         </ul> </li> 
+        <li>connector-work-security-map 
+         <ul> 
+          <li>Same restrictions as that of resource-adapter-config applies for connector-work-security-map.</li> 
+         </ul> </li> 
+        <li>Cross references : 
+         <ul> 
+          <li>an application level jdbc-connection-pool cannot be referred by module level jdbc-resource. This is not supported in this release (3.1)</li> 
+          <li>Above restriction applies to connector-connection-pool also.</li> 
+         </ul> </li> 
+        <li>Global resources : 
+         <ul> 
+          <li><em>java:global</em> is not supported in this release (3.1)</li> 
+         </ul> </li> 
+        <li>Cross definitions : 
+         <ul> 
+          <li>defining <em>"java:app"</em> scoped resources at module level (ie., in module's glassfish-resources.xml) is not supported in this release (3.1)</li> 
+         </ul> </li> 
+       </ul> </li> 
+     </ul> <p><b>Monitoring support</b></p> 
+     <ul> 
+      <li>Monitoring information for connection-pools (jdbc, connector) of application/module scoped resources can be obtained. 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">asadmin get --monitor=true server.applications.web-subclassingApp.resources.* | grep -i "\-count"
+
+server.applications.web-subclassingApp.resources.java:app.embedded-ra-pool.averageconnwaittime-count = 19
+server.applications.web-subclassingApp.resources.java:app.embedded-ra-pool.numconnacquired-count = 14
+server.applications.web-subclassingApp.resources.java:app.embedded-ra-pool.numconncreated-count = 8
+server.applications.web-subclassingApp.resources.java:app.embedded-ra-pool.numconndestroyed-count = 0
+server.applications.web-subclassingApp.resources.java:app.embedded-ra-pool.numconnfailedvalidation-count = 0
+server.applications.web-subclassingApp.resources.java:app.embedded-ra-pool.numconnnotsuccessfullymatched-count = 0
+server.applications.web-subclassingApp.resources.java:app.embedded-ra-pool.numconnreleased-count = 14
+server.applications.web-subclassingApp.resources.java:app.embedded-ra-pool.numconnsuccessfullymatched-count = 0
+server.applications.web-subclassingApp.resources.java:app.embedded-ra-pool.numconntimedout-count = 0
+server.applications.web-subclassingApp.resources.java:app.embedded-ra-pool.numpotentialconnleak-count = 0
+server.applications.web-subclassingApp.resources.java:app.embedded-ra-pool.waitqueuelength-count = 0</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ul> <h4><a name="Gfv31ConnectorsJDBC-4.1.4ReconfigurationandmonitoringsupportforDataSourceDefinitions"></a>4.1.4 Reconfiguration and monitoring support for DataSource-Definitions</h2> <p>Java EE 6 defines <em>@DataSourceDefinition</em> annotation (and its equivalent in deployment-descriptor(s)) which applications can define and export data-sources across components/modules/applications.<br> With the current implementation, data-sources cannot be re-configured which will make it difficult or mandate application redeployment whenever the configuration of the data-source need to be changed. Also, often it is necessary to tune the connection-pool configuration according to the usage metrics. Support for re-configuration will help to avoid re-deployment of application. By providing monitoring statistics for these datasource-definitions, they can be tuned according to the usage metrics.<br> This feature will help to register the datasource-definition in domain.xml such that it can be re-configured.</p> <p>The datasource-definition configuration will be registered within the &lt; application &gt; element in domain.xml</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;application&gt;
+	&lt;module&gt;
+	&lt;/module&gt;
+	&lt;resources&gt;
+		&lt;datasource-definition&gt;
+		&lt;/datasource-definition&gt;
+	&lt;/resources&gt;
+&lt;/application&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p><b>Unique id</b></p> 
+     <ul> 
+      <li>Since all resources defined by various components, modules in the application are registered globally within &lt; application &gt; element as &lt; application-scoped-resources &gt;, it is necessary to generate unique id for the resources as multiple resources can be of same name with same scope within different modules of the application or different components of the module.</li> 
+      <li>Every deployed datasource-definition resource will have unique id generated based on the following characteristics 
+       <ul> 
+        <li>global resources (eg: java:global/myResource) will have unique id as resource-name (eg: "myResource")</li> 
+        <li>app scoped (eg: java:app/myResource) in the application named myApp will have unique id as &lt;APPNAME-RESOURCENAME&gt; (eg: "myApp-myResource")</li> 
+        <li>module scoped (eg: java:module/myResource) in a module named myModule will have unique id as &lt;MODULENAME-RESOURCENAME&gt; (eg : "myModule-myResource")</li> 
+        <li>component scoped (eg: java:comp/myResource) in a module named myModule and component named myComponent will have unique id as &lt;MODULENAME-COMPONENTNAME-RESOURCENAME&gt; (eg : "myModule-myComponent-myResource")</li> 
+       </ul> </li> 
+     </ul> <p><b>Accessing or updating the configuration.</b></p> 
+     <ul> 
+      <li>dotted-names get command can be used to get the configuration.</li> 
+      <li>dotted-names set command can be used to re-configure the data-source.</li> 
+      <li>Dotted-names-get will look like :</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">server.applications.&lt;APP_NAME&gt;.application-scoped-resources.datasource-definition.&lt;DATASOURCE_DEFINITION_UID&gt;.*
+
+eg: for a module scoped resource where application-name is 'my-app', module-name is 'my-module' and resource-name is 'my-resource' :
+server.applications.&lt;my-app&gt;.application-scoped-resources.datasource-definition.&lt;my-module-my-resource&gt;.*</pre> 
+       </div> 
+      </div>
+     </div> <p>Also, with the help of transparent-jdbc-connection-pool-redeployment capability, changes to database specific configuration can also be handled transparent to application.<br> Refer 'Deploy, re-deploy, undeploy' section in Application Scoped Resources which will be applicable for data-source-definition.</p> <h4><a name="Gfv31ConnectorsJDBC-4.1.5MonitoringsupportforvariousConnectionPoolandJDBCartifacts"></a>4.1.5 Monitoring support for various Connection Pool and JDBC artifacts</h2> <h4><a name="Gfv31ConnectorsJDBC-4.1.5.1Connectionsusageinapoolbyapplications"></a>4.1.5.1 Connections usage in a pool by applications</h3> <p>A monitoring feature to get the number of connections in use by an application for the specified connection pool. The existing <b>numconnused</b> monitoring statistic gets the total number of connections used by all applications in a connection pool. This feature groups these connections used by applications. Similarly, the monitoring statistics <b>numconnacquired</b> and <b>numconnreleased</b> are grouped by applications usage. </p> <p>When monitoring is turned on and applications are using connection from the pool, monitoring statistics could be got using asadmin get --monitor=true command as</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">server.resources.testPool.application1.numconnused-current = 2</pre> 
+       </div> 
+      </div>
+     </div> <p>Number of connections acquired from the pool grouped by applications can be got using</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">server.resources.testPool.application1.numconnacquired-count = 15
+server.resources.testPool.application2.numconnacquired-count = 5</pre> 
+       </div> 
+      </div>
+     </div> <p>Number of connections released to the pool by different applications can be got using </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">server.resources.testPool.application1.numconnreleased-count = 15
+server.resources.testPool.application2.numconnreleased-count = 5</pre> 
+       </div> 
+      </div>
+     </div> <p>Above statistics will be collected when JDBC/Connector Connection Pool Monitoring is turned on. </p> <p>The AMX ObjectName that is used to retrieve these attribute values is "amx:pp=/mon/server-mon[server],type=<b>jdbc-connection-pool-app-mon</b>,name=resources/testPool/application1" for a jdbc connection pool used by application1. Similar ObjectName can be used for application2. For connector connection pools, the AMX ObjectName is "amx:pp=/mon/server-mon[server],type=<b>connector-connection-pool-app-mon</b>,name=resources/testCCPool/application1". testCCPool is the connector connection pool for which monitoring grouped by applications is being observed. </p> <p>The monitoring probes that are exposed by this feature are </p> 
+     <ul> 
+      <li>glassfish:jdbc-pool:applications:decrementConnectionUsedEvent</li> 
+      <li>glassfish:jdbc-pool:applications:connectionUsedEvent</li> 
+      <li>glassfish:jdbc-pool:applications:connectionAcquiredEvent</li> 
+      <li>glassfish:jdbc-pool:applications:connectionReleasedEvent<br> for jdbc connection pools and </li> 
+      <li>glassfish:connector-pool:applications:decrementConnectionUsedEvent</li> 
+      <li>glassfish:connector-pool:applications:connectionUsedEvent</li> 
+      <li>glassfish:connector-pool:applications:connectionAcquiredEvent</li> 
+      <li>glassfish:connector-pool:applications:connectionReleasedEvent<br> for connector connection pools.</li> 
+     </ul> <h4><a name="Gfv31ConnectorsJDBC-4.1.5.2SQLTracingtodisplayfrequentlyusedqueries"></a>4.1.5.2 SQL Tracing to display frequently used queries</h3> <p>SQL query monitoring is a new feature to display the 'n' most frequently used queries by the applications in a specific time window. When SQL tracing is turned on by setting the attribute <b>sql-trace-listeners</b>, new connection pool configuration properties <b>number-of-top-queries-to-report</b> and <b>time-to-keep-queries-in-minutes</b> can be configured to set the value of 'n' to display the top 'n' most frequently used queries and the time to retain queries in a cache before they are purged respectively. The property <b>time-to-keep-queries-in-minutes</b> will represent the time window for which the queries will be kept in the cache ie., considered for calculating frequently used queries. The default value of <b>number-of-top-queries-to-report</b> is ten and <b>time-to-keep-queries-in-minutes</b> is five minutes.</p> <p>When monitoring is turned on and sql-trace-listeners attribute is set, administrators and developers can use the monitoring information as shown below to determine the most frequently executed SQL queries. Monitoring statistics are collected only for standard JDBC calls.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">server.resources.testPool.frequsedsqlqueries-current =
+query1
+query2
+query3
+...</pre> 
+       </div> 
+      </div>
+     </div> <p><b>number-of-top-queries-to-report</b> and <b>time-to-keep-queries-in-minutes</b> properties can be set to a positive non-zero value as follows :</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">asadmin&gt; set server.resources.jdbc-connection-pool.&lt;POOL_NAME&gt;.property.number-of-top-queries-to-report=15
+asadmin&gt; set server.resources.jdbc-connection-pool.&lt;POOL_NAME&gt;.property.time-to-keep-queries-in-minutes=10</pre> 
+       </div> 
+      </div>
+     </div> <p>The AMX ObjectName that is used to retrieve this attribute value is "amx:pp=/mon/server-mon﻿﻿[server],type=<b>jdbcra-mon</b>,name=resources/testPool". The monitoring probe that is exposed by this feature is "glassfish:jdbcra:sqltracing:cacheSqlQueryEvent".</p> <h4><a name="Gfv31ConnectorsJDBC-4.1.5.3StatementCachehit%2FmissMonitoring"></a>4.1.5.3 Statement Cache hit/miss Monitoring</h3> <p>A new monitoring probe to display the statement cache hit and miss monitoring statistics. A statement cache hit indicates the number of times a Statement/PreparedStatement/CallableStatement was taken from the cache whereas statement cache miss is number of times the statement was created newly as it was not found in the cache.</p> <p>Statements executed repeatedly by applications can use this monitoring information to tune the <b>statement-cache-size</b> attribute to improve performance. Statement cache monitoring indicates the total number of statement hits and misses in a connection pool.</p> <p>Above statistics will be collected when JDBC Connection Pool Monitoring is turned on and statement-caching (<b>statement-cache-size</b> attribute of jdbc-connection-pool) is enabled.<br> Typical statement cache hit and miss monitoring statistics will look like</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">server.resources.testPool.numstatementcachehit-count = 3
+server.resources.testPool.numstatementcachemiss-count = 1</pre> 
+       </div> 
+      </div>
+     </div> <p>The AMX ObjectName that is used to retrieve these attribute values is "amx:pp=/mon/server-mon[server],type=<b>jdbcra-mon</b>,name=resources/testPool". The monitoring probes that are exposed by this feature are "glassfish:jdbcra:statementcache:statementCacheHitEvent" and "glassfish:jdbcra:statementcache:statementCacheMissEvent".</p> <h4><a name="Gfv31ConnectorsJDBC-4.1.5.4Statementleakmonitoring"></a>4.1.5.4 Statement leak monitoring</h3> <p>Statement leak monitoring will leverage the new feature Statement Leak Detection to get the total number of statement leaks in the application server at the sample time. Statement leaks count is calculated across all applications for the specified pool.</p> <p>When JDBC Connection Pool Monitoring is turned on and <b>statement-leak-timeout-in-seconds</b> is set to a positive non-zero value, the statement leak monitoring information will be collected. The statistic will be of the form :</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">server.resources.testPool.numpotentialstatementleak-count = 6</pre> 
+       </div> 
+      </div>
+     </div> <p>Above statistic will be collected when JDBC Connection Pool Monitoring is turned on and statement leak detection (<b>statement-leak-timeout-in-seconds</b> attribute of jdbc-connection-pool) is enabled.</p> <p>The AMX ObjectName that is used to retrieve these attribute values is "amx:pp=/mon/server-mon[server],type=<b>jdbcra-mon</b>,name=resources/testPool". The monitoring probe that is exposed by this feature is "glassfish:jdbcra:statementleak:potentialStatementLeakEvent".</p> <h4><a name="Gfv31ConnectorsJDBC-4.1.6NewCustomValidationTemplates"></a>4.1.6 New Custom Validation Templates</h2> <p>Custom Validation templates will be introduced for databases MSSQL, DB2 and Sybase. The validation mechanisms will implement the interface <a href="GFV3JDBCOnePager_ConnectionValidator.html" title="GFV3JDBCOnePager_ConnectionValidator">org.glassfish.api.jdbc.validation.ConnectionValidation</a>.</p> <h4><a name="Gfv31ConnectorsJDBC-4.1.7IntrospectJDBCDrivers"></a>4.1.7 Introspect JDBC Drivers</h2> <h4><a name="Gfv31ConnectorsJDBC-4.1.7.1IntrospectJDBCDriversOnRequest%28GUI%29"></a>4.1.7.1 Introspect JDBC Drivers On Request (GUI)</h3> <p>This is an extension to the feature "Introspection of JDBC Drivers" introduced in V3 for GUI. By default, Admin console gets the implementation classnames based on the database vendor from a file called dbvendor.properties.</p> <p>A check box for introspection of data-source/driver implementation class-names will enable introspection. If <b>"Introspect"</b> check box is selected, based on the database vendor and resource type chosen, implementation class-names are displayed. Administrators can choose appropriate class-name from the introspected list to create the connection pool.</p> <p>This feature works on the assumption that the JDBC driver is made available to the application server.</p> <h4><a name="Gfv31ConnectorsJDBC-4.1.7.2IntrospectionofJDBCdriversinCLI"></a>4.1.7.2 Introspection of JDBC drivers in CLI</h3> <p>Admin CLI prompts for Datasource or Driver class name whenever a create-jdbc-connection-pool command is issued without the respective attributes. In such cases, this feature introspects the implementation class-names and displays to the user so that user can choose the implementation class-name.</p> <p>This feature works on the assumption that the JDBC driver is made available to the application server. An ease-of-use feature, its of great help to the users in order to choose implementation class names from the list without the need for a lookup on the driver documentation.</p> <p>The list of implementation class names would be derived based on the database vendor and the resource type provided by the user.</p> <h4><a name="Gfv31ConnectorsJDBC-4.1.8OSGiRFCsupportfromJDBCmodule"></a>4.1.8 OSGi RFC support from JDBC module</h2> <p>Support for OSGi RFC for JDBC (OSGi RFC 122) can be provided in GlassFish.</p> <h4><a name="Gfv31ConnectorsJDBC-4.1.9Transparentjdbcconnectionpoolreconfiguration"></a>4.1.9 Transparent jdbc-connection-pool re-configuration</h2> 
+     <ul> 
+      <li>A feature using which redeployment of jdbc-connection-pool due to attribute or property change can be handled transparent to the applications that use the pool.</li> 
+      <li>Whenever a set of properties / attributes of jdbc-connection-pool are changed, the connection-pool is destroyed and re-created based on the new values. Any application that is using the connection-pool need to be re-deployed or application server need to be re-started due to pool re-configuration.</li> 
+      <li>Using this feature, existing applications can roll-over to new connection pool transparently.</li> 
+      <li>It is also possible that there can be in-flight transactions that is using the connections when the pool is re-configured.</li> 
+      <li>This feature will block the pool for any new connection requests, however will allow requests that have already acquired atleast one connection from the pool and is part of a transaction. Thus, in-flight transactions' connection requests will be honoured and the transaction can complete.</li> 
+      <li>A new property named 'dynamic-reconfiguration-wait-timeout-in-seconds' can be introduced that will help to allow in-flight requests to complete.</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">asadmin&gt; set server.resources.jdbc-connection-pool.&lt;POOL_NAME&gt;.property.dynamic-reconfiguration-wait-timeout-in-seconds=30</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>All new requests will wait for the pool reconfiguration to complete and connections will be acquired using re-configured pool configuration.</li> 
+      <li>All in-use connections, in-flight transactions that span even after 'wait-timeout' is elapsed will have to be re-tried.</li> 
+     </ul> <h4><a name="Gfv31ConnectorsJDBC-4.2.Bug%2FRFENumber%28s%29%3A"></a>4.2. Bug/RFE Number(s):</h2> <p>TBD</p> <h4><a name="Gfv31ConnectorsJDBC-4.3.InScope%3A"></a>4.3. In Scope:</h2> 
+     <ol> 
+      <li>Clustering support will be provided based on v2 functionalities.</li> 
+      <li>Connections Usage by applications, SQL Tracing to display frequently used queries, Statement cache hit/miss statistics depend on whether monitoring is turned on or off.</li> 
+      <li>Statement leak monitoring will work when Statement leak detection and monitoring are turned on.</li> 
+      <li>Statement cache hit/miss monitoring will work when Statement Caching is enabled and monitoring is turned on.</li> 
+      <li>SQL Trace monitoring will work only when SQL Trace listeners are set and monitoring is turned on.</li> 
+      <li>Introspection of JDBC Drivers in GUI/CLI will work based on the existing API introduced in v3 for querying the JDBC driver to get implementation class names.</li> 
+     </ol> <h4><a name="Gfv31ConnectorsJDBC-4.4.OutofScope%3A"></a>4.4. Out of Scope:</h2> 
+     <ol> 
+      <li>Statement cache monitoring, SQL Trace monitoring, Statement leak monitoring could be incrementally enhanced in future releases by grouping the statistics based on applications.</li> 
+     </ol> <h4><a name="Gfv31ConnectorsJDBC-4.5.Interfaces%3A"></a>4.5. Interfaces:</h2> <h4><a name="Gfv31ConnectorsJDBC-4.5.1ExportedInterfaces"></a>4.5.1 Exported Interfaces</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> *Interface* </th> 
+         <th class="confluenceTh"> *Stability* </th> 
+         <th class="confluenceTh"> *Former Stability (if changing)* </th> 
+         <th class="confluenceTh"> Comments </th> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <ul> 
+      <li>Two new flags for <em>list-applications</em> command will be provided 
+       <ul> 
+        <li>--subcomponents and --resources</li> 
+        <li>Refer Admin/Config Impact, CLI Section for sample output</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li><b>preserveAppScopedResources</b> 
+       <ul> 
+        <li>A new property named <b>preserveAppScopedResources</b> need to be supported for <b>deploy --force=true</b> (redeploy) command which will take effect when the archive has <em>application-scoped-resources</em></li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li><b>Custom implementations for connection validation for databases</b> 
+       <ul> 
+        <li>org.glassfish.api.jdbc.MSSQLConnectionValidation</li> 
+        <li>org.glassfish.api.jdbc.DB2ConnectionValidation</li> 
+        <li>org.glassfish.api.jdbc.SybaseConnectionValidation</li> 
+       </ul> </li> 
+     </ul> <p>All of the above implement org.glassfish.api.jdbc.ConnectionValidation interface.</p> <h4><a name="Gfv31ConnectorsJDBC-4.5.2Importedinterfaces"></a>4.5.2 Imported interfaces</h3> <h4><a name="Gfv31ConnectorsJDBC-4.5.3Otherinterfaces%28Optional%29"></a>4.5.3 Other interfaces (Optional)</h3> <h4><a name="Gfv31ConnectorsJDBC-4.6.DocImpact%3A"></a>4.6. Doc Impact:</h2> 
+     <ol> 
+      <li>Administration Guide</li> 
+      <li>Developer's Guide</li> 
+      <li>Administration Reference Guide</li> 
+      <li>Admin GUI online help</li> 
+      <li>Admin CLI help</li> 
+      <li>Performance Tuning Guide</li> 
+     </ol> <h4><a name="Gfv31ConnectorsJDBC-4.7.Admin%2FConfigImpact%3A"></a>4.7. Admin/Config Impact:</h2> <p><b>CLI support</b> :</p> 
+     <ul> 
+      <li>Support for new attributes <b>statement-leak-timeout-in-seconds</b> and <b>statement-leak-reclaim</b> in create-jdbc-connection-pool command.</li> 
+      <li>--target option for the commands : create-resource-ref, delete-resource-ref, list-resource-refs.</li> 
+      <li>--target option to be added for commands listed in section 4.1.2.</li> 
+      <li>New flags <b>--subcomponents and --resources</b> will be introduced to the command "list-applications" 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">asadmin list-applications --subcomponents --resources
+connector16App &lt;ear, ejb, web&gt;
+  java:app/jdbc/app-level-ds	&lt;JdbcResource&gt;
+  java:app/jdbc/XAPointbase	&lt;JdbcResource&gt;
+  java:app/jdbc/app-level-pool	&lt;JdbcConnectionPool&gt;
+  java:app/jdbc-pointbase-pool1	&lt;JdbcConnectionPool&gt;
+  connector16-ejb.jar &lt;EJBModule&gt;
+    java:module/jdbc/ejb-level-ds	&lt;JdbcResource&gt;
+    java:module/eis/testAdmin	&lt;AdminObjectResource&gt;
+    java:module/jdbc/ejb-level-pool	&lt;JdbcConnectionPool&gt;
+  connector16-web.war &lt;WebModule&gt;
+    java:module/jdbc/web-level-ds	&lt;JdbcResource&gt;
+    java:module/jdbc/web-level-pool	&lt;JdbcConnectionPool&gt;</pre> 
+         </div> 
+        </div>
+       </div></li> 
+      <li><b>ping-connection-pool</b> and <b>flush-connection-pool</b> commands will accept new flags <b>"--appname"</b> and <b>"--modulename"</b> in order to support application-scoped-resources and module-scoped-resources</li> 
+      <li>Support for interactive CLI mode to introspect and display implementation class names of JDBC drivers based on database vendor and resource type.</li> 
+     </ul> <p><b>GUI support</b> :</p> 
+     <ul> 
+      <li>Support for adding new attributes to the JDBC Connection Pool page : advanced tab : A text field for "Statement Leak Tracing Timeout in seconds" and a checkbox for "Statement Leak Reclaim".</li> 
+      <li>GUI changes for Clustering support for all types of resources.</li> 
+      <li>GUI support for displaying, editing application-scoped-resources. ( create/delete is not supported for application-scoped-resources)</li> 
+      <li>GUI support for displaying, editing datasource-definition resource. ( create/delete is not supported for datasource-definition)</li> 
+      <li>Support to display monitoring statistics of application-scoped-resources and datasource-definition resources.</li> 
+      <li>Monitoring statistics related support from GUI : 
+       <ul> 
+        <li>Support for displaying the new monitoring statistics for connections usage by applications</li> 
+        <li>Support for displaying SQL Tracing monitoring statistics to view most frequently used sql queries</li> 
+        <li>Support for displaying the Statament cache hit/miss monitoring statistics</li> 
+        <li>Support for displaying the Statement leak monitoring statistics</li> 
+       </ul> </li> 
+      <li>Validation class-names for the default database vendors should be displayed in the GUI whenever connection validation is turned on and custom validation is chosen as the connection validation mechanism. The getValidationClassNames(String dbVendor) API from ConnectorRuntimeAPIProvider could be used for the same.</li> 
+      <li>Support for adding a new check box to the Connection Pool creation page, by name, "Introspect". When this checkbox is selected, list of implementation class-names will be displayed in the next page based on database vendor and resource type provided by the user.</li> 
+     </ul> <p><b>Config Impact</b></p> 
+     <ul> 
+      <li>DTD changes for <a href="GFV31ConnectorsJDBC_DTD_jdbcConnectionPool.html" title="GFV31ConnectorsJDBC_DTD_jdbcConnectionPool">JDBC Connection Pool</a>.</li> 
+      <li>DTD changes for <a href="GFV31ConnectorsJDBC_DTD_appScopedResources.html" title="GFV31ConnectorsJDBC_DTD_appScopedResources">Application, Module elements</a>.</li> 
+      <li>DTD changes for <a href="GFV31ConnectorsJDBC_DTD_dataSourceDefinition.html" title="GFV31ConnectorsJDBC_DTD_dataSourceDefinition">DataSource-Definition</a>.</li> 
+      <li>DTD changes for <a href="GFV31ConnectorsJDBC_DTD_glassfishResources.html" title="GFV31ConnectorsJDBC_DTD_glassfishResources">glassfish-resources_1_5.dtd</a>.</li> 
+     </ul> <h4><a name="Gfv31ConnectorsJDBC-4.8.HAImpact%3A"></a>4.8. HA Impact:</h2> <p>TBD</p> <h4><a name="Gfv31ConnectorsJDBC-4.9.I18N%2FL10NImpact%3A"></a>4.9. I18N/L10N Impact:</h2> <p>None.</p> <h4><a name="Gfv31ConnectorsJDBC-4.10.Packaging%2CDeliveryandUpgrade%3A"></a>4.10. Packaging, Delivery and Upgrade:</h2> <h4><a name="Gfv31ConnectorsJDBC-4.10.1Packaging"></a>4.10.1 Packaging</h3> <h4><a name="Gfv31ConnectorsJDBC-4.10.2Delivery"></a>4.10.2 Delivery</h3> <h4><a name="Gfv31ConnectorsJDBC-4.10.3UpgradeandMigration"></a>4.10.3 Upgrade and Migration</h3> <h4><a name="Gfv31ConnectorsJDBC-4.11.SecurityImpact%3A"></a>4.11. Security Impact:</h2> <h4><a name="Gfv31ConnectorsJDBC-4.12.CompatibilityImpact"></a>4.12. Compatibility Impact</h2> <h4><a name="Gfv31ConnectorsJDBC-4.13.Dependencies"></a>4.13. Dependencies</h2> <h4><a name="Gfv31ConnectorsJDBC-4.13.1InternalDependencies"></a>4.13.1 Internal Dependencies</h3> <h4><a name="Gfv31ConnectorsJDBC-4.13.2ExternalDependencies"></a>4.13.2 External Dependencies</h3> <h4><a name="Gfv31ConnectorsJDBC-4.14.TestingImpact"></a>4.14. Testing Impact</h2> <h4><a name="Gfv31ConnectorsJDBC-5.ReferenceDocuments%3A"></a>5. Reference Documents:</h1> 
+     <ol> 
+      <li><a href="http://docs.sun.com/app/docs/doc/820-4332/6nfq988or?a=expand">GlassFish v2.1 Reference Manual</a></li> 
+      <li><a href="http://jcp.org/en/jsr/detail-322">JSR 322 - Java EE Connector Architecture 1.6 Specification</a></li> 
+      <li><a href="3.1DeploymentOnePager.html" title="3.1DeploymentOnePager">GlassFish 3.1 Deployment one-pager</a></li> 
+      <li><a href="http://wiki.glassfish.java.net/attach/V3FunctionalSpecs/GFv3.1-OSGi-onepager-v0.2.txt">GlassFish 3.1 OSGi one-pager</a></li> 
+      <li><a href="ConnectorsJDBC31ReviewSiva.html" title="ConnectorsJDBC31ReviewSiva">Review comments and discussions on the one-pager</a></li> 
+     </ol> <h4><a name="Gfv31ConnectorsJDBC-6.Schedule%3A"></a>6. Schedule:</h1> <h4><a name="Gfv31ConnectorsJDBC-6.1.ProjectedAvailability%3A"></a>6.1. Projected Availability:</h2> 
+     <ul> 
+      <li>Aligned to overall GlassFish 3.1 Final release schedules.</li> 
+      <li>Refer the <a href="V3.1_Connectors_Pooling_Resources_JDBC.html" title="V3.1_Connectors_Pooling_Resources_JDBC">sub-project's schedule</a> for more information</li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jan 02, 2011 by 
+<font color="#0050B2">jagadish</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

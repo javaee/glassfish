@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : 3.1Transaction</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="3.1Transaction-GlassFishServerOpenSourceEdition3.1TransactionRecovery"></a>GlassFish Server Open Source Edition 3.1 - Transaction Recovery </h1> 
+     <div> 
+      <ul> 
+       <li><a href="#3.1Transaction-GlassFishServerOpenSourceEdition3.1TransactionRecovery">GlassFish Server Open Source Edition 3.1 - Transaction Recovery</a></li> 
+       <ul> 
+        <li><a href="#3.1Transaction-Scope">Scope</a></li> 
+        <li><a href="#3.1Transaction-FeatureOverview">Feature Overview</a></li> 
+        <ul> 
+         <li><a href="#3.1Transaction-TX001Manualdelegatedtransactionrecoverywithsharedfilesystem">TX-001 Manual delegated transaction recovery with shared file system</a></li> 
+         <li><a href="#3.1Transaction-TX002SupportfortargetoptionforexistingCLIs">TX-002 Support for --target option for existing CLIs</a></li> 
+         <li><a href="#3.1Transaction-TX003Automaticdelegatedtransactionrecoverywithsharedfilesystem">TX-003 Automatic delegated transaction recovery with shared file system</a></li> 
+         <li><a href="#3.1Transaction-TX005Properlydocumentlimitationsofstoringtransactionlogsinadatabase">TX-005 Properly document limitations of storing transaction logs in a database</a></li> 
+        </ul> 
+        <li><a href="#3.1Transaction-DesignDocument">Design Document</a></li> 
+        <li><a href="#3.1Transaction-MilestoneSchedule">Milestone Schedule</a></li> 
+        <li><a href="#3.1Transaction-TaskList">Task List</a></li> 
+        <li><a href="#3.1Transaction-DevTests">Dev Tests</a></li> 
+        <li><a href="#3.1Transaction-References">References</a></li> 
+        <ul> 
+         <li><a href="#3.1Transaction-Docs%26QAHandOff">Docs &amp; QA Hand Off</a></li> 
+        </ul> 
+        <li><a href="#3.1Transaction-EmailAlias">Email Alias</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="3.1Transaction-Scope"></a>Scope </h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Feature ID </th> 
+         <th class="confluenceTh"> Priority </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> Eng Response </th> 
+         <th class="confluenceTh"> Owner(s) </th> 
+         <th class="confluenceTh"> Estimate (Man Days) </th> 
+         <th class="confluenceTh"> Source of Requirement </th> 
+         <th class="confluenceTh">Issue Link</th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> TX-001 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Manual delegated transaction recovery with shared file system </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Marina </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Feature parity </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/12212">12212 </a> </td> 
+         <td class="confluenceTd"> Manual (CLI) recovery when server fails to come back up </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> TX-002 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Support for --target option for existing CLIs </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Marina </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Feature parity </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/11966">11966 </a> </td> 
+         <td class="confluenceTd"> recover-transactions, rollback-transaction, freeze-transaction-service, unfreeze-transaction-service </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> TX-003 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Automatic delegated transaction recovery with shared file system </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Marina </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/11967">11967 </a> </td> 
+         <td class="confluenceTd"> Replace GMS fencing with Transaction Service managed file locks </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> TX-004 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Additional DTrace probes </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Marina </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Cover <a href="http://java.sun.com/javaee/6/docs/api/javax/transaction/package-summary.html">javax.transaction </a>, <a href="http://java.sun.com/javaee/6/docs/api/javax/transaction/xa/package-summary.html">javax.transaction.xa </a> APIs </td> 
+         <td class="confluenceTd"> Next release </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> TX-005 </td> 
+         <td class="confluenceTd"> P4 </td> 
+         <td class="confluenceTd"> Properly document limitations of storing transaction logs in a database </td> 
+         <td class="confluenceTd"> Yes (no new features) </td> 
+         <td class="confluenceTd"> Marina </td> 
+         <td class="confluenceTd"> Exists in V3 </td> 
+         <td class="confluenceTd"> Feature parity </td> 
+         <td class="confluenceTd"> Refer to version <a href="http://docs.sun.com/app/docs/doc/821-0181/gcmam?l=en&amp;a=view">2.1.1 docs </a>. See note below </td> 
+         <td class="confluenceTd"> Docs </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.1Transaction-FeatureOverview"></a>Feature Overview </h2> <h4><a name="3.1Transaction-TX001Manualdelegatedtransactionrecoverywithsharedfilesystem"></a>TX-001 Manual delegated transaction recovery with shared file system</h3> 
+     <ul> 
+      <li>Porting of V2 code. Corresponding behavior will be identical to V2.</li> 
+      <li>Required feature</li> 
+      <li>Dependencies 
+       <ul> 
+        <li>admin cluster support</li> 
+        <li>GMS ( for failure detection notifications )</li> 
+       </ul> </li> 
+     </ul> <h4><a name="3.1Transaction-TX002SupportfortargetoptionforexistingCLIs"></a>TX-002 Support for --target option for existing CLIs</h3> 
+     <ul> 
+      <li>Add support for --target option for transaction service CLIs: recover-transactions, rollback-transaction, freeze-transaction-service, unfreeze-transaction-service. Corresponding behavior will be identical to V2.</li> 
+      <li>Required feature</li> 
+      <li>Dependencies 
+       <ul> 
+        <li>admin cluster support</li> 
+        <li>admin module changes to support new asadmin parameter</li> 
+        <li>GMS ( for failure detection notifications )</li> 
+       </ul> </li> 
+     </ul> <h4><a name="3.1Transaction-TX003Automaticdelegatedtransactionrecoverywithsharedfilesystem"></a>TX-003 Automatic delegated transaction recovery with shared file system</h3> 
+     <ul> 
+      <li>Replace GMS fencing for locking and storing information about delegated recovery with locks based on the file system and managed by transaction service itself. If implemented, should allow to identify if a delegated recovery was attempted but not completed if the instance that started the delegated recovery crashed before completing the task.</li> 
+      <li>New implementation</li> 
+      <li>Optional feature</li> 
+      <li>Dependencies 
+       <ul> 
+        <li>admin cluster support</li> 
+        <li>GMS ( for failure detection notifications )</li> 
+       </ul> </li> 
+     </ul> <h4><a name="3.1Transaction-TX005Properlydocumentlimitationsofstoringtransactionlogsinadatabase"></a>TX-005 Properly document limitations of storing transaction logs in a database</h3> 
+     <ul> 
+      <li>Note: This feature is supported in V2 for resource recovery while the server instance is healthy, not for a server crush.</li> 
+      <li>No implementation changes are planed for V3.1</li> 
+     </ul> <h4><a name="3.1Transaction-DesignDocument"></a>Design Document</h2> 
+     <ul> 
+      <li><a href="3.1TransactionOnePager.html" title="3.1TransactionOnePager">One-pager</a></li> 
+     </ul> <h4><a name="3.1Transaction-MilestoneSchedule"></a>Milestone Schedule</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> M3 </td> 
+         <td class="confluenceTd"> TX-001 </td> 
+         <td class="confluenceTd"> Manual delegated transaction recovery with shared file system </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Completed on 08/05 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd"> M4 </td> 
+         <td class="confluenceTd"> TX-002 </td> 
+         <td class="confluenceTd"> Support for --target option for existing CLIs </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Completed on 08/05 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3 </td> 
+         <td class="confluenceTd"> M5 </td> 
+         <td class="confluenceTd"> TX-003 </td> 
+         <td class="confluenceTd"> Automatic delegated transaction recovery with shared file system </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Completed on 09/14 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4 </td> 
+         <td class="confluenceTd"> Dropped </td> 
+         <td class="confluenceTd"> TX-004 </td> 
+         <td class="confluenceTd"> Additional DTrace probes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5 </td> 
+         <td class="confluenceTd"> M5 </td> 
+         <td class="confluenceTd"> TX-005 </td> 
+         <td class="confluenceTd"> Properly document limitations of storing transaction logs in a database </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Docs task </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.1Transaction-TaskList"></a>Task List</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task </th> 
+         <th class="confluenceTh"> Target Milestone </th> 
+         <th class="confluenceTh"> Start </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Owner(s) </th> 
+         <th class="confluenceTh"> Feature ID </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.1Transaction-DevTests"></a>Dev Tests </h2> 
+     <ul> 
+      <li>v2/appserv-tests/devtests/transaction/ee</li> 
+     </ul> <h4><a name="3.1Transaction-References"></a>References</h2> 
+     <ul> 
+      <li><a href="http://docs.sun.com/app/docs/doc/821-0179/6nl8hchmr?l=en&amp;a=expand">GlassFish v2.x CLI Commands</a></li> 
+      <li><a href="GlassFishV2Architecture.html" title="GlassFishV2Architecture">GlassFish v2 Cluster Architecture </a></li> 
+     </ul> <h4><a name="3.1Transaction-Docs%26QAHandOff"></a>Docs &amp; QA Hand Off</h3> 
+     <ul> 
+      <li><a href="http://appserver.sfbay.sun.com/Wiki.jsp?page=TX-001-002-DHQA-MS3">TX-001 &amp; TX-002 </a></li> 
+      <li><a href="http://appserver.sfbay.sun.com/Wiki.jsp?page=TX-003-DHQA-MS5">TX-003 </a></li> 
+     </ul> <h4><a name="3.1Transaction-EmailAlias"></a>Email Alias</h2> 
+     <ul> 
+      <li>Please contact us at <a href="mailto:dev@glassfish.java.net">dev@glassfish.java.net</a></li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Oct 01, 2010 by 
+<font color="#0050B2">-marina</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : Glassfishmigration</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="Glassfishmigration-MigrationofGlassFishCommunityprojectsfromdev.java.nettoglassfish.org"></a>Migration of GlassFish Community projects from dev.java.net to glassfish.org</h1> <p>There are many projects involved in GlassFish community most of them are hosted on java.net. Some are using cvs, others are using svn. All are using the java.net customized bugtrack system. All the projects are also hosting some welcome pages and documentation under the www/ directory of the scm system. All the projects are also managing user roles (owner, dev, doc, observers) and mailing lists. This page describes the migration process for these java.net project to a new site glassfish.org running on top of the Kenai infrastructure. </p> <p>Note: all our current migration scripts are hosted on this project <a href="http://kenai.com/projects/gf-migration">http://kenai.com/projects/gf-migration</a>. YOu need permissions to access to it.</p> <h4><a name="Glassfishmigration-ListofGlassFishrelatedprojectsthatshouldbehostedonglassfish.org"></a>List of GlassFish related projects that should be hosted on glassfish.org</h2> 
+     <ul> 
+      <li>List</li> 
+     </ul> <h4><a name="Glassfishmigration-Schedulemigrationschedule"></a>Schedule</h2> <h4><a name="Glassfishmigration-SourcecodeMigration"></a>Source code Migration</h2> 
+     <ul> 
+      <li>Subversion migration can be done via svnsync Subversion repository migration to Kenai, migrated with minimum downtime</li> 
+      <li>CVS: We have first to convert cvs to SVN within java.net. See <a href="https://java-net.java.net/issues/show_bug.cgi-795">https://java-net.java.net/issues/show_bug.cgi-795</a></li> 
+     </ul> <h4><a name="Glassfishmigration-Mailinglists"></a>Mailing lists</h2> 
+     <ul> 
+      <li>We want to migrate archives. To do that, a migration script is being written.</li> 
+     </ul> <p>Migration script have been done and tested by Rajiv. See (You need access to the gf-migration project)<br> <a href="http://kenai.com/projects/gf-migration/pages/MailServerSetupForMigratingMailingList">http://kenai.com/projects/gf-migration/pages/MailServerSetupForMigratingMailingList</a></p> <h4><a name="Glassfishmigration-Userdatabase"></a>User database</h2> 
+     <ul> 
+      <li>java.net has currently more than 600k accounts, and there are 37k e-mail addresses that are shared by multiple user accounts.</li> 
+      <li>Migrating the entire set of users is the easiest (script is done) thing to do and will benefit the transition of the remaining parts of java.net later.</li> 
+      <li>Passwords cannot be preserved, so we would need to generate random passwords and do a communication plan to send emails to the addresses related to an account with the new password.</li> 
+     </ul> <h4><a name="Glassfishmigration-NeedforKenaiAPI"></a>Need for Kenai API</h2> 
+     <ul> 
+      <li>The same way we have APIs to manipulate most aspects of java.net (<a href="http://javanettasks.java.net/">http://javanettasks.java.net/</a>) we need Kenai APIs that we can run on our own Kenai instance to: 
+       <ul> 
+        <li>create project</li> 
+        <li>create mailing lists</li> 
+        <li>subscribe users to mailing list</li> 
+        <li>create users</li> 
+       </ul> </li> 
+     </ul> <h4><a name="Glassfishmigration-Bugtraq"></a>Bugtraq</h2> 
+     <ul> 
+      <li><a href="http://kenai.com/projects/issuezilla-to-jira">Tool being developed by Hudson community</a> allows migration from IssueZilla to JIRA via the Jelly importer of JIRA. This handles issues, attachments, history, watchers, and votes. Some of the conversions are tricker than others.</li> 
+      <li>Bug queries: We will need to migrate our Bug queries manually. So far, we are using these ones: 
+       <ul> 
+        <li><a href="PlanForGlassFishV3.html#PlanForGlassFishV3-sectionPlanForGlassFishV3DefectQueries">PlanForGlassFishV3#section-PlanForGlassFishV3-DefectQueries</a></li> 
+        <li><a href="https://glassfish.java.net/issues/reports.cgi?state=Openissues&amp;issue_type=DEFECT&amp;containing=gfv3-prelude-included&amp;type=naturallanguagesearch&amp;x=Subcomponent&amp;y=Priority">https://glassfish.java.net/issues/reports.cgi?state=Open+issues&amp;issue_type=DEFECT&amp;containing=gfv3-prelude-included&amp;type=natural+language+search&amp;x=Subcomponent&amp;y=Priority</a></li> 
+       </ul> </li> 
+     </ul> <h4><a name="Glassfishmigration-Wiki"></a>Wiki</h2> 
+     <ul> 
+      <li>we have a few JSPwiki (<a href="http://wiki.glassfish.java.net">http://wiki.glassfish.java.net</a> and <a href="http://wiki.updatecenter.java.net/">http://wiki.updatecenter.java.net/</a> - but note that last one is obsolete and has moved to <a href="http://wikis.sun.com/display/updatecenter/Main">http://wikis.sun.com/display/updatecenter/Main</a>) that may stay as is or could be migrated to the mediawiki of Kenai (there is a migration tool). Not sure yet.</li> 
+     </ul> <h4><a name="Glassfishmigration-URLredirection"></a>URL redirection</h2> 
+     <ul> 
+      <li>JavaScript-based: slow, as page needs to load before redirection. Google search won't notice</li> 
+      <li>Apache-based: this can be only done by Collab.net</li> 
+      <li>Can they cope with that many redirections? Hard to do smart redirections</li> 
+     </ul> <h4><a name="Glassfishmigration-Webcontents"></a>Web contents</h2> 
+     <ul> 
+      <li>daemon to publish trunk/www into WebDAV</li> 
+      <li>We need some templating engine</li> 
+      <li>We could make good use of a CMS (like Drupal or Liferay) integrated into the projects. The Java.Net group (Sonya Barry, under Justin K) has a proposal to do this.</li> 
+      <li>GlassFish is currently not using the <em>Community</em> machinery in Java.Net (see in contrast <a href="http://community.java.net/java-desktop">http://community.java.net/java-desktop</a>); instead we give the viaul impression of a community through the use of JS magic from <a href="https://glassfish-theme.java.net/">glassfish-theme</a> that manipulates the DOM of the pages for many (most?) projects. A good, flexible CMS, with good associated tools, could provide an easy implementation for a "GlassFish.org" microsite. If we could map the front-page of the most popular projects there, we could have a rich and useful micro-site.</li> 
+     </ul> <h4><a name="Glassfishmigration-Superuserprivilegeonjava.net"></a>Super user privilege on java.net</h2> 
+     <ul> 
+      <li>Kohsuke can lock a project one at a time, and dump arbitrary database contents.</li> 
+      <li>We can migrate one project at a time, without incurring a significant down time across the board.</li> 
+     </ul> <h4><a name="Glassfishmigration-OtherUsefulLinks"></a>Other Useful Links</h2> 
+     <ul> 
+      <li>Frank Kieviet wrote a useful <a href="http://frankkieviet.blogspot.com/2010/04/working-with-javanet-tips-and-tricks.html">Working with java.net: tips and tricks for project owners</a> as part of his ToI leaving Oracle/Sun. The entry explains a few details specific to <a href="http://open-esb.java.net">OpenESB</a> but also has plenty of good information on operating within Java.Net, including how to use <a href="http://javanettasks.java.net/">javanettasks</a>, including a link to his own tools at <a href="https://open-esb-build.java.net/svn/open-esb-build/trunk/community-mgt/">open-esb-build</a></li> 
+      <li>On that topic, note that OpenESB also runs its wiki on the same machine as the GlassFish Wiki (IIRC).</li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 02, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:44.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

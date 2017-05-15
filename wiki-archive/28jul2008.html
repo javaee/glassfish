@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : 28jul2008</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="28jul2008-AdministrationITeamMeetingMinutes28July2008"></a>Administration I-Team Meeting Minutes 28 July 2008</h1> <h4><a name="28jul2008-Attendees"></a>Attendees</h2> <p>Byron, Jennifer, Paul, Sreeni</p> <h4><a name="28jul2008-Agenda"></a>Agenda</h2> <h4><a name="28jul2008-ReviewofActionItems"></a>Review of Action Items</h3> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li>QA:* Update the list of <a href="V3FunctionalSpecs.html" title="V3FunctionalSpecs">V3 Functional Specs</a> with QA owners for all features that have a functional spec.<br> <b>In progress:</b> An owner from QA is still required for:</li> 
+        <li><a href="GFV3EmbeddableOnePager.html" title="GFV3EmbeddableOnePager">Embeddable GlassFish</a></li> 
+        <li><a href="GFV3PluggabilityOnePager.html" title="GFV3PluggabilityOnePager">Pluggability/Extensibility/OEM</a></li> 
+        <li>Docs:* Update the <a href="V3FunctionalSpecs.html" title="V3FunctionalSpecs">V3 Functional Specs</a> with docs owners for all features that have a functional spec.<br> <b>Done.</b></li> 
+       </ul> </li> 
+     </ul> <h4><a name="28jul2008-V3PreludedeliverablesSCF%2811aug08%29"></a>V3 Prelude deliverables SCF (11aug08) </h3> <p>With the slip of SCF to August 11, the team has 1 more week to complete these deliverables.</p> <h4><a name="28jul2008-UpdatebyQA%2CDocumentationandDevelopmentTeams"></a>Update by QA, Documentation and Development Teams</h3> <p><b>QA:</b> No update this week.</p> <p><b>Development:</b></p> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li>One-pagers and Functional Specs.* Sreeni sent email last Friday to remind developers that the deadline for finalizing their one-pagers and functions specs is today, July 28, 2008.</li> 
+        <li>Monitoring.* Jennifer is working on the monitoring UI. In v3 Prelude, no charts will be provided, only basic tables for the web container and the HTTP service. The UI will provide similar configuration options to v2, namely the ability to turn on or turn off monitoring.</li> 
+        <li>Functionality for the <tt>get</tt> and <tt>set</tt> Commands.* The initial implementation was incompatible with v2. Jerome is working on fixing this incompatibility. Sreeni is supporting this work during Jerome's vacation.</li> 
+        <li>Workspace Reorganization.* Sreeni is reorganizing the workspace to facilitate the creation of IPS packages for distribution through the Update Center. This reorganization will be performed in the following phases:</li> 
+       </ul> 
+       <ol> 
+        <li>CLI</li> 
+        <li>Configuration</li> 
+        <li>AMX API</li> 
+       </ol> 
+       <ul> 
+        <li>Embeddable GlassFish.* Byron is finalizing the functional specification for embeddable GlassFish. The functionality for embedding GlassFish does not work with builds that date from after April 2008.</li> 
+        <li>Configuration Issues.* Byron has discovered that missing configuration elements prevent GlassFish from starting. More robust code and better error messages are needed. Byron will file an issue against this problem.</li> 
+       </ul> </li> 
+     </ul> <p><b>Documentation:</b></p> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li>Administration Guide.* Dixie submitted a new draft of the Administration Guide for review late last week.</li> 
+        <li>Document Plan.* Kedar has agreed to provide this week a definitive list of the commands that are to be supplied with v3 Prelude. This list is required to enable documentation to determine which commands to document (and, presumably QA to determine which commands to test). The use of <tt>list-commands</tt> is not a substitute for such a list, as <tt>list-commands</tt> lists only the commands in the build, which might not correspond to the list of commands that are actually to be provided.</li> 
+       </ul> </li> 
+     </ul> <h4><a name="28jul2008-CustomerInteraction%2CArch.updateifany"></a>Customer Interaction, Arch. update if any</h3> <p>No update this week.</p> <h4><a name="28jul2008-OpenMic."></a>Open Mic.</h3> <p>Sreeni mentioned that a test plan from QA is still to be provided.</p> <p><b>AI:</b> QA to provide a test plan for the v3 Prelude release.</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:48.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

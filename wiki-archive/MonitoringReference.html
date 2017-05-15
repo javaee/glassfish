@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : MonitoringReference</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h5><a name="MonitoringReference-Documentation"></a>Documentation</h5> <p><b>Engineering</b></p> <p><a href="./Monitoring.html">Requirements</a> (historical, not current)<br> <a href="./GFV3MonitoringOnePager.html">One Pager</a><br> <a href="Monitoring Dependencies Analysis.html" title="Monitoring Dependencies Analysis">Dependencies Analysis</a><br> <a href="http://wikihome.us.oracle.com/appserver/attach/V3SupportReadiness%2FGlassFish_v3_Monitoring.odp">v3 Support Readiness Presentation</a>&nbsp;(internal)<br> <a href="http://wikihome.us.oracle.com/appserver/attach/V3FinalSustainingTOI%2FGlassFish_v3_Monitoring_Sustaining_TOI.odp">v3 Sustaining TOI</a>&nbsp;(internal)<br> <a href="http://wikihome.us.oracle.com/appserver/Wiki.jsp?page=Monitorig_stat_usage">Monitoring Statistics Usage</a>&nbsp;(internal)<br> <a href="http://wikihome.us.oracle.com/appserver/Wiki.jsp?page=GFv3ProbesDashboard">GF v3 Probes Dashboard</a>&nbsp;(internal)<br> <a href="http://wiki.glassfish.java.net/attach/V3FunctionalSpecs/Making_Module_Monitorable_V3.html">Making a Module Monitorable in v3</a><br> <a href="./MonitorV3WithAmx.html">http://wikis.sun.com/display/GlassFish/MonitorV3WithAmx</a></p> <p><b>External</b></p> <p><a href="http://swpubs.us.oracle.com/writing/appserver/docs/cd/E18930_01/html/821-2416/ablur.html">Oracle GlassFish Server 3.1 Administration Guide Monitoring, Chapter 8 Administering the Monitoring Service</a><br> <a href="http://wd0338.oracle.com/archive/cd_ns/E18930_01/html/821-2416/gjzkc.html">Writing and Running JavaScript Clients to Monitor GlassFish Server</a><br> <a href="http://download.oracle.com/docs/cd/E18930_01/html/821-2415/ghmos.html">Oracle GlassFish 3.1 Add-on Component Development Guide, Chapter 5 Adding Monitoring Capabilities</a><br> <a href="http://download.oracle.com/docs/cd/E19226-01/821-1005/index.html">Sun GlassFish Enterprise Manager DTrace Monitoring 3.0 Beta Installation and Quick Start Guide</a><br> <a href="http://wikihome.sfbay.sun.com/App-Server-Release/attach/Attachments%2FJavaEE6_Webinar_2_Monitoring_Sreeni.pdf">Java EE 6 Webinar - Monitoring</a></p> <p><b>Blogs</b></p> <p><a href="http://blogs.oracle.com/foo/entry/mort_learns_how_to_use">Mort Learns How to Use</a><br> <a href="http://blogs.oracle.com/foo/entry/monitoring_scripting_of_clusters_in">Monitoring Scripting of Clusters</a><br> <a href="http://blogs.oracle.com/foo/entry/mort_learns_monitoring_and_admin">Mort Learns Monitoring and Admin</a><br> <a href="http://blogs.oracle.com/jenblog">http://blogs.oracle.com/jenblog</a><br> <a href="http://blogs.oracle.com/msreddy/entry/how_to_create_pluggable_container">How to Create a Pluggable Container</a><br> <a href="http://blogs.steeplesoft.com/2011/02/restful-glassfish-monitoring/">RESTful GlassFish Monitoring</a></p> <h5><a name="MonitoringReference-SourceCodeInformation"></a>Source Code Information</h5> <p><b>Management API</b> - Public APIs and annotations - external to glassfish</p> 
+     <ul> 
+      <li><a href="http://kenai.com/projects/gmbal/sources/gf_common/show/src/org/glassfish/external/probe/provider">Probe Provider annotations, Stats Provider Manager API</a>** Use to define Probe Providers 
+       <ul> 
+        <li>Use to register with GlassFish Monitoring Framework</li> 
+       </ul> </li> 
+      <li><a href="http://kenai.com/projects/gmbal/sources/gf_common/show/src/org/glassfish/external/statistics">Statistic APIs</a> - standard Statistic objects returned by the StatsProvider getSomeStatistic methods.</li> 
+     </ul> <p><b>Monitoring API</b> - public APIs</p> 
+     <ul> 
+      <li>v3/common/glassfish-api/src/main/java/org/glassfish/api/monitoring 
+       <ul> 
+        <li>ContainerMonitoring.java - for pluggability. Refer to <a href="http://blogs.oracle.com/msreddy/entry/how_to_create_pluggable_container">How to Create a Pluggable Container</a></li> 
+       </ul> </li> 
+     </ul> <p><b>Monitoring Infrastructure</b></p> 
+     <ul> 
+      <li>v3/admin/monitor/src/main/java/org/glassfish/admin/monitor 
+       <ul> 
+        <li>MonitoringBootstrap.java - Discovers probe providers. Listens/handles monitoring configuration.</li> 
+        <li>StatsProviderManagerDelegateImpl.java - Creates monitoring tree. Registers StatsProviders with Flashlight, GMBAL.</li> 
+        <li>StatsProviderRegistry.java</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li>Tree Node API/Implementation 
+       <ul> 
+        <li>v3/admin/monitor/src/main/java/org/glassfish/flashlight/</li> 
+        <li>v3/common/internal-api/src/main/java/org/glassfish/flashlight/</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li>Reporter for asadmin get -m command 
+       <ul> 
+        <li>v3/core/kernel/src/main/java/com/sun/enterprise/v3/admin/MonitoringReporter.java</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li>Flashlight Framework 
+       <ul> 
+        <li>v3/flashlight - Register probes with btrace</li> 
+       </ul> </li> 
+     </ul> <h5><a name="MonitoringReference-Technologies"></a>Technologies</h5> 
+     <ul> 
+      <li><a href="http://glassfish.java.net/nonav/v3/admin/planning/V3Changes/V3_AMX_SPI.html">AMX</a>** AMX loads MBeans (all MBeans or none) lazily in response to: 
+       <ul> 
+        <li> 
+         <ul> 
+          <li>an MEJB connection</li> 
+          <li>JMXConnector client connection</li> 
+          <li>explicit call to bootAMX()</li> 
+          <li>AmxPref.getAutoLoad() is true</li> 
+         </ul> </li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li>BTrace - byte code instrumentation - <a href="http://kenai.com/projects/btrace/pages/DeveloperGuide">http://kenai.com/projects/btrace/pages/DeveloperGuide</a></li> 
+      <li>GMBAL - APIs/annotations to create AMX MBeans - <a href="http://gmbal.kenai.com/">http://gmbal.kenai.com/</a></li> 
+     </ul> <h5><a name="MonitoringReference-v3DesignInformation"></a>v3 Design Information</h5> <p><a href="http://wiki.glassfish.java.net/attach/V3FunctionalSpecs/Monitoring%20V3%20one-pager.html#41">Block Diagram</a><br> <a href="http://wiki.glassfish.java.net/attach/V3FunctionalSpecs/Monitoring_V3_Arch_Diagram-Final.JPG">Block Diagram 2</a><br> <a href="http://wikihome.us.oracle.com/App-Server-Release/attach/Attachments%2FGF+Monitoring+-+ASArch+Presentation.odp">GF Monitoring - ASArch Presentation </a><br> <a href="http://wikihome.us.oracle.com/App-Server-Release/attach/Attachments%2FMonitoring+Presentation+for+V3.odt">Monitoring Presentation for v3</a><br> <a href="http://wikihome.us.oracle.com/App-Server-Release/attach/Attachments%2FV3-Express-Monitoring-1.4.odp">v3 Express Monitoring</a></p> <h5><a name="MonitoringReference-Defects"></a>Defects</h5> <p>JIRA Sub-component name - monitoring<br> <a href="http://java.net/jira/secure/IssueNavigator.jspa?mode=hide&amp;requestId=10357">All</a><br> <a href="http://java.net/jira/secure/IssueNavigator.jspa?mode=hide&amp;requestId=10386">All unresolved monitoring bugs</a><br> <a href="http://java.net/jira/secure/IssueNavigator.jspa?mode=hide&amp;requestId=10387">All unresolved features/improvments</a><br> <a href="http://java.net/jira/secure/IssueNavigator.jspa?mode=hide&amp;requestId=10388">Bugs fixed in 3.1</a><br> <a href="http://java.net/jira/secure/IssueNavigator.jspa?mode=hide&amp;requestId=10470">Bugs that need devtests</a></p> <h5><a name="MonitoringReference-Debugging"></a>Debugging</h5> 
+     <ul> 
+      <li>You can step through with the Netbeans debugger in the monitoring code, except in the flashlight area and on a probe. The JVM will crash.</li> 
+      <li>Set monitoring logging level to FINE in logging.properties<br> javax.enterprise.system.tools.monitor.level=FINE</li> 
+      <li>Add jvm option to server-config domain.xml to turn on BTrace debugging<br> <tt>&lt;jvm-options&gt;-javaagent:&lt;gf install&gt;/glassfish/target/glassfish3/glassfish/lib/monitor/btrace-agent.jar=dumpClasses=true,dumpDir=c:\tmp\dump2,debug=true,unsafe=true,noServer=true&lt;/jvm-options&gt;</tt></li> 
+      <li>GMBAL debugging - In v3/admin/monitor/src/main/java/org/glassfish/admin/monitor/StatsProviderManagerDelegateImpl.java at line 722, you can change debug to true 
+       <ul> 
+        <li>mom.setJMXRegistrationDebug(false);</li> 
+       </ul> </li> 
+     </ul> <h5><a name="MonitoringReference-Tests"></a>Tests</h5> <p><a href="./AdminTests.html">Admin Devtests</a><br> {{cd appserv-tests/devtests/admin/cli<br> ant -Dteststorun=monitoring clean all}}<br> <a href="./MonitoringDevTests.html">Module-specific Devtests</a></p> <h5><a name="MonitoringReference-v3Links"></a>v3 Links</h5> <p><a href="./V2ToV3MonitoringXform.html">http://wikis.sun.com/display/GlassFish/V2ToV3MonitoringXform</a><br> <a href="./V3MonitoringReviewJanLuehe.html">http://wikis.sun.com/display/GlassFish/V3MonitoringReviewJanLuehe</a><br> <a href="./MonitoringReviewComments.html">http://wikis.sun.com/display/GlassFish/MonitoringReviewComments</a></p> <h5><a name="MonitoringReference-v2"></a>v2</h5> <p><a href="http://glassfish.java.net/javaee5/monitoring/">http://glassfish.java.net/javaee5/monitoring/</a><br> <a href="./FaqMonitorGlassFish.html">http://wikis.sun.com/display/GlassFish/FaqMonitorGlassFish</a></p> <h5><a name="MonitoringReference-S1AS80PE"></a>S1AS80 PE</h5> <p><a href="http://wiki.glassfish.java.net/attach/GlassFishAdminReferences/monitoring-engineering.html">How Monitoring is Implemented in S1AS8.0 PE</a></p> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on May 31, 2011 by 
+<font color="#0050B2">trmueller</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

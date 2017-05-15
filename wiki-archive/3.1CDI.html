@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : 3.1CDI</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="3.1CDI-GlassFishServerOpenSourceEdition3.1CDI"></a>GlassFish Server Open Source Edition 3.1 - CDI</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#3.1CDI-GlassFishServerOpenSourceEdition3.1CDI">GlassFish Server Open Source Edition 3.1 - CDI</a></li> 
+       <ul> 
+        <li><a href="#3.1CDI-Introduction">Introduction</a></li> 
+        <li><a href="#3.1CDI-Scope">Scope</a></li> 
+        <li><a href="#3.1CDI-FeatureOverview">Feature Overview</a></li> 
+        <li><a href="#3.1CDI-DesignDocument">Design Document</a></li> 
+        <li><a href="#3.1CDI-MilestoneSchedule">Milestone Schedule</a></li> 
+        <li><a href="#3.1CDI-TaskList">Task List</a></li> 
+        <li><a href="#3.1CDI-DevTests">Dev Tests</a></li> 
+        <li><a href="#3.1CDI-References">References</a></li> 
+        <li><a href="#3.1CDI-EmailAlias">Email Alias</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="3.1CDI-Introduction"></a>Introduction</h2> <p>Coming soon</p> <h4><a name="3.1CDI-Scope"></a>Scope </h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Feature ID </th> 
+         <th class="confluenceTh"> Priority </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> Eng Response </th> 
+         <th class="confluenceTh"> Owner(s) </th> 
+         <th class="confluenceTh"> Estimate (Man Days) </th> 
+         <th class="confluenceTh"> Source of Requirement </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> CDI-1 </th> 
+         <th class="confluenceTh"> P1 </th> 
+         <th class="confluenceTh"> Weld 1.1 integration into GlassFish </th> 
+         <th class="confluenceTh"> Yes </th> 
+         <th class="confluenceTh"> Sivakumar Thyagarajan </th> 
+         <th class="confluenceTh"> 100 </th> 
+         <th class="confluenceTh">
+          <ul class="alternate" type="square"> 
+           <li></li> 
+          </ul> </th> 
+         <th class="confluenceTh">Dependent on JBoss for the delivery of Weld 1.1. JBoss yet to provide list of Weld 1.1 features. Based on the feature-list of Weld 1.1, we may have additional tasks.CDI 1.0 MR may get finalized during the 3.1 release cycle. If that happens, Weld 1.1 is the RI and we would integrating CDI 1.0MR features in 3.1 as well through Weld 1.1 </th> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> CDI-2 </th> 
+         <th class="confluenceTh"> P3 </th> 
+         <th class="confluenceTh"> Enhanced tooling support (Netbeans) </th> 
+         <th class="confluenceTh"> Yes </th> 
+         <th class="confluenceTh"> Sivakumar Thyagarajan </th> 
+         <th class="confluenceTh"> 20 </th> 
+         <th class="confluenceTh">
+          <ul class="alternate" type="square"> 
+           <li></li> 
+          </ul> </th> 
+         <th class="confluenceTh">Need to discuss with the Netbeans team. Tracked at <a href="http://wiki.netbeans.org/EnterpriseJava69Next#CDI">netbeans wiki</a> </th> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> CDI-3 </th> 
+         <th class="confluenceTh"> P3 </th> 
+         <th class="confluenceTh"> A custom ClusterScoped scope type to support cluster-scoped Beans </th> 
+         <th class="confluenceTh"> ? </th> 
+         <th class="confluenceTh"> Sivakumar Thyagarajan </th> 
+         <th class="confluenceTh"> 25 </th> 
+         <th class="confluenceTh">
+          <ul class="alternate" type="square"> 
+           <li></li> 
+          </ul> </th> 
+         <th class="confluenceTh">Use CDI's extensible context model to define this custom scope type and leverage 3.1's clustering infrastructure/Coherence to implement the scope. </th> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> CDI-4 </th> 
+         <th class="confluenceTh"> P3 </th> 
+         <th class="confluenceTh"> Support for Seam 3 </th> 
+         <th class="confluenceTh"> ? </th> 
+         <th class="confluenceTh"> Sivakumar Thyagarajan </th> 
+         <th class="confluenceTh">&nbsp;</th> 
+         <th class="confluenceTh">
+          <ul class="alternate" type="square"> 
+           <li></li> 
+          </ul> </th> 
+         <th class="confluenceTh">&nbsp;</th> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> CDI-5 </th> 
+         <th class="confluenceTh"> P3 </th> 
+         <th class="confluenceTh"> Misc. changes </th> 
+         <th class="confluenceTh"> Yes </th> 
+         <th class="confluenceTh"> Sivakumar Thyagarajan </th> 
+         <th class="confluenceTh">&nbsp;</th> 
+         <th class="confluenceTh">
+          <ul class="alternate" type="square"> 
+           <li></li> 
+          </ul> </th> 
+         <th class="confluenceTh">&nbsp;</th> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.1CDI-FeatureOverview"></a>Feature Overview </h2> 
+     <ul> 
+      <li>Coming soon</li> 
+     </ul> <h4><a name="3.1CDI-DesignDocument"></a>Design Document</h2> 
+     <ul> 
+      <li>Link to one-pager</li> 
+     </ul> <h4><a name="3.1CDI-MilestoneSchedule"></a>Milestone Schedule</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> IT01 </th> 
+         <th class="confluenceTh"> 07/19/10 (M3) </th> 
+         <th class="confluenceTh"> CDI-1 </th> 
+         <th class="confluenceTh"> First integration of Weld 1.1 </th> 
+         <th class="confluenceTh"> No </th> 
+         <th class="confluenceTh">Dev tests passing, first run of TCK to assess failure. First integration in GF done </th> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> IT02 </th> 
+         <th class="confluenceTh"> 08/16/10 (M4) </th> 
+         <th class="confluenceTh"> CDI-1 </th> 
+         <th class="confluenceTh"> Weld 1.1 CR </th> 
+         <th class="confluenceTh"> Yes </th> 
+         <th class="confluenceTh">Dev tests passes and suitable for QA Handover. TCK tests pass at least on JBoss, </th> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> IT03 </th> 
+         <th class="confluenceTh"> 11/15/10 (M6) </th> 
+         <th class="confluenceTh"> CDI-1 </th> 
+         <th class="confluenceTh"> Weld 1.1 </th> 
+         <th class="confluenceTh"> Yes </th> 
+         <th class="confluenceTh">All dev and TCK tests pass on GlassFish </th> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> IT04 </th> 
+         <th class="confluenceTh"> 08/16/10 (M4) </th> 
+         <th class="confluenceTh"> CDI-2 </th> 
+         <th class="confluenceTh"> Tooling feature complete </th> 
+         <th class="confluenceTh"> Yes </th> 
+         <th class="confluenceTh">&nbsp;</th> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> IT05 </th> 
+         <th class="confluenceTh"> 11/22/10 (M6) </th> 
+         <th class="confluenceTh"> CDI-1 </th> 
+         <th class="confluenceTh"> FCS quality </th> 
+         <th class="confluenceTh"> Yes </th> 
+         <th class="confluenceTh">Final integration into GlassFish </th> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.1CDI-TaskList"></a>Task List</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task </th> 
+         <th class="confluenceTh"> Target Milestone </th> 
+         <th class="confluenceTh"> Start </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Owner(s) </th> 
+         <th class="confluenceTh"> Feature ID </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> T01 </th> 
+         <th class="confluenceTh"> Setup continuous integration of JBoss' Weld 1.1 workspace with GlassFish 3.1 trunk using Hudson running the GlassFish devtests and CDI TCK </th> 
+         <th class="confluenceTh"> May 10, 2010 </th> 
+         <th class="confluenceTh"> May 20,2010 </th> 
+         <th class="confluenceTh"> Sivakumar Thyagarajan </th> 
+         <th class="confluenceTh"> CDI-1 </th> 
+         <th class="confluenceTh">Dependent on Weld 1.1 availability. For now, will use Weld 1.0.2/trunk </th> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> T03 </th> 
+         <th class="confluenceTh"> Develop a suite of development tests covering all major CDI usecases and Weld SPI integration points </th> 
+         <th class="confluenceTh"> May 15, 2010 </th> 
+         <th class="confluenceTh"> July 9, 2010 </th> 
+         <th class="confluenceTh"> Sivakumar Thyagarajan </th> 
+         <th class="confluenceTh"> CDI-1 </th> 
+         <th class="confluenceTh">Also create functional tests that verify that Weld+GlassFish works correctly in a cluster </th> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> T04 </th> 
+         <th class="confluenceTh"> Pre-integration test suite to JBoss </th> 
+         <th class="confluenceTh"> June 30, 2010 </th> 
+         <th class="confluenceTh"> June 30,2010 </th> 
+         <th class="confluenceTh"> Sivakumar Thyagarajan </th> 
+         <th class="confluenceTh"> CDI-1 </th> 
+         <th class="confluenceTh">A subset of key testcases from our developer tests (and SQE tests?) would be handed over to JBoss. This suite of tests to be run by JBoss against the current GlassFish promoted build for every integration-ready build of Weld 1.1. We will continue to augment this suite as we develop tests to cover new usecases. </th> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> T05 </th> 
+         <th class="confluenceTh"> Investigation and fixing of TCK failures while integrating Weld 1.1 into GlassFish 3.1 </th> 
+         <th class="confluenceTh"> July 12, 2010 </th> 
+         <th class="confluenceTh"> November 22, 2010 </th> 
+         <th class="confluenceTh"> Sivakumar Thyagarajan </th> 
+         <th class="confluenceTh"> CDI-1 </th> 
+         <th class="confluenceTh">This is an ongoing process across milestones. The first integration happens for M3 and we will continue to track and fix TCK issues until the final integration. </th> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> T06 </th> 
+         <th class="confluenceTh"> Fix existing issues in GlassFish and Weld issue tracker pertaining to GlassFish </th> 
+         <th class="confluenceTh"> July 9, 2010 </th> 
+         <th class="confluenceTh"> July 23, 2010 </th> 
+         <th class="confluenceTh"> Sivakumar Thyagarajan </th> 
+         <th class="confluenceTh"> CDI-1 </th> 
+         <th class="confluenceTh">See references for links to GlassFish and Weld issue tracker. </th> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> T07 </th> 
+         <th class="confluenceTh"> Weld 1.1 TCK to run on GlassFish by JBoss </th> 
+         <th class="confluenceTh"> June 30, 2010 </th> 
+         <th class="confluenceTh"> June 30, 2010 </th> 
+         <th class="confluenceTh"> Sivakumar Thyagarajan </th> 
+         <th class="confluenceTh"> CDI-1 </th> 
+         <th class="confluenceTh">AssistJBoss in running Weld 1.1 TCK against a latest promoted build of GlassFish </th> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> T08 </th> 
+         <th class="confluenceTh"> Integration of Weld 1.1 </th> 
+         <th class="confluenceTh"> July 12, 2010 </th> 
+         <th class="confluenceTh"> November 22, 2010 </th> 
+         <th class="confluenceTh"> Sivakumar Thyagarajan </th> 
+         <th class="confluenceTh"> CDI-1 </th> 
+         <th class="confluenceTh">This is an ongoing process across milestones. The first integration happens for M3. </th> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> T09 </th> 
+         <th class="confluenceTh"> Enhance the JAX-RS, WebServices and EJB related integration points in the SPI based on feedback from internal teams </th> 
+         <th class="confluenceTh"> June 7, 2010 </th> 
+         <th class="confluenceTh"> June 25, 2010 </th> 
+         <th class="confluenceTh"> Sivakumar Thyagarajan </th> 
+         <th class="confluenceTh"> CDI-1 </th> 
+         <th class="confluenceTh">Dependencies: Work with JAX-RS(Jersey), Web-services, EJB teams to understand their issues with the current SPI and to communicate with JBoss about the SPI enhancements in advance, so that their changes can happen in Weld 1.1 </th> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> T10 </th> 
+         <th class="confluenceTh"> Usability and diagnosability enhancements </th> 
+         <th class="confluenceTh"> July 12, 2010 </th> 
+         <th class="confluenceTh"> August 8, 2010 </th> 
+         <th class="confluenceTh"> Sivakumar Thyagarajan </th> 
+         <th class="confluenceTh"> CDI-2 </th> 
+         <th class="confluenceTh">Make it easier to find the root-cause of unsatisfied and ambiguous dependencies during typesafe resolution in the IDE(Netbeans). Need to investigate further and work with the Netbeans team to enhance the current CDI tooling support. </th> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> T11 </th> 
+         <th class="confluenceTh"> Enhance CDI documentation </th> 
+         <th class="confluenceTh"> Aug 9,2010 </th> 
+         <th class="confluenceTh"> Aug 20, 2010 </th> 
+         <th class="confluenceTh"> Sivakumar Thyagarajan </th> 
+         <th class="confluenceTh"> CDI-2 </th> 
+         <th class="confluenceTh">Review the current documentation of CDI in GlassFish and enhance it. Add more samples, sample code etc. Also provide content to the section on GlassFish integration in Weld documentation. </th> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> T12 </th> 
+         <th class="confluenceTh"> ClusteredScope support </th> 
+         <th class="confluenceTh"> Aug 9,2010 ? </th> 
+         <th class="confluenceTh"> ? </th> 
+         <th class="confluenceTh"> Sivakumar Thyagarajan </th> 
+         <th class="confluenceTh"> CDI-3 </th> 
+         <th class="confluenceTh">Implementation of the ClusteredScope Context with support from the Cluster/HA teams and Coherence. </th> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> T13 </th> 
+         <th class="confluenceTh"> Explore use of CDI in hybrid applications </th> 
+         <th class="confluenceTh"> Aug 9,2010 ? </th> 
+         <th class="confluenceTh"> ? </th> 
+         <th class="confluenceTh"> Sivakumar Thyagarajan </th> 
+         <th class="confluenceTh"> CDI-5 </th> 
+         <th class="confluenceTh"> Work with the <a href="3.1OSGi.html" title="3.1OSGi">OSGI </a> team to define and implement this feature. </th> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.1CDI-DevTests"></a>Dev Tests </h2> 
+     <ul> 
+      <li>The list of developer tests that would be built as part of T02 are tracked <a href="CDIDevTests.html" title="CDIDevTests">here</a> and would be checked into the GlassFish v3 developer tests workspace.</li> 
+     </ul> <h4><a name="3.1CDI-References"></a>References</h2> 
+     <ul> 
+      <li><a href="V3Jsr299JavaContextsAndDependencyInjectionIntegration.html" title="V3Jsr299JavaContextsAndDependencyInjectionIntegration">Weld Integration page </a></li> 
+      <li><a href="http://tinyurl.com/2dasklz">GlassFish CDI issues</a></li> 
+      <li><a href="http://seamframework.org/Weld">Weld homepage</a></li> 
+      <li><a href="https://jira.jboss.org/jira/browse/WELD">Weld Issue Tracker</a></li> 
+      <li><a href="http://jcp.org/en/jsr/summary-299">JSR 299 specification</a></li> 
+     </ul> <h4><a name="3.1CDI-EmailAlias"></a>Email Alias</h2> 
+     <ul> 
+      <li>Please contact us at <a href="mailto:dev@glassfish.java.net">dev@glassfish.java.net</a></li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Aug 11, 2010 by 
+<font color="#0050B2">sivakumar_thyagarajan</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

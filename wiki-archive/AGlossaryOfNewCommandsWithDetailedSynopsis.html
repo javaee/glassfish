@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : AGlossaryOfNewCommandsWithDetailedSynopsis</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="AGlossaryOfNewCommandsWithDetailedSynopsis-AGlossaryofNewJBICommands"></a>A Glossary of New JBI Commands</h1> <p>These are the new commands that will be added. This page is supposed to be a reference for the people who try out, test, document these commands. Be as detailed as possible.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Id </th> 
+         <th class="confluenceTh"> Command name and brief description </th> 
+         <th class="confluenceTh"> Options, one per line, with legal and default values</th> 
+         <th class="confluenceTh"> Operand, one per line, with brief description </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 00001 </td> 
+         <td class="confluenceTd"> *install-jbi-component*: Will install a Service Engine or Binding Component into the JBI Environment. </td> 
+         <td class="confluenceTd"> 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">--echo|-e : true|[false]
+--interactive|-I : [true]|false
+--terse|-t : true|[false]
+--secure|-s : true|[false]
+--enabled : true|[false]
+--port|-p : [port number]
+--host|-H : [localhost]
+--user|-u : [admin user]
+--properties : [(name=value)[:name=value]* | file]
+--passwordfile : [filename]
+--upload : [true]|false
+--target : [target name]
+--help</pre> 
+            </div> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd">file path or component name: The archive file that will contain the component attributes, or the name of the component that has been previously installed to the domain. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 00002 </td> 
+         <td class="confluenceTd"> *start-jbi-component*: Will start a component (service engine or binding component) on the specified target. If no target is specified, the component will be started on the embedded DAS server. </td> 
+         <td class="confluenceTd"> 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">--echo|-e : true|[false]
+--interactive|-I : [true]|false
+--terse|-t : true|[false]
+--secure|-s : true|[false]
+--port|-p : [port number]
+--host|-H : [localhost]
+--user|-u : [admin user]
+--passwordfile : [filename]
+--target : [target name]
+--help</pre> 
+            </div> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd">component_name: The name of the binding component or service engine. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 00003 </td> 
+         <td class="confluenceTd"> *stop-jbi-component*: Will stop a component (service engine or binding component) on the specified target. If no target is specified, the component will be stopped on the embedded DAS server. </td> 
+         <td class="confluenceTd"> 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">--echo|-e : true|[false]
+--interactive|-I : [true]|false
+--terse|-t : true|[false]
+--secure|-s : true|[false]
+--port|-p : [port number]
+--host|-H : [localhost]
+--user|-u : [admin user]
+--passwordfile : [filename]
+--target : [target name]
+--help</pre> 
+            </div> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd">component_name: The name of the component to stop. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 00004 </td> 
+         <td class="confluenceTd"> *shut-down-jbi-component*: Will shut down a component (service engine or binding component) on the specified target. If no target is specified, the component will be shut down on the embedded DAS server. </td> 
+         <td class="confluenceTd"> 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">--echo|-e : true|[false]
+--interactive|-I : [true]|false
+--terse|-t : true|[false]
+--secure|-s : true|[false]
+--force|-F : true|[false]
+--port|-p : [port number]
+--host|-H : [localhost]
+--user|-u : [admin user]
+--passwordfile : [filename]
+--target : [target name]
+--help</pre> 
+            </div> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd">component_name: The name of the component to shut down. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 00005 </td> 
+         <td class="confluenceTd"> *uninstall-jbi-component*: Will uninstall a component (service engine or binding component) on the specified target. If no target is specified, the component will be uninstall on the embedded DAS server. </td> 
+         <td class="confluenceTd"> 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">--echo|-e : true|[false]
+--interactive|-I : [true]|false
+--terse|-t : true|[false]
+--secure|-s : true|[false]
+--force|-F : true|[false]
+--port|-p : [port number]
+--keeparchive : true|[false]
+--host|-H : [localhost]
+--user|-u : [admin user]
+--passwordfile : [filename]
+--target : [target name]
+--help</pre> 
+            </div> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd">component_name: The name of the component to uninstall. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 00006 </td> 
+         <td class="confluenceTd"> *deploy-jbi-service-assembly*: Will deploy a Service Assembly into the JBI Environment. The Target option (--target) is only relevant for Application Server Enterprise Edition. Please see the Target Option Behavior table for a complete description on how the deploy command will behave for the different target options. </td> 
+         <td class="confluenceTd"> 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">--echo|-e : true|[false]
+--interactive|-I : [true]|false
+--terse|-t : true|[false]
+--secure|-s : true|[false]
+--enabled : true|[false]
+--upload : [true]|false
+--port|-p : [port number]
+--host|-H : [localhost]
+--user|-u : [admin user]
+--passwordfile : [filename]
+--target : [target name]
+--help</pre> 
+            </div> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd">file path or service assembly name: The archive file that will contain the service assembly attributes, or the name of the service assembly that has been previously deployed to the domain. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 00007 </td> 
+         <td class="confluenceTd"> *start-jbi-service-assembly*: Will start a service assemble on the specified target. If a target is not specified, the command will executed against the 'server' instance. </td> 
+         <td class="confluenceTd"> 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">--echo|-e : true|[false]
+--interactive|-I : [true]|false
+--terse|-t : true|[false]
+--secure|-s : true|[false]
+--port|-p : [port number]
+--host|-H : [localhost]
+--user|-u : [admin user]
+--passwordfile : [filename]
+--target : [target name]
+--help</pre> 
+            </div> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd">component_name: The name of the service assembly to start. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 00008 </td> 
+         <td class="confluenceTd"> *stop-jbi-service-assembly*: Will start a service assemble on the specified target. If a target is not specified, the command will executed against the 'server' instance. </td> 
+         <td class="confluenceTd"> 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">--echo|-e : true|[false]
+--interactive|-I : [true]|false
+--terse|-t : true|[false]
+--secure|-s : true|[false]
+--port|-p : [port number]
+--host|-H : [localhost]
+--user|-u : [admin user]
+--passwordfile : [filename]
+--target : [target name]
+--help</pre> 
+            </div> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd">component_name: The name of the service assembly to stop. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 00009 </td> 
+         <td class="confluenceTd"> *shut-down-jbi-service-assembly*: Will shut down a service assemble on the specified target. If a target is not specified, the command will executed against the 'server' instance. </td> 
+         <td class="confluenceTd"> 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">--echo|-e : true|[false]
+--interactive|-I : [true]|false
+--terse|-t : true|[false]
+--secure|-s : true|[false]
+--port|-p : [port number]
+--host|-H : [localhost]
+--user|-u : [admin user]
+--passwordfile : [filename]
+--target : [target name]
+--help</pre> 
+            </div> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd">component_name: The name of the service assembly to shut down. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 00010 </td> 
+         <td class="confluenceTd"> *undeploy-jbi-service-assembly*: Will undeploy a service assemble on the specified target. If a target is not specified, the command will executed against the 'server' instance. </td> 
+         <td class="confluenceTd"> 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">--echo|-e : true|[false]
+--interactive|-I : [true]|false
+--terse|-t : true|[false]
+--secure|-s : true|[false]
+--force|-F : true|[false]
+--port|-p : [port number]
+--keeparchive : true|[false]
+--host|-H : [localhost]
+--user|-u : [admin user]
+--passwordfile : [filename]
+--target : [target name]
+--help</pre> 
+            </div> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd">service_assembly_name: The name of the service assembly to undeploy. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 00011 </td> 
+         <td class="confluenceTd"> *install-jbi-shared-library*: Will install a Shared Library into the JBI Environment. </td> 
+         <td class="confluenceTd"> 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">--echo|-e : true|[false]
+--interactive|-I : [true]|false
+--terse|-t : true|[false]
+--secure|-s : true|[false]
+--port|-p : [port number]
+--host|-H : [localhost]
+--user|-u : [admin user]
+--passwordfile : [filename]
+--upload : [true]|false
+--target : [target name]
+--help</pre> 
+            </div> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd">file path: The archive file that will contain the shared library. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 00012 </td> 
+         <td class="confluenceTd"> *uninstall-jbi-shared-library*: Command Description Will uninstall a shared library from the specified target instance or cluster. If no target is specified, the shared library will be uninstall on the embedded DAS server. </td> 
+         <td class="confluenceTd"> 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">--echo|-e : true|[false]
+--interactive|-I : [true]|false
+--terse|-t : true|[false]
+--secure|-s : true|[false]
+--force|-F : true|[false]
+--port|-p : [port number]
+--keeparchive : true|[false]
+--host|-H : [localhost]
+--user|-u : [admin user]
+--passwordfile : [filename]
+--target : [target name]
+--help</pre> 
+            </div> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd">component_name: The name of the component to start. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 00013 </td> 
+         <td class="confluenceTd"> *list-jbi-service-engines*: Will list the service engines that have been installed into the JBI Environment. If no filters are specified, the list will contain all service engines that have been installed </td> 
+         <td class="confluenceTd"> 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">--echo|-e : true|[false]
+--interactive|-I : [true]|false
+--terse|-t : true|[false]
+--secure|-s : true|[false]
+--port|-p : [port number]
+--host|-H : [localhost]
+--user|-u : [admin user]
+--passwordfile : [filename]
+--lifecyclestate : shutdown|started|stopped
+--libraryname : Shared Library Name
+--assemblyname : Service Assembly Name
+--target : [target name]
+--help</pre> 
+            </div> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd">none </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 00014 </td> 
+         <td class="confluenceTd"> *list-jbi-binding-components*: Will list the binding components that have been installed into the JBI Environment. If no filters are specified, the list will contain all binding components that have been installed. </td> 
+         <td class="confluenceTd"> 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">--echo|-e : true|[false]
+--interactive|-I : [true]|false
+--terse|-t : true|[false]
+--secure|-s : true|[false]
+--port|-p : [port number]
+--host|-H : [localhost]
+--user|-u : [admin user]
+--passwordfile : [filename]
+--lifecyclestate : shutdown|started|stopped
+--libraryname : Shared Library Name
+--assemblyname : Service Assembly Name
+--target : [target name]
+--help</pre> 
+            </div> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd">none </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 00015 </td> 
+         <td class="confluenceTd"> *list-jbi-shared-libraries*: Will list the shared libraries that have been installed into the JBI Environment. If no filters are specified, the list will contain all shared libraries that have been installed </td> 
+         <td class="confluenceTd"> 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">--echo|-e : true|[false]
+--interactive|-I : [true]|false
+--terse|-t : true|[false]
+--secure|-s : true|[false]
+--port|-p : [port number]
+--host|-H : [localhost]
+--user|-u : [admin user]
+--passwordfile : [filename]
+--target : [target name]
+--componentname : [component name]
+--help</pre> 
+            </div> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd">none. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 00016 </td> 
+         <td class="confluenceTd"> *list-jbi-service-assemblies*: Will list the service assemblies that have been deployed into the JBI Environment. If no filters are specified, the list will contain all service assemblies that have been deployed. </td> 
+         <td class="confluenceTd"> 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">--echo|-e : true|[false]
+--interactive|-I : [true]|false
+--terse|-t : true|[false]
+--secure|-s : true|[false]
+--port|-p : [port number]
+--host|-H : [localhost]
+--user|-u : [admin user]
+--passwordfile : [filename]
+--lifecyclestate : shutdown|started|stopped
+--componentname : [component name]
+--target : [target name]
+--help</pre> 
+            </div> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd">none </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 00017 </td> 
+         <td class="confluenceTd"> *show-jbi-service-engine*: Will show the detail information about the specified service engine. </td> 
+         <td class="confluenceTd"> 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">--echo|-e : true|[false]
+--interactive|-I : [true]|false
+--terse|-t : true|[false]
+--secure|-s : true|[false]
+--port|-p : [port number]
+--host|-H : [localhost]
+--user|-u : [admin user]
+--passwordfile : [filename]
+--target : [target name]
+--help</pre> 
+            </div> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd">Component Name </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 00018 </td> 
+         <td class="confluenceTd"> *show-jbi-binding-component*: Will show the detail information about the specified binding component. </td> 
+         <td class="confluenceTd"> 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">--echo|-e : true|[false]
+--interactive|-I : [true]|false
+--terse|-t : true|[false]
+--secure|-s : true|[false]
+--port|-p : [port number]
+--host|-H : [localhost]
+--user|-u : [admin user]
+--passwordfile : [filename]
+--target : [target name]
+--help</pre> 
+            </div> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd">Component Name </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 00019 </td> 
+         <td class="confluenceTd"> *show-jbi-shared-library*: Will show the detail information about the specified shared library. </td> 
+         <td class="confluenceTd"> 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">--echo|-e : true|[false]
+--interactive|-I : [true]|false
+--terse|-t : true|[false]
+--secure|-s : true|[false]
+--port|-p : [port number]
+--host|-H : [localhost]
+--user|-u : [admin user]
+--passwordfile : [filename]
+--target : [target name]
+--help</pre> 
+            </div> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd">Shared Library Name </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 00020 </td> 
+         <td class="confluenceTd"> *show-jbi-service-assembly*: Will show the detail information about the specified service assembly. </td> 
+         <td class="confluenceTd"> 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">--echo|-e : true|[false]
+--interactive|-I : [true]|false
+--terse|-t : true|[false]
+--secure|-s : true|[false]
+--port|-p : [port number]
+--host|-H : [localhost]
+--user|-u : [admin user]
+--passwordfile : [filename]
+--target : [target name]
+--help</pre> 
+            </div> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd">Service Assembly Name </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:48.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

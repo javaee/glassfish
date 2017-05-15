@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : SSRUpgrade</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>Rolling Upgrade in Sailfin</p> <h4><a name="SSRUpgrade-OpenIssues"></a>Open Issues</h1> 
+     <ul> 
+      <li>How to handle the CANCEL in case of quiescing, it can not be routed to the correct instance.</li> 
+      <li>Can we really confirm the INVITE transaction at the 200OK in stead of at the ACK? This will have some impact on timer handling and the persistent state.</li> 
+      <li>How to handle PRACK and BYE on early dialogs?</li> 
+     </ul> <h4><a name="SSRUpgrade-Introduction"></a>Introduction</h1> <h4><a name="SSRUpgrade-Scope"></a>Scope</h2> <p>The purpose of the rolling upgrade is to upgrade an application, the AS, the OS, the hardware or a combination of these with a minimal loss of service and sessions.<br> This document describes a possible implementation or rolling upgrade in the Sailfin project. Parts in italics indicate questionable areas that need to be further refined.</p> <h4><a name="SSRUpgrade-Terminology"></a>Terminology</h2> <h4><a name="SSRUpgrade-References"></a>References</h2> <h4><a name="SSRUpgrade-ArchitecturalIntroduction"></a>Architectural Introduction</h1> <h4><a name="SSRUpgrade-Overview"></a>Overview</h2> <p>The first implementation of rolling upgrade in Sailfin will be based on the save/restore principle. This assumes relatively few mutations to the caches happen during a roll (the time it takes to upgrade one instance in a rolling upgrade).</p> <p>The solution is based on the current session replication solution.</p> <h4><a name="SSRUpgrade-ArchitecturalGoals%2CPrinciplesandConstraints"></a>Architectural Goals, Principles and Constraints</h1> <h4><a name="SSRUpgrade-Goals"></a>Goals</h2> <h4><a name="SSRUpgrade-Principles"></a>Principles</h2> <h4><a name="SSRUpgrade-Constraints"></a>Constraints</h2> <h4><a name="SSRUpgrade-UseCaseview"></a>Use-Case view</h1> <h4><a name="SSRUpgrade-Oneroll"></a>One roll</h2> <p>The operator ...</p> <h4><a name="SSRUpgrade-LogicalView"></a>Logical View</h1> <h4><a name="SSRUpgrade-RUrelationwithSSR"></a>RU relation with SSR</h2> <p>The main requirement is that during and after a rolling upgrade the sessions are still accessible. For this we need some of the functionality from Sip Session Replication (SSR).<br> More details and partly outdated discussions on SSR, including some notes on rolling upgrade can be found in the geeknotes <sup><a href="#SSRUpgrade-1">1</a></sup> . The text in this doc is both a summary of, as well as an extension to, those geeknotes.</p> <h4><a name="SSRUpgrade-SSRdesigninanutshell"></a>SSR design in a nutshell</h3> <p>During the design of SSR, it was decided that we would not cater for subsequent failures (also called back-to-back failures), given that the chances of these are very low. Instead we decided to rely on:</p> 
+     <ul> 
+      <li>lazy replication<br> updating the replica cache only when the active cache became active because of new traffic or timer events</li> 
+     </ul> 
+     <ul> 
+      <li>lazy re-activation<br> Restoring the active copy only when there is new traffic or a timer event occurred on a replica object</li> 
+     </ul> 
+     <ul> 
+      <li>lazy migration<br> Migrating the active copy when it is accessed due to new traffic or based on a timer event.</li> 
+     </ul> <p>We also decided that we would not strive for a 'properly distributed' configuration (A situation where every artifact is active on its home instance (I.e., home instance equals owner instance).<br> The downside of that choice is that we can not know whether a request can be handled locally or whether a re-activation or migration is needed to handle the request. To get this information, while still adhering to the lazy migration and re-activation principles, we introduced the expat list, which gives information on whether a session is lives elsewhere in the cluster.<br> SSR handles shutdown very similar to a failure, except that there is some quiescing period during the shutdown where we try to complete ongoing transactions, this will avoid transaction loss when the instance is stopped.</p> <h4><a name="SSRUpgrade-UpgradeandSSR"></a>Upgrade and SSR</h3> <p>Rolling upgrade from an SSR perspective can be modeled as a sequence of subsequent failures. The lazy replication/re-activation/migration strategy will not work in such a case, since this does not guard against subsequent failures.<br> Therefore, we have to use an eager replication and eager re-activation to establish a robust system again, where every set of data has a copy. There is no need to implement eager migration for this reason, a migrated session is already protected, since it will also have triggered replication.<br> There are two ways to restore the situation of the upgraded server as it was before the upgrade (minus any sessions that migrated during the upgrade); disk based repair and partner based repair.</p> 
+     <ul> 
+      <li>Disk based repair.<br> This is optimized for the case that the upgrade time per instance is short enough that the majority of the sessions have not been changed. It has the advantage that most of the repair handling is done by the upgraded instance. This should limit the throughput loss and the traffic loss (errors) due to overload instance during the repair.<br> E.g., PGM with a lot of sessions (300K per instance) of which relatively few are touched during the upgrade is the prime example of this.</li> 
+     </ul> 
+     <ul> 
+      <li>Partner based repair.<br> This option involves the partners more in the repair process. This can lead to more throughput loss and more traffic loss due to high CPU usage during the repair. Also, it can cause a lot of traffic over the JXTA pipes (the complete replica and active cache).<br> However, if we assume short lived sessions, most of which are updated during the upgrade of an instance, the differences between the two becomes less obvious and the partner based repair might have advantages here. The question is, of course, if for such applications SSR would be enabled at all.<br> The current SSR implementation already has a time-based re-activation strategy for long lived sessions. If the definition of long-lived session can be re-configured during a rolling upgrade, this time-based re-activation can be used as a cheap substitute for the eager repair.</li> 
+     </ul> 
+     <ul> 
+      <li>Memory based repair<br> This option would only work for application upgrade and not for AS or OS upgrade, nor for hardware upgrade.</li> 
+     </ul> <p>It would mean that two versions of the application should be deployed at the same time, where one is active and the other de-activated (or quiescing?). The active and replica cache could be transported between these in-memory applications very efficiently (with the same memory-footprint). There will be some overhead because active sessions have to be serilalised and de-serialised to move between classloader.<br> This is mainly kept here as an option for further study, maybe in glassfish V3?</p> <h4><a name="SSRUpgrade-TechnicalDescriptions"></a>Technical Descriptions</h2> <p>In general the choreography of a rolling upgrade looks as follows.<br> The following steps are preformed only once in the cluster</p> 
+     <ul> 
+      <li>set dynamic-reconfig to disabled<br> This ensures that instances are not syncing their configuration and apps with the DAS anymore.<br> (This is a manual asadmin set command) </li> 
+     </ul> 
+     <ul> 
+      <li>We also require a property under &lt;availability-service&gt; to be set to "true" during rolling upgrade.<br> example: &lt;property name="rolling-upgrade-underway" value="true"&gt;<br> This is a manual asadmin set command.<br> This is optional and depends on the selected alternative for save; if we have separate save and restore commands then this is not needed.</li> 
+     </ul> 
+     <ul> 
+      <li>Backup the cluster configuration<br> (not sure why this is here - leaving it so it can be discussed)</li> 
+     </ul> 
+     <ul> 
+      <li>Deploy the new version of the app on the DAS (in case of an application upgrade).</li> 
+     </ul> 
+     <ul> 
+      <li>Roll each server in turn (described below)</li> 
+     </ul> 
+     <ul> 
+      <li>reset the dynamic-reconfig and rolling-upgrade-underway flags<br> The rolling-upgrade-underway is optional and depends on the selected alternative for save.<br> Again, depending on whether we have separate save/restore commands.</li> 
+     </ul> <p>Rolling each server in turn is done in the following step. Each of these steps is explained in more detail below.</p> 
+     <ol> 
+      <li>Quiescence<br> tell the load balancer to disable the instance (asadmin command). This means it is removed from the consistent hash. (there is a configurable time delay which is a form of 'quiesceing', allowing existing requests to finish processing. </li> 
+     </ol> <p>This is an asadmin command.</p> 
+     <ol> 
+      <li>Save<br> An (new) asadmin command is issues to save the data. This command will block until all the data has been saved (or a configurable maximum time, whichever comes first.</li> 
+      <li>Stop<br> Shutdown the instance. The instance is disabled. Wait a short while to give the in-flight replication data from that instance the chance to make it to the replication partner.</li> 
+     </ol> <p>Alternatively, step 2 and 3 can be combined into a modified stop command that would have a configurable timeout and that would save the data if the global rolling-upgrade-flag was set.</p> 
+     <ol> 
+      <li>Upgrade<br> Perform whatever upgrades needed while the instance is stopped. This could include things like: hardware repair, OS patch, etc. (If only an application is being upgraded, then this step may be skipped. But the instance must still be stopped and re-started).</li> 
+      <li>Restart<br> restart the instance. The instance will retrieve its configuration state and any new application version from the DAS. This will not result in any traffic being received yet, since the CLB is not enabled yet and any ongoing transactions should be finished either in the quiescing or in the upgrade period.</li> 
+      <li>Restore<br> If the rolling-upgrade-underway is set to true the instance will restore its state from disk. </li> 
+      <li>Enable CLB<br> The instance is enabled in the load balancer. The instance will start receiving new traffic again.</li> 
+      <li>Reconcilliate<br> Then there are some repair/reconciliation actions to the stored state that was retrieved from disk, since it is outdated.<br> The neighbors (which are involved in this repair) must not be upgraded before the repair is finished.<br> We need a feeback mechanism to achieve this (probably just writing to the log file that re-conciliation is done is not good enough).</li> 
+     </ol> <h4><a name="SSRUpgrade-Quiescence"></a>Quiescence</h3> <p>The purpose of quiescence is to limit the number of lost transactions when the server is upgraded. There are two reasons why we might loose transactions if we do not quiesce. One reason applies to the BE and one to the FE.</p> 
+     <ol> 
+      <li>Since session replication only happens at the end of the SIP transaction, any SIP transaction that is not completed on the BE when the instance is stopped will be lost.</li> 
+      <li>Since the responses from a SIP request are always routed via the CLB Frontend (if FE and BE are not co-located for the request), no responses can be sent after the FE is gone (or is unreachable).</li> 
+     </ol> <p>The command to quiesce is the same command to disable the instance from the load balancer (i.e., remove it from the consistent hash). This will start the quiescing period. However, the question is whether it should block until the quiescing period is completed. Probably this is needed for automated scripts to perform the quiescing, without having to rely on log inspection or just local sleeps.<br> We need more information on how to configure the quiescing period (default 32 seconds). Will this be part of the command as well?</p> <p><b>BE Quiescence</b></p> <p>Given the decision to only replicate on SIP transaction boundaries, there is no possibility to continue a transaction on another instance, since the transaction data it not available on any other instance.<br> If the transaction should not be lost then we must allow the BE to complete the ongoing transactions, while not starting any new transactions.<br> Stopping new transactions<br> New transactions can be started in various ways:</p> 
+     <ul> 
+      <li>New incoming requests<br> New incoming initial or subsequent requests must not end up on the queiscing instance. The reconfiguration of the CLB will ensure this.</li> 
+      <li>Timeouts<br> Any timeouts (SAS timeout, ST timeout) happening on the queiscing instance must not result in new transactions being started in that instance. This is already ensured by triggering timeouts on the current home instance. Since after a CLB reconfiguration, the queiscing instance is no longer the home instance of any object owned by it, any timeout trigger will result in</li> 
+     </ul> <p>there are no ongoing transactions)</p> 
+     <ul> 
+      <li>Migration<br> If there are not ongoing transaction preventing migration.</li> 
+      <li>Ignore<br> If there is an ongoing transaction preventing migration the timeout is ignored. However, the expiration time is not changed, and after fail-over the replica partner will cause the timer to expire. The maximum delay will be the quiescing time.</li> 
+      <li>New outgoing requests<br> New outgoing request can start new SIP transactions. They do not happen by themselves, but they can be generated in the context of:</li> 
+      <li>Timeouts<br> excluded based on the above.</li> 
+      <li>Incoming requests<br> Excluded based on the above.</li> 
+      <li>Incoming responses<br> We have two possibilities here.<br> Either reject any outgoing request during quiescing (for the application this will probably look like an immediate error response is received in a different thread, which is not a very nice way to handle this).<br> Or just accept the request. The result is that there is less time available for quiescing on the newly started SIP transaction. This is not a major problem, but just increases the chance of a lost SIP transaction.<br> The decision is to allow new transactions to be started in this case.</li> 
+      <li>HTTP sessions<br> HTTP requests will be quiesced the same as incoming SIP requests, so this should not happen.</li> 
+      <li>True Out-of-Band<br> If the outgoing request is sent based on an EJB request, we are talking about true out-of-band. A similar reasoning as for incoming responses holds here.<br> Finishing ongoing transactions<br> Even though we should prevent (as much as convenient) any new transaction from being started, we should also allow ongoing transactions to finish. There are several ways an ongoing transaction finishes or continues.</li> 
+      <li>Success or Error response<br> for some transaction (e.g., subscribe, info etc.) the transaction completes when a 2xx (success) or higher (error, e.g. 3xx, 4xx) response is received.</li> 
+     </ul> <p>Responses are not routed according to the consistent hash, instead the VIA header includes a reference to the originating instance. Therefore, any response if routed to the correct instance and can be used to complete the transaction.</p> 
+     <ul> 
+      <li>Provisional response<br> a provisional response does not finish the transaction, but must be handled in the context of the ongoing dialog. Since the dialog is not yet replicated, it must be routed to the instance where the (early) dialog resides. Since the responses are already routed according to the beroute in the VIA header, there is no problem here.</li> 
+      <li>Transaction Timeout<br> When no response is received a transaction timeout occurs. The transaction timer is kept on the local instance, so the timeout will occur on the instance that started the transaction and the transaction can be completed.</li> 
+      <li>CANCEL<br> An INVITE transaction can be canceled by the UAC if the 200OK is not yet received. However, since the CANCEL is routed according the same DCR rules as the original INVITE and the consistent hash has changed during the quiescing, the CANCEL will be received on the wrong instance (an instance that does not have the transaction) and will be rejected by that instance (481 from the transaction manager).<br> Ideally, the CANCEL should be routed to the same instance as where the INVITE was routed.</li> 
+     </ul> <p>However, it should be considered that an application always must be ready to accept a crossing of a CANCEL and the 200OK. It can respond to any 200OK or non-100 provisional response with a BYE.</p> 
+     <ul> 
+      <li>PRACK<br> An acknowledge of a provisional response (PRACK) is related to an early dialog and should be routed to the instance where this dialog resides. Since the prack is routed according to the contact (TS is UAS) or route (TS is proxy) that were received in the provisional response, they will currently be routed to the wrong instance. Therefore, the retransmissions of the provisional response would not be stopped.</li> 
+     </ul> <p>Ideally the PRACK would be routed to the instance where the transaction is ongoing.</p> 
+     <ul> 
+      <li>BYE on early dialog.<br> An application is allowed to send either a CANCEL (see above) or a BYE on a dialog after the (non-100) provisional response is received.<br> In case of an early dialog the BYE should be routed to the instance where the transaction is handled, since the dialog is not yet replicated and loaded on any other instance.<br> However, a BYE on a confirmed dialog should be routed according to bekey, to the current home instance.</li> 
+      <li>ACK on 2xx<br> The ACK is, unfortunately, routed according the contact or route information that was received in the 200OK, like any other subsequent request (e.g., re-INVITE or BYE).<br> This means in a quiescing situation, the ACK will be routed to the new instance.<br> Currently, we replicate on the ACK and NOT on the 200OK for the INVITE scenario. Therefore, the ACK will be received on an instance that knows nothing of the transaction and also can not load it. Consequently, it will be dropped. And since the ACK will then never be received on the correct instance the 200OK will continue to be retransmitted, until the timer expires, in which case a BYE will be sent.<br> So from the UACs point of view it will look quite strange and eventually the transaction will fail.<br> A possible solution to this problem would be to already replicate at the 200OK. Then the ACK could be routed to the new instance, which would migrate the ongoing session to that instance. However, this has some large impact SSR handling. It has to be carefully checked what the consequences are of replicating a dialog before it is confirmed (e.g., the proxy implementation is now only exchanged for a serialisable version after the confirm happens). Since we replicate the session in a state where the retransmit timer is running (for retransmitting the 200OK), this also implies that this timer must be guarded on the replica, where currently we only guard SAS and ST timers. Also, this solution would mainly work for ACK on 2xx and not cover any of the other scenarios in this section.</li> 
+      <li>ACK on error response<br> Like the ACK on 2xx, the ACK on error response is also used to stop re-transmissions. This ACK is hop-by-hop and not end-to-end and is handled in a different layer (in the transaction layer), but from a routing perspective the same issues hold as for the ACK on 2xx.<br> Since we normally do not replicate on the error response, the dialog can never be migrated to another instance, so there is no possibility to handle this ACK on any other instance than the instance where the transaction is located.</li> 
+      <li>Speedy NOTIFY<br> A so called speedy notify is a notify that is received before the corresponding 200OK response to the subscribe. The speedy notify is a headache, since according to the spec it must also count as dialog confirmation.<br> If a speedy notify is routed according to the be-key it might be received on an different instance as where the 200OK is received (routed by be-route). It will then not be marked as speedy and try to load the session. Since the dialog is not yet confirmed, it is not replicated, and not ready for migration. (remote locked).<br> The conclusion is that if the BE is quiescing, incoming initial and subsequent requests as well as timeouts will no longer happen. Responses will still be routed to the correct instance.</li> 
+     </ul> <p>From the text above it is clear that there are some requests (CANCEL, ACK, PRACK, BYE) that should be routed to the instance where the transaction they pertain to is located. Several solutions for this have been proposed.</p> 
+     <ul> 
+      <li>Include both be-route and be-key information in initial routing info<br> In this alternative we route these 'special' request (PRACK/ACK) according the be-route instead of the be-key. Since we can only provide the information once to the UAC on which all subsequent requests will be routed, this requires that both be-key and be-route are provided in the 200OK or any provisional responses. Any other (non-special) request can be routed (by the FE) according to the be-key information. Since both are available special and non-special request can be routed differently.<br> This would require changes to the CLB, which currently only provides the be-key in the contact and route information, and the be-route only in the via headers.<br> This solution does not work for CANCEL, since the contact or record-route information that includes the be-key and the be-route, is not used in the CANCEL. The CANCEL will contain the same information as the original INVITE.<br> Also for the BYE there is the problem that it can not be determined by the FE whether the BYE is sent in an early or confirmed dialog.<br> For Speedy NOTIFY there is a similar problem. There is no way to know whether the NOTIFY is speedy or not.<br> For PRACK and ACK there are different problems. Since the contact and record-route information are effectively immutable, the be-route would indicate the instance where the initial INVITE was handled. For ACKs and PRACKs on the responses to the initial INVITE this is good. However, in case of a combination of re-invite and migration, the re-invite might be received on a different instance than the instance that handled the initial invite. In such a case the be-route information is outdated, and ACK/PRACK requests could be routed to the wrong instance. This might be less of an issue, given that re-invites are relatively rare.<br> We can also put a time-limit on the use of the be-route. Here we assume that re-routing based on be-route for special requests is only needed in a short time (32 seconds) after the last cluster reshape.<br> Conclusion, this solution does not work properly for CANCEL, BYE or speedy NOTIFY, and only works for ACK/PRACK in the case where there are no re-invites after migration.</li> 
+     </ul> 
+     <ul> 
+      <li>Include a timestamp and keep multiple cluster configurations<br> Disclaimer; I'm not completely sure about this option. So the rest of the text should be read with this in mind.</li> 
+     </ul> <p>Instead of including a be-route in the contact/route information for routing special requests, a time-stamp is included. The FE will based on the timestamp route special request according to the current cluster config or according to the previous cluster config. This will only be done for 32 seconds after the last cluster reshape.<br> The solution is similar to the be-route, with a time-limited route of the be-route. As far as I can see it has simlar limitation.<br> The proposed solution from the CLB team was to keep <b>all</b> the ongoing sessions sticky for 32 seconds after a cluster reshape. However, there are some issues with SSR (which will not load any objects that do not have their home on the current instance). Also, this would allow new requests to be handled (e.g., OPTIONS or re-INVITE) during the quiescing phase, which will again lead to large chances of these transactions being lost. It would rely on the current transactions being finished with the 32 seconds and no new transactions being started...</p> 
+     <ul> 
+      <li>Re-route after lock detection<br> This solution entails that we route the request according to be-key, always. The request might end up on the 'wrong' instance. Via the replication framework we will try to load the dialog with the indicted DFid (todo, check how this works for CANCEL as this does not use the fid that is provided in the contact or route). If the dialog is in the local active cache the request is handled. If the dialog is not in the local cache, a broadcasted load request is issued. For the ACK and PRACK, the load request should fail with a remote locked exception.<br> If we receive the remoteLockedException, some requests, like PRACK/ACK/BYE can be routed to the instance that generated the remote locked exception. (FE-&gt;BE-&gt;BE). Responses (on BYE, PRACK) have to be routed back via the first BE, in order to remove transactions and reuse existing connections.<br> This solution will work for ACK and PRACK as well as for BYE and speedy NOTIFY. It will not work for CANCEL, since the TM already returns the 481 result if the related transaction can not be found on the instance. It will work after re-invite and after migrations. It does not need to be time-limited. The disadvantage is that the architecture gets a bit mixed up.<br> Fortunately, the ACK on error responses is handled as an 2xx ACK if the TM can not find it...</li> 
+     </ul> <p><b>FE quiescence</b><br> Currently the incoming requests will be routed by the FE to the BE (if not co-located). These internally routed request include a VIA header which identifies the connection used for the incoming request (connid) and an indication that this request is routed by the FE (felb).<br> Outgoing responses will be routed by the BE to the FE based on this VIA, which allows the FE to re-use the incoming connection to send the responses. This allows the same TCP connection or TLS connection that was used for the incoming request to be used for outgoing responses as well.<br> Unfortunately, this requires the FE to be available when sending an outgoing response. If the FE is externally addressable during the quiescing period, which is will be if during quiescing we only remove the BE from the CLB, the FE will keep on handling requests for incoming requests and hence be required to be available for outgoing responses as well.<br> In order to do quiescing for the FE as well we have different alternatives.</p> 
+     <ul> 
+      <li>Disable the FE for new incoming requests during the quiescing period, this includes closing of any established connection from the external parties. However, any responses to requests that were sent previously via the FE should still be routed via the FE.<br> If all the communication internally between BE and FE are reusing existing connections, then the responses can still be routed over these connections, provided that we do NOT close these internal connections (although the port is closed which will prevent new internal connections from being established).</li> 
+     </ul> <p>If responses can be send over new connections from BE to FE without re-using any existing connections, then this requires a different port for new incoming requests then for outgoing responses. Then during the quiescing period the one is closed, but not the other.<br> At the end of the quiescing period also the internal FE-BE traffic must be stopped by closing all the internal connections from the quiescing instance (and closing the port if that solution is chosen).<br> It need to be investigated if there is a fully meshed internal network connection pool that is used for sending these responses from BE to the quiescing FE.</p> 
+     <ul> 
+      <li>If the FE is not available when sending the outgoing request, and the top VIA indicates the felb and connid, we do not try to resend the response, but instead pop the via header and respond similar to a FE that lost the connection identified by connid. This would require the BE to open a new connection directly to the UAC.<br> It is unclear whether this works correctly for TLS. For TLS is it not the UAC that must set up the connection. So in case of TLS, when the connection is broken by the FE, the UAC will re-setup the TLS connection to a different FE. However, the BE has no way of knowing to which FE and which connid it should route. This would then also be an issue in a normal connection lost situation.</li> 
+     </ul> <p><b>In-flight data</b><br> At the start of the quiescing, not all the instances in the cluster will immediately have the same view of the re-configured consistent hash. There can be FEs that already sent data to a BE, because that is what the FEs consistent hash indicated, However, when the request is received on the BE that is being quiesced, its consistent hash will indicate that this is not the home instance.<br> There are several ways to handle this:</p> 
+     <ul> 
+      <li>Issue an error response with a retry-after header on these requests. There is some discussion on the correct error response, but at least this should not be a 503, since this indicates things on the IP-address level, which in our case is also the cluster level (saying that the complete cluster is not available for a while). A 302 or 500 error would be preferred.<br> This is the current behaviour.</li> 
+      <li>Handle the request as if is belongs here. This might not be wise since there are several checks also in the SSR part where the home instance is checked.</li> 
+      <li>Reroute the request to the correct (current) home instance.<br> This is probably complicated to achieve since it blurs the boundary between FE and BE (the BE would be acting as a FE). Also this introduces the risk of recursive behaviour (since the current home instance might not have updated its consistent hash yet).<br> The first solution is probably acceptable, since the amount of inflight data should be small.</li> 
+     </ul> <h4><a name="SSRUpgrade-Migrationofsessionbetween200OKandACK"></a>Migration of session between 200OK and ACK</h3> <p>A problem related to the handling of ACK during quiescence is the locking of the dialogs. Currently the lock of the dialog (or better said, all SASes related to a dialog) is obtained at the INVITE, but released at the 200OK. It will be re-obtained at the ACK and released 32 seconds after the ACK is handled.</p> <p>This means two things;</p> 
+     <ul> 
+      <li>The SAS may be migrated between the 200OK and the ACK.<br> If any other request is received for the same SAS (e.g., another session correlated via the SipApplicationSessionKey annotation) the SAS will be migrated. Then even if the ACK would be received on the original instance (which is unlikely, see earlier), the ACK would either be dropped because the SAS is in the mean time remotely locked on another instance, or the SAS will migrate back, which is something we want to avoid from performance point of view.</li> 
+      <li>After the ACK is received and handled, there is a time of 32 seconds during with migration of the SAS is prevented (remoteLockedException).<br> Redesign of the DLC should avoid the latter problem; the lock being kept for 32 seconds after the ACK is handled.</li> 
+     </ul> <p>The first problem could be solved by replicating on the 200OK (see earlier) and routing based on the be-key in the ACK.<br> If we route the ACK to the original instance based on the be-key (see earlier on PRACK handling), then we would still have to extend the locking period to be in effect until the ACK was handled.</p> <h4><a name="SSRUpgrade-Save"></a>Save</h3> <p>During the save a snapshot of the active cache and the replica cache are written to disk.<br> Save is fairly simple. During the backup all the active caches are serialized, by serializing the cache object in which they reside (normally an hashmap or similar). The replica cache is already serialized and can be written quite simply.<br> The location where the data is written must be configurable and depending on the upgrade scenario this could be a file on the local file system or on ram disk (application upgrade, AS upgrade) or on a NFS mounted central disk (OS upgrade, HW upgrade).</p> <p>As a possible later optimization we can make the saving configurable per application and the reconciliation fault tolerant to write failures.<br> Could be combined with the start command?<br> The only mutations to the cache that happen during the save will be migration (i.e., removal from the active cache). Since all traffic ports are closed (both externally and internally in the cluster) after the quiescing, only SSR requests will be handled in this phase. These kind of mutations are not an issue; they will be corrected later during the reconciliation phase.</p> <h4><a name="SSRUpgrade-Stop"></a>Stop</h3> <p>The traffic to the instance is stopped .The pipes are kept open a tiny bit longer to allow in-flight traffic to complete its journey.<br> Now there are two options.</p> 
+     <ul> 
+      <li>Disable replication from the replica source.<br> I.e., during replication the replica source will no longer replicate to us or to any other partner. The instance is expected to return in a relatively short time and will re-claim the replicas that are saved during its down period anyway.</li> 
+      <li>Allow the normal behaviour of having the replica source reconfigure its pipes based on the new cluster configuration.<br> The advantage is that this is the normal behaviour. Also it is more save in case of an (very unexpected) failure during the upgrade (i.e., when the instance is not recoverable for some reason). The disadvantage is that this will create potential zombies on the current replicate destination partner which must be removed before the reconciliation.</li> 
+     </ul> <h4><a name="SSRUpgrade-Upgrade"></a>Upgrade</h3> <p>Do all the stuff that needs to be done.</p> <h4><a name="SSRUpgrade-Restart"></a>Restart</h3> <p>The instance is restarted. The ports are opened. Traffic can be received, but since the instance is not enabled in the CLB, no BE traffic will be received. However, FE traffic can immediately start.</p> <h4><a name="SSRUpgrade-Restore"></a>Restore</h3> <p>The data is restored from the cache. This requires reading from the previously set file location. The data is deserialised for restoring the active cache, the replica cache is already in serialized form, so can be restored as is.<br> Note: with this rolling upgrade functionality it will be possible to upgrade applications but under tight constraints including:</p> 
+     <ol> 
+      <li>there is no support for application versioning in this release so as each instance is updated, the application is newly deployed (instance by instance) with the dynamic-reconfig disabled.</li> 
+      <li>this means that during the overall upgrade process, there will be "in effect" different versions. So great care must be taken by app developers and deployers that the newly deployed app is completely consistent with the old, particularly with regard to usage of objects stored in http-session, sip application session, etc.</li> 
+     </ol> <p>Application are recommended to use a pattern where a version of the data is included in the serialized form, so as to be able to handle both old and new data formats, in case there is any changes made.<br> The container artifacts use the same pattern.</p> <h4><a name="SSRUpgrade-Enable"></a>Enable</h3> <p>The instance is enabled in the CLB and will start receiving BE traffic again.</p> <h4><a name="SSRUpgrade-Reconciliation"></a>Reconciliation</h3> <p>Between saving the snapshot and restoring it all kind of things might have happened that make the restored data invalid.</p> 
+     <ul> 
+      <li>Active sessions have migrated because they have been accessed during the roll (either by traffic or because of a timeout). However, they are still present in the snapshot of the active cache.</li> 
+      <li>Active sessions have been removed during the roll (after being migrated). However, they are still present in the snapshot of the active cache.</li> 
+      <li>New sessions have been started on the replica source but not yet replicated to the upgraded instance. Depending on the solution these replicas may be on our replica destination already.</li> 
+      <li>Sessions might have been updated, but the restored replica cache still contains the old version.</li> 
+      <li>Session have been removed, but they are still present in the restored replica cache.</li> 
+     </ul> <p>The solution to this is to do reconciliation. We distinguish two types of reconciliation; Reconciliation of the active cache and reconciliation of the replica cache.</p> <p><b>Active cache reconciliation</b></p> <p>The idea behind repairing the active cache is very simple. Any items that were in the active cache of upgraded instance should (under normal circumstances) be in the replica cache of the replication partner. During the upgrade, traffic meant for the upgrading instance is redirected to other instances. This will result in reactivaction of those sessions, which means that the owner changes. So during the upgrade the items in the replica cache that are still owned by the upgrading instance will only decrease (never increase). After the upgrade, we just have to remove all the instances from the reloaded active cache that have been reactivated elsewhere in the cluster.</p> <p>Until that task is completed, any items that have not yet been repaired in the active cache are marked as suspect and access on those will trigger a load request, even if it is found in the active cache (since in the mean time it may have been re-actived elsewhere)</p> <p>The way this will occur is that the instance will send out a propagated request to all members of the cluster. Each instance will reply with a list of id's owned by the caller instance (in practice usually only the next partner instance of the caller will reply).</p> <p>Then:</p> 
+     <ol> 
+      <li>all the members of the active cache are marked as 'suspect'</li> 
+      <li>iterate over the members of the active cache - if it's id is not in the list of replicas still owned by it, it is removed (only from the active cache). If is is in the list, then it is marked as 'no longer suspect'.<br> (see the 'geek notes' for example pseudocode for this p.56).<br> Note: this process is occurring while the instance is also under load, so an incoming request during this period must also check members of the active cache and if they are still marked 'suspect', then it should check the owned list. If it is in there it's ok and can be returned. If not, then it should be tossed and a fresh load call issued.<br> (see pseudocode in geek notes p.57)<br> As a future optimization we can consider a fault tolerant active cache reconciliation, that does not depend on the fact that the saved copy of the active cache is complete.<br> The solution assumes that both deleted and migrated sessions will be removed from the restored active cache. This leaves any migrated sessions or sessions that are created expat intact. This could lead to a 'bunched-up' effect due to the cumulation of migrated sessions.<br> TODO qualify this effect, it might not be that bad, we have to take into account the actually time it was disabled from the CLB, during which time migration can occur, vs the reconciliation phase, where migration back is already occurring. Also during the rest of the roll migration back to already migrated instances will happen, so the length of the total roll is essential as well.<br> Migrating back any migrated sessions could be done in different ways, but the most robust solution is based on the expat list handling. Request the expat list for the upgraded instance after the CLB is enabled again and actively try to load all the sessions in the expat list. There could be sessions locked at such a time. Then there are two options, leave those sessions (they will not add up to much anyway, so the bunch-up is avoided and they will be migrated at the next traffic event or timer event) or retry (how long, how much, there is no trigger on which to retry).</li> 
+     </ol> <p><b>Replica cache reconciliation</b><br> This process is different than what the 'geek notes' mentions although similar in spirit.<br> In the geek notes the attempt is made to do the reconciliation work from instance1. We find it is easier to do it from instance4.<br> After the snapshot is restored the upgraded instance triggers its replication source to do the following:</p> 
+     <ul> 
+      <li>query its replication partner (the upgraded instance) to get a list of replica id/version data elements</li> 
+      <li>remove any replica that was created during the roll on any other instance (i.e., anything owned by our replication source that is not on its current replication partner).</li> 
+     </ul> <p>This could be avoided by disabling replication from the replica source during the upgrade.</p> 
+     <ul> 
+      <li>iterate over the query result:</li> 
+      <li>if an id from this list does not exist in its active cache - issue a remove message to remove it from the restored replica cache.</li> 
+      <li>if an id exists and the versions match - do nothing.</li> 
+     </ul> <p>The data in the replica cache is already up to date.</p> 
+     <ul> 
+      <li>if an id exists and the active version is &gt; replica version, do a save</li> 
+     </ul> <p>The data was outdated (possibly it was created on the replica partner and but the updated version removed again in the step above).</p> 
+     <ul> 
+      <li>iterate over the active cache</li> 
+      <li>if an id from active cache does not exist in the replica list, do a save. This ensures that any newly added sessions are stored.</li> 
+     </ul> <h4><a name="SSRUpgrade-Nextroll"></a>Next roll</h3> <p>The next instance in the sequence should not be upgraded before the reconciliation is complete.<br> Well, it could be optimized if the next upgraded instance is neither of the two partners of the just upgraded instance. In fact, if the distance in the replication ring is at least three between upgraded instances, there should be no functional effect of this, in theory they might even be upgraded simultaneously!</p> <h4><a name="SSRUpgrade-RebalancingofTCPconnections"></a>Re-balancing of TCP connections</h3> <p>The SCSF keeps a fixed number of TCP connection to the SIP-AS. In case one of the instances is disabled, the SCSF will notice this as a termination of a part of the connections (1/n th of the connections, in a nicely balanced scenario). It will re-establish these TCP connections based on the termination trigger. The re-established connections will be redistributed over the currently available FE instances by the IP-sprayer.<br> When the instance comes back up again, the SCSF will get no trigger. Therefore, none of the TCP connections will be re-established. Effectively, this means that the TCP connections are not evenly distributed over the FE instances.<br> Example. If we have 10 instances, and 100 TCP connections, ideally every FE has 10 TCP connections. If one instance goes down after re-establishing the connections the 8 of the remaining instances will have 11 TCP conncetion and one will have 12 connections. After the instance is restored, 8 instances will have 11 connection, 1 instance will have 12 connections and one instance will have none.<br> Remember, this is only the FE TCP traffic that is not properly distributed, all instances will receive their fair share of BE traffic or of FE UDP traffic.<br> The previous solution from EAS was to close all the TCP ports in an upscale scenario, forcing a redistribution over the currently available instances.<br> A nicer, less brute force, solution would be to close connections regurlaly. This can be for two reasons</p> 
+     <ol> 
+      <li>The connection did not receive any traffic in a configurable period.</li> 
+      <li>The connection has been alive for a configurable period.</li> 
+     </ol> <p>Period 2 should be longer than period 1 and ensure that even in the presence of constant traffic the connections will eventually be re-distributed evenly over the cluster.</p> <h4><a name="SSRUpgrade-Usecaserealization"></a>Use case realization</h2> <h4><a name="SSRUpgrade-Processview"></a>Process view</h1> <h4><a name="SSRUpgrade-Implementationview"></a>Implementation view</h1> <h4><a name="SSRUpgrade-DataView"></a>Data View</h1> <h4><a name="SSRUpgrade-DeploymentView"></a>Deployment View</h1> <h4><a name="SSRUpgrade-SizeandPerformance"></a>Size and Performance</h1> <h4><a name="SSRUpgrade-CostEstimate"></a>Cost Estimate</h1> <p>The following tasks have been identified.</p> 
+     <ol> 
+      <li>discussions on choreography (includes discussions with the CLB team on quiescing).</li> 
+     </ol> <p>There seem to be several discussions on quiescing and VIP in parallel. Also there are open issues, see text.</p> <p>We should synchronize this with the CLB team</p> <p>As a result of these meetings we might have some impact on CLB, e.g., handling of early dialogs; </p> <p>There might be SSR impact (e.g., we might have to replicate on the 200OK for INVITE dialogs or at least avoid migration of the SAS between the 200OK and the ACK)</p> <p>There might be NM impact (multiple ports for responses and requests)</p> 
+     <ol> 
+      <li>TCP connection redistribution</li> 
+     </ol> <p>Closing of ports.</p> 
+     <ol> 
+      <li>new asadmin commands potential</li> 
+     </ol> <p>Potentially, we need new asadmin commands and this will include extra effort to create those.</p> 
+     <ol> 
+      <li>save/restore functionality</li> 
+     </ol> <p>This is already partly implemented, but needs to be refined. E.g., configuration of the destination ?</p> <p>Code reviews and edge case analysis still needs to be done. Main work done by SUN.</p> 
+     <ol> 
+      <li>reconciliation</li> 
+     </ol> <p>This is also started already, but some parts are not yet done. Again code reviews and edge case analysis is needed.</p> 
+     <ol> 
+      <li>EJB SFSB functionality</li> 
+     </ol> <p>THis is actually part of the previous two. However, it is mentioned as a specific item since it might be decided to skip this in the first release.</p> <p>There is some extra effort involved in this due to the different structure of the managers for EJB SFSBs.</p> 
+     <ol> 
+      <li>SSR high volume tests</li> 
+     </ol> <p>At the moment there are not yet high volume tests for SSR system test it seems.<br> These kind of tests are needed as a basis for the high volume rolling upgrade tests.</p> 
+     <ol> 
+      <li>Rolling upgrade function test</li> 
+     </ol> <p>Except some stabilising period here. Calculate some support in fixing these issues.(and remember, that these are the same resources as involved in the 'normal' SSR work so preferable stabilise that first, so the focus can be on rolling upgrade)</p> 
+     <ol> 
+      <li>System test rolling upgrade</li> 
+     </ol> <p>Need to define appropriate traffic scenarios here.<br> Again expect some performance issues, which might or might not be solved within the scope of the proposed solution.<br> Experience tells that performance problems take a long time to track down and probably also a long time to correct.<br> Also SSR team members are needed for trouble shooting, domain knowledge, bug fixing etc.<br> To conclude, the recommendation is to first finalise the normal SSR testing, so we can be confident that the SSR functionality is in a good state.<br> For Ericsson the effort would not be so much in coding, but more in reviews, design support and trouble shooting help.<br> The main effort for Ericsson should probably on the rolling upgrade testing. <br> I'm not sure what kind of tests are already available from EAS in this area and if they can be reused nor do I know what the normal effort of this was in the EAS days.<br> The following figures are very tentative and are subject to change pending the ongoing discussions. They also do not include an optimist compensation factor (I'm known to be about 25% too optimistic )</p> 
+     <ol> 
+      <li>Quality</li> 
+     </ol> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 08, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

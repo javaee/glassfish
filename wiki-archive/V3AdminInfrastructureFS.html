@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : V3AdminInfrastructureFS</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="V3AdminInfrastructureFS-AdminInfrastructureFunctionalSpecifications"></a>Admin Infrastructure Functional Specifications</h1> <p><a href="V3FunctionalSpecs.html" title="V3FunctionalSpecs">Back to V3 Functional Specifications</a><br> [</p> 
+     <div class="error">
+      <span class="error">Unknown macro: {TableOfContents title='Table of Contents'}</span> 
+     </div> <p>|(TableOfContentstitle='TableofContents')]</p> <h4><a name="V3AdminInfrastructureFS-0.ImportantNotes"></a>0. Important Notes</h1> 
+     <ul> 
+      <li>This one-pager is a bit unusual as it covers a <b>lot</b> of territory and has contributions from multiple authors. The layout is a bit different from the usual format. E.g. section 6 normally contains the schedule. What we've done instead is put the schedule details right in with the appropriate section 4 area.</li> 
+     </ul> <h4><a name="V3AdminInfrastructureFS-1.Introduction"></a>1. Introduction</h1> <p>This document lists the tasks to be done in the administration infrastructure area (configuration, pluggability, admin CLI, public management infrastructure/API, administrative security etc.) for GlassFish V3 Final. It should be used as a guideline to plan the deliverables and test specifications. Every task has been articulated in sufficient detail. Ideally, some kind of design document should be created for the functionality being delivered for this release.</p> <h4><a name="V3AdminInfrastructureFS-1.1.Project%2FComponentWorkingName%3A"></a>1.1. Project/Component Working Name: </h2> <p>Admin Infrastructure</p> <h4><a name="V3AdminInfrastructureFS-1.2.Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier%3A"></a>1.2. Name(s) and e-mail address of Document Author(s)/Supplier:</h2> <p>The individuals who contributed to this document are:</p> <p>Kedar Mhaswade (km@dev.java.net)<br> Byron Nevins (bnevins@dev.java.net)<br> Nandini Ektare (ne110415@dev.java.net)</p> <h4><a name="V3AdminInfrastructureFS-1.3.DateofThisDocument%3A"></a>1.3. Date of This Document:</h2> <p>March 2009</p> <h4><a name="V3AdminInfrastructureFS-2.ProjectSummary"></a>2. Project Summary</h1> <h4><a name="V3AdminInfrastructureFS-2.1.ProjectDescription%3A"></a>2.1. Project Description:</h2> <p>This project deals with facilities of GlassFish v3 that relate to the administration of the server. Deployment is available as a separate spec and is not covered here. The goal is to provide facilities such that users are able to manage instances of GlassFish V3. Most of the management operations relevant to web application deployment and management from GlassFish V2 are carried forward. There are a few new management operations which are explicitly called out in this specification.</p> <h4><a name="V3AdminInfrastructureFS-2.2.RisksandAssumptions%3A"></a>2.2. Risks and Assumptions:</h2> <h4><a name="V3AdminInfrastructureFS-3.ProblemSummary"></a>3. Problem Summary</h1> <h4><a name="V3AdminInfrastructureFS-3.1.ProblemArea%3A"></a>3.1. Problem Area:</h2> <p>Refer to <a href="V3OverviewFunctionalSpec.html" title="V3OverviewFunctionalSpec">V3OverviewFunctionalSpec</a></p> <h4><a name="V3AdminInfrastructureFS-3.2.Justification%3A"></a>3.2. Justification:</h2> <p>Refer to <a href="V3OverviewFunctionalSpec.html" title="V3OverviewFunctionalSpec">V3OverviewFunctionalSpec</a></p> <h4><a name="V3AdminInfrastructureFS-4.TechnicalDescription%3A"></a>4. Technical Description:</h1> <h4><a name="V3AdminInfrastructureFS-4.1.Details%3A"></a>4.1. Details:</h2> <h4><a name="V3AdminInfrastructureFS-4.1.1CoreConfigurationTasks"></a>4.1.1 Core Configuration Tasks</h2> <h4><a name="V3AdminInfrastructureFS-4.1.1.1Providebasicconfigurationvalidationsupport"></a>4.1.1.1 Provide basic configuration validation support</h2> 
+     <ul> 
+      <li>Define the validation framework.</li> 
+     </ul> <p>New: JSR 303 Bean Validation API (javax.validation.*) will be used for all config validations. The implementation is provided through integration of Hibernate Validator. (See the references below for more info on the JSR and its implementation.) The framework defines standard basic validation annotations that can be used to validate object fields (config properties/attributes) and also has extensions to provide custom object level validations. Validations will be provided at both these levels. GlassFish V2 used regex for certain field level validations. The JSR provides a standard @Pattern annotation that suits this kind of validation and that shall be used.</p> 
+     <ul> 
+      <li>Define data-type based validation (application of 1. above for data-type validation). This is required because our configuration interfaces entertain only strings for attributes for any type of data.</li> 
+     </ul> <p>The validation support through the Bean Validation API supports annotations that will take care of this requirement. For example. Custom annotations can be added through the constraints extension mechanism in the API to take care of any specific validation criteria.</p> 
+     <ul> 
+      <li>Define additional annotation types or enhance the org.jvnet.hk2.config.Attribute annotation to include medadata about: 
+       <ul> 
+        <li>data-type - actual data type of a variable. Provide support for int, java.lang.Integer, boolean, java.lang.Boolean.</li> 
+        <li>one-of - enumerated values. range - specifies ranges.</li> 
+       </ul> </li> 
+     </ul> <p>The Bean Validation API has basic annotations to cover the above metadata enhancements. The support can be further extended through the mechanism to add additional constraint annotations</p> <h4><a name="V3AdminInfrastructureFS-4.1.1.2Provideaconfigurationoptiontoturnvalidationonoroff."></a>4.1.1.2 Provide a configuration option to turn validation on or off. </h2> 
+     <ul> 
+      <li>Provide a boolean attribute, validate on admin-service element. (TBD: Jerome's comments: Not sure if this a good idea to support)</li> 
+     </ul> <p>Every time the configuration of objects is changed in memory (via admin interfaces), this flag determines whether validation checks apply. If the flag is turned off, no validation checks are performed while changing the configuration objects.</p> <p><b>Final Decision (ASARCH April 13th, 2009):</b><br> No such support will be provided.</p> <h4><a name="V3AdminInfrastructureFS-4.1.1.3CreateaDTDlikedocumentfromconfiguration."></a>4.1.1.3 Create a DTD-like document from configuration.</h2> <p>(Jerome's comments: We don't need this for 3.0 release)</p> <p>(June's comments: The doc team needs this info in some form in order to document the domain.xml file. It doesn't have to be DTD-like. If it's Javadoc-like, that would work too. And what about QA? Don't they need something that tells them everything domain.xml can contain and whether it's well-formed? Furthermore, what about users? Some of them will want to edit domain.xml but won't want to have to read the source code to do it.)</p> <p><b>Final Decision (ASARCH April 13th, 2009):</b><br> 1. Provide javadoc-like documentation to be release to the community directly and for doc team's reference.<br> 2. Implement verify-domain-xml CLI to make sure domain.xml is validated and verified on demand.</p> <h4><a name="V3AdminInfrastructureFS-4.1.1.4Provideanewattributenamedversionontherootelementofthedomain.xml."></a>4.1.1.4 Provide a new attribute named <em>version</em> on the root element of the domain.xml. </h2> 
+     <ul> 
+      <li>Modify the configuration interface Domain.java to have read-only @Attribute named version.</li> 
+     </ul> <p> Since there is no schema document that validates the domain.xml, it is not possible to identify which release of GlassFish v3 a particular domain.xml corresponds to. This is mostly from the point of view of future provision. This will become prominent once we start thinking of upgrading GlassFish v3 Prelude domains.<br> The value of this should match the Version of the product as returned by the fullVersion field of com.sun.appserv.server.util.Version class.</p> <p><b>Final Decision (ASARCH April 13th, 2009):</b><br> Let the version at the top level remain as is, but do not use it in any decision making because ina partially-upgradable system like v3, the top level version does not really help in making meaningful upgrade decisions based on that version</p> <h4><a name="V3AdminInfrastructureFS-4.1.1.5IncorporatenewGrizzlyconfiguration."></a>4.1.1.5 Incorporate new Grizzly configuration. </h2> 
+     <ol> 
+      <li>Move and rename (to org.glassfish) the following interfaces to glassfish-api for configuration (the idea is that all pluggable modules share these interfaces in their configuration): 
+       <ol> 
+        <li>Property.java – A generic interface with a name and a value. Denotes the &lt;property&gt; element in XML.</li> 
+        <li>PropertyBag.java – A generic interface to hold &lt;property&gt; elements.</li> 
+       </ol> </li> 
+      <li>Incorporate new Grizzly configuration as Java interfaces in org.glassfish.grizzly.config package (and its subpackages).</li> 
+     </ol> 
+     <ul> 
+      <li>This is rather risky, but we can't do anything better.</li> 
+      <li>Open Issue: OI-0.</li> 
+     </ul> <h4><a name="V3AdminInfrastructureFS-4.1.1.6Minifythedomain.xml."></a>4.1.1.6 Minify the domain.xml. </h2> 
+     <ol> 
+      <li>Since this is a web-specific release, the default domain.xml should be modified to remove any extraneous elements.</li> 
+     </ol> <p>As far as possible there should be one domain.xml template for all the distributions of GlassFish v3 Prelude.<br> This requirement is tightly coupled with the requirement to split config beans and not keep them all together in Base GF. Each module contains its config beans. On the first loading of a new module(/container) GF v3 provide a mechanism to detect any default configs or minimal initial configs supported by the module(/container) and merge this new default config with the domain.xml. <br> (Note: The present mechanism to do so is as follows:<br> Every container has a Sniffer provided by the module(/container). <br> The Sniffer interface includes a callback API : public Module[] setup(String containerHome, Logger logger) <br> This is called everytime the container is loaded in memory and gives the container the opportunity to provide its initial configuration through the parseInhabitants() API implemented by the module provider.)</p> <h4><a name="V3AdminInfrastructureFS-4.1.1.7Provideremainingdynamicreconfigurationsupport."></a>4.1.1.7 Provide remaining dynamic reconfiguration support. </h2> 
+     <ol> 
+      <li>Provide an API to access the changes to configuration that are persisted to domain.xml but not applied to the runtime.</li> 
+      <li>Provide support (and API) so that admin interfaces can indicate if the runtime requires a restart of the server to (possibly) apply the changes that are not applied. (e.g. some changes to the JVM options like -Xmx, port being occupied etc.)</li> 
+     </ol> <h4><a name="V3AdminInfrastructureFS-4.1.1.8Provideadmintrafficonaseparateportcalledadminport%2Cwhichis4848bydefault%28justlikeGlassFishV1%2CV2%29."></a>4.1.1.8 Provide admin traffic on a separate port called admin-port, which is 4848 by default (just like GlassFish V1, V2).</h2> 
+     <ol> 
+      <li>Ensure that admin operations are available only on admin-port by default. Admin-port is a required interface on the installer as well as asadmin create-domain command. The default value for the port is 4848.</li> 
+      <li>Modify asadmin stop-domain command logic to specify what the admin-port is. The name of the admin http-listener is admin-listener.</li> 
+      <li>See more details <a href="https://glassfish.java.net/nonav/v3/admin/planning/prelude/admin-user-port-separation.html">here</a></li> 
+     </ol> 
+     <ul> 
+      <li>Benefits of separating the admin-port from user port by default are obvious (compatibility). Also, name-space collision is disliked by users.</li> 
+      <li>Supporting administration both ports is rather tricky. It may so happen that users want administration to be available on secure channel while user traffic on application-specific channel.</li> 
+      <li>Assess the impact of Grizzly Config task on this.</li> 
+     </ul> <h4><a name="V3AdminInfrastructureFS-4.1.1.9DocumentconfigurationPluggability"></a>4.1.1.9 Document configuration Pluggability</h2> 
+     <ol> 
+      <li>Document the manual steps about how a particular module can use the configuration annotations and domain.xml to plug in itself into v3 Prelude runtime. Administration interface to seamlessly do this is out of scope of this release. Users are expected to modify the domain.xml by hand to provide the XML structure for their configuration that needs to get injected.</li> 
+     </ol> <h4><a name="V3AdminInfrastructureFS-4.1.1.10Supportpasswordaliasingtokens."></a>4.1.1.10 Support password aliasing tokens. </h2> <p> See Admin Security Section.</p> <h4><a name="V3AdminInfrastructureFS-4.1.1.11Specifythecompletedomain.xmlpersistencepolicy."></a>4.1.1.11 Specify the complete domain.xml persistence policy. </h2> 
+     <ol> 
+      <li>It is absolutely important to save a backup of domain.xml since it is modified frequently.</li> 
+      <li>We have seen issues when domain.xml is corrupt and there is no backup copy available.</li> 
+      <li>The best strategy seems to be making a change to a backup file and then making an atomic move to the real file if writing to backup succeeds. This is not easy to do on Windows.</li> 
+     </ol> <h4><a name="V3AdminInfrastructureFS-4.1.2CommandLineInterface"></a>4.1.2 Command Line Interface</h2> <p>CLI for V3 Final is exhaustively documented separately:</p> 
+     <ul> 
+      <li><a href="https://glassfish.java.net/nonav/v3/admin/planning/j109/list-of-commands.html">List of CLI Commands</a></li> 
+      <li><a href="https://glassfish.java.net/nonav/v3/admin/planning/j109/admin-cli.html">CLI Functional Specifications</a></li> 
+     </ul> <h4><a name="V3AdminInfrastructureFS-4.1.3PlatformServices"></a>4.1.3 Platform Services</h2> <p>V2 introduced support for setting up GlassFish as a service on Solaris and Windows. The main functional design will remain the same. We will introduce the same command name, <b>create-service</b>, into V3. </p> <p>In keeping with the philosophy of minimizing the introduction of native code into V3, we are planning on leveraging JNA for this project. Naturally all services are platform-dependent and native so there is no way to avoid it. </p> <p><b>asadmin create-service</b>, an existing command in V2, will be ported to V3 as a starting point. It currently works with Solaris and SMF. It will be expanded to work with multiple platforms. </p> <h4><a name="V3AdminInfrastructureFS-4.1.3.1SMF"></a>4.1.3.1 SMF</h3> <p>Much work was put into documenting SMF support for V2. Some useful SMF documents have links at the end of this document. SMF is an important feature. E.g. it improves OpenSolaris adoption for GlassFish. These two documents are especially important:</p> 
+     <ul> 
+      <li><a href="http://wiki.glassfish.java.net/attach/V3AdminInfrastructureFS/SMF_design.html">Design document from V2</a></li> 
+      <li><a href="http://wiki.glassfish.java.net/attach/V3AdminInfrastructureFS/SMF_faqs.html">SMF FAQ from V2</a></li> 
+     </ul> <h4><a name="V3AdminInfrastructureFS-4.1.3.2WindowsServices"></a>4.1.3.2 Windows Services</h3> 
+     <ul> 
+      <li>Windows: A easy-to-use Windows Service will help adoption of GlassFish. It will be flexible enough for use as a Service for other java programs like JavaDB.</li> 
+     </ul> <h4><a name="V3AdminInfrastructureFS-4.1.3.3Schedule"></a>4.1.3.3 Schedule</h3> <p>Platform Services will be completed in mid July for the V3 Final Release</p> <h4><a name="V3AdminInfrastructureFS-4.1.4Serverstartandrestart"></a>4.1.4 Server start and restart</h2> <p> Server restart has been a highly desired feature for a long time. The Admin Console Team is especially excited about this feature so that a user can easily restart the server after making configuration changes that require a restart. The user will be able to restart remotely.</p> <p>There are several ways to implement server restart. All such ideas of course require some sort of process to be running on the server's behalf so that it can restart the server. Two different approaches for implementing the behavior are discussed here. The two approaches have wildly differing levels of \</p> 
+     <ul> 
+      <li>development cost</li> 
+      <li>ease of use</li> 
+      <li>reliability</li> 
+     </ul> <h4><a name="V3AdminInfrastructureFS-4.1.4.1AsadminasaWatchdog"></a>4.1.4.1 Asadmin as a Watchdog</h3> 
+     <ul> 
+      <li>development cost: low</li> 
+      <li>ease of use: medium</li> 
+      <li>reliability: high</li> 
+      <li>This solution has been implemented and is available in V3 as of April 3, 2009</li> 
+     </ul> <p>This solution leverages an already existing process and behavior. This is overwhelmingly our choice for V3 final.</p> <h4><a name="V3AdminInfrastructureFS-Background"></a>Background</h3> <p><b>asadmin start-domain</b> is the supported way to start the server in an <em>external</em> process. It will start the server in a new JVM and exit. If you add the <b>--verbose</b> option then asadmin starts the server and remains running waiting for the server to exit. asadmin holds a reference to the Java Process object of the server's JVM. It also has a console window. It is called "verbose" because it echos all log messages to its console window. If the console window is disposed of (e.g. by entering ^C) then not only is the asadmin process killed but the server's JVM is also destroyed.</p> <h4><a name="V3AdminInfrastructureFS-Goals"></a>Goals</h3> 
+     <ul> 
+      <li>Add a new option to <b>asadmin start-domain</b>. Namely the --watchdog option.</li> 
+      <li>start the domain on the domain machine with a watchdog process running</li> 
+      <li>The watchdog does not require a console window but will have one if <b>--verbose</b> is also chosen.</li> 
+      <li>A new CLI Command will be added – <b>restart-domain</b>.</li> 
+     </ul> <h4><a name="V3AdminInfrastructureFS-Details"></a>Details</h3> 
+     <ul> 
+      <li>The user starts the domain with <b>asadmin start-domain --watchdog</b></li> 
+      <li>If <b>verbose</b> is not also set, asadmin does not directly start the domain. Instead it creates and starts another JVM which in turn runs start-domain. The original asadmin then exits. 
+       <ul> 
+        <li>Why? This is how we get rid of the unwanted console window.</li> 
+       </ul> </li> 
+      <li>If <b>verbose</b> is set then we do everything in this asadmin process.</li> 
+      <li>The user runs the <b>asadmin restart-domain</b> command, which makes the JVM process exit with integer value 10.</li> 
+      <li>asadmin sees the special return value and starts up the server again with the original arguments.</li> 
+     </ul> <p>There are 3 ways to restart a server:</p> 
+     <ol> 
+      <li>REST command</li> 
+      <li>asadmin restart-domain</li> 
+      <li>Admin Console GUI action, probably a button which eventually calls</li> 
+     </ol> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">AMXRoot.getInstance().getDomainRoot().executeREST(DomainRoot.RESTART_DOMAIN);</pre> 
+       </div> 
+      </div>
+     </div> <p>If the startup fails for any reason in this restart mode, launcher gives up and exits with whatever exit code server process exits with. The launcher clearly logs/displays the errors so that the corrective actions can be taken. For this release, no retry attempts have been specified. This facility is used to do a clean implementation of domain restart from the admin console/CLI.</p> <h4><a name="V3AdminInfrastructureFS-Notes"></a>Notes</h3> 
+     <ul> 
+      <li>If the server won't stop properly via a System.exit(10) then a restart is not attempted.</li> 
+      <li>killing the server JVM from the OS itself results in an exit value of 1 - so no restart is attempted</li> 
+      <li>We purposely don't want to add a state to asadmin where it will always try to restart – e.g. <b>asadmin start-domain --alwaysrestart</b></li> 
+      <li>The new CLI command, <b>restart-domain</b> should be very easy to implement. It is exactly the same as <b>stop-domain</b> with one difference. It returns 10 instead of 0.</li> 
+      <li>Starting the domain with <b>asadmin --watchdog</b> will not use a console window. This is important for users. We have learned in past incarnations of AppServer that some users really hate having unnecessary open console windows around. With verbose set to off the console windows would be useless anyway. If they want a console window they simply run in watchdog and verbose modes.</li> 
+      <li>Fairly exhaustive timing <a href="http://wiki.glassfish.java.net/attach/V3AdminInfrastructureFS/SMF_faqs.htmlwatchdog_times.txt">tests</a> were done. If the user starts the domain with verbose and watchdog on - there is zero time impact relative to starting the domain non-verbose and non-watchdog. On the other hand there is a quite large cost for running the watchdog in a separate window – more than 2 seconds of startup time. This is something we can look at more closely post milestone 2.</li> 
+     </ul> <h4><a name="V3AdminInfrastructureFS-DocumentationIdeas%2FRequirements%3A"></a>Documentation Ideas/Requirements:</h3> 
+     <ol> 
+      <li>User must start the domain with the <b>--watchdog</b> option to enable restarts</li> 
+      <li>If the previous step is forgotten then a call to the remote command, RestartDomainCommand, will stop the domain and emit a warning log message.</li> 
+      <li>The <b>--watchdog</b> option must be added to the CLI man page for start-domain</li> 
+      <li>A new man page must be created for the new remote command – RestartDomainCommand (<b>asadmin restart-domain</b>)</li> 
+      <li>--watchdog is by default active.</li> 
+     </ol> <h4><a name="V3AdminInfrastructureFS-QATestingSuggestions%3A"></a>QA Testing Suggestions:</h3> 
+     <ul> 
+      <li>after running this: <b>asadmin start-domain --watchdog</b> 
+       <ul> 
+        <li>call <b>asadmin stop-domain</b>. The domain should stop and not restart.</li> 
+        <li>Kill the domain externally via, say, the kill command. The domain should NOT restart.</li> 
+        <li>Kill the console where <b>asadmin start-domain --watchdog</b> is running by entering ^C. The domain should stop and not restart.</li> 
+        <li>Run jps then <b>asadmin restart-domain</b> then jps again. You should see the server running with some pid, then it should reappear in the list with a different pid. The console window should say "Restarting Domain..."</li> 
+        <li>Repeat the previous step over and over and over.</li> 
+       </ul> </li> 
+      <li><b>asadmin start-domain --verbose</b> 
+       <ul> 
+        <li>Restarting should NOT work. It should only work with the <b>--watchdog</b> option</li> 
+       </ul> </li> 
+      <li><b>asadmin start-domain --verbose --watchdog</b> 
+       <ul> 
+        <li>This should work ''exactly' like * <b>asadmin start-domain --watchdog</b> except that log messages are printed to the console.</li> 
+       </ul> </li> 
+     </ul> <h4><a name="V3AdminInfrastructureFS-TimingResults"></a>Timing Results</h3> <p>Invasive testing. I added code to AsadminMain, Launcher, AppServerStartup as follows</p> 
+     <ol> 
+      <li>AsadminMain immediately gets the clock time and sets a System Property</li> 
+      <li>Launcher starts the server JVM with that System Propertyas a "-D" argument</li> 
+      <li>AppServerStartup gets the clock time when all services are started, subtracts the time sent in from AsadminMain</li> 
+      <li>the resulting time is logged.</li> 
+     </ol> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Watchdog</th> 
+         <th class="confluenceTh">Startup Time </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> yes </td> 
+         <td class="confluenceTd">7937 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> yes </td> 
+         <td class="confluenceTd">7719 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> yes </td> 
+         <td class="confluenceTd">8094 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> yes </td> 
+         <td class="confluenceTd">8156 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> yes </td> 
+         <td class="confluenceTd">7781 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> yes </td> 
+         <td class="confluenceTd">7500 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> yes </td> 
+         <td class="confluenceTd">7938 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> yes </td> 
+         <td class="confluenceTd">7547 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> yes </td> 
+         <td class="confluenceTd">7891 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> yes </td> 
+         <td class="confluenceTd">7828 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> no </td> 
+         <td class="confluenceTd">7782 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> no </td> 
+         <td class="confluenceTd">7797 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> no </td> 
+         <td class="confluenceTd">7609 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> no </td> 
+         <td class="confluenceTd">7906 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> no </td> 
+         <td class="confluenceTd">7796 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> no </td> 
+         <td class="confluenceTd">7719 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> no </td> 
+         <td class="confluenceTd">7860 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> no </td> 
+         <td class="confluenceTd">7625 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> no </td> 
+         <td class="confluenceTd">8344 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> no </td> 
+         <td class="confluenceTd">7672 </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="V3AdminInfrastructureFS-4.1.4.2ALTERNATEIMPLEMENTATIONServerReincarnation"></a>4.1.4.2 ALTERNATE IMPLEMENTATION – Server Reincarnation</h3> 
+     <ul> 
+      <li>development cost: very high</li> 
+      <li>ease of use: very high</li> 
+      <li>reliability: medium</li> 
+     </ul> <p>In this solution the server itself starts a separate JVM process that will run <b>asadmin start-domain</b>. The running server starts the new process when it is near death. Asadmin will be given the process ID (pid) of the running server's JVM. Asadmin waits for the operating system to verify that the process has died.</p> <p>Notes</p> 
+     <ul> 
+      <li>Guaranteeing the running server's demise is the sticky and expensive part of this solution but without it it will be far less reliable.</li> 
+      <li>Windows assigns pid's in a much less clear way than *NIX. What if Windows reuses the dead server's pid right away before asadmin has had a chance to check? Asadmin will wait for that new random process to stop.</li> 
+      <li>There is a requirement for native code. The plan would be to use JNA. Nevertheless it is still native code.</li> 
+      <li>This solution is great from a user's perspective because the server did not have to be started in any special way</li> 
+      <li>All running servers are capable of restarting remotely or locally</li> 
+     </ul> <h4><a name="V3AdminInfrastructureFS-4.1.4.3Schedule"></a>4.1.4.3 Schedule</h3> <p>Because of agile deadlines and the relative simplicity of the solution in 4.1.4.1 we went ahead and completely implemented debugged and tested it in advance of the asarch approval process. I.e. the SCF is only 1 week after the review. Assuming approval it will be ready for V3 Milestone 2.</p> <h4><a name="V3AdminInfrastructureFS-4.1.5Serverstop"></a>4.1.5 Server stop</h2> <p>It is possible for a server to run wild and not be stoppable in the usual controlled way. I.e. asadmin <b>asks</b> the server to stop. This is not possible if, say, the admin listener can't communicate for some reason or a non-daemon thread in the server refuses to stop. <br> A forced kill has been working and available in V3 since TP2 as follows:</p> 
+     <ul> 
+      <li>start the server with <tt><b>asadmin start-domain --verbose</b></tt> 
+       <ul> 
+        <li>Enter ^C at the asadmin console and it will kill the server.</li> 
+       </ul> </li> 
+      <li>New forced kill scenario is to start the server with <tt><b>asadmin start-domain --watchdog</b></tt> 
+       <ul> 
+        <li>In this mode there is no console. Kill the asadmin process and it will guarantee stopping the server as well.</li> 
+       </ul> </li> 
+      <li>The above is the only pure Java way that we can guarantee server shutdown. I.e. we must have an extra running JVM that holds a reference to the server's Java process object. This object is only valid in the JVM that started the server. In the default case that JVM is long gone at runtime.</li> 
+      <li>The server can not just kill itself with a System.exit or an abort call because it may be totally incommunicado.</li> 
+     </ul> <h4><a name="V3AdminInfrastructureFS-4.1.6BackupRestoreSTRETCHGOAL"></a>4.1.6 Backup Restore *** STRETCH GOAL ***</h2> <p>New additions to Backup Restore functionality include:</p> 
+     <ul> 
+      <li>Ability to configure automatic backups</li> 
+      <li>The configuration will be persisted in domain.xml</li> 
+      <li>Backup of a running server will be supported for the first time (see next bullet)</li> 
+      <li>GlassFish-Admin Quiescence will be developed. I.e. all Admin commands will be stopped before a backup is allowed in a running server.</li> 
+     </ul> <h4><a name="V3AdminInfrastructureFS-4.2.Bug%2FRFENumber%28s%29%3A"></a>4.2. Bug/RFE Number(s):</h2> <h4><a name="V3AdminInfrastructureFS-4.3.InScope%3A"></a>4.3. In Scope:</h2> <h4><a name="V3AdminInfrastructureFS-4.4.OutofScope%3A"></a>4.4. Out of Scope:</h2> <h4><a name="V3AdminInfrastructureFS-4.5.Interfaces%3A"></a>4.5. Interfaces:</h2> <h4><a name="V3AdminInfrastructureFS-4.5.1ExportedInterfaces"></a>4.5.1 Exported Interfaces</h3> <p>Disclose all interfaces that this project exports.</p> 
+     <ul> 
+      <li>Interface:</li> 
+      <li>Stability: Committed</li> 
+      <li>Former Stability (if changing):</li> 
+      <li>Comments:</li> 
+     </ul> <h4><a name="V3AdminInfrastructureFS-4.5.2Importedinterfaces"></a>4.5.2 Imported interfaces</h3> <p>None</p> <h4><a name="V3AdminInfrastructureFS-4.5.3Otherinterfaces%28Optional%29"></a>4.5.3 Other interfaces (Optional)</h3> <p>None</p> <h4><a name="V3AdminInfrastructureFS-4.6.DocImpact%3A"></a>4.6. Doc Impact:</h2> <p>The existence of the Administration Reference, which documents the domain.xml file, depends on the existence of reference information about what domain.xml can contain that is outside the source code, such as a DTD file or Javadoc pages.</p> <h4><a name="V3AdminInfrastructureFS-4.7.Admin%2FConfigImpact%3A"></a>4.7. Admin/Config Impact:</h2> <h4><a name="V3AdminInfrastructureFS-4.8.HAImpact%3A"></a>4.8. HA Impact:</h2> <h4><a name="V3AdminInfrastructureFS-4.9.I18N%2FL10NImpact%3A"></a>4.9. I18N/L10N Impact:</h2> <p>Not applicable as special requirement. All externally visible strings should be externalized. </p> <h4><a name="V3AdminInfrastructureFS-4.10.Packaging%26Delivery%3A"></a>4.10. Packaging &amp; Delivery:</h2> <h4><a name="V3AdminInfrastructureFS-4.11.SecurityImpact%3A"></a>4.11. Security Impact:</h2> <h4><a name="V3AdminInfrastructureFS-4.12.CompatibilityImpact"></a>4.12. Compatibility Impact</h2> <h4><a name="V3AdminInfrastructureFS-4.12.1OpenIssues"></a>4.12.1 Open Issues</h2> <h4><a name="V3AdminInfrastructureFS-4.13.Dependencies%3A"></a>4.13. Dependencies:</h2> <p>Not applicable. </p> <h4><a name="V3AdminInfrastructureFS-5.ReferenceDocuments%3A"></a>5. Reference Documents:</h1> 
+     <ul> 
+      <li><a href="GlassfishV3Final_hk2_overview.html" title="GlassfishV3Final_hk2_overview">HK2 Overview</a></li> 
+      <li><a href="https://glassfish.java.net/nonav/v3/admin/planning/prelude/admin-user-port-separation.html">Separating Admin and User HTTP Traffic</a></li> 
+      <li><a href="https://glassfish.java.net/nonav/v3/admin/planning/j109/list-of-commands.html">List of CLI Commands</a></li> 
+      <li><a href="https://glassfish.java.net/nonav/v3/admin/planning/j109/admin-cli.html">CLI Functional Specifications</a></li> 
+      <li><a href="http://wiki.glassfish.java.net/attach/GlassFishAdministrationPages/aliased-passwords.html">Password Aliasing Document</a></li> 
+      <li><a href="http://www.sun.com/bigadmin/content/selfheal/smf-quickstart.jsp">SMF</a></li> 
+      <li><a href="http://jcp.org/en/jsr/detail-303">JSR 303</a></li> 
+      <li><a href="http://www.hibernate.org/412.html">Hibernate Validator</a></li> 
+      <li><a href="http://wiki.glassfish.java.net/attach/V3AdminInfrastructureFS/SMF_faqs.htmlSMF_design.html">SMF Design Doc for V2</a></li> 
+      <li><a href="http://wiki.glassfish.java.net/attach/V3AdminInfrastructureFS/SMF_faqs.html">SMF FAQ from V2</a></li> 
+      <li><a href="http://wiki.glassfish.java.net/attach/V3AdminInfrastructureFS/SMF_faqs.htmlsmf-lisa.pdf">SMF Reference Document</a></li> 
+      <li><a href="http://wiki.glassfish.java.net/attach/V3AdminInfrastructureFS/SMF_faqs.htmlsmf-lianes-preso-to-jesarch-oct242005.pdf">SMF Reference Document from Liane Praza</a></li> 
+      <li><a href="http://wiki.glassfish.java.net/attach/V3AdminInfrastructureFS/SMF_faqs.htmlDomain-service-smf.xml.template.txt">SMF Domain-service-smf.xml.template</a></li> 
+      <li><a href="http://wiki.glassfish.java.net/attach/V3AdminInfrastructureFS/SMF_faqs.htmlNodeAgent-service-smf.xml.template.txt">SMF NodeAgent-service-smf.xml.template</a></li> 
+      <li><a href="http://wiki.glassfish.java.net/attach/V3AdminInfrastructureFS/SMF_faqs.htmlservice_bundle.dtd.txt">SMF service_bundle.dtd</a></li> 
+      <li><a href="http://wiki.glassfish.java.net/attach/V3AdminInfrastructureFS/SMF_faqs.htmlwatchdog_times.txt">Watchdog and Start Domain Timing Data</a></li> 
+     </ul> <h4><a name="V3AdminInfrastructureFS-6.Schedule%3A"></a>6. Schedule:</h1> <h4><a name="V3AdminInfrastructureFS-6.1.ProjectedAvailability%3A"></a>6.1. Projected Availability:</h2> 
+     <hr> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20873551/21364769.pdf">smf-lisa.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20873551/21365184.pdf">SMF_design.html.pdf</a> (application/pdf) 
+      <br> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Dec 01, 2011 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

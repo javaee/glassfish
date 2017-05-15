@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFishv3UserTaskAnalysisAMXv3</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>&lt;h1&gt;GlassFish v3 User Task Analysis for AMX and GMBAL&lt;/h1&gt;</p> <p>Back to <a href="GlassFishV3UserTaskAnalyses.html" title="GlassFishV3UserTaskAnalyses">GlassFish v3 User Task Analyses</a></p> 
+     <div> 
+      <ul> 
+       <li><a href="#GlassFishv3UserTaskAnalysisAMXv3-Attendees">Attendees</a></li> 
+       <li><a href="#GlassFishv3UserTaskAnalysisAMXv3-Scope">Scope</a></li> 
+       <li><a href="#GlassFishv3UserTaskAnalysisAMXv3-RelatedInformation">Related Information</a></li> 
+       <li><a href="#GlassFishv3UserTaskAnalysisAMXv3-ListofTasks">List of Tasks</a></li> 
+       <li><a href="#GlassFishv3UserTaskAnalysisAMXv3-AssociatedConcepts">Associated Concepts</a></li> 
+      </ul>
+     </div> <h4><a name="GlassFishv3UserTaskAnalysisAMXv3-Attendees"></a>Attendees</h1> <p>Kedar, Prashanth, Ken Cavanaugh, Lloyd Chambers, Paul Davies<br> Facilitator: June Parks, Recorder: Dixie Pine</p> <h4><a name="GlassFishv3UserTaskAnalysisAMXv3-Scope"></a>Scope</h1> <p>User tasks and goals associated with AMX V3 that should be described in the user documentation, including tasks related to making new OSGi modules manageable via AMX.</p> <h4><a name="GlassFishv3UserTaskAnalysisAMXv3-RelatedInformation"></a>Related Information</h1> 
+     <ul> 
+      <li><a href="https://glassfish.java.net/nonav/v3/admin/planning/V3Changes/V3_AMX_SPI.html">One-pager</a></li> 
+     </ul> <h4><a name="GlassFishv3UserTaskAnalysisAMXv3-ListofTasks"></a>List of Tasks</h1> 
+     <hr> <p><b>Note -</b> Tasks followed by question marks may not be implemented by engineering.</p> 
+     <hr> <p><b>Administrator</b></p> 
+     <ul> 
+      <li>Tasks that asadmin commands can't do---need to know exactly what</li> 
+      <li>AMX equivalents of asadmin commands</li> 
+      <li>Writing administration scripts using AMX</li> 
+      <li>Viewing the GlassFish configuration using JConsole</li> 
+      <li>Monitoring using AMX</li> 
+     </ul> <p><b>Java EE Developer</b></p> 
+     <ul> 
+      <li>Referencing an AMX Mbean 
+       <ul> 
+        <li>Specify Object Name</li> 
+        <li>Specify Path Name?</li> 
+       </ul> </li> 
+      <li>Creating an AMX MBean 
+       <ul> 
+        <li>Define MBeans</li> 
+        <li>Register MBeans</li> 
+        <li>Unregister MBeas</li> 
+       </ul> </li> 
+      <li>Exposing a regular Java EE app/mod as an AMX MBean?</li> 
+      <li>Exposing a JRuby Module as an AMX MBean?</li> 
+      <li>Listening for notification of attribute changes</li> 
+     </ul> <p><b>OSGi Module Developer</b></p> 
+     <ul> 
+      <li>Exposing OSGi modules as MBeans (GF or non-GF)</li> 
+      <li>Integrating existing JMX MBeans into GF</li> 
+      <li>Deciding how to approach monitoring--decision tree or FAQ 
+       <ul> 
+        <li>No MBeans or Monitoring Code</li> 
+        <li>Monitoring code, no MBeans</li> 
+        <li>MBeans, not AMX compliant</li> 
+        <li>MBeans, AMX compliant</li> 
+       </ul> </li> 
+      <li>Using AMX for Monitoring 
+       <ul> 
+        <li>Using GMBAL for Monitoring?</li> 
+       </ul> </li> 
+      <li>Develop stateful GUI by Using AMX 
+       <ul> 
+        <li>Define GUI Metadata</li> 
+       </ul> </li> 
+     </ul> <h4><a name="GlassFishv3UserTaskAnalysisAMXv3-AssociatedConcepts"></a>Associated Concepts</h1> 
+     <hr> <p><b>Note -</b> Concepts followed by question marks may not be implemented by engineering.</p> 
+     <hr> 
+     <ul> 
+      <li>HTTP API</li> 
+      <li>Path Names?</li> 
+      <li>Object Names</li> 
+      <li>AMX MBeans versus Standard MBeans</li> 
+      <li>Auto Creation of AMX MBeans</li> 
+      <li>GMBAL?</li> 
+     </ul> <p>Back to <a href="GlassFishV3UserTaskAnalyses.html" title="GlassFishV3UserTaskAnalyses">GlassFish v3 User Task Analyses</a></p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 09, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:44.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

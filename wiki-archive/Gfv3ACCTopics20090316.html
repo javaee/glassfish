@@ -1,0 +1,236 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <title>GlassFish Wiki : Gfv3ACCTopics20090316</title>
+	    <link rel="stylesheet" href="styles/site.css" type="text/css" />
+        <META http-equiv="Content-Type" content="text/html; charset=UTF-8">	    
+        <style type="text/css">
+            body { background: white !important; }
+
+            a:link { color: #3E6B8A !important; text-decoration: none !important; }
+            a:visited { color: #917E9C !important; text-decoration: none !important; }
+            a:hover { color: #3E6B8A !important; text-decoration: underline !important; }
+            a:active { color: #3E6B8A !important; text-decoration: none !important; }
+
+            body, p, td, table, tr, .bodytext, .stepfield { font-size: 12px !important; line-height: 140% !important; }
+
+            .pageheader, .pagesubheading { margin-bottom: 12px !important; }
+        </style>
+    </head>
+
+    <body>
+	    <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff">
+		    <tr>
+			    <td valign="top" class="pagebody">
+				    <div class="pageheader">
+					    <span class="pagetitle">
+                            GlassFish Wiki : Gfv3ACCTopics20090316
+                                                    </span>
+				    </div>
+				    <div class="pagesubheading">
+					    This page last changed on Jul 09, 2010 by <font color="#0050B2">am74686</font>.
+				    </div>
+
+				    <h1><a name="Gfv3ACCTopics20090316-AppClientContainerDiscussionTopicsfromasarchreviewandemail"></a>App Client Container - Discussion Topics from asarch review and e-mail</h1>
+
+<p>[</p>
+<div class="error"><span class="error">Unknown macro: {TableOfContents title=&#39;App Client Container Topics&#39;}</span> </div>
+<p>|(TableOfContentstitle='AppClientContainerTopics')]</p>
+
+<p>We had extended discussions via e-mail on several topics since the ACC review.  This page focuses on the external interfaces that have changed since the review as a result of the discussions.</p>
+
+<h1><a name="Gfv3ACCTopics20090316-1.DownloadindividualJARsinsteadofanumbrellaJAR"></a>1. Download individual JARs instead of an umbrella JAR</h1>
+<p><b>Background</b></p>
+
+<p>In v2, deployment of an EAR creates a single umbrella JAR which contains the app client(s) in the EAR plus the transitive closure of JARs cited in an app client's Class-Path or in the EAR's library directory.  "deploy --retreive local-dir" or "get-client-stubs --appname myapp local-dir" copies this umbrella JAR to the user-specified local directory.  During launch the ACC expands the umbrella JAR to a temp directory and builds the class path from the expanded contents.  Users have complained about the start-up time, esp. for small clients that depend on large libraries.  </p>
+
+<p>I proposed that v3 download the individual JARs instead of generating and downloading the umbrella JAR to the local directory.  This reduces the launch time, more importantly, but also cuts down on deployment time.  In e-mail Bill suggested that I poll users for input.  Two responded, both preferring the individual JAR approach to one in which the ACC would extract JARs from the umbrella just-in-time, for example.</p>
+
+<p>There are some open-source projects that resolve class loading and resource references to nested JARs.  One-JAR essentially reads the nested JARs into memory and maps look-ups to the memory-resident nested JAR.  I'm afraid of the memory usage and I could find no performance information about One-JAR on the web.  Jar Jar Links creates a new single JAR that contains all the content of its input JARs, munging names to avoid collisions and using ASM to do bytecode transformations so references to colliding names are patched to refer to the new names.  It does not handle dynamic look-up by resource or class names.  </p>
+
+<p><b>Plan</b></p>
+
+<p>The user feedback - all two of them - was to go with the multi-file download approach.  (There was also a resounding endorsement of the embedded API idea!)  The multi-file download is the approach we've pursued.  We will continue to support the ability to launch not only individual JARs but also the umbrella JAR.  In v3 we will generate an additional JAR representing the EAR-level but it will not contain all the client JARs and all the libraries as the v2 umbrella JAR did; it will just contain pointers to the individual client JARs.</p>
+
+<h1><a name="Gfv3ACCTopics20090316-2.Javacommandsupport"></a>2. Java command support</h1>
+<p><b>Background</b></p>
+
+<p>Recurring requests over time (and some v3 requirements) to let users launch clients using the java command.  This is fairly straightforward for facade JARs ("cooked" JARs) for each app client which v3 generates.  We control the main class of the facade JARs so it does what we want.  More difficult to handle is the original ("uncooked" or "raw") app client JARs.</p>
+
+<p>There is no supported API to find out from Java code which class the Java launcher chose to launch or to capture the entire java command line.  The ACC needs this information or its equivalent to know the main class for injection and to locate the descriptor(s).</p>
+
+<p>Plus, we need to get the gf-client.jar (which contains the ACC) on the class path.  Even in a facade JAR file where we control the Class-Path we cannot generate it to refer to gf-client.jar on end-user systems - we don't know where that will be installed.</p>
+
+<p><b>Plan</b></p>
+
+<p>Two key parts:</p>
+
+<p>A. Write a Java agent (one that does no bytecode transformations) in gf-client.jar.  The {{-javaagent:$</p>
+<div class="error"><span class="error">Unknown macro: {install-root}</span> <p>/modules/gf-client.jar}} option on the java command gets gf-client.jar onto the system class path.  Agent arguments will indicate just how the user has launched the program.  The agent does all of the prep work to get the ACC ready and the main class injected, stopping short of actually invoking the client's main method.  </p>
+
+<p>B. Write the appclient scripts so they:</p>
+<ol>
+	<li>set the agent arguments to tell how the user launched the client,</li>
+	<li>omit the appclient options and arguments from arguments portion of the java command, and</li>
+	<li>execute a java command that will run the app client's main class.</li>
+</ol>
+
+
+
+<h2><a name="Gfv3ACCTopics20090316-2.1javacommandlikesyntaxfortheappclientscript"></a>2.1 java-command-like syntax for the appclient script</h2>
+<p>Users can format their appclient invocations very much like java commands:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<div id="root">
+		<pre class="theme: Confluence; brush: java; gutter: false">appclient [jvm options] client-selection [acc options] [app args]</pre>
+		</div>
+</div></div>
+
+
+<div class='table-wrap'>
+<table class='confluenceTable'><tbody>
+<tr>
+<th class='confluenceTh'> client-selection </th>
+<th class='confluenceTh'> New in v3? </th>
+<th class='confluenceTh'> For java-style </th>
+</tr>
+<tr>
+<td class='confluenceTd'> &#45;client myClient.jar </td>
+<td class='confluenceTd'>&nbsp;</td>
+<td class='confluenceTd'>&nbsp;</td>
+</tr>
+<tr>
+<td class='confluenceTd'> &#45;jar myClient.jar </td>
+<td class='confluenceTd'> X </td>
+<td class='confluenceTd'> X </td>
+</tr>
+<tr>
+<td class='confluenceTd'> x/z/A.class </td>
+<td class='confluenceTd'>&nbsp;</td>
+<td class='confluenceTd'>&nbsp;</td>
+</tr>
+<tr>
+<td class='confluenceTd'> x.y.z.A </td>
+<td class='confluenceTd'>&nbsp;</td>
+<td class='confluenceTd'> X </td>
+</tr>
+<tr>
+<td class='confluenceTd'> &#45;mainclass x.y.z.A </td>
+<td class='confluenceTd'>&nbsp;</td>
+<td class='confluenceTd'>&nbsp;</td>
+</tr>
+<tr>
+<td class='confluenceTd'> &#45;client myUmbrella.jar -mainclass x.y.z.A </td>
+<td class='confluenceTd'>&nbsp;</td>
+<td class='confluenceTd'>&nbsp;</td>
+</tr>
+<tr>
+<td class='confluenceTd'> &#45;client myUmbrella.jar -name display-name </td>
+<td class='confluenceTd'>&nbsp;</td>
+<td class='confluenceTd'>&nbsp;</td>
+</tr>
+</tbody></table>
+</div>
+
+
+<p>This is consistent with the documentation and on-line usage output from past releases in which <tt>-client appClient.jar</tt> appears before other options or arguments on the command line.  We are expanding - not invalidating - the old format, adding the optional JVM options part and adding to the ways in which the user can select which client to run. </p>
+
+
+<h2><a name="Gfv3ACCTopics20090316-2.2Launchingwithjavacommands"></a>2.2 Launching with java commands</h2>
+<p>Users can launch app clients directly using java commands.  For launching facade JARs we have generated, </p>
+
+<p><div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<div id="root">
+		<pre class="theme: Confluence; brush: java; gutter: false"/>
+		</div>
+</div></div>java jvm options -javaagent:$</p></div>
+<p>/modules/gf-client.jar main-class-selection app args<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<div id="root">
+		<pre class="theme: Confluence; brush: java; gutter: false">is sufficient.  The facade JAR's main class - which we control - can tell whether the user specified agent arguments or not and, if not, will do the ACC initialization itself before calling the client's main method.  This would use default values for appclient options.
+
+To launch an original (not deployed and therefore uncooked) app client JARs with the java command users, must specify an agent argument:</pre>
+		</div>
+</div></div>java -javaagent:$</p>
+<div class="error"><span class="error">Unknown macro: {install-root}</span> <p>/modules/gf-client.jar=client=jar=myClient.jar ... -jar myClient.jar app args<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<div id="root">
+		<pre class="theme: Confluence; brush: java; gutter: false">or</pre>
+		</div>
+</div></div>java -javaagent:$</p></div>
+<p>/modules/gf-client.jar=client=class=myClient.jar ... a.b.MyClient app args<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<div id="root">
+		<pre class="theme: Confluence; brush: java; gutter: false">We have to ask such users to duplicate this information because the agent cannot find this out itself from Java.
+
+As Jerome pointed out after the review, the name and location of the gf-client.jar file (as well as some of the agent arguments) becomes an exposed interface of the product if we document and support the pure java command feature.
+
+h1. 3. Embedded API
+*Plan*
+
+A user program follows these basic steps to launch a client:</pre>
+		</div>
+</div></div><br/>
+// one TargetServer for each ORB endpoint for bootstrapping<br/>
+TargetServer[] servers = ...;</p>
+
+<p>// Get a configurator to set up the ACC<br/>
+AppClientConfigurator config = AppClientContainer.newConfigurator(servers);</p>
+
+<p>// Fine-tune the ACC's configuration<br/>
+config.callbackHandler("com.acme.MyHandler").authRealm("myRealm"); // Modify the config</p>
+
+<p>// Get a container for a client.  <br/>
+URI clientURI = ...; // URI to the client JAR<br/>
+AppClientContainer acc = config.newContainer(clientURI);</p>
+
+<p>or</p>
+
+<p>Class mainClass = ...;<br/>
+acc = config.newContainer(mainClass);</p>
+
+<p>String[] appArgs = ...;<br/>
+acc.startClient(appArgs); // Start the client</p>
+
+<p>...</p>
+
+<p>acc.stop(); // stop the ACC(optional)</p>
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<div id="root">
+		<pre class="theme: Confluence; brush: java; gutter: false"/>
+		</div>
+</div></div>
+
+<p><b>Notes:</b></p>
+<ul>
+	<li>Some state checking is present to make sure that a container is not started twice (or more) or stopped before it is started.  But this is a fairly simple API with a simple state model which should be clear to developers.  Roberto had described an alternative in which, for example, startClient would return a RunningACC which would not even have a start method, just stop, thus preventing a developer from accidentally starting a running container again.</li>
+</ul>
+
+
+<ul>
+	<li>A configurator is multi-use; it could be used to create multiple ACCs.</li>
+	<li>An ACC deals with a single app client and is single-use.</li>
+	<li>Invoking acc.stop() is optional.  The ACC registers a shutdown handler to clean up.</li>
+	<li>The choices of names for "startClient" and "stop" (not "start" and not "stopClient") are intentional.
+	<ul>
+		<li>Conceptually and practically, invoking configurator.newContainer "starts" the ACC &#8211; the ACC becomes ready to support an app client's execution.</li>
+		<li>Invoking startClient really does start the client executing by finding and invoking its main method.</li>
+		<li>The stop method shuts down the ACC, not the client.  The startClient method returns to the caller as soon as the client's main method returns to startClient, even if the client has started threads (e.g, the event dispatcher thread servicing a GUI).  The ACC knows nothing about such threads and would not know how to stop them reliably even if it did know about them.  The developer should write the program to invoke stop &#8211; if at all &#8211; only after the program knows the client has finished doing its work and will make no further use of the ACC's services (naming, security, etc.).  Any coordination between the calling program and the client is the developer's responsibility.</li>
+	</ul>
+	</li>
+</ul>
+
+
+<hr />
+
+				    
+                    			    </td>
+		    </tr>
+	    </table>
+	    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+			<tr>
+				<td height="12" background="images/border/border_bottom.gif"><img src="images/border/spacer.gif" width="1" height="1" border="0"/></td>
+			</tr>
+		    <tr>
+			    <td align="center"><font color="grey">Document exported from wikis.oracle.com on May 27, 2015 20:44<br/>Copyright &copy; 2005-2015 Oracle and/or its affiliates. All rights reserved.</font></td>
+		    </tr>
+	    </table>
+    </body>
+</html>

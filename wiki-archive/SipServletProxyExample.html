@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : SipServletProxyExample</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="SipServletProxyExample-TheSipServletProxyexample"></a>The Sip Servlet Proxy example</h3> <p>This example shows how to create a simple SIP proxy servlet.<br> The proxy will just forward all SIP messages from SIP caller (UAC) to SIP callee (UAS).<br> In order to test this code you may use <a href="http://sipp.sourceforge.net/">sipp</a> SIP generator.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Note that this sample works best with sipp 1.1 .</pre> 
+       </div> 
+      </div>
+     </div> <p>The servlet code :</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">package com.ericsson.sip.servlet.example;
+
+import java.io.IOException;
+import javax.servlet.Servlet;
+import javax.servlet.ServletException;
+import javax.servlet.sip.Proxy;
+import javax.servlet.sip.SipErrorEvent;
+import javax.servlet.sip.SipErrorListener;
+import javax.servlet.sip.SipServlet;
+import javax.servlet.sip.SipServletRequest;
+import javax.servlet.sip.SipServletResponse;
+
+
+
+public class SimpleProxyServlet 
+            extends SipServlet 
+            implements SipErrorListener,Servlet {
+    
+    /** Creates a new instance of SimpleProxyServlet */
+    public SimpleProxyServlet() {
+    }
+    
+    
+    protected void doInvite(SipServletRequest request) 
+        throws ServletException, IOException {
+    	 
+        if (request.isInitial()) {
+
+           Proxy proxy = request.getProxy();
+           proxy.setRecordRoute(true);
+	   proxy.setSupervised(true);
+	   proxy.proxyTo(request.getRequestURI()); // bobs uri
+          
+        }
+        
+        System.out.println("SimpleProxyServlet: Got request:\n" + request);
+    }
+    
+    
+    protected void doBye(SipServletRequest request) throws ServletException, IOException {
+        
+        System.out.println("SimpleProxyServlet: Got BYE request:\n" + request);
+        super.doBye(request);
+    }
+    
+    
+    protected void doResponse(SipServletResponse response) 
+        throws ServletException, IOException {
+        
+        System.out.println("SimpleProxyServlet: Got response:\n" + response);
+ 	super.doResponse(response);
+    }
+    
+    
+    // SipErrorListener
+    
+    public void noAckReceived(SipErrorEvent ee) {
+         
+        System.out.println("SimpleProxyServlet: Error: noAckReceived.");
+    }
+    
+    public void noPrackReceived(SipErrorEvent ee) {
+        
+	System.out.println("SimpleProxyServlet: Error: noPrackReceived.");
+    }
+    
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>Archives for Sip Servlets must be of type <b>.sar</b>. In this case the archive can be called <b>sip-proxy.sar</b>.<br> Sip Servlet archives must also contain a deployment descriptor called <b>sip.xml</b>, in the <b>WEB-INF</b> archive directory.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">sip-proxy
+|-- WEB-INF
+|   |-- classes
+|   |   |-- com
+|   |       |-- ericsson
+|   |           |-- sip
+|   |               |-- examples
+|   |                   |-- SimpleProxyServlet.class
+|   |-- lib
+|   |-- sip.xml</pre> 
+       </div> 
+      </div>
+     </div> <p>Here is a deployment descriptor for this example:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+
+&lt;!DOCTYPE sip-app PUBLIC "-//Java Community Process//DTD SIP Application 1.0//EN" "http://www.jcp.org/dtd/sip-app_1_0.dtd"&gt;
+&lt;!-- Some documentation needed here --&gt;
+
+&lt;sip-app&gt;
+    &lt;display-name&gt;Simple Proxy Servlet&lt;/display-name&gt;
+    &lt;description&gt;Simple Proxy Servlet&lt;/description&gt;
+
+    &lt;listener&gt;
+        &lt;listener-class&gt;com.ericsson.sip.servlet.example.SimpleProxyServlet&lt;/listener-class&gt;
+    &lt;/listener&gt;
+
+    &lt;servlet&gt;
+        &lt;servlet-name&gt;SimpleProxyServlet&lt;/servlet-name&gt;
+        &lt;display-name&gt;SimpleProxyServlet&lt;/display-name&gt;
+        &lt;description&gt;Simple SIP proxy servlet&lt;/description&gt;
+        &lt;servlet-class&gt;com.ericsson.sip.servlet.example.SimpleProxyServlet&lt;/servlet-class&gt;
+     	&lt;load-on-startup&gt;1&lt;/load-on-startup&gt;     
+    &lt;/servlet&gt;
+    
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;SimpleProxyServlet&lt;/servlet-name&gt;
+        &lt;pattern&gt;
+	   &lt;and&gt;
+           &lt;equal&gt;&lt;var&gt;request.method&lt;/var&gt;&lt;value&gt;INVITE&lt;/value&gt;&lt;/equal&gt;
+	   &lt;/and&gt;
+       &lt;/pattern&gt;
+    &lt;/servlet-mapping&gt; 
+
+&lt;/sip-app&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>To test the proxy, we will use sipp generator.<br> <a href="http://sipp.sourceforge.net/">SIPp</a> is a free Open Source test tool / traffic generator for the SIP protocol.<br> It can be downloaded from :</p> <p><a href="http://sipp.sourceforge.net/">http://sipp.sourceforge.net/</a></p> <p>In this test, we asume that :</p> 
+     <ul> 
+      <li>the SIP proxy runs on a glassfish application server on a host with ip address 192.168.1.2</li> 
+      <li>the SIP client (UAC) runs on a host with ip address 192.168.1.5 and accepts responses on port 5080</li> 
+      <li>the SIP server (UAS) runs on a host with ip address 192.168.1.8 and accepts requests on port 5090</li> 
+     </ul> <p>To run the test :</p> <p>1) Build and deploy the SIP proxy </p> <p>2) Start the SIP server (UAS) on the host with ip address 192.168.1.8 and port 5090 :</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&gt;&gt; sipp -sn uas -p 5090</pre> 
+       </div> 
+      </div>
+     </div> <p>3) Start the SIP client (UAC) on the host with ip address 192.168.1.5 and port 5080.<br> All traffic between SIP client and server will pass through the proxy (-rsa flag) :</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&gt;&gt; sipp -sn uac -rsa 192.168.1.2:5060 -p 5080 192.168.1.8:5090</pre> 
+       </div> 
+      </div>
+     </div> <p>4) Check the message flow on the text screens of SIP client and server and on sip.log<br> The output on the server side looks like this</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">[ps125818@prsad SIPp]$ ./sipp -sn uas -mp 6001 -p 5090
+------------------------------ Scenario Screen -------- [1-5]: Change Screen --
+  Port   Total-time  Total-calls  Transport
+  5090      16.89 s          197  UDP
+
+  8 new calls during 0.880 s period      2 ms scheduler resolution
+  43 concurrent calls                    Peak was 71 calls, after 4 s
+  1 open sockets
+
+                                 Messages  Retrans   Timeout   Unexpected-Msg
+  ----------&gt; INVITE             197       0                   0
+
+  &lt;---------- 180                197       0
+  &lt;---------- 200                197       11        0
+  ----------&gt; ACK        E-RTD   195       0                   0
+
+  ----------&gt; BYE                197       0                   0
+  &lt;---------- 200                195       0
+  [   4000ms] Pause              195                           0
+------------------------------ Test Terminated --------------------------------</pre> 
+       </div> 
+      </div>
+     </div> <p>The output on the client side looks like this </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">[ps125818@prsad SIPp]$ ./sipp -sn uac -rsa 129.158.229.134:5060 -p 5072 129.158.229.134:5090
+Resolving remote sending address 129.158.229.134...
+Resolving remote host '129.158.229.134'... Done.
+------------------------------ Scenario Screen -------- [1-5]: Change Screen --
+  Call-rate(length)     Port   Total-time  Total-calls  Remote-host
+  10.0(0 ms)/1.000s   5072      26.54 s          225  129.158.229.134:5090(UDP)
+
+  0 new calls during 0.529 s period      2 ms scheduler resolution
+  30 concurrent calls (limit 30)         Peak was 30 calls, after 3 s
+  0 out-of-call msg (discarded)
+  1 open sockets
+
+                                 Messages  Retrans   Timeout   Unexpected-Msg
+      INVITE ----------&gt;         225       0         0
+         100 &lt;----------         225       0                   0
+         180 &lt;----------         197       0                   0
+         183 &lt;----------         0         0                   0
+         200 &lt;---------- E-RTD   197       11                  0
+         ACK ----------&gt;         197       11
+   Var Pause [      0ms]         197                           0
+         BYE ----------&gt;         197       13        0
+         200 &lt;----------         195       0                   0
+
+------------------------------ Test Terminated --------------------------------</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="SipServletProxyExample-Comments%3A"></a>Comments:</h3> 
+     <ul> 
+      <li>Choosing three different addresses is just to make everything more visual. It can also be run on a single machine.</li> 
+     </ul> <h4><a name="SipServletProxyExample-Listofterms"></a>List of terms</h3> <p>A terminology list can be found <a href="SipServletTerminologyList.html" title="SipServletTerminologyList">here</a>.</p> <h4><a name="SipServletProxyExample-Havingtroubletorunthedemo%3F"></a>Having trouble to run the demo ?</h3> <p>A list of known limitations and problems can be found here</p> <h4><a name="SipServletProxyExample-Linkspage"></a>Links page</h3> <p>Useful Sip Container related links can be found <a href="SipServletLinks.html" title="SipServletLinks">here.</a></p> <p><span class="error">Cannot resolve external resource into attachment.</span></p> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Nov 18, 2011 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:49.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

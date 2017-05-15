@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : V3.1g11nOnePager</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="V3.1g11nOnePager-G11NHalfPager"></a>G11N Half Pager</h1> <style type="text/css">/*<![CDATA[*/
+div.rbtoc1278927042898 {margin-left: 1.5em;padding: 0px;}
+div.rbtoc1278927042898 ul {list-style: disc;margin-left: 0px;}
+div.rbtoc1278927042898 li {margin-left: 0px;padding-left: 0px;}
+
+/*]] >*/</style>
+     <div class="rbtoc1278927042898"> 
+      <ul> 
+       <li><a href="#V3.1g11nOnePager-G11NHalfPager">G11N Half Pager</a></li> 
+       <li><a href="#V3.1g11nOnePager-1.Introduction">1. Introduction</a></li> 
+       <ul> 
+        <li><a href="#V3.1g11nOnePager-1.1.Project%2FComponentWorkingName%3A">1.1. Project/Component Working Name:</a></li> 
+        <li><a href="#V3.1g11nOnePager-1.2.Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier%3A">1.2. Name(s) and e-mail address of Document Author(s)/Supplier:</a></li> 
+        <li><a href="#V3.1g11nOnePager-1.3.DateofThisDocument%3A">1.3. Date of This Document:</a></li> 
+       </ul> 
+       <li><a href="#V3.1g11nOnePager-2.ProjectSummary">2. Project Summary</a></li> 
+       <ul> 
+        <li><a href="#V3.1g11nOnePager-2.1.ProjectDescription%3A">2.1. Project Description:</a></li> 
+        <li><a href="#V3.1g11nOnePager-2.2.RisksandAssumptions%3A">2.2. Risks and Assumptions:</a></li> 
+       </ul> 
+       <li><a href="#V3.1g11nOnePager-3.Interfaces%3A">3. Interfaces:</a></li> 
+       <ul> 
+        <li><a href="#V3.1g11nOnePager-3.1ExportedInterfaces">3.1 Exported Interfaces</a></li> 
+        <li><a href="#V3.1g11nOnePager-3.2Importedinterfaces">3.2 Imported interfaces</a></li> 
+       </ul> 
+       <li><a href="#V3.1g11nOnePager-4.Scope">4. Scope</a></li> 
+       <ul> 
+        <li><a href="#V3.1g11nOnePager-4.1Translationlanguages">4.1 Translation languages</a></li> 
+        <li><a href="#V3.1g11nOnePager-4.2LocalizationScope">4.2 Localization Scope</a></li> 
+       </ul> 
+       <li><a href="#V3.1g11nOnePager-5.Packaging">5. Packaging</a></li> 
+       <ul> 
+        <li><a href="#V3.1g11nOnePager-5.1l10npackagesnamingconvention">5.1 l10n packages naming convention</a></li> 
+        <li><a href="#V3.1g11nOnePager-5.2Dependencies">5.2 Dependencies</a></li> 
+       </ul> 
+       <li><a href="#V3.1g11nOnePager-6.l10nmoduledescription">6. l10n module description</a></li> 
+       <li><a href="#V3.1g11nOnePager-7.Testingimpact">7. Testing impact</a></li> 
+      </ul>
+     </div> <h4><a name="V3.1g11nOnePager-1.Introduction"></a>1. Introduction</h1> <h4><a name="V3.1g11nOnePager-1.1.Project%2FComponentWorkingName%3A"></a>1.1. Project/Component Working Name: </h2> <p>GlassFish Open Source Edition 3.1 globalization</p> <h4><a name="V3.1g11nOnePager-1.2.Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier%3A"></a>1.2. Name(s) and e-mail address of Document Author(s)/Supplier:</h2> <p>Georges Murr: georges.murr@oracle.com</p> <h4><a name="V3.1g11nOnePager-1.3.DateofThisDocument%3A"></a>1.3. Date of This Document:</h2> <p>06/02/2010</p> <h4><a name="V3.1g11nOnePager-2.ProjectSummary"></a>2. Project Summary</h1> <h4><a name="V3.1g11nOnePager-2.1.ProjectDescription%3A"></a>2.1. Project Description:</h2> <p>Globalization readiness of GlassFish Open Source Edition 3.1</p> <h4><a name="V3.1g11nOnePager-2.2.RisksandAssumptions%3A"></a>2.2. Risks and Assumptions:</h2> <p>Translatable files need to be ready on time for translation.<br> Need RE support to build l10n packages.<br> Module owners need to follow i18n guidelines.</p> <h4><a name="V3.1g11nOnePager-3.Interfaces%3A"></a>3. Interfaces:</h1> <h4><a name="V3.1g11nOnePager-3.1ExportedInterfaces"></a>3.1 Exported Interfaces</h2> <p>N/A</p> <h4><a name="V3.1g11nOnePager-3.2Importedinterfaces"></a>3.2 Imported interfaces</h2> <p>GlassFish Open Source Edition 3.1 IPS Packages </p> <h4><a name="V3.1g11nOnePager-4.Scope"></a>4. Scope</h1> <h4><a name="V3.1g11nOnePager-4.1Translationlanguages"></a>4.1 Translation languages</h2> <p>Translation languages fr, de, es, ko, ja, zh_CN, zh_TW, pt_BR</p> <h4><a name="V3.1g11nOnePager-4.2LocalizationScope"></a>4.2 Localization Scope</h2> <p>Admin GUI, CLI, Installer, OLH, Upgrade tool<br> We will not translate log messages, docs.</p> <h4><a name="V3.1g11nOnePager-5.Packaging"></a>5. Packaging</h1> <p>There is one-to-one mapping between EN packages and l10n packages. If a base packahe contain files that need to be localized, there will be a corresponding l10n package for it.</p> <h4><a name="V3.1g11nOnePager-5.1l10npackagesnamingconvention"></a>5.1 l10n packages naming convention</h2> <p>l10n packages use the following naming convention: &lt;base package name&gt;-l10n</p> <h4><a name="V3.1g11nOnePager-5.2Dependencies"></a>5.2 Dependencies</h2> <p>Each l10n package depend on the corresponding EN base package</p> <h4><a name="V3.1g11nOnePager-6.l10nmoduledescription"></a>6. l10n module description</h1> <p>The l10n module is located in its own workspace. It contain the EN files that need to be translated and the l10n files. The l10n module is self contained; which means we do not need to checkout glassfish worksapce in order to build l10n packages. EN files are extracted from maven repository using dependency plugins.<br> l10n module contain a packager sub-module to create l10n packages. l10n packages are published into maven repository. ml build process is integrated into glassfish build system. glassfish build automatically produces ml bits at the same time as EN bits by using the l10n packages that are published in maven repository.</p> <h4><a name="V3.1g11nOnePager-7.Testingimpact"></a>7. Testing impact</h1> <p>We will perform i18n testing before translations to make sure modules are ready for localization.<br> Modules to be localized will be tested on supported platforms. Since the matrix is too large, 8 x supported platforms, we create a testing matrix that distributes certain languages to certain platforms.<br> i18n functional testing will also be performed on modules with APIs relevant to i18n testing: Web container, EJB container, etc.. </p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

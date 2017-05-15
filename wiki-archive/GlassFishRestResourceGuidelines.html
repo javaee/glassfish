@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFishRestResourceGuidelines</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GlassFishRestResourceGuidelines-GlassFishRESTResourceStyleandBehaviorGuidelines"></a>GlassFish REST Resource Style and Behavior Guidelines</h1> <p>The following document specifies the constraints that apply to all REST resources produced as part of the development effort, and acts as a set of guidelines for any external contributions. Adherence to these constraints will help ensure a consistent end-user experience.</p> 
+     <div> 
+      <ul> 
+       <li><a href="#GlassFishRestResourceGuidelines-GlassFishRESTResourceStyleandBehaviorGuidelines">GlassFish REST Resource Style and Behavior Guidelines</a></li> 
+       <ul> 
+        <li><a href="#GlassFishRestResourceGuidelines-ImperativeTermsInSpecifications">Imperative Terms In Specifications</a></li> 
+        <li><a href="#GlassFishRestResourceGuidelines-RequestHeaders">Request Headers</a></li> 
+        <li><a href="#GlassFishRestResourceGuidelines-ResponseHeaders">Response Headers</a></li> 
+        <li><a href="#GlassFishRestResourceGuidelines-StandardHTTPStatusCodes">Standard HTTP Status Codes</a></li> 
+        <li><a href="#GlassFishRestResourceGuidelines-HTTPVerbUsage">HTTP Verb Usage</a></li> 
+        <li><a href="#GlassFishRestResourceGuidelines-ResponseBodiesforSuccessfulRequests">Response Bodies for Successful Requests</a></li> 
+        <ul> 
+         <li><a href="#GlassFishRestResourceGuidelines-CollectionResources">Collection Resources</a></li> 
+         <li><a href="#GlassFishRestResourceGuidelines-EntityResources">Entity Resources</a></li> 
+         <li><a href="#GlassFishRestResourceGuidelines-ActionResources">Action Resources</a></li> 
+        </ul> 
+        <li><a href="#GlassFishRestResourceGuidelines-InteractionModes">Interaction Modes</a></li> 
+        <ul> 
+         <li><a href="#GlassFishRestResourceGuidelines-Synchronousrequests">Synchronous requests</a></li> 
+         <li><a href="#GlassFishRestResourceGuidelines-Asynchronousrequests">Asynchronous requests</a></li> 
+         <li><a href="#GlassFishRestResourceGuidelines-Serversentevents">Server-sent events</a></li> 
+         <li><a href="#GlassFishRestResourceGuidelines-Detachedrequests">Detached requests</a></li> 
+        </ul> 
+        <li><a href="#GlassFishRestResourceGuidelines-ClientModels">Client Models</a></li> 
+        <li><a href="#GlassFishRestResourceGuidelines-EncodedClientStructure">Encoded Client Structure</a></li> 
+        <li><a href="#GlassFishRestResourceGuidelines-ErrorResponseMessageBodies">Error Response Message Bodies</a></li> 
+        <li><a href="#GlassFishRestResourceGuidelines-DesignPatterns">Design Patterns</a></li> 
+        <ul> 
+         <li><a href="#GlassFishRestResourceGuidelines-EntityCreation">Entity Creation</a></li> 
+         <li><a href="#GlassFishRestResourceGuidelines-ValidationFailure">Validation Failure</a></li> 
+         <li><a href="#GlassFishRestResourceGuidelines-CollectionResources">Collection Resources</a></li> 
+         <li><a href="#GlassFishRestResourceGuidelines-URIAddressability">URI Addressability</a></li> 
+         <li><a href="#GlassFishRestResourceGuidelines-AuthenticationandAuthorization">Authentication and Authorization</a></li> 
+         <li><a href="#GlassFishRestResourceGuidelines-MultipleDelete">Multiple Delete</a></li> 
+        </ul> 
+        <li><a href="#GlassFishRestResourceGuidelines-OpenQuestions">Open Questions</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="GlassFishRestResourceGuidelines-ImperativeTermsInSpecifications"></a>Imperative Terms In Specifications</h2> <p>The key words "<b>MUST</b>", "<b>MUST NO</b>T", "<b>REQUIRED</b>", "<b>SHALL</b>", "<b>SHALL NOT</b>", "<b>SHOULD</b>", "<b>SHOULD NOT</b>", "<b>RECOMMENDED</b>", "<b>MAY</b>", and "<b>OPTIONAL</b>" in this document, and all other documents that comprise the specification of the GlassFish RESTful API, are to be interpreted as described in "Key words for use in RFCs to Indicate Requirement Levels" (RFC 2119).</p> <h4><a name="GlassFishRestResourceGuidelines-RequestHeaders"></a>Request Headers</h2> <p>In requests made to RESTful services, several specific HTTP headers are used as described in the following table:</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Header </th> 
+         <th class="confluenceTh"> Supported Values </th> 
+         <th class="confluenceTh"> Description of Use </th> 
+         <th class="confluenceTh"> Required </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Accept </td> 
+         <td class="confluenceTd"> Comma-delimited list of media types or media type patterns. </td> 
+         <td class="confluenceTd"> Indicates to the server what media type(s) this client is prepared to accept. </td> 
+         <td class="confluenceTd"> Recommended, on requests that will produce a response message body. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Accept-Language </td> 
+         <td class="confluenceTd"> Any valid language tag (see section 14.4 of RFC 2616). </td> 
+         <td class="confluenceTd"> Specifies the preferred language for any messages in the response body. </td> 
+         <td class="confluenceTd"> No. Defaults to server locale. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Authorization </td> 
+         <td class="confluenceTd"> "Basic " plus username and password (per RFC 2617). </td> 
+         <td class="confluenceTd"> Identifies the authorized user making this request. </td> 
+         <td class="confluenceTd"> Yes, on all requests. <em>TODO: This will be updated in the future as we solidify supported authentication schemes.</em> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> If-Modified-Since </td> 
+         <td class="confluenceTd"> Any date, formatted as specified in section 3.3.1 of RFC 2616 </td> 
+         <td class="confluenceTd"> Can be used to prevent the retrieval of an item that has not been modified since the time specified. </td> 
+         <td class="confluenceTd"> No. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> If-None-Match </td> 
+         <td class="confluenceTd"> A previously retrieved ETag value </td> 
+         <td class="confluenceTd"> Can be used to prevent the retrieval of an item whose cached state on the client matches that on the server. </td> 
+         <td class="confluenceTd"> No. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> X-Requested-By </td> 
+         <td class="confluenceTd"> Any non-empty value </td> 
+         <td class="confluenceTd"> Security measure to prevent CSRF attacks </td> 
+         <td class="confluenceTd"> Yes, on all state-changing requests (POST, DELETE, etc). </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> -X-Wrap-Object- </td> 
+         <td class="confluenceTd"> <del>True or false (default)</del> </td> 
+         <td class="confluenceTd"> <del>If this header contains the value 'true' (case-insensitive), the response payload will be enclosed in a wrapper object. For collections, this wrapper will have one top-level property, items, whose value is the collection itself. For item resources, the wrapper will have one top-level property, item, whose value is the entity itself</del> </td> 
+         <td class="confluenceTd"> <del>No. The system will default to non-wrapped responses.</del> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> X-Skip-Metadata </td> 
+         <td class="confluenceTd"> True or false (default) </td> 
+         <td class="confluenceTd"> If this header contains the value 'true' (case-insensitive), the response payload from collection resources will not include the metadata portion (see description below). </td> 
+         <td class="confluenceTd"> No </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> X-GlassFish-3 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Any non-empty value <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> If a value is provided, the response document for "integrated resources" will be that returned by GlassFish 3.x. If the header is not provided, a new document following the guidelines detailed here will be returned. <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> No. <br class="atl-forced-newline"> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishRestResourceGuidelines-ResponseHeaders"></a>Response Headers</h2> <p>In responses returned by , several specific HTTP headers are used as described in the following table:</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Header </th> 
+         <th class="confluenceTh"> Supported Values </th> 
+         <th class="confluenceTh"> Description of Use </th> 
+         <th class="confluenceTh"> Required </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Content-Length </td> 
+         <td class="confluenceTd"> Length (in bytes) of the response message body. </td> 
+         <td class="confluenceTd"> Describes the size of the message body. </td> 
+         <td class="confluenceTd"> Yes, on responses that contain a message body. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Content-Type </td> 
+         <td class="confluenceTd"> Media type describing the response message body. </td> 
+         <td class="confluenceTd"> Describes the representation and syntax of the response message body. </td> 
+         <td class="confluenceTd"> Yes, on responses that contain a message body. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ETag </td> 
+         <td class="confluenceTd"> A collision-resistant hash of the entities current state. </td> 
+         <td class="confluenceTd"> Used in determining if the entity state held by the client is up-to-date with the current server-side state. </td> 
+         <td class="confluenceTd"> No. Only required for GET and HEAD requests. Optional for OPTIONS requests. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Location </td> 
+         <td class="confluenceTd"> Canonical URI of a newly created resource. </td> 
+         <td class="confluenceTd"> Returns a new URI that can be used to request a representation of the newly created resource. </td> 
+         <td class="confluenceTd"> Yes, on responses to requests that create new server side resources accessible via a URI. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p><em>FIXME - Document cache control headers and behavior somewhere?&nbsp;</em></p> <h4><a name="GlassFishRestResourceGuidelines-StandardHTTPStatusCodes"></a>Standard HTTP Status Codes</h2> <p>REST resources will return standard HTTP response codes as described in the following table, under the conditions listed in the description.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> HTTP Status </th> 
+         <th class="confluenceTh"> Description </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 200 OK </td> 
+         <td class="confluenceTd"> The request was successfully completed. If this request created a new resource that is addressable with a URI, and a response body is returned containing a representation of the new resource, a 200 status will be returned with a Location header containing the canonical URI for the newly created resource. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 201 Created </td> 
+         <td class="confluenceTd"> A request that created a new resource was completed, and no response body containing a representation of the new resource is being returned. A Location header containing the canonical URI for the newly created resource should also be returned. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 202 Accepted </td> 
+         <td class="confluenceTd"> The request has been accepted for processing, but the processing has not been completed. Per the HTTP/1.1 specification, the returned entity (if any) SHOULD include an indication of the request's current status, and either a pointer to a status monitor or some estimate of when the user can expect the request to be fulfilled. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 204 No Content </td> 
+         <td class="confluenceTd"> The server fulfilled the request, but does not need to return a response message body. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 304 Not Modified </td> 
+         <td class="confluenceTd"> A request was made for an object the client has cached but has not been modified since it was retrieved. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 400 Bad Request </td> 
+         <td class="confluenceTd"> The request could not be processed because it contains missing or invalid information (such as validation error on an input field, a missing required value, and so on). </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 401 Unauthorized </td> 
+         <td class="confluenceTd"> The authentication credentials included with this request are missing or invalid. <em>FIXME - talk about WWW-Authenticate header in the response.</em> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 403 Forbidden </td> 
+         <td class="confluenceTd"> The server recognized your credentials, but you do not possess authorization to perform this request. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 404 Not Found </td> 
+         <td class="confluenceTd"> The request specified a URI of a resource that does not exist. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 405 Method Not Allowed </td> 
+         <td class="confluenceTd"> The HTTP verb specified in the request (DELETE, GET, HEAD, POST, PUT) is not supported for this request URI. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 406 Not Acceptable </td> 
+         <td class="confluenceTd"> The resource identified by this request is not capable of generating a representation corresponding to one of the media types in the Accept header of the request. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 409 Conflict </td> 
+         <td class="confluenceTd"> A creation or update request could not be completed, because it would cause a conflict in the current state of the resources supported by the server (for example, an attempt to create a new resource with a unique identifier already assigned to some existing resource). </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 500 Internal Server Error </td> 
+         <td class="confluenceTd"> The server encountered an unexpected condition which prevented it from fulfilling the request. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 501 Not Implemented </td> 
+         <td class="confluenceTd"> The server does not (currently) support the functionality required to fulfill the request. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 503 Service Unavailable </td> 
+         <td class="confluenceTd"> The server is currently unable to handle the request due to temporary overloading or maintenance of the server. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishRestResourceGuidelines-HTTPVerbUsage"></a>HTTP Verb Usage</h2> <p>Typically, RESTful services are implemented over HTTP, but this is not necessary to be considered RESTful. In the context of GlassFish RESTful services, however, all resources <b>MUST</b> be implemented over HTTP, and <b>MUST</b> use the HTTP verbs according to the following conventions:</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> HTTP Verb </th> 
+         <th class="confluenceTh"> Usage </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GET </td> 
+         <td class="confluenceTd"> GET will be used to retrieve the current representation of a model's state. It will also used to retrieve a list of URIs for child resources. For example, one would GET the current state of a particular cluster (<a href="http://machine:port/clusters/cluster1">http://machine:port/clusters/cluster1</a>) or retrieving a list of clusters (<a href="http://machine:port/clusters">http://machine:port/clusters</a>). GET requestMUST NOT change server state. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> POST </td> 
+         <td class="confluenceTd"> POST will be used to create or update a new entity in the referenced collection. For example, a client would POST a representation of a new cluster to the cluster endpoint. The system will create the new cluster and <b>MUST</b> return a 201 (Created) status code to the client, with the URI of the newly created entity returned as the value of the Location header. <br class="atl-forced-newline"> <br class="atl-forced-newline"> In the case of action resources (e.g., starting or stopping an instance), the system <b>SHOULD</b> return a 200 (OK) status, or, for long-running, asynchronous operations, a 202 (Accepted) status, with a URI for the long-running process returned as the value of the Location header. When a long-running process has finished, the system must then return the appropriate status code, e.g. 200 (Ok), 500 (Server Error), etc. <br class="atl-forced-newline"> <br class="atl-forced-newline"> POST will also be used to update the state of an existing entity. If the entity does not exist, the system <b>SHOULD</b> return a 404 (Not Found) error. The creation of new entities <b>SHOULD</b> be achieved by POSTing to a collection URI (<a href="http://machine:port/clusters/">http://machine:port/clusters/</a>). </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> PUT </td> 
+         <td class="confluenceTd"> PUT is typically used to create a new entity when the client is allowed to specify they URI of the newly created entity (e.g., PUTting to &nbsp;<a href="http://machine:port/clusters/cluster2&nbsp;would">http://machine:port/clusters/cluster2&amp;nbsp;would</a> create a new cluster at that URI). URI creation <b>SHOULD</b> be handled by the system, so the use of PUT is discouraged, and, thus <b>SHOULD NOT</b> be used. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> DELETE </td> 
+         <td class="confluenceTd"> DELETE is used to delete a resource. If the entity is successfully deleted, the system <b>SHOULD</b> return 200 (Ok). If the entity is not found, the system <b>SHOULD</b> return a 404 (Not Found). If the delete fails for any reason (such as a validation failure), the system <b>SHOULD</b> return the appropriate status code and an explanatory message as the response body. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> OPTIONS </td> 
+         <td class="confluenceTd"> OPTIONS can be used to interrogate a resource. The response <b>MAY</b> include such things as methods supported, action resource links, etc. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> HEAD </td> 
+         <td class="confluenceTd"> HEAD can be used to interrogate a resource with respect to caching. For example, a HEAD response <b>MAY</b> return various headers such as ETag to help a client determine if a locally-cached representation is out of date. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishRestResourceGuidelines-ResponseBodiesforSuccessfulRequests"></a>Response Bodies for Successful Requests</h2> <p>Successful requests <b>MUST</b> return an HTTP status code of 200 (OK), 201 (Created), or 204 (No Content), to indicate that the requested action has been successfully performed, or 202 (Accepted) for long-running, asynchronous actions. In addition, response <b>MAY</b> include a response message body (with an appropriate media type) containing a representation of the requested information.</p> 
+     <hr> <p>The system supports three basic types of resources:</p> 
+     <ul> 
+      <li>collections (a list of entities)</li> 
+      <li>entities (the state of a single, specific entity)</li> 
+      <li>actions (resource defined for the purpose of exposing workflow-related operations on parent resources).</li> 
+     </ul> <p>Each of these resources will return bodies tailored to the purpose of the resource.</p> <h4><a name="GlassFishRestResourceGuidelines-CollectionResources"></a>Collection Resources</h3> <p>The response of a collection resource will a list of the entities owned by the parent. For example, an <tt>/accounts/</tt> resource would return a list of <tt>Account</tt> objects. To maintain some flexibility in the structure and content of the response body, this list (or JSON array) will be enclosed in a generic object. Such a response might look like this:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&gt; Link: http://localhost:4848/management/accounts/id/account1; rel="account"; title="account1"
+&gt; Link: http://localhost:4848/management/accounts/id/account2; rel="account"; title="account2"
+&gt; Link: http://localhost:4848/management/accounts/id/account3; rel="account"; title="account3"
+
+{
+    items: [
+        {'name':'account1', description="Account 1"},
+        {'name':'account2', description="Account 2"},
+        {'name':'account3', description="Account 3"},
+    ]
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>In this example, the list returned is the full <tt>Account</tt> object. The objects in the list, though, do not specify how to address those objects directly. The client has two options: Using the name of the account, the appropriate URI can be calculated on the client and used in subsequent requests. This requires, though, that the client have a detailed knowledge of the server and how parent/child relationships are built and expressed. This results in a very tight coupling, making the client fragile, and server-side changes difficult, and/or expensive.</p> <p>Another option, though, is to use the metadata provided in the response headers. Link headers <b>SHOULD</b> be provided for each item in the list. Each header's <tt>rel</tt> attribute should specify the type of data represented by the link, and the <tt>title</tt> attribute should reflect the unique identifier used by the system for each entity.</p> <p>For example above we see three <tt>Link</tt> headers (each line prefixed with "&gt; " as one might see returned from the <tt>curl</tt> command-line client) were returned, each one holding the URI for a given account. The <tt>rel</tt> attribute for each link was set to "account", as that is the type of the entity in question, and the <tt>title</tt> attribute was set to the account's name, as that is the primary key by which the system identifies a given account. Given this information, the client should easily be able to find the URI for a given <tt>Account</tt> in the <tt>items</tt> list.</p> <h4><a name="GlassFishRestResourceGuidelines-EntityResources"></a>Entity Resources</h3> <p>When a client accesses an entity resource, it expects the current state of the entity. There is, however, more to the entity than its state. For example, an entity might have child or action resources about which the client needs to be informed. As with collection resources, this type of information will be presented to the client via <tt>Link</tt> headers. There exists the possibility, though, that extra data, such as error messages, etc. may also need to be sent to the client, so the entity will be enclosed in an outer, generic object, under the key "item":</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&gt; Link: http://localhost:4848/management/accounts/id/account1; rel="self"
+&gt; Link: http://localhost:4848/management/accounts/id/account1/services; rel="services"
+
+{
+    "item": {
+        "name": "account1",
+        "description": "Account 1"
+    }
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>In this example, we see that an account can have services associated with it. The client, then, already aware of this through domain knowledge acquired during requirements gathering and system design, knows to look for a link with a <tt>rel</tt> value of "services" to find the URI to fetch this type of information. The client is, of course, free to compute the URI itself, but the fragility and coupling issues discussed above apply here as well.</p> <p>In this example, another <tt>Link</tt> header was provided, this one with the <tt>rel</tt> value of "self". Many REST users are accustomed to seeing this type of self-referential data in the response, so resources <b>MAY</b> return this if desired.</p> <h4><a name="GlassFishRestResourceGuidelines-ActionResources"></a>Action Resources</h3> <p>An action resource, as noted in the <a href="http://jersey.java.net/nonav/documentation/latest/user-guide.html#hypermedia">Jersey documentation</a>, is a concession to the real world fact that some things can't easily be encapsulated as a piece of state. The Jersey documentation uses the workflow of an online ordering system as an example: the client doesn't want or need to know the details. It just wants to pay for the order, ship it, etc. These types of interactions, then are exposed as "action resources", and they are children of the resource on which they act. In the example above, we may need to lock or unlock an account. Rather than exposing a "locked" property and requiring that the user discover the property then somehow learn how to set it, we can model this actions. These are discovered via another set of <tt>Link</tt> headers:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&gt; Link: http://localhost:4848/management/accounts/id/account1; rel="self"
+&gt; Link: http://localhost:4848/management/accounts/id/account1/services; rel="services"
+&gt; Link: http://localhost:4848/management/accounts/id/account1/lock; rel="action"; title="lock";op=POST
+&gt; Link: http://localhost:4848/management/accounts/id/account1/unlock; rel="action"; title="lock";op=POST
+
+{
+    "item": {
+        "name": "account1",
+        "description": "Account 1"
+    }
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>This is the same entity as above, but we've added two more <tt>Link</tt> headers. The <tt>rel</tt> value of "action" identifies this as an action resource URL, the <tt>title</tt> says what it is, and <tt>op</tt> tells the client the HTTP method to use. The response from invoking such an action <b>MUST</b> include the appropriate status code (see table above) and <b>MAY</b> include a message object in the body of the response.</p> <h4><a name="GlassFishRestResourceGuidelines-InteractionModes"></a>Interaction Modes</h2> <p>REST resources are typically consumed in a synchronous fashion: the client makes the request, then waits for the response. Modern REST resources, though, may offer more interesting means of client/server interaction including asynchronous calls and server-sent events. The GlassFish RESTful Administration framework provides support for the following "modes":</p> 
+     <ul> 
+      <li>Synchronous</li> 
+      <li>Asynchronous</li> 
+      <li>Server-sent events</li> 
+      <li>Detached</li> 
+     </ul> <h4><a name="GlassFishRestResourceGuidelines-Synchronousrequests"></a>Synchronous requests</h3> <p>This is the standard/normal means of interacting with a REST resource and need not be elaborated upon here.</p> <h4><a name="GlassFishRestResourceGuidelines-Asynchronousrequests"></a>Asynchronous requests</h3> <p>Technically, asynchronous requests (in JAX-RS terms) are a purely client-side concern. There is no on-the-wire difference for these, but, for the sake of completeness, an example is included here:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">public void asyncRestClient() throws JSONException, InterruptedException {
+        getClient()
+                .target(restUrl)
+                .request(MediaType.APPLICATION_JSON)
+                .async() // #1
+                .post(Entity.entity("Here is some text", MediaType.TEXT_PLAIN),
+                        new InvocationCallback&lt;Response&gt;() { // #2
+            @Override
+            public void completed(Response response) {
+                processResponse(response.readEntity(JSONObject.class));
+            }
+
+            @Override
+            public void failed(ClientException ce) {
+                // Do something
+            }
+        });
+    }</pre> 
+       </div> 
+      </div>
+     </div> <p>This simple example shows how to use the JAX-RS Client API to make an asynchronous request. First, a call to async() is added to the call chain (#1), and, second, an instance of InvocationCallback to is passed to post() (#2). The Client creates a background thread to handle the request. This thread sends the request, then blocks, waiting for the response. Once the response is received, it calls completed() on the InvocationCallback object. The REST client code can then read the entity off the Response, and pass it along to a business method for processing. If an error occurs, the Client will call failure(), at which point the client should handle the error in a manner appropriate for its context.</p> <h4><a name="GlassFishRestResourceGuidelines-Serversentevents"></a>Server-sent events</h3> <p>GlassFish resources can, if written to do so, push <tt>ProgressStatus</tt> events to the client, allowing the client to display the status of a long-running request. The <tt>ProgressStatus</tt> object will look like this (formatted for readability):</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">event: AdminCommandInstance/stateChanged
+data: {
+    "state":"RUNNING",
+    "id":"1",
+    "empty-payload":true
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>GlassFish Currently provides a JAX-RS <tt>MessageBodyReader</tt> to read this entity off the request and return a <tt>ProgressStatus</tt> object which the client can consume. In a typical SSE-based requests, three different event types will be seen.</p> <p><b>AdminCommandInstance/stateChanged</b><br> This event will be the first and the last event type received. It will notify the client the request has been received and started, and, finally, that it has completed. The data elements of this event will look like this, respecitvely:</p> <p><em>RUNNING</em>:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">{
+    "state":"RUNNING",
+    "id":"1",
+    "empty-payload":true
+}</pre> 
+       </div> 
+      </div>
+     </div> <p><em>COMPLETED</em>:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">{
+    "state":"COMPLETED",
+    "id":"1",
+    "empty-payload":true,
+    "action-report": {
+        "message":"Slow command completed.",
+        "command":"slow-command AdminCommand",
+        "exit_code":"SUCCESS",
+        "extraProperties": {
+            "response":{
+                "messages":[{"message":"It works!","severity":"SUCCESS"}]
+            }
+        }
+    }
+}</pre> 
+       </div> 
+      </div>
+     </div> <p><b>ProgressStatus/state</b><br> This event will send the initial state of the <tt>ProgessStatus</tt> object:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">{
+    "progress-status":{
+        "name":"slow-command",
+        "id":"1",
+        "total-step-count":-1,
+        "current-step-count":0,
+        "complete":false
+     }
+}</pre> 
+       </div> 
+      </div>
+     </div> <p><b>ProgressStatus/change</b><br> This event is sent anytime a change happens on the server. The number and frequency of these events is dependent on the REST resource implementation. No assumptions should be made regarding either quantity or frequency.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">{
+    "progress-status-event":{
+        "changed":["SPINNER","STEPS"],
+        "message":"Finished step #1",
+        "progress-status":{
+            "name":"slow-command",
+            "id":"1",
+            "total-step-count":5,
+            "current-step-count":1,
+            "complete":false
+        }
+    }
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>The last event of this type should have its <tt>complete</tt> flag set to <tt>true</tt>. A client of an SSE-based resource is considerably more complex than a normal client, so an example is included here.</p> 
+     <div class="sunwikis-expand-header">
+      Click 
+      <b>here</b> to see the example source
+     </div> 
+     <div class="sunwikis-expand-body">
+      <div class="code panel" style="border-width: 1px;">
+       <div class="codeContent panelContent"> 
+        <div id="root"> 
+         <pre class="theme: Confluence; brush: java; gutter: false">import com.sun.enterprise.admin.remote.reader.AdminCommandStateJsonReader;
+import com.sun.enterprise.admin.remote.reader.ProgressStatusDTOJsonReader;
+import com.sun.enterprise.admin.remote.reader.ProgressStatusEventJsonReader;
+import com.sun.enterprise.admin.remote.sse.GfSseEventReceiver;
+import com.sun.enterprise.admin.remote.sse.GfSseEventReceiverReader;
+import com.sun.enterprise.admin.remote.sse.GfSseInboundEvent;
+// ...
+
+public class SseClient {
+    public static void main(String... args) throws IOException, JSONException {
+        Client client = JerseyClientFactory.newClient();
+        client.configuration()
+                .register(new AdminCommandStateJsonReader())
+                .register(new ProgressStatusDTOJsonReader())
+                .register(new ProgressStatusEventJsonReader())
+                .register(GfSseEventReceiverReader.class);
+
+        GfSseEventReceiver eventReceiver =
+            client.target("http://localhost:4848/management/slow").
+                request(EventChannel.SERVER_SENT_EVENTS).
+                get(GfSseEventReceiver.class);
+        boolean closeSse = false;
+        GfSseInboundEvent event;
+        ActionReport ar = null;
+        String message = null;
+        do {
+            event = eventReceiver.readEvent();
+            if (event != null) {
+                final String eventName = event.getName();
+                if (AdminCommandState.EVENT_STATE_CHANGED.equals(eventName)) {
+                    AdminCommandState acs = event.getData(AdminCommandState.class,
+                        MediaType.APPLICATION_JSON_TYPE);
+                    if (acs.getState() == AdminCommandState.State.COMPLETED
+                            || acs.getState() == AdminCommandState.State.RECORDED) {
+                        if (acs.getActionReport() != null) {
+                            ar = acs.getActionReport();
+                            final JSONObject responseBody =
+                                new JSONObject((Map)ar.getExtraProperties().get("response"));
+                            JSONArray messages = responseBody.getJSONArray("messages");
+                            message = ((JSONObject)messages.get(0)).getString("message");
+                        }
+                        closeSse = true;
+                    }
+                }
+            }
+        } while (event != null &amp;&amp; !eventReceiver.isClosed() &amp;&amp; !closeSse);
+        if (closeSse) {
+            try {
+                eventReceiver.close();
+            } catch (Exception exc) {
+            }
+        }
+
+        System.out.println(message);
+
+    }
+}</pre> 
+        </div> 
+       </div>
+      </div>
+     </div> <h4><a name="GlassFishRestResourceGuidelines-Detachedrequests"></a>Detached requests</h3> <p>This interaction mode is a GlassFish-specific mode and, like server-sent events, may not supported by every resource. In a nutshell, requests of this type will return a URI to a job ID, rather than, say, an entity. To request a detached execution, the client should send the query parameter <tt>__detached</tt> with an arbitrary value (only the presence of the parameter is important). Resources which support this <b>MUST</b> return 201 (Accepted), and <b>SHOULD</b> return two headers: <tt>Location</tt>, which is the URI by which clients can check the status of the detached job, and, optionally, <tt>X-Location</tt> which gives the URI of the entity should the detached execution ultimately succeed. (NOTE: <tt>X-Location</tt>, both it's presence and its name, may change for the final release of the product).</p> <h4><a name="GlassFishRestResourceGuidelines-ClientModels"></a>Client Models</h2> <p>To help with authoring client applications, as well as helping automate the serialization and deserialization of the entity state, each REST resource <b>SHOULD</b> expose on or more model Objects which hold the state of the resource. The system will then encode this resource as JSON (or any other supported encoding). If using such a model is not desired, the module providing the resource <b>MUST</b> provide a means to encode and decode the entity state. This means <b>SHOULD</b> integrate with REST interface architecture, which is described in another document.</p> <p>These models, if used, <b>SHOULD</b> adhere to the JavaBeans specification as much as possible to ensure consistent on-the-wire encoding (see next section).</p> <h4><a name="GlassFishRestResourceGuidelines-EncodedClientStructure"></a>Encoded Client Structure</h2> <p>The client state, when encoded, should be done in as consistent a manner as possible. To that end, the following rules SHOULD be followed when encoding values:</p> 
+     <ul> 
+      <li>All on-the-wire state encoding <b>SHOULD</b> be done using JSON, using the "natural" notation (see, for example, section 5.2.2.2 of the <a href="http://jersey.java.net/nonav/documentation/latest/json.html">Jersey documentation</a>)</li> 
+      <li>All element and attribute names should be camelCased. Dashes and underscores <b>SHOULD</b> be avoided (e.g., preferred: someLongPropertyName; discouraged: some_long_property_name and some-long-property-name).</li> 
+      <li>Collections <b>SHOULD</b> be encoded in a manner as natural as possible in the target encoding. For example, in JSON, lists/arrays will be designated by using brackets ([ and ]), even for single item lists:</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: javascript; gutter: false">"items":["item1", "item2", "itemN"]</pre> 
+       </div> 
+      </div>
+     </div> <p>while maps will be designated using braces ({ and }), even for single item collections:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: javascript; gutter: false">"someObject" : {"property1": "string value", "property2" : 2 }</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="GlassFishRestResourceGuidelines-ErrorResponseMessageBodies"></a>Error Response Message Bodies</h2> <p>It is, of course, possible for a number of things to go wrong. The various underlying causes are described (as discussed above) by various HTTP status codes in the range 400-499 (for client side errors) or 500-599 (for server side problems). The description of each request type MAY list the possible status codes returned by that request type.</p> <p>If a response is returned with an error status code (400-499 or 500-599), the server <b>SHOULD</b> also return a message body containing an error object containing the message(s) which describe what went wrong. The values of such messages might be used, for example, to communicate with a human user of the client side application. Sensitive information, such as stack traces, <b>SHOULD NOT</b> be reflected to the user. For example:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: javascript; gutter: false">{
+    "validationErrors" : [
+        {
+            "field" : "emailAddress",
+            "message" :"The value of emailAddress is not a valid email address"
+        },
+        {
+            "field" : "birthDate",
+            "message" : "The value of birthDate can not be a future date"
+        }
+    ]
+}</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="GlassFishRestResourceGuidelines-DesignPatterns"></a>Design Patterns</h2> <p>This section will detail a list of design patterns and behaviors that <b>SHOULD</b> be implemented in all resources (where appropriate).</p> <h4><a name="GlassFishRestResourceGuidelines-EntityCreation"></a>Entity Creation</h3> <p>After an entity is created on the server, the response to the client <b>SHOULD</b> include the URI to new entity via the Location header, as well as the entity itself in the body of the response.</p> <h4><a name="GlassFishRestResourceGuidelines-ValidationFailure"></a>Validation Failure</h3> <p>If an entity is being updated and a validation error occurs, the resource <b>SHOULD</b> attempt to validate as much of the submitted entity as possible, then it <b>SHOULD</b> return a 400 (Bad Request) with the validation failures returned as an object with a property, validationErrors, whose value is a list of strings detailing the reasons for the failure:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: javascript; gutter: false">{
+    "validationErrors" : [
+        {"field" : "field1" , "message" : "Reason 1"},
+        {"field" : "field2" , "message" : "Reason 2"},
+        {"field" : "field3" , "message" : "Reason n"}
+    ]
+}</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="GlassFishRestResourceGuidelines-CollectionResources"></a>Collection Resources</h3> <p>When making a GET request against a collection resource, the collection <b>SHOULD</b> be returned as an object with a property, children, whose value is a list of the URIs of the child resources:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: javascript; gutter: false">{
+	"children":  [
+		{"uri" : "http://machine:port/uri/for/child1"},
+		{"uri" : "http://machine:port/uri/for/childN"}
+	]
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>In some scenarios, it may be desired to return the child entities with the request. In these situations, the resource can identify such a request from the client via the presence of the _full <em>( TODO: discuss this name</em> ) query parameter. If present, the resource MAY honor the request. If the request will result in a significant use of system resources (memory, bandwidth, etc), the resource MAY ignore the request to return the child entity states.</p> <h4><a name="GlassFishRestResourceGuidelines-URIAddressability"></a>URI Addressability</h3> <p>Generated URIs <b>SHOULD</b> be addressable by the client; i.e., The machine, port, etc <b>SHOULD</b> reflect that specified by client, meaning that the presence of any NAT/firewall in the network <b>SHOULD NOT</b> result in the generation of unreachable URIs.</p> <h4><a name="GlassFishRestResourceGuidelines-AuthenticationandAuthorization"></a>Authentication and Authorization</h3> <p>If security is enabled (as it may not be in a development environment) and a request is made to a resource by an unauthenticated user, the resource <b>MUST</b> return 401 (Unauthorized)</p> <p>If security is enabled and a request is made to a resource to which the client does not have permissions, the system <b>MUST</b> return 403 (Forbidden).</p> <p>If security is enabled and a request is made to a resource to which the client has permission, but the entity contains data to which the client does not have permission, the resource <b>MAY</b> return only the portion to which the client has permission, or the resource <b>MAY</b> reject the entire request with a 403 (Forbidden) response. In the latter case, the system <b>SHOULD</b> include an explanatory error message in the body.</p> <h4><a name="GlassFishRestResourceGuidelines-MultipleDelete"></a>Multiple Delete</h3> <p>Deleting multiple entities at one time is often desired for performance reasons. Resources that support this operation MUST maintain fidelity with the spirit of REST and implement the method using DELETE. The IDs of the entities to be delete <b>SHOULD</b> be specified by repeated id=value query parameters.</p> <h4><a name="GlassFishRestResourceGuidelines-OpenQuestions"></a>Open Questions</h2> 
+     <ol> 
+      <li>What content types must I support in a new resource, and what should I expect from any GlassFish resource?</li> 
+      <li>If I have an artifact like a Data Source that supports a number of operations - shrink, suspend, resume, start, stop - how would I represent that in REST? As one resource? As many?</li> 
+      <li>If I am asking for a collection of results and the user does not have read privs for all of the artifacts, how do I convey that in a response?</li> 
+      <li>Must resources encode values to prevent cross site scripting? Under what circumstances?</li> 
+      <li>Must resource implementations be sensitive to CSRF, or will that be addressed in infrastructure?</li> 
+      <li>If a resource is to implement a "Clone" feature, what would that request look like? How is the source object conveyed?</li> 
+      <li>How is metadata for a request provided (options, other)?</li> 
+      <li>How are related resource URLs made available in a response?</li> 
+      <li>How should resources be named? Should parent-child relationships be conveyed in a URL? What is the best pattern for describing specific 'facets' or perspectives into an artifact?</li> 
+     </ol> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Feb 22, 2013 by 
+<font color="#0050B2">14819</font>. Exported from wikis.oracle.com on May 27, 2015 20:49.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

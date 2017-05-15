@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GFPresentationFAQ</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GFPresentationFAQ-GlassFishPresentationQuestionsFAQ"></a>GlassFish Presentation Questions FAQ</h1> <p>The purpose of this page is to capture the list of questions (and answers) raised at the GlassFish Presentations. The questions included are those raised at:</p> 
+     <ul> 
+      <li>GlassFish presentation to New England Java Users Group, May 10, 2007</li> 
+     </ul> <h4><a name="GFPresentationFAQ-Questions"></a>Questions</h3> <p>Q. *Is v3 going to be able to run Java EE 5 applications ? i.e. Is it backward compabible ?<br> *<br> A. v3 is the Standard Implementation for Java EE 6. One of the goals of Java EE 6 is to prune out features. Pruning refers not to the deletion of the actual feature from the specification, rather the conversion of a feature from a required component of the Java EE platform to an optional one. Thus, a feature may be removed from a Java EE 6 vendor's implementation at a vendor's choice. See <a href="http://jcp.org/en/jsr/detail-313">http://jcp.org/en/jsr/detail-313</a>.</p> <p>Q. <b>Is GlassFish v3 (with container loading on demand) being targeted towards market served by Tomcat ?</b><br> A. The focus of GlassFish v3 is modularization, enablement of non Java EE containers and embeddability. To realize these goals, GlassFish v3 loads containers on demand and will have a fast startup time. So, compared to GlassFish v2, GlassFish v3 will signficantly speed up the development cycle of building, starting the application server and running an Web application.</p> <p>Q. __How long as Grizzly/JSP container been around ? Is it being widely used ? <br> How is the performance?__<br> A. Grizzly was born in 2004 in the GlassFish project and later became Grizzly 1.0. The development of Grizzly 1.5 began in 2006. Grizzly was open sourced on Feburary 6, 2007.</p> <p>Several projects have been succsessfully using Grizzly 1.0 - JRuby On Grizzly, GlassFish v2, GlassFish v3, Sun Web 2.0 Developer Pack, Comet/Cometd, AyncWeb on Grizzly, Phobos.</p> <p>For a performance comparision of Grizzly versus other HTTP servers, see slide 13<br> of <a href="https://grizzly.java.net/presentations/FISL-2007.pdf">https://grizzly.java.net/presentations/FISL-2007.pdf</a>.</p> <p>Q. <b>Is there an eclipse plugin for GlassFish</b>?<br> A. Yes. See <a href="https://glassfishplugins.java.net">https://glassfishplugins.java.net</a> for more information.</p> <p>Q. <b>What is NetBeans ? It looks just like Eclipse.</b><br> A. Need to get official answer from netbeans-feedback@sun.com .</p> <p>Q. __Can jMaki be used to wrap widgets using JSF (as opposed to <br> JSP which was the e.g. I showed)?__<br> A. Yes. See: <a href="https://ajax.java.net/usingFaces.html">https://ajax.java.net/usingFaces.html</a>.</p> <p>Q. __I am using Axis. What is the difference between JAX-WS and Axis ?<br> I used JAX-RPC in the past.__<br> A. TBD</p> <p>Q. __HA is available with product version. A person from CSCO asked a question. Vella <br> answered it. I will defer to Vella for both the question and answer.__<br> A. TBD - Defer to Vella</p> <p>Q. __Is it possible to use a clustered instance for a specific purpose? <br> For e.g. is it possible to say use one app server instance to do authentication ?__<br> A. TBD - Defer to Kedar</p> <p>Q. __Is it possible to configure in memory replication so that some but not all the <br> information is replicated ?__<br> A. TBD - Defer to Kedar. Note: The use case for this is not clear.</p> <p>Q. <b>Is Shoal a requirement for clustering ?</b><br> A. TBD - Defer to Ganapathy.</p> <p>Q. <b>How is Shoal used?</b><br> A. [ I wrote it up but it needs to be reviewed (wording borrowed from existing blogs)- Sekhar|Iwroteitupbutitneedstobereviewedwordingborrowedfromexistingblogs-Sekhar]<br> Project Shoal provides a generic clustering framework for any product requiring<br> clustering features. It is used Java EE/J2SEE application servers to support clustering <br> features such as</p> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li>Automated delegated transaction recovery</li> 
+        <li>Timer migrations</li> 
+        <li>IIOP Failover Loadbalancer</li> 
+        <li>Self Management</li> 
+        <li>Read-only Bean's cache change notifications</li> 
+        <li>Domain Admin Server for cluster health</li> 
+        <li>In-memory replication component's discovery and failure</li> 
+       </ul> </li> 
+     </ul> <p> In GlassFish V2, Project Shoal clusters multiple Glassfish appserver instances using the <br> JXTA technology. Leveraging the JXTA self-organizing and dynamic group networking <br> infrastructure, Project Shoal allows administrators to easily deploy and dynamically <br> group Glassfish appserver instances into a cluster. Project Shoal's highly-decentralized <br> implementation removes the traditional cluster master single point of failures and <br> control by decentralizing the master function accross all instances. Any instance can <br> take over master's responsability, if the existing Master fails. New instances can be <br> added dynamically on-demand enabling massive-scale appserver clustering deployment.</p> <p> See <a href="http://shoal.java.net">http://shoal.java.net</a> for more information.</p> 
+     <hr> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 02, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:44.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

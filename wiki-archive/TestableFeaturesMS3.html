@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : TestableFeaturesMS3</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="TestableFeaturesMS3-ThepageliststhetestablefeatureforMS3."></a>The page lists the testable feature for MS3.</h1> <h4><a name="TestableFeaturesMS3-Administration"></a>Administration</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">No. </th> 
+         <th class="confluenceTh"> Feature </th> 
+         <th class="confluenceTh"> Details </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> Monitoring </td> 
+         <td class="confluenceTd"> turned on for Network Manager, Session Manager ,Transaction Manager, Overload Protection Manager </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Dynamic reconfiguration enabled </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Monitoring stats available are mentioned in <a href="MonitoringStats.html" title="MonitoringStats">this page </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2. </td> 
+         <td class="confluenceTd"> CLI Support for CLB </td> 
+         <td class="confluenceTd">New commands set-dcr-file added for CLB. This is basically to upload user/hand modified dcr.xml file to DAS since we don't have a user interface for the dcr file as such. (There is an issue reported here ) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> CLI Support for Security </td> 
+         <td class="confluenceTd"> 5 new commands for identity trust management </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Extension module support in CLI </td> 
+         <td class="confluenceTd"> list-components would list extension-modules </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3. </td> 
+         <td class="confluenceTd"> Call Flow </td> 
+         <td class="confluenceTd"> CallFlow enabled in SIP Container </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4. </td> 
+         <td class="confluenceTd"> AMX support for SIP Elements </td> 
+         <td class="confluenceTd"> AMX interfaces for sip-service and its child elements have been exposed (yet to be java doc'ed) .New interfaces with complete java doc to be published in the next week or so. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5. </td> 
+         <td class="confluenceTd"> Others </td> 
+         <td class="confluenceTd"> Server validation support added for all the new elements. For a end user it would means that element values are validated before being persisted to domain.xml. For example user cannot enter an invalid value for sip ports. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="TestableFeaturesMS3-AdminGUI"></a>Admin GUI </h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">No. </th> 
+         <th class="confluenceTh"> Feature </th> 
+         <th class="confluenceTh"> Details </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1. </td> 
+         <td class="confluenceTd"> SipService node </td> 
+         <td class="confluenceTd"> View and edit settings for : Access Log, Request Processing, Keep Alive, Connection Pool, SIP Protocol, SIP link settings and SIP timers settings. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2. </td> 
+         <td class="confluenceTd"> SIP Listeners </td> 
+         <td class="confluenceTd"> SIP Listeners (These were available in Developer profile pre-ms3 but are new for cluster profile). In addition create/delete/edit/list of SIP Listeners, SSL properties and Listener properties </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3. </td> 
+         <td class="confluenceTd"> Identity Assertion Trust (Trust Configurations) </td> 
+         <td class="confluenceTd"> List available trust configurations in a config, Create new trust configuration with trust entity or trust handler, Delete trust configurations. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4. </td> 
+         <td class="confluenceTd"> CLB (These are available only in cluster profile) </td> 
+         <td class="confluenceTd"> List CLBs in the domain </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Create New CLB </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Delete CLB </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Edit CLB Config Properties </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Add and Remove Hosting Targets </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Edit Load Balancer Hosting Target Details </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Add and Remove Targets for the CLB </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Edit CLB Target Details. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="TestableFeaturesMS3-Deployment"></a>Deployment</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">No. </th> 
+         <th class="confluenceTh"> Feature </th> 
+         <th class="confluenceTh"> Details </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1. </td> 
+         <td class="confluenceTd"> Deployment in a single instance, enable/disable </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2. </td> 
+         <td class="confluenceTd"> Deployment in a cluster enable/disable </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3. </td> 
+         <td class="confluenceTd"> Deployment via NetBeans of .sar and .ear with a .sar </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4. </td> 
+         <td class="confluenceTd"> Annotation support from JSR289 excl. SipFactory and SipSessionsUtil </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="TestableFeaturesMS3-Security"></a>Security </h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">No. </th> 
+         <th class="confluenceTh"> Feature </th> 
+         <th class="confluenceTh"> Details </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1. </td> 
+         <td class="confluenceTd"> P-Asserted Identity support </td> 
+         <td class="confluenceTd"> support for config via domain.xml ( Issue reported). Only IP Address or asserted handler works. Host name does not work. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2. </td> 
+         <td class="confluenceTd"> Run-As support for Sip Servlets </td> 
+         <td class="confluenceTd"> Issue reported .Role to principal mapping is needed for runAs to work. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3. </td> 
+         <td class="confluenceTd"> Digest Authentication for SIP Servlets </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4. </td> 
+         <td class="confluenceTd"> Authorization for SIP Servlets </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="TestableFeaturesMS3-CLB"></a>CLB </h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">No. </th> 
+         <th class="confluenceTh"> Feature </th> 
+         <th class="confluenceTh"> Details </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1. </td> 
+         <td class="confluenceTd"> enhanced CLI command for CLB creation </td> 
+         <td class="confluenceTd">CLI support for define self loadbalancing cluster as a part of cluster creation </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> default cluster in self load balancing mode available out-of-box. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2. </td> 
+         <td class="confluenceTd"> Dynamic reconfig support </td> 
+         <td class="confluenceTd">config updates that result in regeneration of CLB configuration and its propagation over to the CLB instances ( queiscing is not available) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3. </td> 
+         <td class="confluenceTd"> Integrated SIP and HTTP LB </td> 
+         <td class="confluenceTd"> Expected to work. As per Pankaj, QE is writing an app to test it. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="TestableFeaturesMS3-SessionReplication"></a>Session Replication </h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">No. </th> 
+         <th class="confluenceTh"> Feature </th> 
+         <th class="confluenceTh"> Details </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1. </td> 
+         <td class="confluenceTd"> Replication support for SIP artifacts </td> 
+         <td class="confluenceTd"> Artifacts supported are : SipApplicationSessions, SipSessions, ServletTimers, DialogFragments </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2. </td> 
+         <td class="confluenceTd"> Replication support for HTTP </td> 
+         <td class="confluenceTd"> - http sessions, SFSB, SSO </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3. </td> 
+         <td class="confluenceTd"> Handling apps that are marked "distributable" </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>Note : </p> 
+     <ul> 
+      <li>Testing has excluded CLB</li> 
+      <li>Testing done via HTTP path, using a ConvergedHTTPSession to create SIP Artifacts and replicate them.</li> 
+      <li>Tests confined to a cluster on a single machine.</li> 
+      <li>More details awaited for SIP Traffic</li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 08, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

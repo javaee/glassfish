@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFishV3DocPlanAdminGuide</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>&lt;h1&gt;GlassFish v3 Administration Guide Document Plan&lt;/h1&gt;</p> 
+     <div> 
+      <ul> 
+       <li><a href="#GlassFishV3DocPlanAdminGuide-PeopleandRoles">People and Roles</a></li> 
+       <li><a href="#GlassFishV3DocPlanAdminGuide-Audience">Audience</a></li> 
+       <li><a href="#GlassFishV3DocPlanAdminGuide-PurposeandDescription">Purpose and Description</a></li> 
+       <li><a href="#GlassFishV3DocPlanAdminGuide-StatementsofWork">Statements of Work</a></li> 
+       <ul> 
+        <li><a href="#GlassFishV3DocPlanAdminGuide-TP2StatementofWork">TP2 Statement of Work</a></li> 
+        <li><a href="#GlassFishV3DocPlanAdminGuide-PreludeStatementofWork">Prelude Statement of Work</a></li> 
+        <li><a href="#GlassFishV3DocPlanAdminGuide-PreviewforJavaONEStatementofWork">Preview for JavaONE Statement of Work</a></li> 
+        <li><a href="#GlassFishV3DocPlanAdminGuide-FCSStatementofWork">FCS Statement of Work</a></li> 
+       </ul> 
+       <li><a href="#GlassFishV3DocPlanAdminGuide-ReviewerDashboard">Reviewer Dashboard</a></li> 
+       <li><a href="#GlassFishV3DocPlanAdminGuide-DeliveryMethods">Delivery Methods</a></li> 
+       <li><a href="#GlassFishV3DocPlanAdminGuide-RelatedInformation">Related Information</a></li> 
+      </ul>
+     </div> <h4><a name="GlassFishV3DocPlanAdminGuide-PeopleandRoles"></a>People and Roles</h1> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh">Name</th> 
+         <th class="confluenceTh">Role </th> 
+         <th class="confluenceTh">Location</th> 
+         <th class="confluenceTh">Time Zone</th> 
+         <th class="confluenceTh">Email </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Dixie Pine </td> 
+         <td class="confluenceTd"> Document Owner </td> 
+         <td class="confluenceTd"> SCA14-2402 </td> 
+         <td class="confluenceTd"> PST </td> 
+         <td class="confluenceTd">dixie.pine@sun.com}} </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Paul Davies </td> 
+         <td class="confluenceTd"> asadmin Owner </td> 
+         <td class="confluenceTd"> SCA14 </td> 
+         <td class="confluenceTd"> PST </td> 
+         <td class="confluenceTd">paul-m.davies@sun.com}} </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Julie Bettis </td> 
+         <td class="confluenceTd"> Editor </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">julie.bettis@sun.com}} </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3DocPlanAdminGuide-Audience"></a>Audience</h1> <p>The primary user of the <em>Administration Guide</em> is the person who is managing the Enterprise Server for an organization. Due to the complexity of the product, this is not a novice system administrator. Secondary user is a developer who might be charged with performing administration tasks.</p> <h4><a name="GlassFishV3DocPlanAdminGuide-PurposeandDescription"></a>Purpose and Description</h1> <p>The purpose of the <em>Administration Guide</em> is to provide command-line instructions for administering the Enterprise Server after it has been installed or upgraded. Included:</p> 
+     <ul> 
+      <li>An overview of administration tasks</li> 
+      <li>Instructions for using the asadmin command-line tool to accomplish administrator tasks</li> 
+      <li>Examples and links to asadmin man pages</li> 
+      <li>Links to the graphical Administration Console online help pages whenever possible</li> 
+      <li>Instructions for using the Administration Console if there is no way to perform the task using an asadmin command</li> 
+      <li>Instructions and examples for using the security keytool and certutil utilities</li> 
+      <li>Roadmap to using other related docs in the collection, such as <em>Application Deployment Guide</em>, <em>Developer's Guide</em>, <em>Administration Reference</em>, <em>High Availability Administration Guide</em></li> 
+     </ul> <p><em>Note:</em> An assumption for GFv3 (not TP2, Prelude, or Preview) is that there will be parity between the asadmin commands and the Administration Console.</p> <h4><a name="GlassFishV3DocPlanAdminGuide-StatementsofWork"></a>Statements of Work</h1> <p>There are four major delivery milestones for GlassFish v3 documentation: TP2, Prelude, Preview, FCS. This section describes each release and it's specific contents.</p> <h4><a name="GlassFishV3DocPlanAdminGuide-TP2StatementofWork"></a>TP2 Statement of Work</h2> <p>The TP2 <em>Administration Guide</em> will contain only that material specified by engineering as part of the JavaONE Technology Preview (TP2) release. Using the 9.1 <em>Administration Guide</em> as a base, I will hide all the material that is not for TP2, write new material needed for TP2, apply any changes in terminology/versioning, and reorganize the manual as needed for coherency. A task-based approach will be implemented. One technical review will occur before delivery with 100% of feedback incorporated. If time allows, a peer review and a developmental edit will also be done.</p> <p><b>TP2 Administration Features</b></p> 
+     <ul> 
+      <li>JDBC material</li> 
+      <li>Web Container material</li> 
+      <li>Users/Groups/Roles/Reams material</li> 
+      <li>Certificates and SSL material for JSSE</li> 
+      <li>HTTP configuration material</li> 
+      <li>Logging configuration material</li> 
+      <li>asadmin commands that will be included (from CLI Commands Doc Plan list):</li> 
+     </ul> 
+     <ul class="alternate" type="square"> 
+      <li>deploy/undeploy,redeploy (no java2db)</li> 
+      <li>enable/disable</li> 
+      <li>backup-domain (NTH)</li> 
+      <li>change-admin-password (NTH)</li> 
+      <li>create/delete-ssl</li> 
+      <li>create/delete/list-auth-realm</li> 
+      <li>create/delete/list-domain</li> 
+      <li>create/delete/update/list-file-user</li> 
+      <li>get/set/list</li> 
+      <li>help</li> 
+      <li>start-domain/stop-domain</li> 
+      <li>create/delete/list-jdbc-connection-pool (RSR)</li> 
+      <li>create/delete/list-jdbc-resource (RSR)</li> 
+      <li>create/delete/list-http-listener (RSR)</li> 
+      <li>create/delete/list-virtual-server</li> 
+      <li>ping-connection-pool</li> 
+      <li>create/delete/list-jvm-options (RSR)</li> 
+      <li>create/delete-profiler</li> 
+      <li>add-resources (RSR)</li> 
+      <li>start-database/stop-database</li> 
+      <li>version</li> 
+      <li>list-applications, list-commands, list-components, list-containers, list-modules</li> 
+      <li>create/delete/list-system-properties (NTH)</li> 
+     </ul> <p><b>TP2 Table of Contents</b></p> 
+     <ul> 
+      <li>Ch. 1 About Application Server Administration---Intro to admin tasks, tools, files, Administration Console, asadmin utility. Includes overview of Application Server.</li> 
+      <li>Ch. 2 Basic Administration---Intro, domains, resources properties, lists</li> 
+      <li>Ch. 3 Administering the JVM---Intro, JVM options, profilers</li> 
+      <li>Ch. 4 Administering Database Connectivity---Intro, database set up, connection pools, resources, JDBC drivers</li> 
+      <li>Ch. 5 Administering System Security---Intro, firewalls, passwords, JSSE certificates</li> 
+      <li>Ch. 6 Administering User Security---Intro, file users, authentication realms</li> 
+      <li>Ch. 7 Administering the HTTP Service---Intro, HTTP listeners, virtual servers</li> 
+      <li>Ch. 8 Administering Logging---Intro, settings</li> 
+      <li>App. A The asadmin Utility Commands---List of the administration commands that apply to the release.</li> 
+     </ul> <h4><a name="GlassFishV3DocPlanAdminGuide-PreludeStatementofWork"></a>Prelude Statement of Work</h2> <p>Prelude is a formal release of the TP2 functionality, essentially a v3 Lite or developer release. The <em>Administration Guide</em> will be based on the TP2 version, plus some additional functionality.</p> <p><b>Prelude Administration Features</b><br> Two additional pieces of functionality will expand the TP2 features: monitoring and plugins. Administration tasks for plugins are fairly limited because most plugin work is for developers. Text in the <em>Administration Guide</em> might be limited to overview description of plugins and links to the developer docs. Some asadmin commands will be added; some TP2 commands/man pages will be reworked.</p> <p><b>Prelude Table of Contents</b></p> 
+     <ul> 
+      <li>Ch. 1 About Application Server Administration---Intro to admin tasks, tools, files, Admin Console, asadmin utility. Includes overview of Application Server. ** <font color="red">ADD</font> Explain where to go for instructions on doing additional admin-type work, such as getting started, installation, performance tuning, plugins, deploying apps, troubleshooting, upgrading.%%</li> 
+      <li>Ch. 2 Basic Administration---Intro, domains, resources, properties, lists</li> 
+      <li><font color="red">ADD</font> Ch. 3 Extending &amp; Updating Enterprise Server---Intro, install, update, uninstall add-on components using pkg command.%%</li> 
+      <li>Ch. 4 Administering the JVM---Intro, JVM options, profilers</li> 
+      <li>Ch. 5 Administering Database Connectivity---Intro, database set up, connection pools, resources, JDBC drivers</li> 
+      <li>Ch. 6 Administering System Security---Intro, firewalls, passwords, audit modules, JSSE certificates. Reorganize JSSE material as tasks.</li> 
+      <li>Ch. 7 Administering User Security---Intro, file users, authentication realms</li> 
+      <li><font color="red">ADD</font> Ch. 8 Administering the Transaction Service---%%</li> 
+      <li>Ch. 9 Administering the HTTP Service---Intro, HTTP listeners, virtual servers</li> 
+      <li><font color="red">ADD</font> Ch. 10 Administering Logging---Intro, instructions for configuring with logging.properties file.%%</li> 
+      <li><font color="red">ADD</font> Ch. 11 Monitoring Enterprise Server %%</li> 
+      <li>App. A The asadmin Utility Commands---List of the administration commands that apply to the release. 
+       <ul> 
+        <li><font color="red">ADD</font> monitor%%</li> 
+        <li><font color="red">ADD</font> change-master-password%%</li> 
+        <li><font color="red">ADD</font> create-audit-module%%</li> 
+        <li><font color="red">ADD</font> list-audit-modules%%</li> 
+        <li><font color="red">ADD</font> delete-audit-module%%</li> 
+        <li><font color="red">ADD</font> list-file-groups%%</li> 
+        <li><font color="red">ADD</font> uptime%%</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li><font color="red">ADD</font> App. B Monitoring Statistics (maybe move from ch. 11)%%</li> 
+     </ul> <h4><a name="GlassFishV3DocPlanAdminGuide-PreviewforJavaONEStatementofWork"></a>Preview for JavaONE Statement of Work</h2> <p>For Preview, chapters on the following topics will be added to the <em>Prelude Administration Guide</em>:</p> 
+     <ul> 
+      <li>Connectors</li> 
+      <li>Message Security</li> 
+      <li>JMS</li> 
+      <li>JavaMail</li> 
+      <li>ORB</li> 
+     </ul> <p>Tasks will be written for the corresponding asadmin commands. Other additions: password allias commands (System Security ch), monitoring for JDBC connection pools (Monitoring chapter). Some material is from v2, most is new. All deployment commands will be moved to the <em>Application Deployment Guide</em>.</p> <h4><a name="GlassFishV3DocPlanAdminGuide-FCSStatementofWork"></a>FCS Statement of Work</h2> <p>For FCS, full content of the <em>Administration Guide</em> will be available in task-based form, based on the JavaONE Preview version and pulling in much of the GF2 material that was still hidden for Prelude and Preview. All features, functionality, and tasks will be represented. 100% of editorial and reviewer comments will be implemented. There will be no outstanding P1-P3 bugs against the manual. </p> <p><b>FCS Table of Contents</b></p> 
+     <ul> 
+      <li>Ch.1 Overview of Enterprise Server Administration---Introduction to admin tasks, configuration, tools.</li> 
+     </ul> <p><b>Section 1 Runtime Administration</b></p> 
+     <ul> 
+      <li>General Administration---asadmin, system properties, create resource, list various</li> 
+      <li>Administering Domains---domains, instances, profiles <img class="emoticon" src="images/icons/emoticons/help_16.gif" height="16" width="16" align="absmiddle" alt="" border="0"></li> 
+      <li>Administering the JVM---JVM options, profilers.</li> 
+      <li><font color="red">ADD</font> Administering Thread Pools%%</li> 
+      <li><font color="red">ADD</font> Administering Web Applications%%</li> 
+      <li>Administering the Logging Service</li> 
+      <li>Administering the Monitoring Service</li> 
+      <li><font color="red">ADD</font> Administering Life Cycle Modules%%</li> 
+      <li>Extending Enterprise Server---overview of Update Tool; using pkg command</li> 
+     </ul> <p><b>Section 2 Security Administration</b></p> 
+     <ul> 
+      <li>Administering System Security---overview, passwords, audit modules, JSSE certs</li> 
+      <li>Administering User Security---file users, groups, role, realms</li> 
+      <li>Administering Message Security---providers, protection policies</li> 
+     </ul> <p><b>Section 3 Resources and Services Administration</b></p> 
+     <ul> 
+      <li>Administering Database Connectivity---database set up, connection pools, resources, JDBC drivers</li> 
+      <li><font color="red">ADD</font> Administering EIS Connectivity---connection pools, resources, resource adapters, connector security maps, administered objects
+       <div class="panel" style="border-width: 1px;">
+        <div class="panelContent"> 
+         <p>Internet Connectivity---HTTP/network listeners, virtual servers</p> 
+         <ul> 
+          <li><font color="red">ADD</font> Administering the ORB 
+           <hr> <p>Jspwiki style: Administering</p></li> 
+         </ul> 
+        </div>
+       </div></li> 
+      <li><font color="red">ADD</font> Administering JavaMail%%</li> 
+      <li>Administering JMS---destinations, connection factories, providers, hosts, MQ</li> 
+      <li><font color="red">ADD</font> Ch. Administering JNDI%%</li> 
+      <li><font color="red">ADD</font> Ch. Administering Transactions%%</li> 
+     </ul> <p><b>Appendixes</b></p> 
+     <ul> 
+      <li>Appendix A The asadmin Utility Commands---List of the administration commands in this guide.</li> 
+     </ul> <h4><a name="GlassFishV3DocPlanAdminGuide-ReviewerDashboard"></a>Reviewer Dashboard</h1> <p><a href="GlassFishV3DocPlan.html#GlassFishV3DocPlan-sectionGlassFishV3DocPlanSchedule">Documentation schedule</a></p> <p>The reviewers of this document are listed in the following table. Review comments should be added to the review wiki page: <a href="AdministrationGuide.html" title="AdministrationGuide">Administration Guide comments</a></p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Topic</th> 
+         <th class="confluenceTh">Doc Pieces Affected</th> 
+         <th class="confluenceTh">Writer</th> 
+         <th class="confluenceTh">Reviewers</th> 
+         <th class="confluenceTh">Prelude done</th> 
+         <th class="confluenceTh">Preview done</th> 
+         <th class="confluenceTh">FCS Done </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Overview </td> 
+         <td class="confluenceTd"> Ch.1 </td> 
+         <td class="confluenceTd"> Dixie </td> 
+         <td class="confluenceTd"> Sreeni Munnangi,dev </td> 
+         <td class="confluenceTd"> 10/14 </td> 
+         <td class="confluenceTd"> minor changes </td> 
+         <td class="confluenceTd">*11/30/9* </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Yifeng Luo,QA </td> 
+         <td class="confluenceTd"> 10/10 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Gail Risdal, peer </td> 
+         <td class="confluenceTd"> 10/23 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Julie Bettis,editor </td> 
+         <td class="confluenceTd"> 10/22 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> General admin, domains </td> 
+         <td class="confluenceTd"> Ch2,3 </td> 
+         <td class="confluenceTd"> Dixie </td> 
+         <td class="confluenceTd"> Jane Young,dev </td> 
+         <td class="confluenceTd"> 10/15 </td> 
+         <td class="confluenceTd"> minor changes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Sreeni Munnangi,dev </td> 
+         <td class="confluenceTd"> 10/14 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">*12/4/9* </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Davis Nguyen,QA </td> 
+         <td class="confluenceTd"> 10/10 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Paul Davies, asadmin peer </td> 
+         <td class="confluenceTd"> 10/23 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Julie Bettis,editor </td> 
+         <td class="confluenceTd"> 10/22 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JVM </td> 
+         <td class="confluenceTd"> Ch.4 </td> 
+         <td class="confluenceTd"> Dixie </td> 
+         <td class="confluenceTd"> Kedar Mhaswade, dev </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> no change </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Sreeni Munnangi,dev </td> 
+         <td class="confluenceTd"> 10/14 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">*12/4/9* </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Yifeng Luo,QA </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Julie Bettis,editor </td> 
+         <td class="confluenceTd"> 10/14 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Thread pools </td> 
+         <td class="confluenceTd"> Ch.5 </td> 
+         <td class="confluenceTd"> Dixie </td> 
+         <td class="confluenceTd"> Nachiappan, dev </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd">*12/4/9* </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Justin Lee, dev </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">*11/24/9* </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Smitha Prabu, QA Engineer </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Chinmayee Srivathsa,peer </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 5/13 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Web Apps </td> 
+         <td class="confluenceTd"> Ch.6 </td> 
+         <td class="confluenceTd"> Dixie </td> 
+         <td class="confluenceTd"> Jan Luehe, dev </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd">*12/3/9* </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Amy Roh,mod_jk </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">*12/2/9* </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Byron Nevins </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">*12/2/9* </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> June Parks,peer </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">10/15 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> who?, QA </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Logging </td> 
+         <td class="confluenceTd"> Ch.7 </td> 
+         <td class="confluenceTd"> Dixie </td> 
+         <td class="confluenceTd"> Carla Mott Dev </td> 
+         <td class="confluenceTd"> 9/28,10/14 </td> 
+         <td class="confluenceTd"> no change </td> 
+         <td class="confluenceTd">*12/2/09* </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Davis Nguyen,QA </td> 
+         <td class="confluenceTd"> 10/13 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Julie Bettis,editor </td> 
+         <td class="confluenceTd"> 10/14 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Monitoring </td> 
+         <td class="confluenceTd"> Ch.8 </td> 
+         <td class="confluenceTd"> Dixie </td> 
+         <td class="confluenceTd"> Prashanth Abbagani,dev </td> 
+         <td class="confluenceTd"> 9/12,10/3,10/22 </td> 
+         <td class="confluenceTd"> 5/19 </td> 
+         <td class="confluenceTd">*11/24/9* </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Sreeni Munnangi,dev </td> 
+         <td class="confluenceTd"> 9/23,10/22 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> *11/24/9* </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Jennifer Chou,dev </td> 
+         <td class="confluenceTd"> 9/23,10/22 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">*11/24/9* </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Shalini Muthukrishnan,dev </td> 
+         <td class="confluenceTd"> 9/23,10/22 </td> 
+         <td class="confluenceTd"> 5/19, 5/21 </td> 
+         <td class="confluenceTd">*11/27/9* </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Vivek Pandey,JRuby </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">*12/2/9* </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Lloyd Chambers,JConsole </td> 
+         <td class="confluenceTd"> 9/23,10/22 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">*12/3/09* </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Sankar Neelakandan,QA </td> 
+         <td class="confluenceTd"> 10/10 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">*11/24/9* </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Julie Bettis,editor </td> 
+         <td class="confluenceTd"> 10/14 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Life cycle </td> 
+         <td class="confluenceTd"> Ch. 9 </td> 
+         <td class="confluenceTd"> Dixie </td> 
+         <td class="confluenceTd"> Nandini, dev </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Hong Zhang, dev </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Sankar, QA </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">*12/1/9* </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Extending by using pkg(5) </td> 
+         <td class="confluenceTd"> Ch.10 </td> 
+         <td class="confluenceTd"> Dixie </td> 
+         <td class="confluenceTd"> Ken Paulsen,dev </td> 
+         <td class="confluenceTd"> 10/13 </td> 
+         <td class="confluenceTd"> minor changes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Sreeni Munnangi,dev </td> 
+         <td class="confluenceTd"> 10/14 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Rajeshwar Patil,dev </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Sankar Neelakandan,QA </td> 
+         <td class="confluenceTd"> 10/10 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> SueAnn Spencer,peer </td> 
+         <td class="confluenceTd"> 10/13 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Julie Bettis,editor </td> 
+         <td class="confluenceTd"> 10/14 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> System security </td> 
+         <td class="confluenceTd"> Ch.11 </td> 
+         <td class="confluenceTd"> Dixie </td> 
+         <td class="confluenceTd"> VB Kumar,dev </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> minor changes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Nolan Luu,QA </td> 
+         <td class="confluenceTd"> 10/13 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Julie Bettis,editor </td> 
+         <td class="confluenceTd"> 10/22 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> User security </td> 
+         <td class="confluenceTd"> Ch.12 </td> 
+         <td class="confluenceTd"> Dixie </td> 
+         <td class="confluenceTd"> VB Kumar,dev </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> no change </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Sankar Neelakandan,QA </td> 
+         <td class="confluenceTd"> 10/10 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Julie Bettis,editor </td> 
+         <td class="confluenceTd"> 10/22 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Message security </td> 
+         <td class="confluenceTd"> Ch.13 </td> 
+         <td class="confluenceTd"> Dixie </td> 
+         <td class="confluenceTd"> Lloyd Chambers, dev </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Debbie Carson,doc </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 5/14 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Database Connectivity/JDBC </td> 
+         <td class="confluenceTd"> Ch.14 </td> 
+         <td class="confluenceTd"> Dixie </td> 
+         <td class="confluenceTd"> Jagadish Ramu,dev </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> no change </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Shalini,dev </td> 
+         <td class="confluenceTd"> 9/23, 10/22 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">*11/27/9* </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JDBC drivers </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Lance Andersen,Ming Zhang </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">*12/2/9* </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Nolan Luu,QA </td> 
+         <td class="confluenceTd"> 10/10 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Julie Bettis,editor </td> 
+         <td class="confluenceTd"> 10/22 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> EIS Connectivity/Connector </td> 
+         <td class="confluenceTd"> Ch.15 </td> 
+         <td class="confluenceTd"> Dixie </td> 
+         <td class="confluenceTd"> Jagadish Ramu,dev </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 5/18 </td> 
+         <td class="confluenceTd">*11/25/9* </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Shalini,dev </td> 
+         <td class="confluenceTd"> 9/23, 10/22 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">*11/27/9* </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Smithu,QA </td> 
+         <td class="confluenceTd"> 10/10 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Julie Bettis,editor </td> 
+         <td class="confluenceTd"> 10/22 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Internet Connectivity/HTTP Service </td> 
+         <td class="confluenceTd"> Ch.16 </td> 
+         <td class="confluenceTd"> Dixie </td> 
+         <td class="confluenceTd"> Rajeshwar Patil,dev </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> no change </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Sreeni Munnangi,dev </td> 
+         <td class="confluenceTd"> 10/14 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Sujatha Chintalapati,QA </td> 
+         <td class="confluenceTd"> 10/10 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> June Parks, peer </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 11/1 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Julie Bettis,editor </td> 
+         <td class="confluenceTd"> 10/22 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ORB </td> 
+         <td class="confluenceTd"> Ch.17 </td> 
+         <td class="confluenceTd"> Dixie </td> 
+         <td class="confluenceTd"> Veerappan Nachiappan, dev </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">*12/3/9* </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> who, QA Engineer </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JavaMail </td> 
+         <td class="confluenceTd"> Ch.18 </td> 
+         <td class="confluenceTd"> Dixie </td> 
+         <td class="confluenceTd"> Jagadish, dev </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">*11/27/9* </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> who, QA </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JMS </td> 
+         <td class="confluenceTd"> Ch.19 </td> 
+         <td class="confluenceTd"> Dixie </td> 
+         <td class="confluenceTd"> Satish Kumar, dev </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> 5/12 </td> 
+         <td class="confluenceTd">*12/2/9* </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Sonia Liu, QA </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Kim HAAS, peer </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">11/3 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> June Parks, doc </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 5/15 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JNDI </td> 
+         <td class="confluenceTd"> Ch.20 </td> 
+         <td class="confluenceTd"> Dixie </td> 
+         <td class="confluenceTd"> Nachi, dev </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">*12/3/9* </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Jagadish,dev </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">*12/6/9* </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> ?, QA </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Transactions </td> 
+         <td class="confluenceTd"> Ch.21 </td> 
+         <td class="confluenceTd"> Dixie </td> 
+         <td class="confluenceTd"> Marina Vatkina, dev </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd">*11/30/9* </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Smitha Prabhu, QA </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3DocPlanAdminGuide-DeliveryMethods"></a>Delivery Methods</h1> <p>The <em>Administration Guide</em> will be published on the docs.sun site in PDF and HTML.</p> <h4><a name="GlassFishV3DocPlanAdminGuide-RelatedInformation"></a>Related Information</h1> <p>Previous versions of the <em>Administration Guide</em>: </p> 
+     <ul> 
+      <li><a href="http://docs.sun.com/doc/819-3671">Application Server 9.1 Administration Guide</a></li> 
+      <li><a href="http://docs.sun.com/app/docs/doc/820-4495">GlassFish Enterprise Server v3 Prelude Administration Guide</a></li> 
+     </ul> <p>Email aliases:</p> 
+     <ul> 
+      <li><span class="error">[admin@glassfish.java.net]</span></li> 
+      <li><span class="error">[users@glassfish.java.net]</span></li> 
+      <li><span class="error">[docs@glassfish.java.net]</span></li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 02, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

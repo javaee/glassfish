@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : 3.1DASRecovery</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="3.1DASRecovery-GlassFishServerOpenSourceEdition3.1DASRecovery"></a>GlassFish Server Open Source Edition 3.1 - DAS Recovery</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#3.1DASRecovery-GlassFishServerOpenSourceEdition3.1DASRecovery">GlassFish Server Open Source Edition 3.1 - DAS Recovery</a></li> 
+       <ul> 
+        <li><a href="#3.1DASRecovery-Introduction">Introduction</a></li> 
+        <li><a href="#3.1DASRecovery-UsageScenarios">Usage Scenarios</a></li> 
+        <li><a href="#3.1DASRecovery-Scope">Scope</a></li> 
+        <li><a href="#3.1DASRecovery-FeatureOverview">Feature Overview</a></li> 
+        <ul> 
+         <li><a href="#3.1DASRecovery-DAS001%3Abackupdomain%2Crestoredomain%2Clistbackups">DAS-001: backup-domain, restore-domain, list-backups</a></li> 
+         <li><a href="#3.1DASRecovery-DAS002%3ABackup%2FRestoredestination%3Av2location">DAS-002: Backup/Restore destination: v2 location</a></li> 
+        </ul> 
+        <li><a href="#3.1DASRecovery-DesignDocument">Design Document</a></li> 
+        <li><a href="#3.1DASRecovery-MilestoneSchedule">Milestone Schedule</a></li> 
+        <li><a href="#3.1DASRecovery-TaskList">Task List</a></li> 
+        <li><a href="#3.1DASRecovery-DevTests">Dev Tests</a></li> 
+        <li><a href="#3.1DASRecovery-References">References</a></li> 
+        <li><a href="#3.1DASRecovery-EmailAlias">Email Alias</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="3.1DASRecovery-Introduction"></a>Introduction </h2> <p>Provide a DAS backup and recovery mechanism for GlassFish server deployments. This mechanism must be compatible with functionality available in V2.</p> <h4><a name="3.1DASRecovery-UsageScenarios"></a>Usage Scenarios</h2> 
+     <ul> 
+      <li>DAS host failure or hardware upgrade</li> 
+     </ul> <p>Restore DAS to new host.</p> 
+     <ul> 
+      <li>Corrupted DAS Configuration</li> 
+     </ul> <p>Restore config to DAS.</p> 
+     <ul> 
+      <li>Migrate DAS to a new host</li> 
+     </ul> <p>Restore DAS to new host<br> Reconfig instances to locate DAS (or remap DNS/VIP entry)</p> 
+     <ul> 
+      <li>Protection from patching, updating and new app deployment</li> 
+     </ul> <p>Backup DAS. Restore old config/apps if necessary.</p> <h4><a name="3.1DASRecovery-Scope"></a>Scope </h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Feature ID </th> 
+         <th class="confluenceTh"> Priority </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> Eng Response </th> 
+         <th class="confluenceTh"> Owner(s) </th> 
+         <th class="confluenceTh"> Estimate (Man Days) </th> 
+         <th class="confluenceTh"> Source of Requirement </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> DAS-001 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Support for backup-domain, restore-domain, list-backups </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Yamini </td> 
+         <td class="confluenceTd"> TBD </td> 
+         <td class="confluenceTd"> Feature parity </td> 
+         <td class="confluenceTd"> The v2 code has already been ported to v3. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> DAS-002 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Backup/Restore destination: v2 location </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Yamini </td> 
+         <td class="confluenceTd"> TBD </td> 
+         <td class="confluenceTd"> Feature parity </td> 
+         <td class="confluenceTd"> No change in default dir </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.1DASRecovery-FeatureOverview"></a>Feature Overview </h2> <h4><a name="3.1DASRecovery-DAS001%3Abackupdomain%2Crestoredomain%2Clistbackups"></a>DAS-001: backup-domain, restore-domain, list-backups</h3> <p>Provide compatible functionality in 3.1 to the equivalent functionality provide in GF v2. See <a href="http://docs.sun.com/app/docs/doc/821-0179/backup-domain-1?l=en&amp;q=v2.1.1backup-domain&amp;a=view">backup-domain(1)</a>, <a href="http://docs.sun.com/app/docs/doc/821-0179/restore-domain-1?l=en&amp;a=view">restore-domain(1)</a> and <a href="http://docs.sun.com/app/docs/doc/821-0179/list-backups-1?l=en&amp;a=view">list-backups(1)</a> for details.</p> <h4><a name="3.1DASRecovery-DAS002%3ABackup%2FRestoredestination%3Av2location"></a>DAS-002: Backup/Restore destination: v2 location </h3> <p>By default backup-domain will store the backup at the same location (domaindir/backups/*) as v2. By default restore-domain will restore from this location.</p> <h4><a name="3.1DASRecovery-DesignDocument"></a>Design Document</h2> 
+     <ul> 
+      <li><a href="3.1DASRecoveryOnePager.html" title="3.1DASRecoveryOnePager">DAS Backup and Recovery Open Source Edition One Pager</a></li> 
+     </ul> <h4><a name="3.1DASRecovery-MilestoneSchedule"></a>Milestone Schedule</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1. </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd"> DAS-001 </td> 
+         <td class="confluenceTd"> Support v2 style DAS backup and recovery </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/12070">12070 </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2. </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd"> DAS-002 </td> 
+         <td class="confluenceTd"> Backup to v2 location </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/12070">12070 </a> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.1DASRecovery-TaskList"></a>Task List</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task </th> 
+         <th class="confluenceTh"> Target Milestone </th> 
+         <th class="confluenceTh"> Start </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Owner(s) </th> 
+         <th class="confluenceTh"> Feature ID </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Create build, test and debug environment for 3.1 </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 5/21 </td> 
+         <td class="confluenceTd"> Yamini </td> 
+         <td class="confluenceTd"> DAS-001/002 </td> 
+         <td class="confluenceTd"> COMPLETED </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Rewrite CLI to use new CLI framework </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 5/21 </td> 
+         <td class="confluenceTd"> Yamini </td> 
+         <td class="confluenceTd"> DAS-001/002 </td> 
+         <td class="confluenceTd"> COMPLETED </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Run existing backup/recovery unit tests on 3.1 instance </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 5/21 </td> 
+         <td class="confluenceTd"> Yamini </td> 
+         <td class="confluenceTd"> DAS-001/002 </td> 
+         <td class="confluenceTd">No tests in v2 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Fix existing backup/recovery open issues </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 5/21 </td> 
+         <td class="confluenceTd"> Yamini </td> 
+         <td class="confluenceTd"> DAS-001/002 </td> 
+         <td class="confluenceTd">COMPLETED </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Determine if additional DevTest are required (implement if needed) </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 6/11 </td> 
+         <td class="confluenceTd"> Yamini </td> 
+         <td class="confluenceTd"> DAS-001/002 </td> 
+         <td class="confluenceTd">New dev tests added </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Dev Hand-Off to QA (DHQA) </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 6/16 </td> 
+         <td class="confluenceTd"> Yamini </td> 
+         <td class="confluenceTd"> DAS-001/002 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Documentation </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 6/16 </td> 
+         <td class="confluenceTd"> Yamini </td> 
+         <td class="confluenceTd"> DAS-001/002 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.1DASRecovery-DevTests"></a>Dev Tests </h2> 
+     <ul> 
+      <li>XXX: Investigate existing unit tests.</li> 
+     </ul> <h4><a name="3.1DASRecovery-References"></a>References</h2> 
+     <ul> 
+      <li><a href="http://docs.sun.com/app/docs/doc/821-0182/gcmkp?l=en&amp;a=view">Recovering the Domain Administration Server</a></li> 
+      <li><a href="http://docs.sun.com/app/docs/doc/821-0179/6nl8hchmr?l=en&amp;a=expand">GlassFish v2.x CLI Commands</a></li> 
+      <li><a href="GlassFishV2Architecture.html" title="GlassFishV2Architecture">GlassFish v2 Cluster Architecture </a></li> 
+      <li><a href="GFAdminUnrestrainedCommands.html" title="GFAdminUnrestrainedCommands">Unrestrained Remote Admin Commands</a></li> 
+      <li><a href="http://wiki.glassfish.java.net/attach/3.1DASRecovery/Backup%20_Commands.html">GlassFish v2.x and v3.1 backup commands comparison</a></li> 
+      <li><a href="GFConsoleStartup.html" title="GFConsoleStartup">foo</a></li> 
+     </ul> <h4><a name="3.1DASRecovery-EmailAlias"></a>Email Alias</h2> 
+     <ul> 
+      <li>Please contact us at <a href="mailto:admin@glassfish.java.net">admin@glassfish.java.net</a></li> 
+     </ul> 
+     <hr> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875444/21365207.pdf">BackupCommands3.html.pdf</a> (application/pdf) 
+      <br> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Dec 07, 2010 by 
+<font color="#0050B2">ckasso</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

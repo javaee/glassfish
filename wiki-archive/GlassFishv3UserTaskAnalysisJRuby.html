@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFishv3UserTaskAnalysisJRuby</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>&lt;h1&gt;GlassFish v3 User Task Analysis for jRuby&lt;/h1&gt;</p> <p>Back to <a href="GlassFishV3UserTaskAnalyses.html" title="GlassFishV3UserTaskAnalyses">GlassFish v3 User Task Analyses</a></p> 
+     <div> 
+      <ul> 
+       <li><a href="#GlassFishv3UserTaskAnalysisJRuby-Scope">Scope</a></li> 
+       <li><a href="#GlassFishv3UserTaskAnalysisJRuby-RelatedInformation">Related Information</a></li> 
+       <li><a href="#GlassFishv3UserTaskAnalysisJRuby-ListofTasks">List of Tasks</a></li> 
+       <ul> 
+        <li><a href="#GlassFishv3UserTaskAnalysisJRuby-AdministratorRole">Administrator Role</a></li> 
+        <li><a href="#GlassFishv3UserTaskAnalysisJRuby-DeveloperRole">Developer Role</a></li> 
+        <ul> 
+         <li><a href="#GlassFishv3UserTaskAnalysisJRuby-JRubyonGFGettingStartedTutorialforV3TP2">JRuby on GF Getting Started Tutorial for V3 TP2</a></li> 
+         <li><a href="#GlassFishv3UserTaskAnalysisJRuby-JRubyonGFIntermediateTutorial%28couldbecombinedwithGettingStarted%29">JRuby on GF Intermediate Tutorial (could be combined with Getting Started)</a></li> 
+         <li><a href="#GlassFishv3UserTaskAnalysisJRuby-NetBeansTutorial">NetBeans Tutorial</a></li> 
+         <li><a href="#GlassFishv3UserTaskAnalysisJRuby-FAQ">FAQ</a></li> 
+         <li><a href="#GlassFishv3UserTaskAnalysisJRuby-TroubleshootingGuide">Troubleshooting Guide</a></li> 
+        </ul> 
+       </ul> 
+       <li><a href="#GlassFishv3UserTaskAnalysisJRuby-AssociatedConcepts">Associated Concepts</a></li> 
+       <li><a href="#GlassFishv3UserTaskAnalysisJRuby-PlansforGlassFishV3TP2">Plans for GlassFish V3 TP2</a></li> 
+      </ul>
+     </div> <h4><a name="GlassFishv3UserTaskAnalysisJRuby-Scope"></a>Scope</h1> <p>To identify the tasks that a developer must perform to develop and deploy a Rails application by using jRuby on GlassFish.</p> <h4><a name="GlassFishv3UserTaskAnalysisJRuby-RelatedInformation"></a>Related Information</h1> 
+     <ul> 
+      <li><a href="JRuby.html" title="JRuby">JRuby in GlassFish</a></li> 
+      <li><a href="http://blogs.oracle.com/theaquarium/entry/glassfish_gem_for_rails_gf">Aquarium blog post: GlassFish Gem for Rails</a></li> 
+      <li><a href="http://blogs.oracle.com/arungupta/entry/announcing_glassfish_gem_for_rails">Arun Gupta blog post:Announcing GlassFish Gem for Rails</a></li> 
+     </ul> <h4><a name="GlassFishv3UserTaskAnalysisJRuby-ListofTasks"></a>List of Tasks</h1> <h4><a name="GlassFishv3UserTaskAnalysisJRuby-AdministratorRole"></a>Administrator Role</h2> 
+     <ul> 
+      <li>Configure v3 with jRuby (P1) 
+       <ul> 
+        <li>Subtasks? What does it mean to "configure" v3 for jRuby and what are the steps to do so?</li> 
+       </ul> </li> 
+      <li>Configure a GEM (P1) 
+       <ul> 
+        <li>Subtasks? Again, what does is mean to configure a GEM and what are the steps?</li> 
+       </ul> </li> 
+      <li>Specify port number (P2) 
+       <ul> 
+        <li>The port number for what?</li> 
+       </ul> </li> 
+      <li>Resolve port conflicts (P2)</li> 
+      <li>Anything else?</li> 
+     </ul> <h4><a name="GlassFishv3UserTaskAnalysisJRuby-DeveloperRole"></a>Developer Role</h2> <h4><a name="GlassFishv3UserTaskAnalysisJRuby-JRubyonGFGettingStartedTutorialforV3TP2"></a>JRuby on GF Getting Started Tutorial for V3 TP2</h3> 
+     <ul> 
+      <li><a href="http://docs.sun.com/app/docs/doc/820-4926/install?a=view">Download jruby</a> (P1)</li> 
+      <li><a href="http://docs.sun.com/app/docs/doc/820-4926/install?a=view">Install jruby</a> (P1)</li> 
+      <li><a href="http://docs.sun.com/app/docs/doc/820-4926/install?a=view">Install Rails</a>(P1)</li> 
+      <li><a href="http://docs.sun.com/app/docs/doc/820-4926/install?a=view">Install GlassFish GEM</a>(P1)</li> 
+      <li>Specify jruby home at CLI</li> 
+      <li>Specify jruby env file</li> 
+      <li>Download a popular Rails application (P2)</li> 
+      <li>Host Downloaded App on v3 GEM(P2)</li> 
+      <li><a href="http://docs.sun.com/app/docs/doc/820-4926/ggpvz?a=view">Create a Rails application</a>(P1) 
+       <ul> 
+        <li>Generating a controller</li> 
+        <li>Create Scaffolding for a rails app 
+         <ul> 
+          <li>Subtasks?</li> 
+         </ul> </li> 
+        <li>Create an Action Pack a rails app 
+         <ul> 
+          <li>Subtasks?</li> 
+         </ul> </li> 
+       </ul> </li> 
+      <li>Bundle a Rails application as a WAR file</li> 
+      <li><a href="http://docs.sun.com/app/docs/doc/820-4926/ggpza?a=view">Host application on V3 GEM</a></li> 
+      <li><a href="http://docs.sun.com/app/docs/doc/820-4926/ggpyv?a=view">Deploy in directory</a></li> 
+     </ul> <h4><a name="GlassFishv3UserTaskAnalysisJRuby-JRubyonGFIntermediateTutorial%28couldbecombinedwithGettingStarted%29"></a>JRuby on GF Intermediate Tutorial (could be combined with Getting Started)</h3> 
+     <ul> 
+      <li>Configure database (P2) (Is this a task for an Admin or Developer Role?) 
+       <ul> 
+        <li>MySQL 
+         <ul> 
+          <li>Subtasks?</li> 
+         </ul> </li> 
+        <li>PostGreSQL 
+         <ul> 
+          <li>Subtasks?</li> 
+         </ul> </li> 
+        <li>SQLite3 
+         <ul> 
+          <li>Subtasks?</li> 
+         </ul> </li> 
+       </ul> </li> 
+      <li>Connect to database (P2) 
+       <ul> 
+        <li>Pure Ruby 
+         <ul> 
+          <li>Subtasks?</li> 
+         </ul> </li> 
+        <li>JDBC 
+         <ul> 
+          <li>Subtasks?</li> 
+         </ul> </li> 
+        <li>JNDI 
+         <ul> 
+          <li>Subtasks?</li> 
+         </ul> </li> 
+       </ul> </li> 
+      <li>Access Java EE components from a Rails App 
+       <ul> 
+        <li>JPA access through ruby</li> 
+        <li>JMS access through ruby</li> 
+        <li><a href="http://docs.sun.com/app/docs/doc/820-4926/ggpwj?a=view">Java2D</a></li> 
+       </ul> </li> 
+      <li>Monitor a jruby application (P3)</li> 
+      <li>Deploy rails app in GEM (Is this the same as Hosting app on GEM above?)</li> 
+      <li>Secure jruby Rails App (P3)</li> 
+      <li>Update GEM (P3)</li> 
+      <li>Access multiple rails instances concurrently (P3) 
+       <ul> 
+        <li>Subtasks?</li> 
+       </ul> </li> 
+      <li>Create app with diff versions of jruby and rails (P3) 
+       <ul> 
+        <li>Subtasks?</li> 
+       </ul> </li> 
+      <li>List GEM plugin (P3)</li> 
+     </ul> <h4><a name="GlassFishv3UserTaskAnalysisJRuby-NetBeansTutorial"></a>NetBeans Tutorial</h3> 
+     <ul> 
+      <li>Create a Rails application by using NB 
+       <ul> 
+        <li>Create Scaffolding for a rails app</li> 
+        <li>Create an Action Pack a rails app</li> 
+       </ul> </li> 
+     </ul> <h4><a name="GlassFishv3UserTaskAnalysisJRuby-FAQ"></a>FAQ</h3> 
+     <ul> 
+      <li>Send Feedback</li> 
+      <li>Platform-specific dependencies</li> 
+      <li>Benchmarks</li> 
+      <li>Testing efforts</li> 
+      <li>Known Issues</li> 
+      <li>File issues</li> 
+     </ul> <h4><a name="GlassFishv3UserTaskAnalysisJRuby-TroubleshootingGuide"></a>Troubleshooting Guide</h3> 
+     <ul> 
+      <li>Known issues</li> 
+      <li>File issues</li> 
+      <li>Dynamically trace an application with dTrace</li> 
+     </ul> <h4><a name="GlassFishv3UserTaskAnalysisJRuby-AssociatedConcepts"></a>Associated Concepts</h1> 
+     <ul> 
+      <li>About GEMs (A GEM helps launch a GF instance inside a jRuby VM.)</li> 
+      <li>Comparison of jruby and ruby</li> 
+     </ul> <h4><a name="GlassFishv3UserTaskAnalysisJRuby-PlansforGlassFishV3TP2"></a>Plans for GlassFish V3 TP2</h1> 
+     <ul> 
+      <li><a href="DocPlanJRuby.html" title="DocPlanJRuby">Documentation Plan </a></li> 
+     </ul> <p>Back to <a href="GlassFishV3UserTaskAnalyses.html" title="GlassFishV3UserTaskAnalyses">GlassFish v3 User Task Analyses</a></p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 09, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:44.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

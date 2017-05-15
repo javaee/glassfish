@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : PlanForGlassFishV2UR</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="PlanForGlassFishV2UR-GlassFishv2Update1Release"></a>GlassFish v2 Update 1 Release</h1> <h4><a name="PlanForGlassFishV2UR-ThisReleasewasDeliveredon12%2F19%2F2007"></a>This Release was Delivered on 12/19/2007</h2> <p>Please see the <a href="./GlassFishV2UR1WhatsNew.html">What's New</a> page for release information </p> 
+     <hr> <h4><a name="PlanForGlassFishV2UR-ScopeofRelease%28Goals%29"></a>Scope of Release (Goals)</h2> <p>GlassFish v2 Update 1 is a tightly constrained release to accommodate high priority bug fixes. <a href="./ModulesAndLeads.html">Module Leads</a> will be evaluating existing and incoming issues to see if they should be considered for integration into the release. The scope of the release is as follows:<br> <b>1ST</b></p> 
+     <ul> 
+      <li>AIX support for Cluster and Developer Profiles</li> 
+      <li>Netbeans critical bugs</li> 
+      <li>Late Customer Feedback from beta release</li> 
+      <li>Specifically targeted bugs &amp; enhancements that are a "must have"</li> 
+      <li>OpenESB Requirements<br> <b>2ND</b></li> 
+      <li><a href="https://wiki.ubuntu.com/HardyHeron">Ubuntu package support for HardyHeron</a><br> <b>Issue Tacking</b></li> 
+      <li><a href="https://glassfish.java.net/issues/buglist.cgi?Submitquery=Submitquery&amp;component=glassfish&amp;subcomponent=admin&amp;subcomponent=admin_gui&amp;subcomponent=amx&amp;subcomponent=build_system&amp;subcomponent=cmp&amp;subcomponent=command_line_interface&amp;subcomponent=configuration&amp;subcomponent=deployment&amp;subcomponent=ejb_container&amp;subcomponent=entity-persistence&amp;subcomponent=failover&amp;subcomponent=group_management_service&amp;subcomponent=hadb_admin&amp;subcomponent=i18n&amp;subcomponent=installation&amp;subcomponent=jbi&amp;subcomponent=jca&amp;subcomponent=jdbc&amp;subcomponent=jms&amp;subcomponent=jts&amp;subcomponent=lifecycle_modules&amp;subcomponent=load_balancer&amp;subcomponent=logging&amp;subcomponent=mail&amp;subcomponent=monitoring&amp;subcomponent=orb&amp;subcomponent=other&amp;subcomponent=packaging&amp;subcomponent=performance&amp;subcomponent=rmi_iiop_failover&amp;subcomponent=rmi_iiop_load_balancer&amp;subcomponent=security&amp;subcomponent=standalone_client&amp;subcomponent=upgrade_tool&amp;subcomponent=verifier&amp;subcomponent=webpages&amp;subcomponent=web_container&amp;subcomponent=web_services&amp;subcomponent=web_services_mgmt&amp;subcomponent=docs&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=substring&amp;long_desc=&amp;long_desc_type=substring&amp;issue_file_loc=&amp;issue_file_loc_type=substring&amp;status_whiteboard=&amp;status_whiteboard_type=substring&amp;field0-0-0=status_whiteboard&amp;type0-0-0=notsubstring&amp;value0-0-0=as91ur1-na&amp;field0-1-0=subcomponent&amp;type0-1-0=notequals&amp;value0-1-0=sqe-test&amp;cmdtype=doit&amp;namedcmd=AllJDBC%2FJMS%2FJCAbugs&amp;newqueryname=&amp;order=Reusesamesortaslasttime&amp;field0-2-0=short_desc&amp;type0-2-0=notsubstring&amp;value0-2-0=%3CBT&amp;priority=P1&amp;priority=P2&amp;priority=P3&amp;priority=P4&amp;field0-3-0=status_whiteboard&amp;type0-3-0=substring&amp;value0-3-0=91ur1Approved&amp;issue_status=UNCONFIRMED&amp;issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED&amp;issue_status=RESOLVED&amp;issue_status=VERIFIED&amp;issue_status=CLOSED">Current List of GlassFish Approved Issues (for Target Milestone 9.1peur1)</a></li> 
+      <li><a href="https://glassfish.java.net/issues/buglist.cgi?Submitquery=Submitquery&amp;component=glassfish&amp;subcomponent=admin&amp;subcomponent=admin_gui&amp;subcomponent=amx&amp;subcomponent=build_system&amp;subcomponent=cmp&amp;subcomponent=command_line_interface&amp;subcomponent=configuration&amp;subcomponent=deployment&amp;subcomponent=ejb_container&amp;subcomponent=entity-persistence&amp;subcomponent=failover&amp;subcomponent=group_management_service&amp;subcomponent=hadb_admin&amp;subcomponent=i18n&amp;subcomponent=installation&amp;subcomponent=jbi&amp;subcomponent=jca&amp;subcomponent=jdbc&amp;subcomponent=jms&amp;subcomponent=jts&amp;subcomponent=lifecycle_modules&amp;subcomponent=load_balancer&amp;subcomponent=logging&amp;subcomponent=mail&amp;subcomponent=monitoring&amp;subcomponent=orb&amp;subcomponent=other&amp;subcomponent=packaging&amp;subcomponent=performance&amp;subcomponent=rmi_iiop_failover&amp;subcomponent=rmi_iiop_load_balancer&amp;subcomponent=security&amp;subcomponent=standalone_client&amp;subcomponent=upgrade_tool&amp;subcomponent=verifier&amp;subcomponent=webpages&amp;subcomponent=web_container&amp;subcomponent=web_services&amp;subcomponent=web_services_mgmt&amp;subcomponent=docs&amp;issue_status=UNCONFIRMED&amp;issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=substring&amp;long_desc=&amp;long_desc_type=substring&amp;issue_file_loc=&amp;issue_file_loc_type=substring&amp;status_whiteboard=&amp;status_whiteboard_type=substring&amp;field0-0-0=status_whiteboard&amp;type0-0-0=notequals&amp;value0-0-0=as91ur1-na&amp;field1-0-0=subcomponent&amp;type1-0-0=notequals&amp;value1-0-0=sqe-test&amp;cmdtype=doit&amp;namedcmd=AllJDBC%2FJMS%2FJCAbugs&amp;newqueryname=&amp;order=Reusesamesortaslasttime&amp;priority=P1&amp;priority=P2&amp;priority=P3&amp;priority=P4&amp;field1-1-0=status_whiteboard&amp;type1-1-0=substring&amp;value1-1-0=91ur1Approved&amp;issue_status=RESOLVED&amp;issue_status=VERIFIED&amp;issue_status=CLOSED">Potential List of GlassFish Issues that Target the v2 Update 1 Release (for Target Milestone 9.1peur1)</a></li> 
+      <li><a href="https://open-esb.java.net/issues/buglist.cgi?issue_status=UNCONFIRMED&amp;issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED&amp;issue_status=RESOLVED&amp;issue_status=VERIFIED&amp;issue_status=CLOSED&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=91ur1Approved&amp;status_whiteboard_type=fulltext&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=&amp;cmdtype=doit&amp;newqueryname=&amp;order=Reusesamesortaslasttime&amp;Submitquery=Submitquery">Current List of OpenESB approved Issues</a></li> 
+      <li><a href="https://wsit.java.net/issues/buglist.cgi?component=wsit&amp;version=current&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=91ur1Approved&amp;status_whiteboard_type=fulltext&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=&amp;cmdtype=doit&amp;newqueryname=&amp;order=IssueNumber&amp;Submitquery=Submitquery">Current List of WSIT approved Issues</a></li> 
+      <li><a href="https://updatecenter.java.net/issues/buglist.cgi?component=updatecenter&amp;version=current&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=91ur1Approved&amp;status_whiteboard_type=fulltext&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=&amp;cmdtype=doit&amp;newqueryname=&amp;order=IssueNumber&amp;Submitquery=Submitquery">Current List of Update Center approved Issues</a><br> <b><a href="https://glassfish.java.net/quality/fb-developer-report.html">Findbugs Error Report</a></b><br> <b><a href="PlanForGlassFishV2UR_checkin.html" title="PlanForGlassFishV2UR_checkin">Check in requirements </a></b><br> <b>Bug Scrub List</b></li> 
+      <li><a href="https://glassfish.java.net/issues/buglist.cgi?Submitquery=Submitquery&amp;component=glassfish&amp;subcomponent=admin&amp;subcomponent=admin_gui&amp;subcomponent=amx&amp;subcomponent=build_system&amp;subcomponent=cmp&amp;subcomponent=command_line_interface&amp;subcomponent=configuration&amp;subcomponent=deployment&amp;subcomponent=ejb_container&amp;subcomponent=entity-persistence&amp;subcomponent=failover&amp;subcomponent=group_management_service&amp;subcomponent=hadb_admin&amp;subcomponent=i18n&amp;subcomponent=installation&amp;subcomponent=jbi&amp;subcomponent=jca&amp;subcomponent=jdbc&amp;subcomponent=jms&amp;subcomponent=jts&amp;subcomponent=lifecycle_modules&amp;subcomponent=load_balancer&amp;subcomponent=logging&amp;subcomponent=mail&amp;subcomponent=monitoring&amp;subcomponent=orb&amp;subcomponent=other&amp;subcomponent=packaging&amp;subcomponent=performance&amp;subcomponent=rmi_iiop_failover&amp;subcomponent=rmi_iiop_load_balancer&amp;subcomponent=security&amp;subcomponent=standalone_client&amp;subcomponent=upgrade_tool&amp;subcomponent=verifier&amp;subcomponent=webpages&amp;subcomponent=web_container&amp;subcomponent=web_services&amp;subcomponent=web_services_mgmt&amp;subcomponent=docs&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=substring&amp;long_desc=&amp;long_desc_type=substring&amp;issue_file_loc=&amp;issue_file_loc_type=substring&amp;status_whiteboard=&amp;status_whiteboard_type=substring&amp;field0-0-0=status_whiteboard&amp;type0-0-0=notsubstring&amp;value0-0-0=as91ur1-na&amp;field0-1-0=subcomponent&amp;type0-1-0=notequals&amp;value0-1-0=sqe-test&amp;cmdtype=doit&amp;namedcmd=AllJDBC%2FJMS%2FJCAbugs&amp;newqueryname=&amp;order=Reusesamesortaslasttime&amp;field0-2-0=short_desc&amp;type0-2-0=notsubstring&amp;value0-2-0=%3CBT&amp;issue_status=UNCONFIRMED&amp;issue_status=NEW&amp;issue_status=STARTED&amp;priority=P1&amp;priority=P2&amp;priority=P3&amp;issue_type=DEFECT&amp;field0-3-0=status_whiteboard&amp;type0-3-0=notsubstring&amp;value0-3-0=91ur1Approved&amp;field0-4-0=target_milestone&amp;type0-4-0=notsubstring&amp;value0-4-0=V3">Bugs that need to be Evaluated</a></li> 
+      <li><a href="PlanForGlassFishV2UR_buglist_remove.html" title="PlanForGlassFishV2UR_buglist_remove">How to evaluate a bug so it is removed from the Bug Scrub List </a></li> 
+     </ul> <h4><a name="PlanForGlassFishV2UR-ScheduleDates"></a><b>Schedule Dates</b></h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Task</th> 
+         <th class="confluenceTh">Start Date</th> 
+         <th class="confluenceTh">End Date</th> 
+         <th class="confluenceTh">Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> M0 </td> 
+         <td class="confluenceTd"> 8/13/07 </td> 
+         <td class="confluenceTd"> 8/24/07 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> M0 - Send email to module leads to get critical bugs </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> M0 - Setup Wiki Page </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> M0 - Setup Bug Queries </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> M0 - Layout Milestones &amp; Schedule </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> M0 - Scrub Issues to see what bugs and RFEs will be addressed (ongoing) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> M1: AIX Changes Incorporated </td> 
+         <td class="confluenceTd"> 9/19/07 </td> 
+         <td class="confluenceTd"> 09/19/07 </td> 
+         <td class="confluenceTd">Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> M2: Soft Code Freeze (All Approved Features Integrated) </td> 
+         <td class="confluenceTd"> 11:59PM PST 10/30/07 </td> 
+         <td class="confluenceTd"> 11:59PM PST 10/30/07 </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> M3: Hard Code Freeze (All Approved Bugs Fixed and Integrated). Only show stopper bugs that are found during final testing will be fixed and incorporated after this milestone </td> 
+         <td class="confluenceTd"> 11:59PM PST 11/06/07 </td> 
+         <td class="confluenceTd"> 11:59PM PST 11/06/07 </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> M3: HCF Final Build </td> 
+         <td class="confluenceTd"> 11.59PM Pacific Time 11/13/07 </td> 
+         <td class="confluenceTd"> 11.59PM Pacific Time 11/13/07 </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> M4: RR Release </td> 
+         <td class="confluenceTd"> 12/18/07 </td> 
+         <td class="confluenceTd"> 12/19/07 </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 02, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

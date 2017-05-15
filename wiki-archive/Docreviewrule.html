@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : Docreviewrule</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="Docreviewrule-FishCATDocumentationReviews"></a>FishCAT Documentation Reviews</h1> <p>Documentation reviews are an important part of <a href="FishCAT.html" title="FishCAT">FishCAT</a>. By reviewing documentation you directly improve the quality of GlassFish and greatly benefit GlassFish users and developers. </p> <p>This page provides important details about performing FishCAT doc reviews for the GlassFish v3 release. Please read this information before starting your reviews.</p> <p><a href="#Docreviewrule-ReviewPriorities">Review Priorities</a><br> <a href="#Docreviewrule-ReviewDrafts">Review Drafts</a><br> <a href="#Docreviewrule-ReviewGuidelines">Review Guidelines</a><br> <a href="#Docreviewrule-ReviewPoints">Review Points</a><br> <a href="#Docreviewrule-ReviewQuestions">Review Questions</a><br> Questions about FishCAT for GlassFish v3? See the <a href="FishCAT.html" title="FishCAT">main FishCAT page</a> or contact the <span class="error">[quality mailing list]</span>.</p> <h4><a name="Docreviewrule-ReviewPriorities"></a>Review Priorities</h2> <p>The following GlassFish v3 documents have priority for review. Please review these first.</p> 
+     <ul> 
+      <li>Administration Guide</li> 
+      <li>Quick Start Guide</li> 
+      <li>Application Development Guide (formerly Developer's Guide)</li> 
+      <li>Application Deployment Guide</li> 
+     </ul> <h4><a name="Docreviewrule-ReviewDrafts"></a>Review Drafts</h2> <p>Which draft should be reviewed? Please follow these important guidelines.</p> 
+     <ul> 
+      <li><b>For documentation bundled with the product</b> (CLI man pages, Admin Console GUI online help, HTML pages such as the Quick Start Guide, etc.), review the bundled documentation in the GlassFish v3 build that you are testing. Note the following: 
+       <ul> 
+        <li>The latest Admin Console GUI online help is available from build 71 onward.</li> 
+        <li>The latest man pages are available from build 69 onward, and in the <a href="ReferenceManual.html" title="ReferenceManual">Reference Manual</a>.</li> 
+        <li>Bugs filed against the bundled docs by October 30, 2009 will be fixed for the GlassFish v3 release. This deadline enables issues to be fixed for hard code freeze.</li> 
+        <li>Bugs filed against the bundled docs after October 30, 2009 will not be fixed for GlassFish v3 unless they are deemed to be showstoppers. These issues will be fixed post-GlassFish v3.</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li><b>For documentation not bundled with the product</b> (Administration Guide, Application Development Guide, and so on), review the GlassFish v3 docs listed as <em>Ready for Review</em> on the <a href="GlassFishDocs.html" title="GlassFishDocs">documentation comments wiki</a>. Click the link for a specific doc under <em>Ready for Review</em> and then follow the instructions on the corresponding comment page. Review drafts are available in PDF format. Please also see <a href="#Docreviewrule-ReviewPriorities">Review Priorities</a>.</li> 
+     </ul> <p>If you have any questions about which drafts to review and how to access them, contact the <span class="error">[quality mailing list]</span>. </p> <h4><a name="Docreviewrule-ReviewGuidelines"></a>Review Guidelines</h2> <h4><a name="Docreviewrule-AdministrationConsoleonlinehelp%28bundled%29"></a>Administration Console online help (bundled)</h3> 
+     <ul> 
+      <li>A review of 10 task pages and 5 reference pages counts as a documentation review.</li> 
+      <li>Review all information and perform any procedures within the task pages.</li> 
+      <li>If possible, cross-check the help against the GUI.</li> 
+      <li>Provide detailed information about issues in the help, such as why an explanation is unclear. Also provide missing information, such as why users should set a particular option.</li> 
+      <li>File issues in <a href="https://glassfish.java.net/servlets/ProjectIssues">Issue Tracker</a>, including contact e-mail information so writers can follow up as necessary. Please also use [FishCAT] somewhere in the bug report to assist with identification.</li> 
+      <li>Send e-mail to the <span class="error">[quality mailing list]</span>, indicating which pages have been reviewed.</li> 
+     </ul> <p><b>Note:</b> To access the Admin Console GUI online help after installation, click Help in any GUI screen.<br> \</p> <h4><a name="Docreviewrule-CLImanpages%28bundled%29"></a>CLI man pages (bundled)</h3> 
+     <ul> 
+      <li>A review of 15 pages counts as a documentation review.</li> 
+      <li>Review all information, try <tt>asadmin</tt> with each command, check everything on the page (including option descriptions), and perform and verify the correctness of any examples.</li> 
+      <li>File issues in <a href="https://glassfish.java.net/servlets/ProjectIssues">Issue Tracker</a>, including contact e-mail information so writers can follow up as necessary. Please also use [FishCAT] somewhere in the bug report to assist with identification.</li> 
+      <li>Send email to the <span class="error">[quality mailing list]</span>, indicating which pages have been reviewed.</li> 
+     </ul> <p><b>Note:</b> To access the CLI man pages after installation, execute the following command:</p> <p><em>as-install</em><tt>/bin/asadmin</tt> <em>asadmin-subcommand</em><tt>--help|more</tt></p> <p>For example:</p> <p><em>as-install</em><tt>/bin/asadmin start-domain --help|more</tt><br> \</p> <h4><a name="Docreviewrule-Guidesandtutorials%28unbundled%29"></a>Guides and tutorials (unbundled)</h3> 
+     <ul> 
+      <li>A review of 100 pages (or a complete document if it is less than 100 pages) counts as a documentation review.</li> 
+      <li>Review all information and perform any procedures within the 100 pages.</li> 
+      <li>Record issues for a specific document on the document's comment wiki page. Be sure to include [FishCAT] with your comment ID. For example, <b>[FishCAT] jsmith-01</b>. If you prefer, you can also file issues in <a href="https://glassfish.java.net/servlets/ProjectIssues">Issue Tracker</a>. Please also use <a href="FishCAT.html" title="FishCAT">FishCAT</a> somewhere in the bug report to assist with identification.</li> 
+      <li>Send email to the <span class="error">[quality mailing list]</span>, indicating which pages have been reviewed.</li> 
+     </ul> <p><b>Note:</b> To access the unbundled docs that are ready for review, go to the <a href="GlassFishDocs.html" title="GlassFishDocs">documentation comments wiki</a> and click the link for a document listed as <em>Ready for Review</em>. Please also see <a href="#Docreviewrule-ReviewPriorities">Review Priorities</a>. </p> <h4><a name="Docreviewrule-ReviewPoints"></a>Review Points</h2> <p>Doc review points will be tallied as follows.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Type of Review</th> 
+         <th class="confluenceTh">Points </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> More complete doc review </td> 
+         <td class="confluenceTd">10 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Partial doc review </td> 
+         <td class="confluenceTd">5 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Bug reports and comments reporting a single issue </td> 
+         <td class="confluenceTd">5 </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>In cases where it is not clear from the bug report or comment page how much of a doc was reviewed, assessments will be made and points awarded accordingly.<br> \</p> <h4><a name="Docreviewrule-ReviewQuestions"></a>Review Questions</h2> <p>If you have any questions about FishCAT documentation reviews, please raise them on the <span class="error">[quality mailing list]</span>. We're standing by to help. </p> <p><b>And thanks for your reviews!</b> </p> <p>Amazing work was done by FishCATs for the <a href="http://blogs.oracle.com/appservwriters/entry/thanks_fishcats">GlassFish v3 Prelude</a> and <a href="http://blogs.oracle.com/judy/entry/meet_glassfish_v3_fishcat_team">GlassFish v3</a> releases (also see the <a href="http://blogs.oracle.com/judy/entry/glassfish_v3_fishcat_survey_results">survey results</a>). We appreciate your contributions, which directly improved the quality of GlassFish v3 documentation, and look forward to working with you in the future.<br> \</p> <p><a href="FishCAT.html" title="FishCAT">Main FishCAT page</a></p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 06, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:43.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

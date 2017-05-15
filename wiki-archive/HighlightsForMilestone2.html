@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : HighlightsForMilestone2</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="HighlightsForMilestone2-DeliverablesforMilestone2"></a>Deliverables for Milestone 2</h1> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Module </th> 
+         <th class="confluenceTh"> Deliverable </th> 
+         <th class="confluenceTh"> Use Case </th> 
+         <th class="confluenceTh"> Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Deployment </td> 
+         <td class="confluenceTd"> Support for Cluster Deployment </td> 
+         <td class="confluenceTd"> Deployment of SIP applications in a cluster </td> 
+         <td class="confluenceTd">
+          <div class="panel" style="background-color: green;border-width: 1px;">
+           <div class="panelContent" style="background-color: green;"> 
+            <p>Delivered</p> 
+           </div>
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Support for Sunsip.xml </td> 
+         <td class="confluenceTd"> Per application configuration, using sunsip.xml would be possible if the SIP servlet container supports the elements in sunsip.xml </td> 
+         <td class="confluenceTd">
+          <div class="panel" style="background-color: green;border-width: 1px;">
+           <div class="panelContent" style="background-color: green;"> 
+            <p>Delivered</p> 
+           </div>
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Annotation Processing for JSR289 </td> 
+         <td class="confluenceTd"> Annotation support for annotations defined in JSR289. </td> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: red;border-width: 1px;">
+           <div class="panelContent" style="background-color: red;"> 
+            <p>Moved to MS3</p> 
+           </div>
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Netbeans based deployment </td> 
+         <td class="confluenceTd"> SIP applications can be deployed using Netbeans onto the embedded SailFin in the IDE </td> 
+         <td class="confluenceTd">
+          <div class="panel" style="background-color: green;border-width: 1px;">
+           <div class="panelContent" style="background-color: green;"> 
+            <p>Delivered</p> 
+           </div>
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Security </td> 
+         <td class="confluenceTd"> Authorization support </td> 
+         <td class="confluenceTd"> Specific users/groups would be allowed access to specified resources in a SIP application </td> 
+         <td class="confluenceTd">
+          <div class="panel" style="background-color: green;border-width: 1px;">
+           <div class="panelContent" style="background-color: green;"> 
+            <p>Delivered</p> 
+           </div>
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> P-Asserted Identity support </td> 
+         <td class="confluenceTd"> Support of authentication based on p-asserted-identity header. </td> 
+         <td class="confluenceTd">
+          <div class="panel" style="background-color: green;border-width: 1px;">
+           <div class="panelContent" style="background-color: green;"> 
+            <p>Delivered</p> 
+           </div>
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Client authentication </td> 
+         <td class="confluenceTd"> When the SipContainer acts as a client; it should be able to send authentication info to the server requesting it. </td> 
+         <td class="confluenceTd">
+          <div class="panel" style="background-color: green;border-width: 1px;">
+           <div class="panelContent" style="background-color: green;"> 
+            <p>Delivered</p> 
+           </div>
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Admin </td> 
+         <td class="confluenceTd"> Callflow support for SIP messages </td> 
+         <td class="confluenceTd"> Users would be able to track the SIP calls through the applications and get a report or a log file </td> 
+         <td class="confluenceTd">
+          <div class="panel" style="background-color: red;border-width: 1px;">
+           <div class="panelContent" style="background-color: red;"> 
+            <p>Moved to MS3</p> 
+           </div>
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Monitoring support for SIP servlet container </td> 
+         <td class="confluenceTd"> Specific monitoring attributes of the SIP servlet container would be exposed via admin CLI. Please refer admin spec for details. </td> 
+         <td class="confluenceTd">
+          <div class="panel" style="background-color: green;border-width: 1px;">
+           <div class="panelContent" style="background-color: green;"> 
+            <p>Delivered</p> 
+           </div>
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Admin GUI support for SIP servlet container config changes </td> 
+         <td class="confluenceTd"> Additional screens to support the additional configuration introduced for SIP servlet container. For ex: SIP listeners could be configured via the Admin GUI. Deployment should be possible via Admin GUI </td> 
+         <td class="confluenceTd">
+          <div class="panel" style="background-color: green;border-width: 1px;">
+           <div class="panelContent" style="background-color: green;"> 
+            <p>Delivered</p> 
+           </div>
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Dynamic reconfig of the SIP listener element </td> 
+         <td class="confluenceTd"> User should be able to dynamically configure the SIP listener element without requiring a restart </td> 
+         <td class="confluenceTd">
+          <div class="panel" style="background-color: red;border-width: 1px;">
+           <div class="panelContent" style="background-color: red;"> 
+            <p>Moved to MS3</p> 
+           </div>
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Installer </td> 
+         <td class="confluenceTd"> ZIP based package generation for SailFin modules </td> 
+         <td class="confluenceTd"> Consolidation of jars generated by various SailFin modules into functionally grouped packages </td> 
+         <td class="confluenceTd">
+          <div class="panel" style="background-color: red;border-width: 1px;">
+           <div class="panelContent" style="background-color: red;"> 
+            <p>Moved to MS3</p> 
+           </div>
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> GUI/CLI installer for SailFin </td> 
+         <td class="confluenceTd"> An interactive installer would be provided to install the entire SailFin application server bundle. The user would be interviewed to provide data for the configuration of a domain/node agent. </td> 
+         <td class="confluenceTd">
+          <div class="panel" style="background-color: red;border-width: 1px;">
+           <div class="panelContent" style="background-color: red;"> 
+            <p>Moved to MS3</p> 
+           </div>
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Tools Support </td> 
+         <td class="confluenceTd"> Netbeans module for JSR 289 </td> 
+         <td class="confluenceTd"> User should be able to create SIP servlets and deployment descriptors using Netbeans </td> 
+         <td class="confluenceTd">
+          <div class="panel" style="background-color: red;border-width: 1px;">
+           <div class="panelContent" style="background-color: red;"> 
+            <p>Moved to MS3</p> 
+           </div>
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> SIP Test client </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">
+          <div class="panel" style="background-color: green;border-width: 1px;">
+           <div class="panelContent" style="background-color: green;"> 
+            <p>Delivered</p> 
+           </div>
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Converged LB </td> 
+         <td class="confluenceTd"> HTTP LB component of the converged LB </td> 
+         <td class="confluenceTd"> HTTP requests shall be routed to the appropriate lb instance, which in-turn would determine the current instance to serve this request based on a specific algorithm </td> 
+         <td class="confluenceTd">
+          <div class="panel" style="background-color: green;border-width: 1px;">
+           <div class="panelContent" style="background-color: green;"> 
+            <p>Delivered</p> 
+           </div>
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> SIP LB component of the converged LB </td> 
+         <td class="confluenceTd"> SIPrequests shall be routed to the appropriate lb instance, which in-turn would determine the current instance to serve this request based on a specific algorithm </td> 
+         <td class="confluenceTd">
+          <div class="panel" style="background-color: green;border-width: 1px;">
+           <div class="panelContent" style="background-color: green;"> 
+            <p>Delivered</p> 
+           </div>
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Integration of HTTP and SIP components of CLB </td> 
+         <td class="confluenceTd"> If you have two instances, HTTP and SIP request to a converged application from a single user should be load balanced to the same inst </td> 
+         <td class="confluenceTd">
+          <div class="panel" style="background-color: green;border-width: 1px;">
+           <div class="panelContent" style="background-color: green;"> 
+            <p>Delivered</p> 
+           </div>
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Configuration support for CLB </td> 
+         <td class="confluenceTd"> The admin console/CLI should provide commands to configure the CLB and dynamically reconfigure it(without requiring a server restart) </td> 
+         <td class="confluenceTd">
+          <div class="panel" style="background-color: red;border-width: 1px;">
+           <div class="panelContent" style="background-color: red;"> 
+            <p>Moved to MS3</p> 
+           </div>
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> OLP support </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> SIP Servlet Container </td> 
+         <td class="confluenceTd"> Parameterable (chapter 4.1.1) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">
+          <div class="panel" style="background-color: green;border-width: 1px;">
+           <div class="panelContent" style="background-color: green;"> 
+            <p>Delivered</p> 
+           </div>
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> createPrack (chapter 5.7.1) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">
+          <div class="panel" style="background-color: green;border-width: 1px;">
+           <div class="panelContent" style="background-color: green;"> 
+            <p>Delivered</p> 
+           </div>
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> ProxyBranch (partly chapter 10) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">
+          <div class="panel" style="background-color: green;border-width: 1px;">
+           <div class="panelContent" style="background-color: green;"> 
+            <p>Delivered</p> 
+           </div>
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> B2BuaHelper (chapter 12 </td> 
+         <td class="confluenceTd"> getPendingMessages will be later) </td> 
+         <td class="confluenceTd">
+          <div class="panel" style="background-color: green;border-width: 1px;">
+           <div class="panelContent" style="background-color: green;"> 
+            <p>Delivered</p> 
+           </div>
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> pushRoute (chapter 10.2.2) Proxy as UAS (chapter 10.2.3) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">
+          <div class="panel" style="background-color: green;border-width: 1px;">
+           <div class="panelContent" style="background-color: green;"> 
+            <p>Delivered</p> 
+           </div>
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Session Retainability </td> 
+         <td class="confluenceTd"> Functional Specification </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: green;border-width: 1px;">
+           <div class="panelContent" style="background-color: green;"> 
+            <p>Delivered</p> 
+           </div>
+          </div> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

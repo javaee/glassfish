@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : Gfv3AppclientcontainerOnepager</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="Gfv3AppclientcontainerOnepager-AppClientContainerOnePager"></a>App Client Container One Pager</h1> <p>[</p> 
+     <div class="error">
+      <span class="error">Unknown macro: {TableOfContents title='App Client Container'}</span> 
+     </div> <p>|(TableOfContentstitle='AppClientContainer')]</p> <h4><a name="Gfv3AppclientcontainerOnepager-1.Introduction"></a>1. Introduction</h1> <h4><a name="Gfv3AppclientcontainerOnepager-1.1.Project%2FComponentWorkingName%3A"></a>1.1. Project/Component Working Name: </h2> <p>App Client Container</p> <h4><a name="Gfv3AppclientcontainerOnepager-1.2.Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier%3A"></a>1.2. Name(s) and e-mail address of Document Author(s)/Supplier:</h2> <p>Tim Quinn (timothy.quinn@sun.com)</p> <h4><a name="Gfv3AppclientcontainerOnepager-1.3.DateofThisDocument%3A"></a>1.3. Date of This Document:</h2> <p>12/15/2008<br> rev. 2/4/2009<br> rev. 4/17/2009</p> <h4><a name="Gfv3AppclientcontainerOnepager-2.ProjectSummary"></a>2. Project Summary</h1> <h4><a name="Gfv3AppclientcontainerOnepager-2.1.ProjectDescription%3A"></a>2.1. Project Description:</h2> <p>This one-pager focuses on changes in the ACC from v2 which result from P2 or higher requirements. (The ACC was not part of the v3 prelude release.) Further, it includes brief mentions of internal changes but concentrates on external interface changes.</p> <p>Also, there is a P2 requirement not addressed here for Java Web Start (user-influence and customization of the generated JNLP). For scheduling reasons we are currently planning to address all Java Web Start improvements in the planned 3.1 release. Ideally those improvements would be available for early access well before the release of 3.1. </p> <h4><a name="Gfv3AppclientcontainerOnepager-2.2.RisksandAssumptions%3A"></a>2.2. Risks and Assumptions:</h2> <p>The main risk is the dependency on other components' readiness in v3, such as remote naming, the ORB, transactions.</p> <p>A related risk is that to improve server start-up performance we are trying to reduce the number of modules. This has the risk of including server-only classes and resources into JARs that also contain classes and resources which the ACC needs, possibly expanding the footprint. </p> <h4><a name="Gfv3AppclientcontainerOnepager-3.ProblemSummary"></a>3. Problem Summary</h1> <h4><a name="Gfv3AppclientcontainerOnepager-3.1.ProblemArea%3A"></a>3.1. Problem Area:</h2> 
+     <ul> 
+      <li>JavaFX Script support</li> 
+      <li>Smaller footprint (externally observable but not truly an interface)</li> 
+      <li>Embeddable ACC</li> 
+      <li>Allow users to specify ORB endpoints on the appclient command</li> 
+      <li>Splash screen support</li> 
+      <li>Traditional command-line processing</li> 
+      <li>Enhancements to the 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">deploy</pre> 
+         </div> 
+        </div>
+       </div> and 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">get-client-stubs</pre> 
+         </div> 
+        </div>
+       </div> commands and their admin console counterparts.</li> 
+     </ul> <h4><a name="Gfv3AppclientcontainerOnepager-3.2.Justification%3A"></a>3.2. Justification:</h2> 
+     <ul> 
+      <li>JavaFX Script support - We want to make it as easy as possible for application developers to take advantage of JavaFX from rich app clients.</li> 
+     </ul> 
+     <ul> 
+      <li>Smaller footprint - Especially using the Java Web Start support it takes too long to download the required GlassFish bits to end-user systems.</li> 
+     </ul> 
+     <ul> 
+      <li>Embeddable ACC - Users want more control over when and how the ACC runs their app clients.</li> 
+     </ul> 
+     <ul> 
+      <li>Current mechanisms for specifying the server ORB endpoints to which to connect are in sun-acc.xml or system property settings and are viewed as sometimes too cumbersome to change there.</li> 
+     </ul> 
+     <ul> 
+      <li>Splash screen support - End-users have a better user experience, especially with network applications such as app clients, if they see a splash screen that reinforces that their application is indeed starting.</li> 
+     </ul> 
+     <ul> 
+      <li>Traditional command-line processing - Allow end-users to run app clients using the normal 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">java</pre> 
+         </div> 
+        </div>
+       </div> command syntax.</li> 
+     </ul> 
+     <ul> 
+      <li>Enhancements to 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">deploy</pre> 
+         </div> 
+        </div>
+       </div> and 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">get-client-stubs</pre> 
+         </div> 
+        </div>
+       </div> commands and their admin console counterparts - Required to support fully the splash screen and 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">java</pre> 
+         </div> 
+        </div>
+       </div> command line features.</li> 
+     </ul> <h4><a name="Gfv3AppclientcontainerOnepager-4.TechnicalDescription%3A"></a>4. Technical Description:</h1> <h4><a name="Gfv3AppclientcontainerOnepager-4.1.Details%3A"></a>4.1. Details:</h2> <h4><a name="Gfv3AppclientcontainerOnepager-JavaFXScriptsupport"></a>JavaFX Script support</h3> <p>We will remove the existing v2 technology preview of JavaFX Script support.</p> <p>In v2 we added a technology preview of support for JavaFX interpreted scripting. In that implementation if the user's app client includes a .jfx file with the same name (excluding file type) as the value of the </p>
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">-mainclass</pre> 
+       </div> 
+      </div>
+     </div> command line option then the ACC will start the JavaFX script engine and have it interpret the .jfx file. <p></p> <p>We will drop this from v3 because JavaFX has moved very strongly towards compilation and away from interpreted execution. JavaFX classes can be included in app clients just as any Java class can. Plus, the v2 implementation for client-side scripting in app clients overloads the </p>
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">-mainclass</pre> 
+       </div> 
+      </div>
+     </div> option to identify the main "script" if one by the specified name is found on the classpath. (Typically that option specifies the main <b>class</b>. I suspect very few people would use the interpreted script support for JavaFX vs. compiling FX to .class files and packaging them into their app clients.<p></p> <p>Except in blog entries we have never publicized this feature. We have never mentioned it in our formal product documentation. Also, John Clingan is OK with dropping this.</p> <h4><a name="Gfv3AppclientcontainerOnepager-Smallerfootprint"></a>Smaller footprint</h3> <p>As a side-effect of the overall modularization of GlassFish v3, the ACC should shrink appreciably. We may be able to compress it further by identifying modules which might be split into a small client (or server-and-client) submodule and a server-only submodule. The ACC would require only the client module.</p> <p>In connection with this, GlassFish will deliver a new, separate JAR file gf-client.jar containing the main ACC bits. Its manifest's Class-Path entry will list the various other JARs on which the ACC depends. Although many of these will be OSGi modules, the ACC itself will not execute as an OSGi module nor will it require an OSGi implementation such as Felix to run. </p> <p>The change in JAR name and contents will be hidden inside the appclient scripts.</p> <h4><a name="Gfv3AppclientcontainerOnepager-EmbeddableACC"></a>Embeddable ACC</h3> <p>Developers will be able to embed the ACC into their client applications. By placing the gf-appclient.jar file on their runtime classpath their applications will be able to create the ACC after their application code has started and request that the ACC start the "application client" portion of their application. </p> <p>The basic model is that developers will create a builder object, operate on the builder to configure the ACC, obtain a new ACC instance from the builder, present a client archive or class ot the ACC instance, and then start the client running within the newly-created ACC instance. The ACC will load the app client's main class, perform any required injection, then transfer control to main class's static main method, then return to the calling application. (This is equivalent to how the v2 ACC behaves.) As before, if the app client starts any asynchronous activity then that work will continue after the ACC returns.</p> <p>A developer's program would follow this general pattern:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">// one TargetServer for each ORB endpoint for bootstrapping
+TargetServer[] servers = ...;
+
+// Get a builder to set up the ACC
+AppClientContainer.Builder builder = AppClientContainer.newBuilder(servers);
+
+// Fine-tune the ACC's configuration.  Note ability to "chain" invocations.
+builder.callbackHandler("com.acme.MyHandler").authRealm("myRealm"); // Modify the config
+
+// Get a container for a client.  
+URI clientURI = ...; // URI to the client JAR
+AppClientContainer acc = builder.newContainer(clientURI);
+
+or
+
+Class mainClass = ...;
+AppClientContainer acc = builder.newContainer(mainClass);
+
+// In either case, start the client running.
+String[] appArgs = ...;
+acc.startClient(appArgs); // Start the client
+
+...
+
+acc.close(); // close the ACC(optional)</pre> 
+       </div> 
+      </div>
+     </div> <p>The ACC will invoke the client's main method, which itself could cause async behavior (other threads, GUI) and then the ACC's run method will return to the calling app as soon as the client's main method returns to the ACC. Any async behavior triggered by the client's main method will continue after the ACC returns to the embedding application. If the client causes work on threads other than the calling thread and if the embedding application needs to know when the client's async work completes then the embedding app and the client need to agree on how that will happen. The ACC itself has no knowledge of whether the client's main method triggers asynchronous work.</p> <p>The ACC's current shutdown handling will be invoked from the close() method on ACC. The calling application can invoke acc.close() to close down any services started by the ACC. If the app client code started any asynchronous activity that might still depend on those ACC services, invoking close() before that async activity completes could cause unpredictable and undesirable results. The shutdown handling will also be run automatically at VM shutdown if the user's code has not invoked stop before then.</p> <p>The ACC itself will not prevent the calling application from creating or running more than one ACC instance during a single execution of the application, even running more than one ACC instance at a time. But, other services used from the ACC (transaction manager, security, ORB, etc.) might or might not support such reentrancy at the time v3 is released. If one or more of them do not, the behavior will be unpredictable and users should make sure that their embedding apps use only one ACC at a time. Our long-term goal should be for all the services to support concurrent and serial reuse so the ACC API will remain most stable if it does not enforce restrictions now, only to have to lift them later.</p> <h4><a name="Gfv3AppclientcontainerOnepager-SpecifyingServerORBEndpointsonCommandLine"></a>Specifying Server ORB Endpoints on Command Line</h3> <p>The </p>
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">appclient</pre> 
+       </div> 
+      </div>
+     </div> command will accept a new option:<p></p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">-targetserver host[:port][,host[:port]...]</pre> 
+       </div> 
+      </div>
+     </div> <p>where </p>
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">host[:port]</pre> 
+       </div> 
+      </div>
+     </div> indicates the server host and ORB port to use during ORB bootstrapping. If the user omits the port then the ACC uses the default ORB port of 3700. <p></p> <p>Values for -targetserver from the command line override those in the ORB-related system properties or in the </p>
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;target-server&gt;</pre> 
+       </div> 
+      </div>
+     </div> element(s) in the sun-acc.xml configuration. <p></p> <h4><a name="Gfv3AppclientcontainerOnepager-likecommandlineprocessing"></a>
+      <div class="code panel" style="border-width: 1px;">
+       <div class="codeContent panelContent"> 
+        <div id="root"> 
+         <pre class="theme: Confluence; brush: java; gutter: false">java</pre> 
+        </div> 
+       </div>
+      </div>-like 
+      <div class="code panel" style="border-width: 1px;">
+       <div class="codeContent panelContent"> 
+        <div id="root"> 
+         <pre class="theme: Confluence; brush: java; gutter: false">appclient</pre> 
+        </div> 
+       </div>
+      </div> command-line processing</h3> <p>We can support traditional </p>
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">java</pre> 
+       </div> 
+      </div>
+     </div>-like command-line processing of the 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">appclient</pre> 
+       </div> 
+      </div>
+     </div> command by changing the internals of how the 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">appclient</pre> 
+       </div> 
+      </div>
+     </div> script works and how app clients are processed and downloaded during deployment. <p></p> <p>In v3 the generated app client facade JAR file (the "cooked" JAR file) will be nearly empty except that:</p> 
+     <ul> 
+      <li>GlassFish will add GlassFish-specific manifest entries to record the main class which the developer specified and the URI to the developer's original app client JAR, and</li> 
+      <li>GlassFish will set the Main-Class manifest entry to refer to an ACC-provided main class.</li> 
+     </ul> <p>Similarly, the facade JAR file for an EAR containing app clients will be nearly empty except that:</p> 
+     <ul> 
+      <li>GlassFish will add GlassFish-specific manifest entries to record the URIs of the facades for each nested app client</li> 
+     </ul> <p>The </p>
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">appclient</pre> 
+       </div> 
+      </div>
+     </div> command will support this new syntax<p></p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">appclient (jvm and acc options) -jar myClient.jar (args to the client)</pre> 
+       </div> 
+      </div>
+     </div> <p>in addition to the v2 syntax</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">appclient -client myClient.jar (acc options) (args to the client)</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="Gfv3AppclientcontainerOnepager-SplashScreenSupport"></a>Splash Screen Support</h3> <p>Java SE 6 offers splash screen support, either via a Java command-line option or a manifest entry in the program's JAR file. To take advantage of this Java SE feature, developers of Java EE app clients can </p> 
+     <ol> 
+      <li>Use the new 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">appclient ... -jar</pre> 
+         </div> 
+        </div>
+       </div> launch format, using the 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">java</pre> 
+         </div> 
+        </div>
+       </div> 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">-splash</pre> 
+         </div> 
+        </div>
+       </div> command-line option at runtime or (preferably) the 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">SplashScreen-Image</pre> 
+         </div> 
+        </div>
+       </div> manifest entry at development-time.</li> 
+      <li>In the command environment that will run the appclient script set the VMOPTS environment variable to include the 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">-splash</pre> 
+         </div> 
+        </div>
+       </div> Java command-line option before invoking the appclient script to launch the client.</li> 
+      <li>Build a Java app which uses the embeddable ACC and specify the splash screen image using 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">-splash</pre> 
+         </div> 
+        </div>
+       </div> or 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">SplashScreen-Image</pre> 
+         </div> 
+        </div>
+       </div>.</li> 
+     </ol> <p>Note that the </p>
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">appclient</pre> 
+       </div> 
+      </div>
+     </div> script supports the built-in Java SE 6 support for splash screens inside the app client JAR only if the user launches an app client facade or app client JAR. If the user launches the facade for an EAR or the undeployed EAR itself then the 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">appclient</pre> 
+       </div> 
+      </div>
+     </div> script must launch gf-client.jar (not the user's EAR file) to choose the app client to run. <p></p> <h4><a name="Gfv3AppclientcontainerOnepager-Enhancementstoand%28notforEA%29"></a>Enhancements to 
+      <div class="code panel" style="border-width: 1px;">
+       <div class="codeContent panelContent"> 
+        <div id="root"> 
+         <pre class="theme: Confluence; brush: java; gutter: false">deploy</pre> 
+        </div> 
+       </div>
+      </div> and 
+      <div class="code panel" style="border-width: 1px;">
+       <div class="codeContent panelContent"> 
+        <div id="root"> 
+         <pre class="theme: Confluence; brush: java; gutter: false">get-client-stubs</pre> 
+        </div> 
+       </div>
+      </div> (not for EA)</h3> <p>In v2 the "cooked" JAR for an EAR that contained multiple app clients contained all the app clients packaged in the EAR, along with supporting library JARs. In v3 GlassFish will prepare a separate cooked JAR for each app client. This will allow us to support, in a straightforward way, the </p>
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">java</pre> 
+       </div> 
+      </div>
+     </div> command and splash screen support. <p></p> <p>In v2 the </p>
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">deploy --retrieve</pre> 
+       </div> 
+      </div>
+     </div> option and the 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">get-client-stubs</pre> 
+       </div> 
+      </div>
+     </div> command download the single cooked JAR to the specified directory on the local system. <p></p> <p>In v3 users will be able to, optionally, specify which client(s) they want to retrieve as part of deployment or when separately retrieving the client stubs. These two commands will gain the </p>
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">--client</pre> 
+       </div> 
+      </div>
+     </div> option which requires a single client name or a comma-separated list of client names. <p></p> <p>The </p>
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">deploy --retrieve</pre> 
+       </div> 
+      </div>
+     </div> option and the 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">get-client-stubs</pre> 
+       </div> 
+      </div>
+     </div> command will then retrieve the identified cooked JARs (and any required supporting library JARs) to the local directory. If the user omits the optional 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">--client</pre> 
+       </div> 
+      </div>
+     </div> option then the commands will behave <em>functionally</em> as in v2 by downloading all the app clients that were packaged in the EAR.<p></p> <p>The contents of the local directory has never been identified as a public interface. Nevertheless, this proposal would change what we store there. Users might be accustomed to finding a single downloaded file in the local directory and copying that file elsewhere. That practice will not continue to work unless the user's procedure copies the entire contents of the download directory. If we make this change we will need to include a release note highlighting the change to our usage of the directory.</p> <p>Similarly, some users might have launched app clients by referring directly to the generated JAR file in the app server's internal </p>
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">generated</pre> 
+       </div> 
+      </div>
+     </div> directory. This will no longer work. The supported mechanism is to use 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">deploy --retrieve</pre> 
+       </div> 
+      </div>
+     </div> or 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">get-client-stubs</pre> 
+       </div> 
+      </div>
+     </div>. <p></p> <p>The change in download directory format will also let the v3 ACC launch app clients faster. In v2 the first thing the ACC must do is expand the current, single downloaded JAR file into a temporary directory so the contents can be examined and, most importantly, added to a class loader's classpath. (Java classloaders do not support adding JARs nested inside an outer JAR to the class path.) In v3 the constituent files will not have been packed into a single file and, therefore, no expansion step would be needed. </p> <p>(Such a change is also in line with improvements planned for the Java Web Start support (to be described in a later one-pager). Briefly, I plan to have Java Web Start download the app client JAR and its supporting JARs individually, rather than download the (existing v2) cooked JAR and have to expand it. Not only will this avoid the expansion step (as in the </p>
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">appclient</pre> 
+       </div> 
+      </div>
+     </div> case) but it will allow Java Web Start to optimize downloads better. If a developer changes a small app client which depends on a large library JAR, then in v2 the cooked JAR is rebuilt and Java Web Start must download the entire cooked JAR again. In v3 Java Web Start will be able to download only the updated app client JAR and continue to use the cached copy of the previously-downloaded large library JAR.)<p></p> <h4><a name="Gfv3AppclientcontainerOnepager-4.2.Bug%2FRFENumber%28s%29%3A"></a>4.2. Bug/RFE Number(s):</h2> <h4><a name="Gfv3AppclientcontainerOnepager-JavaFXScriptsupport"></a>JavaFX Script support</h3> <p><a href="https://github.com/javaee/glassfish/issues/4108">Feature Issue 4108</a></p> <h4><a name="Gfv3AppclientcontainerOnepager-Footprint"></a>Footprint</h3> <p><a href="https://github.com/javaee/glassfish/issues/4109">Feature Issue 4109</a></p> <h4><a name="Gfv3AppclientcontainerOnepager-EmbeddedACC"></a>Embedded ACC</h3> <p><a href="https://github.com/javaee/glassfish/issues/4111">Feature Issue 4111</a></p> <h4><a name="Gfv3AppclientcontainerOnepager-Specifyserveroncommandline"></a>Specify server on command line</h3> <p><a href="https://github.com/javaee/glassfish/issues/4110">Feature Issue 4110</a></p> <h4><a name="Gfv3AppclientcontainerOnepager-Splashscreensupport"></a>Splash screen support</h3> <p><a href="https://github.com/javaee/glassfish/issues/4115">Feature Issue 4115</a></p> <h4><a name="Gfv3AppclientcontainerOnepager-4.3.InScope%3A"></a>4.3. In Scope:</h2> <p>as described above</p> <h4><a name="Gfv3AppclientcontainerOnepager-4.4.OutofScope%3A"></a>4.4. Out of Scope:</h2> 
+     <ul> 
+      <li>Java Web Start improvements</li> 
+     </ul> <h4><a name="Gfv3AppclientcontainerOnepager-4.5.Interfaces%3A"></a>4.5. Interfaces:</h2> <h4><a name="Gfv3AppclientcontainerOnepager-4.5.1ExportedInterfaces"></a>4.5.1 Exported Interfaces</h3> <h4><a name="Gfv3AppclientcontainerOnepager-JavaFXScriptsupportnonewexportedinterfaces"></a>JavaFX Script support - no new exported interfaces</h3> <h4><a name="Gfv3AppclientcontainerOnepager-Footprintnonewexportedinterfaces"></a>Footprint - no new exported interfaces</h3> <h4><a name="Gfv3AppclientcontainerOnepager-EmbeddedACC"></a>Embedded ACC</h3> 
+     <ul> 
+      <li>Interface: gf-acc.jar file name</li> 
+      <li>Stability: evolving</li> 
+      <li>Former Stability (if changing):</li> 
+      <li>Comments: Developers will include this JAR in the compile-time and runtime class paths.</li> 
+     </ul> 
+     <ul> 
+      <li>Interface: org.glassfish.appclient.ACC class</li> 
+      <li>Stability: evolving</li> 
+      <li>Former Stability (if changing):</li> 
+      <li>Comments: Developers will refer to this class and its methods to create, configure, start, and stop an embedded ACC.</li> 
+     </ul> <h4><a name="Gfv3AppclientcontainerOnepager-Specifyserveroncommandline"></a>Specify server on command line</h3> 
+     <ul> 
+      <li>Interface: appclient command</li> 
+      <li>Stability: evolving</li> 
+      <li>Former Stability (if changing):</li> 
+      <li>Comments: New -targetserver 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">host[:port][,...]</pre> 
+         </div> 
+        </div>
+       </div> option</li> 
+     </ul> <h4><a name="Gfv3AppclientcontainerOnepager-Splashscreensupportnonewexportedinterfaces%3BdoctosuggestusingVMOPTSvariabletoaddtheJavaSE6splashoptionandvalue."></a>Splash screen support - no new exported interfaces; doc to suggest using VMOPTS variable to add the Java SE 6 -splash option and value.</h3> <h4><a name="Gfv3AppclientcontainerOnepager-4.5.2Importedinterfaces"></a>4.5.2 Imported interfaces</h3> <h4><a name="Gfv3AppclientcontainerOnepager-JavaFXScriptsupportnonewimportedinterfaces"></a>JavaFX Script support - no new imported interfaces</h3> <h4><a name="Gfv3AppclientcontainerOnepager-Footprint"></a>Footprint</h3> 
+     <ul> 
+      <li>Interface: JAR names of other modules which ACC must rely on</li> 
+      <li>Stability: evolving</li> 
+      <li>Exporting Project: transactions, injection, ORB, naming</li> 
+      <li>Comments:</li> 
+     </ul> <h4><a name="Gfv3AppclientcontainerOnepager-EmbeddedACCnonewimportedinterfaces"></a>Embedded ACC - no new imported interfaces</h3> <h4><a name="Gfv3AppclientcontainerOnepager-Specifyserveroncommandlinenonewimportedinterfaces"></a>Specify server on command line - no new imported interfaces</h3> <h4><a name="Gfv3AppclientcontainerOnepager-Splashscreensupportnonewimportedinterfaces"></a>Splash screen support - no new imported interfaces</h3> <h4><a name="Gfv3AppclientcontainerOnepager-4.5.3Otherinterfaces%28Optional%29"></a>4.5.3 Other interfaces (Optional)</h3> <p>n/a</p> <h4><a name="Gfv3AppclientcontainerOnepager-4.6.DocImpact%3A"></a>4.6. Doc Impact:</h2> <h4><a name="Gfv3AppclientcontainerOnepager-JavaFXScriptsupport"></a>JavaFX Script support</h3> <p>No impact.</p> <p>We do not currently document this feature. I propose we do not do so because of JavaFX's strategic emphasis on compiled, not interpreted, execution.</p> <h4><a name="Gfv3AppclientcontainerOnepager-Footprint"></a>Footprint</h3> <p>No impact.</p> <h4><a name="Gfv3AppclientcontainerOnepager-EmbeddedACC"></a>Embedded ACC</h3> <p>Developer's Guide should describe the new ACC API.</p> <h4><a name="Gfv3AppclientcontainerOnepager-Specifyserveroncommandline"></a>Specify server on command line</h3> <p>Administrator's Guide - describe the new option<br> Administrator's Reference - describe the new option</p> <h4><a name="Gfv3AppclientcontainerOnepager-Splashscreensupport"></a>Splash screen support</h3> <p>Developer's Guide should describe setting the VMOPTS environment variable before invoking appclient to use the Java SE 6 support directly.</p> <h4><a name="Gfv3AppclientcontainerOnepager-4.7.Admin%2FConfigImpact%3A"></a>4.7. Admin/Config Impact:</h2> <p>No impact.</p> <h4><a name="Gfv3AppclientcontainerOnepager-4.8.HAImpact%3A"></a>4.8. HA Impact:</h2> <p>None</p> <h4><a name="Gfv3AppclientcontainerOnepager-4.9.I18N%2FL10NImpact%3A"></a>4.9. I18N/L10N Impact:</h2> <p>None</p> <h4><a name="Gfv3AppclientcontainerOnepager-4.10.Packaging%26Delivery%3A"></a>4.10. Packaging &amp; Delivery:</h2> <p>New JAR file gf-acc.jar. </p> <h4><a name="Gfv3AppclientcontainerOnepager-4.11.SecurityImpact%3A"></a>4.11. Security Impact:</h2> <p>None</p> <h4><a name="Gfv3AppclientcontainerOnepager-4.12.CompatibilityImpact"></a>4.12. Compatibility Impact</h2> <p>There are no incompatible changes from v3 prelude to v3/JavaOne. The introduction of the new gf-acc.jar will be hidden in the appclient script. </p> <p>The new -targetserver option is optional and will not affect existing usages of the appclient scripts.</p> <h4><a name="Gfv3AppclientcontainerOnepager-4.13.Dependencies%3A"></a>4.13. Dependencies:</h2> <p>Security, transaction, naming, ORB modules (all used from the ACC).</p> <h4><a name="Gfv3AppclientcontainerOnepager-5.ReferenceDocuments%3A"></a>5. Reference Documents:</h1> <h4><a name="Gfv3AppclientcontainerOnepager-6.Schedule%3A"></a>6. Schedule:</h1> <h4><a name="Gfv3AppclientcontainerOnepager-6.1.ProjectedAvailability%3A"></a>6.1. Projected Availability:</h2> <p>GlassFish v3/JavaOne release (May '09)</p> <p>Java Web Start improvements planned for the proposed 3.1 release</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 09, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:44.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

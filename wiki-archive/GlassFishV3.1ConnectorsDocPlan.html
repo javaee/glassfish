@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFishV3.1ConnectorsDocPlan</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GlassFishV3.1ConnectorsDocPlan-Connectors%28JavaEEConnectorArchitecture%2CConnectionPooling%2CJDBCRA%29DocumentationPlanforGlassFishServerOpenSourceEdition3.1"></a><em>Connectors (JavaEE Connector Architecture, Connection Pooling, JDBC-RA)</em> Documentation Plan for GlassFish Server Open Source Edition 3.1</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#GlassFishV3.1ConnectorsDocPlan-Connectors%28JavaEEConnectorArchitecture%2CConnectionPooling%2CJDBCRA%29DocumentationPlanforGlassFishServerOpenSourceEdition3.1"> <em>Connectors (JavaEE Connector Architecture, Connection Pooling, JDBC-RA)</em> Documentation Plan for GlassFish Server Open Source Edition 3.1</a></li> 
+       <ul> 
+        <li><a href="#GlassFishV3.1ConnectorsDocPlan-PeopleandRoles">People and Roles</a></li> 
+        <li><a href="#GlassFishV3.1ConnectorsDocPlan-Audience">Audience</a></li> 
+        <li><a href="#GlassFishV3.1ConnectorsDocPlan-SummaryoftheFeatureFromaUser%27sPerspective">Summary of the Feature From a User's Perspective</a></li> 
+        <li><a href="#GlassFishV3.1ConnectorsDocPlan-Availability">Availability</a></li> 
+        <li><a href="#GlassFishV3.1ConnectorsDocPlan-StatementofWork">Statement of Work</a></li> 
+        <ul> 
+         <li><a href="#GlassFishV3.1ConnectorsDocPlan-ChangestoBooks">Changes to Books</a></li> 
+         <ul> 
+          <li><a href="#GlassFishV3.1ConnectorsDocPlan-AdministrationGuideChanges"> <em>Administration Guide</em> Changes</a></li> 
+          <li><a href="#GlassFishV3.1ConnectorsDocPlan-ApplicationDevelopmentGuideChanges"> <em>Application Development Guide</em> Changes</a></li> 
+          <li><a href="#GlassFishV3.1ConnectorsDocPlan-ApplicationDeploymentGuideChanges"> <em>Application Deployment Guide</em> Changes</a></li> 
+          <li><a href="#GlassFishV3.1ConnectorsDocPlan-DomainFileFormatReferenceChanges"> <em>Domain File Format Reference</em> Changes</a></li> 
+         </ul> 
+         <li><a href="#GlassFishV3.1ConnectorsDocPlan-ChangestomanPages">Changes to man Pages</a></li> 
+         <ul> 
+          <li><a href="#GlassFishV3.1ConnectorsDocPlan-asadminmanPageChanges"> <em>asadmin man Page</em> Changes</a></li> 
+         </ul> 
+         <li><a href="#GlassFishV3.1ConnectorsDocPlan-ChangestoOnlineHelp">Changes to Online Help</a></li> 
+         <ul> 
+          <li><a href="#GlassFishV3.1ConnectorsDocPlan-AdminConsoleOnlineHelpChanges"> <em>Admin Console Online Help</em> Changes</a></li> 
+         </ul> 
+        </ul> 
+        <li><a href="#GlassFishV3.1ConnectorsDocPlan-ReviewSchedule">Review Schedule</a></li> 
+        <li><a href="#GlassFishV3.1ConnectorsDocPlan-RelatedInformation">Related Information</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="GlassFishV3.1ConnectorsDocPlan-PeopleandRoles"></a>People and Roles</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Name </th> 
+         <th class="confluenceTh"> Role </th> 
+         <th class="confluenceTh"> Location </th> 
+         <th class="confluenceTh"> Time Zone </th> 
+         <th class="confluenceTh"> Email </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Scott Fordin </td> 
+         <td class="confluenceTd"> Documentation Feature Owner </td> 
+         <td class="confluenceTd"> Burlington, MA, USA </td> 
+         <td class="confluenceTd"> US/Eastern </td> 
+         <td class="confluenceTd"> <tt>sfordin@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Rebecca Parks </td> 
+         <td class="confluenceTd"> Owner of Deployment Feature </td> 
+         <td class="confluenceTd"> Santa Clara, CA, USA </td> 
+         <td class="confluenceTd"> US/Pacific </td> 
+         <td class="confluenceTd"> <tt>junesm@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Jagadish Ramu </td> 
+         <td class="confluenceTd"> Project Lead </td> 
+         <td class="confluenceTd"> Bangalore, India </td> 
+         <td class="confluenceTd"> IST </td> 
+         <td class="confluenceTd"> <tt>jr158900@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Shalini Muthukrishnan </td> 
+         <td class="confluenceTd"> Project Lead </td> 
+         <td class="confluenceTd"> Bangalore, India </td> 
+         <td class="confluenceTd"> IST </td> 
+         <td class="confluenceTd"> <tt>sm157516@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Sivakumar Thyagarajan </td> 
+         <td class="confluenceTd"> Software Engineer </td> 
+         <td class="confluenceTd"> Bangalore, India </td> 
+         <td class="confluenceTd"> IST </td> 
+         <td class="confluenceTd"> <tt>sivakumart@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Roberto Chinnici </td> 
+         <td class="confluenceTd"> Software Engineer </td> 
+         <td class="confluenceTd"> Menlo Park, CA, US </td> 
+         <td class="confluenceTd"> US/Pacific </td> 
+         <td class="confluenceTd"> <tt>rchinnici@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Alex Pineda </td> 
+         <td class="confluenceTd"> Quality Engineer </td> 
+         <td class="confluenceTd"> Santa Clara, CA, US </td> 
+         <td class="confluenceTd"> US/Pacific </td> 
+         <td class="confluenceTd"> <tt>pineda@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Paul Davies </td> 
+         <td class="confluenceTd"> Peer Reviewer </td> 
+         <td class="confluenceTd"> Santa Clara, CA, USA </td> 
+         <td class="confluenceTd"> US/Pacific </td> 
+         <td class="confluenceTd"> <tt>pauldavies@dev.java.net</tt> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3.1ConnectorsDocPlan-Audience"></a>Audience</h2> <p>This feature is aimed at system administrators and application developers.</p> <h4><a name="GlassFishV3.1ConnectorsDocPlan-SummaryoftheFeatureFromaUser%27sPerspective"></a>Summary of the Feature From a User's Perspective</h2> <p>Enhancements to existing Connectors, Pooling, JDBC-RA modules will include:</p> 
+     <ul> 
+      <li>Statement leak detection and reclaim support for JDBC applications</li> 
+      <li>Clustering support for all types of resources</li> 
+      <li>Application scoped resources to enable single click deployment of archive with resource definitions</li> 
+      <li>Reconfiguration support for datasource-definition</li> 
+      <li>Monitoring support to display: 
+       <ul> 
+        <li>Connections usage in a pool grouped by different applications</li> 
+        <li>Frequently executed SQL queries by applications</li> 
+        <li>Statement cache hit/miss statistics</li> 
+        <li>Statement leaks</li> 
+       </ul> </li> 
+      <li>Ease of use and configurability features</li> 
+      <li>Transparent reconfiguration of jdbc-connection-pool</li> 
+     </ul> <h4><a name="GlassFishV3.1ConnectorsDocPlan-Availability"></a>Availability</h2> <p>This feature is available in all GlassFish Server distributions.</p> <h4><a name="GlassFishV3.1ConnectorsDocPlan-StatementofWork"></a>Statement of Work</h2> <p>This section describes in detail for each document the work that is required by the introduction of the feature, such as changes, addition of new material, relocation of existing material, and removal of existing material.</p> <p>Documentation Impact:</p> 
+     <ul> 
+      <li>None</li> 
+      <li>Minor</li> 
+      <li>Moderate</li> 
+      <li>Major</li> 
+      <li>New</li> 
+     </ul> 
+     <hr> <p><b>Note -</b> If a document is task based (as opposed to reference), the changes should be determined from the user task analysis for the feature.</p> 
+     <hr> <h4><a name="GlassFishV3.1ConnectorsDocPlan-ChangestoBooks"></a>Changes to Books</h3> <h4><a name="GlassFishV3.1ConnectorsDocPlan-AdministrationGuideChanges"></a><em>Administration Guide</em> Changes</h4> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Item Number</th> 
+         <th class="confluenceTh"> Section </th> 
+         <th class="confluenceTh"> Documentation Impact </th> 
+         <th class="confluenceTh"> Writer </th> 
+         <th class="confluenceTh"> Reviewers </th> 
+         <th class="confluenceTh"> Description of Change </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">1</td> 
+         <td class="confluenceTd"> Chapter 14, Administering Database Connectivity<br class="atl-forced-newline">Configuring Access to the Database </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Alex </td> 
+         <td class="confluenceTd"> Statement leak detection and reclaim; new <tt>statement-leak-timeout-in-seconds</tt> and <tt>statement-leak-reclaim</tt> options. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">2</td> 
+         <td class="confluenceTd"> Chapter 14, Administering Database Connectivity<br class="atl-forced-newline">Configuring Access to the Database </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Alex </td> 
+         <td class="confluenceTd"> Application scoped resources: <tt>preserve-app-scoped-resources</tt><br class="atl-forced-newline"> <tt>list-application-scoped-resources --target</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">3</td> 
+         <td class="confluenceTd"> Chapter 14, Administering Database Connectivity<br class="atl-forced-newline">Configuring Access to the Database </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Alex </td> 
+         <td class="confluenceTd"> Dynamic reconfiguration: new <tt>dynamic-reconfiguration-wait-timeout-in-seconds</tt> properties. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">4</td> 
+         <td class="confluenceTd"> Chapter 14, Administering Database Connectivity<br class="atl-forced-newline">Configuring Access to the Database </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Alex </td> 
+         <td class="confluenceTd"> New options:<br class="atl-forced-newline"> <tt>preserve-app-scoped-resources</tt><br class="atl-forced-newline"> <tt>list-application-scoped-resources --target</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">5</td> 
+         <td class="confluenceTd"> Chapter 14, Administering Database Connectivity<br class="atl-forced-newline">Configuring Access to the Database </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Alex </td> 
+         <td class="confluenceTd"> New introspection behavior returns list of class names when prompting user for datasource or driver name. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">6</td> 
+         <td class="confluenceTd"> Chapter 14, Administering Database Connectivity<br class="atl-forced-newline">Configuring Access to the Database </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Alex </td> 
+         <td class="confluenceTd"> New support for <tt>datasource-definition</tt>. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">7</td> 
+         <td class="confluenceTd"> Chapter 14, Administering Database Connectivity<br class="atl-forced-newline">Configuring Access to the Database </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Alex </td> 
+         <td class="confluenceTd"> Monitoring support for various Connection Pool and JDBC artifacts. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">8</td> 
+         <td class="confluenceTd"> Chapter 14, Administering Database Connectivity<br class="atl-forced-newline">Configuring Access to the Database </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Roberto, Sivakumar </td> 
+         <td class="confluenceTd"> Add new <tt>--target</tt> option to relevant subcommands:<br class="atl-forced-newline"> <tt>add-resources</tt><br class="atl-forced-newline"> <tt>create-admin-object</tt><br class="atl-forced-newline"> <tt>delete-admin-object</tt><br class="atl-forced-newline"> <tt>create-connector-resource</tt><br class="atl-forced-newline"> <tt>delete-connector-resource</tt><br class="atl-forced-newline"> <tt>create-javamail-resource</tt><br class="atl-forced-newline"> <tt>delete-javamail-resource</tt><br class="atl-forced-newline"> <tt>create-jdbc-resource</tt><br class="atl-forced-newline"> <tt>delete-jdbc-resource</tt><br class="atl-forced-newline"> <tt>create-custom-resource</tt><br class="atl-forced-newline"> <tt>delete-custom-resource</tt><br class="atl-forced-newline"> <tt>create-jndi-resource</tt><br class="atl-forced-newline"> <tt>delete-jndi-resource</tt><br class="atl-forced-newline"> <tt>list-admin-objects</tt><br class="atl-forced-newline"> <tt>list-connector-resources</tt><br class="atl-forced-newline"> <tt>list-javamail-resources</tt><br class="atl-forced-newline"> <tt>list-jdbc-resources</tt><br class="atl-forced-newline"> <tt>list-custom-resources</tt><br class="atl-forced-newline"> <tt>list-jndi-resources</tt><br class="atl-forced-newline"> <tt>create-resource-ref</tt><br class="atl-forced-newline"> <tt>delete-resource-ref</tt><br class="atl-forced-newline"> <tt>list-resource-refs</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">9</td> 
+         <td class="confluenceTd"> Chapter 14, Administering Database Connectivity<br class="atl-forced-newline">Administering JDBC Resources </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Alex </td> 
+         <td class="confluenceTd"> New SQL tracing properties:<br class="atl-forced-newline"> <tt>sql-trace-listeners</tt><br class="atl-forced-newline"> <tt>time-to-keep-queries</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">10</td> 
+         <td class="confluenceTd"> Chapter 14, Administering Database Connectivity<br class="atl-forced-newline">Administering JDBC Resources </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Alex </td> 
+         <td class="confluenceTd"> New statement cache hit/miss monitoring probe; <tt>statement-cache-size</tt> property. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">11</td> 
+         <td class="confluenceTd"> Chapter 14, Administering Database Connectivity<br class="atl-forced-newline">Administering JDBC Resources </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Alex </td> 
+         <td class="confluenceTd"> New statement leak monitoring feature; <tt>statement-leak-timeout-in-seconds</tt> property. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">12</td> 
+         <td class="confluenceTd"> Chapter 14, Administering Database Connectivity<br class="atl-forced-newline">Administering JDBC Resources </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Alex </td> 
+         <td class="confluenceTd"> New transparent dynamic redeployment features: <tt>transparent-jdbc-connection-pool-redeployment</tt><br class="atl-forced-newline"> <tt>transparent-jdbc-connection-pool-redeployment</tt><br class="atl-forced-newline"> <tt>dynamic-reconfiguration-wait-timeout-in-seconds</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">13</td> 
+         <td class="confluenceTd"> Chapter 14, Administering Database Connectivity<br class="atl-forced-newline">Administering JDBC Resources </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Alex </td> 
+         <td class="confluenceTd"> New restrictions related to scoped resources. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3.1ConnectorsDocPlan-ApplicationDevelopmentGuideChanges"></a><em>Application Development Guide</em> Changes</h4> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item Number</th> 
+         <th class="confluenceTh"> Section </th> 
+         <th class="confluenceTh"> Documentation Impact </th> 
+         <th class="confluenceTh"> Writer </th> 
+         <th class="confluenceTh"> Reviewers </th> 
+         <th class="confluenceTh"> Description of Change </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">1</td> 
+         <td class="confluenceTd"> Chapter 12, Developing Connectors </td> 
+         <td class="confluenceTd">
+          <ul class="alternate" type="square"> 
+           <li></li> 
+          </ul> </td> 
+         <td class="confluenceTd">
+          <ul class="alternate" type="square"> 
+           <li></li> 
+          </ul> </td> 
+         <td class="confluenceTd">
+          <ul class="alternate" type="square"> 
+           <li></li> 
+          </ul> </td> 
+         <td class="confluenceTd">
+          <ul class="alternate" type="square"> 
+           <li></li> 
+          </ul> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">2</td> 
+         <td class="confluenceTd"> Connector Support in the GlassFish Server </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Roberto, Sivakumar </td> 
+         <td class="confluenceTd"> Add information about scoped resources, clustering, leak detection and reclaiming, transparent reconfiguration. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">3</td> 
+         <td class="confluenceTd"> Advanced Connector Configuration Options, Thread Associations </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Roberto, Sivakumar </td> 
+         <td class="confluenceTd"> Scoped resources. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">4</td> 
+         <td class="confluenceTd"> Advanced Connector Configuration Options, Work Security Maps </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Roberto, Sivakumar </td> 
+         <td class="confluenceTd"> <tt>connector-work-security-map</tt> concepts. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">5</td> 
+         <td class="confluenceTd"> Advanced Connector Configuration Options, Transparent Reconfiguration </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Alex </td> 
+         <td class="confluenceTd"> Transparent reconfiguration features. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">6</td> 
+         <td class="confluenceTd"> Advanced Connector Configuration Options, Flushing a Connector Connection Pool </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Roberto, Sivakumar </td> 
+         <td class="confluenceTd"> <tt>flush-connection-pool</tt> concepts. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">7</td> 
+         <td class="confluenceTd"> Advanced Connector Configuration Options, Handling Invalid Connections </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Roberto, Sivakumar </td> 
+         <td class="confluenceTd"> Leak detection and reclaiming. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">8</td> 
+         <td class="confluenceTd"> Advanced Connector Configuration Options, Leak Detection </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Alex </td> 
+         <td class="confluenceTd"> More about leak detection and reclaiming. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">9</td> 
+         <td class="confluenceTd"> Advanced Connector Configuration Options, OSGi Support </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Alex </td> 
+         <td class="confluenceTd"> OSGi support information. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">10</td> 
+         <td class="confluenceTd"> Chapter 14, Using the JDBC API for Database Access </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">11</td> 
+         <td class="confluenceTd"> Statements, Statement Tracing, Statement Caching </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> SQL caching, tracing, monitoring options. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">12</td> 
+         <td class="confluenceTd"> Connections, Scoped Resources </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Alex </td> 
+         <td class="confluenceTd"> Scoped resource instructions. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">13</td> 
+         <td class="confluenceTd"> Connections, Marking Bad Connections </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Roberto, Sivakumar </td> 
+         <td class="confluenceTd"> Reference to new Leak Detection section, below. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">14</td> 
+         <td class="confluenceTd"> Connections, Leak Detection and Reclaiming </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Alex </td> 
+         <td class="confluenceTd"> New Leak and reclaiming topics. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">15</td> 
+         <td class="confluenceTd"> Connections, Transparent Reconfiguration </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Alex </td> 
+         <td class="confluenceTd"> New transparent reconfiguration tasks. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3.1ConnectorsDocPlan-ApplicationDeploymentGuideChanges"></a><em>Application Deployment Guide</em> Changes</h4> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Item Number</th> 
+         <th class="confluenceTh"> Section </th> 
+         <th class="confluenceTh"> Documentation Impact </th> 
+         <th class="confluenceTh"> Writer </th> 
+         <th class="confluenceTh"> Reviewers </th> 
+         <th class="confluenceTh"> Description of Change </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">1</td> 
+         <td class="confluenceTd"> Chapter 1, Overview, Module-Based Deployment </td> 
+         <td class="confluenceTd"> Major </td> 
+         <td class="confluenceTd"> Rebecca </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Alex </td> 
+         <td class="confluenceTd"> Rework Figure 1-1 and 1-2 to accommodate scoped resources. This is an RFE. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">2</td> 
+         <td class="confluenceTd"> Chapter 2, Deploying Applications </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Rebecca </td> 
+         <td class="confluenceTd"> Roberto, Sivakumar </td> 
+         <td class="confluenceTd"> Explain scoped resources, transparent reconfiguration in general. Show <tt>set</tt> subcommand for <tt>dynamic-reconfiguration-wait-timeout-in-seconds</tt> property. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">3</td> 
+         <td class="confluenceTd"> Chapter 2, Deploying Applications </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Rebecca </td> 
+         <td class="confluenceTd"> Roberto, Sivakumar </td> 
+         <td class="confluenceTd"> Add new <tt>redeploy</tt> property <tt>preserve-app-scoped-resources</tt>, new <tt>list-applications</tt> options <tt>--subcomponents</tt> and <tt>--resources</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">4</td> 
+         <td class="confluenceTd"> Chapter 2, Deploying Applications, Deploying a Connector Module </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Rebecca </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Alex </td> 
+         <td class="confluenceTd"> Explain scoped resources relative to connectors. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">5</td> 
+         <td class="confluenceTd"> Appendix C, Elements of the GlassFish Server Deployment Descriptors, <tt>glassfish-resources.xml</tt>, <tt>jdbc-connection-pool</tt> </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Rebecca </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Alex </td> 
+         <td class="confluenceTd"> New attributes:<br class="atl-forced-newline"> <tt>statement-leak-timeout-in-seconds</tt><br class="atl-forced-newline"> <tt>statement-leak-reclaim</tt><br class="atl-forced-newline"> New properties:<br class="atl-forced-newline"> <tt>dynamic-reconfiguration-wait-timeout-in-seconds</tt><br class="atl-forced-newline"> <tt>number-of-top-queries-to-report</tt><br class="atl-forced-newline"> <tt>time-to-keep-queries-in-minutes</tt><br class="atl-forced-newline"> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3.1ConnectorsDocPlan-DomainFileFormatReferenceChanges"></a><em>Domain File Format Reference</em> Changes</h4> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Item Number</th> 
+         <th class="confluenceTh"> Section </th> 
+         <th class="confluenceTh"> Documentation Impact </th> 
+         <th class="confluenceTh"> Writer </th> 
+         <th class="confluenceTh"> Reviewers </th> 
+         <th class="confluenceTh"> Description of Change </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">1</td> 
+         <td class="confluenceTd"> <tt>jdbc-connection-pool</tt> entry </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Alex </td> 
+         <td class="confluenceTd"> New properties:<br class="atl-forced-newline"> <tt>statement-leak-timeout-in-seconds</tt><br class="atl-forced-newline"> <tt>statement-leak-reclaim</tt><br class="atl-forced-newline"> <tt>dynamic-reconfiguration-wait-timeout-in-seconds</tt><br class="atl-forced-newline"> <tt>preserve-app-scoped-resources</tt><br class="atl-forced-newline"> <tt>statement-cache-size</tt><br class="atl-forced-newline"> <tt>transparent-jdbc-connection-pool-redeployment</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">2</td> 
+         <td class="confluenceTd"> <tt>resource-adapter-config</tt> </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Alex </td> 
+         <td class="confluenceTd"> New options:<br class="atl-forced-newline"> <tt>connector-work-security-map</tt><br class="atl-forced-newline"> <tt>sql-trace-listeners</tt><br class="atl-forced-newline"> <tt>time-to-keep-queries</tt><br class="atl-forced-newline"> <tt>statement-cache-size</tt><br class="atl-forced-newline"> <tt>datasource-definition</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">3</td> 
+         <td class="confluenceTd"> <tt>jdbc-connection-pool</tt> entry </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Roberto, Sivakumar </td> 
+         <td class="confluenceTd"> Add <tt>--target</tt> option. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">4</td> 
+         <td class="confluenceTd"> <tt>jdbc-resource</tt> entry </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Roberto, Sivakumar </td> 
+         <td class="confluenceTd"> Add <tt>--target</tt> option. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3.1ConnectorsDocPlan-ChangestomanPages"></a>Changes to man Pages</h3> <h4><a name="GlassFishV3.1ConnectorsDocPlan-asadminmanPageChanges"></a><em>asadmin man Page</em> Changes</h4> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Item Number</th> 
+         <th class="confluenceTh"> Topic Title </th> 
+         <th class="confluenceTh"> Documentation Impact </th> 
+         <th class="confluenceTh"> Writer </th> 
+         <th class="confluenceTh"> Reviewers </th> 
+         <th class="confluenceTh"> Description of Change </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">1</td> 
+         <td class="confluenceTd"> <tt>create-jdbc-connection-pool</tt> </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Alex </td> 
+         <td class="confluenceTd"> New subcommand options:<br class="atl-forced-newline"> <tt>statement-leak-timeout-in-seconds</tt><br class="atl-forced-newline"> <tt>statement-leak-reclaim</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">2</td> 
+         <td class="confluenceTd"> <tt>add-resources</tt><br class="atl-forced-newline"> <tt>create-admin-object</tt><br class="atl-forced-newline"> <tt>delete-admin-object</tt><br class="atl-forced-newline"> <tt>create-connector-resource</tt><br class="atl-forced-newline"> <tt>delete-connector-resource</tt><br class="atl-forced-newline"> <tt>create-javamail-resource</tt><br class="atl-forced-newline"> <tt>delete-javamail-resource</tt><br class="atl-forced-newline"> <tt>create-jdbc-resource</tt><br class="atl-forced-newline"> <tt>delete-jdbc-resource</tt><br class="atl-forced-newline"> <tt>create-custom-resource</tt><br class="atl-forced-newline"> <tt>delete-custom-resource</tt><br class="atl-forced-newline"> <tt>create-jndi-resource</tt><br class="atl-forced-newline"> <tt>delete-jndi-resource</tt><br class="atl-forced-newline"> <tt>list-admin-objects</tt><br class="atl-forced-newline"> <tt>list-connector-resources</tt><br class="atl-forced-newline"> <tt>list-javamail-resources</tt><br class="atl-forced-newline"> <tt>list-jdbc-resources</tt><br class="atl-forced-newline"> <tt>list-custom-resources</tt><br class="atl-forced-newline"> <tt>list-jndi-resources</tt><br class="atl-forced-newline"> <tt>create-resource-ref</tt><br class="atl-forced-newline"> <tt>delete-resource-ref</tt><br class="atl-forced-newline"> <tt>list-resource-refs</tt> </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Roberto, Sivakumar </td> 
+         <td class="confluenceTd"> Add new <tt>--target</tt> option to subcommands. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">3</td> 
+         <td class="confluenceTd"> <tt>ping-connection-pool</tt><br class="atl-forced-newline"> <tt>flush-connection-pool</tt> </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Roberto, Sivakumar </td> 
+         <td class="confluenceTd"> Add new <tt>--appname</tt> option to subcommand. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">4</td> 
+         <td class="confluenceTd"> <tt>create-jdbc-connection-pool</tt> </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Alex </td> 
+         <td class="confluenceTd"> New <tt>dynamic-reconfiguration-wait-timeout-in-seconds</tt> property. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">5</td> 
+         <td class="confluenceTd"> <tt>deploy</tt> </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Alex </td> 
+         <td class="confluenceTd"> New options:<br class="atl-forced-newline"> <tt>preserve-app-scoped-resources</tt><br class="atl-forced-newline"> <tt>list-application-scoped-resources --target</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">5</td> 
+         <td class="confluenceTd"> <tt>create-jdbc-connection-pool</tt> </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Alex </td> 
+         <td class="confluenceTd"> New introspection behavior returns list of class names when prompting user for datasource or driver name. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">6</td> 
+         <td class="confluenceTd"> <tt>jdbc-connection-pool</tt> </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Alex </td> 
+         <td class="confluenceTd"> New SQL tracing properties:<br class="atl-forced-newline"> <tt>sql-trace-listeners</tt><br class="atl-forced-newline"> <tt>time-to-keep-queries</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">7</td> 
+         <td class="confluenceTd"> <tt>jdbc-connection-pool</tt> </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Alex </td> 
+         <td class="confluenceTd"> New statement cache hit/miss monitoring probe; <tt>statement-cache-size</tt> property. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">8</td> 
+         <td class="confluenceTd"> <tt>jdbc-connection-pool</tt> </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Alex </td> 
+         <td class="confluenceTd"> New statement leak monitoring feature; <tt>statement-leak-timeout-in-seconds</tt> property. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">9</td> 
+         <td class="confluenceTd"> <tt>jdbc-connection-pool</tt> </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Alex </td> 
+         <td class="confluenceTd"> New transparent dynamic redeployment features: <tt>transparent-jdbc-connection-pool-redeployment</tt><br class="atl-forced-newline"> <tt>transparent-jdbc-connection-pool-redeployment</tt><br class="atl-forced-newline"> <tt>dynamic-reconfiguration-wait-timeout-in-seconds</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">10</td> 
+         <td class="confluenceTd"> <tt>resource-adapter-config</tt><br class="atl-forced-newline"> <tt>connector-work-security-map</tt> </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Alex </td> 
+         <td class="confluenceTd"> New restrictions related to scoped resources. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">11</td> 
+         <td class="confluenceTd"> <tt>jdbc-connection-pool</tt> </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Alex </td> 
+         <td class="confluenceTd"> New support for <tt>datasource-definition</tt>. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3.1ConnectorsDocPlan-ChangestoOnlineHelp"></a>Changes to Online Help</h3> <h4><a name="GlassFishV3.1ConnectorsDocPlan-AdminConsoleOnlineHelpChanges"></a><em>Admin Console Online Help</em> Changes</h4> <p>See the <a href="GlassFishV3.1AdminConsoleDocPlan.html" title="GlassFishV3.1AdminConsoleDocPlan">GlassFish 3.1 Admin Console Doc Plan</a> for a list of Admin Console online help changes.</p> <h4><a name="GlassFishV3.1ConnectorsDocPlan-ReviewSchedule"></a>Review Schedule</h2> <p>The review schedule for the documentation items that are affected by this feature is provided in the following table.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item </th> 
+         <th class="confluenceTh"> Review Start Date </th> 
+         <th class="confluenceTh"> Review End Date </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Administration Guide changes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Application Development Guide changes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Application Deployment Guide changes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Admin Console Online Help changes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> asadmin man Page changes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Domain File Format Reference </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>Reviewers are listed in the <em>Statement of Work</em>.</p> <h4><a name="GlassFishV3.1ConnectorsDocPlan-RelatedInformation"></a>Related Information</h2> 
+     <ul> 
+      <li><a href="./V3FunctionalSpecs.html">Product Functional Specifications</a></li> 
+      <li><a href="./Gfv31ConnectorsJDBC.html">Connectors One-Pager</a></li> 
+      <li><a href="http://jcp.org/en/jsr/detail-322">JSR 322 - Java EE Connector Architecture 1.6 Specification</a></li> 
+      <li><a href="./3.1DeploymentOnePager.html">GlassFish 3.1 Deployment one-pager</a></li> 
+      <li><a href="http://wiki.glassfish.java.net/attach/V3FunctionalSpecs/GFv3.1-OSGi-onepager-v0.2.txt">GlassFish 3.1 OSGi one-pager</a></li> 
+      <li><a href="GlassFishV3.1AdminConsoleDocPlan.html" title="GlassFishV3.1AdminConsoleDocPlan">GlassFish 3.1 Admin Console Doc Plan</a></li> 
+     </ul> <p>Email aliases:</p> 
+     <ul> 
+      <li><a href="mailto:admin@glassfish.java.net">admin@glassfish.java.net</a></li> 
+      <li><a href="mailto:users@glassfish.java.net">users@glassfish.java.net</a></li> 
+      <li><a href="mailto:docs@glassfish.java.net">docs@glassfish.java.net</a></li> 
+     </ul> 
+     <hr> 
+     <div class="tabletitle"> 
+      <a name="comments"> <h4>Comments:</h2> </a> 
+     </div> 
+     <table border="0" width="100%"> 
+      <tbody>
+       <tr> 
+        <td> <a name="comment-20881467"></a> <font class="smallfont"><p>1. Under Administration Guide changes : item 5 : Not clear on whether the description is about GUI or CLI or both. If this means both, appropriate explanations should be included for GUI and CLI separately.<br> 2. Under Administration Guide changes : item 9 : sql-trace-listeners is not a new attribute for this release. The new <b>properties</b> for monitoring sql traces are "TIME-TO-KEEP-QUERIES-IN-MINUTES" and "NUMBER-OF-TOP-QUERIES-TO-REPORT". (One pager will be updated soon with the latest changes). Please refer one pager for the dotted names.<br> 3. Under Administration Guide changes : item 10 : statement-cache-size is an attribute introduced in the last release to enable statement caching. Only when this is enabled, number of hits/misses can be monitored. Please refer one pager for the dotted names.<br> 4. Under Administration Guide changes : item 11 : Only when statement-leak-timeout-in-seconds attribute (being introduced in this release) is set, statement leaks can be monitored. Please refer one pager for the dotted names.<br> 5. Please add the new feature : "Connections usage in a pool by applications" (as in the one pager) to the admin guide.</p> <p>6. Under Application Development Guide changes : item 11 : the changes are sql trace monitoring, statement cache hit/miss monitoring, statement leak detection &amp; reclaim, statement leak monitoring.</p> <p>7. Under Application Deployment Guide changes : last item : sql-trace-listeners, statement-cache-size are not new attributes for this release. They were introduced in 3.0. The time-to-keep-queries-in-minutes and number-of-top-queries-to-report are <b>properties</b> being introduced for this release for sql trace monitoring.</p> <p>8. Under Reference Manual changes : item 6 : GUI and CLI introspection behavior should be described appropriately.<br> 9. Under Reference Manual changes : item 7 : new sql trace monitoring properties are time-to-keep-queries-in-minutes and number-of-top-queries-to-report.</p> <p>10. Under Domain File format reference changes : item 1 : Should be New attributes instead of properties. statement-cache-size was introduced in 3.0 and hence is not a new attribute for this release. New properties for jdbc connection pool are (only when sql-trace-listeners attribute is set), time-to-keep-queries-in-minutes and number-of-top-queries-to-report.<br> 11. Under Domain File format reference changes : item 2 : Changes to be made according to (10).</p> <p>12. Under asadmin man page changes : item 7, 8, 9 should be addressed based on comments above.</p></font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by mchondria at Jul 28, 2010 05:06 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20881480"></a> <font class="smallfont"><p>---------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br> Administration Guide Changes :</p> <p>CHAPTER 14 :<br> ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br> Item 2 : </p> <p>Application scoped resources: preserve-app-scoped-resources<br> list-application-scoped-resources --target</p> <p>COMMENT :<br> We need not specify about app-scoped-resources in the above section.<br> ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br> Item 4 :</p> <p>New options:<br> preserve-app-scoped-resources<br> list-application-scoped-resources --target</p> <p>COMMENT :<br> We need not specify about app-scoped-resources in the above section.<br> ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------</p> <p>Item 12 :<br> New transparent dynamic redeployment features: transparent-jdbc-connection-pool-redeployment<br> transparent-jdbc-connection-pool-redeployment<br> dynamic-reconfiguration-wait-timeout-in-seconds</p> <p>COMMENT :<br> This seems to be already covered in Item 3.</p> <p>---------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br> Item 13 :<br> New restrictions related to scoped resources.</p> <p>COMMENT :<br> We need not specify this in the above section.<br> ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------</p> <p>Application Development Guide changes :<br> ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br> CHAPTER 12 :</p> <p>Item 2 :</p> <p>Add information about scoped resources, clustering, leak detection and reclaiming, transparent reconfiguration. </p> <p>COMMENT :<br> This is not applicable for connectors.<br> ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------</p> <p>Item 4 :<br> connector-work-security-map concepts. </p> <p>COMMENT :<br> This was introduced in 3.0<br> ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br> Item 3 &amp; 5 :<br> COMMENT :<br> Application scoped resources include non-connector / non-jdbc resources also.<br> Instead of listing them under "connectors" section, we might have to introduce a new section named "application-scoped-resources" and provide feature description.<br> "Application Development Guide &gt; Using Services and APIs &gt; Application Scoped Resources" would be an option.<br> ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br> Item 9 :<br> It is not clear about the support of OSGi as of today. We shall revisit this during MS-5.<br> ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br> CHAPTER 14 :<br> Item 12 :<br> "Scoped resource instructions. "</p> <p>COMMENT :<br> No need to specify here.</p> <p>---------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br> Application Deployment Guide Changes :<br> ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br> Item 1 :<br> "Clustering support, application scoped resources, transparent reconfiguration, support for OSGi RFCs for JDBC (OSGi RFC 122) and Resource-Adapters (OSGi RFC 146)."<br> can be<br> "Clustering support, application scoped resources" for now.<br> ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br> Item 3 :<br> "Add information about transparent reconfiguration. "</p> <p>COMMENT :<br> Not applicable in application deployment section.<br> ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br> Item 5:<br> "Explain scoped resources, transparent reconfiguration. "<br> can be<br> "Explain scoped resources"</p> <p>Reference Manual Changes :<br> ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br> Item 5 :<br> "New options:<br> preserve-app-scoped-resources<br> list-application-scoped-resources --target"</p> <p>can be</p> <p>"New options:<br> preserve-app-scoped-resources"<br> ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br> Domain File Format Reference Changes</p> <p>Item 1 :<br> "dynamic-reconfiguration-wait-timeout-in-seconds" is a property and hence it has no DTD impact.<br> "transparent-jdbc-connection-pool-redeployment" is same as "dynamic-reconfiguration-wait-timeout-in-seconds"<br> ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br> Item 2 :<br> "New options:<br> connector-work-security-map<br> sql-trace-listeners<br> time-to-keep-queries<br> statement-cache-size<br> datasource-definition"</p> <p>can be</p> <p>New options:<br> connector-work-security-map<br> ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------</p> <p>asadmin Man Pages :</p> <p>Item 5 :<br> list-application-scoped-resources --target<br> need not be specified under "deploy" command section.<br> ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------</p></font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by jagadish at Jul 28, 2010 09:54 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20881355"></a> <font class="smallfont">
+          <div class="table-wrap"> 
+           <table class="confluenceTable">
+            <tbody> 
+             <tr> 
+              <th class="confluenceTh"> Comment ID <br class="atl-forced-newline"> </th> 
+              <th class="confluenceTh"> Section </th> 
+              <th class="confluenceTh"> Comment <br class="atl-forced-newline"> </th> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> PMD-001 </td> 
+              <td class="confluenceTd"> <em>Application Development Guide</em> Changes </td> 
+              <td class="confluenceTd"> Most of the information in Chapter 12, Developing Connectors is about administration, despite the title of the chapter. Plan on migrating that information to the <em>Administration Guide</em> and consolidating it with the information about connectors and so forth already there. That way, you might avoid having to make the same changes in 2 different places. <br class="atl-forced-newline"> <br class="atl-forced-newline"> Any information about writing or editing deployment descriptors can be moved to the <em>Application Deployment Guide</em>. <br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> PMD-002 </td> 
+              <td class="confluenceTd"> <em>Reference Manual</em> Changes </td> 
+              <td class="confluenceTd"> Delete this section. The changes to man pages are propagated automatically to the Reference Manual without further intervention from the writer, so they do not need to be listed twice. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> PMD-003 </td> 
+              <td class="confluenceTd"> <em>Domain File Format</em> Changes, Item 2 <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> Clarify whether these items are properties or attributes of the element. domain.xml has no concept of options. <br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> PMD-004 </td> 
+              <td class="confluenceTd"> <em>Domain File Format</em> Changes, Items 3,4 <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> Delete these items. Support for the --target option does not affect the content of these elements in domain.xml <br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> PMD-005 </td> 
+              <td class="confluenceTd"> Man Page Changes, Items 6-11 <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> I think you need to prefix the name of each item in the topic column with "create-". <br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> PMD-006 </td> 
+              <td class="confluenceTd"> Man Page Changes </td> 
+              <td class="confluenceTd"> Ensure that all additions to man pages are consistent with all additions to <em>Domain File Format Reference</em>. As a general rule, an option in a create command corresponds to an attribute of the element that represents the created item in domain.xml and a property of an element in domain.xml corresponds to a property that can be specified through --property in the command. <br class="atl-forced-newline"> </td> 
+             </tr> 
+            </tbody>
+           </table> 
+          </div> </font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by pauldavies at Jul 29, 2010 19:34 
+         </div> </td> 
+       </tr> 
+      </tbody>
+     </table> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Dec 09, 2010 by 
+<font color="#0050B2">rebeccaparks</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

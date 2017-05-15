@@ -1,0 +1,1127 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFish Server Open Source Edition 3.1 JMS Integration Documentation Review</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>This page provides links to review drafts of new and changed documentation for the JMS Integration project.</p> <p>Mandatory reviewers for each item are listed in each section.</p> <p>Changes to existing documentation since the last release are marked with change bars. No changes are marked in new documentation.</p> <p>Please provide your feedback by adding a comment to this page. To simplify the processing of your comments, please add your comments in the format in the sample comment. Review existing comments to see known issues and avoid duplicates.</p> 
+     <div> 
+      <ul> 
+       <li><a href="#GlassFishServerOpenSourceEdition3.1JMSIntegrationDocumentationReview-ChangestoBooks">Changes to Books</a></li> 
+       <ul> 
+        <li><a href="#GlassFishServerOpenSourceEdition3.1JMSIntegrationDocumentationReview-GlassFishAdministrationGuideChanges"> <em>GlassFish Administration Guide</em> Changes</a></li> 
+        <li><a href="#GlassFishServerOpenSourceEdition3.1JMSIntegrationDocumentationReview-GlassFishHighAvailabilityAdministrationGuideChanges"> <em>GlassFish High Availability Administration Guide</em> Changes</a></li> 
+        <li><a href="#GlassFishServerOpenSourceEdition3.1JMSIntegrationDocumentationReview-MessageQueueAdministrationGuideChanges"> <em>Message Queue Administration Guide</em> Changes</a></li> 
+        <li><a href="#GlassFishServerOpenSourceEdition3.1JMSIntegrationDocumentationReview-MessageQueueTechnicalOverviewChanges"> <em>Message Queue Technical Overview</em> Changes</a></li> 
+        <li><a href="#GlassFishServerOpenSourceEdition3.1JMSIntegrationDocumentationReview-ChangestoManPages">Changes to Man Pages</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="GlassFishServerOpenSourceEdition3.1JMSIntegrationDocumentationReview-ChangestoBooks"></a>Changes to Books</h1> <h4><a name="GlassFishServerOpenSourceEdition3.1JMSIntegrationDocumentationReview-GlassFishAdministrationGuideChanges"></a><em>GlassFish Administration Guide</em> Changes</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Section </th> 
+         <th class="confluenceTh"> Documentation Impact </th> 
+         <th class="confluenceTh"> Reviewers </th> 
+         <th class="confluenceTh"> Status <br class="atl-forced-newline"> </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365573.pdf">"Configuring the Generic JMS Resource Adapter for External JMS Providers", "Using the Generic JMS Resource Adapter with WebLogic JMS"</a> in Chapter 16 <br class="atl-forced-newline"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365645.pdf">draft 3</a> , Nigel's latest comments <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Moderate, New </td> 
+         <td class="confluenceTd"> Nigel&nbsp;Deakin, Satish&nbsp;Kumar </td> 
+         <td class="confluenceTd"> Review complete. <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://wikis.sun.com/download/attachments/237607161/GenericJMSRA-WLS-MQ.pdf">"Using the Generic JMS Resource Adapter with IBM WebSphere MQ"</a> in Chapter 16 <br class="atl-forced-newline"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365644.pdf">draft2</a>, Satish's latest comments <br class="atl-forced-newline"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365318.pdf">draft3</a>], added new MQ/GF graphic for doc refresh <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Nigel&nbsp;Deakin, Satish&nbsp;Kumar </td> 
+         <td class="confluenceTd"> In review. Comments due by March 25th, 2011. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jmsra/mq-related sections in Chapter 16, "Administering the Java Message Service (JMS)" <br class="atl-forced-newline"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365908.pdf">draft 1</a> <br class="atl-forced-newline"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365639.pdf">draft 2</a>, comment responses (<a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365640.pdf">pdf</a>,<a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365218.pdf">docx</a>) <br class="atl-forced-newline"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365629.pdf">draft 3</a>, comment responses 2 (<a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365626.pdf">pdf</a>,<a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365220.pdf">docx</a>) <br class="atl-forced-newline"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365676.pdf">draft 4</a>, comment responses 3 (<a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365677.pdf">pdf</a>,<a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365221.pdf">docx</a>) <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Amy&nbsp;Kang, Nigel&nbsp;Deakin, Satish&nbsp;Kumar </td> 
+         <td class="confluenceTd"> Review complete. <br class="atl-forced-newline"> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishServerOpenSourceEdition3.1JMSIntegrationDocumentationReview-GlassFishHighAvailabilityAdministrationGuideChanges"></a><em>GlassFish High Availability Administration Guide</em> Changes</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Section </th> 
+         <th class="confluenceTh"> Documentation Impact </th> 
+         <th class="confluenceTh"> Reviewers </th> 
+         <th class="confluenceTh"> Status <br class="atl-forced-newline"> </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter&nbsp;1,&nbsp;"High&nbsp;Availability&nbsp;in&nbsp;GlassFish Server" <br class="atl-forced-newline"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365869.pdf">draft 1</a> <br class="atl-forced-newline"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365641.pdf">draft 2</a>, comment responses below with Chapter 10 <br class="atl-forced-newline"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365630.pdf">draft 3</a>, comment responses 2 below with Chapter 10 <br class="atl-forced-newline"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365673.pdf">draft 4</a>, comment responses 3 below with Chapter 10 </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Amy&nbsp;Kang, Nigel&nbsp;Deakin, Satish&nbsp;Kumar </td> 
+         <td class="confluenceTd"> In review. Comments due by February 17th, 2011. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 10, "Java Message Service Load Balancing and Failover" <br class="atl-forced-newline"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365866.pdf">draft 1</a> <br class="atl-forced-newline"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365642.pdf">draft 2</a>, comment responses (<a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365643.pdf">pdf</a>,<a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365225.pdf">docx</a>) <br class="atl-forced-newline"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365628.pdf">draft 3</a>, comment responses 2 (<a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365627.pdf">pdf</a>,<a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365219.pdf">docx</a>) <br class="atl-forced-newline"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365672.pdf">draft 4</a>, comment responses 3 (<a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365674.pdf">pdf</a>,<a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365224.pdf">docx</a>) </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Amy&nbsp;Kang, Nigel&nbsp;Deakin, Satish&nbsp;Kumar </td> 
+         <td class="confluenceTd"> In review. Comments due by February 17th, 2011. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishServerOpenSourceEdition3.1JMSIntegrationDocumentationReview-MessageQueueAdministrationGuideChanges"></a><em>Message Queue Administration Guide</em> Changes</h2> <p>Draft of <em>Message Queue Administration Guide</em> with change bars: <br class="atl-forced-newline"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365600.pdf">draft 1</a><br class="atl-forced-newline"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365668.pdf">draft 2</a>, comment responses (<a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365667.pdf">pdf</a>,<a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365223.pdf">docx</a>) <br class="atl-forced-newline"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365701.pdf">draft 3</a>, comment responses 2 (<a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365702.pdf">pdf</a>,<a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365222.pdf">docx</a>)</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Section </th> 
+         <th class="confluenceTh"> Documentation Impact </th> 
+         <th class="confluenceTh"> Reviewers </th> 
+         <th class="confluenceTh"> Status <br class="atl-forced-newline"> </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 10, "Configuring and Managing Broker Clusters" </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Amy&nbsp;Kang, Nigel&nbsp;Deakin </td> 
+         <td class="confluenceTd"> In review. Comments due by February 20th, 2011. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 16, "Command Line Reference" </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Amy&nbsp;Kang, Nigel&nbsp;Deakin </td> 
+         <td class="confluenceTd"> In review. Comments due by February 20th, 2011. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 17, "Broker Properties Reference" </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Amy&nbsp;Kang, Nigel&nbsp;Deakin </td> 
+         <td class="confluenceTd"> In review. Comments due by February 20th, 2011. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishServerOpenSourceEdition3.1JMSIntegrationDocumentationReview-MessageQueueTechnicalOverviewChanges"></a><em>Message Queue Technical Overview</em> Changes</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Section </th> 
+         <th class="confluenceTh"> Documentation Impact </th> 
+         <th class="confluenceTh"> Reviewers </th> 
+         <th class="confluenceTh"> Status <br class="atl-forced-newline"> </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 4, "Broker Clusters" <br class="atl-forced-newline"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365602.pdf">draft 1</a> <br class="atl-forced-newline"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365634.pdf">draft 2</a>, comment responses (<a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365635.pdf">pdf</a>, <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365194.pdf">docx</a>) <br class="atl-forced-newline"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365632.pdf">draft 3</a>, comment responses 2 (<a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365631.pdf">pdf</a>, <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365195.pdf">docx</a>) </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Amy Kang, Nigel Deakin </td> 
+         <td class="confluenceTd"> In review. Comments due by February 19th, 2011. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishServerOpenSourceEdition3.1JMSIntegrationDocumentationReview-ChangestoManPages"></a>Changes to Man Pages</h2> 
+     <hr> <p>Note - Comments are now closed for man pages. To suggest an improvement to a man page or report an error in a man page, file a <a href="http://java.net/jira/browse/GLASSFISH">GlassFish issue</a>, subcomponent docs, against the man page.</p> 
+     <hr> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Man Page Name and Section </th> 
+         <th class="confluenceTh"> Documentation Impact </th> 
+         <th class="confluenceTh"> Reviewers </th> 
+         <th class="confluenceTh"> Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365518.pdf">change-master-broker(1)</a> </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Satish Kumar </td> 
+         <td class="confluenceTd"> Updated 11 Feb 2011 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365511.pdf">configure-jms-cluster(1)</a> </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Satish Kumar </td> 
+         <td class="confluenceTd"> Updated 11 Feb 2011 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365517.pdf">create-jmsdest(1)</a> </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Satish Kumar </td> 
+         <td class="confluenceTd"> Updated 11 Feb 2011 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365516.pdf">create-jms-host(1)</a> </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Satish Kumar </td> 
+         <td class="confluenceTd"> Updated 11 Feb 2011 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365515.pdf">create-jms-resource(1)</a> </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Satish Kumar </td> 
+         <td class="confluenceTd"> Updated 11 Feb 2011 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365522.pdf">delete-jmsdest(1)</a> </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Satish Kumar </td> 
+         <td class="confluenceTd"> Updated 11 Feb 2011 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365521.pdf">delete-jms-host(1)</a> </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Satish Kumar </td> 
+         <td class="confluenceTd"> Updated 11 Feb 2011 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365520.pdf">delete-jms-resource(1)</a> </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Satish Kumar </td> 
+         <td class="confluenceTd"> Updated 11 Feb 2011 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365519.pdf">flush-jmsdest(1)</a> </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Satish Kumar </td> 
+         <td class="confluenceTd"> Updated 11 Feb 2011 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365498.pdf">jms-ping(1)</a> </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Satish Kumar </td> 
+         <td class="confluenceTd"> Updated 11 Feb 2011 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365499.pdf">list-jmsdest(1)</a> </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Satish Kumar </td> 
+         <td class="confluenceTd"> Updated 11 Feb 2011 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365496.pdf">list-jms-hosts(1)</a> </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Satish Kumar </td> 
+         <td class="confluenceTd"> Updated 11 Feb 2011 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365497.pdf">list-jms-resources(1)</a> </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Satish Kumar </td> 
+         <td class="confluenceTd"> Updated 11 Feb 2011 </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365892.pdf">configure-jms-cluster.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365891.pdf">change-master-broker.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365889.pdf">create-jmsdest.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365901.pdf">create-jms-host.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365898.pdf">create-jms-resource.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365890.pdf">delete-jmsdest.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365899.pdf">delete-jms-host.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365896.pdf">delete-jms-resource.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365887.pdf">flush-jmsdest.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365900.pdf">jms-ping.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365888.pdf">list-jmsdest.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365897.pdf">list-jms-hosts.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365895.pdf">list-jms-resources.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365573.pdf">genericjmsra.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365908.pdf">AdminGde-Ch16-JMS.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365869.pdf">HAAdminGde-Ch1-Overview.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365866.pdf">HAAdminGde-Ch10-JMS.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365511.pdf">configure-jms-cluster.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365518.pdf">change-master-broker.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365517.pdf">create-jmsdest.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365522.pdf">delete-jmsdest.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365519.pdf">flush-jmsdest.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365499.pdf">list-jmsdest.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365516.pdf">create-jms-host.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365498.pdf">jms-ping.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365515.pdf">create-jms-resource.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365521.pdf">delete-jms-host.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365520.pdf">delete-jms-resource.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365496.pdf">list-jms-hosts.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365497.pdf">list-jms-resources.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365602.pdf">4_broker-clusters.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365600.pdf">MQ_Admin_Gde.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365615.pdf">GenericJMSRA-WLS-MQ.pdf</a> (application/x-download) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365640.pdf">JMS-GFAG-Comments.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365639.pdf">AdminGde-Ch16-JMS-draft2.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365642.pdf">HAAdminGde-Ch10-JMS-draft2.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365643.pdf">JMS-GFHAAG-Comments.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365641.pdf">HAAdminGde-Ch1-Overview-draft2.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365635.pdf">JMS-MQTO-Comments.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365634.pdf">4_broker-clusters-draft2.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365645.pdf">genericjmsra-wls_v3.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365644.pdf">genericjmsra-mq_v2.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365628.pdf">HAAdminGde-Ch10-JMS-draft3.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365629.pdf">AdminGde-Ch16-JMS-draft3.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365630.pdf">HAAdminGde-Ch1-Overview-draft3.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365626.pdf">JMS-GFAG-Comments-2.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365627.pdf">JMS-GFHAAG-Comments-2.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365632.pdf">4_broker-clusters-draft3.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365631.pdf">JMS-MQTO-Comments-2.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365668.pdf">MQ_Admin_Gde2.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365667.pdf">JMS-MQAG-Comments.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365676.pdf">AdminGde-Ch16-JMS-draft4.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365677.pdf">JMS-GFAG-Comments-3.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365674.pdf">JMS-GFHAAG-Comments-3.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365672.pdf">HAAdminGde-Ch10-JMS-draft4.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365673.pdf">HAAdminGde-Ch1-Overview-draft4.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365702.pdf">JMS-MQAG-Comments-2.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365701.pdf">MQ_Admin_Gde3.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365318.pdf">genericjmsra-mq_refresh.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365194.pdf">JMS-MQTO-Comments.docx.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365195.pdf">JMS-MQTO-Comments-2.docx.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365223.pdf">JMS-MQAG-Comments.docx.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365222.pdf">JMS-MQAG-Comments-2.docx.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365225.pdf">JMS-GFHAAG-Comments.docx.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365224.pdf">JMS-GFHAAG-Comments-3.docx.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365219.pdf">JMS-GFHAAG-Comments-2.docx.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365218.pdf">JMS-GFAG-Comments.docx.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365221.pdf">JMS-GFAG-Comments-3.docx.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874345/21365220.pdf">JMS-GFAG-Comments-2.docx.pdf</a> (application/pdf) 
+      <br> 
+     </div> 
+     <div class="tabletitle"> 
+      <a name="comments"> <h4>Comments:</h2> </a> 
+     </div> 
+     <table border="0" width="100%"> 
+      <tbody>
+       <tr> 
+        <td> <a name="comment-20882668"></a> <font class="smallfont">
+          <div class="table-wrap"> 
+           <table class="confluenceTable">
+            <tbody> 
+             <tr> 
+              <th class="confluenceTh"> Comment ID </th> 
+              <th class="confluenceTh"> Location </th> 
+              <th class="confluenceTh"> Comment </th> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> MAF-001 </td> 
+              <td class="confluenceTd"> GF Admin Gde, Ch14 </td> 
+              <td class="confluenceTd"> Sample comment. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> MAF-002 </td> 
+              <td class="confluenceTd"> GF HA Admin Gde, Ch10 </td> 
+              <td class="confluenceTd"> Another Sample comment. </td> 
+             </tr> 
+            </tbody>
+           </table> 
+          </div> </font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by oldestred at Feb 10, 2011 02:51 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20882365"></a> <font class="smallfont"><p>Following are the Comments for man pages:</p> <p>1. configure-jms-cluster</p> <p>Under Options-&gt;clustertype, it should be configstoretype instead of configstorstype</p> <p>2.create-jmsdest</p> <p>Under Options, remove -T option</p> <p>3. create-jms-host</p> <p>create-jms-host doesn't work without mqusername &amp; mqpassword options. So example needs to be updated with those options. Are they part of passfile???</p> <p>4. delete-jmsdest</p> <p>remove -T option under Options</p> <p>5.flush-jmsdest</p> <p>remove -T option under Options</p> <p>6.jms-ping, create-jms-resource etc</p> <p>I am seeing the connector statements printed along with jms statements. I am not sure if they should be included in the examples.</p> <p>For example:<br> intg-v60x-1# ./asadmin jms-ping<br> JMS-ping command executed successfully<br> Connector resource test_jms_adapter created.<br> Command jms-ping executed successfully.</p> <p>7.list-jmsdest</p> <p>remove -T option under Options</p> <p>8.I am also seeing &nbsp;"This subcommand is supported in remote mode only" for most of the jms commands. Is it jms REMOTE mode or something completely different? If it is jms REMOTE mode then the comment should be removed for most of the commands.</p></font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by sarada_k at Feb 10, 2011 18:14 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20882362"></a> <font class="smallfont"> <p>1. change-master-broker<br> Its probably worth mentioning here that by default the master broker is the first configured instance in the GF cluster</p> <p>2. configure-jms-cluster<br> Remove the --force option. This is no longer valid. </p> <p>3. create-jms-resource/delete-jms-resource/list-jms-resources:<br> config is not a valid target type. Valid targets for these commands are - server, domain, cluster_name, instance_name</p> </font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by sats_i at Feb 11, 2011 02:49 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20882361"></a> <font class="smallfont"><p>Thanks for the thorough review Sarada.</p> <p>RE: your comment no 8: the REMOTE mode being referred to here is the asadmin REMOTE mode not the JMS integration REMOTE mode, so this should be fine. </p></font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by sats_i at Feb 11, 2011 02:52 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20882354"></a> <font class="smallfont"><p><b>1. configure-jms-cluster</b><br> Done. See updated pdf.<br> <b>2. create-jmsdest</b><br> Done. See updated pdf.<br> <b>3. create-jms-host</b><br> Done. Discovered through trying it out that all the --mq* options are required. See updated pdf.<br> <b>4. delete-jmsdest</b><br> Done. See updated pdf.<br> <b>5.flush-jmsdest</b><br> Done. See updated pdf.<br> <b>6.jms-ping, create-jms-resource etc</b><br> Done. See updated pdfs of jms-ping, create-jms-resource, delete-jms-resource.<br> <b>7.list-jmsdest</b><br> Done. See updated pdf.<br> <b>8.I am also seeing "This subcommand is ...</b><br> Done. Added the text "Remote asadmin subcommands require a running domain administration server (DAS)." as appropriate to all man pages in an effort to clarify the confusion. See updated pdfs.</p></font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by oldestred at Feb 11, 2011 18:03 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20882353"></a> <font class="smallfont"><p><b>1. change-master-broker</b><br> Done. See updated pdf.<br> <b>2. configure-jms-cluster</b><br> Done. See updated pdf.<br> <b>3. create-jms-resource/delete-jms-resource/list-jms-resources:</b><br> Done. See updated pdf.</p></font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by oldestred at Feb 11, 2011 18:05 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20882024"></a> <font class="smallfont"><p>Comments for chapter 16 Administering the Java Message Service (JMS)</p> 
+          <div class="table-wrap"> 
+           <table class="confluenceTable">
+            <tbody> 
+             <tr> 
+              <th class="confluenceTh">Comment ID </th> 
+              <th class="confluenceTh"> Location </th> 
+              <th class="confluenceTh"> Comment </th> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-1</td> 
+              <td class="confluenceTd">p289</td> 
+              <td class="confluenceTd">some links do not seem point to the top of intended sections under "The following topics are addressed here:"</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-2</td> 
+              <td class="confluenceTd">p290 The JMS service supports JMS hosts to be used in these modes:</td> 
+              <td class="confluenceTd">The "Embedded", "Local" and "Remote" descriptions need to be changed, please refer to the latest GF 3.1 "Deployment Planning Guide" chapter "Java Message Service Type" for descriptions of these modes</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-3</td> 
+              <td class="confluenceTd">p290 JMS Destination Resources </td> 
+              <td class="confluenceTd"> ".. specify the target of messages they produce and the source of messages they consume.." - please clarify 'target'and 'source' by using 'target destination' and 'source destination'</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-4</td> 
+              <td class="confluenceTd">p290 JMS Physical Destinations </td> 
+              <td class="confluenceTd"> Please use "administratively" instead of 'statically' to be consistent with MQ Administration Guide doc</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-5</td> 
+              <td class="confluenceTd">p290</td> 
+              <td class="confluenceTd">".. statically created physical destinations are more efficient in production environment", change to ".. administratively created destinations are more suitable for production environment"</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-6</td> 
+              <td class="confluenceTd">p290 JMS Service High Availability </td> 
+              <td class="confluenceTd"> possibly here reference MQ Technical Overview "Broker Clusters"</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-7</td> 
+              <td class="confluenceTd">p291 Updating the JMS Service Configuration</td> 
+              <td class="confluenceTd">"...jms-service.type", "The JMS host mode the service is to use", the "JMS host mode" term is not consistent with other books, e.g. "Deployment Planning Guide" or the domain.xml dtd, it simply refers the "type" as the JMS service type. It should use "JMS service type"</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-8</td> 
+              <td class="confluenceTd">p290 Updating the JMS Service Configuration</td> 
+              <td class="confluenceTd">"..jms-service.start-args", "A list of arguments the JMS service passes to Local-mode .." should be "A list of arguments the JMS service passes to Local-mode and Embedded mode .."</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-9</td> 
+              <td class="confluenceTd">p290 Updating the JMS Service Configuration</td> 
+              <td class="confluenceTd"> The term "JMS host" here and some other places in this doc is inconsistent with some other docs, e.g. domain.xml dtd, where it uses "broker" </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-10</td> 
+              <td class="confluenceTd">p290 Updating the JMS Service Configuration</td> 
+              <td class="confluenceTd">"..jms-service.addresslist-iterations", "..indicates that the number of attempts.." should be "..indicates that the number of times.."</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-11</td> 
+              <td class="confluenceTd">p290 Updating the JMS Service Configuration</td> 
+              <td class="confluenceTd"> Please check with Satish for all properties prefixes </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-12</td> 
+              <td class="confluenceTd">P290 Updating the JMS Service Configuration </td> 
+              <td class="confluenceTd"> Please check with Satish for "set configs.config.config-name.jms-service.property.broker-property-name=value" usage correctness</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-13</td> 
+              <td class="confluenceTd">p293 About JMS Host Modes</td> 
+              <td class="confluenceTd"> "servuce" typo</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-14</td> 
+              <td class="confluenceTd">p293 About JMS Host Modes</td> 
+              <td class="confluenceTd"> Please check with Satish on comments about the port# of RMI registry </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-15</td> 
+              <td class="confluenceTd">p294 Configuring Embedded and Local JMS Hosts</td> 
+              <td class="confluenceTd">"Should the need to use Message Queue utilities arise, you must use the -varhome option when running the Message Queue utility to specify the location where the JMS service stores configuration information for Embedded and Local JMS hosts ", change to "Should the need to use Message Queue utilities arise, you must use the -varhome option when running certain Message Queue utilities to specify the 'var' home location of the Embedded and Local JMS host"</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-16</td> 
+              <td class="confluenceTd">p294 To Create a JMS Host</td> 
+              <td class="confluenceTd">"Use the create-jms-host subcommand in remote mode to create an additional JMS host", the term "remote mode" is confusing here, similar confusion usage of "remote mode in later sections of this doc as well</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-17</td> 
+              <td class="confluenceTd">Administering JMS Hosts</td> 
+              <td class="confluenceTd">There should be some text to explain for Embedded and Local JMS service modes, how the JMS host(s) in jms-service are used in a GlassFish cluster where Message Queue brokers are auto-clustering. Please check with Satish for text</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-18</td> 
+              <td class="confluenceTd">p300 Administering JMS Physical Destinations</td> 
+              <td class="confluenceTd">"The physical destination is temporary and expires after a period specified by a Message Queue configuration property", change to "The auto-created physical destination is temporary and expires after a period specified by a Message Queue configuration property if no message in it and no producer and no consumer on it"</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-19</td> 
+              <td class="confluenceTd">p302 Troubleshooting the JMS Service</td> 
+              <td class="confluenceTd">"When you start GlassFish Server, the JMS service is available but is not loaded until it is needed", please check with Satish - this is only true for Embedded JMS service mode</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-20</td> 
+              <td class="confluenceTd">p302 Troubleshooting the JMS Service </td> 
+              <td class="confluenceTd"> "Use the jms-ping(1) subcommand to check if the JMS service is running or, if it is not yet running, to start it", need to give suggestion how "to start it" and clarify whether this applies to all modes of JMS service please check with Satish. Please note that in LOCAL mode, one should not start the broker process by itself</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-21</td> 
+              <td class="confluenceTd">p302 Troubleshooting the JMS Service</td> 
+              <td class="confluenceTd">"If a the log file indicates that a Message Queue broker did not respond to a message, stop the broker and then restart it." - I believe here it refers to REMOTE JMS service mode, should clarify that</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-22</td> 
+              <td class="confluenceTd">Administering the Java Message Service (JMS)</td> 
+              <td class="confluenceTd">This chapter should mention the GlassFish 3.1 new JMS subcommands of asadmin added, e.g. configure-jms-cluster, ..., please check with Satish for text</td> 
+             </tr> 
+            </tbody>
+           </table> 
+          </div> </font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by a-k at Feb 15, 2011 19:09 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20881914"></a> <font class="smallfont"><p>Comments for chapter 1 and 10 of GlassFish High Availability Administration Guide</p> 
+          <div class="table-wrap"> 
+           <table class="confluenceTable">
+            <tbody> 
+             <tr> 
+              <th class="confluenceTh"> Comment ID </th> 
+              <th class="confluenceTh"> Location </th> 
+              <th class="confluenceTh"> Comments </th> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-1</td> 
+              <td class="confluenceTd">p22 Recovering Message Queue</td> 
+              <td class="confluenceTd">".., including JMS hostconfigurations, are stored in the Domain", change to ".., including JMS host configurations for Embedded or Local JMS hosts, are stored in DAS"</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-2</td> 
+              <td class="confluenceTd">p23 Recovering Message Queue</td> 
+              <td class="confluenceTd">"according using" typo</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-3</td> 
+              <td class="confluenceTd">p157 Connection Pooling and Failover</td> 
+              <td class="confluenceTd"> "When the Address List Behavior attribute is random (the default), .." somewhat contradicts with the later sentence "The default value for the Address List Behavior attribute is priority, if the JMS type is of type LOCAL.", Please check with Satish to clarify what is the default Address List Behavior for Embedded, Local and Remote</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-4</td> 
+              <td class="confluenceTd">p157 Connection Pooling and Failover</td> 
+              <td class="confluenceTd">"When failover occurs, MQ transparently transfers the load to another broker ..", change to "When failover occurs, MQ automatically transfers the load to another broker .."</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-5</td> 
+              <td class="confluenceTd">p157 Connection Pooling and Failover</td> 
+              <td class="confluenceTd">"To specify whether the GlassFish Server tries to reconnect to the primary broker ..", need to clarify what does "primary broker" referring to here</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-6</td> 
+              <td class="confluenceTd">p157 Connection Pooling and Failover</td> 
+              <td class="confluenceTd">"select the Reconnect checkbox", need to clarify on which screen</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-7</td> 
+              <td class="confluenceTd">p158 Load-Balanced Message Inflow</td> 
+              <td class="confluenceTd">"set the maxNumActiveConsumers property of the physical destination to a large value", change "a large value" to "a value &gt; 0"</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-8</td> 
+              <td class="confluenceTd">p158 Load-Balanced Message Inflow</td> 
+              <td class="confluenceTd">"To ensure that local delivery is preferred", change to "To ensure a message-driven bean first try to connect to the local colocated broker"</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-9</td> 
+              <td class="confluenceTd">p158 Load-Balanced Message Inflow</td> 
+              <td class="confluenceTd">"This setting is the default for GlassFish Server instances that belong to a cluster", see comment ak-3</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-9'</td> 
+              <td class="confluenceTd">p159</td> 
+              <td class="confluenceTd">8 links under "The following topics are addressed here" and the link titles look crowded, for clarity maybe combine close-related topics to a higher level title ?</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-10</td> 
+              <td class="confluenceTd">p159 About Message Queue Broker Clusters</td> 
+              <td class="confluenceTd">"When a broker or a connection fails, ...reconnect to another broker in the cluster", change to "When a broker fails, ...reconnect to another broker in the cluster", or to be worded to include the case of auto-reconnect to possibly the same broker if only connection failed but broker running</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-11</td> 
+              <td class="confluenceTd">p159 About Message Queue Broker Clusters</td> 
+              <td class="confluenceTd">"based on where information about the cluster configuration is stored", change to "based on where the cluster configuration change record is stored"</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-12</td> 
+              <td class="confluenceTd">p159 About Message Queue Broker Clusters</td> 
+              <td class="confluenceTd">change all occurrences of "the information about the cluster's configuration" to "the cluster configuration change record"</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-13</td> 
+              <td class="confluenceTd">p159 About Message Queue Broker Clusters</td> 
+              <td class="confluenceTd">"to keep abreast of changes to the configuration", change to "to keep abreast of changes to the cluster configuration change record"</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-14</td> 
+              <td class="confluenceTd">p159 About Message Queue Broker Clusters</td> 
+              <td class="confluenceTd">"Thus, brokers can access the cluster configuration information", change to "Thus, brokers can access the cluster configuration change record"</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-15</td> 
+              <td class="confluenceTd">p159 About Message Queue Broker Clusters</td> 
+              <td class="confluenceTd">Enhanced broker clusters: some comment as ak-10</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-16</td> 
+              <td class="confluenceTd">p159 About Message Queue Broker Clusters</td> 
+              <td class="confluenceTd">This section should refer to MQ Technical Overview on "Broker Clusters" so that the same content are not repeated here. I think here it can simply give a brief summarization of MQ cluster types and service availabilities provided</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-17</td> 
+              <td class="confluenceTd">p160 </td> 
+              <td class="confluenceTd">"it as its primary broker and has that broker listed first in its JMS host list.", if "primary broker" == "listed first in its JMS host list", then rewording this</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-18</td> 
+              <td class="confluenceTd">p161</td> 
+              <td class="confluenceTd">"subcommand in remote mode", confusing "remote mode" here, maybe "subcommand in asadmin remote mode", similar changes in later contents where "remote" is used for the same context</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-19</td> 
+              <td class="confluenceTd">p162</td> 
+              <td class="confluenceTd">"Use the change-master-broker subcommand .. JMS hosts", add following at the end "for example, before you remove the GlassFish instance that is associated with the current master broker from the cluster"</td> 
+             </tr> 
+            </tbody>
+           </table> 
+          </div> </font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by a-k at Feb 17, 2011 06:40 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20881910"></a> <font class="smallfont"><p><b>Comments on GF HA Guide:</b></p> <p>1. Connection Pooling and failover (Page 157)- "By default, the JMS service selects the primary JMS host (Message Queue broker) randomly from the specified JMS host list." The above is true only for Remote mode. For EMBEDDED and LOCAL, it should be - "By default, the JMS Service selects the co-located JMS Host (MQ Broker). When failover occurs, MQ transparently transfers the load to another JMS host in the list..."</p> <p>2. Page 164 "Configure the GlassFish Server cluster to use a Message Queue enhanced broker cluster with master broker by using the configure-jms-cluster(1) subcommand: asadmin --passwordfile password-file configure-jms-cluster --clustertype=enhanced<br> --dbvendor database-vendor-name --dbuser database-user-name --dburl database-url<br> --property list-of-database-specific-properties glassfish-cluster-name" </p> <p>This is incorrect there is no master-broker option in enhanced broker clusters. The command will need the --configstore and --messagestore to point to JDBC</p> <p>3. To Migrate Between Types of Conventional Broker Clusters (Page 162)- "If the need arises to convert from a conventional broker cluster with master broker to a conventional broker cluster of peer brokers, or the reverse, follow the instructions in 'Managing Conventional Clusters' in Oracle GlassFish Message Queue 4.5 Administration Guide." This should be changed into a note of caution and mentioned right in the beginning of this section.</p></font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by sats_i at Feb 17, 2011 10:18 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20881909"></a> <font class="smallfont"><p><b>Comments on GF Admin Guide:</b></p> <p>1. Page 292:<br> "If the broker property name includes dots, preface the dots with backslashes (); for example, to set the imq.system.max_count property, specify imq\.system\.max_count in the set subcommand."</p> <p>The '.' should be escaped with double slashes - '<br class="atl-forced-newline">' like in the following example</p> <p>asadmin set server-config.jms-service.property.imq\\.admin\\.tcp<br class="atl-forced-newline">.port=12345</p> <p>2. page 293: typo- JMS servuce -&gt; JMS Service</p> <p>3. Page 294: ...varhome... This location is domain-root-dir/domain-name/imq. </p> <p>This varhome location is only for DAS. We will need to specify the varhome location for stand-alone instances and clustered-instances also.</p> <p>4. Page 293: About JMS Host Modes:<br> "Local mode: the JMS Service starts the MQ broker specified ... on the same host" <br> You may want to add that the broker is started as a separate process.</p> <p>5. Trouble shooting (page 302):<br> "When you start GlassFish Server, the JMS service is available but is not loaded until it is needed"</p> <p>This is true only for Embedded mode. The service is started eagerly in LOCAL mode.</p> </font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by sats_i at Feb 17, 2011 10:30 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20881891"></a> <font class="smallfont"><p>Comments for Message Queue Technical Overview</p> 
+          <div class="table-wrap"> 
+           <table class="confluenceTable">
+            <tbody> 
+             <tr> 
+              <th class="confluenceTh">Comment ID</th> 
+              <th class="confluenceTh">Location</th> 
+              <th class="confluenceTh">Comment</th> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-1</td> 
+              <td class="confluenceTd">p85</td> 
+              <td class="confluenceTd"> "a broker or connection failure rarely ..... delivered in order.", change to "messages owned by the failed broker are delivered by the failover broker as soon as been taken over and processed, and JMS message order semantics are preserved during failover"</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-2</td> 
+              <td class="confluenceTd">p89</td> 
+              <td class="confluenceTd">"... differ in the way that cluster state information is maintained.", change to "... differ in the way that cluster persist state information is maintained."</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-3</td> 
+              <td class="confluenceTd">p92</td> 
+              <td class="confluenceTd">"When the cluster encounters a failed connection between brokers, it cannot do anything to recover, other than stop sendng data.", change to "When a broker in the cluster detects a failure of its connection to another broker in the cluster, it automatically attempts to reconnect to that broker periodically. If that broker is failed, messages and state information stored in the failed broker cannot be recovered until the failed broker is restarted."</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-4</td> 
+              <td class="confluenceTd">p92</td> 
+              <td class="confluenceTd">"It is the responsibility of an administrator to monitor .. (...) and perform the appropriate recovery operations.", change to "It is the responsibility of an administrator to monitor ..(...) and to ensure the failed broker is brought back online as soon as possible"</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-5</td> 
+              <td class="confluenceTd">p92</td> 
+              <td class="confluenceTd">"For example, messages to have been consumed by the client or the state of transactions involving the client might have been lost.", change to "For example, messages that have been consumed by the client or the state of transactions involving the client"</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-6</td> 
+              <td class="confluenceTd">p93</td> 
+              <td class="confluenceTd">"If these failure detection services operating in tandem determine that a broker has failed, then a failover broker ..", change to "These failure detection services operating in tandem to determine that a broker has failed, then a failover borker .."</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-6</td> 
+              <td class="confluenceTd">p93</td> 
+              <td class="confluenceTd">".. will clean up any transient resources (such as transactions and ..)", change to ".. will clean up any transient resources (such as completed transactions and ..)"</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-6</td> 
+              <td class="confluenceTd">p93</td> 
+              <td class="confluenceTd">".. will not cause a failure in message delivery.", change to ".. will not cause its messages unavailable for delivery"</td> 
+             </tr> 
+            </tbody>
+           </table> 
+          </div> </font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by a-k at Feb 17, 2011 20:15 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20881882"></a> <font class="smallfont"><p>Comments on GlassFish High Availability Administration Guide</p> <p>Chapter 1<br> ---------</p> <p>P18 "High Availability Java Message Service"</p> <p>Change "Connection Pooling and Failover<br> The JMS service pools JMS connections automatically."<br> To: "Failover"</p> <p>Connection pooling is nothing to do with high availability. It's a performance/resource management feature. Suggest you delete all references to connection pooling from this section.)</p> <p>Change:<br> "For more information about JMS connection pooling and failover, see "Connection Pooling<br> and Failover" on page xxx."<br> To:<br> "For more information about JMS high availability, see (name of chapter 10) on page xxx."</p> <p>I make more comments about chapter 10 later.</p> <p>Page 19: "How GlassFish Server Provides High Availability"</p> <p>In the list that follows "GlassFish Server provides high availability through the following subcomponents and features:", Add a link to "Using Message Queue Broker Clusters with GlassFish Server" on page xxx" (or perhaps to the whole of chapter 10)</p> <p>I know we mentioned it earlier, but if we're listing here the ways in which GlassFish provides HA then we need to mention MQ high availability.</p> <p>Page 19: "Message Queue Broker Clusters"</p> <p>Change "This automatically created broker cluster is configurable to<br> take advantage of the different types of broker clusters supported by Message Queue."<br> To: "This automatically created broker cluster is configurable to<br> take advantage of the two types of broker clusters (conventional and enhanced) supported by Message Queue."</p> <p>Change: "Additionally, Message Queue broker clusters created and managed using Message Queue<br> itself can be used as external, or remote, JMS hosts to provide JMS messaging high<br> availability to both GlassFish standalone instances and clusters."</p> <p>To: "Additionally, Message Queue broker clusters created and managed using Message Queue<br> itself can be used as external, or remote, JMS hosts. This provides additional deployment options, such<br> as deploying a Message Queue broker on a different machine from the GlassFish instance, or deploying<br> different numbers of GlassFish instances and Message Queue brokers."</p> <p>Page 20: "Highly Available Clusters"</p> <p>Is it worth spelling out that in this context we're not talking about JMS HA?</p> <p>Page 22: "Recovering MessageQueue"</p> <p>Change "hostconfigurations" to "host configurations"</p> <p>Change "maintain by Message Queue brokers" to "maintained by Message Queue brokers"</p> <p>This statement that private data is stored with the GlassFish instances does not apply in the case of enhanced clusters. In that case the message data will be stored in a centralised HA database. Add that in that case you may need to follow any backup/restore procedure defined for that database.</p> <p>Chapter 10: "Java Message Service Load Balancing and Failover"<br> -------------------------------------------------------------</p> <p>I think the name of this chapter, and its introductory sentence, should refer to "High Availability", for consistency with the previous chapter.</p> <p>I suggect changing the name of the chapter to "Configuring Java Message Service High Availability, Load Balancing and Failover", or, of this is too long, leave out the mention of load balancing since that's a relatively short part of the chapter.</p> <p>Then change "This chapter describes how to configure load balancing and failover of the JavaMessage Service<br> (JMS) for use with the GlassFish Server."<br> to:<br> "This chapter describes how to configure high availability, load balancing and failover of the Java Message Service<br> (JMS) for use with the GlassFish Server."</p> <p>Under "The following topics are addressed here:"<br> add a reference to Load-Balanced Message Inflow on p158.</p> <p>Page 157: "For more information about JMS connection pooling and failover, see "Connection Pooling<br> and Failover" on page xxx."</p> <p>Page 157: "Connection Pooling and Failover"</p> <p>Connection pooling is nothing to do with HA (you get connection pooling in standalone instances as well). Please remote all references to connection pooling.</p> <p>Change: "Connection Pooling and Failover. GlassFish Server supports JMS connection pooling and failover. The Oracle GlassFish Server pools JMS connections automatically."<br> To: "Connection Failover. GlassFish Server supports JMS connection failover."</p> <p>Page 159: "Conventional cluster with master broker." You could add that this is the simplest to configure and is the default for a GlassFish cluster.</p> <p>Page 159: "Conventional cluster of peer brokers."<br> I haven't seen this term before. I like it. Do the updated MQ docs (admin guide and technical overview) use the same term?</p> <p>Page 160: Embedded (at bottom of page). Add the comment that there is one broker for each GlassFish instance, and that each pair is colocated in the same JVM.</p> <p>Page 161: Local (at top of page). Add the comment that there is one broker for each GlassFish instance, and that each pair is colocated on the same machine.</p> <p>Page 161: Remote (near top of page).<br> I suggest replacing "Any" with the same list as for "Local", since the use of the word "Any" suggests that there are other possibilities.</p> <p>Add the comment that this option allows a different number of brokers to GlassFish instance, and that may be on different machines.</p> <p>Page 161: "To Configure a Conventional Broker Cluster With Master Broker as an Embedded or Local JMS Host for a GlassFish Server Cluster"</p> <p>This heading is a rather convoluted form of words. Can't we drop the words "JMS Host" (which in this context is synonymous with "Broker", and using two terms for the same thing is confusing) and change it to<br> "To Configure a GlassFish Server Cluster to use a conventional broker cluster with master broker"</p> <p>Change "Use the configure-jms-cluster subcommand in remote mode to configure a conventional<br> broker cluster with master broker to service a GlassFish Server cluster that uses Embedded or<br> Local JMS hosts."<br> To: "Use the configure-jms-cluster subcommand to configure a conventional<br> broker cluster with master broker to service a GlassFish Server cluster that uses either Embedded or<br> Local brokers"</p> <p>(I don't know why the words "in remote mode" were used previously)</p> <p>Change "Note that this configuration, with embedded brokers, is the default for GlassFish Server clusters"</p> <p>Page 161: "To Configure a Conventional Broker Cluster of Peer<br> Brokers as an Embedded or Local JMS Host for a<br> GlassFish Server Cluster"</p> <p>Change heading to<br> "To Configure a GlassFish Server Cluster to use a conventional cluster of peer brokers"</p> <p>Change "Use the configure-jms-cluster subcommand in remote mode to configure a conventional<br> broker cluster of peer brokers to service a GlassFish Server cluster that uses Embedded or Local<br> JMS hosts."<br> To: "Use the configure-jms-cluster subcommand to configure a conventional<br> broker cluster of peer brokers to service a GlassFish Server cluster that uses Embedded or Local<br> brokers"</p> <p>Page 163: "To Change the Master Broker in a Broker Cluster<br> Serving as an Embedded or LocalHost"</p> <p>Change to "To change the master broker in a broker cluster that uses either embedded or<br> local brokers"</p> <p>(N.B. I'm not trying to impose my own capitalisation preferences here)</p> <p>Page 163: Fix incorrect use of bold font in "If the need arises to convert froma conventional broker cluster with master broker to a conventional broker cluster of peer brokers, or the reverse, follow the instructions in"Managing<br> Conventional Clusters" in"</p></font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by nigeldeakin at Feb 18, 2011 10:49 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20881855"></a> <font class="smallfont"><p>Comments for Message Queue Administration Guide Changes</p> 
+          <div class="table-wrap"> 
+           <table class="confluenceTable">
+            <tbody> 
+             <tr> 
+              <th class="confluenceTh">Comment ID</th> 
+              <th class="confluenceTh">Location</th> 
+              <th class="confluenceTh">Comment</th> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-1</td> 
+              <td class="confluenceTd">p178</td> 
+              <td class="confluenceTd">"no two running clusters may have the same cluster identifier", change to "no two clusters may have the same cluster identifier"</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-2</td> 
+              <td class="confluenceTd">p178</td> 
+              <td class="confluenceTd">Remove ". imq.cluster.sharecc.persist.jdbc.&lt;vendorName&gt;.table.MQSHARECC45 optionally .. change record" for it's for internal use, not for specifying alternative table name</td> 
+             </tr> 
+            </tbody>
+           </table> 
+          </div> <p>The following properties were not explicitly mentioned in the func spec, please add</p> 
+          <div class="table-wrap"> 
+           <table class="confluenceTable">
+            <tbody> 
+             <tr> 
+              <th class="confluenceTh">Comment ID</th> 
+              <th class="confluenceTh">Location</th> 
+              <th class="confluenceTh">Comment </th> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-3</td> 
+              <td class="confluenceTd">p178</td> 
+              <td class="confluenceTd">Add imq.cluster.sharecc.persist.jdbc.&lt;vendorName&gt;.password specifies password for the user, if required, for connecting to the database from vendor &lt;vendorName&gt;, should be set only in password files. String type, default not set</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-4</td> 
+              <td class="confluenceTd">p178</td> 
+              <td class="confluenceTd">Add imq.cluster.sharecc.persist.jdbc.&lt;vendorName&gt;.driver fully qualified Java class name of the JDBC driver for connecting to database from vendor vendorName. String type, default set per vendor </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-5</td> 
+              <td class="confluenceTd">p178</td> 
+              <td class="confluenceTd">Add imq.cluster.sharecc.persist.jdbc.&lt;vendorName&gt;.opendburl URL for connecting to existing database from vendor vendorName, applicable when Driver is used to connect to database. String type, default not set</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-6</td> 
+              <td class="confluenceTd">p178</td> 
+              <td class="confluenceTd">Add imq.cluster.sharecc.persist.jdbc.&lt;vendorName&gt;.createdburl URL for creating new database from vendor vendorName, applies for embedded database, such as Java DB. optional, String type, default not set </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-7</td> 
+              <td class="confluenceTd">p178</td> 
+              <td class="confluenceTd">Add imq.cluster.sharecc.persist.jdbc.&lt;vendorName&gt;.closedburl URL for closing connection to database from vendor vendorName, applies for some embedded databases, such as Java DB. String type, default not set </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-8</td> 
+              <td class="confluenceTd">p178</td> 
+              <td class="confluenceTd">Add imq.cluster.sharecc.persist.jdbc.&lt;vendorName&gt;.needpassword Does database from vendor vendorName require a password for broker access? If true, the imqbrokerd and imqdbmgr commands will prompt for a password, unless imq.cluster.sharecc.persist.jdbc.&lt;vendorName&gt;.password is set. Boolean type, default false</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-9</td> 
+              <td class="confluenceTd">p178</td> 
+              <td class="confluenceTd">Add imq.cluster.sharecc.persist.jdbc.&lt;vendorName&gt;.tableoption Vendor-specific options passed to the database when creating the table schema. String type, default not set except for MySQL, see broker default.properties</td> 
+             </tr> 
+             <tr> 
+              <th class="confluenceTh">Comment ID </th> 
+              <th class="confluenceTh"> Location </th> 
+              <th class="confluenceTh"> Comment </th> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-10</td> 
+              <td class="confluenceTd">p180</td> 
+              <td class="confluenceTd">Remove "HADB When using HDB in a GlassFish ... explicitly."</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-11</td> 
+              <td class="confluenceTd">p184</td> 
+              <td class="confluenceTd">"On such systems, you must ... properly: For each Linux ..", change to "On such systems, you must do the following: For each Linux .."</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-12</td> 
+              <td class="confluenceTd">p184</td> 
+              <td class="confluenceTd">"edit the file DNS lookup is performed before ..", change to "edit the file /etc/nsswitch.conf so that DNS lookup is performed before .."</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-13</td> 
+              <td class="confluenceTd">p183</td> 
+              <td class="confluenceTd">"..five seconds; the connection will succeed .. up (if one is configured). If .. has completed its startup." change to ".. five seconds until the connection succeeds." and start a new paragraph "For a cluster configured with master broker, the connection will succeed .. up. If .. has completed its startup."</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-14</td> 
+              <td class="confluenceTd">p184</td> 
+              <td class="confluenceTd">"Use the imqdbmgr .. to create the database table schema", change to "Use the imqdbmgr .. to create the database table", same comment on p185</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-15</td> 
+              <td class="confluenceTd">p184</td> 
+              <td class="confluenceTd"> Add following to "2 Create a cluster configuration file that uses the imq.cluster.brokerlist ..": "If you are using a cluster of peer brokers, set imq.cluster.nomasterbroker=true and the necessary JDBC properties (prefix with imq.cluster.sharecc.) in the configuration file"</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-16</td> 
+              <td class="confluenceTd">p185</td> 
+              <td class="confluenceTd">reorganize the original content in section "To Connect Brokers from the Command Line" as following </td> 
+             </tr> 
+            </tbody>
+           </table> 
+          </div> <p>Connecting brokers to a cluster on command line involves starting each broker with the imqbrokerd command using the -cluster option to specify the complete list of brokers to be included in the cluster, For example the following command... (taken text from "2 If you are ..").</p> <p>The value specified for the -cluster option must be the same for all brokers in the cluster.</p> <p>The following steps assumes you have set the necessary broker properties (except the imq.cluster.brokerlist) in each broker instance's configuration file: </p> <p>1 If using .. of peer ..</p> 
+          <ul> 
+           <li>Use the imqdbmgr ..</li> 
+           <li>Place a copy of ..</li> 
+           <li>Then start each broker with imqbrokerd using -cluster option</li> 
+          </ul> <p>2 If you are using a master broker</p> 
+          <ul> 
+           <li>Start the master broker first with imqbrokerd using -cluster option</li> 
+           <li>Once the master broker is runing, start each of the other brokers in the cluster with the imqbrokerd command using -cluster option</li> 
+          </ul> 
+          <div class="table-wrap"> 
+           <table class="confluenceTable">
+            <tbody> 
+             <tr> 
+              <th class="confluenceTh">Comment ID</th> 
+              <th class="confluenceTh"> Location</th> 
+              <th class="confluenceTh">Comment</th> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-17</td> 
+              <td class="confluenceTd">p187</td> 
+              <td class="confluenceTd">add following to "Removing Brokers From a Conventional Cluster": "If the broker to be removed is the master broker, please following instruction from section "Change Master Broker" which is a new section should be added to mention how to manually and dynamically change master broker</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-18</td> 
+              <td class="confluenceTd">p189</td> 
+              <td class="confluenceTd">"and then re-create the table schema", change to "and then re-create the table"</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-19</td> 
+              <td class="confluenceTd">p189-190</td> 
+              <td class="confluenceTd"> The hyper links of "Step 2" does not seem necessary</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-20</td> 
+              <td class="confluenceTd">p192</td> 
+              <td class="confluenceTd">"Create the database schema needed" change to "Create the database tables needed", some comment on p193</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-21</td> 
+              <td class="confluenceTd">p183</td> 
+              <td class="confluenceTd">The feature "Dynamically Change Master Broker" is not mentioned in chapter 10</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-22</td> 
+              <td class="confluenceTd">p326</td> 
+              <td class="confluenceTd">TABLE 16-4 "where hostName is the host name of the new master broker's host", change to "where hostName is the host name of the new master broker's Port Mapper host"</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-23</td> 
+              <td class="confluenceTd">p333</td> 
+              <td class="confluenceTd">create sharecc_tbl: "Create the database table schema for shared configuration change records in the current data store", change to "Create the database table for shared cluster configuration change record"</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-24</td> 
+              <td class="confluenceTd">p333</td> 
+              <td class="confluenceTd">delete sharecc_tbl: "Delete the shared configuration change database table from the current data store", change to "Delete the shared cluster configuration change record database table"</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-25</td> 
+              <td class="confluenceTd">p333</td> 
+              <td class="confluenceTd">recreate sharecc_tbl: "Re-create database table schema for shared configuration change records in the current data store. Deletes any existing shared configuration change database table from the current data store and then re-creates the table schema.", change to "Re-create database table for shared cluster configuration change record. Deletes existing database table of shared cluster configuration change record then re-creates the table."</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-26</td> 
+              <td class="confluenceTd">p333</td> 
+              <td class="confluenceTd">"Back up the shared configuration change database table to a backup file", change to "Back up the shared cluster configuration change record database table to a backup file"</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-27</td> 
+              <td class="confluenceTd">p333</td> 
+              <td class="confluenceTd">"Restore the shared configuration change database table from a backup file. The table schema must already exist.", change to "Restore the shared cluster configuration change record database table from a backup file. The table must already exist."</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-28</td> 
+              <td class="confluenceTd">p358</td> 
+              <td class="confluenceTd">"The location, as a URL, of the access control file for connection service", change to "The location, as a URL, of the access control file for the connection service"</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-29</td> 
+              <td class="confluenceTd">p368</td> 
+              <td class="confluenceTd">imq.cluster.nomasterbroker: "Does this conventional cluster lack a master broker in favor of using a shared JDBC store for the change configuration record?", change to "Specifies whether a conventional cluster should use shared JDBC database store for shared cluster configuration change record instead of using a master broker"</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-30</td> 
+              <td class="confluenceTd">p369</td> 
+              <td class="confluenceTd">"the imq.cluster.sharecc.persist.jdbc.* properties configure access to the shared JDBC store.", change to "the imq.cluster.sharecc.persist.jdbc.* properties are configured for accessing the shared JDBC store."</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-31</td> 
+              <td class="confluenceTd">p369</td> 
+              <td class="confluenceTd">imq.cluster.sharecc.persist.jdbc.dbVendor: "..housing the configuration change record", change to "..housing the cluster configuration change record", when it's not in chapter 10 where 'cluster' is obvious, I think use "cluster configuration change record" for clarity</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-31</td> 
+              <td class="confluenceTd">p369</td> 
+              <td class="confluenceTd">imq.cluster.sharecc.persist.jdbc.dbVendor: add "db2" to the vendor's list</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-32</td> 
+              <td class="confluenceTd">p369</td> 
+              <td class="confluenceTd">All descriptions for imq.cluster.sharecc.persist.jdbc.xx properties should mention "shared JDBC store for cluster configuration change record" for clarity</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-33</td> 
+              <td class="confluenceTd">p369</td> 
+              <td class="confluenceTd">"Optional vendor-specific property propName for database from vendor vendorName", change to "Optional vendor-specific property propName for the JDBC driver from vendor vendorName"</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-34</td> 
+              <td class="confluenceTd">p369</td> 
+              <td class="confluenceTd">Remove "imq.cluster.sharecc.persist.jdbc.vendorName.table.MQSHARECC45" from TABLE 17-12</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">ak-35</td> 
+              <td class="confluenceTd">p369</td> 
+              <td class="confluenceTd">Add the additional imq.cluster.sharecc.persist.jdbc.xxx properties from comments ak-3 to ak-9 inclusive to TABLE 17-12</td> 
+             </tr> 
+            </tbody>
+           </table> 
+          </div> </font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by a-k at Feb 18, 2011 13:29 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20879664"></a> <font class="smallfont"><p>Hey Satish, <br> I just updated the GenericJMSRA and WebSphere MQ section with a new graphic. I think you'll really like this one too. </p></font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by jeffschieli at Mar 17, 2011 15:19 
+         </div> </td> 
+       </tr> 
+      </tbody>
+     </table> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Dec 02, 2011 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

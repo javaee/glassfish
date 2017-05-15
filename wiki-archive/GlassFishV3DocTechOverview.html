@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFishV3DocTechOverview</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GlassFishV3DocTechOverview-GlassFishv3TechnicalOverview"></a>GlassFish v3 Technical Overview</h1> <p>The documentation team is creating an overview document for the Glassfish v3 Application Server doc collection. This document will contain high-level material about the AppServer architecture, users, tools, available docs, relationships to other products and plugins, and so on. At present, this type of material is scattered throughout the product docs, which means that many docs contain versions of the same material. We would like to centralize the general overview material so that action documents can go right in tasks and only the material directly associated with those tasks. Action docs are generally titled "guides."</p> <h4><a name="GlassFishV3DocTechOverview-TargetAudience"></a>Target Audience</h3> <p>The overview doc is aimed at people who have limited experience with J2ee technology, with the concepts of an application server, or with the concepts of this particular application server. People thinking of trying GlassFish. People thinking of buying the supported Sun Java Application Server product. Executives. System integrators. Your dad. </p> <h4><a name="GlassFishV3DocTechOverview-PurposeofThisPage"></a>Purpose of This Page</h3> <p>The purpose of this page is to identify the document content.</p> 
+     <ul> 
+      <li>Identify material from existing AppServer docs that might better be contained in a single overview, where all docs can point to it</li> 
+      <li>Suggest additional material that would be useful in such a product overview.</li> 
+      <li>Write material to add to the overview.</li> 
+     </ul> <p>This doc is not a catch-all for material that doesn't seem to belong anywhere else. Material must be high-level and apply to the Application Server as a whole. Public links to good high-level product information on a topic are welcome.</p> 
+     <hr> <h4><a name="GlassFishV3DocTechOverview-TechnicalOverviewContents%28proposed%29"></a>Technical Overview Contents (proposed)</h1> <p>Following is a tentative structure that such a doc could have, with some example topics. The links point to material in the 9.1 docset <a href="http://docs.sun.com/app/docs/coll/1343.4">http://docs.sun.com/app/docs/coll/1343.4</a>:</p> <h4><a name="GlassFishV3DocTechOverview-Chapter1IntroducingtheSunGlassFishEnterpriseServer"></a>Chapter 1 Introducing the Sun GlassFish Enterprise Server</h2> 
+     <ul> 
+      <li>What is an Application Server., what is GFES</li> 
+      <li>J2ee tutorial</li> 
+      <li>Explain commercial version and opensource version</li> 
+     </ul> <p><a href="http://docs.sun.com/app/docs/doc/819-3671/ablas?a=view">http://docs.sun.com/app/docs/doc/819-3671/ablas?a=view</a></p> 
+     <ul> 
+      <li>Concepts: domain, instance</li> 
+      <li>High availability---cluster, node agent, HADB</li> 
+     </ul> <p><a href="http://docs.sun.com/app/docs/doc/819-3671/ablaz?a=view">http://docs.sun.com/app/docs/doc/819-3671/ablaz?a=view</a><br> <a href="http://docs.sun.com/app/docs/doc/819-3671/geolm?a=view">http://docs.sun.com/app/docs/doc/819-3671/geolm?a=view</a></p> 
+     <ul> 
+      <li>Describe users: who does what. users, groups. Developers, Admins</li> 
+      <li>Usage Profiles</li> 
+     </ul> <p><a href="http://docs.sun.com/app/docs/doc/819-3671/gelvk?a=view">http://docs.sun.com/app/docs/doc/819-3671/gelvk?a=view</a></p> <h4><a name="GlassFishV3DocTechOverview-Chapter2EnterpriseServerArchitecture"></a>Chapter 2 Enterprise Server Architecture</h2> <p>modular arch/pluggability<br> <a href="http://docs.sun.com/app/docs/doc/819-3671/ablat?a=view">http://docs.sun.com/app/docs/doc/819-3671/ablat?a=view</a></p> <h4><a name="GlassFishV3DocTechOverview-Resources"></a>Resources</h3> 
+     <ul> 
+      <li>JDBC</li> 
+     </ul> <p><a href="http://docs.sun.com/app/docs/doc/819-3671/ablih?a=view">http://docs.sun.com/app/docs/doc/819-3671/ablih?a=view</a><br> <a href="http://docs.sun.com/app/docs/doc/819-3672/beamj?a=view">http://docs.sun.com/app/docs/doc/819-3672/beamj?a=view</a></p> 
+     <ul> 
+      <li>JMS</li> 
+     </ul> <p><a href="http://docs.sun.com/app/docs/doc/819-3671/abljz?a=view">http://docs.sun.com/app/docs/doc/819-3671/abljz?a=view</a><br> <a href="http://docs.sun.com/app/docs/doc/819-3671/ablka?a=view">http://docs.sun.com/app/docs/doc/819-3671/ablka?a=view</a><br> <a href="http://docs.sun.com/app/docs/doc/819-3671/ablkj?a=view">http://docs.sun.com/app/docs/doc/819-3671/ablkj?a=view</a><br> <a href="http://docs.sun.com/app/docs/doc/819-3672/beaob?a=view">http://docs.sun.com/app/docs/doc/819-3672/beaob?a=view</a></p> 
+     <ul> 
+      <li>JavaMail</li> 
+     </ul> <p><a href="http://docs.sun.com/app/docs/doc/819-3671/ablkr?a=view">http://docs.sun.com/app/docs/doc/819-3671/ablkr?a=view</a><br> <a href="http://docs.sun.com/app/docs/doc/819-3672/beaow?a=view">http://docs.sun.com/app/docs/doc/819-3672/beaow?a=view</a></p> 
+     <ul> 
+      <li>JNDI</li> 
+     </ul> <p><a href="http://docs.sun.com/app/docs/doc/819-3671/ablky?a=view">http://docs.sun.com/app/docs/doc/819-3671/ablky?a=view</a><br> <a href="http://docs.sun.com/app/docs/doc/819-3672/beanr?a=view">http://docs.sun.com/app/docs/doc/819-3672/beanr?a=view</a></p> 
+     <ul> 
+      <li>Connectors</li> 
+     </ul> <p><a href="http://docs.sun.com/app/docs/doc/819-3671/abllp?a=view">http://docs.sun.com/app/docs/doc/819-3671/abllp?a=view</a></p> <h4><a name="GlassFishV3DocTechOverview-Services"></a>Services</h3> 
+     <ul> 
+      <li>HTTP</li> 
+     </ul> <p><a href="http://docs.sun.com/app/docs/doc/819-3671/ablsw?a=view">http://docs.sun.com/app/docs/doc/819-3671/ablsw?a=view</a></p> 
+     <ul> 
+      <li>ORB and IIOP</li> 
+     </ul> <p><a href="http://docs.sun.com/app/docs/doc/819-3671/abltr?a=view">http://docs.sun.com/app/docs/doc/819-3671/abltr?a=view</a></p> 
+     <ul> 
+      <li>Thread Pools and JVM</li> 
+     </ul> <p><a href="http://docs.sun.com/app/docs/doc/819-3671/abluc?a=view">http://docs.sun.com/app/docs/doc/819-3671/abluc?a=view</a><br> <a href="http://docs.sun.com/app/docs/doc/819-3671/ablwj?a=view">http://docs.sun.com/app/docs/doc/819-3671/ablwj?a=view</a></p> 
+     <ul> 
+      <li>JBI</li> 
+     </ul> <p><a href="http://docs.sun.com/app/docs/doc/819-3671/jbichapter?a=view">http://docs.sun.com/app/docs/doc/819-3671/jbichapter?a=view</a></p> 
+     <ul> 
+      <li>Containers</li> 
+     </ul> <p><a href="http://docs.sun.com/app/docs/doc/819-3671/ablms?a=view">http://docs.sun.com/app/docs/doc/819-3671/ablms?a=view</a></p> 
+     <ul> 
+      <li>Web Container</li> 
+     </ul> <p><a href="http://docs.sun.com/app/docs/doc/819-3671/gbbjd?a=view">http://docs.sun.com/app/docs/doc/819-3671/gbbjd?a=view</a></p> 
+     <ul> 
+      <li>Diagnostics</li> 
+     </ul> <p><a href="http://docs.sun.com/app/docs/doc/819-3671/gbphk?a=view">http://docs.sun.com/app/docs/doc/819-3671/gbphk?a=view</a></p> 
+     <ul> 
+      <li>Transactions</li> 
+     </ul> <p><a href="http://docs.sun.com/app/docs/doc/819-3671/ablso?a=view">http://docs.sun.com/app/docs/doc/819-3671/ablso?a=view</a><br> <a href="http://docs.sun.com/app/docs/doc/819-3672/beanm?a=view">http://docs.sun.com/app/docs/doc/819-3672/beanm?a=view</a></p> 
+     <ul> 
+      <li>Logging</li> 
+     </ul> <p><a href="http://docs.sun.com/app/docs/doc/819-3671/abluk?a=view">http://docs.sun.com/app/docs/doc/819-3671/abluk?a=view</a></p> 
+     <ul> 
+      <li>Monitoring</li> 
+     </ul> <p><a href="http://docs.sun.com/app/docs/doc/819-3671/ablus?a=view">http://docs.sun.com/app/docs/doc/819-3671/ablus?a=view</a></p> 
+     <ul> 
+      <li>Management Rules</li> 
+     </ul> <p><a href="http://docs.sun.com/app/docs/doc/819-3671/gbnej?a=view">http://docs.sun.com/app/docs/doc/819-3671/gbnej?a=view</a></p> <h4><a name="GlassFishV3DocTechOverview-Etcetera"></a>Etcetera</h3> <p>Eclipse IDE, AMX, Migration tool, sample apps, MySQL, JavaFX, Ajax widgets, VMWare, Grizzly</p> <h4><a name="GlassFishV3DocTechOverview-Chapter3EnterpriseServerSecurity"></a>Chapter 3 Enterprise Server Security</h2> <h4><a name="GlassFishV3DocTechOverview-ServerSecurity"></a>Server Security</h3> <p><a href="http://docs.sun.com/app/docs/doc/819-3671/ablnn?a=view">http://docs.sun.com/app/docs/doc/819-3671/ablnn?a=view</a><br> <a href="http://docs.sun.com/app/docs/doc/819-3671/ablno?a=view">http://docs.sun.com/app/docs/doc/819-3671/ablno?a=view</a></p> 
+     <ul> 
+      <li>Passwords</li> 
+     </ul> <p><a href="http://docs.sun.com/app/docs/doc/819-3671/ablnp?a=view">http://docs.sun.com/app/docs/doc/819-3671/ablnp?a=view</a></p> 
+     <ul> 
+      <li>Roles</li> 
+     </ul> <p><a href="http://docs.sun.com/app/docs/doc/819-3671/abloe?a=view">http://docs.sun.com/app/docs/doc/819-3671/abloe?a=view</a></p> 
+     <ul> 
+      <li>Authentication and Authorization</li> 
+     </ul> <p><a href="http://docs.sun.com/app/docs/doc/819-3671/ablnx?a=view">http://docs.sun.com/app/docs/doc/819-3671/ablnx?a=view</a></p> 
+     <ul> 
+      <li>Certs, SSL</li> 
+     </ul> <p><a href="http://docs.sun.com/app/docs/doc/819-3671/abloj?a=view">http://docs.sun.com/app/docs/doc/819-3671/abloj?a=view</a><br> <a href="http://docs.sun.com/app/docs/doc/819-3671/ablqx?a=view">http://docs.sun.com/app/docs/doc/819-3671/ablqx?a=view</a></p> 
+     <ul> 
+      <li>Firewalls</li> 
+     </ul> <p><a href="http://docs.sun.com/app/docs/doc/819-3671/ablop?a=view">http://docs.sun.com/app/docs/doc/819-3671/ablop?a=view</a></p> 
+     <ul> 
+      <li>JSEE/NSS</li> 
+     </ul> <p><a href="http://docs.sun.com/app/docs/doc/819-3671/ablqz?a=view">http://docs.sun.com/app/docs/doc/819-3671/ablqz?a=view</a><br> <a href="http://docs.sun.com/app/docs/doc/819-3671/ablnk?a=browse">http://docs.sun.com/app/docs/doc/819-3671/ablnk?a=browse</a></p> <h4><a name="GlassFishV3DocTechOverview-UserSecurity"></a>User Security</h3> 
+     <ul> 
+      <li>About Realms, users, groups</li> 
+     </ul> <h4><a name="GlassFishV3DocTechOverview-MessageSecurity"></a>Message Security</h3> <p><a href="http://docs.sun.com/app/docs/doc/819-3671/ablrm?a=view">http://docs.sun.com/app/docs/doc/819-3671/ablrm?a=view</a><br> <a href="http://docs.sun.com/app/docs/doc/819-3671/ablrn?a=view">http://docs.sun.com/app/docs/doc/819-3671/ablrn?a=view</a><br> <a href="http://docs.sun.com/app/docs/doc/819-3671/ablry?a=view">http://docs.sun.com/app/docs/doc/819-3671/ablry?a=view</a><br> <a href="http://docs.sun.com/app/docs/doc/819-3671/ablsa?a=view">http://docs.sun.com/app/docs/doc/819-3671/ablsa?a=view</a></p> <h4><a name="GlassFishV3DocTechOverview-Chapter4EnterpriseServerAdministration"></a>Chapter 4 Enterprise Server Administration</h2> <p><a href="http://docs.sun.com/app/docs/doc/819-3671/ablav?a=view">http://docs.sun.com/app/docs/doc/819-3671/ablav?a=view</a><br> <a href="http://docs.sun.com/app/docs/doc/819-3671/ablcg?a=view">http://docs.sun.com/app/docs/doc/819-3671/ablcg?a=view</a></p> 
+     <ul> 
+      <li>Admin Console, online help</li> 
+     </ul> <p><a href="http://docs.sun.com/app/docs/doc/819-3671/ablaw?a=view">http://docs.sun.com/app/docs/doc/819-3671/ablaw?a=view</a><br> <a href="http://docs.sun.com/app/docs/doc/819-3671/geluw?a=view">http://docs.sun.com/app/docs/doc/819-3671/geluw?a=view</a></p> 
+     <ul> 
+      <li>asadmin Utility, online help pages (man pages)</li> 
+     </ul> <p><a href="http://docs.sun.com/app/docs/doc/819-3671/ablax?a=view">http://docs.sun.com/app/docs/doc/819-3671/ablax?a=view</a></p> 
+     <ul> 
+      <li>hadbm Utility</li> 
+      <li>JConsole</li> 
+     </ul> <p><a href="http://docs.sun.com/app/docs/doc/819-3671/ablwi?a=view">http://docs.sun.com/app/docs/doc/819-3671/ablwi?a=view</a><br> <a href="http://docs.sun.com/app/docs/doc/819-3671/geold?a=view">http://docs.sun.com/app/docs/doc/819-3671/geold?a=view</a></p> 
+     <ul> 
+      <li>AMX</li> 
+     </ul> <p><a href="http://docs.sun.com/app/docs/doc/819-3671/ablay?a=view">http://docs.sun.com/app/docs/doc/819-3671/ablay?a=view</a></p> 
+     <ul> 
+      <li>Update Tool</li> 
+     </ul> <h4><a name="GlassFishV3DocTechOverview-Chapter5EnterpriseServerDevelopment"></a>Chapter 5 Enterprise Server Development</h2> 
+     <ul> 
+      <li>Development Tools---Netbeans IDE, asant, verifier</li> 
+     </ul> <p>]<a href="http://docs.sun.com/app/docs/doc/819-3672/beaat?a=view">http://docs.sun.com/app/docs/doc/819-3672/beaat?a=view</a>]</p> 
+     <ul> 
+      <li>Debugging, Profiling, Security</li> 
+      <li>Various APIs</li> 
+      <li>Web Services, Web Apps, EJBs</li> 
+      <li>Container Managed Persistence</li> 
+      <li>Java Clients, Listeners, Custom MBeans</li> 
+      <li>Scripting---JavaScript, Jruby, Python, Groovy</li> 
+     </ul> <h4><a name="GlassFishV3DocTechOverview-Chapter6AdditionalResourcesAvailabletoYou"></a>Chapter 6 Additional Resources Available to You</h2> 
+     <ul> 
+      <li>docs.sun.com collection</li> 
+      <li>Tutorials</li> 
+      <li>GlassFish open source site</li> 
+      <li>Support</li> 
+      <li>Forums</li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 09, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

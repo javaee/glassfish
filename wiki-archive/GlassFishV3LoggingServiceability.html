@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFishV3LoggingServiceability</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GlassFishV3LoggingServiceability-LoggingServiceabilityRequirements."></a>Logging Serviceability Requirements.</h1> <p>Serviceability requirements state that all SEVERE, WARNING and INFO messages must have a message id. It is recommended that all other messages logged also have a message id. Please see <a href="GlassFishV3LoggingMessageFormat.html" title="GlassFishV3LoggingMessageFormat">logging message specification</a> for more information on message id format.</p> <p>For help in finding and fixing messages with missing message ids or message ids that don't conform to specification, please see List of messages with missing message ids ( <a href="http://wiki.glassfish.java.net/attach/GlassFishV3LoggingServiceability/msgidlist.html">in green-red-color</a> or <a href="http://wiki.glassfish.java.net/attach/GlassFishV3LoggingServiceability/msgidlist-gray.html">black-gray-black-color</a> ). </p> <p>Further the log needs to contain recommended actions to take to further determine the cause of a problem (not solution). To support this requirement each module must include diagnostic information in the resource bundles. Each message of level SEVERE or WARNING should have diagnostic information. At least the cause of the problem is required. There may be more than one cause. In addition it is helpful to provide information to help guide the user to solving the problem by giving him a set of things to check. There may be more than check message. See <a href="GlassFishV3LoggingMessageFormat.html" title="GlassFishV3LoggingMessageFormat">message format page</a> for examples of diagnostic messages. </p> <h4><a name="GlassFishV3LoggingServiceability-Resourcebundlesnotcontainingdiagnosticmessages%3A"></a>Resource bundles not containing diagnostic messages:</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Resource Bundle Name </th> 
+         <th class="confluenceTh">Status (SEVERE) due Aug 3 </th> 
+         <th class="confluenceTh"> Status (WARNING) due Aug 17 </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> admin/config-api/src/main/java/org/glassfish/config/support//LogStrings.properties </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> common/common-util/src/main/java/com/sun/common/util/logging//LogStrings.properties </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> common/common-util/src/main/java/com/sun/logging/enterprise/resource/javamail//LogStrings.properties </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> common/common-util/src/main/java/com/sun/logging/enterprise/resource/jms//LogStrings.properties </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> common/common-util/src/main/java/com/sun/logging/enterprise/system/activation//LogStrings.properties </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> common/common-util/src/main/java/com/sun/logging/enterprise/system/core/classloading//LogStrings.properties </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> common/common-util/src/main/java/com/sun/logging/enterprise/system/core//LogStrings.properties </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> common/common-util/src/main/java/com/sun/logging/enterprise/system/core/selfmanagement//LogStrings.properties </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> common/common-util/src/main/java/com/sun/logging/enterprise/system//LogStrings.properties </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> common/common-util/src/main/java/com/sun/logging/enterprise/system/tools/diagnostics//LogStrings.properties </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> common/common-util/src/main/java/com/sun/logging/enterprise/system/tools/launcher//LogStrings.properties </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> common/common-util/src/main/java/com/sun/logging/enterprise/system/tools//LogStrings.properties </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> common/common-util/src/main/java/com/sun/logging/enterprise/system/util//LogStrings.properties </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> common/container-common/src/main/resources/org/glassfish/javaee/services//LogStrings.properties </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> core/kernel/src/main/java/com/sun/enterprise/server//LogStrings.properties </td> 
+         <td class="confluenceTd"> removed </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> core/kernel/src/main/resources/com/sun/enterprise//LogStrings.properties </td> 
+         <td class="confluenceTd"> removed </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> core/kernel/src/main/resources/com/sun/logging/enterprise/system/core//LogStrings.properties </td> 
+         <td class="confluenceTd"> removed </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> flashlight/framework/src/main/java/org/glassfish/flashlight/impl/client//LogStrings.properties </td> 
+         <td class="confluenceTd"> new </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> persistence/common/src/main/resources/org/glassfish/persistence/common//LogStrings.properties </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> web/web-glue/src/main/java/com/sun/enterprise/web/logging/pwc//LogStrings.properties </td> 
+         <td class="confluenceTd"> removed </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> webservices/jsr109-impl/src/main/resources/org/glassfish/webservices//LogStrings.properties </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> persistence/cmp/ejb-mapping/src/main/java/com/sun/jdo/api/persistence/mapping/ejb//Bundle.properties </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> persistence/cmp/enhancer/src/main/java/com/sun/jdo/api/persistence/enhancer//Bundle.properties </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> persistence/cmp/model/src/main/java/com/sun/jdo/api/persistence/model//Bundle.properties </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> persistence/cmp/support-ejb/src/main/java/com/sun/jdo/spi/persistence/support/ejb/cmp//Bundle.properties </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> persistence/cmp/support-ejb/src/main/java/com/sun/jdo/spi/persistence/support/ejb/codegen//Bundle.properties </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> persistence/cmp/support-ejb/src/main/java/com/sun/jdo/spi/persistence/support/ejb/model//Bundle.properties </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> persistence/cmp/support-sqlstore/src/main/java/com/sun/jdo/spi/persistence/support/sqlstore/impl//Bundle.properties </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> persistence/cmp/support-sqlstore/src/main/java/com/sun/jdo/spi/persistence/support/sqlstore/query//Bundle.properties </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> persistence/cmp/support-sqlstore/src/main/java/com/sun/jdo/spi/persistence/support/sqlstore/query/jqlc//Bundle.properties </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> persistence/cmp/support-sqlstore/src/main/java/com/sun/jdo/spi/persistence/support/sqlstore/query/util/scope//Bundle.properties </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> persistence/cmp/utility/src/main/java/com/sun/jdo/spi/persistence/utility//Bundle.properties </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> persistence/cmp/utility/src/main/java/com/sun/jdo/spi/persistence/utility/generator/io//Bundle.properties </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3LoggingServiceability-Resourcebundleswithdiagnosticmessages%3A"></a>Resource bundles with diagnostic messages:</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Resource Bundle Name </th> 
+         <th class="confluenceTh">Status (SEVERE) due Aug 3 </th> 
+         <th class="confluenceTh"> Status (WARNING) due Aug 17 </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> appclient/server/core/src/main/resources/org/glassfish/appclient/server/core//LogStrings.properties </td> 
+         <td class="confluenceTd"> all but two (internal errors) were OK as of 7/21; cause and checked added for the two </td> 
+         <td class="confluenceTd">all but two (internal errors) were OK as of 7/21; cause and checked added for the two </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> common/common-util/src/main/java/com/sun/logging/enterprise/system/container/appclient//LogStrings.properties </td> 
+         <td class="confluenceTd">Relocated to appclient/client/acc 8/11 with cause and check </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> common/common-util/src/main/java/com/sun/logging/enterprise/system/container/ejb//LogStrings.properties </td> 
+         <td class="confluenceTd"> incomplete </td> 
+         <td class="confluenceTd">incomplete </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> common/common-util/src/main/java/com/sun/logging/enterprise/system/container/ejb/mdb//LogStrings.properties </td> 
+         <td class="confluenceTd"> incomplete </td> 
+         <td class="confluenceTd">incomplete </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> common/common-util/src/main/java/com/sun/logging/enterprise/system/core/naming//LogStrings.properties </td> 
+         <td class="confluenceTd"> incomplete </td> 
+         <td class="confluenceTd">incomplete </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> common/common-util/src/main/java/com/sun/logging/enterprise/system/tools/admin//LogStrings.properties </td> 
+         <td class="confluenceTd"> incomplete </td> 
+         <td class="confluenceTd">incomplete </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> connectors/connectors-inbound-runtime/src/main/resources/com/sun/enterprise/connectors/inbound//LogStrings.properties </td> 
+         <td class="confluenceTd"> incomplete </td> 
+         <td class="confluenceTd">incomplete </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> connectors/connectors-internal-api/src/main/resources/com/sun/appserv/connectors/internal/api//LogStrings.properties </td> 
+         <td class="confluenceTd"> incomplete </td> 
+         <td class="confluenceTd">incomplete </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> connectors/connectors-runtime/src/main/resources/com/sun/logging/enterprise/resource/resourceadapter//LogStrings.properties </td> 
+         <td class="confluenceTd"> incomplete </td> 
+         <td class="confluenceTd">incomplete </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> connectors/work-management/src/main/resources/com/sun/enterprise/connectors/work//LogStrings.properties </td> 
+         <td class="confluenceTd"> incomplete </td> 
+         <td class="confluenceTd">incomplete </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> deployment/common/src/main/resources/com/sun/logging/enterprise/system/tools/deployment//LogStrings.properties </td> 
+         <td class="confluenceTd"> incomplete </td> 
+         <td class="confluenceTd">incomplete </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ejb/ejb-container/src/main/resources/com/sun/logging/enterprise/system/container/ejb//LogStrings.properties </td> 
+         <td class="confluenceTd"> incomplete </td> 
+         <td class="confluenceTd">incomplete </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ejb/ejb-container/src/main/resources/com/sun/logging/enterprise/system/container/ejb/mdb//LogStrings.properties </td> 
+         <td class="confluenceTd"> incomplete </td> 
+         <td class="confluenceTd">incomplete </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jdbc/jdbc-ra/jdbc-core/src/main/resources/com/sun/gjc/spi//LogStrings.properties </td> 
+         <td class="confluenceTd"> incomplete </td> 
+         <td class="confluenceTd">incomplete </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> security/core/src/main/resources/com/sun/logging/enterprise/system/core/security//LogStrings.properties </td> 
+         <td class="confluenceTd"> incomplete </td> 
+         <td class="confluenceTd">incomplete </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> transaction/jta/src/main/resources/com/sun/enterprise/transaction//LogStrings.properties </td> 
+         <td class="confluenceTd"> incomplete </td> 
+         <td class="confluenceTd">incomplete </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> transaction/jts/src/main/resources/com/sun/jts//LogStrings.properties </td> 
+         <td class="confluenceTd"> incomplete </td> 
+         <td class="confluenceTd">incomplete </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> web/war-util/src/main/resources/com/sun/logging/enterprise/system/container/web//LogStrings.properties </td> 
+         <td class="confluenceTd"> incomplete </td> 
+         <td class="confluenceTd">incomplete </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> persistence/cmp/generator-database/src/main/java/com/sun/jdo/spi/persistence/generator/database//Bundle.properties </td> 
+         <td class="confluenceTd"> incomplete </td> 
+         <td class="confluenceTd">incomplete </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> persistence/cmp/support-ejb/src/main/java/com/sun/jdo/spi/persistence/support/ejb/ejbc//Bundle.properties </td> 
+         <td class="confluenceTd"> incomplete </td> 
+         <td class="confluenceTd">incomplete </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> persistence/cmp/support-ejb/src/main/java/com/sun/jdo/spi/persistence/support/ejb/ejbqlc//Bundle.properties </td> 
+         <td class="confluenceTd"> incomplete </td> 
+         <td class="confluenceTd">incomplete </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> persistence/cmp/support-sqlstore/src/main/java/com/sun/jdo/spi/persistence/support/sqlstore//Bundle.properties </td> 
+         <td class="confluenceTd"> incomplete </td> 
+         <td class="confluenceTd">incomplete </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> persistence/cmp/utility/src/main/java/com/sun/jdo/spi/persistence/utility/logging//Bundle.properties </td> 
+         <td class="confluenceTd"> incomplete </td> 
+         <td class="confluenceTd">incomplete </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 02, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : WebTierV2Schedule</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>altaoloric<br> ersitdarrelt<br> passitc<br> Overall Web Teir Schedule:<br> See the main list of <a href="GFv2Milestones.html" title="GFv2Milestones">GFv2Milestones</a>.</p> 
+     <ul> 
+      <li>Milestone 3 (feature complete): Oct 31</li> 
+     </ul> <p>All tasks are to be completed by Hard Code Freeze, Milestone 3.</p> <p>Vacations:</p> 
+     <ul> 
+      <li>Ed - Gone first week of Oct</li> 
+      <li>Rajiv - Gone first week of Oct</li> 
+      <li>Nick - Gone middle two weeks of Oct</li> 
+      <li>Jan - Gone middle two weeks of Sep</li> 
+      <li>Jeanfrancois - Customer visit 2nd week of Sep</li> 
+      <li>Jim D - Last two weeks of Oct</li> 
+      <li>Kin-man - Oct 30 thru Nov 3</li> 
+     </ul> <p>General tasks, by Engineer</p> 
+     <ul> 
+      <li>Amy (amyroh) 
+       <ul> 
+        <li>Overhead - 10%</li> 
+        <li>GlassFish - 40%</li> 
+       </ul> </li> 
+      <li>Jan (jluehe) 
+       <ul> 
+        <li>Previous version Maintenance - 25%</li> 
+        <li>Lead and coordination tasks - 15%</li> 
+        <li>Overhead - 10%</li> 
+       </ul> </li> 
+      <li>Jean-Francois (jfarcand) 
+       <ul> 
+        <li>Grizzly community support - 20% (not included in Grizzly estimates below)</li> 
+        <li>Overhead - 10%</li> 
+       </ul> </li> 
+      <li>Kin-Man (kchung) 
+       <ul> 
+        <li>Previous version Maintenance - 25%</li> 
+        <li>Overhead - 10%</li> 
+       </ul> </li> 
+      <li>Ed (edburns) 
+       <ul> 
+        <li>Spec coordination - 50%</li> 
+       </ul> </li> 
+      <li>Roger (rogerk) 
+       <ul> 
+        <li>Overhead - 10%</li> 
+       </ul> </li> 
+      <li>Ryan (rlubke) 
+       <ul> 
+        <li>Performance enhancements - 50%</li> 
+       </ul> </li> 
+      <li>Nick (nrodin) 
+       <ul> 
+        <li>Licensee support - 25%</li> 
+       </ul> </li> 
+      <li>Doug (dougd) 
+       <ul> 
+        <li>Licensee support - 25%</li> 
+       </ul> </li> 
+     </ul> <p>Tasks by engineer:</p> 
+     <ul> 
+      <li>Jean-Francois (jfarcand) 
+       <ul> 
+        <li>Push Grizzly v1 runtime to ibiblio (jfarcand) - 1 week - Sep 1 (DONE)</li> 
+        <li>Grizzly v2 related work (jfarcand) - 2 weeks (NEEDS TO BE SPLIT UP - 2 weeks to Kin-Man) - Sep 20 (slip to November 13)</li> 
+        <li>WebContainer integration via J2EEInstanceListener is inefficient <a href="https://github.com/javaee/glassfish/issues/858">Issue: 858</a> (jfarcand) - 1 week - Oct 17 (DONE)</li> 
+        <li>Simulating load traffic onto port 4848 or 8080 hangs PE <a href="https://github.com/javaee/glassfish/issues/677">Issue: 677</a> (jfarcand) - 2 days once reproduced - Oct 20</li> 
+        <li>See if we should optimize for the HTTP 1.1 path, possibly taking an expensive hit for 1.0 (jfarcand) - 3 days - Oct 24 (DONE)</li> 
+       </ul> </li> 
+      <li>Jan (jluehe) 
+       <ul> 
+        <li>Avoid treating default-web-module as separate web application <a href="https://github.com/javaee/glassfish/issues/1024">Issue: 1024</a> (jluehe) - 4 days - Sep 1 (DONE)</li> 
+        <li>Multiple docroot support <a href="https://github.com/javaee/glassfish/issues/948">Issue: 948</a> (jluehe) - 4 days - Sep 11 (DONE)</li> 
+        <li>JSTL 1.2 MRx (jluehe) 
+         <ul> 
+          <li>Bring spec into alignment with existing RI - 1 day - Sep 12 (DONE)</li> 
+         </ul> </li> 
+        <li>Redeployment memory leak investigation <a href="https://github.com/javaee/glassfish/issues/587">Issue: 587</a> (jluehe) - 3 days - Oct 4 (DONE - early!)</li> 
+        <li>Impossible for JSP error page to set response encoding when invoked from another JSP <a href="https://github.com/javaee/glassfish/issues/815">Issue: 815</a> (jluehe) - 1 day - Oct 6 (DONE)</li> 
+        <li>HttpSession.getLastAccessedTime(): Session's lastAccessedTime must be updated by mere presence of JSESSIONID in request (jluehe) - 1 day - Oct 10 (DONE)</li> 
+        <li>Support HA/In-memory-replication store SPI (lwhite/jluehe)</li> 
+        <li>Valve optimizations 
+         <ul> 
+          <li>Coordinate with admin team's profiling work to make sure access logging is turned off by default in development profile (jluehe) - 2 days (depends on Kedar/admin) - Oct 17 (DONE)</li> 
+         </ul> </li> 
+        <li>Fix FindBugs warnings - 3 days</li> 
+       </ul> </li> 
+      <li>Kin-Man (kchung) 
+       <ul> 
+        <li>JSP 2.1 MRx (kchung) 
+         <ul> 
+          <li>Make EL implementation pluggable <a href="https://github.com/javaee/glassfish/issues/802">Issue: 802</a> - 2 days - Sep 1 (DONE)</li> 
+          <li>Add expression factory - 2 days - Sep 7 (DONE)</li> 
+         </ul> </li> 
+        <li>Grizzly v2 - 3 weeks - Delayed 
+         <ul> 
+          <li>JSP 2.1 MRx - Separate EL into its own spec - 3 day - Oct 11 (DONE)</li> 
+         </ul> </li> 
+        <li>MapELResolver.setValue sometimes throws UnsupportedOperation <a href="https://github.com/javaee/glassfish/issues/567">Issue: 567</a> (kchung) - 2 days - DONE</li> 
+        <li>Changing http-listener properties requires server restart <a href="https://github.com/javaee/glassfish/issues/462">Issue: 462</a> (kchung) - 2 days - DONE</li> 
+        <li>Namespace Prefix in EL Qualified Functions with '.' or '-' <a href="https://github.com/javaee/glassfish/issues/839">Issue: 839</a> (kchung) - Dropped</li> 
+        <li>JSP performance: 
+         <ul> 
+          <li>Static text encoding</li> 
+          <li>Reduce JSP buffers</li> 
+         </ul> </li> 
+        <li>Additional JSR 199 performance improvements (kchung) - all available time</li> 
+       </ul> </li> 
+      <li>Amy (amyroh) 
+       <ul> 
+        <li>Generated servlet error when app. server installed in a path with space <a href="https://github.com/javaee/glassfish/issues/845">Issue: 845</a> (amyroh) - 2 days - Sep 1 (DONE)</li> 
+        <li>Connection reset by peer accessing Admin UI and custom web apps (including OpenCMS) <a href="https://github.com/javaee/glassfish/issues/888">Issue: 888</a> (amyroh) - 1 week - Sep 15 (DONE) 
+         <ul> 
+          <li>Include lookup method in ServletContext - RI (amyroh) - 2 days - Sep 21 (DROPPED)</li> 
+          <li>Special symbols in non-standard HTTP methods <a href="https://github.com/javaee/glassfish/issues/32">Issue: 32</a> - 1 day - Sep 22 (DONE)</li> 
+         </ul> </li> 
+        <li>Remove copying data between buffers (PWC 1.3) <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6415250">http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6415250</a> (jfarcand) 1 week - Oct 11</li> 
+        <li>commons-modeler performance <a href="https://github.com/javaee/glassfish/issues/1034">Issue: 1034</a> (amyroh) - 1 week - Oct 19</li> 
+        <li>Grizzly in Jetty (amyroh) - 1 week - Oct 26</li> 
+       </ul> </li> 
+      <li>Ed (edburns) - all tasks done by Milestone 3 
+       <ul> 
+        <li> 
+         <ul> 
+          <li>Generify class variable PhaseId.VALUES <a href="https://javaserverfaces-spec-public.java.net/issues/show_bug.cgi-182">Issue 182</a> (edburns) - 1 day (DONE)</li> 
+          <li>Accessibility enhancements for DataTable <a href="https://javaserverfaces.java.net/issues/show_bug.cgi-341">RI Issue 341</a> (edburns) - 10 days - (PROPOSAL)</li> 
+          <li>RenderKit Docs: Too Restrictive For CommandLink <a href="https://javaserverfaces-spec-public.java.net/issues/show_bug.cgi-199">Issue 199</a> (edburns) - 2 days (DONE)</li> 
+         </ul> </li> 
+       </ul> </li> 
+      <li>Roger (rogerk) - all tasks done by Milestone 3 
+       <ul> 
+        <li> 
+         <ul> 
+          <li>f:setPropertyActionListener:Use Converter If Attached To Component <a href="https://javaserverfaces-spec-public.java.net/issues/show_bug.cgi-197">Issue 197</a> (rogerk) - 5 days - (DONE) (Issue Resolved - but will go into JSF 2.0)</li> 
+         </ul> </li> 
+       </ul> </li> 
+      <li>Ryan (rlubke)</li> 
+      <li>Rajiv (mode) - all tasks done by Milestone 3 
+       <ul> 
+        <li>Servlet 2.5 MR6 (mode) 
+         <ul> 
+          <li>Servlet compliance tests breaking when response committed before returning from a RequestDispatcher.forward <a href="https://servlet-spec-eg.java.net/issues/show_bug.cgi-30">Issue 30</a> 
+           <ul> 
+            <li>Spec update (mode) - 1 day</li> 
+           </ul> </li> 
+          <li>Allow Servlet context init params to be added / configured from a container wide deployment descriptor <a href="https://servlet-spec-eg.java.net/issues/show_bug.cgi-31">Issue 31</a> 
+           <ul> 
+            <li>Spec update (mode) - 1 day</li> 
+           </ul> </li> 
+          <li>Special symbols in non-standard HTTP methods <a href="https://servlet-spec-eg.java.net/issues/show_bug.cgi-32">Issue: 32</a> 
+           <ul> 
+            <li>Spec update (mode) - 1 day</li> 
+           </ul> </li> 
+          <li>Clarify session attribute synchronization <a href="https://servlet-spec-eg.java.net/issues/show_bug.cgi-33">Issue: 33</a> 
+           <ul> 
+            <li>Spec update (mode) - 1 day</li> 
+           </ul> </li> 
+          <li>Include lookup method in ServletContext <a href="https://servlet-spec-eg.java.net/issues/show_bug.cgi-35">Issue: 35</a> 
+           <ul> 
+            <li>Spec update (mode) - 1 day</li> 
+           </ul> </li> 
+          <li>Clarification of scope of request and call to removeAttribute method <a href="https://servlet-spec-eg.java.net/issues/show_bug.cgi-36">Issue: 36</a> 
+           <ul> 
+            <li>Spec update (mode) - 1 day</li> 
+           </ul> </li> 
+         </ul> </li> 
+       </ul> </li> 
+      <li>Nick (nrodin) 
+       <ul> 
+        <li>Standalone EL TCK: Port existing tests from JSP, add tests as time permits 
+         <ul> 
+          <li>port ELResolver API tests - <b>DONE</b></li> 
+          <li>port MethodExpression API tests - <b>DONE</b></li> 
+          <li>port ValueExpression, ExpressionFactory API tests - 1 day</li> 
+          <li>port 2.1 Spec tests - 4 days</li> 
+          <li>port 2.0 Literal tests - 1 day IN PROGRESS</li> 
+          <li>port 2.0 Operators tests - 10 days IN PROGRESS</li> 
+          <li>port 2.0 Coercion tests - 5 days</li> 
+          <li>port other 2.0 tests - 1 day</li> 
+          <li>add VariableMapper API - 2 days</li> 
+          <li>add Expression implements Serializable - 1 day</li> 
+          <li>add Expression.equals(), getExpressionString() - 1 day</li> 
+          <li>add ELContextListener.contextCreated() - 2 days</li> 
+          <li>add ELContext get and setLocale() - 1 day</li> 
+          <li>add Resolver valuation tests - 2 days</li> 
+          <li>add ExpressionFactoryMultipleThreads test - 3 days</li> 
+          <li>add ExpressionFactory types tests - 1 day</li> 
+          <li>add other EL Spec and Javadoc tests - 3 days</li> 
+          <li>build TCK infrastructure - 3 days</li> 
+          <li>testing - 1 day</li> 
+          <li>Docs - 5 days</li> 
+         </ul> </li> 
+        <li>New tests for JSF 1.2 MR1 
+         <ul> 
+          <li>Managed bean Annotations - 5 days - <b>DONE</b></li> 
+          <li>Content Interweaving - 3 days <b>POSTPONED</b></li> 
+          <li>Enum converter Issue 172 - 3 days - <b>DONE</b></li> 
+         </ul> </li> 
+       </ul> </li> 
+      <li>Doug (dougd) 
+       <ul> 
+        <li>New tests and fixes for JSF 1.2 MR1 
+         <ul> 
+          <li>Fix bug #6485582 - 1 day - <b>DONE</b></li> 
+          <li>invokeOnComponent Issue 145 - 3 days <b>DONE</b></li> 
+          <li>RestoreView Issue 162 - 5 days - <b>DONE</b></li> 
+          <li>Render kit tests (including issues 199 + 309) - 10 days 
+           <ul> 
+            <li>Message and Messages - <b>DONE</b></li> 
+            <li>Remaining to be done: Format, Label, Output Link, Group <b>POSTPONED</b></li> 
+           </ul> </li> 
+          <li>Testing - 2 days</li> 
+         </ul> </li> 
+       </ul> </li> 
+      <li>Servlet 2.5 MR6 
+       <ul> 
+        <li>Add lookup method to ServletContext - Dianne (DROPPED)</li> 
+        <li>Session Last Access time - Dianne</li> 
+        <li>New TCK Tests to be added (djiao) 
+         <ul> 
+          <li>11 special characters in rfc1738, especially "+" in query String (IBM)- 2 days (Finished by Sep 27)</li> 
+          <li>request.getQueryString() returns exactly as the original request (Weblogic) - 2 days (Finished by Sep 27)</li> 
+          <li>possible other requests from EG - 3 days (Finished by Sep 27)</li> 
+         </ul> </li> 
+       </ul> </li> 
+      <li>JSF 1.2MR1 
+       <ul> 
+        <li>MR1 to 9.0 UR1 Backport work estimates - <a href="https://javaserverfaces.java.net/JSR252ChangeLogAll.html">https://javaserverfaces.java.net/JSR252ChangeLogAll.html</a> 
+         <ul> 
+          <li>C001 - DONE</li> 
+          <li>C005 - DONE</li> 
+          <li>C009 - rlubke - 1 day</li> 
+          <li>C012 - rlubke - 1 day</li> 
+          <li>C013 - DONE</li> 
+          <li>C015 - rlubke - 1 day</li> 
+          <li>C016 - rlubke - 1 day</li> 
+          <li>C017 - DONE</li> 
+          <li>C018 - rlubke - 1 day</li> 
+          <li>C021 - rlubke - 1 day</li> 
+         </ul> </li> 
+       </ul> </li> 
+     </ul> <p><a href="ListOfAllFeaturesOrRFEsOrEnhancements.html" title="ListOfAllFeaturesOrRFEsOrEnhancements">Overall List of Features </a></p> <p><a href="WebTierV2SQESchedule.html" title="WebTierV2SQESchedule">WebTier V2 SQE Schedule </a></p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Aug 24, 2010 by 
+<font color="#0050B2">wombat</font>. Exported from wikis.oracle.com on May 27, 2015 20:49.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

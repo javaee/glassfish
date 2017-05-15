@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : 3.1deploymentReview_Jagadish</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="3.1deploymentReview_Jagadish-GlassFish3.1Deployment3.1DeploymentOnePagerReview"></a><a href="3.1DeploymentOnePager.html" title="3.1DeploymentOnePager">GlassFish 3.1 Deployment</a> Review</h1> <h4><a name="3.1deploymentReview_Jagadish-Document%3A3.1DeploymentOnePager"></a>Document: <a href="3.1DeploymentOnePager.html" title="3.1DeploymentOnePager">3.1DeploymentOnePager</a></h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item </th> 
+         <th class="confluenceTh"> Section </th> 
+         <th class="confluenceTh"> Comment </th> 
+         <th class="confluenceTh"> Response </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Versioning </td> 
+         <td class="confluenceTd"> Versioning </td> 
+         <td class="confluenceTd"> Is it possible to have different version of the application to be active in different instances ? eg: app-v-1 in ins-1 and app-v-2 in ins-2. </td> 
+         <td class="confluenceTd">Yes </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Versioning </td> 
+         <td class="confluenceTd"> Versioning </td> 
+         <td class="confluenceTd"> The one-pager states that while deploying a newer version of the application older version of the application that is active will be disabled first and then newer version will be deployed. By the statement 'disabling' old application, do we mean setting "enabled=false" in &lt;application&gt; element or &lt;application-ref&gt; element ? The reason behind this query is that, AFAIK, &lt;application&gt; element in the domain.xml is shared across all instances ? and it is the &lt;application-ref&gt;'s enabled/disabled state that determines whether an application will be active in the instance or not. </td> 
+         <td class="confluenceTd">Yes, disabling means disable the application-ref and unload the application from that server instance. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Versioning </td> 
+         <td class="confluenceTd"> Versioning </td> 
+         <td class="confluenceTd"> If the above statement is valid, then : * the "expression-aware-operation" create-application-ref -<del>target instance_1 app:BETA</del>* will try to enable all BETA-* versions of the application in instance_1 ? </td> 
+         <td class="confluenceTd">Yes, good question. As the default --enabled attribute of create-application-ref is true, the create-application-ref should probably be like deploy command and take a version identifier instead. Romain et al: We also need to accomplish Bill's requirement of creating references of all versions of an application on a given target by one command. Maybe when the --enable is true, only version identifier is allowed, and when the --enabled is false, the version expression is allowed. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Versioning </td> 
+         <td class="confluenceTd"> Versioning </td> 
+         <td class="confluenceTd"> Considering a resource-adapter application and resources made available : When a new version of RAR is deployed, older version is disabled and then newer version is enabled. It is possible that the newer version will not support the already deployed resources' interfaces/contracts. <b>UPDATE</b> : Resources are created with reference to the resource-adapter's (application's) name. Since we embed version within the application's name, the older version's resources will not refer to newer version of the application. Administrator/Developer need to explicitly create resources for the newer version of the application. Probably a note about this can be provided in the one-pager </td> 
+         <td class="confluenceTd"> Yes, Serli to update the document </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Versioning </td> 
+         <td class="confluenceTd"> Versioning </td> 
+         <td class="confluenceTd"> Section 5.5 "Indeed the undeployment process deletes matched version bits in repository and disables the currently enabled version if the expression matches it". Should it be "Indeed the undeployment process deletes matched version bits in repository which might also result in undeploying the currently enabled version if the expression matches it" ? </td> 
+         <td class="confluenceTd"> Serli to update document with it </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Versioning </td> 
+         <td class="confluenceTd"> Versioning </td> 
+         <td class="confluenceTd"> Section 5.5, last undeploy sample : "A user wants to undeploy all the version with an identifier beginning with RC" can be "A user wants to undeploy all of the version(s) of an application where the identifier begins with RC" </td> 
+         <td class="confluenceTd"> Serli to update document with it </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 09, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

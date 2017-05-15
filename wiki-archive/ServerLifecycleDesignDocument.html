@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : ServerLifecycleDesignDocument</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="ServerLifecycleDesignDocument-Serverstartandrestart"></a>Server start and restart</h1> <p> Server restart has been a highly desired feature for a long time. The Admin Console Team is especially excited about this feature so that a user can easily restart the server after making configuration changes that require a restart. The user will be able to restart remotely.</p> <p>There are several ways to implement server restart. All such ideas of course require some sort of process to be running on the server's behalf so that it can restart the server. Two different approaches for implementing the behavior are discussed here. The two approaches have wildly differing levels of \</p> 
+     <ul> 
+      <li>development cost</li> 
+      <li>ease of use</li> 
+      <li>reliability</li> 
+     </ul> <h4><a name="ServerLifecycleDesignDocument-AsadminasaWatchdog"></a>Asadmin as a Watchdog</h2> 
+     <ul> 
+      <li>development cost: low</li> 
+      <li>ease of use: medium</li> 
+      <li>reliability: high</li> 
+     </ul> <p>This solution leverages an already existing process and behavior. This is overwhelmingly our choice for V3 final.</p> <h4><a name="ServerLifecycleDesignDocument-Background"></a>Background</h3> <p><b>asadmin start-domain</b> is the supported way to start the server in an <em>external</em> process. It will start the server in a new JVM and exit. If you add the <b>--verbose</b> option then asadmin starts the server and remains running waiting for the server to exit. asadmin holds a reference to the Java Process object of the server's JVM. It also has a console window. It is called "verbose" because it echos all log messages to its console window. If the console window is disposed of (e.g. by entering ^C) then not only is the asadmin process killed but the server's JVM is also destroyed.</p> <h4><a name="ServerLifecycleDesignDocument-Goals"></a>Goals</h3> 
+     <ul> 
+      <li>Add a new option to <b>asadmin start-domain</b>. Namely the --watchdog option.</li> 
+      <li>start the domain on the domain machine with a watchdog process running</li> 
+      <li>The watchdog does not require a console window but will have one if <b>--verbose</b> is also chosen.</li> 
+      <li>A new CLI Command will be added – <b>restart-domain</b>.</li> 
+     </ul> <h4><a name="ServerLifecycleDesignDocument-Details"></a>Details</h3> 
+     <ul> 
+      <li>The user starts the domain with <b>asadmin start-domain --watchdog</b></li> 
+      <li>If <b>verbose</b> is not also set, asadmin does not directly start the domain. Instead it creates and starts another JVM which in turn runs start-domain. The original asadmin then exits. 
+       <ul> 
+        <li>Why? This is how we get rid of the unwanted console window.</li> 
+       </ul> </li> 
+      <li>If <b>verbose</b> is set then we do everything in this asadmin process.</li> 
+      <li>The user runs the <b>asadmin restart-domain</b> command, which makes the JVM process exit with integer value 10.</li> 
+      <li>asadmin sees the special return value and starts up the server again with the original arguments.</li> 
+     </ul> <p>If the startup fails for any reason in this restart mode, launcher gives up and exits with whatever exit code server process exits with. The launcher clearly logs/displays the errors so that the corrective actions can be taken. For this release, no retry attempts have been specified. This facility is used to do a clean implementation of domain restart from the admin console/CLI.</p> <h4><a name="ServerLifecycleDesignDocument-Notes"></a>Notes</h3> 
+     <ul> 
+      <li>If the server won't stop properly via a System.exit(10) then a restart is not attempted.</li> 
+      <li>killing the server JVM from the OS itself results in an exit value of 1 - so no restart is attempted</li> 
+      <li>We purposely don't want to add a state to asadmin where it will always try to restart – e.g. <b>asadmin start-domain --alwaysrestart</b></li> 
+      <li>The new CLI command, <b>restart-domain</b> should be very easy to implement. It is exactly the same as <b>stop-domain</b> with one difference. It returns 10 instead of 0.</li> 
+      <li>For now, starting the domain with <b>asadmin --watchdog</b> will leave a console window running. The stretch goal will be to guarantee no console window. I would like to get approval of this first from reviewers because it is fairly complicated to implement.</li> 
+     </ul> <h4><a name="ServerLifecycleDesignDocument-DocumentationIdeas%2FRequirements%3A"></a>Documentation Ideas/Requirements:</h3> 
+     <ol> 
+      <li>User must start the domain with the <b>--watchdog</b> option to enable restarts</li> 
+      <li>If the previous step is forgotten then a call to the remote command, RestartDomainCommand, will simply stop the domain.</li> 
+      <li>The <b>--watchdog</b> option must be added to the CLI man page for start-domain</li> 
+      <li>A new man page must be created for the new remote command – RestartDomainCommand (<b>asadmin restart-domain</b>)</li> 
+     </ol> <h4><a name="ServerLifecycleDesignDocument-QATestingSuggestions%3A"></a>QA Testing Suggestions:</h3> 
+     <ul> 
+      <li>after running this: <b>asadmin start-domain --watchdog</b> 
+       <ul> 
+        <li>call <b>asadmin stop-domain</b>. The domain should stop and not restart.</li> 
+        <li>Kill the domain externally via, say, the kill command. The domain should NOT restart.</li> 
+        <li>Kill the console where <b>asadmin start-domain --watchdog</b> is running by entering ^C. The domain should stop and not restart.</li> 
+        <li>Run jps then <b>asadmin restart-domain</b> then jps again. You should see the server running with some pid, then it should reappear in the list with a different pid. The console window should say "Restarting Domain..."</li> 
+        <li>Repeat the previous step over and over and over.</li> 
+       </ul> </li> 
+      <li><b>asadmin start-domain --verbose</b> 
+       <ul> 
+        <li>Restarting should NOT work. It should only work with the <b>--watchdog</b> option</li> 
+       </ul> </li> 
+      <li><b>asadmin start-domain --verbose --watchdog</b> 
+       <ul> 
+        <li>This should work ''exactly' like * <b>asadmin start-domain --watchdog</b> except that log messages are printed to the console.</li> 
+       </ul> </li> 
+     </ul> <h4><a name="ServerLifecycleDesignDocument-IIServerReincarnation"></a>II Server Reincarnation</h2> 
+     <ul> 
+      <li>development cost: very high</li> 
+      <li>ease of use: very high</li> 
+      <li>reliability: medium</li> 
+     </ul> <p>In this solution the server itself starts a separate JVM process that will run <b>asadmin start-domain</b>. The running server starts the new process when it is near death. Asadmin will be given the process ID (pid) of the running server's JVM. Asadmin waits for the operating system to verify that the process has died.</p> <p>Notes</p> 
+     <ul> 
+      <li>Guaranteeing the running server's demise is the sticky and expensive part of this solution but without it it will be far less reliable.</li> 
+      <li>Windows assigns pid's in a much less clear way than *NIX. What if Windows reuses the dead server's pid right away before asadmin has had a chance to check? Asadmin will wait for that new random process to stop.</li> 
+      <li>There is a requirement for native code. The plan would be to use JNA. Nevertheless it is still native code.</li> 
+      <li>This solution is great from a user's perspective because the server did not have to be started in any special way</li> 
+      <li>All running servers are capable of restarting remotely or locally</li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

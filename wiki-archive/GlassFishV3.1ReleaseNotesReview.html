@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFishV3.1ReleaseNotesReview</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   
+     <div> 
+      <ul> 
+       <li><a href="#GlassFishV3.1ReleaseNotesReview-Overview">Overview</a></li> 
+       <li><a href="#GlassFishV3.1ReleaseNotesReview-DocumentLinks">Document Links</a></li> 
+       <li><a href="#GlassFishV3.1ReleaseNotesReview-ReleaseNotesDevelopmentandReviewProcess"> <em>Release Notes</em> Development and Review Process</a></li> 
+       <li><a href="#GlassFishV3.1ReleaseNotesReview-ProvidingFeedback">Providing Feedback</a></li> 
+       <li><a href="#GlassFishV3.1ReleaseNotesReview-MilestoneDates">Milestone Dates</a></li> 
+       <li><a href="#GlassFishV3.1ReleaseNotesReview-Questions">Questions</a></li> 
+      </ul>
+     </div> <h4><a name="GlassFishV3.1ReleaseNotesReview-Overview"></a>Overview</h3> <p>This page explains the development and review process for the GlassFish Server 3.1 <em>Release Notes</em>.</p> <h4><a name="GlassFishV3.1ReleaseNotesReview-DocumentLinks"></a>Document Links</h3> <p>The following are links to several versions of the GlassFish Server <em>Release Notes</em>:</p> 
+     <ul> 
+      <li><b>GlassFish 3.0.1 Release Notes</b> 
+       <ul> 
+        <li><a href="http://download.oracle.com/docs/cd/E19798-01/821-1759/821-1759.pdf">PDF</a></li> 
+        <li><a href="http://download.oracle.com/docs/cd/E19798-01/821-1759/index.html">HTML</a></li> 
+       </ul> </li> 
+      <li><b>GlassFish 2.1.1 Release Notes</b> 
+       <ul> 
+        <li><a href="http://download.oracle.com/docs/cd/E19879-01/821-0188/821-0188.pdf">PDF</a></li> 
+        <li><a href="http://download.oracle.com/docs/cd/E19879-01/821-0188/index.html">HTML</a></li> 
+       </ul> </li> 
+     </ul> <p>Links to the 3.1 <em>Release Notes</em> will be made available after comments on the 3.0.1 and 2.1.1 <em>Release Notes</em> have been incorporated and any new 3.1-specific topics have been added.</p> <h4><a name="GlassFishV3.1ReleaseNotesReview-ReleaseNotesDevelopmentandReviewProcess"></a><em>Release Notes</em> Development and Review Process</h3> <p>The GlassFish Server 3.1 <em>Release Notes</em> development process is a bit unusual because the 3.1 release combines features from both the 2.1.1 release and the 3.0.1 release. Specifically, GF3.1 inherits clustering features from 2.1.1 and Java 6 EE features from 3.0.1. Because of this, there are topics from both the 2.1.1 and 3.0.1 <em>Release Notes</em> that are relevant to the 3.1 <em>Release Notes</em>.</p> <p>With the foregoing in mind, the <em>Release Notes</em> development and review process is divided into four phases:</p> 
+     <ol> 
+      <li><b>Assess 2.1.1 and 3.0.1 Topics</b>: Determine which topics from the 2.1.1 and 3.0.1 <em>Release Notes</em> are still relevant to 3.1. Please review the 2.1.1 and 3.0.1 documents, linked above, with an eye towards what to keep and what to throw with regard to the 3.1 <em>Release Notes</em>.</li> 
+      <li><b>Determine New Topics for 3.1</b>: After establishing a baseline in Phase 1, the next phase is to determine the new topics that need to be included in the 3.1 <em>Release Notes</em>. Most of these topics should already be added as bugs, per the instructions in <a href="./iddocissues.html">How to identify doc issues to technical writers</a>.</li> 
+      <li><b>First Draft Review</b>: Review the first complete draft of the 3.1 <em>Release Notes</em>, which will combine the relevant 2.1.1 and 3.0.1 topics and any new 3.1-specific topics. The goal of this phase is to identify any major issues or topics that have been omitted or not integrated correctly.</li> 
+      <li><b>Final Hand-off Review</b>: The final review phase will be to verify that all relevant topics and comments have been incorporated in the 3.1 <em>Release Notes</em>. Note that this will <em>not</em> be the time to add major new topics or sections. Such comments should be made during Phase 3, above.</li> 
+     </ol> <h4><a name="GlassFishV3.1ReleaseNotesReview-ProvidingFeedback"></a>Providing Feedback</h3> <p>Please provide your feedback by adding comments to this wiki. Please review existing comments before posting to avoid duplicates.</p> <h4><a name="GlassFishV3.1ReleaseNotesReview-MilestoneDates"></a>Milestone Dates</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Phase</th> 
+         <th class="confluenceTh">Summary</th> 
+         <th class="confluenceTh">Purpose</th> 
+         <th class="confluenceTh">Deadline Date</th> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh">1</th> 
+         <td class="confluenceTd">Assess 2.1.1 and 3.0.1 Topics</td> 
+         <td class="confluenceTd">Determine which topics from the 2.1.1 and 3.0.1 RNs are still relevant to 3.0.1</td> 
+         <th class="confluenceTh">February 14th</th> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh">2</th> 
+         <td class="confluenceTd">Determine new 3.1 topics</td> 
+         <td class="confluenceTd">Use the <a href="./iddocissues">defined procedure</a> for notifying the <a href="mailto:scott.fordin@oracle.com.html">RN writer</a> of any new topics to add</td> 
+         <th class="confluenceTh">February 18th</th> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh">3</th> 
+         <td class="confluenceTd">First complete draft review</td> 
+         <td class="confluenceTd">Identify any major issues or topics that still need to be integrated</td> 
+         <th class="confluenceTh">February 21st</th> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh">4</th> 
+         <td class="confluenceTd">Final hand-off review</td> 
+         <td class="confluenceTd">Verify that all comments and topic requests have been integrated correctly</td> 
+         <th class="confluenceTh">February 24th</th> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>Any <em>Release Notes</em> comments that do not make it into the initial GlassFish 3.1 release will be added during the documentation refresh in March.</p> <h4><a name="GlassFishV3.1ReleaseNotesReview-Questions"></a>Questions</h3> <p>If you have any specific questions about the <em>Release Notes</em> or the <em>Release Notes</em> development process, please contact the <a href="mailto:scott.fordin@oracle.com"><em>Release Notes</em> owner</a>.</p> 
+     <div class="tabletitle"> 
+      <a name="comments"> <h4>Comments:</h2> </a> 
+     </div> 
+     <table border="0" width="100%"> 
+      <tbody>
+       <tr> 
+        <td> <a name="comment-20882348"></a> <font class="smallfont">
+          <div class="table-wrap"> 
+           <table class="confluenceTable">
+            <tbody> 
+             <tr> 
+              <th class="confluenceTh"> Comment ID <br class="atl-forced-newline"> </th> 
+              <th class="confluenceTh"> Comment <br class="atl-forced-newline"> </th> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> JC-001 <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> We should remove the following sections, and replace them with a section that links (link TBD) to the published certification matrix: <br class="atl-forced-newline"> 
+               <ul> 
+                <li>Supported Platforms</li> 
+                <li>Required JDK Versions</li> 
+                <li><a href="http://download.oracle.com/docs/cd/E19798-01/821-1759/gawms/index.html">Supported JDBC Drivers and Databases</a></li> 
+                <li><a href="http://download.oracle.com/docs/cd/E19798-01/821-1759/gawlk/index.html">Supported Browsers</a></li> 
+                <li><a href="http://download.oracle.com/docs/cd/E19798-01/821-1759/gjkxp/index.html">mod_jk Support</a></li> 
+               </ul> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> JC-002 <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> Add a section "Deprecated Functionality" that covers deprecated/EOL'd functionality (such as HADB), and to host announced deprecated features moving forward (TBD).&nbsp; Unclear if we can link to an external "Deprecated Functionality" table. FYI, WLS "deprecated functionality" section: <a href="http://download.oracle.com/docs/cd/E12840_01/wls/docs103/notes/new.html#wp1093291">http://download.oracle.com/docs/cd/E12840_01/wls/docs103/notes/new.html#wp1093291</a> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> JC-003 <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> Add a section "Standards Support".&nbsp; Unclear if we can point to an external document. I'll post an update. FYI, WLS "standards support" section: <a href="http://download.oracle.com/docs/cd/E12840_01/wls/docs103/notes/new.html#wp1078833">http://download.oracle.com/docs/cd/E12840_01/wls/docs103/notes/new.html#wp1078833</a>We have the data for this.&nbsp; Will post an update.<br class="atl-forced-newline"> </td> 
+             </tr> 
+            </tbody>
+           </table> 
+          </div> </font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by johnclingan at Feb 11, 2011 13:22 
+         </div> </td> 
+       </tr> 
+      </tbody>
+     </table> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Feb 08, 2011 by 
+<font color="#0050B2">sfordin</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : V3UpdateCenterGettingStartedSandbox</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="V3UpdateCenterGettingStartedSandbox-GettingStartedwiththeUpdateCenter"></a>Getting Started with the Update Center</h1> <p>[</p> 
+     <div class="error">
+      <span class="error">Unknown macro: {TableOfContents title=' '}</span> 
+     </div> <p>|(TableOfContentstitle='')]</p> <p>The <a href="https://updatecenter.java.net/">Update Center</a> is an open source project integrated with GlassFish v3 and Java EE 6 SDK. It provides both the ability to seamlessly apply updates to already installed content and to download and install additional applications.<br> <span class="error">Cannot resolve external resource into attachment.</span></p> <h4><a name="V3UpdateCenterGettingStartedSandbox-UsingtheUpdateCenter"></a>Using the Update Center</h2> <p>Before you can use the Update Center, you must have GlassFish v3 or Java EE 6 SDK installed. Download the distribution you want from the <a href="https://glassfish.java.net/downloads/v3-final.html">GlassFish v3 Download Website</a>.</p> <p>To launch the Updatetool:</p> 
+     <ul> 
+      <li>From the GlassFish installation directory, navigate to the top level <em>bin</em> directory (&lt;code&gt;&lt;GlassFish_v3_Install_Dir&gt;/bin&lt;/code&gt;).</li> 
+      <li>Launch the Update Tool by typing: &lt;code&gt;updatetool&lt;/code&gt;. 
+       <ul> 
+        <li>If the Updatetool client installation option was deselected in installer, or if you installed zip file distribution, the script may need to download and install the necessary runtime packages the first time you invoke it. User will need to run the script again after the bootstrap. Note that the bootstrap may take a while to download and initialize the packages, depending on your connection speed.</li> 
+       </ul> </li> 
+      <li>The Updatetool GUI client displays.</li> 
+     </ul> <p><span class="error">Cannot resolve external resource into attachment.</span></p> <h4><a name="V3UpdateCenterGettingStartedSandbox-SettingUpProxyConfiguration"></a>Setting Up Proxy Configuration</h3> <p>If there are no components listed on the screen of <em>Available Add-ons</em>, you may be behind a proxy server. To connect the Update Center to the proxy server:</p> 
+     <ul> 
+      <li>Select the Preferences button.</li> 
+      <li>Select the "Manual proxy configuration" option.</li> 
+      <li>Provide the proxy server names and port numbers.</li> 
+      <li>If the proxy server requires authentication, select the "Proxy require authentication" checkbox and provide the username and password.</li> 
+      <li>Select OK button.</li> 
+     </ul> <p><span class="error">Cannot resolve external resource into attachment.</span><br> Select the Available Add-ons node once again to display the components that are available for an update.<br> If you select a package and install it, the installed package is no longer displayed in Available Add-ons screen. You can view these newly installed components in the Installed Components screen.</p> <h4><a name="V3UpdateCenterGettingStartedSandbox-AvailableAddons"></a>Available Add-ons</h2> <p>The Available Add-ons screen shows all the software components available for installation through the Update Center. Notice that the modules are categorized in associated groupings. The <em>Package Details</em> section of the window shows more information about the software package.</p> <h4><a name="V3UpdateCenterGettingStartedSandbox-AvailableUpdates"></a>Available Updates</h2> <p>The Available Updates screen shows when updates are available for installation. It shows the basic details about each software updates. You can select the desired package(s) from the table and click <em>Install</em> button. The <em>Package Details</em> section of the window shows more information for the component selected in the table. </p> <h4><a name="V3UpdateCenterGettingStartedSandbox-InstalledComponents"></a>Installed Components</h2> <p>The Installed Components screen shows the software components currently installed. The <em>Package Details</em> section of the window shows more information for the installed software including technical specifications, documentation, and other useful resources.</p> <h4><a name="V3UpdateCenterGettingStartedSandbox-Preferences"></a>Preferences</h2> <p>When you click on the <em>Preferences</em> button, the <em>Preferences</em> dialog will appear. It lets you configure the Update Center settings and specify a schedule for the updates. </p> <h4><a name="V3UpdateCenterGettingStartedSandbox-ImageProperties"></a>Image Properties</h2> <p>When you select File -&gt; Image Properties menu, the image properties dialog will appear. From this dialog, you can add or edit update center repository urls.</p> <h4><a name="V3UpdateCenterGettingStartedSandbox-ReplacingCommunityRepositoryConfigurationwithSunRepositoryConfiguration"></a>Replacing Community Repository Configuration with Sun Repository Configuration</h2> <p>In several upgrade scenario you may need to replace community distribution repository configuration with Sun branding repository configuration. Here are the steps:<br> 1. Start Update Tool</p> 
+     <ul> 
+      <li>Start update tool by going to top level "bin" directory and running "updatetool" script. The GUI should appear.</li> 
+     </ul> <p><span class="error">Cannot resolve external resource into attachment.</span></p> <p>2. Set "release.glassfish.sun.com" as preferred publisher in Image Properties</p> 
+     <ul> 
+      <li>On Update Tool menu, select File -&gt; Image Properties... 
+       <ul> 
+        <li>This should bring up a dialog.</li> 
+        <li>Select "Preferred" checkbox in "release.glassfish.sun.com" row in "Software Sources" table.</li> 
+        <li>Click OK button.</li> 
+       </ul> </li> 
+     </ul> <h4><a name="V3UpdateCenterGettingStartedSandbox-CommonDistributionUpgradeScenarios"></a>Common Distribution Upgrade Scenarios</h2> <h4><a name="V3UpdateCenterGettingStartedSandbox-UpgradingtoSunGlassFishEnterpriseServerv3"></a>Upgrading to Sun GlassFish Enterprise Server v3</h3> <p>Using the Update Center, user is able to upgrade their community installation to Sun GlassFish Enterprise Server v3 installation. Use following steps:</p> <p>1. Set Sun Repository</p> 
+     <ul> 
+      <li>Replace community repository configuration with Sun repository configuration using these <a href="#V3UpdateCenterGettingStartedSandbox-sectionV3UpdateCenterGettingStartedSandboxRepl...">instructions</a>.</li> 
+     </ul> <p>2. Install Sun Distribution Artifacts</p> 
+     <ul> 
+      <li>Go to "Available Add-Ons" screen and install one of these packages, depending on desired distribution profile: 
+       <ul> 
+        <li>GlassFish Enterprise Full Profile (glassfish-enterprise-full-profile) or</li> 
+        <li>GlassFish Enterprise Web Profile (glassfish-enterprise-web-profile)</li> 
+       </ul> </li> 
+     </ul> <p>This will download the necessary artifacts and upgrade your installation. </p> <p>3. Verifying the Upgrade</p> 
+     <ul> 
+      <li>Congratulations! You are now using Sun GlassFish Enterprise Server v3. 
+       <ul> 
+        <li>You may run "asadmin version" command to verify the upgrade.</li> 
+        <li>Alternatively, you may also log on to the management console and verify the version of the product on the masthead.</li> 
+       </ul> </li> 
+     </ul> <p>4. Going Back to Community Distribution</p> 
+     <ul> 
+      <li>To undo the changes, simply remove all packages from this list listed in "Installed Components" screen: 
+       <ul> 
+        <li>glassfish-enterprise-full-profile</li> 
+        <li>glassfish-enterprise-web-profile</li> 
+        <li>glassfish-branding</li> 
+        <li>glassfish-branding-gui</li> 
+        <li>mq-branding</li> 
+       </ul> </li> 
+     </ul> <p>After server re-start, you should see the community distribution version.</p> <h4><a name="V3UpdateCenterGettingStartedSandbox-UpgradingtoJavaEE6SDK"></a>Upgrading to Java EE 6 SDK</h3> <p>Using the Update Center, user is able to upgrade their community or Sun GlassFish Enterprise Server v3 installation to Java EE 6 SDK. Use following steps:</p> <p>1. Set Sun Repository</p> 
+     <ul> 
+      <li>If your starting point is community distribution installation, replace community repository configuration with Sun repository configuration using these <a href="#V3UpdateCenterGettingStartedSandbox-sectionV3UpdateCenterGettingStartedSandboxRepl...">instructions</a>.</li> 
+     </ul> <p>2. Install Java EE 6 SDK Distribution Artifacts</p> 
+     <ul> 
+      <li>Go to "Available Add-Ons" screen and install one of these packages, depending on desired Java EE 6 SDK distribution profile: 
+       <ul> 
+        <li>Java EE 6 SDK Full Profile (javaee-sdk-full-profile) or</li> 
+        <li>Java EE 6 SDK Web Profile (javaee-sdk-web-profile)</li> 
+       </ul> </li> 
+     </ul> <p>This will download all Java EE 6 SDK components and upgrade your installation to the equivalent of Java EE 6 SDK.</p> <h4><a name="V3UpdateCenterGettingStartedSandbox-UpgradingFromCommunityWebProfiletoCommunityFullProfile"></a>Upgrading From Community Web Profile to Community Full Profile</h3> <p>1. Install GlassFish Full Profile Artifacts</p> 
+     <ul> 
+      <li>Go to "Available Add-Ons" screen and install following full profile metapackage: 
+       <ul> 
+        <li>GlassFish Full Profile (glassfish-full-profile)</li> 
+       </ul> </li> 
+     </ul> <p>This will download all required components and upgrade your installation to the equivalent of full profile GlassFish v3.</p> <h4><a name="V3UpdateCenterGettingStartedSandbox-UpgradingFromSunGlassFishEnterpriseServerWebProfiletoSunGlassFishEnterpriseServerFullProfile"></a>Upgrading From Sun GlassFish Enterprise Server Web Profile to Sun GlassFish Enterprise Server Full Profile</h3> <p>1. Install GlassFish Full Profile Artifacts</p> 
+     <ul> 
+      <li>Go to "Available Add-Ons" screen and install following full profile metapackage: 
+       <ul> 
+        <li>GlassFish Enterprise Full Profile (glassfish-enterprise-full-profile)</li> 
+       </ul> </li> 
+     </ul> <p>This will download all required components and upgrade your installation to the equivalent of full profile Sun GlassFish Enterprise Server v3.</p> <h4><a name="V3UpdateCenterGettingStartedSandbox-UpgradingFromJavaEE6SDKWebProfiletoJavaEE6SDKFullProfile"></a>Upgrading From Java EE 6 SDK Web Profile to Java EE 6 SDK Full Profile</h3> <p>1. Install Java EE 6 SDK Full Profile Artifacts</p> 
+     <ul> 
+      <li>Go to "Available Add-Ons" screen and install following full profile metapackage: 
+       <ul> 
+        <li>Java EE 6 SDK Full Profile (javaee-sdk-full-profile)</li> 
+       </ul> </li> 
+     </ul> <p>This will download all required components and upgrade your installation to the equivalent of full profile Java EE 6 SDK.</p> <h4><a name="V3UpdateCenterGettingStartedSandbox-SettingUpAutomaticUpdateChecks"></a>Setting Up Automatic Update Checks</h2> <p>To Schedule an update check:</p> 
+     <ul> 
+      <li>Select the Preferences button.</li> 
+      <li>In the Updates section of the dialog, select "Automatically check for updates" checkbox and set a desired frequency of update check.</li> 
+      <li>Click OK button.</li> 
+     </ul> <p>The Update Center notifier automatically checks for updates based on the schedule you defined in the Update Preferences. However, you can also check for an update at anytime using the <em>Refresh</em> button. If any updates become available, they are displayed in the Available Updates screen.<br> More components are being added every day, so check the Update Center frequently.</p> 
+     <hr> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875379/21365014.gif">UpdatetoolBootstrap.GIF</a> (image/gif) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875379/21365013.png">PreferencesProxy.PNG</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875379/21365011.png">ImageProperties.PNG</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875379/21365012.png">UpdatetoolClient.PNG</a> (application/octet-stream) 
+      <br> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 02, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:48.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

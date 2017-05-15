@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : V2inNB65</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="V2inNB65-IntegrationofGlassFishV2andNetBeans6.5"></a>Integration of GlassFish V2 and NetBeans 6.5</h1> 
+     <hr> <h4><a name="V2inNB65-Background"></a>Background</h3> <p>NetBeans 6.1 currently supports Java EE 5 development against GF V2. That support will be maintained in 6.5. </p> <h4><a name="V2inNB65-Stakeholders"></a>Stakeholders</h3> 
+     <ul> 
+      <li>Java EE Modules</li> 
+      <li>Dynamic Language Modules</li> 
+     </ul> <h4><a name="V2inNB65-Users"></a>Users</h3> 
+     <ul> 
+      <li>Java EE 6 early adopters</li> 
+      <li>Dynamic Language developers that are experimenting with GF V3<br> need list of languages that will be supported by v3 AND 6.5.</li> 
+     </ul> <h4><a name="V2inNB65-Risks"></a>Risks</h3> 
+     <ul> 
+      <li>limited QA bandwidth.</li> 
+      <li>urgent interrupts on development team's time.</li> 
+     </ul> <h4><a name="V2inNB65-Assumptions"></a>Assumptions</h3> 
+     <ul> 
+      <li>Not necessary to be production quality<br> but it should not be really buggy either.</li> 
+     </ul> <h4><a name="V2inNB65-Vision"></a>Vision </h2> <p>In the 6.5 time frame we want to create an environment that allows users to leverage the features of V3 that will be "ready". The Java EE 6 features are supposed to be ready. The ability to support dynamic languages is going to be "ready". The support for the module system in v3 will be more baked...</p> <p>We will need to extend the dev modules to support Java EE 6 development.</p> <h4><a name="V2inNB65-Features"></a>Features</h3> 
+     <ul> 
+      <li>EJB wizard in Web project</li> 
+      <li>Call EJB support for web packaged EJBs inside the web project...</li> 
+      <li>Leverage v3 container features</li> 
+      <li>extend web app with an action that can create an ejb jar file for the embedded ejbs</li> 
+      <li>Wizard/action to create a v3 module from a regular java project</li> 
+      <li>support for ejb module project deployment (if supported by v3)</li> 
+      <li>support for app client project deployment (if supported by v3)</li> 
+      <li>support for ear project deployment (if supported by v3)</li> 
+      <li>v3 dd support</li> 
+      <li></li> 
+     </ul> <h4><a name="V2inNB65-Nonfeatures"></a>Non features</h3> 
+     <ul> 
+      <li>new Java EE 6 dd support (unless absolutely necessary)</li> 
+      <li></li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:49.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

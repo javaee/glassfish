@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : FaqTroubleshootReplicationZh</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="FaqTroubleshootReplicationZh-%22%E6%95%B0%E6%8D%AE%E5%A4%8D%E5%88%B6%22%E4%B8%8D%E8%B5%B7%E4%BD%9C%E7%94%A8%E3%80%82%E8%83%BD%E6%8F%90%E4%BE%9B%E4%B8%80%E4%BA%9B%E7%96%91%E9%9A%BE%E8%A7%A3%E7%AD%94%E6%8F%90%E7%A4%BA%E5%90%97%EF%BC%9F"></a>"数据复制"不起作用。能提供一些疑难解答提示吗？</h2> 
+     <ul> 
+      <li>检查各台计算机是否位于同一子网中。<tt>ifconfig -a</tt> 应该显示将位于同一子网中的两台计算机的 IP 地址。</li> 
+     </ul> 
+     <ul> 
+      <li>在 Linux/Unix 上，</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">ifconfig -a</pre> 
+       </div> 
+      </div>
+     </div> <p>应该显示您的网络接口的 <tt>MULTICAST</tt> 属性。还要确保接口处于启动和运行状态。如果未启用多址广播，则可以使用：</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">ifconfig &lt;interfacename&gt; multicast</pre> 
+       </div> 
+      </div>
+     </div> <p>启动它。在 Windows 上，打开 Regedit 并查找</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">HKEY_LOCAL_Machine &gt; SYSTEM &gt; CurrentControlSet &gt; Services &gt; Tcpip &gt; Parameters.</pre> 
+       </div> 
+      </div>
+     </div> <p>查找参数 <tt>TrFunctionalMcastAddress</tt>，看其值是否设置为 0。如果未设置为 0，请将其设置为 0。</p> 
+     <ul> 
+      <li>在您的多台计算机设置中，查看 server.log 文件，看是否有显示 <tt>ADD_EVENT</tt> 或 <tt>MASTER_CHANGE_EVENT</tt> 之类的短语的条目。然后在它上面的日志行查看是否两个实例均存在。这可能是未启用多址广播或未处于同一子网的症状。</li> 
+     </ul> 
+     <ul> 
+      <li>还要确保在 <tt>/etc/hosts</tt> 文件中将您的 IP 映射到计算机。</li> 
+     </ul> <p><em>（Shreedhar Ganapathy 回答）</em></p> 
+     <hr> <p><a href="FaqTroubleshootReplication.html" title="FaqTroubleshootReplication">英文 </a></p> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 02, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:44.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

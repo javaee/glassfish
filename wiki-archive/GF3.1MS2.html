@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GF3.1MS2</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GF3.1MS2-GlassFishServerOpenSourceEdition3.1Milestone2%28Enddate06%2F21%2F10%29"></a>GlassFish Server Open Source Edition 3.1 Milestone 2 (End date 06/21/10)</h2> 
+     <div> 
+      <ul> 
+       <li><a href="#GF3.1MS2-GlassFishServerOpenSourceEdition3.1Milestone2%28Enddate06%2F21%2F10%29">GlassFish Server Open Source Edition 3.1 Milestone 2 (End date 06/21/10)</a></li> 
+       <li><a href="#GF3.1MS2-DemoTopics">Demo Topics</a></li> 
+       <ul> 
+        <li><a href="#GF3.1MS2-BasicClustering">Basic Clustering</a></li> 
+        <li><a href="#GF3.1MS2-Configuration">Configuration</a></li> 
+        <li><a href="#GF3.1MS2-Synchronization">Synchronization</a></li> 
+        <li><a href="#GF3.1MS2-DynamicReconfiguration">Dynamic Reconfiguration</a></li> 
+        <li><a href="#GF3.1MS2-Deployment">Deployment</a></li> 
+        <li><a href="#GF3.1MS2-AppClientContainer">App Client Container</a></li> 
+        <li><a href="#GF3.1MS2-Connectors%2CPooling%2CResources%2CJDBC">Connectors, Pooling, Resources, JDBC</a></li> 
+        <li><a href="#GF3.1MS2-Security">Security</a></li> 
+        <li><a href="#GF3.1MS2-SSHProvisioning">SSH Provisioning</a></li> 
+        <li><a href="#GF3.1MS2-TransactionRecovery">Transaction Recovery</a></li> 
+        <li><a href="#GF3.1MS2-RESTfulAdministrationAPI">RESTful Administration API</a></li> 
+        <li><a href="#GF3.1MS2-JMX">JMX</a></li> 
+        <li><a href="#GF3.1MS2-AdministrationConsole">Administration Console</a></li> 
+        <li><a href="#GF3.1MS2-Logging%26Diagnostics">Logging &amp; Diagnostics</a></li> 
+        <li><a href="#GF3.1MS2-DASRecovery">DAS Recovery</a></li> 
+        <li><a href="#GF3.1MS2-Installer">Installer</a></li> 
+        <li><a href="#GF3.1MS2-Packaging">Packaging</a></li> 
+        <li><a href="#GF3.1MS2-Upgrade">Upgrade</a></li> 
+        <li><a href="#GF3.1MS2-Build">Build</a></li> 
+        <li><a href="#GF3.1MS2-InmemorySessionReplication%3AHighAvailability">In-memory Session Replication: High Availability</a></li> 
+        <li><a href="#GF3.1MS2-ShoalGroupManagementService%28GMS%29forRuntimeClusteringServices">Shoal Group Management Service (GMS) for Runtime Clustering Services</a></li> 
+        <li><a href="#GF3.1MS2-Webtier">Webtier</a></li> 
+        <li><a href="#GF3.1MS2-EJB">EJB</a></li> 
+        <li><a href="#GF3.1MS2-IIOPClustering">IIOP Clustering</a></li> 
+        <li><a href="#GF3.1MS2-JMSandMessageQueue">JMS and Message Queue</a></li> 
+        <li><a href="#GF3.1MS2-Metro">Metro</a></li> 
+        <li><a href="#GF3.1MS2-Loadbalancer">Loadbalancer</a></li> 
+        <li><a href="#GF3.1MS2-DeveloperToolingwithNetBeans">Developer Tooling with NetBeans</a></li> 
+        <li><a href="#GF3.1MS2-EclipseWTP">Eclipse WTP</a></li> 
+        <li><a href="#GF3.1MS2-Embedded">Embedded</a></li> 
+        <li><a href="#GF3.1MS2-DevTestFramework">Dev Test Framework</a></li> 
+        <li><a href="#GF3.1MS2-JSF">JSF</a></li> 
+        <li><a href="#GF3.1MS2-Grizzly">Grizzly</a></li> 
+        <li><a href="#GF3.1MS2-OSGi">OSGi</a></li> 
+        <li><a href="#GF3.1MS2-Persistence">Persistence</a></li> 
+        <li><a href="#GF3.1MS2-Jersey">Jersey</a></li> 
+        <li><a href="#GF3.1MS2-CDI">CDI</a></li> 
+        <li><a href="#GF3.1MS2-BeanValidation">Bean Validation</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="GF3.1MS2-DemoTopics"></a>Demo Topics</h2> 
+     <ul> 
+      <li>SSH - create/delete node, create/delete instance, start/stop instance, start/stop cluster</li> 
+      <li>Deployment - Deploy to cluster</li> 
+      <li>JMS - Support for conventional clustering of MQ brokers in LOCAL or REMOTE broker mode</li> 
+      <li>Grizzly WebSockets</li> 
+     </ul> <h4><a name="GF3.1MS2-BasicClustering"></a>Basic Clustering</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item #</th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 04. </td> 
+         <td class="confluenceTd"> MS2 (6/21) </td> 
+         <td class="confluenceTd"> INFRA-005, INFRA-002A, INFRA-002C, INFRA-002B, INFRA-003A, INFRA-003B </td> 
+         <td class="confluenceTd"> create/delete/list-cluster, create/delete/list-instance, start/stop-instance </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Planned - will do QA/Docs handover with proper Dev Tests, Issues <a href="https://github.com/javaee/glassfish/issues/12042">12042 </a>, <a href="https://github.com/javaee/glassfish/issues/12043">12043 </a>, <a href="https://github.com/javaee/glassfish/issues/12044">12044 </a> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 05. </td> 
+         <td class="confluenceTd"> MS2 (6/21) </td> 
+         <td class="confluenceTd"> INFRA-001 </td> 
+         <td class="confluenceTd"> create-domain template support </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Issue <a href="https://github.com/javaee/glassfish/issues/12016">12016 </a> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 06. </td> 
+         <td class="confluenceTd"> MS2 (6/21) </td> 
+         <td class="confluenceTd"> INFRA-007 </td> 
+         <td class="confluenceTd"> copy/delete/list-config </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Issue <a href="https://github.com/javaee/glassfish/issues/12017">12017 </a> Completed </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS2-Configuration"></a>Configuration</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 01. </td> 
+         <td class="confluenceTd"> MS2 (6/21) </td> 
+         <td class="confluenceTd"> CONFIG-001 </td> 
+         <td class="confluenceTd"> Token support </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Issue <a href="https://github.com/javaee/glassfish/issues/12018">12018 </a> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 02. </td> 
+         <td class="confluenceTd"> MS2 (6/21) </td> 
+         <td class="confluenceTd"> CONFIG-002 </td> 
+         <td class="confluenceTd"> Support for multi-config </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 03. </td> 
+         <td class="confluenceTd"> MS2 (6/21) </td> 
+         <td class="confluenceTd"> CONFIG-005 </td> 
+         <td class="confluenceTd"> Support for port conflicts </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Issue <a href="https://github.com/javaee/glassfish/issues/11972">11972 </a> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 04. </td> 
+         <td class="confluenceTd"> MS2 (6/21) </td> 
+         <td class="confluenceTd"> CONFIG-004 </td> 
+         <td class="confluenceTd"> Concurrent administration </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Issue <a href="https://github.com/javaee/glassfish/issues/12019">12019 </a> Completed </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS2-Synchronization"></a>Synchronization</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 01. </td> 
+         <td class="confluenceTd"> MS2 (6/21) </td> 
+         <td class="confluenceTd"> SYNC-001 </td> 
+         <td class="confluenceTd"> Sync during startup </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 02. </td> 
+         <td class="confluenceTd"> MS2 (6/21) </td> 
+         <td class="confluenceTd"> SYNC-002 </td> 
+         <td class="confluenceTd"> Clean up stale files </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 03. </td> 
+         <td class="confluenceTd"> MS2 (6/21) </td> 
+         <td class="confluenceTd"> SYNC-003 </td> 
+         <td class="confluenceTd"> Graceful handing of DAS not available during startup </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 04. </td> 
+         <td class="confluenceTd"> MS2 (6/21) </td> 
+         <td class="confluenceTd"> SYNC-004 </td> 
+         <td class="confluenceTd"> Handle symlinks </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Issue <a href="https://github.com/javaee/glassfish/issues/12025">12025 </a> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 06. </td> 
+         <td class="confluenceTd"> MS2 (6/21) </td> 
+         <td class="confluenceTd"> SYNC-006 </td> 
+         <td class="confluenceTd"> Ability to trigger full sync </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS2-DynamicReconfiguration"></a>Dynamic Reconfiguration</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh">Date/Milestone</th> 
+         <th class="confluenceTh">Feature ID</th> 
+         <th class="confluenceTh">Description</th> 
+         <th class="confluenceTh">QA/Docs Handover</th> 
+         <th class="confluenceTh">Status</th> 
+         <th class="confluenceTh">Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 05. </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd"> DYREC-001 </td> 
+         <td class="confluenceTd"> Provide infrastructure to apply configuration changes dynamically (--target option in CLI) across a cluster </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Issue <a href="https://github.com/javaee/glassfish/issues/12030">12030 </a> Completed </td> 
+         <td class="confluenceTd">QA will be able test proper command replication with all scenarios handled for createJDBCResource and createJDBCConnectionPool commands </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 06. </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd"> DYREC-004 </td> 
+         <td class="confluenceTd"> Clearly show status at the end of each operations. For all server instances where dynamic reconfiguration failed, please identify the server instances and suggest next steps to users to recover from this error (example, restart the server instances) </td> 
+         <td class="confluenceTd"> yes </td> 
+         <td class="confluenceTd"> Issue <a href="https://github.com/javaee/glassfish/issues/12031">12031 </a> Completed </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS2-Deployment"></a>Deployment</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID</th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5. </td> 
+         <td class="confluenceTd"> Milestone 2 (06/21) </td> 
+         <td class="confluenceTd"> DPLY-001 </td> 
+         <td class="confluenceTd"> Support the basic clustering deployment or provide workaround to allow other sub teams to start working on their clustering requirements </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd">Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6. </td> 
+         <td class="confluenceTd"> Milestone 2 (06/21) </td> 
+         <td class="confluenceTd"> DPLY-007 </td> 
+         <td class="confluenceTd"> Support versioning for the rest PE application commands (list-application etc) </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS2-AppClientContainer"></a>App Client Container</h3> <p>Deliverables got pushed to MS3</p> <h4><a name="GF3.1MS2-Connectors%2CPooling%2CResources%2CJDBC"></a>Connectors, Pooling, Resources, JDBC</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item #</th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-21 </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd"> Hudson jobs for connector-dev-tests, connector-standalone-cts, jdbc-dev-tests </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-23 </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd"> GlassFish-ize sun-resources.dtd to glassfish-resources.dtd </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS2-Security"></a>Security</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item #</th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> MS2 (6/21) </td> 
+         <td class="confluenceTd"> -- </td> 
+         <td class="confluenceTd"> Porting OWSM interop related Fixes to Metro 1.6 </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> DONE </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd"> MS2 (6/21) </td> 
+         <td class="confluenceTd"> SEC-015 </td> 
+         <td class="confluenceTd"> GlassFish OAM Integration </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> CODE COMPLETE, tested the Authenticator Mode with BASIC, FORM and CERTIFICATE authentication, Need to test Identity-Asserter Mode, which requires installing a Proxy-Server Front-Ending GlassFish and need to install Oracle AccessManager WebGate Plugin at the Proxy-Server and a ModJK connector to GlassFish </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS2-SSHProvisioning"></a>SSH Provisioning </h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh">Date/Milestone</th> 
+         <th class="confluenceTh">Feature-ID</th> 
+         <th class="confluenceTh">Description</th> 
+         <th class="confluenceTh">QA/Docs Handover?</th> 
+         <th class="confluenceTh">Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd"> SSHPRO-001,6-8 </td> 
+         <td class="confluenceTd"> ssh client library and API </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Completed <a href="https://github.com/javaee/glassfish/issues/12006">12006 </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd"> SSHPRO-002 </td> 
+         <td class="confluenceTd"> remote create/delete node: initial integration </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Completed <a href="https://github.com/javaee/glassfish/issues/12000">12000 </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3 </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd"> SSHPRO-003 </td> 
+         <td class="confluenceTd"> remote create/delete instance: initial integration </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Completed <a href="https://github.com/javaee/glassfish/issues/12002">12002 </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4 </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd"> SSHPRO-004 </td> 
+         <td class="confluenceTd"> remote start/stop instance: initial integration </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Completed <a href="https://github.com/javaee/glassfish/issues/12003">12003 </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5 </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd"> SSHPRO-005 </td> 
+         <td class="confluenceTd"> remote start/stop cluster: initial integration </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Completed <a href="https://github.com/javaee/glassfish/issues/12124">12124 </a> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS2-TransactionRecovery"></a>Transaction Recovery </h3> <p>No deliverables planned for MS 2</p> <h4><a name="GF3.1MS2-RESTfulAdministrationAPI"></a>RESTful Administration API</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 02. </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd"> REST-002 </td> 
+         <td class="confluenceTd"> JMS support </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">Completed </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS2-JMX"></a>JMX</h3> <p>Investigation work</p> <h4><a name="GF3.1MS2-AdministrationConsole"></a>Administration Console</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> #2 </td> 
+         <td class="confluenceTd"> MS2 (6/21) </td> 
+         <td class="confluenceTd"> GUI-002 </td> 
+         <td class="confluenceTd"> Modify tree to include clusters, nodes, standalone instances and multi config </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> #3 </td> 
+         <td class="confluenceTd"> MS2 (6/21) </td> 
+         <td class="confluenceTd"> GUI-002 </td> 
+         <td class="confluenceTd"> Page Layout Change, modify or add additional pages for cluster support. This includes: Create cluster, all the tabs for cluster page, standalone instances page and tab, target support for applications and resources. </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS2-Logging%26Diagnostics"></a>Logging &amp; Diagnostics </h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments / Dependencies </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 02. </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd"> LOG-001 </td> 
+         <td class="confluenceTd"> Message ids for all SEVERE, WARNING and INFO messages </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> required check-ins are done. Integration of build script with QL is pending - Checked in 6/24 </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS2-DASRecovery"></a>DAS Recovery</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1. </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd"> DAS-001 </td> 
+         <td class="confluenceTd"> Support v2 style DAS backup and recovery </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/12070">12070 </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2. </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd"> DAS-002 </td> 
+         <td class="confluenceTd"> Backup to v2 location </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/12070">12070 </a> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS2-Installer"></a>Installer</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> #1 </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd"> INST-001 </td> 
+         <td class="confluenceTd"> Support creation/removal of services </td> 
+         <td class="confluenceTd"> YES </td> 
+         <td class="confluenceTd">Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> #2 </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd"> INST-002 </td> 
+         <td class="confluenceTd"> Setup required permissions to directories/files and protect exposed passwords. </td> 
+         <td class="confluenceTd"> YES </td> 
+         <td class="confluenceTd"> Open with multiple dependencies and is getting tracked at asarch level. Following up with security team and hopefully will get a better implementation technique soon. Will carry over to MS 3 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> #3 </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd"> INST-003 </td> 
+         <td class="confluenceTd"> Sign installer executables on windows with appropriate publisher </td> 
+         <td class="confluenceTd"> YES </td> 
+         <td class="confluenceTd"> Completed signing and version information on 06/08/10 with Sun Microsystems as publisher. The signer info will be later updated with Oracle certificate info once obtained. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS2-Packaging"></a>Packaging</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3 </td> 
+         <td class="confluenceTd"> Milestone 2 (6/21) </td> 
+         <td class="confluenceTd"> PKG-001 </td> 
+         <td class="confluenceTd"> Create IPS packages for HA features and other new features </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Completed - only those IPS packages which actually have some existing content are being built and published, others are placeholders until their content becomes available. Also, QA/Docs handover for this feature will be delayed until all packages are usable and devtests in place -MS 4 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4 </td> 
+         <td class="confluenceTd"> Milestone 2 (6/21) </td> 
+         <td class="confluenceTd"> PKG-003 </td> 
+         <td class="confluenceTd"> HA packages pluggable </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd">Completed </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS2-Upgrade"></a>Upgrade</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3. </td> 
+         <td class="confluenceTd"> M2 </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> Get tasks/dates from leads </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS2-Build"></a>Build</h3> <p>No deliverables planned for MS2</p> <h4><a name="GF3.1MS2-InmemorySessionReplication%3AHighAvailability"></a>In-memory Session Replication: High Availability</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Desired Improvement </th> 
+         <th class="confluenceTh"> Priority </th> 
+         <th class="confluenceTh"> Comments </th> 
+         <th class="confluenceTh"> Issue # </th> 
+         <th class="confluenceTh"> Milestone </th> 
+         <th class="confluenceTh"> Eng Response </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> HA-2 </td> 
+         <td class="confluenceTd"> Implement Replication Store in Project Shoal providing save(), remove() operations </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Allows session data to be persisteed and removed from store </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/12224">12224 </a> Completed </td> 
+         <td class="confluenceTd"> Milestone 2 </td> 
+         <td class="confluenceTd"> YES </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> HA-5 </td> 
+         <td class="confluenceTd"> Implement HA BackingStore SPI using shoal Replication store </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Allows Containers to interact with the shoal Replication store using the SPI </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/12225">12225 </a> Completed </td> 
+         <td class="confluenceTd"> Milestone 2 </td> 
+         <td class="confluenceTd"> YES </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> HA-6 </td> 
+         <td class="confluenceTd"> Implement a No-Op HA BackingStore SPI </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Allows Metro to operate outside of GlassFish. Other containers may also use this approach when run in non-cluster mode. </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/12226">12226 </a> Completed </td> 
+         <td class="confluenceTd"> Milestone 2 </td> 
+         <td class="confluenceTd"> YES </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> HA-7 </td> 
+         <td class="confluenceTd"> Retain v2.1 HA configuration elements and attributes in domain.xml </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Allows QA test scripts to enable &amp; disable HA </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/12227">12227 </a> Completed </td> 
+         <td class="confluenceTd"> Milestone 2 </td> 
+         <td class="confluenceTd"> YES </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS2-ShoalGroupManagementService%28GMS%29forRuntimeClusteringServices"></a>Shoal Group Management Service (GMS) for Runtime Clustering Services </h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 02 </td> 
+         <td class="confluenceTd"> 5/28 </td> 
+         <td class="confluenceTd"> GMS-02 </td> 
+         <td class="confluenceTd"> Integrate Shoal GMS into GF v3.1 using dev. stop-gap clustering cmds </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/12189">issue 12189 </a> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 03 </td> 
+         <td class="confluenceTd"> M2 </td> 
+         <td class="confluenceTd"> GMS-03 </td> 
+         <td class="confluenceTd"> Shoal GMS integration via domain.xml configuration </td> 
+         <td class="confluenceTd"> Handoff: YES (in process) Docs: yes </td> 
+         <td class="confluenceTd"> update <a href="http://wiki.glassfish.java.net/attach/GlassFishv3GMS-gmsconfig.rtf">gms config doc </a> with review feedback <a href="https://github.com/javaee/glassfish/issues/12190">issue 12190 </a> Completed </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS2-Webtier"></a>Webtier</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> Milestone 2 </td> 
+         <td class="confluenceTd"> WEB-1 </td> 
+         <td class="confluenceTd"> Web Container one pager </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> The one pager will be reviewed by asarch by milestone 2 - Completed </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS2-EJB"></a>EJB</h3> <p>No deliverables planned for MS2</p> <h4><a name="GF3.1MS2-IIOPClustering"></a>IIOP Clustering</h3> <p>No deliverables planned for MS2</p> <h4><a name="GF3.1MS2-JMSandMessageQueue"></a>JMS and Message Queue </h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 02 </td> 
+         <td class="confluenceTd"> M2 </td> 
+         <td class="confluenceTd"> JMS-06 </td> 
+         <td class="confluenceTd"> Support for conventional clustering of MQ brokers in LOCAL broker mode </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> CLI will not be ready in MS2. Handoff will happen in MS3 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 03 </td> 
+         <td class="confluenceTd"> M2 </td> 
+         <td class="confluenceTd"> JMS-07 </td> 
+         <td class="confluenceTd"> Support for enhanced clustering of MQ brokers in LOCAL broker mode </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> CLI will not be ready in MS2. Handoff will happen in MS3 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 04 </td> 
+         <td class="confluenceTd"> M2 </td> 
+         <td class="confluenceTd"> JMS-08 </td> 
+         <td class="confluenceTd"> Support for conventional clustering of MQ brokers in REMOTE broker mode </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> CLI will not be ready in MS2. Handoff will happen in MS3 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 05 </td> 
+         <td class="confluenceTd"> M2 </td> 
+         <td class="confluenceTd"> JMS-09 </td> 
+         <td class="confluenceTd"> Support for enhanced clustering of MQ brokers in REMOTE broker mode </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> CLI will not be ready in MS2. Handoff will happen in MS3 </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS2-Metro"></a>Metro</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status /Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 01. </td> 
+         <td class="confluenceTd"> MS2 (6/21) </td> 
+         <td class="confluenceTd"> Metro-007 </td> 
+         <td class="confluenceTd"> Time skew for trust and SC token lifetime </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS2-Loadbalancer"></a>Loadbalancer</h3> <p>No deliverables planned for MS2</p> <h4><a name="GF3.1MS2-DeveloperToolingwithNetBeans"></a>Developer Tooling with NetBeans</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task </th> 
+         <th class="confluenceTh"> Target Milestone </th> 
+         <th class="confluenceTh"> Start </th> 
+         <th class="confluenceTh"> End </th> 
+         <th class="confluenceTh"> Owner </th> 
+         <th class="confluenceTh"> Supports Feature ID </th> 
+         <th class="confluenceTh"> Status/Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Create new instance object for WizardProvider (ee6plusClustering) </td> 
+         <td class="confluenceTd"> m2 </td> 
+         <td class="confluenceTd"> may 24 </td> 
+         <td class="confluenceTd"> May 26 </td> 
+         <td class="confluenceTd"> vbk </td> 
+         <td class="confluenceTd"> nbinteg-001 </td> 
+         <td class="confluenceTd"> adds GF 3.1 to the server registration dialog. Done <b>dependency:</b> promoted builds available (for download now support) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Create new instance object for InstanceProvider (ee6plusCluatsering) </td> 
+         <td class="confluenceTd"> m2 </td> 
+         <td class="confluenceTd"> may 26 </td> 
+         <td class="confluenceTd"> may 28 </td> 
+         <td class="confluenceTd"> vbk </td> 
+         <td class="confluenceTd"> nbinteg-001 </td> 
+         <td class="confluenceTd"> many features use this object Prevents registering 3.0 as 3.1 - Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> extend the 3.0 instance object to prevent 3.1 domains getting misregistered </td> 
+         <td class="confluenceTd"> m2 </td> 
+         <td class="confluenceTd"> may 28 </td> 
+         <td class="confluenceTd"> may 28 </td> 
+         <td class="confluenceTd"> vbk </td> 
+         <td class="confluenceTd"> nbinteg-001 </td> 
+         <td class="confluenceTd"> error checking - Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Create new instance object for DeploymentFactory (ee6plusClustering) </td> 
+         <td class="confluenceTd"> m2 </td> 
+         <td class="confluenceTd"> may 31 </td> 
+         <td class="confluenceTd"> june 2 </td> 
+         <td class="confluenceTd"> vbk </td> 
+         <td class="confluenceTd"> nbinteg-001 </td> 
+         <td class="confluenceTd"> Java EE features use this object - Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create new instance object for J2eePlatformFactory </td> 
+         <td class="confluenceTd"> m2 </td> 
+         <td class="confluenceTd"> june 3 </td> 
+         <td class="confluenceTd"> june 4 </td> 
+         <td class="confluenceTd"> vbk </td> 
+         <td class="confluenceTd"> nbinteg-001 </td> 
+         <td class="confluenceTd"> Java EE feature support - Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create new instance object for OptionalDeploymentManagerFactory </td> 
+         <td class="confluenceTd"> m2 </td> 
+         <td class="confluenceTd"> june 7 </td> 
+         <td class="confluenceTd"> june 9 </td> 
+         <td class="confluenceTd"> vbk </td> 
+         <td class="confluenceTd"> nbinteg-001 </td> 
+         <td class="confluenceTd"> Java EE features support -Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create new instance object for RunTimeDDCatalog </td> 
+         <td class="confluenceTd"> m2 </td> 
+         <td class="confluenceTd"> June 10 </td> 
+         <td class="confluenceTd"> june 12 </td> 
+         <td class="confluenceTd"> vbk </td> 
+         <td class="confluenceTd"> nbinteg-002 </td> 
+         <td class="confluenceTd"> maps public id and private id to installed dtds; basis of code completion in xml editor <b>dependency:</b> new glassfish-*.dtd files available in promoted builds - Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create/publish nbms for NB 6.9 </td> 
+         <td class="confluenceTd"> m2 </td> 
+         <td class="confluenceTd"> post 6.9 clone </td> 
+         <td class="confluenceTd"> post 6.9 release beta date </td> 
+         <td class="confluenceTd"> vbk </td> 
+         <td class="confluenceTd"> nbinteg-010 </td> 
+         <td class="confluenceTd"> let folks using 6.9 'upgrade' to a plugin that exposes new 3.1 integration features. release schedule is adhoc. - Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> extend DD api project to know glassfish-* descriptors </td> 
+         <td class="confluenceTd"> m2 </td> 
+         <td class="confluenceTd"> june 14 </td> 
+         <td class="confluenceTd"> june 17 </td> 
+         <td class="confluenceTd"> vbk </td> 
+         <td class="confluenceTd"> nbinteg-02 </td> 
+         <td class="confluenceTd"> primarily to allow GUI to read/write the new glassfish-* descriptors <b>dependency:</b> new glassfish-*.dtd files available in promoted builds - Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create 'new' templates to support File-&gt;New File-&gt;Other... (category: GlassFish; type: Glassfish Deployment Descriptor) </td> 
+         <td class="confluenceTd"> m2 </td> 
+         <td class="confluenceTd"> june 18 </td> 
+         <td class="confluenceTd"> June 18 </td> 
+         <td class="confluenceTd"> vbk </td> 
+         <td class="confluenceTd"> nbinteg-002 </td> 
+         <td class="confluenceTd"> put the 'right'descriptor into a new project that targets GlassFish 3.1 <b>dependency:</b> new glassfish-*.dtd files available in promoted builds - Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> include weblogic deployment descriptors into the RunTimeDDCatalog support </td> 
+         <td class="confluenceTd"> m2 </td> 
+         <td class="confluenceTd"> June 12 </td> 
+         <td class="confluenceTd"> June 12 </td> 
+         <td class="confluenceTd"> vbk </td> 
+         <td class="confluenceTd"> nbinteg-008 </td> 
+         <td class="confluenceTd"> To support xml editor features. <b>dependency:</b> the dtd and xsd files for the supported descriptor files need to be available in the 3.1 promoted build - Done </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS2-EclipseWTP"></a>Eclipse WTP</h3> <p>One pager </p> <h4><a name="GF3.1MS2-Embedded"></a>Embedded</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd"> EMB-4 </td> 
+         <td class="confluenceTd"> Complete Ant support </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Needed for devtests - Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd"> EMB-3 </td> 
+         <td class="confluenceTd"> ScatteredArchive </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Support Jar feature - Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd"> EMB-2-5 </td> 
+         <td class="confluenceTd"> embedded + JPA </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Additional persistence support <a href="3.1Persistence.html" title="3.1Persistence">Per-002 </a> - Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd"> EMB-2-2 </td> 
+         <td class="confluenceTd"> EJB Timer support </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Part of additional EJB support <a href="GlassFishv3.1EJB.html" title="GlassFishv3.1EJB">EJB-5 </a> - Completed </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS2-DevTestFramework"></a>Dev Test Framework</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd"> DEVTEST-001 Phase-1 - Multiple GlassFish instances on a single host </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> In progress </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS2-JSF"></a>JSF</h3> <p>No deliverables planned for MS2</p> <h4><a name="GF3.1MS2-Grizzly"></a>Grizzly</h3> <p>No deliverables planned for MS2</p> <h4><a name="GF3.1MS2-OSGi"></a>OSGi</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task </th> 
+         <th class="confluenceTh"> Target Milestone </th> 
+         <th class="confluenceTh"> Start </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Owner(s) </th> 
+         <th class="confluenceTh"> Feature ID </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Integrate Felix 3.0.x </td> 
+         <td class="confluenceTd"> M2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Richard </td> 
+         <td class="confluenceTd"> OSGi-01-01 </td> 
+         <td class="confluenceTd"> First major upgrade done, as we have upgraded Felix from 2.0.2 to 3.0.0. We will have to upgrade to next couple of maintenance releases of Felix before freezing Felix version in GF3.1 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Provide an API to handle META-INF/services in OSGi context </td> 
+         <td class="confluenceTd"> M2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Sahoo, Richard </td> 
+         <td class="confluenceTd"> OSGi-04-06 </td> 
+         <td class="confluenceTd"> On schedule - expect to make available this week. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA resource such as jdbc-resource, jms-resource (connection-factory &amp; destination) as OSGi service </td> 
+         <td class="confluenceTd"> M2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> JCA Team </td> 
+         <td class="confluenceTd"> OSGi-04-08 </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Make OBR runtime part of GlassFish </td> 
+         <td class="confluenceTd"> M2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Richard </td> 
+         <td class="confluenceTd"> OSGi-05-01 </td> 
+         <td class="confluenceTd"> Completed - Integrated obr 1.6.2. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS2-Persistence"></a>Persistence</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd"> M2 (06/21) </td> 
+         <td class="confluenceTd"> PER-002 </td> 
+         <td class="confluenceTd"> Better alignment with Embedded </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Finish support for default data source in embedded mode <a href="https://github.com/javaee/glassfish/issues/12245">Issue 12245 </a> Completed </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS2-Jersey"></a>Jersey</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1. </td> 
+         <td class="confluenceTd"> MS 2 6/21 </td> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> Modularization of Jersey distribution </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> not delivered, Jersey 1.3 containing the feature was not integrated into the GF due to an issue in the admin cli tests: otherwise works fine, being continually tested with <a href="http://sysifos-sol.czech/hudson/view/Jersey-00-all-Jersey-jobs/job/Jersey-test-GFv3-tests/">http://sysifos-sol.czech/hudson/view/Jersey-00-all-Jersey-jobs/job/Jersey-test-GFv3-tests/</a> <p> </p></td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2. </td> 
+         <td class="confluenceTd"> MS 2 6/21 </td> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd"> Deployment of Jersey OSGi-war bundles </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> not delivered, Jersey 1.3 containing the feature was not integrated into the GF due to an issue in the admin cli tests: otherwise works fine, tested with <a href="http://sysifos-sol.czech/hudson/view/Jersey-00-all-Jersey-jobs/job/Jersey-test-WAB-deployment/">http://sysifos-sol.czech/hudson/view/Jersey-00-all-Jersey-jobs/job/Jersey-test-WAB-deployment/</a> <p> </p></td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3. </td> 
+         <td class="confluenceTd"> MS 2 6/21 </td> 
+         <td class="confluenceTd"> 3 </td> 
+         <td class="confluenceTd"> Use the GlassFish 3 embedded API </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> NOT DELIVERED – blocked by <a href="https://github.com/javaee/glassfish/issues/11727">https://github.com/javaee/glassfish/issues/11727</a> <p> (can't use embedded glassfish maven plugin for testing); integrating embedded glassfish into jersey test framework failed - problem with rebundled Jersey ServiceFinder implementation </p></td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS2-CDI"></a>CDI</h3> <p>No deliverables planned for MS 2</p> <h4><a name="GF3.1MS2-BeanValidation"></a>Bean Validation</h3> <p>No deliverables planned for MS 2</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 13, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

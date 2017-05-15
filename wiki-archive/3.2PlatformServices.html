@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : 3.2PlatformServices</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="3.2PlatformServices-GlassFishServerOpenSourceEdition3.2PlatformServicesOnePager"></a>GlassFish Server Open Source Edition 3.2 - Platform Services One Pager</h1> <p>(template version 1.92)</p> 
+     <div> 
+      <ul> 
+       <li><a href="#3.2PlatformServices-GlassFishServerOpenSourceEdition3.2PlatformServicesOnePager">GlassFish Server Open Source Edition 3.2 - Platform Services One Pager</a></li> 
+       <ul> 
+        <li><a href="#3.2PlatformServices-1.Introduction">1. Introduction</a></li> 
+        <ul> 
+         <li><a href="#3.2PlatformServices-1.1Project%2FComponentWorkingName%3A">1.1 Project/Component Working Name:</a></li> 
+         <li><a href="#3.2PlatformServices-1.2NameandEmailAddressofAuthor">1.2 Name and Email Address of Author</a></li> 
+         <li><a href="#3.2PlatformServices-1.3.DateofThisDocument%3A">1.3. Date of This Document:</a></li> 
+        </ul> 
+        <li><a href="#3.2PlatformServices-2.ProjectSummary">2. Project Summary</a></li> 
+        <ul> 
+         <li><a href="#3.2PlatformServices-2.1.ProjectDescription%3A">2.1. Project Description:</a></li> 
+         <li><a href="#3.2PlatformServices-2.2.RisksandAssumptions%3A">2.2. Risks and Assumptions:</a></li> 
+        </ul> 
+        <li><a href="#3.2PlatformServices-3.ProblemSummary">3. Problem Summary</a></li> 
+        <ul> 
+         <li><a href="#3.2PlatformServices-3.1.ProblemArea%3A">3.1. Problem Area:</a></li> 
+         <li><a href="#3.2PlatformServices-3.2.Justification%3A">3.2. Justification:</a></li> 
+        </ul> 
+        <li><a href="#3.2PlatformServices-4.TechnicalDescription%3A">4. Technical Description:</a></li> 
+        <ul> 
+         <li><a href="#3.2PlatformServices-4.1.Details%3A">4.1. Details:</a></li> 
+         <li><a href="#3.2PlatformServices-4.2.Bug%2FRFENumber%3A">4.2. Bug/RFE Number:</a></li> 
+         <li><a href="#3.2PlatformServices-4.3.InScope%3A">4.3. In Scope:</a></li> 
+         <ul> 
+          <li><a href="#3.2PlatformServices-4.3.1Newcommands">4.3.1 New commands</a></li> 
+          <li><a href="#3.2PlatformServices-4.3.2NewAutoRestartBehavior">4.3.2 New Auto-Restart Behavior</a></li> 
+         </ul> 
+         <li><a href="#3.2PlatformServices-4.4.OutofScope%3A">4.4. Out of Scope:</a></li> 
+         <li><a href="#3.2PlatformServices-4.5.Interfaces%3A">4.5. Interfaces:</a></li> 
+         <ul> 
+          <li><a href="#3.2PlatformServices-4.5.1PublicInterfaces">4.5.1 Public Interfaces</a></li> 
+          <ul> 
+           <li><a href="#3.2PlatformServices-4.5.1.1createservice">4.5.1.1 create-service</a></li> 
+           <ul> 
+            <li><a href="#3.2PlatformServices-4.5.1.1.1AutoRestartoption">4.5.1.1.1 AutoRestart option</a></li> 
+           </ul> 
+           <li><a href="#3.2PlatformServices-4.5.1.2deleteservice">4.5.1.2 delete-service</a></li> 
+           <li><a href="#3.2PlatformServices-4.5.1.3listservices">4.5.1.3 list-services</a></li> 
+           <li><a href="#3.2PlatformServices-4.5.1.4startservice">4.5.1.4 start-service</a></li> 
+           <li><a href="#3.2PlatformServices-4.5.1.4stopservice">4.5.1.4 stop-service</a></li> 
+           <li><a href="#3.2PlatformServices-4.5.1.4restartservice">4.5.1.4 restart-service</a></li> 
+          </ul> 
+          <li><a href="#3.2PlatformServices-4.5.2PrivateInterfaces">4.5.2 Private Interfaces</a></li> 
+          <li><a href="#3.2PlatformServices-4.5.3Deprecated%2FRemovedInterfaces%3A">4.5.3 Deprecated/Removed Interfaces:</a></li> 
+         </ul> 
+         <li><a href="#3.2PlatformServices-4.6.DocImpact%3A">4.6. Doc Impact:</a></li> 
+         <li><a href="#3.2PlatformServices-4.7.Admin%2FConfigImpact%3A">4.7. Admin/Config Impact:</a></li> 
+         <li><a href="#3.2PlatformServices-4.8.HAImpact%3A">4.8. HA Impact:</a></li> 
+         <li><a href="#3.2PlatformServices-4.9.I18N%2FL10NImpact%3A">4.9. I18N/L10N Impact:</a></li> 
+         <li><a href="#3.2PlatformServices-4.10.Packaging%2CDelivery%26Upgrade%3A">4.10. Packaging, Delivery &amp; Upgrade:</a></li> 
+         <ul> 
+          <li><a href="#3.2PlatformServices-4.10.1.Packaging">4.10.1. Packaging</a></li> 
+          <li><a href="#3.2PlatformServices-4.10.2.Delivery">4.10.2. Delivery</a></li> 
+          <li><a href="#3.2PlatformServices-4.10.3.UpgradeandMigration%3A">4.10.3. Upgrade and Migration:</a></li> 
+         </ul> 
+         <li><a href="#3.2PlatformServices-4.11.SecurityImpact%3A">4.11. Security Impact:</a></li> 
+         <li><a href="#3.2PlatformServices-4.12.CompatibilityImpact">4.12. Compatibility Impact</a></li> 
+         <li><a href="#3.2PlatformServices-4.13.Dependencies%3A">4.13. Dependencies:</a></li> 
+         <ul> 
+          <li><a href="#3.2PlatformServices-4.13.1InternalDependencies">4.13.1 Internal Dependencies</a></li> 
+          <li><a href="#3.2PlatformServices-4.13.2ExternalDependencies">4.13.2 External Dependencies</a></li> 
+         </ul> 
+         <li><a href="#3.2PlatformServices-4.14.TestingImpact%3A">4.14. Testing Impact:</a></li> 
+         <li><a href="#3.2PlatformServices-5.ReferenceDocuments%3A">5. Reference Documents:</a></li> 
+         <li><a href="#3.2PlatformServices-6.Schedule%3A">6. Schedule:</a></li> 
+        </ul> 
+        <li><a href="#3.2PlatformServices-6.1.ProjectedAvailability%3A">6.1. Projected Availability:</a></li> 
+        <li><a href="#3.2PlatformServices-7.0ReviewerComments">7.0 Reviewer Comments</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="3.2PlatformServices-1.Introduction"></a>1. Introduction</h2> <h4><a name="3.2PlatformServices-1.1Project%2FComponentWorkingName%3A"></a>1.1 Project/Component Working Name:</h3> <p>GlassFish Server Open Source Edition 3.2 Platform Services Improvements</p> <h4><a name="3.2PlatformServices-1.2NameandEmailAddressofAuthor"></a>1.2 Name and Email Address of Author</h3> <p><a href="mailto://byron.nevins@oracle.com">Byron Nevins</a></p> <h4><a name="3.2PlatformServices-1.3.DateofThisDocument%3A"></a>1.3. Date of This Document:</h3> <p>Started: 04/18/11</p> <h4><a name="3.2PlatformServices-2.ProjectSummary"></a>2. Project Summary</h2> <h4><a name="3.2PlatformServices-2.1.ProjectDescription%3A"></a>2.1. Project Description:</h3> <p>Platform Services Improvements</p> <h4><a name="3.2PlatformServices-2.2.RisksandAssumptions%3A"></a>2.2. Risks and Assumptions:</h3> <p>Platform Services are, obviously, dependent on native code and tools for multiple operating systems.&nbsp; There are many many flavors of Linux.&nbsp; We assume that the ancient common denominator of init.d scripts will work on all Linux deployments.&nbsp;</p> <p>Is it possible for a savvy and/or clueless user to foul-up his operating system configuration so badly that it is impossible for our Platform Services to work?&nbsp; Yes!&nbsp; E.g. he or she can redefine all the standard run-levels.&nbsp; We will not support things like that.</p> <p>Assumption:</p> 
+     <ul> 
+      <li>I will have access to the appropriate hardware so that I can develop and test on multiple platforms</li> 
+      <li>I will be able to purchase reference materials and have time to do the necessary research about the multiple platforms.</li> 
+     </ul> <h4><a name="3.2PlatformServices-3.ProblemSummary"></a>3. Problem Summary</h2> <p>We need richer support for running the native tools on multiple platforms for handling the lifecycle of GlassFish servers.</p> <h4><a name="3.2PlatformServices-3.1.ProblemArea%3A"></a>3.1. Problem Area:</h3> <p>We have support, right now, for creating services on Windows, all versions of Linux, and Solaris 10+ SMF. We need to extend this to include all versions of UNIX including non-SMF Solaris.</p> <p>After creation the user is on his own and must use the platform's native tools for managing the services.</p> <h4><a name="3.2PlatformServices-3.2.Justification%3A"></a>3.2. Justification:</h3> <p>It is important to do this in order to make Platform Services closer to the Java ideal of "write once - run everywhere". Services for our product will be platform-independent, as far as the user is concerned.<br> In addition, the experienced and/or intrepid user is free to use the platform's native tools instead of or in addition to our tools.</p> <h4><a name="3.2PlatformServices-4.TechnicalDescription%3A"></a>4. Technical Description:</h2> <h4><a name="3.2PlatformServices-4.1.Details%3A"></a>4.1. Details:</h3> <p>Linux and non-SMF UNIX will be done at the lowest common denominator. We manipulate scripts directly in the special services area of the file systems. This was all developed over 40 years ago. This makes it old-fashioned and very time-consuming but phenomenally well-tested, well-documented and robust.</p> <p>SMF will be worked with directly when available on the platform.</p> <p>Windows will be worked with directly.</p> <p>You can see in the existing code precisely how we interact with these 3 main implementation areas. Each area will be expanded to include the new features.</p> <h4><a name="3.2PlatformServices-4.2.Bug%2FRFENumber%3A"></a>4.2. Bug/RFE Number:</h3> <p><a href="https://github.com/javaee/glassfish/issues/16311">RFE</a></p> <h4><a name="3.2PlatformServices-4.3.InScope%3A"></a>4.3. In Scope:</h3> <h4><a name="3.2PlatformServices-4.3.1Newcommands"></a>4.3.1 New commands</h4> <p>New Asadmin commands will be developed to join the already existing create-service command:</p> 
+     <ul> 
+      <li>delete-service</li> 
+      <li>list-services</li> 
+      <li>start-service</li> 
+      <li>restart-service</li> 
+      <li>stop-service</li> 
+     </ul> <h4><a name="3.2PlatformServices-4.3.2NewAutoRestartBehavior"></a>4.3.2 New Auto-Restart Behavior</h4> <p>If the user wished to have a service restart automatically he was required to set this up using the platform's native tools. We now will take this over internally. We will add a new Service Property (see create-service details below) that sets the number of times a restart is attempted after a crash.<br> A very nice feature here is that our code <em>knows</em> the difference between a deliberate shutdown and a crash. If it is deliberately shutdown we do nothing. If it crashes then we will restart if the conditions apply.</p> <p>By default we will try to restart a server that crashes 3 times and then quit.</p> <h4><a name="3.2PlatformServices-4.4.OutofScope%3A"></a>4.4. Out of Scope:</h3> <p>We will not support multiple ad hoc tools available on particular Linux versions. E.g. Ubuntu has one way of working with services and Red Hat has a completely different solution. They all share the ancient tried and true solution.</p> <h4><a name="3.2PlatformServices-4.5.Interfaces%3A"></a>4.5. Interfaces:</h3> <h4><a name="3.2PlatformServices-4.5.1PublicInterfaces"></a>4.5.1 Public Interfaces</h4> <p>As mentioned before the new public interfaces are the new asadmin commands discussed above.</p> <h5><a name="3.2PlatformServices-4.5.1.1createservice"></a>4.5.1.1 create-service</h5> <p>For completeness, here is the usage for the existing command from 3.1 One change is planned which is to make --force true by default instead of false.</p> 
+     <ul> 
+      <li><b>--name</b> <em>optional, default is the domain or instance name</em></li> 
+      <li><b>--serviceproperties</b> <em>optional, no default</em> See below for new option.</li> 
+      <li><b>-n or --dry-run</b> <em>optional – do everything except the actual creation</em></li> 
+      <li><b>--force</b> <em>default is false in 3.1, In 3.2 the default will be true. This simply undoes a previous service creation</em></li> 
+      <li><b>--domaindir</b> <em>the usual option possibly needed for commands that specify a domain</em></li> 
+      <li><b>--serviceuser</b> <em>Specify a different user that will run the commands on Linux only</em></li> 
+      <li><b>--nodedir</b> <em>the usual option possibly needed for commands that specify an instance</em></li> 
+      <li><b>--node</b> <em>the usual option needed for commands that specify an instance</em></li> 
+      <li><b>--help</b> <em>the usual help command</em></li> 
+      <li>domain_or_instance_name <em>the name of the server</em></li> 
+     </ul> <h6><a name="3.2PlatformServices-4.5.1.1.1AutoRestartoption"></a>4.5.1.1.1 AutoRestart option</h6> <p>RESTART_TRIES=<b>number</b> where -1 means restart infinitely, 0 means do not restart, and any other number means try that many times before any of these commands reset the counter (as appropriate to the server type of course):</p> 
+     <ul> 
+      <li>stop-service</li> 
+      <li>stop-instance</li> 
+      <li>stop-domain</li> 
+      <li>stop-local-instance</li> 
+      <li>restart-service</li> 
+      <li>restart-domain</li> 
+      <li>restart-local-instance</li> 
+      <li>restart-instance</li> 
+     </ul> <h5><a name="3.2PlatformServices-4.5.1.2deleteservice"></a>4.5.1.2 delete-service</h5> <p>This command exists in 3.1 as the undocumented command named <b>_delete-service</b><br> In 3.2 it will be exposed as <b>delete-service</b> with these options:</p> 
+     <ul> 
+      <li><b>--name</b> <em>optional, default is the domain or instance name</em></li> 
+      <li><b>--domaindir</b> <em>the usual option possibly needed for commands that specify a domain</em></li> 
+      <li><b>--nodedir</b> <em>the usual option possibly needed for commands that specify an instance</em></li> 
+      <li><b>--node</b> <em>the usual option needed for commands that specify an instance</em></li> 
+      <li><b>--help</b> <em>the usual help command</em></li> 
+      <li>domain_or_instance_name <em>the name of the server</em></li> 
+     </ul> <h5><a name="3.2PlatformServices-4.5.1.3listservices"></a>4.5.1.3 list-services</h5> <p>This command will report on all GlassFish Services that are discoverable. I.e. all such services that were created by create-service.<br> Options:</p> 
+     <ul> 
+      <li><b>--domaindir</b> <em>If specified, will look inside here for domains</em></li> 
+      <li><b>--nodedir</b> <em>If specified, will look inside here for instances</em></li> 
+      <li><b>--node</b> <em>If specified, will look inside here for instances</em></li> 
+      <li><b>--help</b> <em>the usual help command</em></li> 
+     </ul> <h5><a name="3.2PlatformServices-4.5.1.4startservice"></a>4.5.1.4 start-service</h5> <p>The start-service command will start a service that is not currently running.<br> Options:</p> 
+     <ul> 
+      <li><b>--name</b> <em>optional, default is the domain or instance name</em></li> 
+      <li><b>--domaindir</b> <em>If specified, will look inside here for domains</em></li> 
+      <li><b>--nodedir</b> <em>If specified, will look inside here for instances</em></li> 
+      <li><b>--node</b> <em>If specified, will look inside here for instances</em></li> 
+      <li><b>--help</b> <em>the usual help command</em></li> 
+     </ul> <h5><a name="3.2PlatformServices-4.5.1.4stopservice"></a>4.5.1.4 stop-service</h5> <p>The stop-service command will stop a service that is currently running.<br> Options:</p> 
+     <ul> 
+      <li><b>--name</b> <em>optional, default is the domain or instance name</em></li> 
+      <li><b>--domaindir</b> <em>If specified, will look inside here for domains</em></li> 
+      <li><b>--nodedir</b> <em>If specified, will look inside here for instances</em></li> 
+      <li><b>--node</b> <em>If specified, will look inside here for instances</em></li> 
+      <li><b>--help</b> <em>the usual help command</em></li> 
+     </ul> <h5><a name="3.2PlatformServices-4.5.1.4restartservice"></a>4.5.1.4 restart-service</h5> <p>The restart-service command will restart a service that is currently running.<br> If the service happens to not be running then it will be started.<br> Options:</p> 
+     <ul> 
+      <li><b>--name</b> <em>optional, default is the domain or instance name</em></li> 
+      <li><b>--domaindir</b> <em>If specified, will look inside here for domains</em></li> 
+      <li><b>--nodedir</b> <em>If specified, will look inside here for instances</em></li> 
+      <li><b>--node</b> <em>If specified, will look inside here for instances</em></li> 
+      <li><b>--help</b> <em>the usual help command</em></li> 
+     </ul> <h4><a name="3.2PlatformServices-4.5.2PrivateInterfaces"></a>4.5.2 Private Interfaces</h4> <p>No new private interfaces that are observable externally.</p> <h4><a name="3.2PlatformServices-4.5.3Deprecated%2FRemovedInterfaces%3A"></a>4.5.3 Deprecated/Removed Interfaces:</h4> <p>The asadmin command, _delete-service will be removed. It is, by definition, not supported so is not really a public interface.<br> I list it here for completeness.<br> The command will be replaced by the fully-supported command, delete-service.</p> <h4><a name="3.2PlatformServices-4.6.DocImpact%3A"></a>4.6. Doc Impact:</h3> <p>Rather extensive new documentation will be required for this feature.</p> <h4><a name="3.2PlatformServices-4.7.Admin%2FConfigImpact%3A"></a>4.7. Admin/Config Impact:</h3> <p>This change <em>is</em> part of Admin, so the impact has been discussed already above.<br> The Admin Console will need to support and use the new commands.</p> <h4><a name="3.2PlatformServices-4.8.HAImpact%3A"></a>4.8. HA Impact:</h3> <p>None.</p> <h4><a name="3.2PlatformServices-4.9.I18N%2FL10NImpact%3A"></a>4.9. I18N/L10N Impact:</h3> <p>No impact.</p> <h4><a name="3.2PlatformServices-4.10.Packaging%2CDelivery%26Upgrade%3A"></a>4.10. Packaging, Delivery &amp; Upgrade:</h3> <h4><a name="3.2PlatformServices-4.10.1.Packaging"></a>4.10.1. Packaging</h4> <p>No new packages will be necessary.</p> <h4><a name="3.2PlatformServices-4.10.2.Delivery"></a>4.10.2. Delivery</h4> <p>No impact.</p> <h4><a name="3.2PlatformServices-4.10.3.UpgradeandMigration%3A"></a>4.10.3. Upgrade and Migration:</h4> <p>No backward compatibility issues. We plan on requiring zero changes to domain.xml so no upgrade issues there.</p> <h4><a name="3.2PlatformServices-4.11.SecurityImpact%3A"></a>4.11. Security Impact:</h3> <p>Obviously there are huge security implications for running services on any platform. But there is nothing <em>new</em> to consider for this feature enhancement.</p> <h4><a name="3.2PlatformServices-4.12.CompatibilityImpact"></a>4.12. Compatibility Impact</h3> <p>Old interfaces remain the same. We are adding new commands and functionality - not modifying the existing behavior.</p> <h4><a name="3.2PlatformServices-4.13.Dependencies%3A"></a>4.13. Dependencies:</h3> <h4><a name="3.2PlatformServices-4.13.1InternalDependencies"></a>4.13.1 Internal Dependencies</h4> <p>Common utilities.</p> <h4><a name="3.2PlatformServices-4.13.2ExternalDependencies"></a>4.13.2 External Dependencies</h4> <p>winsw.exe is a C# program for wrapping java programs as Windows services. It is a Kenai project and is in GlassFish 3.1 already so it should not be an issue.<br> Sathyan Catari has expressed interest in developing native code to replace winsw. Winsw works fine but doesn't report on errors very well. Meantime I don't know the C# language nor do I have any tools for building C# applications. I believe we can live with Winsw as-is.</p> <h4><a name="3.2PlatformServices-4.14.TestingImpact%3A"></a>4.14. Testing Impact:</h3> <p>This is a very difficult area to test. We need many different platforms. I don't believe it was tested thoroughly for GF 3.0 or 3.1. I did plenty of manual testing on the platforms I have access to for 3.1 (Solaris 10, Windows XP, Ubuntu).<br> This is an example of an area where, in my opinion, it would be a waste of resources to make automated tests. Instead what we need is a dedicated Engineer running through all of the different commands and observing results on many many different machines.</p> <h4><a name="3.2PlatformServices-5.ReferenceDocuments%3A"></a>5. Reference Documents:</h3> <p>List of related documents, if any (BugID's, RFP's, papers).</p> <p>Explain how/where to obtain the documents, and what each contains, not just their titles.</p> <h4><a name="3.2PlatformServices-6.Schedule%3A"></a>6. Schedule:</h3> <p>Use this <a href="http://java.net/jira/secure/IssueNavigator.jspa?mode=hide&amp;requestId=10552">link</a> to see the issues and assigned milestones </p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Issue</th> 
+         <th class="confluenceTh">What</th> 
+         <th class="confluenceTh">Milestone</th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 10266 </td> 
+         <td class="confluenceTd"> delete-service command </td> 
+         <td class="confluenceTd"> 3</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 16522 </td> 
+         <td class="confluenceTd"> list-services command </td> 
+         <td class="confluenceTd"> 3</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 16526 </td> 
+         <td class="confluenceTd"> restart-service command </td> 
+         <td class="confluenceTd"> 4 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 16523 </td> 
+         <td class="confluenceTd"> Add support for all UNIX </td> 
+         <td class="confluenceTd"> 4 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 16525 </td> 
+         <td class="confluenceTd"> auto restart </td> 
+         <td class="confluenceTd"> 5 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 16311 </td> 
+         <td class="confluenceTd"> improve OS integration </td> 
+         <td class="confluenceTd"> 5 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 16140 </td> 
+         <td class="confluenceTd"> -Xrs (signals) issue on Windows </td> 
+         <td class="confluenceTd"> 5 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 11692 </td> 
+         <td class="confluenceTd"> Advanced Improvements for SMF </td> 
+         <td class="confluenceTd"> 6 </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.2PlatformServices-6.1.ProjectedAvailability%3A"></a>6.1. Projected Availability:</h2> <p>Indicate which milestones from the current schedule the project<br> will be:</p> 
+     <ul> 
+      <li>Initially integrated: Varies. The new commands and functionality are staged across milestones 3-6</li> 
+      <li>Feature complete (ready for handoff to QA): MS5</li> 
+      <li>At production quality level: MS6</li> 
+     </ul> <h4><a name="3.2PlatformServices-7.0ReviewerComments"></a>7.0 Reviewer Comments</h2> <p>From <em>Tom Mueller</em>, April 26, 2011</p> <p>1. Section 3.1 talks about supporting more platforms (non-SMF solaris), but I don't see this in RFE 16311. Where did this come from? I'd suggest removing it. Would this include adding AIX too?</p> <p>2. Section 3.1 doesn't talk about implementing 3a. Specifically in the case where you have a service that will automatically restart the server, if the user runs stop-instance, the instances shouldn't be restarted. Also, on Windows, there is the notion of a service being in Manual or Automatic mode. Does a start/stop-instance effect that setting?</p> <p>Maybe what I'm looking for is to see your last comment in the one-pager. Or maybe a reference to the RFE in section 3.1 saying that the details of exactly what will be implemented are there.</p> <p>3. I'm not convinced that we really need start-service, stop-service or restart-service. P3?</p> <p>4. Section 4.5.1.1.1 - is RESTART_TRIES passed in as a "--serviceproperties" option? It's really all upcase with an underscore?</p> <p>5. WRT restarting a server, is this implemented by the GlassFish code or via the automatic mechanisms of the OS? I seem to recall that SMF has a restart mechanism itself.</p> <p>6. If RESTART_TRIES is set to 3, I can see not trying to start the server again if it fails to start 3 times in a row. But what happens if the server crashes once per day for 3 days. Or how about once a month for 3 months? Does it not get restarted then? Should there be some timeout after which the count is reset?</p> <p>7. Section 4.12: Isn't the change of the default value for the --force option a compatibility issue?</p> <p>8. Maybe this is for the design spec, but it would be really helpful to have a state transition diagram that shows what happens for various actions, including the GF commands (stop-instance, etc.) as well as the OS commands "svcadm ..." or GUI actions.</p> 
+     <hr> <p>From <em>John Clingan</em>, April 27, 2011</p> <p>3.1 Technically, "We need to extend this to include all versions of UNIX including non-SMF Solaris." is not a requirement.&nbsp; The solution only needs to include supported platforms, but the supported platform matrix may change in the future :-)</p> <p>4.3.1 Regarding Tom's comment about (re)start/stop-service, how would (re)start/stop-instance (or domain) differ? Wouldn't (re)start/stop-instance do the same thing? Byron, is there a semantic difference in your mind?</p> <p>4.3.2: Can you clarify "we will now take this over internally"? Does this mean the DAS?&nbsp; Solution must be able to watchdog 100 remote instances today, and perhaps 100's in the future.&nbsp; Also, note that *all* the solutions require administrator/root privileges (or "process management" privileges in RBAC environment).&nbsp; Since this is the case, why not use inittab for non-SMF Unix/Linux environments to distribute the watchdog role?&nbsp; Also, how would auto-restart deal with the competing SMF &amp; Windows Service restarting roles?</p> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on May 09, 2011 by 
+<font color="#0050B2">bnevins</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

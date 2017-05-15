@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : Nb65SIFSd</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="Nb65SIFSd-NetBeans6.5ServerIntegrationFeatureSmackDown"></a>NetBeans 6.5 Server Integration Feature SmackDown</h1> 
+     <hr> <p>Partial list. If you don't see your favorite feature, please add it and provide the 'audit info'</p> <p>Next release for NB is NB 7.0, for Eclipse is 3.5</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Category </th> 
+         <th class="confluenceTh"> Details </th> 
+         <th class="confluenceTh"> which NB integration </th> 
+         <th class="confluenceTh"> NB v3 status </th> 
+         <th class="confluenceTh"> which Eclipse integration </th> 
+         <th class="confluenceTh"> Eclipse v3 status </th> 
+         <th class="confluenceTh"> plan for next release </th> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> Per-instance Properties </th> 
+         <td class="confluenceTd"> http monitoring control </td> 
+         <td class="confluenceTd"> v2/TC </td> 
+         <td class="confluenceTd"> implemented </td> 
+         <td class="confluenceTd"> v2 </td> 
+         <td class="confluenceTd"> implemented </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> settable deployment timeout </td> 
+         <td class="confluenceTd"> v2/TC </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> worth doing. NB has bug in v2 SI when set to low values. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> settable startup timeout </td> 
+         <td class="confluenceTd"> v2 </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> v2 </td> 
+         <td class="confluenceTd"> implemented </td> 
+         <td class="confluenceTd"> NB: may implement: not used that much. has bug when set to very low values. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> JDBC driver deployment control </td> 
+         <td class="confluenceTd"> v2/TC </td> 
+         <td class="confluenceTd"> implemented </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> JavaDB start-up control </td> 
+         <td class="confluenceTd"> v2 </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> <font color="red">global setting only</font> </td> 
+         <td class="confluenceTd"> <font color="red">global setting only</font> </td> 
+         <td class="confluenceTd"> worth doing. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> directory deployment control </td> 
+         <td class="confluenceTd"> v2 </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> not going to implement </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> settable user name </td> 
+         <td class="confluenceTd"> v2/TC </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> worth doing </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> settable password </td> 
+         <td class="confluenceTd"> v2/TC </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> worth doing </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> deferred port settings server port shutdown port </td> 
+         <td class="confluenceTd"> TC </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> harder to do with v3 once it hits 'full size' </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> debug transport control sh_mem or socket(with port) </td> 
+         <td class="confluenceTd"> TC </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> should implement </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> use ide proxy settings </td> 
+         <td class="confluenceTd"> v2/TC </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font>???? </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> should implement </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> java platform settings </td> 
+         <td class="confluenceTd"> TC </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> <font color="red">eclipse lets you point at JRE - is that enough?</font> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> should implement </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> settable JVM options </td> 
+         <td class="confluenceTd"> TC </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> <font color="red">eclipse lets you define VM args - is that enough?</font> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> not as important – since there are domain props in the domain.xml – the merge issue makes this harder to add and do right than the 'run a java application case' </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> security manager enable/disable </td> 
+         <td class="confluenceTd"> TC </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> not valuable and may not be supported by the server... </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> session preservation across redeployments </td> 
+         <td class="confluenceTd"> --- </td> 
+         <td class="confluenceTd"> implemented </td> 
+         <td class="confluenceTd"> --- </td> 
+         <td class="confluenceTd"> implemented </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> comet support </td> 
+         <td class="confluenceTd"> --- </td> 
+         <td class="confluenceTd"> implemented </td> 
+         <td class="confluenceTd"> --- </td> 
+         <td class="confluenceTd"> ? </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> Domain Registration </th> 
+         <td class="confluenceTd"> default local domains/embedded domains </td> 
+         <td class="confluenceTd"> v2/TC </td> 
+         <td class="confluenceTd"> implemented </td> 
+         <td class="confluenceTd"> v2 </td> 
+         <td class="confluenceTd"> implemented </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> local domains/private Catalina Base </td> 
+         <td class="confluenceTd"> v2/TC </td> 
+         <td class="confluenceTd"> implemented </td> 
+         <td class="confluenceTd"> v2 </td> 
+         <td class="confluenceTd"> implemented </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> remote domains </td> 
+         <td class="confluenceTd"> v2 </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> should implement. need to extend the http api to support post (server-side/client-side) also. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> create personal domains </td> 
+         <td class="confluenceTd"> v2 </td> 
+         <td class="confluenceTd"> <font color="orange">incomplete</font> missing ability for user to see/set the ports that are selected </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> may complete. Need way to see the ports after the IDE has restarted. want way to allow use to control the port selection process (lower priority) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> create embedded domains </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> possible in v2 simplified in v3 </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> --- </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> automatic default domain registration </td> 
+         <td class="confluenceTd"> v2/TC </td> 
+         <td class="confluenceTd"> implemented </td> 
+         <td class="confluenceTd"> v2 </td> 
+         <td class="confluenceTd"> implemented </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> automatic personal domain creation </td> 
+         <td class="confluenceTd"> v2/TC </td> 
+         <td class="confluenceTd"> implemented </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> user name password associated at registration time </td> 
+         <td class="confluenceTd"> v2/TC </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> <font color="red">allow to use admin user/pwd - is that enough? </font> </td> 
+         <td class="confluenceTd"> will be more important as v3 moves to production oriented. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> automated JavaDB integration creates sample db and creates connections </td> 
+         <td class="confluenceTd"> v2 </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> should implement. better for demos. May be able to leverage javadb from the jdk???? </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> download now </td> 
+         <td class="confluenceTd"> --- </td> 
+         <td class="confluenceTd"> implemented </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> in progress </td> 
+         <td class="confluenceTd"> *need to resolve* registration support user settable 'which bits?' feedback on which bits are being downloaded </td> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> Domain Management </th> 
+         <td class="confluenceTd"> Start* </td> 
+         <td class="confluenceTd"> v2/TC </td> 
+         <td class="confluenceTd"> implemented </td> 
+         <td class="confluenceTd"> v2 </td> 
+         <td class="confluenceTd"> implemented </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Start with Debugging Enabled* </td> 
+         <td class="confluenceTd"> v2/TC </td> 
+         <td class="confluenceTd"> implemented </td> 
+         <td class="confluenceTd"> v2 </td> 
+         <td class="confluenceTd"> implemented </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Start with Profiler* </td> 
+         <td class="confluenceTd"> v2/TC </td> 
+         <td class="confluenceTd"> implemented, but it is buggy </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> NB: needs to be revisited as part of the restart processing </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Restart* </td> 
+         <td class="confluenceTd"> v2/TC </td> 
+         <td class="confluenceTd"> implemented </td> 
+         <td class="confluenceTd"> v2 </td> 
+         <td class="confluenceTd"> implemented </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Stop* </td> 
+         <td class="confluenceTd"> v2/TC </td> 
+         <td class="confluenceTd"> implemented </td> 
+         <td class="confluenceTd"> v2 </td> 
+         <td class="confluenceTd"> implemented </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Refresh Connnection </td> 
+         <td class="confluenceTd"> v2/TC </td> 
+         <td class="confluenceTd"> implemented </td> 
+         <td class="confluenceTd"> automatic </td> 
+         <td class="confluenceTd"> automatic </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Open the Admin Console (web administrative interface) </td> 
+         <td class="confluenceTd"> v2/TC </td> 
+         <td class="confluenceTd"> implemented </td> 
+         <td class="confluenceTd"> v2 </td> 
+         <td class="confluenceTd"> implemented </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> View the domain log in an output window* </td> 
+         <td class="confluenceTd"> v2/TC </td> 
+         <td class="confluenceTd"> implemented </td> 
+         <td class="confluenceTd"> v2 </td> 
+         <td class="confluenceTd"> implemented </td> 
+         <td class="confluenceTd"> may implement some serious improvements </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> open editor on server config file </td> 
+         <td class="confluenceTd"> TC(context.xml) </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> should implement </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> open update tool </td> 
+         <td class="confluenceTd"> v2 </td> 
+         <td class="confluenceTd"> implemented </td> 
+         <td class="confluenceTd"> ? - goes to admin ui </td> 
+         <td class="confluenceTd"> implemented </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> register installation </td> 
+         <td class="confluenceTd"> --- </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> v2 </td> 
+         <td class="confluenceTd"> implemented </td> 
+         <td class="confluenceTd"> dependent on reglib... removed from v2 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> start java db at server start </td> 
+         <td class="confluenceTd"> v2 </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> v2, but global setting </td> 
+         <td class="confluenceTd"> implemented - global setting </td> 
+         <td class="confluenceTd"> may want to change the way the v2 feature works, too </td> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> Deployed Application Management </th> 
+         <td class="confluenceTd"> undeploy </td> 
+         <td class="confluenceTd"> v2/TC </td> 
+         <td class="confluenceTd"> implemented </td> 
+         <td class="confluenceTd"> v2 </td> 
+         <td class="confluenceTd"> implemented </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> disable/enable </td> 
+         <td class="confluenceTd"> v2/TC </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> ? </td> 
+         <td class="confluenceTd"> ? </td> 
+         <td class="confluenceTd"> REMOVE FROM V2 – exposes confusing edge-cases when combined with DoS and the like. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> view/edit properties </td> 
+         <td class="confluenceTd"> v2/TC </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> may implement </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Open web-app in browser </td> 
+         <td class="confluenceTd"> TC </td> 
+         <td class="confluenceTd"> implemented </td> 
+         <td class="confluenceTd"> v2 </td> 
+         <td class="confluenceTd"> implemented </td> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> Registered Resource Management </th> 
+         <td class="confluenceTd"> unregister </td> 
+         <td class="confluenceTd"> v2 </td> 
+         <td class="confluenceTd"> implemented </td> 
+         <td class="confluenceTd"> v2 </td> 
+         <td class="confluenceTd"> implemented </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> view/edit properties on server </td> 
+         <td class="confluenceTd"> v2 </td> 
+         <td class="confluenceTd"> <font color="orange">incomplete</font> </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> uses a customizer limited property exposure very limited property table editing. extend to open editor on double click... duh. </td> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> Domain Configuration </th> 
+         <td class="confluenceTd"> Domain JVM properties </td> 
+         <td class="confluenceTd"> v2 </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> should implement. edits should go into domain.xml... may implement as port of the domain properties (for local domains only) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> automatic JDBC driver integration </td> 
+         <td class="confluenceTd"> v2/TC </td> 
+         <td class="confluenceTd"> implemented </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> has issues around restarting </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> http monitoring </td> 
+         <td class="confluenceTd"> v2/TC </td> 
+         <td class="confluenceTd"> implemented </td> 
+         <td class="confluenceTd"> how is this diff than above? </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">has issues around restarting... hope the underlying feature changes in NB 7.0 changes radically </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> extension node support </td> 
+         <td class="confluenceTd"> v2 </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> the v2 api had an mbean at its foundation no mbeans used by v3 integration and we want to avoid them. this may be necessary.. work with the JBI folks for this </td> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> Project deployment </th> 
+         <td class="confluenceTd"> web (directory and archive) </td> 
+         <td class="confluenceTd"> v2/TC(directory only) </td> 
+         <td class="confluenceTd"> directory only </td> 
+         <td class="confluenceTd"> v2 (directory only) </td> 
+         <td class="confluenceTd"> directory only </td> 
+         <td class="confluenceTd"> remote and archive project needs archive deploy support </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> ejb (directory and archive) </td> 
+         <td class="confluenceTd"> v2 </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> v2 (archive only) </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> must! easy to support needs testing </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> ear (directory and archive) </td> 
+         <td class="confluenceTd"> v2 </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> v2 (archive only) </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> must! easy to support needs testing </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> app client (archive only – server limitation) </td> 
+         <td class="confluenceTd"> v2 </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> v2 (archive only) </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> must! easy to support needs testing </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> resource registration and update </td> 
+         <td class="confluenceTd"> v2 </td> 
+         <td class="confluenceTd"> <font color="orange">incomplete</font> </td> 
+         <td class="confluenceTd"> v2 - JDBC registration only </td> 
+         <td class="confluenceTd"> JDBC registration only </td> 
+         <td class="confluenceTd"> must! many types haven't been tried bug related to solo connection-pool </td> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> Zero configuration </th> 
+         <td class="confluenceTd"> Use Database (j2ee and java ee) </td> 
+         <td class="confluenceTd"> v2/TC </td> 
+         <td class="confluenceTd"> implemented???? </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> the code for supporting this in an ejb module may need work did not look at j2ee case </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Call EJB (j2ee only) </td> 
+         <td class="confluenceTd"> v2 </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> must implement </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> send mail </td> 
+         <td class="confluenceTd"> v2 </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> must implement </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Use JMS </td> 
+         <td class="confluenceTd"> v2 </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> must implement </td> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> deployment descriptors </th> 
+         <td class="confluenceTd"> sun-web.xml (gui/xml) </td> 
+         <td class="confluenceTd"> v2 </td> 
+         <td class="confluenceTd"> implemented </td> 
+         <td class="confluenceTd"> v2 (xml) </td> 
+         <td class="confluenceTd"> xml </td> 
+         <td class="confluenceTd"> need to update to account for v3 elements </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> sun-ejb-jar.xml (gui/xml) </td> 
+         <td class="confluenceTd"> v2 </td> 
+         <td class="confluenceTd"> implemented </td> 
+         <td class="confluenceTd"> v2 (xml) </td> 
+         <td class="confluenceTd"> xml </td> 
+         <td class="confluenceTd"> need to update to account for v3 elements </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> sun-application.xml (xml) </td> 
+         <td class="confluenceTd"> v2 </td> 
+         <td class="confluenceTd"> implemented </td> 
+         <td class="confluenceTd"> v2 (xml) </td> 
+         <td class="confluenceTd"> xml </td> 
+         <td class="confluenceTd"> need to update to account for v3 elements </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> sun-app-client.xml (xml) </td> 
+         <td class="confluenceTd"> v2 </td> 
+         <td class="confluenceTd"> implemented </td> 
+         <td class="confluenceTd"> v2 (xml) </td> 
+         <td class="confluenceTd"> xml </td> 
+         <td class="confluenceTd"> need to update to account for v3 elements </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> sun-sip.xml (xml) </td> 
+         <td class="confluenceTd"> v2 </td> 
+         <td class="confluenceTd"> N/A ??? </td> 
+         <td class="confluenceTd"> ? </td> 
+         <td class="confluenceTd"> ? </td> 
+         <td class="confluenceTd"> investigate </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> domain.xml (xml) </td> 
+         <td class="confluenceTd"> v2 </td> 
+         <td class="confluenceTd"> implemented ??? </td> 
+         <td class="confluenceTd"> ? </td> 
+         <td class="confluenceTd"> ? </td> 
+         <td class="confluenceTd"> this may be broken due to the fact that domain.xml doesn't have a doctype </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> sun-cmp-mapping.xml (gui/xml) </td> 
+         <td class="confluenceTd"> v2 </td> 
+         <td class="confluenceTd"> implemented ??? </td> 
+         <td class="confluenceTd"> ? </td> 
+         <td class="confluenceTd"> ? </td> 
+         <td class="confluenceTd"> may want to figure out a way to disable this </td> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> Project level features </th> 
+         <td class="confluenceTd"> verifier </td> 
+         <td class="confluenceTd"> v2 </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> may want to implement </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> java db start on deploy </td> 
+         <td class="confluenceTd"> v2 </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> <font color="red">not implemented</font> </td> 
+         <td class="confluenceTd"> need to implement. in the v2 plugin, we use the DerbySupport.ensureStarted() to start javadb as part of StartSunServer. We can move this startup into the jdbc driver deployment processing... reasoning: if there isn't any datasource, there is no reason to start the db... </td> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> Resource Wizards </th> 
+         <td class="confluenceTd"> many resource types </td> 
+         <td class="confluenceTd"> implemented </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> v2 - JBDC Resource </td> 
+         <td class="confluenceTd"> JDBC Resource </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <ul> 
+      <li>Applies to local domains only</li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:49.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

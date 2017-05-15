@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GFMacRestart</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h5><a name="GFMacRestart-TheProblem"></a>The Problem</h5> <p><a href="https://github.com/javaee/glassfish/issues/12942">12942 Mac: restart fails for instance started with start-instance</a></p> <p>When an instance is started via SSH (using start-instance) it appears to run OK. But when the instance is restarted the newly started instance fails to start because it can't resolve the hostname of the DAS. It also has other symptoms – like the user.name Java system property is set to "?".</p> <p>Mac only. Solaris and Linux AOK.</p> <h5><a name="GFMacRestart-TheRootCause"></a>The Root Cause</h5> <p>On the Mac a process has an <a href="http://developer.apple.com/library/mac/technotes/tn2005/tn2083.html#SECEXECUTIONCONTEXTS">Execution Context</a> that scopes what Mac OS services the process can locate. These services provide basic functionality – like resolving hostnames and getting the current user name. When a process is started over SSH it looses its context when the SSH session ends. This means the process (and its children) can't do basic things like looking up a hostname. That's what is happening in the case of our bug. As long as the SSH session is open all is well, but once it is closed things can break. The symptom we see is the restart bug.</p> <h5><a name="GFMacRestart-TheFix"></a>The Fix</h5> <p>Mac OS provides a special utility that can be used to launch long-running processes which preserves an Execution Context: <a href="http://developer.apple.com/library/mac/documentation/Darwin/Reference/ManPages/man8/StartupItemContext.8.html">/usr/libexec/StartupItemContext</a></p> <p>The proposed fix is to change start-local-instance so that, on Mac OS, it uses StartupItemContext to launch the JVM of the instance like this:</p> 
+     <div class="preformatted panel" style="border-width: 1px;">
+      <div class="preformattedContent panelContent"> 
+       <pre>/usr/libexec/StartupItemContext /usr/bin/java . . .
+</pre> 
+      </div>
+     </div> <p>The new code in GFLauncher.launchInstance() looks like this:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">List&lt;String&gt; cmds = null;
+        if (OS.isDarwin()) {
+            // On MacOS we need to start long running process with
+            // StartupItemContext. See IT 12942
+            cmds = new ArrayList&lt;String&gt;();
+            cmds.add("/usr/libexec/StartupItemContext");
+            cmds.addAll(getCommandLine());
+        } else {
+            cmds = getCommandLine();
+        }</pre> 
+       </div> 
+      </div>
+     </div> <p>In addition to fixing the original bug (over SSH), this change will allow the user to start an instance (or a domain?), then log out and still have the instance behave well and be restartable.</p> <h5><a name="GFMacRestart-Todo"></a>Todo</h5> 
+     <ul> 
+      <li>Test</li> 
+      <li>Finish reading technical note</li> 
+      <li>Check behavior when start-local-instance (and hence /usr/libexec/StartupItemContext) is run by a non-admin user.</li> 
+     </ul> <h5><a name="GFMacRestart-References"></a>References</h5> 
+     <ul> 
+      <li><a href="http://developer.apple.com/library/mac/#technotes/tn2005/tn2083.html">Apple Technical Note TN2083: Daemons and Agents</a></li> 
+      <li><a href="http://lists.apple.com/archives/unix-porting/2010/Jun/msg00000.html">Apple unix-porting mailing list posting</a></li> 
+     </ul> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Oct 26, 2010 by 
+<font color="#0050B2">dipol</font>. Exported from wikis.oracle.com on May 27, 2015 20:43.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

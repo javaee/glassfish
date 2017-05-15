@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFish Wiki Migration - Known Issues</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   
+     <div> 
+      <ul> 
+       <li><a href="#GlassFishWikiMigration-KnownIssues-What%27sthis%3F">What's this?</a></li> 
+       <li><a href="#GlassFishWikiMigration-KnownIssues-Knownlimitations">Known limitations</a></li> 
+       <ul> 
+        <li><a href="#GlassFishWikiMigration-KnownIssues-historynotpreserved">history not preserved</a></li> 
+        <li><a href="#GlassFishWikiMigration-KnownIssues-attachmentsarelimitedinsizeto5MB">attachments are limited in size to 5MB</a></li> 
+        <li><a href="#GlassFishWikiMigration-KnownIssues-nosortabletable">no sortable table</a></li> 
+        <ul> 
+         <li><a href="#GlassFishWikiMigration-KnownIssues-absolutelinks">absolute links</a></li> 
+        </ul> 
+        <li><a href="#GlassFishWikiMigration-KnownIssues-leftoverJSPWikiAuthorizationmacros">left-over JSPWiki Authorization macros</a></li> 
+        <li><a href="#GlassFishWikiMigration-KnownIssues-existingJSPWikimacros">existing JSPWiki macros</a></li> 
+        <li><a href="#GlassFishWikiMigration-KnownIssues-Singleinitialauthor">Single initial author</a></li> 
+       </ul> 
+       <li><a href="#GlassFishWikiMigration-KnownIssues-Syntaxmigrationknownissues">Syntax migration known issues</a></li> 
+       <li><a href="#GlassFishWikiMigration-KnownIssues-Preservingtheleftmenu">Preserving the left menu</a></li> 
+       <li><a href="#GlassFishWikiMigration-KnownIssues-Largeattachments">Large attachments</a></li> 
+       <li><a href="#GlassFishWikiMigration-KnownIssues-Contact">Contact</a></li> 
+      </ul>
+     </div> <h4><a name="GlassFishWikiMigration-KnownIssues-What%27sthis%3F"></a>What's this?</h2> <p>In the process of migrating from the existing jspwiki infrastructure that powers <a href="http://wiki.glassfish.org">wiki.glassfish.org</a> to wikis.sun.com (confluence) using a <a href="https://studio.plugins.atlassian.com/wiki/display/UWC/Universal+Wiki+Converter">migration tool</a> a number of limitations were identified. <br class="atl-forced-newline">This is a list of known issues and how to fix them. Every page moved over to wikis.sun.com has links at the bottom for its old and new location to easily fix things that didn't go well during the migration.</p> <h4><a name="GlassFishWikiMigration-KnownIssues-Knownlimitations"></a>Known limitations</h2> <p>These limitations are known and not considered as show-stoppers :</p> <h4><a name="GlassFishWikiMigration-KnownIssues-historynotpreserved"></a>history not preserved</h3> <p>check out old wiki for that</p> <h4><a name="GlassFishWikiMigration-KnownIssues-attachmentsarelimitedinsizeto5MB"></a>attachments are limited in size to 5MB</h3> <p>use YouTube for screencasts, slideshare.net for presentations and other files elsewhere. See list below for the AppServer wiki.</p> <h4><a name="GlassFishWikiMigration-KnownIssues-nosortabletable"></a>no sortable table</h3> <h4><a name="GlassFishWikiMigration-KnownIssues-absolutelinks"></a>absolute links</h4> <p>absolute link to attachments hosted on jspwiki will be preserved as is and break when the redirect is in place. If the attachment is less than 5MB it was also migrated and the link should be updated.</p> <h4><a name="GlassFishWikiMigration-KnownIssues-leftoverJSPWikiAuthorizationmacros"></a>left-over JSPWiki Authorization macros</h3> <p>need to manually remove {<tt>ALLOW ...</tt>} instructions used for authorization in several jspwiki pages</p> <h4><a name="GlassFishWikiMigration-KnownIssues-existingJSPWikimacros"></a>existing JSPWiki macros</h3> <p>no migration for the following JSPWiki macros: <tt>UnusedPagesPlugin</tt>, <tt>INSERT IndexPlugin ...</tt>, <tt>INSERT com.ecyrd.jspwiki.plugin.RecentChangesPlugin ...</tt>, <tt>INSERT CurrentTimePlugin ...</tt> (but Confluence has equivalent tooling)</p> <h4><a name="GlassFishWikiMigration-KnownIssues-Singleinitialauthor"></a>Single initial author</h3> <p>all pages will initially show as been authored by the same use user (the one used for the migration process)</p> <h4><a name="GlassFishWikiMigration-KnownIssues-Syntaxmigrationknownissues"></a>Syntax migration known issues</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Id. </th> 
+         <th class="confluenceTh"> Issue </th> 
+         <th class="confluenceTh"> original jspwiki syntax </th> 
+         <th class="confluenceTh"> generated bogus markup &amp; solution </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> jspwiki page name aliasing </td> 
+         <td class="confluenceTd"> a jspwiki link to <tt>default-config</tt> resolves to a page called <tt>DefaultConfig</tt> if <tt>default-config</tt> does not exist </td> 
+         <td class="confluenceTd"> link to non-existing page. <br class="atl-forced-newline">You'll need to edit the link manually </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd"> <tt>~UWC_TOKEN</tt> appearing in generated markup </td> 
+         <td class="confluenceTd"> 
+          <div class="preformatted panel" style="border-width: 1px;">
+           <div class="preformattedContent panelContent"> 
+            <pre>${MyWorkspace}</pre> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd"> 
+          <div class="preformatted panel" style="border-width: 1px;">
+           <div class="preformattedContent panelContent"> 
+            <pre>~UWC_TOKEN_START~1272982934422~UWC_TOKEN_END\{MyWorkspace}</pre> 
+           </div>
+          </div> <p> <br class="atl-forced-newline"> manually replace bogus long string with <tt>$</tt> (or any other character). The migration tool considers this as a macro and tries to interpret it. As a general rule, using </p> 
+          <div class="preformatted panel" style="border-width: 1px;">
+           <div class="preformattedContent panelContent"> 
+            <pre>noformat</pre> 
+           </div>
+          </div> <p> around the initial wiki code should also work </p></td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3 </td> 
+         <td class="confluenceTd"> slash replaced with dash in URLs <br class="atl-forced-newline">(in tables only?) </td> 
+         <td class="confluenceTd"> 
+          <div class="preformatted panel" style="border-width: 1px;">
+           <div class="preformattedContent panelContent"> 
+            <pre>[URL|http://maven.dyndns.org/glassfish...]</pre> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd"> 
+          <div class="preformatted panel" style="border-width: 1px;">
+           <div class="preformattedContent panelContent"> 
+            <pre>[URL| http:--maven.dyndns.org-glassfish-...]</pre> 
+           </div>
+          </div> <p> <br class="atl-forced-newline"> change manually <img class="emoticon" src="images/icons/emoticons/sad.gif" height="20" width="20" align="absmiddle" alt="" border="0"> </p></td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4 </td> 
+         <td class="confluenceTd"> missing closing {<tt>panel</tt>} </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> manually add closing {panel} <br class="atl-forced-newline"> it's also a good idea to consider removing the {panel} section altogether</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5 </td> 
+         <td class="confluenceTd"> tabs not supported by migration tool </td> 
+         <td class="confluenceTd"> 
+          <div class="preformatted panel" style="border-width: 1px;">
+           <div class="preformattedContent panelContent"> 
+            <pre>%%tabbedSection
+%%tab-TabName1
+...
+%%
+%%tab-TabName2
+[{InsertPage page=...}]
+...
+%%</pre> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd"> you should manually write the tabs using this notation: <br class="atl-forced-newline"> 
+          <div class="preformatted panel" style="border-width: 1px;">
+           <div class="preformattedContent panelContent"> 
+            <pre>{tabs}
+  {tab:title=Title of tab #1}
+    Content of tab #1 in _wiki_ format, including other macros.
+    {include:Sample Include Page}
+  {tab}
+  {tab:title=Title of tab #2}
+    Content of tab #2 in _wiki_ format, including other macros.
+  {tab}
+{tabs}</pre> 
+           </div>
+          </div> <p><br class="atl-forced-newline"> details <a href="http://wikis.sun.com/display/Help/Tabs+Macro">here</a> </p></td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6 </td> 
+         <td class="confluenceTd"> HTML and CSS formatting not supported by Confluence </td> 
+         <td class="confluenceTd"> jspwiki can render some HTML code as is. Prefer 
+          <div class="preformatted panel" style="border-width: 1px;">
+           <div class="preformattedContent panelContent"> 
+            <pre>{{code of any sort}}</pre> 
+           </div>
+          </div> <p> to the use of HTML's \&lt;pre\&gt; </p></td> 
+         <td class="confluenceTd"> in Confluence, you have to use the <a href="https://wikis.sun.com/renderer/notationhelp.action">wiki syntax</a> <br class="atl-forced-newline"> For code simply use this tag: 
+          <div class="preformatted panel" style="border-width: 1px;">
+           <div class="preformattedContent panelContent"> 
+            <pre>{code}</pre> 
+           </div>
+          </div> <p> </p></td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 7 </td> 
+         <td class="confluenceTd"> Horizontal bar needs not rendered </td> 
+         <td class="confluenceTd"> {----} is not rendered if not on a single dedicated line </td> 
+         <td class="confluenceTd"> use {----} on its own line </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 8 </td> 
+         <td class="confluenceTd"> Strike-through not supported</td> 
+         <td class="confluenceTd"> 
+          <div class="preformatted panel" style="border-width: 1px;">
+           <div class="preformattedContent panelContent"> 
+            <pre>%%strike[URL]%%</pre> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd"> use the Confluence notation : 
+          <div class="preformatted panel" style="border-width: 1px;">
+           <div class="preformattedContent panelContent"> 
+            <pre>-[URL]-</pre> 
+           </div>
+          </div> <p> </p></td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 9 </td> 
+         <td class="confluenceTd"> jspwiki <tt>%%collapse .... %%</tt> not migrated to Confluence's <tt>expand</tt> </td> 
+         <td class="confluenceTd"> 
+          <div class="preformatted panel" style="border-width: 1px;">
+           <div class="preformattedContent panelContent"> 
+            <pre>%%collapse
+*__Title__
+**[Sub-menu #1]
+**[Sub-menu #2]
+%%</pre> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd"> 
+          <div class="preformatted panel" style="border-width: 1px;">
+           <div class="preformattedContent panelContent"> 
+            <pre>{expand:*Title*|expanded=true}
+[Sub-menu #1]
+[Sub-menu #2]
+{expand}
+</pre> 
+           </div>
+          </div> <p> <br class="atl-forced-newline"> details <a href="http://wikis.sun.com/display/Help/Expand+Macro">here</a> </p></td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 10 </td> 
+         <td class="confluenceTd"> <tt>mailto:</tt> not recognized </td> 
+         <td class="confluenceTd"> 
+          <div class="preformatted panel" style="border-width: 1px;">
+           <div class="preformattedContent panelContent"> 
+            <pre>[donald@duck.net|mailto:donald@duck.net]</pre> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd"> Links to email addresses should simply use 
+          <div class="preformatted panel" style="border-width: 1px;">
+           <div class="preformattedContent panelContent"> 
+            <pre>[mailto:donald@duck.net]</pre> 
+           </div>
+          </div> <p> otherwise the email address is interpreted as an attachment. </p></td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 11 </td> 
+         <td class="confluenceTd"> Insert page syntax </td> 
+         <td class="confluenceTd"> 
+          <div class="preformatted panel" style="border-width: 1px;">
+           <div class="preformattedContent panelContent"> 
+            <pre>[{InsertPage page=ScenariosIntegratingDistros}]</pre> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd"> 
+          <div class="preformatted panel" style="border-width: 1px;">
+           <div class="preformattedContent panelContent"> 
+            <pre>{include:ScenariosIntegratingDistros}</pre> 
+           </div>
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 12 </td> 
+         <td class="confluenceTd"> Table of Content </td> 
+         <td class="confluenceTd"> 
+          <div class="preformatted panel" style="border-width: 1px;">
+           <div class="preformattedContent panelContent"> 
+            <pre>{TableOfContents title=' '}</pre> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd"> 
+          <div class="preformatted panel" style="border-width: 1px;">
+           <div class="preformattedContent panelContent"> 
+            <pre>{toc}</pre> 
+           </div>
+          </div> <p> <br class="atl-forced-newline">details <a href="https://wikis.sun.com/renderer/notationhelp.action?section=confluence">here</a> </p></td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 13 </td> 
+         <td class="confluenceTd"> HTML attachments </td> 
+         <td class="confluenceTd"> attachments with .html extensions are not rendered <br class="atl-forced-newline">but rather downloaded when one clicks on them. </td> 
+         <td class="confluenceTd"> wikis.sun.com doesn't support rendering any kind of html that was directly entered by a user as raw html. This is because of all kinds of security issues (XSS, CSRF) that would such a feature expose the entire site to. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishWikiMigration-KnownIssues-Preservingtheleftmenu"></a>Preserving the left menu</h2> <p>Simply rename the "<tt>LeftMenu</tt>" page to "<tt>.left-section</tt>" (and adjust collapse/expand if needed).</p> <h4><a name="GlassFishWikiMigration-KnownIssues-Largeattachments"></a>Large attachments</h2> <p>This is the list of large (more than 5MB) and recent (less than 1 year-old) attachments for the GlassFishWiki (these files remain available from the old wiki) :</p> 
+     <div class="preformatted panel" style="border-width: 1px;">
+      <div class="preformattedContent panelContent"> 
+       <pre>    3353422 Jul 17  2009 appserver/attachments/DeveloperTestDashboard-att/domain1_default_mac.zip-dir/1.zip
+    3354857 Jul 17  2009 appserver/attachments/DeveloperTestDashboard-att/domain1_default_sparc.zip-dir/1.zip
+    3352254 Jul 17  2009 appserver/attachments/DeveloperTestDashboard-att/domain1_default_winxp.zip-dir/1.zip
+    166553600 Jul 17  2009 appserver/attachments/DeveloperTestDashboard-att/jboss-seam-2.1.1.GA.tar-dir/1.tar
+    11438636 Jul 17  2009 appserver/attachments/DeveloperTestDashboard-att/jboss-seam-jpa.war-dir/1.war
+    15035341 Jul 17  2009 appserver/attachments/DeveloperTestDashboard-att/seamjpa_mac.zip-dir/1.zip
+    15026991 Jul 17  2009 appserver/attachments/DeveloperTestDashboard-att/seamjpa_sparc.zip-dir/1.zip
+    15025830 Jul 17  2009 appserver/attachments/DeveloperTestDashboard-att/seamjpa_winxp.zip-dir/1.zip
+    5990401 Oct 14  2009 appserver/attachments/JavaEE6TutorialCDI-att/JAVAEE6TUTV1.pdf-dir/1.pdf
+    6114176 Nov 18  2009 appserver/attachments/JavaEE6TutorialCDI-att/JAVAEE6TUTV1.pdf-dir/2.pdf
+    6109203 Dec  3 07:12 appserver/attachments/JavaEE6TutorialCDI-att/JAVAEE6TUTV1.pdf-dir/3.pdf
+    5562334 Dec  9 12:57 appserver/attachments/JavaEE6TutorialVol1-att/JavaEETutorial.pdf-dir/1.pdf
+    15050790 Jul 19  2009 appserver/attachments/Screencasts-att/callflow.zip-dir/1.zip
+    20628302 Jul 19  2009 appserver/attachments/Screencasts-att/gfv3tp2-guiplugin-demo.zip-dir/1.zip
+    19687226 Jul 19  2009 appserver/attachments/Screencasts-att/glassfishv3-1_screencast.zip-dir/1.zip
+    9147792 Jul 19  2009 appserver/attachments/Screencasts-att/hello-reliable-glassfish.zip-dir/1.zip
+    7801388 Jul 19  2009 appserver/attachments/Screencasts-att/hello-simple-client-glassfish.zip-dir/1.zip
+    7859504 Jul 19  2009 appserver/attachments/Screencasts-att/hello-simple-glassfish.zip-dir/1.zip
+    31777885 Jul 19  2009 appserver/attachments/Screencasts-att/jmaki-crud.zip-dir/1.zip
+    56156175 Jul 19  2009 appserver/attachments/Screencasts-att/jmaki-in-europa.zip-dir/1.zip
+    33933448 Jul 19  2009 appserver/attachments/Screencasts-att/jmaki-on-rails2.zip-dir/1.zip
+    21877226 Jul 19  2009 appserver/attachments/Screencasts-att/jruby-update-center.zip-dir/1.zip
+    2614392 Sep 25  2009 appserver/attachments/UsageScenarios-att/gfv2_domain1_empty.tar.gz-dir/1.gz
+    2615565 Sep 25  2009 appserver/attachments/UsageScenarios-att/gfv2_empty_u.tar.gz-dir/1.gz
+    16979066 Sep 25  2009 appserver/attachments/UsageScenarios-att/gfv3p_domain1_empty.tar.gz-dir/1.gz
+    3454810 Sep 25  2009 appserver/attachments/UsageScenarios-att/v2_1_empty_u.tar.gz-dir/1.gz
+    3462507 Sep 25  2009 appserver/attachments/UsageScenarios-att/v2_1_jsp.tar.gz-dir/1.gz
+    3459137 Sep 25  2009 appserver/attachments/UsageScenarios-att/v2_1_jsp_u.tar.gz-dir/1.gz
+    2622700 Sep 25  2009 appserver/attachments/UsageScenarios-att/v2_jsp.tar.gz-dir/1.gz
+    2624028 Sep 25  2009 appserver/attachments/UsageScenarios-att/v2_jsp.tar.gz-dir/2.gz
+    2619255 Sep 25  2009 appserver/attachments/UsageScenarios-att/v2_jsp_u.tar.gz-dir/1.gz
+    2619853 Sep 25  2009 appserver/attachments/UsageScenarios-att/v2_jsp_u.tar.gz-dir/2.gz
+    2624928 Sep 25  2009 appserver/attachments/UsageScenarios-att/v2_web_ejb.tar.gz-dir/1.gz
+    2629822 Sep 25  2009 appserver/attachments/UsageScenarios-att/v2_web_ejb.tar.gz-dir/2.gz
+    2627736 Sep 25  2009 appserver/attachments/UsageScenarios-att/v2_web_ejb_u.tar.gz-dir/1.gz
+    16978766 Sep 25  2009 appserver/attachments/UsageScenarios-att/v3p_empty_u.tar.gz-dir/1.gz
+    16983958 Sep 25  2009 appserver/attachments/UsageScenarios-att/v3p_jsp.tar.gz-dir/1.gz
+    16987657 Sep 25  2009 appserver/attachments/UsageScenarios-att/v3p_jsp.tar.gz-dir/2.gz
+    16983339 Sep 25  2009 appserver/attachments/UsageScenarios-att/v3p_jsp_u.tar.gz-dir/1.gz
+    16986205 Sep 25  2009 appserver/attachments/UsageScenarios-att/v3p_jsp_u.tar.gz-dir/2.gz
+    3353422 Jul 17  2009 appserver/attachments/V3UpgradeDashboard-att/domain1_default_mac.zip-dir/1.zip
+    3354857 Jul 17  2009 appserver/attachments/V3UpgradeDashboard-att/domain1_default_sparc.zip-dir/1.zip
+    3352254 Jul 17  2009 appserver/attachments/V3UpgradeDashboard-att/domain1_default_winxp.zip-dir/1.zip
+    166553600 Jul 17  2009 appserver/attachments/V3UpgradeDashboard-att/jboss-seam-2.1.1.GA.tar-dir/1.tar
+    11438636 Jul 17  2009 appserver/attachments/V3UpgradeDashboard-att/jboss-seam-jpa.war-dir/1.war
+    3446785 Aug 24  2009 appserver/attachments/V3UpgradeDashboard-att/macos_domain1.tar.gz-dir/1.gz
+    15035341 Jul 17  2009 appserver/attachments/V3UpgradeDashboard-att/seamjpa_mac.zip-dir/1.zip
+    15026991 Jul 17  2009 appserver/attachments/V3UpgradeDashboard-att/seamjpa_sparc.zip-dir/1.zip
+    15025830 Jul 17  2009 appserver/attachments/V3UpgradeDashboard-att/seamjpa_winxp.zip-dir/1.zip
+    3448362 Aug 24  2009 appserver/attachments/V3UpgradeDashboard-att/sparc_domain1.tar.gz-dir/1.gz
+    77760528 Oct 30  2009 appserver/attachments/VinceKraemer-att/glassfish.zip-dir/1.zip
+</pre> 
+      </div>
+     </div> <h4><a name="GlassFishWikiMigration-KnownIssues-Contact"></a>Contact</h2> <p>If you have questions or suggestions, please use the <a href="https://wikis.sun.com/spaces/contact/contact.action?key=GlassFish">Contact Form</a></p> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 22, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

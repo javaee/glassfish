@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : PlanForGlassFishV3Ja</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="PlanForGlassFishV3Ja-GlassFishv3%E3%81%A8%E3%81%AF%E4%BD%95%E3%81%A7%E3%81%99%E3%81%8B%3F"></a>GlassFish v3 とは何ですか?</h1> <p>GlassFish v3 は、次期メジャーリリースの GlassFish アプリケーションサーバーで、現在 GlassFish コミュニティによって開発が進められています。<br> GlassFish v3 はモジュール化された、ライトウェイトで、拡張可能なアーキテクチャになっています。次に上げられたものを提供するのが目標です:</p> 
+     <ul> 
+      <li>オープンで、モジュール化され、拡張可能なプラットフォーム</li> 
+      <li>速くて、使いやすく、信頼性のあるアプリケーションサーバー</li> 
+      <li>スケーラビリティに優れ、洗練された管理機能を持った、エンタープライズ用途に使えるアプリケーションサーバー</li> 
+      <li>製品のアップデートとアドオンを、実務で使える <a href="http://wiki.updatecenter.java.net">Update Center 2.0</a> から提供</li> 
+      <li>OSGi のサポート</li> 
+      <li>Ruby や Groovy といった動的言語のサポート</li> 
+      <li>Java EE 6 のサポート</li> 
+     </ul> <p>このページでは、GlassFish v3 の情報とリソースをお知らせします。<br> (訳者注: 以下のリンクはまだ英語です。興味のある方、日本語化にしてみませんか？)</p> 
+     <hr> 
+     <div> 
+      <ul> 
+       <li><a href="#PlanForGlassFishV3Ja-GlassFishv3%E3%81%A8%E3%81%AF%E4%BD%95%E3%81%A7%E3%81%99%E3%81%8B%3F">GlassFish v3 とは何ですか?</a></li> 
+       <ul> 
+        <li><a href="#PlanForGlassFishV3Ja-%E6%A6%82%E8%A6%81">概要</a></li> 
+        <li><a href="#PlanForGlassFishV3Ja-%E3%82%A8%E3%83%B3%E3%82%B8%E3%83%8B%E3%82%A2%E3%83%AA%E3%83%B3%E3%82%B0">エンジニアリング</a></li> 
+        <ul> 
+         <li><a href="#PlanForGlassFishV3Ja-%E3%83%93%E3%83%AB%E3%83%89%E9%96%A2%E9%80%A3%3A">ビルド関連:</a></li> 
+         <li><a href="#PlanForGlassFishV3Ja-%E3%83%87%E3%82%B6%E3%82%A4%E3%83%B3%E3%83%89%E3%82%AD%E3%83%A5%E3%83%A1%E3%83%B3%E3%83%88%3A">デザインドキュメント:</a></li> 
+         <li><a href="#PlanForGlassFishV3Ja-%E6%9C%AA%E8%A7%A3%E6%B1%BA%E3%81%AE%E8%AA%B2%E9%A1%8C%3A">未解決の課題:</a></li> 
+        </ul> 
+        <li><a href="#PlanForGlassFishV3Ja-%E5%93%81%E8%B3%AA%E3%82%A8%E3%83%B3%E3%82%B8%E3%83%8B%E3%82%A2%E3%83%AA%E3%83%B3%E3%82%B0">品質エンジニアリング</a></li> 
+        <li><a href="#PlanForGlassFishV3Ja-%E3%83%97%E3%83%A9%E3%83%B3%E3%83%8B%E3%83%B3%E3%82%B0">プランニング</a></li> 
+        <ul> 
+         <li><a href="#PlanForGlassFishV3Ja-%E6%A9%9F%E8%83%BD%3A">機能:</a></li> 
+         <li><a href="#PlanForGlassFishV3Ja-%E3%83%AA%E3%83%AA%E3%83%BC%E3%82%B9%3A">リリース:</a></li> 
+         <li><a href="#PlanForGlassFishV3Ja-%E3%82%B9%E3%82%B1%E3%82%B8%E3%83%A5%E3%83%BC%E3%83%AB%3A">スケジュール:</a></li> 
+         <li><a href="#PlanForGlassFishV3Ja-%E3%83%89%E3%82%AD%E3%83%A5%E3%83%A1%E3%83%B3%E3%83%88%3A">ドキュメント:</a></li> 
+        </ul> 
+        <li><a href="#PlanForGlassFishV3Ja-%E3%81%9D%E3%81%AE%E4%BB%96">その他</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="PlanForGlassFishV3Ja-%E6%A6%82%E8%A6%81"></a>概要</h2> <p>GlassFish v3 は、次期メジャーリリースの GlassFish アプリケーションサーバーです。このリリースでのフォーカスは、モジュール化と Java EE 以外のコンテナ、そして組み込み機能です。</p> <p><a href="https://glassfish.java.net/downloads/v3/">GlassFish V3 technology preview</a> をぜひお試しください! いくつか<a href="V3Examples.html" title="V3Examples">シンプルな例</a>があります。</p> <h4><a name="PlanForGlassFishV3Ja-%E3%82%A8%E3%83%B3%E3%82%B8%E3%83%8B%E3%82%A2%E3%83%AA%E3%83%B3%E3%82%B0"></a>エンジニアリング</h2> <p><a href="V3EngineersGuide.html" title="V3EngineersGuide">V3 の紹介(英語)</a> ドキュメントに全体のアーキテクチャやビルド方法や v3 での作業の情報が書かれています。</p> <h4><a name="PlanForGlassFishV3Ja-%E3%83%93%E3%83%AB%E3%83%89%E9%96%A2%E9%80%A3%3A"></a>ビルド関連: </h3> 
+     <ul> 
+      <li><a href="DevelopmentInstructions.html" title="DevelopmentInstructions">DevelopmentInstructions</a> GF v3 を生産的に開発するための資料。</li> 
+      <li><a href="HowDoesV3BuildWorks.html" title="HowDoesV3BuildWorks">GF v3 のビルドや開発はどのように行われているか?</a></li> 
+      <li><a href="FullBuildInstructions.html" title="FullBuildInstructions">FullBuildInstructions</a> v3 を最初から完全にビルドするための手順</li> 
+      <li><a href="AddingModule.html" title="AddingModule">AddingModule</a> V3 にモジュールを追加するための手順</li> 
+      <li><a href="AddingBinaryDependency.html" title="AddingBinaryDependency">AddingBinaryDependency</a> V3 で新規にバイナリ依存性を追加する手順</li> 
+      <li><a href="V3DistributionAssembly.html" title="V3DistributionAssembly">glassfish.zip を作成する詳細手順</a></li> 
+      <li><a href="V3BuildToDoList.html" title="V3BuildToDoList">ビルドシステムやインフラの To Do リスト</a></li> 
+      <li><a href="V3BrownBags.html" title="V3BrownBags">ビルドについての会合 </a></li> 
+      <li><a href="V3WorkspaceStructure.html" title="V3WorkspaceStructure">ディレクトリレイアウトの草案</a></li> 
+      <li>ソースコード管理</li> 
+      <li><a href="V3BuildToDoList.html" title="V3BuildToDoList">ビルドに関する To Do リスト</a></li> 
+      <li><a href="V3AdminWorkspaceStructure.html" title="V3AdminWorkspaceStructure">管理ワークスペースの構造</a></li> 
+      <li><a href="V3BuildTests.html" title="V3BuildTests">V3 のビルド/テストガイドライン</a></li> 
+     </ul> <h4><a name="PlanForGlassFishV3Ja-%E3%83%87%E3%82%B6%E3%82%A4%E3%83%B3%E3%83%89%E3%82%AD%E3%83%A5%E3%83%A1%E3%83%B3%E3%83%88%3A"></a>デザインドキュメント:</h3> 
+     <ul> 
+      <li><a href="V3FunctionalSpecs.html" title="V3FunctionalSpecs">機能仕様の 1 pager </a></li> 
+      <li><a href="http://hk2.java.net">http://hk2.java.net</a> にあるモジュールシステム情報</li> 
+      <li><a href="DependencyMechanism.html" title="DependencyMechanism">DependencyMechanism</a></li> 
+      <li>コンテナ起動・停止の SPI : <a href="ContainerSPI.html" title="ContainerSPI">ContainerSPI</a></li> 
+      <li>管理用コマンドのインフラ : <a href="AdminCommandSPI.html" title="AdminCommandSPI">AdminCommandSPI</a></li> 
+      <li><a href="http://wiki.glassfish.java.net/attach/PlanForGlassFishV3/config_asarch.html">2007年12月10日に行われた、構成 API の議論 – これは現状ではないので、ブレインストーミングとして扱ってください</a></li> 
+     </ul> <h4><a name="PlanForGlassFishV3Ja-%E6%9C%AA%E8%A7%A3%E6%B1%BA%E3%81%AE%E8%AA%B2%E9%A1%8C%3A"></a>未解決の課題:</h3> 
+     <ul> 
+      <li><a href="https://glassfish.java.net/issues/buglist.cgi?issue_type=DEFECT&amp;component=glassfish&amp;issue_status=UNCONFIRMED&amp;issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED&amp;priority=P1&amp;priority=P2&amp;version=V3&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=fulltext&amp;keywords=tp2-exclude&amp;keywords_type=notokens&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=&amp;cmdtype=doit&amp;order=Reusesamesortaslasttime&amp;Submitquery=Submitquery">TP2 リリースの Open P1 &amp; P2 障害</a></li> 
+      <li><a href="https://glassfish.java.net/issues/buglist.cgi?Submitquery=Submitquery&amp;issue_type=DEFECT&amp;component=glassfish&amp;issue_status=UNCONFIRMED&amp;issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED&amp;priority=P1&amp;priority=P2&amp;version=V3&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=fulltext&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=&amp;cmdtype=doit&amp;order=Reusesamesortaslasttime">Open P1 &amp; P2 障害</a></li> 
+      <li><a href="https://glassfish.java.net/issues/buglist.cgi?Submitquery=Submitquery&amp;issue_type=DEFECT&amp;component=glassfish&amp;issue_status=UNCONFIRMED&amp;issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED&amp;priority=P1&amp;priority=P2&amp;&amp;priority=P3&amp;version=V3&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=fulltext&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=&amp;cmdtype=doit&amp;order=Reusesamesortaslasttime">Open P1-P3 障害</a></li> 
+     </ul> <h4><a name="PlanForGlassFishV3Ja-%E5%93%81%E8%B3%AA%E3%82%A8%E3%83%B3%E3%82%B8%E3%83%8B%E3%82%A2%E3%83%AA%E3%83%B3%E3%82%B0"></a>品質エンジニアリング</h2> <p>Glassfish V3 のテストプラントテスト仕様 </p> <h4><a name="PlanForGlassFishV3Ja-%E3%83%97%E3%83%A9%E3%83%B3%E3%83%8B%E3%83%B3%E3%82%B0"></a>プランニング</h2> <h4><a name="PlanForGlassFishV3Ja-%E6%A9%9F%E8%83%BD%3A"></a>機能: </h3> 
+     <ul> 
+      <li><a href="GlassFishV3Themes.html" title="GlassFishV3Themes">GlassFish V3 のテーマ</a></li> 
+      <li><a href="GlassFishV3Requirements.html" title="GlassFishV3Requirements">GlassFish V3 の要求</a></li> 
+      <li><a href="ContainersConfiguration.html" title="ContainersConfiguration">ContainersConfiguration</a> RoR, Phobos, PHP コンテナを v3 で構成する資料</li> 
+      <li>Web 層の機能リスト : <a href="V3WebTier.html" title="V3WebTier">V3WebTier</a></li> 
+      <li>配備: <a href="V3Deployment.html" title="V3Deployment">V3Deployment</a></li> 
+      <li>管理コンソール: <a href="GlassFishV3AdminConsole.html" title="GlassFishV3AdminConsole">GlassFishV3AdminConsole</a></li> 
+      <li><a href="V3AdminCommands.html" title="V3AdminCommands">V3AdminCommands</a> 利用可能な管理コマンドのリスト</li> 
+      <li>GlassFish V3 管理に関する開始ポイント 
+       <ul> 
+        <li><a href="V3AdministrationImprovements.html" title="V3AdministrationImprovements">V3 Administration Improvements</a></li> 
+       </ul> </li> 
+      <li><a href="UC2Integration.html" title="UC2Integration">Updatecenter 2.0 のインテグレーション </a></li> 
+      <li><a href="GlassFishV3EclipsePlugin.html" title="GlassFishV3EclipsePlugin">Eclipse v3 プラグインの機能 </a></li> 
+      <li><a href="V3cli.html" title="V3cli">GlassFish V3 管理の CLI </a></li> 
+     </ul> <h4><a name="PlanForGlassFishV3Ja-%E3%83%AA%E3%83%AA%E3%83%BC%E3%82%B9%3A"></a>リリース:</h3> 
+     <ul> 
+      <li><a href="GLassFishV3Distributions.html" title="GLassFishV3Distributions">GlassFish V3 ディストリビューション</a></li> 
+      <li><a href="GlassFishV3TP2Content.html" title="GlassFishV3TP2Content">GlassFish V3 Technology Preview 2</a></li> 
+      <li><a href="GlassFishV3IPS.html" title="GlassFishV3IPS">GlassFish V3 IPS</a></li> 
+     </ul> <h4><a name="PlanForGlassFishV3Ja-%E3%82%B9%E3%82%B1%E3%82%B8%E3%83%A5%E3%83%BC%E3%83%AB%3A"></a>スケジュール:</h3> 
+     <ul> 
+      <li><a href="GlassFishV3Schedule.html" title="GlassFishV3Schedule">エンジニアリングスケジュールの草案</a></li> 
+     </ul> <h4><a name="PlanForGlassFishV3Ja-%E3%83%89%E3%82%AD%E3%83%A5%E3%83%A1%E3%83%B3%E3%83%88%3A"></a>ドキュメント:</h3> 
+     <ul> 
+      <li><a href="GlassFishV3DocMeetings.html" title="GlassFishV3DocMeetings">GlassFish v3 ドキュメントのプラン</a></li> 
+     </ul> <h4><a name="PlanForGlassFishV3Ja-%E3%81%9D%E3%81%AE%E4%BB%96"></a>その他 </h2> 
+     <ul> 
+      <li><a href="ToDoList.html" title="ToDoList">増加している To Do リスト</a></li> 
+      <li><a href="http://blogs.oracle.com/arungupta/entry/screencast_24_getting_started_with">TP2 を使ってみるためのスクリーンキャスト</a></li> 
+      <li>最初の <a href="http://blogs.oracle.com/dochez/entry/first_glassfish_v3_screencast1">v3 スクリーンキャスト</a>.</li> 
+      <li><a href="UpdateCenterForGlassFishV3.html" title="UpdateCenterForGlassFishV3">次のアップデートセンターが持つであろう技術の比較</a></li> 
+      <li><a href="GlassFishV3Planning.html" title="GlassFishV3Planning">GlassFish V3 プランミーティング</a></li> 
+      <li><a href="V3EngineersGuide.html" title="V3EngineersGuide">エンジニア向けガイド</a></li> 
+      <li><a href="V3embedded.html" title="V3embedded">V3 を組み込みで実行: 要求</a></li> 
+      <li><a href="./GlassFishDeveloperFAQ#section-GlassFishDeveloperFAQ-GlassFishV3Development.html">開発者向け FAQs</a></li> 
+      <li><a href="UpgradeCompatibilityRequirements.html" title="UpgradeCompatibilityRequirements">Upgrade Compatibility Requirements</a></li> 
+     </ul> 
+     <hr> <p>日本語翻訳: <a href="http://blogs.oracle.com/shioda">shioda</a></p> <p><a href="PlanForGlassFishV3.html" title="PlanForGlassFishV3">英文 </a> (翻訳したバージョン: 102)</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 22, 2011 by 
+<font color="#0050B2">jane.young</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : 3.2AdminCommandProgress</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="3.2AdminCommandProgress-AdminCommandProgressStatusOnePager"></a>Admin Command Progress Status One Pager</h1> <p>(template version 1.92)</p> 
+     <div> 
+      <ul> 
+       <li><a href="#3.2AdminCommandProgress-AdminCommandProgressStatusOnePager">Admin Command Progress Status One Pager</a></li> 
+       <li><a href="#3.2AdminCommandProgress-1.Introduction">1. Introduction</a></li> 
+       <ul> 
+        <li><a href="#3.2AdminCommandProgress-1.1.Project%2FComponentWorkingName%3A">1.1. Project/Component Working Name:</a></li> 
+        <li><a href="#3.2AdminCommandProgress-1.2.Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier%3A">1.2. Name(s) and e-mail address of Document Author(s)/Supplier:</a></li> 
+        <li><a href="#3.2AdminCommandProgress-1.3.DateofThisDocument%3A">1.3. Date of This Document:</a></li> 
+       </ul> 
+       <li><a href="#3.2AdminCommandProgress-2.ProjectSummary">2. Project Summary</a></li> 
+       <ul> 
+        <li><a href="#3.2AdminCommandProgress-2.1.ProjectDescription%3A">2.1. Project Description:</a></li> 
+        <li><a href="#3.2AdminCommandProgress-2.2.RisksandAssumptions%3A">2.2. Risks and Assumptions:</a></li> 
+       </ul> 
+       <li><a href="#3.2AdminCommandProgress-3.ProblemSummary">3. Problem Summary</a></li> 
+       <ul> 
+        <li><a href="#3.2AdminCommandProgress-3.1.ProblemArea%3A">3.1. Problem Area:</a></li> 
+        <li><a href="#3.2AdminCommandProgress-3.2.Justification%3A">3.2. Justification:</a></li> 
+       </ul> 
+       <li><a href="#3.2AdminCommandProgress-4.TechnicalDescription%3A">4. Technical Description:</a></li> 
+       <ul> 
+        <li><a href="#3.2AdminCommandProgress-4.1.Details%3A">4.1. Details:</a></li> 
+        <li><a href="#3.2AdminCommandProgress-4.2.Bug%2FRFENumber%28s%29%3A">4.2. Bug/RFE Number(s):</a></li> 
+        <li><a href="#3.2AdminCommandProgress-4.3.InScope%3A">4.3. In Scope:</a></li> 
+        <li><a href="#3.2AdminCommandProgress-4.4.OutofScope%3A">4.4. Out of Scope:</a></li> 
+        <li><a href="#3.2AdminCommandProgress-4.5.Interfaces%3A">4.5. Interfaces:</a></li> 
+        <ul> 
+         <li><a href="#3.2AdminCommandProgress-4.5.1PublicInterfaces">4.5.1 Public Interfaces</a></li> 
+         <li><a href="#3.2AdminCommandProgress-4.5.2PrivateInterfaces">4.5.2 Private Interfaces</a></li> 
+         <li><a href="#3.2AdminCommandProgress-4.5.3Deprecated%2FRemovedInterfaces%3A">4.5.3 Deprecated/Removed Interfaces:</a></li> 
+        </ul> 
+        <li><a href="#3.2AdminCommandProgress-4.6.DocImpact%3A">4.6. Doc Impact:</a></li> 
+        <li><a href="#3.2AdminCommandProgress-4.7.Admin%2FConfigImpact%3A">4.7. Admin/Config Impact:</a></li> 
+        <li><a href="#3.2AdminCommandProgress-4.8.HAImpact%3A">4.8. HA Impact:</a></li> 
+        <li><a href="#3.2AdminCommandProgress-4.9.I18N%2FL10NImpact%3A">4.9. I18N/L10N Impact:</a></li> 
+        <li><a href="#3.2AdminCommandProgress-4.10.Packaging%2CDelivery%26Upgrade%3A">4.10. Packaging, Delivery &amp; Upgrade:</a></li> 
+        <ul> 
+         <li><a href="#3.2AdminCommandProgress-4.10.1.Packaging">4.10.1. Packaging</a></li> 
+         <li><a href="#3.2AdminCommandProgress-4.10.2.Delivery">4.10.2. Delivery</a></li> 
+         <li><a href="#3.2AdminCommandProgress-4.10.3.UpgradeandMigration%3A">4.10.3. Upgrade and Migration:</a></li> 
+        </ul> 
+        <li><a href="#3.2AdminCommandProgress-4.11.SecurityImpact%3A">4.11. Security Impact:</a></li> 
+        <li><a href="#3.2AdminCommandProgress-4.12.CompatibilityImpact">4.12. Compatibility Impact</a></li> 
+        <li><a href="#3.2AdminCommandProgress-4.13.Dependencies%3A">4.13. Dependencies:</a></li> 
+        <ul> 
+         <li><a href="#3.2AdminCommandProgress-4.13.1InternalDependencies">4.13.1 Internal Dependencies</a></li> 
+         <li><a href="#3.2AdminCommandProgress-4.13.2ExternalDependencies">4.13.2 External Dependencies</a></li> 
+        </ul> 
+        <li><a href="#3.2AdminCommandProgress-4.14.TestingImpact%3A">4.14. Testing Impact:</a></li> 
+       </ul> 
+       <li><a href="#3.2AdminCommandProgress-5.ReferenceDocuments%3A">5. Reference Documents:</a></li> 
+       <li><a href="#3.2AdminCommandProgress-6.Schedule%3A">6. Schedule:</a></li> 
+       <ul> 
+        <li><a href="#3.2AdminCommandProgress-6.1.ProjectedAvailability%3A">6.1. Projected Availability:</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="3.2AdminCommandProgress-1.Introduction"></a>1. Introduction</h1> <h4><a name="3.2AdminCommandProgress-1.1.Project%2FComponentWorkingName%3A"></a>1.1. Project/Component Working Name:</h2> <p>Admin Command Progress Status</p> <h4><a name="3.2AdminCommandProgress-1.2.Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier%3A"></a>1.2. Name(s) and e-mail address of Document Author(s)/Supplier:</h2> <p>Chris Kasso: <a href="mailto:chris.kasso@oracle.com">chris.kasso@oracle.com</a></p> <h4><a name="3.2AdminCommandProgress-1.3.DateofThisDocument%3A"></a>1.3. Date of This Document:</h2> <p>04/22/2011</p> <h4><a name="3.2AdminCommandProgress-2.ProjectSummary"></a>2. Project Summary</h1> <h4><a name="3.2AdminCommandProgress-2.1.ProjectDescription%3A"></a>2.1. Project Description:</h2> <p>Long running admin commands do not have a mechanism to provide ongoing progress as they work to complete the task. This feature provides such a mechanism.</p> <h4><a name="3.2AdminCommandProgress-2.2.RisksandAssumptions%3A"></a>2.2. Risks and Assumptions:</h2> 
+     <ol> 
+      <li>A long running command may run for hours before completing.</li> 
+      <li>Several long running commands may be active simultaneously.</li> 
+     </ol> <p>Note any risks, and assumptions that must be considered along with the proposal. Include technical risks.</p> <h4><a name="3.2AdminCommandProgress-3.ProblemSummary"></a>3. Problem Summary</h1> <h4><a name="3.2AdminCommandProgress-3.1.ProblemArea%3A"></a>3.1. Problem Area:</h2> <p>If the user has defined a large cluster it may take a significant amount of time to start the instances which are associated with the cluster. Similarly deploying a large application to a cluster may take a significant amount of time. Providing on-going progress updates during these operations reassures the user that the operation is proceeding.</p> <h4><a name="3.2AdminCommandProgress-3.2.Justification%3A"></a>3.2. Justification:</h2> <p>The primary justification is to provide a better user experience.</p> <h4><a name="3.2AdminCommandProgress-4.TechnicalDescription%3A"></a>4. Technical Description:</h1> <h4><a name="3.2AdminCommandProgress-4.1.Details%3A"></a>4.1. Details:</h2> <p>TBD. Several approaches are under investigation.</p> <p>The <a href="3.2ProgressRequirements.html" title="3.2ProgressRequirements">requirements for this feature</a> will provide an overview of the functionality that is being considered. The design considerations and approach is covered in the <br> <a href="3.2ProgressDesign.html" title="3.2ProgressDesign">Admin Command Progress Design Spec</a>.</p> <p>This feature can be implemented in multiple phases. The first phase would include the ability for long running commands to provide on-going progress as they execute. The asadmin client would remain connected (as it does today) for the duration of the command execution. The second phase of this project will provide for the ability of the asadmin client to disconnect from the long running command. The user would be provided with the ability to later query for status by reconnecting to the DAS. The user would also be able to query the DAS for a list of long running commands that have available status to be retrieved.</p> <p>This feature will have impact on the Admin Console, IDE's and the REST implementation.</p> <p>For 3.2 it is likely only phase 1 will be implemented. The final decision is pending final resources and cost estimates for other 3.2 requirements.</p> <h4><a name="3.2AdminCommandProgress-4.2.Bug%2FRFENumber%28s%29%3A"></a>4.2. Bug/RFE Number(s):</h2> 
+     <ul> 
+      <li><a href="https://github.com/javaee/glassfish/issues/9956">GLASSFISH-9956</a></li> 
+      <li><a href="https://github.com/javaee/glassfish/issues/12032">GLASSFISH-12032</a></li> 
+     </ul> <h4><a name="3.2AdminCommandProgress-4.3.InScope%3A"></a>4.3. In Scope:</h2> 
+     <ul> 
+      <li>Support for a select set of existing remote commands: 
+       <ul> 
+        <li>start-cluster</li> 
+        <li>deploy</li> 
+       </ul> </li> 
+      <li>New IAAS based long running commands.</li> 
+     </ul> <h4><a name="3.2AdminCommandProgress-4.4.OutofScope%3A"></a>4.4. Out of Scope:</h2> 
+     <ul> 
+      <li>Support for local commands.</li> 
+     </ul> <h4><a name="3.2AdminCommandProgress-4.5.Interfaces%3A"></a>4.5. Interfaces:</h2> <p>Interfaces may be commands, files, directory structure, ports,<br> DTD/Schema, tools, APIs, CLIs, etc.<br> Note: In lieu of listing the interfaces in the one pager, providing<br> a link to another specification which defines the interfaces<br> is acceptable.</p> <h4><a name="3.2AdminCommandProgress-4.5.1PublicInterfaces"></a>4.5.1 Public Interfaces</h3> <p>In phase 1 it may be necessary for the implementation of a command to indicate it may be long running command through a new annotation. The command's implementation would likely interact with new methods of the existing ActionReport interface or a new object would be used as the channel to return progress reports.</p> <p>The output format of the CLI will change for long running commands - if a TTY is available and the --terse option is not specified.</p> <p>The REST interface will need to be changed to accommodate accessing progress reports.</p> <p>In phase 2 (if implemented) a new sub-command option would be introduced to support async mode - that is the command does not wait for the results. New sub-commands would be introduced to query available command results (and the status of the executing command) as well retrieve the results from the DAS.</p> <p>In phase 2 we would introduce new configuration for the DAS which controls the lifecycle of the progress store including how much progress information should be maintained and its expiry information.</p> <p>Phase 1 public interfaces:</p> 
+     <ul> 
+      <li>Interface: TBD: @ProgressStatus</li> 
+      <li>Comment: Indicates the command will run in a independent thread and provide ongoing progress reports.</li> 
+     </ul> 
+     <ul> 
+      <li>Interface: TBD: ProgressReport interface</li> 
+      <li>Comment: Provide a mechanism for a command to return ongoing progress status.</li> 
+     </ul> <h4><a name="3.2AdminCommandProgress-4.5.2PrivateInterfaces"></a>4.5.2 Private Interfaces</h3> <p>List private interfaces which are externally observable.</p> 
+     <ul> 
+      <li>Interface:</li> 
+      <li>Comment:</li> 
+     </ul> <h4><a name="3.2AdminCommandProgress-4.5.3Deprecated%2FRemovedInterfaces%3A"></a>4.5.3 Deprecated/Removed Interfaces:</h3> <p>No interfaces will be removed as part of this project.</p> <h4><a name="3.2AdminCommandProgress-4.6.DocImpact%3A"></a>4.6. Doc Impact:</h2> <p><b>Phase 1:</b></p> <p>Minimal impact to user documentation as no new commands or options will be added. Existing long running commands for start-cluster and deploy will provide additional progress feedback during operation. The additional feedback may not be provide in certain modes of operation (e.g. --terse). It is likely the Admin Console will be modified to represent progress for long running commands. These changes may potentially impact existing documentation.</p> <p>To the extent that we provide developer documentation about how to implement a command it would be necessary to add additional documentation to cover how a command implementation would provide feedback during an operation. The new progress mechanism would also likely impact any REST interface documentation related to commands that provide progress status.</p> <p><b>Phase 2:</b></p> <p>An async or disconnected mode version of asadmin would be supported. This would offer a new asadmin option to indicate the command should disconnect after launching the operation. A discussion of the two modes would need to be provided. New subcommands would be provided to access progress status maintained in the DAS. </p> <p>New DAS configuration options would be provided to allow the admin to customize the amount of unretrieved progress status the DAS will maintain as well as the expiry period for that content.</p> <h4><a name="3.2AdminCommandProgress-4.7.Admin%2FConfigImpact%3A"></a>4.7. Admin/Config Impact:</h2> <p>How will this change impact the administration of the product?</p> <p>Phase 1 does not modify how the product is administered. If phase 2 is implemented we would introduce new configuration to control the lifecycle and expiry of progress maintained by the DAS. New CLI would be added to support this.</p> <p>The Console should be modified to graphically represent (e.g. progress bar) progress generated from long running commands.</p> <h4><a name="3.2AdminCommandProgress-4.8.HAImpact%3A"></a>4.8. HA Impact:</h2> <p>This feature has no impact on high availability. </p> <p>A challenge for this feature is handling the case for long running commands which use the command replication framework to distribute the command to running instances in a cluster. If a long running command uses the replication facility we will need to determine a mechanism to provide progress for each of the replicated commands.</p> <h4><a name="3.2AdminCommandProgress-4.9.I18N%2FL10NImpact%3A"></a>4.9. I18N/L10N Impact:</h2> <p>As a byproduct of this feature certain commands (e.g. deploy, start-cluster) will introduce new strings in order to provide progress status. Those strings will require l10n. </p> <h4><a name="3.2AdminCommandProgress-4.10.Packaging%2CDelivery%26Upgrade%3A"></a>4.10. Packaging, Delivery &amp; Upgrade:</h2> <h4><a name="3.2AdminCommandProgress-4.10.1.Packaging"></a>4.10.1. Packaging</h3> <p>This feature will reuse existing packages. No new IPS packages will be required.</p> <h4><a name="3.2AdminCommandProgress-4.10.2.Delivery"></a>4.10.2. Delivery</h3> <p>The feature has no impact on product delivery or installation.</p> <h4><a name="3.2AdminCommandProgress-4.10.3.UpgradeandMigration%3A"></a>4.10.3. Upgrade and Migration:</h3> <p>This feature has no impact on upgrade or migration.</p> <h4><a name="3.2AdminCommandProgress-4.11.SecurityImpact%3A"></a>4.11. Security Impact:</h2> <p>If phase 2 is implemented we need to address the implications of a different user with asadmin privileges accessing the progress status of a command executed by a different user.</p> <p>Depending on the final design there may be security impact between the client the DAS in regards to how the connection is managed to retrieve progress from a long running command.</p> <p>How does this proposal interact with security-related APIs or interfaces? Does it rely on any Java policy or platform user/permissions implication? If the feature exposes any new ports, Or any similar communication points which may have security implications, note these here.</p> <h4><a name="3.2AdminCommandProgress-4.12.CompatibilityImpact"></a>4.12. Compatibility Impact</h2> <p>While CLI output is generally considered an unstable interface the introduction of additional progress feedback would change an existing command's CLI output (deploy, start-cluster). Scripts which currently consume this output may break. If the command is invoked with the --terse option the output would not include progress status. </p> <p>TBD: if the CLI has no associated TTY then we could consider not providing progress status.</p> <p>There may be similar impact for users using the REST interface.</p> <h4><a name="3.2AdminCommandProgress-4.13.Dependencies%3A"></a>4.13. Dependencies:</h2> <p>An internal dependency is a dependency on a project, module,<br> component or product that is within the GlassFish project.<br> An external dependency is a dependency on a project, component<br> or product that resides outside of the GlassFish project.</p> <h4><a name="3.2AdminCommandProgress-4.13.1InternalDependencies"></a>4.13.1 Internal Dependencies</h3> <p>TBD.</p> <p>List all internal dependencies this proposal has on other<br> software. Include component version requirements if necessary.</p> <h4><a name="3.2AdminCommandProgress-4.13.2ExternalDependencies"></a>4.13.2 External Dependencies</h3> <p>TBD - likely none.</p> <p>List all external dependencies this proposal has on other<br> software. Indicate if the software is open source, what<br> license terms the software is released under and the version<br> of the software that is being consumed by this project.</p> <h4><a name="3.2AdminCommandProgress-4.14.TestingImpact%3A"></a>4.14. Testing Impact:</h2> <p>How will the new feature(s) introduced by this project be tested?<br> Do tests exist from prior releases (e.g. v2) that can be reused?<br> Will new tests need to be written? Can they be automated?</p> <h4><a name="3.2AdminCommandProgress-5.ReferenceDocuments%3A"></a>5. Reference Documents:</h1> 
+     <ul> 
+      <li><a href="3.2ProgressRequirements.html" title="3.2ProgressRequirements">Progress Status Requirements</a></li> 
+      <li><a href="3.2ProgressDesign.html" title="3.2ProgressDesign">Progress Status Design</a></li> 
+     </ul> <h4><a name="3.2AdminCommandProgress-6.Schedule%3A"></a>6. Schedule:</h1> <h4><a name="3.2AdminCommandProgress-6.1.ProjectedAvailability%3A"></a>6.1. Projected Availability:</h2> <p>Indicate which milestones from the current schedule the project<br> will be:</p> 
+     <ul> 
+      <li>Initially integrated (may not be feature complete)</li> 
+      <li>Feature complete (ready for handoff to QA)</li> 
+      <li>At production quality level</li> 
+     </ul> 
+     <hr> 
+     <div class="tabletitle"> 
+      <a name="comments"> <h4>Comments:</h2> </a> 
+     </div> 
+     <table border="0" width="100%"> 
+      <tbody>
+       <tr> 
+        <td> <a name="comment-20877782"></a> <font class="smallfont">
+          <div class="table-wrap"> 
+           <table class="confluenceTable">
+            <tbody> 
+             <tr> 
+              <th class="confluenceTh">Comment ID</th> 
+              <th class="confluenceTh">Location</th> 
+              <th class="confluenceTh">Comment</th> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">PMD-001</td> 
+              <td class="confluenceTd">4.6. Doc Impact</td> 
+              <td class="confluenceTd">All examples in the man pages, Quick Start Guide, Administration Guide, and Application Deployment Guide that include the affected subcommands will have to be updated to show the current output from these subcommands. The documentation plan for this feature ought to itemize the required changes.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">PMD-002</td> 
+              <td class="confluenceTd">4.6. Doc Impact</td> 
+              <td class="confluenceTd">Detailed instructions for <a href="http://download.oracle.com/docs/cd/E18930_01/html/821-2415/ghmrd.html">extending the asadmin utility</a> are already provided in the product documentation. These instructions will have to be updated to explain how to enable a subcommand to provide progress feedback.The documentation plan for this feature ought to itemize the required changes.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">PMD-003</td> 
+              <td class="confluenceTd">4.6. Doc Impact</td> 
+              <td class="confluenceTd">The <a href="http://download.oracle.com/docs/cd/E18930_01/html/821-2416/gjipx.html">REST interface documentation</a> does not describe REST interfaces for individual subcommands and, therefore, might not be affected by this feature. If any changes are necessary, the documentation plan for this feature ought to itemize the changes. </td> 
+             </tr> 
+            </tbody>
+           </table> 
+          </div> </font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by pauldavies at May 09, 2011 17:24 
+         </div> </td> 
+       </tr> 
+      </tbody>
+     </table> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on May 03, 2011 by 
+<font color="#0050B2">ckasso</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

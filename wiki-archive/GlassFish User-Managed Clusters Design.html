@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFish User-Managed Clusters Design</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GlassFishUser-ManagedClustersDesign-GlassFishUserManagedClustersDesignSpec"></a>GlassFish User-Managed Clusters Design Spec</h1> <p>This is the design specification for the user-managed clusters feature for GlassFish.</p> <p><b>Authors</b></p> 
+     <ul> 
+      <li>Tom Mueller (<a href="mailto:tmueller@java.net">tmueller@java.net</a> )</li> 
+      <li>Rajiv Mordani (<a href="mailto:mode@java.net">mode@java.net</a> )</li> 
+      <li>Chris Kasso (<a href="mailto:kasso@java.net">kasso@java.net</a> )</li> 
+      <li>Jennifer Chou (<a href="mailto:jc129909@java.net">jc129909@java.net</a> )</li> 
+     </ul> <p>Note: This is the second major revision of this design. &nbsp;See <a href="GlassFish User-Managed Clusters Design - take 1 (obsolete).html" title="GlassFish User-Managed Clusters Design - take 1 (obsolete)">this page</a> for the first revision.&nbsp;</p> 
+     <hr> 
+     <div> 
+      <ul> 
+       <li><a href="#GlassFishUser-ManagedClustersDesign-GlassFishUserManagedClustersDesignSpec">GlassFish User-Managed Clusters Design Spec</a></li> 
+       <ul> 
+        <li><a href="#GlassFishUser-ManagedClustersDesign-Introduction">Introduction</a></li> 
+        <li><a href="#GlassFishUser-ManagedClustersDesign-Requirements">Requirements</a></li> 
+        <li><a href="#GlassFishUser-ManagedClustersDesign-GeneralDesign">General Design</a></li> 
+        <ul> 
+         <li><a href="#GlassFishUser-ManagedClustersDesign-Domains%2CClusters%2CandInstances">Domains, Clusters, and Instances</a></li> 
+         <li><a href="#GlassFishUser-ManagedClustersDesign-Staticvs.DynamicClusterConfiguration%26nbsp%3B">Static vs. Dynamic Cluster Configuration&nbsp;</a></li> 
+        </ul> 
+        <li><a href="#GlassFishUser-ManagedClustersDesign-ConfigurationchangesforisDas%28%29calls">Configuration changes for isDas() calls</a></li> 
+        <li><a href="#GlassFishUser-ManagedClustersDesign-CommandChanges">Command Changes</a></li> 
+        <ul> 
+         <li><a href="#GlassFishUser-ManagedClustersDesign-"></a></li> 
+        </ul> 
+        <li><a href="#GlassFishUser-ManagedClustersDesign-SecurityChanges">Security Changes</a></li> 
+        <li><a href="#GlassFishUser-ManagedClustersDesign-ContainerIssues">Container Issues</a></li> 
+        <ul> 
+         <li><a href="#GlassFishUser-ManagedClustersDesign-ApplicationId">Application Id</a></li> 
+         <li><a href="#GlassFishUser-ManagedClustersDesign-Timers">Timers</a></li> 
+         <li><a href="#GlassFishUser-ManagedClustersDesign-Transactions">Transactions</a></li> 
+        </ul> 
+        <li><a href="#GlassFishUser-ManagedClustersDesign-ClusteringforJMS%2FMQ">Clustering for JMS/MQ</a></li> 
+        <li><a href="#GlassFishUser-ManagedClustersDesign-Upgrade">Upgrade</a></li> 
+       </ul> 
+      </ul>
+     </div> 
+     <hr> <h4><a name="GlassFishUser-ManagedClustersDesign-Introduction"></a>Introduction</h2> <p>In the GlassFish 3.1 release, clusters and clustered instances are managed by a domain administration server (DAS). The DAS is required to create, list, start, stop, and delete a cluster and the instances that are in a cluster. Configuration information is synchronized with members of the cluster by the DAS. The user-managed cluster feature provides the ability to create a cluster of instances without using a separate DAS to manage them. Responsibility for managing the cluster and its instances rests with the user, either by manually updating the configuration of each instance or by providing an external software system that does this management. Since the user provides the management for the cluster, the feature is called user-managed clusters.</p> <p>The purpose of this document is to describe the design for the feature. This includes the following sections:</p> 
+     <ul> 
+      <li>General information about how the feature works</li> 
+      <li>Analysis of the use of the isDas method within the server and how these calls need to be changed</li> 
+      <li>Changes to asadmin subcommands changes to existing command for managing instances, and new commands</li> 
+      <li>Various issues with containers including handling of the application id for the EJB container, timer management, and transaction management</li> 
+      <li>Changes needed for JMS and Message Queue integration with clustering</li> 
+     </ul> <p>Additional high level information about the requirements and design, such as packaging, i18n/l10n impact, etc. is available in the <a href="User-Managed Clusters.html" title="User-Managed Clusters">one-pager/project page</a> for this feature. That information is not duplicated in this document.</p> <h4><a name="GlassFishUser-ManagedClustersDesign-Requirements"></a>Requirements</h2> <p>The <a href="./User-Managed+Clusters#User-ManagedClusters-3.2.FeatureList%28TechnicalRequirements%29.html">requirements</a> for this feature are specified on the one-pager/project page&nbsp;for this feature.</p> <h4><a name="GlassFishUser-ManagedClustersDesign-GeneralDesign"></a>General Design</h2> <p>The basic idea for the feature is to provide the ability for a DAS to join a cluster as a core member of the cluster. Each member of the cluster is its own domain, i.e., it has an entry in the "domains" directory and would be started with the start-domain command. To simplify the implementation, the domain.xml does not have a &lt;cluster&gt; element for the cluster containing the DAS. &nbsp;Rather, information is added to other element such as &lt;server&gt; and &lt;group-management-service&gt; to provide the information that is needed to allow the DAS to join a cluster. The DAS would join the GMS group as a core member rather than an observer.</p> <h4><a name="GlassFishUser-ManagedClustersDesign-Domains%2CClusters%2CandInstances"></a>Domains, Clusters, and Instances</h3> <p>When using the user-managed cluster feature, the DAS for a domain can be a member of exactly one cluster. &nbsp;The DAS can still manage other clusters for which it is not a member, but the DAS itself can only be a member of one cluster. &nbsp;In 3.1, the DAS could not be a member of a cluster. So this feature changes that.&nbsp;</p> <p>To use the user-managed cluster feature, a user creates the DAS using the create-domain command. &nbsp;To make the DAS a member of a cluster, a cluster-member-name and cluster-name properties are set on the server.&nbsp;</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">asadmin create-domain domain1
+asadmin start-domain
+asadmin set servers.server.server.property.cluster-member-name=domain1-instance1
+asadmin set servers.server.server.property.cluster-name=domain1-cluster
+
+// GMS configuration commands follow</pre> 
+       </div> 
+      </div>
+     </div> <p>The RuntimeType of an instance in a user-managed cluster will be DAS. &nbsp;This means that all places that call isDas or isInstance to determine behavior that effects cluster membership will need to be changed so that there is instead a check to see if the instance is a member of a cluster. A new Server.isClusteredDas method is available to make this check (see details in the isDas section below). &nbsp;</p> <p>As with any other DAS, the files for a member of a user-managed cluster will reside within a "domains" directory.&nbsp;</p> <p>Since all members of the cluster should have same domain name, support for multiple instances in a user-managed cluster requires the use of multiple domains directories. &nbsp;This is specified on the create-domain command using the --domaindir option.</p> <p>This feature does not guarantee that the configuration for instances in a cluster stays in sync with each other. &nbsp;It is the responsibility of the user or software provided by the user to do this. &nbsp;When GlassFish instances communicate with one another, the software must handle potential errors caused by having configuration data, including the list of deployed applications, that is not in sync.</p> <h4><a name="GlassFishUser-ManagedClustersDesign-Staticvs.DynamicClusterConfiguration%26nbsp%3B"></a>Static vs. Dynamic Cluster Configuration&nbsp;</h3> <p>There are some modules in GlassFish that depend on knowing information about what instances are in a cluster. &nbsp;There are two ways of getting this information. &nbsp;The Cluster config bean contains static cluster configuration information, i.e., the information that is in the &lt;cluster&gt; element of the domain.xml. &nbsp;This includes instances that may be up or down. The GMS subsystem provides dynamic cluster configuration information, specifically the list of members that are up, or that have been up since this instance was started. All places that need a list of cluster members will be made to use the dynamic cluster configuration information. &nbsp;&nbsp;</p> <p>The following classes, which call getCluster()/getClusterForInstance(..) depend on the static information from the &lt;cluster&gt; element and may need modification to get the information from the dynamic cluster configuration or new properties of the Server config bean. &nbsp;&nbsp;</p> <p><b>EJB Container</b></p> 
+     <ul> 
+      <li>MigrateTimers.java</li> 
+     </ul> <p><b>GMS</b></p> 
+     <ul> 
+      <li>GMSAdapterService.java</li> 
+     </ul> <p><b>JMS</b></p> 
+     <ul> 
+      <li>ChangeMasterBrokerCommand.java</li> 
+      <li>ActiveJmsResourceAdapter.java</li> 
+      <li>JmsRaUtil.java</li> 
+      <li>MQAddressList.java</li> 
+     </ul> <p><b>Load Balancer</b></p> 
+     <ul> 
+      <li>ConfigureLBWeightCommand.java</li> 
+      <li>LBCommandsBase.java</li> 
+     </ul> <h4><a name="GlassFishUser-ManagedClustersDesign-ConfigurationchangesforisDas%28%29calls"></a>Configuration changes for isDas() calls</h2> <p>There are numerous calls to isDas() throughout the code, but most of these do not need to be modified for a user-managed instance/clustered DAS. In the places, where modifications are needed, new duck-typed methods on the Server config bean are required.</p> <p>To identify if an instance is a clustered DAS, a new duck-typed method, isClusteredDas(), on the Server config bean is required. &nbsp;A new Server.getClusterMemberName method is used to obtain the cluster member name for an instance in a user-managed cluster.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">public static boolean isClusteredDas(Server server) {   &lt;----- CHANGE REQUIRED
+            boolean isClusteredDas = false;
+            if (isDas(server)) {
+
+                isClusteredDas = server.getProperty("cluster-member-name") == null ? false : true;
+            }
+            return isClusteredDas;
+        }
+
+        public static String getClusterMemberName(Server server) {   &lt;----- CHANGE REQUIRED
+            return server.getPropertyValue("cluster-member-name", server.getName());
+        }</pre> 
+       </div> 
+      </div>
+     </div> <p>The remainder of this section analyzes the calls to the isDas method throughout the server. &nbsp;No changes are needed from any of these areas except for those indicated with "CHANGE REQUIRED".</p> <p><b>Admin</b></p> <p>CommandRunnerImpl uses env.isDas(), in addition to whether the number of servers is greater than 1 or the cluster size is greater than 0, to ask 'Does this server require replication?'. There is only 1 server in a user-managed cluster, and the cluster element will not exist, so no change is required.</p> <p><b>Application</b></p> <p>ApplicationConfigListener uses server.isDas() to help determine if the current instance matches the target. In a user-managed cluster, the application is deployed directly to the instance so the ApplicationRef will have Server as its parent. No change should be needed.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">private boolean isCurrentInstanceMatchingTarget(Object parent) {
+        // DAS receive all the events, so we need to figure out
+        // whether we should take action on DAS depending on the event
+        if (parent instanceof ApplicationRef) {
+            Object grandparent = ((ApplicationRef)parent).getParent();
+            if (grandparent instanceof Server) {
+                Server gpServer = (Server)grandparent;
+                if ( ! server.getName().equals(gpServer.getName())) {
+                    return false;
+                }
+            } else if (grandparent instanceof Cluster) {
+                if (server.isDas()) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }</pre> 
+       </div> 
+      </div>
+     </div> <p><br class="atl-forced-newline"></p> <p>ApplicationLifecycle.getVirtualServers(String target) returns the virtual server, "server" if the target is "domain" and we are running in DAS.<br> If a clustered DAS is always named "server", then no change required.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">private String getVirtualServers(String target) {
+        if (env.isDas() &amp;&amp; DeploymentUtils.isDomainTarget(target)) {
+            target = "server";
+        }</pre> 
+       </div> 
+      </div>
+     </div> <p><br class="atl-forced-newline"></p> <p>ApplicationLifecycle uses env.isDas() to load system applications on DAS. Currently, the following system applications are available under lib\install\applications: __admingui, __cp_jdbc_ra, __dm_jdbc_ra, __ds_jdbc_ra, __xa_jdbc_ra, jaxr-ra, jmsra, metro, ejb-timer-service-app.war, mejb.jar. Only the __admingui is registered in the domain.xml. If loading system applications on a user-managed instance is ok, then no change is required.</p> <p>If a system application needs to be loaded on start-up, ApplicationLoaderService will load the system app if the server is DAS or the system app is enabled. If loading a system app on a user-managed is ok, then no change is required.</p> <p>If a system application, stand-alone resource adapter, or application is enabled, then the ApplicationLoaderService will load the app on the instance and also (partially) load on DAS so the application information is available on DAS. The user-managed instance should have the app loaded when the app is enabled, so no change should be required.</p> <p><b>Admin Console</b></p> <p>AdminConsoleAdapter uses !env.isDas() to return if it's not running on DAS. Admin Console would be able to run on a clustered DAS. If we want to prevent Admin Console from running on a clustered DAS, a change may be required here.</p> <p><b>Config API</b></p> <p>Server.isDas() - If the server name remains as "server", then no change is required.</p> <p>ConfigRefValidator.isValid(..) - Currently, cannot change config-ref of DAS from "server-config". If the server name remains as "server", then no change is required.</p> <p>ResourceUtil.getTargetsReferringResourceRef(String refName) - If the server isDas(), then SystemPropertyConstants.DAS_SERVER_NAME is added to the target list. SystemPropertyConstants.DAS_SERVER_NAME/DEFAULT_SERVER_INSTANCE_NAME and DAS_SERVER_CONFIG, which equal "server" and "server-config", do not need to change if the server name remains as "server".</p> <p><b>Cluster</b></p> <p>Some commands (CreateInstanceCommand, ListInstancesCommand, RestartInstanceCommand, StartClusterCommand, StopInstanceCommand) use !env.isDas() to allow the command to run only on DAS. StartInstanceCommand and StopClusterCommand also use env.isDas() to only run on DAS. These commands are not relevant for a clustered DAS. If the commands do not need to be prevented from running on a clustered DAS, no change is required.</p> <p><b>Deployment</b></p> <p>The EnableCommand\DisableCommand on DAS will, if the target is a clustered instance, replicate the command to all instances in the cluster so they can update their configs. For a clustered DAS, the ClusterOperationUtil.replicateCommand, skips this replication for DAS, so no change is required.</p> <p><b>EJB Container</b></p> <p>EjbContainerUtilImpl uses !isDas() to set _doDBReadBeforeTimeout = true. In this case, !isDas() is asking 'Is _doDBReadBeforeTimeout default true?' On a clustered instance, the default is true, so a user-managed instance default should also be true. A change is required. Here the isDas() method on EjbContainerUtilImpl is modified to return false for a clustered DAS.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">if (!isDas()) {
+            // On a clustered instance default is true
+            _doDBReadBeforeTimeout = true;
+        }
+
+    public boolean isDas() {
+        return (env.isDas() &amp;&amp; !server.isClusteredDas()) || env.isEmbedded();   &lt;----- CHANGE REQUIRED
+    }</pre> 
+       </div> 
+      </div>
+     </div> <p><br class="atl-forced-newline"></p> <p><del>If EJBTimerService.createSchedules(..) is called on a deploy in a clustered deployment, only persistent schedule based timers will be created. And no timers will be scheduled. If it is called from deploy on a non-clustered instance, both persistent and non-persistent timers will be created. Otherwise only non-persistent timers are created by this method. The method createSchedules(containerId, applicationId, schedules, result, ownerIdOfThisServer_, true, (deploy &amp;&amp; isDas)) is called by recoverAndCreateSchedules(..). A clustered deployment is defined by 'deploy &amp;&amp; isDas'. This will be true also for deploy on a clustered DAS. No change is required.</del> For the timer deployment to a cluster of DAS's, EJB container would need to distinguish between the 1st deployment to a DAS instance and the subsequent deployment (and the last undeploy), not whether it is a DAS or an instance. The deploy/undeploy command will change to pass in those flags.</p> <p>DistributedEJBTimerServiceImpl uses !isDas() to ask 'Is the server required to 1) register for Planned Shutdown event, 2) set DB read before timeout to true, 3) register for transaction recovery events?'.<br> A user-managed instance may require the above steps as well. A change is required to allow the same behavior on a user-managed instance.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">public void postConstruct() {
+        if (!ejbContainerUtil.isDas() || server.isClusteredDas()) {   &lt;----- CHANGE REQUIRED
+
+            if (gmsAdapterService != null) {
+                GMSAdapter gmsAdapter = gmsAdapterService.getGMSAdapter();
+                if (gmsAdapter != null) {
+                    // We only register interest in the Planned Shutdown event here.
+                    // Because of the dependency between transaction recovery and
+                    // timer migration, the timer migration operation during an
+                    // unexpected failure is initiated by the transaction recovery
+                    // subsystem.
+                    gmsAdapter.registerPlannedShutdownListener(this);
+                }
+            }
+            // Do DB read before timeout in a cluster
+            setPerformDBReadBeforeTimeout(true);
+
+            // Register for transaction recovery events
+            recoveryResourceRegistry.addEventListener(this);
+        }
+    }</pre> 
+       </div> 
+      </div>
+     </div> <p><br class="atl-forced-newline"></p> <p>ReadOnlyBeanMessageCallBack uses !ejbContainerUtil.isDas() to ask 'Does this server require to 1) register as GMS adapter Message Listener 2) set as DistributedReadOnlyBeanNotifier ?'.<br> A user managed-instance is a clustered instance, and may also require these actions. A change is required to allow the same behavior on a user-managed instance.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">public void postConstruct() {
+        if (!ejbContainerUtil.isDas() || server.isClusteredDas()) {   &lt;----- CHANGE REQUIRED
+            if (gmsAdapterService != null) {
+                GMSAdapter gmsAdapter = gmsAdapterService.getGMSAdapter();
+                if (gmsAdapter != null) {
+                    gms = gmsAdapter.getModule();
+                    gmsAdapter.registerMessageListener(GMS_READ_ONLY_COMPONENT_NAME, this);
+                    _readOnlyBeanService.setDistributedReadOnlyBeanNotifier(this);
+                }
+            }
+        }
+    }</pre> 
+       </div> 
+      </div>
+     </div> <p><br class="atl-forced-newline"></p> <p><b>GMS</b></p> <p>GMSAdapterImpl uses isDas to determine the member type as spectator for DAS or core for non-DAS. A change is required to set the clustered DAS as a core member, not a spectator. (<b><a href="./User-Managed+Clusters#User-ManagedClusters-3.HighAvailability.html">Technical Requirement High Availability</a></b> <b>3.6 P1 GMS clusters Support all methods that GMS provides for forming the cluster, i.e., multicast, non-multicast, etc.</b>). The HealthHistory constructor currently takes a Cluster object to iterate over the instances. We'll add another constructor for the clustered DAS case so that the instance name is passed in instead and move the creation of the concurrent map out of the constructors. The current isDas() call can remain as-is.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">private void readGMSConfigProps(Properties configProps) {
+        configProps.put(MEMBERTYPE_STRING, (isDas &amp;&amp; !server.isClusteredDas()) ? SPECTATOR : CORE); &lt;--- CHANGE REQUIRED</pre> 
+       </div> 
+      </div>
+     </div> <p><br class="atl-forced-newline"></p> <p>GMSAdapterImpl uses isDAS to determine whether it is a bootstrapping node, where DAS is a bootstrapping node. A bootstrapping node refers to a node that was used to bootstrap finding the cluster when multicast is not enabled. This is currently not being used in 3.x. The isDAS call may not be the only way to determine if a self-managed member is considered a bootstrap node. But at this time we are not using the concept at all, so it is okay to just comment that info out and we will work on it when implementing non-multicast support. (from Joe F.)</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">private void readGMSConfigProps(Properties configProps) {
+...................................................
+                    case IS_BOOTSTRAPPING_NODE:
+                    configProps.put(keyName, isDas ? Boolean.TRUE.toString() : Boolean.FALSE.toString());
+                    break;</pre> 
+       </div> 
+      </div>
+     </div> <p><br class="atl-forced-newline"></p> <p>GMSAdapterImpl has the following which may apply for a clustered DAS.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">//fix gf it 12905
+                if (testFailureRecoveryHandler &amp;&amp; ! env.isDas() || server.isClusteredDas()) {   &lt;----- CHANGE REQUIRED
+
+                    // this must be here or appointed recovery server notification is not printed out for automated testing.
+                    registerFailureRecoveryListener("GlassfishFailureRecoveryHandlerTest", this);
+                }</pre> 
+       </div> 
+      </div>
+     </div> <p><br class="atl-forced-newline"></p> <p>(<b><a href="./User-Managed+Clusters#User-ManagedClusters-4.Administration.html">Technical Requirement Administration</a></b> <b>4.6 P2 GMS get-health Support the get-health command on any instance in a user-managed cluster</b>). The HealthHistory constructor currently takes a Cluster object to iterate over the instances. We'll add another constructor for the clustered DAS case so that the instance name is passed in instead and move the creation of the concurrent map out of the constructors. The current isDas() call can remain as-is.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">public HealthHistory(Cluster cluster) {
+        // move this constructor to static initializer and leave out the size
+        healthMap = new ConcurrentHashMap&lt;String, InstanceHealth&gt;(
+            cluster.getInstances().size());
+
+        for (Server server : cluster.getInstances()) {
+            if (server.isDas()) {   &lt;----- LEAVE AS-IS
+                continue;
+            }
+            // etc
+        }
+}
+public HealthHistory(String instanceName) {
+    // add instance to health table
+}</pre> 
+       </div> 
+      </div>
+     </div> <p><br class="atl-forced-newline"></p> <p>This will require a change in GMSAdapterImpl to create the HealthHistory object differently in the case of a user-managed cluster.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">if (cluster == null) {
+            if (server.isClusteredDas()) {            &lt;----- ADD THIS CHECK AND NEW METHOD
+                initializeHealthHistory(server.getClusterMemberName());
+            } else {
+                logger.log(Level.WARNING, "gmsservice.nocluster.warning");
+                return false;       //don't enable GMS
+            }
+        } else if (isDas) {
+            // only want to do this in the case of the DAS
+            initializeHealthHistory(cluster);
+        }</pre> 
+       </div> 
+      </div>
+     </div> <p><br class="atl-forced-newline"></p> <p>The HealthHistory object is a GMS client and so is notified dynamically of any changes to the cluster. So it should be ok for the nth instance to come up with only itself in the table, but this will need to be tested. The HealthHistory object is also a listener for changes on the Cluster object when present; this won't happen in the clustered DAS case. <br class="atl-forced-newline"></p> <p><b>MBeanServer</b></p> <p>DynamicInterceptor uses MbeanService.getInstance().isDas() to add "server" as a target. No change required.</p> <p><b>JMS</b></p> <p>JMSConfigListener uses thisServer.isDas() to ask 'Does this server not need to update the cluster broker list on the active JMS resource adapter when there is a config change event on the Server config?'. A change is required to allow the same behavior for a user-managed instance.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">public UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
+..........
+if (eventName.equals(ServerTags.SERVER_REF)){
+    String oldServerRef = oldValue != null ? oldValue.toString() : null;
+    String newServerRef = newValue != null ? newValue.toString(): null;
+    if (oldServerRef  != null &amp;&amp; newServerRef == null &amp;&amp; !thisServer.isDas() || thisServer.isClusteredDas()) {//instance has been deleted  &lt;--- CHANGE REQUIRED
+        _logger.log(Level.FINE, "Got Cluster change event for server_ref" + event.getSource() + " " + eventName + " " + oldServerRef + " " + newServerRef);
+        String url = getBrokerList();
+        aresourceAdapter.setClusterBrokerList(url);
+        break;
+    }//
+} // else skip
+if (event.getSource() instanceof Server) {
+    _logger.log(Level.FINE, "In JMSConfigListener - recieved cluster event " + event.getSource());
+    Server changedServer = (Server) event.getSource();
+    if (thisServer.isDas() &amp;&amp; !thisServer.isClusteredDas() )return null;   &lt;----- CHANGE REQUIRED
+
+        if(jmsProviderPort != null){
+            String nodeName = changedServer.getNodeRef();
+            String nodeHost = null;
+
+            if(nodeName != null)
+               nodeHost = domain.getNodeNamed(nodeName).getNodeHost();
+            String url = getBrokerList();
+            url = url + ",mq://" + nodeHost + ":" + jmsProviderPort;
+            aresourceAdapter.setClusterBrokerList(url);
+            break;
+        }
+
+    }</pre> 
+       </div> 
+      </div>
+     </div> <p><br class="atl-forced-newline"></p> <p><b>Security</b></p> <p>AdminAccessController authenticate(GrizzlyRequest req) - With more recent changes to Grizzly, this check is going to be removed by another project. No change required.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">if (authenticator != null) {
+            /*
+             * If an admin request includes a large payload and secure admin is
+             * enabled and the request does NOT include a client cert, then
+             * the getUsePrincipal invocation can cause problems.  So normally
+             * the DAS will not look for a client cert. To override this, the user can
+             * set org.glassfish.admin.DASCheckAdminCert=true but s/he should realize
+             * that this can cause problems with large uploads if secure admin
+             * is enabled and no client cert is present.
+             */
+            final Principal sslPrincipal = ! env.isDas() ||
+                    Boolean.getBoolean(DAS_LOOK_FOR_CERT_PROPERTY_NAME) ? req.getUserPrincipal() : null;
+            return authenticator.loginAsAdmin(user, password, as.getAuthRealmName(),
+                    req.getRemoteHost(), authRelatedHeaders(req), sslPrincipal);
+        }</pre> 
+       </div> 
+      </div>
+     </div> <p><br class="atl-forced-newline"></p> <p><b>Web Services</b></p> <p>MetroContainer.isCluster() returns true if this is not DAS, not embedded, and GMS is enabled. MetroContainer will initialize the HA environment for a cluster if availability is enabled. Since a user-managed instance is a clustered DAS, a change is required for this initialization to happen for a user-managed instance. (<b>Technical Requirement 3.3 High Availability P1 HA Messaging Metro HA aspect must work</b>)</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">public void postConstruct() {
+        ................
+        if (isCluster() &amp;&amp; isHaEnabled()) {
+            final String clusterName = gmsAdapterService.getGMSAdapter().getClusterName();
+            final String instanceName = gmsAdapterService.getGMSAdapter().getModule().getInstanceName();
+
+            HighAvailabilityProvider.INSTANCE.initHaEnvironment(clusterName, instanceName);
+            logger.info("metro.ha.environemt.initialized");
+        }
+        ...............
+    }
+
+    private boolean isCluster() {
+        return (!env.isDas() || server.isClusteredDas()) &amp;&amp; !env.isEmbedded() &amp;&amp; gmsAdapterService.isGmsEnabled();   &lt;----- CHANGE
+    }</pre> 
+       </div> 
+      </div>
+     </div> <p><br class="atl-forced-newline"></p> <h4><a name="GlassFishUser-ManagedClustersDesign-CommandChanges"></a>Command Changes</h2> <p>No command changes are needed to to support creation and lifecycle for user-managed cluster instances since all configuration for this is done through properties that can be set with the set command.&nbsp;</p> <h4><a name="GlassFishUser-ManagedClustersDesign-"></a></h3> <h4><a name="GlassFishUser-ManagedClustersDesign-SecurityChanges"></a>Security Changes</h2> <p>The changes required for security are describe in the section for <b>Configuration change to remove isDas() calls</b></p> <h4><a name="GlassFishUser-ManagedClustersDesign-ContainerIssues"></a>Container Issues</h2> <h4><a name="GlassFishUser-ManagedClustersDesign-ApplicationId"></a>Application Id</h3> <p>As part of high availability of stateful session beans, the application id's that are generated at deployment, of stateful session beans the application id needs to be the same across the cluster. Today the application id is generated by using the System.currentTimeMillis() and then replicated by the DAS to the cluster deployment. <br class="atl-forced-newline"> However as we move to the user managed cluster design approach, since the deployment will be done on each unmanaged instance, we need to ensure that the app id continues to be the same on all the instances. To make it happen, the generation of application id needs to change from using System.currentTimeMillis(). As part of the change, one way to ensure the same id is generated is to use MD5 hash of the application to generate the application id. <br class="atl-forced-newline"> A corner case today is that at redeployment, even if the application has not changed, a new application id is generated. With the MD5 Hash approach, if the application has not changed, but for some reason the application has be redeployed, the application id will remain the same. Details of why the application id needs to change on redployment still needs to be discussed. However except for this corner case, the MD5 hash should work for most cases. We will base the solution on MD5 Hash with some changes to address the corner case described above.</p> <h4><a name="GlassFishUser-ManagedClustersDesign-Timers"></a>Timers</h3> <p>Look at migrate timers (D: Chris)</p> <h4><a name="GlassFishUser-ManagedClustersDesign-Transactions"></a>Transactions</h3> <p>and transactions (D: Chris)</p> <h4><a name="GlassFishUser-ManagedClustersDesign-ClusteringforJMS%2FMQ"></a>Clustering for JMS/MQ</h2> <p>Work with JMS/MQ team as to how JMS cluster will work with this feature (D:Chris)</p> <h4><a name="GlassFishUser-ManagedClustersDesign-Upgrade"></a>Upgrade</h2> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Aug 28, 2012 by 
+<font color="#0050B2">10193</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

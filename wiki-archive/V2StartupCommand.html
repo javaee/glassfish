@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : V2StartupCommand</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">c:/jdk/jre/..\bin\java
+-Dcom.sun.aas.instanceRoot=D:/as/domains/domain1
+-Dcom.sun.aas.ClassPathPrefix=
+-Dcom.sun.aas.ClassPathSuffix=
+-Dcom.sun.aas.ServerClassPath=
+-Dcom.sun.aas.classloader.appserverChainJars.ee=
+-Dcom.sun.aas.classloader.appserverChainJars=admin-cli.jar,admin-cli-ee.jar,j2ee-svc.jar
+-Dcom.sun.aas.classloader.excludesList=admin-cli.jar,appserv-upgrade.jar,sun-appserv-ant.jar
+-Dcom.sun.aas.classloader.optionalOverrideableChain.ee=
+-Dcom.sun.aas.classloader.optionalOverrideableChain=webservices-rt.jar,webservices-tools.jar
+-Dcom.sun.aas.classloader.serverClassPath.ee=/lib/hadbjdbc4.jar,D:/as/lib/SUNWjdmk/5.1/lib/jdmkrt.jar,/lib/dbstate.jar,/lib/hadbm.jar,/lib/hadbmgt.jar,D:/as/lib/SUNWmfwk/lib/mfwk_instrum_tk.jar
+-Dcom.sun.aas.classloader.serverClassPath=D:/as/lib/install/applications/jmsra/imqjmsra.jar,D:/as/imq/lib/jaxm-api.jar,D:/as/imq/lib/fscontext.jar,D:/as/imq/lib/imqbroker.jar,D:/as/imq/lib/imqjmx.jar,D:/as/lib/ant/lib/ant.jar,D:/as/lib/SUNWjdmk/5.1/lib/jdmkrt.jar
+-Dcom.sun.aas.classloader.sharedChainJars.ee=appserv-se.jar,appserv-ee.jar,jesmf-plugin.jar,/lib/dbstate.jar,/lib/hadbjdbc4.jar,jgroups-all.jar,D:/as/lib/SUNWmfwk/lib/mfwk_instrum_tk.jar
+-Dcom.sun.aas.classloader.sharedChainJars=javaee.jar,c:/jdk/jre/../lib/tools.jar,install/applications/jmsra/imqjmsra.jar,com-sun-commons-launcher.jar,com-sun-commons-logging.jar,D:/as/imq/lib/jaxm-api.jar,D:/as/imq/lib/fscontext.jar,D:/as/imq/lib/imqbroker.jar,D:/as/imq/lib/imqjmx.jar,D:/as/imq/lib/imqxm.jar,webservices-rt.jar,webservices-tools.jar,mail.jar,appserv-jstl.jar,jmxremote_optional.jar,D:/as/lib/SUNWjdmk/5.1/lib/jdmkrt.jar,activation.jar,appserv-rt.jar,appserv-admin.jar,appserv-cmp.jar,D:/as/updatecenter/lib/updatecenter.jar,D:/as/jbi/lib/jbi.jar,D:/as/imq/lib/imqjmx.jar,D:/as/lib/ant/lib/ant.jar,dbschema.jar
+-Dcom.sun.aas.configName=server-config
+-Dcom.sun.aas.configRoot=D:/as/config
+-Dcom.sun.aas.defaultLogFile=D:/as/domains/domain1/logs/server.log
+-Dcom.sun.aas.domainName=domain1
+-Dcom.sun.aas.installRoot=D:/as
+-Dcom.sun.aas.instanceName=server
+-Dcom.sun.aas.jdwpOptions=transport=dt_socket,server=y,suspend=n,address=9009
+-Dcom.sun.aas.processLauncher=SE
+-Dcom.sun.aas.promptForIdentity=true
+-Dcom.sun.appserv.pluggable.features=com.sun.enterprise.ee.server.pluggable.EEPluggableFeatureImpl
+-Dcom.sun.enterprise.config.config_environment_factory_class=com.sun.enterprise.config.serverbeans.AppserverConfigEnvironmentFactory
+-Dcom.sun.enterprise.overrideablejavaxpackages=javax.help,javax.portlet
+-Dcom.sun.enterprise.taglibs=appserv-jstl.jar,jsf-impl.jar
+-Dcom.sun.enterprise.taglisteners=jsf-impl.jar
+-Dcom.sun.updatecenter.home=D:/as/updatecenter
+-Ddomain.name=domain1
+-Djava.endorsed.dirs=D:/as/lib/endorsed
+-Djava.ext.dirs=c:/jdk/jre/../lib/ext;c:/jdk/jre/../jre/lib/ext;D:/as/domains/domain1/lib/ext;D:/as/javadb/lib;D:/as/lib/jdbcdrivers
+-Djava.library.path=D:\as\lib;D:\as\lib;D:\as\bin;D:\as\lib;D:\as\lib
+-Djava.security.auth.login.config=D:/as/domains/domain1/config/login.conf
+-Djava.security.policy=D:/as/domains/domain1/config/server.policy
+-Djava.util.logging.manager=com.sun.enterprise.server.logging.ServerLogManager
+-Djavax.management.builder.initial=com.sun.enterprise.ee.admin.AppServerMBeanServerBuilder
+-Djavax.net.ssl.keyStore=D:/as/domains/domain1/config/keystore.jks
+-Djavax.net.ssl.trustStore=D:/as/domains/domain1/config/cacerts.jks
+-Djdbc.drivers=org.apache.derby.jdbc.ClientDriver
+-Djmx.invoke.getters=true
+-Dsun.rmi.dgc.client.gcInterval=3600000
+-Dsun.rmi.dgc.server.gcInterval=3600000
+-client
+-Xdebug
+-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=9009
+-XX:+UnlockDiagnosticVMOptions
+-XX:MaxPermSize=192m
+-Xmx512m
+-XX:NewRatio=2
+-XX:+LogVMOutput
+-Xrs
+-XX:LogFile=D:/as/domains/domain1/logs/jvm.log
+-cp
+D:/as/lib/jhall.jar;D:\as\lib\appserv-launch.jar
+com.sun.enterprise.server.PELaunch
+start
+debug</pre> 
+       </div> 
+      </div>
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 08, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

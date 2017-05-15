@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : TroubleshootingGuideJa</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="TroubleshootingGuideJa-ApplicationServer9.1%E3%83%88%E3%83%A9%E3%83%96%E3%83%AB%E3%82%B7%E3%83%A5%E3%83%BC%E3%83%86%E3%82%A3%E3%83%B3%E3%82%B0%E3%82%AC%E3%82%A4%E3%83%89"></a>Application Server 9.1 トラブルシューティングガイド</h1> <p><font color="blue"><a href="TSG_OverviewJa.html" title="TSG_OverviewJa">概要</a> / <a href="TSG_CommonProblemsJa.html" title="TSG_CommonProblemsJa">共通の問題</a> / <a href="TSG_HADBProblemsJa.html" title="TSG_HADBProblemsJa">HADB の問題</a> / <a href="TSG_SecurityProblemsJa.html" title="TSG_SecurityProblemsJa">セキュリティの問題</a> / <a href="TSG_FAQJa.html" title="TSG_FAQJa">FAQ</a></font></p> 
+     <hr> <p>このウィキは <a href="http://docs.sun.com/app/docs/doc/819-3677">HTML</a> と <a href="http://dlc.sun.com/pdf/819-3677/819-3677.pdf">PDF</a> 形式で利用可能なトラブルシューティングガイドの、インタラクティブかつ編集可能な日本語翻訳バージョンとなることを意図します。</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">注 </th> 
+         <td class="confluenceTd"> Java EE 5 SDK にバンドルされている <b>Sun Java Application Server 9.1</b> は <b>GlassFish v2</b> の商用バージョンです。2 つのコードペースは同じで、違いは提供されるサポートオプションとなります。このウィキとしては、「Application Server」は全て等しく「GlassFish」をさすものとします。つまり名称は相互に入れ替え可能です。Application Server 9.1 と Java EE 5 SDK に関する情報は、<a href="http://sdc.sun.co.jp/java/javaee/downloads/index.html">Java EE ダウンロード</a>のページを参照下さい。 </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>トラブルシューティングガイドは、実際その対象の製品が市場に出回ってからでないと本当に便利なものとはなりません。実世界での問題とその解決策は、開発者、管理者、エンドユーザが製品を徹底的に使用する機会があって判明するからです。</p> <p>ぜひ参加して下さい！新規トピックや、既存トピックの解決策の追加、既存のコンテンツにコメントをつけたり、修正したり、または英語コンテンツだけあるものを翻訳したり。様々な方法でこのガイドを便利なものにして下さい。コメントについては、トラブルシューティングガイドウィキに直接追加するか、もしくは、<a href="http://docs.sun.com/app/docs/doc/819-3677">HTML</a> か <a href="http://dlc.sun.com/pdf/819-3677/819-3677.pdf">PDF</a> 版を参照し下記表に追加して下さい。</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">コメント ID </th> 
+         <th class="confluenceTh"> 日付 </th> 
+         <th class="confluenceTh"> セクション, ページ番号/URL </th> 
+         <th class="confluenceTh"> コメント </th> 
+         <th class="confluenceTh">状態 – (<font color="lime">RESOLVED</font>/<font color="red">UNRESOLVED</font>) </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 例: <em>jsmith-001</em> </td> 
+         <td class="confluenceTd"> <em>コメントが記入された日付</em> </td> 
+         <td class="confluenceTd"> <em>ドキュメントへの詳細なポインタ</em> </td> 
+         <td class="confluenceTd"> <em>詳細なコメント</em> </td> 
+         <td class="confluenceTd"><em>空欄にしておく - 後にライターが状態を記入</em> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> -- </td> 
+         <td class="confluenceTd"> -- </td> 
+         <td class="confluenceTd"> -- </td> 
+         <td class="confluenceTd"> -- </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> -- </td> 
+         <td class="confluenceTd"> -- </td> 
+         <td class="confluenceTd"> -- </td> 
+         <td class="confluenceTd"> -- </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">注 </th> 
+         <td class="confluenceTd"> 貢献する前に、必ず<a href="./TermsOfUse.html">利用条件 (英語)</a>ページを読むようにして下さい。 </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p><a href="GlassFishDocs.html" title="GlassFishDocs">メインページ</a> に戻る</p> <p><a href="TSG_OverviewJa.html" title="TSG_OverviewJa">次ページ</a>[</p> 
+     <div class="error">
+      <span class="error">Unknown macro: {TableOfContents title='On This Page'}</span> 
+     </div> <p>|(TableOfContentstitle='OnThisPage')]</p> 
+     <hr> <h4><a name="TroubleshootingGuideJa-%E5%89%8D%E6%9B%B8%E3%81%8D"></a>前書き</h1> <p><em>Sun Java System Application Server 9.1 トラブルシューティングガイド</em> は Sun Java System Application Server 9.1 を使用する上で直面することがある共通の問題とその解決方法を説明しています。</p> <h4><a name="TroubleshootingGuideJa-%E5%AF%BE%E8%B1%A1%E8%AA%AD%E8%80%85"></a>対象読者</h2> <p><em>Sun Java System Application Server 9.1 トラブルシューティングガイド</em> は Sun Java System Application Server を使用して web ベースの分散アプリケーションを構築、配備する開発者と管理者を対象としています。</p> <h4><a name="TroubleshootingGuideJa-%E6%9C%AC%E3%83%89%E3%82%AD%E3%83%A5%E3%83%A1%E3%83%B3%E3%83%88%E3%81%AE%E6%A7%8B%E6%88%90"></a>本ドキュメントの構成</h2> <p>このウィキは Sun Java System Application Server 9.1 ソフトウェアを設定、利用、もしくはアプリケーションを配備する際に直面する可能性のある問題の回避策を解説します。以下の章を含みます。</p> 
+     <ul> 
+      <li><a href="TSG_OverviewJa.html" title="TSG_OverviewJa">第 1 章, 概要</a> (<a href="TSG_Overview.html" title="TSG_Overview">原文 </a>) トラブルシューティングのプロセスについての一般的な概要。</li> 
+     </ul> 
+     <ul> 
+      <li><a href="TSG_CommonProblemsJa.html" title="TSG_CommonProblemsJa">第 2 章, 共通の問題</a> (<a href="TSG_CommonProblems.html" title="TSG_CommonProblems">原文 </a>) 製品を使用する際に直面する可能性のある共通の問題。</li> 
+     </ul> 
+     <ul> 
+      <li><a href="TSG_HADBProblemsJa.html" title="TSG_HADBProblemsJa">第 3 章, HADB の問題</a> (<a href="TSG_HADBProblems.html" title="TSG_HADBProblems">原文 </a>) HADB に関連する問題。</li> 
+     </ul> 
+     <ul> 
+      <li><a href="TSG_SecurityProblemsJa.html" title="TSG_SecurityProblemsJa">第 4 章, セキュリティの問題</a> (<a href="TSG_SecurityProblems.html" title="TSG_SecurityProblems">原文 </a>) セキュリティの設定に関連する問題。</li> 
+     </ul> 
+     <ul> 
+      <li><a href="TSG_FAQJa.html" title="TSG_FAQJa">第 5 章, FAQ</a> (<a href="TSG_FAQ.html" title="TSG_FAQ">原文 </a>) Application Server ソフトウェアに関する FAQ。</li> 
+     </ul> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> 注 </th> 
+         <td class="confluenceTd">ウィキが成熟するに従って、章が追加されることが予想されます。 </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="TroubleshootingGuideJa-%E3%83%87%E3%83%95%E3%82%A9%E3%83%AB%E3%83%88%E3%83%91%E3%82%B9%E3%81%A8%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB%E5%90%8D"></a>デフォルトパスとファイル名</h2> <p>下記表は、このウィキで使用されるデフォルトのパスとファイル名について説明しています。</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">プレースホルダ</th> 
+         <th class="confluenceTh">説明</th> 
+         <th class="confluenceTh">デフォルト値 </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <em>install-dir</em> </td> 
+         <td class="confluenceTd"> Application Server のインストールディレクトリ </td> 
+         <td class="confluenceTd">*Solaris:* <tt>/opt/SUNWappserver/appserver</tt> <b>Linux:</b> <tt>/opt/sun/appserver/</tt> <b>Non-root:</b> <tt>~/SUNWappserver</tt> <b>Windows:</b> <tt><em>Drive</em>:\Sun\AppServer</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <em>domain-root-dir</em> </td> 
+         <td class="confluenceTd"> 全てのドメインを含むディレクトリ </td> 
+         <td class="confluenceTd">*Solaris:* <tt>var/opt/SUNWappserver/domains/</tt> <b>Linux:</b> <tt>/var/opt/sun/appserver/domains/</tt> <b>Other:</b> <tt>install-dir/domains/</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <em>domain-dir</em> </td> 
+         <td class="confluenceTd"> ドメインのディレクトリ </td> 
+         <td class="confluenceTd">設定ファイルでは、<em>domain-dir</em> は次のようになっていると思います: {{$ 
+          <div class="error">
+           <span class="error">Unknown macro: {com.sun.aas.instanceRoot}</span> 
+          </div> <p> <tt>domain-root-dir/domain-dir</tt> </p></td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <em>instance-dir</em> </td> 
+         <td class="confluenceTd"> サーバーインスタンスのディレクトリ </td> 
+         <td class="confluenceTd"><tt>domain-dir/instance-dir</tt> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="TroubleshootingGuideJa-%E3%82%B5%E3%83%BC%E3%83%89%E3%83%91%E3%83%BC%E3%83%86%E3%82%A3web%E3%82%B5%E3%82%A4%E3%83%88%E3%81%B8%E3%81%AE%E5%8F%82%E7%85%A7"></a>サードパーティ web サイトへの参照</h2> <p>本ドキュメントの中では、サードパーティの URL が参照され、追加の関連する情報を提供しています。</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">注 </th> 
+         <td class="confluenceTd">Sun is not responsible for the availability of third-party web sites mentioned in this document. Sun does not endorse and is not responsible or liable for any content, advertising, products, or other materials that are available on or through such sites or resources. Sun will not be responsible or liable for any actual or alleged damage or loss caused or alleged to be caused by or in connection with use of or reliance on any such content, goods, or services that are available on or through such sites or resources. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="TroubleshootingGuideJa-Sun%E3%81%AE%E3%82%AA%E3%83%B3%E3%83%A9%E3%82%A4%E3%83%B3%E3%83%AA%E3%82%BD%E3%83%BC%E3%82%B9%E3%81%B8%E3%81%AE%E3%82%A2%E3%82%AF%E3%82%BB%E3%82%B9"></a>Sun のオンラインリソースへのアクセス</h2> <p><a href="http://docs.sun.com">docs.sun.com</a> web サイトでは、Sun のテクニカルドキュメントにオンラインでアクセスすることができます。アーカイブを閲覧したり、特定のドキュメント名やテーマで検索することが可能です。ドキュメントは PDF と HTML 形式で入手可能です。両フォーマットは障害のあるユーザにも支援技術により読むことができます。</p> <p>下記の Sun リソースにアクセスするには、<a href="http://jp.sun.com/">Sun Microsystems</a> をご覧下さい:</p> 
+     <ul> 
+      <li>Sun 製品のダウンロード</li> 
+      <li>サービスとソリューション</li> 
+      <li>サポート (パッチとアップデートを含む)</li> 
+      <li>トレーニング</li> 
+      <li>コミュニティ</li> 
+     </ul> 
+     <hr> <p><a href="TSG_OverviewJa.html" title="TSG_OverviewJa">次ページ</a></p> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 02, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

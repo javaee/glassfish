@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : OpenMQDiagnosticQuestions</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="OpenMQDiagnosticQuestions-FAQfordiagnosticcommandsinOpenMessageQueue%21https%3A%2F%2Fmq.java.net%2Fimages%2Fdukemqicon.gif%21"></a>FAQ for diagnostic commands in Open Message Queue <span class="error">Cannot resolve external resource into attachment.</span></h1> <p>If you are interested in contributing to this FAQ, please read the <a href="MQWikiContributionGuidelines.html" title="MQWikiContributionGuidelines">Contribution Guidelines</a>.</p> 
+     <div class="panel" style="border-width: 1px;">
+      <div class="panelContent"> 
+       <p><a href="https://mq.java.net">Back to Open MQ</a></p> 
+       <hr> 
+       <p>Jspwiki style: center</p> 
+      </div>
+     </div> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li>What are the commands?* 
+         <div class="code panel" style="border-width: 1px;">
+          <div class="codeContent panelContent"> 
+           <div id="root"> 
+            <pre class="theme: Confluence; brush: java; gutter: false">imqbrokerd - starts the broker
+   imqadmin - starts a gui based admin tool (minimal functionality)
+   imqdbmgr - used to set of the database
+   imqcmd - primary admin tool (cheat you can use -pw instead of a passfile)
+   imqobjmgr - used to set of the connection factory
+   imqusermgr - manages the file based password directory</pre> 
+           </div> 
+          </div>
+         </div></li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li>What are the arguments for each of these commands?*</li> 
+        <li>All the commands will display their arguments if you invoke them with -help. You can also read the <a href="http://docs.sun.com/app/docs/doc/819-7755/6n9m8u5ln?a=view#aeonc">Command Line Reference chapter</a> of the Administration Guide. (this link is for MQ 4.1)</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li>Where are the log files?*</li> 
+        <li>That depends on how it is installed and the name of the broker (usually imqbrokerd although that may change based on user or with the application server) 
+         <ul> 
+          <li>On Solaris (and Linux in a slightly different location) with a package based install it is in 
+           <div class="code panel" style="border-width: 1px;">
+            <div class="codeContent panelContent"> 
+             <div id="root"> 
+              <pre class="theme: Confluence; brush: java; gutter: false">/var/imq/instances/&lt;brokername&gt;/logs</pre> 
+             </div> 
+            </div>
+           </div></li> 
+          <li>On Windows and with file based installs, it is in the var directory where mq is installed. e.g. 
+           <div class="code panel" style="border-width: 1px;">
+            <div class="codeContent panelContent"> 
+             <div id="root"> 
+              <pre class="theme: Confluence; brush: java; gutter: false">&lt;mq install&gt;/var/instances/imqbrokerd/logs</pre> 
+             </div> 
+            </div>
+           </div></li> 
+         </ul> </li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li>How do I get command line arguments to the broker when I'm running with the GlassFish Application Server?*</li> 
+        <li>Run in LOCAL mode and pass the arguments and configure the arguments in GlassFish</li> 
+        <li>Run as REMOTE and start the broker with the arguments you want (before starting GlassFish)</li> 
+        <li>See the <a href="AppserverMqIntegrationOptions.html" title="AppserverMqIntegrationOptions">GlassFish MQ Configuration Options</a> page for details about Local and Remote</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li>Where do I set the configuration options in Open MQ?*</li> 
+        <li>MQ has configuration settings for both the client and for the broker.</li> 
+        <li>On the client you can either: 
+         <ul> 
+          <li>create and set connection factory object using imqobjmgr</li> 
+          <li>pass arguments in on the command line</li> 
+         </ul> </li> 
+        <li>On the broker, we have two types of data: 
+         <ul> 
+          <li>operational objects (e.g. destinations) which are created with imqcmd</li> 
+          <li>configuration which is set in the config.properties file (and in some cases can also be set by imqcmd). 
+           <ul> 
+            <li>you can also pass those properties in with -D e.g. 
+             <div class="code panel" style="border-width: 1px;">
+              <div class="codeContent panelContent"> 
+               <div id="root"> 
+                <pre class="theme: Confluence; brush: java; gutter: false">imqbrokerd -tty -Dmyprop=myvalue</pre> 
+               </div> 
+              </div>
+             </div></li> 
+           </ul> </li> 
+          <li>config.properties is located in: 
+           <div class="code panel" style="border-width: 1px;">
+            <div class="codeContent panelContent"> 
+             <div id="root"> 
+              <pre class="theme: Confluence; brush: java; gutter: false">var/instances/&lt;brokername&gt;/config</pre> 
+             </div> 
+            </div>
+           </div></li> 
+         </ul> </li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li><b>How can I check to see that the broker is really running?</b> 
+       <ul> 
+        <li>Use telnet to check the portmapper port: 
+         <div class="code panel" style="border-width: 1px;">
+          <div class="codeContent panelContent"> 
+           <div id="root"> 
+            <pre class="theme: Confluence; brush: java; gutter: false">telnet localhost 7676</pre> 
+           </div> 
+          </div>
+         </div></li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li><b>How do I get more logging on the broker?</b> 
+       <ul> 
+        <li>You can change the log level in the config.properties file OR use the loglevel command line argument (e.g. 
+         <div class="code panel" style="border-width: 1px;">
+          <div class="codeContent panelContent"> 
+           <div id="root"> 
+            <pre class="theme: Confluence; brush: java; gutter: false">imqbrokerd -loglevel DEBUG</pre> 
+           </div> 
+          </div>
+         </div> ). The MQ broker supports several different log levels, the most commonly used ones are: 
+         <div class="code panel" style="border-width: 1px;">
+          <div class="codeContent panelContent"> 
+           <div id="root"> 
+            <pre class="theme: Confluence; brush: java; gutter: false">ERROR
+       WARNING
+       INFO
+       DEBUG</pre> 
+           </div> 
+          </div>
+         </div></li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li><b>How do I get information to show up in the window I start the broker?</b> 
+       <ul> 
+        <li>You can set this up in config.properties</li> 
+        <li>You can use the -tty option to start the broker</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li>I keep seeing entries in the log like RED, ORANGE, YELLOW, GREEN in the log file, what does this mean?*</li> 
+        <li>MQ has memory management. As the server gets low on memory producers are throttled back to attempt to keep the broker running.</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li>How do I start a standard cluster of broker nodes?*<br> This is described in the product manuals and also the on-line training, but the simplest way is to use the -cluster property on imqbrokerd. e.g. 
+         <div class="code panel" style="border-width: 1px;">
+          <div class="codeContent panelContent"> 
+           <div id="root"> 
+            <pre class="theme: Confluence; brush: java; gutter: false">imqbrokerd -tty -cluster whippet:7676,whippet:7777
+    imqbrokerd -tty -port 7777 -cluster whippet:7676,whippet:7777</pre> 
+           </div> 
+          </div>
+         </div></li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li>How can I pass vm arguments (like -Xmx) into the broker?*</li> 
+        <li>Use -vmarg, e.g. 
+         <div class="code panel" style="border-width: 1px;">
+          <div class="codeContent panelContent"> 
+           <div id="root"> 
+            <pre class="theme: Confluence; brush: java; gutter: false">imqcmd -vmargs -Xmx=2G</pre> 
+           </div> 
+          </div>
+         </div></li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li>I look in the code and I see "public" and "private" properties for the broker. What is this for?*</li> 
+        <li>MQ property based configuration is broken up into three categories: 
+         <ul> 
+          <li>public (in the docs and supported)</li> 
+          <li>private (not supported documented in an installed file called default.properties)</li> 
+          <li>secret - hidden in various spots of the code</li> 
+         </ul> </li> 
+        <li>default.properties is in the lib directory in a file-based install</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li>How can I see the protocol that is passing between the client/broker or brokers?*</li> 
+        <li>On the client, you can turn on protocol level debugging with: 
+         <div class="code panel" style="border-width: 1px;">
+          <div class="codeContent panelContent"> 
+           <div id="root"> 
+            <pre class="theme: Confluence; brush: java; gutter: false">-Dimq.debug -DReadOnlyPacket -DReadWritePacket</pre> 
+           </div> 
+          </div>
+         </div></li> 
+        <li>On the broker, you can use the private -debug command line argument (protocol is dumped to the log file). e.g. 
+         <div class="code panel" style="border-width: 1px;">
+          <div class="codeContent panelContent"> 
+           <div id="root"> 
+            <pre class="theme: Confluence; brush: java; gutter: false">imqbrokerd -debug pkt</pre> 
+           </div> 
+          </div>
+         </div></li> 
+        <li>Options are:</li> 
+       </ul> </li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">pkt - all client/broker communication
+   pktin - incoming client/broker communication
+   pktout - outgoing client/broker communication
+   cluster - all cluster communication
+   lock - only cluster locking communication
+   clscon - only cluster connection information
+   clstxn - only cluster-wide transaction processing info
+   clsmsg - protocol in the cluster
+   clsha - only HA information</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li>How can I read this protocol output?*</li> 
+        <li>Send us e-mail to <a href="mailto:users@mq.java.net">users@mq.java.net</a>. We'll talk you through this. (It's a bit more complex than can be managed here in this FAQ)</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li>The system is behaving weirdly, what can I do?*</li> 
+        <li>Open MQ has a secret dump command which can be used to retrieve the state of most of the system (although its difficult to read). It is not documented, but generally looks something like: 
+         <div class="code panel" style="border-width: 1px;">
+          <div class="codeContent panelContent"> 
+           <div id="root"> 
+            <pre class="theme: Confluence; brush: java; gutter: false">imqcmd dump bkr -debug -o file=/tmp/bkr.log</pre> 
+           </div> 
+          </div>
+         </div></li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li>How do I read this dump file?*</li> 
+        <li>Drop us a line <a href="mailto:users@mq.java.net">users@mq.java.net</a>. We'll talk you through this. (It's a bit more complex than can be managed here in this FAQ)</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li>How can I get a stack trace with <em>imqdbmgr</em> command?*</li> 
+        <li>Invoke <em>imqdbmgr</em> command with <em>-debug</em> option.</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li>How do I know if brokers in Open MQ cluster are really communicating ?*</li> 
+        <li>Open MQ has private imqcmd command line options which can be used to dynamically (only supported for Open MQ version &gt;= 4.4u1) turn on/off the Open MQ cluster private debug property imq.cluster.debug.ping, like <em>imqcmd update bkr -o imq.cluster.debug.ping=true -debug -nocheck</em>, on each broker in the cluster, then you should see periodic ping packet dumps in the broker log like following. Alternatively you can also dynamically (only supported for Open MQ version &gt;= 4.4u1) turn on/off the Open MQ cluster private debug property imq.cluster.debug.packet to see all packet dumps between brokers.</li> 
+       </ul> </li> 
+     </ul> <p></p>
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">[......] SENDING PACKET : mq://...... &lt;---&gt; mq://......
+Packet =     Packet: 33
+......</pre> 
+       </div> 
+      </div>
+     </div>or<p></p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">[......] RECEIVING PACKET : mq://...... &lt;---&gt; mq://......
+Packet =     Packet: 33
+......</pre> 
+       </div> 
+      </div>
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Mar 14, 2012 by 
+<font color="#0050B2">10193</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

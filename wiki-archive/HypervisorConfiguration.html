@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : HypervisorConfiguration</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>To use an hypervisor, some configuration needs to be added to the domain.xml. This configuration is basically falling into 3 steps, one is configuring the access to the hypervisor (libvirt, ovm), two is adding the server pool configuration, and finally optionally adding the server machines within the defined server pools.</p> <h4><a name="HypervisorConfiguration-KVM%28libvirt%29"></a>KVM (libvirt)</h1> <p>To access KVM enabled machine, you need to configure the IMS to use the libvirt libraries. First step is defining the emulator used on the target machine. Depending on the hypervisor used on the target machine (KVM, Xen), the emulator definition is slightly different. </p> <h4><a name="HypervisorConfiguration-Emulator"></a>Emulator</h2> <p>Emulators are used to run virtual machine, there are different types of emulators supported so far, kvm for the hardware accelerated virtual machines, and qemu for the software emulated virtual machines (slower).</p> <p>Emulators will also define how we will connect to the remote machine by replacing the connection-string keys with configured values for that particular machine : </p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> key </th> 
+         <th class="confluenceTh"> value </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">#{auth.sep} </td> 
+         <td class="confluenceTd"> separator for the authentication method (if any) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">#{auth.method} </td> 
+         <td class="confluenceTd"> authentication method on the remote machine </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">#{user.name} </td> 
+         <td class="confluenceTd"> user name configured for the machine access </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">#{target.host} </td> 
+         <td class="confluenceTd"> host identification</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>By default the libvirt plugin will configure kvm with accelerated hardware. </p> <p>connection string = qemu#</p> 
+     <div class="error">
+      <span class="error">Unknown macro: {auth.sep}</span> 
+      <p>#</p> 
+      <div class="error">
+       <span class="error">Unknown macro: {auth.method}</span> 
+      </div> 
+      <p>://#</p> 
+      <div class="error">
+       <span class="error">Unknown macro: {user.name}</span> 
+      </div> 
+      <p>@#</p> 
+      <div class="error">
+       <span class="error">Unknown macro: {target.host}</span> 
+      </div> 
+      <p>/system<br> emulator path = /usr/bin/kvm</p> 
+      <h4><a name="HypervisorConfiguration-Defaulthypervisorconfiguration"></a>Default hypervisor configuration</h4> 
+      <p>You also need to add some default hypervisor configuration, with the right default emulator (can be overriden at the machine level when issuing a create-machine command), the above default connection string and emulator path will be used.</p> 
+      <div class="code panel" style="border-width: 1px;">
+       <div class="codeContent panelContent"> 
+        <div id="root"> 
+         <pre class="theme: Confluence; brush: java; gutter: false">asadmin add-libirt-virtualization --emulator kvm</pre> 
+        </div> 
+       </div>
+      </div> 
+      <p>if you are not planning the default connection string and default emulator path : </p> 
+      <div class="code panel" style="border-width: 1px;">
+       <div class="codeContent panelContent"> 
+        <div id="root"> 
+         <pre class="theme: Confluence; brush: java; gutter: false"></pre> 
+        </div> 
+       </div>
+      </div> 
+      <p>asadmin add-libirt-virtualization --emulatorpath /usr/bin/kvm --connectionstring qemu#</p>
+     </div> <p>#</p> 
+     <div class="error">
+      <span class="error">Unknown macro: {auth.method}</span> 
+      <p>://#</p> 
+      <div class="error">
+       <span class="error">Unknown macro: {user.name}</span> 
+      </div> 
+      <p>@#</p> 
+      <div class="error">
+       <span class="error">Unknown macro: {target.host}</span> 
+      </div> 
+      <p>/system kvm</p> 
+      <p>asadmin add-libvirt-virtualization --emulatorpath /usr/bin/qemu-system-x86_64 --connectionstring qemu#</p> 
+      <div class="error">
+       <span class="error">Unknown macro: {auth.sep}</span> 
+      </div> 
+      <p>#</p>
+     </div> <p>://#</p> 
+     <div class="error">
+      <span class="error">Unknown macro: {user.name}</span> 
+      <p>@#</p> 
+      <div class="error">
+       <span class="error">Unknown macro: {target.host}</span> 
+      </div> 
+      <p>/system qemu</p> 
+      <p>asadmin add-libvirt-virtualization --emulatorpath /usr/lib64/xen/bin/qemu-dm --connectionstring xen#</p> 
+      <div class="error">
+       <span class="error">Unknown macro: {auth.sep}</span> 
+      </div> 
+      <p>#</p> 
+      <div class="error">
+       <span class="error">Unknown macro: {auth.method}</span> 
+      </div> 
+      <p>://#</p>
+     </div> <p>@#</p> 
+     <div class="error">
+      <span class="error">Unknown macro: {target.host}</span> 
+     </div> <p> xen</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">h3. Server Pools and machines
+
+Machines are organized in server pools, each server pool is administered by a pool master. The pool master maintains the list of attached machines using either the IP address (if machines have static IPs) or the MAC address. To find out a machine mac address, do
+{{ifconfig \-a}}
+
+So far, IMS only support the server pool definition in the DAS. This does not mean that the DAS must be the server pool master (administering the target machines itself), as the server pool implementation can be a proxy to a separate entity managing machines and allocating virtual machines (ovm for instance). 
+
+h4. Add a server pool
+
+A server pool is a set of machines that can be referenced and targeted together. You need to create a server pool first and then optionally add remote machines (and/or the local machine) to it. If you do not add machines to a server pool, that means the server pool implementation is able to allocate virtual machines without the notion of physical machines attached to it, it's basically a VM allocation service itself.</pre> 
+       </div> 
+      </div>
+     </div> <p>asadmin create-server-pool --virtualization kvm --subnet 10.132.181.0/24 --portName "cscotun0;br0" cloud</p> <p>on a mac, it becomes : <br> asadmin create-server-pool --virtualization kvm --subnet 10.132.181.0/24 --portName "utun0;en0" cloud</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">the subnet is the group-master subnet that will be use to find the group's machine current IP address. This subnet will be used to do a multicast ping and retrieve a machine current IP address from it's mac address.
+
+The portName are the port the group master will use in sequence to communicate. Here I have 2 ports, one is the VPN port (if enabled), the other is the bridged wired connection (br0).
+
+h4. Adding machines to the server pool master
+
+h5. local machine
+
+To add the local machine to a group so virtual machines can be started on the same machines that runs the DAS, do :</pre> 
+       </div> 
+      </div>
+     </div> <p>asadmin create-machine --serverPool &lt;poolName&gt; --networkName localhost local</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">h5. remote machine
+
+If you are using a DHCP machine, you need to add the machine to the group master using the mac address. Also, the
+group master must reside in the same subnet as the machine.</pre> 
+       </div> 
+      </div>
+     </div> <p>asadmin create-machine --serverPool &lt;poolName&gt; --mac &lt;mac address of your machine&gt; name</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">to obtain your machine mac address on linux, use ifconfig \-a
+
+for example :
+asadmin create-machine \--serverPool cloud \--mac 00:1c:c4:9f:e9:3b cloud-1
+
+Bug warning : after adding machine(s) to the group master/DAS, restart the server.
+
+If you have a fixed IP address or it's not on the same subnet as the pool controller, you should add the IP to the create-machine command like :</pre> 
+       </div> 
+      </div>
+     </div> <p>asadmin create-machine --serverPool cloud --networkName office --ip 10.132.181.57 office</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">h4. User
+
+A user must be associated with the pool which mean that glassfish will use this user's account to talk to the remote machines part of that group. To add a user for the newly created group :</pre> 
+       </div> 
+      </div>
+     </div> <p>asadmin create-server-pool-user --serverPool &lt;groupName&gt; --userId &lt;unix-user-id&gt; --groupId &lt;unix-group-id&gt; unix_user_name</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Example :</pre> 
+       </div> 
+      </div>
+     </div> <p>asadmin create-server-pool-user --serverPool cloud --userId 1001 --groupId 1001 cloud</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">A machine can override the group user setting by creating a user specific to that machine.</pre> 
+       </div> 
+      </div>
+     </div> <p>asamin create-machine-user --serverPool &lt;groupName&gt; --machine &lt;machineName&gt; --userId &lt;unix-user-id&gt; --groupId &lt;unix-group-id&gt; unix_user_name</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false"></pre> 
+       </div> 
+      </div>
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Sep 01, 2011 by 
+<font color="#0050B2">jeromedochez</font>. Exported from wikis.oracle.com on May 27, 2015 20:49.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

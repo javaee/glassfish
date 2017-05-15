@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : M2GRunJa</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="M2GRunJa-%E3%83%9E%E3%82%A4%E3%82%B0%E3%83%AC%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%83%84%E3%83%BC%E3%83%AB%E3%81%AE%E8%B5%B7%E5%8B%95"></a>マイグレーションツールの起動 </h1> <p>マイグレーションツールは GUI もしくは コマンドライン・モードで実行することができます。</p> <h4><a name="M2GRunJa-Solaris%E3%81%BE%E3%81%9F%E3%81%AFLinux%E4%B8%8A%E3%81%A7%E3%83%9E%E3%82%A4%E3%82%B0%E3%83%AC%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%83%84%E3%83%BC%E3%83%AB%E3%82%92%E8%B5%B7%E5%8B%95%E3%81%99%E3%82%8B"></a>Solaris または Linux 上でマイグレーションツールを起動する</h2> <p>Solaris または Linux 上でマイグレーションツールを機動するには：</p> 
+     <ul> 
+      <li>マイグレーションツールを GUI モードで起動するには、シェルプロンプトから以下のようにコマンドを実行します。</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">% &lt;INSTALL_DIR&gt;/bin/asmigrate.sh -u</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>コマンドラインモードでツールを起動する場合は以下のように実行してください：</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">% &lt;INSTALL_DIR&gt;/bin/asmigrate.sh -c -S sourceserver -t targetdirectory -T targetserver &lt;OPERAND&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>　もしくは以下のとおり。</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">% &lt;INSTALL_DIR&gt;/bin/asmigrate.sh -c -S sourceserver -s sourcedirectory-t targetdirectory -T targetserver</pre> 
+       </div> 
+      </div>
+     </div> <p>マイグレーションツールのコマンドライン・オプションのセクションには、ツールの利用時に必要となるパラメータに関する情報が記載されています。</p> <h4><a name="M2GRunJa-Windows%E4%B8%8A%E3%81%A7%E3%83%9E%E3%82%A4%E3%82%B0%E3%83%AC%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%83%84%E3%83%BC%E3%83%AB%E3%82%92%E8%B5%B7%E5%8B%95%E3%81%99%E3%82%8B"></a>Windows 上でマイグレーションツールを起動する</h2> <p>Windows 上でマイグレーションツールを実行するには：</p> <p>　DOS のコマンドウィンドウ（※訳者注：コマンド・プロンプト）を開き、アプリケーションサーバをインストールしたディレクトリ配下の <tt>bin</tt> ディレクトリへ移動します。マイグレーションツールを GUI モードで起動する場合は、DOSプロンプト上から以下のようにコマンドを実行してください。</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">C:&gt; asmigrate.cmd -u</pre> 
+       </div> 
+      </div>
+     </div> <p>　また、マイグレーションツールをコマンドラインモードで起動する場合は以下のようにします：</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">C:&gt; asmigrate.cmd -S sourceserver -t targetdirectory -T targetserver &lt;OPERAND&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>　あるいは、次のようにコマンドを実行してください。</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">C:&gt; asmigrate.cmd -c -S sourceserver -s sourcedirectory-t targetdirectory -T targetserver</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="M2GRunJa-%E3%83%9E%E3%82%A4%E3%82%B0%E3%83%AC%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%83%84%E3%83%BC%E3%83%AB%E3%81%AE%E3%82%B3%E3%83%9E%E3%83%B3%E3%83%89%E3%83%A9%E3%82%A4%E3%83%B3%E3%82%AA%E3%83%97%E3%82%B7%E3%83%A7%E3%83%B3"></a>マイグレーションツールのコマンドラインオプション</h2> <p><tt>asmigrate</tt> コマンドの構文は以下の通りです。</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">asmigrate 必須パラメータ [任意のパラメータ] [オペランド]</pre> 
+       </div> 
+      </div>
+     </div> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">asmigrate 
+  [-h | --help ] 
+  [-v | --version ] 
+  ( (-c | --commandline) | (-u | --ui) )
+  [-q | --quiet ] 
+  [-d | --debug ]
+  [-s | --sourcedirectory source_directory] 
+  [-S | --sourceserversource_application_server] 
+  [-t | --targetdirectory target_directory] 
+  [-T | --targetserver target_application_server] 
+  [-n | --scan-native-apis-only ] 
+  [-p | --scan-packages package_list]
+  [-j | --java2db create-tables=true, drop-tables=true, db-vendor-name=dbVendorName] 
+  [-m | --migrate-cmp comment-pk-modifiers=true, overwriteconflicting-accessors=true] 
+  [-f | --file-filter all-files=true, html-files=true, java-files=true, jsp-files=true, xml-files=true, archive-files=true] 
+  [-a | --append-logs ]
+  [operands]</pre> 
+       </div> 
+      </div>
+     </div> <p>{{必須パラメータ}}には以下のいずれかを指定する必要があります：</p> 
+     <ul> 
+      <li><em><tt><del>u|</del>-ui</tt></em><br> 　マイグレーションツールをグラフィカル・ユーザ・インタフェース（ GUI ）モードで起動します。このパラメータと同時に他のパラメータを指定することはできません。</li> 
+      <li><em><tt><del>c|</del>-commandline</tt></em><br> 　マイグレーションツールをコマンドラインモードで起動します。以下のいずれかのパラメータを合わせて指定する必要があります。</li> 
+     </ul> 
+     <ul> 
+      <li><em><tt><del>S|</del>-sourceserver</tt></em><br> 　マイグレートするアプリケーションが配備されている、移行元のアプリケーションサーバを指定します。指定できるサーバには次のようなものがあります：</li> 
+     </ul> 
+     <ul> 
+      <li><tt>wl51</tt>: WebLogic Application Server 5.1</li> 
+      <li><tt>wl60</tt>: WebLogic Application Server 6.0</li> 
+      <li><tt>wl61</tt>: WebLogic Application Server 6.1</li> 
+      <li>wl81: Weblogic Application Server 8.1</li> 
+      <li><tt>as65</tt>: Sun ONE Application Server 6.5</li> 
+      <li><tt>as70</tt>: Sun ONE Application Server 7.0</li> 
+      <li><tt>ws40</tt>: WebSphere Application Server 4.0</li> 
+      <li>ws50: Websphere Application Server 5.1</li> 
+      <li><tt>ri13</tt>: JavaTMÖ 2 Platform Enterprise Edition 1.3</li> 
+      <li><tt>ri14</tt>: JavaTMÖ 2 Platform Enterprise Edition 1.4</li> 
+      <li><tt>jb30</tt>: JBoss Application Server 3.0</li> 
+      <li><tt>tc41</tt>: Tomcat Application Server 4.1</li> 
+      <li><em><tt><del>t|</del>-targetdirectory</tt></em><br> 　マイグレート後のアプリケーションを格納する、出力先のディレクトリを指定します。</li> 
+     </ul> 
+     <ul> 
+      <li><em><tt><del>T|</del>-targetserver</tt></em><br> 　アプリケーションのマイグレート先となるアプリケーションサーバを指定します。 {{<b>TARGETSERVER_DESIGNATOR</b>}}と Sun Java System Application Server を指定可能です。</li> 
+     </ul> <p>((optional_parameters)) には、以下より一つ以上を指定できます：</p> 
+     <ul> 
+      <li><em><tt><del>h|</del>-help</tt></em><br> 　マイグレーションツール起動時に指定可能な実行時引数を表示する。</li> 
+      <li><em><tt><del>v|</del>-version</tt></em><br> 　マイグレーションツールのバージョンを表示する。</li> 
+      <li><em><tt><del>q|</del>-quiet</tt></em><br> 　マイグレーションツールを非出力モードで起動する。</li> 
+      <li><em><tt><del>d|</del>-debug</tt></em><br> 　マイグレーションツールをデバッグモードで起動する。</li> 
+      <li><em><tt><del>s|</del>-sourcedirectory</tt></em><br> 　マイグレート、または走査対象となるソースコードが格納されているディレクトリを指定する。</li> 
+     </ul> 
+     <ul> 
+      <li><em><tt><del>n|</del>-scan-native-apis-only</tt></em><br> 　ソースコードを走査し、アプリケーションサーバ固有の API が存在するかどうかを確認する。</li> 
+     </ul> 
+     <ul> 
+      <li><em><tt><del>p|</del>-scan-packages</tt></em><br> 　走査対象の Java パッケージをカンマ区切りのリストで指定。</li> 
+     </ul> 
+     <ul> 
+      <li><em><tt><del>j|</del>-java2db</tt></em><br> 　 <tt>sun-cmp-mapping.xml</tt> ファイルの作成を行わず、オプション引数を <tt>sun-ejb-jar.xml</tt> ファイルに挿入する。</li> 
+     </ul> <p>　オプション引数は以下の通り：</p> 
+     <ul> 
+      <li><tt>create-tables</tt>: true を指定した場合（デフォルト）、デプロイ時にテーブルを作成する。 false を指定した場合はテーブルは作成されない。</li> 
+      <li><tt>drop-tables</tt>: true を指定した場合（デフォルト）、配備解除時にテーブルを削除する。 false を指定した場合はテーブルは削除されない。</li> 
+      <li><tt>db-vendor-name</tt>: マイグレートするアプリケーション のデータベース・ベンダー名を指定。サポートされるベンダー： Oracle 、 Sybase 、 DB2 、 Generic SQL92 、 JavaDB 、 MSSQL</li> 
+     </ul> 
+     <ul> 
+      <li><em><tt><del>m|</del>-migrate-cmp</tt></em><br> 　1.1 対応の CMP があれば 2.0 にマイグレートする。オプション引数は以下の通り：</li> 
+     </ul> 
+     <ul> 
+      <li><tt>overwrite-conflicting-accessors</tt>: true を指定した場合（デフォルト）、競合するアクセサは上書きされる。 false を指定した場合、アクセサは上書きされない。</li> 
+      <li><tt>comment-pk-modifiers</tt>: true を指定した場合（デフォルト）、プライマリ・キーのsetterはコメントアウトされる。 false を指定した場合、プライマリ・キーのsetterはコメントアウトされない。</li> 
+     </ul> 
+     <ul> 
+      <li><em><tt><del>f|</del>-file-filter</tt></em><br> マイグレートするファイルのタイプを選択する。オプション引数は以下の通り：</li> 
+     </ul> 
+     <ul> 
+      <li><tt>all-files</tt>: true を指定した場合（デフォルト）、すべてのタイプのファイルをマイグレートする</li> 
+      <li><tt>html-files</tt>: true を指定した場合（デフォルト）、 HTML ファイルをマイグレートする。</li> 
+      <li><tt>java-files</tt>: true を指定した場合（デフォルト）、 Java ファイルをマイグレートする。</li> 
+      <li><tt>jsp-files</tt>: true を指定した場合（デフォルト）、 JSP ファイルをマイグレートする。</li> 
+      <li><tt>archive-files</tt>: true を指定した場合（デフォルト）、 JAR/EAR/WAR/RAR ファイルをマイグレートする。</li> 
+     </ul> 
+     <ul> 
+      <li><em><tt><del>a|</del>-append-logs</tt></em><br> このオプションが指定された場合、既存のまたは以前のログの末尾にログを追加出力する（上書きは行わない）。オプションを指定しない場合は以前のログを上書きする。</li> 
+      <li><em><tt>operand</tt></em><br> 　マイグレート対象となるカーかイブファイル (JAR/EAR/WAR/RAR) を特定する。</li> 
+     </ul> <h4><a name="M2GRunJa-%E3%82%B3%E3%83%9E%E3%83%B3%E3%83%89%E3%83%A9%E3%82%A4%E3%83%B3%E5%AE%9F%E8%A1%8C%E4%BE%8Bs"></a>コマンドライン実行例s</h3> <p>以下のコマンドは Java EE のアーカイブ（ EAR ファイル）をマイグレートします。ソースディレクトリは特定せず、アーカイブへのパス名をオペランドに指定している点に注意してください。</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">asmigrate.sh -c --sourceserver as65
+--targetdirectory /d4/ias6.5/out
+--targetserver __TARGETSERVER_DESIGNATOR_CMD__ /d2/apps/HelloWorld.ear</pre> 
+       </div> 
+      </div>
+     </div> <p>以下のコマンドは Java EE アプリケーションのソースコードをマイグレートします。ソースディレクトリが指定され、オペランドにファイル名は指定されていない点に注意して下さい。</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">asmigrate.cmd -c --sourcedirectory
+/d2/apps/helloWorld/src
+--sourceserver as65 --targetdirectory /d4/ias6.5/out --targetserver
+__TARGETSERVER_DESIGNATOR_CMD__</pre> 
+       </div> 
+      </div>
+     </div> <p><a href="M2GPreRunJa.html" title="M2GPreRunJa">前へ</a> <a href="M2GMigrateAppJa.html" title="M2GMigrateAppJa">次へ</a> </p> 
+     <hr> <p>日本語翻訳: <a href="http://apercu-j.blogspot.com/">Kana. Kotake</a></p> <p><a href="M2GPreRun.html" title="M2GPreRun">英文 </a> (翻訳したバージョン: 4)</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 09, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : Jaxb2CommonsUsingAndDeveloping</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="Jaxb2CommonsUsingAndDeveloping-UsinganddevelopingJAXB2PluginswithJaxb2Commons"></a>Using and developing JAXB 2 Plugins with Jaxb2-Commons</h1> 
+     <hr> <h4><a name="Jaxb2CommonsUsingAndDeveloping-Introduction"></a>Introduction</h1> <p>Java Architecture for XML Binding (JAXB) provides a convenient way to bind an XML schema to a representation in Java code. This makes it easy for you to incorporate XML data and processing functions in applications based on Java technology without having to know much about XML itself.</p> <p>The following figure shows the components that make up a JAXB implementation:</p> <p><span class="error">Cannot resolve external resource into attachment.</span></p> <p>The central role in this architecture plays the schema compiler, which binds a source schema to a set of schema derived program elements. Essentially, binding compiler accepts a set of schema and binding files as input and generates source code of Java classes (these are called schema-derived classes).</p> <p>Although JAXB allows for customizing the schema-derived classes, these customizations are only possible to the certain extent. Fortunatelly, <a href="https://jaxb.java.net/">JAXB reference implementation</a> schema compiler (XJC) can be extended through the mechanism of plugins. Plugins may augment schema-derived classes or influence the way XJC generates the code. For instance, you can use plugins to add value-based <tt>equals</tt> or <tt>hashCode</tt> methods, make your generated classes JMX-ready, add fluent-style <tt>with_MyProperty_</tt> methods and so on.</p> <p>There is already a number of useful plugins developed by JAXB 2 enthusiasts. This document intends to help end-users use JAXB 2 plugins and those who would like to develop an own plugin for JAXB 2.</p> <h4><a name="Jaxb2CommonsUsingAndDeveloping-Usingplugins"></a>Using plugins</h1> <h4><a name="Jaxb2CommonsUsingAndDeveloping-Basicusage"></a>Basic usage</h2> <p>Basically, in order to use the plugin, you have to do two things:</p> 
+     <ol> 
+      <li>Make your plugin avaliable to XJC.</li> 
+      <li>Turn your plugin on during the schema compilation.</li> 
+     </ol> <p>The plugin is made available to XJC by simply including it (togther with all of its dependencies) into the XJC classpath. During the schema compilation, XJC will search its classpath for the available plugins, initialize them and run the enabled plugins.</p> <p>The plugin is turned on (or enabled) by the corresponding command-line option name. Every plugin must have such an option name. For instance, ToString plugin is activated by the <tt>XtoString</tt> option; in order to turn on this plugin you have to append <tt>-XtoString</tt> command line argument to the XJC args.</p> <p>The following sections explain how these two tasks (making plugins available to XJC and enabling the plugin) are done in popular build systems (Ant and Maven2).</p> <h4><a name="Jaxb2CommonsUsingAndDeveloping-Plugindependencies"></a>Plugin dependencies</h2> <p>Before going on to Ant and Maven2 usage it is necessary to cover another important topic: plugin dependencies.</p> <p>Dependencies are third-party libraries which are required for some code to function. In the case of plugins there are two types of dependencies to consider: dependencies of the plugin itself and dependencies of the generated code.</p> <p>First type of dependency appears when your plugin relies on some third-party libraries. For instance, a plugin may use utilities from jaxb2-commons-tools for code generation. When adding plugin library to the XJC classpath, it is important to add all dependency libraries as well. Otherwise the plugin could be instantiated.</p> <p>Second type of dependency arises when your plugin generates code that depends on some third-party libraries. For instance, basic plugins from Jaxb2-Commons generate code that uses Jakarta Commons Lang. Consequently, corresponding libraries must be added to the compilation and/or the runtime classpass so that generated code would actually compile and work.</p> <p>Plugin dependencies are usually documented in plugin documentation.</p> <h4><a name="Jaxb2CommonsUsingAndDeveloping-UsingpluginswithAnt"></a>Using plugins with Ant</h2> <p>Schema compilation in Ant is done with the special XJC Ant task, which is the part of JAXB RI. The following sections cover usage of JAXB plugins from the XJC task of Ant.</p> <h4><a name="Jaxb2CommonsUsingAndDeveloping-ExposingpluginstotheXJCAnttask"></a>Exposing plugins to the XJC Ant task</h3> <p>In order to make you plugin available to the XJC Ant task, you have to include the plugin and all of its dependencies into the classpath of the declared task:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&amp;lt;taskdef name="xjc" classname="com.sun.tools.xjc.XJCTask"&gt;
+	&amp;lt;classpath&gt;
+		&amp;lt;fileset dir="${basedir}/lib"&gt;
+			&amp;lt;!-- JAXB dependencies --&gt;
+			&amp;lt;include name="activation-*.jar"/&gt;
+			&amp;lt;include name="jaxb-api-*.jar"/&gt;
+			&amp;lt;include name="jaxb-impl-*.jar"/&gt;
+			&amp;lt;include name="jsr173_api-*.jar"/&gt;
+			&amp;lt;include name="jaxb-xjc-*.jar"/&gt;
+			&amp;lt;!-- Plugins --&gt;
+			&amp;lt;include name="basic-*.jar"/&gt;
+			&amp;lt;!-- Plugin dependencies --&gt;
+			&amp;lt;include name="runtime-*.jar"/&gt;
+			&amp;lt;include name="tools-*.jar"/&gt;
+			&amp;lt;include name="commons-beanutils-*.jar"/&gt;
+			&amp;lt;include name="commons-lang-*.jar"/&gt;
+			&amp;lt;include name="commons-logging-*.jar"/&gt;
+		&amp;lt;/fileset&gt;
+	&amp;lt;/classpath&gt;
+&amp;lt;/taskdef&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>Do not forget to include plugin dependencies, otherwise the XJC will not be able to instantiate your plugins.</p> <h4><a name="Jaxb2CommonsUsingAndDeveloping-Activatingplugins"></a>Activating plugins</h3> <p>Plugins are activated by including the corresponding option (<tt>-XmyPlugin</tt>) into the XJC arguments. This is doe with the nested <tt>&lt;arg/&gt;</tt> element:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&amp;lt;xjc target="${basedir}/target/generated-sources/xjc" extension="true"&gt;
+	&amp;lt;arg line="
+		-Xequals
+		-XhashCode
+		-XtoString
+		-Xcopyable"/&gt;
+	&amp;lt;binding dir="${basedir}/src/main/resources"&gt;
+	 	&amp;lt;include name="**/*.xjb"/&gt;
+	&amp;lt;/binding&gt;
+	&amp;lt;schema dir="${basedir}/src/main/resources"&gt;
+	 	&amp;lt;include name="**/*.xsd"/&gt;
+	&amp;lt;/schema&gt;
+&amp;lt;/xjc&gt;</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="Jaxb2CommonsUsingAndDeveloping-Compile%2Fruntimedependencies."></a>Compile/runtime dependencies.</h3> <p>In case generated code has some additional compile or runtime dependencies, add these to the corresponding compilation, testing or runtime path.</p> <p>For instance, <tt>hashCode()</tt> or <tt>equals(...)</tt> methods generated by basic plugins rely on <a href="http://jakarta.apache.org/commons/lang/">Commons Lang</a> and some interfaces from Jaxb2 Commons Runtime. Ant's compilation target would the look as follows:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&amp;lt;!-- Compilation classpath --&gt;
+&amp;lt;path id="compile.path"&gt;
+	&amp;lt;fileset dir="${basedir}/lib"&gt;
+		&amp;lt;!-- JAXB compile-time dependencies --&gt;
+		&amp;lt;include name="jaxb-api-*.jar"/&gt;
+		&amp;lt;!-- Additional compile-time dependencies of the generated code --&gt;
+		&amp;lt;include name="commons-lang-*.jar"/&gt;
+		&amp;lt;include name="runtime-*.jar"/&gt;
+	&amp;lt;/fileset&gt;
+&amp;lt;/path&gt;
+&amp;lt;!-- Compilation target --&gt;
+&amp;lt;target name="compile" depends="generate-sources"&gt;
+	&amp;lt;mkdir dir="${basedir}/target/classes"/&gt;
+	&amp;lt;javac
+		destdir="${basedir}/target/classes" 
+		srcdir="${basedir}/src/main/java:${basedir}/target/generated-sources/xjc"
+		classpathref="compile.path"
+		source="1.5"
+		target="1.5"&gt;
+	&amp;lt;/javac&gt;
+	&amp;lt;copy todir="${basedir}/target/classes"&gt;
+		&amp;lt;fileset dir="${basedir}/src/main/resources"/&gt;
+		&amp;lt;fileset dir="${basedir}/target/generated-sources/xjc"&gt;
+			&amp;lt;exclude name="**/*.java" /&gt;
+		&amp;lt;/fileset&gt;
+	&amp;lt;/copy&gt;
+&amp;lt;/target&gt;</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="Jaxb2CommonsUsingAndDeveloping-UsingpluginswithMaven2"></a>Using plugins with Maven2</h2> <p>Schema compilation in Maven2 is performed by specialized Maven2 plugins for JAXB2. There's a number of such plugins available. Jaxb2-Commons primarily uses the <a href="https://maven-jaxb2-plugin.java.net">maven-jaxb2-plugin</a>, so we'll refer to this Maven2 plugin in this document as well.</p> <p>In order to use this plugin, you have to include the corresponding declaration into your <tt>build/plugins</tt> element:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&amp;lt;build&gt;
+	&amp;lt;plugins&gt;
+		&amp;lt;plugin&gt;
+			&amp;lt;groupId&gt;org.jvnet.jaxb2.maven2&amp;lt;/groupId&gt;
+			&amp;lt;artifactId&gt;maven-jaxb2-plugin&amp;lt;/artifactId&gt;
+			&amp;lt;executions&gt;
+				&amp;lt;execution&gt;
+					&amp;lt;goals&gt;
+						&amp;lt;goal&gt;generate&amp;lt;/goal&gt;
+					&amp;lt;/goals&gt;
+				&amp;lt;/execution&gt;
+			&amp;lt;/executions&gt;
+		&amp;lt;/plugin&gt;
+	&amp;lt;/plugins&gt;
+&amp;lt;/build&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>The definition above includes schema compilation performed by XJC into the <tt>generate-source</tt> phase of the build.</p> <h4><a name="Jaxb2CommonsUsingAndDeveloping-ExposingpluginstotheMaven2JAXB2plugin"></a>Exposing plugins to the Maven2 JAXB2 plugin</h3> <p>In order to make your plugins available to the Maven2 JAXB2 plugin, you have to include their dependencies into the plugin definition:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&amp;lt;plugin&gt;
+	&amp;lt;groupId&gt;org.jvnet.jaxb2.maven2&amp;lt;/groupId&gt;
+	&amp;lt;artifactId&gt;maven-jaxb2-plugin&amp;lt;/artifactId&gt;
+	&amp;lt;dependencies&gt;
+		&amp;lt;dependency&gt;
+			&amp;lt;groupId&gt;org.jvnet.jaxb2_commons&amp;lt;/groupId&gt;
+			&amp;lt;artifactId&gt;basic&amp;lt;/artifactId&gt;
+			&amp;lt;version&gt;0.1&amp;lt;/version&gt;
+		&amp;lt;/dependency&gt;
+	&amp;lt;/dependencies&gt;
+	&amp;lt;executions&gt;
+		&amp;lt;execution&gt;
+			&amp;lt;goals&gt;
+				&amp;lt;goal&gt;generate&amp;lt;/goal&gt;
+			&amp;lt;/goals&gt;
+		&amp;lt;/execution&gt;
+	&amp;lt;/executions&gt;
+&amp;lt;/plugin&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>If dependencies of your plugin are well-managed, Maven will include them transitively. So, in example above we don't need to mind the dependencies of the basic plugins - they will be included by Maven automatically.</p> <h4><a name="Jaxb2CommonsUsingAndDeveloping-Activatingplugins"></a>Activating plugins</h3> <p>Activation of plugins is done via the <tt>configuration/args/arg</tt> elements in the plugin definition:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&amp;lt;plugin&gt;
+	&amp;lt;groupId&gt;org.jvnet.jaxb2.maven2&amp;lt;/groupId&gt;
+	&amp;lt;artifactId&gt;maven-jaxb2-plugin&amp;lt;/artifactId&gt;
+	&amp;lt;dependencies&gt;
+		&amp;lt;dependency&gt;
+			&amp;lt;groupId&gt;org.jvnet.jaxb2_commons&amp;lt;/groupId&gt;
+			&amp;lt;artifactId&gt;basic&amp;lt;/artifactId&gt;
+			&amp;lt;version&gt;0.1&amp;lt;/version&gt;
+		&amp;lt;/dependency&gt;
+	&amp;lt;/dependencies&gt;
+	&amp;lt;configuration&gt;
+		&amp;lt;args&gt;
+			&amp;lt;arg&gt;-XtoString&amp;lt;/arg&gt;
+			&amp;lt;arg&gt;-Xequals&amp;lt;/arg&gt;
+			&amp;lt;arg&gt;-XhashCode&amp;lt;/arg&gt;
+			&amp;lt;arg&gt;-Xcopyable&amp;lt;/arg&gt;
+		&amp;lt;/args&gt;
+	&amp;lt;/configuration&gt;
+	&amp;lt;executions&gt;
+		&amp;lt;execution&gt;
+			&amp;lt;goals&gt;
+				&amp;lt;goal&gt;generate&amp;lt;/goal&gt;
+			&amp;lt;/goals&gt;
+		&amp;lt;/execution&gt;
+	&amp;lt;/executions&gt;
+&amp;lt;/plugin&gt;</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="Jaxb2CommonsUsingAndDeveloping-Compile%2Fruntimedependencies"></a>Compile/runtime dependencies</h3> <p>Don't forget to include further compile/runtime/test dependencies into your project. For instance, the code generated by the basic plugins depends on the <tt>runtime</tt> module and uses <tt>testing</tt> module for unit-tests. Therefore we'll include these dependencies into our pom:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&amp;lt;project xmlns="http://maven.apache.org/POM/4.0.0" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"&gt;
+	&amp;lt;!-- ... --&gt;
+	&amp;lt;dependencies&gt;
+		&amp;lt;dependency&gt;
+			&amp;lt;groupId&gt;org.jvnet.jaxb2_commons&amp;lt;/groupId&gt;
+			&amp;lt;artifactId&gt;runtime&amp;lt;/artifactId&gt;
+			&amp;lt;version&gt;0.1&amp;lt;/version&gt;
+		&amp;lt;/dependency&gt;
+		&amp;lt;dependency&gt;
+			&amp;lt;groupId&gt;org.jvnet.jaxb2_commons&amp;lt;/groupId&gt;
+			&amp;lt;artifactId&gt;testing&amp;lt;/artifactId&gt;
+			&amp;lt;version&gt;0.1&amp;lt;/version&gt;
+			&amp;lt;scope&gt;test&amp;lt;/scope&gt;
+		&amp;lt;/dependency&gt;
+	&amp;lt;/dependencies&gt;
+	&amp;lt;!-- ... --&gt;
+&amp;lt;/project&gt;</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="Jaxb2CommonsUsingAndDeveloping-Troubleshooting"></a>Troubleshooting</h2> <p>The first step to diagnose and resolve build problems is to turn on debugging information:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">ant -d -v clean install</pre> 
+       </div> 
+      </div>
+     </div> <p>for Ant or</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">mvn -X clean install</pre> 
+       </div> 
+      </div>
+     </div> <p>for Maven2.</p> <p>The most frequent problem reported by users is "unrecognized parameer -X_myPlugin_". There can be two reasons for this: either the plugin could not be found, or it cannot be instantiated.<br> To resolve this issue carefull check your XJC classpath. It must contain your plugin and all of is dependencies.<br> addon.AddOn).</p> <p>If the problem persists, turn on tracing of the add-on instantiation in XJC. This is done by adding -Dcom.sun.tools.xjc.Options.findServices=true to your ANT_OPTS.</p> <h4><a name="Jaxb2CommonsUsingAndDeveloping-Examples"></a>Examples</h2> <p>For your reference, Jaxb2-Commons include a number of <a href="Jaxb2CommonsSamples.html" title="Jaxb2CommonsSamples">ready-to-use sample projects</a> for Maven2 and Ant.</p> <h4><a name="Jaxb2CommonsUsingAndDeveloping-Developingplugins"></a>Developing plugins</h1> <p>The following sections intend to help new developers start writing JAXB 2 plugins. We cover general questions of plugin development as well as illustrate how Jaxb2-Commons framework may ease the life of plugin developers.</p> <h4><a name="Jaxb2CommonsUsingAndDeveloping-Pluginbasics"></a>Plugin basics</h2> <p>Plugins are simply Java classes that extend the base abstract class <tt>com.sun.tools.xjc.Plugin</tt>.</p> <p>A minimalistic plugin must have a default public no-arg constructor and implement three abstract methods of the base class:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">public abstract String getOptionName();
+public abstract String getUsage();
+public abstract boolean run(Outline outline, Options opt, ErrorHandler errorHandler);</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="Jaxb2CommonsUsingAndDeveloping-Optionname"></a>Option name</h3> <p>Each plugin has an assigned option name. This option name is used by plugin end-users to activate the plugin. Option name must start with a <tt>"-"</tt>. By convention, plugins also add <tt>"X"</tt> prefix to the option name. So typically the option name will be something like <tt>"-X_myPlugin_"</tt>. For instance, <tt>"-XtoString</tt>.</p> <h4><a name="Jaxb2CommonsUsingAndDeveloping-Usage"></a>Usage</h3> <p>Usage is simply a textual description of plugin functionality/configuration.</p> <h4><a name="Jaxb2CommonsUsingAndDeveloping-Runmethod"></a>Run method</h3> <p>The <tt>run(...)</tt> method is the central method of the plugin class. This method will be invoked by XJC after the schema was processed and the code model was generated. Still, at this point the code model was not yet written to disk. This means it still gives a chance to be augment by the plugin.</p> <p>This method has three arguments: outline, options and error handler.</p> <p>Outline is the complete model generated by XJC. It contains processed schema constructs (package, class and field outlines), generated code model and so on. Outline is the main object that your plugin will work with. You may use this object for analysis, but you may also modify it to change or extend the code that will finall make up the source code of the schema-derived classes.</p> <p>Options describe the configuration of the environment in which XJC runs. From the options object you can retrieve source and target directories, included schemas and further XJC parameters.</p> <p>Error handler is intended to be the error reporting mechanism. Theoretically, errors or problems shold be reported as SAX exceptions through the error handler. However, in practice almoust noone does this.</p> <h4><a name="Jaxb2CommonsUsingAndDeveloping-Furthermethods"></a>Further methods</h3> <p>The <tt>com.sun.tools.xjc.Plugin</tt> has a couple more methods which allow the plugin to be parameterized, enable proccessing of vendor-specific bindings and provide few more plugin hooks. This advanced plugin functionality is covered in the following sections.</p> <h4><a name="Jaxb2CommonsUsingAndDeveloping-Parameterizableplugins"></a>Parameterizable plugins</h2> <p>Quite often plugin's behaviour must be customized by some externally provided parameter. This is done via the <tt>parseArgument</tt> method:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">public int parseArgument( Options opions, String[] args, int i) throws BadCommandLineException, IOException;</pre> 
+       </div> 
+      </div>
+     </div> <p>The plugin must consider arguments (<tt>args</tt>) starting at position <tt>i</tt> and return the number of tokens it hase recognized and consumed. If nothing is consumed, simply return <tt>0</tt>.</p> <p>Arguments are passed to XJC exactly the same way plugins are activated. So you'll do something like</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&amp;lt;xjc target="${basedir}/target/generated-sources/xjc" extension="true"&gt;
+	&amp;lt;arg line="
+		-XmyPlugin
+		-XmyPlugin-myOption=value"/&gt;
+	&amp;lt;!-- ... --&gt;
+&amp;lt;/xjc&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>By convention, plugin sub-options must start with plugin option name followed by <tt>"<del>"</del></tt>. So, "-X_myPlugin_<em>myOption</em>=<em>value</em>" would mean that the <tt><em>myOption</em></tt> parameter of the <tt><em>myPlugin</em></tt> plugin has have the certain "<em>value</em>". In this case, plugin must recognize this option and return <tt>1</tt>.</p> <h4><a name="Jaxb2CommonsUsingAndDeveloping-Extendingthe%7B%7BAbstractParameterizablePlugin%7D%7D"></a>Extending the <tt>AbstractParameterizablePlugin</tt></h3> <p>I you feel fine with the proposed sub-option conventions, instead of implementing the <tt>parseArgument(...)</tt> method yourself, you may simply base your plugin on <tt>org.jvnet.jaxb2_commons.plugin.AbstractParameterizablePlugin</tt> from Jaxb2-Commons-Tools. This abstract plugin provides an implementation of the <tt>parseArgument(...)</tt> method which recognizes all "<del>X_myPlugin_</del><em>myOption</em>=<em>value</em>" parameters and injects the <tt><em>value</em></tt> into the plugin via setter. Ex. "<del>X_myPlugin_</del><em>myOption</em>=<em>value</em>" will result in <tt>myPlugin.setMyOption("value")</tt> invocation.<br> Injection is done with bean introspection implemented by Commons BeanUtils, so this will handle all basic datatype conversions and so on.<br> Essentially, you just need to define setters - and your plugin becomes parameterizable.</p> <p>For example, the ToString plugin has an option to parameterize which string builder will be used when creating string representation of schema-derived object. This parameter is simply a class which can be passed from the outside.</p> <p>Instead of implementing <tt>parseArgument(...)</tt>, ToString plugin simply extends <tt>AbstractParameterizablePlugin</tt> and declares the <tt>toStringBuilder</tt> property:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">public class ToStringPlugin extends AbstractParameterizablePlugin {
+
+  @Override
+  public String getOptionName() {
+    return "XtoString";
+  }
+
+  @Override
+  public String getUsage() {
+    return ""
+        + "-XtoString:  generates toString() method based on Jakarta Commons Lang"
+        + "-XtoString-toStringBuilder:  toString builder class to use. Defaults to "
+        + JAXBToStringBuilder.class.getName()
+        + ".";
+  }
+
+  private Class toStringBuilder = JAXBToStringBuilder.class;
+
+  public void setToStringBuilder(Class equalsBuilderClass) {
+    if (!ToStringBuilder.class.isAssignableFrom(equalsBuilderClass))
+      throw new IllegalArgumentException("The class must extend ["
+          + ToStringBuilder.class.getName()
+          + "].");
+    this.toStringBuilder = equalsBuilderClass;
+  }
+
+  public Class getToStringBuilder() {
+    return toStringBuilder;
+  }
+
+  // ...
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>In case the command line contains the <tt>-XtoString-toStringBuilder=com.acme.foo.MyToStringBuilder</tt> argument, the <tt>com.acme.foo.MyToStringBuilder.class</tt> will be passed to the plugin through the <tt>setToStringBuilder(...)</tt> setter.</p> <h4><a name="Jaxb2CommonsUsingAndDeveloping-WritingaSpringconfigurableplugin"></a>Writing a Spring-configurable plugin</h2> <h4><a name="Jaxb2CommonsUsingAndDeveloping-Usingextensionbindings"></a>Using extension bindings</h2> <h4><a name="Jaxb2CommonsUsingAndDeveloping-Writingaparameterizableplugin"></a>Writing a parameterizable plugin</h2> <h4><a name="Jaxb2CommonsUsingAndDeveloping-Buildingtheplugin"></a>Building the plugin</h2> <h4><a name="Jaxb2CommonsUsingAndDeveloping-Jaxb2CommonsMaven2buildsystem"></a>Jaxb2-Commons Maven2 build system</h3> <h4><a name="Jaxb2CommonsUsingAndDeveloping-Testingtheplugin"></a>Testing the plugin</h2> <h4><a name="Jaxb2CommonsUsingAndDeveloping-Programmaticexecutionoftheplugin"></a>Programmatic execution of the plugin</h3> <h4><a name="Jaxb2CommonsUsingAndDeveloping-Integratedtesting"></a>Integrated testing</h3> <h4><a name="Jaxb2CommonsUsingAndDeveloping-Documentingtheplugin"></a>Documenting the plugin</h2> <h4><a name="Jaxb2CommonsUsingAndDeveloping-Distributingtheplugin"></a>Distributing the plugin</h2> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:48.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

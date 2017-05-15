@@ -1,0 +1,2084 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : V3FunctionalSpecs</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="V3FunctionalSpecs-OnePagersforNewFunctionalityinGlassFishServerOpenSourceEdition"></a>One Pagers for New Functionality in GlassFish Server Open Source Edition</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#V3FunctionalSpecs-OnePagersforNewFunctionalityinGlassFishServerOpenSourceEdition">One Pagers for New Functionality in GlassFish Server Open Source Edition</a></li> 
+       <ul> 
+        <li><a href="#V3FunctionalSpecs-OnePagersfor3.2Release">One Pagers for 3.2 Release</a></li> 
+        <ul> 
+         <li><a href="#V3FunctionalSpecs-OverallPaaSOnePager">Overall PaaS One Pager</a></li> 
+         <li><a href="#V3FunctionalSpecs-Infrastructure">Infrastructure</a></li> 
+         <li><a href="#V3FunctionalSpecs-InfrastructureHighavailability">Infrastructure High availability</a></li> 
+         <li><a href="#V3FunctionalSpecs-ContainersandServices">Containers and Services</a></li> 
+         <li><a href="#V3FunctionalSpecs-ManagementandAPI">Management and API</a></li> 
+         <li><a href="#V3FunctionalSpecs-DeveloperandTooling">Developer and Tooling</a></li> 
+        </ul> 
+        <li><a href="#V3FunctionalSpecs-OnePagersfor3.1Release">One Pagers for 3.1 Release</a></li> 
+        <ul> 
+         <li><a href="#V3FunctionalSpecs-Infrastructure">Infrastructure</a></li> 
+         <li><a href="#V3FunctionalSpecs-InfrastructureHighAvailability">Infrastructure - High Availability</a></li> 
+         <li><a href="#V3FunctionalSpecs-ManagementandAPI">Management and API</a></li> 
+         <li><a href="#V3FunctionalSpecs-ContainersandServices">Containers and Services</a></li> 
+         <li><a href="#V3FunctionalSpecs-DeveloperandTooling">Developer and Tooling</a></li> 
+         <li><a href="#V3FunctionalSpecs-TechnologyRefreshandIntegration">Technology Refresh and Integration</a></li> 
+        </ul> 
+        <li><a href="#V3FunctionalSpecs-OnePagersforv3FinalRelease">One Pagers for v3 Final Release</a></li> 
+        <ul> 
+         <li><a href="#V3FunctionalSpecs-OverviewandInfrastructure">Overview and Infrastructure</a></li> 
+         <li><a href="#V3FunctionalSpecs-ContainersandCoreServices">Containers and Core Services</a></li> 
+         <li><a href="#V3FunctionalSpecs-ManagementandMonitoring">Management and Monitoring</a></li> 
+        </ul> 
+        <li><a href="#V3FunctionalSpecs-OnePagersforv3Preluderelease">One Pagers for v3 Prelude release</a></li> 
+        <li><a href="#V3FunctionalSpecs-GuidelinesforAuthors">Guidelines for Authors</a></li> 
+        <li><a href="#V3FunctionalSpecs-GuidelinesforReviewers">Guidelines for Reviewers</a></li> 
+        <li><a href="#V3FunctionalSpecs-ReviewProcess">Review Process</a></li> 
+        <li><a href="#V3FunctionalSpecs-ASArchReview">ASArch Review</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="V3FunctionalSpecs-OnePagersfor3.2Release"></a>One Pagers for 3.2 Release</h2> <p>Please follow <a href="#V3FunctionalSpecs-GuidelinesForAuthors">instructions</a> defined at the bottom of this page.</p> <h4><a name="V3FunctionalSpecs-OverallPaaSOnePager"></a>Overall PaaS One Pager</h3> <p><font color="#00e000"><a href="3.2OverallOnePager.html" title="3.2OverallOnePager">Overall One Pager</a></font> is an introduction to the various parts described below.</p> <h4><a name="V3FunctionalSpecs-Infrastructure"></a>Infrastructure</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Document </th> 
+         <th class="confluenceTh"> Authors </th> 
+         <th class="confluenceTh"> Status </th> 
+         <th class="confluenceTh"> Reviewer(s) </th> 
+         <th class="confluenceTh"> Forum/Email Thread and Slides </th> 
+         <th class="confluenceTh"> Testing owner </th> 
+         <th class="confluenceTh"> Test Specification </th> 
+         <th class="confluenceTh"> Test Spec Status </th> 
+         <th class="confluenceTh"> Doc. Owner </th> 
+         <th class="confluenceTh"> ASArch Review </th> 
+         <th class="confluenceTh"> Review Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="3.2AdminCommandProgress.html" title="3.2AdminCommandProgress">Admin Command Progress Status</a> (<a href="3.2ProgressRequirements.html" title="3.2ProgressRequirements">requirements</a>) </td> 
+         <td class="confluenceTd"> Chris Kasso </td> 
+         <td class="confluenceTd"> Being written </td> 
+         <td class="confluenceTd"> Tom Mueller, Anissa Lam </td> 
+         <td class="confluenceTd"> <a href="mailto:admin@glassfish.java.net">admin@glassfish.java.net</a>, <br class="atl-forced-newline"> <a href="https://github.com/javaee/glassfish/issues/12032">issue&nbsp;12032</a> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Paul Davies </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="3.2Dcom.html" title="3.2Dcom">Remote Node Improvements for Windows</a> </td> 
+         <td class="confluenceTd"> Byron Nevins, Joe Di Pol </td> 
+         <td class="confluenceTd"> Assigned </td> 
+         <td class="confluenceTd"> Carla Mott, Tom Mueller </td> 
+         <td class="confluenceTd"> <a href="mailto:admin@glassfish.java.net">admin@glassfish.java.net </a>, <a href="https://github.com/javaee/glassfish/issues/16248">issue 16248</a> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Paul Davies </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/16247">JVM-specific JVM options</a> </td> 
+         <td class="confluenceTd"> Tom Mueller </td> 
+         <td class="confluenceTd"> ASArch <br class="atl-forced-newline"> Review Ready </td> 
+         <td class="confluenceTd"> Byron Nevins, Chris Kasso </td> 
+         <td class="confluenceTd"> <a href="mailto:admin@glassfish.java.net">admin@glassfish.java.net </a>, <a href="https://github.com/javaee/glassfish/issues/16247">issue 16247</a> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Paul Davies </td> 
+         <td class="confluenceTd"> Yes (via email) </td> 
+         <td class="confluenceTd"> Byron-Approved </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="3.2PlatformServices.html" title="3.2PlatformServices">Improved OS service integration</a> </td> 
+         <td class="confluenceTd"> Byron Nevins </td> 
+         <td class="confluenceTd"> ASArch Review Ready </td> 
+         <td class="confluenceTd"> Bill Shannon, Jennifer Chou </td> 
+         <td class="confluenceTd"> <a href="mailto:admin@glassfish.java.net">admin@glassfish.java.net </a>, <br class="atl-forced-newline"> <a href="https://github.com/javaee/glassfish/issues/16311">issue 16311</a> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Paul Davies </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="3.2Virtualization.html" title="3.2Virtualization">Virtualization / IaaS</a> </td> 
+         <td class="confluenceTd"> Jerome Dochez </td> 
+         <td class="confluenceTd"> Assigned </td> 
+         <td class="confluenceTd"> Mahesh Kannan, Sivakumar Thyagarajan, Hong Zhang </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Gopal/Varun/Sherry </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="3.2VirtualizationPlugins.html" title="3.2VirtualizationPlugins">Virtualization Provider Plugins</a> </td> 
+         <td class="confluenceTd"> Joe Di Pol, Jerome Dochez, Ludovic Champenois </td> 
+         <td class="confluenceTd"> Assigned </td> 
+         <td class="confluenceTd"> Rajiv Mordani, Hong Zhang </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Gopal/Varun </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="GlassFish 3.2 Open Source Edition - Elasticity Module One Pager.html" title="GlassFish 3.2 Open Source Edition - Elasticity Module One Pager">Elasticity </a> </td> 
+         <td class="confluenceTd"> Mahesh Kannan, Santiago Pericas-Geertsen, Carla Mott </td> 
+         <td class="confluenceTd"> Assigned </td> 
+         <td class="confluenceTd"> Bill Shannon, Joe Fialli, Tom Mueller </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ming </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="3.2 Service Orchestration One Pager.html" title="3.2 Service Orchestration One Pager">Service Orchestration</a><br class="atl-forced-newline"> Also see <a href="Gf3.2ConnectorsJDBC.html" title="Gf3.2ConnectorsJDBC">Connectors, Pooling, Resources, JDBC</a><br class="atl-forced-newline"> For VM templates etc. related to service orchestration <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Sivakumar&nbsp;Thyagarajan <br class="atl-forced-newline"> Sahoo </td> 
+         <td class="confluenceTd"> Ready for Review </td> 
+         <td class="confluenceTd"> Jerome Dochez, Bill Shannon, Amy Kang </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Varun/Shariff </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="User-Managed Clusters.html" title="User-Managed Clusters">User-Managed Clusters</a> </td> 
+         <td class="confluenceTd"> Tom Mueller </td> 
+         <td class="confluenceTd"> Being written </td> 
+         <td class="confluenceTd"> Rajiv Mordani, Bill Shannon </td> 
+         <td class="confluenceTd"> admin@glassfish.java.net <br class="atl-forced-newline"> <a href="https://github.com/javaee/glassfish/issues/16431">issue 16431</a> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="3.2SecureAdmin.html" title="3.2SecureAdmin">Secure admin </a> </td> 
+         <td class="confluenceTd"> Tim Quinn </td> 
+         <td class="confluenceTd"> Draft </td> 
+         <td class="confluenceTd"> V.B. Kumar Jayanti, Bill Shannon </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Paul Davies </td> 
+         <td class="confluenceTd"> yes (perhaps via email is sufficient, depending on scope of changes) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="3.2DeploymentOnePager.html" title="3.2DeploymentOnePager">Deployment</a> </td> 
+         <td class="confluenceTd"> Hong Zhang, Tim Quinn </td> 
+         <td class="confluenceTd"> Draft </td> 
+         <td class="confluenceTd"> Jerome Dochez, Rajiv Mordani </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Elena </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Rebecca </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="v32LoggingOnePager.html" title="v32LoggingOnePager">Logging</a> </td> 
+         <td class="confluenceTd"> Naman Mehta </td> 
+         <td class="confluenceTd"> Ready for Review </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Lidia </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Scott Fordin </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="V3FunctionalSpecs-InfrastructureHighavailability"></a>Infrastructure High availability</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Document </th> 
+         <th class="confluenceTh"> Authors </th> 
+         <th class="confluenceTh"> Status </th> 
+         <th class="confluenceTh"> Reviewer(s) </th> 
+         <th class="confluenceTh"> Forum/Email Thread and Slides </th> 
+         <th class="confluenceTh"> Testing owner </th> 
+         <th class="confluenceTh"> Test Specification </th> 
+         <th class="confluenceTh"> Test Spec Status </th> 
+         <th class="confluenceTh"> Doc. Owner </th> 
+         <th class="confluenceTh"> ASArch Review </th> 
+         <th class="confluenceTh"> Review Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="GMS3.2OnePager.html" title="GMS3.2OnePager">GMS runtime clustering</a> </td> 
+         <td class="confluenceTd"> Joe Fialli, Bobby Bissett </td> 
+         <td class="confluenceTd"> Being written </td> 
+         <td class="confluenceTd"> Bill Shannon, Mahesh Kannan, Ken Cavanaugh, Rajiv Mordani </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Kazem </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="V3FunctionalSpecs-ContainersandServices"></a>Containers and Services</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Document </th> 
+         <th class="confluenceTh"> Authors </th> 
+         <th class="confluenceTh"> Status </th> 
+         <th class="confluenceTh"> Reviewer(s) </th> 
+         <th class="confluenceTh"> Forum/Email Thread and Slides </th> 
+         <th class="confluenceTh"> Testing owner </th> 
+         <th class="confluenceTh"> Test Specification </th> 
+         <th class="confluenceTh"> Test Spec Status </th> 
+         <th class="confluenceTh"> Doc. Owner </th> 
+         <th class="confluenceTh"> ASArch Review </th> 
+         <th class="confluenceTh"> Review Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="3.2JMS-onepager.html" title="3.2JMS-onepager">JMS Integration </a> </td> 
+         <td class="confluenceTd"> Satish Kumar <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Assigned </td> 
+         <td class="confluenceTd"> Nigel Deakin, Amy Kang, Chris Kasso, Jason Lee, Jerome Dochez </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Sonia </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="GlassFish 3.2 Message Queue One-pagers.html" title="GlassFish 3.2 Message Queue One-pagers">Message Queue </a> </td> 
+         <td class="confluenceTd"> Amy Kang, Nigel Deakin </td> 
+         <td class="confluenceTd"> Assigned </td> 
+         <td class="confluenceTd"> Nigel Deakin, Amy Kang,Satish Kumar <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Sonia </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="V3.2SecurityOnePager.html" title="V3.2SecurityOnePager">Security</a> </td> 
+         <td class="confluenceTd"> Kumar Jayanti, Nithya Subramanian </td> 
+         <td class="confluenceTd"> Ready </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Sonia </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://aseng-wiki.us.oracle.com/asengwiki/display/GlassFish/GF3.2CorbaOnePager">CORBA</a> <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Ken Cavanaugh <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Assigned <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="V3.2JerseyOnePager.html" title="V3.2JerseyOnePager">Jersey </a> <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Jakub Podlesak <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Assigned <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="GF3.2MetroOnePager.html" title="GF3.2MetroOnePager">Metro</a> <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Fabian Ritzmann <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Draft <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/16454">issue&nbsp;16454</a> </td> 
+         <td class="confluenceTd"> Sony Manuel <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="Gf3.2ConnectorsJDBC.html" title="Gf3.2ConnectorsJDBC">Connectors, Pooling, Resources, JDBC </a> </td> 
+         <td class="confluenceTd"> Jagadish Ramu, Shalini Muthukrishnan </td> 
+         <td class="confluenceTd"> Draft </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="3.2Persistence.html" title="3.2Persistence">Persistence </a> </td> 
+         <td class="confluenceTd"> Mitesh Meswani </td> 
+         <td class="confluenceTd"> Draft </td> 
+         <td class="confluenceTd"> Marina Vatkina, <a href="3.2PersistenceReview.html" title="3.2PersistenceReview">Joe Fialli </a> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Sherry Shen </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Load Balancer Service </td> 
+         <td class="confluenceTd"> Kshitiz Saxena </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="V3FunctionalSpecs-ManagementandAPI"></a>Management and API</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Document </th> 
+         <th class="confluenceTh"> Authors </th> 
+         <th class="confluenceTh"> Status </th> 
+         <th class="confluenceTh"> Reviewer(s) </th> 
+         <th class="confluenceTh"> Forum/Email Thread and Slides </th> 
+         <th class="confluenceTh"> Testing owner </th> 
+         <th class="confluenceTh"> Test Specification </th> 
+         <th class="confluenceTh"> Test Spec Status </th> 
+         <th class="confluenceTh"> Doc. Owner </th> 
+         <th class="confluenceTh"> ASArch Review </th> 
+         <th class="confluenceTh"> Review Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="3.2AdminConsoleOnePager.html" title="3.2AdminConsoleOnePager">Console</a> </td> 
+         <td class="confluenceTd"> Anissa Lam </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Sivakumar Thyagarajan, Jagadish Ramu </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Lidia </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Mike Fitch </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="32RestInterfaceOnePager.html" title="32RestInterfaceOnePager">RESTful API</a> </td> 
+         <td class="confluenceTd"> Jason Lee, Ludovic Champenois </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Jerome Dochez </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> NA </td> 
+         <td class="confluenceTd"> NA </td> 
+         <td class="confluenceTd"> NA </td> 
+         <td class="confluenceTd"> Paul Davies </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="V3FunctionalSpecs-DeveloperandTooling"></a>Developer and Tooling</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Document </th> 
+         <th class="confluenceTh"> Authors </th> 
+         <th class="confluenceTh"> Status </th> 
+         <th class="confluenceTh"> Reviewer(s) </th> 
+         <th class="confluenceTh"> Forum/Email Thread and Slides </th> 
+         <th class="confluenceTh"> Testing owner </th> 
+         <th class="confluenceTh"> Test Specification </th> 
+         <th class="confluenceTh"> Test Spec Status </th> 
+         <th class="confluenceTh"> Doc. Owner </th> 
+         <th class="confluenceTh"> ASArch Review </th> 
+         <th class="confluenceTh"> Review Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="3.2EmbeddedOnePager.html" title="3.2EmbeddedOnePager">Embedded GlassFish</a> </td> 
+         <td class="confluenceTd"> Bhavanishankar </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="V3FunctionalSpecs-OnePagersfor3.1Release"></a>One Pagers for 3.1 Release</h2> <p>Please follow <a href="#V3FunctionalSpecs-sectionV3FunctionalSpecsGuidelinesForAuthors">instructions</a> defined at the bottom of this page.</p> <h4><a name="V3FunctionalSpecs-Infrastructure"></a>Infrastructure</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Document </th> 
+         <th class="confluenceTh"> Authors </th> 
+         <th class="confluenceTh"> Status </th> 
+         <th class="confluenceTh"> Reviewer(s) </th> 
+         <th class="confluenceTh"> Forum/Email Thread and Slides </th> 
+         <th class="confluenceTh"> Testing owner </th> 
+         <th class="confluenceTh"> Test Specification </th> 
+         <th class="confluenceTh"> Test Spec Status </th> 
+         <th class="confluenceTh"> Doc. Owner </th> 
+         <th class="confluenceTh"> ASArch Review </th> 
+         <th class="confluenceTh"> Review Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="V3.1ClusteringInfraOnePager.html" title="V3.1ClusteringInfraOnePager">Clustering Infrastructure </a> , <a href="3.1SecureAdminTraffic.html" title="3.1SecureAdminTraffic">Secure Admin </a> </td> 
+         <td class="confluenceTd"> Tom Mueller , Tim Quinn </td> 
+         <td class="confluenceTd"> Review Complete </td> 
+         <td class="confluenceTd"> Jerome Dochez, <a href="V3.1ClusteringInfraOnePagerReview.html" title="V3.1ClusteringInfraOnePagerReview">Roberto Chinnici </a>, <a href="V3.1ClusteringInfraOnePagerReview.html" title="V3.1ClusteringInfraOnePagerReview">Mahesh Kannan </a> </td> 
+         <td class="confluenceTd"> <a href="http://forums.java.net/jive/thread.jspa?threadID=148940">Forum </a> </td> 
+         <td class="confluenceTd"> Elena , Shaline </td> 
+         <td class="confluenceTd"> <a href="http://agni-1.us.oracle.com/net/asqe-logs/export1/v3.1/docs/sqe/ClusteringInfrastructure_one_pager.html">One pager</a> <br class="atl-forced-newline"> <a href="http://agni-1.us.oracle.com/net/asqe-logs/export1/Docs/Clustering-Infrastructure-Test-OnePager.html">CLI</a> </td> 
+         <td class="confluenceTd"> Draft </td> 
+         <td class="confluenceTd"> Paul Davies <a href="GlassFishV3.1ClusterInfrastructureDocPlan.html" title="GlassFishV3.1ClusterInfrastructureDocPlan">Doc Plan </a> </td> 
+         <td class="confluenceTd"> Y - Scheduled for July 12, Y - Aug 11 </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="3.1SSHProvisioningOnePager.html" title="3.1SSHProvisioningOnePager">SSH/SSHD </a> </td> 
+         <td class="confluenceTd"> Joe Di Pol </td> 
+         <td class="confluenceTd"> <a href="3.1SSHProvisioningOnePagerReview.html" title="3.1SSHProvisioningOnePagerReview">Ready for Review </a> </td> 
+         <td class="confluenceTd"> Jerome Dochez, <a href="3.1SSHProvisioningOnePagerReview.html" title="3.1SSHProvisioningOnePagerReview">Bill Shannon </a>, Nigel Deakin, Joe Fialli </td> 
+         <td class="confluenceTd"> <a href="http://forums.java.net/jive/thread.jspa?threadID=149247">Forum </a> </td> 
+         <td class="confluenceTd"> Elena </td> 
+         <td class="confluenceTd"> <a href="http://agni-1.us.oracle.com/asqe-logs/export1/v3.1/docs/sqe/ssh_one_pager.html">One Pager</a> </td> 
+         <td class="confluenceTd"> Draft </td> 
+         <td class="confluenceTd"> Paul Davies <br class="atl-forced-newline"> <a href="GlassFishV3.1SSHProvisioningDocPlan.html" title="GlassFishV3.1SSHProvisioningDocPlan">Doc Plan</a><br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Y - Scheduled for July 2 </td> 
+         <td class="confluenceTd">
+          <ul class="alternate" type="square"> 
+           <li></li> 
+          </ul> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="3.1DeploymentOnePager.html" title="3.1DeploymentOnePager">Deployment </a> </td> 
+         <td class="confluenceTd"> Hong Zhang, Tim Quinn </td> 
+         <td class="confluenceTd"> Under Review </td> 
+         <td class="confluenceTd"> <a href="VersioningArunGupta.html" title="VersioningArunGupta">Arun Gupta </a>, <a href="3.1DeploymentOnePagerReviewLudo.html" title="3.1DeploymentOnePagerReviewLudo">Ludovic Champenois </a>, <a href="3.1DeploymentOnePagerReview.html" title="3.1DeploymentOnePagerReview">Kshi tiz Saxena </a>, <a href="3.1deploymentReview_Jagadish.html" title="3.1deploymentReview_Jagadish">Jagadish Ramu </a>, <a href="3.1deploymentReviewAnissa.html" title="3.1deploymentReviewAnissa">Anissa Lam </a>, <a href="3.1DeploymentOnePagerReviewVBK.html" title="3.1DeploymentOnePagerReviewVBK">Vince Kraemer </a> </td> 
+         <td class="confluenceTd"> <a href="http://forums.java.net/jive/thread.jspa?messageID=470560">Forum </a> </td> 
+         <td class="confluenceTd"> Elena </td> 
+         <td class="confluenceTd"> <a href="http://agni-1.us.oracle.com/asqe-logs/export1/Docs/deployment-test-one-pager.html">One pager</a> </td> 
+         <td class="confluenceTd"> Draft </td> 
+         <td class="confluenceTd"> Rebecca Parks <a href="GlassFishV3.1DeploymentDocPlan.html" title="GlassFishV3.1DeploymentDocPlan">Doc Plan </a> </td> 
+         <td class="confluenceTd"> Y - Scheduled for June 9 </td> 
+         <td class="confluenceTd">
+          <ul class="alternate" type="square"> 
+           <li></li> 
+          </ul> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="Gfv31JNLPCustomization.html" title="Gfv31JNLPCustomization">App Client Container </a> </td> 
+         <td class="confluenceTd"> Tim Quinn </td> 
+         <td class="confluenceTd"> Ready for Review </td> 
+         <td class="confluenceTd"> Rajiv Mordani, <a href="Gfv31JNLPCustomizationReviewVBK.html" title="Gfv31JNLPCustomizationReviewVBK">Vince Kraemer </a> </td> 
+         <td class="confluenceTd"> <a href="http://forums.java.net/jive/thread.jspa?threadID=148953">Forum </a> </td> 
+         <td class="confluenceTd"> NA </td> 
+         <td class="confluenceTd"> NA </td> 
+         <td class="confluenceTd"> NA </td> 
+         <td class="confluenceTd"> Rebecca Parks <a href="GlassFishV3.1ACCDocPlan.html" title="GlassFishV3.1ACCDocPlan">Doc Plan </a> </td> 
+         <td class="confluenceTd"> Y - Scheduled for June 9 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="3.1Installer.html" title="3.1Installer">Installer </a> </td> 
+         <td class="confluenceTd"> Sathyan Catari </td> 
+         <td class="confluenceTd"> Ready for Review </td> 
+         <td class="confluenceTd"> <a href="http://forums.java.net/jive/message.jspa?messageID=471856#471856">Tom Mueller </a>, <a href="InstallerReviewLudo.html" title="InstallerReviewLudo">Ludovic Champenois </a>, Snjezana Sevo-Zenzerovic </td> 
+         <td class="confluenceTd"> <a href="http://forums.java.net/jive/thread.jspa?threadID=149110&amp;tstart=0">Forum </a> </td> 
+         <td class="confluenceTd"> Ming </td> 
+         <td class="confluenceTd"> <a href="http://agni-1.us.oracle.com/asqe-logs/export1/v3.1/docs/sqe/GF3.1-installer-test-one-pager.html">One Pager</a> </td> 
+         <td class="confluenceTd"> Draft </td> 
+         <td class="confluenceTd"> Scott Fordin <a href="GlassFishV3.1InstallerDocPlan.html" title="GlassFishV3.1InstallerDocPlan">Doc Plan</a> </td> 
+         <td class="confluenceTd"> Y - Scheduled for June 18 </td> 
+         <td class="confluenceTd">
+          <ul class="alternate" type="square"> 
+           <li></li> 
+          </ul> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="3.1PackagingOnePager.html" title="3.1PackagingOnePager">Packaging </a> </td> 
+         <td class="confluenceTd"> Snjezana Sevo-Zenzerovic </td> 
+         <td class="confluenceTd"> <a href="3.1PackagingOnePagerReview.html" title="3.1PackagingOnePagerReview">Ready for Review </a> </td> 
+         <td class="confluenceTd"> <a href="3.1PackagingOnePagerReview.html" title="3.1PackagingOnePagerReview">Joe Di Pol, Alexis Moussine-Pouchkine </a> </td> 
+         <td class="confluenceTd">
+          <ul class="alternate" type="square"> 
+           <li></li> 
+          </ul> </td> 
+         <td class="confluenceTd"> NA </td> 
+         <td class="confluenceTd"> NA </td> 
+         <td class="confluenceTd"> NA </td> 
+         <td class="confluenceTd"> Scott Fordin <a href="GlassFishV3.1PackagingDocPlan.html" title="GlassFishV3.1PackagingDocPlan">Doc Plan</a> </td> 
+         <td class="confluenceTd"> Y - Scheduled for July 19 </td> 
+         <td class="confluenceTd">
+          <ul class="alternate" type="square"> 
+           <li></li> 
+          </ul> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="3.1FileLayoutOnePager.html" title="3.1FileLayoutOnePager">File Layout </a> </td> 
+         <td class="confluenceTd"> Snjezana Sevo-Zenzerovic </td> 
+         <td class="confluenceTd"> Review Complete </td> 
+         <td class="confluenceTd"> <a href="3.1FileLayoutReviewHong.html" title="3.1FileLayoutReviewHong">Hong Zhang </a>, <a href="3.1FileLayoutOnePagerAlexisMP.html" title="3.1FileLayoutOnePagerAlexisMP">Alexis Moussine-Pouchkine </a> </td> 
+         <td class="confluenceTd"> <a href="http://forums.java.net/jive/thread.jspa?threadID=150386&amp;tstart=0">Forum </a> </td> 
+         <td class="confluenceTd"> NA </td> 
+         <td class="confluenceTd"> NA </td> 
+         <td class="confluenceTd"> NA </td> 
+         <td class="confluenceTd"> Scott Fordin <a href="GlassFishV3.1FileLayoutDocPlan.html" title="GlassFishV3.1FileLayoutDocPlan">Doc Plan</a> </td> 
+         <td class="confluenceTd"> Y - Scheduled for July 19 </td> 
+         <td class="confluenceTd">
+          <ul class="alternate" type="square"> 
+           <li></li> 
+          </ul> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="3.1Logging.html" title="3.1Logging">Logging &amp; Diagnostics </a> </td> 
+         <td class="confluenceTd"> Naman Mehta </td> 
+         <td class="confluenceTd"> Review Complete </td> 
+         <td class="confluenceTd"> Jerome Dochez, <a href="3.1loggingReviewAnissa.html" title="3.1loggingReviewAnissa">Anissa Lam </a>, <a href="3.1loggingReviewAnissa.html" title="3.1loggingReviewAnissa">Vince Kraemer </a> </td> 
+         <td class="confluenceTd">
+          <ul class="alternate" type="square"> 
+           <li></li> 
+          </ul> </td> 
+         <td class="confluenceTd"> Lidia </td> 
+         <td class="confluenceTd"> <a href="http://wikis.sun.com/download/attachments/209654762/GFv3.1Logging-OnePager.pdf">One pager</a> </td> 
+         <td class="confluenceTd"> Draft </td> 
+         <td class="confluenceTd"> Scott Fordin <a href="GlassFishV3.1LoggingDocPlan.html" title="GlassFishV3.1LoggingDocPlan">Doc Plan</a> </td> 
+         <td class="confluenceTd"> Y - Scheduled for July 14 </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="3.1Security1Pager.html" title="3.1Security1Pager">Security </a> </td> 
+         <td class="confluenceTd"> Kumar Jayanti </td> 
+         <td class="confluenceTd"> Ready for Review </td> 
+         <td class="confluenceTd"> Bill Shannon, <a href="http://forums.java.net/jive/thread.jspa?messageID=472323#472323">Tom Mueller </a> </td> 
+         <td class="confluenceTd"> <a href="http://forums.java.net/jive/thread.jspa?threadID=149272">Forum </a> </td> 
+         <td class="confluenceTd"> Sonia </td> 
+         <td class="confluenceTd"> <a href="http://agni-1.us.oracle.com/asqe-logs/export1/v3.1/docs/sqe/GF3.1_security_test_onepager.html">One pager</a> </td> 
+         <td class="confluenceTd"> Draft </td> 
+         <td class="confluenceTd"> Scott Fordin <a href="GlassFishV3.1SecurityDocPlan.html" title="GlassFishV3.1SecurityDocPlan">Doc Plan</a><br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Y - Scheduled for June 23 </td> 
+         <td class="confluenceTd">
+          <ul class="alternate" type="square"> 
+           <li></li> 
+          </ul> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="V3.1UpgradeOnePager.html" title="V3.1UpgradeOnePager">Upgrade </a> </td> 
+         <td class="confluenceTd"> Bobby Bissett </td> 
+         <td class="confluenceTd"> <a href="V3.1UpgradeOnePagerReview.html" title="V3.1UpgradeOnePagerReview">Review Completed </a> </td> 
+         <td class="confluenceTd"> <a href="V3.1UpgradeOnePagerReview.html" title="V3.1UpgradeOnePagerReview">Chris Kasso </a>, Jennier Chou </td> 
+         <td class="confluenceTd"> <a href="http://forums.java.net/jive/thread.jspa?threadID=149035&amp;tstart=30">Forum </a> </td> 
+         <td class="confluenceTd"> Alex </td> 
+         <td class="confluenceTd"> <a href="http://agni-1.us.oracle.com/JSPWiki/attach?page=GFv31SQECoverage%2FUpgradeOnePager.html">One Pager</a> </td> 
+         <td class="confluenceTd"> Draft </td> 
+         <td class="confluenceTd"> Scott Fordin <a href="GlassFishV3.1UpgradeDocPlan.html" title="GlassFishV3.1UpgradeDocPlan">Doc Plan</a> </td> 
+         <td class="confluenceTd"> Y - Scheduled for July 16 </td> 
+         <td class="confluenceTd">
+          <ul class="alternate" type="square"> 
+           <li></li> 
+          </ul> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="V3.1g11nOnePager.html" title="V3.1g11nOnePager">Globalization </a> </td> 
+         <td class="confluenceTd"> Georges Murr </td> 
+         <td class="confluenceTd"> Ready for Review </td> 
+         <td class="confluenceTd"> Arun Gupta, <a href="3.1GlobalizationReviewAnissa.html" title="3.1GlobalizationReviewAnissa">Anissa Lam </a> </td> 
+         <td class="confluenceTd">
+          <ul class="alternate" type="square"> 
+           <li></li> 
+          </ul> </td> 
+         <td class="confluenceTd"> NA for QA </td> 
+         <td class="confluenceTd"> NA for QA </td> 
+         <td class="confluenceTd"> NA for QA </td> 
+         <td class="confluenceTd"> N/A: No doc impact </td> 
+         <td class="confluenceTd"> Y - Scheduled for July 9 </td> 
+         <td class="confluenceTd">
+          <ul class="alternate" type="square"> 
+           <li></li> 
+          </ul> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="V3FunctionalSpecs-InfrastructureHighAvailability"></a>Infrastructure - High Availability</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Document </th> 
+         <th class="confluenceTh"> Authors </th> 
+         <th class="confluenceTh"> Status </th> 
+         <th class="confluenceTh"> Reviewer(s) </th> 
+         <th class="confluenceTh"> Forum/Email Thread and Slides </th> 
+         <th class="confluenceTh"> Testing owner </th> 
+         <th class="confluenceTh"> Test Specification </th> 
+         <th class="confluenceTh"> Test Spec Status </th> 
+         <th class="confluenceTh"> Doc. Owner </th> 
+         <th class="confluenceTh"> ASArch Review </th> 
+         <th class="confluenceTh"> Review Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="GlassFish3.1HAOnePager.html" title="GlassFish3.1HAOnePager">In-memory Session Replication </a> </td> 
+         <td class="confluenceTd"> Mahesh Kannan, Joe Fialli </td> 
+         <td class="confluenceTd"> Ready for Review </td> 
+         <td class="confluenceTd"> <a href="GlassFish3.1HAOnePagerReview.html" title="GlassFish3.1HAOnePagerReview">Roberto Chinnici </a>, <a href="GlassFish3.1HAOnePagerReview.html" title="GlassFish3.1HAOnePagerReview">Bill Shannon </a>, <a href="GlassFish3.1HAOnePagerReview.html" title="GlassFish3.1HAOnePagerReview">Amy Kang </a>, Harold Carr </td> 
+         <td class="confluenceTd"> <a href="https://glassfish.java.net/servlets/ReadMsg?list=dev&amp;msgNo=17253">Forum </a> </td> 
+         <td class="confluenceTd"> Gopal </td> 
+         <td class="confluenceTd"> <a href="http://agni-1.us.oracle.com/asqe-logs/export1/v3.1/docs/sqe/GF3.1-HA-test-one-pager.html">One Pager</a> </td> 
+         <td class="confluenceTd"> Draft </td> 
+         <td class="confluenceTd"> Paul Davies <br class="atl-forced-newline"> <a href="GlassFishV3.1InMemorySessionReplicationDocPlan.html" title="GlassFishV3.1InMemorySessionReplicationDocPlan">Doc Plan</a> </td> 
+         <td class="confluenceTd"> Y - Scheduled for June 25 </td> 
+         <td class="confluenceTd"> - </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="GlassFish_v3.1_GMS_One_Pager.html" title="GlassFish_v3.1_GMS_One_Pager">GMS Runtime Clustering </a> </td> 
+         <td class="confluenceTd"> Joe Fialli </td> 
+         <td class="confluenceTd"> <a href="Gms_gfv3_1_onepager_review.html" title="Gms_gfv3_1_onepager_review">Ready for Review </a> </td> 
+         <td class="confluenceTd"> <a href="V3.1GMSOnePagerReview.html" title="V3.1GMSOnePagerReview">Mahesh Kannan </a>, Bill Shannon, Bobby Bissett, Jennifer Chou, <a href="KenReviewComments.html" title="KenReviewComments">Ken Cavanaugh </a> </td> 
+         <td class="confluenceTd"> <a href="https://glassfish.java.net/servlets/ReadMsg?listName=dev&amp;msgNo=17258">Forum </a> </td> 
+         <td class="confluenceTd"> Kazem </td> 
+         <td class="confluenceTd"> <a href="http://aras2:8080/testresults/export1/gms/gf31/gms_gf_v3_1_testplan.txt">One pager</a> </td> 
+         <td class="confluenceTd"> Draft </td> 
+         <td class="confluenceTd"> Paul Davies <br class="atl-forced-newline"> <a href="GlassFishV3.1GMSandGMSConfigurationDocPlan.html" title="GlassFishV3.1GMSandGMSConfigurationDocPlan">Doc Plan</a><br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Y - Scheduled for July 12 </td> 
+         <td class="confluenceTd"> - </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://wikis.sun.com/download/attachments/209654762/gmsconfig_gfv3_1-26.pdf">GMS Configuration </a> </td> 
+         <td class="confluenceTd"> Joe Fialli </td> 
+         <td class="confluenceTd"> <a href="GmsconfigGfv31review.html" title="GmsconfigGfv31review">Ready for Review </a> </td> 
+         <td class="confluenceTd"> Bill Shannon, Bobby Bissett, Jennifer Chou ,<a href="3.1GMSConfReviewAnissa.html" title="3.1GMSConfReviewAnissa">Anissa Lam </a> </td> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365265.pdf">admin review </a> <a href="http://wiki.glassfish.java.net/PageInfo.jsp?page=V3FunctionalSpecs-GMSConfig-v31-asarch.pdf+">asarch preso </a> </td> 
+         <td class="confluenceTd"> Kazem </td> 
+         <td class="confluenceTd"> <a href="http://aras2:8080/testresults/export1/gms/gf31/gms_gf_v3_1_testplan.txt">One pager</a> </td> 
+         <td class="confluenceTd"> Draft </td> 
+         <td class="confluenceTd"> Paul Davies <br class="atl-forced-newline"> <a href="GlassFishV3.1GMSandGMSConfigurationDocPlan.html" title="GlassFishV3.1GMSandGMSConfigurationDocPlan">Doc Plan</a><br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Y - Scheduled for June 21 </td> 
+         <td class="confluenceTd"> - </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://wikis.sun.com/download/attachments/209655156/LB-one-pager.html">Loadbalancer </a> </td> 
+         <td class="confluenceTd"> Kshitiz Saxena </td> 
+         <td class="confluenceTd"> Review completed </td> 
+         <td class="confluenceTd"> <a href="3.1LoadbalancerReview.html" title="3.1LoadbalancerReview">Mahesh Kannan </a>, <a href="3.1LoadbalancerReview.html" title="3.1LoadbalancerReview">Joe Di Pol </a> </td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd"> Homer </td> 
+         <td class="confluenceTd"> <a href="http://agni-1.us.oracle.com/JSPWiki/attach?page=GFv31SQECoverage%2FLB-SQE-test-one-pager.html">One pager</a> </td> 
+         <td class="confluenceTd"> Draft </td> 
+         <td class="confluenceTd"> Scott Fordin <a href="GlassFishV3.1LoadBalancerDocPlan.html" title="GlassFishV3.1LoadBalancerDocPlan">Doc Plan</a> </td> 
+         <td class="confluenceTd"> Review completed </td> 
+         <td class="confluenceTd"> - </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="V3FunctionalSpecs-ManagementandAPI"></a>Management and API</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Document </th> 
+         <th class="confluenceTh"> Authors </th> 
+         <th class="confluenceTh"> Status </th> 
+         <th class="confluenceTh"> Reviewer(s) </th> 
+         <th class="confluenceTh"> Forum/Email Thread and Slides </th> 
+         <th class="confluenceTh"> Testing owner </th> 
+         <th class="confluenceTh"> Test Specification </th> 
+         <th class="confluenceTh"> Test Spec Status </th> 
+         <th class="confluenceTh"> Doc. Owner </th> 
+         <th class="confluenceTh"> ASArch Review </th> 
+         <th class="confluenceTh"> Review Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="GF3.1AdminConsoleOnePager.html" title="GF3.1AdminConsoleOnePager">Management Console </a> </td> 
+         <td class="confluenceTd"> Anissa Lam, Ken Paulsen </td> 
+         <td class="confluenceTd"> AS Arch Review completed </td> 
+         <td class="confluenceTd"> <a href="ManagementConsoleArunGupta.html" title="ManagementConsoleArunGupta">Arun Gupta </a>, <a href="Ramu3.1GuiReview.html" title="Ramu3.1GuiReview">Jagadish Ramu </a>, <a href="EdBurns3.1GuiReview.html" title="EdBurns3.1GuiReview">Ed Burns </a>, <a href="Mordani3.1GuiReview.html" title="Mordani3.1GuiReview">Rajiv Mordani </a> </td> 
+         <td class="confluenceTd"> <a href="http://forums.java.net/jive/thread.jspa?threadID=148960">Forum </a> </td> 
+         <td class="confluenceTd"> <a href="Lidia3.1ReviewQuestions.html" title="Lidia3.1ReviewQuestions">Lidia </a> </td> 
+         <td class="confluenceTd"> <a href="http://agni-1.us.oracle.com/JSPWiki/attach?page=V3.1TestPlans%2Fadmingui-one-pager.html">One pager</a> </td> 
+         <td class="confluenceTd"> Draft </td> 
+         <td class="confluenceTd"> Mike Fitch <br class="atl-forced-newline"> <a href="GlassFishV3.1AdminConsoleDocPlan.html" title="GlassFishV3.1AdminConsoleDocPlan">Doc Plan</a> </td> 
+         <td class="confluenceTd"> Y - Scheduled for June 16 </td> 
+         <td class="confluenceTd">
+          <ul class="alternate" type="square"> 
+           <li></li> 
+          </ul> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="V3.1RESTfulApiOnePager.html" title="V3.1RESTfulApiOnePager">RESTful API </a> </td> 
+         <td class="confluenceTd"> Jason Lee, Ludovic Champenois </td> 
+         <td class="confluenceTd"> Ready for Review </td> 
+         <td class="confluenceTd"> Paul Sandoz, Siraj Ghaffar, <a href="V3.1RESTfulApiOnePagerReviewVBK.html" title="V3.1RESTfulApiOnePagerReviewVBK">Vince Kraemer </a> </td> 
+         <td class="confluenceTd"> <a href="http://forums.java.net/jive/thread.jspa?threadID=149392">Forum </a> </td> 
+         <td class="confluenceTd"> NA </td> 
+         <td class="confluenceTd"> NA </td> 
+         <td class="confluenceTd"> NA </td> 
+         <td class="confluenceTd"> Paul Davies <br class="atl-forced-newline"> <a href="GlassFishV3.1RESTDocPlan.html" title="GlassFishV3.1RESTDocPlan">Doc Plan</a> </td> 
+         <td class="confluenceTd"> Y - Scheduled for July 2 </td> 
+         <td class="confluenceTd">
+          <ul class="alternate" type="square"> 
+           <li></li> 
+          </ul> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="3.1AMXOnePager.html" title="3.1AMXOnePager">JMX API (AMX) </a> </td> 
+         <td class="confluenceTd"> Prasad Subramanian </td> 
+         <td class="confluenceTd"> Ready for review <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Anissa Lam, <a href="3.1AMXOnePagerReviewVBK.html" title="3.1AMXOnePagerReviewVBK">Vince Kraemer </a>, Alexis Moussine-Pouchkine </td> 
+         <td class="confluenceTd"> <a href="http://forums.java.net/jive/thread.jspa?threadID=152088">Forum </a> </td> 
+         <td class="confluenceTd"> NA </td> 
+         <td class="confluenceTd"> NA </td> 
+         <td class="confluenceTd"> NA </td> 
+         <td class="confluenceTd"> Rebecca Parks <a href="GlassFishV3.1JMXDocPlan.html" title="GlassFishV3.1JMXDocPlan">Doc Plan </a> </td> 
+         <td class="confluenceTd"> Y - Scheduled for July 28 </td> 
+         <td class="confluenceTd">
+          <ul class="alternate" type="square"> 
+           <li></li> 
+          </ul> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="V3FunctionalSpecs-ContainersandServices"></a>Containers and Services</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Document </th> 
+         <th class="confluenceTh"> Authors </th> 
+         <th class="confluenceTh"> Status </th> 
+         <th class="confluenceTh"> Reviewer(s) </th> 
+         <th class="confluenceTh"> Forum/Email Thread and Slides </th> 
+         <th class="confluenceTh"> Testing owner </th> 
+         <th class="confluenceTh"> Test Specification </th> 
+         <th class="confluenceTh"> Test Spec Status </th> 
+         <th class="confluenceTh"> Doc. Owner </th> 
+         <th class="confluenceTh"> ASArch Review </th> 
+         <th class="confluenceTh"> Review Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="OnePager.html" title="OnePager">Web Tier </a> </td> 
+         <td class="confluenceTd"> Rajiv Mordani, Shing-Wai Chan </td> 
+         <td class="confluenceTd"> Ready for review </td> 
+         <td class="confluenceTd"> Eduardo Pelegri-Llopart, Ed Burns, Ken Paulsen </td> 
+         <td class="confluenceTd"> <a href="http://forums.java.net/jive/thread.jspa?threadID=149112&amp;tstart=0">Forum </a> </td> 
+         <td class="confluenceTd"> Sudipa </td> 
+         <td class="confluenceTd"> <a href="http://agni-1.us.oracle.com/asqe-logs/export1/v3.1/docs/sqe/GFV3.1WebTier_OnePager.html">One pager</a> </td> 
+         <td class="confluenceTd"> Draft </td> 
+         <td class="confluenceTd"> Mike Fitch <br class="atl-forced-newline"> <a href="GlassFishV3.1WebTierDocPlan.html" title="GlassFishV3.1WebTierDocPlan">Doc Plan</a> </td> 
+         <td class="confluenceTd"> Y - Scheduled for June 18 </td> 
+         <td class="confluenceTd"> Review completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="GlassFishv3.1EJBOnePager.html" title="GlassFishv3.1EJBOnePager">EJB </a> </td> 
+         <td class="confluenceTd"> Marina Vatkina </td> 
+         <td class="confluenceTd"> Ready for Review </td> 
+         <td class="confluenceTd"> <a href="GlassFishv3.1EJBOnePagerReview.html" title="GlassFishv3.1EJBOnePagerReview">Mahesh Kannan </a>, Rajiv Mordani </td> 
+         <td class="confluenceTd"> <a href="http://forums.java.net/jive/thread.jspa?threadID=149093&amp;tstart=0">Forum </a> </td> 
+         <td class="confluenceTd"> Ming </td> 
+         <td class="confluenceTd"> <a href="http://agni-1.us.oracle.com/asqe-logs/export1/v3.1/docs/sqe/GF3.1-ejb-test-one-pager.html">One pager</a> </td> 
+         <td class="confluenceTd"> Draft </td> 
+         <td class="confluenceTd"> Rebecca Parks <a href="GlassFishV3.1EJBDocPlan.html" title="GlassFishV3.1EJBDocPlan">Doc Plan </a> </td> 
+         <td class="confluenceTd"> Y - Scheduled for June 25 </td> 
+         <td class="confluenceTd"> - </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="3.1TransactionOnePager.html" title="3.1TransactionOnePager">Transaction Service </a> </td> 
+         <td class="confluenceTd"> Marina Vatkina </td> 
+         <td class="confluenceTd"> Ready For Review </td> 
+         <td class="confluenceTd"> Ken Saks, <a href="http://forums.java.net/jive/thread.jspa?messageID=472311#472311">Tom Mueller </a>, <a href="3.1TransactionOnePagerReview.html" title="3.1TransactionOnePagerReview">Chris Kasso </a>, Nigel Deakin </td> 
+         <td class="confluenceTd"> <a href="http://forums.java.net/jive/thread.jspa?threadID=149096&amp;tstart=0">Forum </a> </td> 
+         <td class="confluenceTd"> Sherry </td> 
+         <td class="confluenceTd"> <a href="http://agni-1.us.oracle.com/asqe-logs/export1/v3.1/docs/sqe/GF31TransactionSQEOnePager.html">One Pager</a> </td> 
+         <td class="confluenceTd"> Draft </td> 
+         <td class="confluenceTd"> Paul Davies <br class="atl-forced-newline"> <a href="GlassFishV3.1TransactionServiceDocPlan.html" title="GlassFishV3.1TransactionServiceDocPlan">Doc Plan</a> <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Y - Scheduled for June 28 </td> 
+         <td class="confluenceTd"> - </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://gf-corba-v3-mirror.kenai.com/design/FOLB/IIOPFOLBOnePager.html">IIOP </a> </td> 
+         <td class="confluenceTd"> Ken Cavanaugh </td> 
+         <td class="confluenceTd"> Review Completed </td> 
+         <td class="confluenceTd"> Ken Saks, V B Kumar Jayanti </td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd"> Gopal </td> 
+         <td class="confluenceTd"> <a href="http://agni-1.us.oracle.com/asqe-logs/export1/v3.1/docs/sqe/GF3.1-IIOPFOLB-test-one-pager.html">One Pager</a> </td> 
+         <td class="confluenceTd"> Draft </td> 
+         <td class="confluenceTd"> Paul Davies <br class="atl-forced-newline"> <a href="GlassFishV3.1IIOPFOLBDocPlan.html" title="GlassFishV3.1IIOPFOLBDocPlan">Doc Plan</a><br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Y - Scheduled for July 9 </td> 
+         <td class="confluenceTd"> - </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="Gfv31ConnectorsJDBC.html" title="Gfv31ConnectorsJDBC">Connectors, Pooling, Resources, JDBC </a> </td> 
+         <td class="confluenceTd"> Jagadish Ramu, Shalini Muthukrishnan </td> 
+         <td class="confluenceTd"> Ready for review </td> 
+         <td class="confluenceTd"> <a href="ConnectorsJDBC31ReviewSiva.html" title="ConnectorsJDBC31ReviewSiva">Sivakumar Thyagarajan </a>, Roberto Chinnici </td> 
+         <td class="confluenceTd"> <a href="http://forums.java.net/jive/thread.jspa?threadID=149010">Forum </a> </td> 
+         <td class="confluenceTd"> Alex </td> 
+         <td class="confluenceTd"> <a href="http://agni-1.us.oracle.com/JSPWiki/attach?page=GFv31SQECoverage%2FResourcesOnePager.html">OnePager</a> </td> 
+         <td class="confluenceTd"> Draft </td> 
+         <td class="confluenceTd"> Scott Fordin <a href="GlassFishV3.1ConnectorsDocPlan.html" title="GlassFishV3.1ConnectorsDocPlan">Doc Plan</a><br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Y - Scheduled for June 16 </td> 
+         <td class="confluenceTd"> - </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365234.pdf">JMS Integration </a> (<a href="https://mq.java.net/4.5.html">MQ Specific Onepagers </a>) </td> 
+         <td class="confluenceTd"> Satish Kumar, Nigel Deakin, Amy Kang </td> 
+         <td class="confluenceTd"> Review Completed </td> 
+         <td class="confluenceTd"> Chris Kasso, Jerome Dochez, <a href="V3.1JmsOnePagerReviewJDL.html" title="V3.1JmsOnePagerReviewJDL">Jason Lee </a> </td> 
+         <td class="confluenceTd"> <a href="http://forums.java.net/jive/thread.jspa?threadID=149280">Forum </a> </td> 
+         <td class="confluenceTd"> Sonia </td> 
+         <td class="confluenceTd"> <a href="http://agni-1.us.oracle.com/asqe-logs/export1/v3.1/docs/sqe/GF3.1_jms_test_onepager.html">One pager</a> </td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd"> Mike Fitch <br class="atl-forced-newline"> <a href="GlassFishV3.1JMSDocPlan.html" title="GlassFishV3.1JMSDocPlan">Doc Plan</a> </td> 
+         <td class="confluenceTd"> Y - Completed on June 30 </td> 
+         <td class="confluenceTd"> - </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="V3.1MetroOnePager.html" title="V3.1MetroOnePager">Metro </a> </td> 
+         <td class="confluenceTd"> Marek Potociar, Bhakti Mehta, Jiandong Guo, Jitendra Kotamraju, Kumar Jayanti, Rama Pulavarthi </td> 
+         <td class="confluenceTd"> Review completed </td> 
+         <td class="confluenceTd"> Bhakti Mehta, Ken Saks, Mahesh Kannan, Joe Fialli </td> 
+         <td class="confluenceTd"> <a href="http://forums.java.net/jive/thread.jspa?threadID=149381">Forum </a> </td> 
+         <td class="confluenceTd"> Sony </td> 
+         <td class="confluenceTd"> <a href="http://agni-1.us.oracle.com/JSPWiki/attach?page=GFv31SQECoverage%2FGFV3.1-Metro-testplan.html">One Pager</a> </td> 
+         <td class="confluenceTd"> Draft </td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd"> Y - Scheduled for July 14 </td> 
+         <td class="confluenceTd"> - </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="V3FunctionalSpecs-DeveloperandTooling"></a>Developer and Tooling</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Document </th> 
+         <th class="confluenceTh"> Authors </th> 
+         <th class="confluenceTh"> Status </th> 
+         <th class="confluenceTh"> Reviewer(s) </th> 
+         <th class="confluenceTh"> Forum/Email Thread and Slides </th> 
+         <th class="confluenceTh"> Testing owner </th> 
+         <th class="confluenceTh"> Test Specification </th> 
+         <th class="confluenceTh"> Test Spec Status </th> 
+         <th class="confluenceTh"> Doc. Owner </th> 
+         <th class="confluenceTh"> ASArch Review </th> 
+         <th class="confluenceTh"> Review Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="3.1EmbeddedOnePager.html" title="3.1EmbeddedOnePager">Embedded </a> </td> 
+         <td class="confluenceTd"> Siraj Ghaffar </td> 
+         <td class="confluenceTd"> Review Complete(except asarch) </td> 
+         <td class="confluenceTd"> Roberto Chinnici, Paul Sandoz, Eduardo Pelegri-Llopart, <a href="3.1EmbeddedOnePagerAlexisMP.html" title="3.1EmbeddedOnePagerAlexisMP">Alexis Moussine-Pouchkine </a>, <a href="EmbeddedArunGupta.html" title="EmbeddedArunGupta">Arun Gupta </a> </td> 
+         <td class="confluenceTd"> <a href="http://forums.java.net/jive/thread.jspa?threadID=149031&amp;tstart=15">Forum </a> </td> 
+         <td class="confluenceTd"> NA </td> 
+         <td class="confluenceTd"> NA </td> 
+         <td class="confluenceTd"> NA </td> 
+         <td class="confluenceTd"> Rebecca Parks <a href="GlassFishV3.1EmbeddedDocPlan.html" title="GlassFishV3.1EmbeddedDocPlan">Doc Plan </a> </td> 
+         <td class="confluenceTd"> Y- Scheduled for July 7 </td> 
+         <td class="confluenceTd">
+          <ul class="alternate" type="square"> 
+           <li></li> 
+          </ul> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Developer Tooling <a href="3.1DevToolingNB1Pager.html" title="3.1DevToolingNB1Pager">NetBeans </a> </td> 
+         <td class="confluenceTd"> Vince Kraemer, Ludovic Champenois </td> 
+         <td class="confluenceTd"> Ready for Review </td> 
+         <td class="confluenceTd"> <a href="3.1DevToolingNB1PagerReview.html" title="3.1DevToolingNB1PagerReview">Arun Gupta, Tim Quinn, Hong </a> </td> 
+         <td class="confluenceTd"> <a href="http://forums.java.net/jive/thread.jspa?threadID=149084&amp;tstart=50">Forum </a> </td> 
+         <td class="confluenceTd"> NA </td> 
+         <td class="confluenceTd"> NA </td> 
+         <td class="confluenceTd"> NA </td> 
+         <td class="confluenceTd"> NetBeans Doc Team </td> 
+         <td class="confluenceTd"> Y - Scheduled for Aug 4 </td> 
+         <td class="confluenceTd">
+          <ul class="alternate" type="square"> 
+           <li></li> 
+          </ul> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Developer Tooling <a href="3.1DevToolingWTP1Pager.html" title="3.1DevToolingWTP1Pager">Eclipse WTP </a> </td> 
+         <td class="confluenceTd"> Ludovic Champenois, Vince Kraemer </td> 
+         <td class="confluenceTd"> Ready for Review </td> 
+         <td class="confluenceTd"> <a href="3.1DevToolingWTP1PagerAlexisMP.html" title="3.1DevToolingWTP1PagerAlexisMP">Alexis Moussine-Pouchkine </a>, <a href="3.1DevToolingWTP1ReviewHong.html" title="3.1DevToolingWTP1ReviewHong">Hong Zhang </a>, <a href="3.1DevToolingWTP1PagerArun.html" title="3.1DevToolingWTP1PagerArun">Arun Gupta </a> </td> 
+         <td class="confluenceTd">
+          <ul class="alternate" type="square"> 
+           <li></li> 
+          </ul> </td> 
+         <td class="confluenceTd"> NA </td> 
+         <td class="confluenceTd"> NA </td> 
+         <td class="confluenceTd"> NA </td> 
+         <td class="confluenceTd"> Mike Fitch <br class="atl-forced-newline"> <a href="GlassFishV3.1EclipseIntegrationDocPlan.html" title="GlassFishV3.1EclipseIntegrationDocPlan">Doc Plan</a> </td> 
+         <td class="confluenceTd"> Y - Scheduled for Aug 4 </td> 
+         <td class="confluenceTd">
+          <ul class="alternate" type="square"> 
+           <li></li> 
+          </ul> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="V3FunctionalSpecs-TechnologyRefreshandIntegration"></a>Technology Refresh and Integration</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Document </th> 
+         <th class="confluenceTh"> Authors </th> 
+         <th class="confluenceTh"> Status </th> 
+         <th class="confluenceTh"> Reviewer(s) </th> 
+         <th class="confluenceTh"> Forum/Email Thread and Slides </th> 
+         <th class="confluenceTh"> Testing owner </th> 
+         <th class="confluenceTh"> Test Specification </th> 
+         <th class="confluenceTh"> Test Spec Status </th> 
+         <th class="confluenceTh"> Doc. Owner </th> 
+         <th class="confluenceTh"> ASArch Review </th> 
+         <th class="confluenceTh"> Review Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365130.pdf">OSGi </a> </td> 
+         <td class="confluenceTd"> Sanjeeb Sahoo, Richard Hall </td> 
+         <td class="confluenceTd"> Ready for Review </td> 
+         <td class="confluenceTd"> Bill Shannon, Adam Leftik, Jerome Dochez </td> 
+         <td class="confluenceTd"> <a href="http://forums.java.net/jive/thread.jspa?threadID=149642">forum thread </a> </td> 
+         <td class="confluenceTd"> NA </td> 
+         <td class="confluenceTd"> NA </td> 
+         <td class="confluenceTd"> NA </td> 
+         <td class="confluenceTd"> Paul Davies </td> 
+         <td class="confluenceTd"> Completed on June 23 </td> 
+         <td class="confluenceTd"> Complete </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="V3.1JsfHalfPager.html" title="V3.1JsfHalfPager">JSF </a> </td> 
+         <td class="confluenceTd"> Ed Burns </td> 
+         <td class="confluenceTd"> Ready for Review </td> 
+         <td class="confluenceTd"> Eduardo Pelegri-Llopart, Kan Paulsen, Ludovic Champenois </td> 
+         <td class="confluenceTd"> <a href="http://forums.sun.com/forum.jspa?forumID=427">forums.sun.com </a> <a href="https://javaserverfaces.java.net/servlets/SummarizeList?listName=dev">Mojarra Developer Mailing List </a> <a href="https://glassfish.java.net/servlets/SummarizeList?listName=webtier">Glassfish Webtier mailing list </a> </td> 
+         <td class="confluenceTd"> Lidia </td> 
+         <td class="confluenceTd"> <a href="http://agni-1.us.oracle.com/JSPWiki/attach?page=V3.1TestPlans%2Fjsf-one-pager.html">One pager</a> </td> 
+         <td class="confluenceTd"> Draft </td> 
+         <td class="confluenceTd"> Java EE Tutorial Team </td> 
+         <td class="confluenceTd"> Y - Scheduled for July 19 </td> 
+         <td class="confluenceTd"> - </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="V3.1JerseyOnePager.html" title="V3.1JerseyOnePager">Jersey </a> </td> 
+         <td class="confluenceTd"> Paul Sandoz </td> 
+         <td class="confluenceTd"> Ready for Review </td> 
+         <td class="confluenceTd"> Roberto Chinnici, Ludovic Champenois, Jerome Dochez </td> 
+         <td class="confluenceTd"> <a href="http://jersey.576304.n2.nabble.com/Jersey-planning-with-alignment-for-GlassFish-3-1-td5084213.html#a5084213">Jersey user list Nabble </a> </td> 
+         <td class="confluenceTd"> Jon </td> 
+         <td class="confluenceTd"> <a href="./V3.1JerseyOnePager_QE.html" title="V3.1JerseyOnePager_QE">One pager</a> </td> 
+         <td class="confluenceTd"> Draft </td> 
+         <td class="confluenceTd"> Jersey Engineering Team maintains Jersey User's Guide </td> 
+         <td class="confluenceTd"> Y- Scheduled for June 21 </td> 
+         <td class="confluenceTd"> - </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Contexts and Dependency Injection (CDI) <a href="GlassFishv3.1CDIHalfPager.html" title="GlassFishv3.1CDIHalfPager">wiki </a> </td> 
+         <td class="confluenceTd"> Sivakumar Thyagarajan </td> 
+         <td class="confluenceTd"> Ready for Review </td> 
+         <td class="confluenceTd"> Ken Saks, Ed Burns, Roger Kitain, <a href="Gfv3.1CdiHalfPagerReviewVbk.html" title="Gfv3.1CdiHalfPagerReviewVbk">Vince Kraemer </a> </td> 
+         <td class="confluenceTd"> mailing list: <a href="http://old.nabble.com/3.1-Contexts-and-Dependency-Injection-(CDI)-one-pager-to28659186.html">dev </a> <a href="http://old.nabble.com/3.1-Contexts-and-Dependency-Injection-(CDI)-one-pager-ts28659181.html#a28659181">users </a> </td> 
+         <td class="confluenceTd"> Lidia </td> 
+         <td class="confluenceTd"> <a href="http://agni-1.us.oracle.com/JSPWiki/attach?page=V3.1TestPlans%2Fcdi-one-pager.html">One pager</a> </td> 
+         <td class="confluenceTd"> Draft </td> 
+         <td class="confluenceTd"> Java EE Tutorial Team </td> 
+         <td class="confluenceTd"> Y - Scheduled for Aug 4 </td> 
+         <td class="confluenceTd"> - </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="V3.1PersistenceOnePager.html" title="V3.1PersistenceOnePager">Persistence </a> </td> 
+         <td class="confluenceTd"> Mitesh Meswani </td> 
+         <td class="confluenceTd"> Review Completed </td> 
+         <td class="confluenceTd"> <a href="GFv3ReviewPersistence.html" title="GFv3ReviewPersistence">Marina Vatkina </a> </td> 
+         <td class="confluenceTd"> <a href="http://forums.java.net/jive/thread.jspa?threadID=149111&amp;tstart=0">Forum </a> </td> 
+         <td class="confluenceTd"> Sherry </td> 
+         <td class="confluenceTd"> <a href="http://agni-1.us.oracle.com/asqe-logs/export1/v3.1/docs/sqe/GF31PersistenceSQEOnePager.html">One pager</a> </td> 
+         <td class="confluenceTd"> Draft </td> 
+         <td class="confluenceTd"> Rebecca Parks <a href="GlassFishV3.1PersistenceDocPlan.html" title="GlassFishV3.1PersistenceDocPlan">Doc Plan </a> </td> 
+         <td class="confluenceTd"> Y - Scheduled for July 19 </td> 
+         <td class="confluenceTd"> - </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="V3FunctionalSpecs-OnePagersforv3FinalRelease"></a>One Pagers for v3 Final Release</h2> <h4><a name="V3FunctionalSpecs-OverviewandInfrastructure"></a>Overview and Infrastructure</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Document </th> 
+         <th class="confluenceTh"> Authors </th> 
+         <th class="confluenceTh"> Status </th> 
+         <th class="confluenceTh"> Review(s) </th> 
+         <th class="confluenceTh"> Forum/Email Thread and Slides </th> 
+         <th class="confluenceTh"> Testing owner </th> 
+         <th class="confluenceTh"> Test OnePager </th> 
+         <th class="confluenceTh"> Test OnePager Status </th> 
+         <th class="confluenceTh"> Doc. Owner </th> 
+         <th class="confluenceTh"> ASArch Review </th> 
+         <th class="confluenceTh"> Review Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GlassFish v3 Overview </td> 
+         <td class="confluenceTd"> Jerome Dochez </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Bill Shannon, Sreeram Duvur </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> Dixie Pine </td> 
+         <td class="confluenceTd"> N </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="GlassfishV3Final_hk2_overview.html" title="GlassfishV3Final_hk2_overview">HK2 Overview</a> </td> 
+         <td class="confluenceTd"> Jerome Dochez </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Roberto Chinnici, Ludovic Champenois </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> Paul Davies </td> 
+         <td class="confluenceTd"> Y </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365134.pdf">OSGi </a> </td> 
+         <td class="confluenceTd"> Sahoo, Richard Hall </td> 
+         <td class="confluenceTd"> Review Completed </td> 
+         <td class="confluenceTd"> Sreeram Duvur, Roberto Chinnici </td> 
+         <td class="confluenceTd"> <a href="http://forums.java.net/jive/thread.jspa?threadID=55863&amp;tstart=45">forum thread </a> </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> Dixie Pine </td> 
+         <td class="confluenceTd"> Y </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="GrizzlyOnePager.html" title="GrizzlyOnePager">Grizzly </a> </td> 
+         <td class="confluenceTd"> Oleksiy Stashok </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Sreeram Duvur, Jerome Dochez </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> Covered by existing tests </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> June Parks </td> 
+         <td class="confluenceTd"> Y </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="V3AdminInfrastructureFS.html" title="V3AdminInfrastructureFS">Admin Infrastructure </a> </td> 
+         <td class="confluenceTd"> Kedar Mhaswade, Byron Nevins, Nandini Ektare, Siraj Ghaffar </td> 
+         <td class="confluenceTd"> Ready for Review </td> 
+         <td class="confluenceTd"> Sreeram Duvur, Sahoo </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Sankar </td> 
+         <td class="confluenceTd"> <a href="http://wiki.glassfish.java.net/attach/V3FunctionalSpecs/GFv3AdminInfrastructureTestSpec.html">Test One pager </a> </td> 
+         <td class="confluenceTd"> TBD </td> 
+         <td class="confluenceTd"> June Parks </td> 
+         <td class="confluenceTd"> Y </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="GrizzlyConfigOnePager.html" title="GrizzlyConfigOnePager">Grizzly Configuration </a> </td> 
+         <td class="confluenceTd"> Jeanfrancois Arcand, Oleksiy Stashok, Dhiru Pandey </td> 
+         <td class="confluenceTd"> Draft published </td> 
+         <td class="confluenceTd"> <a href="./" v3grizzlyconfigurationreviewanissalam.html"="">Anissa Lam </a> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Shaline </td> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365258.pdf">Grizzly Config One Pager </a> </td> 
+         <td class="confluenceTd"> Approved </td> 
+         <td class="confluenceTd"> June Parks </td> 
+         <td class="confluenceTd"> Y (please merge with Grizzly one-pager) </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://wiki.glassfish.java.net/attach/V3FunctionalSpecs-GFv3Logging-onepager.html">Logging </a> </td> 
+         <td class="confluenceTd"> Carla Mott </td> 
+         <td class="confluenceTd"> Under Review </td> 
+         <td class="confluenceTd"> Sreeram Duvur, Kedar Mhaswade </td> 
+         <td class="confluenceTd"> <a href="http://forums.java.net/jive/thread.jspa?threadID=56532">Forum Thread </a> </td> 
+         <td class="confluenceTd"> Lidia </td> 
+         <td class="confluenceTd"> TBD </td> 
+         <td class="confluenceTd"> TBD </td> 
+         <td class="confluenceTd"> Dixie Pine </td> 
+         <td class="confluenceTd"> Y </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365269.pdf">Packaging </a> </td> 
+         <td class="confluenceTd"> Snjezana Sevo-Zenzerovic </td> 
+         <td class="confluenceTd"> Under Review </td> 
+         <td class="confluenceTd"> Ludovic Champenois, Kedar Mhaswade </td> 
+         <td class="confluenceTd"> <a href="http://forums.java.net/jive/thread.jspa?threadID=55766&amp;tstart=0">Forum Thread </a> </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> Covered by Installer testing </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> Gail Risdal </td> 
+         <td class="confluenceTd"> N </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365242.pdf">File Layout </a> </td> 
+         <td class="confluenceTd"> Snjezana Sevo-Zenzerovic </td> 
+         <td class="confluenceTd"> Under Review </td> 
+         <td class="confluenceTd"> Ludovic Champenois, Kedar Mhaswade </td> 
+         <td class="confluenceTd"> <a href="http://forums.java.net/jive/thread.jspa?threadID=55765&amp;tstart=0">Forum Thread </a> </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> Covered by Installer testing </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> Gail Risdal </td> 
+         <td class="confluenceTd"> N </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="GFV3ExtensibilityOnePager.html" title="GFV3ExtensibilityOnePager">Extensibility </a> </td> 
+         <td class="confluenceTd"> Sreenivas Munnangi, Ken Paulsen, Nandini Ektare, Kedar Mhaswade </td> 
+         <td class="confluenceTd"> Under Review </td> 
+         <td class="confluenceTd"> Jerome Dochez, Sahoo, Richard Hall </td> 
+         <td class="confluenceTd"> <a href="http://forums.java.net/jive/thread.jspa?threadID=56009">Forum Thread </a> </td> 
+         <td class="confluenceTd"> Sankar Yifeng </td> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365260.pdf">Test one pager </a> </td> 
+         <td class="confluenceTd"> TBD </td> 
+         <td class="confluenceTd"> Paul Davies </td> 
+         <td class="confluenceTd"> Y </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="GFV3FinalEmbeddableOnePager.html" title="GFV3FinalEmbeddableOnePager">Embedded Server </a> </td> 
+         <td class="confluenceTd"> Siraj Ghaffar, Rajiv Mordani, Ken Saks, Jagadish Ramu, Linda Schneider </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Sreeram Duvur, Sahoo </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Homer </td> 
+         <td class="confluenceTd"> In process </td> 
+         <td class="confluenceTd"> TBD </td> 
+         <td class="confluenceTd"> June Parks </td> 
+         <td class="confluenceTd"> Y </td> 
+         <td class="confluenceTd"> Scheduled </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365268.pdf">Localization </a> </td> 
+         <td class="confluenceTd"> Ming Dong, Georges Murr </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Sahoo, Ken Cavanaugh </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> Paul Davies </td> 
+         <td class="confluenceTd"> N </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="V3FunctionalSpecs-ContainersandCoreServices"></a>Containers and Core Services</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Document </th> 
+         <th class="confluenceTh"> Authors </th> 
+         <th class="confluenceTh"> Status </th> 
+         <th class="confluenceTh"> Reviewer(s) </th> 
+         <th class="confluenceTh"> Forum/Email Thread and Slides </th> 
+         <th class="confluenceTh"> Testing owner </th> 
+         <th class="confluenceTh"> Test Specification </th> 
+         <th class="confluenceTh"> Test Spec Status </th> 
+         <th class="confluenceTh"> Doc. Owner </th> 
+         <th class="confluenceTh"> ASArch Review </th> 
+         <th class="confluenceTh"> Review Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Application Client Container </td> 
+         <td class="confluenceTd"> Tim Quinn </td> 
+         <td class="confluenceTd"> Ready for review </td> 
+         <td class="confluenceTd"> Ken Saks </td> 
+         <td class="confluenceTd"> <a href="http://forums.java.net/jive/thread.jspa?threadID=55757">Forum thread </a> </td> 
+         <td class="confluenceTd"> Aditya </td> 
+         <td class="confluenceTd"> Existing GFv2.x tests will cover this area. </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> June Parks </td> 
+         <td class="confluenceTd"> Y </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="V3NamingHalfPager.html" title="V3NamingHalfPager">Naming and Injection Manager </a> </td> 
+         <td class="confluenceTd"> Ken Saks </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Jerome Dochez </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> Mike Fitch </td> 
+         <td class="confluenceTd"> N </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="GFV3JDBCOnePager.html" title="GFV3JDBCOnePager">Resources (JDBC, JCA) </a> </td> 
+         <td class="confluenceTd"> Jagadish Ramu, Shalini M </td> 
+         <td class="confluenceTd"> Review Ready </td> 
+         <td class="confluenceTd"> Kedar Mhaswade </td> 
+         <td class="confluenceTd"> <a href="http://forums.java.net/jive/thread.jspa?threadID=55615&amp;tstart=0">Forum </a> </td> 
+         <td class="confluenceTd"> Smitha </td> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365263.pdf">Test One Pager </a> </td> 
+         <td class="confluenceTd"> Approved </td> 
+         <td class="confluenceTd"> Mike Fitch </td> 
+         <td class="confluenceTd"> Y </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="GFV3JSR322HalfPager.html" title="GFV3JSR322HalfPager">JSR 322 Connectors Half-pager </a> </td> 
+         <td class="confluenceTd"> Jagadish Ramu </td> 
+         <td class="confluenceTd"> Review Ready </td> 
+         <td class="confluenceTd"> Kedar Mhaswade </td> 
+         <td class="confluenceTd"> NA : JSR 322 based support </td> 
+         <td class="confluenceTd"> Smitha </td> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365263.pdf">Test One Pager </a> </td> 
+         <td class="confluenceTd"> Approved </td> 
+         <td class="confluenceTd"> Chinmayee Srivatsa </td> 
+         <td class="confluenceTd"> N </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="GFV3SecurityOnePager.html" title="GFV3SecurityOnePager">Security </a> </td> 
+         <td class="confluenceTd"> VB Kumar Jayanti </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Bill Shannon </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Jagadesh Munta, Sonia Liu </td> 
+         <td class="confluenceTd"> Internal </td> 
+         <td class="confluenceTd"> Approved </td> 
+         <td class="confluenceTd"> Debbie Carson </td> 
+         <td class="confluenceTd"> N </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="TransactionServiceHalfPager.html" title="TransactionServiceHalfPager">Transaction Service </a> </td> 
+         <td class="confluenceTd"> Marina Vatkina </td> 
+         <td class="confluenceTd"> Review Ready </td> 
+         <td class="confluenceTd"> Sankar Rao, Sreeram Duvur </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Nga Nguyen </td> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365284.pdf">Transaction Service Half Pager </a> </td> 
+         <td class="confluenceTd"> Approved </td> 
+         <td class="confluenceTd"> Ian Evans </td> 
+         <td class="confluenceTd"> N </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://wikis.sun.com/download/attachments/209654762/Half+Pager+for++Persistence+Services+for+GlassFish.pdf">Persistence Service </a> </td> 
+         <td class="confluenceTd"> Mitesh Meswani </td> 
+         <td class="confluenceTd"> Review Ready </td> 
+         <td class="confluenceTd"> Marina Vatkina </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Sherry Shen </td> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365280.pdf">Persistence Service Half Pager </a> </td> 
+         <td class="confluenceTd"> Approved </td> 
+         <td class="confluenceTd"> Ian Evans </td> 
+         <td class="confluenceTd"> N </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://wiki.glassfish.java.net/attach/V3FunctionalSpecs-GFV3-MQIntegrationOnePager.html">OpenMQ Integration </a> </td> 
+         <td class="confluenceTd"> Satish, Nigel </td> 
+         <td class="confluenceTd"> Draft </td> 
+         <td class="confluenceTd"> Jerome Dochez, Sreeram Duvur </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Sonia </td> 
+         <td class="confluenceTd"> Covered by Porting of GFv2.1 tests </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> Dixie Pine </td> 
+         <td class="confluenceTd"> N </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365282.pdf">Scripting </a> </td> 
+         <td class="confluenceTd"> Vivek Pandey </td> 
+         <td class="confluenceTd"> Review Completed </td> 
+         <td class="confluenceTd"> Roberto Chinnici, Ludovic Champenois </td> 
+         <td class="confluenceTd"> <a href="http://forums.java.net/jive/thread.jspa?threadID=56010&amp;tstart=0">Forum Thread </a> </td> 
+         <td class="confluenceTd"> Ming, Sherry </td> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365283.pdf">Scripting One Pager </a> </td> 
+         <td class="confluenceTd"> Under Review </td> 
+         <td class="confluenceTd"> Devika Gollapudi </td> 
+         <td class="confluenceTd"> Y </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="V3FinalWebtierFunctionalSpec.html" title="V3FinalWebtierFunctionalSpec">Web Tier </a> </td> 
+         <td class="confluenceTd"> Rajiv Mordani </td> 
+         <td class="confluenceTd"> Draft </td> 
+         <td class="confluenceTd"> Sreeram Duvur, Ludovic Champenois </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Sudipa </td> 
+         <td class="confluenceTd"> <a href="http://agni-1.us.oracle.com/JSPWiki/Wiki.jsp?page=SQEWebTierOverallTestOnePager">Webtier One Pager </a> </td> 
+         <td class="confluenceTd"> Approved </td> 
+         <td class="confluenceTd"> Devika Gollapudi </td> 
+         <td class="confluenceTd"> Y </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="V3EjbHalfPager.html" title="V3EjbHalfPager">EJB </a> </td> 
+         <td class="confluenceTd"> Ken Saks </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Mahesh Kannan </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ming Zhang </td> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365104.pdf">EJB Test One Pager </a> </td> 
+         <td class="confluenceTd"> Under Review </td> 
+         <td class="confluenceTd"> Ian Evans </td> 
+         <td class="confluenceTd"> N </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="GFv3MetroOnePager.html" title="GFv3MetroOnePager">Metro 2.0 </a> </td> 
+         <td class="confluenceTd"> Harold Carr </td> 
+         <td class="confluenceTd"> Draft </td> 
+         <td class="confluenceTd"> Martin Matula, Jitu, Marek </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Anand Mishra </td> 
+         <td class="confluenceTd"> <a href="http://wikis.glassfish.org/metro/Wiki.jsp?page=v2.0OnePagers">Metro2.0 One Pagers </a> </td> 
+         <td class="confluenceTd"> Approved </td> 
+         <td class="confluenceTd"> Eric Jendrock </td> 
+         <td class="confluenceTd"> N </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="WebservicesOnePager.html" title="WebservicesOnePager">Web Services Integration </a> </td> 
+         <td class="confluenceTd"> Bhakti Mehta </td> 
+         <td class="confluenceTd"> Draft </td> 
+         <td class="confluenceTd"> Harold Carr, Marek Potociar </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Naresh </td> 
+         <td class="confluenceTd"> TBD </td> 
+         <td class="confluenceTd"> TBD </td> 
+         <td class="confluenceTd"> Eric Jendrock </td> 
+         <td class="confluenceTd"> N </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="JerseyV3OnePager.html" title="JerseyV3OnePager">Jersey Integration </a> </td> 
+         <td class="confluenceTd"> Jakub Podlesak </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Rajiv Mordani </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Naresh </td> 
+         <td class="confluenceTd"> <a href="JerseyV3OnePager_QE.html" title="JerseyV3OnePager_QE">QE One Pager </a> </td> 
+         <td class="confluenceTd"> Under Review </td> 
+         <td class="confluenceTd"> Debbie Carson </td> 
+         <td class="confluenceTd"> N </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365255.pdf">Java EE Service Engine </a> </td> 
+         <td class="confluenceTd"> Bhavani </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Sahoo, Mahesh Kannan </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> PDE </td> 
+         <td class="confluenceTd"> Covered by devtests </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> Gail Risdal </td> 
+         <td class="confluenceTd"> N </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="V3FunctionalSpecs-ManagementandMonitoring"></a>Management and Monitoring</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Document </th> 
+         <th class="confluenceTh"> Authors </th> 
+         <th class="confluenceTh"> Status </th> 
+         <th class="confluenceTh"> Reviewer(s) </th> 
+         <th class="confluenceTh"> Forum/Email Thread and Slides </th> 
+         <th class="confluenceTh"> Testing owner </th> 
+         <th class="confluenceTh"> Test Specification </th> 
+         <th class="confluenceTh"> Test Spec Status </th> 
+         <th class="confluenceTh"> Doc. Owner </th> 
+         <th class="confluenceTh"> ASArch Review </th> 
+         <th class="confluenceTh"> Review Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="https://glassfish.java.net/nonav/v3/admin/planning/j109/admin-cli.html">Command Line Interface </a> </td> 
+         <td class="confluenceTd"> Kedar Mhaswade / Lloyd Chambers </td> 
+         <td class="confluenceTd"> Pre-Draft </td> 
+         <td class="confluenceTd"> Sreeram Duvur, Ludovic Champenois </td> 
+         <td class="confluenceTd"> <a href="http://forums.java.net/jive/thread.jspa?threadID=54895&amp;tstart=0">Forum thread </a> </td> 
+         <td class="confluenceTd"> Sankar </td> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365285.pdf">Test OnePager </a> </td> 
+         <td class="confluenceTd"> Published </td> 
+         <td class="confluenceTd"> Paul Davies </td> 
+         <td class="confluenceTd"> Y </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://sites.google.com/site/glassfishconsole/v3-one-pager">Administration Console </a> </td> 
+         <td class="confluenceTd"> Jason Lee, Anissa Lam, Ken Paulsen </td> 
+         <td class="confluenceTd"> Ready for Review </td> 
+         <td class="confluenceTd"> Kedar Mhaswade, Ludovic Champenois </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Yifeng </td> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365257.pdf">Test OnePager </a> </td> 
+         <td class="confluenceTd"> Published </td> 
+         <td class="confluenceTd"> Kim Haase </td> 
+         <td class="confluenceTd"> N </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365279.pdf">Monitoring </a> </td> 
+         <td class="confluenceTd"> Prashanth Abbagani, Sreenivas Munnangi </td> 
+         <td class="confluenceTd"> Ready for Review </td> 
+         <td class="confluenceTd"> Mahesh Kannan, Kedar Mhaswade </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Sankar </td> 
+         <td class="confluenceTd"> <a href="http://wikis.sun.com/download/attachments/209654762/Monitoring+Test+Plan+-+V3.pdf">Test Plan </a> </td> 
+         <td class="confluenceTd"> Approved </td> 
+         <td class="confluenceTd"> Dixie Pine </td> 
+         <td class="confluenceTd"> Y </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Application Deployment and Management </td> 
+         <td class="confluenceTd"> Hong Zhang, Tim Quinn </td> 
+         <td class="confluenceTd"> Review Completed </td> 
+         <td class="confluenceTd"> Jerome Dochez </td> 
+         <td class="confluenceTd"> <a href="http://forums.java.net/jive/thread.jspa?threadID=55759">Forum thread </a> </td> 
+         <td class="confluenceTd"> Elena Asarina </td> 
+         <td class="confluenceTd"> <a href="http://agni-1.us.oracle.com/JSPWiki/attach?page=SQETestOnePagerPlanSpec%2Fv3_deployment.html">Deployment one pager </a> </td> 
+         <td class="confluenceTd"> Approved </td> 
+         <td class="confluenceTd"> Dixie Pine </td> 
+         <td class="confluenceTd"> Y </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="https://glassfish.java.net/nonav/v3/admin/planning/V3Changes/V3_AMX_SPI.html">AMX V3 </a> </td> 
+         <td class="confluenceTd"> Lloyd Chambers </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Kedar Mhaswade </td> 
+         <td class="confluenceTd"> <a href="http://forums.java.net/jive/thread.jspa?threadID=54898&amp;tstart=0">Forum Thread </a> </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> Covered by Porting of GFv2.1 tests </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> June Parks </td> 
+         <td class="confluenceTd"> N </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="https://glassfish.java.net/nonav/v3/admin/planning/V3Changes-GmbalFunctionalSpec.html">GlassFish MBean Annotation Library (gmbal) </a> </td> 
+         <td class="confluenceTd"> Ken Cavanaugh </td> 
+         <td class="confluenceTd"> Draft Published </td> 
+         <td class="confluenceTd"> Lloyd Chambers , Kedar Mhaswade, Harold Carr </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> L </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> June Parks </td> 
+         <td class="confluenceTd"> Y </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://wikis.sun.com/download/attachments/211391966/InstallerOnePager.pdf">Installation </a> </td> 
+         <td class="confluenceTd"> Sathyan Catari </td> 
+         <td class="confluenceTd"> Review Completed </td> 
+         <td class="confluenceTd"> Ludovic Champenois </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Nolan Luu </td> 
+         <td class="confluenceTd"> <a href="http://wikis.sun.com/download/attachments/209654762/GFv3InstallerTestSpec.pdf">GFv3 Install Test Spec </a> <a href="http://wikis.sun.com/download/attachments/209654762/GFv3InstallerTestSpec.pdf">GFv3 Preview Install Test Spec </a> </td> 
+         <td class="confluenceTd"> Approved </td> 
+         <td class="confluenceTd"> Gail Risdal </td> 
+         <td class="confluenceTd"> N </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365271.pdf">Upgrade (Draft 2, pending Jerome's additions) </a> </td> 
+         <td class="confluenceTd"> Rebecca Searls </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Kedar Mhaswade, Bill Shannon </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Nga Nguyen </td> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365286.pdf">Upgrade </a> </td> 
+         <td class="confluenceTd"> Approved </td> 
+         <td class="confluenceTd"> Kim Haase </td> 
+         <td class="confluenceTd"> Y </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Verifier </td> 
+         <td class="confluenceTd"> Sahoo </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Roberto Chinnici </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> Dixie Pine </td> 
+         <td class="confluenceTd"> N </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365264.pdf">HTTP Interface for Administration </a> </td> 
+         <td class="confluenceTd"> Rajeshwar Patil </td> 
+         <td class="confluenceTd"> Ready for review </td> 
+         <td class="confluenceTd"> *<a href="V3HTTPInterfacesReviewKenPaulsen.html" title="V3HTTPInterfacesReviewKenPaulsen">Ken Paulsen </a>*, <a href="V3HTTPInterfacesReviewJasonLee.html" title="V3HTTPInterfacesReviewJasonLee">Jason Lee </a>, <a href="V3HTTPInterfacesReviewPaulSandoz.html" title="V3HTTPInterfacesReviewPaulSandoz">Paul Sandoz </a>, <a href="V3HTTPInterfacesReviewJakubPodlesak.html" title="V3HTTPInterfacesReviewJakubPodlesak">Jakub Podlesak </a> </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> Covered by Admin testing </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Paul Davies </td> 
+         <td class="confluenceTd"> Y </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="V3FunctionalSpecs-OnePagersforv3Preluderelease"></a>One Pagers for v3 Prelude release</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Document </th> 
+         <th class="confluenceTh"> Authors </th> 
+         <th class="confluenceTh"> Status </th> 
+         <th class="confluenceTh"> Review(s) </th> 
+         <th class="confluenceTh"> Forum/Email Thread and Slides </th> 
+         <th class="confluenceTh"> Testing owner </th> 
+         <th class="confluenceTh"> Test Specification </th> 
+         <th class="confluenceTh"> Test Spec Status </th> 
+         <th class="confluenceTh"> Doc. Owner </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="V3OverviewFunctionalSpec.html" title="V3OverviewFunctionalSpec">Prelude Overview</a> </td> 
+         <td class="confluenceTd"> Jerome Dochez </td> 
+         <td class="confluenceTd"> Review Completed </td> 
+         <td class="confluenceTd"> <a href="V3OverviewReviewSreeramDuvur.html" title="V3OverviewReviewSreeramDuvur">Sreeram Duvur </a>, <a href="V3OverviewReviewBillShannon.html" title="V3OverviewReviewBillShannon">Bill Shannon </a> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd"> Paul Davies </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365132.pdf">OSGi </a> </td> 
+         <td class="confluenceTd"> Sahoo </td> 
+         <td class="confluenceTd"> Review Completed </td> 
+         <td class="confluenceTd"> Roberto Chinnici </td> 
+         <td class="confluenceTd"> <a href="https://glassfish.java.net/servlets/BrowseList?list=dev&amp;by=thread&amp;from=1209119">Email Thread </a> </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd"> Paul Davies, Chinmayee Srivastha </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365281.pdf">Scripting </a> </td> 
+         <td class="confluenceTd"> Vivek Pandey </td> 
+         <td class="confluenceTd"> Review Completed </td> 
+         <td class="confluenceTd"> Jerome Dochez , <a href="V3ScriptingReviewBillShannon.html" title="V3ScriptingReviewBillShannon">Bill Shannon </a> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ming, Sherry </td> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365262.pdf">Scripting </a> </td> 
+         <td class="confluenceTd"> Draft published </td> 
+         <td class="confluenceTd"> June Parks </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="V3webtierFunctionalSpec.html" title="V3webtierFunctionalSpec">Webtier</a> </td> 
+         <td class="confluenceTd"> Rajiv Mordani </td> 
+         <td class="confluenceTd"> Review completed </td> 
+         <td class="confluenceTd"> Ken Saks ,ScottOaks , <a href="V3WebtierReviewBillShannon.html" title="V3WebtierReviewBillShannon">Bill Shannon </a> <a href="V3WebtierReviewVinceKraemer.html" title="V3WebtierReviewVinceKraemer">Vince Kraemer </a> </td> 
+         <td class="confluenceTd"> <a href="http://wiki.glassfish.java.net/attach/V3webtierFunctionalSpec-ValveAlignment.pdf">Valves alignment slides </a> <a href="https://glassfish.java.net/servlets/BrowseList?list=webtier&amp;by=thread&amp;from=1222185">Email thread </a> </td> 
+         <td class="confluenceTd"> Sudipa </td> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365261.pdf">Webtier </a> </td> 
+         <td class="confluenceTd"> Draft published </td> 
+         <td class="confluenceTd"> Paul Davies </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="GFV3AdminGUIOnePager.html" title="GFV3AdminGUIOnePager">Admin GUI </a> </td> 
+         <td class="confluenceTd"> Anissa Lam </td> 
+         <td class="confluenceTd"> Review Completed </td> 
+         <td class="confluenceTd"> <a href="V3AdminGUIReviewArunGupta.html" title="V3AdminGUIReviewArunGupta">Arun Gupta </a>, <a href="V3AdminGUIReviewBillShannon.html" title="V3AdminGUIReviewBillShannon">Bill Shannon </a>,<a href="V3AdminGUIReviewTomMueller.html" title="V3AdminGUIReviewTomMueller">Tom Mueller </a> </td> 
+         <td class="confluenceTd"> <a href="http://forums.java.net/jive/thread.jspa?threadID=43767&amp;tstart=0">Forum Thread </a> </td> 
+         <td class="confluenceTd"> Yifeng </td> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365256.pdf">AdminGUI </a> </td> 
+         <td class="confluenceTd"> Draft Published </td> 
+         <td class="confluenceTd"> Paul Davies </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="Deploymentv3PreludeOnePager.html" title="Deploymentv3PreludeOnePager">Deployment </a> </td> 
+         <td class="confluenceTd"> Hong Zhang, Tim Quinn, Jerome Dochez </td> 
+         <td class="confluenceTd"> Review completed </td> 
+         <td class="confluenceTd"> <a href="V3DeploymentReviewVinceKraemer.html" title="V3DeploymentReviewVinceKraemer">Vince Kraemer </a>, <a href="V3DeploymentReviewLudovicChampenois.html" title="V3DeploymentReviewLudovicChampenois">Ludovic Champenois </a>, <a href="V3DeploymentReviewBillShannon.html" title="V3DeploymentReviewBillShannon">Bill Shannon </a> </td> 
+         <td class="confluenceTd"> <a href="http://forums.java.net/jive/thread.jspa?threadID=43827&amp;tstart=0">Forum Thread </a> </td> 
+         <td class="confluenceTd"> Lidia </td> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365272.pdf">Deployment </a> </td> 
+         <td class="confluenceTd"> Draft published </td> 
+         <td class="confluenceTd"> June Parks </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="GFV3MonitoringOnePager.html" title="GFV3MonitoringOnePager">Monitoring </a> </td> 
+         <td class="confluenceTd"> Prashanth Abbagani, Harpreet Singh, Mahesh Kannan </td> 
+         <td class="confluenceTd"> Review Completed </td> 
+         <td class="confluenceTd"> Kohsuke Kawaguchi , <a href="V3MonitoringReviewJanLuehe.html" title="V3MonitoringReviewJanLuehe">Jan Luehe </a> </td> 
+         <td class="confluenceTd"> <a href="http://wiki.glassfish.java.net/attach/GfProbes-V3-Express-Monitoring-1.5.pdf">Presentation Slides </a>, <a href="https://glassfish.java.net/servlets/BrowseList?listName=users&amp;by=thread&amp;from=1207986&amp;to=1207986&amp;first=1&amp;count=1">Email Thread </a>, <a href="MonitoringReviewComments.html" title="MonitoringReviewComments">Monitoring Review Comments </a> </td> 
+         <td class="confluenceTd"> Sankar </td> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365259.pdf">Test Plan </a> , <a href="http://wiki.glassfish.java.net/attach/V3FunctionalSpecs-Gf_V3_Prelude_Monitoring_Test_Specification.html">Test Spec </a> </td> 
+         <td class="confluenceTd"> Under Review </td> 
+         <td class="confluenceTd"> Dixie Pine </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="GFV3PluggabilityOnePager.html" title="GFV3PluggabilityOnePager">Pluggability / Extensibility / OEM </a> </td> 
+         <td class="confluenceTd"> Sreenivas Munnangi, Ken Paulsen, Hong Zhang, Kedar Mhaswade </td> 
+         <td class="confluenceTd"> Review Completed </td> 
+         <td class="confluenceTd"> Ed Burns </td> 
+         <td class="confluenceTd"> <a href="https://glassfish.java.net/servlets/BrowseList?listName=users&amp;by=thread&amp;from=1208123&amp;to=1208123&amp;first=1&amp;count=1">Email Thread </a> </td> 
+         <td class="confluenceTd"> Yifeng Sankar Lidia </td> 
+         <td class="confluenceTd"> <a href="PluggabilityTestPlan.html" title="PluggabilityTestPlan">Click </a> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> <a href="V3PluggabilityReviewDixie.html" title="V3PluggabilityReviewDixie">Chinmayee Srivathsa </a>, Paul Davies </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="https://glassfish.java.net/nonav/v3/admin/planning/prelude-admin-infra-prelude.html">Admin Infrastructure </a> </td> 
+         <td class="confluenceTd"> Kedar Mhaswade, Muhammad Siraj Ghaffar </td> 
+         <td class="confluenceTd"> Review Completed </td> 
+         <td class="confluenceTd"> <a href="V3AdminInfrastructureReviewSreeramDuvur.html" title="V3AdminInfrastructureReviewSreeramDuvur">Sreeram Duvur </a>, <a href="V3AdminInfrastructureReviewBillShannon.html" title="V3AdminInfrastructureReviewBillShannon">Bill Shannon </a> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Sankar </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> <a href="http://wiki.glassfish.java.net/attach/V3FunctionalSpecs-GFv3AdminCLITestSpec.html">QE One Pager </a> </td> 
+         <td class="confluenceTd"> Dixie(CLI), Paul(GUI), June(domain.xml) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="GFV3EmbeddableOnePager.html" title="GFV3EmbeddableOnePager">Embeddable GlassFish </a> </td> 
+         <td class="confluenceTd"> Byron Nevins, Kohsuke Kawaguchi </td> 
+         <td class="confluenceTd"> Review Completed </td> 
+         <td class="confluenceTd"> Mahesh Kannan , Jeanfrancois Arcand </td> 
+         <td class="confluenceTd"> <a href="http://forums.java.net/jive/thread.jspa?threadID=43971">Forum Thread </a> <a href="EmbeddableToDoList.html" title="EmbeddableToDoList">ToDoList </a> </td> 
+         <td class="confluenceTd"> Sherry </td> 
+         <td class="confluenceTd"> <a href="http://wiki.glassfish.java.net/attach/V3FunctionalSpecs-GFv3EmbeddableTestSpec.html">Embeddable </a> </td> 
+         <td class="confluenceTd"> Draft published </td> 
+         <td class="confluenceTd"> June Parks </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://wikis.sun.com/download/attachments/211391966/InstallerOnePager.pdf">Installer </a> </td> 
+         <td class="confluenceTd"> Sathyan Catari </td> 
+         <td class="confluenceTd"> Review Completed </td> 
+         <td class="confluenceTd"> <a href="V3InstallerReviewAlexisPouchkine.html" title="V3InstallerReviewAlexisPouchkine">Alexis Moussine-Pouchkine </a>, <a href="V3InstallerReviewBillShannon.html" title="V3InstallerReviewBillShannon">Bill Shannon </a> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Nolan </td> 
+         <td class="confluenceTd"> <a href="http://wikis.sun.com/download/attachments/209654762/GFv3InstallerTestSpec.pdf">Install </a> </td> 
+         <td class="confluenceTd"> Reviewed Completed </td> 
+         <td class="confluenceTd"> SueAnn Spencer </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365232.pdf">Packaging and File Layout </a> </td> 
+         <td class="confluenceTd"> Snjezana Sevo-Zenzerovic </td> 
+         <td class="confluenceTd"> Review Completed </td> 
+         <td class="confluenceTd"> <a href="V3PackagingReviewSahoo.html" title="V3PackagingReviewSahoo">Sahoo </a> <a href="V3PackagingReviewTomMueller.html" title="V3PackagingReviewTomMueller">Tom Mueller </a> <a href="V3PackagingReviewJoeDiPol.html" title="V3PackagingReviewJoeDiPol">Joe Di Pol </a> </td> 
+         <td class="confluenceTd"> <a href="https://glassfish.java.net/servlets/BrowseList?listName=users&amp;by=thread&amp;from=1207985&amp;to=1207985&amp;first=1&amp;count=1">Email Thread </a> </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd"> Paul Davies </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>-------------</p> <p><a name="V3FunctionalSpecs-GuidelinesForAuthors"></a></p> <h4><a name="V3FunctionalSpecs-GuidelinesforAuthors"></a>Guidelines for Authors</h2> 
+     <ul> 
+      <li>The one pager represents a feature or project to be considered for inclusion in a future release.</li> 
+      <li>It provides a high level description of the project along with details about the interfaces, delivery and impact on other parts of the release.</li> 
+      <li>The one pager is meant for consumption by ARCs, Docs, QE/QA, SEs and other developers who may need to understand the high level workings and interfaces. Please use the standard templates given below 
+       <ul> 
+        <li><a href="OnePagerTemplate.html" title="OnePagerTemplate">Wiki </a></li> 
+        <li><a href="http://aseng-wiki.us.oracle.com/asengwiki/display/GlassFish/GlassFish+Templates">Internal templates (txt or html)</a></li> 
+       </ul> </li> 
+      <li>For projects/feature proposals that are not well defined (yet) use one of the following half pager templates: 
+       <ul> 
+        <li><a href="HalfPagerTemplate.html" title="HalfPagerTemplate">Wiki</a></li> 
+        <li><a href="http://aseng-wiki.us.oracle.com/asengwiki/display/GlassFish/GlassFish+Templates">Internal templates (txt or html)</a></li> 
+       </ul> </li> 
+      <li>The one pager is not a substitute for design document. Please keep one pagers reasonably brief.</li> 
+      <li>When the initial draft of a document is ready, please link it to the table above and change the state to <em>Draft</em></li> 
+      <li>When the document is ready for review: 
+       <ul> 
+        <li>Please contact designated reviewers and request for feedback.</li> 
+        <li>Please solicit community feedback/comments about the new feature by providing a link to the relevant one pager and a link to this wiki page. You may use one of the following methods based on your preference: 
+         <ul> 
+          <li>Forum: Please start a new <a href="http://forums.java.net/jive/forum.jspa?forumID=56&amp;start=0">GlassFish forum</a> thread.</li> 
+          <li>Email: Please send an email to users@glassfish.java.net and cc dev@glassfish.java.net. If you have an active community for the project you are discussing, please feel free to include other appropriate mailing lists.</li> 
+         </ul> </li> 
+        <li>The subject of the thread should say something about the new feature.</li> 
+        <li>Ask for feedback on the new feature in the body and include the link to the relevant one pager in it. Please also include a link to this wiki page.</li> 
+        <li>Indicate in the initial (email or fourm) thread that the review period is 1 week. Comments received after that will not be considered for this release.</li> 
+        <li>Please add a link to the relevant GlassFish (forum or email) thread to this table for your one pager and change the status to <em>Under Review</em>.</li> 
+       </ul> </li> 
+      <li>Please allow a minimum period of 1 week for the community to provide feedback/comments on the GlassFish forum.</li> 
+      <li>At the end of this period: 
+       <ul> 
+        <li>Announce in the appropriate GlassFish forum thread that the review period is over and the one pager will be updated with all relevant feedback/comments received during this period.</li> 
+        <li>Incorporate any feedback that is useful and relevant for this release into the one pager and update it on this page.</li> 
+        <li>Change the status to <em>Review Completed</em></li> 
+       </ul> </li> 
+     </ul> <h4><a name="V3FunctionalSpecs-GuidelinesforReviewers"></a>Guidelines for Reviewers</h2> 
+     <ul> 
+      <li>Please use the <a href="GFv3ReviewTemplate.html" title="GFv3ReviewTemplate">review template</a> format to provide feedback.</li> 
+      <li>Share one common review page for each one-pager or functional spec. (All reviews for a common one-pager will be on a single review page.)</li> 
+      <li>If you are the first reviewer for a specific one-pager create a new page based on the template. The name of the review page should be the one-pager wiki name with "Review" appended. For example if the published one pager wiki name is called 3.1Loadbalancer the review page wiki name will be 3.1LoadbalancerReview.</li> 
+      <li>The new page should be linked from your name in the reviewer's column in the table.</li> 
+      <li>If you are a subsequent reviewer for the one-pager update the existing review page and then link your name in the reviewer's column to the same page.</li> 
+      <li>Notify the author(s) that new review comments are available.</li> 
+     </ul> <h4><a name="V3FunctionalSpecs-ReviewProcess"></a>Review Process</h2> 
+     <ul> 
+      <li>The author of the one pager for the feature will post the one pager on this wiki and start a new <a href="http://forums.java.net/jive/forum.jspa?forumID=56&amp;start=0">GlassFish forum</a> thread soliciting feedback/comments on the new feature.</li> 
+      <li>All documents posted will allow a minimum of 1 week for the community to provide feedback.</li> 
+      <li>During this period, author is expected to respond to feedback/comments posted by others on the forum.</li> 
+      <li>At the end of this period the author will update the one pager with all relevant feedback/comments received during this period.</li> 
+      <li>Any feedback/comments received after this period will not be considered for this release.</li> 
+     </ul> <h4><a name="V3FunctionalSpecs-ASArchReview"></a>ASArch Review</h2> 
+     <ul> 
+      <li>If the ASArch Review column contains "Y", please schedule an ASArch Review of your one-pager and update the column with the date of your review. To schedule a review, contact <a href="mailto:shannon@java.net">Bill Shannon</a>. If you would like to review via email - please email<a href="mailto:dev@glassfish.java.net">dev@glassfish.java.net</a> dev@glassfish.java.net to initiate and complete review via email.</li> 
+     </ul> 
+     <hr> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365082.jpg">gui-monitor-screenshot.JPG</a> (image/jpeg) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365084.jpg">Monitoring_V3_Arch_Diagram-Final.JPG</a> (image/jpeg) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365083.pdf">GMSConfig-v31-asarch.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365078.jpg">list-probes.jpg</a> (image/pjpeg) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365079.png">ishot-195.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365080.jpg">Monitoring Architecture Diagram V3.jpg</a> (image/pjpeg) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365081.jpg">asadmin_list_command.JPG</a> (image/jpeg) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365074.jpg">jvm_jconsole.JPG</a> (image/jpeg) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365075.jpg">jconsole-monitor-screenshot.JPG</a> (image/jpeg) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365140.pdf">gmsconfig_gfv3_1-26.pdf</a> (application/x-download) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365136.pdf">Half Pager for Persistence Services for GlassFish.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365137.pdf">GFV3.1FinalInstallerOnePager.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365135.pdf">GFv3InstallerTestSpec.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365130.pdf">GFv3.1-OSFi-onepager-v0.3.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365129.pdf">GFv3.1-OSGi-onepager-v0.2.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365132.pdf">GFv3Prelude-OSGi-onepager-v0.2.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365131.pdf">GFv3Prelude-OSGi-onepager-v0.1.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365134.pdf">GFv3-OSGi-onepager-v0.3.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365133.pdf">GFv3-OSGi-onepager-v0.2.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365104.pdf">GFv3EjbTestSpec.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365233.pdf">GFv3Logging-onepager.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365234.pdf">JMS-onepager-GF3.1.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365235.pdf">Monitoring Test Plan - V3.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365236.pdf">Scripting and JavaEE6 alignment.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365232.pdf">V3PreludePackagingFileLayout.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365239.pdf">GFv3.1Logging-OnePager.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365253.pdf">ASMQV3OnePager.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365254.pdf">gfv3-deployment-one-pager.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365251.pdf">GFv3PreludeInstallerTestSpec.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365252.pdf">GFv3PreludeInstallerTestSpec02.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365249.pdf">GFv3PreviewInstallerTestSpec03.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365250.pdf">GFv3PreviewInstallerTestSpec070.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365247.pdf">GFv3PreviewInstallerTestSpec074b.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365248.pdf">gmsconfig_gfv3_1.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365267.pdf">gmsconfig.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365246.pdf">half-pager.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365243.pdf">InstallerOnePager.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365244.pdf">Instructions.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365241.pdf">onepager.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365242.pdf">V3FileLayout.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365270.pdf">V3FinalInstallerOnePager.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365269.pdf">V3Packaging.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365268.pdf">g11ngfv3specs.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365266.pdf">gmsconfig.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365245.pdf">gmsconfig.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365265.pdf">GMSConfig-slides.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365264.pdf">HTTPInterfaceForAdministartion.html.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365263.pdf">GFV3JDBCTestOnePager.html.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365262.pdf">GFv3ScriptingTestSpec.html.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365261.pdf">GFV3Prelude-WebTierTestSpec.html.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365260.pdf">Glassfish_V3_Extensibility_Test_One_Pager.html.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365259.pdf">GlassFish_v3_Monitoring.html.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365258.pdf">GrizzlyConfigOnePagerSQE.html.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365257.pdf">GUI_Test_Plan_V3.html.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365256.pdf">GUITestPlanV3Prelude.html.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365255.pdf">JavaEEServiceEngineV3OnePager.html.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365279.pdf">monitoring-one-pager-v3ms2.html.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365280.pdf">PersistenceHalfPagerSQE.html.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365281.pdf">Scripting-one-pager-v1.1.html.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365282.pdf">Scripting-one-pager.html.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365283.pdf">ScriptingOnePagerSQE.html.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365284.pdf">TransactionServiceHalfPagerSQE.html.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365285.pdf">V3_EA_Admin_CLI_Test_Specification.html.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365286.pdf">V3_UpgradeMatrix.html.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365271.pdf">v3_upgradetool_spec.html.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875619/21365272.pdf">v3-prelude-deployment-testplan.html.pdf</a> (application/pdf) 
+      <br> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Aug 28, 2012 by 
+<font color="#0050B2">10193</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

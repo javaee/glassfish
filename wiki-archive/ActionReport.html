@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : ActionReport</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>I took a bit of time this morning to try some experiments. I created an Admin Command that fills an ActionReport with data. It exercises all of the different ways of doing that.<br> Running asadmin with AS_DEBUG is invaluable since it dumps out the actual Manifest Object. Have a look see:</p> <h4><a name="ActionReport-SourceCodejavafile"></a>Source Code <a href="http://wiki.glassfish.java.net/attach/ActionReport/output-tester.java">java file</a></h2> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">ActionReport.MessagePart top = report.getTopMessagePart();
+        ActionReport.MessagePart sub1 = top.addChild();
+        ActionReport.MessagePart sub2 = top.addChild();
+
+        sub1.setChildrenType("childrentype-1");
+        sub2.setChildrenType("childrentype-2");
+        top.setChildrenType("childrentype-top");
+
+        sub1.setMessage("sub1 message");
+        sub2.setMessage("sub2 message");
+        top.setMessage("top message");
+
+        sub1.addProperty("sub1-key1", "sub1-value1");
+        sub2.addProperty("sub2-key1", "sub2-value1");
+        top.addProperty("top-key1", "top-value1");
+
+        Properties extraProps = new Properties();
+        extraProps.setProperty("extra-key1", "extra-value1");
+        report.setExtraProperties(extraProps);
+        report.setActionExitCode(ActionReport.ExitCode.SUCCESS);</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="ActionReport-ThisistheManifestobjectthatasadminreceived%3A"></a>This is the Manifest object that asadmin received:</h2> <p><b>Notice that the extra properties are not in the Manifest object. Feel free to investigate why!</b></p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">------- RAW RESPONSE  ---------
+Signature-Version: 1.0
+message: top message%%%EOL%%%
+top-key1_name: top-key1
+keys: top-key1
+top-key1_value: top-value1
+children: sub1 message;sub2 message
+use-main-children-attribute: false
+children-type: childrentype-top
+exit-code: SUCCESS
+
+Name: sub1 message
+sub1-key1_name: sub1-key1
+message: top message%%%EOL%%%
+sub1-key1_value: sub1-value1
+keys: sub1-key1
+
+Name: sub2 message
+message: top message%%%EOL%%%
+keys: sub2-key1
+sub2-key1_name: sub2-key1
+sub2-key1_value: sub2-value1</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="ActionReport-Hereisthenormal%28nondebug%29asadminoutput."></a>Here is the normal (non-debug) asadmin output. </h2> <p><b>Notice how the properties are NOT shown. This may be useful!</b></p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">C:\gf\v3\cluster\admin&gt;asadmin output-tester
+top message
+childrentype-top : sub1 message
+childrentype-top : sub2 message
+
+Command output-tester executed successfully.</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="ActionReport-Hereistheoutputinabrowserfrom"></a>Here is the output in a browser from <a href="http://localhost:4848/__asadmin/output-tester.xml">http://localhost:4848/__asadmin/output-tester.xml</a></h2> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">This XML file does not appear to have any style information associated with it. The document tree is shown below.
+      
+−
+&lt;action-report description="output-tester AdminCommand" exit-code="SUCCESS"&gt;
+−
+&lt;message-part message="top message"&gt;
+&lt;property name="top-key1" value="top-value1"/&gt;
+−
+&lt;message-part message="sub1 message" type="childrentype-1"&gt;
+&lt;property name="sub1-key1" value="sub1-value1"/&gt;
+&lt;/message-part&gt;
+−
+&lt;message-part message="sub2 message" type="childrentype-2"&gt;
+&lt;property name="sub2-key1" value="sub2-value1"/&gt;
+&lt;/message-part&gt;
+&lt;/message-part&gt;
+&lt;/action-report&gt;</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="ActionReport-Hereisapictureofthebrowseroutputof%21"></a>Here is a picture of the browser output of <span class="error">Cannot resolve external resource into attachment.</span></h2> <p>And finally here is the output from <a href="http://localhost:4848/__asadmin/output-tester.json">http://localhost:4848/__asadmin/output-tester.json</a> – it was all one line. I added some linefeeds to make it easier to read.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">{ "name":"top message" , "command":"output-tester AdminCommand" , 
+"exit_code":"SUCCESS" ,"properties" : { "top-key1" : "top-value1" } ,
+ "result" : [ { "name":"sub1 message" ,"properties" : { "sub1-key1" 
+: "sub1-value1" } } , { "name":"sub2 message" ,"properties" 
+: { "sub2-key1" : "sub2-value1" } } ] }</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="ActionReport-IsthistheAnswerUsethetopmessageproperties"></a>Is this the Answer – Use the top-message properties</h1> <h4><a name="ActionReport-Source"></a>Source</h2> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">private void two(ActionReport report) {
+        ActionReport.MessagePart top = report.getTopMessagePart();
+        top.setMessage("Here is a big fancy list-instances output%%%EOL%%%Second Line Here");
+
+        top.addProperty("instance1", "running");
+        top.addProperty("instance2", "running");
+        top.addProperty("instance3", "not running");
+
+        Properties extraProps = new Properties();
+        extraProps.setProperty("XXinstance1", "running");
+        extraProps.setProperty("XXinstance2", "running");
+        extraProps.setProperty("XXinstance3", "not running");
+        report.setExtraProperties(extraProps);
+        report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
+    }</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="ActionReport-ManifestObjectcontents"></a>Manifest Object contents</h2> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">------- RAW RESPONSE  ---------
+Signature-Version: 1.0
+message: Here is a big fancy list-instances output%%%EOL%%%Second Line
+  Here%%%EOL%%%
+keys: instance3;instance2;instance1
+instance2_name: instance2
+instance1_name: instance1
+instance1_value: running
+use-main-children-attribute: false
+instance2_value: running
+instance3_name: instance3
+instance3_value: not running
+exit-code: SUCCESS
+
+
+------- RAW RESPONSE  ---------</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="ActionReport-AsadminOutput"></a>Asadmin Output</h2> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Here is a big fancy list-instances output
+Second Line Here
+
+Command output-tester executed successfully.</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="ActionReport-XMLOutputLookin%27Good%21"></a>XML Output – Lookin' Good!</h2> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;action-report description="output-tester AdminCommand" exit-code="SUCCESS"&gt;
+
+&lt;message-part message="Here is a big fancy list-instances output%%%EOL%%%Second Line Here"&gt;
+&lt;property name="instance3" value="not running"/&gt;
+&lt;property name="instance2" value="running"/&gt;
+&lt;property name="instance1" value="running"/&gt;
+&lt;/message-part&gt;
+&lt;/action-report&gt;</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="ActionReport-JSONOutputLooksGood%21"></a>JSON Output – Looks Good!</h2> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">{ "name":"Here is a big fancy list-instances output%%%EOL%%%Second Line Here" , 
+"command":"output-tester AdminCommand" , "exit_code":"SUCCESS" ,"properties" : 
+{ "instance3" : "not running" , 
+"instance2" : "running" , 
+"instance1" : "running" } }</pre> 
+       </div> 
+      </div>
+     </div> 
+     <hr> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875363/21365445.jpg">output-tester.JPG</a> (image/jpeg) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875363/21364907.jpg">output-tester.JPG</a> (image/jpeg) 
+      <br> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Dec 01, 2011 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:42.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

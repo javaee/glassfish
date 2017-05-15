@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : 0725MeetingMinutes</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>Minutes of meeting 2007-07-25</p> <p><b>In attendance</b></p> <p>Joel, Larry, Jan, Binod, Erik</p> <p><b>Transactions</b></p> <p>It was discussed earlier in tome TLI sessions (Jan, Robert, Kristoffer, Larry) that transactions might be needed.<br> We should re-evaluate the need for this.</p> <p>One of the reasons seems to be that the information is stored in a number of interdependent objects (e.g., SIP application session, SIP session, HTTP session, where the SIP Application session can contain multiple protocol sessions (HTTP or SIP) and a SIP or HTTP session belongs to 0 or 1 SIP application session.<br> The different entities have different lifecycles and different events that cause replication to occur.</p> <p>The suggestion is to have all these objects as separate, individual, but 'linked' entities.<br> In particular, each is a unit of replication and each entitiy should have its own independent version.</p> <p>Regarding transcations in HTTP sessions<br> In the Java EE arch the notition of HTTP session is not transactional (in the ACID sense).<br> Java EE does offer some hooks to the application (e.g., AfterCompletion callbacks).<br> The same holds for SFSB.</p> <p>SUN's attitude towards replication is based on this, each operation is disconnected logically, multiple things are seen as discrete actions and are executed one at the time.<br> This does not have seemed to harm until now.</p> <p>The suggestion is that we try to avoid transactions in the case of the data structures needed for SIP.</p> <p>Joel indicated that transactionality is probably not really needed (it is not done in EAS 4.1). It is acceptable to have an 'optimistic' replication; i.e., it is best effort, but we should be able to detect if a structure is inconsistent.</p> <p>There was a discussion on how this could be established where it was reasoned (by Erik and Jan) that we might need versioned references to accomplish this optimistic concurrency. Only then will we be able to detect whether the data structure is consistent (e.g., if the SIP session refers to the correct version of the SIP application session).</p> <p>However, Larry reasoned that versions are not needed. Worse still, the inclusion of references with versions would mean that every update of a part of the structure would mean that the whole tree is updated. E.g., an update of a HTTP session would mean that the SIP application session has to be updated to refer to the new version, which means that all the other protocol session have to be updated to refer to the new version of the SIP application session....)<br> Versions is also a problem if the same object can be accessed concurrently from multiple clients. E.g., this problem occurred for the EJB. So in this case the semantics are relaxed, which means that it is also OK if a version is loaded that has a higher version number then the one used by the client (which would indicate that it was changed from another client in the mean time).</p> <p>It seems that we can aim for best effort, but we can not really detect inconsistencies if we do not include the version in the references between the entities.<br> However, it might be that this is still acceptable. If we assume that all the related objects are co-located on the same server instance.</p> <p>We need to do some more data modeling and go through some failure scenarios to see if this is indeed true.</p> <p><b>SIP application session co-location</b></p> <p>There also was a brief disucssion on whether the SIP application sessions would always be co-located or if there are some situations where its child protocol sessions could end up on different instances, and hence the SIP application session could be accessed on both.<br> The idea was that HTTP requests could include only the HTTP sessionID and not a SIP application sessionID. If this is the case how can the LB route them to the same instance, since the LB does not know about the relation between the HTTP sessionID and the SASid.</p> <p>Jan mentioned two solutions to the problem, but I can only remember discussion one of them:<br> always URL encode both session ids and stickiness is only sticky on SIP application session ID.</p> <p>Joel reasoned that is should NOT be possible to end up on two different instances.<br> SIP and HTTP use the same hashCode and the same consistent hashing.<br> On the first initial request you generate a hash code (mapped to one instance in failover to another instance) this is included in the cookie (jroute).<br> The http session id would be coded in the jsessionid, but the jroute would be what is used for the routing.<br> In case of recovery, map back to original.</p> <p>For the moment we assume that co-location is possible, but this discussion will continue in the LB meeting.</p> <p><b>Timers</b></p> <p>Currently replicas are in deserialised form and therefore a replica timer can never be active.<br> EJBs do migration of timers based on GMS.</p> <p>The question is can we do a best effort with timers? I.e., wait until the SAS is activated by an event and only then activate the timers.<br> The answer is NO. The events can be very infrequent (hours), the timers could be periodic (10 minutes). It is not acceptable to wait that long, furthermore, there is also a timer specifically to guard the lifetime of the SAS object (e.g., for the case where there are no events received)</p> <p>There was a discussion on using GMS to wake up the timers, which led to a discussion that this could mean that timers are activated twice, since the events from the LB and the GMS allocation would both activate same objects. </p> <p>The suggestion propsed earlier in the email by Erik is to start the timers in the failover situation on the replica buddy (reverse repair). So this would mean we do not wait for an event (via the LB) to activate the replica. Then we would <em>move</em> the active instance (including the active timer) to the node where the LB sends the next event for the session. </p> <p><b>Active ession migration</b></p> <p>This started a whole discussion on active session migration. It seems that the current framework does not support moving of active instances, while the suggestion in the FSD was that in case of a load all the current replicas <em>and all active instances</em> would be removed and an active version would appear on the instance where the load was performed. However, according to Larry this violates the principles of the FW, since there is always a reason that an instance is active and once it has become active the LB should direct all the traffic to that instance, that is what stickiness is about.</p> <p>However, this goes against the whole concept of User Centric load distribution where 'users' are allocated to server instances based on the hash of the data indicating the user and consistent hash algorithm that allocates these hashes to server instances. This goes even beyond the concept of SIP application session; even unrelated requests (different SASes) for the same user should go to the same instance.<br> So in case of a server failure, we do not actually migrate ongoing sessions to a backup node, we migrate users (or better a logical partition in the complete address space of users).<br> When the instance comes back the consistent hash is updated and the users are reallocated.<br> Since every configuration covers the complete space there is no middle ground.</p> <p>We seem to have stumbled on a contradiction between the replication FW and the user centric load balancer.<br> User centric seems to need the migration of active sessions between nodes.</p> <p>As Joel described this in a mail:</p> 
+     <hr> <p>The "Session Key Based Targeting Mechanism" described in section 15.11.2 of JSR-289 implies that an application might tie an incoming (initial) request to an existing SipApplicationSession based on rules that is unkwon for the container, e.g. tie all requests directed to a specific user to the same SipApplicationSession.</p> <p>Say that the application wants to tie all new SIP dialogs directed to a specific user to the same SipApplicationSession. Now, if the load balancer is based on the concept that it only routes established sessions to the same back-end. Then one would end up in the case that new dialogs directed to the same user would end up in different back-ends and in each back-end the application need to tie that request to the same SipApplicationSession, which requires the (active) SipApplicationSession to be migrated back and forth between the back-ends. There are two things to observe about this solution: a) the performance would be lousy; b) it requires migration of active SipApplicationSessions.</p> <p>Since Session Key Based Targeting Mechanism is equivalent with the User-Centric mechanism in the EAS, we intended to solve this by having the load balancer application configurable so that it follows the same rules as the Session Key Based Targeting Mechanism, thus directing all initial requests for, e.g, a specific user, to the same back-end. This is done be extracting a value to hash on, i.e. the user from the request-URI, referred to as hash key.</p> <p>That value is used for look-up using the consistent hash function which maps an arbitrary string to one element in the set of AS instances <span class="error">[^AS1..ASn]</span>. The consistent hash function is re-configured in case an AS instance fails (it is removed from the set), so that no new requests can be directed to that AS instance. After recovery of the AS the consistent has is re-configured again (the AS is inserted into the set again), and new traffic will be directed to it again. The consistent hash provides the guarantee that when when it is reconfigured is done all old mappings (to the other AS instances in the set) are still valid.</p> <p>Once a dialog has been established the hash key is encoded in the message in a way that guarantees that it is provided on all future messages within the dialog (since these may not include all the fields to hash on). In this way we can guarantee that a) all new dialogs related to that hash key (e.g. user) and b) all subsequent messages within a dialog associated with that hash key, are directed to the same back-end. Since we tie an ongoing dialog to the hash key rather than to a specific AS instance, that guarantees that new requests and ongoing dialogs tied to a hash key ends up on the same instance at fail-over and after recovery. However, this implies that active sessions (that were migrated during the fail-over), must migrate back to the recovered node again.</p> <p>As an extra caveat, look at 13.3 in JSR-289 "Accessing SipApplicationSession By Id": that little feature opens up a similar can of worms, since it allows the application to transfer a application session ID via some out-of-band mechanism and access a specific SipApplicationSession via that ID. There is no way we can guarantee that the application is located on the AS having that session in its active cache, thus there must exist a mechanism that supports migration of active sessions. Whe Kristoffer, me and Robert discussed this in May, we said that we needed to implement such feature, but when we discussed (me, Jan and Håkan) this in Bangalore, I got the impression that the session replication framework already handled it, but apparently I misunderstood Jan.</p> <p>Anyway, as can be seen from the discussion above, there is a number of reasons why we need some kind of support for accessing active sessions across the cluster. Whether this shall be supported by the session replication framework or by some other component I leave open for discussion, but I think it would be inefficient to have two different solutions handling session migration in the cluster. </p> 
+     <hr> <p>We will continue the discussion during the LB meeting tomorrow.</p> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Nov 18, 2011 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:48.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

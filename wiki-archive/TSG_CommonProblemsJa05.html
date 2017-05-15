@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : TSG_CommonProblemsJa05</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="TSG_CommonProblemsJa05-%E3%83%AA%E3%83%A2%E3%83%BC%E3%83%88%E3%82%B5%E3%83%BC%E3%83%90%E3%81%AB%E3%82%A2%E3%82%AF%E3%82%BB%E3%82%B9%E3%81%A7%E3%81%8D%E3%81%AA%E3%81%84"></a>リモートサーバにアクセスできない </h2> <p>アプリケーションサーバーの開始ページをオープンしようとしたとき、初期画面が表示されない。</p> <p>次の点を調べてみてください:</p> 
+     <ul> 
+      <li>サーバーはローカルからアクセスできるか?</li> 
+      <li>プロキシの設定が問題を引き起こしてないか?</li> 
+     </ul> <h4><a name="TSG_CommonProblemsJa05-%E3%82%B5%E3%83%BC%E3%83%90%E3%83%BC%E3%81%AF%E3%83%AD%E3%83%BC%E3%82%AB%E3%83%AB%E3%81%8B%E3%82%89%E3%82%A2%E3%82%AF%E3%82%BB%E3%82%B9%E3%81%A7%E3%81%8D%E3%82%8B%E3%81%8B%3F"></a>サーバーはローカルからアクセスできるか?</h3> 
+     <ul> 
+      <li><b>説明</b><br> \Web からサーバーにアクセス出来ないけど、ローカルではアクセスできる場合、サーバーは実際には起動しています。</li> 
+     </ul> 
+     <ul> 
+      <li><b>解決法</b>\\\\\サーバーがローカルで動いているか確認します。<br> \ 
+       <ul> 
+        <li><b>サーバーがローカルで動いているかを確認する方法</b><br> \</li> 
+       </ul> 
+       <ol> 
+        <li>サーバーが起動しているマシンにログオンする<br> \</li> 
+        <li>ローカル Web ページを表示する。例えば、8080 がデフォルトポートならば、次の URL にアクセス\\\\\~UWC_TOKEN_START~1278691907363~UWC_TOKEN_END<br> \開始ページが表示されれば、リモートからサーバーにアクセスする Web Connection に問題があります。開始ページが表示されなければ、サーバーが起動しているか確認してください。</li> 
+       </ol> </li> 
+     </ul> <h4><a name="TSG_CommonProblemsJa05-%E3%83%97%E3%83%AD%E3%82%AD%E3%82%B7%E3%81%AE%E8%A8%AD%E5%AE%9A%E3%81%8C%E5%95%8F%E9%A1%8C%E3%82%92%E5%BC%95%E3%81%8D%E8%B5%B7%E3%81%93%E3%81%97%E3%81%A6%E3%81%AA%E3%81%84%E3%81%8B%3F"></a>プロキシの設定が問題を引き起こしてないか?</h3> 
+     <ul> 
+      <li><b>説明</b><br> \サーバーが起動しているホスト (localhost) からはサーバーに直接アクセスできるようにします。(例) デフォルトポート <tt>8080</tt> を使っている場合:\ 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">http://localhost:8080/</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ul> 
+     <ul> 
+      <li><b>解決法</b><br> \サーバーホストマシンがプロキシを通して Web と接続している場合、localhost で動作しているサーバーインスタンスにアクセス出来ない場合があります。これを解決するには、次のうちの１つを試してみてください:\ 
+       <ul> 
+        <li>localhost にアクセスする場合、プロキシサーバーを迂回するようブラウザを設定する。設定方法は、それぞれのブラウザのヘルプやマニュアルなどをご覧ください。<br> \</li> 
+        <li>完全指定ホスト名や IP アドレスを使う。(例)\\\\\~UWC_TOKEN_START~1278691907365~UWC_TOKEN_END<br> *注意:* localhost マシンのホスト名やドメイン名を探す方法:\ 
+         <ul> 
+          <li><b>Microsoft Windows の場合:</b> デスクトップで、「マイコンピュータ」をマウスの右ボタンでクリックし、ポップアップメニューから「プロパティ」を選択します。システムプロパティダイアログが表示されるので、「ネットワーク」をクリックし、コンピュータ名を確認します。,<br> \</li> 
+          <li><b>Solaris および Linux の場合:</b> コマンドプロンプトで <tt>hostname</tt> と入力します。</li> 
+         </ul> </li> 
+       </ul> </li> 
+     </ul> <p><sup><a href="./TSG_CommonProblemsJa.html">戻る</a></sup></p> 
+     <hr> <p>日本語翻訳: <a href="http://blogs.oracle.com/shioda">shioda</a></p> <p><a href="TSG_CommonProblems.html" title="TSG_CommonProblems">英文 </a> (翻訳したバージョン: 104)</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 09, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

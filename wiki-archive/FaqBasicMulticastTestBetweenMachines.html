@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : FaqBasicMulticastTestBetweenMachines</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="FaqBasicMulticastTestBetweenMachines-ProblemStatement"></a>Problem Statement</h1> <h4><a name="FaqBasicMulticastTestBetweenMachines-ProblemA%3A"></a>Problem A: </h2> <p>How do you test your multi machine environment to see if multicast traffic is supported?</p> <h4><a name="FaqBasicMulticastTestBetweenMachines-ProblemB%3A"></a>Problem B: </h2> <p>You have just installed GlassFish on multiple machines, created a cluster of instances spanning these machines and started the cluster. Later you stop one of the instances. You see that although the admin GUI shows status of the instances, the logs show that GMS view change on the DAS and a few instances of the cluster show all instances except one or more other cluster instances. Why are those instances missing from the view?</p> <h4><a name="FaqBasicMulticastTestBetweenMachines-ProblemC%3A"></a>Problem C :</h2> <p>You have in-memory replication enabled but you see that sessions are not getting replicated or more particularly sessions are not being found (barring requests that were in-flight at the time of failure) when an instance is killed or stopped.</p> <h4><a name="FaqBasicMulticastTestBetweenMachines-Explanation"></a>Explanation </h1> <p>The <a href="https://shoal.java.net">Shoal GMS</a> runtime clustering library requires that the machines involved in the cluster are on the same sub network and multicast traffic should be enabled on this network. When multicast is not enabled or some of the machines involved are not on the same subnetwork, the GMS view change log statements would not include the instances on those machines that were not on the same subnet. Looking in the logs of the instances that are isolated one can confirm this by seeing that the GMS view change log statement would only consist of one or a few of the isolated instances. The Admin GUI codebase relies on a different code path to report instance statuses so one cannot make a determination of this problem at the outset.</p> <h4><a name="FaqBasicMulticastTestBetweenMachines-Solution"></a>Solution </h1> <p>Before getting into the above situation, when you know you are going to use multiple machines and have GlassFish clustering, perform a basic multicast test to see if multicast support exists for all machines involved. </p> <p>Here's a basic multicast test you can do without involvement of GlassFish or Shoal GMS code :</p> <p>The Shoal GMS test code contains a basic DatagramSocket based test that uses JDK APIs to send and receive messages using multicast without involved Shoal or Jxta codepaths. </p> <p>Check out Shoal sources on two or more machines and do a build (takes a few seconds) following instructions posted &lt;b&gt;<a href="https://shoal.java.net/servlets/ProjectDocumentView?documentID=43252&amp;noNav=true">here</a>&lt;/b&gt;</p> <p>Once you have the Shoal sources built, open one terminal on each machine and change dir to shoal/gms. On one of the terminals, run the ant target</p> <h4><a name="FaqBasicMulticastTestBetweenMachines-anttestmcastsenderThisrunstheMulticastSendersendingmessagestothegroup"></a>ant test-mcastsender This runs the MulticastSender sending messages to the group</h3> <p>On the other machines, in the terminal run</p> <h4><a name="FaqBasicMulticastTestBetweenMachines-anttestmcastsnifferThisrunstheMulticastSniffer"></a>ant test-mcastsniffer This runs the MulticastSniffer</h3> <p>You should see 9 messages on the sniffer to confirm multicast works properly.</p> <p>If you don't see these messages on the sniffer side, then it means multicast traffic is not enabled. You need to contact your network admin to enable multicast traffic within your subnet. Sometimes, it is quite possible for machines to be on the same subnet but the machines may be connected to different switches under the same router. In such cases, if the switches are not enabled to pass multicast traffic to other switches in the sub network, you can experience the same issues as mentioned in Problem B. </p> <p>To ensure all machines are multicast supported, try running the sender test eventually on each of the machines while running the sniffer test on remaining machines. This will ensure that the machines involved can support both sending and receiving of multicast messages. </p> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 02, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:44.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

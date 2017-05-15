@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : ARDiscussions</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>This page can be a place holder for any AR ( Application router related discussions that we have.</p> <h4><a name="ARDiscussions-MeetingMinutes"></a>Meeting Minutes</h2> <h4><a name="ARDiscussions-17Oct2007"></a>17Oct 2007</h1> <p>Participants :<br> Yvo, Per, Eltjo, Binod, Siva and Prasad</p> <p>We discussed the philosophy behind how the AR would be treated in SJSCAS</p> 
+     <ul> 
+      <li>Packaging of the AR</li> 
+     </ul> <p> The AR would be packaged as a .jar file. It would be deployed using the asadmin command/autodeploy feature.<br> Advantages of deployment :</p> 
+     <ol> 
+      <li>Can have different ARs for each cluster</li> 
+      <li>Synchronization taken care of</li> 
+      <li>Potential swapping of AR possible</li> 
+     </ol> 
+     <ul> 
+      <li>The AR jar file would be treated as a plain java application.The ArchiveDescriptor implementation would just return the Classloader used for deploying AR.</li> 
+     </ul> 
+     <ul> 
+      <li>Location of the AR classes in the AS directory structure : Given that we need the AR classes to be synchronized using the current synchronization framework of the AS, the AR classes would be located in</li> 
+     </ul> <p>$</p> 
+     <div class="error">
+      <span class="error">Unknown macro: {com.sun.aas.instanceRoot}</span> 
+      <p>/applications/j2ee-module/&lt;&lt;AR-JAR-NAME&gt;&gt; , where $</p>
+     </div> <p> = &lt;AS-INSTALL-ROOT&gt;/domains/&lt;domain-name&gt; OR &lt;AS-INSTALL-ROOT&gt;/nodeagents/&lt;node-agent-name&gt;/&lt;instance-name&gt;</p> 
+     <ul> 
+      <li>Loading of AR : The Application Dispatcher would need to "register" the AR with itself. hence during the "load" operation of the deployment process, either an instance of AR would be passed to the Application Dispatcher or the class name of the AR class would be passed to the Application Dispatcher.</li> 
+     </ul> 
+     <ul> 
+      <li>ClassLoader for AR : A custom classloader would need to be created for AR , whose parent in the AS Classloading chain would be the common classloader. Note that this class loader is relevant for the "loading" phase. The classpath for this classloader should have the location of the AR classes mentioned above.</li> 
+     </ul> 
+     <ul> 
+      <li>Annotation Processing : At this time we would not support any annotations in AR. If the AR classes wish to access any resources like JDBC resources they would need to do a lookup on a Context , in the same manner as a Java program.</li> 
+     </ul> 
+     <ul> 
+      <li>Hot Deployment of AR : We are still experimenting on this. Current plan of record is ; that in production systems, the Rolling Upgrade procedure for applications would apply for the AR too. ; in developer scenarios there may be a loss of session "in-flight", which shd be acceptable.</li> 
+     </ul> 
+     <ul> 
+      <li>Open Issues:</li> 
+     </ul> 
+     <ol> 
+      <li>AR Deployment is blocked by a bug in the Extension Module Deployment SPI. Prasad to fix and revert back to Yvo.</li> 
+     </ol> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:48.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

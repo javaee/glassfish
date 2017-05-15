@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GFV3JDBCOnePager</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GFV3JDBCOnePager-GlassFishV3Connectors%28JavaEEConnectorArchitecture%2CConnectionPooling%2CJDBCRA%29OnePager"></a>GlassFish V3 Connectors (JavaEE Connector Architecture, Connection Pooling, JDBC-RA) One Pager</h1> <p>[</p> 
+     <div class="error">
+      <span class="error">Unknown macro: {TableOfContents title=' '}</span> 
+     </div> <p>|(TableOfContentstitle='')]</p> <h4><a name="GFV3JDBCOnePager-1.Introduction"></a>1. Introduction</h1> <h4><a name="GFV3JDBCOnePager-1.1.Project%2FComponentWorkingName%3A"></a>1.1. Project/Component Working Name: </h2> <p>Connectors, Connection Pool, JDBC features in GlassFish V3 </p> <h4><a name="GFV3JDBCOnePager-1.2.Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier%3A"></a>1.2. Name(s) and e-mail address of Document Author(s)/Supplier:</h2> <p>Jagadish Ramu: Jagadish.Ramu@Sun.COM</p> <p>Shalini Muthukrishnan: Shalini.Muthukrishnan@Sun.COM</p> <h4><a name="GFV3JDBCOnePager-1.3.DateofThisDocument%3A"></a>1.3. Date of This Document:</h2> <p>12/12/08 </p> <h4><a name="GFV3JDBCOnePager-1.4.RevisionHistory"></a>1.4. Revision History</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Date </th> 
+         <th class="confluenceTh"> Change </th> 
+         <th class="confluenceTh"> Revision </th> 
+         <th class="confluenceTh"> Changes from previous version </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 11/30/09 </td> 
+         <td class="confluenceTd"> Modified description of certain features with erroneous attribute names/descriptions </td> 
+         <td class="confluenceTd"> 13 </td> 
+         <td class="confluenceTd"> <a href="http://wiki.glassfish.java.net/Diff.jsp?page=GFV3JDBCOnePager&amp;r1=90&amp;r2=89">changes </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 10/05/09 </td> 
+         <td class="confluenceTd"> Modified description of Flush connection pool feature </td> 
+         <td class="confluenceTd"> 12 </td> 
+         <td class="confluenceTd"> <a href="http://wiki.glassfish.java.net/Diff.jsp?page=GFV3JDBCOnePager&amp;r1=89&amp;r2=88">changes </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 09/09/09 </td> 
+         <td class="confluenceTd"> Commented postponed features (multiple-associate-with-thread, application-scoped-resources ) and updated 4.7-Admin/Config Impact sections with latest configuration for sun-resources_1_4.dtd, work-security-map, admin-object </td> 
+         <td class="confluenceTd"> 11 </td> 
+         <td class="confluenceTd"> <a href="http://wiki.glassfish.java.net/Diff.jsp?page=GFV3JDBCOnePager&amp;r1=88&amp;r2=83">changes </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 06/23/09 </td> 
+         <td class="confluenceTd"> Modified 4.1.7, 4.1.15 and 4.7-Admin/Config Impact sections based on comments from Bill Shannon </td> 
+         <td class="confluenceTd"> 10 </td> 
+         <td class="confluenceTd"> <a href="http://wiki.glassfish.java.net/Diff.jsp?page=GFV3JDBCOnePager&amp;r1=83&amp;r2=80">changes </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 05/27/09 </td> 
+         <td class="confluenceTd"> Modified 4.1.4, 4.1.9 and 4.1.10 based on comments from Bill Shannon </td> 
+         <td class="confluenceTd"> 9 </td> 
+         <td class="confluenceTd"> <a href="http://wiki.glassfish.java.net/Diff.jsp?page=GFV3JDBCOnePager&amp;r1=80&amp;r2=78">changes </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 02/09/09 </td> 
+         <td class="confluenceTd"> Added sun-resources.dtd to exported interfaces section </td> 
+         <td class="confluenceTd"> 8 </td> 
+         <td class="confluenceTd"> <a href="http://wiki.glassfish.java.net/Diff.jsp?page=GFV3JDBCOnePager&amp;r1=78&amp;r2=77">changes </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 02/09/09 </td> 
+         <td class="confluenceTd"> Updated based on comments from Siva </td> 
+         <td class="confluenceTd"> 7 </td> 
+         <td class="confluenceTd"> <a href="http://wiki.glassfish.java.net/Diff.jsp?page=GFV3JDBCOnePager&amp;r1=77&amp;r2=76">changes </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 02/02/09 </td> 
+         <td class="confluenceTd"> Added Application Scoped Resources </td> 
+         <td class="confluenceTd"> 6 </td> 
+         <td class="confluenceTd"> <a href="http://wiki.glassfish.java.net/Diff.jsp?page=GFV3JDBCOnePager&amp;r1=76&amp;r2=74">changes </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 01/20/09 </td> 
+         <td class="confluenceTd"> Updated Revision History </td> 
+         <td class="confluenceTd"> 5 </td> 
+         <td class="confluenceTd"> <a href="http://wiki.glassfish.java.net/Diff.jsp?page=GFV3JDBCOnePager&amp;r1=74&amp;r2=73">changes </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 01/20/09 </td> 
+         <td class="confluenceTd"> Modified based on comments from Vince and Steve </td> 
+         <td class="confluenceTd"> 4 </td> 
+         <td class="confluenceTd"> <a href="http://wiki.glassfish.java.net/Diff.jsp?page=GFV3JDBCOnePager&amp;r1=73&amp;r2=3">changes </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 01/06/09 </td> 
+         <td class="confluenceTd"> Clarified init-sql, switch-off-pooling, custom-resources sections based on feedback from Binod </td> 
+         <td class="confluenceTd"> 3 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 12/26/08 </td> 
+         <td class="confluenceTd"> Review Ready </td> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 12/12/08 </td> 
+         <td class="confluenceTd"> Draft Created </td> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GFV3JDBCOnePager-2.ProjectSummary"></a>2. Project Summary</h1> <h4><a name="GFV3JDBCOnePager-2.1.ProjectDescription%3A"></a>2.1. Project Description:</h2> <p>This document describes the functionality changes and enhancements to Connectors, Connection Pooling, JDBC-RA </p> <h4><a name="GFV3JDBCOnePager-2.2.RisksandAssumptions%3A"></a>2.2. Risks and Assumptions:</h2> 
+     <ul> 
+      <li>Risks: None.</li> 
+      <li>Assumptions: None.</li> 
+     </ul> <h4><a name="GFV3JDBCOnePager-3.ProblemSummary"></a>3. Problem Summary</h1> <h4><a name="GFV3JDBCOnePager-3.1.ProblemArea%3A"></a>3.1. Problem Area:</h2> <p>Following enhancements need to be introduced in GlassFish v3 to overcome or to provide :</p> 
+     <ul> 
+      <li>Absence of statement caching support for jdbc applications</li> 
+      <li>Aid to call a user defined validation mechanism</li> 
+      <li>No mechanism to execute a user provided SQL for initialization</li> 
+      <li>No mechanism to flush a connection pool and re-initialize the connections</li> 
+      <li>No mechanism to have application specific (self-contained) resources</li> 
+      <li>Ease of use and configurability features</li> 
+      <li>Application Server vendor specific support for JSR 322</li> 
+     </ul> <h4><a name="GFV3JDBCOnePager-3.2.Justification%3A"></a>3.2. Justification:</h2> <p>Enhancements to the existing connectors, pooling, jdbc modules is very useful as the functionality offered by these modules are used widely among the user-base and based on the competitive appservers, these functionality improvements and changes would not only bring in performance improvements but also feature parity. The proposed features will highly enhance the user experience.</p> <h4><a name="GFV3JDBCOnePager-4.TechnicalDescription%3A"></a>4. Technical Description:</h1> <h4><a name="GFV3JDBCOnePager-4.1.Details%3A"></a>4.1. Details:</h2> <p>The Connectors, Pooling, JDBC-RA would provide the following enhancements in this release</p> <h4><a name="GFV3JDBCOnePager-4.1.1StatementCaching"></a>4.1.1 Statement Caching</h2> <p>Statement Caching is a feature to cache statements, prepared-statements, callable-statements that are executed repeatedly by applications, thereby improving performance. Instead of preparing the statement each time, the cache is searched for a match. The overhead of parsing and creating new statements each time is prevented.</p> <p>Statement Caching, in general, is a functionality of the JDBC driver. This proposal is for supporting statement caching that will be useful for drivers that do not support caching. The feature can be enabled by setting a connection pool configuration attribute <b>statement-cache-size</b>. By default, this attribute is set to zero and the statement caching is turned off. Caching is enabled when set to a positive non-zero value eg: 10 implies upto 10 statements can be maintained in the statement cache.</p> <p>Built-in cache eviction strategy will be LRU-based (Least Recently Used). This is the only cache eviction strategy provided in this release. When a connection pool is flushed, the connections in the statement cache will be recreated.</p> <h4><a name="GFV3JDBCOnePager-4.1.2CustomValidation"></a>4.1.2 Custom Validation</h2> <p>Using Custom validation a user can specify his/her own implementation that will be used during connection validation. This feature aids user to call database specific optimized or faster validation routines. </p> <p>The existing attribute <b>connection-validation-method</b> could be set to a value <b>custom-validation</b>. Other existing validation mechanisms available in JDBC Connection pool are table/auto-commit/metadata.</p> <p>A public interface <a href="GFV3JDBCOnePager_ConnectionValidator.html" title="GFV3JDBCOnePager_ConnectionValidator">org.glassfish.api.jdbc.ConnectionValidation</a> will be introduced which developers can implement to plugin their implementations. </p> <p>A new attribute <b>validation-classname</b> will be used to specify the fully-qualified name of the Class that implements the ConnectionValidation interface. Administrators or developers could provide the custom validation implementation that should be made available to the application server. When validation is turned on and <b>connection-validation-method</b> is set to <b>custom-validation</b>, the attribute <b>validation-classname</b> is mandatory.</p> <p>By default, custom validation mechanisms will be provided for Derby, MySQL, Oracle and Postgres for faster and optimized validation routines. Additionally, for JDBC 40 compliant database drivers, a validation mechanism will be provided that uses <a href="http://java.sun.com/javase/6/docs/api/java/sql/Connection.html#isValidint">Connection.isValid(0)</a> implementation.</p> <h4><a name="GFV3JDBCOnePager-4.1.3InitSql"></a>4.1.3 Init Sql</h2> <p>Init Sql feature aids in executing an arbitrary query provided by the user during connection creation.</p> <p>Every time a physical connection (ManagedConnection) to the database is created from the pool (not the connections that are reused from the pool), the initSql will be executed to initialize the state of the connection.</p> <p>A new attribute <b>init-sql</b> is used to specify a SQL string to be executed whenever a connection is created from the pool. This is an optional attribute and should carry a value when initialization SQL is to be executed. This is a useful feature to set the request/session specific properties, suited for homogeneous requests (e.g : for single application usage).</p> <p>There is no default value and hence enabled only when a value is specified. </p> <h4><a name="GFV3JDBCOnePager-4.1.4TracingSQLStatements"></a>4.1.4 Tracing SQL Statements</h2> <p>A feature to trace the SQL statements executed by applications using a jdbc connection pool. In most cases, administrators refer to the database logs for SQL statements analysis. This is made easy by setting an attribute <b>sql-trace-listeners</b> to a comma separated list of listener implementations. </p> <p>A public interface <a href="GFV3JDBCOnePager_SQLTraceListener.html" title="GFV3JDBCOnePager_SQLTraceListener">org.glassfish.api.jdbc.SQLTraceListener</a> will be introduced which administrators/developers can implement to provide a means of recording the <a href="GFV3JDBCOnePager_SQLTraceRecord.html" title="GFV3JDBCOnePager_SQLTraceRecord">SQLTraceRecord</a> objects. </p> <p>GlassFish provides an inbuilt SQL tracing logger to log the SQL operations in the form of SQLTraceRecord in server.log file. "<b>javax.enterprise.resource.sqltrace</b>" is the module name using which SQL operation will be logged. SQL traces are logged as FINE messages along with the module name to enable easy filtering of the sql logs. A sample SQL trace record would be like</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">[#|2009-11-27T15:46:52.202+0530|FINE|glassfishv3.0|javax.enterprise.resource.sqltrace.com.sun.gjc.util|_ThreadID=29;_ThreadName=Thread-1;ClassName=com.sun.gjc.util.SQLTraceLogger;MethodName=sqlTrace;|ThreadID=77 | ThreadName=p: thread-pool-1; w: 6 | TimeStamp=1259317012202 | ClassName=com.sun.gjc.spi.jdbc40.PreparedStatementWrapper40 | MethodName=executeUpdate | arg[0]=insert into table1(colName) values(100) | arg[1]=columnNames | |#]</pre> 
+       </div> 
+      </div>
+     </div> <p>Above trace shows that an executeUpdate(String sql, String[] columnNames) is being done. </p> <h4><a name="GFV3JDBCOnePager-4.1.5IntrospectionofJDBCdrivers"></a>4.1.5 Introspection of JDBC drivers</h2> <p>This is a GUI feature that will introspect any newly installed drivers and display the DataSource/Driver implementations. GlassFish displays a predefined list of drivers and its Datasource/Driver implementations. This feature helps the user to configure a pool for an arbitrary (not listed by default in GUI) jdbc driver. Using this feature, the arbitrary driver will be introspected to list the Datasource/Driver implementations during pool creation.</p> <p>Based on the resource type and database vendor name chosen, the Administration console introspects the available jdbc driver and lists the implementation classname against the datasource/driver classname field. The classnames are listed in a drop-down list box.</p> <p>The user can select an implementation classname to configure the connection pool whose properties would be listed in the additional properties section. </p> <p>A default set of classnames for common database vendors are maintained for display in GUI. For uncommon databases, introspection happens to retrieve the classnames.</p> <h4><a name="GFV3JDBCOnePager-4.1.6FlushConnectionPool"></a>4.1.6 Flush Connection Pool</h2> <p>Flush connection pool is a feature that re-initializes all the connections in the pool without the need for reconfiguring the whole pool. This is a useful feature for administrators. </p> <p>Flush connection pool will help to solve the issue by recreating the connections established in the pool and bringing the pool to the steady pool size. The existing "live" connections are killed/destroyed and any existing transactions are lost and must be retired. The main purpose of this command is to kill/destroy any aged or old connections in the pool.</p> <p>Like <b>ping-connection-pool</b>, <b>flush-connection-pool</b> will be an admin CLI command to be executed whenever needed. A button <b>Flush</b>, similar to Ping will be available in Admin GUI for the same purpose. </p> <h4><a name="GFV3JDBCOnePager-4.1.7BuiltinfactoriesforCustomResources"></a>4.1.7 Built in factories for Custom Resources</h2> <p>Custom-Resources aid to create various type of resources that can be shared across applications. Defining built-in object factories and resource template files will help the user to get access to most commonly used custom resources. Users can create <em>custom-resources</em> specifying these built-in <em>factory-class-name</em> and necessary <em>properties</em>. Following object factories will be provided in V3 (refer Packaging &amp; Delivery section for the templates availability &amp; usage).</p> <p><b>JavaBeanFactory</b></p> 
+     <ul> 
+      <li>Used to provide instances of specified JavaBean class. JavaBeanFactory will use the properties specified during the creation of custom-resource to configure the JavaBean instance.</li> 
+      <li>eg: If the JavaBean has a method named setAccount, user can specify a property named "account" and a value while creating the custom-resource.</li> 
+      <li>the JavaBean class has to be accessible for GlassFish instance. eg: GF_INSTALL_DIR/lib</li> 
+     </ul> <p><b>PrimitivesAndStringFactory</b></p> 
+     <ul> 
+      <li>Used to provide primitives to applications.</li> 
+      <li>eg: If the application requires a 'double' of value 22.1, a custom-resource with PrimitivesAndStringFactory can be created with following properties 
+       <ul> 
+        <li>value="22.1"</li> 
+       </ul> </li> 
+      <li>valid values for <em>--restype</em>(resource-type) are int/integer/long/double/float/char/character/short/byte/boolean/string or their fully qualified wrapper class name equivalents.</li> 
+     </ul> <p><b>URLFactory</b></p> 
+     <ul> 
+      <li>Helps to provide URL instances to applications</li> 
+      <li>eg: a custom-resource with URLFactory as factory can be created which will return a URL instance.</li> 
+      <li>The URL is composed based on the properties specified.</li> 
+      <li>Three constructors of URL is supported 
+       <ul> 
+        <li>URL (protocol, host, port, file)</li> 
+        <li>URL (spec)</li> 
+        <li>URL (protocol, host, file)</li> 
+       </ul> </li> 
+      <li>User should specify appropriate properties based on the type of constructor that need to be used.</li> 
+     </ul> <p><b>PropertiesFactory</b></p> 
+     <ul> 
+      <li>Helps to provide properties to applications.</li> 
+      <li>User can specify <em>properties file-location</em> or a set of name-value pairs as property of custom-resource or both</li> 
+      <li><em>file-location</em> is specified via the property <em>org.glassfish.resources.custom.factory.PropertiesFactory.fileName</em> 
+       <ul> 
+        <li>If the <em>file-location</em> is relative, it will taken with reference to GlassFish installation location.</li> 
+        <li>If the <em>file-location</em> is specified, it is necessary that administrator has provided security access permission for the file to GlassFish server.</li> 
+        <li>User can specify properties file or an XML file. If an XML file (file-name ending with .xml) is specified it must match the DTD specified in the API definition of <a href="http://java.sun.com/javase/6/docs/api/java/util/Properties.html">java.util.Properties</a></li> 
+        <li>If both the <em>file-location</em> property and name-value pairs are specified, resulting properties will be the union and the name-value pairs will override the value of the properties, if any, in the file.</li> 
+       </ul> </li> 
+     </ul> <h4><a name="GFV3JDBCOnePager-4.1.8Associatingmultipleconnectionswithathread"></a>4.1.8 <del>Associating multiple connections with a thread</del></h2> <p><b>NOTE : This feature is not implemented in v3</b></p> 
+     <ul> 
+      <li>Proposal to support associating multiple connections with a thread to improve performance. This feature helps to reduce contention in the pool as it will be able to serve connections from the requesting thread.</li> 
+     </ul> 
+     <ul> 
+      <li>A new attribute <b>associate-with-thread-connections-count</b> set to an int value represents the number of connections that should be associated with a single thread. The <b>associate-with-thread</b> attribute should be set to true for the new attribute to take effect. Default value of <b>associate-with-thread-connections-count</b> would be 1.</li> 
+     </ul> <h4><a name="GFV3JDBCOnePager-4.1.9SwitchoffPooling"></a>4.1.9 Switch off Pooling</h2> <p>Ease-of-use feature that would turn off connection pooling for the specified pool. The new attribute <b>pooling</b> when set to false will disable connection pooling for the specified pool. </p> <p>By default, this attribute's value will be true. The existing system property '<b>com.sun.enterprise.connectors.SwitchoffACCConnectionPooling</b>', that turns off connection pooling in ACC and the new attribute <b>pooling</b> do not affect each other.</p> <p>Associate-with-thread functionality is invalid when pooling is disabled and hence an exception will be thrown if it is set to true. An exception will be thrown if Flush connection pool is done when pooling is disabled. </p> <p>A warning will be logged when the following attributes are active as they are useful in pooled environment only : </p> 
+     <ul> 
+      <li>connection-validation</li> 
+      <li>validate-atmost-once-period</li> 
+      <li>match-connections</li> 
+      <li>max-connection-usage</li> 
+      <li>idle-timeout</li> 
+     </ul> <h4><a name="GFV3JDBCOnePager-4.1.10DefaultvaluesofJDBCConnectionPoolAttributes"></a>4.1.10 Default values of JDBC Connection Pool Attributes </h2> <p>The following attributes will undergo a change in their default values :</p> 
+     <ul> 
+      <li>connection-validation-method <b>"table"</b><br> Since most drivers cache auto-commit and meta-data values, table based validation might prove to be more realistic. The <b>validation-table-name</b> will become a mandatory attribute if <b>is-connection-validation-required</b> is set to true. The connection validation settings will be moved to the <b>Advanced</b> pool settings. The user could set <b>is-connection-validation-required</b> in the Advanced tab after jdbc connection pool creation.</li> 
+     </ul> <p>A list of table names would be displayed against the <b>validation-table-name</b> field for the user to choose a table to perform connection validation.</p> 
+     <ul> 
+      <li>wrap-jdbc-objects <b>"true"</b><br> To enable getting wrapped JDBC objects for Statement, PreparedStatement, CallableStatement, ResultSet and DatabaseMetaData. GlassFish always provides a wrapped connection object to the application. It is necessary that Statement.getConnection() has to be the connection that was used to create the statement. (<a href="http://java.sun.com/javase/6/docs/api/java/sql/Statement.html#getConnection">Statement.getConnection()</a>)</li> 
+     </ul> <p>Since the statement objects are not wrapped by default, user will get access to the physical connection which may affect the pooling infrastructure. This can be prevented by setting wrap-jdbc-objects to <br> "true", hence making this as default behavior.</p> <h4><a name="GFV3JDBCOnePager-4.1.11PingPoolduringcreation"></a>4.1.11 Ping Pool during creation</h2> <p>The connection pool will be automatically tested for valid connectivity, when it is created by setting a new attribute <b>ping</b> to true. This feature is useful to identify erroneous values, if any, specified in the jdbc connection pool configuration. </p> <p>The existing pooling infrastructure does not warn the user of any unsupported/incorrect value of a database connectivity property while it is created. Only at runtime, the pool is initialized with the properties and attributes specified by the user and while getting a connection a warning would be seen. </p> <p>Default value of <b>ping</b> is false which indicates that the pool will not be tested during creation. The existing "Ping" button in admin GUI and the "asadmin ping-connection-pool" command would exist and be supported in the future. </p> <h4><a name="GFV3JDBCOnePager-4.1.12java.sql.Driverbasedpoolingsupport"></a>4.1.12 java.sql.Driver based pooling support</h2> <p>This is a proposal to support configuration of JDBC drivers and applications that use java.sql.Driver implementations. </p> <p>The <b>res-type</b> attribute when set to <b>java.sql.Driver</b> enables the Driver manager based MCF. A new attribute <b>driver-classname</b> will take implementing driver class name as the value. <b>driver-classname</b> will be a mandatory attribute when the <b>res-type</b> is set to java.sql.Driver.</p> <p><b>datasource-classname</b> attribute will be an optional attribute when res-type is set to java.sql.Driver, whereas the <b>driver-classname</b> attribute will be mandatory. </p> <h4><a name="GFV3JDBCOnePager-4.1.13WorkContextSecuritymappingmechanism"></a>4.1.13 Work Context Security mapping mechanism </h2> <p>JSR-322, Connector Specification introduces Security-Inflow-Context mechanism.<br> It is possible for a resource-adapter to request for mapping of identities from EIS domain to<br> application server domain. Application Servers can provide this functionality in a vendor specific<br> way. GlassFish will have WorkContextSecurityMap(s) configured for a resource-adapter using<br> CLI/GUI. Refer <em>admin/config impact section</em> for required commands and dtd changes. </p> <h4><a name="GFV3JDBCOnePager-4.1.14ConfiguringruntimetransactionsupportlevelofMCF"></a>4.1.14 Configuring runtime transaction-support-level of MCF </h2> <p>JSR-322 introduces a mechanism using which the transaction-level of MCF can be detected by the container<br> at runtime. During the configuration of MCF (connector-connection-pool), admin console (GUI) can <br> instantiate the MCF and show the level of transaction-support.<br> eg: There are 3 levels, no-tx, local-tx, xa-tx. <br> If an MCF returns local-tx as the level it can support, it is assumed that xa-tx is not supported and <br> hence admin console (GUI) will show no-tx and local-tx as the available tx-support levels.<br> This ease-of-use feature will be provided via admin console (GUI) only.</p> <h4><a name="GFV3JDBCOnePager-4.1.15ApplicationScopedResources"></a>4.1.15 <del>Application Scoped Resources</del></h2> <p><b>NOTE : This feature is not implemented in v3</b></p> 
+     <ul> 
+      <li>A feature using which applications can be deployed with resource definitions specified within the archive.</li> 
+      <li>Helps to achieve a single-click deployment ability for complex archives with various type of resource requirements</li> 
+      <li>By being able to specify and hence process the resource definitions that are defined within the archive, this feature will avoid the need to redeploy the application archive that has embedded resource-adapters used by other modules within the archive.</li> 
+     </ul> <p><b>Scope of resources</b></p> 
+     <ul> 
+      <li>The resources are scoped to the applications that define them ie., they are available only to the applications that defines them.</li> 
+      <li>With the introduction of scope for the resource, application is assured that a scoped resource is not used by other applications and be free from unexpected resource starvation or delay in acquiring connections.</li> 
+      <li>These scoped resources cannot be referred or looked up by other applications.</li> 
+      <li>If the resource definition is provided within an archive (ie., sun-resources.xml within an .ear or other archives), they are assumed to be scoped resources</li> 
+      <li>Application scoped resources are specified in jndi-name using the following format :</li> 
+     </ul> <p>java:app/jdbc/myDataSource. This is in accordance with the new naming scopes introduced in Java EE 6 Specification. Please refer <em>Resources, Naming and Injection</em>, sub-section <em>JNDI Naming Context</em> of Java EE 6 Specification for more details.</p> 
+     <ul> 
+      <li>When an application looks up the resource by its name (jndi-name), naming manager will check whether the resource is scoped ie., resource-reference by jndi-name of the format <em>java:app</em>. If it is found it will be returned or else naming exception will be thrown. If the jndi-name does not have prefix (<em>java:app</em>), the resource is assumed to be global resource and looked for.</li> 
+      <li>When an application tries to look up a scoped resource that does not belong to the application (defined in another application), naming exception will be thrown.</li> 
+      <li>It is also possible to specify the global resource using <em>java:global</em> prefix (eg: <em>java:global/jdbc/myDataSource</em> which is equivalent to <em>jdbc/myDataSource</em>) in the jndi-name</li> 
+     </ul> <p><b>sun-resources.xml</b> </p> 
+     <ul> 
+      <li>Resource definitions are specified via sun-resources.xml which should be a valid XML file that conforms to the <a href="http://www.sun.com/software/dtd/appserver/sun-resources_1_3.dtd">sun-resources.dtd</a></li> 
+      <li>When used with sun-resources.xml, it provides EOU functionality such that resources are created/destroyed during application deploy/undeploy.</li> 
+      <li>All resources created using a sun-resources.xml within an application archive will be scoped.</li> 
+      <li>sun-resources.xml should be placed in META-INF directory of the archive.</li> 
+      <li>sun-resources.xml can be defined in each archive (sub-module) of an enteprise application (.ear). 
+       <ul> 
+        <li>During deployment of the archive, resource-definitions of all sun-resources.xml in an archive is merged and resources would be created for the merged set.</li> 
+       </ul> </li> 
+      <li>Scoping the resources also help to eliminate most of the conflicts of sun-resources.xml based applications against other applications or resources that already exist in the server.</li> 
+      <li>Existing <b>add-resources</b> command uses <b>sun-resources.xml</b>. Resources created using <b>add-resources</b> are global ie., they are not specific to any application.</li> 
+      <li>These resources can be reconfigured using admin CLI, GUI. Refer Admin/Config Impact section for more details.</li> 
+     </ul> <p><b>Duplicates &amp; Conflicts</b></p> 
+     <ul> 
+      <li>Duplicate : 
+       <ul> 
+        <li>If there is a resource definition with same resource-name, resource-type, properties and attributes, it is assumed to be a duplicate.</li> 
+       </ul> </li> 
+      <li>Conflict : 
+       <ul> 
+        <li>A conflict occurs when two resource-definitions with different properties are made for the same resource-name and resource-type.</li> 
+       </ul> </li> 
+      <li>Duplicates &amp; Conflicts can occur within an .ear with sub-modules providing resource-definitions.</li> 
+      <li>Duplicates will be logged as WARNING messages and deployment will continue.</li> 
+     </ul> 
+     <ul> 
+      <li>Conflict will result in deployment failure. Administrator will have to resolve the conflicts.</li> 
+     </ul> <p><b>Deploy, re-deploy, undeploy</b></p> 
+     <ul> 
+      <li>When an application is undeployed, by default its (scoped) resources will be deleted (<b>--cascade=true</b>).</li> 
+      <li>During redeployment of the application, resources will be destroyed and created based on the new resource definition in the archive.</li> 
+     </ul> <p><b>Supported application types</b></p> 
+     <ul> 
+      <li>j2ee-application, ejb-module, web-module, connector-module, appclient-module</li> 
+      <li>v3 represents all these applications via a generic &lt;application&gt; element 
+       <ul> 
+        <li>TODO : Need a criteria (sniffers list or engine list) using which the application types are restricted</li> 
+       </ul> </li> 
+     </ul> <p><b>Restriction on resource types in various application types</b></p> 
+     <ul> 
+      <li>resource-adapter-config 
+       <ul> 
+        <li>ra-config can be specified for a <em>connector-module</em> and <em>j2ee-application</em> that has embedded .rar</li> 
+       </ul> </li> 
+     </ul> <p><b>Tooling support</b></p> 
+     <ul> 
+      <li>IDEs (Netbeans &amp; Eclipse plugins) can make use of this feature to generate application archives with resource definitions in the projects.</li> 
+     </ul> <p><b>Monitoring &amp; AMX Support</b></p> 
+     <ul> 
+      <li>Application Scoped resources can be monitored using CLI and AMX.</li> 
+      <li>Monitoring information can be displayed as :</li> 
+     </ul> <p><tt>server.&lt;application-name&gt;.resources.&lt;resource-name&gt;.*</tt></p> <h4><a name="GFV3JDBCOnePager-4.2.Bug%2FRFENumber%28s%29%3A"></a>4.2. Bug/RFE Number(s):</h2> 
+     <ol> 
+      <li>CR 4749421 Change request to support statement caching.</li> 
+      <li>CR 6473767 Change request to support custom validation.</li> 
+      <li>CR 6294004 Change request to support Init SQL.</li> 
+      <li>IT 4124 Issue Tracker for Associate with multiple thread support.</li> 
+      <li>IT 4126 Issue Tracker to support driver manager based MCF.</li> 
+     </ol> <h4><a name="GFV3JDBCOnePager-4.3.InScope%3A"></a>4.3. In Scope:</h2> 
+     <ol> 
+      <li>Statement caching will be based on the default caching mechanism Least Recently Used.</li> 
+      <li>Interfaces would be exposed by GlassFish for users to implement their own caching mechanisms, custom validators, init-sql functionalities. The implemented mechanisms should be made available to the application server.</li> 
+      <li>Switch Off Connection Pooling will be based on the same mechanism as that used for ACC based pools.</li> 
+     </ol> <h4><a name="GFV3JDBCOnePager-4.4.OutofScope%3A"></a>4.4. Out of Scope:</h2> 
+     <ol> 
+      <li>Statement caching could be incrementally enhanced in the future releases by implementing other caching mechanisms.</li> 
+      <li>Statement caching feature could expose a public interface for the users to implement their own caching mechanisms in future releases.</li> 
+      <li>Auto-commit and meta-data based validations would still be supported.</li> 
+      <li>Incremental enhancement could be done for the introspection of the JDBC drivers in the future releases in case of the datasource properties to be introspected by the resource infrastructure automatically.</li> 
+     </ol> <h4><a name="GFV3JDBCOnePager-4.5.Interfaces%3A"></a>4.5. Interfaces:</h2> <h4><a name="GFV3JDBCOnePager-4.5.1ExportedInterfaces"></a>4.5.1 Exported Interfaces</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> *Interface* </th> 
+         <th class="confluenceTh"> *Stability* </th> 
+         <th class="confluenceTh"> *Former Stability (if changing)* </th> 
+         <th class="confluenceTh"> Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> org.glassfish.resources.custom.factory.JavaBeanFactory </td> 
+         <td class="confluenceTd"> NA </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">Specify bean property name and value as property of custom-resource </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> org.glassfish.resources.custom.factory.PropertiesFactory </td> 
+         <td class="confluenceTd"> NA </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"><em>org.glassfish.resources.custom.factory.PropertiesFactory.fileName</em> need to be specified as a <em>property</em> of custom-resource, to indicate the properties file </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> org.glassfish.resources.custom.factory.PrimitiviesAndStringFactory </td> 
+         <td class="confluenceTd"> NA </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> a property named <em>value</em> that needs to be set for the data-type specified in CLI/GUI <em>--restype</em> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> org.glassfish.resources.custom.factory.URLFactory </td> 
+         <td class="confluenceTd"> NA </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> <em>protocol, host, port, file, spec</em> are the properties that need to be set for the custom-resource, in accordance with the constructor of java.net.URL that need to be used. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="GFV3JDBCOnePager_ConnectionValidator.html" title="GFV3JDBCOnePager_ConnectionValidator">org.glassfish.api.jdbc.ConnectionValidation </a> </td> 
+         <td class="confluenceTd"> Evolving </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Custom validation public interface </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="GFV3JDBCOnePager_SQLTraceListener.html" title="GFV3JDBCOnePager_SQLTraceListener">org.glassfish.api.jdbc.SQLTraceListener </a> </td> 
+         <td class="confluenceTd"> Evolving </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> SQLTraceListener interface for custom sql tracing </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="GFV3JDBCOnePager_SQLTraceRecord.html" title="GFV3JDBCOnePager_SQLTraceRecord">org.glassfish.api.jdbc.SQLTraceRecord </a> </td> 
+         <td class="confluenceTd"> Evolving </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> SQLTraceRecord for format of sql trace records </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http:--www.sun.com-software-dtd-appserver-sun-resources_1_3.dtd">sun-resources.dtd </a> </td> 
+         <td class="confluenceTd"> Evolving </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> sun-resources.xml dtd </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <ul> 
+      <li><b>Custom implementations for connection validation for common databases</b> 
+       <ul> 
+        <li>org.glassfish.api.jdbc.DerbyConnectionValidation</li> 
+        <li>org.glassfish.api.jdbc.MySQLConnectionValidation</li> 
+        <li>org.glassfish.api.jdbc.PostgresConnectionValidation</li> 
+        <li>org.glassfish.api.jdbc.OracleConnectionValidation</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li><b>Inbuilt connection validation implementation for JDBC 4.0 compliant drivers</b> 
+       <ul> 
+        <li>org.glassfish.api.jdbc.JDBC40ConnectionValidation</li> 
+       </ul> </li> 
+     </ul> <p>All of the above implement org.glassfish.api.jdbc.ConnectionValidation interface.</p> <h4><a name="GFV3JDBCOnePager-4.5.2Importedinterfaces"></a>4.5.2 Imported interfaces</h3> <h4><a name="GFV3JDBCOnePager-4.5.3Otherinterfaces%28Optional%29"></a>4.5.3 Other interfaces (Optional)</h3> <h4><a name="GFV3JDBCOnePager-4.6.DocImpact%3A"></a>4.6. Doc Impact:</h2> 
+     <ol> 
+      <li>Administration Guide</li> 
+      <li>Developer's Guide</li> 
+      <li>Administration Reference Guide</li> 
+      <li>Admin GUI online help</li> 
+      <li>Admin CLI help</li> 
+      <li>Performance Tuning Guide</li> 
+     </ol> <h4><a name="GFV3JDBCOnePager-4.7.Admin%2FConfigImpact%3A"></a>4.7. Admin/Config Impact:</h2> <p><b>CLI support</b> : </p> 
+     <ul> 
+      <li>CLI support for new / changed attributes of jdbc-connection-pool &amp; connector-connection-pool is needed. Refer config impact section for the new / changed attributues.</li> 
+      <li>A new command <em><b>flush-connection-pool</b></em> can be provided 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">flush-connection-pool [--terse={true|false}] 
+[--echo={true|false}] [--interactive={true|false}] [--host host] [--port port] 
+[--secure | -s] [--user admin_user] [--passwordfile filename] 
+[--help] pool_name</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ul> 
+     <ul> 
+      <li>connector work security map can be created, deleted, listed, updated using the following set of new commands</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">create-connector-work-security-map --raname resource_adapter_name
+  --principalsmap eis-principal=server-principal[,eis-principal=server-principal]*
+  --groupsmap eis-group=server-group[,eis-group=server-group]*
+  [--terse=false] [--echo=false] [--interactive=true] [--host localhost] [--port 4848|4849]
+  [--secure | -s] [--user admin_user] [--passwordfile file_name] mapname
+
+delete-connector-work-security-map --raname resource_adapter_name [--terse=false] [--echo=false]
+  [--interactive=true] [--host localhost] [--port 4848|4849] [--secure | -s] [--user admin_user]
+  [--passwordfile file_name] mapname
+
+list-connector-work-security-map [--terse=false] [--echo=false] [--interactive=true]
+  [--host localhost] [--port 4848|4849] [--secure | -s] [--user admin_user]
+  [--passwordfile file_name] [--securitymap mapname] [--verbose=false] resource-adapter-name
+
+update-connector-work-security-map --raname resource_adapter_name  [--terse=false] [--echo=false]
+  [--interactive=true] [--host localhost] [--port 4848|4849] [--secure | -s] [--user admin_user]
+  [--passwordfile file_name]
+  [--addprincipals eis-principal=server-principal[,eis-principal=server-principal]*]
+  [--addgroups eis-group=server-group[,eis-group=server-group]*]
+  [--removeprincipals eis-principal[,eis-principal]*]
+  [--removegroups eis-group[,eis-group]*]  mapname</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>Application scoped resources : 
+       <ul> 
+        <li><b>deploy</b> command when used for redeploy <b>deploy -<del>force=true</del></b> can to have a new flag <b>-cascade-resources</b> to destroy and create resources in accordance with the modified sun-resources.xml (if any) in the application 
+         <div class="code panel" style="border-width: 1px;">
+          <div class="codeContent panelContent"> 
+           <div id="root"> 
+            <pre class="theme: Confluence; brush: java; gutter: false">deploy [--force=true] [--cascade-resources=true] myApp.ear</pre> 
+           </div> 
+          </div>
+         </div></li> 
+        <li>scoped resources can be displayed using the following CLI</li> 
+       </ul> </li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">list-resources [--app-name application-name] 
+
+    eg: 
+    list-resources myApp
+    resource1 &lt;jdbc-resource&gt;
+    resource2 &lt;mail-resource&gt;
+    resource3 &lt;jdbc-resource&gt;
+    resource4 &lt;custom-resource&gt;</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li> 
+         <ul> 
+          <li>--app-name is optional, when not specified, will display all the global resources.</li> 
+          <li>when "<b>' is specified as *--app-name</b>, all scoped resources ie., resources of all applications will be displayed</li> 
+         </ul> </li> 
+        <li>Existing <b>list-XXX-resources/list-XXX-connection-pools</b> can take a flag <b>--app-name</b> to display resources of the application. 
+         <div class="code panel" style="border-width: 1px;">
+          <div class="codeContent panelContent"> 
+           <div id="root"> 
+            <pre class="theme: Confluence; brush: java; gutter: false">list-jdbc-resources [--app-name application-name]
+
+    eg:
+    list-jdbc-resources --app-name myApp
+    resource1 
+    resource3
+
+    list-jdbc-resources --app-name "*"
+
+    resource1 &lt;app-1&gt;
+    resource2 &lt;app-2&gt;</pre> 
+           </div> 
+          </div>
+         </div></li> 
+       </ul> </li> 
+      <li>Built-in custom-resources support : 
+       <ul> 
+        <li><em>-<del>restype</del></em> of CLI can be used to automatically select the <em>-factoryclassname</em> if unspecified by the user. 
+         <ul> 
+          <li>eg: if <em>-<del>restype</del></em> is any of the primitives or string (eg; int, long, java.lang.String, java.lang.Double etc) CLI can default the <em>-factoryclassname</em> as <em>org.glassfish.resources.custom.factory.PrimitivesAndStringFactory</em></li> 
+          <li>Also, if <em>--restype</em> class is a JavaBean (by checking a typical JavaBean characteristics), <em>org.glassfish.resources.custom.factory.JavaBeanFactory</em> can be chosen.</li> 
+          <li>For unknown <em>-<del>restype</del></em>, CLI will behave similar to v2, ie., <em>-factoryclassname</em> is mandatory.</li> 
+         </ul> </li> 
+       </ul> </li> 
+      <li>Admin-Object-Resource support : 
+       <ul> 
+        <li>With the introduction of <em>admin-object-uniqueness</em> in Connector 1.6 specification, <em>create-admin-object</em> CLI needs an optional parameter <em>-<del>classname</del></em> so as to determine appropriate admin-object defined in ra.xml. <em><del>classname</del></em> represents the admin-object implementation class. This parameter is a must only when there is more than one admin-object for a particular admin-object-type (<em>-restype</em>) is defined in ra.xml</li> 
+       </ul> </li> 
+     </ul> <p><b>GUI support</b> : </p> 
+     <ul> 
+      <li>In GUI, the new attributes are available in the <em><b>Advanced</b></em> or <em><b>General</b></em> tabs. The user can edit values from admin GUI.</li> 
+      <li>New button in admin GUI for a JDBC Connection pool <em><b>Flush</b></em> will be added in effect for the new feature <b>Flush connection pool.</b></li> 
+      <li>Connector-Work-Security-Map can be created using GUI, should be similar to Connector-Security-Map for Connector-Connection-pools</li> 
+      <li>Support for introspection of JDBC drivers.</li> 
+      <li>Provision to display application scoped resource within applications node.</li> 
+      <li>Provision to display monitoring information of scoped resources</li> 
+      <li>Connection Validation settings will be moved to the Advanced Jdbc connection pool settings page.</li> 
+      <li>For custom-resources, in addition to the current behavior (editable fields for <em>Resource Type</em> and <em>Factory Class</em>) GUI can display the built-in resources list. 
+       <ul> 
+        <li>ie., show a built-in set of <em>Resource Type</em> values and when any of the built-in value is chosen, select the appropriate built-in <em>Factory Class</em> automatically. User is also allowed to change the values (editable field) in case user has implementation of <em>Factory class</em> of his own.</li> 
+        <li>GUI can also list the required <em>properties</em> for built-in <em>Factory Class</em>. Refer the feature description for more details.</li> 
+       </ul> </li> 
+      <li>Admin Object Resource Support : 
+       <ul> 
+        <li>Refer <em>Admin Object Resource Support</em> section in the <em>CLI Support</em> for details.</li> 
+       </ul> </li> 
+     </ul> <p><b>Config Impact</b></p> 
+     <ul> 
+      <li>DTD changes for <a href="GFV3JDBCOnePager_DTDChanges.html" title="GFV3JDBCOnePager_DTDChanges">JDBC Connection Pool</a>.</li> 
+      <li>DTD changes for Connector Connection Pool.</li> 
+      <li>DTD changes for Connector-Work-Security-Map.</li> 
+      <li>DTD changes for sun-resources.xml.</li> 
+      <li>DTD changes for Admin-Object-Resource.</li> 
+     </ul> <h4><a name="GFV3JDBCOnePager-4.8.HAImpact%3A"></a>4.8. HA Impact:</h2> <p>None.</p> <h4><a name="GFV3JDBCOnePager-4.9.I18N%2FL10NImpact%3A"></a>4.9. I18N/L10N Impact:</h2> <p>None.</p> <h4><a name="GFV3JDBCOnePager-4.10.Packaging%26Delivery%3A"></a>4.10. Packaging &amp; Delivery:</h2> <p><b>Templates for custom resource factories</b></p> 
+     <ul> 
+      <li>Template for all the proposed factories will be provided with sample configurations in GlassFish.</li> 
+      <li>Using "asadmin&gt; add-resources &lt;resource-template-file&gt;" command, custom resources can be created.</li> 
+      <li>Proposed templates will be available at GF_INSTALL_ROOT/lib/install/templates/resources/custom</li> 
+     </ul> <h4><a name="GFV3JDBCOnePager-4.11.SecurityImpact%3A"></a>4.11. Security Impact:</h2> 
+     <ul> 
+      <li>Custom implementations provided by the users for the exposed interfaces viz., 
+       <ul> 
+        <li>org.glassfish.api.jdbc.ConnectionValidation</li> 
+        <li>org.glassfish.api.jdbc.SQLTraceListener</li> 
+       </ul> </li> 
+     </ul> <p>need to be accessible (java permission, if needed) by the application server.</p> <h4><a name="GFV3JDBCOnePager-4.12.CompatibilityImpact"></a>4.12. Compatibility Impact</h2> 
+     <ul> 
+      <li><em>connection-validation-type</em> default has changed from <em>auto-commit</em> to <em>table</em>. <em>table</em> mode of validation mandates the attribute <em>validation-table-name</em>. <em>auto-commit</em> is still supported for backward compatibility. No new support is needed from migration tool/upgrade tool as long as they port the configuration values from older version of GlassFish to GlassFish v3.</li> 
+      <li>Default value of <em>wrap-jdbc-objects</em> is changed from <em>false</em> to <em>true</em> to be JDBC specification compliant. No new support is needed from migration tool/upgrade tool as long as they port the configuration values from older version of GlassFish to GlassFish v3.</li> 
+     </ul> <p>These changes will be documented.</p> <h4><a name="GFV3JDBCOnePager-4.13.Dependencies%3A"></a>4.13. Dependencies:</h2> <h4><a name="GFV3JDBCOnePager-5.ReferenceDocuments%3A"></a>5. Reference Documents:</h1> 
+     <ol> 
+      <li><a href="http://jcp.org/en/jsr/detail-322">JSR 322 - Java EE Connector Architecture 1.6 Specification</a></li> 
+      <li><a href="GFV3JSR322HalfPager.html" title="GFV3JSR322HalfPager">JSR 322 - Reference Implementation - Half Pager </a></li> 
+      <li><a href="http://jcp.org/en/jsr/detail-316">JSR 316 - Java EE 6 Specification</a></li> 
+     </ol> <h4><a name="GFV3JDBCOnePager-6.Schedule%3A"></a>6. Schedule:</h1> <h4><a name="GFV3JDBCOnePager-6.1.ProjectedAvailability%3A"></a>6.1. Projected Availability:</h2> <p>Aligned to overall GlassFish V3 Final release schedules.</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 02, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:44.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

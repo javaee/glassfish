@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFishV3.1LoadBalancerDocPlan</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GlassFishV3.1LoadBalancerDocPlan-LoadBalancerDocumentationPlanforGlassFishServerOpenSourceEdition3.1"></a><em>Load Balancer</em> Documentation Plan for GlassFish Server Open Source Edition 3.1</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#GlassFishV3.1LoadBalancerDocPlan-LoadBalancerDocumentationPlanforGlassFishServerOpenSourceEdition3.1"> <em>Load Balancer</em> Documentation Plan for GlassFish Server Open Source Edition 3.1</a></li> 
+       <ul> 
+        <li><a href="#GlassFishV3.1LoadBalancerDocPlan-PeopleandRoles">People and Roles</a></li> 
+        <li><a href="#GlassFishV3.1LoadBalancerDocPlan-Audience">Audience</a></li> 
+        <li><a href="#GlassFishV3.1LoadBalancerDocPlan-SummaryoftheFeatureFromaUser%27sPerspective">Summary of the Feature From a User's Perspective</a></li> 
+        <li><a href="#GlassFishV3.1LoadBalancerDocPlan-Availability">Availability</a></li> 
+        <li><a href="#GlassFishV3.1LoadBalancerDocPlan-StatementofWork">Statement of Work</a></li> 
+        <ul> 
+         <li><a href="#GlassFishV3.1LoadBalancerDocPlan-ChangestoBooks">Changes to Books</a></li> 
+         <ul> 
+          <li><a href="#GlassFishV3.1LoadBalancerDocPlan-AdministrationGuideChanges"> <em>Administration Guide</em> Changes</a></li> 
+          <li><a href="#GlassFishV3.1LoadBalancerDocPlan-QuickStartGuideChanges"> <em>Quick Start Guide</em> Changes</a></li> 
+          <li><a href="#GlassFishV3.1LoadBalancerDocPlan-HighAvailabilityAdministrationGuideChanges"> <em>High Availability Administration Guide</em> Changes</a></li> 
+         </ul> 
+         <li><a href="#GlassFishV3.1LoadBalancerDocPlan-ChangestomanPages">Changes to man Pages</a></li> 
+         <ul> 
+          <li><a href="#GlassFishV3.1LoadBalancerDocPlan-asadminmanPageChanges"> <em>asadmin man Page</em> Changes</a></li> 
+         </ul> 
+        </ul> 
+        <li><a href="#GlassFishV3.1LoadBalancerDocPlan-ReviewSchedule">Review Schedule</a></li> 
+        <li><a href="#GlassFishV3.1LoadBalancerDocPlan-RelatedInformation">Related Information</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="GlassFishV3.1LoadBalancerDocPlan-PeopleandRoles"></a>People and Roles</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Name </th> 
+         <th class="confluenceTh"> Role </th> 
+         <th class="confluenceTh"> Location </th> 
+         <th class="confluenceTh"> Time Zone </th> 
+         <th class="confluenceTh"> Email </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Scott Fordin </td> 
+         <td class="confluenceTd"> Documentation Feature Owner </td> 
+         <td class="confluenceTd"> Burlington, MA, USA </td> 
+         <td class="confluenceTd"> US/Eastern </td> 
+         <td class="confluenceTd"> <tt>sfordin@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Kshitiz Saxena </td> 
+         <td class="confluenceTd"> Project Lead </td> 
+         <td class="confluenceTd"> Bangalore, India </td> 
+         <td class="confluenceTd"> IST </td> 
+         <td class="confluenceTd"> <tt>kshitiz_saxena@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Mahesh Kannan </td> 
+         <td class="confluenceTd"> Software Engineer </td> 
+         <td class="confluenceTd"> Santa Clara, CA, US </td> 
+         <td class="confluenceTd"> US/Pacific </td> 
+         <td class="confluenceTd"> <tt>maheshkannan@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Joe Di Pol </td> 
+         <td class="confluenceTd"> Software Engineer </td> 
+         <td class="confluenceTd"> Santa Clara, CA, US </td> 
+         <td class="confluenceTd"> US/Pacific </td> 
+         <td class="confluenceTd"> <tt>jfdipol@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Yamini K B </td> 
+         <td class="confluenceTd"> Software Engineer </td> 
+         <td class="confluenceTd"> Bangalore, India </td> 
+         <td class="confluenceTd"> IST </td> 
+         <td class="confluenceTd"> <tt>yaminikb@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Homer Yau </td> 
+         <td class="confluenceTd"> Quality Engineer </td> 
+         <td class="confluenceTd"> Santa Clara, CA, US </td> 
+         <td class="confluenceTd"> US/Pacific </td> 
+         <td class="confluenceTd"> <tt>hyau@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Paul Davies </td> 
+         <td class="confluenceTd"> Peer Reviewer </td> 
+         <td class="confluenceTd"> Santa Clara, CA, USA </td> 
+         <td class="confluenceTd"> US/Pacific </td> 
+         <td class="confluenceTd"> <tt>pauldavies@dev.java.net</tt> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3.1LoadBalancerDocPlan-Audience"></a>Audience</h2> <p>This feature is aimed at system administrators and application developers.</p> <h4><a name="GlassFishV3.1LoadBalancerDocPlan-SummaryoftheFeatureFromaUser%27sPerspective"></a>Summary of the Feature From a User's Perspective</h2> <p>With the introduction of clustering support in GlassFish 3.1, there is a basic requirement for a Load Balancer component to distribute incoming requests to cluster instances. This Load Balancer must provide controls for managing such features as detecting cluster health and request route renegotiation, among others, thereby providing high availability and performance.</p> <p>The Load Balancer Plugin for GlassFish is a native plugin that is installed on a Web server. After installing and configuring the Load Balancer Plugin, the Web server will start distributing requests across GlassFish cluster instances and provide a number of features, including failover handling.</p> <p>A LoadBalancer Configurator installer will automate most of the required and error-prone Load Balancer configuration procedures.</p> <h4><a name="GlassFishV3.1LoadBalancerDocPlan-Availability"></a>Availability</h2> <p>This feature is available in the GlassFish Server Full distribution.</p> <h4><a name="GlassFishV3.1LoadBalancerDocPlan-StatementofWork"></a>Statement of Work</h2> <p>This section describes in detail for each document the work that is required by the introduction of the feature, such as changes, addition of new material, relocation of existing material, and removal of existing material.</p> <p>Documentation Impact:</p> 
+     <ul> 
+      <li>None</li> 
+      <li>Minor</li> 
+      <li>Moderate</li> 
+      <li>Major</li> 
+      <li>New</li> 
+     </ul> 
+     <hr> <p><b>Note -</b> If a document is task based (as opposed to reference), the changes should be determined from the user task analysis for the feature.</p> 
+     <hr> <h4><a name="GlassFishV3.1LoadBalancerDocPlan-ChangestoBooks"></a>Changes to Books</h3> <h4><a name="GlassFishV3.1LoadBalancerDocPlan-AdministrationGuideChanges"></a><em>Administration Guide</em> Changes</h4> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Section </th> 
+         <th class="confluenceTh"> Documentation Impact </th> 
+         <th class="confluenceTh"> Writer </th> 
+         <th class="confluenceTh"> Reviewers </th> 
+         <th class="confluenceTh"> Description of Change </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6, Administering Web Applications, Administering mod_jk </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Kshitiz </td> 
+         <td class="confluenceTd"> Remove paragraph that states specific version compatibility. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3.1LoadBalancerDocPlan-QuickStartGuideChanges"></a><em>Quick Start Guide</em> Changes</h4> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Section </th> 
+         <th class="confluenceTh"> Documentation Impact </th> 
+         <th class="confluenceTh"> Writer </th> 
+         <th class="confluenceTh"> Reviewers </th> 
+         <th class="confluenceTh"> Description of Change </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Working With Load Balancers </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Kshitiz, Yamini </td> 
+         <td class="confluenceTd"> Adapt chapter from 2.1.1 QSG </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3.1LoadBalancerDocPlan-HighAvailabilityAdministrationGuideChanges"></a><em>High Availability Administration Guide</em> Changes</h4> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Section </th> 
+         <th class="confluenceTh"> Documentation Impact </th> 
+         <th class="confluenceTh"> Writer </th> 
+         <th class="confluenceTh"> Reviewers </th> 
+         <th class="confluenceTh"> Description of Change </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1, High Availability in Enterprise Server </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Kshitiz, Yamini </td> 
+         <td class="confluenceTd"> Adapt chapter from 2.1.1 HAAG </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> High Availability and Failover; <em>several sections</em> </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Kshitiz, Yamini </td> 
+         <td class="confluenceTd"> Update HADB support information; HADB not supported in this release. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5, Configuring HTTP Load Balancing, various sections </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Kshitiz, Yamini </td> 
+         <td class="confluenceTd"> Adapt chapter from 2.1.1 HAAG </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <em>Throughout</em> </td> 
+         <td class="confluenceTd"> Moderate-Major </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> All reviewers </td> 
+         <td class="confluenceTd"> Clean up HADB references throughout book; there are quite a lot of them </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3.1LoadBalancerDocPlan-ChangestomanPages"></a>Changes to man Pages</h3> <h4><a name="GlassFishV3.1LoadBalancerDocPlan-asadminmanPageChanges"></a><em>asadmin man Page</em> Changes</h4> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Topic Title </th> 
+         <th class="confluenceTh"> Documentation Impact </th> 
+         <th class="confluenceTh"> Writer </th> 
+         <th class="confluenceTh"> Reviewers </th> 
+         <th class="confluenceTh"> Description of Change </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>apply-http-lb-changes</tt><br class="atl-forced-newline"> <tt>configure-lb-weight</tt><br class="atl-forced-newline"> <tt>create-http-health-checker</tt><br class="atl-forced-newline"> <tt>create-http-lb-config</tt><br class="atl-forced-newline"> <tt>create-http-lb-ref</tt><br class="atl-forced-newline"> <tt>create-http-lb</tt><br class="atl-forced-newline"> <tt>delete-http-health-checker</tt><br class="atl-forced-newline"> <tt>delete-http-lb-config</tt><br class="atl-forced-newline"> <tt>delete-http-lb-ref</tt><br class="atl-forced-newline"> <tt>delete-http-lb</tt><br class="atl-forced-newline"> <tt>disable-http-lb-application</tt><br class="atl-forced-newline"> <tt>disable-http-lb-server</tt><br class="atl-forced-newline"> <tt>enable-http-lb-application</tt><br class="atl-forced-newline"> <tt>enable-http-lb-server</tt><br class="atl-forced-newline"> <tt>export-http-lb-config</tt> (add <tt>--target</tt> parameter)<br class="atl-forced-newline"> <tt>list-http-lb-configs</tt><br class="atl-forced-newline"> <tt>list-http-lbs</tt> </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Kshitiz, Yamini </td> 
+         <td class="confluenceTd"> Adapt Load Balancer subcommands from 2.1.1 man pages, update defaults, state that these subcommands are not applicable to GF Open Source Edition. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>create-instance</tt><br class="atl-forced-newline"> <tt>deploy</tt> </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Joe, Homer </td> 
+         <td class="confluenceTd"> Add new <tt>lb-enabled</tt> attribute, state that attribute is not applicable to GF Open Source Edition. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3.1LoadBalancerDocPlan-ReviewSchedule"></a>Review Schedule</h2> <p>The review schedule for the documentation items that are affected by this feature is provided in the following table.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item </th> 
+         <th class="confluenceTh"> Review Start Date </th> 
+         <th class="confluenceTh"> Review End Date </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Administration Guide </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>asadmin</tt> man Page </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Domain File Format Reference </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> High Availability Administration Guide </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Quick Start Guide </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>Reviewers are listed in the <em>Statement of Work</em>.</p> <h4><a name="GlassFishV3.1LoadBalancerDocPlan-RelatedInformation"></a>Related Information</h2> 
+     <ul> 
+      <li><a href="./V3FunctionalSpecs.html">Product Functional Specifications</a></li> 
+      <li><a href="http://wikis.sun.com/download/attachments/209655156/LB-one-pager.html">Load Balancer One-Pager</a></li> 
+      <li><a href="https://www.sun.com/offers/details/GlassFish_Load_Balancer.xml">White paper on GlassFish load-balancer</a></li> 
+      <li><a href="GlassFishV3.1LoadBalancerDocReview.html" title="GlassFishV3.1LoadBalancerDocReview">Doc Review</a></li> 
+     </ul> <p>Email aliases:</p> 
+     <ul> 
+      <li><a href="mailto:admin@glassfish.java.net">admin@glassfish.java.net</a></li> 
+      <li><a href="mailto:users@glassfish.java.net">users@glassfish.java.net</a></li> 
+      <li><a href="mailto:docs@glassfish.java.net">docs@glassfish.java.net</a></li> 
+     </ul> 
+     <hr> 
+     <div class="tabletitle"> 
+      <a name="comments"> <h4>Comments:</h2> </a> 
+     </div> 
+     <table border="0" width="100%"> 
+      <tbody>
+       <tr> 
+        <td> <a name="comment-20881510"></a> <font class="smallfont">
+          <div class="table-wrap"> 
+           <table class="confluenceTable">
+            <tbody> 
+             <tr> 
+              <th class="confluenceTh"> Comment ID <br class="atl-forced-newline"> </th> 
+              <th class="confluenceTh"> Section </th> 
+              <th class="confluenceTh"> Comment <br class="atl-forced-newline"> </th> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> PMD-001<br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> People and Roles<br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> Joe and Mahesh are both based in Santa Clara, CA, USA.<br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> PMD-002 </td> 
+              <td class="confluenceTd"> <em>Quick Start Guide</em> Changes </td> 
+              <td class="confluenceTd"> Wherever HADB is mentioned, change the description to state that the information will be deleted. HADB is not supported in this release. <br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> PMD-003 </td> 
+              <td class="confluenceTd"> <em>High Availability Administration Guide</em> Changes, 10, Java Message Service Load Balancing and Failover </td> 
+              <td class="confluenceTd"> Delete this row as JMS load balancing and failover are handled in a separate project. <br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> PMD-004 </td> 
+              <td class="confluenceTd"> <em>High Availability Administration Guide</em> Changes: <br class="atl-forced-newline"> 
+               <ul> 
+                <li>11, RMI-IIOP Load Balancing and Failover</li> 
+                <li>Overview, Algorithm</li> 
+               </ul> </td> 
+              <td class="confluenceTd"> Delete these rows as IIOP load balancing and failover are handled in a separate project. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> PMD-005 </td> 
+              <td class="confluenceTd"> <em>Domain File Format Reference</em> Changes </td> 
+              <td class="confluenceTd"> Add a row for the Element Hierarchy section and state which elements you'll be adding. <br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> PMD-006 </td> 
+              <td class="confluenceTd"> <em>Domain File Format Reference</em> Changes, 1, The domain.xml File, Alphabetical List of Elements </td> 
+              <td class="confluenceTd"> I believe that a v2.1.1 description of all the elements pages that you listed as new exists, so you can probably change the documentation impact to moderate. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> PMD-007 </td> 
+              <td class="confluenceTd"> <em>Upgrade Guide</em> Changes, Upgrading Node Agents </td> 
+              <td class="confluenceTd"> Delete this row as node agents are not supported in this release. I will find out from the SSH provisioning team if any corresponding procedures for nodes are required. <br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> PMD-008 </td> 
+              <td class="confluenceTd"> <em>Reference Manual</em> Changes </td> 
+              <td class="confluenceTd"> Delete this section. The changes to man pages are propagated automatically to the Reference Manual without further intervention from the writer, so they do not need to be listed twice. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> PMD-009 </td> 
+              <td class="confluenceTd"> Changes to Man Pages <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> I believe that a v2.1.1 version of all the man pages that you listed as new exists, so you can probably change the documentation impact to moderate. <br class="atl-forced-newline"> </td> 
+             </tr> 
+            </tbody>
+           </table> 
+          </div> </font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by pauldavies at Jul 28, 2010 17:49 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20880935"></a> <font class="smallfont">
+          <div class="table-wrap"> 
+           <table class="confluenceTable">
+            <tbody> 
+             <tr> 
+              <th class="confluenceTh"> Comment ID </th> 
+              <th class="confluenceTh"> Comment </th> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> PMD-001 </td> 
+              <td class="confluenceTd"> Corrected addresses, also added Yamini as a reviewer. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> PMD-002 </td> 
+              <td class="confluenceTd"> Removed all but one of the HADB table rows; remaining row states HADB not supported in 3.1 </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> PMD-003 </td> 
+              <td class="confluenceTd"> Deleted row. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> PMD-004 </td> 
+              <td class="confluenceTd"> Deleted rows. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> PMD-005 </td> 
+              <td class="confluenceTd"> Clarified changes, added new row. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> PMD-006 </td> 
+              <td class="confluenceTd"> Changed doc impact to Moderate. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> PMD-007 </td> 
+              <td class="confluenceTd"> Deleted row. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> PMD-008 </td> 
+              <td class="confluenceTd"> Deleted section. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> PMD-009 </td> 
+              <td class="confluenceTd"> Changed doc impact to Moderate. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> SRF-001 </td> 
+              <td class="confluenceTd"> Incorporated a bunch of comments from Kshitiz. </td> 
+             </tr> 
+            </tbody>
+           </table> 
+          </div> </font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by sfordin at Aug 06, 2010 18:14 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20879016"></a> <font class="smallfont">
+          <div class="table-wrap"> 
+           <table class="confluenceTable">
+            <tbody> 
+             <tr> 
+              <th class="confluenceTh"> Comment ID </th> 
+              <th class="confluenceTh"> Section </th> 
+              <th class="confluenceTh"> Comment </th> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> SRF-002 </td> 
+              <td class="confluenceTd"> <em>Administration Guide</em> Changes </td> 
+              <td class="confluenceTd"> Added new section; changes related to mod_jk. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> SRF-003 </td> 
+              <td class="confluenceTd"> <em>Upgrade Guide</em> Changes </td> 
+              <td class="confluenceTd"> Removed entire section because it referred mostly to LB Plugin and Configurator. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> SRF-004 </td> 
+              <td class="confluenceTd"> <em>Online Help</em> Changes </td> 
+              <td class="confluenceTd"> Removed entire section because there will be no changes to online help. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> SRF-005 </td> 
+              <td class="confluenceTd"> Several locations </td> 
+              <td class="confluenceTd"> Removed references to LB Plugin and Configurator. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> SRF-006 </td> 
+              <td class="confluenceTd"> Several locations </td> 
+              <td class="confluenceTd"> Changed names of reviewers. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> SRF-007 </td> 
+              <td class="confluenceTd"> <em>Domain File Format Reference</em> Changes </td> 
+              <td class="confluenceTd"> Removed duplicate table row. </td> 
+             </tr> 
+            </tbody>
+           </table> 
+          </div> </font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by sfordin at Aug 11, 2010 13:00 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20878595"></a> <font class="smallfont">
+          <div class="table-wrap"> 
+           <table class="confluenceTable">
+            <tbody> 
+             <tr> 
+              <th class="confluenceTh"> Comment ID </th> 
+              <th class="confluenceTh"> Section </th> 
+              <th class="confluenceTh"> Comment </th> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> SRF-008 </td> 
+              <td class="confluenceTd"> man pages and <em>Domain File Format Reference</em> </td> 
+              <td class="confluenceTd"> State that LB subcommands and attributes are not applicable to GF OSE. </td> 
+             </tr> 
+            </tbody>
+           </table> 
+          </div> </font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by sfordin at Aug 18, 2010 13:41 
+         </div> </td> 
+       </tr> 
+      </tbody>
+     </table> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Feb 01, 2011 by 
+<font color="#0050B2">sfordin</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

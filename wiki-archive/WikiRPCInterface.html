@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : WikiRPCInterface</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>JSPWiki comes with a XML-RPC interface. For more information, see:</p> 
+     <ul> 
+      <li><a href="http://www.xmlrpc.com/">http://www.xmlrpc.com/</a></li> 
+      <li><a href="http://www.jspwiki.org/Wiki.jsp?page=WikiRPCInterface">http://www.jspwiki.org/Wiki.jsp?page=WikiRPCInterface</a></li> 
+     </ul> <h4><a name="WikiRPCInterface-XMLRPCStandardAPI"></a>XML-RPC Standard API</h2> <p>Here is now the API as of v1.6.12 (the command prefix being <em>wiki.</em>).</p> <p>The default URL for this API is &lt;your-wiki-url&gt;/RPC2</p> 
+     <ul> 
+      <li><b>array getRecentChanges( Date timestamp )</b>: Get list of changed pages since<br> <em>timestamp</em>, which should be in UTC. The result is an array, where each <br> element is a struct: 
+       <ul> 
+        <li><em>name</em> (string) : Name of the page. The name is UTF-8 with URL</li> 
+       </ul> </li> 
+     </ul> <p> encoding to make it ASCII.</p> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li><em>lastModified</em> (date) : Date of last modification, in UTC.</li> 
+        <li><em>author</em> (string) : Name of the author (if available). Again, name is</li> 
+       </ul> </li> 
+     </ul> <p> UTF-8 with URL encoding.</p> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li><em>version</em> (int) : Current version.</li> 
+       </ul> </li> 
+      <li>A page MAY be specified multiple times. A page MAY NOT be specified multiple</li> 
+     </ul> <p> times with the <em>same</em> modification date.</p> 
+     <ul> 
+      <li><b>int getRPCVersionSupported()</b>: Returns 1 with this version of the JSPWiki API.</li> 
+     </ul> 
+     <ul> 
+      <li><b>base64 getPage( String pagename )</b>: Get the raw Wiki text of page, latest<br> version. Page name <b>must</b> be UTF-8, with URL encoding. Returned value is a <br> binary object, with UTF-8 encoded page data.</li> 
+     </ul> 
+     <ul> 
+      <li><b>base64 getPageVersion( String pagename, int version )</b>: Get the raw Wiki<br> text of page. Returns UTF-8, expects UTF-8 with URL encoding.</li> 
+     </ul> 
+     <ul> 
+      <li><b>base64 getPageHTML( String pagename )</b>: Return page in rendered HTML.<br> Returns UTF-8, expects UTF-8 with URL encoding.</li> 
+     </ul> 
+     <ul> 
+      <li><b>base64 getPageHTMLVersion( String pagename, int version )</b>: Return page<br> in rendered HTML, UTF-8.</li> 
+     </ul> 
+     <ul> 
+      <li><b>array getAllPages()</b>: Returns a list of all pages. The result is an array<br> of strings, again UTF-8 in URL encoding.</li> 
+     </ul> 
+     <ul> 
+      <li><b>struct getPageInfo( string pagename )</b> : returns a struct with elements 
+       <ul> 
+        <li><em>name</em> (string): the canonical page name, URL-encoded UTF-8.</li> 
+        <li><em>lastModified</em> (date): Last modification date, UTC.</li> 
+        <li><em>author</em> (string): author name, URL-encoded UTF-8.</li> 
+        <li><em>version</em> (int): current version</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li><b>struct getPageInfoVersion( string pagename, int version )</b> : returns a<br> struct just like plain <em>getPageInfo()</em>, but this time for a specific<br> version.</li> 
+     </ul> 
+     <ul> 
+      <li><b>array listLinks( string pagename )</b>: Lists all links for a given page.<br> The returned array contains structs, with the following elements: 
+       <ul> 
+        <li><em>page</em> (string) : The page name or URL the link is to.</li> 
+        <li><em>type</em> (int) : The link type. This is a string, with the following</li> 
+       </ul> </li> 
+     </ul> <p> possible values:</p> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li> 
+         <ul> 
+          <li>"external" : The link is an external hyperlink</li> 
+          <li>"local" : This is a local Wiki name for hyperlinking</li> 
+         </ul> </li> 
+       </ul> </li> 
+     </ul> <p>As you can see, all data is returned in a <em>base64</em> -type in UTF-8<br> encoding, regardless of what JSPWiki preference actually is. Also,<br> all incoming or outcoming strings are really UTF-8, but they have been<br> URL-encoded so that the XML-RPC requirement of ASCII is fulfilled.</p> <h4><a name="WikiRPCInterface-TheUTF8API"></a>The UTF-8 API</h2> <p>This is exactly as the upper API, except that ALL strings should be<br> encoded in UTF-8. Also, instead of base64 type, all methods returning<br> page data return UTF-8 format strings.</p> <p>This does break the XML-RPC spec somewhat, but for ease of use I think<br> it is important to serve both models. Use which one you like <img class="emoticon" src="images/icons/emoticons/smile.gif" height="20" width="20" align="absmiddle" alt="" border="0">.</p> <p>The default URL for the UTF-8 XML-RPC API is</p> <p>&lt;your-wiki-url&gt;/RPCU</p> <h4><a name="WikiRPCInterface-Errors"></a>Errors</h2> <p>All methods which handle a page in any way can return a Fault. Current fault<br> codes are:</p> 
+     <ul> 
+      <li>1 : No such page was found.</li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 08, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:48.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

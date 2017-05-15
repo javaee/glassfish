@@ -1,0 +1,2519 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : SupportWLDDInContainers</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="SupportWLDDInContainers-SupportWebLogicDD%27sWhereSemanticallyEquivalent"></a>Support WebLogic DD's Where Semantically Equivalent</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#SupportWLDDInContainers-SupportWebLogicDD%27sWhereSemanticallyEquivalent">Support WebLogic DD's Where Semantically Equivalent</a></li> 
+       <ul> 
+        <li><a href="#SupportWLDDInContainers-Web%28weblogic.xml%29">Web (weblogic.xml)</a></li> 
+        <li><a href="#SupportWLDDInContainers-EJB%28weblogicejbjar.xml%29">EJB (weblogic-ejb-jar.xml)</a></li> 
+        <li><a href="#SupportWLDDInContainers-CMP%2FPersistence">CMP/Persistence</a></li> 
+        <li><a href="#SupportWLDDInContainers-Webservices%28weblogicwebservices.xml%29">Webservices (weblogic-webservices.xml)</a></li> 
+        <li><a href="#SupportWLDDInContainers-ResourceAdapter%28weblogicra.xml%29">Resource Adapter (weblogic-ra.xml)</a></li> 
+        <li><a href="#SupportWLDDInContainers-ApplicationClient%28weblogicapplicationclient.xml%29">Application Client (weblogic-application-client.xml)</a></li> 
+        <li><a href="#SupportWLDDInContainers-Application%28weblogicapplication.xml%29">Application (weblogic-application.xml)</a></li> 
+        <li><a href="#SupportWLDDInContainers-JDBCModule%28XXXjdbc.xml%29">JDBC Module (XXX-jdbc.xml)</a></li> 
+        <li><a href="#SupportWLDDInContainers-JMSModule%28XXXjms.xml%29">JMS Module (XXX-jms.xml)</a></li> 
+        <li><a href="#SupportWLDDInContainers-DeploymentPlan%28plan.xml%29">Deployment Plan (plan.xml)</a></li> 
+        <li><a href="#SupportWLDDInContainers-WLDFModule%28weblogicdiagnostics.xml%29">WLDF Module (weblogic-diagnostics.xml)</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="SupportWLDDInContainers-Web%28weblogic.xml%29"></a>Web (weblogic.xml)</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Element Name </th> 
+         <th class="confluenceTh"> Effort Level (low/medium/high/unknown) </th> 
+         <th class="confluenceTh"> Glassfish Corresponding Element (if applicable) </th> 
+         <th class="confluenceTh"> Comments </th> 
+         <th class="confluenceTh">&nbsp;</th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> description </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> weblogic-version </td> 
+         <td class="confluenceTd"> impossible </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Specific to Weblogic </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> security-role-assignment:role-name </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd"> security-role-mapping:role-name in sun-web.xml </td> 
+         <td class="confluenceTd"> SECURITY </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> security-role-assignment:principal-name </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd"> security-role-mapping:principal-name in sun-web.xml </td> 
+         <td class="confluenceTd"> SECURITY </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> security-role-assignment:externally-defined </td> 
+         <td class="confluenceTd"> unknown </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> SECURITY: Ignore </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> run-as-role-assignment:role-name </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd"> servlet:run-as in web.xml </td> 
+         <td class="confluenceTd"> SECURITY: Ignore </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> run-as-role-assignment:run-as-principal-name </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd"> servlet:principal-name in sun-web.xml </td> 
+         <td class="confluenceTd"> SECURITY: Ignore </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> resource-description </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd"> resource-ref in sun-web.xml </td> 
+         <td class="confluenceTd"> Yes, without resource-link </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> resource-env-description </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd"> resource-env-ref in sun-web.xml </td> 
+         <td class="confluenceTd"> Yes, without resource-link </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ejb-reference-description </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd"> ejb-ref in sun-web.xml </td> 
+         <td class="confluenceTd"> Yes </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> service-reference-description </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd"> service-ref in sun-web.xml </td> 
+         <td class="confluenceTd"> WEB SERVICE </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> session-descriptor:timeout-secs </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd"> "timeoutSeconds" property of session-config:session-properties in sun-web.xml </td> 
+         <td class="confluenceTd"> Yes </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> session-descriptor:invalidation-interval-secs </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd"> "reapIntervalSeconds" property of session-config:session-manager:manager-properties in sun-web.xml </td> 
+         <td class="confluenceTd"> Yes </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> session-descriptor:sharing-enabled </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> session-descriptor:debug-enabled </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> session-descriptor:id-length </td> 
+         <td class="confluenceTd"> medium </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> session-descriptor:tracking-enabled </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> session-descriptor:cache-size </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> session-descriptor:max-in-memory-sessions </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd"> "maxSessions" property of session-config:session-manager:manager-properties in sun-web.xml </td> 
+         <td class="confluenceTd"> Yes </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> session-descriptor:cookies-enabled </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd"> Already supported via Servlet 3.0 </td> 
+         <td class="confluenceTd"> Yes </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> session-descriptor:cookie-name </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd"> Already supported via Servlet 3.0 </td> 
+         <td class="confluenceTd"> Yes </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> session-descriptor:cookie-path </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd"> Already supported via Servlet 3.0 </td> 
+         <td class="confluenceTd"> Yes </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> session-descriptor:cookie-domain </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd"> Already supported via Servlet 3.0 </td> 
+         <td class="confluenceTd"> Yes </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> session-descriptor:cookie-comment </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd"> Already supported via Servlet 3.0 </td> 
+         <td class="confluenceTd"> Yes </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> session-descriptor:cookie-secure </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd"> Already supported via Servlet 3.0 </td> 
+         <td class="confluenceTd"> Yes </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> session-descriptor:cookie-max-age-secs </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd"> Already supported via Servlet 3.0 </td> 
+         <td class="confluenceTd"> Yes </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> session-descriptor:cookie-http-only </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd"> Already supported via Servlet 3.0 </td> 
+         <td class="confluenceTd"> Yes </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> session-descriptor:persistent-store-type </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> session-descriptor:persistent-store-cookie-name </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Support for cookie-based persistence has been added to GlassFish v3.1, see <a href="https://github.com/javaee/glassfish/issues/11648">IT 11648 </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> session-descriptor:persistent-store-dir </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd"> "directory" property of session-config:session-manager:store-properties in sun-web.xml </td> 
+         <td class="confluenceTd"> Yes </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> session-descriptor:persistent-store-pool </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> session-descriptor:persistent-store-table </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> session-descriptor:jdbc-column-name-max-inactive-interval </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> session-descriptor:jdbc-connection-timeout-secs </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> session-descriptor:url-rewriting-enabled </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd"> Already supported via Servlet 3.0 </td> 
+         <td class="confluenceTd"> Yes </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> session-descriptor:http-proxy-caching-of-cookies </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> session-descriptor:encode-session-id-in-query-params </td> 
+         <td class="confluenceTd"> medium </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> session-descriptor:runtime-main-attribute </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jsp-descriptor:page-check-seconds </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd"> Combination of "checkInterval ", "development", and "reload-interval" init params of JspServlet </td> 
+         <td class="confluenceTd"> Yes </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jsp-descriptor:precompile </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> TBD. Need change in web deployment. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jsp-descriptor:precompile-continue </td> 
+         <td class="confluenceTd"> medium </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jsp-descriptor:keepgenerated </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd"> "keepgenerated" init parameter of JspServlet </td> 
+         <td class="confluenceTd"> Yes </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jsp-descriptor:verbose </td> 
+         <td class="confluenceTd"> medium </td> 
+         <td class="confluenceTd"> Already supported by jspc tool, but printing out debug info to the browser will be high </td> 
+         <td class="confluenceTd"> Ignore </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jsp-descriptor:working-dir </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd"> "scratchdir" init parameter of JspServlet </td> 
+         <td class="confluenceTd"> Yes </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jsp-descriptor:print-nulls </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jsp-descriptor:backward-compatible </td> 
+         <td class="confluenceTd"> impossible </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jsp-descriptor:encoding </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jsp-descriptor:package-prefix </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jsp-descriptor:exact-mapping </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jsp-descriptor:default-file-name </td> 
+         <td class="confluenceTd"> unknown </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jsp-descriptor:rtexprvalue-jsp-param-name </td> 
+         <td class="confluenceTd"> medium </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jsp-descriptor:optimize-java-expression </td> 
+         <td class="confluenceTd"> unknown </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jsp-descriptor:compress-html-template </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Yes </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jsp-descriptor:super-class </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jsp-descriptor:debug </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jsp-descriptor:resource-provider-class </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> auth-filter </td> 
+         <td class="confluenceTd"> unknown </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> container-descriptor:check-auth-on-forward </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> container-descriptor:filter-dispatched-requests-enabled </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> container-descriptor:redirect-with-absolute-url </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> container-descriptor:index-directory-enabled </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd"> "listings" init parameter of DefaultServlet </td> 
+         <td class="confluenceTd"> Yes </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> container-descriptor:index-directory-sort-by </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd"> "sortedBy" init parameter of DefaultServlet </td> 
+         <td class="confluenceTd"> Yes </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> container-descriptor:servlet-reload-check-secs </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> container-descriptor:resource-reload-check-secs </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> container-descriptor:single-threaded-servlet-pool-size </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> container-descriptor:session-monitoring-enabled </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> container-descriptor:save-sessions-enabled </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd"> Same as "asadmin redeploy --properties keepSessions=true" </td> 
+         <td class="confluenceTd"> Yes </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> container-descriptor:prefer-web-inf-classes </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd"> "delegate" attribute of the class-loader element in sun-web.xml </td> 
+         <td class="confluenceTd"> Yes </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> container-descriptor:default-mime-type </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> container-descriptor:client-cert-proxy-enabled </td> 
+         <td class="confluenceTd"> medium </td> 
+         <td class="confluenceTd"> Similar support already present in GlassFish via "auth-pass-through-enabled" http attribute in domain.xml and provider-based com.sun.appserv.ProxyHandler mechanism </td> 
+         <td class="confluenceTd"> Ignore </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> container-descriptor:relogin-enabled </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Not that relevant, because Weblogic provides it only for backward compatibility reasons, and GlassFish already does the right thing by default. SECURITY:Ignore </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> container-descriptor:allow-all-roles </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Not that relevant, because Weblogic provides it only for backward compatibility reasons, and GlassFish already does the right thing by default. SECURITY:Ignore </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> container-descriptor:native-io-enabled </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> container-descriptor:minimum-native-file-size </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> container-descriptor:disable-implicit-servlet-mapping </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> container-descriptor:optimistic-serialization </td> 
+         <td class="confluenceTd"> medium </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> container-descriptor:require-admin-traffic </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> container-descriptor:access-logging-disabled </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> charset-params:input-charset </td> 
+         <td class="confluenceTd"> medium </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> charset-params:charset-mapping </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> virtual-directory-mapping </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd"> alternatedocroot_x property of virtual-server in domain.xml and alternatedocroot_x property in sun-web.xml </td> 
+         <td class="confluenceTd"> Ignore </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> url-match-map </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> security-permission </td> 
+         <td class="confluenceTd"> medium </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> SECURITY </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> context-root </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd"> context-root element in sun-web.xml </td> 
+         <td class="confluenceTd"> Yes </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> wl-dispatch-policy </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> servlet-descriptor </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> We will implement run-as-principal-name. But not init-as-principal-name, destroy-as-principal name as we do not distinguish run-as for for init and destroy. SECURITY. The dispatch-policy is a deprecated element in weblogic.xml </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> work-manager </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> logging </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> GlassFish does not support per-web-application logging </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> library-ref </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> fast-swap </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> session-descriptor:persistent-data-source-jndi-name </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore, async-jdbc </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> session-descriptor:persistent-session-flush-interval </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore, async-jdbc </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> session-descriptor:persistent-session-flush-threshold </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore, async-jdbc </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> session-descriptor:persistent-async-queue-timeout </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore, async-jdbc </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> session-descriptor:monitoring-attribute-name </td> 
+         <td class="confluenceTd"> medium </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> component-factory-class-name </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> library-ref </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> descriptionType </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> container-descriptor:redirect-content-type </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> deprecated, Ignore </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> container-descriptor:redirect-content </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> deprecated, Ignore </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> container-descriptor:temp-dir </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> container-descriptor:retain-original-url </td> 
+         <td class="confluenceTd"> medium </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> container-descriptor:show-archived-real-path-enabled </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="SupportWLDDInContainers-EJB%28weblogicejbjar.xml%29"></a>EJB (weblogic-ejb-jar.xml)</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Element Name </th> 
+         <th class="confluenceTh"> Effort Level (low/medium/high/unknown) </th> 
+         <th class="confluenceTh"> Glassfish Corresponding Element (if applicable) </th> 
+         <th class="confluenceTh"> Comments </th> 
+         <th class="confluenceTh">&nbsp;</th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> allow-concurrent-calls </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Supporting the default conflicts with ejb 3.1, but we could support an explicitly specified value of true/false. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> allow-remove-during-transaction </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> cache-between-transactions </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> CMP related. Doesn't make sense to put effort into this. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> cache-type </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Anything dealing with the cache is challenging since we have a completely different cache implementation. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> client-authentication </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> client-cert-authentication </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> clients-on-same-server </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> component-factory-class-name </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> concurrency-strategy </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> CMP </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> confidentiality </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> connection-factory-jndi-name </td> 
+         <td class="confluenceTd"> unknown </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> connection-factory-resource-link </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-as-principal-name </td> 
+         <td class="confluenceTd"> medium </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> delay-updates-until-end-of-tx </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> CMP </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> description </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> destination-jndi-name </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> disable-warning </td> 
+         <td class="confluenceTd"> medium </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> dispatch-policy </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> distributed-destination-connection </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> durable-subscription-deletion </td> 
+         <td class="confluenceTd"> medium </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ejb-local-reference-description </td> 
+         <td class="confluenceTd"> medium </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ejb-name </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ejb-reference-description </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ejb-ref-name </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> enable-bean-class-redeploy </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> enable-call-by-reference </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> enable-dynamic-queries </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> CMP </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> entity-always-uses-transaction </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> CMP </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> entity-cache </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> CMP </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> entity-cache-name </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> CMP </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> entity-cache-ref </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> CMP </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> entity-clustering </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> CMP </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> entity-descriptor </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> CMP </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> estimated-bean-size </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> CMP </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> externally-defined </td> 
+         <td class="confluenceTd"> unknown </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> externally-defined </td> 
+         <td class="confluenceTd"> unknown </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> finders-load-bean </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> CMP </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> generate-unique-jms-client-id </td> 
+         <td class="confluenceTd"> medium </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> global-role </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> deprecated </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> home-call-router-class-name </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> home-is-clusterable </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> home-load-algorithm </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> idempotent-methods </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> identity-assertion </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> idle-timeout-seconds </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> iiop-security-descriptor </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> init-suspend-seconds </td> 
+         <td class="confluenceTd"> medium </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> initial-beans-in-free-pool </td> 
+         <td class="confluenceTd"> medium </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> initial-context-factory </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> integrity </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> invalidation-target </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> CMP </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> is-modified-method-name </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> CMP </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> isolation-level </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> CMP </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jms-client-id </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jms-polling-interval-seconds </td> 
+         <td class="confluenceTd"> medium </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jndi-name </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> local-jndi-name </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> max-beans-in-cache </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> max-messages-in-transaction </td> 
+         <td class="confluenceTd"> unknown </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> max-beans-in-free-pool </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> max-queries-in-cache </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> CMP </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> max-suspend-seconds </td> 
+         <td class="confluenceTd"> unknown </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> message-destination-descriptor </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> message-destination-name </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> message-driven-descriptor </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> method </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> method-intf </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> method-name </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> method-param </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> method-params </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> network-access-point </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> passivate-as-principal-name </td> 
+         <td class="confluenceTd"> medium </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> persistence </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> CMP </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> persistence-use </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> CMP </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> persistent-store-dir </td> 
+         <td class="confluenceTd"> medium </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> persistent-store-logical-name </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> pool </td> 
+         <td class="confluenceTd"> medium </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> principal-name </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> provider-url </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> read-timeout-seconds </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> CMP </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> remote-client-timeout </td> 
+         <td class="confluenceTd"> medium </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> remove-as-principal-name </td> 
+         <td class="confluenceTd"> medium </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> replication-type </td> 
+         <td class="confluenceTd"> medium </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> res-env-ref-name </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> res-ref-name </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> resource-description </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> resource-adapter-jndi-name </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> resource-description </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> resource-env-description </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> resource-link </td> 
+         <td class="confluenceTd"> unknown </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> retry-count </td> 
+         <td class="confluenceTd"> medium </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> retry-methods-on-rollback </td> 
+         <td class="confluenceTd"> medium </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> role-name </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> run-as-identity-principal </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> run-as-principal-name </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> run-as-role-assignment </td> 
+         <td class="confluenceTd"> medium </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> security-permission </td> 
+         <td class="confluenceTd"> unknown </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> security-permission-spec </td> 
+         <td class="confluenceTd"> unknown </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> security-role-assignment </td> 
+         <td class="confluenceTd"> medium </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> service-reference-description </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> session-timeout-seconds </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> stateful-session-cache </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> stateful-session-clustering </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> stateful-session-descriptor </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> stateless-bean-call-router-class-name </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> stateless-bean-is-clusterable </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> stateless-bean-load-algorithm </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> stateless-bean-methods-are-idempotent </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> stateless-clustering </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> stateless-session-descriptor </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> stick-to-first-server </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> timer-descriptor </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> timer-implementation </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> transaction-descriptor </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> transaction-isolation </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> transport-requirements </td> 
+         <td class="confluenceTd"> medium </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> trans-timeout-seconds </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> type-identifier </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> CMP </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> type-storage </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> CMP </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> type-version </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> CMP </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> use-serverside-stubs </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> use81-style-polling </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> weblogic-compatibility </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> weblogic-ejb-jar </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> weblogic-enterprise-bean </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> work-manager </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="SupportWLDDInContainers-CMP%2FPersistence"></a>CMP/Persistence</h2> <p>CMP (weblogic-rdbms-jar.xml) : Legacy feature, no work planned.</p> <p>Persistence (persistence-configuration.xml): No work required.</p> <p>Additional Note:</p> <p>Weblogic does provide following two provider agnostic value add features for JPA development according to their doc. We do not have either of them available in v3.</p> 
+     <ul> 
+      <li>Automatic persistence unit deployment based on variable name: Effort to implement in GlassFish - Medium</li> 
+     </ul> 
+     <ul> 
+      <li>Support for vendor-specific subinterfaces when injecting an EntityManager from a particular persistence provider: Effort to implement in GlassFish - Medium</li> 
+     </ul> <h4><a name="SupportWLDDInContainers-Webservices%28weblogicwebservices.xml%29"></a>Webservices (weblogic-webservices.xml)</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Element Name </th> 
+         <th class="confluenceTh"> Effort Level(low/medium/high/unknown) </th> 
+         <th class="confluenceTh"> Glassfish Corresponding Element (if applicable) </th> 
+         <th class="confluenceTh"> Comments </th> 
+         <th class="confluenceTh">&nbsp;</th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: xml; gutter: false">&lt;webservice-type&gt; 
+    (JAXRPC/JAXWS) 
+&lt;/webservice-type&gt;</pre> 
+            </div> 
+           </div>
+          </div></td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd"> 
+          <div class="sunwikis-expand-header">
+           supported
+          </div> 
+          <div class="sunwikis-expand-body">
+           Nominal support to label the Web Service as jax-rpc or jax-ws. We rely on @WebService to identify if it is JAX-WS WS, but WLS supports @WebService via JAX-RPC, we can't support this.
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: xml; gutter: false">&lt;wsdl-publish-file&gt;</pre> 
+            </div> 
+           </div>
+          </div></td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd"> wsdl-publish-location in sun-web.xml &amp; wsdl-publish-location in sun-ejb-jar.xml </td> 
+         <td class="confluenceTd">supported</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: xml; gutter: false">&lt;service-endpoint-address&gt; 
+    &lt;webservice-contextpath/&gt; 
+    &lt;webservice-serviceuri/&gt; 
+&lt;/service-endpoint-address&gt;</pre> 
+            </div> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd"> medium </td> 
+         <td class="confluenceTd"> endpoint-address-uri in sun-ejb-jar.xml &amp; sun-web.xml </td> 
+         <td class="confluenceTd"> 
+          <div class="sunwikis-expand-header">
+           supported
+          </div> 
+          <div class="sunwikis-expand-body">
+           webservice-contextpath and webservice-serviceuri combined as endpoint-address-uri in sun-ejb-jar.xml endpoint-address-uri in sun-web.xml, don't know how to set webservice-contextpath, ours allows only relative to the contextpath.
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: xml; gutter: false">&lt;j2ee:login-config&gt;</pre> 
+            </div> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd"> login-config in sun-web.xml &amp; sun-ejb-jar.xml </td> 
+         <td class="confluenceTd">supported</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: xml; gutter: false">&lt;j2ee:transport-guarantee&gt;</pre> 
+            </div> 
+           </div>
+          </div></td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd"> transport-guarantee in sun-web.xml &amp; sun-ejb-jar.xml </td> 
+         <td class="confluenceTd">supported</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: xml; gutter: false">&lt;deployment-listener-list&gt;</pre> 
+            </div> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd"> 
+          <div class="sunwikis-expand-header">
+           unsupported/ignored
+          </div> 
+          <div class="sunwikis-expand-body">
+           No idea, For WLS Internal use only
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: xml; gutter: false">&lt;wsdl&gt;
+   &lt;exposed&gt;(true/false)&lt;/exposed&gt; 
+&lt;/wsdl&gt;</pre> 
+            </div> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd"> medium </td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd"> supported </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: xml; gutter: false">&lt;transaction-timeout&gt;</pre> 
+            </div> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd"> unknown </td> 
+         <td class="confluenceTd"> cmt-timeout-in-seconds in sun-ejb-jar.xml (not part of Web Service config), How do we do for Servlet endpoints? </td> 
+         <td class="confluenceTd"> unsupported/ignored</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: xml; gutter: false">&lt;callback-protocol&gt; 
+(http/https/jms) 
+&lt;/callback-protocol&gt;</pre> 
+            </div> 
+           </div>
+          </div></td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd"> No Support for callbacks in Metro, Proposed as part of JAX-WS.Next work </td> 
+         <td class="confluenceTd"> unsupported/ignored </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: xml; gutter: false">&lt;stream-attachments&gt;</pre> 
+            </div> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd"> JAX-WS defaults to Streaming attachments </td> 
+         <td class="confluenceTd">supported </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: xml; gutter: false">&lt;validate-request&gt;</pre> 
+            </div> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd"> supported </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: xml; gutter: false">&lt;http-flush-response&gt;</pre> 
+            </div> 
+           </div>
+          </div></td> 
+         <td class="confluenceTd"> unknown </td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd"> 
+          <div class="sunwikis-expand-header">
+           unsupported/ignored
+          </div> 
+          <div class="sunwikis-expand-body">
+           Seems to be configuration for ReliableMessagingFeature, need more info on this property behavior 
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: xml; gutter: false">&lt;http-response-buffersize&gt;</pre> 
+            </div> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd"> 
+          <div class="sunwikis-expand-header">
+           supported
+          </div> 
+          <div class="sunwikis-expand-body">
+           ReliableMessagingFeature.getDestinationBufferQuota(). Can be clubbed with ReliabilityConfig above to set the feature accordingly.
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: xml; gutter: false">&lt;reliability-config&gt;
+ &lt;inactivity-timeout/&gt;
+ &lt;base-retransmission-interval/&gt;
+ &lt;retransmission-exponential-backoff/&gt;
+ &lt;acknowledgement-interval/&gt;
+ &lt;sequence-expiration/&gt;
+ &lt;buffer-retry-count/&gt;
+ &lt;buffer-retry-delay/&gt;
+ &lt;/reliability-config&gt;</pre> 
+            </div> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd"> medium </td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd"> 
+          <div class="sunwikis-expand-header">
+           partial support,click for more info
+          </div> 
+          <div class="sunwikis-expand-body">
+           Can be implemented via Metro API ReliableMessagingFeature. &lt;inactivity-timeout&gt; = ReliableMessagingFeature.getSequenceInactivityTimeout() &lt;base-retransmission-interval&gt; = ReliableMessagingFeature.getMessageRetransmissionInterval() retransmission-exponential-backoff= ReliableMessagingFeature.getRetransmissionBackoffAlgorithm() - enum values, one of them is "exponential" acknowledgement-interval = ReliableMessagingFeature.getAcknowledgementTransmissionInterval() sequence-expiration = ReliableMessagingFeature.getSequenceInactivityTimeout(); this is not exactly the same. In WLS this value means "regardless of activity". In Metro it applies only to inactive sequences. buffer-retry-count = ReliableMessagingFeature.getMaxMessageRetransmissionCount() buffer-retry-delay = ReliableMessagingFeature.getMessageRetransmissionInterval()
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: xml; gutter: false">&lt;webservice-security&gt;
+ &lt;mbean-name&gt;
+ &lt;webservice-security&gt;</pre> 
+            </div> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd"> unknown </td> 
+         <td class="confluenceTd"> unknown </td> 
+         <td class="confluenceTd"> 
+          <div class="sunwikis-expand-header">
+           unsupported/error
+          </div> 
+          <div class="sunwikis-expand-body">
+           //TODO VB Kumar Jayanti (sun-web.xml, sun-ejb-jar.xml has some configuration for specifying Message Security).
+          </div> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="SupportWLDDInContainers-ResourceAdapter%28weblogicra.xml%29"></a>Resource Adapter (weblogic-ra.xml)</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Element Name </th> 
+         <th class="confluenceTh"> Effort Level (low/medium/high/unknown) </th> 
+         <th class="confluenceTh"> Glassfish Corresponding Element (if applicable) </th> 
+         <th class="confluenceTh"> Comments </th> 
+         <th class="confluenceTh">&nbsp;</th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ~UWC_TOKEN_START~1278095715785~UWC_TOKEN_END| unknown </td> 
+         <td class="confluenceTd"> NA </td> 
+         <td class="confluenceTd"> GlassFish does not have per application based native library support. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">&lt;jndi-name</pre> 
+            </div> 
+           </div>
+          </div>&gt; </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd"> NA </td> 
+         <td class="confluenceTd"> jndi name for the resource-adapter bean which can be used by weblogic-ejb-jar.xml to map MDB configuration </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">&lt;enable-access-outside-app</pre> 
+            </div> 
+           </div>
+          </div>&gt; </td> 
+         <td class="confluenceTd"> medium </td> 
+         <td class="confluenceTd"> NA </td> 
+         <td class="confluenceTd"> Possible with classloader changes. Embedded rar classloader is not managed by connector classloader. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">&lt;enable-global-access-to-classes</pre> 
+            </div> 
+           </div>
+          </div>&gt; </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd"> NA </td> 
+         <td class="confluenceTd"> Possible as there is already a global flag in 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">&lt; connector-service</pre> 
+            </div> 
+           </div>
+          </div>&gt;. Need similar functionality per resource-adapter. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">&lt;work-manager</pre> 
+            </div> 
+           </div>
+          </div>&gt; </td> 
+         <td class="confluenceTd"> unknown/high </td> 
+         <td class="confluenceTd"> NA </td> 
+         <td class="confluenceTd"> Weblogic provides extensive features on work-management. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">&lt;security</pre> 
+            </div> 
+           </div>
+          </div>&gt; </td> 
+         <td class="confluenceTd"> medium </td> 
+         <td class="confluenceTd"> NA </td> 
+         <td class="confluenceTd"> Provision to specify multiple identities to perform various functions on RAR (RA lifecycle, connection-creation, work execution) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">&lt;properties</pre> 
+            </div> 
+           </div>
+          </div>&gt; </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd"> NA </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">&lt;admin-objects</pre> 
+            </div> 
+           </div>
+          </div>&gt; </td> 
+         <td class="confluenceTd"> low-medium </td> 
+         <td class="confluenceTd"> NA </td> 
+         <td class="confluenceTd"> Ability to group admin-object so as to apply common configuration </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">&lt;outbound-resource-adapter</pre> 
+            </div> 
+           </div>
+          </div>&gt; 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">&lt;default-connection-properties</pre> 
+            </div> 
+           </div>
+          </div>&gt; 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">&lt;logging</pre> 
+            </div> 
+           </div>
+          </div>&gt; </td> 
+         <td class="confluenceTd"> medium </td> 
+         <td class="confluenceTd"> NA </td> 
+         <td class="confluenceTd"> Ability to log ra specific usage in separate log files and various log file management facilities </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">&lt;outbound-resource-adapter</pre> 
+            </div> 
+           </div>
+          </div>&gt; 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">&lt;default-connection-properties</pre> 
+            </div> 
+           </div>
+          </div>&gt; 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">&lt;transaction-support</pre> 
+            </div> 
+           </div>
+          </div>&gt; </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd"> NA </td> 
+         <td class="confluenceTd"> Ability to specify transaction-support at connection-definition level rather than RA level </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">&lt;outbound-resource-adapter</pre> 
+            </div> 
+           </div>
+          </div>&gt; 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">&lt;default-connection-properties</pre> 
+            </div> 
+           </div>
+          </div>&gt; 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">&lt;authentication-mechanism</pre> 
+            </div> 
+           </div>
+          </div>&gt; </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd"> NA </td> 
+         <td class="confluenceTd"> Ability to specify auth-mechanism at connection-definition level rather than RA level </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">&lt;outbound-resource-adapter</pre> 
+            </div> 
+           </div>
+          </div>&gt; 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">&lt;default-connection-properties</pre> 
+            </div> 
+           </div>
+          </div>&gt; 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">&lt;reauthentication-support</pre> 
+            </div> 
+           </div>
+          </div>&gt; </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd"> NA </td> 
+         <td class="confluenceTd"> Ability to specify reauth-support at connection-definition level rather than RA level </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">&lt;outbound-resource-adapter</pre> 
+            </div> 
+           </div>
+          </div>&gt; 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">&lt;default-connection-properties</pre> 
+            </div> 
+           </div>
+          </div>&gt; 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">&lt;properties</pre> 
+            </div> 
+           </div>
+          </div>&gt; </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd"> NA </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">&lt;outbound-resource-adapter</pre> 
+            </div> 
+           </div>
+          </div>&gt; 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">&lt;default-connection-properties</pre> 
+            </div> 
+           </div>
+          </div>&gt; 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">&lt;res-auth</pre> 
+            </div> 
+           </div>
+          </div>&gt; </td> 
+         <td class="confluenceTd"> low-medium </td> 
+         <td class="confluenceTd"> NA </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">&lt;outbound-resource-adapter</pre> 
+            </div> 
+           </div>
+          </div>&gt; 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">&lt;default-connection-properties</pre> 
+            </div> 
+           </div>
+          </div>&gt; 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">&lt;pool-params</pre> 
+            </div> 
+           </div>
+          </div>&gt; </td> 
+         <td class="confluenceTd"> medium </td> 
+         <td class="confluenceTd"> NA </td> 
+         <td class="confluenceTd"> Refer connection-pool related support w.r.t XXX-jdbc.xml </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">&lt;outbound-resource-adapter</pre> 
+            </div> 
+           </div>
+          </div>&gt; 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">&lt;connection-definition-group</pre> 
+            </div> 
+           </div>
+          </div>&gt; </td> 
+         <td class="confluenceTd"> medium </td> 
+         <td class="confluenceTd"> NA </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">&lt;outbound-resource-adapter</pre> 
+            </div> 
+           </div>
+          </div>&gt; 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">&lt;connection-instance</pre> 
+            </div> 
+           </div>
+          </div>&gt; </td> 
+         <td class="confluenceTd"> medium </td> 
+         <td class="confluenceTd"> NA </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="SupportWLDDInContainers-ApplicationClient%28weblogicapplicationclient.xml%29"></a>Application Client (weblogic-application-client.xml)</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Element Name </th> 
+         <th class="confluenceTh"> Effort Level (low/medium/high/unknown) </th> 
+         <th class="confluenceTh"> Glassfish Corresponding Element (if applicable) </th> 
+         <th class="confluenceTh"> Comments </th> 
+         <th class="confluenceTh">&nbsp;</th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> env-entry </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd"> (none) </td> 
+         <td class="confluenceTd"> simple property definitions based on the env-entry-name and env-entry-value </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ejb-ref </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd"> ejb-ref </td> 
+         <td class="confluenceTd"> ejb-ref-name and jndi-name subelements are identical </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> resource-ref </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd"> resource-ref </td> 
+         <td class="confluenceTd"> both have subelements res-ref-name and jndi-name </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> resource-description </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd"> resource-ref? </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> resource-env-description </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd"> resource-env-ref </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ejb-reference-description </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd"> ejb-ref? </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> service-reference-description </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd"> service-ref </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="SupportWLDDInContainers-Application%28weblogicapplication.xml%29"></a>Application (weblogic-application.xml)</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Element Name </th> 
+         <th class="confluenceTh"> Effort Level (low/medium/high/unknown) </th> 
+         <th class="confluenceTh"> Glassfish Corresponding Element (if applicable) </th> 
+         <th class="confluenceTh"> Comments </th> 
+         <th class="confluenceTh">&nbsp;</th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ejb </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore, legacy (CMP) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> xml </td> 
+         <td class="confluenceTd"> medium </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jdbc-connection-pool </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore, deprecated </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> security </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd"> security-role-mapping </td> 
+         <td class="confluenceTd"> Yes </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> application-param </td> 
+         <td class="confluenceTd"> medium </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Yes (but the web container does not support the particular params that could be specified through this element yet) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> classloader-structure </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> listener </td> 
+         <td class="confluenceTd"> medium </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> singleton-service </td> 
+         <td class="confluenceTd"> medium </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> startup </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore, deprecated </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> shutdown </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore, deprecated </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> module </td> 
+         <td class="confluenceTd"> medium </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Yes (but the jms and jdbc do not support the module element that could be specified through this element yet) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> library-ref </td> 
+         <td class="confluenceTd"> medium </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> fair-share-request </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore, work manager related </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> response-time-request </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore, work manager related </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> context-request </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore, work manager related </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> max-threads-constraint </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore, work manager related </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> min-threads-constraint </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore, work manager related </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> capacity </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore, work manager related </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> work-manager </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore, work manager related </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> component-factory-class-name </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> application-admin-mode-trigger </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> session-descriptor </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore (see session-descriptor in weblogic.xml) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> library-context-root-override </td> 
+         <td class="confluenceTd"> medium </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> prefer-application-packages </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore, classloader structure related </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> prefer-application-resources </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore, classloader structure related </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> fast-swap </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ignore </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="SupportWLDDInContainers-JDBCModule%28XXXjdbc.xml%29"></a>JDBC Module (XXX-jdbc.xml)</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Element Name </th> 
+         <th class="confluenceTh"> Effort Level (low/medium/high/unknown) </th> 
+         <th class="confluenceTh"> Glassfish Corresponding Element (if applicable) </th> 
+         <th class="confluenceTh"> Comments </th> 
+         <th class="confluenceTh">&nbsp;</th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> initial-capacity </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd"> steady-pool-size </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> max-capacity </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd"> max-pool-size </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> capacity-increment </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd"> pool-resize-quantity </td> 
+         <td class="confluenceTd"> GF attribute takes care of both scale up/down of pool </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> shrink-frequency-seconds </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd"> idle-timeout-in-seconds </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> connection-creation-retry-frequency-seconds </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd"> connection-creation-retry-interval-in-seconds </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> connection-reserve-timeout-seconds </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd"> max-wait-time </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> test-frequency-seconds </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd"> idle-timeout-in-seconds </td> 
+         <td class="confluenceTd"> Periodic validation is done in Weblogic </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> test-connections-on-reserve </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd"> is-connection-validation-required </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> inactive-connection-timeout-seconds </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd"> Leak tracing + Leak reclaim put together </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> test-table-name </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd"> validation-table-name </td> 
+         <td class="confluenceTd"> The feature should be extended as a SQL query could be given (starting with string SQL), in which case a custom validator should be automatically created and validation_classname should be provided with this custom validator. Simple way is to extend support by parsing the query. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> init-sql </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd"> init-sql </td> 
+         <td class="confluenceTd"> a SQL string or just a table name can be provided here which can be parsed and "select count<img class="emoticon" src="images/icons/emoticons/star_yellow.gif" height="16" width="16" align="absmiddle" alt="" border="0"> from tablename" can be done in GF. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> statement-cache-size </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd"> statement-cache-size </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> seconds-to-trust-an-idle-pool-connection </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd"> Support of validate-atmost-once can be extended. </td> 
+         <td class="confluenceTd"> Seconds to return a connection from the pool before performing a connection validation. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> statement-timeout </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd"> statement-timeout </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> pinned-to-thread </td> 
+         <td class="confluenceTd"> low </td> 
+         <td class="confluenceTd"> associate-with-thread </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> statement-cache-type </td> 
+         <td class="confluenceTd"> medium </td> 
+         <td class="confluenceTd"> None </td> 
+         <td class="confluenceTd"> LRU already implemented in GF. FIXED type not yet implemented. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> remove-infected-connections </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd"> None </td> 
+         <td class="confluenceTd"> When true, physical connection is recreated everytime. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> profile-type </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> None </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jdbc-xa-debug-level </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> None </td> 
+         <td class="confluenceTd"> level of jdbc debugging for xa drivers </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> credential-mapping-enabled </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> None </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> driver-interceptor </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> None </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> identity-based-connection-pooling-enabled </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd"> None </td> 
+         <td class="confluenceTd"> A feature similar to &lt;security-map&gt; in &lt;connector-connection-pool&gt; can be introduced </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> highest-num-waiters </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd"> None </td> 
+         <td class="confluenceTd"> No. of requests that can block threads. More like Pool Wait Queue in GF that is configurable. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> profile-harvest-frequency-seconds </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> None </td> 
+         <td class="confluenceTd"> Harvesting profile data. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ignore-in-use-connections-enabled </td> 
+         <td class="confluenceTd"> high </td> 
+         <td class="confluenceTd"> Flush connection pool feature in GF may be extended </td> 
+         <td class="confluenceTd"> Datasource shutdown even if connections in pool are in use. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> login-delay-seconds </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> None </td> 
+         <td class="confluenceTd"> Delay before each physical connection is created. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="SupportWLDDInContainers-JMSModule%28XXXjms.xml%29"></a>JMS Module (XXX-jms.xml)</h2> <p>Not supported in Glassfish 3.1. For an analysis of how Weblogic JMS descriptor files might be handled by Glassfish, see<br> <a href="WeblogicJMSDescriptor.html" title="WeblogicJMSDescriptor">here</a>.</p> <h4><a name="SupportWLDDInContainers-DeploymentPlan%28plan.xml%29"></a>Deployment Plan (plan.xml)</h2> <p>Advanced feature. Will visit later.</p> <h4><a name="SupportWLDDInContainers-WLDFModule%28weblogicdiagnostics.xml%29"></a>WLDF Module (weblogic-diagnostics.xml)</h2> <p>Advanced feature. Will visit later.</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Sep 30, 2010 by 
+<font color="#0050B2">ramapulavarthi</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

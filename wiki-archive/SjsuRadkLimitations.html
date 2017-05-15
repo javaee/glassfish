@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : SjsuRadkLimitations</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p><a href="./SjsuRadkProjectsummary.html">RADK Project</a></p> 
+     <hr> <h4><a name="SjsuRadkLimitations-DataBaseSchemalimitations"></a>DataBase Schema limitations</h1> 
+     <hr> 
+     <ul> 
+      <li>Composite primary keys are not supported by Radk at the moment.</li> 
+     </ul> 
+     <ul> 
+      <li>We don't recommend using autoincrement primary keys. Although Radk will work for autoincrement primary keys, the end user</li> 
+     </ul> <p>will run into confusion while doing CRUD operations with the autoincrement primary keys.</p> 
+     <ul> 
+      <li>The column names of a table should not have any alien characters like white spaces, $ or any other special charaters.</li> 
+     </ul> <p> For example, if student name is a column in the student table, the valid names for Radk will be,<br> StudentName,<br> studentname,<br> student_name,<br> Student_Name.</p> <p> Some of the invalid representions are shown below,</p> <p> student name,<br> student$name,<br> student*name.</p> <h4><a name="SjsuRadkLimitations-EJBdeploymentIssues"></a>EJB deployment Issues</h1> <p>GlassFish does not allow the session bean, which has the same name as the one already existing in the EJB container to be deployed again. It will throw an error if you try to do this. Assume a session bean with name "StudentFacade" of the EJB project1 was deployed in the GlassFish EJB container. Now, if you try to deploy a session bean with the name "StudentFacade" of the EJB project 2, then GlassFish will throw deployment error since a session bean with the name StudentFacade has already been deployed previosuly. We are not sure why this happens or if it is a GlassFishV2 bug. The only way to overcome this problem is to undeploy the previous project(project1) and deploy the new project(project2)</p> <h4><a name="SjsuRadkLimitations-Entitiesgeneratorlimitations"></a>Entities generator limitations</h1> <p>------</p> 
+     <ul> 
+      <li>Many to Many annotations, which are involved with the join tables(tables that do not have primary key) are not supported.</li> 
+     </ul> 
+     <ul> 
+      <li>No entities/ session beans will be generated for the join tables. This behaviour is same as the entities generation wizard of NetBeans IDE</li> 
+     </ul> 
+     <hr> <p>Web Services and Web pages only support one primary key per table for GET, DELETE and PUT methods</p> 
+     <hr> <p><a href="./SjsuRadkProjectsummary.html">RADK Project</a></p> 
+     <hr> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:49.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

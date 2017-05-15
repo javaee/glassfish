@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : 3.1DirDeployToCluster</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="3.1DirDeployToCluster-GlassFishServerOpenSourceEdition3.1DirectoryDeploymenttoRemoteInstancesandClusters"></a>GlassFish Server Open Source Edition 3.1 - Directory Deployment to Remote Instances and Clusters</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#3.1DirDeployToCluster-GlassFishServerOpenSourceEdition3.1DirectoryDeploymenttoRemoteInstancesandClusters">GlassFish Server Open Source Edition 3.1 - Directory Deployment to Remote Instances and Clusters</a></li> 
+       <li><a href="#3.1DirDeployToCluster-1Introduction">1 Introduction</a></li> 
+       <ul> 
+        <li><a href="#3.1DirDeployToCluster-Achallengeandasolution">A challenge and a solution</a></li> 
+       </ul> 
+       <li><a href="#3.1DirDeployToCluster-2UserExperience">2 User Experience</a></li> 
+       <li><a href="#3.1DirDeployToCluster-3Design">3 Design</a></li> 
+       <li><a href="#3.1DirDeployToCluster-3Nongoals">3 Non-goals</a></li> 
+       <ul> 
+        <li><a href="#3.1DirDeployToCluster-Developeroverrideofdirectorycontentscheck">Developer override of directory contents check</a></li> 
+        <li><a href="#3.1DirDeployToCluster-DirectorydeploymentwithnonhomogeneousOStypes">Directory deployment with non-homogeneous OS types</a></li> 
+       </ul> 
+       <li><a href="#3.1DirDeployToCluster-4Whyachecksum%3F"> 4 Why a checksum?</a></li> 
+      </ul>
+     </div> <h4><a name="3.1DirDeployToCluster-1Introduction"></a>1 Introduction</h1> <p>Developers can deploy apps in expanded directory form, rather than in JAR-format archives. This saves the developer time and effort in building the archive file and it saves GlassFish from having to expand the archive as part of deployment.</p> <p>Historically, GlassFish has not permitted directory deployment to remote instances or clusters. GlassFish 3.1 lifts this restriction.</p> <h4><a name="3.1DirDeployToCluster-Achallengeandasolution"></a>A challenge and a solution</h2> <p>Directory deployment to remote instances does not transfer the files. Rather, it simply tells the remote instance where the directory is. For this to work, the DAS and the remote instances must see the same actual directory when they access the same directory path.</p> <p>To avoid deploying a different file set to an instance, GlassFish will make sure the files in the directory as seen by the DAS are the same as those seen by the instances.</p> <h4><a name="3.1DirDeployToCluster-2UserExperience"></a>2 User Experience</h1> <p>Users do two things to use this feature.</p> 
+     <ol> 
+      <li>Make sure that the full file path provided on the <tt>deploy</tt> command exists on the DAS and on all instances specified by the <tt>--target</tt> option. If the user gives a relative file path, conceptually the corresponding full absolute path is sent to the DAS and to the target instances. The deployed directory must be accessible as the same path on the DAS and all affected instances. Further, the path the DAS and each instance must contain the same files.</li> 
+      <li>Use the <tt>deploy</tt> command (or use the deploy function in the admin console) and specify a directory for the path and the target(s) to which the application is to be deployed.</li> 
+     </ol> <p>If GlassFish determines that the DAS and the instances do not see the same files, it will report an error.</p> <p><b>Some Background</b><br> During any deployment operation, both the DAS and the target instance(s) do some work with the deployed application. GlassFish will try to make sure that the DAS and the instance(s) see the same files when they refer to the deployment directory provided by the user. The user must therefore make sure that the full file path on the <tt>deploy</tt> command exists on the DAS and the instances, and that the files accessible using that path are the same on the DAS and the instances. Often users will accomplish this by using a network file system.</p> <p>The actual technique GlassFish uses to decide whether the DAS and the target instances see the same files is an implementation decision and might change over time. GlassFish is likely to use some heuristic that does not guarantee - but makes it very likely - that the deployed directories are in fact identical.</p> <h4><a name="3.1DirDeployToCluster-3Design"></a>3 Design</h1> <p>We will add a DAS-only supplemental command (for the moment, call it CheckRemoteDirDepl) that runs before DeployCommand.</p> <p>If a directory deployment is requested and a non-DAS target is specified, CheckRemoteDirDepl will build a list of URIs of files in the deployment directory. The URIs will be relative to the directory being deployed and arranged using URI.compareTo. Using URIs, and relative ones at that, removes any platform dependencies in file name formatting for files within the directory.</p> <p>CheckRemoteDirDeploy will then invoke InstanceCheckRemoteDirDeploy on all the targeted instances, passing:</p> 
+     <ul> 
+      <li>the Adler32 checksum of the assembled URI list (see <a href="#3.1DirDeployToCluster-whyChecksum">explanation below</a>),</li> 
+      <li>the path of the directory being deployed expressed as an absolute URI, and</li> 
+      <li>the OS type of the DAS - either Windows or non-Windows.</li> 
+     </ul> <p>InstanceCheckRemoteDirDeploy on each targeted instance will build its own list of URIs in the directory path, exactly as CheckRemoteDirDeploy did. It returns success if the checksum of its own list matches the checksum sent from the DAS, failure if the checksums differ.</p> <p>Back on the DAS, if CheckRemoteDirDeploy detects at least one failure report from a remote InstanceCheckRemoteDirDeploy then it reports failure, preventing the DeployCommand from even starting.</p> <h4><a name="3.1DirDeployToCluster-3Nongoals"></a>3 Non-goals</h1> <h4><a name="3.1DirDeployToCluster-Developeroverrideofdirectorycontentscheck"></a>Developer override of directory contents check</h2> <p>During the review we talked about possibly providing an option on the "deploy" command which would allow a user to bypass the consistency check and do the directory deploy on the requested instances anyway. GlassFish will not support such an override because it seems there is no use case for which this makes sense. If we know the target instances do not have the same files as the DAS when they inventory the directory, only trouble will arise by letting the user force the deployment to proceed and thus knowingly rendering the instances inconsistent.</p> <h4><a name="3.1DirDeployToCluster-DirectorydeploymentwithnonhomogeneousOStypes"></a>Directory deployment with non-homogeneous OS types</h2> <p>GlassFish will not support directory deployment to instances unless the DAS and all instances in the target are of the same OS type. This is why the DAS sends its OS type.</p> <p>Even in URI form, the device part of the path will be different for Windows vs. non-Windows systems with the ":" device separator present in the Windows format. It is out of scope for this feature to try to figure out the correspondence between a device on a Windows system and the mounted file system on a non-Windows system.</p> <p>The first part of InstanceCheckRemoteDirDeploy will check the DAS OS type passed on the command against its own OS type to avoid this problem.</p> <h4><a name="3.1DirDeployToCluster-4Whyachecksum%3F"></a><a name="3.1DirDeployToCluster-whyChecksum"></a> 4 Why a checksum?</h1> <p>The DAS sends a checksum to each instance, rather than the entire inventory of files it can see in the directory, to drastically reduce the size of the network message. The cost of computing the checksum in the DAS and in each target instance is expected to be much lower than the cost of transmitting the URIs themselves - in a much larger network message - to all target instances.</p> <p>We'll use the Adler32 checksum, purportedly much faster and almost as reliable as CRC32.</p> <p>The checksum will be updated with URI.toASCIIString().asBytes() for each relative URI GlassFish finds in the deployed directory.</p> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 25, 2010 by 
+<font color="#0050B2">timq</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

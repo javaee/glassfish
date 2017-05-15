@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : V3OverviewReviewBillShannon</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="V3OverviewReviewBillShannon-OverviewReview"></a>Overview Review</h1> <h4><a name="V3OverviewReviewBillShannon-Document%3AGlassFishv3OverviewFunctionalSpecification"></a>Document: GlassFish v3 Overview Functional Specification</h3> <h4><a name="V3OverviewReviewBillShannon-Reviewer%3ABillShannon"></a>Reviewer: Bill Shannon</h3> <h4><a name="V3OverviewReviewBillShannon-Reviewdate%3A7%2F7%2F2008"></a>Review date: 7/7/2008</h3> <h4><a name="V3OverviewReviewBillShannon-Responsedate%3A"></a>Response date: </h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item </th> 
+         <th class="confluenceTh"> Type </th> 
+         <th class="confluenceTh"> Comment </th> 
+         <th class="confluenceTh"> Response </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> Comment </td> 
+         <td class="confluenceTd"> In section 4.1, I'm glad to see you admit that maven 2 is technically difficult to understand and maintain! I sure wish we had a better choice... </td> 
+         <td class="confluenceTd"> Maven2 has undoubtedly difficulties in terms of user interface and implementation. Our usage is quite simple and if we better choice arise, we should be able to switch relatively easily. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd"> Correction </td> 
+         <td class="confluenceTd"> Under WebTier, you mean "TCK", not "CTS Tests". </td> 
+         <td class="confluenceTd"> OK </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3 </td> 
+         <td class="confluenceTd"> Clarification </td> 
+         <td class="confluenceTd"> Under REST Interface for Administration, I don't understand the difference between the two items you list. </td> 
+         <td class="confluenceTd"> One interface is the simple HTTP web forms style of invocation with all parameters encoded in the request URL parameters. The second interface is a real REST style invocation based on JAX-RS. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4 </td> 
+         <td class="confluenceTd"> Clarification </td> 
+         <td class="confluenceTd"> Under Embeddable GlassFish, bullet 1, does this imply that all use of OSGi APIs must be optional, so that GlassFish can run without an OSGi runtime? </td> 
+         <td class="confluenceTd"> yes, we would like to support such a case even if it reduces the extensibility of the runtime. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5 </td> 
+         <td class="confluenceTd"> Clarification </td> 
+         <td class="confluenceTd"> Under Embeddable GlassFish, bullet 2, I don't understand this. Does this mean you have to be able to run embedded with no domain.xml at all? </td> 
+         <td class="confluenceTd"> Right, people should be able to use a simple set of APIs to programmatically configure an instance of GlassFish and run it with such configuration. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6 </td> 
+         <td class="confluenceTd"> Clarification </td> 
+         <td class="confluenceTd"> Under Embeddable GlassFish, bullet 3, does this imply that every fixed directory, relative file lookup, or file location algorithm must be configurable? </td> 
+         <td class="confluenceTd"> no we will support only a certain set of configurable directories/location, and those locations should be accessible from a centralized Server environment. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 7 </td> 
+         <td class="confluenceTd"> Clarification </td> 
+         <td class="confluenceTd"> Under Embeddable GlassFish, bullet 4, this doesn't apply to the contents of Java EE defined deployment artifacts, does it? </td> 
+         <td class="confluenceTd"> so far, it applies to the location of the deployment descriptors, the static content, the classes and the library files. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 8 </td> 
+         <td class="confluenceTd"> Clarification </td> 
+         <td class="confluenceTd"> You need to fill out section 4.12 on compatibility. It seems that more and more people are assuming they can break compatibility. You need to be clear on exactly what compatibility is required, especially with the structure of existing domains and with applications that use the existing GlassFish-specific APIs such as AMX. </td> 
+         <td class="confluenceTd"> Ok, added </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 08, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:48.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

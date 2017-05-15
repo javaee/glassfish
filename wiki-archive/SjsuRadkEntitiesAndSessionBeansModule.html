@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : SjsuRadkEntitiesAndSessionBeansModule</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p><a href="./SjsuRadkProjectsummary.html">RADK Project</a></p> 
+     <hr> 
+     <div> 
+      <ul> 
+       <li><a href="#SjsuRadkEntitiesAndSessionBeansModule-RadkEJB3.0Generator">Radk EJB 3.0 Generator</a></li> 
+       <ul> 
+        <li><a href="#SjsuRadkEntitiesAndSessionBeansModule-Entities">Entities</a></li> 
+        <li><a href="#SjsuRadkEntitiesAndSessionBeansModule-SessionFacade">Session Facade</a></li> 
+        <li><a href="#SjsuRadkEntitiesAndSessionBeansModule-StatelessSessionBeans">Stateless Session Beans</a></li> 
+       </ul> 
+       <li><a href="#SjsuRadkEntitiesAndSessionBeansModule-SequentialStepsinvolvedinEJB3.0modulegeneration">Sequential Steps involved in EJB 3.0 module generation</a></li> 
+       <ul> 
+        <li><a href="#SjsuRadkEntitiesAndSessionBeansModule-CreatinganewMySQLDBconnection">Creating a new MySQL DB connection</a></li> 
+        <li><a href="#SjsuRadkEntitiesAndSessionBeansModule-GettingthemetadataofDBschema">Getting the metadata of DB schema</a></li> 
+        <li><a href="#SjsuRadkEntitiesAndSessionBeansModule-CreatingEJBfolderstructure">Creating EJB folder structure</a></li> 
+        <li><a href="#SjsuRadkEntitiesAndSessionBeansModule-Generationofentities">Generation of entities</a></li> 
+        <li><a href="#SjsuRadkEntitiesAndSessionBeansModule-Generationofpersistence.xml">Generation of persistence.xml</a></li> 
+        <li><a href="#SjsuRadkEntitiesAndSessionBeansModule-Generationofstatelesssessionbeans">Generation of stateless session beans</a></li> 
+       </ul> 
+      </ul>
+     </div> 
+     <hr> <h4><a name="SjsuRadkEntitiesAndSessionBeansModule-RadkEJB3.0Generator"></a>Radk EJB 3.0 Generator</h1> 
+     <hr> <p>The EJB 3.0 generator generates the entities and session beans for a given MySQL DB schema. This metadata of the selected DB schema is built as a complex data structure using Java Collections during the runtime to avoid the frequent opening and closing of the DB connection. The TopLink persistence unit is created to manage the lifecycle of entities. The name convention for entities is &lt;Tablename&gt;.java. After the successful generation of entities, the generated files are saved in the entities sub folder. Immediately, after the generation of entities, the generation of stateless session beans begins. Initially, a set of remote interfaces are generated by the name of &lt;EntityClassName&gt;FacadeRemote.java. Subsequently, for the generated interfaces, a set of stateless session beans are generated by the name of &lt;EntityClassName&gt;Facade.java The below sections will give a brief introductiona about entities and stateless session beans and explain how these components are generated in Radk.</p> <p>--------------------------</p> <h4><a name="SjsuRadkEntitiesAndSessionBeansModule-Entities"></a>Entities</h3> <p>Entities are not just Plain old java objects. They define the object-relational mapping through annotations. Every table in the relational database has a corresponding entity class. Each column in the table is mapped into an instance variable in the entity class; and the setter and getter methods for that instance variable are defined. The attributes of the table such as primary key, foreign key, and data types are defined through annotations. In addition, several object relational mapping rules, namely, one to many, many to one, and many to many are defined through annotations. The entity manager instance of the persistence unit is used to query over entities and do the CRUD operations. In summary, any persistence unit that implements the Java Persistence API of EJB 3.0 acts as a container for entities and manages their life cycle through the entity manager. RADK tool kit uses Oracle's TopLink persistence unit.</p> <p>--------------------------------</p> <h4><a name="SjsuRadkEntitiesAndSessionBeansModule-SessionFacade"></a>Session Facade</h3> <p>The session facade is a higher-level business component that contains and centralizes complex interactions between lower-level business components. A Session Facade is implemented as a session enterprise bean. If the client needs to invoke the session bean from a different JVM, then the session facade should be declared as a remote interface, which is handled via remote method invocation (RMI).<br> --------------------------------</p> <h4><a name="SjsuRadkEntitiesAndSessionBeansModule-StatelessSessionBeans"></a>Stateless Session Beans</h3> <p>A stateless session bean is a distributed object that does not have a conversational state associated with it, thus allowing concurrent access to the bean. There is no dependency between two requests; and as a result, the contents of instance variables are not preserved across method calls. In addition, the stateless session beans provide more scalability than stateful session beans. Generally, RESTful Web Services are based on stateless architecture; and the generated JEE application by RADK should be more scalable. As a result, we chose stateless session beans over stateful session beans<br> ------------------------------------</p> <h4><a name="SjsuRadkEntitiesAndSessionBeansModule-SequentialStepsinvolvedinEJB3.0modulegeneration"></a>Sequential Steps involved in EJB 3.0 module generation</h1> <p>---------------------------------<br> This sub-system facilitates the code generation of entities and session beans. The algorithm for this code generation process involves the following steps:(text-align:justify<img class="emoticon" src="images/icons/emoticons/wink.gif" height="20" width="20" align="absmiddle" alt="" border="0"># Creating a new MySQL DB connection # Getting the metadata of DB schema # Creating Folder structure for EJB module # Generation of entities # Generation of persistence.xml # Generation of session beans%%</p> <p>Each one of the above steps is explained in detail in the following sections.<br> ----------</p> <h4><a name="SjsuRadkEntitiesAndSessionBeansModule-CreatinganewMySQLDBconnection"></a>Creating a new MySQL DB connection </h3> <p>The driver class, com.mysql.jdbc.Driver is used to connect to MySQL. RADK tool kit requires the parameters, namely, server name, username, password, port number, and database name to represent a valid DB connection. The syntax for a valid db connection is jdbc:mysql://(servername:(portnumber)/(database name)username. Once a db connection is created and validated for the first time, the DB pool and the JNDI name for this DB resource is created in the GlassFish server through its asadmin commands. Classes, namely, Runtime and Process, which are present in the java.lang package, facilitate the execution of asadmin command during runtime. GlassFish maintains the JDBC resources such as DB pools and their corresponding JNDI names in its domain.xml file. The TopLink persistence unit, which is coupled with the GlassFish server, uses the JNDI name of a specific DB connection to perform the database transactions during runtime. Since the creation of DB pool and JNDI name happens internally in RADK tool kit, only one JNDI name is created for a particular DB pool resource. If the user chooses the same DB connection for creating a new RADK project, the existing JNDI name will be used.<br> --------------------</p> <h4><a name="SjsuRadkEntitiesAndSessionBeansModule-GettingthemetadataofDBschema"></a>Getting the metadata of DB schema</h3> <p>For generating the entities, session beans, RESTful Web Services, and Web UI, we need the metadata of DB schema such as table names, column names of the table, primary keys, foreign keys, column attributes, parent tables, and child tables. These details have to be present in a metadata DB schema of MySQL. The metadata tables of MySQL are present in the information_schema. Once the user selects a DB connection for creating a new RADK project, the RADK tool kit obtains all the metadata information of the selected DB schema from information_schema and stores all the information in complex data structures such as, ArrayList, LinkedList, TreeSet, HashMap, and TreeMap. RADK is an intelligent tool kit because in order to avoid the opening and closing of DB connection many number of times during the code generation process, it stores all the metadata in the collections data structure and allows the code generation classes to access the information from the collections. In this way, the performance is heavily boosted during runtime.</p> <p>Utility classes of RADK, namely, DBManager, Table, and Column, which are present in the radk.utils package, contribute in creating complex data structures in which the metadata of the DB schema is saved. Their functionality is explained in the following sections.</p> <p><em>Table class:</em> Every table in the db schema is represented by a Table class, which is a POJO. This class has an instance boolean variable called isJoin, which indicates whether it is a join table or not. A table that contains only the mapping data without any primary key is called as join table. Entities, session beans, RESTful web services, and Web UI will not be generated for the join table.</p> <p><em>Column class:</em> Every column in the table has attributes such as datatype, nullable, key type, referenced table name, referenced table name, and referenced column name. Column object is created for every column in the table with the help of a POJO Column class.</p> <p><em>DBManager class:</em> This utility class has various static methods, which perform the following actions: 1) validating a particular MySQL DB connection; 2) opening and closing of a MySQL DB connection; 3) querying the COLUMNS and KEY_COLUMN_USAGE tables of the information_schema database of the MySQL to obtain the metadata of the selected db schema; and 4) building complex data structures such as List, Set, and Map for saving the metadata. These data structures are represented as static variables in the Parameters class.<br> </p>
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Some of the data structures initialized by the DB Manager are: 
+	
+* public static Map&lt;String, List&lt;Column&gt;&gt; columnDetailsOfTable = new TreeMap&lt;String, List&lt;Column&gt;&gt;();
+* public static Map&lt;String, List&lt;Table&gt;&gt; childTables = new TreeMap&lt;String, List&lt;Table&gt;&gt;();
+* public static Map&lt;String, Map&lt;String, List&lt;String&gt;&gt;&gt; oneToManyMaps = new TreeMap&lt;String, Map&lt;String, List&lt;String&gt;&gt;&gt;();
+* public static Map&lt;String, List&lt;Table&gt;&gt; parentTables = new TreeMap&lt;String, List&lt;Table&gt;&gt;();
+* public static Map&lt;String, Map&lt;String, Map&lt;String, String&gt;&gt;&gt; manyToOneMaps = new TreeMap&lt;String, Map&lt;String, Map&lt;String, String&gt;&gt;&gt;();</pre> 
+       </div> 
+      </div>
+     </div>.<br> ---------------------<p></p> <h4><a name="SjsuRadkEntitiesAndSessionBeansModule-CreatingEJBfolderstructure"></a>Creating EJB folder structure</h3> <p>Although RADK is independent of any IDE, it creates a NetBeans project so that it will be easy for the end user to import the created projects into NetBeans IDE and do any enhancement if necessary. As a result, the EJB folder structure of NetBeans is followed. The naming convention of EJB project is given by appending the acronym EJB to the RADK project name given by the user. For example, if the user gives the project name as foo, the EJB project name will be fooEjb. After creating the EJB project folder, other folders, namely, dist, src, test, and nbproject are created. Under src folder, packages, namely, java.entities and java.sessionbeans are created to save the generated entities and session beans. In addition, the conf folder is created to save the generated persistence.xml file for entities. Under the nbproject folder, necessary folders and files required for building the EJB project are created.<br> -----------------</p> <h4><a name="SjsuRadkEntitiesAndSessionBeansModule-Generationofentities"></a>Generation of entities</h3> <p>Entities are generated for the selected tables. The sequence of steps involved in the generation of entities are as follows: 1) mapping MYSQL data type to Java data type; 2) generation of import statements; 3) generation of named queries; 4) class header generation; 5) generation of column annotations; 6) generation of one to many annotations; 6) generation of many to one annotations; 7) generation of constructor; 8) generation of get and set methods; and 9) generation of equals(), hashcode(), and toString() methods. All the classes involved in the generation of entities are present in the radk.ejbgeneratormodule. The FileManager class present in the radk.utils package is responsible for creating folders, files, writing the code into files, saving the files, and copying the files. The code snippet, which represents the overall algorithm for generating entities, is shown below,</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">StringBuilder sb = new StringBuilder();
+for (Table t : Parameters.selectedTableNames) {sb.delete(0, sb.length());
+sb.append(CommentGenerator.commentGenerator(t.getTableName())); sb.append(ImportStatementsGenerator.importStatementGenerator(t.getTableName()));
+sb.append(NamedQueryGenerator.namedQueryGenerator(t.getTableName()));
+sb.append(ClassHeaderGenerator.classHeaderGenerator(t.getTableName()));
+sb.append(ColumnAnnotationGenerator.columnAnnotationGenerator(t.getTableName()));
+          sb.append(OneToManyAnnotationGenerator.oneToManyAnnotationGenerator(t.getTableName()));
+             sb.append(ManyToOneAnnotationGenerator.manyToOneAnnotationGenerator(t.getTableName()));
+sb.append(ConstructorGenerator.generateConstructor(t.getTableName()));
+sb.append(GetAndSetMethodsGenerator.getAndSetGenerator(t.getTableName()))                sb.append(EqualsHashcodeToStringGenerator.equalsHashCodeToStringGenerator(t.getTableName()));
+absEntityFileNamePath = new File(entitiesFolder + "/" + EntityFileName.GetEntityFileName(t.getTableName()));
+genStatus = FileManager.writeFile(absEntityFileNamePath, sb.toString());
+if (genStatus) {continue;
+} else if (!genStatus) 
+{ throw new EntityClassFileIOException();
+}</pre> 
+       </div> 
+      </div>
+     </div> <p><em><b>Mapping MYSQL data type to Java data type</b></em></p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">MySQL data type	  EJB Data type	    RESTful WebServices Data type
+
+varchar	             String	       String
+char	             String	       String
+int	             Integer	       Integer
+integer	             Integer	       Integer
+smallint	     Short	       Short
+tinyint	             Short	       Short
+mediumint	     Integer	       Integer
+bigint	             BigInteger	       BigInteger
+text	             String	       String
+tinytext	     String	       String
+longtext	     String	       String
+mediumtext	     String	       String
+float	             Float	       Float
+decimal	             BigDecimal	       BigDecimal
+double	             Double	       Double
+real	             Double	       Double
+date	             java.util.Date    java.sql.Date
+datetime	     java.util.Date    java.sql.Timestamp
+timestamp	     java.util.Date    java.sql.Timestamp
+time	             java.util.Date    java.sql.Time
+boolean	             Boolean	       Boolean
+bit	             Boolean	       Boolean
+blob	             byte[]	       byte[]
+mediumblob	     byte[]	       byte[]
+longblob	     byte[]	       byte[]
+tinyblob	     byte[]	       byte[]
+set	             String	       String
+enum	             String	       String</pre> 
+       </div> 
+      </div>
+     </div> <p><em><b>Generation of import statements</b></em> <br> Necessary import statements, namely, import java.io.Serializable, import javax.persistence.<b>, import java.util.</b>, and import java.math.*, are generated by the ImportStatementsGenerator class.</p> <p>''__ <br> Generation of named queries__''<br> Named query in an entity class is a static query that is represented in JPQL (Java Persistence Query language). NamedQueryGenerator class of RADK generates the necessary named queries for entities. The code snippet of a generated named query sample is shown below,</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@NamedQueries({@NamedQuery(name= "Person.findAll",
+query = "SELECT p FROM Person p"),@NamedQuery(name= "Person.findByPersonID",
+query = "SELECT p FROM Person p WHERE p.personID= :personID"),</pre> 
+       </div> 
+      </div>
+     </div> <p><em><b>Generation of column annotations</b></em></p> <p>The ColumnAnnotationGenerator class of RADK's EJB generator module generates the necessary annotations for each column of a table in the given DB schema. These columns act as instance variables of an entity class. The below code snippet shows the annotation generated for the primary key column named PersonID of the person table.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Id
+@Basic(optional = false)
+@Column(name =  "PersonID")
+private Integer personID;</pre> 
+       </div> 
+      </div>
+     </div> <p><em><b>Generation of one to many annotations</b></em><br> One to many annotations of an entity class represent the parent-child relationship between entities. For example, the Department and Employee tables in any DB schema have a parent-child relationship between them. The DepartmentID primary key of Department table will act as a foreign key in the Employee table. As a result, the Department entity class will have a one to many relationships, which is represented as</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@OneToMany(cascade = CascadeType.ALL, mappedBy ="departmentID")
+private Collection&lt;Employee&gt; employeeCollection;</pre> 
+       </div> 
+      </div>
+     </div> <p>__''<br> Generation of many to one annotation''__<br> Many to one annotations of an entity class represent the child-parent relationship between entities. For example, the Employee and Department tables in any DB schema have a child-parent relationship between them. Since there will be many employees in a single department, the Employee table has a many to one relationship. The following code snippet shows the many to one relationship in the Employee entity class,</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@JoinColumn(name="DepartmentID", referencedColumnName="DepartmentID")
+@ManyToOne
+private Department departmentID;</pre> 
+       </div> 
+      </div>
+     </div> <p>''__<br> Generation of constructor __''<br> Every Entity class should have a constructor with its primary key instance variable as a parameter for the constructor. The ConstructorGenerator class of RADK generates the constructor for the entities. For example, if EmployeeID is the primary key of the Employee table, the constructor of the Employee entity class is represented as,</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Public Employee(Integer employeeID){
+this.employeeID=employeeID;
+}</pre> 
+       </div> 
+      </div>
+     </div> <p> <em><b>Generation of setter and getter methods</b></em></p> <p>All the instance variables in an entity class have getter and setter methods, which is similar to that of a POJO. The GetAndSetMethodsGenerator class of RADK generated the getter and setter methods for an entity class. The code snippet for the same is shown below,</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">public void setGreetingCategoryID(Greetingcategory greetingCategoryID) {
+this.greetingCategoryID=greetingCategoryID;}
+public Greetingcategory getGreetingCategoryID( ) {
+return greetingCategoryID;}</pre> 
+       </div> 
+      </div>
+     </div> <p>''__<br> Generation of equals, hashcode and toString methods__''<br> Entity classes override the equals, hashcode, and toString methods of java.lang.Object. The EqualsHashcodeToStringGenerator class of RADK overrides these methods for an entity class. The code snippet for the same is shown below,</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Override
+ public int hashCode() {
+int hash = 0;
+hash += (greetingCategoryID!= null ? greetingCategoryID.hashCode() : 0);
+return hash;
+}
+@Override
+public boolean equals(Object object) {
+// TODO: Warning - this method won't work in the case the id fields are not set
+if (!(object instanceof Greetingcategory)) {
+ return false;
+}
+Greetingcategory other = (Greetingcategory) object;
+ if ((this.greetingCategoryID == null &amp;&amp; other.greetingCategoryID != null) || (this.greetingCategoryID != null &amp;&amp; !this.greetingCategoryID.equals(other.greetingCategoryID))) {
+return false;
+}
+return true;
+}
+@Override
+public String toString() {
+ return "entities.Greetingcategory[greetingCategoryID="+greetingCategoryID+"]";
+}
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>----------------</p> <h4><a name="SjsuRadkEntitiesAndSessionBeansModule-Generationofpersistence.xml"></a>Generation of persistence.xml</h3> <p>The persistence unit of the generated EJB 3.0 module of RADK is represented in the form of a XML file called persistence.xml file. The Entity Manager API of the persistence unit handles the persistence context, which is a group of entity instances. The persistence.xml file contains attributes such as persistence unit name, transaction type, persistence provider name, and the name of the entity classes managed by the persistence unit. In addition, its JTA (Java Transaction API) attribute has the JNDI name of the data source, which is present in the JDBC resources of the GlassFish Application server. A sample persistence.xml file generated by the PersistenceUnit class of RADK is shown below<br> ,</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;persistence version="1.0" xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd"&gt;
+&lt;persistence-unit name="jcapsEjbPU" transaction-type="JTA"&gt;
+&lt;provider&gt;oracle.toplink.essentials.PersistenceProvider&lt;/provider&gt;
+&lt;jta-data-source&gt;jdbc/localhost3306marvelgreetingsroot&lt;/jta-data-source&gt;
+&lt;class&gt;entities.Favorite&lt;/class&gt;
+&lt;class&gt;entities.Greetingcategory&lt;/class&gt;
+&lt;class&gt;entities.Greetingreceived&lt;/class&gt;
+&lt;class&gt;entities.Greetingsection&lt;/class&gt;
+&lt;class&gt;entities.Greetingsent&lt;/class&gt;
+&lt;class&gt;entities.Person&lt;/class&gt;
+&lt;class&gt;entities.Prizes&lt;/class&gt;
+&lt;class&gt;entities.User&lt;/class&gt;
+&lt;exclude-unlisted-classes&gt;true&lt;/exclude-unlisted-classes&gt;
+&lt;properties/&gt;
+&lt;/persistence-unit&gt;
+&lt;/persistence&gt;</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="SjsuRadkEntitiesAndSessionBeansModule-Generationofstatelesssessionbeans"></a>Generation of stateless session beans</h3> <p>The SessionBeansGenerator class generates the remote session façade interfaces and session beans. The session façade interface declares create, edit, find, delete, and find all methods. The session bean that implements the session façade interface defines these methods. The entity manager instance in the session beans is used to perform the CRUD operations. A sample session façade interface and session beans, which are generated by the RADK tool kit is shown below,</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">package sessionbeans;
+import entities.Favorite;
+import java.util.List;
+import javax.ejb.Remote;
+@Remote
+public interface FavoriteFacadeRemote {
+void create(Favorite favorite);
+void edit(Favorite favorite);
+void remove(Favorite favorite);
+Favorite find(Object id);
+List&lt;Favorite&gt; findAll();
+}</pre> 
+       </div> 
+      </div>
+     </div> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">package sessionbeans;
+import entities.Greetingcategory;
+import java.util.*;
+import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+@Stateless
+public class GreetingcategoryFacade implements GreetingcategoryFacadeRemote {
+@PersistenceContext
+private EntityManager em
+public void create(Greetingcategory greetingcategory) {
+em.persist(greetingcategory);
+}
+public void edit(Greetingcategory greetingcategory) {
+em.merge(greetingcategory);
+}
+public void remove(Greetingcategory greetingcategory) {
+em.remove(em.merge(greetingcategory));
+}
+public Greetingcategory find(Object id) {
+return em.find(Greetingcategory.class, id);
+}
+public List&lt;Greetingcategory&gt; findAll() {
+return em.createQuery("select object(o) from Greetingcategory as o").getResultList();
+}
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>—<br> <a href="./SjsuRadkProjectsummary.html">RADK Project</a></p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:49.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

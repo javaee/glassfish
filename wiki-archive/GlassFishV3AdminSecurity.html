@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFishV3AdminSecurity</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p><a href="GlassFishV3SubProjects.html" title="GlassFishV3SubProjects">Back to other Admin Subprojects </a> <a href="GlassFishV3AdministrationStartingPoint.html" title="GlassFishV3AdministrationStartingPoint">Back to Administration Starting Point</a></p> 
+     <div> 
+      <ul> 
+       <li><a href="#GlassFishV3AdminSecurity-Introduction">Introduction</a></li> 
+       <ul> 
+        <li><a href="#GlassFishV3AdminSecurity-MasterPasswordRelatedChanges">Master Password Related Changes</a></li> 
+        <ul> 
+         <li><a href="#GlassFishV3AdminSecurity-Details">Details</a></li> 
+        </ul> 
+        <li><a href="#GlassFishV3AdminSecurity-ProvisionofaLocalPassword">Provision of a Local Password</a></li> 
+        <ul> 
+         <li><a href="#GlassFishV3AdminSecurity-Footnotes">Footnotes</a></li> 
+        </ul> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="GlassFishV3AdminSecurity-Introduction"></a>Introduction</h1> <p>This page provides some of the projects we have done in administration security area.</p> <h4><a name="GlassFishV3AdminSecurity-MasterPasswordRelatedChanges"></a>Master Password Related Changes</h2> <p>First off, please make yourself familiar with the terminology by referring to <a href="http://wiki.glassfish.java.net/attach/GlassFishAdministrationPages/aliased-passwords.html">this page</a>. Thus, <b>Master Password</b> is the password that locks the keystore and truststore that server needs to open, should it need to get the private key(s) and/or access the certs of other servers it trusts. It should be noted that this discussion applies to JKS based stores only since we haven't provided an NSS support yet, for V3. And I admit, this area is rather confusing because of players like JSSE system properties involved. </p> <p>So, the problem is how the master password that unlocks the stores should be made available to the server's runtime. It should be as secure as possible, but at the same time, different services in server runtime need to get an "easy" programmatic access to the password in clear, so they can do what they want with the store.</p> <p>Following should be kept in mind:</p> 
+     <ol> 
+      <li>There is only one keystore/truststore pair for the server from a sysadmin standpoint. Sysadmins prefer to manage as few passwords as possible. For the time being, ignoring the crypto accelerator passwords, there is only one master password that sysadmins need to know <sup><a href="#GlassFishV3AdminSecurity-refGlassFishV3AdminSecurity1">1</a></sup>.</li> 
+      <li>We have two ways to start the servers: asadmin start-domain and java -jar glassfish.jar and this should work in both the cases.</li> 
+     </ol> <h4><a name="GlassFishV3AdminSecurity-Details"></a>Details</h3> 
+     <ol> 
+      <li>asadmin arranges for securely passing the master password from asadmin process (VM1) to the actual server VM (VM2). We use stdin for this. For this purpose, an option <em>-read-stdin true/false</em> is introduced on server main class: ASMain. This makes an Init Service (v3/core/kernel/../admin/IdmService.java) in server read the stdin and get the password securely from there. Similar things happen in case of java -jar, if you use -read-stdin true option.</li> 
+      <li>IdmService also implements a contract called IdentityManagement that everyone else should Inject into their implementation.</li> 
+      <li>IdmService verifies that the master password is correct, by opening the stores (keystore.jks).</li> 
+      <li>Per security team's advice, it also sets up the default JSSE System Properties to this password:</li> 
+     </ol> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">System.setProperty(SystemPropertyConstants.KEYSTORE_PASSWORD_PROPERTY, masterPassword);
+        System.setProperty(SystemPropertyConstants.TRUSTSTORE_PASSWORD_PROPERTY, masterPassword);</pre> 
+       </div> 
+      </div>
+     </div> <p>It's expected that subsystems use IdentityManagement contract rather than JSSE properties to get the master password. This is to allow for changes in underlying storage mechanism. IdentityManagement (currently supports only JKS) will be enhanced to support NSS if required.</p> <h4><a name="GlassFishV3AdminSecurity-ProvisionofaLocalPassword"></a>Provision of a Local Password</h2> <p>To allow local commands to work compatibly with v2, without the need to authenticate to the server,<br> we introduced a special "local password". When the server starts up, it uses SecureRandom to<br> generate a cryptographically unique "password" (just a sequence of 40 bytes). This password is<br> stored in the file <tt>config/local-password</tt> in the domain directory that is protected so that only the owner of the domain<br> can read the file. The intent is that only the owner of the domain, running on the same machine<br> as the server, can access the file. The password is stored as a hex string.</p> <p>Commands that operate locally, such as stop-domain, read the local password from the file and<br> use it in the authentication information sent to the server. If the server gets a request with<br> authentication information that includes a password that matches the local password (which effectively<br> "can't" happen by accident or by guessing) the request is allowed. (The user name is not checked.)</p> <p>The effect is that commands executing on the same machine as the server, and executing as the same<br> user who owns the server, can authenticate to the server using this local password without ever<br> having to prompt the user for a password.</p> <p>A few notes about the current implementation:</p> 
+     <ul> 
+      <li>The local password is regenerated every time the server starts.</li> 
+      <li>The local password file is never <b>read</b> by the server so any changes to the file can't compromise security.</li> 
+      <li>If the local password file can't be written by the server, no password is stored, effectively disabling this feature.</li> 
+     </ul> <h4><a name="GlassFishV3AdminSecurity-Footnotes"></a>Footnotes</h3> <p><a name="GlassFishV3AdminSecurity-1"></a> There are ways to deal with this password in terms of how to store it for unattended boots (the so-called "master-password" file in server's config folder) etc. See <a href="http://docs.sun.com/app/docs/doc/820-4332/create-domain-1?a=view#Options">asadmin create-domain options</a> for details.<br> <a name="GlassFishV3AdminSecurity-2"></a> This obsoletes the IdentityManager class that was used earlier (in V2).</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 02, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:44.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

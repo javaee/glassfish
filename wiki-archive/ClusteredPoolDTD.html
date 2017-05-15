@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : ClusteredPoolDTD</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="ClusteredPoolDTD-ChangestoConnectionPoolConfigurationtoSupportClusterdPools"></a>Changes to Connection Pool Configuration to Support ClusterdPools</h1> <h4><a name="ClusteredPoolDTD-OriginalRequest%3A18Aug2006."></a>Original Request: 18 Aug 2006.</h2> <p>&lt;pre&gt;</p> <p>&gt; attributes :<br> &gt; pool-name<br> &gt; the pool-id associated with the resource.<br> &gt; In case of clustered-pool, it can be a comma separated<br> &gt; list of available connection pools.<br> &gt;</p> <p>643a650,656</p> <p>&gt; attributes<br> &gt;<br> &gt; pool-name<br> &gt; the pool-id associated with the resource.<br> &gt; In case of clustered-pool, it can be a comma separated<br> &gt; list of available connection pools.<br> &gt;</p> <p>Comments : This is only a description change. <br> Now pool-name can take comma-separated connection-pool ids. The DTD has no impact as such.</p> <p>------------------------------------------------------------------------------------------------------</p> 
+     <ul> 
+      <li>DTD change associated with introduction of sun-specific-property</li> 
+     </ul> <p>2569a2583,2621</p> <p>&gt; sun-specific-property<br> &gt; To enable application server specific connection pool features.<br> &gt; (See &lt;sun-specific-property&gt;)<br> &gt;<br> &gt; The following are the names and corresponding description for these<br> &gt; properties<br> &gt;<br> &gt; LeakTracing<br> &gt; To aid user in detecting potential connection leaks by<br> &gt; application.<br> &gt;<br> &gt; ConnectionLeakTimeout<br> &gt; The period after which connection is considered to<br> &gt; be leaked.<br> &gt;<br> &gt; ConnectionCreationRetry<br> &gt; To retry connection creation for specific number of<br> &gt; times, at specified intervals<br> &gt;<br> &gt; ConnectionCreationRetryAttempts<br> &gt; The number of attempt to create a new connection<br> &gt; when requested by application<br> &gt;<br> &gt; ConnectionCreationRetryInterval<br> &gt; The time interval between successive retry to create<br> &gt; a connection<br> &gt;<br> &gt; ValidateAtmostPeriod<br> &gt; Validates atmost once in the specified time-interval<br> &gt;<br> &gt; StatementTimeout<br> &gt; Sets the timeout property of a connection to enable<br> &gt; termination of abnormally long running queries.<br> &gt;<br> &gt; PollInterval<br> &gt; The time interval between successive polling of failed node.<br> &gt; Applicable only for clustered pool.<br> &gt;</p> <p>2725c2777<br> &lt; &lt;!ELEMENT jdbc-connection-pool (description?, property*)&gt;<br> —</p> <p>&gt; &lt;!ELEMENT jdbc-connection-pool (description?, sun-specific-property* property*)&gt;</p> <p>2762a2815,2849</p> <p>&gt; sun-specific-property<br> &gt; To enable application server specific connection pool features.<br> &gt; (See &lt;sun-specific-property&gt;)<br> &gt;<br> &gt; The following are the names and corresponding description for these<br> &gt; properties<br> &gt;<br> &gt; LeakTracing<br> &gt; To aid user in detecting potential connection leaks by<br> &gt; application.<br> &gt;<br> &gt; ConnectionLeakTimeout<br> &gt; The period after which connection is considered to<br> &gt; be leaked.<br> &gt;<br> &gt; ConnectionCreationRetry<br> &gt; To retry connection creation for specific number of<br> &gt; times, at specified intervals<br> &gt;<br> &gt; ConnectionCreationRetryAttempts<br> &gt; The number of attempt to create a new connection<br> &gt; when requested by application<br> &gt;<br> &gt; ConnectionCreationRetryInterval<br> &gt; The time interval between successive retry to create<br> &gt; a connection<br> &gt;<br> &gt; ValidateAtmostPeriod<br> &gt; Validates atmost once in the specified time-interval<br> &gt;<br> &gt; PollInterval<br> &gt; The time interval between successive polling of failed node.<br> &gt; Applicable only for clustered pool.<br> &gt;</p> <h4><a name="ClusteredPoolDTD-Responsefromkm105526@dev.java.neton18Aug2006."></a>Response from km105526@dev.java.net on 18 Aug 2006.</h2> 
+     <ul class="alternate" type="square"> 
+      <li>the jdbc-resource and connector-resource are the elements that<br> have pool-name as an attribute and that contains the value of<br> the name of the jdbc/connector-connection-pool defined in the<br> same config. So, in effect, you are suggesting changing the<br> description of the "pool-name" attribute from this, to a list<br> names that are comma separated. Is that right?</li> 
+     </ul> 
+     <ul class="alternate" type="square"> 
+      <li>if yes, then what are the implications of the same on the creation<br> of jdbc-resource itself? For example, will the following kind<br> of config now be seen in domain.xml:</li> 
+     </ul> <p>resources<br> ..<br> jdbc-resource jndi-name="jdbc/clustered-pool" pool-name="jcp1,jcp2" .../</p> <p> jdbc-connection-pool name="jcp1" .../<br> jdbc-connection-pool name="jcp2" .../</p> <p>/resources</p> 
+     <ul class="alternate" type="square"> 
+      <li>if yes, then this is not a change in the description alone. It gives me<br> an impression that you are using existing infrastructure to expand<br> the relationship between a resource and connection-pool. Currently, the<br> relationship is one-&gt;one and you are extending it to be one-&gt;many.<br> Is that right, or am I missing something?</li> 
+     </ul> 
+     <ul class="alternate" type="square"> 
+      <li>this is most likely going to complicate the behavior of --cascade option on<br> delete-jdbc/connector-connection-pool commands. Can you give a little<br> more thought to it? This is of course, if above is correct.</li> 
+     </ul> 
+     <ul class="alternate" type="square"> 
+      <li>Secondly, why do you need a &lt;sun-specific-property&gt; which is just<br> same as &lt;property&gt; element? Why can't we reuse &lt;property&gt;? After all,<br> &lt;property&gt; was designed to take care of vendor specific configuration<br> options.</li> 
+     </ul> <h4><a name="ClusteredPoolDTD-Lloyd%27sResponse"></a>Lloyd's Response</h2> <p>From an API (eg AMX) perspective, I strongly dislike comma-separated lists of values. It forces the user to do an "all or none" whack of the value eg use a String[]. It forces the AMX code to parse the value to provide a decent API, which further couples the code:</p> <p>String[] getPoolNames(); &lt;= attribute must be parsed.</p> <p>Also, we typically are lax about saying whether the following are all equivalent. Are these the same, or not?</p> <p>{p1,p2,p3}</p> 
+     <div class="error">
+      <span class="error">Unknown macro: {p1, p2, [3}</span> 
+     </div> <p>{p1,p2, p3}<br> {p1,p2, p3}</p> <p>What about<br> {p1,,p2,p3}</p> <p>&lt;/pre&gt;</p> 
+     <hr> {p1,p2,p3}<br> {p1,p2,p3}<br> <br> Whatabout<br> {p1,,p2,p3}<br> <br> &lt;/pre&gt;<br> ----color:purple;OldURLread-only:<a href="./ClusteredPoolDTD.html">http://wiki.glassfish.java.net/Wiki.jsp?page=ClusteredPoolDTD</a>%%<br> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:48.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

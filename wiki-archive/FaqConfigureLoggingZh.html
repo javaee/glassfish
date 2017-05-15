@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : FaqConfigureLoggingZh</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="FaqConfigureLoggingZh-%E5%A6%82%E4%BD%95%E9%85%8D%E7%BD%AE%E6%97%A5%E5%BF%97%E8%AE%B0%E5%BD%95%EF%BC%9F"></a>如何配置日志记录？</h2> <p>Glassfish 使用 Java java.util.logging 系统作为其所有日志记录的基础。有关 java.util.logging 的更多信息，请参阅相应的 JDK 文档。</p> <p>配置 Glassfish 日志记录所用的主要界面是管理控制台中的 "Application Server" -&gt;"日志记录"选项卡。</p> <p>"日志记录"选项卡本身包含两个选项卡："常规"和"日志级别"。</p> <p>"常规"选项卡用于配置将日志写入哪些文件、是否使用系统日志，等等。</p> <p>在"常规"选项卡上，您可能需要自定义的最常用属性包括"日志文件"、"文件轮转限制"或"文件轮转时间限制"。</p> <p>"日志文件"属性告知服务器应为系统日志文件使用什么文件名。</p> <p>"文件轮转限制"告知服务器在文件达到多大后才会重命名当前日志文件并创建新的日志文件。单位是字节数，因此 2000000 表示 2 MB 文件。</p> <p>"文件轮转时间限制"告知服务器在文件经过多长时间后才会创建新的文件。单位是分钟数，因此 60 表示每隔一小时创建一个新的日志文件。请注意，无论文件大小是多大，"时间限制"都会轮转文件。</p> <p>"日志级别"选项卡用于更改服务器内日志记录的级别。</p> <p>虽然开发社区的惯例是按记录程序所用的类名来命名其记录程序，但是 Glassfish 开发者将记录程序合并到子系统中。例如，"Web 容器"类别包含嵌入式 Tomcat 容器和 JSP 编译程序内的所有类，以及其他内部 Web 容器类。</p> <p>使用下拉式列表可以选择每个子系统的日志记录的相应级别。缺省值为 INFO。FINEST 是日志记录的最高级别，SEVERE 是最粗糙的级别，OFF 将完全关闭该子系统的日志记录。</p> <p>这些更改会立即生效，并可在运行的容器中使用以便动态更改级别。</p> <p>在此特别要注意的是页面底部的"属性"部分。</p> <p>可以使用这些属性微调整日志记录，特别是更改您自己的类的日志记录级别。</p> <p>如果您在自己的应用程序中使用 java.util.logging 系统，则可以在此添加属性，以便直接影响您的记录程序。</p> <p>假定您的所有类都是由 com.example 域派生的，并假定您按类名命名所有记录程序。</p> <p>如果添加名为 com.example 且值为 INFO 的属性，则会将所有记录程序设置为 INFO 级别。</p> <p>现在，如果服务器上有 Servlet 问题，则可能是 com.example.mywebapp.BuggyServlet。</p> <p>在运行的服务器上，只需添加名为 com.example.mywebapp.BuggyServlet 且值为 FINE 的新属性，BuggyServlet 中的任何新日志消息现在都将转发到日志中。如果不再需要收集目前的更多详细信息，只需返回并删除该属性或将其更改为更高的日志记录级别（例如 INFO）。这在生产服务器上极为有利，并且您不必创建自定义接口即可利用此功能。</p> 
+     <hr> <p><a href="FaqConfigureLogging.html" title="FaqConfigureLogging">英文 </a></p> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 02, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:44.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

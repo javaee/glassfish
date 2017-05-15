@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFishUserFAQ</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p><b>Translations:</b><br class="atl-forced-newline"> <a href="GlassFishUserFAQJa.html" title="GlassFishUserFAQJa">Japanese</a><br class="atl-forced-newline"> <a href="GlassFishUserFAQZh.html" title="GlassFishUserFAQZh">Chinese</a></p> <h4><a name="GlassFishUserFAQ-GlassFishUserFAQ"></a>GlassFish User FAQ</h1> <p>This User FAQ lists frequently asked questions related to the use of the GlassFish application server. In true wiki and open source fashion, this is a community effort. Help fill in the blanks, add new FAQs, and generally make this a valuable resource for you and other GlassFish users. For FAQs related to the development of GlassFish, see the <a href="GlassFishDeveloperFAQ.html" title="GlassFishDeveloperFAQ">GlassFish Developer FAQ</a>.<br> <b>This is a community resource. The success and usefulness of this FAQ depends on you.</b> Please help by contributing new FAQs and updating and enhancing existing ones.</p> <h4><a name="GlassFishUserFAQ-HowtoContribute"></a>How to Contribute</h2> <p>For starters, add answers to questions for which answers are needed, listed in the <a href="#GlassFishUserFAQ-UserFAQWishList">User FAQ Wish List</a> section. Also add new questions and answers of your own. Be sure to read <a href="FaqContributeToUserFAQ.html" title="FaqContributeToUserFAQ">How do I contribute to this User FAQ?</a>, which contains guidelines about content and format. Nothing too restrictive, just some things we should all pay attention to.</p> <p>If you're new to wiki, see the <a href="http://www.jspwiki.org/wiki/OneMinuteWiki">One Minute Wiki</a> and <a href="http://www.jspwiki.org/wiki/TextFormattingRules">Text Formatting Rules</a>. To test things out, try the <a href="http://sandbox.jspwiki.org/">Sand Box</a>. And as always, remember your <a href="http://www.jspwiki.org/wiki/WikiEtiquette">Wiki Etiquette</a>.</p> <p>If you have questions or suggestions about this FAQ, please contact <a href="mailto:docs@glassfish.java.net">docs@glassfish.java.net</a>. You can subscribe to the list from the GlassFish <a href="https://glassfish.java.net/servlets/ProjectMailingListList">mailing lists</a> page. </p> <p><b>Translation into other languages is also needed.</b> See <a href="Translate_UserAndDeveloperFAQs.html" title="Translate_UserAndDeveloperFAQs">Translating User and Developer FAQs</a> for details. The User FAQ is currently available in <a href="GlassFishUserFAQJa.html" title="GlassFishUserFAQJa">Japanese</a> and <a href="GlassFishUserFAQZh.html" title="GlassFishUserFAQZh">Chinese</a>. Translation into <a href="Translate_FAQStatus.html#Translate_FAQStatus-sectionTranslateFAQStatusRussian">Russian</a>, <a href="Translate_FAQStatus.html#Translate_FAQStatus-sectionTranslateFAQStatusItalian">Italian</a>, and <a href="Translate_FAQStatus.html#Translate_FAQStatus-sectionTranslateFAQStatusSpanish">Spanish</a> is also underway.</p> <h4><a name="GlassFishUserFAQ-TableofContents"></a>Table of Contents</h2> <h4><a name="GlassFishUserFAQ-GeneralTopics"></a><em>General Topics</em></h3> 
+     <ul> 
+      <li><a href="#GlassFishUserFAQ-AboutGlassFish">About GlassFish</a></li> 
+      <li><a href="#GlassFishUserFAQ-AboutGlassFishPortfolio">About GlassFish Portfolio</a></li> 
+      <li><a href="#GlassFishUserFAQ-AboutGlassFishV3">About GlassFish v3</a> (final release)</li> 
+      <li><a href="#GlassFishUserFAQ-AboutGlassFishV3PreviewReleases">About GlassFish v3 preview releases</a> (TP2, Prelude, Preview)</li> 
+      <li><a href="#GlassFishUserFAQ-AboutGlassFishV2">About GlassFish v2</a></li> 
+      <li><a href="#GlassFishUserFAQ-AboutGlassFishV2UR1">About GlassFish v2 UR1</a></li> 
+      <li><a href="#GlassFishUserFAQ-CommunityAndContribution">Community and Contribution</a></li> 
+      <li><a href="#GlassFishUserFAQ-DocumentationAndResources">Documentation and Resources</a></li> 
+      <li><a href="#GlassFishUserFAQ-RegistrationAndSupport">Registration and Support</a></li> 
+     </ul> <h4><a name="GlassFishUserFAQ-SpecificTopics"></a><em>Specific Topics</em></h3> 
+     <ul> 
+      <li><a href="#GlassFishUserFAQ-AddOns">Add-Ons</a></li> 
+      <li><a href="#GlassFishUserFAQ-ApplicationsAjax">Applications - Ajax</a></li> 
+      <li><a href="#GlassFishUserFAQ-ApplicationsGeneral">Applications - General</a></li> 
+      <li><a href="#GlassFishUserFAQ-ApplicationsJavaEE5">Applications - Java EE 5</a></li> 
+      <li><a href="#GlassFishUserFAQ-ApplicationsWebServices">Applications - Web Services</a></li> 
+      <li><a href="#GlassFishUserFAQ-ClusteringAndHighAvailability">Clustering and High Availability</a></li> 
+      <li><a href="#GlassFishUserFAQ-Configuration">Configuration</a></li> 
+      <li><a href="#GlassFishUserFAQ-ConnectionPools">Connection Pools</a></li> 
+      <li><a href="#GlassFishUserFAQ-Connectors">Connectors</a></li> 
+      <li><a href="#GlassFishUserFAQ-ErrorMessages">Error Messages</a></li> 
+      <li><a href="#GlassFishUserFAQ-InstallationAndMigration">Installation and Migration</a></li> 
+      <li><a href="#GlassFishUserFAQ-Logging">Logging</a></li> 
+      <li><a href="#GlassFishUserFAQ-MonitoringAndJMX">Monitoring and JMX</a></li> 
+      <li><a href="#GlassFishUserFAQ-MySQL">MySQL</a></li> 
+      <li><a href="#GlassFishUserFAQ-Performance">Performance</a></li> 
+      <li><a href="#GlassFishUserFAQ-Persistence">Persistence</a></li> 
+      <li><a href="#GlassFishUserFAQ-Profiles">Profiles</a></li> 
+      <li><a href="#GlassFishUserFAQ-Security">Security</a></li> 
+      <li><a href="#GlassFishUserFAQ-Troubleshooting">Troubleshooting</a></li> 
+      <li><a href="#GlassFishUserFAQ-UpdateCenter">Update Center</a></li> 
+     </ul> <h4><a name="GlassFishUserFAQ-AboutGlassFish"></a>About GlassFish</h3> 
+     <ul> 
+      <li><a href="FaqWhyName.html" title="FaqWhyName">Why the name GlassFish?</a></li> 
+      <li><a href="FaqWhatIsAppServer.html" title="FaqWhatIsAppServer">What is an Application Server?</a></li> 
+      <li><a href="FaqWhatIsGlassFish.html" title="FaqWhatIsGlassFish">What is Project GlassFish?</a></li> 
+      <li><a href="FaqProjectURL.html" title="FaqProjectURL">Where do I go to access the GlassFish project?</a></li> 
+      <li><a href="FaqGlassFishDownloads.html" title="FaqGlassFishDownloads">Where can I get GlassFish?</a></li> 
+      <li><a href="FaqGlassFishReallyFree.html" title="FaqGlassFishReallyFree">Is GlassFish really free to use?</a></li> 
+      <li><a href="FaqGlassFishUpdate.html" title="FaqGlassFishUpdate">How often can I get an update of GlassFish?</a></li> 
+      <li><a href="FaqGlassFishRoadMap.html" title="FaqGlassFishRoadMap">What is the Roadmap?</a></li> 
+      <li><a href="FaqMarketShare.html" title="FaqMarketShare">What's GlassFish market share compared to other app servers?</a></li> 
+      <li><a href="FaqGlassFishTomcat.html" title="FaqGlassFishTomcat">What is the difference between Tomcat and GlassFish?</a></li> 
+      <li><a href="FaqCompareGlassFish.html" title="FaqCompareGlassFish">Where can I find a comparison between GlassFish and other open source Application Servers?</a></li> 
+      <li><a href="FaqUnneededFeatures.html" title="FaqUnneededFeatures">How do I use just part of the GlassFish Application Server? I don't need or want everything</a>.</li> 
+      <li><a href="FaqGlassFishDemos.html" title="FaqGlassFishDemos">Any Dos and Don'ts I should know about when using GlassFish in demos?</a></li> 
+      <li><a href="FaqPictureLogo.html" title="FaqPictureLogo">Where can I get a GlassFish picture/logo to use on my web page?</a></li> 
+      <li><a href="FaqGlassFishVer.html" title="FaqGlassFishVer">How do I know which release is the latest production release of GlassFish?</a></li> 
+     </ul> <h4><a name="GlassFishUserFAQ-AboutGlassFishPortfolio"></a>About GlassFish Portfolio</h3> 
+     <ul> 
+      <li><a href="FaqWhatIsGlassFishPortfolio.html" title="FaqWhatIsGlassFishPortfolio">What is GlassFish Portfolio?</a></li> 
+     </ul> <h4><a name="GlassFishUserFAQ-AboutGlassFishv3"></a>About GlassFish v3</h3> 
+     <ul> 
+      <li><a href="FaqWhatIsV3.html" title="FaqWhatIsV3">What is GlassFish v3?</a></li> 
+      <li><a href="FaqDownloadV3GetStarted.html" title="FaqDownloadV3GetStarted">How do I get GlassFish v3 and get started?</a></li> 
+     </ul> <h4><a name="GlassFishUserFAQ-AboutGlassFishv3previewreleases"></a>About GlassFish v3 preview releases</h3> 
+     <ul> 
+      <li><a href="FaqWhatIsV3Preview.html" title="FaqWhatIsV3Preview">What is GlassFish v3 Preview?</a></li> 
+      <li><a href="FaqWhatIsV3Prelude.html" title="FaqWhatIsV3Prelude">What is GlassFish v3 Prelude? How does it differ from GlassFish v2?</a></li> 
+      <li><a href="FaqDownloadV3PreludeGetStarted.html" title="FaqDownloadV3PreludeGetStarted">How do I get GlassFish v3 Prelude and get started?</a></li> 
+      <li><a href="FaqUseV2OrV3Prelude.html" title="FaqUseV2OrV3Prelude">Should I use GlassFish v2 or GlassFish v3 Prelude?</a></li> 
+      <li><a href="FaqSunGlassFishEnterpriseServer.html" title="FaqSunGlassFishEnterpriseServer">How does GlassFish v3 Prelude relate to Sun GlassFish Enterprise Server v3 Prelude?</a></li> 
+      <li><a href="FaqUpgradeV2ToV3Prelude.html" title="FaqUpgradeV2ToV3Prelude">Can I upgrade my GlassFish v2 installation to GlassFish v3 Prelude?</a></li> 
+      <li><a href="FaqJRubyV3Prelude.html" title="FaqJRubyV3Prelude">What options are available for running JRuby with GlassFish v3 Prelude?</a></li> 
+      <li><a href="FaqGlassFishV3.html" title="FaqGlassFishV3">Where can I learn more about GlassFish v3?</a></li> 
+      <li><a href="FaqV3RFE.html" title="FaqV3RFE">How do I file an RFE for GlassFish v3?</a></li> 
+      <li><a href="FaqV3TP2WhatIsTP2.html" title="FaqV3TP2WhatIsTP2">What is GlassFish v3 Technology Preview 2 (TP2)?</a></li> 
+      <li><a href="FaqV3TP2WhatsInTP2.html" title="FaqV3TP2WhatsInTP2">What's in GlassFish v3 TP2?</a></li> 
+      <li><a href="FaqV3TP2DownloadGetStarted.html" title="FaqV3TP2DownloadGetStarted">How do I get GlassFish v3 TP2 and get started?</a></li> 
+      <li>Is GlassFish v3 supported on Mac OS Leopard even though Leopard does not support J2EE 6 (yet)?</li> 
+     </ul> <h4><a name="GlassFishUserFAQ-AboutGlassFishv2"></a>About GlassFish v2</h3> 
+     <ul> 
+      <li><a href="FaqWhatIsGlassFishV2.1.1.html" title="FaqWhatIsGlassFishV2.1.1">What is GlassFish v2.1.1?</a></li> 
+      <li><a href="FaqWhatIsGlassFishV2.1.html" title="FaqWhatIsGlassFishV2.1">What is GlassFish v2.1?</a></li> 
+      <li>What is GlassFish v2?</li> 
+      <li><a href="FaqV2InsteadOfV1.html" title="FaqV2InsteadOfV1">Why should I use v2 instead of v1?</a></li> 
+      <li><a href="FaqHowToGetV2.html" title="FaqHowToGetV2">How can I get GlassFish v2 and other releases?</a></li> 
+      <li>What version of Java EE is used?</li> 
+      <li><a href="FaqSupportedPlatformsV2.html" title="FaqSupportedPlatformsV2">What platforms are supported in GlassFish v2?</a></li> 
+      <li><a href="FaqEclipseSupport.html" title="FaqEclipseSupport">Is Eclipse supported?</a></li> 
+      <li><a href="FaqGlassFishV2vsSJSAS91.html" title="FaqGlassFishV2vsSJSAS91">How does GlassFish v2 differ from the Sun Java System Application Server 9.1?</a></li> 
+     </ul> <h4><a name="GlassFishUserFAQ-AboutGlassFishv2UR1"></a>About GlassFish v2 UR1</h3> 
+     <ul> 
+      <li><a href="FaqGlassFishV2UR1.html" title="FaqGlassFishV2UR1">What's different in GlassFish v2 UR1?</a></li> 
+      <li><a href="FaqSupportedPlatformsV2UR1.html" title="FaqSupportedPlatformsV2UR1">What platforms are supported in GlassFish v2 UR1?</a></li> 
+      <li><a href="FaqAIXSupportV2UR1.html" title="FaqAIXSupportV2UR1">Is GlassFish v2 UR1 supported on AIX?</a></li> 
+      <li>Does GlassFish v2 UR1 work on Red Hat Enterprise Linux?</li> 
+     </ul> <h4><a name="GlassFishUserFAQ-CommunityandContribution"></a>Community and Contribution</h3> 
+     <ul> 
+      <li><a href="FaqWhosUsing.html" title="FaqWhosUsing">Who's using GlassFish?</a></li> 
+      <li><a href="FaqUsingInProduction.html" title="FaqUsingInProduction">Who's using GlassFish in production? What are their experiences?</a></li> 
+      <li><a href="FaqGettingInvolved.html" title="FaqGettingInvolved">How do I get involved?</a></li> 
+      <li><a href="FaqContributeToDocumentation.html" title="FaqContributeToDocumentation">How do I contribute to GlassFish documentation?</a></li> 
+      <li><a href="FaqContributeToUserFAQ.html" title="FaqContributeToUserFAQ">How do I contribute to this User FAQ?</a></li> 
+      <li><a href="FaqGAP.html" title="FaqGAP">What is the GlassFish Community Awards (GAP)? Who can participate?</a></li> 
+     </ul> <h4><a name="GlassFishUserFAQ-DocumentationandResources"></a>Documentation and Resources</h3> 
+     <ul> 
+      <li><a href="FaqWhereIsDocumentation.html" title="FaqWhereIsDocumentation">Where is the documentation? What other resources are available?</a></li> 
+      <li><a href="FaqGlassFishOverview.html" title="FaqGlassFishOverview">Where can I find a general overview of GlassFish?</a></li> 
+      <li><a href="FaqGetHelpWithGlassFish.html" title="FaqGetHelpWithGlassFish">How can I get help with GlassFish?</a></li> 
+      <li><a href="FaqStayingUpToDate.html" title="FaqStayingUpToDate">How can I stay up to date on GlassFish news and views?</a></li> 
+      <li><a href="FaqTipsAndBlogs.html" title="FaqTipsAndBlogs">Where can I find Tech Tips and Blogs?</a></li> 
+      <li><a href="FaqDeveloperInfo.html" title="FaqDeveloperInfo">How do I get more developer information?</a></li> 
+      <li><a href="FaqWiki.html" title="FaqWiki">Is there a FAQ for the GlassFish wiki?</a></li> 
+      <li><a href="FaqEvents.html" title="FaqEvents">What events are happening that I might be interested in?</a></li> 
+     </ul> <h4><a name="GlassFishUserFAQ-RegistrationandSupport"></a>Registration and Support</h3> 
+     <ul> 
+      <li><a href="FaqSupportOfferings.html" title="FaqSupportOfferings">What support offerings are available? Why should I subscribe?</a></li> 
+      <li><a href="FaqRegisterSunConnection.html" title="FaqRegisterSunConnection">What is Sun Connection? Why should I register my installation? How do I register?</a></li> 
+      <li><a href="FaqGlassFishReallyFree.html" title="FaqGlassFishReallyFree">Is GlassFish really free to use?</a></li> 
+     </ul> <h4><a name="GlassFishUserFAQ-AddOns"></a>Add-Ons</h3> 
+     <ul> 
+      <li><a href="FaqAddOns.html" title="FaqAddOns">How do I write plugins (not Java EE components) for GlassFish?</a></li> 
+     </ul> <h4><a name="GlassFishUserFAQ-ApplicationsAjax"></a>Applications - Ajax</h3> 
+     <ul> 
+      <li><a href="FaqAjax.html" title="FaqAjax">Does GlassFish support Ajax?</a></li> 
+      <li><a href="FaqAjaxApps.html" title="FaqAjaxApps">Where can I get information about Ajax and GlassFish?</a></li> 
+      <li><a href="FaqBluePrints.html" title="FaqBluePrints">Where can I get the BluePrints catalog with Ajax running on GlassFish?</a></li> 
+     </ul> <h4><a name="GlassFishUserFAQ-ApplicationsGeneral"></a>Applications - General</h3> 
+     <ul> 
+      <li><a href="FaqMigrateApps.html" title="FaqMigrateApps">How do I migrate applications deployed on other application servers to GlassFish?</a></li> 
+      <li><a href="FaqShipGlassFishWithApp.html" title="FaqShipGlassFishWithApp">Can I ship GlassFish with my application?</a></li> 
+      <li><a href="FaqSupportHotDeployment.html" title="FaqSupportHotDeployment">Does GlassFish support hot deployment?</a></li> 
+      <li><a href="FaqPortalServer.html" title="FaqPortalServer">Does the Portal Server run on GlassFish?</a></li> 
+      <li><a href="FaqJavaNet.html" title="FaqJavaNet">Does java.net run on GlassFish?</a></li> 
+      <li><a href="FaqApacheLoadbalancerPitfalls.html" title="FaqApacheLoadbalancerPitfalls">What are some of the common pitfalls when loadbalancing a GlassFish cluster using Apache over AJP/mod_jk?</a></li> 
+      <li><a href="FaqSecDebugging.html" title="FaqSecDebugging">How do I debug application security in GlassFish v2?</a></li> 
+     </ul> <h4><a name="GlassFishUserFAQ-ApplicationsJavaEE5"></a>Applications - Java EE 5</h3> 
+     <ul> 
+      <li><a href="FaqEJB3Apps.html" title="FaqEJB3Apps">Where can I get help with building EJB 3.0 persistence applications?</a></li> 
+      <li>Can GlassFish deploy EJB 2.0 applications?</li> 
+      <li><a href="FaqJ2EE14Tutorial.html" title="FaqJ2EE14Tutorial">Where is the J2EE 1.4 tutorial?</a></li> 
+      <li><a href="FaqNetBeansJavaEEApp.html" title="FaqNetBeansJavaEEApp">Can I use NetBeans to build my Java EE 5 application?</a></li> 
+      <li><a href="FaqComplexExamples.html" title="FaqComplexExamples">Where can I find Java EE examples that are more complex?</a></li> 
+      <li><a href="FaqEJBCommunication.html" title="FaqEJBCommunication">How do EJBs communicate between an Enterprise Application and an EJB Module?</a></li> 
+      <li><a href="FaqEJBQuestions.html" title="FaqEJBQuestions">I have some EJB questions. Is there an EJB FAQ?</a></li> 
+      <li><a href="FaqDeployExistingApps.html" title="FaqDeployExistingApps">Can I deploy existing J2EE web applications on GlassFish?</a></li> 
+      <li><a href="FaqJSFTemplatingWoodstock.html" title="FaqJSFTemplatingWoodstock">JSF component authoring made easy? Is that really possible?</a></li> 
+      <li>[Does NetBeans need to be installed on the same production box as GlassFish</li> 
+     </ul> <p>for GlassFish to access NetBeans jar files?|FaqAccessNetBeansJarFiles]</p> 
+     <ul> 
+      <li><a href="FaqSeam.html" title="FaqSeam">How can I run JBoss Seam 2.0 on GlassFish v2?</a></li> 
+      <li><a href="FaqACC.html" title="FaqACC">I'm going to use the Glassfish v2 Application Client Container (ACC). Where can I find more information about it?</a></li> 
+     </ul> <h4><a name="GlassFishUserFAQ-ApplicationsWeb"></a>Applications - Web</h3> 
+     <ul> 
+      <li><a href="FaqWebAppAtGlassFishRoot.html" title="FaqWebAppAtGlassFishRoot">How do I install a web application at the root of GlassFish?</a></li> 
+      <li><a href="FaqWebAppDisableDirectoryListings.html" title="FaqWebAppDisableDirectoryListings">How can I disable directory listings for my web application?</a></li> 
+      <li><a href="FaqWebAppVirtualServers.html" title="FaqWebAppVirtualServers">Multiple virtual servers and ServletContextListener?</a></li> 
+      <li><a href="FaqUrlRdn.html" title="FaqUrlRdn">Is there a simple way to configure web application URLs and redirect them to more user-friendly URLs? </a></li> 
+      <li><a href="FaqWebAppStoppedIllegalAccessError.html" title="FaqWebAppStoppedIllegalAccessError">What does this error mean: <em>Illegal access: this web application instance has been stopped already</em>?</a></li> 
+      <li><a href="FaqWebAppUnableToSetRequestCharEncoding.html" title="FaqWebAppUnableToSetRequestCharEncoding">What does this warning message in the server.log mean: <em>Unable to set request character encoding to UTF-8 from context /&lt;your_webapp&gt;, because request parameters have already been read, or ServletRequest.getReader() has already been called</em>?</a></li> 
+      <li><a href="FaqMaxPOST.html" title="FaqMaxPOST">How do I configure the max POST request parameter size in GlassFish?</a></li> 
+      <li><a href="FaqAlternateDocrootResourcePath.html" title="FaqAlternateDocrootResourcePath">How does the web container compute filesystem resource paths corresonding to alternate docroots?</a></li> 
+      <li><a href="FaqHttpRequestParameterEncoding.html" title="FaqHttpRequestParameterEncoding">How can I specify the encoding of HTTP request parameters?</a></li> 
+      <li><a href="FaqActivateSymbolicLinks.html" title="FaqActivateSymbolicLinks">How do I activate symbolic links in my web application?</a></li> 
+      <li><a href="FaqTomcatValveConversion.html" title="FaqTomcatValveConversion">How can I make my Tomcat valves work with GlassFish?</a></li> 
+      <li><a href="FaqMultibyteFormSubmission.html" title="FaqMultibyteFormSubmission">How can I use multibyte data in FORM submissions?</a></li> 
+     </ul> <h4><a name="GlassFishUserFAQ-ApplicationsWebServices"></a>Applications - Web Services</h3> 
+     <ul> 
+      <li><a href="FaqWSIT.html" title="FaqWSIT">How can I develop web services that are interoperable with the .NET framework?</a></li> 
+      <li><a href="FaqMetro.html" title="FaqMetro">Where can I get more information about Metro?</a></li> 
+      <li><a href="FaqMetroSecureAttachments.html" title="FaqMetroSecureAttachments">How do I secure attachments with Metro 1.3?</a></li> 
+      <li><a href="FaqLifeOfObject.html" title="FaqLifeOfObject">What is the life of an object?</a></li> 
+      <li><a href="FaqGlassFishAndSOAP.html" title="FaqGlassFishAndSOAP">How do I make GlassFish work with SOAP 1.2?</a></li> 
+     </ul> <h4><a name="GlassFishUserFAQ-ClusteringandHighAvailability"></a>Clustering and High Availability</h3> 
+     <ul> 
+      <li><a href="FaqClusterOverview.html" title="FaqClusterOverview">Can you point me to an overview of the clustering support in GlassFish v2?</a></li> 
+      <li><a href="ClusteringSingleHost.html" title="ClusteringSingleHost">How do I create a cluster on a single host?</a></li> 
+      <li><a href="ClusteringMultipleHost.html" title="ClusteringMultipleHost">How do I create a cluster on multiple hosts?</a></li> 
+      <li><a href="FaqHA.html" title="FaqHA">In a high availability cluster, what are "instances"?</a></li> 
+      <li><a href="FaqHAsingle.html" title="FaqHAsingle">Is there a use for a cluster on a single machine?</a></li> 
+      <li><a href="FaqHTTPLoadBalancing.html" title="FaqHTTPLoadBalancing">Can I use load balancing with HTTP?</a></li> 
+      <li><a href="FaqACCLoadBalancing.html" title="FaqACCLoadBalancing">Can I use load balancing with ACC?</a></li> 
+      <li><a href="FaqIIOP.html" title="FaqIIOP">Does the GlassFish load balancer balance IIOP calls?</a></li> 
+      <li><a href="FaqGlassFishBehindApache.html" title="FaqGlassFishBehindApache">Does GlassFish have a plugin for Apache web server?</a></li> 
+      <li><a href="FaqPluginWithApache.html" title="FaqPluginWithApache">Can I use the load balancer plugin with an Apache server? How do I do it?</a></li> 
+      <li><a href="FaqClustraInGlassFish.html" title="FaqClustraInGlassFish">Regarding HA features in GlassFish v2, is there Clustra functionality in there?</a></li> 
+      <li><a href="FaqSpecificHTTPLoadBalancer.html" title="FaqSpecificHTTPLoadBalancer">I want to deploy my web services to a cluster. Do I need to install a specific HTTP load balancer plug-in?</a></li> 
+      <li><a href="FaqN1SPS.html" title="FaqN1SPS">Where can I find more information about provisioning GlassFish v2 with N1SPS?</a></li> 
+      <li><a href="FaqClustersActivePassive.html" title="FaqClustersActivePassive">Does GlassFish support active and passive clusters?</a></li> 
+      <li><a href="FaqMigrateTimers.html" title="FaqMigrateTimers">How can I backup persistent timers and jms queues and topics?</a></li> 
+      <li><a href="FaqTroubleshootReplication.html" title="FaqTroubleshootReplication">Replication isn't working for me. Any troubleshooting tips?</a></li> 
+      <li><a href="FaqNoBinInClusterMember.html" title="FaqNoBinInClusterMember">How do I get a 'bin' directory on cluster member machines?</a></li> 
+      <li><a href="FaqExtendedPersistenceContextInCluster.html" title="FaqExtendedPersistenceContextInCluster">Can I use an Extended Persistence Context in a Clustered environment?</a></li> 
+      <li><a href="FaqBasicMulticastTestBetweenMachines.html" title="FaqBasicMulticastTestBetweenMachines">How do I check if basic multicast support exists in my network where more than one machine is involved?</a></li> 
+      <li><a href="FaqTroubleshootDASCommunication.html" title="FaqTroubleshootDASCommunication">Why Node-Agent is Unable to communicate with Domain Administration Server?</a></li> 
+      <li><a href="FaqShoalGMSAttributesInDomainXML.html" title="FaqShoalGMSAttributesInDomainXML">What do the group-management-service (Shoal GMS) configuration attributes in domain.xml mean?</a></li> 
+      <li><a href="FaqShoalGMSPropertiesInDomainXML.html" title="FaqShoalGMSPropertiesInDomainXML">Shoal GMS Configurations added in Glassfish v2.1</a></li> 
+      <li>Shoal GMS Configurations added in Glassfish v2.1.x</li> 
+     </ul> <h4><a name="GlassFishUserFAQ-Configuration"></a>Configuration</h3> 
+     <ul> 
+      <li><a href="FaqIncreasePermGenSpace.html" title="FaqIncreasePermGenSpace">How do I increase the PermGen space?</a></li> 
+      <li><a href="FaqGlassFishBehindApache.html" title="FaqGlassFishBehindApache">How do I configure GlassFish behind the Apache web server, possibly using mod_jk?</a></li> 
+      <li><a href="FaqGlassFishBehindSunWebServer.html" title="FaqGlassFishBehindSunWebServer">How do I configure GlassFish for use behind the Sun Web Server?</a></li> 
+      <li><a href="FaqIPV6.html" title="FaqIPV6">Does GlassFish support IPV6?</a></li> 
+      <li><a href="QuartzGlassFish.html" title="QuartzGlassFish">How can I use the Quartz scheduler with GlassFish?</a></li> 
+      <li><a href="FaqDomainProperty.html" title="FaqDomainProperty">Where can I put a property file unique to my domain?</a></li> 
+      <li><a href="AdminConsoleTimeoutValue.html" title="AdminConsoleTimeoutValue">Can I change the admin console timeout value?</a></li> 
+      <li><a href="AutoStartMacOSX.html" title="AutoStartMacOSX">How can I get GlassFish to automatically start on Mac OS X?</a></li> 
+      <li><a href="FaqGlassFishDebug.html" title="FaqGlassFishDebug">How can I start start GlassFish from the command line with debug enabled?</a></li> 
+      <li><a href="Faq64bitConfig.html" title="Faq64bitConfig">How can I configure GlassFish to use a 64-bit JVM?</a></li> 
+      <li><a href="http://blogs.oracle.com/JohnD/entry/glassfish_domain1_opensso_domain2_policy">How do I create a second domain on GlassFish?</a></li> 
+      <li><a href="http://blogs.oracle.com/JohnD/entry/glassfish_domain1_opensso_domain2_policy">How can I deploy OpenSSO server on GlassFish?</a></li> 
+      <li><a href="http://blogs.oracle.com/JohnD/entry/glassfish_domain1_opensso_domain2_policy">How can I Install OpenSSO Policy Agent 3.0 to Protect Resources on GlassFish?</a></li> 
+      <li><a href="FaqAdminConsoleDisconnected.html" title="FaqAdminConsoleDisconnected">How can I configure the Admin Console to be disconnected from the Internet?</a></li> 
+     </ul> <h4><a name="GlassFishUserFAQ-ConnectionPools"></a>Connection Pools</h3> 
+     <ul> 
+      <li>How do I get the number of active connections in GlassFish?</li> 
+      <li><a href="FaqJCA_RA_Pool.html" title="FaqJCA_RA_Pool">How do I use asadmin to add properties to a JCA RA pool?</a></li> 
+      <li><a href="FaqJDBCManager.html" title="FaqJDBCManager">Can GlassFish dynamically manage the JDBC pool for me?</a></li> 
+     </ul> <h4><a name="GlassFishUserFAQ-Connectors"></a>Connectors</h3> 
+     <ul> 
+      <li><a href="FaqConnAPIImp.html" title="FaqConnAPIImp">Where can I find information about the GlassFish Connectors API implementation?</a></li> 
+     </ul> <h4><a name="GlassFishUserFAQ-ErrorMessages"></a>Error Messages</h3> 
+     <ul> 
+      <li><a href="FaqErrorMessageRef.html" title="FaqErrorMessageRef">Is there a GlassFish error message reference guide?</a></li> 
+     </ul> <h4><a name="GlassFishUserFAQ-InstallationandMigration"></a>Installation and Migration</h3> 
+     <ul> 
+      <li><a href="FaqHowToInstall.html" title="FaqHowToInstall">How do I install GlassFish and get started?</a></li> 
+      <li><a href="FaqDiffDistPlatforms.html" title="FaqDiffDistPlatforms">Why are there different GlassFish v2 downloads for Windows, Solaris, Linux, AIX, and MacOs?</a></li> 
+      <li><a href="FaqQuickStart.html" title="FaqQuickStart">I have GlassFish installed. Now what do I do?</a></li> 
+      <li><a href="FaqSolarisZones.html" title="FaqSolarisZones">How do I install GlassFish v2 in Solaris 10 zones?</a></li> 
+      <li><a href="FaqMigrationIssues.html" title="FaqMigrationIssues">Any migration issues I should consider in moving from GlassFish v1 to GlassFish v2?</a></li> 
+      <li><a href="FaqMigrateApps.html" title="FaqMigrateApps">How do I migrate applications deployed on other application servers to GlassFish?</a></li> 
+      <li><a href="FaqRunAsWindowsService.html" title="FaqRunAsWindowsService">How do I run GlassFish as a Windows service?</a></li> 
+      <li><a href="FaqRunAsNonRootUser.html" title="FaqRunAsNonRootUser">Can I run GlassFish as a non-root user (via package installer)?</a></li> 
+      <li><a href="FaqUpgradeGlassFish.html" title="FaqUpgradeGlassFish">How do I upgrade GlassFish?</a></li> 
+      <li><a href="FaqEasierInstall.html" title="FaqEasierInstall">Isn't there an easier way to install GlassFish? What about the IzPack installer?</a></li> 
+      <li><a href="FaqNoBinInClusterMember.html" title="FaqNoBinInClusterMember">How do I get a 'bin' directory on cluster member machines?</a></li> 
+      <li><a href="FaqGlassFishHosting.html" title="FaqGlassFishHosting">Which hosting providers support GlassFish?</a></li> 
+      <li><a href="FaqMigJbossToGlassFish.html" title="FaqMigJbossToGlassFish">What changes do I need to make when migrating my application from JBoss to GlassFish?</a></li> 
+      <li><a href="FaqMigWebSphereToGlassFish.html" title="FaqMigWebSphereToGlassFish">What changes do I need to make when migrating my application from WebSphere to GlassFish?</a></li> 
+      <li><a href="FaqMigWebLogicToGlassFish.html" title="FaqMigWebLogicToGlassFish">What changes do I need to make when migrating my application from WebLogic to GlassFish?</a></li> 
+      <li><a href="FaqProductionSetupOpenSolaris.html" title="FaqProductionSetupOpenSolaris">How should I setup my GlassFish clustered environment on a Unix system like OpenSolaris?</a></li> 
+     </ul> <h4><a name="GlassFishUserFAQ-Logging"></a>Logging</h3> 
+     <ul> 
+      <li><a href="FaqCongifureLog4J.html" title="FaqCongifureLog4J">How do I configure Log4J for use in GlassFish?</a></li> 
+      <li><a href="FaqCongifureLog4JCluster.html" title="FaqCongifureLog4JCluster">How do I configure Log4J for use in GlassFish cluster?</a></li> 
+      <li><a href="FaqConfigureLogging.html" title="FaqConfigureLogging">How do I configure logging?</a></li> 
+      <li><a href="FaqLogFormat.html" title="FaqLogFormat">How do I configure the format of log messages in GlassFish?</a></li> 
+      <li><a href="FaqDeleteRotatedLogs.html" title="FaqDeleteRotatedLogs">How do I configure GlassFish to delete rotated log files?</a></li> 
+      <li><a href="FaqLogStandardOutput.html" title="FaqLogStandardOutput">How do I log output to standard output instead of the server.log file?</a></li> 
+      <li><a href="FaqLogManager.html" title="FaqLogManager">How can I manage my log files (rotations, archiving, etc...)?</a></li> 
+     </ul> <h4><a name="GlassFishUserFAQ-MonitoringandJMX"></a>Monitoring and JMX</h3> 
+     <ul> 
+      <li><a href="FaqMonitorGlassFish.html" title="FaqMonitorGlassFish">Are there any utilities to monitor GlassFish?</a></li> 
+      <li><a href="FaqSNMPSupport.html" title="FaqSNMPSupport">Is there SNMP support</a>?</li> 
+     </ul> <h4><a name="GlassFishUserFAQ-MySQL"></a>MySQL</h3> 
+     <ul> 
+      <li><a href="FaqGlassFishAndMySQL.html" title="FaqGlassFishAndMySQL">Where can I find more information about using GlassFish with MySQL?</a></li> 
+     </ul> <h4><a name="GlassFishUserFAQ-Performance"></a>Performance</h3> 
+     <ul> 
+      <li><a href="FaqGlassFishPerformance.html" title="FaqGlassFishPerformance">What GlassFish performance results are available?</a></li> 
+      <li><a href="FaqPerfTuning.html" title="FaqPerfTuning">When it comes to performance tuning, how do I get the most out of GlassFish?</a></li> 
+      <li><a href="FaqTuneJVM.html" title="FaqTuneJVM">Are there any tools to help tune the JVM?</a></li> 
+      <li><a href="FaqPassByReference.html" title="FaqPassByReference">Can I use pass-by-reference with GlassFish?</a></li> 
+     </ul> <h4><a name="GlassFishUserFAQ-Persistence"></a>Persistence</h3> 
+     <ul> 
+      <li><a href="FaqJavaPersistenceAPI.html" title="FaqJavaPersistenceAPI">Where can I find answers to my questions about persistence and the Java Persistence API?</a></li> 
+      <li><a href="FaqPostgresSequences.html" title="FaqPostgresSequences">Can I use sequences with Postgres?</a></li> 
+      <li>Can I use EclipseLink (the successor to TopLink) with GlassFish v2?</li> 
+     </ul> <h4><a name="GlassFishUserFAQ-Profiles"></a>Profiles</h3> 
+     <ul> 
+      <li><a href="FaqUsageProfiles.html" title="FaqUsageProfiles">How do I make sense of usage profiles?</a></li> 
+      <li><a href="FaqUpgradeDeveloperProfileToCluster.html" title="FaqUpgradeDeveloperProfileToCluster">Can I add cluster support to a domain?</a></li> 
+      <li><a href="FaqWhichProfileToUse.html" title="FaqWhichProfileToUse">Which profile should I use in production?</a></li> 
+     </ul> <h4><a name="GlassFishUserFAQ-Security"></a>Security</h3> 
+     <ul> 
+      <li><a href="FaqNSSAndNSPR.html" title="FaqNSSAndNSPR">Have dependencies on NSS and NSPR been removed in GlassFish v2?</a></li> 
+      <li><a href="FaqSecAMX.html" title="FaqSecAMX">Is there an API to create certificates so they don't have to be manually installed on multiple machines?</a></li> 
+      <li><a href="FaqDigestAuth.html" title="FaqDigestAuth">How do I configure Digest authentication?</a></li> 
+      <li><a href="FaqBlockIPAddress.html" title="FaqBlockIPAddress">How do I block a specific IP address in GlassFish?</a></li> 
+      <li><a href="FaqSecDebugging.html" title="FaqSecDebugging">How do I debug application security in GlassFish v2?</a></li> 
+      <li><a href="FaqUserDeployAccess.html" title="FaqUserDeployAccess">Does GlassFish v2 support role-based access control?</a></li> 
+      <li><a href="FaqSuppressProductInfoInHttpResponse.html" title="FaqSuppressProductInfoInHttpResponse">How can I suppress any product information in HTTP responses?</a></li> 
+     </ul> <h4><a name="GlassFishUserFAQ-Troubleshooting"></a>Troubleshooting</h3> 
+     <ul> 
+      <li>Is there a GlassFish troubleshooting guide?</li> 
+      <li><a href="FaqTroubleshootingTools.html" title="FaqTroubleshootingTools">What tools can I use to facilitate troubleshooting?</a></li> 
+      <li><a href="FaqRunOffline.html" title="FaqRunOffline">Why do I get errors when I run GlassFish off-line from the Internet?</a></li> 
+      <li><a href="FaqSetup.html" title="FaqSetup">Where is the bin directory and 'asadmin'?</a></li> 
+      <li><a href="CannotRegisterDomainFromNetBeans.html" title="CannotRegisterDomainFromNetBeans">I can't seem to be able to register GlassFish from NetBeans, why?</a></li> 
+      <li><a href="CannotFindPathSpecifiedError.html" title="CannotFindPathSpecifiedError">When I try to install GlassFish or create a domain I get a "The system cannot find the path specified" error. Why?</a></li> 
+      <li><a href="FaqAdminConsoleSlowStrartup.html" title="FaqAdminConsoleSlowStrartup">The startup time for the Admin Console is very (VERY!) long. Why?</a></li> 
+     </ul> <h4><a name="GlassFishUserFAQ-UpdateCenter"></a>Update Center</h3> 
+     <ul> 
+      <li><a href="FaqUpdateCenter.html" title="FaqUpdateCenter">Where can I get more information about the GlassFish Update Center?</a></li> 
+     </ul> <h4><a name="GlassFishUserFAQ-UserFAQWishList"></a>User FAQ Wish List</h2> <p>What's missing? What questions would you like to see answered that aren't? What are the top issues you run into for which having an FAQ would be<br> especially helpful? Please add those questions to this wish list! And if you know the answer to one or more of these questions, please provide it. Help make this a useful resource – for the community, by the community.</p> <p>Questions for which answers are needed:</p> 
+     <ul> 
+      <li>What 64-bit platforms are supported? Does that include all features such as HADB and load balancer?</li> 
+     </ul> 
+     <ul> 
+      <li>Is it possible to make GlassFish (HTTP/EJB/JMS services) work behind a router? If so, how?</li> 
+     </ul> 
+     <ul> 
+      <li>How do I configure a cluster and load balancer for a WAR file or EAR? Is there a simple application I can test with?</li> 
+     </ul> 
+     <ul> 
+      <li>How do I add a JDBC connection pool?</li> 
+     </ul> 
+     <ul> 
+      <li><a href="FaqAlternateDocRoot.html" title="FaqAlternateDocRoot">How can I map external directories to my application's context root?</a></li> 
+     </ul> 
+     <ul> 
+      <li><a href="FaqConfigureSharedHosting.html" title="FaqConfigureSharedHosting">How do I configure GlassFish for a shared hosting environment?</a></li> 
+     </ul> 
+     <ul> 
+      <li>What is the difference between in-memory replication and HADB? When should I use one over the other?</li> 
+     </ul> 
+     <ul> 
+      <li>How do I enable the GlassFish JVM for JMX monitoring?</li> 
+     </ul> 
+     <ul> 
+      <li>How do I deploy Mbeans?</li> 
+     </ul> 
+     <ul> 
+      <li>How can I minimize resource (memory) use?</li> 
+     </ul> 
+     <ul> 
+      <li><a href="FaqChangeHTTPPort.html" title="FaqChangeHTTPPort">How do I change the HTTP Port?</a></li> 
+     </ul> 
+     <ul> 
+      <li><a href="FaqClearConnectionsWithoutRestart.html" title="FaqClearConnectionsWithoutRestart">How do I clear connections without waiting for them to time out or restarting the server?</a></li> 
+     </ul> 
+     <ul> 
+      <li><a href="FaqInstallOpenESBWithGlassFish.html" title="FaqInstallOpenESBWithGlassFish">What is the best way to evaluate and install Open ESB with GlassFish?</a></li> 
+     </ul> 
+     <ul> 
+      <li>How do I enable access logging?</li> 
+     </ul> 
+     <ul> 
+      <li>How can I manage users and roles for HTTP Basic Authentication?</li> 
+     </ul> 
+     <ul> 
+      <li><a href="FaqSSLCertsGenByOpenSSL.html" title="FaqSSLCertsGenByOpenSSL">How can I use SSL certificates generated by OpenSSL?</a></li> 
+     </ul> 
+     <ul> 
+      <li><a href="FaqManageSSLCertsUsingKeytool.html" title="FaqManageSSLCertsUsingKeytool">How do I manage SSL certificates using keytool?</a></li> 
+     </ul> 
+     <ul> 
+      <li>Is it possible to add user Web-files to the GlassFish? If so, how?</li> 
+     </ul> 
+     <ul> 
+      <li>At the time of starting glassfish v2ur server i am getting the errors like ide timeout,port conflicts,domain.xml to be corrected manually,invalid installation.may i know the solution to these problems.</li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Sep 28, 2010 by 
+<font color="#0050B2">bambi535</font>. Exported from wikis.oracle.com on May 27, 2015 20:49.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

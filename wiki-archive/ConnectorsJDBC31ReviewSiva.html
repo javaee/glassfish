@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : ConnectorsJDBC31ReviewSiva</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="ConnectorsJDBC31ReviewSiva-Connectors%2FJDBConepagerforGlassFish3.1Review"></a>Connectors/JDBC one-pager for GlassFish 3.1 Review</h1> <h4><a name="ConnectorsJDBC31ReviewSiva-Document%3AJDBC%2FConnectorsonepagerfor3.1Gfv31ConnectorsJDBC"></a>Document: <a href="Gfv31ConnectorsJDBC.html" title="Gfv31ConnectorsJDBC">JDBC/Connectors one-pager for 3.1</a></h3> <h4><a name="ConnectorsJDBC31ReviewSiva-Reviewer%3ASivakumarThyagarajan"></a>Reviewer: Sivakumar Thyagarajan</h3> <h4><a name="ConnectorsJDBC31ReviewSiva-Reviewdate%3AMay26%2C2010"></a>Review date: May 26, 2010</h3> <h4><a name="ConnectorsJDBC31ReviewSiva-Responsedate%3AMay27%2C2010"></a>Response date: May 27, 2010</h3> <p>General comments: Congratulations on the very well-written one-pager. </p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item </th> 
+         <th class="confluenceTh"> Type </th> 
+         <th class="confluenceTh"> Comment </th> 
+         <th class="confluenceTh"> Response </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.1.1 </td> 
+         <td class="confluenceTd"> Clarification </td> 
+         <td class="confluenceTd"> Please clarify what happens during statement reclaim. Is Statement.close() called? This would work for CallableStatement and PreparedStatement as well. Please indicate that explicitly. Any recommendations of the usage of this feature wrt connection leak detection and reclaim (such as connection leak timeout should be far greater than statement timeout etc)? Would you explicitly close related ResultSets before closing the statement in the case of statement reclaim.? </td> 
+         <td class="confluenceTd"> During a statement reclaim, the leaked statement(s) is closed. There is no need to close the ResultSets explicitly as they will be closed during a Statement.close(). Will add the recommendations "Connection leak timeout should be greater than the statement leak timeout" and "Statement timeout should be lesser than the Statement leak timeout". These can also be added to the documentation. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.1.2 </td> 
+         <td class="confluenceTd"> Correction </td> 
+         <td class="confluenceTd"> Please add resource-adapter-config, connector-security-map, connector-work-security-map to the list </td> 
+         <td class="confluenceTd"> These resources do not have target as they are applicable to all instances </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.1.2 </td> 
+         <td class="confluenceTd"> Enhancement </td> 
+         <td class="confluenceTd"> Can we add a "delete-resources" as an opposite command for "create-resources" as part of this release? </td> 
+         <td class="confluenceTd"> This enhancement could cause issues when a pool is deleted and is referred to by a jdbc resource not created using the add-resources. A pool with the same name (in the xml file) could have been created using the CLI. But the jdbc resource could have a different name. The delete-resources command would fail in this case. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.1.3 </td> 
+         <td class="confluenceTd"> Clarification </td> 
+         <td class="confluenceTd"> can a resource-adapter-config definition for a different resource-adapter than the one it is bundled under be allowed? </td> 
+         <td class="confluenceTd"> No. Since ResourceAdapterConfig will affect the resource-adapter which may be used by other applications/global resources, this is not allowed. We shall update the one-pager with more clarification </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.1.3 </td> 
+         <td class="confluenceTd"> Clarification </td> 
+         <td class="confluenceTd"> Please clearly state that there is no module-level visibility(ie a resource defined in an ejb-jar of an ear is visible to the war in that ear) </td> 
+         <td class="confluenceTd"> By default, all resources are defined with application-level-visibilty ie., "java:app/" which is stated in the description of application-scoped-resources </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.1.3 </td> 
+         <td class="confluenceTd"> Clarification </td> 
+         <td class="confluenceTd"> Can application scoped resource be reconfigured? If yes, the last bullet point in section "glassfish-resoucres.xml" must be one level up? </td> 
+         <td class="confluenceTd"> Yes, this was a typo while formatting. It applies to all of application-scoped-resources. This will be fixed in the one-pager </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.1.3 </td> 
+         <td class="confluenceTd"> Suggestion </td> 
+         <td class="confluenceTd"> rename "preserve-app-scoped-resources" to "preserve-resources"? </td> 
+         <td class="confluenceTd"> Since there is --cascade flag in "undeploy" for globally defined resources, we prefer keeping app-scoped-resources or application-scoped-resources term </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.1.3 </td> 
+         <td class="confluenceTd"> Clarification </td> 
+         <td class="confluenceTd"> Under section "Restriction on resource types in various application types", does this mean the artifacts listed can only be specified in the glassfish-resources.xml of the RAR? Why is this so? Why can't a RAR's resource be specified in the root glassfish-resources.xml of the EAR? </td> 
+         <td class="confluenceTd"> Its possible. We wanted to make the RAR self contained with all its configuration. We shall remove the restriction of not allowing the above resource types (resource-adapter-config, connector-work-security-map) in other glassfish-resources.xml than that of the resource-adapter. This will be fixed in the one-pager. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.1.3 </td> 
+         <td class="confluenceTd"> Clarification </td> 
+         <td class="confluenceTd"> Would we continue to support sun-resources_1_4.dtd? </td> 
+         <td class="confluenceTd"> Yes, but deprecated which is in accordance with the plan for all sun-* descriptors. Will provide a reference to deployment one-pager </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.1.4 </td> 
+         <td class="confluenceTd"> Correction </td> 
+         <td class="confluenceTd"> Two modules in different applications can have the same name. So the unique id for module scoped DataSourceDefinitions should include appname as well. </td> 
+         <td class="confluenceTd"> No, even if they share the same name, they will not be visibile to other applications as the naming scope is per application. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.1.4 </td> 
+         <td class="confluenceTd"> Clarification </td> 
+         <td class="confluenceTd"> How is application redeployment handled? Would exisiting DataSourceDefinitions be retained or be replaced with new configuration in the application? </td> 
+         <td class="confluenceTd"> This is similar to the behavior of application-scoped-resources as it is stored within application-scoped-resources. I shall add a note in the appropriate section. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.1.4 </td> 
+         <td class="confluenceTd"> Clarification </td> 
+         <td class="confluenceTd"> Would DataSourceDefinitions with name as "java:global/XXX" also be placed under the &lt;application&gt; element in domain.xml and its dotted name would also be via the app? If yes, that sound counter-intuitive. Please explicitly clarify this. </td> 
+         <td class="confluenceTd"> Yes. It will not be intuitive to store the configuration at different places in domain.xml which will make it difficult for the application deployer. Also, it is necessary to determine which application is exporting the data-source that will be necessary for re-deployment/ undeploy. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.1.4 </td> 
+         <td class="confluenceTd"> Clarification </td> 
+         <td class="confluenceTd"> In the dottedname example shown, please show sample usage for a DataSourceDefinition with name say "java:module/XXX" </td> 
+         <td class="confluenceTd"> OK. This will be provided in the one-pager </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.1.5.4 </td> 
+         <td class="confluenceTd"> Clarification </td> 
+         <td class="confluenceTd"> Should there be a statement-reclaim-success-count and statement-reclaim-failure-count based on success/fail of statement reclaim? </td> 
+         <td class="confluenceTd"> The failure of statement reclaim could happen very rarely ex: when database is inaccessible. Not sure if this monitoring statistic is really needed. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.1.8 </td> 
+         <td class="confluenceTd"> Clarification </td> 
+         <td class="confluenceTd"> Provide a link to the OSGi onepager? </td> 
+         <td class="confluenceTd"> OK. This will be fixed in the one-pager </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.1.9 </td> 
+         <td class="confluenceTd"> Clarificaition </td> 
+         <td class="confluenceTd"> Will in-flight connections that don't return within the configured timeout be killed? If yes, please state that explicitly. </td> 
+         <td class="confluenceTd"> Yes, once the timeout elapses they will follow the usual behavior of re-configuration where all connections will be killed. Any in-flight connections/transactions will have to be re-tried. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.1.9 </td> 
+         <td class="confluenceTd"> Clarification </td> 
+         <td class="confluenceTd"> Can this be done for connector connection pools too? If no, why not? </td> 
+         <td class="confluenceTd"> A POC was done for all connection-pool (any resource-adapter) before writing the one-pager and there are still some use-cases where redeployment cannot be handled transparently eg: lazy-connection-enlistment, lazy-connection-association where the connection-manager will get recreated. With JDBC-RA it is possible to introduce custom contract to handle re-deployment dynamically. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.1.9 </td> 
+         <td class="confluenceTd"> Enhancement </td> 
+         <td class="confluenceTd"> Can we ping pool before reconfigure and only on success proceed with reconfiguration (similar to GFV3JDBCOnePager#section-GFV3JDBCOnePager-4.1.11PingPoolDuringCreation)? </td> 
+         <td class="confluenceTd"> ping=true attribute will ping and indicate the results. It does not prevent the reconfiguration of faulty values. This will be a nice RFE. Also, AFAIK, it is not possible to prevent the configuration from getting updated in domain.xml as backend will get the event only after the configuration is updated in domain.xml </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.1.9 </td> 
+         <td class="confluenceTd"> Clarification </td> 
+         <td class="confluenceTd"> Clarify explicitly that this is available for DataSourceDefinition reconfiguration too. </td> 
+         <td class="confluenceTd"> This is already stated in the datasource-definition section. "Also, with the help of transparent-jdbc-connection-pool-redeployment capability, changes to database specific configuration can also be handled transparent to application." </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.5.1 </td> 
+         <td class="confluenceTd"> Suggestion </td> 
+         <td class="confluenceTd"> rename list-application-scoped-resources to list-app-scoped-resources or list-app-resources to align with other commands? </td> 
+         <td class="confluenceTd"> We prefer application-scoped-resources and hence change the flag name for "deploy" command </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.7 </td> 
+         <td class="confluenceTd"> Clarification </td> 
+         <td class="confluenceTd"> GUI support: why should "Introspect" explicitly be selected? Can't this be the default? </td> 
+         <td class="confluenceTd"> This is not the default as of now, as we had introduced dbvendor.properties to get the default classnames for common databases. Introspect, in a few cases lists many classnames in a list. First time users might have to refer the documentation for commonly used classnames to use in his application. That is the reason why a classname is chosen as default from the pre-defined list. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.7 </td> 
+         <td class="confluenceTd"> Clarification </td> 
+         <td class="confluenceTd"> Config impact: GFV31ConnectorsJDBC_DTD_jdbc-connection-pool : use of the word "default" twice in statement-leak-timeout-in-seconds description. Do we need to say statement-leak-timeout-in-seconds must be greater than statement-timeout-in-seconds here? </td> 
+         <td class="confluenceTd"> Will correct this in the one pager. Will also add the recommendations to the DTD. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.7 </td> 
+         <td class="confluenceTd"> Enhancement </td> 
+         <td class="confluenceTd"> GFV31ConnectorsJDBC_DTD_data-source-definition When we persist a datasource definition in domain.xml, why can't we persist it as a jdbc-connection-pool? That way the user gets so much more richer information during re-configuration and monitoring? </td> 
+         <td class="confluenceTd"> We do not allow other naming scopes (module/comp) in jdbc-resources/pools in application-scoped-resources. We do not have @DSD's equivalent way in glassfish-resources.xml to define "java:comp" scope for resources. We will have to generate two artifacts (jdbc-resource and jdbc-connection-pool) to represent a @DSD. Since @DSD is internally making use of GlassFish's connection-pool, all of the monitoring statistics will still be available. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.7 </td> 
+         <td class="confluenceTd"> Clarification </td> 
+         <td class="confluenceTd"> DTD changes for glassfish-resources_1_4.dtd: can we remove this because these changes are available in the next bullet item? </td> 
+         <td class="confluenceTd"> No. The plan is to have an glassfish-* equivalent version of existing sun-* equivalent and a new version of glassfish-* for new additions to DTD. UPDATE : With the recent discussions in <a href="http://glassfish.markmail.org/search/?q=list%3Anet.java.dev.glassfish.dev%22DTDnamechangesandtheDOCTYPE%22#query:list%3Anet.java.dev.glassfish.dev%20%22DTD%20name%20changes%20and%20the%20DOCTYPE%22page:1mid:c2vc2xyph7ic4zs6state:results">dev@GF </a>, it is decided to provide only one version of glassfish-* equivalent version for both the cases ie., renaming and adding new attributes/elements. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 17, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GFV3DocMinutes12_05_07</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GFV3DocMinutes12_05_07-GlassFishv3DocumentationPlanningMinutes12%2F05%2F07"></a>GlassFish v3 Documentation Planning Minutes - 12/05/07</h2> <h4><a name="GFV3DocMinutes12_05_07-Attendees"></a>Attendees</h3> <p>Ian, Alan, Paul, Dixie, Rajeev, Gail, Hanan, Jennifer, June</p> <h4><a name="GFV3DocMinutes12_05_07-Agenda"></a>Agenda</h3> 
+     <ul> 
+      <li>Read through GlassFish v3 <a href="PlanForGlassFishV3.html" title="PlanForGlassFishV3">design docs and info</a> and come to the meeting ready to list topic areas for the brainstorming sessions, who should be involved, and how to kick the sessions off</li> 
+     </ul> <h4><a name="GFV3DocMinutes12_05_07-DiscussionSummary"></a>Discussion Summary</h3> 
+     <ul> 
+      <li>Current activity: Look at <a href="GlassFishV3Requirements.html" title="GlassFishV3Requirements">GlassFish v3 Requirements</a> page; pull topic areas from that page (items listed in the first column of the table), then pull task ideas from those high-level topic areas</li> 
+     </ul> 
+     <ul> 
+      <li>Looking at the first column in the table on the v3 requirements page, it would seem that each topic area (category) might be the subject of each session; each topic area has a list of features (click the link for each in the table)</li> 
+     </ul> 
+     <ul> 
+      <li>There's only about a dozen categories; most categories seem to have about a dozen features (except admin infrastructure, which is huge and will need to be divided into subcategories)</li> 
+     </ul> 
+     <ul> 
+      <li>Each feature has a task analysis; each task analysis results in a list of tasks</li> 
+     </ul> 
+     <ul> 
+      <li>Idea is to take each topic area (category) and come up with a list of tasks: each topic area would be the focus of an individual brainstorming session, during which the list of tasks would be brainstormed and identified</li> 
+     </ul> 
+     <ul> 
+      <li>As we go through and identify topic areas and associated tasks, we should cross-reference the list we're working with on the <a href="GlassFishV3Requirements.html" title="GlassFishV3Requirements">v3 requirements</a> page with the information on the <a href="GLassFishV3Distributions.html" title="GLassFishV3Distributions">v3 distributions</a> page</li> 
+     </ul> 
+     <ul> 
+      <li>Key participants need to be indentified for each brainstorming session, i.e., SMEs from development engineering, QA, product management, support, usability, and the community</li> 
+     </ul> 
+     <ul> 
+      <li>Goal would be to keep sessions to 1 hour; come up with an initial timetable for the sessions and adjust that as we see how long these sessions actually take; start the sessions in January</li> 
+     </ul> 
+     <ul> 
+      <li>Question: Are we doing a task analysis on the entire product or just new functionality in GF v3? Discussed but no definitive conclusion.</li> 
+     </ul> 
+     <ul> 
+      <li>One thought: If we identify all related tasks in each topic category, we should be able to cover the entire product</li> 
+     </ul> 
+     <ul> 
+      <li>Look at features in GlassFish and try to identify all of the tasks you can perform with those features; might be in existing product or might be related to new functionality in v3</li> 
+     </ul> 
+     <ul> 
+      <li>Group identified good candidates for the initial brainstorming sessions, i.e., those topic areas in the left column of the table on the <a href="GlassFishV3Requirements.html" title="GlassFishV3Requirements">v3 requirements</a> page that have smaller lists of features (again, administration is the exception): 
+       <ul> 
+        <li>Administration (broken into subcategories which are TBD)</li> 
+        <li>Application Client Container</li> 
+        <li>Deployment</li> 
+        <li>Diagnostics</li> 
+        <li>High Availability</li> 
+        <li>Installer</li> 
+        <li>Security</li> 
+        <li>Web Services</li> 
+        <li>Web Tier</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li>The above list of topic areas will be presented to the v3 planning committee; will present proposal and recruit participants for the brainstorm sessions</li> 
+     </ul> 
+     <ul> 
+      <li>One point: We're creating task-based docs and looking at rearchitecting the entire doc set; we don't want to recreate exactly what we have now: Dev Guide, Admin Guide, etc. based on the feature list</li> 
+     </ul> 
+     <ul> 
+      <li>Using administration as an example, we should focus on tasks users are actually trying to accomplish (i.e., some kind of goal that has an associated series of tasks or sequence of operations with an end goal in mind) rather than thinking in terms of admin GUI and CLI; don't think in terms of GUI/CLI (console/core) but rather in terms of user goals</li> 
+     </ul> 
+     <ul> 
+      <li>Don't mistake the method you use to accomplish the task with the task category itself; focus on the goal the user wants to achieve (don't get lost in implementation details, i.e., whether I use the CLI or the GUI to accomplish the task/goal)</li> 
+     </ul> 
+     <ul> 
+      <li>For instance, if dividing up by the separate categories of admin console and admin core and coming up with a task list for each category, some of the tasks you come up with for admin core would be repeated in admin console; should think of admin in the abstract rather than how it's implemented (i.e., there are differences between the GUI and CLI but the end result/goal is the same)</li> 
+     </ul> 
+     <ul> 
+      <li>This process could very well mean major changes to the doc set. For instance, will we still have something called the Admin Guide? Don't know! The task analysis will determine what we need; don't want to prejudice the outcome, but start with a clean slate and take it from there; everything's on the table</li> 
+     </ul> 
+     <ul> 
+      <li>General process: 
+       <ul> 
+        <li>Identify topic areas for brainstorm session (see the preliminary list above)</li> 
+        <li>Indentify key participants</li> 
+        <li>Provide pre-meeting info to participants to prepare them for the goal of the meeting: What do people do with these features? (tasks)</li> 
+        <li>Set a time for the meeting, state the purpose, provide introductory remarks to reinforce the purpose of the meeting, let the ideas flow!</li> 
+       </ul> </li> 
+     </ul> <p><b>Next Steps</b></p> 
+     <ul> 
+      <li>Present the proposed topic list to the v3 planning committee</li> 
+      <li>Reconvene these doc planning meetings in January to finalize topic list, key participants, meeting timeline, etc.</li> 
+      <li>Kick off brainstorming sessions in January</li> 
+      <li>Between now and then, raise any issues, suggestions, thoughts, etc. on the <span class="error">[docs@glassfish.java.net]</span> mailing list to keep the discussion going</li> 
+     </ul> <h4><a name="GFV3DocMinutes12_05_07-CommunityCommentsandSuggestions%3F"></a>Community Comments and Suggestions?</h2> <p>Any thoughts about this discussion? About GlassFish v3 docs? Please join the conversation! You can do that in several ways:</p> 
+     <ul> 
+      <li>Add your comments to this wiki page</li> 
+      <li>Participate in these discussions; details are posted on the GlassFish v3 docs <a href="./GlassFishV3DocMeetings.html">meeting page</a></li> 
+      <li>Use the <span class="error">[docs@glassfish.java.net]</span> mailing list</li> 
+     </ul> <p>Documentation is a community effort, and contributions can be small or large, from writing a HowTo topic to collaborating on a larger guide. If you're interested in docs, we'd love to hear from you.</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 09, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:44.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

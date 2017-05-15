@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : InstallationGuide</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="InstallationGuide-InstallationGuideCommentsPage"></a>Installation Guide Comments Page</h2> <p>The Installation Guide explains how to install and uninstall the GlassFish software.</p> <p><b>The latest review version of this document is available in <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874955/21364968.pdf">PDF</a> format.</b> This version applies to GlassFish v3. Comments on this version will be considered for a future update. </p> <p>The published version of the guide is available in <a href="http://docs.sun.com/doc/820-7690">HTML</a> and <a href="http://dlc.sun.com/pdf/820-7690/820-7690.pdf">PDF</a> formats.</p> <h4><a name="InstallationGuide-Comments"></a>Comments</h2> <p>Your comments are important. Use this page to identify information that is incorrect and to make suggestions for how the document could be improved.</p> <p>Please add your comments to the table in the format used below. Review existing comments in the table to see known issues and avoid duplicates.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Comment ID </th> 
+         <th class="confluenceTh"> Date </th> 
+         <th class="confluenceTh"> Version </th> 
+         <th class="confluenceTh"> Section, Page Number/URL </th> 
+         <th class="confluenceTh"> Comment </th> 
+         <th class="confluenceTh">Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Example: <em>jsmith-01</em> </td> 
+         <td class="confluenceTd"> <em>Date comment entered</em> </td> 
+         <td class="confluenceTd"> <em>Version (v2 or v3)</em> </td> 
+         <td class="confluenceTd"> <em>Detailed pointer to location in the doc</em> </td> 
+         <td class="confluenceTd"> <em>Detailed comment (with proposed fix and correct content if applicable)</em> </td> 
+         <td class="confluenceTd"><em>Leave blank – the writer will provide status</em> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Sathyan Catari-01 </td> 
+         <td class="confluenceTd"> 12/04/09 </td> 
+         <td class="confluenceTd"> V3 </td> 
+         <td class="confluenceTd"> Document Front page </td> 
+         <td class="confluenceTd"> Why not use a generic product name instead of "Sun GlassFish Enterprise Server.." as these instructions apply to all the bundles that use this installer. </td> 
+         <td class="confluenceTd"><font color="orange">REJECTED</font> Product docs are for the Sun branded version (and published on a Sun-branded site ). As a service to the community, they are also made available to users of the community version. The same is true for all docs. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Sathyan Catari-02 </td> 
+         <td class="confluenceTd"> 12/04/09 </td> 
+         <td class="confluenceTd"> V3 </td> 
+         <td class="confluenceTd"> Page 8, Symbolic convention table. </td> 
+         <td class="confluenceTd"> Most of these symbols are not used in this document. Also if this is taken from a product wide table, than that needs correction. OS specific keys are to be mentioned here. For ex. does Ctrl+A+N apply to Mac also? </td> 
+         <td class="confluenceTd"><font color="orange">REJECTED</font> The purpose of this table is to explain the difference between + and - in a sequence of key strokes in the documentation. The purpose is not to explain what the effect of Ctrl+A+N might be. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Sathyan Catari-03 </td> 
+         <td class="confluenceTd"> 12/04/09 </td> 
+         <td class="confluenceTd"> V3 </td> 
+         <td class="confluenceTd"> Page 9, Table P-4 </td> 
+         <td class="confluenceTd"> Why not refer to as-install-parent when describing as-install instead of hard-coding the paths? </td> 
+         <td class="confluenceTd"><font color="orange">REJECTED</font> Because throughout the documentation, as-install is used assuming that the domains subdir is included. To change this now would be too disruptive. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Sathyan Catari-04 </td> 
+         <td class="confluenceTd"> 12/04/09 </td> 
+         <td class="confluenceTd"> V3 </td> 
+         <td class="confluenceTd"> Page 13, Step 4. </td> 
+         <td class="confluenceTd"> Please use a zip file as an example along with unzip command, not a .sh file. </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> Made this change. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Sathyan Catari-05 </td> 
+         <td class="confluenceTd"> 12/04/09 </td> 
+         <td class="confluenceTd"> V3 </td> 
+         <td class="confluenceTd"> Page 14, "Using Enterprise Server GUI Installation..." </td> 
+         <td class="confluenceTd"> Under the heading, specify console mode is not supported and there is silent mode installation available. Replace "self-extracting file" with "self-extracting installation program". </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> Made this change. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Sathyan Catari-06 </td> 
+         <td class="confluenceTd"> 12/04/09 </td> 
+         <td class="confluenceTd"> V3 </td> 
+         <td class="confluenceTd"> Page 15, Step 4 about Windows systems. </td> 
+         <td class="confluenceTd"> We should add this note. " If you are installing on a 64 bit Windows OS, please make sure that you run the installer with -j option pointing to a 64 bit JDK." </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> Made this change. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Sathyan Catari-07 </td> 
+         <td class="confluenceTd"> 12/04/09 </td> 
+         <td class="confluenceTd"> V3 </td> 
+         <td class="confluenceTd"> Page 16, Step 6. </td> 
+         <td class="confluenceTd"> Replace c:\glassfishv3 with "SystemDrive:\glassfishv3". </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> Made this change. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Sathyan Catari-08 </td> 
+         <td class="confluenceTd"> 12/04/09 </td> 
+         <td class="confluenceTd"> V3 </td> 
+         <td class="confluenceTd"> Page 16, Step 7. </td> 
+         <td class="confluenceTd"> Replace ".... leave Username as it is..." with "... leave Username as "admin".. </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> Made this change. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Sathyan Catari-09 </td> 
+         <td class="confluenceTd"> 12/04/09 </td> 
+         <td class="confluenceTd"> V3 </td> 
+         <td class="confluenceTd"> Page 17, Step 11, NOTE: </td> 
+         <td class="confluenceTd"> We should advice them explicitly to select "Skip Registration" option during installation. </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> Made this change. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Sathyan Catari-10 </td> 
+         <td class="confluenceTd"> 12/04/09 </td> 
+         <td class="confluenceTd"> V3 </td> 
+         <td class="confluenceTd"> Page 17, Step 12. </td> 
+         <td class="confluenceTd"> Replace "..in the.." with "..under the.." </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> Made this change. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Sathyan Catari-11 </td> 
+         <td class="confluenceTd"> 12/04/09 </td> 
+         <td class="confluenceTd"> V3 </td> 
+         <td class="confluenceTd"> Page 18,19,20 has duplicate installation instructions as 14,15,16 </td> 
+         <td class="confluenceTd"> We should have a single section with instructions and ask the users to refer here. Simultaneously let them know the difference between GUI installation and the Silent installation. </td> 
+         <td class="confluenceTd"><font color="red">UNRESOLVED</font> Enhancement to be considered for a future release. Wasn't time for v3. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Sathyan Catari-12 </td> 
+         <td class="confluenceTd"> 12/04/09 </td> 
+         <td class="confluenceTd"> V3 </td> 
+         <td class="confluenceTd"> Page 21, Step 9. </td> 
+         <td class="confluenceTd"> Replace "..in the.." with "..under the.." </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> Made this change. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Sathyan Catari-13 </td> 
+         <td class="confluenceTd"> 12/04/09 </td> 
+         <td class="confluenceTd"> V3 </td> 
+         <td class="confluenceTd"> Page 22, Remark 1-10. </td> 
+         <td class="confluenceTd"> Answer is "Yes, but remove any entries in the answer file that have the word "ANONYMOUS.." in them. </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> Made this change. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Sathyan Catari-14 </td> 
+         <td class="confluenceTd"> 12/04/09 </td> 
+         <td class="confluenceTd"> V3 </td> 
+         <td class="confluenceTd"> Page 23, Remark 1-14 </td> 
+         <td class="confluenceTd"> Answer is "It will disrupt the installation program". </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> Made this change. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Sathyan Catari-15 </td> 
+         <td class="confluenceTd"> 12/04/09 </td> 
+         <td class="confluenceTd"> V3 </td> 
+         <td class="confluenceTd"> Page 23, question about JDK_TYPED_IN_CHOICE </td> 
+         <td class="confluenceTd"> answer is "Yes" </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Sathyan Catari-16 </td> 
+         <td class="confluenceTd"> 12/04/09 </td> 
+         <td class="confluenceTd"> V3 </td> 
+         <td class="confluenceTd"> Page 24, Step 3. </td> 
+         <td class="confluenceTd"> Please remove the "note" as I don't see how it fits here. </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> Made this change. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Sathyan Catari-17 </td> 
+         <td class="confluenceTd"> 12/04/09 </td> 
+         <td class="confluenceTd"> V3 </td> 
+         <td class="confluenceTd"> Page 24/25, Installation setup options. </td> 
+         <td class="confluenceTd"> I think this should be moved to page 15, where there are instructions on how to launch the installer. </td> 
+         <td class="confluenceTd"><font color="red">UNRESOLVED</font> Enhancement to be considered for a future release. Wasn't time for v3. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Sathyan Catari-18 </td> 
+         <td class="confluenceTd"> 12/04/09 </td> 
+         <td class="confluenceTd"> V3 </td> 
+         <td class="confluenceTd"> Page 27, Remark 2-1. </td> 
+         <td class="confluenceTd"> Yes, instruct them to just delete the directory. </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> Made this change. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Sathyan Catari-19 </td> 
+         <td class="confluenceTd"> 12/04/09 </td> 
+         <td class="confluenceTd"> V3 </td> 
+         <td class="confluenceTd"> Page 27, Before you Begin </td> 
+         <td class="confluenceTd"> Please update with instructions on how to stop updatetool. </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> Made this change. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Sathyan Catari-20 </td> 
+         <td class="confluenceTd"> 12/04/09 </td> 
+         <td class="confluenceTd"> V3 </td> 
+         <td class="confluenceTd"> Page 27, Step 4. </td> 
+         <td class="confluenceTd"> This is an important step, I would like it to be highlighted. Probably a NOTE should do? </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> Made this change. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> -- </td> 
+         <td class="confluenceTd"> -- </td> 
+         <td class="confluenceTd"> -- </td> 
+         <td class="confluenceTd"> -- </td> 
+         <td class="confluenceTd"> -- </td> 
+         <td class="confluenceTd"> -- </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> -- </td> 
+         <td class="confluenceTd"> -- </td> 
+         <td class="confluenceTd"> -- </td> 
+         <td class="confluenceTd"> -- </td> 
+         <td class="confluenceTd"> -- </td> 
+         <td class="confluenceTd"> -- </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> -- </td> 
+         <td class="confluenceTd"> -- </td> 
+         <td class="confluenceTd"> -- </td> 
+         <td class="confluenceTd"> -- </td> 
+         <td class="confluenceTd"> -- </td> 
+         <td class="confluenceTd"> -- </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> -- </td> 
+         <td class="confluenceTd"> -- </td> 
+         <td class="confluenceTd"> -- </td> 
+         <td class="confluenceTd"> -- </td> 
+         <td class="confluenceTd"> -- </td> 
+         <td class="confluenceTd"> -- </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> -- </td> 
+         <td class="confluenceTd"> -- </td> 
+         <td class="confluenceTd"> -- </td> 
+         <td class="confluenceTd"> -- </td> 
+         <td class="confluenceTd"> -- </td> 
+         <td class="confluenceTd"> -- </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> -- </td> 
+         <td class="confluenceTd"> -- </td> 
+         <td class="confluenceTd"> -- </td> 
+         <td class="confluenceTd"> -- </td> 
+         <td class="confluenceTd"> -- </td> 
+         <td class="confluenceTd"> -- </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> -- </td> 
+         <td class="confluenceTd"> -- </td> 
+         <td class="confluenceTd"> -- </td> 
+         <td class="confluenceTd"> -- </td> 
+         <td class="confluenceTd"> -- </td> 
+         <td class="confluenceTd"> -- </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p><a href="InstallationGuideResolved.html" title="InstallationGuideResolved">Resolved comments</a> for a previous version of the document</p> <p><a href="GlassFishDocs.html" title="GlassFishDocs">Main comments page</a></p> 
+     <hr> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874955/21364968.pdf">SJSASEEIG.pdf</a> (application/pdf) 
+      <br> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 02, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFishV3.1LoggingDocPlan</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GlassFishV3.1LoggingDocPlan-LoggingDocumentationPlanforGlassFishServerOpenSourceEdition3.1"></a><em>Logging</em> Documentation Plan for GlassFish Server Open Source Edition 3.1</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#GlassFishV3.1LoggingDocPlan-LoggingDocumentationPlanforGlassFishServerOpenSourceEdition3.1"> <em>Logging</em> Documentation Plan for GlassFish Server Open Source Edition 3.1</a></li> 
+       <ul> 
+        <li><a href="#GlassFishV3.1LoggingDocPlan-PeopleandRoles">People and Roles</a></li> 
+        <li><a href="#GlassFishV3.1LoggingDocPlan-Audience">Audience</a></li> 
+        <li><a href="#GlassFishV3.1LoggingDocPlan-SummaryoftheFeatureFromaUser%27sPerspective">Summary of the Feature From a User's Perspective</a></li> 
+        <li><a href="#GlassFishV3.1LoggingDocPlan-Availability">Availability</a></li> 
+        <li><a href="#GlassFishV3.1LoggingDocPlan-StatementofWork">Statement of Work</a></li> 
+        <ul> 
+         <li><a href="#GlassFishV3.1LoggingDocPlan-ChangestoBooks">Changes to Books</a></li> 
+         <ul> 
+          <li><a href="#GlassFishV3.1LoggingDocPlan-ErrorMessageReferenceChanges"> <em>Error Message Reference</em> Changes</a></li> 
+          <li><a href="#GlassFishV3.1LoggingDocPlan-AdministrationGuideChanges"> <em>Administration Guide</em> Changes</a></li> 
+          <li><a href="#GlassFishV3.1LoggingDocPlan-TroubleshootingGuideChanges"> <em>Troubleshooting Guide</em> Changes</a></li> 
+         </ul> 
+         <li><a href="#GlassFishV3.1LoggingDocPlan-ChangestomanPages">Changes to man Pages</a></li> 
+         <ul> 
+          <li><a href="#GlassFishV3.1LoggingDocPlan-asadminmanPageChanges"> <em>asadmin man Page</em> Changes</a></li> 
+         </ul> 
+         <li><a href="#GlassFishV3.1LoggingDocPlan-ChangestoOnlineHelp">Changes to Online Help</a></li> 
+         <ul> 
+          <li><a href="#GlassFishV3.1LoggingDocPlan-AdminConsoleOnlineHelpChanges"> <em>Admin Console Online Help</em> Changes</a></li> 
+         </ul> 
+        </ul> 
+        <li><a href="#GlassFishV3.1LoggingDocPlan-ReviewSchedule">Review Schedule</a></li> 
+        <li><a href="#GlassFishV3.1LoggingDocPlan-RelatedInformation">Related Information</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="GlassFishV3.1LoggingDocPlan-PeopleandRoles"></a>People and Roles</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Name </th> 
+         <th class="confluenceTh"> Role </th> 
+         <th class="confluenceTh"> Location </th> 
+         <th class="confluenceTh"> Time Zone </th> 
+         <th class="confluenceTh"> Email </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Scott Fordin </td> 
+         <td class="confluenceTd"> Documentation Feature Owner </td> 
+         <td class="confluenceTd"> Burlington, MA, USA </td> 
+         <td class="confluenceTd"> US/Eastern </td> 
+         <td class="confluenceTd"> <tt>sfordin@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Paul Davies </td> 
+         <td class="confluenceTd"> Peer Reviewer </td> 
+         <td class="confluenceTd"> Santa Clara, CA, USA </td> 
+         <td class="confluenceTd"> US/Pacific </td> 
+         <td class="confluenceTd"> <tt>pauldavies@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Naman Mehta </td> 
+         <td class="confluenceTd"> Feature Lead </td> 
+         <td class="confluenceTd"> Santa Clara, CA, USA </td> 
+         <td class="confluenceTd"> US/Pacific </td> 
+         <td class="confluenceTd"> <tt>namanmehta@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Anissa Lam </td> 
+         <td class="confluenceTd"> Software Engineer </td> 
+         <td class="confluenceTd"> Santa Clara, CA, USA </td> 
+         <td class="confluenceTd"> US/Pacific </td> 
+         <td class="confluenceTd"> <tt>anilam@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Vince Kraemer </td> 
+         <td class="confluenceTd"> Software Engineer </td> 
+         <td class="confluenceTd"> Santa Clara, CA, USA </td> 
+         <td class="confluenceTd"> US/Pacific </td> 
+         <td class="confluenceTd"> <tt>VinceKraemer@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Jerome Dochez </td> 
+         <td class="confluenceTd"> Software Engineer </td> 
+         <td class="confluenceTd"> Santa Clara, CA, USA </td> 
+         <td class="confluenceTd"> US/pacific </td> 
+         <td class="confluenceTd"> <tt>dochez@dev.java.net</tt> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3.1LoggingDocPlan-Audience"></a>Audience</h2> <p>This feature is aimed at system administrators, application developers, and product support engineers.</p> <h4><a name="GlassFishV3.1LoggingDocPlan-SummaryoftheFeatureFromaUser%27sPerspective"></a>Summary of the Feature From a User's Perspective</h2> <p>The Logging &amp; Diagnostic components provide GUI and command-line tools for configuring, searching, viewing, and archiving server logs. These features will be available for standalone instances, DAS, and cluster nodes.</p> <h4><a name="GlassFishV3.1LoggingDocPlan-Availability"></a>Availability</h2> <p>This feature is available in all GlassFish Server distributions.</p> <h4><a name="GlassFishV3.1LoggingDocPlan-StatementofWork"></a>Statement of Work</h2> <p>This section describes in detail for each document the work that is required by the introduction of the feature, such as changes, addition of new material, relocation of existing material, and removal of existing material.</p> <p>Documentation Impact:</p> 
+     <ul> 
+      <li>None</li> 
+      <li>Minor</li> 
+      <li>Moderate</li> 
+      <li>Major</li> 
+      <li>New</li> 
+     </ul> 
+     <hr> <p><b>Note -</b> If a document is task based (as opposed to reference), the changes should be determined from the user task analysis for the feature.</p> 
+     <hr> <h4><a name="GlassFishV3.1LoggingDocPlan-ChangestoBooks"></a>Changes to Books</h3> <h4><a name="GlassFishV3.1LoggingDocPlan-ErrorMessageReferenceChanges"></a><em>Error Message Reference</em> Changes</h4> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Section </th> 
+         <th class="confluenceTh"> Documentation Impact </th> 
+         <th class="confluenceTh"> Writer </th> 
+         <th class="confluenceTh"> Reviewers </th> 
+         <th class="confluenceTh"> Description of Change </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Message IDs and Diagnostic Information </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> All reviewers </td> 
+         <td class="confluenceTd"> Entire book will be regenerated from properties files. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3.1LoggingDocPlan-AdministrationGuideChanges"></a><em>Administration Guide</em> Changes</h4> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Section </th> 
+         <th class="confluenceTh"> Documentation Impact </th> 
+         <th class="confluenceTh"> Writer </th> 
+         <th class="confluenceTh"> Reviewers </th> 
+         <th class="confluenceTh"> Description of Change </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 7, Administering the Logging Service </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &nbsp;&nbsp;&nbsp;About Logging, Logging Targets </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> All reviewers </td> 
+         <td class="confluenceTd"> New subsection to introduce concept of targets, logging.properties per instance/node target. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &nbsp;&nbsp;&nbsp;Setting Log Levels </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Naman, Anissa </td> 
+         <td class="confluenceTd"> Explain setting levels per instance/node target. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &nbsp;&nbsp;&nbsp;Viewing Log Records </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Naman, Anissa </td> 
+         <td class="confluenceTd"> New search filters, ZIP file compilation. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &nbsp;&nbsp;&nbsp;Viewing Log Records </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Naman, Anissa </td> 
+         <td class="confluenceTd"> Explanations corresponding to 2.1.1 features: <tt>display-log-records</tt>, <tt>display-error-distributions</tt>, <tt>display-error-statistics</tt>. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &nbsp;&nbsp;&nbsp;Compiling Log Records Into a ZIP File </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Naman, Anissa </td> 
+         <td class="confluenceTd"> Explain how to use new ZIP compilation feature. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Appendix A., Subcommands for the asadmin Utility </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &nbsp;&nbsp;&nbsp;<tt>set-log-levels</tt> </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Naman, Anissa </td> 
+         <td class="confluenceTd"> Rename; add <tt>--target</tt> option. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &nbsp;&nbsp;&nbsp;<tt>list-log-levels</tt> </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Naman, Anissa </td> 
+         <td class="confluenceTd"> Rename; add <tt>--target</tt> option. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &nbsp;&nbsp;&nbsp;<tt>display-log-records</tt> </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Naman, Anissa </td> 
+         <td class="confluenceTd"> Pull in from 2.1.1; rework for 3.0.1, add <tt>--target</tt> option. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &nbsp;&nbsp;&nbsp;<tt>display-error-distributions</tt> </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Naman, Anissa </td> 
+         <td class="confluenceTd"> Pull in from 2.1.1; rework for 3.0.1, add <tt>--target</tt> option. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &nbsp;&nbsp;&nbsp;<tt>display-error-statistics</tt> </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Naman, Anissa </td> 
+         <td class="confluenceTd"> Pull in from 2.1.1; rework for 3.0.1, add <tt>--target</tt> option. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &nbsp;&nbsp;&nbsp;<tt>collect-log-files</tt> </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Naman, Anissa </td> 
+         <td class="confluenceTd"> New subcommand for compiling logs into ZIP file. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3.1LoggingDocPlan-TroubleshootingGuideChanges"></a><em>Troubleshooting Guide</em> Changes</h4> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Section </th> 
+         <th class="confluenceTh"> Documentation Impact </th> 
+         <th class="confluenceTh"> Writer </th> 
+         <th class="confluenceTh"> Reviewers </th> 
+         <th class="confluenceTh"> Description of Change </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Examining Log Files, in Chapter 1 </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Anissa </td> 
+         <td class="confluenceTd"> Add description of node options, ZIP file compilation. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3.1LoggingDocPlan-ChangestomanPages"></a>Changes to man Pages</h3> <h4><a name="GlassFishV3.1LoggingDocPlan-asadminmanPageChanges"></a><em>asadmin man Page</em> Changes</h4> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Topic Title </th> 
+         <th class="confluenceTh"> Documentation Impact </th> 
+         <th class="confluenceTh"> Writer </th> 
+         <th class="confluenceTh"> Reviewers </th> 
+         <th class="confluenceTh"> Description of Change </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>set-log-levels</tt> </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Naman, Anissa </td> 
+         <td class="confluenceTd"> Rename; add <tt>--target</tt> option. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>list-log-levels</tt> </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Naman, Anissa </td> 
+         <td class="confluenceTd"> Rename; add <tt>--target</tt> option. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>display-log-records</tt> </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Naman, Anissa </td> 
+         <td class="confluenceTd"> Pull in from 2.1.1; rework for 3.0.1, add <tt>--target</tt> option. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>display-error-distributions</tt> </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Naman, Anissa </td> 
+         <td class="confluenceTd"> Pull in from 2.1.1; rework for 3.0.1, add <tt>--target</tt> option. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>display-error-statistics</tt> </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Naman, Anissa </td> 
+         <td class="confluenceTd"> Pull in from 2.1.1; rework for 3.0.1, add <tt>--target</tt> option. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>collect-log-files</tt> </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Naman, Anissa </td> 
+         <td class="confluenceTd"> New subcommand for compiling logs into ZIP file. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3.1LoggingDocPlan-ChangestoOnlineHelp"></a>Changes to Online Help</h3> <h4><a name="GlassFishV3.1LoggingDocPlan-AdminConsoleOnlineHelpChanges"></a><em>Admin Console Online Help</em> Changes</h4> <p>See the <a href="GlassFishV3.1AdminConsoleDocPlan.html" title="GlassFishV3.1AdminConsoleDocPlan">GlassFish 3.1 Admin Console Doc Plan</a> for a list of Admin Console online help changes.</p> <h4><a name="GlassFishV3.1LoggingDocPlan-ReviewSchedule"></a>Review Schedule</h2> <p>The review schedule for the documentation items that are affected by this feature is provided in the following table.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item </th> 
+         <th class="confluenceTh"> Review Start Date </th> 
+         <th class="confluenceTh"> Review End Date </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Error Message Reference changes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Administration Guide changes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Troubleshooting Guide_ Changes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> asadmin man Page changes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Admin Console online help changes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>Reviewers are listed in the <em>Statement of Work</em>.</p> <p><img class="emoticon" src="images/icons/emoticons/information.gif" height="16" width="16" align="absmiddle" alt="" border="0"> Please use the <a href="GlassFishV3.1LoggingDocumentationReview.html" title="GlassFishV3.1LoggingDocumentationReview">Logging Documentation Review</a> page to provide your review comments on the Logging documentation deliverables.</p> <h4><a name="GlassFishV3.1LoggingDocPlan-RelatedInformation"></a>Related Information</h2> 
+     <ul> 
+      <li><a href="http://wiki.glassfish.java.net/attach/V3FunctionalSpecs/GFv3.1Logging-onepager.html">Logging &amp; Diagnostic One-Pager</a></li> 
+      <li><a href="3.1Logging.html" title="3.1Logging">Project page</a></li> 
+      <li><a href="./V3FunctionalSpecs.html">Product Functional Specifications</a></li> 
+      <li><a href="GlassFishV3.1AdminConsoleDocPlan.html" title="GlassFishV3.1AdminConsoleDocPlan">GlassFish 3.1 Admin Console Doc Plan</a></li> 
+      <li><a href="GlassFishV3.1LoggingDocumentationReview.html" title="GlassFishV3.1LoggingDocumentationReview">Logging Documentation Review Page</a></li> 
+     </ul> <p>Email aliases:</p> 
+     <ul> 
+      <li><a href="mailto:admin@glassfish.java.net">admin@glassfish.java.net</a></li> 
+      <li><a href="mailto:users@glassfish.java.net">users@glassfish.java.net</a></li> 
+      <li><a href="mailto:docs@glassfish.java.net">docs@glassfish.java.net</a></li> 
+     </ul> 
+     <hr> 
+     <div class="tabletitle"> 
+      <a name="comments"> <h4>Comments:</h2> </a> 
+     </div> 
+     <table border="0" width="100%"> 
+      <tbody>
+       <tr> 
+        <td> <a name="comment-20881511"></a> <font class="smallfont">
+          <div class="table-wrap"> 
+           <table class="confluenceTable">
+            <tbody> 
+             <tr> 
+              <th class="confluenceTh"> Comment ID <br class="atl-forced-newline"> </th> 
+              <th class="confluenceTh"> Section </th> 
+              <th class="confluenceTh"> Comment <br class="atl-forced-newline"> </th> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> PMD-001 </td> 
+              <td class="confluenceTd"> <em>Error Message Reference</em> Changes </td> 
+              <td class="confluenceTd"> As you'll have to regenerate the entire book from the properties files, change columns in this table as follows: <br class="atl-forced-newline"> 
+               <ul> 
+                <li>Change the Documentation Impact to New.</li> 
+                <li>Change the Description of Change to state that the entire book will be regenerated from the properties files.</li> 
+               </ul> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> PMD-002 </td> 
+              <td class="confluenceTd"> <em>Administration Guide</em> Changes: <br class="atl-forced-newline"> Chapter 7, Administering the Logging Service <br class="atl-forced-newline"> Appendix A., Subcommands for the asadmin Utility </td> 
+              <td class="confluenceTd"> If the sections that follow are listed in later rows are subsections of the chapter or appendix, delete the content of the other cells in the chapter or appendix row and and indent the content of the first column in each subsection row. That way, it'll be clearer that you are itemizing the individual changes in each chapter and appendix. This would be so much easier if wiki tables supported cell spans. <br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> PMD-003 </td> 
+              <td class="confluenceTd"> <em>Administration Guide</em> Changes, Viewing Log Records </td> 
+              <td class="confluenceTd"> Delete the references to the wiki feature. Log messages will be published in the <em>Error Message Reference</em>. The references in the 1-pager and the project page to publication of log messages in a wiki are erroneous. I have asked Naman to correct these errors. <br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> PMD-004 </td> 
+              <td class="confluenceTd"> <em>Administration Guide</em> Changes: set-log-level, list-logger-levels, display-log-records, display-error-distributions, and display-error-statistics </td> 
+              <td class="confluenceTd"> Ensure that the target option is preceded by 2 dashes. <br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> PMD-005 <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> <em>Reference Manual</em> Changes </td> 
+              <td class="confluenceTd"> Delete this section. The changes to man pages are propagated automatically to the Reference Manual without further intervention from the writer, so they do not need to be listed twice. <br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> PMD-006 <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> <em>Troubleshooting Guide</em> Changes </td> 
+              <td class="confluenceTd"> You can probably just delete the 1st row in this table and change the 1st column of the 2nd row to read "Examining Log Files in Chapter". <br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> PMD-007 <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> <em>Troubleshooting Guide</em> Changes </td> 
+              <td class="confluenceTd"> Delete the references to the wiki feature. See PMD-003 <br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> PMD-008 </td> 
+              <td class="confluenceTd"> Changes to Man Pages <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> Ensure that the target option is preceded by 2 dashes. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> PMD-009 <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> Changes to Online Help <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> Move the content of this section to the <a href="GlassFishV3.1AdminConsoleDocPlan.html" title="GlassFishV3.1AdminConsoleDocPlan">Administration Console Documentation Plan</a> and add a cross-reference to that plan. <br class="atl-forced-newline"> <br class="atl-forced-newline"> Determine the online help set to which the topics listed in <em>Log Viewer Online Help</em> Changes belong (probably common). There is no separate online help set for the log viewer. <br class="atl-forced-newline"> </td> 
+             </tr> 
+            </tbody>
+           </table> 
+          </div> </font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by pauldavies at Jul 28, 2010 17:00 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20878596"></a> <font class="smallfont">
+          <div class="table-wrap"> 
+           <table class="confluenceTable">
+            <tbody> 
+             <tr> 
+              <th class="confluenceTh"> Comment ID </th> 
+              <th class="confluenceTh"> Response </th> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> PMD-001 </td> 
+              <td class="confluenceTd"> Made requested changes to Impact and Description. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> PMD-002 </td> 
+              <td class="confluenceTd"> Made requested formatting changes. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> PMD-003 </td> 
+              <td class="confluenceTd"> Deleted all references to wiki feature. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> PMD-004 </td> 
+              <td class="confluenceTd"> Globally changed all <tt>target</tt> references to <tt>--target</tt>. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> PMD-005 </td> 
+              <td class="confluenceTd"> Deleted section. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> PMD-006 </td> 
+              <td class="confluenceTd"> Made requested formatting change. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> PMD-007 </td> 
+              <td class="confluenceTd"> See response to PMD-003. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> PMD-008 </td> 
+              <td class="confluenceTd"> See response to PMD-004. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> PMD-009 </td> 
+              <td class="confluenceTd"> Moved content to <a href="GlassFishV3.1AdminConsoleDocPlan.html" title="GlassFishV3.1AdminConsoleDocPlan">GlassFish 3.1 Admin Console Doc Plan</a>; fleshed out topics some more. </td> 
+             </tr> 
+            </tbody>
+           </table> 
+          </div> </font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by sfordin at Aug 18, 2010 14:27 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20881479"></a> <font class="smallfont"><p>Added link to the new <a href="GlassFishV3.1LoggingDocumentationReview.html" title="GlassFishV3.1LoggingDocumentationReview">Logging Documentation Review</a> page. Please use this page to provide comments on the Logging documentation deliverables.</p></font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by sfordin at Sep 28, 2010 12:43 
+         </div> </td> 
+       </tr> 
+      </tbody>
+     </table> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Sep 28, 2010 by 
+<font color="#0050B2">sfordin</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

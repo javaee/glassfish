@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : install-node and uninstall-node</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="install-nodeanduninstall-node-installnodeanduninstallnode"></a>install-node and uninstall-node</h1> <h4><a name="install-nodeanduninstall-node-Overviewofinstallnode"></a>Overview of install-node</h2> <p>Install node provisions GlassFish software on the host(s) specified as the operand to the command. The command creates an archive of the GlassFish installation, if needed, from the DAS installation. The location of the archive file can either be specified as an option, or defaulted to either the base root of the DAS installation, if writeable, or to the directory referred to by the system property java.io.tmpdir. The archive created does not contain the domains or nodes directory. These are synced when the instance is created and started. If multiple hosts are specified, they are all configured the same (in terms<br> of SSH credentials and install-location).</p> <h4><a name="install-nodeanduninstall-node-CommandUsage"></a>Command Usage</h3> <p>install-node doesn't store any configuration information in domain.xml. It is a local command with the following usage:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Usage: asadmin [asadmin-utility-options] install-node [--sshuser &lt;sshuser&gt;]
+	[--sshport &lt;sshport(default:22)&gt;] [--sshkeyfile &lt;sshkeyfile&gt;] 
+        [--archiveDir &lt;archive dir&gt;] [--interactive &lt;default:true&gt;]
+        [--install-location &lt;location to install&gt;]  [--recreate]
+	[-?|--help[=&lt;help(default:false)&gt;]] hosts ...</pre> 
+       </div> 
+      </div>
+     </div> <p>where the username is the username to use for the remote login (default: user id of asadmin user) port is the port of the sshd server on remote node (default: 22)sshkeyfile is the location of the private key file (default: $HOME/.ssh/id_rsa) archiveDir is the directory on the DAS where the archive is created (defaults to either the base-root of the installation if it is writeable or to the directory pointed to by the system property java.io.tmpdir) install-location - is The location on the remote system where the glassfish bundle will be installed. This directory corresponds to the top most glassfish<br> install directory, for example: "/opt/glassfishv3". (note the current implementation has bug where install-location is required to be the parent directory of glassfishv3, i.e."/opt" in this case). </p> <h4><a name="install-nodeanduninstall-node-Archivecreation"></a>Archive creation</h3> <p>The GlassFish archive is created from the DAS installation. To create the archive first we look at the archiveDir, if specified, and see if a glassfish.zip already exists. If it does then it will use the file at the location and not recreate the archive. If there is no glassfish.zipit is indeed writeable. If an archiveDir is specified, and is not writeable by the user as which the asadmin is running, then a CommandException will be thrown. If no archiveDir is specified, then the base root of the current installation is used as the location if it is writeable, else the location specified by the system property java.io.tmpdir is used. The base root is determined by the running the hidden command __locations. The archive contains all files relative to the glassfishv3 directory except the domains and nodes directories. The archive also contains the IPS meta-data (currently a bug in the implementation which we will fix) so the installation can be updated using the update center. There is a --recreate option which forces the creation of the archive even if one exists.</p> <h4><a name="install-nodeanduninstall-node-InstallLocation"></a>Install Location</h3> <p>The install-location, if specified, will be used as the location on the remote system to install the software. To the install location today we append glassfishv3/glassfish. If the directory does not exist, the directory for the install-location will be created and the bits will be unzipped at the location. After the installation occurs, the permissions for files in the glassfishv3/glassfish/bin directory are set so that the scripts can be executed. If there is already an installation of glassfish then the installation will fail with a CommandException and a message stating that an installation already exists at the specified location. If the directory specified via the install-location is not writeable by the user that the DAS is running as, a CommandException will be thrown with an error message indicating the same. If no install-location is specified, the default install location is the same location as the DAS.</p> <h4><a name="install-nodeanduninstall-node-Interactiveinstallnode"></a>Interactive install-node</h3> <p>In the case when the ssh keys have not been setup, the install-node commmand is interactive by default. The command, when run, will prompt for a password for the specified ssh user. There is a --interactive parameter that the command takes that can be used to run in non-interactive mode (for automation of scripts). In that case a password file can be specified where the ssh password / alias to the password is specified.</p> <h4><a name="install-nodeanduninstall-node-Examples"></a>Examples</h3> <p>Example 1: Where the ssh keys have been setup and the user name on the remote system is the same as the user that the DAS is running as.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin install-node  nine.us.oracle.com
+SSH public key authentication is already configured for the DAS on nine and the ssh user is assumed to be the same as the user that the DAS is running as.</pre> 
+       </div> 
+      </div>
+     </div> <p>Example 2: Specify a different sshuser</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin install-node  --sshuser=mode nine.us.oracle.com</pre> 
+       </div> 
+      </div>
+     </div> <p>Example 3: Specify a different sshuser and the password for the user is specified via the passwordfile. Can optionally be made non-interactive with --interactive=false</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin install-node  --sshuser=mode --passwordfile=/tmp/passwordfile nine.us.oracle.com</pre> 
+       </div> 
+      </div>
+     </div> <p>Example 4: Force recreation of archive and specify archiveDir</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin install-node  --recreate=true --archiveDir=/home/rajiv/tmp/glassfish-archive-dir nine.us.oracle.com</pre> 
+       </div> 
+      </div>
+     </div> <p>Example 5: Specify install-location</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">$ asadmin install-node  --recreate=true --install-location=/opt/glassfish3 nine.us.oracle.com</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="install-nodeanduninstall-node-Overviewofuninstallnode"></a>Overview of uninstall-node</h2> <p>The uninstall-node command uninstalls the glassfish software on the specified host(s). Before uninstalling the command validates that no nodes refer to the host in the configuration. If any node exists in the configuration that points to the specified host, then a CommandException is thrown indicating the same and asks the user to run delete-node-ssh before running uninstall-node.</p> <p>Command usage:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Usage: asadmin [asadmin-utility-options] uninstall-node [--sshuser &lt;sshuser&gt;]
+	[--sshport &lt;sshport(default:22)&gt;] [--sshkeyfile &lt;sshkeyfile&gt;]
+        [--install-location &lt;location to install&gt;]
+	[-?|--help[=&lt;help(default:false)&gt;]] hosts ...</pre> 
+       </div> 
+      </div>
+     </div> <p>The options to uninstall-node are almost the same as install-node. Except uninstall-node does not take an archiveDir parameter, interactive parameter and the recreate parameter.</p> <h4><a name="install-nodeanduninstall-node-Openissues"></a>Open issues</h2> 
+     <ul> 
+      <li>--install-location vs. create-node-ssh --installdir</li> 
+      <li>Should we support a "--install" and "--uninstall" option on create-node-ssh and delete-node-ssh? What about update-node-ssh when a node is created via create-node-config and then "upgraded" to an ssh node via update-node-ssh.</li> 
+     </ul> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Oct 06, 2010 by 
+<font color="#0050B2">rajivmordani</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

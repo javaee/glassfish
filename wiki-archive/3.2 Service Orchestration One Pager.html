@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : 3.2 Service Orchestration One Pager</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="3.2ServiceOrchestrationOnePager-3.2ServiceOrchestrationOnePager"></a>3.2 Service Orchestration One Pager</h1> <p>(Based on template version 1.92)</p> 
+     <div> 
+      <ul> 
+       <li><a href="#3.2ServiceOrchestrationOnePager-3.2ServiceOrchestrationOnePager">3.2 Service Orchestration One Pager</a></li> 
+       <li><a href="#3.2ServiceOrchestrationOnePager-1.Introduction">1. Introduction</a></li> 
+       <ul> 
+        <li><a href="#3.2ServiceOrchestrationOnePager-1.1.Project%2FComponentWorkingName%3A">1.1. Project/Component Working Name:</a></li> 
+        <li><a href="#3.2ServiceOrchestrationOnePager-1.2.Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier%3A">1.2. Name(s) and e-mail address of Document Author(s)/Supplier:</a></li> 
+        <li><a href="#3.2ServiceOrchestrationOnePager-1.3.DateofThisDocument%3A">1.3. Date of This Document:</a></li> 
+       </ul> 
+       <li><a href="#3.2ServiceOrchestrationOnePager-2.ProjectSummary">2. Project Summary</a></li> 
+       <ul> 
+        <li><a href="#3.2ServiceOrchestrationOnePager-2.1.ProjectDescription%3A">2.1. Project Description:</a></li> 
+        <li><a href="#3.2ServiceOrchestrationOnePager-2.2.RisksandAssumptions%3A">2.2. Risks and Assumptions:</a></li> 
+       </ul> 
+       <li><a href="#3.2ServiceOrchestrationOnePager-3.ProblemSummary">3. Problem Summary</a></li> 
+       <ul> 
+        <li><a href="#3.2ServiceOrchestrationOnePager-3.1.ProblemArea%3A">3.1. Problem Area:</a></li> 
+        <li><a href="#3.2ServiceOrchestrationOnePager-3.2.Justification%3A">3.2. Justification:</a></li> 
+       </ul> 
+       <li><a href="#3.2ServiceOrchestrationOnePager-4.TechnicalDescription%3A">4. Technical Description:</a></li> 
+       <ul> 
+        <li><a href="#3.2ServiceOrchestrationOnePager-4.1.Details%3A">4.1. Details:</a></li> 
+        <li><a href="#3.2ServiceOrchestrationOnePager-4.2.Bug%2FRFENumber%28s%29%3A">4.2. Bug/RFE Number(s):</a></li> 
+        <li><a href="#3.2ServiceOrchestrationOnePager-4.3.InScope%3A">4.3. In Scope:</a></li> 
+        <li><a href="#3.2ServiceOrchestrationOnePager-4.4.OutofScope%3A">4.4. Out of Scope:</a></li> 
+        <li><a href="#3.2ServiceOrchestrationOnePager-4.5.Interfaces%3A">4.5. Interfaces:</a></li> 
+        <ul> 
+         <li><a href="#3.2ServiceOrchestrationOnePager-4.5.1PublicInterfaces">4.5.1 Public Interfaces</a></li> 
+         <li><a href="#3.2ServiceOrchestrationOnePager-4.5.2PrivateInterfaces">4.5.2 Private Interfaces</a></li> 
+         <li><a href="#3.2ServiceOrchestrationOnePager-4.5.3Deprecated%2FRemovedInterfaces%3A">4.5.3 Deprecated/Removed Interfaces:</a></li> 
+        </ul> 
+        <li><a href="#3.2ServiceOrchestrationOnePager-4.6.DocImpact%3A">4.6. Doc Impact:</a></li> 
+        <li><a href="#3.2ServiceOrchestrationOnePager-4.7.Admin%2FConfigImpact%3A">4.7. Admin/Config Impact:</a></li> 
+        <li><a href="#3.2ServiceOrchestrationOnePager-4.8.HAImpact%3A">4.8. HA Impact:</a></li> 
+        <li><a href="#3.2ServiceOrchestrationOnePager-4.9.I18N%2FL10NImpact%3A">4.9. I18N/L10N Impact:</a></li> 
+        <li><a href="#3.2ServiceOrchestrationOnePager-4.10.Packaging%2CDelivery%26Upgrade%3A">4.10. Packaging, Delivery &amp; Upgrade:</a></li> 
+        <ul> 
+         <li><a href="#3.2ServiceOrchestrationOnePager-4.10.1.Packaging">4.10.1. Packaging</a></li> 
+         <li><a href="#3.2ServiceOrchestrationOnePager-4.10.2.Delivery">4.10.2. Delivery</a></li> 
+         <li><a href="#3.2ServiceOrchestrationOnePager-4.10.3.UpgradeandMigration%3A">4.10.3. Upgrade and Migration:</a></li> 
+        </ul> 
+        <li><a href="#3.2ServiceOrchestrationOnePager-4.11.SecurityImpact%3A">4.11. Security Impact:</a></li> 
+        <li><a href="#3.2ServiceOrchestrationOnePager-4.12.CompatibilityImpact">4.12. Compatibility Impact</a></li> 
+        <li><a href="#3.2ServiceOrchestrationOnePager-4.13.Dependencies%3A">4.13. Dependencies:</a></li> 
+        <ul> 
+         <li><a href="#3.2ServiceOrchestrationOnePager-4.13.1InternalDependencies">4.13.1 Internal Dependencies</a></li> 
+         <li><a href="#3.2ServiceOrchestrationOnePager-4.13.2ExternalDependencies">4.13.2 External Dependencies</a></li> 
+        </ul> 
+        <li><a href="#3.2ServiceOrchestrationOnePager-4.14.TestingImpact%3A">4.14. Testing Impact:</a></li> 
+       </ul> 
+       <li><a href="#3.2ServiceOrchestrationOnePager-5.ReferenceDocuments%3A">5. Reference Documents:</a></li> 
+       <li><a href="#3.2ServiceOrchestrationOnePager-6.Schedule%3A">6. Schedule:</a></li> 
+       <ul> 
+        <li><a href="#3.2ServiceOrchestrationOnePager-6.1.ProjectedAvailability%3A">6.1. Projected Availability:</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="3.2ServiceOrchestrationOnePager-1.Introduction"></a>1. Introduction</h1> <h4><a name="3.2ServiceOrchestrationOnePager-1.1.Project%2FComponentWorkingName%3A"></a>1.1. Project/Component Working Name:</h2> <p>GlassFish 3.2 Service Orchestration (Service Metadata, Provisioning and Association)</p> <h4><a name="3.2ServiceOrchestrationOnePager-1.2.Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier%3A"></a>1.2. Name(s) and e-mail address of Document Author(s)/Supplier:</h2> <p>Bhavanishankara Sapaliga: bhavanishankar@java.net<br> Jagadish Ramu: jr158900@java.net<br> Sanjeeb Sahoo: ss141213@java.net<br> Sivakumar Thyagarajan: sivakumart@java.net</p> <h4><a name="3.2ServiceOrchestrationOnePager-1.3.DateofThisDocument%3A"></a>1.3. Date of This Document:</h2> <p>04/25/10</p> <h4><a name="3.2ServiceOrchestrationOnePager-2.ProjectSummary"></a>2. Project Summary</h1> <h4><a name="3.2ServiceOrchestrationOnePager-2.1.ProjectDescription%3A"></a>2.1. Project Description:</h2> <p>Single-click application provisioning and deployment of a PaaS application through service dependency discovery, service provisioning and service association.</p> <p>See below for a longer, more detailed technical description.</p> <h4><a name="3.2ServiceOrchestrationOnePager-2.2.RisksandAssumptions%3A"></a>2.2. Risks and Assumptions:</h2> <p>The Service Orchestration layer of GlassFish 3.2 is dependent on the following set of new 3.2 infrastructure subsystems:</p> 
+     <ul> 
+      <li>the Virtualization/IaaS (using the Template catalog and the IMS API for provisioning VMs)</li> 
+      <li>PaaS Deployment(for integration of the Orchestrator into the Deployment SPI) and</li> 
+      <li>Administration/Management areas.</li> 
+     </ul> <p>The Deployment and the Elasticity teams also depend on the Service Orchestrator layer.</p> <p>Management of dependencies between these components under active development is a risk. Any delay in the delivery of the depended features will affect the delivery of this feature.</p> <h4><a name="3.2ServiceOrchestrationOnePager-3.ProblemSummary"></a>3. Problem Summary</h1> <h4><a name="3.2ServiceOrchestrationOnePager-3.1.ProblemArea%3A"></a>3.1. Problem Area:</h2> <p>The Wikipedia definition of PaaS <a href="http://en.wikipedia.org/wiki/Platform_as_a_service">states</a> the following as a key characteristic of a PaaS offering</p> 
+     <blockquote>
+      <p>"... facilitate deployment of applications without the cost and complexity of ... managing the underlying hardware and software and provisioning hosting capabilities, providing all of the facilities required to support the complete life cycle of building and delivering web applications and services".</p>
+     </blockquote> <p>The current GlassFish deployment model assumes that the deployer also provisions the various dependent services of an application. To support PaaS deployment scenarios, it is imperative for GlassFish 3.2 to provide a simplified application provisioning and deployment interface to users, and let the runtime handle the discovery of service dependencies of a Java EE application, provision services and associate the application's service references to the provisioned services.</p> <h4><a name="3.2ServiceOrchestrationOnePager-3.2.Justification%3A"></a>3.2. Justification:</h2> 
+     <ul> 
+      <li>Eases the deployment experience in PaaS usecases (single click application provisioning and deployment)</li> 
+      <li>Reduces cost and complexity of managing underlying hardware and software for the deployer</li> 
+      <li>Ensures effective utilization of resources through virtualization and/or use of compute/storage resources on-demand, auto-scaling using elasticity rules.</li> 
+     </ul> <h4><a name="3.2ServiceOrchestrationOnePager-4.TechnicalDescription%3A"></a>4. Technical Description:</h1> <h4><a name="3.2ServiceOrchestrationOnePager-4.1.Details%3A"></a>4.1. Details:</h2> <p>A PaaS deployment of a Java EE application is handled through an Orchestrator module running in DAS. This module enables single-click application provisioning and deployment of a PaaS application through service dependency discovery, service provisioning and service association.</p> <p><b>Terminology</b><br> Any entity that is created, provisioned, managed, and monitored by the PAAS runtime/infrastructure is a <tt>Service</tt>. Examples of Services could be Java EE(GlassFish clusters and standalone server instances), JMS providers(Open MQ broker or broker clusters), databases (Derby, MySQL) etc. A <tt>Service Provider</tt> provides an implementation of a Service. A <tt>Service implementation</tt> is an implementation of a particular class of Services, called <tt>ServiceType</tt>. Standard ServiceTypes that could be supported by GlassFish 3.2 could be RDBMS, JMS, LoadBalancer. There could be multiple Service implementations of a ServiceType concurrently deployed in a PAAS runtime. For instance, there could be Derby and MySQL database plugins for the RDBMS ServiceType available at the same time in the PAAS runtime.</p> <p><b>Service Metadata</b><br> An application specifies its dependencies to Services using <tt>Service Requirements</tt>. Service Requirements usually consists of the following:</p> 
+     <ul> 
+      <li><tt>Service Definition</tt>: Information(metadata) used to provision an instance of the Service.</li> 
+      <li><tt>Service References</tt> (or Service Bindings): This is information provided by the application to indicate its dependency on a Service.<br> In short, the Service Definition metadata is used to provision an instance of the Service at runtime, and the Service Reference metadata is used to bind an application or an application component's dependencies to a <tt>Provisioned Service</tt>.</li> 
+     </ul> <p>A mechanism to specify optional deployment-time services meta-data, <tt>glassfish-services.xml</tt> (suggested name – final name TBD, see <a href="./3.2+Services+Metadata">here</a> for more information on the current proposed schema and sample specification) would be introduced. This descriptor could be used by the Deployer to include service definitions of an application. The Service bindings/service references of an application would be specified in glassfish-resources.xml (see <a href="http://wikis.sun.com/display/GlassFish/3.2+Services+Metadata.html">here</a> for more information). The Service Reference could be a reference to an application-scoped provisioned service or global provisioned service or external service. This descriptor would also be used by the Orchestrator to map the generic service meta-data to a Service Template in an IMS template catalog.</p> <p><b>Service Dependency Discovery</b><br> The Service References for an application would be discovered through the following means:</p> 
+     <ul> 
+      <li>Implicitly derived through references to external resources in standard deployment-descriptors/annotations. For example, a Java EE web application (WAR) could explicitly specify a Service Reference to a RDBMS ServiceType by specifying a &lt;resource-ref&gt; whose &lt;res-type&gt; is javax.sql.DataSource in its web.xml. The Orchestrator and plugin could use this information to derive a service reference for this application to a RDBMS ServiceType.</li> 
+      <li>Explicit Declaration of Service references in glassfish-services.xml</li> 
+      <li>Discovered through other means. These are references which are not encoded in the application bits. For instance, an application deployed as a WAR/EAR, by virtue of its packaging, implies a service reference to a Java EE ServiceType</li> 
+     </ul> <p><b>Services</b><br> The Orchestrator must support binding of an application to the following types of Services:</p> 
+     <ul> 
+      <li>External services: these are not provisioned by the orchestrator, but created and managed by an external user. Their lifecycle is not tied to an application and is not managed by the orchestrator. This is useful in scenarios where a user has existing DB/MoM investments and they want to reuse their existing setup for their application.</li> 
+      <li>Global Provisioned services: Services that are created by a DAS administrator that are provisioned and managed by the orchestrator. These services can be shared by multiple applications in the domain and the service lifecycle is not tied to a single application. This type of service is useful, for example, when multiple applications in a domain want to share the same database.</li> 
+      <li>Application-Scoped Provisioned services (These are services that are automatically provisioned by the orchestrator during PaaS-style deployment of the application, and their life-cycle is tied to the application's lifecycle.)</li> 
+     </ul> <p>The list of ServiceTypes and Services supported for this release are RDBMS(JavaDB, MySQL), HTTPLoadBalancer (potentially 3 plugins: Native LB, Java LB, Apache mod_jk - exact set of supported LB configurations is TBD) and JMS(OpenMQ).</p> <p>The orchestrator must not assume a fixed set of ServiceTypes and a limited set of Service Providers per ServiceType. A plugin architecture (Service Provider) must allow extending the orchestrator to support provisioning and association of new ServiceTypes and Service Providers for a ServiceType. SPIs to be able to add/remove the Plugins into the Orchestrator. The SPI will also define contracts for service life-cycle related activities viz., create, start, stop, destroy. For this release, these SPIs will be private to GlassFish. The various Service integration teams (container teams) would deliver the plugins. For instance, the MQ integration team delivers the OpenMQ plugin, the JDBC team delivers the JavaDB and MySQL plugins, and the LB team delivers the various load balancer plugins.</p> <p>All the administration operations/commands on a managed entity(such as a cluster provisioned by the orchestrator) must be intercepted by the Orchestrator. The orchestrator will decide whether to allow or disallow these operations. (For example, orchestrator might not allow 'asadmin stop-cluster' on a managed cluster). Moreover, orchestrator might need to perform some additional tasks (eg: for book-keeping purposes) during the command execution on a managed object.</p> <p><b>Orchestration Flow</b><br> When a PaaS Java EE archive(a WAR/EAR with additional optional metadata specified through glassfish-services.xml) is deployed in a cloud environment, see GlassFish 3.2 Deployment <a href="./3.2DeploymentOnePager.html">OnePager</a>, the Orchestrator performs the following deployment actions:</p> 
+     <ul> 
+      <li>Service Dependency Discovery: Scans the application(standard deployment descriptors, glassfish-services.xml) to get effective Service Requirements for this application archive.</li> 
+      <li>Service Provisioning: 
+       <ul> 
+        <li>Automatic Service Provisioning: Provision all the required dependent services. The application could come up with full/partial/no PaaS meta-data.<br> During Service Provisioning, the Orchestrator must match the service requirements of the application to a Service Template. This template would then be used to provision and realize the Service through the <a href="./3.2Virtualization">IMS API</a>. These matching rules are still a work in progress. One simple rule that has been identified is: If the application requires a RDBMS service and the service definition is not specified in the PaaS meta-data or the service definition does not explicit point to a particular Service Provider(say MySQL), then by default the Orchestrator will select a "default.html" template (e.g: Derby service template).</li> 
+       </ul> </li> 
+      <li>Service Association/Binding: Automatically creates the necessary artifacts in GlassFish(for instance, create the necessary pools/resources etc) to bind an application to the services provisioned for the application.</li> 
+      <li>Application Deployment: Deploy and load the application.</li> 
+     </ul> <p><b>PaaS Deployment Scenarios</b></p> 
+     <ul> 
+      <li>Deployment: Provisioning of dependent services during application deployment must be atomic. If a subset of dependent services cannot be provisioned, the deployment must fail and the state of the system must roll-back to the state prior to the current deployment. When multiple plugins can handle particular service requirement and a particular service provider can not be matched then deployment must fail. The Orchestrator must also be able to discover and provision all the required services during the deployment of a vanilla Java EE archive (ie an application that is PaaS unaware, doesn't contain any services meta-data).</li> 
+      <li>Undeployment: Automatically decommission all the application-scoped provisioned services of an application during application undeployment.</li> 
+      <li>Enable/Disable: Pause/Stop all the application-scoped provisioned services when an application is disabled. Similarly, start all the provisioned services when the application is enabled.</li> 
+      <li>Redeployment: Support redeployment of the application. Add a "--retain" redeployment option to re-use the previously provisioned services instead of re-provisioning them again. Default value of --retain is true.</li> 
+      <li>Service decomissioning during domain deletion: Decommission all the provisioned services (application scoped and global/shared) during domain deletion.</li> 
+     </ul> <h4><a name="3.2ServiceOrchestrationOnePager-4.2.Bug%2FRFENumber%28s%29%3A"></a>4.2. Bug/RFE Number(s):</h2> <p>The Umbrella RFE is <a href="https://github.com/javaee/glassfish/issues/16402">GLASSFISH-16402</a>. The related issues are in the dependency "Issue Links" section of that issue.</p> <h4><a name="3.2ServiceOrchestrationOnePager-4.3.InScope%3A"></a>4.3. In Scope:</h2> <p>Features discussed above.</p> <h4><a name="3.2ServiceOrchestrationOnePager-4.4.OutofScope%3A"></a>4.4. Out of Scope:</h2> 
+     <ul> 
+      <li>Advanced redeployment scenarios 
+       <ul> 
+        <li>Update and Upgrade of Service References</li> 
+       </ul> </li> 
+      <li>Extensible Service Provider mechanism</li> 
+      <li>Elastic scaling of Services</li> 
+      <li>Allow a Provisioned Service's lifecycle to be managed by a PaaS System Adminstrator</li> 
+      <li>Support mapping to external PaaS Service Offerings (for instance Amazon RDS)</li> 
+      <li>Support for other ServiceTypes (Caching - Coherence, Mail, Queueing, NoSQL)</li> 
+      <li>Advanced Service Matching Heuristics</li> 
+      <li>Service elevation ie., upgrade an application-scoped service to shared-service when needed.</li> 
+     </ul> <p>For an extended list, see the Non-Requirements/Out of Scope section <a href="./3.2+Service+Orchestration+Technical+Requirements.html">here</a>.</p> <h4><a name="3.2ServiceOrchestrationOnePager-4.5.Interfaces%3A"></a>4.5. Interfaces:</h2> <h4><a name="3.2ServiceOrchestrationOnePager-4.5.1PublicInterfaces"></a>4.5.1 Public Interfaces</h3> <p>The definition for this interfaces is still a work in progress and hence should be considered as draft for now.</p> 
+     <ul> 
+      <li>Interface: glassfish-services.xml</li> 
+      <li>Comment: services meta-data for an application. A proposed schema and discussion is <a href="./3.2+Services+Metadata.html">here</a>.</li> 
+     </ul> <h4><a name="3.2ServiceOrchestrationOnePager-4.5.2PrivateInterfaces"></a>4.5.2 Private Interfaces</h3> 
+     <ul> 
+      <li>Interface: domain.xml config changes TBD.</li> 
+     </ul> <h4><a name="3.2ServiceOrchestrationOnePager-4.5.3Deprecated%2FRemovedInterfaces%3A"></a>4.5.3 Deprecated/Removed Interfaces:</h3> <p>Not applicable</p> <h4><a name="3.2ServiceOrchestrationOnePager-4.6.DocImpact%3A"></a>4.6. Doc Impact:</h2> <p>New man pages for the new command. Modifications to Application Deployment Guide, Application Development Guide, a new PaaS Guide or modify Administrators Guide, Troubleshooting Guide to cover the new PaaS deployment and Service Orchestration features.</p> <h4><a name="3.2ServiceOrchestrationOnePager-4.7.Admin%2FConfigImpact%3A"></a>4.7. Admin/Config Impact:</h2> 
+     <ul> 
+      <li>Interface: External Services management 
+       <div class="preformatted panel" style="border-width: 1px;">
+        <div class="preformattedContent panelContent"> 
+         <pre>create-external-service [--default=false] [--force=false] --type servicetype
+[--property (name=value)[:name=value]*] servicename}}
+</pre> 
+        </div>
+       </div></li> 
+     </ul> <p>Creates an external service reference config element in domain.xml and creates a global shared connection pool(if relevant) pointing to that external service for use by applications. The supported ServiceTypes are RDBMS, JMS, and HTTPLB. The name-value property pair provides the necessary configuration to connect to the external service. For instance, if the ServiceType is RDBMS, the specified properties must be database URL, username, password, driver location(??).</p> 
+     <div class="preformatted panel" style="border-width: 1px;">
+      <div class="preformattedContent panelContent"> 
+       <pre>list-external-services [--type servicetype]
+</pre> 
+      </div>
+     </div> <p>Lists all external services registered in this domain, optionally filtered by specified ServiceType.</p> 
+     <div class="preformatted panel" style="border-width: 1px;">
+      <div class="preformattedContent panelContent"> 
+       <pre>delete-external-service servicename
+</pre> 
+      </div>
+     </div> <p>Deletes an external service reference. Ensures that there is no active usage of the deleted service reference before deleting it.</p> 
+     <ul> 
+      <li>Interface: Shared Provisioned Services management 
+       <div class="preformatted panel" style="border-width: 1px;">
+        <div class="preformattedContent panelContent"> 
+         <pre>create-shared-service [--default=false] [--force=false] [--init-type=EAGER|LAZY] --template templatename
+[--property (name=value)[:name=value]*] servicename
+</pre> 
+        </div>
+       </div></li> 
+     </ul> <p>Provisions a shared service through the Orchestrator and makes it available for use by other applications in the domain. The command creates a service reference config element in domain.xml, provisions the Service if the init-type is EAGER and creates a global shared connection pool(if relevant) pointing to that provisioned service for use by applications. If init-type is LAZY, the service provisioning and resource creation step is performed when the first application bound to that shared service is deployed/loaded. The name-value property pair provides any additional optional configuration of the provisioned service.</p> 
+     <div class="preformatted panel" style="border-width: 1px;">
+      <div class="preformattedContent panelContent"> 
+       <pre>list-shared-services
+</pre> 
+      </div>
+     </div> <p>Lists all shared services registered in this domain.</p> 
+     <div class="preformatted panel" style="border-width: 1px;">
+      <div class="preformattedContent panelContent"> 
+       <pre>delete-shared-service servicename
+</pre> 
+      </div>
+     </div> <p>Decommissions a shared provisioned service and deletes a shared service config element in domain.xml. Ensures that there is no active usage of the deleted service reference before deleting it.</p> 
+     <ul> 
+      <li>Interface: PaaS Deployment. See <a href="./3.2DeploymentOnePager#3.2DeploymentOnePager-4.5.Interfaces%3A.html">Deployment OnePager</a></li> 
+     </ul> 
+     <ul> 
+      <li>Interface: GUI. See <a href="./3.2AdminConsoleOnePager.html">Admin Console OnePager</a></li> 
+     </ul> <h4><a name="3.2ServiceOrchestrationOnePager-4.8.HAImpact%3A"></a>4.8. HA Impact:</h2> <p>No Impact.</p> <h4><a name="3.2ServiceOrchestrationOnePager-4.9.I18N%2FL10NImpact%3A"></a>4.9. I18N/L10N Impact:</h2> <p>No Impact.</p> <h4><a name="3.2ServiceOrchestrationOnePager-4.10.Packaging%2CDelivery%26Upgrade%3A"></a>4.10. Packaging, Delivery &amp; Upgrade:</h2> <h4><a name="3.2ServiceOrchestrationOnePager-4.10.1.Packaging"></a>4.10.1. Packaging</h3> <p>A new Orchestrator package.</p> <h4><a name="3.2ServiceOrchestrationOnePager-4.10.2.Delivery"></a>4.10.2. Delivery</h3> <p>The Orchestrator would only be part of the PaaS/Cloud distrbution/environment and would only run in DAS.</p> <h4><a name="3.2ServiceOrchestrationOnePager-4.10.3.UpgradeandMigration%3A"></a>4.10.3. Upgrade and Migration:</h3> <p>Not applicable.</p> <h4><a name="3.2ServiceOrchestrationOnePager-4.11.SecurityImpact%3A"></a>4.11. Security Impact:</h2> <p>In a virtualized hybrid deployment environment, where a DB might lie within a firewall and the provisioned GlassFish cluster may reside outside, the virtualization layer must be configured such that DB ports would need to be accessible to the provisioned instances.</p> <h4><a name="3.2ServiceOrchestrationOnePager-4.12.CompatibilityImpact"></a>4.12. Compatibility Impact</h2> <p>No Impact.</p> <h4><a name="3.2ServiceOrchestrationOnePager-4.13.Dependencies%3A"></a>4.13. Dependencies:</h2> <h4><a name="3.2ServiceOrchestrationOnePager-4.13.1InternalDependencies"></a>4.13.1 Internal Dependencies</h3> <p>PaaS deployment<br> GlassFish 3.2 Administration<br> IaaS Managment Service(IMS)/Virtualization</p> <h4><a name="3.2ServiceOrchestrationOnePager-4.13.2ExternalDependencies"></a>4.13.2 External Dependencies</h3> <p>Not applicable.</p> <h4><a name="3.2ServiceOrchestrationOnePager-4.14.TestingImpact%3A"></a>4.14. Testing Impact:</h2> 
+     <ul class="alternate" type="square"> 
+      <li>New developer tests</li> 
+      <li>Tests to use a mock IaaS layer or work with developer mode virtualization providers such as VirtualBox/KVM.</li> 
+     </ul> <h4><a name="3.2ServiceOrchestrationOnePager-5.ReferenceDocuments%3A"></a>5. Reference Documents:</h1> 
+     <ul> 
+      <li><a href="./3.2DeploymentOnePager.html">Deployment OnePager</a></li> 
+      <li><a href="./3.2IMSPlugins.html">IMSPlugins</a></li> 
+      <li><a href="./3.2Virtualization.html">Virtualization</a></li> 
+      <li><a href="./3.2AdminConsoleOnePager.html">Admin Console OnePager</a></li> 
+      <li><a href="./GlassFish+3.2+Open+Source+Edition+-+Elasticity+Module+One+Pager.html">Elasticity OnePager</a></li> 
+      <li><a href="./3.2+Service+Orchestration+Technical+Requirements.html">GlassFish 3.2 Service Orchestration Technical requirements page</a></li> 
+     </ul> <h4><a name="3.2ServiceOrchestrationOnePager-6.Schedule%3A"></a>6. Schedule:</h1> <h4><a name="3.2ServiceOrchestrationOnePager-6.1.ProjectedAvailability%3A"></a>6.1. Projected Availability:</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Feature </th> 
+         <th class="confluenceTh"> Milestone </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Integration of Prototype work in 3.2 code base </td> 
+         <td class="confluenceTd"> MS3 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Cloud Meta Data finalization </td> 
+         <td class="confluenceTd"> MS4 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Deployment commands </td> 
+         <td class="confluenceTd"> MS4 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> First cut of <br class="atl-forced-newline"> 
+          <ul> 
+           <li>Support for PaaS deployment</li> 
+           <li>Support for App Scoped Services</li> 
+           <li>Support for External Services</li> 
+           <li>IMS API integration</li> 
+           <li>Deployment API integration</li> 
+          </ul> </td> 
+         <td class="confluenceTd"> MS5 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Feature complete state of above + <br class="atl-forced-newline"> 
+          <ul> 
+           <li>Advance deployment scenarios</li> 
+           <li>Shared services</li> 
+           <li>Admin GUI backed support</li> 
+           <li>Admin command restriction</li> 
+           <li>Monitoring and Management support</li> 
+           <li>Finalized metadata</li> 
+          </ul> </td> 
+         <td class="confluenceTd"> MS6 </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <hr> 
+     <div class="tabletitle"> 
+      <a name="comments"> <h4>Comments:</h2> </a> 
+     </div> 
+     <table border="0" width="100%"> 
+      <tbody>
+       <tr> 
+        <td> <a name="comment-20882321"></a> <font class="smallfont"><p>1. Is the NativeLB service going to be supported via a default template that has native-lb pre-installed on a webserver ?</p> <p>2. Under "Service Dependency Discovery" it is mentioned that the third means of discovering a dependency is through "other means". Can you give an example ? Is this through resource.xml packaged in the app ? Are there any other examples ?</p> <p>3. Section "PaaS Deployment Scenarios", first bullet item "Deployment" notes that - "When multiple plugins can handle particular service requirement and a particular service provider can not be matched then deployment must fail."</p> 
+          <ul class="alternate" type="square"> 
+           <li>Question: In the case mentioned, is deployment failed only if <b>multiple</b> plugins are available for that service requirement ? What if there is just one plugin (i think MQ is the current example ?) that satisfies a service requirement but the service characteristics specified in the glassfish-services.xml do not match any template. Is the plan then to still fail deployment ?</li> 
+          </ul> <p>4. How different are EAGER and LAZY init options of create-shared-service from user perspective ? In what kind of a scenario would a user prefer one to the other ? Do both need to be supported ?</p> 
+          <ul class="alternate" type="square"> 
+           <li>Is it possible to support the EAGER init option ? Wouldn't the created shared service/resource need to refer a target cluster, while the cluster is created much after the create-shared-service command is used ?</li> 
+          </ul> </font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by vr143562 at May 01, 2011 05:18 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20882320"></a> <font class="smallfont"><p>How does the user know the service url or host/port after deploying an app. How is this available for a webapp and ejb (for&nbsp; appclient or standalone).</p></font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by sonymanuel at May 01, 2011 11:00 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20882325"></a> <font class="smallfont"><p>We should use glassfish-resources.xml to define service bindings (aka service-references). e.g., a jdbc-connection-pool can be used to represent a binding to a RDBMS, a connector-connection-pool for a JMS system.</p></font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by sahoo_sk at May 01, 2011 23:00 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20882323"></a> <font class="smallfont"><p>Responses from Bhavani and Jagadish :</p> <p>Response to question-2 : Service dependency discovery paragraph categorizes the various modes by which dependencies could be discovered. This particular case states that by virtue of an user deploying a .war/.ear, a JavaEE service provider (runtime) is required.</p> <p>Response to question-3 : Deployment will fail when there are multiple plugins that matches the service-requirement, when there is no plugin that could match the service requirement. Service characteristics is also part of service-requirement and hence they need to be satisfied by a plugin, failing which deployment will fail.</p> <p>Response to question-4 :</p> <p>Consider the case where a shared-database-service is created with "lazy-init"=true.</p> <p>No DB instance/ resource, pool is created (made available)&nbsp;</p> <p>When the first application is deployed that has a service requirement for the shared-database-service created above, then the database service would be provisioned, connection-pool would be created which could be used by the application.&nbsp; </p></font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by jagadish at May 02, 2011 01:20 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20882324"></a> <font class="smallfont"><p>Refer section 5.3.a in the Technical requirements document (link below) that lists the need for showing all services used by an application :</p> <p><a href="./3.2+Service+Orchestration+Technical+Requirements.html">http://wikis.sun.com/display/GlassFish/3.2+Service+Orchestration+Technical+Requirements</a></p></font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by jagadish at May 02, 2011 01:23 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20882319"></a> <font class="smallfont"><p>Yes, there will be load-balancer templates provided for 3.2. This will include templates created using our GlassFish load-balancer plugin pre-installed on web server.</p></font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by kshitiz_s at May 02, 2011 02:04 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20882318"></a> <font class="smallfont"><p>Yes, there will be load-balancer templates provided for 3.2. This will include templates created using our GlassFish load-balancer plugin pre-installed on web server.</p></font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by kshitiz_s at May 02, 2011 04:07 
+         </div> </td> 
+       </tr> 
+      </tbody>
+     </table> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Aug 28, 2012 by 
+<font color="#0050B2">10193</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFishV3LoggingCleanerMessages</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GlassFishV3LoggingCleanerMessages-ImproveLogFileReadability"></a>Improve Log File Readability</h1> <p>Improving the readability of the log files helps users to find problems more quickly. Please incorporate the following recommendation to help improve log file readability.</p> <p>GlassFish implements a logging utility. Use that logging utility when providing information or error messages about the server or server processing. Developers should never use System.out or System.err even when providing debug information. Many times stack traces are useful and should be logged using the logging utility. Developers have the ability to use anonymous loggers if more convenient. </p> <p>All stack traces should be logged. Example below assumes that ex is an Exception object. </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Logger.getAnonymousLogger().log(Level.WARNING, "Error occurred", ex);</pre> 
+       </div> 
+      </div>
+     </div> <p>The following modules use printStackTrace directly to print the stack traces.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Module Name </th> 
+         <th class="confluenceTh">Occurrences of printStackTrace in code </th> 
+         <th class="confluenceTh"> Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> admin </td> 
+         <td class="confluenceTd"> 17 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> admin-cli </td> 
+         <td class="confluenceTd"> 8 </td> 
+         <td class="confluenceTd"> increase week as of Aug 6 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> admin-util </td> 
+         <td class="confluenceTd"> 3 </td> 
+         <td class="confluenceTd"> 1 test </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> amx-config-impl </td> 
+         <td class="confluenceTd"> 0 </td> 
+         <td class="confluenceTd"> fixed all occurences 2009-0827 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> amx-core </td> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> fixed all occurences 2009-0827 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> amx-core-impl </td> 
+         <td class="confluenceTd"> 0 </td> 
+         <td class="confluenceTd"> fixed all occurences 2009-0827 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> amx-ext-impl </td> 
+         <td class="confluenceTd"> 0 </td> 
+         <td class="confluenceTd"> fixed all occurences 2009-0827 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> amx-j2ee-impl </td> 
+         <td class="confluenceTd"> 0 </td> 
+         <td class="confluenceTd"> fixed all occurences 2009-0827 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> annotation-framework </td> 
+         <td class="confluenceTd"> 3 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> cli-framework </td> 
+         <td class="confluenceTd"> 7 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> cli-optional </td> 
+         <td class="confluenceTd"> 5 </td> 
+         <td class="confluenceTd"> one less as of Sept 22 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> cmp-ejb-mapping </td> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd">This is a command line tool that runs out side appserver. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> cmp-enhancer </td> 
+         <td class="confluenceTd"> 15 </td> 
+         <td class="confluenceTd"> None of above code would be executed inside appserver </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> cmp-model </td> 
+         <td class="confluenceTd"> 9 </td> 
+         <td class="confluenceTd"> Defines a convenience method printStrackTrace on an exception class for JDO users. It never gets called inside appserver </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> cmp-support-sqlstore </td> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd">Defines a convenience method printStrackTrace on an exception class for JDO users. It never gets called inside appserver </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> cmp-utility </td> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> This class is not active inside running appserver. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> common-util </td> 
+         <td class="confluenceTd"> 51 </td> 
+         <td class="confluenceTd"> 43 are from class Print.java which uses the string printStaceTrace through out, more investigation needed. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> config-api </td> 
+         <td class="confluenceTd"> 9 </td> 
+         <td class="confluenceTd"> 7 tests </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> connectors-inbound-runtime </td> 
+         <td class="confluenceTd"> 0 </td> 
+         <td class="confluenceTd"> as of Sept 22 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> connectors-internal-api </td> 
+         <td class="confluenceTd"> 9 </td> 
+         <td class="confluenceTd"> one less as of Sept 22 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> connectors-runtime </td> 
+         <td class="confluenceTd"> 0 </td> 
+         <td class="confluenceTd"> as of sept 22 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> console-common </td> 
+         <td class="confluenceTd"> 25 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> console-common-full-plugin </td> 
+         <td class="confluenceTd"> 2 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> console-core </td> 
+         <td class="confluenceTd"> 9 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> console-jms-plugin </td> 
+         <td class="confluenceTd">1 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> console-updatecenter-plugin </td> 
+         <td class="confluenceTd">10 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> container-common </td> 
+         <td class="confluenceTd">1 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> deployment-admin </td> 
+         <td class="confluenceTd"> 0 </td> 
+         <td class="confluenceTd"> as of Aug 6 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> deployment-autodeploy </td> 
+         <td class="confluenceTd"> 0 </td> 
+         <td class="confluenceTd"> as of Aug 6 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> deployment-client </td> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd"> the remaining two occurrences are printing stack trace to printwriter/printstream </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> deployment-common </td> 
+         <td class="confluenceTd"> 0 </td> 
+         <td class="confluenceTd"> as of Aug 6 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> deployment-j2ee-full </td> 
+         <td class="confluenceTd"> 0 </td> 
+         <td class="confluenceTd"> as of Aug 6 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> dol </td> 
+         <td class="confluenceTd"> 0 </td> 
+         <td class="confluenceTd"> as of Aug 6 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ejb-container </td> 
+         <td class="confluenceTd"> 16 </td> 
+         <td class="confluenceTd">4 tests </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ejb-internal-api </td> 
+         <td class="confluenceTd">9 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ejb-timer-service-app </td> 
+         <td class="confluenceTd">1 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> extras </td> 
+         <td class="confluenceTd"> 42 </td> 
+         <td class="confluenceTd">8 tests </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> flashlight-framework </td> 
+         <td class="confluenceTd">4 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> gf-client </td> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd"> These are in the app client, not the server. One use is in the package-appclient utility which does not use a logger. The other is in a catch-all handler in the Java agent used during app client launches. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> gf-client-module </td> 
+         <td class="confluenceTd"> 7 </td> 
+         <td class="confluenceTd"> These are in the app client, not the server. Further, all 7 occurrences are very early in the processing before the app client logger would be established. Some printStackTrace calls are to streams other than System.out or System.err to capture the stack trace for other purposes, such as formatting for a dialog box during Java Web Start launches. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> glassfish-api </td> 
+         <td class="confluenceTd"> 4 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> glassfish-mbeanserver </td> 
+         <td class="confluenceTd">10 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> glassfish-nameing </td> 
+         <td class="confluenceTd">6 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> glassfish-parent </td> 
+         <td class="confluenceTd"> 58 </td> 
+         <td class="confluenceTd">14 tests (in dir called testing) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> internal-api </td> 
+         <td class="confluenceTd">5 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> javax.ejb </td> 
+         <td class="confluenceTd"> 1 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jdbc-core </td> 
+         <td class="confluenceTd">0 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jms-admin </td> 
+         <td class="confluenceTd"> 9 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jms-core </td> 
+         <td class="confluenceTd">7 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jsr109-impl </td> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd"> as of Aug 6 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jta </td> 
+         <td class="confluenceTd"> 18 </td> 
+         <td class="confluenceTd"> as of Aug 6 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jts </td> 
+         <td class="confluenceTd"> 20 </td> 
+         <td class="confluenceTd"> as of Aug 6 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> kernel </td> 
+         <td class="confluenceTd"> 35 </td> 
+         <td class="confluenceTd">4 commented out </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> launcher </td> 
+         <td class="confluenceTd"> 2 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> mejb </td> 
+         <td class="confluenceTd"> 9 </td> 
+         <td class="confluenceTd"> 5 tests </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> monitoring-core </td> 
+         <td class="confluenceTd"> 3 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> orb-iiop </td> 
+         <td class="confluenceTd">1 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> osgi-container </td> 
+         <td class="confluenceTd">1 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> registration-impl </td> 
+         <td class="confluenceTd">14 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> rest-service </td> 
+         <td class="confluenceTd"> 20 </td> 
+         <td class="confluenceTd"> increase by 2 as of sept 22 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> security </td> 
+         <td class="confluenceTd"> 16 </td> 
+         <td class="confluenceTd"> increase as of Aug 6 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> server-mgmt </td> 
+         <td class="confluenceTd"> 3 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> sun-javaee-engine </td> 
+         <td class="confluenceTd">31 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> transaction </td> 
+         <td class="confluenceTd"> 9 </td> 
+         <td class="confluenceTd"> All tests </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> utils </td> 
+         <td class="confluenceTd"> 1 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> verifier </td> 
+         <td class="confluenceTd"> 40 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> war-util </td> 
+         <td class="confluenceTd"> 0 </td> 
+         <td class="confluenceTd"> as of Aug 6 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> web </td> 
+         <td class="confluenceTd"> 9 </td> 
+         <td class="confluenceTd"> All test cases </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> web-ajp </td> 
+         <td class="confluenceTd"> 13 </td> 
+         <td class="confluenceTd"> Wholesale integration of source code from Apache </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> web-core </td> 
+         <td class="confluenceTd">6 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> web-embed-impl </td> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> new as of Sept 22 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> web-glue </td> 
+         <td class="confluenceTd">2 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> web-naming </td> 
+         <td class="confluenceTd"> 1 </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 02, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : V3GuiDirectories</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p><a href="GlassFishV3AdminConsole.html" title="GlassFishV3AdminConsole">Back to AdminConsole V3 </a></p> <h4><a name="V3GuiDirectories-GlassFishV3WorkspaceStructureforAdminConsole"></a>GlassFish V3 Workspace Structure for Admin Console</h1> <p>There are 2 options in organizing the directory structure for admin console in V3. </p> 
+     <ol> 
+      <li>All pluggable modules that provides different functionality in admin gui resides under one admingui module as sub modules. admingui is at the top level of the v3 source. It contains other sub-module such as the core which provides the infrastructure of the console. Other sub-module such as webtier, jdbc is at the same level as the core. There is a sub-module which is packaged as a war applications, with the core jar in it. The advantage of this approach is such that all the source code related to admin console is available in one centralized location, making developement, building etc. more convenient.</li> 
+      <li>Admin gui source code resides under its corresponding container/module. admingui is at the top level of the v3 source. It only contains the core module and the war application. The gui source code for all other module such as webtier, jdbc, ejb etc will be resided under the module itself. Basically, there will be one pluggable admingui module corresponding to different area of the admin residing under that module itself. The advantage of this approach is that the pluggable module becomes 'self contained', and building or compiling this pluggable module will ensure that console functionality of this module is up-to-date. This also means closer tie between the console and the backend.</li> 
+     </ol> <p>The admin console team decided to go with the first approach. It is more convenient for development in the early stage. Towards the end of the development cycle, we may decide to move the admin gui sub modules to under their corresponding modules, hopefully this will be a pretty straight forward task. </p> <h4><a name="V3GuiDirectories-AdminConsoleWebPackages"></a>Admin Console Web Packages</h2> <p>This is the top level for the Admin Console. It contains all the sub modules in the console, and also the war application itself. </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">/v3
+/v3/admingui
+/v3/admingui/war
+/v3/admingui/core
+/v3/admingui/jdbc
+...</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="V3GuiDirectories-AdminConsoleWebApplication"></a>Admin Console Web Application</h2> <p>This is the war packaging module which will contains the core jar file. After the building cycle, a war file is available for deployment.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">/v3
+/v3/admingui
+/v3/admingui/war
+/v3/admingui/war/src
+/v3/admingui/war/src/main
+/v3/admingui/war/src/main/webapp
+/v3/admingui/war/src/main/webapp/WEB-INF
+/v3/admingui/war/src/main/webapp/WEB-INF/web.xml
+...</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="V3GuiDirectories-CoreModuleforAdminConsole."></a>Core Module for Admin Console. </h2> <p>This is the module that provides the infrastructure for the Admin Console. All other sub module should depend on this module.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">/v3
+/v3/admingui
+/v3/admingui/core
+/v3/admingui/core/src/main/java/com/sun/enterprise/tools/admingui/handlers
+/v3/admingui/core/src/main/java/com/sun/enterprise/tools/admingui/utils
+/v3/admingui/core/src/main/resources
+/v3/admingui/core/src/main/resources/home.jsf
+/v3/admingui/core/src/main/resources/appServer/general.jsf</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="V3GuiDirectories-JDBCmodule"></a>JDBC module</h2> <p>This is the plugin module for providing the JDBC functionality in Admin Console.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">/v3
+/v3/admingui/jdbc
+/v3/admingui/jdbc/src/main/java/com/sun/enterprise/tools/admingui/handlers
+/v3/admingui/jdbc/src/main/resources
+/v3/admingui/jdbc/src/main/resources/jdbc
+/v3/admingui/jdbc/src/main/resources/jdbc/createJDBC.jsf</pre> 
+       </div> 
+      </div>
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 09, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

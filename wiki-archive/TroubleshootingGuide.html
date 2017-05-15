@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : TroubleshootingGuide</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p><b>Translations:</b><br class="atl-forced-newline"> <a href="TroubleshootingGuideJa.html" title="TroubleshootingGuideJa">Japanese</a></p> <h4><a name="TroubleshootingGuide-ApplicationServer9.1TroubleshootingGuide"></a>Application Server 9.1 Troubleshooting Guide</h1> <p><font color="blue"><a href="TSG_Overview.html" title="TSG_Overview">Overview</a> / <a href="TSG_CommonProblems.html" title="TSG_CommonProblems">Common Problems</a> / <a href="TSG_HADBProblems.html" title="TSG_HADBProblems">HADB Problems</a> / <a href="TSG_SecurityProblems.html" title="TSG_SecurityProblems">Security Problems</a> / <a href="TSG_FAQ.html" title="TSG_FAQ">Frequently Asked Questions</a></font></p> 
+     <hr> <p>This Wiki is intended to be an interactive, editable version of the Troubleshooting Guide that is also available in <a href="http://docs.sun.com/app/docs/doc/819-3677">HTML</a> and <a href="http://dlc.sun.com/pdf/819-3677/819-3677.pdf">PDF</a> formats.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Note </th> 
+         <td class="confluenceTd"> *Sun Java Application Server 9.1*, bundled with the Java EE 5 SDK, is the commercial version of <b>GlassFish v2</b>. The code bases are the same, only the support options differ. For the purposes of this Wiki, all references to "Application Server" refer equally to "GlassFish"; the names are interchangeable. For information about Application Server 9.1 and the Java EE 5 SDK, please go to the <a href="http://java.sun.com/javaee/downloads/?intcmp=1282">Java EE Downloads</a> page. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>A troubleshooting guide cannot be really useful until the product the guide is supposed to help you troubleshoot has been "in the wild" for some time. Real-world problems and their solutions can only be known after developers, administrators, and end users have had a chance to thoroughly exercise the product.</p> <p>Please get involved! Make this guide useful by submitting new topics and/or solutions to existing topics, or by commenting on or modifying the content that is already here. <b>Please add your comments, descriptions, solutions and/or workarounds directly to this Troubleshooting Guide wiki.</b> See How do I edit a wiki page? for more information about editing these pages.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Note </th> 
+         <td class="confluenceTd"> Before contributing to this document, please be sure to read the <a href="./TermsOfUse.html">Terms of Use</a> page. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p><a href="TSG_Overview.html" title="TSG_Overview">Next</a>[</p> 
+     <div class="error">
+      <span class="error">Unknown macro: {TableOfContents title='On This Page'}</span> 
+     </div> <p>|(TableOfContentstitle='OnThisPage')]</p> 
+     <hr> <h4><a name="TroubleshootingGuide-Preface"></a>Preface</h1> <p>The <em>Sun Java System Application Server 9.1 Troubleshooting Guide</em> describes common problems encountered when using the Sun Java System Application Server 9.1 and how to solve them.</p> <h4><a name="TroubleshootingGuide-WhoShouldUseThisGuide"></a>Who Should Use This Guide</h2> <p>The <em>Sun Java System Application Server 9.1 Troubleshooting Guide</em> is intended for developers and administrators who use the Sun Java System Application Server to assemble and deploy distributed and Web-based applications.</p> 
+     <ul> 
+      <li>Java APIs as defined in the JavaJava Servlet, JavaServer Pages (JSP), Enterprise JavaBeans (EJB), and Java Database Connectivity (JDBC) specifications</li> 
+     </ul> 
+     <ul> 
+      <li>The SQL structured database query languages</li> 
+     </ul> 
+     <ul> 
+      <li>Relational database concepts</li> 
+     </ul> <h4><a name="TroubleshootingGuide-HowThisBookIsOrganized"></a>How This Book Is Organized</h2> <p>This Wiki describes workarounds for some problems you may encounter when configuring, using, or deploying applications with the Sun Java System Application Server 9.1 software. This Wiki includes the following chapters:</p> 
+     <ul> 
+      <li><a href="TSG_Overview.html" title="TSG_Overview">Chapter 1, Overview</a> provides a general overview of the troubleshooting process.</li> 
+     </ul> 
+     <ul> 
+      <li><a href="TSG_CommonProblems.html" title="TSG_CommonProblems">Chapter 2, Common Problems</a> covers the most common problems you may encounter when using the product.</li> 
+     </ul> 
+     <ul> 
+      <li><a href="TSG_HADBProblems.html" title="TSG_HADBProblems">Chapter 3, HADB Problems</a> covers the most common problems you may encounter when using the product.</li> 
+     </ul> 
+     <ul> 
+      <li><a href="TSG_SecurityProblems.html" title="TSG_SecurityProblems">Chapter 4, Security Problems</a> covers problems related to security settings.</li> 
+     </ul> 
+     <ul> 
+      <li><a href="TSG_FAQ.html" title="TSG_FAQ">Chapter 5, Frequently Asked Questions</a> covers commonly asked questions about Application Server software.</li> 
+     </ul> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Note</th> 
+         <td class="confluenceTd">It is anticipated that chapters will be added as this Wiki matures. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="TroubleshootingGuide-DefaultPathsandFileNames"></a>Default Paths and File Names</h2> <p>The following table describes the default paths and file names that are<br> used in this Wiki.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Placeholder</th> 
+         <th class="confluenceTh">Description</th> 
+         <th class="confluenceTh">Default Value </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <em>install-dir</em> </td> 
+         <td class="confluenceTd"> Represents the base installation directory for Application Server. </td> 
+         <td class="confluenceTd">*Solaris:* <tt>/opt/SUNWappserver/appserver</tt> <b>Linux:</b> <tt>/opt/sun/appserver/</tt> <b>Non-root:</b> <tt>~/SUNWappserver</tt> <b>Windows:</b> <tt><em>Drive</em>:\Sun\AppServer</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <em>domain-root-dir</em> </td> 
+         <td class="confluenceTd"> Represents the directory containing all domains. </td> 
+         <td class="confluenceTd">*Solaris:* <tt>var/opt/SUNWappserver/domains/</tt> <b>Linux:</b> <tt>/var/opt/sun/appserver/domains/</tt> <b>Other:</b> <tt>install-dir/domains/</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <em>domain-dir</em> </td> 
+         <td class="confluenceTd"> Represents the directory for a domain. </td> 
+         <td class="confluenceTd">In configuration files, you might see <em>domain-dir</em> represented as follows: {{$ 
+          <div class="error">
+           <span class="error">Unknown macro: {com.sun.aas.instanceRoot}</span> 
+          </div> <p> <tt>domain-root-dir/domain-dir</tt> </p></td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <em>instance-dir</em> </td> 
+         <td class="confluenceTd"> Represents the directory for a server instance. </td> 
+         <td class="confluenceTd"><tt>domain-dir/instance-dir</tt> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="TroubleshootingGuide-ThirdPartyWebSiteReferences"></a>Third-Party Web Site References</h2> <p>Third-party URLs are referenced in this document and provide additional, related information.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Note </th> 
+         <td class="confluenceTd">Sun is not responsible for the availability of third-party web sites mentioned in this document. Sun does not endorse and is not responsible or liable for any content, advertising, products, or other materials that are available on or through such sites or resources. Sun will not be responsible or liable for any actual or alleged damage or loss caused or alleged to be caused by or in connection with use of or reliance on any such content, goods, or services that are available on or through such sites or resources. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="TroubleshootingGuide-AccessingSunResourcesOnline"></a>Accessing Sun Resources Online</h2> <p>The <a href="http://docs.sun.com">docs.sun.com</a> Web site enables you to access Sun technical documentation online. You<br> can browse the docs.sun.com archive or search for a specific book title or subject. Books are available as online files in PDF and HTML formats. Both formats are readable by assistive technologies for users with disabilities.</p> <p>To access the following Sun resources, go to the <a href="http://www.sun.com">Sun Microsystems</a> Web site: </p> 
+     <ul> 
+      <li>Downloads of Sun products</li> 
+      <li>Services and solutions</li> 
+      <li>Support (including patches and updates)</li> 
+      <li>Training</li> 
+      <li>Research</li> 
+      <li>Communities (for example, Sun Developer Network)</li> 
+     </ul> 
+     <hr> <p><a href="TSG_Overview.html" title="TSG_Overview">Next</a></p> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 02, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

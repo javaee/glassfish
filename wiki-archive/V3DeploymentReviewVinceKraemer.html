@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : V3DeploymentReviewVinceKraemer</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="V3DeploymentReviewVinceKraemer-V3PreludeDeploymentDeploymentv3PreludeOnePagerReview"></a><a href="Deploymentv3PreludeOnePager.html" title="Deploymentv3PreludeOnePager">V3 Prelude Deployment</a> Review</h1> <h4><a name="V3DeploymentReviewVinceKraemer-Document%28s%29%3ADeploymentv3PreludeOnePagerDeploymentv3PreludeOnePager%26version%3D2%2CApplicationManagementAppMgtv3PreludeOnePager%26version%3D2andContainerSPIContainerSPI%26version%3D9"></a>Document(s): Deploymentv3PreludeOnePager, Application Management and Container SPI</h3> <h4><a name="V3DeploymentReviewVinceKraemer-Reviewer%3AVinceKraemerVinceKraemer"></a>Reviewer: <a href="VinceKraemer.html" title="VinceKraemer">Vince Kraemer</a></h3> <h4><a name="V3DeploymentReviewVinceKraemer-Reviewdate%3A20080707"></a>Review date: 2008-07-07</h3> <h4><a name="V3DeploymentReviewVinceKraemer-Responsedate%3A20080708"></a>Response date: 2008-07-08</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item </th> 
+         <th class="confluenceTh"> Type </th> 
+         <th class="confluenceTh"> File </th> 
+         <th class="confluenceTh"> Comment </th> 
+         <th class="confluenceTh"> Response </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> Correction </td> 
+         <td class="confluenceTd"> Deployment </td> 
+         <td class="confluenceTd"> In section 4.1 of Deploymentv3PreludeOnePager (version 2) : provide link to the relevant doc. </td> 
+         <td class="confluenceTd">one-pager updated - the doc link is added </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd"> Compatibility Issue </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> changing the default value of the force flag from true to false will cause problems for existing user scripts. How will existing V2 users benefit from this change? </td> 
+         <td class="confluenceTd">one-pager updated - safer operation, prevent user from overwriting original application accidentally </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3 </td> 
+         <td class="confluenceTd"> Compatibility Issue </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> changing the deployment location of web modules to a new location. How will existing V2 users benefit from this change? </td> 
+         <td class="confluenceTd">one-pager updated - simplify implementation, while v2 user may not benefit much, the new v3 user will have a uniform place to look for all types of applications </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4 </td> 
+         <td class="confluenceTd"> Clarification </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Is JSR-88 supported? It isn't clear. </td> 
+         <td class="confluenceTd">one-pager updated - JSR88 not available in this release, but will be in next v3 release </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5 </td> 
+         <td class="confluenceTd"> Correction </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> The semantics of redeploy are poorly described. Please provide a more complete explanation of the functionality </td> 
+         <td class="confluenceTd">Please clarify what type of information you would like to see. The detailed syntax of the redeploy command will be documented in the man page. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6 </td> 
+         <td class="confluenceTd"> RFE </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Please make it possible to use the redeploy command without the 'path' option in situations where the user has deployed an archive. Forcing the user to reenter data (sometimes) seems like a bad idea. </td> 
+         <td class="confluenceTd">This decision was made by intention. In case of archive redeployment, how do we know where to get/upload the latest archive? </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 7 </td> 
+         <td class="confluenceTd"> Correction </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> there is no mention of the HTTP based deployment capabilities. This is a new, complex feature/interface that requires mention in the one-pager and a complete functional specification. Both the requests (commands) and responses need to be specified clearly. </td> 
+         <td class="confluenceTd">Agreed, we should have more information in this area. And this information probably belong in the v3 overview one-pager or a separate one-pager as the information will be common to all the supported administration commands through HTTP interface. I have added some information specific to deployment in the deployment one-pager. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 8 </td> 
+         <td class="confluenceTd"> Correction </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Section 4.12 does not mention that any user script that depends on the default behavior of the V2 deploy subcommand will probably need to be corrected. It probably should </td> 
+         <td class="confluenceTd">one-pager updated - added this in section 4.12 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 9 </td> 
+         <td class="confluenceTd"> Correction </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Section 4.12 does not mention that user scripts that currently leverage the dynamic reload functionality will need to be corrected. It probably should. </td> 
+         <td class="confluenceTd">one-pager updated - added this in section 4.12 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 10 </td> 
+         <td class="confluenceTd"> Clarification </td> 
+         <td class="confluenceTd"> App management </td> 
+         <td class="confluenceTd"> Will customizations survive an undeploy/deploy sequence? Many users will use that sequence of commands, especially if asadmin deploy has its force flag default to false.... </td> 
+         <td class="confluenceTd"> One-pager updated - custom config will not survive undeployment followed by deployment </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 11 </td> 
+         <td class="confluenceTd"> Clarification </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> No cli and/or http admin parallel... this is strictly in the Admin console/GUI? </td> 
+         <td class="confluenceTd"> one-pager updated - CLI get and set commands (dotted notation) will provide access to the custom config data </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Reference Number</th> 
+         <th class="confluenceTh"> Clarification/Enhancement/Correction/....</th> 
+         <th class="confluenceTh">Detailed review comments</th> 
+         <th class="confluenceTh">Response from functional spec/one pager author </th> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 08, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

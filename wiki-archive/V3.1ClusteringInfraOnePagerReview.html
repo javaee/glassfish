@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : V3.1ClusteringInfraOnePagerReview</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="V3.1ClusteringInfraOnePagerReview-Document%3AV3.1ClusteringInfraOnePager"></a>Document: <a href="V3.1ClusteringInfraOnePager.html" title="V3.1ClusteringInfraOnePager">V3.1ClusteringInfraOnePager</a></h3> <h4><a name="V3.1ClusteringInfraOnePagerReview-Reviewers%3AMaheshKannan%2CRobertoChinnici%2CJoeFialli"></a>Reviewers: Mahesh Kannan, Roberto Chinnici, Joe Fialli</h3> <h4><a name="V3.1ClusteringInfraOnePagerReview-Reviewdate%3AJune02%2C2010"></a>Review date: June 02, 2010</h3> <h4><a name="V3.1ClusteringInfraOnePagerReview-Responsedate%3AJune07%2C2010"></a>Response date: June 07, 2010</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item </th> 
+         <th class="confluenceTh"> Section </th> 
+         <th class="confluenceTh"> Comment </th> 
+         <th class="confluenceTh"> Response </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> MK-1 </td> 
+         <td class="confluenceTd"> 2.2 </td> 
+         <td class="confluenceTd"> Are there any risks due to the absence of node agent? </td> 
+         <td class="confluenceTd"> The main risk is the lack of compatibility that results from this. I'll add this to the document. - DONE </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> MK-2 </td> 
+         <td class="confluenceTd"> 4.3 </td> 
+         <td class="confluenceTd"> Do we have create-node-agent in V3.1? </td> 
+         <td class="confluenceTd"> No. The one-pager and the design spec are being updated to reflect this. - DONE </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> MK-3 </td> 
+         <td class="confluenceTd"> 4.5.2 </td> 
+         <td class="confluenceTd"> What exactly does das.properties contain? </td> 
+         <td class="confluenceTd">It is a Java properties file. I added an example of it's content to the document. - DONE </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> MK-3 </td> 
+         <td class="confluenceTd"> 4.5.3 </td> 
+         <td class="confluenceTd"> Can you list the commands that are not supported in V3.1? Also, it will be great if you can document if there are alternatives that the user must / can do. For example, administrators are expected to use rc scripts to monitor health of instances (because node agent is not present in v3.1) </td> 
+         <td class="confluenceTd">Will add a list of unsupported commands to the out-of-scope section. - DONE </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> MK-4 </td> 
+         <td class="confluenceTd"> 4.13 </td> 
+         <td class="confluenceTd"> This section needs to list the dependencies. </td> 
+         <td class="confluenceTd">Whoops - will fill that in. - DONE </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> MK-5 </td> 
+         <td class="confluenceTd"> GEN </td> 
+         <td class="confluenceTd"> The design doc describes how time stamp of directories and files are used to perform sync between DAS and nodes. Does this mean that all instances in the cluster are assumed to be in time sync? </td> 
+         <td class="confluenceTd">No. When a file is synchronized, the modification time for the file on the DAS is set on the instance. When checking to see if a file need to be updated, the algorithm checks if the modification time is different (either before or after), and if it is, it synchronizes the file again. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> MK-6 </td> 
+         <td class="confluenceTd"> DESIGN DOC </td> 
+         <td class="confluenceTd"> create-local-instance take a bunch of node-agent related options. Are these still required in v3.1? </td> 
+         <td class="confluenceTd"> Yes, the following node agent-related properties can be passed to create-local-instance: --agentport --agentproperties --nodeagent --agentdir. The node agent directory structure is created automatically by create-local-instance if it is not there. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> MK-7 </td> 
+         <td class="confluenceTd"> DESIGN DOC </td> 
+         <td class="confluenceTd"> Deployment in clustered environment: The diagram seem to suggest that the hidden command will be run on each server instance. What happens if there is a failure in one of the servers? Does the entire deployment fails? Or the deployer has to manually redeploy the application on that one node? </td> 
+         <td class="confluenceTd"> Although discussed in the design doc, application deployment is actually out of scope for this one pager because it is being handled by another sub-project. The design spec is shared among several projects. My understanding of the plan generally for replicated command, including deploy, is that if there is a failure on any instance, then the command will be rolled back on all instances. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> RC-1 </td> 
+         <td class="confluenceTd"> 4.10.3 </td> 
+         <td class="confluenceTd"> Maybe it's a meta-issue, but I looked at the linked page for the project on upgrading to 3.1 and there is little information there about any of the clustering-specific issues in upgrading. I'd like to make sure that information doesn't fall through the cracks between the various one-pagers. </td> 
+         <td class="confluenceTd"> Agreed. This is an area that needs more work. We've been in contact with Bobby Bisset about upgrade issues and have submitted several issues to the <a href="V3.1UpgradeDashboard.html" title="V3.1UpgradeDashboard">upgrade dashboard </a> that is referenced in the spec. This coordination will continue throughout the implementation. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> RC-2 </td> 
+         <td class="confluenceTd"> DESIGN DOC </td> 
+         <td class="confluenceTd"> "Synchronization criteria" section: what's the rationale for treating lib and docroot directories under a config-specific directory differently from those under config? The same arguments used for the other case would apply here (libs can be large, docroot can contain many files), so I expected the two cases to be handled the same way. Another argument for that is that the distinction between the main config section and the per-server/cluster one is in principle invisible to clients. </td> 
+         <td class="confluenceTd">(From Bill) The docroot directory may contain a large number of small files. The lib directory may contain a small number of large files. The config-specific directory may contain both or either, which makes it hard to tell. We could handle "lib" and "docroot" subdirectories differently, but since the use of this directory, and its contents, are entirely unspecified and at best by convention, it's hard to know what exactly to do here. The goal is to avoid wasting time checking lots of files that probably didn't change, so the different behavior is based on the expected number of files, not the size of the files. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> RC-3 </td> 
+         <td class="confluenceTd"> DESIGN DOC </td> 
+         <td class="confluenceTd"> "When to do startup synchronization?" section: while I agree that it might take more work to implement, I'd think that doing sync-on-startup in the server itself would be less fragile than doing it in the client, in that the server, however started, will know how to get itself back in sync with the DAS. I'm a little wary about having asadmin join the group with GMS, as it would introduce the notion of a non-server member of the group. Maybe it's possible to use an in-between approach, where asadmin synchronized critical info and then lets the server do the rest. </td> 
+         <td class="confluenceTd">(From Bill) We don't plan to have asadmin join the GMS group. I've got a more complete design for this that I plan to send to the admin alias soon. It's actually <b>much</b> harder to do in the server after the server is fully started. You effectively have to "diff" the old and new domain.xml and figure out how to apply the changes to a running system. Doing it in the server before the server itself reads domain.xml is easier, but doesn't seem to have any obvious advantages over doing it in the code that starts the server. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> RC-4 </td> 
+         <td class="confluenceTd"> DESIGN DOC </td> 
+         <td class="confluenceTd"> "Communication (Transport) Layer" section: this business of retrieving a representation of a resource if not changed smells like REST (HTTP) to me. Issues like caching, compression, invalidation, etc. have pretty much standard answers there. I was wondering if the authors had spent some time looking at these issues while wearing a REST hat. </td> 
+         <td class="confluenceTd">(From Bill) I think the difference here is that we're batching multiple resources in a single request, as well as returning resources that you didn't even know to ask for. Possibly this could be cast in a more RESTful style, but given the limited use that doesn't seem important. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> RC-5 </td> 
+         <td class="confluenceTd"> DESIGN DOC </td> 
+         <td class="confluenceTd"> "Server Software Upgrade Implications" section: re the "need to carefully manage compatibility of the synchronization protocol and the config files", while reading the earlier sections I was expecting explicit version information to be included in both the protocol and the config files, since managing backward and forward compatibility without explicit version information can get tricky. </td> 
+         <td class="confluenceTd"> (From Bill) This issue probably hasn't been given enough consideration. Designing a protocol to handle this sort of evolution gracefully is <b>hard</b>, and it's not clear that adding version numbers is either necessary or sufficient. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JF-1 </td> 
+         <td class="confluenceTd"> DESIGN DOC </td> 
+         <td class="confluenceTd"> Under "When to do startup synchronization?" there is a question "Where does GMS get its configuration information?" It gets it from domain.xml. In fact, shoal-gms.jar can not be loaded if there is not a cluster in the domain.xml that has gms-enabled set to true. See <a href="http:--wiki.glassfish.java.net-attach-V3FunctionalSpecs-gmsconfig_gfv3_1.rtf">GMS configuration design doc </a> for more info on GMS configuration in domain.xml </td> 
+         <td class="confluenceTd">I've updated the document to indicate that GMS gets its configuration from the domain.xml file and added a reference to the configuration design doc for GMS. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JF-2 </td> 
+         <td class="confluenceTd"> DESIGN DOC </td> 
+         <td class="confluenceTd"> this is a question about the propagation of cluster configuration info when a cluster is running. if one has 2 instances, instance1 and instance2 in a glassfish cluster clusterA and that cluster is started via "asadmin start-cluster", what happens when one dynamically adds a new instance to clusterA, namely executing "asadmin create-instance instance3" while DAS, instance1 and instance2 are already running? When will the configuration info for the newly created instance3 be introduced to in-memory config/domain.xml of running instances instance1 and instance2. When the newly created instance "instance3" is started and joins the running cluster, we are trying to gauge if config lookup of "clusterA" within the GMS "join" event of instance3 inside of already running instance1 and instance2 will see config info created for instance3 when it was created. We are trying to determine if IIOP could get its endpoint info from the cluster config. The IIOP config information is definitley for each clustered instance in domain.xml for instances created in the cluster before the members of the cluster are started. </td> 
+         <td class="confluenceTd">The already running instances are updated by the command replication mechanism, i.e., the create-instance command is replicated to all running instances, and the in-memory config is updated that way. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>Here are the details of the the discussion about RC's comments with Bill Shannon (WS):</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">(RC)&gt;&gt;&gt; "Synchronization criteria" section: what's the rationale for
+&gt;&gt;&gt; treating lib and docroot directories under a config-specific
+&gt;&gt;&gt; directory differently from those under config? The same arguments
+&gt;&gt;&gt; used for the other case would apply here (libs can be large, docroot
+&gt;&gt;&gt; can contain many files), so I expected the two cases to be handled
+&gt;&gt;&gt; the same way. Another argument for that is that the distinction
+&gt;&gt;&gt; between the main config section and the per-server/cluster one is in
+&gt;&gt;&gt; principle invisible to clients.
+&gt;&gt;
+(WS)&gt;&gt; The docroot directory may contain a large number of small files.
+&gt;&gt;
+&gt;&gt; The lib directory may contain a small number of large files.
+&gt;&gt;
+&gt;&gt; The config-specific directory may contain both or either, which makes
+&gt;&gt; it hard to tell. We could handle "lib" and "docroot" subdirectories
+&gt;&gt; differently, but since the use of this directory, and its contents,
+&gt;&gt; are entirely unspecified and at best by convention, it's hard to know
+&gt;&gt; what exactly to do here.
+&gt;&gt;
+&gt;&gt; The goal is to avoid wasting time checking lots of files that probably
+&gt;&gt; didn't change, so the different behavior is based on the expected number
+&gt;&gt; of files, not the size of the files.
+&gt;
+(RC)&gt; I was going by this comment in the design document: "The config-specific
+&gt; directory may commonly contain lib and docroot subdirectories, and so might
+&gt; be very large". In such a situation, users may update docroot/index.html
+&gt; without realizing it will cause all contents of the parent directory to
+&gt; be sent
+&gt; over to the client, possibly including lots of files in docroot and some
+&gt; large
+&gt; files in lib.
+&gt;
+&gt; If that is not a common use case, then it doesn't matter.
+
+(WS)I've asked, and people don't really know how often the config-specific
+directory is used.  People seem to think that it might be used for
+libraries that you don't want to distribute to all machines.  Using it
+for machine or cluster specific docroots was less clear.
+
+I originally thought there was some automatic, transparent override
+associated with entries in the config-specific directory, but that's
+not the case.  Apparently you have to manually reconfigure the
+virtual server to use a docroot located there.
+
+Without more data on how people are actually using it, I'm not sure
+what to do here.  Do you have any better suggestions?
+
+(RC)No. We may go back to it later if we ever get more data on how it's used. 
+
+(RC)&gt;&gt;&gt; "When to do startup synchronization?" section: while I agree that it
+&gt;&gt;&gt; might take more work to implement, I'd think that doing
+&gt;&gt;&gt; sync-on-startup in the server itself would be less fragile than
+&gt;&gt;&gt; doing it in the client, in that the server, however started, will
+&gt;&gt;&gt; know how to get itself back in sync with the DAS.
+&gt;&gt;
+(WS)&gt;&gt; It's actually *much* harder to do in the server after the server is
+&gt;&gt; fully started. You effectively have to "diff" the old and new domain.xml
+&gt;&gt; and figure out how to apply the changes to a running system.
+&gt;
+(RC)&gt; I agree.
+&gt;
+(WS)&gt;&gt; Doing it in the server before the server itself reads domain.xml is
+&gt;&gt; easier,
+&gt;&gt; but doesn't seem to have any obvious advantages over doing it in the code
+&gt;&gt; that starts the server.
+&gt;
+(RC)&gt; It depends on how much you have to "grow" the asadmin command to do that.
+&gt; If it needs to grow a lot, it may be easier to do the work in the server
+&gt; itself.
+
+(WS)One of the advantages of doing this in asadmin instead of the server
+itself was that all the infrastructure that was needed to interact with
+the DAS was already there.  I only had to add one relatively small new
+local command (and improve the infrastructure in a few ways).
+
+(RC)&gt; I'd also imagine that modularity would help get the server to enter a
+&gt; kind of
+&gt; "update mode" at startup, before going fully operational (reading
+&gt; domain.xml,
+&gt; etc.), but in reality I don't know how deeply wired domain.xml is in the
+&gt; current
+&gt; code.
+
+(WS)It's not impossible to insert new code that gets run before domain.xml
+is read.  The real issue was the lack of supporting infrastructure for
+talking to the DAS.
+
+I've since had to extract much of that infrastructure and make it
+available for use in the DAS, so the DAS can talk to an instance.
+So, the choice may not be as clear-cut now, but the current approach
+seems to be working well.
+
+(RC)&gt;&gt; &gt; I'm a little wary
+&gt;&gt;&gt; about having asadmin join the group with GMS, as it would introduce
+&gt;&gt;&gt; the notion of a non-server member of the group. Maybe it's possible
+&gt;&gt;&gt; to use an in-between approach, where asadmin synchronized critical
+&gt;&gt;&gt; info and then lets the server do the rest.
+&gt;&gt;
+(WS)&gt;&gt; We don't plan to have asadmin join the GMS group. I've got a more
+&gt;&gt; complete
+&gt;&gt; design for this that I plan to send to the admin alias soon.
+&gt;&gt;
+(RC)&gt;&gt;&gt; "Communication (Transport) Layer" section: this business of
+&gt;&gt;&gt; retrieving a representation of a resource if not changed smells like
+&gt;&gt;&gt; REST (HTTP) to me. Issues like caching, compression, invalidation,
+&gt;&gt;&gt; etc. have pretty much standard answers there. I was wondering if the
+&gt;&gt;&gt; authors had spent some time looking at these issues while wearing a
+&gt;&gt;&gt; REST hat.
+&gt;&gt;
+(WS)&gt;&gt; I think the difference here is that we're batching multiple resources
+&gt;&gt; in a single request, as well as returning resources that you didn't
+&gt;&gt; even know to ask for.
+&gt;&gt;
+&gt;&gt; Possibly this could be cast in a more RESTful style, but given the
+&gt;&gt; limited
+&gt;&gt; use that doesn't seem important.
+&gt;
+(RC)&gt; It depends on how much of REST you'll be reinventing... ;-)
+
+(WS)Not much.  Right now it leverages the entire admin command infrastructure,
+and just adds a command to synchronize certain sets of files.  It's
+pretty special-purpose, which seems fine since the only client we envision
+is GlassFish itself.
+
+(RC)&gt;&gt;&gt; "Server Software Upgrade Implications" section: re the "need to
+&gt;&gt;&gt; carefully manage compatibility of the synchronization protocol and
+&gt;&gt;&gt; the config files", while reading the earlier sections I was
+&gt;&gt;&gt; expecting explicit version information to be included in both the
+&gt;&gt;&gt; protocol and the config files, since managing backward and forward
+&gt;&gt;&gt; compatibility without explicit version information can get tricky.
+&gt;&gt;
+(WS)&gt;&gt; This issue probably hasn't been given enough consideration.
+&gt;&gt;
+&gt;&gt; Designing a protocol to handle this sort of evolution gracefully is
+&gt;&gt; *hard*,
+&gt;&gt; and it's not clear that adding version numbers is either necessary or
+&gt;&gt; sufficient.
+&gt;
+(RC)&gt; That's true.
+&gt;
+&gt; I find it helps to know what version of the protocol each side is using,
+&gt; so that negotiation is explicit.
+
+(WS)I *do* need to spend more time on this.  We might be able to at least
+detect when the client and server are not compatible, but I doubt that
+we're going to spend any effort making old clients work with new servers
+or vice versa.</pre> 
+       </div> 
+      </div>
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

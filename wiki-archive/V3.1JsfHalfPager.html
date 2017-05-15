@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : V3.1JsfHalfPager</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1. Introduction
+     1.1. Project/Component Working Name:
+JavaServer Faces/Mojarra
+
+     1.2. Name(s) and e-mail address of Document Author(s)/Supplier:
+Edward Burns &lt;edward.burns@oracle.com&gt;
+
+     1.3. Date of This Document:
+05/03/10
+
+2. Project Summary
+     2.1. Project Description:
+
+JavaServer Faces (JSF) is the standard GUI for Java EE.  It describes a
+component model for creating UI components, assembling them into an
+application, and connecting the whole GUI to the rest of the Java EE stack.
+
+     2.2. Risks and Assumptions:
+
+Large and diverse number of JSF users means that top priority
+requests for action can come in from many places and disrupt the
+schedule.
+
+Assumptions
+===========
+
+The JCP Minor Revision process can be used to produce JSF 2.1, including
+signature changes that require a new revision of the TCK.
+
+The Java EE platform umbrella JSR approves the revision of JSF 2.1
+(including signature changes) for inclusion in Java EE 6.
+
+The AS core team approves the revision of JSF 2.1 (including signature
+changes) for inclusion in Java EE 6.
+
+3. Problem Summary
+     3.1. Problem Area:
+
+Maintain forward momentum of JSF development, and the thought leadership
+thereof.
+
+     3.2. Justification:
+
+Competitors such as JBoss and IBM have been angling for taking over
+thought leadership in this space, which is crucial to Java EE 6 adoption.
+
+4. Technical Description:
+      4.1. Details:
+
+There are two buckets of issues, each with two sub-buckets.  For each of
+these buckets, assign one of the two JSF spec co-leaders to each issue.
+Each spec lead will then list the issues in decreasing order of
+priority.  Each spec lead will work down the list, delegating as
+necessary.
+
+      4.2. Bug/RFE Number(s):
+
+JSF 2.1
+
+   JCP Changelog
+
+   http://wiki.jcp.org/wiki/index.php?page=JSF+2.1+Change+Log
+
+   Spec Issue Tracker issues
+
+ 
+   https://javaserverfaces-spec-public.java.net/issues/buglist.cgi?resort=1&amp;component=javaserverfaces-spec-public;issue_status=NEW;issue_status=STARTED;issue_status=REOPENED;target_milestone=2.1;email1=;emailtype1=exact;emailassigned_to1=1;email2=;emailtype2=exact;emailreporter2=1;issueidtype=include;issue_id=;changedin=;votes=;chfieldfrom=;chfieldto=Now;chfieldvalue=;short_desc=;short_desc_type=fulltext;long_desc=;long_desc_type=fulltext;issue_file_loc=;issue_file_loc_type=fulltext;status_whiteboard=;status_whiteboard_type=fulltext;field0-0-0=noop;type0-0-0=noop;value0-0-0=;namedcmd=IssuesResolvedEDRtoPR;newqueryname=;Submit%20query=Submit%20query&amp;order=map_reporter.userid,%20map_reporter.userid,%20issues.status_whiteboard,%20issues.status_whiteboard,%20issues.subcomponent,%20issues.issue_id
+
+    Mojarra Issue Tracker Issues
+
+      Open issues we have committed to fix before 2.1
+
+      https://javaserverfaces.java.net/issues/buglist.cgi?component=javaserverfaces&amp;issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=fulltext&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=target_milestone&amp;type0-0-0=equals&amp;value0-0-0=2.0.3&amp;cmdtype=doit&amp;namedcmd=mystuff&amp;newqueryname=&amp;order=Reuse+same+sort+as+last+time&amp;Submit+query=Submit+query
+
+      Open issues we have committed to fix for 2.1
+
+      https://javaserverfaces.java.net/issues/buglist.cgi?component=javaserverfaces&amp;issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED&amp;target_milestone=2.0.next&amp;target_milestone=2.1&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=fulltext&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=&amp;cmdtype=doit&amp;namedcmd=mystuff&amp;newqueryname=&amp;order=Reuse+same+sort+as+last+time&amp;Submit+query=Submit+query
+
+      Open issues we have not committed to fix for 2.1
+
+      https://javaserverfaces.java.net/issues/buglist.cgi?component=javaserverfaces&amp;issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=fulltext&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=target_milestone&amp;type0-0-0=notequals&amp;value0-0-0=2.1&amp;field0-1-0=target_milestone&amp;type0-1-0=notequals&amp;value0-1-0=2.0.next&amp;field0-2-0=target_milestone&amp;type0-2-0=notequals&amp;value0-2-0=2.0.3&amp;cmdtype=doit&amp;namedcmd=mystuff&amp;newqueryname=&amp;order=Reuse+same+sort+as+last+time&amp;Submit+query=Submit+query
+
+
+      4.3. In Scope:
+
+         JSF 2.1
+
+           Any changes that improve the quality of the spec, may involve
+           implementation changes, but may not be so "big" as to require
+           a new JSR.
+
+           It is acceptable to make signature changes in this release.  
+
+      4.4. Out of Scope:
+	Entire new subsystems may not be introduced.
+
+         Anything that breaks the ability to run on GlassFish v2 will not
+         be introduced.
+
+      4.5. Interfaces:
+	This project implements JSR-314
+         http://jcp.org/en/jsr/summary-314
+
+         4.5.1.  Public Interfaces:
+	    javax.faces.*
+             JSF Schemas
+             Standard HTML RenderKit
+             JSP Taglibrary doc
+             Facelets Taglibrary doc
+             JSDoc
+
+         4.5.2.  Private Interfaces:
+	    com.sun.faces.spi.*
+
+         4.5.3.  Deprecated/Removed Interfaces:
+
+             None
+
+      4.6. Doc Impact:
+
+              JSF2 Content in the Java EE Tutorial will need to be updated.
+
+      4.7. Admin/Config Impact:
+
+	Because the GlassFish Admin Console heavily uses JSF, it must be thoroughly
+	tested with this new version.
+
+      4.8. HA Impact:
+
+         Dev tests need to be run in a clustered environment,
+         specifically ones where a cluster member dies during execution
+
+      4.9. I18N/L10N Impact:
+
+         No new requirements, but it would be nice to have more oversight
+         from the I18N team.</pre> 
+       </div> 
+      </div>
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

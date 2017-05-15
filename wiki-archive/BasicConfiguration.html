@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : BasicConfiguration</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="BasicConfiguration-OperatingSystemsinstallations"></a>Operating Systems installations</h1> <p>Before being able to run virtual machines, you need to configure the dom0 so it can create virtual machines. I will add more information on various O.S. as I gather it.</p> <p><a href="OSes.html" title="OSes">Operating Systems installations </a></p> <h4><a name="BasicConfiguration-Addbasicconfiguration"></a>Add basic configuration</h1> <h4><a name="BasicConfiguration-KVM"></a>KVM</h2> <p>To ensure your host machine is capable of running successfully virtual machines, you should create a virtual machine.<br> Example of doing so is located at this <a href="templating.html" title="templating">page</a></p> <p>Follow this <a href="HypervisorConfiguration.html" title="HypervisorConfiguration">link </a> to configure IMS with KVM.</p> <h4><a name="BasicConfiguration-VirtualBox"></a>VirtualBox</h2> <p>Follow this <a href="VirtualBox.html" title="VirtualBox">link</a> to configure IMS with VirtualBox.</p> <h4><a name="BasicConfiguration-OVM"></a>OVM</h2> <p>For information concerning integration with OVM please see the internal GlassFish <a href="http://aseng-wiki.us.oracle.com/asengwiki/display/GlassFish/Oracle+VM+Overview">OVM overview page</a></p> <h4><a name="BasicConfiguration-Native"></a>Native</h2> <p>To run services directly on your local machine without an hypervisor, you need to follow those <a href="NativeConfiguration.html" title="NativeConfiguration">steps</a>.</p> <h4><a name="BasicConfiguration-Template"></a>Template</h1> <p>In order to allocate virtual machines, you need to create a virtual machine template. Such template comes from creating a VM like showed earlier and saving the associated disk image (in my example, called ubuntu.img). Such images are usually stored in /var/lib/libvirt/images on ubuntu</p> <h4><a name="BasicConfiguration-Generictemplate"></a>Generic template</h2> <p>I have also provided templates information that can be retrieve from the ftp server :<br> ftp 10.132.178.154 and use (cloud/cloud) as username/password. then retrieve the ubuntu.xml and ubuntu.img<br> (this is outdated, for now build it yourself).</p> <h4><a name="BasicConfiguration-TemplateBuilding"></a>Template Building</h2> <p>Look at Templating <a href="templating.html" title="templating">page</a> for information on how to build a template.</p> <h4><a name="BasicConfiguration-TemplateInstallation"></a>Template Installation</h3> <p>To install a template in the DAS, you need to use the create-template admin command</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">asadmin create-template --files /Users/dochez/templates/ubuntu.img,/Users/dochez/templates/ubuntu.xml --indexes ServiceType=JavaEE,VirtualizationType=KVM ubuntu</pre> 
+       </div> 
+      </div>
+     </div> <p>You should run this command each time the original template files are changed as glassfish is making a copy of the files in its cache, you will need to do a delete-template first.</p> <h4><a name="BasicConfiguration-TemplateUser"></a>Template User</h3> <p>A template can have a specific user (defaulted to the server pool user's if absent). To install the template user's information :</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">asadmin create-template-user --virtualization kvm --template ubuntu --userId 1000 --groupId 1000 cloud</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="BasicConfiguration-TemplateIndexes"></a>Template Indexes</h3> <p>Templates are installed using indexes that can be used in queries. So far we support two types of indexes, first is the Service Type which represents the service a template will provided. So far, a template can only provided one service type (to be extended). Second index is the virtualization technology the template supports (again, only one at this point). Such indexes must be declared when the template is registered so the system can look them up when deployment and services requests are being resolved.</p> <p>The template registration below registers a template for Java EE service type running in a libvirt environment.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">$WS_HOME/appserver/distributions/glassfish/glassfish3/glassfish/bin/asadmin create-template --virtualization kvm --files /Users/dochez/templates/ubuntu.img,/Users/dochez/templates/ubuntu.xml --indexes ServiceType=JavaEE,VirtualizationType=libvirt ubuntu</pre> 
+       </div> 
+      </div>
+     </div> <h5><a name="BasicConfiguration-Templatereplication"></a>Template replication</h5> <p>The templates will be replicated to all the machines configured in the group (in ~/virt/templates by default). This replication can take time so as soon as you have added a template restart the DAS and go to the target machines to see the progress. The DAS will print those messages. Do not do anything with the DAS and virtualization until you are sure all the templates have been copied successfully on the remote machines (this is a need to be improved area obviously).</p> <p>[#|2011-02-22T12:33:27.317-0800|INFO|glassfish3.1|null|_ThreadID=16;_ThreadName=pool-3-thread-2;|Copying template ubuntu on cloud-2|#]</p> <p>[#|2011-02-22T12:51:01.888-0800|INFO|glassfish3.1|null|_ThreadID=16;_ThreadName=pool-3-thread-2;|Finished copying template ubuntu on cloud-2|full details at : <a href="https://help.ubuntu.com/community/KVM/Installation">https://help.ubuntu.com/community/KVM/Installation</a></p> <h4><a name="BasicConfiguration-VirtualClustersanddeployment"></a>Virtual Clusters and deployment</h1> <h4><a name="BasicConfiguration-VirtualClusters"></a>Virtual Clusters</h2> <p>You are now ready to create a virtual cluster of Java EE service types :</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">asadmin create-virtual-cluster --group cloud --template &lt;template_name&gt; --min 2 myCluster</pre> 
+       </div> 
+      </div>
+     </div> <p>This will create 2 virtual machines (round-robin on all your configured machines), where disks are installed in ~/virt/disks by default.</p> <p>To delete an existing virtual cluster</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">asadmin delete-virtual-cluster myCluster</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="BasicConfiguration-deployment"></a>deployment</h2> <p>Deployment is like any deployment to a cluster, use --target option.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">asadmin deploy --target myCluster myapp.war</pre> 
+       </div> 
+      </div>
+     </div> <p>You can use a cloud.xml (will be replaced with a glassfish-services.xml at some point, to automatically create a virtual cluster of JavaEE services (Database too) before deploying the application to the cluster. The name of the cluster will be defaulted to the appName, and the cluster (all services) will be deleted upon undeployement.</p> <p>In the example below, located in the META-INF/cloud.xml, a cluster of 3 Java EE instances and 1 Database intense will be created.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;cloud-application&gt;
+	&lt;services&gt;
+		&lt;java-ee-service min-instances="3"/&gt;
+		&lt;database-service/&gt;
+	&lt;/services&gt;
+&lt;/cloud-application&gt;</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="BasicConfiguration-Quicktutorial"></a>Quick tutorial</h1> <p>Say you just want to use a KVM machine with a static IP, do :</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false"># add basic configuration
+asadmin create-ims-config-libvirt kvm
+
+# create server pool (note that the subnet should be optional, just enter your current subnet for now)
+asadmin create-server-pool --virtualization kvm --subnet 10.132.181.0/24 --portName "utun0;en0" cloud
+
+# create default user for all machines in the server pool.
+asadmin create-server-pool-user --serverPool cloud --userId 1001 --groupId 1001 cloud
+
+# add the template to the DAS and specify the user that will run glassfish within the virtual machine
+asadmin create-template --virtualization kvm --files /Users/dochez/templates/ubuntu.img,/Users/dochez/templates/ubuntu.xml --indexes ServiceType=JavaEE,VirtualizationType=libvirt ubuntu
+asadmin create-template-user --virtualization kvm --userid 1000 --groupid 1000 --template ubuntu cloud
+
+# add a second template (same one really) for the database (derby)
+asadmin create-template --virtualization kvm --files /Users/dochez/templates/ubuntu.img,/Users/dochez/templates/ubuntu.xml --indexes ServiceType=Database,VirtualizationType=libvirt dbase
+asadmin create-template-user --virtualization kvm --userid 1000 --groupid 1000 --template dbase cloud
+
+
+
+# add local machine.
+asadmin create-machine --serverPool cloud --networkName localhost local
+
+# add remote machine
+asadmin create-machine --serverPool cloud --networkName office --ip 10.132.181.57 office
+
+# add your user name to your machine
+asadmin create-machine-user --group cloud --machine local --userId 1000 --groupId 1000 dochez
+
+# create the virtual cluster
+asadmin create-virtual-cluster --groupnames cloud --template ubuntu --min 2 firstCluster
+
+# deploy
+asadmin deploy --target firstCluster myapp.war</pre> 
+       </div> 
+      </div>
+     </div> <p>Resulting configuration known to work :</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;virtualizations&gt;
+    &lt;libvirt-virtualization name="kvm" type="libvirt"&gt;
+      &lt;template name="ubuntu"&gt;
+        &lt;template-index value="JavaEE" type="ServiceType"&gt;&lt;/template-index&gt;
+        &lt;template-index value="libvirt" type="VirtualizationType"&gt;&lt;/template-index&gt;
+        &lt;user group-id="1000" name="cloud" user-id="1000"&gt;&lt;/user&gt;
+      &lt;/template&gt;
+      &lt;template name="dbase"&gt;
+        &lt;template-index value="Database" type="ServiceType"&gt;&lt;/template-index&gt;
+        &lt;template-index value="libvirt" type="VirtualizationType"&gt;&lt;/template-index&gt;
+        &lt;user group-id="1000" name="cloud" user-id="1000"&gt;&lt;/user&gt;
+      &lt;/template&gt;
+      &lt;server-pool port-name="utun0;en0" name="cloud" sub-net="10.132.181.0/24"&gt;
+        &lt;machines name="office"&gt;
+          &lt;ip-address&gt;10.132.181.57&lt;/ip-address&gt;
+          &lt;network-name&gt;office&lt;/network-name&gt;
+        &lt;/machines&gt;
+        &lt;user group-id="1001" name="cloud" user-id="1001"&gt;&lt;/user&gt;
+      &lt;/server-pool&gt;
+    &lt;/libvirt-virtualization&gt;
+  &lt;/virtualizations&gt;</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="BasicConfiguration-OpenIssues"></a>Open Issues</h3> <p>Lots of them obviously</p> 
+     <ul> 
+      <li>simplification</li> 
+      <li>User credential seems to be very unix centric, needs to be revisited.</li> 
+      <li>Error cases not handled well.</li> 
+     </ul> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876143/21365671.png">create1.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876143/21365678.png">create2.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876143/21365680.png">create3.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876143/21365679.png">create4.png</a> (image/png) 
+      <br> 
+     </div> 
+     <div class="tabletitle"> 
+      <a name="comments"> <h4>Comments:</h2> </a> 
+     </div> 
+     <table border="0" width="100%"> 
+      <tbody>
+       <tr> 
+        <td> <a name="comment-41846444"></a> <font class="smallfont"><p>Hello there!</p> <p>First of all, I would like to express my deepest gratitude for this tutorial and all of the support you guys give us to aid our cause. Glassfish in my opinion is one of the most well-written application I ever had pleasure to work with. After all I didn't picked it as one of technologies involved in my master degree project for no reason.</p> <p>After following steps from this tutorial I got stuck on deployment of my app. I verified logs and traced problem in code. It turns out that virtual cluster is not a proper target to deploy applications... so I guess this tutorial is a bit out-dated. Could you confirm that deployment to virtual cluster is not permitted? If so than how apps should be deployed so they have load balancer and elasticity container provisioned?</p></font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by 20674 at Jul 12, 2012 18:42 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-42108654"></a> <font class="smallfont"><p>Hello Piotr,</p> <p>Yes, these instructions are outdated. In the most basic form, you would need to do this:</p> <p>1. asadmin create-ims-config-native<br> 2. asadmin register-service-provisioning-engine --defaultservice=true --type Database org.glassfish.paas.javadbplugin.DerbyPlugin<br> 3. asadmin register-service-provisioning-engine --defaultservice=true --type JavaEE org.glassfish.paas.gfplugin.GlassFishPlugin<br> 4. cadmin deploy &lt;app&gt;.war (assuming app is PaaS enabled)</p> <p>Please refer to <a href="./LBTemplating.html">https://wikis.oracle.com/display/GlassFish/LBTemplating</a> for instructions on configuring and using a load balancer.</p> <p>HTH,<br> -Yamini</p></font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by 16320 at Jul 13, 2012 04:31 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-42108660"></a> <font class="smallfont"><p>thank you Yamini for throwing some light on this. If it comes to load balancer site I have already seen it, thanks for it. It was extremely helpful. If it comes to those register commands I will investigate them later... Two things that riveted my attention:</p> <p>1. in 4'th point - you wrote cadmin on purpose? Didn't you mean asadmin? I have not seen script with name like this so far...</p> <p>2. What do you mean by PaaS enablement? Could you explain me what it is or point me a place where I can read about it?</p> <p>and one last thing... do you plan to fix paas console so that it will work under secure-admin enabled?</p> <p>thank you for your reply,</p> <p>P</p></font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by 20674 at Jul 13, 2012 13:28 
+         </div> </td> 
+       </tr> 
+      </tbody>
+     </table> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Mar 16, 2012 by 
+<font color="#0050B2">16320</font>. Exported from wikis.oracle.com on May 27, 2015 20:49.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

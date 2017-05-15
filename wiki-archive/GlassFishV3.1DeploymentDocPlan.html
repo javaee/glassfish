@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFishV3.1DeploymentDocPlan</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GlassFishV3.1DeploymentDocPlan-DeploymentDocumentationPlanforGlassFishServerOpenSourceEdition3.1"></a><em>Deployment</em> Documentation Plan for GlassFish Server Open Source Edition 3.1</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#GlassFishV3.1DeploymentDocPlan-DeploymentDocumentationPlanforGlassFishServerOpenSourceEdition3.1"> <em>Deployment</em> Documentation Plan for GlassFish Server Open Source Edition 3.1</a></li> 
+       <ul> 
+        <li><a href="#GlassFishV3.1DeploymentDocPlan-PeopleandRoles">People and Roles</a></li> 
+        <li><a href="#GlassFishV3.1DeploymentDocPlan-Audience">Audience</a></li> 
+        <li><a href="#GlassFishV3.1DeploymentDocPlan-SummaryoftheFeatureFromaUser%27sPerspective">Summary of the Feature From a User's Perspective</a></li> 
+        <li><a href="#GlassFishV3.1DeploymentDocPlan-Availability">Availability</a></li> 
+        <li><a href="#GlassFishV3.1DeploymentDocPlan-StatementofWork">Statement of Work</a></li> 
+        <ul> 
+         <li><a href="#GlassFishV3.1DeploymentDocPlan-ChangestoBooks">Changes to Books</a></li> 
+         <li><a href="#GlassFishV3.1DeploymentDocPlan-ChangestoOnlineHelp">Changes to Online Help</a></li> 
+         <li><a href="#GlassFishV3.1DeploymentDocPlan-ChangestoManPages">Changes to Man Pages</a></li> 
+        </ul> 
+        <li><a href="#GlassFishV3.1DeploymentDocPlan-ReviewSchedule">Review Schedule</a></li> 
+        <li><a href="#GlassFishV3.1DeploymentDocPlan-RelatedInformation">Related Information</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="GlassFishV3.1DeploymentDocPlan-PeopleandRoles"></a>People and Roles</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Name</th> 
+         <th class="confluenceTh">Role </th> 
+         <th class="confluenceTh">Location</th> 
+         <th class="confluenceTh">Time Zone</th> 
+         <th class="confluenceTh">Email </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Rebecca Parks </td> 
+         <td class="confluenceTd"> Documentation Feature Owner </td> 
+         <td class="confluenceTd"> Santa Clara, CA, USA </td> 
+         <td class="confluenceTd"> US/Pacific </td> 
+         <td class="confluenceTd"><tt>junesm@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Additional Writer </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"><em>java.netID</em><tt>@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Peer Reviewer </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"><em>java.netID</em><tt>@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Hong Zhang </td> 
+         <td class="confluenceTd"> Software Engineer </td> 
+         <td class="confluenceTd"> Burlington, VT, USA </td> 
+         <td class="confluenceTd"> US/Eastern </td> 
+         <td class="confluenceTd"><em>java.netID</em><tt>@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Tim Quinn </td> 
+         <td class="confluenceTd"> Software Engineer </td> 
+         <td class="confluenceTd"> Itasca, IL, USA </td> 
+         <td class="confluenceTd"> US/Central </td> 
+         <td class="confluenceTd"><em>java.netID</em><tt>@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Elena Asarina </td> 
+         <td class="confluenceTd"> QA Engineer </td> 
+         <td class="confluenceTd"> Santa Clara, CA, USA </td> 
+         <td class="confluenceTd"> US/Pacific </td> 
+         <td class="confluenceTd"><em>java.netID</em><tt>@dev.java.net</tt> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3.1DeploymentDocPlan-Audience"></a>Audience</h2> <p>Both administrators and developers deploy applications, so this feature is of interest to all users. Some topics, such as rolling upgrade, are of primary interest to administrators, while others, such as deployment descriptors, are of primary interest to developers.</p> <h4><a name="GlassFishV3.1DeploymentDocPlan-SummaryoftheFeatureFromaUser%27sPerspective"></a>Summary of the Feature From a User's Perspective</h2> <p>The following deployment enhancements are planned for this 3.1 release:</p> 
+     <ul> 
+      <li>Clustering deployment, support dynamic deployment to cluster and rolling upgrade (parity with 2.1)</li> 
+      <li>Support application related commands in clustering environment (parity with 2.1)</li> 
+      <li>Partial support for Weblogic deployment descriptors in GlassFish (new)</li> 
+      <li>Rename sun-specific deployment descriptor dtds from sun-<b>.dtd to glassfish-</b>.dtd (new)</li> 
+      <li>Application versioning, support deployment of applications with multiple versions (new)</li> 
+     </ul> <h4><a name="GlassFishV3.1DeploymentDocPlan-Availability"></a>Availability</h2> <p>The deployment featutre is available in the Web Profile distribution and the Full Platform distribution, but deployment of some types of components is possible only with the Full Platform distribution.</p> <h4><a name="GlassFishV3.1DeploymentDocPlan-StatementofWork"></a>Statement of Work</h2> <p>This section describes in detail for each document the work that is required by the introduction of the feature, such as changes, addition of new material, relocation of existing material, and removal of existing material.</p> <p>Documentation Impact:</p> 
+     <ul> 
+      <li>None</li> 
+      <li>Minor</li> 
+      <li>Moderate</li> 
+      <li>Major</li> 
+      <li>New</li> 
+     </ul> 
+     <hr> <p><b>Note -</b> If a document is task based (as opposed to reference), the changes should be determined from the user task analysis for the feature.</p> 
+     <hr> <h4><a name="GlassFishV3.1DeploymentDocPlan-ChangestoBooks"></a>Changes to Books</h3> <p>The renaming of deployment descriptors applies to the entire GlassFish Server documentation set but is minor, basically a search-and-replace operation. Old and new file names are listed in the following table.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Old 3.0.1 Name </th> 
+         <th class="confluenceTh">New 3.1 Name </th> 
+         <th class="confluenceTh">Top-Level Element </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> sun-application.xml </td> 
+         <td class="confluenceTd">glassfish-application.xml </td> 
+         <td class="confluenceTd">glassfish-application </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> sun-application_6_0-0.dtd </td> 
+         <td class="confluenceTd">glassfish-application_6_0-1.dtd </td> 
+         <td class="confluenceTd">glassfish-application </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> sun-web.xml </td> 
+         <td class="confluenceTd">glassfish-web.xml </td> 
+         <td class="confluenceTd">glassfish-web-app </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> sun-web-app_3_0-0.dtd </td> 
+         <td class="confluenceTd">glassfish-web-app_3_0-1.dtd </td> 
+         <td class="confluenceTd">glassfish-web-app </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> sun-ejb-jar.xml </td> 
+         <td class="confluenceTd">glassfish-ejb-jar.xml </td> 
+         <td class="confluenceTd">glassfish-ejb-jar </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> sun-ejb-jar_3_1-0.dtd </td> 
+         <td class="confluenceTd">glassfish-ejb-jar_3_1-1.dtd </td> 
+         <td class="confluenceTd">glassfish-ejb-jar </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> sun-cmp-mappings.xml </td> 
+         <td class="confluenceTd">sun-cmp-mappings.xml </td> 
+         <td class="confluenceTd">Unchanged </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> sun-cmp-mapping_1_2.dtd </td> 
+         <td class="confluenceTd">sun-cmp-mapping_1_2.dtd </td> 
+         <td class="confluenceTd">Unchanged </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> sun-application-client.xml </td> 
+         <td class="confluenceTd">glassfish-application-client.xml </td> 
+         <td class="confluenceTd">glassfish-application-client </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> sun-application-client_6_0-0.dtd </td> 
+         <td class="confluenceTd">glassfish-application-client_6_0-1.dtd </td> 
+         <td class="confluenceTd">glassfish-application-client </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> sun-acc.xml </td> 
+         <td class="confluenceTd">sun-acc.xml </td> 
+         <td class="confluenceTd">Unchanged </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> sun-application-client-container_1_2.dtd </td> 
+         <td class="confluenceTd">sun-application-client-container_1_2.dtd </td> 
+         <td class="confluenceTd">Unchanged </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> sun-resources.xml </td> 
+         <td class="confluenceTd">glassfish-resources.xml </td> 
+         <td class="confluenceTd">Unchanged </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> sun-resources_1_4.dtd </td> 
+         <td class="confluenceTd">glassfish-resources_1_5.dtd </td> 
+         <td class="confluenceTd">Unchanged </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <hr> 
+     <ul> 
+      <li>Note -* Mitesh Meswani, the engineer assigned to CMP, says that the sun-cmp-mapping* files may not change, because CMP is an old and seldom-used feature. 
+       <hr></li> 
+     </ul> <p><b><em>Application Deployment Guide</em> Changes</b></p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Section</th> 
+         <th class="confluenceTh">Documentation Impact</th> 
+         <th class="confluenceTh">Writer</th> 
+         <th class="confluenceTh">Reviewers</th> 
+         <th class="confluenceTh">Description of Change </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1 Overview of Deployment </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Rebecca Parks </td> 
+         <td class="confluenceTd"> Hong Zhang Tim Quinn </td> 
+         <td class="confluenceTd">Deployment to clusters and rolling upgrade reinstated from v2, new application versioning section. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2 Deploying Applications </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Rebecca Parks </td> 
+         <td class="confluenceTd"> Hong Zhang Tim Quinn </td> 
+         <td class="confluenceTd">New <tt>redeploy --keep-state</tt> option (spelling uncertain) applies to HTTP session and SFSB/timer state saving. No other changes to deployment of specific module types expected. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> A <tt>asadmin</tt> Deployment Subcommands </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Rebecca Parks </td> 
+         <td class="confluenceTd"> Hong Zhang Tim Quinn </td> 
+         <td class="confluenceTd">The <tt>create-application-ref</tt>, <tt>delete-application-ref</tt>, and <tt>list-application-refs</tt> commands will be reinstated from v2, and other deployment commands will have their <tt>--target</tt> options reinstated. New <tt>redeploy --keep-state</tt> option (spelling uncertain). </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> B Deployment Descriptor Files </td> 
+         <td class="confluenceTd"> Major </td> 
+         <td class="confluenceTd"> Rebecca Parks </td> 
+         <td class="confluenceTd"> Hong Zhang Tim Quinn </td> 
+         <td class="confluenceTd">Add WebLogic deployment descriptors, including supported elements, with links to WebLogic docs. Change GlassFish deployment descriptor names. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> C Elements of Deployment Descriptors </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Rebecca Parks </td> 
+         <td class="confluenceTd"> Hong Zhang Tim Quinn </td> 
+         <td class="confluenceTd">Few GlassFish deployment descriptor changes are expected aside from <tt>sun-<b></b></tt><b> to <tt>glassfish-</tt></b> top-level element name changes. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3.1DeploymentDocPlan-ChangestoOnlineHelp"></a>Changes to Online Help</h3> <p><b><em>Administration Console Common Online Help</em> Changes</b></p> <p>See the <a href="./GlassFishV3.1AdminConsoleDocPlan.html">Administration Console Documentation Plan</a>.</p> <h4><a name="GlassFishV3.1DeploymentDocPlan-ChangestoManPages"></a>Changes to Man Pages</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Man Page Name and Section</th> 
+         <th class="confluenceTh">Documentation Impact</th> 
+         <th class="confluenceTh">Writer</th> 
+         <th class="confluenceTh">Reviewers</th> 
+         <th class="confluenceTh">Description of Change </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>create-application-ref</tt>, <tt>delete-application-ref</tt>, and <tt>list-application-refs</tt> </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Rebecca Parks </td> 
+         <td class="confluenceTd"> Hong Zhang Tim Quinn </td> 
+         <td class="confluenceTd">Reinstated from v2. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>deploy</tt>, <tt>undeploy</tt>, <tt>enable</tt>, <tt>disable</tt>, <tt>deploydir</tt>, <tt>redeploy</tt>, <tt>list-components</tt>, <tt>list-sub-components</tt>, <tt>show-component-status</tt>, <tt>list-applications</tt>, <tt>create-lifecycle-module</tt>, <tt>delete-lifecycle-module</tt>, <tt>list-lifecycle-modules</tt> </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Rebecca Parks </td> 
+         <td class="confluenceTd"> Hong Zhang Tim Quinn </td> 
+         <td class="confluenceTd"><tt>--target</tt> option reinstated from v2. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>redeploy</tt> </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Rebecca Parks </td> 
+         <td class="confluenceTd"> Hong Zhang Tim Quinn </td> 
+         <td class="confluenceTd">New <tt>--keep-state</tt> option (spelling uncertain) applies to HTTP session and SFSB/timer state saving. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3.1DeploymentDocPlan-ReviewSchedule"></a>Review Schedule</h2> <p>The review schedule for the documentation items that are affected by this feature is provided in the following table.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Item</th> 
+         <th class="confluenceTh">Review Start Date</th> 
+         <th class="confluenceTh">Review End Date </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <em>Application Deployment Guide</em> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Deployment Online Help </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Deployment Man Pages </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>Reviewers are listed in the <em>Statement of Work</em>.</p> <h4><a name="GlassFishV3.1DeploymentDocPlan-RelatedInformation"></a>Related Information</h2> 
+     <ul> 
+      <li><a href="3.1DeploymentOnePager.html" title="3.1DeploymentOnePager">1-pager</a></li> 
+      <li>User task analysis</li> 
+      <li>Design document</li> 
+      <li><a href="V3.1Deployment.html" title="V3.1Deployment">Project page</a></li> 
+      <li><a href="http://docsview.sfbay.sun.com/app/docs/doc/821-1750">v3.0.1 Application Deployment Guide</a></li> 
+      <li><a href="http://docs.sun.com/app/docs/doc/821-0184?l=en">v2.1.1 Application Deployment Guide</a></li> 
+      <li><a href="GlassFishV3.1DeploymentDocReview.html" title="GlassFishV3.1DeploymentDocReview">Deployment Doc Review Page</a></li> 
+     </ul> <p>Email aliases:</p> 
+     <ul> 
+      <li><a href="mailto:admin@glassfish.java.net">admin@glassfish.java.net</a></li> 
+      <li><a href="mailto:users@glassfish.java.net">users@glassfish.java.net</a></li> 
+      <li><a href="mailto:docs@glassfish.java.net">docs@glassfish.java.net</a></li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Dec 15, 2010 by 
+<font color="#0050B2">rebeccaparks</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

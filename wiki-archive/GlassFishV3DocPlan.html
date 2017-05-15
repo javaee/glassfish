@@ -1,0 +1,1335 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFishV3DocPlan</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>&lt;h1&gt;GlassFish v3 Documentation Plan&lt;/h1&gt;</p> 
+     <div> 
+      <ul> 
+       <li><a href="#GlassFishV3DocPlan-RelatedInformation">Related Information</a></li> 
+       <ul> 
+        <li><a href="#GlassFishV3DocPlan-FeatureDocumentationPlans">Feature Documentation Plans</a></li> 
+        <li><a href="#GlassFishV3DocPlan-IndividualDocumentPlans">Individual Document Plans</a></li> 
+        <li><a href="#GlassFishV3DocPlan-DocumentationInformation">Documentation Information</a></li> 
+        <li><a href="#GlassFishV3DocPlan-EngineeringInformation">Engineering Information</a></li> 
+       </ul> 
+       <li><a href="#GlassFishV3DocPlan-EngineeringStaff">Engineering Staff</a></li> 
+       <li><a href="#GlassFishV3DocPlan-TechnicalWritingStaff">Technical Writing Staff</a></li> 
+       <li><a href="#GlassFishV3DocPlan-SummaryofDeliverables">Summary of Deliverables</a></li> 
+       <ul> 
+        <li><a href="#GlassFishV3DocPlan-Books">Books</a></li> 
+        <li><a href="#GlassFishV3DocPlan-BooksAvailableOnlytoRegisteredUsers">Books Available Only to Registered Users</a></li> 
+        <li><a href="#GlassFishV3DocPlan-OnlineHelpSets">Online Help Sets</a></li> 
+        <li><a href="#GlassFishV3DocPlan-ManPages">Man Pages</a></li> 
+        <li><a href="#GlassFishV3DocPlan-InlineHelpandSystemTexts">Inline Help and System Texts</a></li> 
+        <li><a href="#GlassFishV3DocPlan-BundledHTMLPages">Bundled HTML Pages</a></li> 
+        <li><a href="#GlassFishV3DocPlan-Screencasts">Screencasts</a></li> 
+        <li><a href="#GlassFishV3DocPlan-WikiandWebPages">Wiki and Web Pages</a></li> 
+       </ul> 
+       <li><a href="#GlassFishV3DocPlan-DocumentationRequirementsforThisRelease">Documentation Requirements for This Release</a></li> 
+       <ul> 
+        <li><a href="#GlassFishV3DocPlan-ProductFeaturesbyDistribution">Product Features by Distribution</a></li> 
+        <ul> 
+         <li><a href="#GlassFishV3DocPlan-Nucleus%3A">Nucleus:</a></li> 
+         <li><a href="#GlassFishV3DocPlan-Web">Web</a></li> 
+         <li><a href="#GlassFishV3DocPlan-AppServer">AppServer</a></li> 
+         <li><a href="#GlassFishV3DocPlan-Addons%3AUpdateCenterDownloads">Addons: Update Center Downloads</a></li> 
+         <li><a href="#GlassFishV3DocPlan-Addons%3ANetBeansPlugin">Addons: NetBeans Plugin</a></li> 
+         <li><a href="#GlassFishV3DocPlan-Addons%3AEclipsePlugin">Addons: Eclipse Plugin</a></li> 
+        </ul> 
+        <li><a href="#GlassFishV3DocPlan-EngineeringChangeRequestsThatAffectDocumentation">Engineering Change Requests That Affect Documentation</a></li> 
+        <li><a href="#GlassFishV3DocPlan-DocumentationChangeRequests">Documentation Change Requests</a></li> 
+       </ul> 
+       <li><a href="#GlassFishV3DocPlan-Schedule">Schedule</a></li> 
+       <li><a href="#GlassFishV3DocPlan-DeliverablesThatAretoBeTranslated">Deliverables That Are to Be Translated</a></li> 
+       <li><a href="#GlassFishV3DocPlan-DocumentationExitCriteria">Documentation Exit Criteria</a></li> 
+      </ul>
+     </div> <h4><a name="GlassFishV3DocPlan-RelatedInformation"></a>Related Information</h1> <h4><a name="GlassFishV3DocPlan-FeatureDocumentationPlans"></a>Feature Documentation Plans</h2> 
+     <ul> 
+      <li><a href="GlassFishV3FeatureDocPlanTemplate.html" title="GlassFishV3FeatureDocPlanTemplate">GlassFish v3 Feature Documentation Plan Template</a></li> 
+      <li><a href="GlassFishV3AdminInfrastructureDocPlan.html" title="GlassFishV3AdminInfrastructureDocPlan">Administration Infrastructure Documentation Plan</a></li> 
+      <li><a href="GlassFishV3AdminCLIDocPlan.html" title="GlassFishV3AdminCLIDocPlan">Administration CLI Documentation Plan</a></li> 
+      <li><a href="GlassFishV3HK2DocPlan.html" title="GlassFishV3HK2DocPlan">Hundred-Kilobyte Kernel Documentation Plan</a></li> 
+      <li><a href="GlassFishV3ExtensibilityDocPlan.html" title="GlassFishV3ExtensibilityDocPlan">Extensibility Documentation Plan</a></li> 
+      <li><a href="GlassFishV3GrizzlyDocPlan.html" title="GlassFishV3GrizzlyDocPlan">Grizzly Documentation Plan</a></li> 
+      <li><a href="GlassFishV3AMXDocPlan.html" title="GlassFishV3AMXDocPlan">AMX and GMBAL Documentation Plan</a></li> 
+      <li><a href="GlassFishV3ACCDocPlan.html" title="GlassFishV3ACCDocPlan">ACC Documentation Plan</a></li> 
+      <li><a href="GlassFishv3JDBCRADocPlan.html" title="GlassFishv3JDBCRADocPlan">JDBC and Connectors Documentation Plan</a></li> 
+      <li><a href="GlassFishv3PropertiesDocPlan.html" title="GlassFishv3PropertiesDocPlan">Properties Plan</a></li> 
+      <li><a href="GlassFishV3ExtensibilityDocPlan.html" title="GlassFishV3ExtensibilityDocPlan">Extensibility Documentation Plan</a></li> 
+      <li><a href="GlassFishV3AppDeploymentDocPlan.html" title="GlassFishV3AppDeploymentDocPlan">Application Deployment Documentation Plan</a></li> 
+      <li><a href="GlassFishV3LoggingDocPlan.html" title="GlassFishV3LoggingDocPlan">Logging Documentation Plan</a></li> 
+      <li><a href="GlassFishV3MonitoringDocPlan.html" title="GlassFishV3MonitoringDocPlan">Monitoring Documentation Plan</a></li> 
+      <li><a href="GlassFishV3OSGiDocPlan.html" title="GlassFishV3OSGiDocPlan">OSGi in GlassFish Documentation Plan</a></li> 
+      <li><a href="GlassFishV3SecurityDocPlan.html" title="GlassFishV3SecurityDocPlan">Security Documentation Plan</a></li> 
+     </ul> <h4><a name="GlassFishV3DocPlan-IndividualDocumentPlans"></a>Individual Document Plans</h2> 
+     <ul> 
+      <li><a href="GlassFishV3DocPlanAdminGuide.html" title="GlassFishV3DocPlanAdminGuide">Administration Guide</a></li> 
+      <li><a href="GlassFishV3DocPlanDevGuide.html" title="GlassFishV3DocPlanDevGuide">Application Development Guide</a> (formerly Developer's Guide)</li> 
+      <li><a href="GlassFishV3DocPlanAppDepGuide.html" title="GlassFishV3DocPlanAppDepGuide">Application Deployment Guide</a></li> 
+      <li><a href="GlassFishV3DocAdminRef.html" title="GlassFishV3DocAdminRef">Domain File Format Reference</a> (formerly Administration Reference)</li> 
+      <li><a href="GlassFishV3DocPlanManPages.html" title="GlassFishV3DocPlanManPages">Reference Manual</a></li> 
+      <li>Installation Guide</li> 
+      <li><a href="GlassFishV3DocPlanQuickStart.html" title="GlassFishV3DocPlanQuickStart">Quick Start Guide</a></li> 
+      <li><a href="GlassFishV3DocPlanPlugInDev.html" title="GlassFishV3DocPlanPlugInDev">Add-On Component Development Guide</a></li> 
+      <li><a href="GlassFishv3UpgradePlan.html" title="GlassFishv3UpgradePlan">Upgrade and Migration Guide</a></li> 
+      <li>Documentation Center</li> 
+      <li><a href="GlassFishV3DocPlanTrblShootGuide.html" title="GlassFishV3DocPlanTrblShootGuide">Troubleshooting Guide</a></li> 
+      <li><a href="GlassFishV3DocPlanErrMsgRef.html" title="GlassFishV3DocPlanErrMsgRef">Error Message Reference</a></li> 
+      <li>High Availability Administration Guide</li> 
+      <li>Deployment Planning Guide</li> 
+      <li>Performance Tuning Guide</li> 
+      <li>HADB Commands Reference Manual</li> 
+      <li><a href="GlassFishV3DocPlanAdminGUIOLH.html" title="GlassFishV3DocPlanAdminGUIOLH">Administration Console GUI Online Help</a></li> 
+      <li><tt>asadmin</tt> <a href="GlassFishV3DocPlanManPages.html" title="GlassFishV3DocPlanManPages">CLI help</a></li> 
+      <li><a href="JavaEE6TutorialVolume1DocPlan.html" title="JavaEE6TutorialVolume1DocPlan">Java EE 6 Tutorial, Volume I</a></li> 
+      <li><a href="JavaEE6TutorialVolumeIIDocPlan.html" title="JavaEE6TutorialVolumeIIDocPlan">Java EE 6 Tutorial, Volume II</a></li> 
+     </ul> <h4><a name="GlassFishV3DocPlan-DocumentationInformation"></a>Documentation Information</h2> 
+     <ul> 
+      <li><a href="GlassFishV3AudienceAnalysis.html" title="GlassFishV3AudienceAnalysis">Audience Analysis</a></li> 
+      <li><a href="GlassFishV3UserTaskAnalyses.html" title="GlassFishV3UserTaskAnalyses">User Task Analyses List</a></li> 
+      <li><a href="GlassFishV3DocStyleSheet.html" title="GlassFishV3DocStyleSheet">Style Sheet</a></li> 
+      <li><a href="GlassFishV3DocQuality.html" title="GlassFishV3DocQuality">Documentation Quality Assurance</a></li> 
+      <li><a href="GlassFishV3DocMeetings.html" title="GlassFishV3DocMeetings">Documentation Meetings</a></li> 
+      <li><a href="http://docs.sun.com/coll/1343.7">GlassFish v3 Prelude documentation</a></li> 
+     </ul> <h4><a name="GlassFishV3DocPlan-EngineeringInformation"></a>Engineering Information</h2> 
+     <ul> 
+      <li><a href="V3FunctionalSpecs.html" title="V3FunctionalSpecs">One-Pagers and Functional Specifications</a></li> 
+      <li><a href="JavaEE6Samples.html" title="JavaEE6Samples">Java EE 6 Samples</a></li> 
+      <li><a href="GlassFishV3Schedule.html" title="GlassFishV3Schedule">Engineering Schedule</a></li> 
+      <li>Tasks for GlassFish v3 milestones: 
+       <ul> 
+        <li><a href="GFv3FinalMS6.html" title="GFv3FinalMS6">Milestone 6 tasks</a></li> 
+        <li><a href="GFv3FinalMS5.html" title="GFv3FinalMS5">Milestone 5 tasks</a></li> 
+        <li><a href="GFv3FinalMS4.html" title="GFv3FinalMS4">Milestone 4 tasks</a></li> 
+        <li><a href="GFv3FinalMS3.html" title="GFv3FinalMS3">Milestone 3 tasks</a></li> 
+        <li><a href="GFv3FinalMS2.html" title="GFv3FinalMS2">Milestone 2 tasks</a></li> 
+        <li><a href="GFv3FinalMS1.html" title="GFv3FinalMS1">Milestone 1 tasks</a></li> 
+       </ul> </li> 
+      <li><a href="V3_FCS_WebTier.html" title="V3_FCS_WebTier">Web Tier Tasks for v3 Final</a></li> 
+      <li><a href="GlassFishV3DocV2Features.html" title="GlassFishV3DocV2Features">v2 Features Not in v3 Prelude</a></li> 
+      <li><a href="GLassFishV3Distributions.html" title="GLassFishV3Distributions">Distributions</a></li> 
+      <li><a href="GlassFishV3Themes.html" title="GlassFishV3Themes">Themes</a></li> 
+      <li><a href="GlassFishV3Requirements.html" title="GlassFishV3Requirements">Requirements</a></li> 
+      <li><a href="ContainersConfiguration.html" title="ContainersConfiguration">ContainersConfiguration</a> for configuring RoR, Phobos and Groovy/Grails containers in V3</li> 
+      <li><a href="V3WebTier.html" title="V3WebTier">Web Tier Feature List</a></li> 
+      <li><a href="V3Deployment.html" title="V3Deployment">Deployment</a></li> 
+      <li><a href="V3AdminCommands.html" title="V3AdminCommands">List of available administrative commands</a></li> 
+      <li><a href="GlassFishV3AdministrationStartingPoint.html" title="GlassFishV3AdministrationStartingPoint">Administration Starting Point</a></li> 
+      <li><a href="V3AdministrationImprovements.html" title="V3AdministrationImprovements">Administration Improvements</a></li> 
+     </ul> <h4><a name="GlassFishV3DocPlan-EngineeringStaff"></a>Engineering Staff</h1> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Responsibility Area </th> 
+         <th class="confluenceTh">Development </th> 
+         <th class="confluenceTh">SQE </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Manager </td> 
+         <td class="confluenceTd"> Engineering-Abhijit Kumar </td> 
+         <td class="confluenceTd">QA-Alex Pineda </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Tech Lead </td> 
+         <td class="confluenceTd"> Engineering-Jerome Dochez </td> 
+         <td class="confluenceTd">QA-Sherry Shen </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> HK2 </td> 
+         <td class="confluenceTd"> Kohsuke Kawaguchi Sahoo (OSGi support) </td> 
+         <td class="confluenceTd">no one </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Grizzly, Comet </td> 
+         <td class="confluenceTd"> Jean-Francois Arcand Kin-Man Chung (50%) </td> 
+         <td class="confluenceTd">Shaline </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Web container (servlet, JSP) </td> 
+         <td class="confluenceTd"> Shing-Wai Chan Amy Roh </td> 
+         <td class="confluenceTd">Sudipa Bhattacharya </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JSF </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">Lidia Marchioni </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jRuby support </td> 
+         <td class="confluenceTd"> Vivek Pandey Pramod Gopinath </td> 
+         <td class="confluenceTd">Ming Zhang </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jMaki </td> 
+         <td class="confluenceTd"> Carla Mott </td> 
+         <td class="confluenceTd">no one </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Jersey </td> 
+         <td class="confluenceTd"> Martin Matula Paul Sandoz </td> 
+         <td class="confluenceTd">no one </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Groovy/Grails </td> 
+         <td class="confluenceTd"> Martin Grebac Vivek Pandey Barbara Louis Kin-Man Chung JeanFrancois Arcand Ming Zhang </td> 
+         <td class="confluenceTd">Sherry Shen </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Java Persistence </td> 
+         <td class="confluenceTd"> Mitesh Meswani </td> 
+         <td class="confluenceTd"> Ming Zhang Sherry Shen </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JDBC </td> 
+         <td class="confluenceTd"> Jagadish Prasad Ramu Sivakumar Thyagarajan Shalini Muthukrishnan </td> 
+         <td class="confluenceTd">Smitha Prabhu </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JNDI (naming) </td> 
+         <td class="confluenceTd"> Mahesh Kannan </td> 
+         <td class="confluenceTd">no one </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Transactions </td> 
+         <td class="confluenceTd"> Marina Vatkina </td> 
+         <td class="confluenceTd">Smitha Prabhu </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Security </td> 
+         <td class="confluenceTd"> VB Kumar Venugopal </td> 
+         <td class="confluenceTd">Jagadesh Munta </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Deployment </td> 
+         <td class="confluenceTd"> Hong Zhang Tim Quinn Jane Young </td> 
+         <td class="confluenceTd">Lidia Marchioni </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Admin Infrastructure </td> 
+         <td class="confluenceTd"> Kedar Mhaswade Siraj Ghaffar (50%) Lloyd Chambers (50%) Nandini Ektare Byron Nevins </td> 
+         <td class="confluenceTd">Sankar Neelakandan Davis Nguyen </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Logging </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">Lidia Marchioni </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Monitoring </td> 
+         <td class="confluenceTd"> Prashant Abbagani Sreenivas Munnangi Harpreet Singh Mahesh Kannan Rajeshwar Patil Devika Chou </td> 
+         <td class="confluenceTd">Elena Asarina </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Runtime Management </td> 
+         <td class="confluenceTd"> Sreenivas Munnagi Harpreet Singh (20%) Prashanth Abbagani Rajeshwar Patil (50%) Devika Chou </td> 
+         <td class="confluenceTd"> Sankar Needleham </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Admin CLI </td> 
+         <td class="confluenceTd"> Sreenivas Munnangi Devika Chou Prashant Abbagani Rajeshwar Patil Harpreet Singh </td> 
+         <td class="confluenceTd">Sankar Needleham </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Admin GUI </td> 
+         <td class="confluenceTd"> Anissa Lam Ken Paulsen Senthil Chidambaram Ana Caballero </td> 
+         <td class="confluenceTd"> Davis Nguyen </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Update Center </td> 
+         <td class="confluenceTd"> Rajeshwar Patil (50%) Snjezana Sevo-Zenzerovic (50%) </td> 
+         <td class="confluenceTd"> Nolan Luu </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> NetBeans Plugin </td> 
+         <td class="confluenceTd"> Peter Williams Vince Kraemer (25%) Ludo </td> 
+         <td class="confluenceTd">Dasari Kumar Davis Nguyen (30%) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Eclipse Plugin </td> 
+         <td class="confluenceTd"> Rochelle Raccah Nitya Doraisamy (after Ubuntu) Ludo </td> 
+         <td class="confluenceTd"> Davis Nguyen (20%) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Packaging and Build </td> 
+         <td class="confluenceTd"> Kohsuke Kawaguchi Dindesh Patil </td> 
+         <td class="confluenceTd"> no one </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Release Engineering </td> 
+         <td class="confluenceTd"> Terena Chin-Fujii </td> 
+         <td class="confluenceTd"> no one </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> I18N Program </td> 
+         <td class="confluenceTd"> Ming Dong </td> 
+         <td class="confluenceTd"> no one </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>Additional links to engineers:</p> 
+     <ul> 
+      <li><a href="WebContributors.html" title="WebContributors">Module Leads and Development Engineers</a>.</li> 
+     </ul> <h4><a name="GlassFishV3DocPlan-TechnicalWritingStaff"></a>Technical Writing Staff</h1> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Name </th> 
+         <th class="confluenceTh">Location </th> 
+         <th class="confluenceTh">Time Zone </th> 
+         <th class="confluenceTh">Role </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Alan Sommerer </td> 
+         <td class="confluenceTd"> Santa Clara, CA, USA </td> 
+         <td class="confluenceTd"> US/Pacific </td> 
+         <td class="confluenceTd">Manager </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Paul Davies </td> 
+         <td class="confluenceTd"> Santa Clara, CA, USA </td> 
+         <td class="confluenceTd"> US/Pacific </td> 
+         <td class="confluenceTd">Documentation project lead, writer </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Eric Jendrock </td> 
+         <td class="confluenceTd"> Burlington, MA, USA </td> 
+         <td class="confluenceTd"> US/Eastern </td> 
+         <td class="confluenceTd">Tutorials project lead, writer </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Debbie Carson </td> 
+         <td class="confluenceTd"> Santa Clara, CA, USA </td> 
+         <td class="confluenceTd"> US/Pacific </td> 
+         <td class="confluenceTd">Writer </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Ian Evans </td> 
+         <td class="confluenceTd"> Santa Clara, CA, USA </td> 
+         <td class="confluenceTd"> US/Pacific </td> 
+         <td class="confluenceTd">Writer </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Mike Fitch </td> 
+         <td class="confluenceTd"> Santa Clara, CA, USA </td> 
+         <td class="confluenceTd"> US/Pacific </td> 
+         <td class="confluenceTd">Writer </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Devika. Gollapudi </td> 
+         <td class="confluenceTd"> Santa Clara, CA, USA </td> 
+         <td class="confluenceTd"> US/Pacific </td> 
+         <td class="confluenceTd">Writer </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Kim Haase </td> 
+         <td class="confluenceTd"> Burlington, MA, USA </td> 
+         <td class="confluenceTd"> US/Eastern </td> 
+         <td class="confluenceTd">Writer </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> June Parks </td> 
+         <td class="confluenceTd"> Santa Clara, CA, USA </td> 
+         <td class="confluenceTd"> US/Pacific </td> 
+         <td class="confluenceTd">Writer </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Dixie Pine </td> 
+         <td class="confluenceTd"> Santa Clara, CA, USA </td> 
+         <td class="confluenceTd"> US/Pacific </td> 
+         <td class="confluenceTd">Writer </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Gail Risdal </td> 
+         <td class="confluenceTd"> Bellevue, WA, USA </td> 
+         <td class="confluenceTd"> US/Pacific </td> 
+         <td class="confluenceTd">Writer </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chinmayee Srivathsa </td> 
+         <td class="confluenceTd"> Bangalore, India </td> 
+         <td class="confluenceTd"> India (GMT+5.30) </td> 
+         <td class="confluenceTd">Writer </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Julie Bettis </td> 
+         <td class="confluenceTd"> Broomfield, CO, USA </td> 
+         <td class="confluenceTd"> US/Mountain </td> 
+         <td class="confluenceTd">Editor </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3DocPlan-SummaryofDeliverables"></a>Summary of Deliverables</h1> <p>The documentation should cover all the features of the Application Server as listed in <a href="GLassFishV3Distributions.html" title="GLassFishV3Distributions">GlassFish V3 Distributions</a>.</p> <h4><a name="GlassFishV3DocPlan-Books"></a>Books</h2> <p>Books are published on the docs.sun.com^SM^ <a href="http://docs.sun.com">site</a>. </p> <p>The features of GlassFish v3 are similar to the features in a Platform Edition release such as <br> <a href="http://docs.sun.com/coll/134.4">Sun Java System Application Server Platform Edition 9.0 Update 1</a> or <br> <a href="http://docs.sun.com/coll/1343.7">Sun GlassFish Enterprise Server v3 Prelude</a>. The set of books for the GlassFish v3 release reflects this fact.</p> <p>For the v3 final release, the books that are to be provided are listed in the following table.</p> <p></p>
+     <div class="panel" style="border-width: 1px;">
+      <div class="panelContent"> 
+       <div class="table-wrap"> 
+        <table class="confluenceTable">
+         <tbody> 
+          <tr> 
+           <th class="confluenceTh">Title </th> 
+           <th class="confluenceTh">Owner</th> 
+           <th class="confluenceTh">Short Name </th> 
+           <th class="confluenceTh">Part Number </th> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> Release Notes </td> 
+           <td class="confluenceTd"> Gail </td> 
+           <td class="confluenceTd"> SJSASEERN </td> 
+           <td class="confluenceTd">820-7688 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> <a href="GlassFishV3DocPlanQuickStart.html" title="GlassFishV3DocPlanQuickStart">Quick Start Guide </a> </td> 
+           <td class="confluenceTd"> Gail </td> 
+           <td class="confluenceTd"> SJSASEEQSG </td> 
+           <td class="confluenceTd">820-7689 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> Installation Guide </td> 
+           <td class="confluenceTd"> Gail </td> 
+           <td class="confluenceTd"> SJSASEEIG </td> 
+           <td class="confluenceTd">820-7690 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> <a href="GlassFishV3DocPlanAdminGuide.html" title="GlassFishV3DocPlanAdminGuide">Administration Guide </a> </td> 
+           <td class="confluenceTd"> Dixie </td> 
+           <td class="confluenceTd"> SJSASEEAG </td> 
+           <td class="confluenceTd">820-7692 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> <a href="GlassFishV3DocPlanAppDepGuide.html" title="GlassFishV3DocPlanAppDepGuide">Application Deployment Guide </a> </td> 
+           <td class="confluenceTd"> Dixie </td> 
+           <td class="confluenceTd"> SJSASEEADG </td> 
+           <td class="confluenceTd">820-7693 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> Your First Cup: An Introduction to the Java EE Platform </td> 
+           <td class="confluenceTd"> Tutorial team </td> 
+           <td class="confluenceTd"> FRSTCUPENTJAVA </td> 
+           <td class="confluenceTd">820-7759 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> <a href="GlassFishV3DocPlanDevGuide.html" title="GlassFishV3DocPlanDevGuide">Application Development Guide </a> </td> 
+           <td class="confluenceTd"> June </td> 
+           <td class="confluenceTd"> SJSASEEDG </td> 
+           <td class="confluenceTd">820-7695 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> <a href="GlassFishV3DocPlanPlugInDev.html" title="GlassFishV3DocPlanPlugInDev">Add-On Component Development Guide </a> </td> 
+           <td class="confluenceTd"> Paul </td> 
+           <td class="confluenceTd"> SGFESADDONDEV </td> 
+           <td class="confluenceTd">820-7727 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> Scripting Framework Guide </td> 
+           <td class="confluenceTd"> Devika </td> 
+           <td class="confluenceTd"> JRUBYAPPDG </td> 
+           <td class="confluenceTd">820-7697 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> Embedded Server Guide </td> 
+           <td class="confluenceTd"> June </td> 
+           <td class="confluenceTd"> GFEMBEDDED </td> 
+           <td class="confluenceTd">821-1208 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> <a href="GlassFishV3DocPlanTrblShootGuide.html" title="GlassFishV3DocPlanTrblShootGuide">Troubleshooting Guide </a> </td> 
+           <td class="confluenceTd"> Gail </td> 
+           <td class="confluenceTd"> SJSASEETSG </td> 
+           <td class="confluenceTd">820-7699 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> <a href="GlassFishV3DocPlanManPages.html" title="GlassFishV3DocPlanManPages">Reference Manual </a> </td> 
+           <td class="confluenceTd"> Paul </td> 
+           <td class="confluenceTd"> SJSASEEREFMAN </td> 
+           <td class="confluenceTd">820-7701 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> <a href="JavaEE6TutorialVolume1DocPlan.html" title="JavaEE6TutorialVolume1DocPlan">Java EE 6 Tutorial, Volume I </a> </td> 
+           <td class="confluenceTd"> Tutorial team </td> 
+           <td class="confluenceTd"> JAVAEE6TUTV1 </td> 
+           <td class="confluenceTd">820-7627 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> Message Queue 4.4.1 Release Notes </td> 
+           <td class="confluenceTd"> Mike </td> 
+           <td class="confluenceTd"> MQRN </td> 
+           <td class="confluenceTd">821-1073 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> Message Queue 4.4 Administration Guide </td> 
+           <td class="confluenceTd"> Mike </td> 
+           <td class="confluenceTd"> MQAG </td> 
+           <td class="confluenceTd">821-0027 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> Message Queue 4.4 Developer's Guide for JMX Clients </td> 
+           <td class="confluenceTd"> Mike </td> 
+           <td class="confluenceTd"> MQJMX </td> 
+           <td class="confluenceTd">821-0031 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> System Virtualization Support in Sun Java System Products </td> 
+           <td class="confluenceTd"> Java ES writer </td> 
+           <td class="confluenceTd"> SJESV12NSTMT </td> 
+           <td class="confluenceTd"> <a href="http://docs.sun.com/app/docs/doc/820-4651">820-4651 </a> </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> Documentation Center <sup><a href="#GlassFishV3DocPlan-1">1</a></sup> </td> 
+           <td class="confluenceTd"> Paul </td> 
+           <td class="confluenceTd"> ASEEHOME </td> 
+           <td class="confluenceTd">820-7691 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> <a href="GlassFishV3DocAdminRef.html" title="GlassFishV3DocAdminRef">Domain File Format Reference </a> <sup><a href="#GlassFishV3DocPlan-1">1</a></sup> <sup><a href="#GlassFishV3DocPlan-2">2</a></sup> </td> 
+           <td class="confluenceTd"> June </td> 
+           <td class="confluenceTd"> SJSASEEAREF </td> 
+           <td class="confluenceTd">820-7694 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> <a href="GlassFishv3UpgradePlan.html" title="GlassFishv3UpgradePlan">Upgrade Guide </a> <sup><a href="#GlassFishV3DocPlan-1">1</a></sup> </td> 
+           <td class="confluenceTd"> Kim </td> 
+           <td class="confluenceTd"> SJSASEEUMG </td> 
+           <td class="confluenceTd">820-7698 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> <a href="GlassFishV3DocPlanErrMsgRef.html" title="GlassFishV3DocPlanErrMsgRef">Error Message Reference </a> </td> 
+           <td class="confluenceTd"> Gail </td> 
+           <td class="confluenceTd"> SJSASEEERR </td> 
+           <td class="confluenceTd">820-7700 </td> 
+          </tr> 
+         </tbody>
+        </table> 
+       </div> 
+       <ol> 
+        <li>To be added to the set of books for the v3 Preview release.</li> 
+        <li>Formerly <em>Administration Reference</em></li> 
+       </ol> 
+       <p>Books in earlier releases that are not to be supplied in this release:</p> 
+       <div class="table-wrap"> 
+        <table class="confluenceTable">
+         <tbody> 
+          <tr> 
+           <th class="confluenceTh">Title </th> 
+           <th class="confluenceTh">Provisional Owner</th> 
+           <th class="confluenceTh">Short Name </th> 
+           <th class="confluenceTh">Part Number </th> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> HADB Commands Reference Manual </td> 
+           <td class="confluenceTd"> Paul </td> 
+           <td class="confluenceTd"> ASHADBREFMAN </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> <a href="GlassFishV3DocPlanRESTDG.html" title="GlassFishV3DocPlanRESTDG">RESTful Web Services Developer's Guide </a> <sup><a href="#GlassFishV3DocPlan-1">1</a></sup> </td> 
+           <td class="confluenceTd"> Debbie </td> 
+           <td class="confluenceTd"> RESTWEBSVCSDG </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> Clustering Administration Guide <sup><a href="#GlassFishV3DocPlan-2">2</a></sup> </td> 
+           <td class="confluenceTd"> Dixie </td> 
+           <td class="confluenceTd"> SJSASEEHAAG </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> Deployment Planning Guide </td> 
+           <td class="confluenceTd"> Paul </td> 
+           <td class="confluenceTd"> SJSASEEDPG </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> Performance Tuning Guide </td> 
+           <td class="confluenceTd"> Dixie </td> 
+           <td class="confluenceTd"> SJSASEEPTG </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> jMaki Application Development Guide <sup><a href="#GlassFishV3DocPlan-3">3</a></sup> </td> 
+           <td class="confluenceTd"> Devika </td> 
+           <td class="confluenceTd"> JMAKIAPPDG </td> 
+           <td class="confluenceTd">820-7696 </td> 
+          </tr> 
+         </tbody>
+        </table> 
+       </div> 
+       <ol> 
+        <li><em>RESTful Web Services Developer's Guide</em> is obsolete in this release. Relevant content from the <a href="http://docs.sun.com/doc/820-4867">guide for v3 Prelude</a> is to be migrated to the Java EE 6 Tutorial.</li> 
+        <li><em>Clustering Administration Guide</em> was formerly known as <em>High Availability Administration Guide</em>.</li> 
+        <li>Ideally, the information in this document should be donated to the NetBeans team or the jMaki team.</li> 
+       </ol> 
+       <h4><a name="GlassFishV3DocPlan-BooksAvailableOnlytoRegisteredUsers"></a>Books Available Only to Registered Users</h2> 
+       <hr> 
+       <p>Jspwiki style: sortable</p> 
+      </div>
+     </div>sortable<p></p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Title </th> 
+         <th class="confluenceTh">Owner</th> 
+         <th class="confluenceTh">Short Name </th> 
+         <th class="confluenceTh">Part Number </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="JavaEE6TutorialVolumeIIDocPlan.html" title="JavaEE6TutorialVolumeIIDocPlan">Java EE 6 Tutorial, Volume II </a> </td> 
+         <td class="confluenceTd"> Tutorial team </td> 
+         <td class="confluenceTd"> JAVAEE6VOL2 </td> 
+         <td class="confluenceTd">820-7628 </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3DocPlan-OnlineHelpSets"></a>Online Help Sets </h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Brief Title </th> 
+         <th class="confluenceTh">Owner </th> 
+         <th class="confluenceTh">Short Name</th> 
+         <th class="confluenceTh">Part Number</th> 
+         <th class="confluenceTh">Module ID </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="GlassFishV3DocPlanAdminGUIOLH.html" title="GlassFishV3DocPlanAdminGUIOLH">Admin Console Common Online Help </a> </td> 
+         <td class="confluenceTd"> Kim </td> 
+         <td class="confluenceTd"> ASEEADCONOH </td> 
+         <td class="confluenceTd"> 820-7734 </td> 
+         <td class="confluenceTd">common </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="GlassFishV3DocPlanAdminGUIOLH.html" title="GlassFishV3DocPlanAdminGUIOLH">Admin Console JavaMail Online Help </a> </td> 
+         <td class="confluenceTd"> Kim </td> 
+         <td class="confluenceTd"> ASEEACOHJMAIL </td> 
+         <td class="confluenceTd"> 821-0305 </td> 
+         <td class="confluenceTd">jmail </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="GlassFishV3DocPlanAdminGUIOLH.html" title="GlassFishV3DocPlanAdminGUIOLH">Admin Console Web Online Help </a> </td> 
+         <td class="confluenceTd"> Kim </td> 
+         <td class="confluenceTd"> ASEEACOHWEB </td> 
+         <td class="confluenceTd"> 821-0306 </td> 
+         <td class="confluenceTd">web </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="GlassFishV3DocPlanAdminGUIOLH.html" title="GlassFishV3DocPlanAdminGUIOLH">Admin Console JDBC Online Help </a> </td> 
+         <td class="confluenceTd"> Kim </td> 
+         <td class="confluenceTd"> ASEEACOHJDBC </td> 
+         <td class="confluenceTd"> 821-0307 </td> 
+         <td class="confluenceTd">jdbc </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="GlassFishV3DocPlanAdminGUIOLH.html" title="GlassFishV3DocPlanAdminGUIOLH">Admin Console JCA Online Help </a> </td> 
+         <td class="confluenceTd"> Kim </td> 
+         <td class="confluenceTd"> ASEEACOHJCA </td> 
+         <td class="confluenceTd"> 821-0308 </td> 
+         <td class="confluenceTd">jca </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="GlassFishV3DocPlanAdminGUIOLH.html" title="GlassFishV3DocPlanAdminGUIOLH">Admin Console EJB Lite Online Help </a> </td> 
+         <td class="confluenceTd"> Kim </td> 
+         <td class="confluenceTd"> ASEEACOHEJBLT </td> 
+         <td class="confluenceTd"> 821-0309 </td> 
+         <td class="confluenceTd">ejb-lite </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="GlassFishV3DocPlanAdminGUIOLH.html" title="GlassFishV3DocPlanAdminGUIOLH">Admin Console EJB Online Help </a> </td> 
+         <td class="confluenceTd"> Kim </td> 
+         <td class="confluenceTd"> ASEEACOHEJB </td> 
+         <td class="confluenceTd"> 821-0310 </td> 
+         <td class="confluenceTd">ejb </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="GlassFishV3DocPlanAdminGUIOLH.html" title="GlassFishV3DocPlanAdminGUIOLH">Admin Console CORBA Online Help </a> </td> 
+         <td class="confluenceTd"> Kim </td> 
+         <td class="confluenceTd"> ASEEACOHCORBA </td> 
+         <td class="confluenceTd"> 821-0311 </td> 
+         <td class="confluenceTd">corba </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="GlassFishV3DocPlanAdminGUIOLH.html" title="GlassFishV3DocPlanAdminGUIOLH">Admin Console JTS Online Help </a> </td> 
+         <td class="confluenceTd"> Kim </td> 
+         <td class="confluenceTd"> ASEEACOHJTS </td> 
+         <td class="confluenceTd"> 821-0312 </td> 
+         <td class="confluenceTd">jts </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="GlassFishV3DocPlanAdminGUIOLH.html" title="GlassFishV3DocPlanAdminGUIOLH">Admin Console JMS Online Help </a> </td> 
+         <td class="confluenceTd"> Kim </td> 
+         <td class="confluenceTd"> ASEEACOHJMS </td> 
+         <td class="confluenceTd"> 821-0313 </td> 
+         <td class="confluenceTd">jms </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="GlassFishV3DocPlanAdminGUIOLH.html" title="GlassFishV3DocPlanAdminGUIOLH">Admin Console Scripting Online Help </a> </td> 
+         <td class="confluenceTd"> Kim </td> 
+         <td class="confluenceTd"> ASEEACOHSCRIPT </td> 
+         <td class="confluenceTd"> 821-0321 </td> 
+         <td class="confluenceTd">jruby </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Upgrade Tool Online Help </td> 
+         <td class="confluenceTd"> Kim </td> 
+         <td class="confluenceTd"> SJSASEEMTOH </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>asadmin</tt> <a href="GlassFishV3DocPlanManPages.html" title="GlassFishV3DocPlanManPages">CLI help </a> </td> 
+         <td class="confluenceTd"> Paul </td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3DocPlan-ManPages"></a>Man Pages</h2> <p>Paul is responsible for delivery of man pages into Application Server builds. Owners of individual man pages are listed in the <a href="GlassFishV3DocPlanManPages.html" title="GlassFishV3DocPlanManPages">GlassFish v3 Man Page Document Plan</a>.</p> <h4><a name="GlassFishV3DocPlan-InlineHelpandSystemTexts"></a>Inline Help and System Texts</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Properties File </th> 
+         <th class="confluenceTh">Owner </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>Strings.properties</tt> </td> 
+         <td class="confluenceTd">Paul </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3DocPlan-BundledHTMLPages"></a>Bundled HTML Pages</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Title </th> 
+         <th class="confluenceTh">Owner</th> 
+         <th class="confluenceTh">File Name </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Quick Start for Basic Features </td> 
+         <td class="confluenceTd"> Paul <sup><a href="#GlassFishV3DocPlan-1">1</a></sup> </td> 
+         <td class="confluenceTd"><tt>quickstart.html</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Sun Java System Application Server - Installation Complete </td> 
+         <td class="confluenceTd"> Paul </td> 
+         <td class="confluenceTd"><tt>about.html</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Proprietary Rights Notice </td> 
+         <td class="confluenceTd"> Paul </td> 
+         <td class="confluenceTd"><tt>copyright.html</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Features and Resources </td> 
+         <td class="confluenceTd"> Paul </td> 
+         <td class="confluenceTd"><tt>features.html</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Your Application Server is now running </td> 
+         <td class="confluenceTd"> Paul </td> 
+         <td class="confluenceTd"><tt>index.html</tt> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <ol> 
+      <li>Paul to edit and deliver HTML version generated from content written by Gail</li> 
+     </ol> <h4><a name="GlassFishV3DocPlan-Screencasts"></a>Screencasts</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Title</th> 
+         <th class="confluenceTh">Owner </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GlassFish v3 Quick Start </td> 
+         <td class="confluenceTd">Gail </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3DocPlan-WikiandWebPages"></a>Wiki and Web Pages</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Title </th> 
+         <th class="confluenceTh">Owner </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="GlassFishUserFAQ.html" title="GlassFishUserFAQ">GlassFish User FAQ </a> <sup><a href="#GlassFishV3DocPlan-1">1</a></sup> - wiki </td> 
+         <td class="confluenceTd">Gail </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="GlassFishDeveloperFAQ.html" title="GlassFishDeveloperFAQ">GlassFish Developer FAQ </a> <sup><a href="#GlassFishV3DocPlan-1">1</a></sup> - wiki </td> 
+         <td class="confluenceTd">Gail </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="https:--glassfish.java.net-docs-index.html">Product Documentation </a> - web </td> 
+         <td class="confluenceTd">Gail </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="https:--glassfish.java.net-docs-project.html">Documentation Home Page </a> - web </td> 
+         <td class="confluenceTd">Gail </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <ol> 
+      <li>Assumes that GlassFish v3 changes will affect the FAQs.</li> 
+     </ol> <h4><a name="GlassFishV3DocPlan-DocumentationRequirementsforThisRelease"></a>Documentation Requirements for This Release</h1> <p>Documentation requirements come from:</p> 
+     <ul> 
+      <li>Product features</li> 
+      <li>Engineering change requests that affect documentation</li> 
+      <li>Documentation change requests</li> 
+     </ul> <h4><a name="GlassFishV3DocPlan-ProductFeaturesbyDistribution"></a>Product Features by Distribution</h2> <h4><a name="GlassFishV3DocPlan-Nucleus%3A"></a>Nucleus:</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Feature </th> 
+         <th class="confluenceTh">GF v3 Milestone </th> 
+         <th class="confluenceTh">Documentation Impact </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> HK2 </td> 
+         <td class="confluenceTd"> TP2 </td> 
+         <td class="confluenceTd">New </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Grizzly </td> 
+         <td class="confluenceTd"> TP2 </td> 
+         <td class="confluenceTd">New </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Logging </td> 
+         <td class="confluenceTd"> TP2 </td> 
+         <td class="confluenceTd">Minor - v2 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Basic admin CLI: support for deployment </td> 
+         <td class="confluenceTd"> <span class="error">[TP2 | ]</span> </td> 
+         <td class="confluenceTd">Minor - v2 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Basic admin CLI: support for http service configuration </td> 
+         <td class="confluenceTd"> <span class="error">[TP2 | ]</span> </td> 
+         <td class="confluenceTd">Minor - v2 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Basic admin CLI: support for web container </td> 
+         <td class="confluenceTd"> <span class="error">[TP2 | ]</span> </td> 
+         <td class="confluenceTd">Minor - v2 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Basic admin CLI: support for JDBC </td> 
+         <td class="confluenceTd"> <span class="error">[TP2 | ]</span> </td> 
+         <td class="confluenceTd">Minor - v2 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Basic admin GUI: support for deployment </td> 
+         <td class="confluenceTd"> TP2 </td> 
+         <td class="confluenceTd">Minor - v2 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Basic admin GUI: support for http service configuration </td> 
+         <td class="confluenceTd"> TP2 </td> 
+         <td class="confluenceTd">Minor - v2 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Basic admin GUI: support for web container </td> 
+         <td class="confluenceTd"> TP2 </td> 
+         <td class="confluenceTd">Minor - v2 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Basic admin GUI: support for JDBC </td> 
+         <td class="confluenceTd"> TP2 </td> 
+         <td class="confluenceTd">Minor - v2 </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3DocPlan-Web"></a>Web</h3> <p>Nucleus plus: </p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Feature </th> 
+         <th class="confluenceTh">GF v3 Milestone</th> 
+         <th class="confluenceTh">Documentation Impact </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Web Container: Servlet 2.5 </td> 
+         <td class="confluenceTd"> TP2 </td> 
+         <td class="confluenceTd">Minor - v2 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Web Container: JSP 2.1 </td> 
+         <td class="confluenceTd"> TP2 </td> 
+         <td class="confluenceTd">Minor - v2 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Web Container: JSF 1.2 </td> 
+         <td class="confluenceTd"> TP2 </td> 
+         <td class="confluenceTd">Minor - v2 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Web Container: jMaki 1.x </td> 
+         <td class="confluenceTd"> TP2 </td> 
+         <td class="confluenceTd">New </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Configuration </td> 
+         <td class="confluenceTd"> TP2 </td> 
+         <td class="confluenceTd">Minor - v2 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Web Tier configuration </td> 
+         <td class="confluenceTd"> TP2 </td> 
+         <td class="confluenceTd">New </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Deployment: web modules </td> 
+         <td class="confluenceTd"> TP2 </td> 
+         <td class="confluenceTd">Minor - v2 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Deployment: Groovy modules </td> 
+         <td class="confluenceTd"> Beta </td> 
+         <td class="confluenceTd">New </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Deployment: jRuby modules </td> 
+         <td class="confluenceTd"> TP2 </td> 
+         <td class="confluenceTd">New </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Application Mgmt 1st phase: Edit/Manage servlet init parameters and env entry </td> 
+         <td class="confluenceTd"> Beta </td> 
+         <td class="confluenceTd">New </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Application Mgmt 1st phase: Start/Stop support </td> 
+         <td class="confluenceTd"> Beta </td> 
+         <td class="confluenceTd">New </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Security: SSL infrastructure </td> 
+         <td class="confluenceTd"> TP2 </td> 
+         <td class="confluenceTd">Minor - v2 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Security: File and JDBC Realm </td> 
+         <td class="confluenceTd"> TP2 </td> 
+         <td class="confluenceTd">Minor - v2 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Security: Container Authentication and Authorization </td> 
+         <td class="confluenceTd"> TP2 </td> 
+         <td class="confluenceTd">None for TP2 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Security: SPIs to support Metro </td> 
+         <td class="confluenceTd"> TP2 </td> 
+         <td class="confluenceTd">None for TP2 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Java Persistence API (JPA)1.0 Support </td> 
+         <td class="confluenceTd"> TP2 </td> 
+         <td class="confluenceTd">Minor - v2 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JPA 1.0 Support- Java Transaction API </td> 
+         <td class="confluenceTd"> TP2 </td> 
+         <td class="confluenceTd">None for TP2 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Scripting: jRuby support </td> 
+         <td class="confluenceTd"> TP2 </td> 
+         <td class="confluenceTd">New </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Scripting: Groovy support </td> 
+         <td class="confluenceTd"> Beta </td> 
+         <td class="confluenceTd">New </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Scripting: FastCGI support </td> 
+         <td class="confluenceTd"> Beta </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> RESTful services (code name Jersey) </td> 
+         <td class="confluenceTd"> TP2 </td> 
+         <td class="confluenceTd">New </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JDBC </td> 
+         <td class="confluenceTd"> TP2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JDBC Connection Pooling </td> 
+         <td class="confluenceTd"> TP2 </td> 
+         <td class="confluenceTd">Minor - v2 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JDBC Connection Pooling - Java Connector Architecture 1.5 </td> 
+         <td class="confluenceTd"> Beta </td> 
+         <td class="confluenceTd">None for TP2 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Clustering </td> 
+         <td class="confluenceTd"> Beta </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Full Admin Console Support </td> 
+         <td class="confluenceTd"> Beta </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Full Admin CLI Support </td> 
+         <td class="confluenceTd"> Beta </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Update Center - CLI support for downloading additional content </td> 
+         <td class="confluenceTd"> TP2 </td> 
+         <td class="confluenceTd">New - not by AS writers </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Update Center - simple GUI (nice to have) </td> 
+         <td class="confluenceTd"> TP2 </td> 
+         <td class="confluenceTd">New - not by AS writers </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Image pacakging System (IPS) </td> 
+         <td class="confluenceTd"> Beta </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Standalone Installer based on IPS </td> 
+         <td class="confluenceTd"> Beta </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3DocPlan-AppServer"></a>AppServer</h3> <p>Web plus:</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Feature </th> 
+         <th class="confluenceTh">GF v3 Milestone </th> 
+         <th class="confluenceTh">Documentation Impact </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> All Java EE </td> 
+         <td class="confluenceTd"> Beta </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3DocPlan-Addons%3AUpdateCenterDownloads"></a>Addons: Update Center Downloads</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Feature </th> 
+         <th class="confluenceTh">GF v3 Milestone</th> 
+         <th class="confluenceTh">Documentation Impact </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Metro </td> 
+         <td class="confluenceTd"> TP2 </td> 
+         <td class="confluenceTd">Minor -v2 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Jersey </td> 
+         <td class="confluenceTd"> TP2 </td> 
+         <td class="confluenceTd">New </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Groovy runtime </td> 
+         <td class="confluenceTd"> Beta </td> 
+         <td class="confluenceTd">New </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jRuby runtime </td> 
+         <td class="confluenceTd"> TP2 </td> 
+         <td class="confluenceTd">New </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> EclipseLink </td> 
+         <td class="confluenceTd"> TP2 </td> 
+         <td class="confluenceTd">New </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3DocPlan-Addons%3ANetBeansPlugin"></a>Addons: NetBeans Plugin</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Feature </th> 
+         <th class="confluenceTh">GF v3 Milestone </th> 
+         <th class="confluenceTh">Documentation Impact </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Development and Deployment Support for Web Applications </td> 
+         <td class="confluenceTd"> TP2 </td> 
+         <td class="confluenceTd">New but maybe by NetBeans writers </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Development and Deployment Support for Groovy Applications </td> 
+         <td class="confluenceTd"> Beta </td> 
+         <td class="confluenceTd">New but maybe by NetBeans writers </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Development and Deployment Support for jRuby Applications </td> 
+         <td class="confluenceTd"> TP2 </td> 
+         <td class="confluenceTd">New but maybe by NetBeans writers </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3DocPlan-Addons%3AEclipsePlugin"></a>Addons: Eclipse Plugin</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Feature </th> 
+         <th class="confluenceTh">GF v3 Milestone</th> 
+         <th class="confluenceTh">Documentation Impact </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Development and Deployment Support for Web Applications </td> 
+         <td class="confluenceTd"> TP2 </td> 
+         <td class="confluenceTd">New - low priority </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Development and Deployment Support for Groovy Applications (nice to have) </td> 
+         <td class="confluenceTd"> Beta </td> 
+         <td class="confluenceTd">New - low priority </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Development and Deployment Support for jRuby Applications (nice to have) </td> 
+         <td class="confluenceTd"> TP2 </td> 
+         <td class="confluenceTd">New - low priority </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3DocPlan-EngineeringChangeRequestsThatAffectDocumentation"></a>Engineering Change Requests That Affect Documentation</h2> <h4><a name="GlassFishV3DocPlan-DocumentationChangeRequests"></a>Documentation Change Requests</h2> 
+     <ul> 
+      <li><a href="https://glassfish.java.net/issues/buglist.cgi?component=glassfish&amp;subcomponent=docs&amp;issue_status=UNCONFIRMED&amp;issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED&amp;target_milestone=V3&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=fulltext&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=&amp;cmdtype=doit&amp;order=Reusesamesortaslasttime&amp;Submitquery=Submitquery">All open doc bugs</a> for GlassFish v3.<br> Issue Tracker <a href="https://glassfish.java.net/issues/query.cgi">query </a> criteria: 
+       <ul> 
+        <li>Subcomponent: docs</li> 
+        <li>Status: UNCONFIRMED, NEW, STARTED, REOPENED</li> 
+        <li>Target milestone: v3</li> 
+       </ul> </li> 
+      <li><a href="https://glassfish.java.net/issues/buglist.cgi?issue_type=DEFECT&amp;issue_type=ENHANCEMENT&amp;issue_type=FEATURE&amp;issue_type=TASK&amp;component=glassfish&amp;subcomponent=docs&amp;issue_status=UNCONFIRMED&amp;issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED&amp;priority=P1&amp;priority=P2&amp;priority=P3&amp;priority=P4&amp;priority=P5&amp;target_milestone=V3&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=notregexp&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=notregexp&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=short_desc&amp;type0-0-0=notsubstring&amp;value0-0-0=%5BUB%5D&amp;cmdtype=doit&amp;namedcmd=AS91UR1Docs&amp;newqueryname=&amp;order=Reusesamesortaslasttime&amp;Submitquery=Submitquery">Bundled doc bugs</a><br> Issue Tracker <a href="https://glassfish.java.net/issues/query.cgi">query </a> criteria: 
+       <ul> 
+        <li>Subcomponent: docs</li> 
+        <li>Status: UNCONFIRMED, NEW, STARTED, REOPENED</li> 
+        <li>Target milestone: v3</li> 
+        <li>Summary does not contain the substring [UB]</li> 
+       </ul> </li> 
+      <li><a href="https://glassfish.java.net/issues/buglist.cgi?issue_type=DEFECT&amp;issue_type=ENHANCEMENT&amp;issue_type=FEATURE&amp;issue_type=TASK&amp;component=glassfish&amp;subcomponent=docs&amp;issue_status=UNCONFIRMED&amp;issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED&amp;priority=P1&amp;priority=P2&amp;priority=P3&amp;priority=P4&amp;priority=P5&amp;target_milestone=V3&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=%5BUB%5D&amp;short_desc_type=casesubstring&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=notregexp&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=&amp;cmdtype=doit&amp;namedcmd=AS91UR1Docs&amp;newqueryname=&amp;order=Reusesamesortaslasttime&amp;Submitquery=Submitquery">Unbundled doc bugs</a><br> Issue Tracker <a href="https://glassfish.java.net/issues/query.cgi">query </a> criteria: 
+       <ul> 
+        <li>Subcomponent: docs</li> 
+        <li>Status: UNCONFIRMED, NEW, STARTED, REOPENED</li> 
+        <li>Target milestone: v3</li> 
+        <li>Summary contains the substring [UB]</li> 
+       </ul> </li> 
+     </ul> <h4><a name="GlassFishV3DocPlan-Schedule"></a>Schedule</h1> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Milestone </th> 
+         <th class="confluenceTh">Date </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Feature Doc Plans Complete </td> 
+         <td class="confluenceTd">April 17 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> *JavaOne EA Release* Soft code freeze (SCF) </td> 
+         <td class="confluenceTd">April 20 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> *JavaOne EA Release* Hard code freeze (HCF)/Bundled Doc Freeze </td> 
+         <td class="confluenceTd">May 4 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> *JavaOne EA Release* Unbundled Doc Freeze </td> 
+         <td class="confluenceTd">May 25 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> *JavaOne EA Release* Software Ship </td> 
+         <td class="confluenceTd">May 27 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> *RR* SCF </td> 
+         <td class="confluenceTd">August 31 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> *RR* FishCAT Program start </td> 
+         <td class="confluenceTd">September 24 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> *RR* FishCAT Program end </td> 
+         <td class="confluenceTd">October 9 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> *RR* Bundled documentation review start </td> 
+         <td class="confluenceTd">October 16 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> *RR* Bundled documentation review end </td> 
+         <td class="confluenceTd">October 30 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> *RR* P1/P2 bug cutoff </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> *RR* Bundled documentation freeze </td> 
+         <td class="confluenceTd">November 6 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> *RR* HCF </td> 
+         <td class="confluenceTd">November 9 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> *RR* Unbundled documentation review start </td> 
+         <td class="confluenceTd">November 23 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> *RR* Unbundled documentation review end </td> 
+         <td class="confluenceTd">December 1 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> *RR* Checkin and submission of unbundled documents </td> 
+         <td class="confluenceTd">December 8 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> *RR* Publication of unbundled documents the docs.sun.com^SM^ site </td> 
+         <td class="confluenceTd">December 9 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> *RR* Software ship </td> 
+         <td class="confluenceTd">December 10 </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>Bundled documentation consists of documentation that is bundled with the product, namely:</p> 
+     <ul> 
+      <li>Online help</li> 
+      <li>Inline help and system texts</li> 
+      <li>Man pages</li> 
+      <li>Bundled HTML pages</li> 
+     </ul> <p>Unbundled documentation consists of documentation that is published on the web separately from the product, namely:</p> 
+     <ul> 
+      <li>Books</li> 
+      <li>Screencasts</li> 
+      <li>Wiki pages</li> 
+     </ul> <h4><a name="GlassFishV3DocPlan-DeliverablesThatAretoBeTranslated"></a>Deliverables That Are to Be Translated</h1> 
+     <ul> 
+      <li><em>Release Notes</em></li> 
+      <li><em>Administration Guide</em></li> 
+      <li>Online help sets for the Administration Console</li> 
+      <li>Inline help and system texts</li> 
+     </ul> <h4><a name="GlassFishV3DocPlan-DocumentationExitCriteria"></a>Documentation Exit Criteria</h1> 
+     <ul> 
+      <li>All planned documentation deliverables present and complete <sup><a href="#GlassFishV3DocPlan-1">1</a></sup> .</li> 
+      <li>No unwaived P1, P2, or P3 bugs.</li> 
+     </ul> 
+     <ol> 
+      <li>The scope of a document deliverable might be cut to meet the schedule. The technical writers will work with the engineers to determine which topics are the highest priority.</li> 
+     </ol> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Aug 15, 2011 by 
+<font color="#0050B2">sb_2011</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

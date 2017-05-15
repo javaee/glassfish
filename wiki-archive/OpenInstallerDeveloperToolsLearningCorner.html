@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : OpenInstallerDeveloperToolsLearningCorner</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="OpenInstallerDeveloperToolsLearningCorner-Codingconventions"></a>Coding conventions</h2> 
+     <ul> 
+      <li>There should be proper javadoc including inline comments.</li> 
+      <li>Variable names and class names should follow Standard Java naming conventions.</li> 
+      <li>For UI variables, we will use &lt;function-in-small-case&gt;&lt;UIFieldType&gt; syntax. For example, if I have a button to add dependency then the button variable name should be 'addDependencyButton'.</li> 
+      <li>NB module packages should be preceded with org.openinstaller.devtools.[modulename] eg.. 
+       <ul> 
+        <li>For module level classes - org.openinstaller.devtools.[modulename].</li> 
+        <li>For beans &amp; model classes - org.openinstaller.devtools.[modulename].[model]</li> 
+        <li>For Views - org.openinstaller.devtools.[modulename].[view]</li> 
+        <li>For Filetype support - org.openinstaller.devtools.[modulename].[filetype]</li> 
+        <li>For module level Utility Classes - org.openinstaller.devtools.[modulename].util</li> 
+       </ul> </li> 
+      <li>Image names should be context specific.</li> 
+     </ul> <p>&lt;br&gt;</p> 
+     <ul> 
+      <li>Webrev 
+       <ul> 
+        <li>Webrev for mercurial is available at following location. [internal location.|[internallocation.]</li> 
+        <li>Inside working directory, if you execute this command with -b"unique_bug_id" -l option. You get unique http location, that can be used for webrev.</li> 
+        <li>Command line options:</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li>-b - bug Id or unique name for web rev directory.</li> 
+      <li>-B - Bug description</li> 
+      <li>-f - file contains name of all files which need to generate webrev.</li> 
+      <li>-l - lists of files which need to create webrev.</li> 
+     </ul> <p>&lt;br&gt;<br> _<em>'Note :</em>_'All the above should be verified during code reviews along with other standard CR parameter.</p> <h4><a name="OpenInstallerDeveloperToolsLearningCorner-DeveloperBestPractices"></a>Developer Best Practices</h2> <h4><a name="OpenInstallerDeveloperToolsLearningCorner-WorkingonNetbeansmoduledevelopment"></a>Working on Netbeans module development</h3> 
+     <ol> 
+      <li>Always do 'Clean and Build All' on the module suite instead of individual modules. That way we can save time in future when we do the module integration. This is not different from running individual modules.</li> 
+      <li>The 'Run' action on the module suite does NOT do 'Clean and Build All'. We can fix this by editing the build script, but for now, always use 'Clean and Build All' before you use 'Run' on the module suite.</li> 
+      <li>The above actions can be easily executed if you have set the module suite as your main project among the opened projects in Netbeans. For example, you can use the keyboard shortcuts or use the main menu to execute them.</li> 
+      <li>When adding an existing module to the module suite, copy the module project inside the module suite directory and then add that module to the suite within Netbeans. Netbeans does not have this restriction of having individual modules inside the suite, but it helps to zip everything quickly.</li> 
+      <li>For all strings in double quotes that you have in the code, make sure you append '//NOI18N' (without quotes). This the convention used everywhere in the Netbeans source codes. We would like to follow it.</li> 
+     </ol> <h4><a name="OpenInstallerDeveloperToolsLearningCorner-Netbeansmoduledevelopmentpitfalls"></a>Netbeans module development pitfalls</h3> 
+     <ol> 
+      <li>Sometimes, the runtime IDE crashes or does not open properly and it leaves behind the lock file. When you run the suite, Netbeans displayes an error message saying that it cannot delete the lock file. So before you run the next time, you need to manually delete the lock file after killing the hanging process. You can do this in the following way: First, goto Runtime tab and expand Process Node and right click on the build process and choose 'Terminate Process'. Then goto the 'testuserdir' under the suite folder and delete the lock file.</li> 
+      <li>Sometimes due to the errors in the module, you see a blank window is being shown when you run the suite. Thats because the runtime IDE did not run properly because there were serious errors in the cluster. That time you can do 'Clean and Build All' and check if the runtime IDE comes properly.</li> 
+     </ol> <h4><a name="OpenInstallerDeveloperToolsLearningCorner-LookingforNetbeansModuleDevelopmentHelp%3F"></a>Looking for Netbeans Module Development Help?</h2> 
+     <ol> 
+      <li>Module development Landing page: <a href="http://platform.netbeans.org/">http://platform.netbeans.org/</a></li> 
+      <li>Tutorial Page: <a href="http://platform.netbeans.org/tutorials/index.html">http://platform.netbeans.org/tutorials/index.html</a></li> 
+      <li>Online Javadoc: <a href="http://www.netbeans.org/download/dev/javadoc/">http://www.netbeans.org/download/dev/javadoc/</a></li> 
+      <li>FAQ wiki: <a href="http://wiki.netbeans.org/wiki/view/NetBeansDeveloperFAQ">http://wiki.netbeans.org/wiki/view/NetBeansDeveloperFAQ</a></li> 
+      <li>Geertjan's blog: <a href="http://blogs.oracle.com/geertjan">http://blogs.oracle.com/geertjan</a></li> 
+      <li>Roumen's blog: <a href="http://blogs.oracle.com/roumen/">http://blogs.oracle.com/roumen/</a></li> 
+      <li>Tim Boudreau's blog: <a href="http://weblogs.java.net/blog/timboudreau/">http://weblogs.java.net/blog/timboudreau/</a></li> 
+      <li>Vadiraj's blog <img class="emoticon" src="images/icons/emoticons/smile.gif" height="20" width="20" align="absmiddle" alt="" border="0"> <a href="http://blogs.oracle.com/vdblog">http://blogs.oracle.com/vdblog</a></li> 
+      <li>Netbeans blogger aggregation: <a href="http://planetnetbeans.org/">http://planetnetbeans.org/</a></li> 
+      <li>Netbeans module development mailing list: nb-dev@netbeans.org, dev@openide.netbeans.org. We can ask questions from API related to the modules and upcoming modules. The list is highly active and there are people who answer queries.</li> 
+     </ol> <h4><a name="OpenInstallerDeveloperToolsLearningCorner-HGBestPractices"></a>HG Best Practices</h2> 
+     <ol> 
+      <li>Gerard has an excellent solution about maintaining our local workspaces without corrupting them: Keep pulling always, and have the local changes locally. When you are ready for checkin, do commit and push.</li> 
+      <li>To check out the sources for the first time or to create a new workspace do: <em>'hg clone</em>' <a href="http://repo">http://repo</a> [internal location|[internallocation]</li> 
+      <li>After all the testing, when you want to commit the sources, please do 'Clean All' on the suite. This will eliminate all the built files and folders. So that when we checkin, we would just be pushing only the development files.</li> 
+      <li>To add a new module that was copied into the existing workspace do: <em>'hg add</em>' [module folder|[modulefolder]</li> 
+      <li>To speed up the commit process, create a new file under the .hg folder of root repository folder called hgrc. (So you create a file as .hg/hgrc under the suite folder.) and add the following lines in that file and save it:</li> 
+     </ol> <p>&lt;pre&gt;<br> [paths]<br> default = <a href="http://\[internal">http://[internal</a> location|[internallocation]/repo<br> default-push = ssh://[internal location|[internallocation]/repo</p> <p>[ui]<br> username = [Your user name here: firstname lastname|[Yourusernamehere:firstnamelastname] [firstname.lastname@here.COM]<br> &lt;/pre&gt;<br> This will save some typing.</p> 
+     <ol> 
+      <li>To commit the sources, do: <em>'hg commit</em>' [provide appropriate commit comments when hg opens up the editor|[provideappropriatecommitcommentswhenhgopensuptheeditor] and do <em>'hg push</em>'. This tip is applicable only if you have created hgrc file as in the previous tip.</li> 
+     </ol> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:49.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

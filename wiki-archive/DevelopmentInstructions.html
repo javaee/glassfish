@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : DevelopmentInstructions</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="DevelopmentInstructions-GlassFishDeveloperInstruction"></a>GlassFish Developer Instruction</h1> <p>For complete build instructions, please see: <a href="FullBuildInstructions.html" title="FullBuildInstructions">FullBuildInstructions</a>.</p> <p>First, make sure your maven can find artifacts from the java.net maven2 repository.<br> This is done by making sure that your <tt>~/.m2/settings.xml</tt> has a proper entry like this:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;settings&gt;
+  &lt;!-- only if you are behind the proxy --&gt;
+  &lt;proxies&gt;
+   &lt;proxy&gt;
+      &lt;active&gt;true&lt;/active&gt;
+      &lt;protocol&gt;http&lt;/protocol&gt;
+      &lt;host&gt;proxy.somewhere.com&lt;/host&gt;
+      &lt;port&gt;8080&lt;/port&gt;
+    &lt;/proxy&gt;
+  &lt;/proxies&gt;
+&lt;/settings&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>If you're building in Oracle Network, set the proxy host and port as: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;host&gt;www-proxy.us.oracle.com&lt;/host&gt;
+    &lt;port&gt;80&lt;/port&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>Next, check out the part of the glassfish that you are interested in working on. For example,<br> if you are working on <tt>appserv-webtier</tt>, you'd do the following.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">svn checkout https://svn.java.net/svn/glassfish-svn/trunk/main/appserver/web/appserv-webtier</pre> 
+       </div> 
+      </div>
+     </div> <p>You can then generate project files for your IDE by running the command like below. Due to the directory layout, this does not work for some of the modules. NetBeans and Intellij don't need such additional step as it can understand Maven natively by using <a href="http://mevenide.codehaus.org/m2-site/">a plugin</a>.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">mvn -DdownloadSources=true eclipse:eclipse       // for Eclipse</pre> 
+       </div> 
+      </div>
+     </div> <p>After you make your changes, you can build your module by running the following command. </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">mvn install</pre> 
+       </div> 
+      </div>
+     </div> <p>Once you are satisfied with your change, use <tt>svn</tt> to commit the changes.</p> <h4><a name="DevelopmentInstructions-Edit%2FBuild%2FDebugCycle"></a>Edit/Build/Debug Cycle</h2> <p>You'll be spending most of time going through edit/build/debug cycle, so making this step efficient is important for your productivity.</p> <p>After you make changes, you can launch Glassfish with your local changes by running the following command:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">mvn gf:run</pre> 
+       </div> 
+      </div>
+     </div> <p>This starts Glassfish with your module's <tt>target/classes</tt> and all the other pre-built binaries. The first time around it will take some time to download all those additional binaries, but from then on this should run fairly quickly.</p> <p>To launch this Glassfish under the debugger, do as follows. You'll be running this often, so it's usually a good idea to make this a little shell script or an alias:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">UNIX:
+export MAVEN_OPTS=-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5050
+
+Windows:
+setlocal
+set MAVEN_OPTS=-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5050
+mvn gf:run
+endlocal</pre> 
+       </div> 
+      </div>
+     </div> <p>The same technique is also used if you need to tweak the VM launch parameter. See <a href="http://TODO/">the plugin documentation</a> for more about <tt>gf:run</tt> goal and how to customize its behavior.</p> <p>Once Maven starts under debugger, connect your IDE remotely to the port, and you can debug it all you like. Also, be sure to learn about <a href="http://java.sun.com/j2se/1.4.2/docs/guide/jpda/enhancements.html#hotswap">hot swapping</a>, so that you can make simple changes from your IDE without restarting Glassfish.</p> <h4><a name="DevelopmentInstructions-FurtherReading"></a>Further Reading</h2> <p>Read more about <a href="HowDoesV3BuildWorks.html" title="HowDoesV3BuildWorks">how GFv3 build/development works</a> to get a better understanding why this works. Also, see this <a href="http://blogs.oracle.com/jenblog/entry/glassfish_v3_getting_started_setting">jenblog</a> entry for more build tips.</p> <h4><a name="DevelopmentInstructions-OtherProductivityTips"></a>Other Productivity Tips</h2> 
+     <ul> 
+      <li>For building your module, Maven occasionally needs to hit the remote repository to check if any of your dependencies are updated. You can avoid this by running <tt>mvn</tt> with the <tt>-o</tt> option. This often reduces the build time.</li> 
+      <li>Contrarily, if you want to force Maven to check updates to all your dependencies, run <tt>mvn</tt> with <tt>-U -up</tt>. This is often necessary when a change in your code depends on another change another developer made in another module.</li> 
+      <li>Sun employees can use <a href="http://maven.sfbay/jsp/Wiki?RepositoryMirroring">the internal maven repository mirrors</a> for faster repository access.</li> 
+     </ul> <h4><a name="DevelopmentInstructions-TODO"></a>TODO</h2> 
+     <ul> 
+      <li>Automate deployment via Hudson.</li> 
+     </ul> 
+     <hr> 
+     <div class="tabletitle"> 
+      <a name="comments"> <h4>Comments:</h2> </a> 
+     </div> 
+     <table border="0" width="100%"> 
+      <tbody>
+       <tr> 
+        <td> <a name="comment-20876407"></a> <font class="smallfont"><p>Hi can I import the glassfish projects into eclipse, I always get errors concerning the classpath.</p></font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by veit_ullmann at Nov 04, 2011 10:05 
+         </div> </td> 
+       </tr> 
+      </tbody>
+     </table> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 22, 2011 by 
+<font color="#0050B2">jane.young</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

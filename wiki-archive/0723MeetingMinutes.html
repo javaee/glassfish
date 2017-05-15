@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : 0723MeetingMinutes</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="0723MeetingMinutes-Date%3A07%2F23%2F07"></a>Date: 07/23/07</h3> <p>In attendance: Larry, Binod, Joel, Erik, Jan</p> <h4><a name="0723MeetingMinutes-1.Consistenthashing"></a>1. Consistent hashing</h3> <p>The consistent hashing algorithm used by SailFin's converged<br> loadbalancers supports stickiness by computing a hashkey based on the<br> request headers of the 1st request. The computed hashkey remains<br> constant across subsequent requests that belong to the same<br> session. This hashkey is used to lookup the instance in the cluster<br> that is supposed to service the request. All active cluster instances<br> are managed in a hashmap. This hashmap changes dynamically, in<br> response to GMS notifications of cluster reshape events (i.e., in<br> response to instances leaving or joining the cluster). Every LB, which<br> may be a dedicated LB or an instance acting as a LB, maintains this<br> kind of hashmap. If the instance that is mapped to by a given hashkey<br> goes down, the same hashkey will be mapped to a different instance<br> that was selected as the failover target.</p> <p>This is somewhat different from Sun's current LB approach for HTTP<br> requests, which uses a "proxy id" to support stickiness, but unlike<br> the hashkey used in consistent hashing, the "proxy id" does change<br> after a failover has occurred.</p> <p>In either approach, the "proxy id" or hashkey, respecitvely, is<br> communicated to the client, and back to the LB, in the form of a<br> cookie or rewritten URL.</p> <h4><a name="0723MeetingMinutes-2.Versioningissues"></a>2. Versioning issues</h3> <p>The data model used in Ericsson's EAS product defines separate trees<br> for the following SIP entities: SipApplicationSession, SipSession,<br> SipDialog, and ServletContext. Each of these trees is keyed by a<br> unique key (in the case of the session related trees, the session id<br> is used as the key), and each SIP entity that is stored as a value in<br> the appropriate tree may be replicated separately.</p> <p>When using in-memory replication, the above, fine-grained data model<br> requires that each SIP entity be supported by some kind of versioning<br> information (like the kind we use for HTTP sessions in GlassFish), in<br> order to be able to identify the most recent (and therefore most<br> accurate) version of a SIP entity when there are multiple versions<br> present on different instances.</p> <p>The following issues must be considered by any approach that relies on<br> versioning:</p> <h4><a name="0723MeetingMinutes-2.1Clientcooperation"></a>2.1 Client cooperation</h3> <p> Any versioning approach requires cooperating clients that supply<br> versioning information with their requests (HTTP clients cooperate by<br> automatically including versioning information received in response<br> cookies or rewritten URLs with their requests). Even if we find that<br> our SIP clients do cooperate in the above sense, we must ensure that<br> the container will always have an opportunity to increment the version<br> before the response is returned to the client, so that a client will<br> never request a stale version of a SIP entity.</p> <h4><a name="0723MeetingMinutes-2.2Crossprotocolupdates"></a>2.2 Cross-protocol updates</h3> <p> In a converged container, it is possible, though probably not<br> recommended, to traverse the session hierarchy and update session<br> objects belonging to a different protocol. For example, from a<br> ConvergedHttpSession, it is possible to navigate to the parent<br> SipApplicationSession and its SIP protocol session children, and<br> update them. However, since those SIP sessions would have been updated<br> from a "foreign" protocol (in this case: HTTP), it would be impossible<br> to communicate their incremented version information to any SIP<br> clients as part of the (HTTP) response.</p> <h4><a name="0723MeetingMinutes-2.3Missingversioninginfo"></a>2.3 Missing versioning info</h3> <p> Some of the SIP APIs, e.g.,<br> SipSessionsUtil.getApplicationSession(String applicationSessionId),<br> allow requesting a SipApplicationSession based on its id, but at the<br> time of their invocation, there may not be any versioning information<br> available.</p> <h4><a name="0723MeetingMinutes-3.Sessionexpirationandtimeractivation"></a>3. Session expiration and timer activation</h3> <p>A SipApplicationSession may have a number of timers attached to it,<br> see the following javax.servlet.sip APIs:</p> <p> TimerService.java:</p> <p> public ServletTimer createTimer(sipAppSession, ...);</p> <p> ServletTimer.java:</p> <p> public SipApplicationSession getApplicationSession();</p> <p> SipApplicationSession.java:</p> <p> public Collection getTimers();</p> <p>ServletTimer objects are associated with an application session. The<br> application may store data in the application session and retrieve it<br> later when the timer fires. The getTimers() method of the<br> SipApplicationSession interface returns a java.util.Collection<br> containing all ServletTimer objects currently scheduled and associate<br> with that session.</p> <p>If (different versions of) the same SipApplicationSession is (are)<br> active at the same time, the container must ensure that only a single<br> set of timers fires. Session versioning alone will not address this.</p> <p>EJB timers are different, because they are not attached to any session<br> objects. In addition, in GlassFish, EJB timers are not replicated, but<br> continue to be persisted to a database, even if in-memory replication<br> has been selected as the persistence type.</p> <p>We need to check whether we can treat (SIP) ServletTimer objects as<br> separate from their SipApplicationSession parents as far as their<br> activation is concerned, and mediate their activation through GMS.</p> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Nov 18, 2011 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:48.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

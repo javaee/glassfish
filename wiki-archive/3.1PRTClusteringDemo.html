@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : 3.1PRTClusteringDemo</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="3.1PRTClusteringDemo-GlassFishServerOpenSourceEdition3.1"></a>GlassFish Server Open Source Edition 3.1</h1> <h4><a name="3.1PRTClusteringDemo-PRTClusteringInfrastructureDemo"></a>PRT Clustering Infrastructure Demo</h2> <p>The clustering infrastructure features available in 3.1 will be demonstrated using the following script.</p> <h4><a name="3.1PRTClusteringDemo-Team"></a>Team</h2> <p>This demo is brought to you by the core clustering infrastructure team:</p> 
+     <ul> 
+      <li>Jennifer Chou</li> 
+      <li>Byron Nevins</li> 
+      <li>Bhakti Mehta</li> 
+      <li>Tom Mueller</li> 
+      <li>Vijay Ramachandran</li> 
+      <li>Bill Shannon</li> 
+     </ul> <h4><a name="3.1PRTClusteringDemo-Setup"></a>Setup</h2> 
+     <ul> 
+      <li>Install GlassFish Server Open Source Edition 3.1 software on 3 servers, referred to as das, node1 and node2 in these instructions. The DAS will run on node das</li> 
+      <li>Setup SSH so that das can communicate to both node1 and node2</li> 
+     </ul> <p><span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20874319/21365846.png" style="border: 1px solid black"></span></p> <p>The demonstration consists of running a DAS with a cluster, c1, that contains two instances. The DAS runs on its own node, instance in1 runs on node1 and instance in2 runs on node 2. instance 2 and 3 will run on node2. The HTTP ports for the instances are both 28080. Since SSH is configured, all configuration can be done from the DAS node.</p> <h4><a name="3.1PRTClusteringDemo-OntheDASnode%2CstarttheDAS%2Ccreatethecluster%2Ccreatenodes%2Ccreateinstances%2Cstartthecluster%2Canddeployanapplicationtotheinstances."></a>On the DAS node, start the DAS, create the cluster, create nodes, create instances, start the cluster, and deploy an application to the instances.</h3> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">asadmin start-domain
+asadmin create-cluster c1
+asadmin create-node-ssh --nodehost glassfish-x86-2.sfbay.sun.com --installdir /export/home/hudson/test/glassfishv3 node1
+asadmin create-node-ssh --nodehost iasengsol6.sfbay.sun.com --installdir /export/home/hudson/test/glassfishv3 node2
+asadmin create-instance --cluster c1 --node node1 in1
+asadmin create-instance --cluster c1 --node node2 in2
+asadmin start-cluster c1
+asadmin deploy --target c1 apps/helloworld.war</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="3.1PRTClusteringDemo-Listtheinstancestoseethattheyarerunning."></a>List the instances to see that they are running.</h3> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">asadmin list-instances</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="3.1PRTClusteringDemo-UseabrowsertoshowthefollowingURLsontheinstances%3A"></a>Use a browser to show the following URLs on the instances:</h3> 
+     <ul> 
+      <li><a href="http://node1:28080/helloworld/hi.jsp">http://node1:28081/helloworld/hi.jsp</a></li> 
+      <li><a href="http://node2:28080/helloworld/hi.jsp">http://node2:28080/helloworld/hi.jsp</a></li> 
+     </ul> <h4><a name="3.1PRTClusteringDemo-UseabrowsertoshowtheRESTinterfacethatisavailableonaninstanceandhowitdiffersfromtheDAS%3A"></a>Use a browser to show the REST interface that is available on an instance and how it differs from the DAS:</h3> 
+     <ul> 
+      <li><a href="http://node2:24848/management/domain">http://node2:24848/management/domain</a></li> 
+      <li><a href="http://das:4848/management/domain">http://das:4848/management/domain</a> (DAS)</li> 
+     </ul> <p>Browse through to the list of <tt>&lt;config&gt;</tt> and to the list of <tt>&lt;server&gt;</tt></p> 
+     <ul> 
+      <li>notice how DAS has 3 server elements – instances each have only the instance in the cluster.</li> 
+      <li>notice that DAS has all the <tt>&lt;config&gt;</tt> elements while instances have just one or two.</li> 
+     </ul> <p>Mention that this "idiot-proof"s instances in one respect – they can't foul-up others' config elements, only DAS can do that!</p> <h4><a name="3.1PRTClusteringDemo-Showdirectorystructureonnode2"></a>Show directory structure on node2</h3> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">ls glassfish/nodeagent/node2</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="3.1PRTClusteringDemo-Showcontentsofdomain.xml"></a>Show contents of domain.xml</h3> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">vi glassfish/domains/domain1/config/domain.xml</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="3.1PRTClusteringDemo-Runcommandswithclustertargetandshowreplicationonallinstancesinacluster"></a>Run commands with cluster target and show replication on all instances in a cluster</h3> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">asadmin create-jdbc-connection-pool --datasourceclassname org.apache.derby.jdbc.ClientDataSource --restype javax.sql.XADataSource --target c1 sample_jdbc_pool
+asadmin create-iiop-listener --target c1 --listeneraddress 192.168.1.100 --iiopport 1400 sample_iiop_listener
+asadmin create-connector-connection-pool --target c1 --raname jmsra --connectiondefinition javax.jms.QueueConnectionFactory jms/qConnPool</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="3.1PRTClusteringDemo-Useabrowserandshowthefollowinglinkstoshowhowthecommandisautomaticallyreplicatedtoallinstancesinacluster"></a>Use a browser and show the following links to show how the command is automatically replicated to all instances in a cluster</h3> 
+     <ul> 
+      <li>http://<tt>host:port</tt>/management/domain/resources/jdbc-connection-pool</li> 
+      <li>http://<tt>host:port</tt>/management/domain/configs/config/c1-config/iiop-service/iiop-listener</li> 
+      <li>http://<tt>host:port</tt>/management/domain/resources/connector-connection-pool</li> 
+     </ul> <h4><a name="3.1PRTClusteringDemo-Showthedomain.xmlfileonin3toshowhowithasbeenmodified"></a>Show the domain.xml file on in3 to show how it has been modified</h3> <h4><a name="3.1PRTClusteringDemo-Runcommandwithinstancetargetandshowreplicationonlytothatinstance"></a>Run command with instance target and show replication only to that instance</h3> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">asadmin create-connector-connection-pool --target in2 --raname jmsra --connectiondefinition javax.jms.QueueConnectionFactory jms/instanceOnlyConnPool</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="3.1PRTClusteringDemo-Useabrowserandshowthefollowinglinkstoshowhowthecommandisautomaticallyreplicatedtotheinstanceonly"></a>Use a browser and show the following links to show how the command is automatically replicated to the instance only</h3> 
+     <ul> 
+      <li>http://<tt>host:port</tt>/management/domain/resources/jdbc-connection-pool</li> 
+      <li>http://<tt>host:port</tt>/management/domain/configs/config/c1-config/iiop-service/iiop-listener</li> 
+      <li>http://<tt>host:port</tt>/management/domain/resources/connector-connection-pool</li> 
+     </ul> <h4><a name="3.1PRTClusteringDemo-Runcommandsandshowreplication"></a>Run commands and show replication</h3> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">asadmin delete-jdbc-connection-pool --target c1 sample_jdbc_pool
+asadmin delete-iiop-listener --target c1 sample_iiop_listener
+asadmin delete-connector-connection-pool --target c1 jms/qConnPool</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="3.1PRTClusteringDemo-Useabrowserandshowthatthedeletecommands%27effect"></a>Use a browser and show that the delete commands' effect</h3> 
+     <ul> 
+      <li>http://<tt>host:port</tt>/management/domain/resources/jdbc-connection-pool</li> 
+      <li>http://<tt>host:port</tt>/management/domain/configs/config/c1-config/iiop-service/iiop-listener</li> 
+      <li>http://<tt>host:port</tt>/management/domain/resources/connector-connection-pool</li> 
+     </ul> <h4><a name="3.1PRTClusteringDemo-Stopanddeletetheinstances.OnDAS%3A"></a>Stop and delete the instances. On DAS:</h3> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">asadmin stop-cluster c1
+asadmin delete-instance in1
+asadmin delete-instance in2
+asadmin delete-cluster c1
+asadmin stop-domain</pre> 
+       </div> 
+      </div>
+     </div> <p>Mention that the first command here stops an instance on a remote node and the delete-instance commands operate on the remote nodes via SSH.</p> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874319/21365845.png">ms1demo3.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874319/21365846.png">PRTDemoDiagram.png</a> (image/png) 
+      <br> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Nov 09, 2011 by 
+<font color="#0050B2">trmueller</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

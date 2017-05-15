@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : V2ToV3MonitoringXform</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="V2ToV3MonitoringXform-v2tov3MonitoringChanges"></a>v2 to v3 Monitoring Changes</h2> <p>It looks like there were some changes to the hierarchy of data that is available to monitoring clients... This is an evolving map of the changes, to guide folks that want to use v3 monitoring and are familiar with v2 monitoring.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">ConnectionQueueMonitor used in: HTTP Service view</th> 
+         <th class="confluenceTh">&nbsp;</th> 
+         <th class="confluenceTh">&nbsp;</th> 
+         <th class="confluenceTh">&nbsp;</th> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> attribute </th> 
+         <th class="confluenceTh"> v3 monitor object </th> 
+         <th class="confluenceTh"> keyed by </th> 
+         <th class="confluenceTh"> name </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> CountOverflows </td> 
+         <td class="confluenceTd"> connection-queue-mon </td> 
+         <td class="confluenceTd"> network/$listener-name/connection-queue </td> 
+         <td class="confluenceTd">countoverflows </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> CountQueued </td> 
+         <td class="confluenceTd"> ' </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> countqueued </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> CountQueued1MinuteAverage </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> countqueued1minuteaverage </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> CountQueued5MinuteAverage </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> countqueued5minuteaverage </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> CountQueued15MinuteAverage </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> countqueued15minuteaverage </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> CountTotalConnections </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> counttotalconnections </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> CountTotalQueued </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> counttotalqueued </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ID </td> 
+         <td class="confluenceTd"> ??? </td> 
+         <td class="confluenceTd"> ??? </td> 
+         <td class="confluenceTd"> ??? </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> MaxQueued </td> 
+         <td class="confluenceTd"> connection-queue-mon </td> 
+         <td class="confluenceTd"> network/$listener-name/connection-queue </td> 
+         <td class="confluenceTd"> maxqueued </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> PeakQueued </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> peakqueued </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> TicksTotalQueued </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> tickstotalqueued </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> FileCacheMonitor used in: HTTP Service view </th> 
+         <th class="confluenceTh">&nbsp;</th> 
+         <th class="confluenceTh">&nbsp;</th> 
+         <th class="confluenceTh">&nbsp;</th> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> attribute </th> 
+         <th class="confluenceTh"> v3 monitor object </th> 
+         <th class="confluenceTh"> keyed by </th> 
+         <th class="confluenceTh"> name </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> CountContentHits </td> 
+         <td class="confluenceTd"> file-cache-mon </td> 
+         <td class="confluenceTd"> network/$listener-name/connection-queue </td> 
+         <td class="confluenceTd"> contenthits </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> CountContentMisses </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> contentmisses </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> CountEntries </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> ????? </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> CountHits </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> hits </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> CountInfoHits </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> infohits </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> CountInfoMisses </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> informisses </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> CountMisses </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> misses </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> CountOpenEntries </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> opencacheentries </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> FlagEnabled </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> ???? </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> MaxEntries </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> ??? </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> MaxHeapCacheSize </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> maxheapsize (???) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> MaxMmapCacheSize </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> maxmappedmemorysize (???) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> MaxOpenEntries </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> openentries </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> SecondsMaxAge </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> ??? </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> SizeHeapCache </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> heapsize </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> SizeMmapCache </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> mappedmemorysize </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> KeepAliveMonitor used in: HTTP Service view </th> 
+         <th class="confluenceTh">&nbsp;</th> 
+         <th class="confluenceTh">&nbsp;</th> 
+         <th class="confluenceTh">&nbsp;</th> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> attribute </th> 
+         <th class="confluenceTh"> v3 monitor object </th> 
+         <th class="confluenceTh"> keyed by </th> 
+         <th class="confluenceTh"> name </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> CountConnections </td> 
+         <td class="confluenceTd"> keep-alive-mon </td> 
+         <td class="confluenceTd"> network/$listener-name/connection-queue </td> 
+         <td class="confluenceTd">countconnections </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> CountFlushes </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd">countflushes </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> CountHits </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> counthits </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> CountRefusals </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> countrefusals </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> CountTimeouts </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> counttimeouts </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> MaxConnections </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> ??? </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> SecondsTimeouts </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> secondstimeouts </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> HTTPListenerMonitor used in: HTTP listener view </th> 
+         <th class="confluenceTh">&nbsp;</th> 
+         <th class="confluenceTh">&nbsp;</th> 
+         <th class="confluenceTh">&nbsp;</th> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> attribute </th> 
+         <th class="confluenceTh"> v3 monitor object </th> 
+         <th class="confluenceTh"> keyed by </th> 
+         <th class="confluenceTh"> name </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> BytesReceived </td> 
+         <td class="confluenceTd"> ?? </td> 
+         <td class="confluenceTd"> ?? </td> 
+         <td class="confluenceTd"> ?? </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> BytesSent </td> 
+         <td class="confluenceTd"> ?? </td> 
+         <td class="confluenceTd"> ?? </td> 
+         <td class="confluenceTd"> ?? </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> CountOpenConnections </td> 
+         <td class="confluenceTd"> connection-queue-mon </td> 
+         <td class="confluenceTd"> network/$listener-name/connection-queue </td> 
+         <td class="confluenceTd">countopenconnections </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> CountOther </td> 
+         <td class="confluenceTd"> request-mon </td> 
+         <td class="confluenceTd"> $htt-service-name/server/request </td> 
+         <td class="confluenceTd">countother </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> CurrentThreadCount </td> 
+         <td class="confluenceTd"> thread-pool-mon </td> 
+         <td class="confluenceTd"> network/$listener-name/thread-pool </td> 
+         <td class="confluenceTd">currentthreadcount </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> CurrentThreadsBusy </td> 
+         <td class="confluenceTd"> thread-pool-mon </td> 
+         <td class="confluenceTd"> network/$listener-name/thread-pool </td> 
+         <td class="confluenceTd">currentthreadsbusy </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ErrorCount </td> 
+         <td class="confluenceTd"> request-mon </td> 
+         <td class="confluenceTd"> $htt-service-name/server/request </td> 
+         <td class="confluenceTd">errorcount </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> MaxOpenConnections </td> 
+         <td class="confluenceTd"> ?? </td> 
+         <td class="confluenceTd"> ?? </td> 
+         <td class="confluenceTd"> ?? </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> MaxSpareThreads </td> 
+         <td class="confluenceTd"> ?? </td> 
+         <td class="confluenceTd"> ?? </td> 
+         <td class="confluenceTd"> ?? </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> MaxThreads </td> 
+         <td class="confluenceTd"> thread-pool-mon </td> 
+         <td class="confluenceTd"> network/$listener-name/thread-pool </td> 
+         <td class="confluenceTd">maxthreads </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> MaxTime </td> 
+         <td class="confluenceTd"> request-mon </td> 
+         <td class="confluenceTd"> $htt-service-name/server/request </td> 
+         <td class="confluenceTd">maxtime </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> MinSpareThreads </td> 
+         <td class="confluenceTd"> ?? </td> 
+         <td class="confluenceTd"> ?? </td> 
+         <td class="confluenceTd"> ?? </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ProcessingTime </td> 
+         <td class="confluenceTd"> request-mon </td> 
+         <td class="confluenceTd"> $htt-service-name/server/request </td> 
+         <td class="confluenceTd">processingtime </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> RequestCount </td> 
+         <td class="confluenceTd"> request-mon </td> 
+         <td class="confluenceTd"> $htt-service-name/server/request </td> 
+         <td class="confluenceTd">requestcount </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> WebModuleVirtualServerMonitor used in: Web Module view </th> 
+         <th class="confluenceTh">&nbsp;</th> 
+         <th class="confluenceTh">&nbsp;</th> 
+         <th class="confluenceTh">&nbsp;</th> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> attribute </th> 
+         <th class="confluenceTh"> v3 monitor object </th> 
+         <th class="confluenceTh"> keyed by </th> 
+         <th class="confluenceTh"> name </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ActiveSessionsCurrent </td> 
+         <td class="confluenceTd"> session-mon </td> 
+         <td class="confluenceTd"> $web-mod-name/server </td> 
+         <td class="confluenceTd">activesessionscurrent </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ActiveSessionsHigh </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> ??? </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ExpiredSessionsTotal </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> expiredsessionstotal </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JSPErrorCount </td> 
+         <td class="confluenceTd"> jsp-mon </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> jsperrorcount </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> RejectedSessionsTotal </td> 
+         <td class="confluenceTd"> session-mon </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> rejectedsessionstotal </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ServletProcessingTimes </td> 
+         <td class="confluenceTd"> servlet-mon </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> servletprocessingtimes </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> SessionsTotal </td> 
+         <td class="confluenceTd"> session-mon </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> sessionstotal </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> ServletMonitor/AltServletStats used in: servlet view </th> 
+         <th class="confluenceTh">&nbsp;</th> 
+         <th class="confluenceTh">&nbsp;</th> 
+         <th class="confluenceTh">&nbsp;</th> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> attribute </th> 
+         <th class="confluenceTh"> v3 monitor object </th> 
+         <th class="confluenceTh"> keyed by </th> 
+         <th class="confluenceTh"> name </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ProcessingTime </td> 
+         <td class="confluenceTd"> servlet-instance-mon </td> 
+         <td class="confluenceTd"> $web-module-name/server/$servlet-name </td> 
+         <td class="confluenceTd">processingtime </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> RequestCount </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> requestcount </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> MaxTime </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> maxtime </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> JDBCConnectionPoolMonitor used in: JDBC Connection Pool view </th> 
+         <th class="confluenceTh">&nbsp;</th> 
+         <th class="confluenceTh">&nbsp;</th> 
+         <th class="confluenceTh">&nbsp;</th> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> attribute </th> 
+         <th class="confluenceTh"> v3 monitor object </th> 
+         <th class="confluenceTh"> keyed by </th> 
+         <th class="confluenceTh"> name </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> NumConnFree_Current </td> 
+         <td class="confluenceTd"> jdbc-connection-pool-mon </td> 
+         <td class="confluenceTd"> resources/$name </td> 
+         <td class="confluenceTd">numconnfree </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> NumConnUsed_Current </td> 
+         <td class="confluenceTd"> ' </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> numconnused </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> NumConnCreated_Count </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> numconncreated </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> NumConnDestroyed_Count </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> numconndestroyed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> NumConnAcquired_Count </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> numconnacquired </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> WaitQueueLength_Count </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> waitqueuelength </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> NumPotentialConnLeak_Count </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> numpotentialconnleak </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ConnRequestWaitTime_Current </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> connrequestwaittime </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> AverageConnWaitTime_HighWaterMark </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> averageconnwaittime </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> ConnectorConnectionPoolMonitor used in: Connector Connection Pool view </th> 
+         <th class="confluenceTh">&nbsp;</th> 
+         <th class="confluenceTh">&nbsp;</th> 
+         <th class="confluenceTh">&nbsp;</th> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> attribute </th> 
+         <th class="confluenceTh"> v3 monitor object </th> 
+         <th class="confluenceTh"> keyed by </th> 
+         <th class="confluenceTh"> name </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> NumConnFree_Current </td> 
+         <td class="confluenceTd"> connector-connection-pool-mon </td> 
+         <td class="confluenceTd"> resources/$name </td> 
+         <td class="confluenceTd">numconnfree </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> NumConnUsed_Current </td> 
+         <td class="confluenceTd"> ' </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> numconnused </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> NumConnCreated_Count </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> numconncreated </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> NumConnDestroyed_Count </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> numconndestroyed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> NumConnAcquired_Count </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> numconnacquired </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> WaitQueueLength_Count </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> waitqueuelength </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> NumPotentialConnLeak_Count </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> numpotentialconnleak </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ConnRequestWaitTime_Current </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> connrequestwaittime </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> AverageConnWaitTime_HighWaterMark </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> averageconnwaittime </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> ThreadPoolMonitor used in: Thread Pool View - <font color="red">GlassFish Issue <a href="https:--glassfish.java.net-issues-show_bug.cgi-9116">9116 </a></font> </th> 
+         <th class="confluenceTh">&nbsp;</th> 
+         <th class="confluenceTh">&nbsp;</th> 
+         <th class="confluenceTh">&nbsp;</th> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> attribute </th> 
+         <th class="confluenceTh"> v3 monitor object </th> 
+         <th class="confluenceTh"> keyed by </th> 
+         <th class="confluenceTh"> name </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> CurrentNumberOfThreads_Current </td> 
+         <td class="confluenceTd"> ?? </td> 
+         <td class="confluenceTd"> ?? </td> 
+         <td class="confluenceTd">?? </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> NumberOfBusyThreads_Count </td> 
+         <td class="confluenceTd"> ' </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> ?? </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> TotalWorkItemsAdded_Count </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> ?? </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> NumConnDestroyed </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> ?? </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> NumConnAcquired </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> ?? </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> WaitQueueLength </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> ?? </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> NumPotentialConnLeak </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> ?? </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ConnRequestWaitTime </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> ?? </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> AverageConnWaitTime </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> ?? </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> WebServiceEndpointMonitor used in Web Services View </th> 
+         <th class="confluenceTh">&nbsp;</th> 
+         <th class="confluenceTh">&nbsp;</th> 
+         <th class="confluenceTh">&nbsp;</th> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> attribute </th> 
+         <th class="confluenceTh"> v3 monitor object </th> 
+         <th class="confluenceTh"> keyed by </th> 
+         <th class="confluenceTh"> name </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ResponseTime_Count </td> 
+         <td class="confluenceTd"> servlet-instance-mon </td> 
+         <td class="confluenceTd"> $webapp/server/$webservice </td> 
+         <td class="confluenceTd">processingtime </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> TotalFaults_Count </td> 
+         <td class="confluenceTd"> web-request-mon </td> 
+         <td class="confluenceTd"> $webapp/server/$webservice </td> 
+         <td class="confluenceTd">errorcount </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> TotalNumSuccess_Count </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd">requestcount </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> BeanPoolMonitor used in Entity Bean View and Stateless Session Bean View </th> 
+         <th class="confluenceTh">&nbsp;</th> 
+         <th class="confluenceTh">&nbsp;</th> 
+         <th class="confluenceTh">&nbsp;</th> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> attribute </th> 
+         <th class="confluenceTh"> v3 monitor object </th> 
+         <th class="confluenceTh"> keyed by </th> 
+         <th class="confluenceTh"> name </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> NumBeansInPool_Current </td> 
+         <td class="confluenceTd"> bean-pool-mon </td> 
+         <td class="confluenceTd"> $beanName/bean-pool </td> 
+         <td class="confluenceTd">numbeansinpool </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> NumBeansInPool_UpperBound </td> 
+         <td class="confluenceTd"> ? </td> 
+         <td class="confluenceTd"> ? </td> 
+         <td class="confluenceTd">? </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> NumThreadsWaiting_Current </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd">numthreadswaiting </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> TotalBeansCreated_Count </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd">totalbeanscreated </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> TotalBeansDestroyed_Count </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd">totalbeansdestroyed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> StatefulSessionBeanMonitor used in Stateful Session Bean View </th> 
+         <th class="confluenceTh">&nbsp;</th> 
+         <th class="confluenceTh">&nbsp;</th> 
+         <th class="confluenceTh">&nbsp;</th> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> attribute </th> 
+         <th class="confluenceTh"> v3 monitor object </th> 
+         <th class="confluenceTh"> keyed by </th> 
+         <th class="confluenceTh"> name </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> BeansInCache_Current </td> 
+         <td class="confluenceTd"> bean-cache-mon </td> 
+         <td class="confluenceTd"> $appName/bean-cache-mon/$beanName </td> 
+         <td class="confluenceTd">numbeansincache </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> CacheHits_Current </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd">cachehits </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> CacheMisses_Current </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd">cachemisses </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ExpiredSessionsRemoved_Count </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd">numexpiredsessionsremoved </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Passivations_Count </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd">numpassivations </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> PassivationErrors_Count </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd">numpassivationerrors </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> PassivationSuccesses_Count </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd"> " </td> 
+         <td class="confluenceTd">numpassivationsuccess </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 02, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

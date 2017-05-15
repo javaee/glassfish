@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : V3.2JerseyOnePager</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>One pager template version: 1.9</p> <p>1. Introduction<br> &nbsp;&nbsp;&nbsp; 1.1. Project/Component Working Name:<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Jersey</p> <p>&nbsp;&nbsp;&nbsp; 1.2. Name(s) and e-mail address of Document Author(s)/Supplier:<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; japod@java.net</p> <p>&nbsp;&nbsp;&nbsp; 1.3. Date of This Document:&nbsp;&nbsp; &nbsp;<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 04/26/11</p> <p>2. Project Summary<br> &nbsp;&nbsp;&nbsp; 2.1. Project Description:</p> <p>&nbsp;&nbsp; &nbsp;Grizzly 2 support</p> <p>&nbsp;&nbsp; &nbsp;Multiple Jersey versions support</p> <p>&nbsp;&nbsp; &nbsp;Fix EJB integration&nbsp;&nbsp; &nbsp;</p> <p>&nbsp;&nbsp; &nbsp;Non-blocking asynchronous client</p> <p>&nbsp;&nbsp; &nbsp;Apache HTTP Client 4 support</p> <p>&nbsp;&nbsp; &nbsp;REST client injection<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;<br> &nbsp;&nbsp; &nbsp;JMX monitoring interface</p> <p>&nbsp;&nbsp;&nbsp; 2.2. Risks and Assumptions:</p> <p>&nbsp;&nbsp;&nbsp; We presume OSGi features allow us to properly separate various<br> &nbsp;&nbsp; &nbsp;Jersey versions, so that non-privileged end-users could run multiple Jersey versions in parallel<br> &nbsp;&nbsp; &nbsp;in the runtime. If that assumption is wrong, the end-user still needs administrator<br> &nbsp;&nbsp; &nbsp;access to GlassFish to correctly separate Jersey versions.</p> <p>&nbsp;&nbsp; &nbsp;EJB integration done in the previous GF version lacks support<br> &nbsp;&nbsp; &nbsp;for certain use-cases. We are going to fill the gap, but it is not clear<br> &nbsp;&nbsp; &nbsp;if there are some more "yet to come" use-cases missing.</p> <p>3. Problem Summary<br> &nbsp;&nbsp;&nbsp; 3.1. Problem Area:</p> <p>&nbsp;&nbsp; &nbsp;a) Integration with Grizzly 2</p> <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; b) Deployment of multiple versions of Jersey-based applications to GlassFish.</p> <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; c) Improved integration with Java EE 6.</p> <p>&nbsp;&nbsp; &nbsp;d) Better REST client story.</p> <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; e) Diagnose issues with in-production running JAX-RS applications.</p> <p>&nbsp;&nbsp;&nbsp; 3.2. Justification:</p> <p>&nbsp;&nbsp; &nbsp;ad a)&nbsp;&nbsp; &nbsp;GlassFish 3.2 is based on Grizzly 2. REST administrator API spawns it's own<br> &nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;Grizzly server inside GlassFish container and is using Jersey on top of it.<br> &nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;Grizzly 2 Jersey integration is a must have to support this.</p> <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ad b)&nbsp;&nbsp; &nbsp;Enables developers to use the latest stable version of Jersey when a lesser version<br> &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; is installed in GlassFish without having administrator privileges.<br> &nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;This is mainly important for hosted environments.</p> <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ad c)&nbsp;&nbsp; &nbsp;Smooth integration of Java EE 6 components gives developers a better experience.</p> <p>&nbsp;&nbsp; &nbsp;ad d)&nbsp;&nbsp; &nbsp;Increasing number of web services act as a client to other services.<br> &nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;There is also a big demand for more advanced client features like caching, asynchronous<br> &nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;processing, connection control, etc. which needs to be addressed.</p> <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ad e)&nbsp;&nbsp; &nbsp;Analysis of in-production running JAX-RS applications can help diagnose system performance<br> &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; issues.</p> <p>4. Technical Description:<br> &nbsp;&nbsp;&nbsp;&nbsp; 4.1. Details:</p> <p>Jersey server module in GFv3.1 has integrated Grizzly 1 support together<br> with support for other containers. Grizzly 1 support will be<br> pulled out and provided as a separate module. Another such module<br> will be introduced to contain Grizzly 2 integration code.</p> <p>Deployment of Jersey applications to GlassFish as an OSGI-bundle<br> enables to include a concrete Jersey version in the application bundle<br> OSGi headers to specify which Jersey version is required.<br> Unfortunately, Jersey server module uses generic DynamicImport-Package: *<br> header to be able to load application classes. This dynamic import clause<br> breaks clean version separation, as Jersey is provided in a multi-modular<br> fashion. We will remove the dynamic import clause and introduce a pluggable<br> mechanism to allow Jersey to utilize OSGi means when loading application classes.<br> Another fix will be needed in the JSON module, where for different<br> Jersey supported notations different JAXB versions are needed.<br> This is currently work-arounded using the OSGi optional resolution option.<br> The workaround is not sufficient, and to fix this, we will need to modularize<br> Jersey JSON support and introduce a separate OSGi bundle for each JSON notation.</p> <p>Jersey needs to improve it's integration with EJB to address<br> use-cases where the EJB beans implement local and/or remote interfaces.<br> Jersey currently uses Java reflection API when dispatching<br> requests to resource methods. In the above specified<br> case, the final method invocation call fails, as Jersey tries<br> to utilize Java method from the original resource class whereas<br> GlassFish injects a proxy to the local/remote interface implementation<br> with no other binding to the resource class method.<br> To fix this, we are going to introduce a new pluggable point,<br> where it should be able to tweak the final method<br> invocation code.</p> <p>We are going to do some research in the client area<br> and based on that we might introduce Jersey client API additions<br> to address the most demanded client features, like having complete<br> support for asynchronous request processing and the ability to<br> control/specify used thread pool.</p> <p>Jersey already has DTrace probe support for resource matching.<br> Based on a WLS requirement we are going to introduce an additional monitoring SPI,<br> which could be further utilized also in GlassFish.<br> We are also going to introduce a simple JMX layer on top of the new monitoring SPI<br> to enable container agnostic diagnosis.</p> <p>&nbsp;&nbsp;&nbsp;&nbsp; 4.2. Bug/RFE Number(s):</p> <p><a href="https://github.com/javaee/glassfish/issues/13165">https://github.com/javaee/glassfish/issues/13165</a><a href="https://github.com/javaee/glassfish/issues/13236">https://github.com/javaee/glassfish/issues/13236</a><a href="https://github.com/javaee/glassfish/issues/16199">https://github.com/javaee/glassfish/issues/16199</a></p> <p>&nbsp;&nbsp;&nbsp;&nbsp; 4.3. In Scope:<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; N/A</p> <p>&nbsp;&nbsp;&nbsp;&nbsp; 4.4. Out of Scope:<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; N/A</p> <p>&nbsp;&nbsp;&nbsp;&nbsp; 4.5. Interfaces:</p> <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 4.5.1.&nbsp; Public Interfaces:</p> <p>&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; Grizzly 2 APIs</p> <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Client APIs</p> <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Monitoring SPI</p> <p>&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; New OSGi modules</p> <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 4.5.2.&nbsp; Private Interfaces:</p> <p>&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; Custom Java method invoker SPI for resource method dispatcher</p> <p>&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; Application resource class loader SPI</p> <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 4.5.3.&nbsp; Deprecated/Removed Interfaces:<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; None.</p> <p>&nbsp;&nbsp;&nbsp;&nbsp; 4.6. Doc Impact:<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; TBD</p> <p>&nbsp;&nbsp;&nbsp;&nbsp; 4.7. Admin/Config Impact:<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; None<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;<br> &nbsp;&nbsp;&nbsp;&nbsp; 4.8. HA Impact:<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; None</p> <p>&nbsp;&nbsp;&nbsp;&nbsp; 4.9. I18N/L10N Impact:<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; None</p> <p>&nbsp;&nbsp;&nbsp;&nbsp; 4.10. Packaging, Delivery &amp; Upgrade:</p> <p>&nbsp;&nbsp; &nbsp;4.10.1. Packaging<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; None</p> <p>&nbsp;&nbsp; &nbsp;4.10.2. Delivery</p> <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Number of the Jersey OSGi modules distributed with GlassFish will increase.</p> <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 4.10.3. Upgrade and Migration:<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; None</p> <p>&nbsp;&nbsp;&nbsp;&nbsp; 4.11. Security Impact:<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; None</p> <p>&nbsp;&nbsp;&nbsp;&nbsp; 4.12. Compatibility Impact<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; None</p> <p>&nbsp;&nbsp;&nbsp;&nbsp; 4.13. Dependencies:</p> <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 4.13.1 Internal Dependencies<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Grizzly 2.x<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 4.13.2 External Dependencies<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Ning Asynchronous HTTP client which is an open source project licensed under Apache Software License 2.0.<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a href="http://hc.apache.org/index.html">https://github.com/sonatype/async-http-client</a><a href="http://hc.apache.org/index.html">http://hc.apache.org/index.html</a><br> &nbsp;&nbsp;&nbsp;&nbsp; 4.14. Testing Impact<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Automated tests using the Jersey test framework leveraging JUnit.<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Hudson will be be used to continually build and test.</p> <p>5. Reference Documents:</p> <p>6. Schedule:<br> &nbsp;&nbsp;&nbsp; 6.1. Projected Availability:<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; See: TBD</p> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Aug 28, 2012 by 
+<font color="#0050B2">10193</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

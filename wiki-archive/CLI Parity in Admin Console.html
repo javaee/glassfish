@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : CLI Parity in Admin Console</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>This page lists out all the CLI remote commands thats available in 3.1.2, &nbsp;and maps that to the functionality provided in Admin Console.</p> 
+     <div> 
+      <ul> 
+       <li><a href="#CLIParityinAdminConsole-ApplicationsSupport%3A">Applications Support:</a></li> 
+       <li><a href="#CLIParityinAdminConsole-Nodes">Nodes</a></li> 
+       <li><a href="#CLIParityinAdminConsole-ClustersandInstances">Clusters and Instances</a></li> 
+       <li><a href="#CLIParityinAdminConsole-LoadBalancerConfigurations%3A%26nbsp%3BNewfeaturesaddedin3.1.2">Load Balancer Configurations: &nbsp;New features added in 3.1.2</a></li> 
+       <li><a href="#CLIParityinAdminConsole-SecureAdministration%2CPasswordandPasswordAliasing">Secure Administration, Password and Password Aliasing</a></li> 
+       <li><a href="#CLIParityinAdminConsole-Transactions">Transactions</a></li> 
+       <li><a href="#CLIParityinAdminConsole-Misc">Misc</a></li> 
+       <li><a href="#CLIParityinAdminConsole-Configurations">Configurations</a></li> 
+       <li><a href="#CLIParityinAdminConsole-Lowlevelgrizzlyconfigurationsupport">Low level grizzly configuration support</a></li> 
+       <li><a href="#CLIParityinAdminConsole-Loggings">Loggings</a></li> 
+       <li><a href="#CLIParityinAdminConsole-JMS">JMS</a></li> 
+       <li><a href="#CLIParityinAdminConsole-Resources">Resources</a></li> 
+      </ul>
+     </div> <h4><a name="CLIParityinAdminConsole-ApplicationsSupport%3A"></a>Applications Support:</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> CLI &nbsp; &nbsp; </th> 
+         <th class="confluenceTh"> Supported in 3.1.1 GUI &nbsp; </th> 
+         <th class="confluenceTh"> Add support in 3.1.2 ? </th> 
+         <th class="confluenceTh"> Doc Subtask </th> 
+         <th class="confluenceTh"> Comments &nbsp; &nbsp; </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-applications &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;list-components <br class="atl-forced-newline"> show-component-status &nbsp; &nbsp; list-sub-components </td> 
+         <td class="confluenceTd"> yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> deploy &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;deploydir <br class="atl-forced-newline"> undeploy &nbsp; &nbsp; &nbsp; redeploy </td> 
+         <td class="confluenceTd"> yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-application-refs &nbsp; create-application-ref <br class="atl-forced-newline"> delete-application-ref <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> disable enable <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-lifecycle-modules delete-lifecycle-module <br class="atl-forced-newline"> create-lifecycle-module <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> get-client-stubs <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> <font color="#008000">DONE</font>.&nbsp; P3. <a href="https://github.com/javaee/glassfish/issues/17554">GLASSFISH-17554</a><br class="atl-forced-newline"> <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/17790">GLASSFISH-17790</a> </td> 
+         <td class="confluenceTd"> was available in v2. <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-web-context-param &nbsp; &nbsp;list-web-env-entry &nbsp; &nbsp; <br class="atl-forced-newline"> set-web-context-param &nbsp; set-web-env-entry <br class="atl-forced-newline"> unset-web-context-param unset-web-env-entry </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> P4. <a href="https://github.com/javaee/glassfish/issues/17622">GLASSFISH-17622</a> </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/17807">GLASSFISH-17807 </a> </td> 
+         <td class="confluenceTd"> no user request. &nbsp;never supported in GUI. &nbsp; <br class="atl-forced-newline"> considerable effort to support this in 3.1.2. &nbsp; <br class="atl-forced-newline"> Will consider this for future release. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="CLIParityinAdminConsole-Nodes"></a>Nodes</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> CLI &nbsp; &nbsp; </th> 
+         <th class="confluenceTh"> Supported in 3.1.1 GUI &nbsp; </th> 
+         <th class="confluenceTh"> Add support in 3.1.2 ? </th> 
+         <th class="confluenceTh"> Doc Subtask <br class="atl-forced-newline"> </th> 
+         <th class="confluenceTh"> Comments &nbsp; &nbsp; </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-node-config create-node-ssh&nbsp; <br class="atl-forced-newline"> create-node-config create-node-ssh </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-nodes list-nodes-config list-nodes-ssh </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> delete-node-config delete-node-ssh update-node-config update-node-ssh &nbsp; </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> install-node install-node-ssh </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> <font color="#008000">DONE</font>. P2, <a href="https://github.com/javaee/glassfish/issues/17552">GLASSFISH-17552</a> </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/17792">GLASSFISH-17792</a> <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> uninstall-node uninstall-node-ssh </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> <font color="#008000">DONE</font>. P2.&nbsp;<a href="https://github.com/javaee/glassfish/issues/17552">GLASSFISH-17552</a> </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/17792">GLASSFISH-17792</a> </td> 
+         <td class="confluenceTd"> Need backend to convert this to Remote command. <a href="https://github.com/javaee/glassfish/issues/17553">GLASSFISH-17553</a><br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ping-node-ssh </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> <font color="#008000">DONE</font>. P2. <a href="https://github.com/javaee/glassfish/issues/17555">GLASSFISH-17555</a> DONE </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/17791">GLASSFISH-17791</a> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ping-node-dcom </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> <font color="#008000">DONE</font>. P2. <a href="https://github.com/javaee/glassfish/issues/17555">GLASSFISH-17555</a> DONE </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/17791">GLASSFISH-17791</a> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-nodes-dcom create-node-dcom delete-node-dcom update-node-dcom </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> <font color="#008000">DONE</font>. P2, <a href="https://github.com/javaee/glassfish/issues/17556">GLASSFISH-17556</a> DONE </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/17808">GLASSFISH-17808</a> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> install-node-dcom &nbsp; uninstall-node-dcom </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> <font color="#008000">DONE</font>. P2. <a href="https://github.com/javaee/glassfish/issues/17555">GLASSFISH-17555</a> </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/17791">GLASSFISH-17791</a> </td> 
+         <td class="confluenceTd"> Need backend to convert this to Remote command. <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> setup-ssh <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> No <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/17736"><font color="#008000">DONE</font>. GLASSFISH-17736</a> </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/17808">GLASSFISH-17809 </a> </td> 
+         <td class="confluenceTd"> Need backend to convert this to Remote command. <a href="https://github.com/javaee/glassfish/issues/17524">GLASSFISH-17524</a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> validate-dcom </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> <font color="#008000">DONE</font>. P3. <a href="https://github.com/javaee/glassfish/issues/17624">GLASSFISH-17624</a> </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/17810">GLASSFISH-17810</a><br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="CLIParityinAdminConsole-ClustersandInstances"></a>Clusters and Instances</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> CLI &nbsp; &nbsp; </th> 
+         <th class="confluenceTh"> Supported in 3.1.1 GUI &nbsp; </th> 
+         <th class="confluenceTh"> Add support in 3.1.2 ? </th> 
+         <th class="confluenceTh"> Doc Subtask <br class="atl-forced-newline"> </th> 
+         <th class="confluenceTh"> Comments &nbsp; &nbsp; </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-clusters create-cluster delete-cluster </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> start-cluster stop-cluster <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> restart-instance <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-instances create-instance delete-instance <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> start-instance stop-instance <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> get-health <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> <font color="#008000">DONE</font>. P2. <a href="https://github.com/javaee/glassfish/issues/17570">GLASSFISH-17570&nbsp;</a> </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/17811">GLASSFISH-17811</a> </td> 
+         <td class="confluenceTd"> depends on <a href="https://github.com/javaee/glassfish/issues/17571">GLASSFISH-17571 </a>&nbsp;(FIXED) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> export-sync-bundle <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Nice-to-have </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> This can easily be done using CLI, &nbsp;and since "import-sync-bundle' is <br class="atl-forced-newline"> a local command, &nbsp;user will need to rely on CLI to restore the configuration. &nbsp; <br class="atl-forced-newline"> Not critical to provide this support in GUI. <br class="atl-forced-newline"> <br class="atl-forced-newline"> <br class="atl-forced-newline"> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="CLIParityinAdminConsole-LoadBalancerConfigurations%3A%26nbsp%3BNewfeaturesaddedin3.1.2"></a>Load Balancer Configurations: &nbsp;New features added in 3.1.2</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> CLI &nbsp; &nbsp; </th> 
+         <th class="confluenceTh"> Supported in 3.1.1 GUI &nbsp; </th> 
+         <th class="confluenceTh"> Add support in 3.1.2 ? </th> 
+         <th class="confluenceTh"> Comments &nbsp; &nbsp; </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-http-lb-configs list-http-lbs </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Yes, DONE </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-http-health-checker &nbsp; &nbsp;create-http-lb <br class="atl-forced-newline"> create-http-lb-config &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; create-http-lb-ref <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Yes, DONE </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> delete-http-health-checker &nbsp; &nbsp;delete-http-lb <br class="atl-forced-newline"> delete-http-lb-config &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; delete-http-lb-ref <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Yes, DONE </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> disable-http-lb-application enable-http-lb-application <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Yes, DONE </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> disable-http-lb-server enable-http-lb-server <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Yes, DONE </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> configure-lb-weight <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Yes, DONE </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> export-http-lb-config <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Yes, DONE </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> apply-http-lb-changes <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Yes, DONE </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="CLIParityinAdminConsole-SecureAdministration%2CPasswordandPasswordAliasing"></a>Secure Administration, Password and Password Aliasing</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> CLI &nbsp; &nbsp; </th> 
+         <th class="confluenceTh"> Supported in 3.1.1 GUI &nbsp; </th> 
+         <th class="confluenceTh"> Add support in 3.1.2 ? </th> 
+         <th class="confluenceTh"> Comments &nbsp; &nbsp; </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> enable-secure-admin, &nbsp; <br class="atl-forced-newline"> disable-secure-admin </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> New Feature added for 3.1.2 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-secure-admin-internal-users <br class="atl-forced-newline"> enable-secure-admin-internal-users <br class="atl-forced-newline"> disable-secure-admin-internal-users <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Nice-to-have </td> 
+         <td class="confluenceTd"> these cmds are added for a specific customer. &nbsp; <br class="atl-forced-newline"> probably not widely used by others. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-secure-admin-principals <br class="atl-forced-newline"> list-secure-admin-principals <br class="atl-forced-newline"> list-secure-admin-principals <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Nice-to-have </td> 
+         <td class="confluenceTd"> these cmds are added for a specific customer. &nbsp; <br class="atl-forced-newline"> probably not widely used by others. <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-password-aliases <br class="atl-forced-newline"> delete-password-alias <br class="atl-forced-newline"> create-password-alias <br class="atl-forced-newline"> update-password-alias </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> change-admin-password </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="CLIParityinAdminConsole-Transactions"></a>Transactions</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> CLI &nbsp; &nbsp; </th> 
+         <th class="confluenceTh"> Supported in 3.1.1 GUI &nbsp; </th> 
+         <th class="confluenceTh"> Add support in 3.1.2 ? </th> 
+         <th class="confluenceTh"> Doc Subtask <br class="atl-forced-newline"> </th> 
+         <th class="confluenceTh"> Comments &nbsp; &nbsp; </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> recover-transactions </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> freeze-transaction-service <br class="atl-forced-newline"> unfreeze-transaction-service <br class="atl-forced-newline"> rollback-transaction </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> P4 <a href="https://github.com/javaee/glassfish/issues/17710">GLASSFISH-17710 </a> </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/17818">GLASSFISH-17818 </a> </td> 
+         <td class="confluenceTd"> We didn't get any request to support this. <br class="atl-forced-newline"> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="CLIParityinAdminConsole-Misc"></a>Misc</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> CLI &nbsp; &nbsp; </th> 
+         <th class="confluenceTh"> Supported in 3.1.1 GUI &nbsp; </th> 
+         <th class="confluenceTh"> Add support in 3.1.2 ? </th> 
+         <th class="confluenceTh"> Doc Subtask <br class="atl-forced-newline"> </th> 
+         <th class="confluenceTh"> Comments &nbsp; &nbsp; </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> version </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> uptime </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> <font color="#008000">DONE</font>. P3 <a href="https://github.com/javaee/glassfish/issues/17585">GLASSFISH-17585</a> </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/17812">GLASSFISH-17812</a><br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> depends on <a href="https://github.com/javaee/glassfish/issues/17776">GLASSFISH-17776</a><br class="atl-forced-newline"> Useful info to display to user. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> generate-domain-schema </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Nice-to-have </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> never supported in previous release. no request </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> configure-ldap-for-admin </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Nice-to-have </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> never supported in previous release. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> collect-log-files </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> <font color="#008000">DONE</font>. P3 <a href="https://github.com/javaee/glassfish/issues/17627">GLASSFISH-17627 </a> </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/17813">GLASSFISH-17813</a><br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> may help diagnostic </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-jndi-entries </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> P2 <a href="https://github.com/javaee/glassfish/issues/5842">GLASSFISH-5842 </a> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> v2 has JDNI browser. has 11 votes for this RFE. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-timers </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> <font color="#008000">DONE</font>. P3 <a href="https://github.com/javaee/glassfish/issues/17629">GLASSFISH-17629 </a> </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/17814">GLASSFISH-17814</a><br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> depends on <a href="https://github.com/javaee/glassfish/issues/17785">GLASSFISH-17785</a><br class="atl-forced-newline"> Never supported in previous release, but will be nice to see the list of timers before calling migrate-timers. <br class="atl-forced-newline"> <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> migrate-timers </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-modules </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> P4 <a href="https://github.com/javaee/glassfish/issues/17630">GLASSFISH-17630 </a> </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/17815">GLASSFISH-17815 </a><br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> no request from user. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-containers </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> P4&nbsp;<a href="https://github.com/javaee/glassfish/issues/17631">GLASSFISH-17631 </a> </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/17816">GLASSFISH-17816 </a><br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> no request from user. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="CLIParityinAdminConsole-Configurations"></a>Configurations</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> CLI &nbsp; &nbsp; </th> 
+         <th class="confluenceTh"> Supported in 3.1.1 GUI &nbsp; </th> 
+         <th class="confluenceTh"> Add support in 3.1.2 ? </th> 
+         <th class="confluenceTh"> Comments &nbsp; &nbsp; </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> generate-jvm-report </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-configs <br class="atl-forced-newline"> copy-config <br class="atl-forced-newline"> delete-config </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-jvm-options <br class="atl-forced-newline"> create-jvm-options <br class="atl-forced-newline"> delete-jvm-options </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-profiler <br class="atl-forced-newline"> delete-profiler </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-audit-modules <br class="atl-forced-newline"> create-audit-module <br class="atl-forced-newline"> delete-audit-module </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-auth-realms <br class="atl-forced-newline"> create-auth-realm <br class="atl-forced-newline"> delete-auth-realm </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-file-users <br class="atl-forced-newline"> create-file-user <br class="atl-forced-newline"> delete-file-user <br class="atl-forced-newline"> update-file-user </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-http-listeners <br class="atl-forced-newline"> create-http-listener <br class="atl-forced-newline"> delete-http-listener </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-jacc-provider <br class="atl-forced-newline"> delete-jacc-provider <br class="atl-forced-newline"> list-jacc-providers </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-message-security-provider <br class="atl-forced-newline"> delete-message-security-provider <br class="atl-forced-newline"> list-message-security-providers </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-network-listeners <br class="atl-forced-newline"> create-network-listener <br class="atl-forced-newline"> delete-network-listener </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-protocols <br class="atl-forced-newline"> create-protocol <br class="atl-forced-newline"> delete-protocol </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-http <br class="atl-forced-newline"> delete-http </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-ssl <br class="atl-forced-newline"> delete-ssl </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-system-properties <br class="atl-forced-newline"> create-system-properties <br class="atl-forced-newline"> delete-system-property </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-threadpools <br class="atl-forced-newline"> create-threadpool <br class="atl-forced-newline"> delete-threadpool </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-transports <br class="atl-forced-newline"> create-transport <br class="atl-forced-newline"> delete-transport </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-virtual-servers <br class="atl-forced-newline"> create-virtual-server <br class="atl-forced-newline"> delete-virtual-server </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-iiop-listeners <br class="atl-forced-newline"> create-iiop-listener <br class="atl-forced-newline"> delete-iiop-listener </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-file-groups </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-persistence-types </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-supported-cipher-suites </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> disable-monitoring <br class="atl-forced-newline"> enable-monitoring </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="CLIParityinAdminConsole-Lowlevelgrizzlyconfigurationsupport"></a>Low level grizzly configuration support</h3> <p>These commands were not support in the admin console because it is assumed GlassFish administrator is very unlikely to do this low level grizzly configuration.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> CLI &nbsp; &nbsp; </th> 
+         <th class="confluenceTh"> Supported in 3.1.1 GUI &nbsp; </th> 
+         <th class="confluenceTh"> Add support in 3.1.2 ? </th> 
+         <th class="confluenceTh"> Comments &nbsp; &nbsp; </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-protocol-filters <br class="atl-forced-newline"> create-protocol-filter <br class="atl-forced-newline"> delete-protocol-filter </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-protocol-finders <br class="atl-forced-newline"> create-protocol-finder <br class="atl-forced-newline"> delete-protocol-finder </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-http-redirect <br class="atl-forced-newline"> delete-http-redirect </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="CLIParityinAdminConsole-Loggings"></a>Loggings</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> CLI &nbsp; &nbsp; </th> 
+         <th class="confluenceTh"> Supported in 3.1.1 GUI &nbsp; </th> 
+         <th class="confluenceTh"> Add support in 3.1.2 ? </th> 
+         <th class="confluenceTh"> Comments &nbsp; &nbsp; </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> rotate-log </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> set-log-attributes </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> set-log-levels </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> delete-log-levels </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-log-attributes </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-log-levels </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="CLIParityinAdminConsole-JMS"></a>JMS</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> CLI &nbsp; &nbsp; </th> 
+         <th class="confluenceTh"> Supported in 3.1.1 GUI &nbsp; </th> 
+         <th class="confluenceTh"> Add support in 3.1.2 ? </th> 
+         <th class="confluenceTh"> Doc Subtask <br class="atl-forced-newline"> </th> 
+         <th class="confluenceTh"> Comments &nbsp; &nbsp; </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-jms-resources <br class="atl-forced-newline"> create-jms-resource <br class="atl-forced-newline"> delete-jms-resource <br class="atl-forced-newline"> list-jms-resources,&nbsp;create-jms-resource,&nbsp;delete-jms-resource </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-jms-hosts, &nbsp;create-jms-host, &nbsp;delete-jms-host </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-jmsdest,&nbsp;create-jmsdest,&nbsp;delete-jmsdest </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> flush-jmsdest </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jms-ping </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> configure-jms-cluster </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> <font color="#008000">DONE</font>. P2 <br class="atl-forced-newline"> <a href="https://github.com/javaee/glassfish/issues/17582">GLASSFISH-17582&nbsp;</a><br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/17793">GLASSFISH-17793</a> </td> 
+         <td class="confluenceTd"> Not supported in v2 either. &nbsp; Haven't heard any customer request. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> change-master-broker </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> <font color="#008000">DONE</font>. P3 <br class="atl-forced-newline"> <a href="https://github.com/javaee/glassfish/issues/17779">GLASSFISH-17779</a> </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/17794">GLASSFISH-17794</a> </td> 
+         <td class="confluenceTd"> Can easily add this in the JMS config page.&nbsp; That page somehow missed the 'master broker' attribute. <br class="atl-forced-newline"> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="CLIParityinAdminConsole-Resources"></a>Resources</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> CLI &nbsp; &nbsp; </th> 
+         <th class="confluenceTh"> Supported in 3.1.1 GUI &nbsp; </th> 
+         <th class="confluenceTh"> Add support in 3.1.2 ? </th> 
+         <th class="confluenceTh"> Doc Subtask <br class="atl-forced-newline"> </th> 
+         <th class="confluenceTh"> Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-connector-connection-pools list-connector-resources <br class="atl-forced-newline"> list-connector-security-maps list-connector-work-security-maps <br class="atl-forced-newline"> <br class="atl-forced-newline"> create-connector-connection-pool create-connector-resource <br class="atl-forced-newline"> create-connector-security-map create-connector-work-security-map <br class="atl-forced-newline"> <br class="atl-forced-newline"> delete-connector-connection-pool delete-connector-resource <br class="atl-forced-newline"> delete-connector-security-map delete-connector-work-security-map <br class="atl-forced-newline"> <br class="atl-forced-newline"> update-connector-security-map update-connector-work-security-map <br class="atl-forced-newline"> <br class="atl-forced-newline"> ping-connection-pool <br class="atl-forced-newline"> flush-connection-pool <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-jdbc-connection-pools list-jdbc-resources <br class="atl-forced-newline"> create-jdbc-connection-pool create-jdbc-resource <br class="atl-forced-newline"> delete-jdbc-connection-pool delete-jdbc-resource </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-admin-objects <br class="atl-forced-newline"> create-admin-object <br class="atl-forced-newline"> delete-admin-object </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-resource-adapter-configs <br class="atl-forced-newline"> create-resource-adapter-config <br class="atl-forced-newline"> delete-resource-adapter-config </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-javamail-resources <br class="atl-forced-newline"> create-javamail-resource <br class="atl-forced-newline"> delete-javamail-resource </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-custom-resources <br class="atl-forced-newline"> create-custom-resource <br class="atl-forced-newline"> delete-custom-resource </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-jndi-resources <br class="atl-forced-newline"> create-jndi-resource <br class="atl-forced-newline"> delete-jndi-resource </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-resource-refs <br class="atl-forced-newline"> create-resource-ref <br class="atl-forced-newline"> delete-resource-ref </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> add-resources </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> <font color="#008000">DONE</font>. P3 <a href="https://github.com/javaee/glassfish/issues/17625">GLASSFISH-17625 </a> </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/17817">GLASSFISH-17817 </a> </td> 
+         <td class="confluenceTd"> not supported in previous release, didn't have request to support this. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p><br class="atl-forced-newline"> <br class="atl-forced-newline"></p> 
+     <div class="tabletitle"> 
+      <a name="comments"> <h4>Comments:</h2> </a> 
+     </div> 
+     <table border="0" width="100%"> 
+      <tbody>
+       <tr> 
+        <td> <a name="comment-20876411"></a> <font class="smallfont">
+          <div class="table-wrap"> 
+           <table class="confluenceTable">
+            <tbody> 
+             <tr> 
+              <th class="confluenceTh">Comment ID</th> 
+              <th class="confluenceTh">Location</th> 
+              <th class="confluenceTh">Comment</th> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">PMD-001</td> 
+              <td class="confluenceTd">General</td> 
+              <td class="confluenceTd">If any approved issue affects the documentation, including inline help and online help, a documentation subtask of the issue is required to notify the documentation team of the required changes.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">PMD-002</td> 
+              <td class="confluenceTd">Nodes</td> 
+              <td class="confluenceTd">Support for create-node-ssh is incomplete. The Administration Console does not support the --install and --archive options of this subcommand.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">PMD-003</td> 
+              <td class="confluenceTd">Nodes</td> 
+              <td class="confluenceTd">Support for delete-node-ssh is incomplete. The Administration Console does not support the --uninstall option of this subcommand.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">PMD-004</td> 
+              <td class="confluenceTd">Nodes</td> 
+              <td class="confluenceTd">P2 seems high for install-node,install-node-ssh, install-node-dcom, uninstall-node, uninstall-node-ssh, and uninstall-node-dcom. The names of these subcommands are completely misleading, as the subcommands do <b>not</b> act upon nodes in the domain configuration in the DAS. They only copy GlassFish Server software files from one host to specified hosts, or remove GlassFish Server software files from specified hosts. These subcommands do not query or modify the domain configuration on the DAS. Perhaps this functionality could be provided by supporting all the options of create-node-ssh, delete-node-ssh, create-node-dcom, and delete-node-dcom.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">PMD-005</td> 
+              <td class="confluenceTd">Nodes</td> 
+              <td class="confluenceTd"><a href="http://download.oracle.com/docs/cd/E18930_01/html/821-2433/setup-ssh-1.html#scrolltoc">setup-ssh</a> is missing from this table. Like install-node-ssh, setup-ssh is supported in local mode only, only copies files from one host to specified hosts, and does not query or modify the domain configuration on the DAS. Users can run this subcommand before using the Administration Console. For these reasons, parity with this subcommand should have low priority, probably P4, if any.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">PMD-006</td> 
+              <td class="confluenceTd">Misc</td> 
+              <td class="confluenceTd">One could argue that generate-domain-schema is not supported. This subcommand is not documented and, to my knowledge has not been tested.</td> 
+             </tr> 
+            </tbody>
+           </table> 
+          </div> </font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by pauldavies at Nov 08, 2011 11:27 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20876410"></a> <font class="smallfont"><p>Paul, Thanks for the comments and feedback.</p> <p><b>PMD-001</b>: We will ensure that doc bugs will be filed for anything that will affect docs. </p> <p><b>PMD-002, PMD-003 and PMD-004</b>: it is about install and delete node. I didn't specify exactly how install and delete node will be supported, ie, the UI part of that.<br> install-node, install-node-ssh and install-node-dcom will be added as an option when creating the node. There will NOT be separate screen just for that command. This will also take care of PMD-002 and PMD-003 that you mentioned about missing the "--install" and "--archive" option.</p> <p>delete-node will provide the option of doing the un-installation as well.<br> The change in current UI to support all this is actually pretty simple. This is based on discussion with Joe. </p> <p><b>PMD-005</b> setup-ssh will also be an option in the Create Node screen. A checkbox will be provided that if selected, will run setup-ssh first BEFORE creating the SSH node.</p> </font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by 3070 at Nov 08, 2011 16:40 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20876420"></a> <font class="smallfont"><p><b>PMD-001:</b> Thanks. To ensure that the doc subtasks are completed for 3.1.2, please file all the required JIRA issues by Friday November 18, 2011. The documentation team cannot commit to fixing for 3.1.2 any issues that are filed after that date.</p> <p><b>PMD-002, PMD-003 and PMD-004:</b> The converse of install is uninstall, not delete. I assume that the Administration Console UI will use the correct terminology. As I said before, the names of the [un]install-* subcommands are confusing.</p> <p><b>PMD-005:</b> I have added setup-ssh to the table in the Nodes section of this page.</p></font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by pauldavies at Nov 15, 2011 09:43 
+         </div> </td> 
+       </tr> 
+      </tbody>
+     </table> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jan 18, 2012 by 
+<font color="#0050B2">14717</font>. Exported from wikis.oracle.com on May 27, 2015 20:44.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

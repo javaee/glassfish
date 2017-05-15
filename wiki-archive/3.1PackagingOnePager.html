@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : 3.1PackagingOnePager</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="3.1PackagingOnePager-GlassFishServerOpenSourceEdition3.1PackagingOnePager"></a>GlassFish Server Open Source Edition 3.1 - Packaging One Pager</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#3.1PackagingOnePager-GlassFishServerOpenSourceEdition3.1PackagingOnePager">GlassFish Server Open Source Edition 3.1 - Packaging One Pager</a></li> 
+       <li><a href="#3.1PackagingOnePager-1.Introduction">1. Introduction</a></li> 
+       <ul> 
+        <li><a href="#3.1PackagingOnePager-1.1.Project%2FComponentWorkingName%3A">1.1. Project/Component Working Name:</a></li> 
+        <li><a href="#3.1PackagingOnePager-1.2.Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier%3A">1.2. Name(s) and e-mail address of Document Author(s)/Supplier:</a></li> 
+        <li><a href="#3.1PackagingOnePager-1.3.DateofThisDocument%3A">1.3. Date of This Document:</a></li> 
+       </ul> 
+       <li><a href="#3.1PackagingOnePager-2.ProjectSummary">2. Project Summary</a></li> 
+       <ul> 
+        <li><a href="#3.1PackagingOnePager-2.1.ProjectDescription%3A">2.1. Project Description:</a></li> 
+        <li><a href="#3.1PackagingOnePager-2.2.RisksandAssumptions%3A">2.2. Risks and Assumptions:</a></li> 
+       </ul> 
+       <li><a href="#3.1PackagingOnePager-3.ProblemSummary">3. Problem Summary</a></li> 
+       <ul> 
+        <li><a href="#3.1PackagingOnePager-3.1.ProblemArea%3A">3.1. Problem Area:</a></li> 
+        <li><a href="#3.1PackagingOnePager-3.2.Justification%3A">3.2. Justification:</a></li> 
+       </ul> 
+       <li><a href="#3.1PackagingOnePager-4.TechnicalDescription%3A">4. Technical Description:</a></li> 
+       <ul> 
+        <li><a href="#3.1PackagingOnePager-4.1.Details%3A">4.1. Details:</a></li> 
+        <li><a href="#3.1PackagingOnePager-4.2.Bug%2FRFENumber%28s%29%3A">4.2. Bug/RFE Number(s):</a></li> 
+        <li><a href="#3.1PackagingOnePager-4.3.InScope%3A">4.3. In Scope:</a></li> 
+        <li><a href="#3.1PackagingOnePager-4.4.OutofScope%3A">4.4. Out of Scope:</a></li> 
+        <li><a href="#3.1PackagingOnePager-4.5.Interfaces%3A">4.5. Interfaces:</a></li> 
+        <ul> 
+         <li><a href="#3.1PackagingOnePager-4.5.1PublicInterfaces">4.5.1 Public Interfaces</a></li> 
+         <li><a href="#3.1PackagingOnePager-4.5.1.1">4.5.1.1</a></li> 
+         <li><a href="#3.1PackagingOnePager-4.5.2PrivateInterfaces">4.5.2 Private Interfaces</a></li> 
+         <li><a href="#3.1PackagingOnePager-4.5.3Deprecated%2FRemovedInterfaces%3A">4.5.3 Deprecated/Removed Interfaces:</a></li> 
+        </ul> 
+        <li><a href="#3.1PackagingOnePager-4.6.DocImpact%3A">4.6. Doc Impact:</a></li> 
+        <li><a href="#3.1PackagingOnePager-4.7.Admin%2FConfigImpact%3A">4.7. Admin/Config Impact:</a></li> 
+        <li><a href="#3.1PackagingOnePager-4.8.HAImpact%3A">4.8. HA Impact:</a></li> 
+        <li><a href="#3.1PackagingOnePager-4.9.I18N%2FL10NImpact%3A">4.9. I18N/L10N Impact:</a></li> 
+        <li><a href="#3.1PackagingOnePager-4.10.Packaging%2CDelivery%26Upgrade%3A">4.10. Packaging, Delivery &amp; Upgrade:</a></li> 
+        <ul> 
+         <li><a href="#3.1PackagingOnePager-4.10.1.Packaging">4.10.1. Packaging</a></li> 
+         <li><a href="#3.1PackagingOnePager-4.10.2.Delivery">4.10.2. Delivery</a></li> 
+         <li><a href="#3.1PackagingOnePager-4.10.3.UpgradeandMigration%3A">4.10.3. Upgrade and Migration:</a></li> 
+        </ul> 
+        <li><a href="#3.1PackagingOnePager-4.11.SecurityImpact%3A">4.11. Security Impact:</a></li> 
+        <li><a href="#3.1PackagingOnePager-4.12.CompatibilityImpact">4.12. Compatibility Impact</a></li> 
+        <li><a href="#3.1PackagingOnePager-4.13.Dependencies%3A">4.13. Dependencies:</a></li> 
+        <ul> 
+         <li><a href="#3.1PackagingOnePager-4.13.1InternalDependencies">4.13.1 Internal Dependencies</a></li> 
+         <li><a href="#3.1PackagingOnePager-4.13.1.1PackageDependencies">4.13.1.1 Package Dependencies</a></li> 
+         <li><a href="#3.1PackagingOnePager-4.13.2ExternalDependencies">4.13.2 External Dependencies</a></li> 
+        </ul> 
+        <li><a href="#3.1PackagingOnePager-4.14.TestingImpact%3A">4.14. Testing Impact:</a></li> 
+       </ul> 
+       <li><a href="#3.1PackagingOnePager-5.ReferenceDocuments%3A">5. Reference Documents:</a></li> 
+       <li><a href="#3.1PackagingOnePager-6.Schedule%3A">6. Schedule:</a></li> 
+       <ul> 
+        <li><a href="#3.1PackagingOnePager-6.1.ProjectedAvailability%3A">6.1. Projected Availability:</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="3.1PackagingOnePager-1.Introduction"></a>1. Introduction</h1> <h4><a name="3.1PackagingOnePager-1.1.Project%2FComponentWorkingName%3A"></a>1.1. Project/Component Working Name:</h2> <p>GlassFish Open Source Edition 3.1 Packaging</p> <h4><a name="3.1PackagingOnePager-1.2.Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier%3A"></a>1.2. Name(s) and e-mail address of Document Author(s)/Supplier:</h2> <p>Snjezana Sevo-Zenzerovic: snjezana@java.net</p> <h4><a name="3.1PackagingOnePager-1.3.DateofThisDocument%3A"></a>1.3. Date of This Document:</h2> <p>07/26/2010</p> <h4><a name="3.1PackagingOnePager-2.ProjectSummary"></a>2. Project Summary</h1> <h4><a name="3.1PackagingOnePager-2.1.ProjectDescription%3A"></a>2.1. Project Description:</h2> <p>This project defines product packaging used to deliver the content of GlassFish Open Source Edition 3.1 release as standalone product distribution.</p> <h4><a name="3.1PackagingOnePager-2.2.RisksandAssumptions%3A"></a>2.2. Risks and Assumptions:</h2> <p>Project depends on the stability and support for its imported interfaces (mainly IPS). It also depends on the timely delivery of package payload files.</p> <h4><a name="3.1PackagingOnePager-3.ProblemSummary"></a>3. Problem Summary</h1> <h4><a name="3.1PackagingOnePager-3.1.ProblemArea%3A"></a>3.1. Problem Area:</h2> <p>GlassFish 3.1 release has to be delivered as standalone product installation integrated into Update Center 2.x content delivery mechanism based on Image Packaging System (IPS).</p> <h4><a name="3.1PackagingOnePager-3.2.Justification%3A"></a>3.2. Justification:</h2> <p>File layout and packaging are essential product interfaces.</p> <h4><a name="3.1PackagingOnePager-4.TechnicalDescription%3A"></a>4. Technical Description:</h1> <h4><a name="3.1PackagingOnePager-4.1.Details%3A"></a>4.1. Details:</h2> <p>Product packages will be organized based on functional component boundaries and will be mapped to OSGi bundles. Package naming and versioning will follow IPS Packaging Best Practices document (see section 5 for link).</p> <p>All existing GlassFish packages as defined in <a href="http://wiki.glassfish.java.net/attach/V3FunctionalSpecs/V3Packaging.txt">GlassFish v3 Packager one-pager</a> will continue being maintained and shipped with the exception of <tt>glassfish-scripting</tt> package. This project will define additional new packages required to deliver new product functionality being implemented in this release.</p> <h4><a name="3.1PackagingOnePager-4.2.Bug%2FRFENumber%28s%29%3A"></a>4.2. Bug/RFE Number(s):</h2> <p>.<br> Issue Tracker issue <a href="https://github.com/javaee/glassfish/issues/11380">11380</a> - Packages for OSGi/Java EE support.<br> Issue Tracker issue <a href="https://github.com/javaee/glassfish/issues/12463">12463</a> - Removing JRuby from install bundles.<br> Issue Tracker issue <a href="https://github.com/javaee/glassfish/issues/12676">12676</a> - Add additional package info metadata to GlassFish packages.</p> <h4><a name="3.1PackagingOnePager-4.3.InScope%3A"></a>4.3. In Scope:</h2> <p>Packaging for standalone IPS image based distributions of GlassFish Open Source Edition 3.1 release.</p> <h4><a name="3.1PackagingOnePager-4.4.OutofScope%3A"></a>4.4. Out of Scope:</h2> <p>Packaging for any other distributions based on GlassFish Open Source Edition 3.1 release and packaging for additional product functionality delivered in subsequent GlassFish 3.x releases or offered as additional content through update center.</p> <h4><a name="3.1PackagingOnePager-4.5.Interfaces%3A"></a>4.5. Interfaces:</h2> <h4><a name="3.1PackagingOnePager-4.5.1PublicInterfaces"></a>4.5.1 Public Interfaces</h3> <p>Interface: GlassFish Open Source Edition 3.1 IPS Packages<br> Stability: Uncommitted<br> Former Stability: Uncommitted<br> Comments: Described in section 4.5.1.1</p> <h4><a name="3.1PackagingOnePager-4.5.1.1"></a>4.5.1.1</h3> <p>This table defines IPS packages which will be newly introduced in 3.1 release:</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Package Name </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> Depends on </th> 
+         <th class="confluenceTh"> Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> shoal </td> 
+         <td class="confluenceTd"> Shoal GMS framework </td> 
+         <td class="confluenceTd"> glassfish-nucleus </td> 
+         <td class="confluenceTd"> Standalone package for Shoal. Need to be able to remove it and replace with other GMS framework such as Coherence. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> glassfish-cluster </td> 
+         <td class="confluenceTd"> Product-wide clustering support implementation. </td> 
+         <td class="confluenceTd"> glassfish-common, shoal(optional) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> glassfish-ha </td> 
+         <td class="confluenceTd"> HA support </td> 
+         <td class="confluenceTd"> glassfish-common </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> glassfish-jms-ra </td> 
+         <td class="confluenceTd"> Generic RA and JMS JCA </td> 
+         <td class="confluenceTd"> glassfish-jms </td> 
+         <td class="confluenceTd"> Required for WebSphere/WebLogic interop. Available in stable update center repository only; this would replace current glassfish-generic-ra package. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> glassfish-ant-tasks </td> 
+         <td class="confluenceTd"> GlassFish Ant tasks library </td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd"> Available as contrib update center repository content only. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> felix-gui </td> 
+         <td class="confluenceTd"> Felix Admin Console </td> 
+         <td class="confluenceTd"> glassfish-osgi-http </td> 
+         <td class="confluenceTd"> Available as contrib update center repository content only. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>These existing IPS packages will be updated with significant new content or have updated package dependencies:</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Package Name </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> New content/dependency </th> 
+         <th class="confluenceTh"> Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> glassfish-nucleus </td> 
+         <td class="confluenceTd"> Nucleus package </td> 
+         <td class="confluenceTd"> Deployment versioning support </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> glassfish-common </td> 
+         <td class="confluenceTd"> Commons package </td> 
+         <td class="confluenceTd"> Clustering and HA API </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> glassfish-web </td> 
+         <td class="confluenceTd"> Web container package </td> 
+         <td class="confluenceTd"> Additional clustering/HA support </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> glassfish-ejb-lite </td> 
+         <td class="confluenceTd"> EJB lite container package </td> 
+         <td class="confluenceTd"> Additional OSGi support </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> glassfish-ejb </td> 
+         <td class="confluenceTd"> Full EJB container package </td> 
+         <td class="confluenceTd"> Additional clustering/HA support </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> glassfish-jca </td> 
+         <td class="confluenceTd"> JCA package </td> 
+         <td class="confluenceTd"> Additional OSGi support </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> glassfish-jpa </td> 
+         <td class="confluenceTd"> JPA package </td> 
+         <td class="confluenceTd"> Additional OSGi support </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> glassfish-jms </td> 
+         <td class="confluenceTd"> JMS package </td> 
+         <td class="confluenceTd"> Additional clustering/HA support </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> metro </td> 
+         <td class="confluenceTd"> Metro package </td> 
+         <td class="confluenceTd"> Additional clustering/HA support </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> glassfish-gui </td> 
+         <td class="confluenceTd"> Core admin console package </td> 
+         <td class="confluenceTd"> New dependency on glassfish-management </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>This existing package will be obsoleted:</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Package Name </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> glassfish-scripting </td> 
+         <td class="confluenceTd"> JRuby scripting support package </td> 
+         <td class="confluenceTd"> May require publishing of one-off empty placeholder package in order to handle upgrades from 3.0 and 3.0.1 </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.1PackagingOnePager-4.5.2PrivateInterfaces"></a>4.5.2 Private Interfaces</h3> <p>N/A</p> <h4><a name="3.1PackagingOnePager-4.5.3Deprecated%2FRemovedInterfaces%3A"></a>4.5.3 Deprecated/Removed Interfaces:</h3> <p><tt>glassfish-scripting</tt> IPS package.</p> <h4><a name="3.1PackagingOnePager-4.6.DocImpact%3A"></a>4.6. Doc Impact:</h2> <p>This project impacts product documentation in areas which need to reference package names and content, such as administration, installation and upgrade guides.</p> <h4><a name="3.1PackagingOnePager-4.7.Admin%2FConfigImpact%3A"></a>4.7. Admin/Config Impact:</h2> <p>Project defines the packaging of product files, including those used for product configuration. However, domain and server instance configuration files themselves are not under package system control.</p> <h4><a name="3.1PackagingOnePager-4.8.HAImpact%3A"></a>4.8. HA Impact:</h2> <p>Project defines packaging of clustering/HA support files, but at this point does not have other impact on clustering and HA implementation.</p> <h4><a name="3.1PackagingOnePager-4.9.I18N%2FL10NImpact%3A"></a>4.9. I18N/L10N Impact:</h2> <p>Additional localized content will be delivered following Java and OSGi guidelines and locale specific files will be packaged into IPS packages which will be named according to the base package for English version, i.e.&lt;base package name&gt;-l10n. Such packages will have defined dependency on their corresponding base package.</p> <h4><a name="3.1PackagingOnePager-4.10.Packaging%2CDelivery%26Upgrade%3A"></a>4.10. Packaging, Delivery &amp; Upgrade:</h2> <h4><a name="3.1PackagingOnePager-4.10.1.Packaging"></a>4.10.1. Packaging</h3> <p>See section 4.5.1.1.</p> <h4><a name="3.1PackagingOnePager-4.10.2.Delivery"></a>4.10.2. Delivery</h3> <p>Installation impact is minimal since installer uses pre-assembled installation image archive as its payload content. This isolates installer implementation from changes in package list used for particular GlassFish distribution.</p> <h4><a name="3.1PackagingOnePager-4.10.3.UpgradeandMigration%3A"></a>4.10.3. Upgrade and Migration:</h3> <p>Product upgrades from previous Glassfish 3.x releases will be handled by pkg(5) framework. Care will be taken during package content design to ensure preservation of existing product configuration files which can be modified by user, such as asenv.conf and asenv.bat and existing domain configuration directories. Existing metapackages and incorporation packages will be used to automatically install new packages during existing installation update.<br> There is no direct impact of this project on side-by-side upgrades since domain configuration files are not under package control.</p> <h4><a name="3.1PackagingOnePager-4.11.SecurityImpact%3A"></a>4.11. Security Impact:</h2> <p>Project defines file ownership and permissions for all product files which are under IPS packaging control and this mechanism will be used to restrict access to product files.</p> <h4><a name="3.1PackagingOnePager-4.12.CompatibilityImpact"></a>4.12. Compatibility Impact</h2> <p>Package names and content are consistent with those used in previous GlassFish 3.x releases.</p> <h4><a name="3.1PackagingOnePager-4.13.Dependencies%3A"></a>4.13. Dependencies:</h2> <h4><a name="3.1PackagingOnePager-4.13.1InternalDependencies"></a>4.13.1 Internal Dependencies</h3> <p>Project depends on all GlassFish modules which produce content that needs to be included in the GlassFish distribution, including their transitive dependencies.</p> <h4><a name="3.1PackagingOnePager-4.13.1.1PackageDependencies"></a>4.13.1.1 Package Dependencies</h3> <p>Product packages have defined dependencies in order to ensure consistent content of installed product image. In 3.1 release, package dependencies will be more strictly enforced than in previous 3.x releases since package dependency will generally specify both package name and its version up to the level of particular promoted build. This rule may be relaxed for packages which contain independently versioned external content provided that project delivering such packages guarantees their compatibility with multiple GlassFish promoted builds. One example of such package would be <tt>jersey</tt>.</p> <p>Project will also continue delivering metapackages (<tt>glassfish-web-profile</tt> and <tt>glassfish-full-profile</tt>) and incorporation packages (<tt>glassfish-web-incorporation</tt> and <tt>glassfish-full-incorporation</tt>). Metapackages specify set of all packages which are part of particular product distribution (either web profile or full platform) as dependency so the presence of metapackage ensures that no content will be missing from installed image. Incorporation packages also specify dependency on all distribution packages using "incorporates" type dependency which sets both lower and upper bound on package version. However, this type of dependency does not enforce the presence of dependency packages in installed image, so both metapackages and incorporation packages are required to control both aspects of installed image consistency, i.e. the presence of installed packages and their exact versions.</p> <h4><a name="3.1PackagingOnePager-4.13.2ExternalDependencies"></a>4.13.2 External Dependencies</h3> 
+     <ul> 
+      <li><a href="https://updatecenter2.java.net/">Update Center 2.3</a> - available under CDDL license, existing dependency. 
+       <ul> 
+        <li>Includes dependency on maven-makepkgs-plugin version 0.5.* and pkg(5).</li> 
+        <li>Update Center 2.3 project is currently in maintenance mode, which may affect the delivery of enhancements which are of interest to this project, such as interactive package license acceptance prompt in pkg(5).</li> 
+       </ul> </li> 
+     </ul> <h4><a name="3.1PackagingOnePager-4.14.TestingImpact%3A"></a>4.14. Testing Impact:</h2> <p>This feature is implicitly tested through product functional testing since functional areas will be affected by missing or corrupted files or incorrect permissions.</p> <p>Specific tests for packager and distribution assembly modules will also be developed. These tests will check for inconsistencies between staged content and corresponding IPS package content and track changes in the package content such as addition and removal of product files.</p> <h4><a name="3.1PackagingOnePager-5.ReferenceDocuments%3A"></a>5. Reference Documents:</h1> 
+     <ul> 
+      <li><a href="http://wikis.sun.com/display/IpsBestPractices/Multi-platformPackagingforLayeredDistros">IPS Packaging Best Practices</a> - guidelines on IPS package naming, versioning, etc.</li> 
+     </ul> <h4><a name="3.1PackagingOnePager-6.Schedule%3A"></a>6. Schedule:</h1> <h4><a name="3.1PackagingOnePager-6.1.ProjectedAvailability%3A"></a>6.1. Projected Availability:</h2> 
+     <ul> 
+      <li>Feature complete in milestone 5 (09/12/2010)</li> 
+      <li>At production quality level in milestone 6 (11/21/2010)</li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Aug 28, 2012 by 
+<font color="#0050B2">10193</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

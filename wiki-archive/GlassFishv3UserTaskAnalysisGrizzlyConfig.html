@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFishv3UserTaskAnalysisGrizzlyConfig</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>&lt;h1&gt;GlassFish v3 User Task Analysis for Grizzly Configuration&lt;/h1&gt;</p> <p>Back to <a href="GlassFishV3UserTaskAnalyses.html" title="GlassFishV3UserTaskAnalyses">GlassFish v3 User Task Analyses</a></p> 
+     <div> 
+      <ul> 
+       <li><a href="#GlassFishv3UserTaskAnalysisGrizzlyConfig-Attendees">Attendees</a></li> 
+       <li><a href="#GlassFishv3UserTaskAnalysisGrizzlyConfig-Scope">Scope</a></li> 
+       <li><a href="#GlassFishv3UserTaskAnalysisGrizzlyConfig-RelatedInformation">Related Information</a></li> 
+       <li><a href="#GlassFishv3UserTaskAnalysisGrizzlyConfig-ExistingTaskstoBeRetained">Existing Tasks to Be Retained</a></li> 
+       <li><a href="#GlassFishv3UserTaskAnalysisGrizzlyConfig-NewTaskstoBeAdded">New Tasks to Be Added</a></li> 
+       <li><a href="#GlassFishv3UserTaskAnalysisGrizzlyConfig-DeferredTasks">Deferred Tasks</a></li> 
+       <li><a href="#GlassFishv3UserTaskAnalysisGrizzlyConfig-AssociatedConcepts">Associated Concepts</a></li> 
+      </ul>
+     </div> <h4><a name="GlassFishv3UserTaskAnalysisGrizzlyConfig-Attendees"></a>Attendees</h1> <p>Oleksiy Stashok via email<br> Kim Haase via email<br> Facilitator: June Parks</p> <h4><a name="GlassFishv3UserTaskAnalysisGrizzlyConfig-Scope"></a>Scope</h1> <p>User tasks and goals associated with the Grizzly configuration that should be described in the user documentation, especially the Administration Guide.</p> <h4><a name="GlassFishv3UserTaskAnalysisGrizzlyConfig-RelatedInformation"></a>Related Information</h1> 
+     <ul> 
+      <li><a href="GrizzlyConfigOnePager.html" title="GrizzlyConfigOnePager">One-pager</a></li> 
+      <li><a href="http://docs.sun.com/app/docs/doc/820-7692/ablsw?a=view">Administration Guide Chapter (v3 Preview)</a></li> 
+     </ul> <h4><a name="GlassFishv3UserTaskAnalysisGrizzlyConfig-ExistingTaskstoBeRetained"></a>Existing Tasks to Be Retained</h1> 
+     <ul> 
+      <li>To Create an HTTP Listener (NOTE: Need to add that a network listener is created behind the scenes)</li> 
+      <li>To List HTTP Listeners</li> 
+      <li>To Delete an HTTP Listener</li> 
+      <li>To Configure an HTTP Listener for SSL</li> 
+      <li>To Delete SSL From an HTTP Listener</li> 
+      <li>To Create a Virtual Server</li> 
+      <li>To List Virtual Servers</li> 
+      <li>To Delete a Virtual Server</li> 
+     </ul> <h4><a name="GlassFishv3UserTaskAnalysisGrizzlyConfig-NewTaskstoBeAdded"></a>New Tasks to Be Added</h1> 
+     <ul> 
+      <li>To Create an HTTP Network Listener, follow these steps: 
+       <ol> 
+        <li>To Create an HTTP or HTTPS Protocol <tt>create-protocol --securityenabled=false|true</tt> (to use the built-in <tt>http-listener-1</tt> HTTP protocol or <tt>http-listener-2</tt> HTTPS protocol, skip this step)</li> 
+        <li>To Create an HTTP Configuration <tt>create-http</tt> (if using a built-in protocol, skip this step)</li> 
+        <li>To Create a Transport <tt>create-transport</tt> (to use the built-in <tt>tcp</tt> transport, skip this step)</li> 
+        <li>To Create a Thread Pool <tt>create-threadpool</tt> (to not use a thread pool or to use the built-in <tt>http-thread-pool</tt> thread pool, skip this step)</li> 
+        <li>To Create a Network Listener <tt>create-network-listener</tt> (specify a protocol and transport, optionally a thread pool)</li> 
+       </ol> </li> 
+      <li>To Delete an HTTP Configuration <tt>delete-http</tt></li> 
+      <li>To Delete a Protocol <tt>delete-protocol</tt></li> 
+      <li>To Delete a Transport <tt>delete-transport</tt></li> 
+      <li>To Delete a Thread Pool <tt>delete-threadpool</tt></li> 
+      <li>To Delete a Network Listener <tt>delete-network-listener</tt></li> 
+      <li>To List Protocols <tt>list-protocols</tt></li> 
+      <li>To List Transports <tt>list-transports</tt></li> 
+      <li>To List Thread Pools <tt>list-threadpools</tt></li> 
+      <li>To List Network Listeners <tt>list-network-listeners</tt></li> 
+     </ul> <h4><a name="GlassFishv3UserTaskAnalysisGrizzlyConfig-DeferredTasks"></a>Deferred Tasks</h1> 
+     <ul> 
+      <li>To Create a Network Listener with Protocol Filters, follow these steps: 
+       <ol> 
+        <li>To Create a Protocol Filter</li> 
+        <li>To Create a Protocol Using Protocol Filters</li> 
+        <li>To Create a Transport</li> 
+        <li>To Create a Thread Pool (optional)</li> 
+        <li>To Create a Network Listener</li> 
+       </ol> </li> 
+      <li>To Create a Network Listener with Port Unification, follow these steps: 
+       <ol> 
+        <li>To Create Sub-Protocols for Port Unification</li> 
+        <li>To Create a Port Unification Configuration</li> 
+        <li>To Create a Port Unification Protocol</li> 
+        <li>To Create a Transport</li> 
+        <li>To Create a Thread Pool (optional)</li> 
+        <li>To Create a Network Listener</li> 
+       </ol> </li> 
+      <li>To Delete a Port Unification Configuration</li> 
+      <li>To List Port Unification Configurations</li> 
+      <li>To Delete a Protocol Filter</li> 
+      <li>To List Protocol Filters</li> 
+      <li>To Create a File Cache</li> 
+      <li>To Delete a File Cache</li> 
+      <li>To List File Caches</li> 
+     </ul> <h4><a name="GlassFishv3UserTaskAnalysisGrizzlyConfig-AssociatedConcepts"></a>Associated Concepts</h1> 
+     <ul> 
+      <li>Existing HTTP Listener tasks, retained for backward compatibility, operate on network listeners behind the scenes</li> 
+      <li>Name of built-in HTTP protocol is <tt>http-listener-1</tt> (same name as built-in HTTP network listener)</li> 
+      <li>Name of built-in HTTPS protocol is <tt>http-listener-2</tt> (same name as built-in HTTP network listener)</li> 
+      <li>Name of built-in transport is <tt>tcp</tt></li> 
+      <li>Name of built-in thread pool for HTTP network listeners is <tt>http-thread-pool</tt></li> 
+     </ul> <p>Back to <a href="GlassFishV3UserTaskAnalyses.html" title="GlassFishV3UserTaskAnalyses">GlassFish v3 User Task Analyses</a></p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 02, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:44.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

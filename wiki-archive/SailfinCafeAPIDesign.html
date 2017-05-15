@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : SailfinCafeAPIDesign</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="SailfinCafeAPIDesign-Communicationsarefullymeshed"></a>Communications are fully meshed</h2> <p>In a communication all objects (participants or joinables) communicate in a fully meshed configuration, as far as their capabilities allow.</p> <p>E.g., a conference with 3 participants; Alice has audio only, Bob has audio and video, Carol has video only. Then Alice and Bob will communicate with audio, Bob and Carol will communicate using video. Alice and Carol will not communicate directly.<br> Cafe introduces the necessary JSR 309 objects in order to make this possible.</p> <p>E.g., in the above case three network connections are needed and a mixer.<br> Economy dictates that the most efficient media solution will be established.<br> This is not always easy or possible. For example, in the above mentioned conference no mixer would be needed since it could also be accomplished using two bridges..<br> The proposal is that for clarity all communications are fully-meshed and that Cafe will take care of this.</p> <h4><a name="SailfinCafeAPIDesign-CommunicationscancontainbothParticipantsandjoinables"></a>Communications can contain both Participants and joinables</h2> <p>A communication can contain a mix of participants, representing external parties assumed to the humans, and JSR 309 joinables (e.g., recorders or announcement machines).</p> <p>The rules for fully meshed communication also apply in such a case.</p> <p>Some communications must at least contain a human participant (might not be strictly needed in case of a conference?)</p> <p>The proposal is to model media-groups as objects in a communication, so that by default everything is fully meshed. Applications that want more have to manipulate the 309 objects explicitly.</p> <h4><a name="SailfinCafeAPIDesign-Typeofcommunicationdeterminesvisibleobjects"></a>Type of communication determines visible objects</h2> <p>The type of interface determines which JSR 309 objects are visible to the application.</p> 
+     <ul> 
+      <li><em>Transparent call</em><br> no JSR 309 objects are visible</li> 
+      <li><em>Non-transparent call</em><br> Network connections are visible, and can be used as joinables in JSR 309</li> 
+      <li><em>Conference</em><br> Network connections and one mixer are visible.</li> 
+     </ul> <p>Using these JSR 309 object the application can create arbitrary complex connection graphs between the objects. E.g., an conference application might introduce subconferences etc. </p> <p>TODO - what if the app introduces a mixer in a non-transparent call, how does the cafe affect the lifecycle then? And the other way around, what if the app gets the mixer in a conference and releases it...</p> <h4><a name="SailfinCafeAPIDesign-Allowmigrationsbetweencommunicationtypes"></a>Allow migrations between communication types</h2> <p>To allow the application access to the visible devices it might be needed to 'upgrade' a communication. This means that the communication is migrated, e.g., from a transparent call to a non-transparent call, or to a conference.</p> <p>Downgrading might also be considered. E.g,, transform a 2 party conference into a transparent call.</p> <p>Note that a application always has the possibility to migrate, by creating a new communication and moving participants to that communication, but this might lead to breaks in the media communication between the parties, which may be avoided (as far as possible) if migration is performed by Cafe.</p> <h4><a name="SailfinCafeAPIDesign-Policies"></a>Policies</h2> <p>Note that the previous descriptions did not mention any more explicit difference between transparent call, non-transparent call and conference than only the visibility of some JSR 309 objects. Nothing (yet) implies that calls can only have a limited number of participants.</p> <p>So what is a two-party call?<br> It is a communication which has a limitation on the number of participants.<br> Such a policy might be established because of economics, e.g., to avoid adding a mixer in a call if we limit the number of objects in a call to maximum two. I might be to protect the application from making mistakes (e.g., accidently creating a conference because it forgets to remove a participant). Finally it might be because of familiarity, a two party call is by far the most common occurrence and that is something you might want to model separately.</p> <h4><a name="SailfinCafeAPIDesign-Routingofincomingcalls"></a>Routing of incoming calls</h2> <p>For outgoing calls, it is the application that directly determines the type of the call (transparent, non-transparent, conference).<br> However, for incoming calls we also have to have a possibility to determine the type of the call. There are two obvious possibilities.</p> 
+     <ol> 
+      <li>incoming calls always start out as transparent calls. It is then up to the application to upgrade these calls to the appropriate type.</li> 
+      <li>We provide some kind of 'trigger criteria'.</li> 
+     </ol> <p>For the moment, I think that the first option suffices.</p> <h4><a name="SailfinCafeAPIDesign-Optimalmediaroutingvsminimalsignaling"></a>Optimal media routing vs minimal signaling</h2> <p>There is a conflict between trying to keep the media optimal for every configuration and trying to keep the signaling to a minimum.</p> <p>For example, when a user removes a participant in a transparent two party call, and then adds an announcement, there is (for a very short time) a one party call without any media flowing. During this time a most optimal solution would be to remove all the media towards the remaining participant. But when adding the media group later, the media has to be established again.<br> With respect to media handling the solution is most optimal for each configuration. But with respect to signaling, it would have been more optimal to connect the remaining participant to the media server, if an announcement is to be played immediately after (but not if another participant is added to the communication, instead of an announcement).</p> <p>Such conflicts can be resolved by changing the API to allow a combination of actions (e.g., replace participant by a mediagroup, instead of removing an participant and adding a mediagroup). Another, more technically involved, solution would be to delay acting on some methods while waiting for the following actions. But this will get very tricky and would not be recommended.<br> The proposal here is to start with atomic actions, and just take the additional signalling costs. Then later try to optimise, e.g., by introducing such a replace method.</p> <h4><a name="SailfinCafeAPIDesign-Implicitvsexplicitparticipantcreation"></a>Implicit vs explicit participant creation</h2> <p>For incoming calls the participant indicates the party (s)he wants to communicate with. This can either be the application itself (e.g., some SPI) or it can be another user. The application must have the possibility to influence the routing.<br> There are two possibilities:</p> 
+     <ol> 
+      <li>Cafe implicitly creates a second participant based on the to-header in the incoming request. Rerouting would then mean replacing this implicitly created participant with an new explicitly created participant.</li> 
+      <li>The application always explicitly has to create the second participant, but it can easily access the to-header from the incoming request.</li> 
+     </ol> <p>The proposal is to only have the second alternative which is more consistent with outgoing call creation scenarios.</p> <h4><a name="SailfinCafeAPIDesign-Incomingcallrejection"></a>Incoming call rejection</h2> <p>Since each incoming call is represented as a new one-party call towards the application, the application can easily reject a participant by rejecting the call.<br> MORE....</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:49.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

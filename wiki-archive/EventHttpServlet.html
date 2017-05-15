@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : EventHttpServlet</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>Summary: This draft presents a new type of event driven Servlets, with an associated filter pipeline, complementing the regular HttpServlet servlets. The idea is to use IO triggered events to allow a Servlet to perform reads and writes that will not block, in addition to other capabilities (including suspend/resume). Not overloading the service() method of regular servlets allows avoid causing compatibility problems with classic filters, as well as simpler code in the servlets (the event handling being done by a simple switch/case). Additional requests events (similar to ServletRequestListener), as well as new elements for declaring and mapping this new Servlet and Filter type could be defined, but are not mandatory (Servlet and Filter type identification is possible at runtime).</p> <p>The Servlet class implements the following:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">/**
+ * This interface should be implemented by Servlets which would like to handle
+ * asynchronous IO, receiving events when data is available for reading, and
+ * being able to output data without the need for being invoked by the container.
+ * Note: When this interface is implemented, the service method of the Servlet will
+ * never be called, and will be replaced with a begin event.
+ */
+public interface HttpEventServlet extends Servlet 
+{
+
+    /**
+     * Process the given IO event.
+     * 
+     * @param event The event that will be processed
+     * @throws IOException
+     * @throws ServletException
+     */
+    public void event(HttpEvent event)
+        throws IOException, ServletException;
+
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>The event class is:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">/**
+ * The HttpEvent interface, which indicates the type of the event that is
+ * being processed, as well as provides useful callbacks and utility objects.
+ */
+public interface HttpEvent {
+
+    /**
+     * Enumeration describing the major events that the container can invoke 
+     * the EventHttpServlet event() method with:
+     * &lt;ul&gt;
+     * &lt;li&gt;BEGIN - will be called at the beginning 
+     *  of the processing of the connection. It can be used to initialize any relevant 
+     *  fields using the request and response objects. Between the end of the processing 
+     *  of this event, and the beginning of the processing of the end or error events,
+     *  it is possible to use the response object to write data on the open connection.
+     *  Note that the response object and dependent OutputStream and Writer are  
+     *  not synchronized, so when they are accessed by multiple threads adequate
+     *  synchronization is needed. After processing the initial event, the request 
+     *  is considered to be committed.&lt;/li&gt;
+     * &lt;li&gt;EOF - The end of file of the input has been reached, and no further data is
+     *  available. This event is sent because it can be difficult to detect otherwise.
+     *  Following the processing of this event and the processing of any subsequent
+     *  event, the event will be suspended.&lt;/li&gt;
+     * &lt;li&gt;END - End may be called to end the processing of the request. Fields that have
+     *  been initialized in the begin method should be reset. After this event has
+     *  been processed, the request and response objects, as well as all their dependent
+     *  objects will be recycled and used to process other requests. In particular,
+     *  this event will be called if the HTTP session associated with the connection
+     *  times out, if the web application is reloaded, if the server is shutdown, or
+     *  if the connection was closed asynchronously.&lt;/li&gt;
+     * &lt;li&gt;ERROR - Error will be called by the container in the case where an IO exception
+     *  or a similar unrecoverable error occurs on the connection. Fields that have
+     *  been initialized in the begin method should be reset. After this event has
+     *  been processed, the request and response objects, as well as all their dependent
+     *  objects will be recycled and used to process other requests.&lt;/li&gt;
+     * &lt;li&gt;EVENT - Event will be called by the container after the resume() method is called,
+     *  during which any operations can be performed, including closing the connection
+     *  using the close() method.&lt;/li&gt;
+     * &lt;li&gt;READ - This indicates that input data is available, and that at least one 
+     *  read can be made without blocking. The available and ready methods of the InputStream or
+     *  Reader may be used to determine if there is a risk of blocking: the Servlet
+     *  must continue reading while data is reported available. When encountering a read error, 
+     *  the Servlet should report it by propagating the exception properly. Throwing 
+     *  an exception will cause the error event to be invoked, and the connection 
+     *  will be closed. 
+     *  Alternately, it is also possible to catch any exception, perform clean up
+     *  on any data structure the Servlet may be using, and using the close method
+     *  of the event. It is not allowed to attempt reading data from the request 
+     *  object outside of the processing of this event, unless the suspend() method
+     *  has been used.&lt;/li&gt;
+     * &lt;li&gt;TIMEOUT - the connection timed out, but the connection will not be closed unless 
+     *  the servlet uses the close method of the event&lt;/li&gt;
+     * &lt;li&gt;WRITE - Write is sent if the Servlet is using the ready method. This means that 
+     *  the connection is ready to receive data to be written out. This event will never
+     *  be received if the Servlet is not using the ready() method, or if the ready() 
+     *  method always returns true.&lt;/li&gt;
+     * &lt;/ul&gt;
+     */
+    public enum EventType { BEGIN, END, ERROR, EVENT, READ, EOF, TIMEOUT, WRITE }
+    
+    
+    /**
+     * Returns the HttpServletRequest.
+     * 
+     * @return HttpServletRequest
+     */
+    public HttpServletRequest getHttpServletRequest();
+    
+    /**
+     * Returns the HttpServletResponse.
+     * 
+     * @return HttpServletResponse
+     */
+    public HttpServletResponse getHttpServletResponse();
+    
+    /**
+     * Returns the event type.
+     * 
+     * @return EventType
+     * @see #EventType
+     */
+    public EventType getType();
+    
+    /**
+     * Ends the request, which marks the end of the event stream. This will send 
+     * back to the client a notice that the server has no more data to send 
+     * as part of this request. An END event will be sent to the Servlet.
+     * 
+     * @throws IOException if an IO exception occurs
+     */
+    public void close() throws IOException;
+
+    /**
+     * This method sets the timeout in milliseconds of idle time on the connection.
+     * The timeout is reset every time data is received from the connection. If a timeout occurs, the 
+     * Servlet will receive an TIMEOUT event which will not result in automatically closing
+     * the event (the event may be closed using the close() method).
+     * 
+     * @param timeout The timeout in milliseconds for this connection, must be a positive value, larger than 0
+     */
+    public void setTimeout(int timeout);
+
+    /**
+     * Returns true when data may be read from the connection (the flag becomes false if no data
+     * is available to read). When the flag becomes false, the Servlet can attempt to read additional
+     * data, but it will block until data is available. This method is equivalent to 
+     * (Reader.ready() &gt; 0) and InputStream.available().
+     * 
+     * @return boolean true if data can be read without blocking
+     */
+    public boolean isReadReady();
+
+    /**
+     * Returns true when data may be written to the connection (the flag becomes false 
+     * when the client is unable to accept data fast enough). When the flag becomes false, 
+     * the Servlet must stop writing data. If there's an attempt to flush additional data 
+     * to the client and data still cannot be written immediately, an IOException will be 
+     * thrown. If calling this method returns false, it will also 
+     * request notification when the connection becomes available for writing again, and the  
+     * Servlet will receive a write event.
+     * &lt;br&gt;
+     * Note: If the Servlet is not using isWriteReady, and is writing its output inside the
+     * container threads (inside the event() method processing, for example), using this method
+     * is not mandatory, and writes will block until all bytes are written.
+     * 
+     * @return boolean true if data can be written without blocking
+     */
+    public boolean isWriteReady();
+
+    /**
+     * Suspend processing of the connection until the configured timeout occurs, 
+     * or resume() is called. In practice, this means the servlet will no longer 
+     * receive read events. Reading should always be performed synchronously in 
+     * the Tomcat threads unless the connection has been suspended.
+     */
+    public void suspend();
+
+    /**
+     * Resume will cause the Servlet container to send a generic event 
+     * to the Servlet, where the request can be processed synchronously 
+     * (for example, it is possible to use this to complete the request after 
+     * some asynchronous processing is done). This also resumes read events 
+     * if they have been disabled using suspend. It is then possible to call suspend 
+     * again later. It is also possible to call resume without calling suspend before.
+     * This method must be called asynchronously.
+     */
+    public void resume();
+
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>Filter and filter chain class:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">/**
+ * An event filter, similar to regular filters, performs filtering tasks on either 
+ * the request to a resource (an event driven Servlet), or on the response from a resource, or both.
+ */
+public interface HttpEventFilter extends Filter {
+
+    
+    /**
+     * The &lt;code&gt;doFilterEvent&lt;/code&gt; method of the HttpEventFilter is called by the container
+     * each time a request/response pair is passed through the chain due
+     * to a client event for a resource at the end of the chain. The HttpEventFilterChain passed in to this
+     * method allows the Filter to pass on the event to the next entity in the
+     * chain.&lt;p&gt;
+     * A typical implementation of this method would follow the following pattern:- &lt;br&gt;
+     * 1. Examine the request&lt;br&gt;
+     * 2. Optionally wrap the request object contained in the event with a custom implementation to
+     * filter content or headers for input filtering and pass a HttpEvent instance containing
+     * the wrapped request to the next filter&lt;br&gt;
+     * 3. Optionally wrap the response object contained in the event with a custom implementation to
+     * filter content or headers for output filtering and pass a HttpEvent instance containing
+     * the wrapped request to the next filter&lt;br&gt;
+     * 4. a) &lt;strong&gt;Either&lt;/strong&gt; invoke the next entity in the chain using the HttpEventFilterChain 
+     *       object (&lt;code&gt;chain.doFilterEvent()&lt;/code&gt;), &lt;br&gt;   
+     * 4. b) &lt;strong&gt;or&lt;/strong&gt; not pass on the request/response pair to the next entity in the 
+     *       filter chain to block the event processing&lt;br&gt;
+     * 5. Directly set fields on the response after invocation of the next entity in the filter chain.
+     * 
+     * @param event the event that is being processed. Another event may be passed along the chain.
+     * @param chain 
+     * @throws IOException
+     * @throws ServletException
+     */
+    public void doFilterEvent(HttpEvent event, HttpEventFilterChain chain)
+        throws IOException, ServletException;
+    
+
+}</pre> 
+       </div> 
+      </div>
+     </div> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">/**
+ * A HttpEventFilterChain is an object provided by the Servlet container to the developer
+ * giving a view into the invocation chain of a filtered event for a resource. Filters
+ * use the HttpEventFilterChain to invoke the next filter in the chain, or if the calling filter
+ * is the last filter in the chain, to invoke the resource at the end of the chain.
+ */
+public interface HttpEventFilterChain {
+
+    
+    /**
+     * Causes the next filter in the chain to be invoked, or if the calling filter is the last filter
+     * in the chain, causes the resource at the end of the chain to be invoked.
+     *
+     * @param event the event to pass along the chain.
+     */
+    public void doFilterEvent(HttpEvent event) throws IOException, ServletException;
+    
+
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>Of all things, the class and interface names are placeholders, as it did not seem appropriate to use the "Servlet" name unless it is part of one of the Servlet specifications.</p> <p>Servlets and filters are at the moment mapped along with regular filters and Servlets (separation between the two pipelines is done using the types; the event type gets precedence for Servlets - if a servlet implements both the regular and the event interface, then it will be used in event mode). New web.xml elements could be defined: &lt;event-servlet&gt;, &lt;event-servlet-mapping&gt;, &lt;event-filter&gt;, &lt;event-filter-mapping&gt;.</p> <p>If deemed useful, support for this Servlet type could be optional. Similarly, additional request events could be defined. Relationship with the request dispatcher is not clearly defined at his time (it is assumed that usage to dispatch to a regular Servlet is forbidden, but it should be possible to dispatch the event processing to another EventHttpServlet, identical to what is done for regular HttpServlet). Implementation could be difficult (it should require a mix of blocking and non blocking IO capabilities), but is currently feature complete in the JBoss Web 2.1+ project (<a href="http://www.jboss.org/jbossweb/">http://www.jboss.org/jbossweb/</a>). This work is based on extending and simplifying the interface that has been designed in Apache Tomcat 6.0.x.</p> <p>Although this allows writing IO code that will not block (both reading and writing), this still exposes and supports the usual blocking IO constructs (all bytes written in a write(byte[]) call will be written or an exception will be sent; a read() is guaranteed to return at least one byte, or EOF will be returned or an exception will be thrown).</p> <p>Small code examples (demonstrating how to implement common patterns):</p> 
+     <ul class="alternate" type="square"> 
+      <li>synchronous blocking read</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">public class EventServletTest1 extends HttpServlet implements HttpEventServlet {
+
+    public void event(HttpEvent event) throws IOException, ServletException {
+        System.out.println("[" + event.getHttpServletRequest().getSession(true).getId() + "] " + event.getType());
+        switch (event.getType()) {
+        case READ:
+            ServletInputStream is = event.getHttpServletRequest().getInputStream();
+            // Using while (true): Not checking if input is available will trigger a blocking
+            // read. No other event should be triggered (the current READ event will be in progress
+            // until the read timeouts, which will trigger an ERROR event due to an IOException).
+            while (true) {
+                int c = is.read();
+                if (c &gt; 0) {
+                    System.out.print((char) c);
+                } else {
+                    System.out.print(c);
+                    break;
+                }
+            }
+            System.out.println();
+            break;
+        }
+    }
+
+}</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul class="alternate" type="square"> 
+      <li>synchronous "non blocking" read</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">public class EventServletTest2 extends HttpServlet implements HttpEventServlet {
+
+    public void event(HttpEvent event) throws IOException, ServletException {
+        System.out.println("[" + event.getHttpServletRequest().getSession(true).getId() + "] " + event.getType());
+        switch (event.getType()) {
+        case READ:
+            ServletInputStream is = event.getHttpServletRequest().getInputStream();
+            while (is.available() &gt; 0) {
+                int c = is.read();
+                if (c &gt; 0) {
+                    System.out.print((char) c);
+                } else {
+                    System.out.print(c);
+                    break;
+                }
+            }
+            System.out.println();
+            break;
+        }
+    }
+
+}</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul class="alternate" type="square"> 
+      <li>synchronous blocking write</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">public class EventServletTest3 extends HttpServlet implements HttpEventServlet {
+
+    int count = 0;
+    
+    public void event(HttpEvent event) throws IOException, ServletException {
+        System.out.println("[" + event.getHttpServletRequest().getSession(true).getId() + "] " + event.getType());
+        switch (event.getType()) {
+        case BEGIN:
+            break;
+        case END:
+            break;
+        case ERROR:
+            event.close();
+            break;
+        case EVENT:
+            ServletOutputStream os = event.getHttpServletResponse().getOutputStream();
+            // Obviously, prseudo code ...
+            while (true) {
+                if (count % 100 == 0) {
+                    os.println((count++) + " ");
+                } else {
+                    os.print((count++) + " ");
+                }
+            }
+            break;
+        case READ:
+            ServletInputStream is = event.getHttpServletRequest().getInputStream();
+            // Using while (true): Not checking if input is available will trigger a blocking
+            // read. No other event should be triggered (the current READ event will be in progress
+            // until the read timeouts, which will trigger an ERROR event due to an IOException).
+            // while (true) {
+            while (is.available() &gt; 0) {
+                int c = is.read();
+                if (c &gt; 0) {
+                    System.out.print((char) c);
+                } else {
+                    System.out.print(c);
+                    break;
+                }
+            }
+            System.out.println();
+            break;
+        case TIMEOUT:
+            // This will cause a generic event to be sent to the Servlet every time the connection is idle for
+            // a while.
+            event.resume();
+            break;
+        case WRITE:
+            event.resume();
+            break;
+        }
+    }
+}</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul class="alternate" type="square"> 
+      <li>synchronous "non blocking" write</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">public class EventServletTest4 extends HttpServlet implements HttpEventServlet {
+
+    int count = 0;
+    
+    public void event(HttpEvent event) throws IOException, ServletException {
+        System.out.println("[" + event.getHttpServletRequest().getSession(true).getId() + "] " + event.getType());
+        switch (event.getType()) {
+        case BEGIN:
+            break;
+        case END:
+            break;
+        case ERROR:
+            event.close();
+            break;
+        case EVENT:
+            ServletOutputStream os = event.getHttpServletResponse().getOutputStream();
+            while (event.ready()) {
+                if (count % 100 == 0) {
+                    os.println((count++) + " ");
+                } else {
+                    os.print((count++) + " ");
+                }
+            }
+            break;
+        case READ:
+            ServletInputStream is = event.getHttpServletRequest().getInputStream();
+            // Using while (true): Not checking if input is available will trigger a blocking
+            // read. No other event should be triggered (the current READ event will be in progress
+            // until the read timeouts, which will trigger an ERROR event due to an IOException).
+            // while (true) {
+            while (is.available() &gt; 0) {
+                int c = is.read();
+                if (c &gt; 0) {
+                    System.out.print((char) c);
+                } else {
+                    System.out.print(c);
+                    break;
+                }
+            }
+            System.out.println();
+            break;
+        case TIMEOUT:
+            // This will cause a generic event to be sent to the Servlet every time the connection is idle for
+            // a while.
+            event.resume();
+            break;
+        case WRITE:
+            event.resume();
+            break;
+        }
+    }
+}</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul class="alternate" type="square"> 
+      <li>asynchronous "non blocking" write<br> Writes are performed in an application thread, using event.ready() to check if a backlog occurs. Writing on the connection can be resumed after receiving a WRITE event from the container.</li> 
+     </ul> 
+     <ul class="alternate" type="square"> 
+      <li>suspend and resume</li> 
+     </ul> 
+     <ul class="alternate" type="square"> 
+      <li>timeout handling</li> 
+     </ul> 
+     <ul class="alternate" type="square"> 
+      <li>asynchronous blocking reads are not directly possible; asynchronous code should call resume() and do blocking reads in the generic event that is sent</li> 
+     </ul> 
+     <ul class="alternate" type="square"> 
+      <li>asynchronous "non blocking" reads could be performed in theory while suspended, but without any events to indicate that data is available, it is not possible to use it in practice</li> 
+     </ul> 
+     <ul class="alternate" type="square"> 
+      <li>blocking asynchronous writes are not possible directly (asynchronous code - running in a thread owned by the web application rather than a container thread - must always use the control flags and should handle READ and WRITE events); the application should resume() and perform the blocking write in the generic event that will be sent 
+       <hr> </li>
+     </ul> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:49.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,2361 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : FrameworkPluggability</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="FrameworkPluggability-Proposalforannotationsandmodularityofweb.xmlintheservletspecification."></a>Proposal for annotations and modularity of web.xml in the servlet specification.</h2> <p>The following annotations are being added to the Servlet 3.0 specification - @WebServlet, @ServletFilter, @InitParam and @WebServletContextListener</p> <p>New annotations defined in the servlet 3.0 specification are shown below.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">package javax.servlet.annotation;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+@Target({ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+public @interface WebServlet {
+
+    String servletName() default "";
+    // url patterns. This will enable shorthand for @WebServlet("/foo")
+    String [] value() default {};
+
+    // For use when you have more than one param. Recommended when you have more than one attribute. 
+    // Can only use one of the two - value or urlPatterns
+    // Note that urlPatterns / values have default values. However at least one urlPattern MUST be specified (either by using the value or the urlPatterns field).
+    String [] urlPatterns() default {};
+
+    int loadOnStartup() default -1;
+
+    InitParam [] initParams() default {};
+
+    String icon() default "";
+
+    String description() default "";
+    
+    boolean supportsAsync default false;
+    
+    long timeout default 0;
+
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>The default name of the Servlet if not specified is the fully qualified<br> class name. The deployment descriptor elements may be used to override<br> the name of the Servlet.</p> <p>The annotated servlet MUST specify at least one url pattern to be deployed.</p> <p>The WebServlet annotation can also be used on a web service being defined. So the @WebServlet annotation could also go on a JAX-RS / JAX-WS endpoint when deployed in the web container.</p> <p>Classes annotated with @WebServlet class MUST extend javax.servlet.http.HttpServlet class except when applied on a JAX-RS / JAX-WS endpoint.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">package javax.servlet.annotation;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+@Target({ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+public @interface ServletFilter {
+
+    String description() default "";
+
+    String displayName() default "";
+
+    InitParam [] initParams() default {};
+
+    String filterName() default "";
+
+    String icon() default "";
+
+    String [] servletNames() default {};
+    // url patterns. This will enable shorthand for @ServletFilter("/foo")
+    String [] value();
+
+    // For use when you have more than one param. Recommended when you have more than one attribute. 
+    // Can only use one of the two - value or urlPatterns
+    String [] urlPatterns();
+
+    DispatcherType [] dispatcherTypes() default {DispatcherType.REQUEST};
+
+    boolean supportsAsync default false;
+
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>Classes annotated with @ServletFilter MUST implement javax.servlet.Filter</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">package javax.servlet.annotation;
+
+public @interface InitParam {
+
+    String name();
+
+    String value();
+
+    String description() default "";
+}</pre> 
+       </div> 
+      </div>
+     </div> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">package javax.servlet.annotation;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+@Target({ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+public @interface WebServletContextListener {
+    String description() default "";
+
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>Classes annotated with @WebServletContextListener must implement javax.servlet.ServletContextListener</p> <p>The following are 2 samples uses of the @WebServlet annotation</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">package samples;
+import javax.servlet.annotation.*;
+import javax.servlet.http.*;
+import javax.servlet.*;
+
+@WebServlet("/foo")
+public class SimpleSample extends HttpServlet{
+    public void service(ServletRequest req, ServletResponse res) {
+        //...
+    }
+}</pre> 
+       </div> 
+      </div>
+     </div> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">package samples;
+import javax.servlet.http.*;
+import javax.servlet.*;
+import javax.servlet.annotation.*;
+
+@WebServlet({"/foo", "/bar"})
+public class SampleUsingAnnotationAttributes extends HttpServlet {
+
+    public void doGet(HttpServletRequest req, HttpServletResponse res) {
+
+    }
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>In addition to these annotations the current servlet spec already<br> allows the use of <br> <tt>RunAs, DeclareRoles, PersistenceContext, EJB,</tt><br> <tt>PersistenceUnit, PersistenceUnits, PostConstruct, PreDestroy,</tt><br> <tt>WebServiceRef, WebServiceRefs, Resource and Resources</tt>. All those will continue to<br> work in the context of these new annotations. <br> Issues - </p> <p>There is an <tt>InitParam</tt> in <tt>javax.jws.soap</tt> from JSR 181 that has been deprecated <br> and is slightly different than the one defined here. Should we look at<br> aligning the two in anyway?</p> <p>By default all applications will have index.htm(l) and index.jsp in the list of welcome-file-list. The descriptor may to be used to override these default settings. The relevant section (10.10) will be updated to reflect this change.</p> <p>The order in which the listeners, Servlets etc are loaded from the various framework jars / classes in the WEB-INF/classes or WEB-INF/lib is unspecified when using annotations. If ordering is important then look at the section for modularity of web.xml below. The order can be specified in the deployment descriptor only.</p> <h4><a name="FrameworkPluggability-Elementsaddedtoweb.xml"></a>Elements added to web.xml</h2> <p>The servlet element now has a child element that allows to enable / disable a servlet. The enable / disable controls whether a servlet is available at the url-pattern specified via an annotation or a web-fragment.</p> <h4><a name="FrameworkPluggability-Modularityofweb.xml"></a>Modularity of web.xml</h2> <p>Using the annotations defined above the need of web.xml is optional.<br> However for incremental upgrade / overriding either the default values<br> or the values set via annotations the deployment descriptor is used.<br> As before, if the metadata-complete element is set to true in the web.xml descriptor,<br> annotations in the class files need not be processed. It implies that all the metadata<br> for the application is specified via descriptor(s). For better pluggability and less <br> configuration for developers in this version of the specification we are introducing the notion<br> of web-fragments. A web-fragment is a part or all of the web.xml that can be specified and <br> included in a library / framework jar's META-INF directory. The container will pick up and use the configuration as per<br> the rules defined below.<br> A web fragment is a logical partitioning of the web app in such a<br> way that the frameworks being used within the web app can define all<br> the artifacts without asking devlopers to go and edit / add information<br> in the web.xml deployment descriptor. It can include the Servlets, filters<br> bundled in the framework.<br> This proposal defines the addition of a new xml descriptor -<br> web-fragment.xml that can be used by frameworks / libraries.<br> A web-fragment can contain the defintion of a servlet, filters,<br> listeners basically the whole web.xml but with a different top level element - web-fragment as opposed to web-app.<br> If the fragment is packaged as a jar file and has metadata information<br> in the form of deployment descriptor then the web-fragment.xml descriptor<br> must be in the META-INF/ directory of the jar file.<br> If a framework wants its META-INF/web-fragment.xml honored in such a way that it augments a web<br> application's web.xml, the framework must be bundled within the web<br> application's WEB-INF/lib directory. In order for any other types of resources (e.g., class files) of the<br> framework to be made available to a web application, it is sufficient<br> for the framework to be present anywhere in the classloader delegation<br> chain of the web application.In other words, only JAR files bundled in a web application's<br> WEB-INF/lib directory, but not those higher up in the classloading<br> delegation chain, need to be scanned for web-fragment.xml<br> During deployment the container is responsible for<br> scanning the location specified above and discovering the web-fragment.xml and processing them. The requirements about name uniqueness that exist currently for a single web.xml also apply to the union of a web.xml and all applicable web-fragment.xml files.</p> <p>The new schemas for web.xml and web-fragment.xml are reproduced at the bottom of the wiki page.</p> <h4><a name="FrameworkPluggability-Orderingforlisteners%2Fservletmappings"></a>Ordering for listeners / servlet mappings</h2> <p>If the order in which the listeners are invoked is important to an application or the order in which the servlets, filters etc are invoked is important then a deployment descriptor must be used. As described above - when using annotations to define the listeners, servlets and filters the order in which they are invoked is unspecified. Same is the case for the order in which web-fragment.xml files are scanned in jars. Below are a set of rules that apply for ordering of servlets, filters and listeners:</p> 
+     <ol> 
+      <li>The order for listeners, servlets, filters if relevant must be specified in either the web-fragment.xml or the web.xml.</li> 
+      <li>The ordering will be based on the order in which they are defined in the descriptor. 
+       <ol> 
+        <li>Filters that match a request are chained in the order in which they</li> 
+       </ol> </li> 
+     </ol> <p> are declared in the web.xml.</p> 
+     <ol> 
+      <li> 
+       <ol> 
+        <li>Servlets are initialized either lazily at request processing time,</li> 
+       </ol> </li> 
+     </ol> <p> or eagerly during deployment. In the latter case, they are initialized<br> in the order indicated by their load-on-startup elements.</p> 
+     <ol> 
+      <li> 
+       <ol> 
+        <li>Currently, context listeners are invoked in random order. We would like to change invoking them in the order in which they are declared in the web.xml</li> 
+       </ol> </li> 
+      <li>The order in the web.xml of the web application overrides what is specified in the web-fragment.xml.</li> 
+      <li>If a servlet is disabled using the enable / disable element introduced in the web.xml then the servlet will not be available at the url-pattern specified for the servlet.</li> 
+      <li>The web.xml of the web application has the highest precedence when resolving conflicts between the web.xml and web-fragment.xml.</li> 
+      <li>If metadata-complete is not specified in the descriptors then the effective metadata for the application is derived by combining the metadata present in the annnotations and the descriptor. The descriptor always overrides any metadata specified via annotations.</li> 
+      <li>A descriptor (web.xml or web-fragment.xml) may have a top level <tt>&lt;name&gt;</tt> element of type <tt>javaee:java-identifierType</tt>. If a <tt>&lt;name&gt;</tt> element is present, it must be considered for the ordering of artifacts.</li> 
+      <li>A deployment descriptor may have an <tt>&lt;ordering&gt;</tt> element. If so, this element must contain zero or one <tt>&lt;before&gt;</tt> element and zero or one <tt>&lt;after&gt;</tt> element. If either element is present, it must contain one or more <tt>&lt;name&gt;</tt> elements. These constraints are enforced by the schema. These elements can be specified either in the main web.xml or in the fragments (if a fragment knows it has dependencies of it's own for example). Below is an example demonstrating some of the new elements</li> 
+     </ol> <p>web-fragment.xml (Fragment 1)</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;web-fragment&gt;
+  &lt;name&gt;MyFragment1&lt;/name&gt;
+  &lt;ordering&gt;&lt;before&gt;&lt;name&gt;MyFragment2&lt;/name&gt;&lt;/before&gt;&lt;/ordering&gt;
+  ..
+&lt;/web-fragment&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>web-fragment.xml (Fragment 2)</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;web-fragment&gt;
+  &lt;name&gt;MyFragment2&lt;/name&gt;
+  &lt;ordering&gt;&lt;after&gt;&lt;name&gt;MyFragment1&lt;/name&gt;&lt;/after&gt;&lt;/ordering&gt;
+  ..
+&lt;/web-fragment&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>web.xml</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;web-app&gt;
+  &lt;name&gt;MyApp&lt;/name&gt;
+  &lt;ordering&gt;
+  &lt;before&gt;&lt;name&gt;Fragment1&lt;/name&gt;&lt;/before&gt;&lt;/name&gt;
+  ...
+&lt;/web-app&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>The preceding example illustrates some, but not all, of the following principles.</p> 
+     <ul> 
+      <li><tt>&lt;before&gt;</tt> means the document must be ordered before the document with the name matching the name specified within the nested <tt>&lt;name&gt;</tt> element.</li> 
+      <li><tt>&lt;after&gt;</tt> means the document must be ordered after the document with the name matching the name specified within the nested <tt>&lt;name&gt;</tt> element.</li> 
+      <li>There is a special element <tt>&lt;others /&gt;</tt> that may be included within the <tt>&lt;before&gt;</tt> or <tt>&lt;after&gt;</tt> element. The <tt>&lt;others /&gt;</tt> element must be handled as follows. 
+       <ul> 
+        <li>If the <tt>&lt;before&gt;</tt> element contains a nested <tt>&lt;others /&gt;</tt>, the document will be moved to the beginning of the list of sorted documents. If there are multiple documents requiring before <tt>&lt;others /&gt;</tt>, they will all be at the beginning of the list of sorted documents, but the ordering within the group of such documents is unspecified.</li> 
+        <li>If the <tt>&lt;after&gt;</tt> element contains a nested <tt>&lt;others /&gt;</tt>, the document will be moved to the end of the list of sorted documents. If there are multiple documents requiring after <tt>&lt;others /&gt;</tt>, they will all be at the end of the list of sorted documents, but the ordering within the group of such documents is unspecified.</li> 
+        <li>Within a <tt>&lt;before&gt;</tt> or <tt>&lt;after&gt;</tt> element, if an <tt>&lt;others /&gt;</tt> element is present, but is not the only <tt>&lt;name&gt;</tt> element within its parent element, the other elements within that parent must be considered in the ordering process.</li> 
+       </ul> </li> 
+      <li>If a web.xml or web-fragment.xml file does not have an <tt>&lt;ordering&gt;</tt> section the artifacts are assumed to not have any ordering dependency.</li> 
+      <li>If the runtime discovers circular references, an informative message must be logged, and the <tt>&lt;ordering&gt;</tt> section of all parties of the circular reference must be ignored.</li> 
+     </ul> <p>Below are some examples of showing how the rules apply to the various descriptors.</p> <p>web.xml (with no name and ordering elements)</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;web-app&gt;
+  &lt;servlet&gt;
+    &lt;servlet-name&gt;MyServlet&lt;/servlet-name&gt;
+    &lt;servlet-class&gt;com.foo.wombat.MyAppServlet&lt;/servlet-class&gt;
+  &lt;/servlet&gt;
+  &lt;servlet-mapping&gt;
+    &lt;servlet-name&gt;MyServlet&lt;/servlet-name&gt;
+    &lt;url-pattern&gt;/wombats&lt;/url-pattern&gt;
+  &lt;/servlet-mapping&gt;
+  &lt;listener&gt;
+    &lt;listener-class&gt;
+     com.foo.wombat.MyContextListener2
+    &lt;/listener-class&gt;
+  &lt;/listener&gt;
+  &lt;listener&gt;
+    &lt;listener-class&gt;
+     com.foo.wombat.MyContextListener1
+    &lt;/listener-class&gt;
+  &lt;/listener&gt;
+
+
+&lt;/web-app&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>web-fragment.xml (with no name or ordering elements)</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;web-fragment&gt;
+  &lt;servlet&gt;
+    &lt;servlet-name&gt;MyServlet&lt;/servlet-name&gt;
+    &lt;servlet-class&gt;com.foo.wombat.MyAppServlet&lt;/servlet-class&gt;
+  &lt;/servlet&gt;
+  &lt;servlet-mapping&gt;
+    &lt;servlet-name&gt;MyServlet&lt;/servlet-name&gt;
+    &lt;url-pattern&gt;/MyServlet&lt;/url-pattern&gt;
+  &lt;/servlet-mapping&gt;
+  &lt;listener&gt;
+    &lt;listener-class&gt;
+     com.foo.wombat.MyContextListener1
+    &lt;/listener-class&gt;
+  &lt;/listener&gt;
+  &lt;listener&gt;
+    &lt;listener-class&gt;
+     com.foo.wombat.MyContextListener2
+    &lt;/listener-class&gt;
+  &lt;/listener&gt;
+
+&lt;/web-fragment&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>The mapping defined in the web.xml takes precedence and the order in which the listeners are invoked will also be based on the web.xml as opposed to the fragment.</p> <h4><a name="FrameworkPluggability-MethodsfordeclaringServletandFiltersandthecorrespondingmappingsprogramatically"></a>Methods for declaring Servlet and Filters and the corresponding mappings programatically</h2> <p>The following method are added to the <tt>ServletContext</tt> and can be<br> called during the initilization of the application only. It is illegal<br> to call these methods from outside the contextInitialized event of the<br> webapp.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Index: ServletContext.java
+===================================================================
+RCS file: /cvs/glassfish/servlet-api/src/jakarta-servletapi-5/jsr154/src/share/javax/servlet/ServletContext.java,v
+retrieving revision 1.7
+diff -u -r1.7 ServletContext.java
+--- ServletContext.java	5 May 2007 05:34:19 -0000	1.7
++++ ServletContext.java	18 Mar 2008 00:37:34 -0000
+@@ -44,6 +44,8 @@
+ import java.net.MalformedURLException;
+ import java.net.URL;
+ import java.util.Enumeration;
++import java.util.EnumSet;
++import java.util.Map;
+ import java.util.Set;
+ 
+ 
+@@ -688,6 +690,128 @@
+      */
+     
+     public String getServletContextName();
++
++    /**
++     * Adds the servlet with the given name, description, class name,
++     * init parameters, and loadOnStartup, to this servlet context.
++     *
++     * &lt;p&gt;If &lt;tt&gt;loadOnStartup&lt;/tt&gt; is a positive integer or zero, it
++     * indicates to the container the initialization priority of the
++     * servlet. In this case, the container must instantiate and initialize
++     * the servlet during the initialization phase of this servlet context,
++     * that is, after it has invoked all of the ServletContextListeners
++     * configured for this servlet context at their
++     * {@link ServletContextListener#contextInitialized} method.
++     *
++     * &lt;p&gt;If &lt;tt&gt;loadOnStartup&lt;/tt&gt; is a negative integer, the container
++     * is free to instantiate and initialize the servlet lazily.
++     *
++     * @param servletName the name of the servlet
++     * @param description the description of the servlet
++     * @param className the fully qualified class name of the servlet
++     * @param initParameters the initialization parameters of the servlet,
++     * or null if the servlet does not need any
++     * @param loadOnStartup the initialization priority of the servlet
++     *
++     * @throws IllegalArgumentException if a servlet with the given
++     * &lt;tt&gt;servletName&lt;/tt&gt; already exists in this servlet context
++     * @throws IllegalStateException if this servlet context has already
++     * been initialized
++     *
++     * @since 3.0
++     */
++    public void addServlet(String servletName,
++                           String description,
++                           String className,
++                           Map&lt;String, String&gt; initParameters,
++                           int loadOnStartup);
++
++    /**
++     * Adds servlet mappings from the given url patterns to the servlet
++     * with the given servlet name to this servlet context.
++     *
++     * &lt;p&gt;The servlet with the given name may have been declared in the
++     * deployment descriptor or one of the web fragments of this servlet
++     * context, or may be added using {@link #addServlet addServlet}. It is
++     * legal to add a servlet mapping for a servlet that has not yet been
++     * added.
++     *
++     * @param servletName the name of the servlet for which the servlet
++     * mapping is added
++     * @param urlPatterns the url patterns of the servlet mapping
++     *
++     * @throws IllegalArgumentException if &lt;tt&gt;urlPatterns&lt;/tt&gt; is null
++     * or empty
++     * @throws IllegalStateException if this servlet context has already
++     * been initialized
++     *
++     * @since 3.0
++     */
++    public void addServletMapping(String servletName,
++                                  String... urlPatterns);
++
++    /**
++     * Adds the filter with the given name, description, and class name to
++     * this servlet context.
++     *
++     * @param filterName the name of the filter
++     * @param description the description of the filter
++     * @param className the fully qualified class name of the filter
++     * @param initParameters the initialization parameters of the filter,
++     * or null if the filter does not need any
++     *
++     * @throws IllegalArgumentException if a filter with the given
++     * &lt;tt&gt;filterName&lt;/tt&gt; already exists in this servlet context
++     * @throws IllegalStateException if this servlet context has already
++     * been initialized
++     *
++     * @since 3.0
++     */
++    public void addFilter(String filterName,
++                          String description,
++                          String className,
++                          Map&lt;String, String&gt; initParameters);
++
++    /**
++     * Adds a filter mapping with the given servlet names, and
++     * dispatcher types for the filter with the given filter name to this
++     * servlet context.
++     *
++     * &lt;p&gt;The filter with the given name may have been declared in the
++     * deployment descriptor or one of the web fragments of this servlet
++     * context, or may be added using {@link #addFilter addFilter}. It is
++     * legal to add a filter mapping for a filter that has not yet been added.
++     *
++     * &lt;p&gt;Filter mappings added via this method will be matched against 
++     * requests in the same order in which they were added.
++     * 
++     * &lt;p&gt;Depending on the value of the &lt;tt&gt;isMatchAfter&lt;/tt&gt; parameter, the
++     * given filter mapping will be considered after or before any
++     * &lt;i&gt;declared&lt;/i&gt; filter mappings of this servlet context.
++     *
++     * @param filterName the name of the filter for which the filter
++     * mapping is added
++     * @param dispatcherTypes the dispatcher types of the filter mapping,
++     * or null if the default &lt;tt&gt;DispatcherType.REQUEST&lt;/tt&gt; is to be used
++     * @param isMatchAfter true if the given filter mapping should be matched
++     * against requests after any declared filter mappings of this servlet
++     * context, and false if it is supposed to be matched before any declared
++     * filter mappings of this servlet context
++     * @param servletNames the servlet names of the filter mapping
++     *
++     * @throws IllegalArgumentException if &lt;tt&gt;servletNames&lt;/tt&gt; is both null or empty
++     * @throws IllegalStateException if this servlet context has already
++     * been initialized
++     *
++     * @since 3.0
++     */
++
++    public void addFilterMappingForServletNames(String filterName,
++                                EnumSet&lt;DispatcherType&gt; dispatcherTypes,
++                                 boolean isMatchAfter,
++                                 String... servletNames);
++
++    /**
++     * Adds a filter mapping with the given url patterns, and
++     * dispatcher types for the filter with the given filter name to this
++     * servlet context.
++     *
++     * &lt;p&gt;The filter with the given name may have been declared in the
++     * deployment descriptor or one of the web fragments of this servlet
++     * context, or may be added using {@link #addFilter addFilter}. It is
++     * legal to add a filter mapping for a filter that has not yet been added.
++     *
++     * &lt;p&gt;Filter mappings added via this method will be matched against 
++     * requests in the same order in which they were added.
++     * 
++     * &lt;p&gt;Depending on the value of the &lt;tt&gt;isMatchAfter&lt;/tt&gt; parameter, the
++     * given filter mapping will be considered after or before any
++     * &lt;i&gt;declared&lt;/i&gt; filter mappings of this servlet context.
++     *
++     * @param filterName the name of the filter for which the filter
++     * mapping is added
++     * @param dispatcherTypes the dispatcher types of the filter mapping,
++     * or null if the default &lt;tt&gt;DispatcherType.REQUEST&lt;/tt&gt; is to be used
++     * @param isMatchAfter true if the given filter mapping should be matched
++     * against requests after any declared filter mappings of this servlet
++     * context, and false if it is supposed to be matched before any declared
++     * filter mappings of this servlet context
++     * @param urlPatterns the url patterns of the filter mapping
++     *
++     * @throws IllegalArgumentException if &lt;tt&gt;urlPatterns&lt;/tt&gt; is null or empty
++     * @throws IllegalStateException if this servlet context has already
++     * been initialized
++     *
++     * @since 3.0
++     */
++    public void addFilterMappingForUrlPatterns(String filterName,
++                                 EnumSet&lt;DispatcherType&gt; dispatcherTypes,
++                                 boolean isMatchAfter,
++                                 String... urlPatterns); }
++
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>Example:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">package samples;
+
+import javax.servlet.ServletContext;
+import javax.servlet.ServletContextListener;
+import javax.servlet.ServletContextEvent;
+
+@WebServletContextListener
+public class MyListener implements ServletContextListener {
+    public void contextInitialized(ServletContextEvent sce) {
+        ServletContext sc = sce.getServletContext();
+
+        sc.addServlet("myServlet", "Sample servlet", "foo.bar.MyServlet", null, -1);
+        sc.addServletMapping("myServlet", new String[] { "/urlpattern/*" });
+    }
+
+    public void contextDestroyed(ServletContextEvent sce) {
+        // Do nothing
+    }
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>Additional convenience methods:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Index: ServletRequest.java
+===================================================================
+RCS file: /cvs/glassfish/servlet-api/src/jakarta-servletapi-5/jsr154/src/share/javax/servlet/ServletRequest.java,v
+retrieving revision 1.6
+diff -u -r1.6 ServletRequest.java
+--- ServletRequest.java	5 May 2007 05:34:19 -0000	1.6
++++ ServletRequest.java	18 Mar 2008 00:37:34 -0000
+@@ -619,5 +619,26 @@
+      */
+     public int getLocalPort();
+ 
++    /**
++     * Gets the servlet context to which this servlet request was last
++     * dispatched.
++     *
++     * @return the servlet context to which this servlet request was last
++     * dispatched
++     *
++     * @since 3.0
++     */
++    public ServletContext getServletContext();
++
++    /**
++     * Gets the servlet response with which this servlet request has been
++     * associated.
++     *
++     * @return the servlet response with which this servlet request has been
++     * associated
++     *
++     * @since 3.0
++     */
++    public ServletResponse getServletResponse();
+ }
+ 
+Index: ServletRequestWrapper.java
+===================================================================
+RCS file: /cvs/glassfish/servlet-api/src/jakarta-servletapi-5/jsr154/src/share/javax/servlet/ServletRequestWrapper.java,v
+retrieving revision 1.3
+diff -u -r1.3 ServletRequestWrapper.java
+--- ServletRequestWrapper.java	5 May 2007 05:34:19 -0000	1.3
++++ ServletRequestWrapper.java	18 Mar 2008 00:37:34 -0000
+@@ -420,6 +420,31 @@
+     public int getLocalPort(){
+         return this.request.getLocalPort();
+     }
+-    
++
++    /**
++     * Gets the servlet context to which this servlet request was last
++     * dispatched.
++     *
++     * @return the servlet context to which this servlet request was last
++     * dispatched
++     *
++     * @since 3.0
++     */
++    public ServletContext getServletContext() {
++        return request.getServletContext();
++    }
++
++    /**
++     * Gets the servlet response with which this servlet request has been
++     * associated.
++     *
++     * @return the servlet response with which this servlet request has been
++     * associated
++     *
++     * @since 3.0
++     */
++    public ServletResponse getServletResponse() {
++        return request.getServletResponse();
++    }
+ }</pre> 
+       </div> 
+      </div>
+     </div> 
+     <hr> <p>web-app_3_0.xsd</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;xsd:schema xmlns="http://www.w3.org/2001/XMLSchema"
+	    targetNamespace="http://java.sun.com/xml/ns/javaee"
+	    xmlns:javaee="http://java.sun.com/xml/ns/javaee"
+	    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	    elementFormDefault="qualified"
+	    attributeFormDefault="unqualified"
+	    version="3.0"&gt;
+  &lt;xsd:annotation&gt;
+    &lt;xsd:documentation&gt;
+      @(#)web-app_3_0.xsds	1.68 07/03/09
+    &lt;/xsd:documentation&gt;
+  &lt;/xsd:annotation&gt;
+
+  &lt;xsd:annotation&gt;
+    &lt;xsd:documentation&gt;
+
+      DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+      Copyright 2003-2007 Sun Microsystems, Inc. All rights reserved.
+
+      The contents of this file are subject to the terms of either the
+      GNU General Public License Version 2 only ("GPL") or the Common
+      Development and Distribution License("CDDL") (collectively, the
+      "License").  You may not use this file except in compliance with
+      the License. You can obtain a copy of the License at
+      https://glassfish.java.net/public/CDDL+GPL.html or
+      glassfish/bootstrap/legal/LICENSE.txt.  See the License for the
+      specific language governing permissions and limitations under the
+      License.
+
+      When distributing the software, include this License Header
+      Notice in each file and include the License file at
+      glassfish/bootstrap/legal/LICENSE.txt.  Sun designates this
+      particular file as subject to the "Classpath" exception as
+      provided by Sun in the GPL Version 2 section of the License file
+      that accompanied this code.  If applicable, add the following
+      below the License Header, with the fields enclosed by brackets []
+      replaced by your own identifying information:
+      "Portions Copyrighted [year] [name of copyright owner]"
+
+      Contributor(s):
+
+      If you wish your version of this file to be governed by only the
+      CDDL or only the GPL Version 2, indicate your decision by adding
+      "[Contributor] elects to include this software in this
+      distribution under the [CDDL or GPL Version 2] license."  If you
+      don't indicate a single choice of license, a recipient has the
+      option to distribute your version of this file under either the
+      CDDL, the GPL Version 2 or to extend the choice of license to its
+      licensees as provided above.  However, if you add GPL Version 2
+      code and therefore, elected the GPL Version 2 license, then the
+      option applies only if the new code is made subject to such
+      option by the copyright holder.
+
+    &lt;/xsd:documentation&gt;
+  &lt;/xsd:annotation&gt;
+
+  &lt;xsd:annotation&gt;
+    &lt;xsd:documentation&gt;
+      &lt;![CDATA[
+
+	This is the XML Schema for the Servlet 3.0 deployment descriptor.
+	The deployment descriptor must be named "WEB-INF/web.xml" in the
+	web application's war file.  All Servlet deployment descriptors
+	must indicate the web application schema by using the Java EE
+	namespace:
+
+	http://java.sun.com/xml/ns/javaee
+
+	and by indicating the version of the schema by
+	using the version element as shown below:
+
+	    &lt;web-app xmlns="http://java.sun.com/xml/ns/javaee"
+	      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	      xsi:schemaLocation="..."
+	      version="3.0"&gt;
+	      ...
+	    &lt;/web-app&gt;
+
+	The instance documents may indicate the published version of
+	the schema using the xsi:schemaLocation attribute for Java EE
+	namespace with the following location:
+
+	http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd
+
+	]]&gt;
+    &lt;/xsd:documentation&gt;
+  &lt;/xsd:annotation&gt;
+
+  &lt;xsd:annotation&gt;
+    &lt;xsd:documentation&gt;
+
+      The following conventions apply to all Java EE
+      deployment descriptor elements unless indicated otherwise.
+
+      - In elements that specify a pathname to a file within the
+	same JAR file, relative filenames (i.e., those not
+	starting with "/") are considered relative to the root of
+	the JAR file's namespace.  Absolute filenames (i.e., those
+	starting with "/") also specify names in the root of the
+	JAR file's namespace.  In general, relative names are
+	preferred.  The exception is .war files where absolute
+	names are preferred for consistency with the Servlet API.
+
+    &lt;/xsd:documentation&gt;
+  &lt;/xsd:annotation&gt;
+
+  &lt;xsd:include schemaLocation="web-common_3_0.xsd"/&gt;
+
+
+&lt;!-- **************************************************** --&gt;
+
+  &lt;xsd:element name="web-app" type="javaee:web-appType"&gt;
+    &lt;xsd:annotation&gt;
+      &lt;xsd:documentation&gt;
+
+	The web-app element is the root of the deployment
+	descriptor for a web application.  Note that the sub-elements
+	of this element can be in the arbitrary order. Because of
+	that, the multiplicity of the elements of distributable,
+	session-config, welcome-file-list, jsp-config, login-config,
+	and locale-encoding-mapping-list was changed from "?" to "*"
+	in this schema.  However, the deployment descriptor instance
+	file must not contain multiple elements of session-config,
+	jsp-config, and login-config. When there are multiple elements of
+	welcome-file-list or locale-encoding-mapping-list, the container
+	must concatenate the element contents.  The multiple occurence
+	of the element distributable is redundant and the container
+	treats that case exactly in the same way when there is only
+	one distributable.
+
+      &lt;/xsd:documentation&gt;
+    &lt;/xsd:annotation&gt;
+
+    &lt;xsd:unique name="web-app-servlet-name-uniqueness"&gt;
+      &lt;xsd:annotation&gt;
+	&lt;xsd:documentation&gt;
+
+	  The servlet element contains the name of a servlet.
+	  The name must be unique within the web application.
+
+	&lt;/xsd:documentation&gt;
+      &lt;/xsd:annotation&gt;
+      &lt;xsd:selector xpath="javaee:servlet"/&gt;
+      &lt;xsd:field    xpath="javaee:servlet-name"/&gt;
+    &lt;/xsd:unique&gt;
+
+    &lt;xsd:unique name="web-app-filter-name-uniqueness"&gt;
+      &lt;xsd:annotation&gt;
+	&lt;xsd:documentation&gt;
+
+	  The filter element contains the name of a filter.
+	  The name must be unique within the web application.
+
+	&lt;/xsd:documentation&gt;
+      &lt;/xsd:annotation&gt;
+      &lt;xsd:selector xpath="javaee:filter"/&gt;
+      &lt;xsd:field    xpath="javaee:filter-name"/&gt;
+    &lt;/xsd:unique&gt;
+
+    &lt;xsd:unique name="web-app-ejb-local-ref-name-uniqueness"&gt;
+      &lt;xsd:annotation&gt;
+	&lt;xsd:documentation&gt;
+
+	  The ejb-local-ref-name element contains the name of an EJB
+	  reference. The EJB reference is an entry in the web
+	  application's environment and is relative to the
+	  java:comp/env context.  The name must be unique within
+	  the web application.
+
+	  It is recommended that name is prefixed with "ejb/".
+
+	&lt;/xsd:documentation&gt;
+      &lt;/xsd:annotation&gt;
+      &lt;xsd:selector xpath="javaee:ejb-local-ref"/&gt;
+      &lt;xsd:field    xpath="javaee:ejb-ref-name"/&gt;
+    &lt;/xsd:unique&gt;
+
+    &lt;xsd:unique name="web-app-ejb-ref-name-uniqueness"&gt;
+      &lt;xsd:annotation&gt;
+	&lt;xsd:documentation&gt;
+
+	  The ejb-ref-name element contains the name of an EJB
+	  reference. The EJB reference is an entry in the web
+	  application's environment and is relative to the
+	  java:comp/env context.  The name must be unique within
+	  the web application.
+
+	  It is recommended that name is prefixed with "ejb/".
+
+	&lt;/xsd:documentation&gt;
+      &lt;/xsd:annotation&gt;
+      &lt;xsd:selector xpath="javaee:ejb-ref"/&gt;
+      &lt;xsd:field    xpath="javaee:ejb-ref-name"/&gt;
+    &lt;/xsd:unique&gt;
+
+    &lt;xsd:unique name="web-app-resource-env-ref-uniqueness"&gt;
+      &lt;xsd:annotation&gt;
+	&lt;xsd:documentation&gt;
+
+	  The resource-env-ref-name element specifies the name of
+	  a resource environment reference; its value is the
+	  environment entry name used in the web application code.
+	  The name is a JNDI name relative to the java:comp/env
+	  context and must be unique within a web application.
+
+	&lt;/xsd:documentation&gt;
+      &lt;/xsd:annotation&gt;
+      &lt;xsd:selector xpath="javaee:resource-env-ref"/&gt;
+      &lt;xsd:field    xpath="javaee:resource-env-ref-name"/&gt;
+    &lt;/xsd:unique&gt;
+
+    &lt;xsd:unique name="web-app-message-destination-ref-uniqueness"&gt;
+      &lt;xsd:annotation&gt;
+	&lt;xsd:documentation&gt;
+
+	  The message-destination-ref-name element specifies the name of
+	  a message destination reference; its value is the
+	  environment entry name used in the web application code.
+	  The name is a JNDI name relative to the java:comp/env
+	  context and must be unique within a web application.
+
+	&lt;/xsd:documentation&gt;
+      &lt;/xsd:annotation&gt;
+      &lt;xsd:selector xpath="javaee:message-destination-ref"/&gt;
+      &lt;xsd:field    xpath="javaee:message-destination-ref-name"/&gt;
+    &lt;/xsd:unique&gt;
+
+    &lt;xsd:unique name="web-app-res-ref-name-uniqueness"&gt;
+      &lt;xsd:annotation&gt;
+	&lt;xsd:documentation&gt;
+
+	  The res-ref-name element specifies the name of a
+	  resource manager connection factory reference.  The name
+	  is a JNDI name relative to the java:comp/env context.
+	  The name must be unique within a web application.
+
+	&lt;/xsd:documentation&gt;
+      &lt;/xsd:annotation&gt;
+      &lt;xsd:selector xpath="javaee:resource-ref"/&gt;
+      &lt;xsd:field    xpath="javaee:res-ref-name"/&gt;
+    &lt;/xsd:unique&gt;
+
+    &lt;xsd:unique name="web-app-env-entry-name-uniqueness"&gt;
+      &lt;xsd:annotation&gt;
+	&lt;xsd:documentation&gt;
+
+	  The env-entry-name element contains the name of a web
+	  application's environment entry.  The name is a JNDI
+	  name relative to the java:comp/env context.  The name
+	  must be unique within a web application.
+
+	&lt;/xsd:documentation&gt;
+      &lt;/xsd:annotation&gt;
+
+      &lt;xsd:selector xpath="javaee:env-entry"/&gt;
+      &lt;xsd:field    xpath="javaee:env-entry-name"/&gt;
+    &lt;/xsd:unique&gt;
+
+    &lt;xsd:key name="web-app-role-name-key"&gt;
+      &lt;xsd:annotation&gt;
+	&lt;xsd:documentation&gt;
+
+	  A role-name-key is specified to allow the references
+	  from the security-role-refs.
+
+	&lt;/xsd:documentation&gt;
+      &lt;/xsd:annotation&gt;
+      &lt;xsd:selector xpath="javaee:security-role"/&gt;
+      &lt;xsd:field    xpath="javaee:role-name"/&gt;
+    &lt;/xsd:key&gt;
+
+    &lt;xsd:keyref name="web-app-role-name-references"
+		refer="javaee:web-app-role-name-key"&gt;
+      &lt;xsd:annotation&gt;
+	&lt;xsd:documentation&gt;
+
+	  The keyref indicates the references from
+	  security-role-ref to a specified role-name.
+
+	&lt;/xsd:documentation&gt;
+      &lt;/xsd:annotation&gt;
+      &lt;xsd:selector xpath="javaee:servlet/javaee:security-role-ref"/&gt;
+      &lt;xsd:field    xpath="javaee:role-link"/&gt;
+    &lt;/xsd:keyref&gt;
+  &lt;/xsd:element&gt;
+
+&lt;/xsd:schema&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>web-common_3_0.xsd</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;xsd:schema xmlns="http://www.w3.org/2001/XMLSchema"
+	    targetNamespace="http://java.sun.com/xml/ns/javaee"
+	    xmlns:javaee="http://java.sun.com/xml/ns/javaee"
+	    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	    elementFormDefault="qualified"
+	    attributeFormDefault="unqualified"
+	    version="3.0"&gt;
+  &lt;xsd:annotation&gt;
+    &lt;xsd:documentation&gt;
+      @(#)web-common_3_0.xsds	1.68 08/26/08
+    &lt;/xsd:documentation&gt;
+  &lt;/xsd:annotation&gt;
+
+  &lt;xsd:annotation&gt;
+    &lt;xsd:documentation&gt;
+
+      DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+      Copyright 2003-2007 Sun Microsystems, Inc. All rights reserved.
+
+      The contents of this file are subject to the terms of either the
+      GNU General Public License Version 2 only ("GPL") or the Common
+      Development and Distribution License("CDDL") (collectively, the
+      "License").  You may not use this file except in compliance with
+      the License. You can obtain a copy of the License at
+      https://glassfish.java.net/public/CDDL+GPL.html or
+      glassfish/bootstrap/legal/LICENSE.txt.  See the License for the
+      specific language governing permissions and limitations under the
+      License.
+
+      When distributing the software, include this License Header
+      Notice in each file and include the License file at
+      glassfish/bootstrap/legal/LICENSE.txt.  Sun designates this
+      particular file as subject to the "Classpath" exception as
+      provided by Sun in the GPL Version 2 section of the License file
+      that accompanied this code.  If applicable, add the following
+      below the License Header, with the fields enclosed by brackets []
+      replaced by your own identifying information:
+      "Portions Copyrighted [year] [name of copyright owner]"
+
+      Contributor(s):
+
+      If you wish your version of this file to be governed by only the
+      CDDL or only the GPL Version 2, indicate your decision by adding
+      "[Contributor] elects to include this software in this
+      distribution under the [CDDL or GPL Version 2] license."  If you
+      don't indicate a single choice of license, a recipient has the
+      option to distribute your version of this file under either the
+      CDDL, the GPL Version 2 or to extend the choice of license to its
+      licensees as provided above.  However, if you add GPL Version 2
+      code and therefore, elected the GPL Version 2 license, then the
+      option applies only if the new code is made subject to such
+      option by the copyright holder.
+
+    &lt;/xsd:documentation&gt;
+  &lt;/xsd:annotation&gt;
+
+  &lt;xsd:annotation&gt;
+    &lt;xsd:documentation&gt;
+      &lt;![CDATA[
+
+	This is the common XML Schema for the Servlet 3.0 deployment descriptor.
+	This file is in turn used by web.xml and web-fragment.xml
+	web application's war file.  All Servlet deployment descriptors
+	must indicate the web common schema by using the Java EE
+	namespace:
+
+	http://java.sun.com/xml/ns/javaee
+
+	and by indicating the version of the schema by
+	using the version element as shown below:
+
+	    &lt;web-app xmlns="http://java.sun.com/xml/ns/javaee"
+	      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	      xsi:schemaLocation="..."
+	      version="3.0"&gt;
+	      ...
+	    &lt;/web-app&gt;
+
+	The instance documents may indicate the published version of
+	the schema using the xsi:schemaLocation attribute for Java EE
+	namespace with the following location:
+
+	http://java.sun.com/xml/ns/javaee/web-common_3_0.xsd
+
+	]]&gt;
+    &lt;/xsd:documentation&gt;
+  &lt;/xsd:annotation&gt;
+
+  &lt;xsd:annotation&gt;
+    &lt;xsd:documentation&gt;
+
+      The following conventions apply to all Java EE
+      deployment descriptor elements unless indicated otherwise.
+
+      - In elements that specify a pathname to a file within the
+	same JAR file, relative filenames (i.e., those not
+	starting with "/") are considered relative to the root of
+	the JAR file's namespace.  Absolute filenames (i.e., those
+	starting with "/") also specify names in the root of the
+	JAR file's namespace.  In general, relative names are
+	preferred.  The exception is .war files where absolute
+	names are preferred for consistency with the Servlet API.
+
+    &lt;/xsd:documentation&gt;
+  &lt;/xsd:annotation&gt;
+
+  &lt;xsd:include schemaLocation="javaee_5.xsd"/&gt;
+  &lt;xsd:include schemaLocation="jsp_2_1.xsd"/&gt;
+
+
+&lt;!-- **************************************************** --&gt;
+
+  &lt;xsd:complexType name="auth-constraintType"&gt;
+    &lt;xsd:annotation&gt;
+      &lt;xsd:documentation&gt;
+
+	The auth-constraintType indicates the user roles that
+	should be permitted access to this resource
+	collection. The role-name used here must either correspond
+	to the role-name of one of the security-role elements
+	defined for this web application, or be the specially
+	reserved role-name "*" that is a compact syntax for
+	indicating all roles in the web application. If both "*"
+	and rolenames appear, the container interprets this as all
+	roles.  If no roles are defined, no user is allowed access
+	to the portion of the web application described by the
+	containing security-constraint.  The container matches
+	role names case sensitively when determining access.
+
+      &lt;/xsd:documentation&gt;
+    &lt;/xsd:annotation&gt;
+
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element name="description"
+		   type="javaee:descriptionType"
+		   minOccurs="0" maxOccurs="unbounded"/&gt;
+      &lt;xsd:element name="role-name"
+		   type="javaee:role-nameType"
+		   minOccurs="0" maxOccurs="unbounded"/&gt;
+    &lt;/xsd:sequence&gt;
+    &lt;xsd:attribute name="id" type="xsd:ID"/&gt;
+  &lt;/xsd:complexType&gt;
+
+&lt;!-- **************************************************** --&gt;
+
+  &lt;xsd:complexType name="auth-methodType"&gt;
+    &lt;xsd:annotation&gt;
+      &lt;xsd:documentation&gt;
+
+	The auth-methodType is used to configure the authentication
+	mechanism for the web application. As a prerequisite to
+	gaining access to any web resources which are protected by
+	an authorization constraint, a user must have authenticated
+	using the configured mechanism. Legal values are "BASIC",
+	"DIGEST", "FORM", "CLIENT-CERT", or a vendor-specific
+	authentication scheme.
+
+	Used in: login-config
+
+      &lt;/xsd:documentation&gt;
+    &lt;/xsd:annotation&gt;
+
+    &lt;xsd:simpleContent&gt;
+      &lt;xsd:restriction base="javaee:string"/&gt;
+    &lt;/xsd:simpleContent&gt;
+  &lt;/xsd:complexType&gt;
+
+&lt;!-- **************************************************** --&gt;
+
+  &lt;xsd:complexType name="dispatcherType"&gt;
+    &lt;xsd:annotation&gt;
+      &lt;xsd:documentation&gt;
+
+	The dispatcher has four legal values: FORWARD, REQUEST, INCLUDE,
+	and ERROR. A value of FORWARD means the Filter will be applied
+	under RequestDispatcher.forward() calls.  A value of REQUEST
+	means the Filter will be applied under ordinary client calls to
+	the path or servlet. A value of INCLUDE means the Filter will be
+	applied under RequestDispatcher.include() calls.  A value of
+	ERROR means the Filter will be applied under the error page
+	mechanism.  The absence of any dispatcher elements in a
+	filter-mapping indicates a default of applying filters only under
+	ordinary client calls to the path or servlet.
+
+      &lt;/xsd:documentation&gt;
+    &lt;/xsd:annotation&gt;
+
+    &lt;xsd:simpleContent&gt;
+      &lt;xsd:restriction base="javaee:string"&gt;
+	&lt;xsd:enumeration value="FORWARD"/&gt;
+	&lt;xsd:enumeration value="INCLUDE"/&gt;
+	&lt;xsd:enumeration value="REQUEST"/&gt;
+	&lt;xsd:enumeration value="ERROR"/&gt;
+      &lt;/xsd:restriction&gt;
+    &lt;/xsd:simpleContent&gt;
+  &lt;/xsd:complexType&gt;
+
+&lt;!-- **************************************************** --&gt;
+
+  &lt;xsd:simpleType name="encodingType"&gt;
+    &lt;xsd:annotation&gt;
+      &lt;xsd:documentation&gt;
+
+	The encodingType defines IANA character sets.
+
+      &lt;/xsd:documentation&gt;
+    &lt;/xsd:annotation&gt;
+
+    &lt;xsd:restriction base="xsd:string"&gt;
+      &lt;xsd:pattern value="[^\s]+"/&gt;
+    &lt;/xsd:restriction&gt;
+  &lt;/xsd:simpleType&gt;
+
+&lt;!-- **************************************************** --&gt;
+
+  &lt;xsd:complexType name="error-codeType"&gt;
+    &lt;xsd:annotation&gt;
+      &lt;xsd:documentation&gt;
+
+	The error-code contains an HTTP error code, ex: 404
+
+	Used in: error-page
+
+      &lt;/xsd:documentation&gt;
+    &lt;/xsd:annotation&gt;
+
+    &lt;xsd:simpleContent&gt;
+      &lt;xsd:restriction base="javaee:xsdPositiveIntegerType"&gt;
+	&lt;xsd:pattern value="\d{3}"/&gt;
+	&lt;xsd:attribute name="id" type="xsd:ID"/&gt;
+      &lt;/xsd:restriction&gt;
+    &lt;/xsd:simpleContent&gt;
+  &lt;/xsd:complexType&gt;
+
+&lt;!-- **************************************************** --&gt;
+
+  &lt;xsd:complexType name="error-pageType"&gt;
+    &lt;xsd:annotation&gt;
+      &lt;xsd:documentation&gt;
+
+	The error-pageType contains a mapping between an error code
+	or exception type to the path of a resource in the web
+	application.
+
+	Used in: web-app
+
+      &lt;/xsd:documentation&gt;
+    &lt;/xsd:annotation&gt;
+
+    &lt;xsd:sequence&gt;
+      &lt;xsd:choice&gt;
+	&lt;xsd:element name="error-code"
+		     type="javaee:error-codeType"/&gt;
+
+	&lt;xsd:element name="exception-type"
+		     type="javaee:fully-qualified-classType"&gt;
+	  &lt;xsd:annotation&gt;
+	    &lt;xsd:documentation&gt;
+
+	      The exception-type contains a fully qualified class
+	      name of a Java exception type.
+
+	    &lt;/xsd:documentation&gt;
+	  &lt;/xsd:annotation&gt;
+	&lt;/xsd:element&gt;
+      &lt;/xsd:choice&gt;
+
+      &lt;xsd:element name="location"
+		   type="javaee:war-pathType"&gt;
+	&lt;xsd:annotation&gt;
+	  &lt;xsd:documentation&gt;
+
+	    The location element contains the location of the
+	    resource in the web application relative to the root of
+	    the web application. The value of the location must have
+	    a leading `/'.
+
+	  &lt;/xsd:documentation&gt;
+	&lt;/xsd:annotation&gt;
+      &lt;/xsd:element&gt;
+    &lt;/xsd:sequence&gt;
+    &lt;xsd:attribute name="id" type="xsd:ID"/&gt;
+  &lt;/xsd:complexType&gt;
+
+&lt;!-- **************************************************** --&gt;
+
+  &lt;xsd:complexType name="filter-mappingType"&gt;
+    &lt;xsd:annotation&gt;
+      &lt;xsd:documentation&gt;
+
+	Declaration of the filter mappings in this web
+	application is done by using filter-mappingType.
+	The container uses the filter-mapping
+	declarations to decide which filters to apply to a request,
+	and in what order. The container matches the request URI to
+	a Servlet in the normal way. To determine which filters to
+	apply it matches filter-mapping declarations either on
+	servlet-name, or on url-pattern for each filter-mapping
+	element, depending on which style is used. The order in
+	which filters are invoked is the order in which
+	filter-mapping declarations that match a request URI for a
+	servlet appear in the list of filter-mapping elements.The
+	filter-name value must be the value of the filter-name
+	sub-elements of one of the filter declarations in the
+	deployment descriptor.
+
+      &lt;/xsd:documentation&gt;
+    &lt;/xsd:annotation&gt;
+
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element name="filter-name"
+		   type="javaee:filter-nameType"/&gt;
+      &lt;xsd:choice minOccurs="1" maxOccurs="unbounded"&gt;
+	&lt;xsd:element name="url-pattern"
+		     type="javaee:url-patternType"/&gt;
+	&lt;xsd:element name="servlet-name"
+		     type="javaee:servlet-nameType"/&gt;
+      &lt;/xsd:choice&gt;
+      &lt;xsd:element name="dispatcher"
+		   type="javaee:dispatcherType"
+		   minOccurs="0" maxOccurs="4"/&gt;
+    &lt;/xsd:sequence&gt;
+    &lt;xsd:attribute name="id" type="xsd:ID"/&gt;
+  &lt;/xsd:complexType&gt;
+
+&lt;!-- **************************************************** --&gt;
+
+  &lt;xsd:complexType name="filter-nameType"&gt;
+    &lt;xsd:annotation&gt;
+      &lt;xsd:documentation&gt;
+
+	The logical name of the filter is declare
+	by using filter-nameType. This name is used to map the
+	filter.  Each filter name is unique within the web
+	application.
+
+	Used in: filter, filter-mapping
+
+      &lt;/xsd:documentation&gt;
+    &lt;/xsd:annotation&gt;
+
+    &lt;xsd:simpleContent&gt;
+      &lt;xsd:extension base="javaee:nonEmptyStringType"/&gt;
+    &lt;/xsd:simpleContent&gt;
+  &lt;/xsd:complexType&gt;
+
+&lt;!-- **************************************************** --&gt;
+
+  &lt;xsd:complexType name="filterType"&gt;
+    &lt;xsd:annotation&gt;
+      &lt;xsd:documentation&gt;
+
+	The filterType is used to declare a filter in the web
+	application. The filter is mapped to either a servlet or a
+	URL pattern in the filter-mapping element, using the
+	filter-name value to reference. Filters can access the
+	initialization parameters declared in the deployment
+	descriptor at runtime via the FilterConfig interface.
+
+	Used in: web-app
+
+      &lt;/xsd:documentation&gt;
+    &lt;/xsd:annotation&gt;
+
+    &lt;xsd:sequence&gt;
+      &lt;xsd:group ref="javaee:descriptionGroup"/&gt;
+      &lt;xsd:element name="filter-name"
+		   type="javaee:filter-nameType"/&gt;
+      &lt;xsd:element name="filter-class"
+		   type="javaee:fully-qualified-classType"&gt;
+	&lt;xsd:annotation&gt;
+	  &lt;xsd:documentation&gt;
+
+	    The fully qualified classname of the filter.
+
+	  &lt;/xsd:documentation&gt;
+	&lt;/xsd:annotation&gt;
+      &lt;xsd:element name="async-support"
+		   type="javaee:generic-booleanType"
+		   minOccurs="0"/&gt;
+      &lt;xsd:element name="async-timeout"
+		   type="javaee:xsdIntegerType"
+		   minOccurs="0"/&gt;
+      &lt;/xsd:element&gt;
+
+      &lt;xsd:element name="init-param"
+		   type="javaee:param-valueType"
+		   minOccurs="0" maxOccurs="unbounded"&gt;
+	&lt;xsd:annotation&gt;
+	  &lt;xsd:documentation&gt;
+
+	    The init-param element contains a name/value pair as
+	    an initialization param of a servlet filter
+
+	  &lt;/xsd:documentation&gt;
+	&lt;/xsd:annotation&gt;
+      &lt;/xsd:element&gt;
+    &lt;/xsd:sequence&gt;
+    &lt;xsd:attribute name="id" type="xsd:ID"/&gt;
+  &lt;/xsd:complexType&gt;
+
+&lt;!-- **************************************************** --&gt;
+
+  &lt;xsd:complexType name="form-login-configType"&gt;
+    &lt;xsd:annotation&gt;
+      &lt;xsd:documentation&gt;
+
+	The form-login-configType specifies the login and error
+	pages that should be used in form based login. If form based
+	authentication is not used, these elements are ignored.
+
+	Used in: login-config
+
+      &lt;/xsd:documentation&gt;
+    &lt;/xsd:annotation&gt;
+
+    &lt;xsd:sequence&gt;
+
+      &lt;xsd:element name="form-login-page"
+		   type="javaee:war-pathType"&gt;
+	&lt;xsd:annotation&gt;
+	  &lt;xsd:documentation&gt;
+
+	    The form-login-page element defines the location in the web
+	    app where the page that can be used for login can be
+	    found.  The path begins with a leading / and is interpreted
+	    relative to the root of the WAR.
+
+	  &lt;/xsd:documentation&gt;
+	&lt;/xsd:annotation&gt;
+      &lt;/xsd:element&gt;
+
+      &lt;xsd:element name="form-error-page"
+		   type="javaee:war-pathType"&gt;
+	&lt;xsd:annotation&gt;
+	  &lt;xsd:documentation&gt;
+
+	    The form-error-page element defines the location in
+	    the web app where the error page that is displayed
+	    when login is not successful can be found.
+	    The path begins with a leading / and is interpreted
+	    relative to the root of the WAR.
+
+	  &lt;/xsd:documentation&gt;
+	&lt;/xsd:annotation&gt;
+      &lt;/xsd:element&gt;
+
+    &lt;/xsd:sequence&gt;
+    &lt;xsd:attribute name="id" type="xsd:ID"/&gt;
+  &lt;/xsd:complexType&gt;
+
+&lt;!-- **************************************************** --&gt;
+
+  &lt;xsd:simpleType name="http-methodType"&gt;
+    &lt;xsd:annotation&gt;
+
+      &lt;xsd:documentation&gt;
+
+	A HTTP method type as defined in HTTP 1.1 section 2.2.
+
+      &lt;/xsd:documentation&gt;
+    &lt;/xsd:annotation&gt;
+
+     &lt;xsd:restriction base="xsd:token"&gt;
+      &lt;xsd:pattern value="[&amp;#33;-&amp;#126;-[\(\)&amp;#60;&amp;#62;@,;:&amp;#34;/\[\]?=\{\}\\\p{Z}]]+"/&gt;
+     &lt;/xsd:restriction&gt;
+
+  &lt;/xsd:simpleType&gt;
+
+&lt;!-- **************************************************** --&gt;
+
+  &lt;xsd:simpleType name="load-on-startupType"&gt;
+    &lt;xsd:union memberTypes="javaee:null-charType xsd:integer"/&gt;
+  &lt;/xsd:simpleType&gt;
+
+&lt;!-- **************************************************** --&gt;
+
+  &lt;xsd:complexType name="locale-encoding-mapping-listType"&gt;
+    &lt;xsd:annotation&gt;
+      &lt;xsd:documentation&gt;
+
+	The locale-encoding-mapping-list contains one or more
+	locale-encoding-mapping(s).
+
+      &lt;/xsd:documentation&gt;
+    &lt;/xsd:annotation&gt;
+
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element name="locale-encoding-mapping"
+		   type="javaee:locale-encoding-mappingType"
+		   maxOccurs="unbounded"/&gt;
+    &lt;/xsd:sequence&gt;
+    &lt;xsd:attribute name="id" type="xsd:ID"/&gt;
+  &lt;/xsd:complexType&gt;
+
+&lt;!-- **************************************************** --&gt;
+
+  &lt;xsd:complexType name="locale-encoding-mappingType"&gt;
+    &lt;xsd:annotation&gt;
+      &lt;xsd:documentation&gt;
+
+	The locale-encoding-mapping contains locale name and
+	encoding name. The locale name must be either "Language-code",
+	such as "ja", defined by ISO-639 or "Language-code_Country-code",
+	such as "ja_JP".  "Country code" is defined by ISO-3166.
+
+      &lt;/xsd:documentation&gt;
+    &lt;/xsd:annotation&gt;
+
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element name="locale"
+		   type="javaee:localeType"/&gt;
+      &lt;xsd:element name="encoding"
+		   type="javaee:encodingType"/&gt;
+    &lt;/xsd:sequence&gt;
+    &lt;xsd:attribute name="id" type="xsd:ID"/&gt;
+  &lt;/xsd:complexType&gt;
+
+&lt;!-- **************************************************** --&gt;
+
+  &lt;xsd:simpleType name="localeType"&gt;
+    &lt;xsd:annotation&gt;
+      &lt;xsd:documentation&gt;
+
+	The localeType defines valid locale defined by ISO-639-1
+	and ISO-3166.
+
+      &lt;/xsd:documentation&gt;
+    &lt;/xsd:annotation&gt;
+
+    &lt;xsd:restriction base="xsd:string"&gt;
+      &lt;xsd:pattern value="[a-z]{2}(_|-)?([\p{L}\-\p{Nd}]{2})?"/&gt;
+    &lt;/xsd:restriction&gt;
+  &lt;/xsd:simpleType&gt;
+
+&lt;!-- **************************************************** --&gt;
+
+  &lt;xsd:complexType name="login-configType"&gt;
+    &lt;xsd:annotation&gt;
+      &lt;xsd:documentation&gt;
+
+	The login-configType is used to configure the authentication
+	method that should be used, the realm name that should be
+	used for this application, and the attributes that are
+	needed by the form login mechanism.
+
+	Used in: web-app
+
+      &lt;/xsd:documentation&gt;
+    &lt;/xsd:annotation&gt;
+
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element name="auth-method"
+		   type="javaee:auth-methodType"
+		   minOccurs="0"/&gt;
+      &lt;xsd:element name="realm-name"
+		   type="javaee:string" minOccurs="0"&gt;
+	&lt;xsd:annotation&gt;
+	  &lt;xsd:documentation&gt;
+
+	    The realm name element specifies the realm name to
+	    use in HTTP Basic authorization.
+
+	  &lt;/xsd:documentation&gt;
+	&lt;/xsd:annotation&gt;
+      &lt;/xsd:element&gt;
+      &lt;xsd:element name="form-login-config"
+		   type="javaee:form-login-configType"
+		   minOccurs="0"/&gt;
+    &lt;/xsd:sequence&gt;
+    &lt;xsd:attribute name="id" type="xsd:ID"/&gt;
+  &lt;/xsd:complexType&gt;
+
+&lt;!-- **************************************************** --&gt;
+
+  &lt;xsd:complexType name="mime-mappingType"&gt;
+    &lt;xsd:annotation&gt;
+      &lt;xsd:documentation&gt;
+
+	The mime-mappingType defines a mapping between an extension
+	and a mime type.
+
+	Used in: web-app
+
+      &lt;/xsd:documentation&gt;
+    &lt;/xsd:annotation&gt;
+
+    &lt;xsd:sequence&gt;
+      &lt;xsd:annotation&gt;
+	&lt;xsd:documentation&gt;
+
+	  The extension element contains a string describing an
+	  extension. example: "txt"
+
+	&lt;/xsd:documentation&gt;
+      &lt;/xsd:annotation&gt;
+
+      &lt;xsd:element name="extension"
+		   type="javaee:string"/&gt;
+      &lt;xsd:element name="mime-type"
+		   type="javaee:mime-typeType"/&gt;
+    &lt;/xsd:sequence&gt;
+    &lt;xsd:attribute name="id" type="xsd:ID"/&gt;
+  &lt;/xsd:complexType&gt;
+
+&lt;!-- **************************************************** --&gt;
+
+  &lt;xsd:complexType name="mime-typeType"&gt;
+    &lt;xsd:annotation&gt;
+      &lt;xsd:documentation&gt;
+
+	The mime-typeType is used to indicate a defined mime type.
+
+	Example:
+	"text/plain"
+
+	Used in: mime-mapping
+
+      &lt;/xsd:documentation&gt;
+    &lt;/xsd:annotation&gt;
+
+    &lt;xsd:simpleContent&gt;
+      &lt;xsd:restriction base="javaee:string"&gt;
+	&lt;xsd:pattern value="[^\p{Cc}^\s]+/[^\p{Cc}^\s]+"/&gt;
+      &lt;/xsd:restriction&gt;
+    &lt;/xsd:simpleContent&gt;
+  &lt;/xsd:complexType&gt;
+
+&lt;!-- **************************************************** --&gt;
+
+  &lt;xsd:complexType name="nonEmptyStringType"&gt;
+    &lt;xsd:annotation&gt;
+      &lt;xsd:documentation&gt;
+	This type defines a string which contains at least one
+	character.
+      &lt;/xsd:documentation&gt;
+    &lt;/xsd:annotation&gt;
+    &lt;xsd:simpleContent&gt;
+      &lt;xsd:restriction base="javaee:string"&gt;
+	&lt;xsd:minLength value="1"/&gt;
+      &lt;/xsd:restriction&gt;
+    &lt;/xsd:simpleContent&gt;
+  &lt;/xsd:complexType&gt;
+
+&lt;!-- **************************************************** --&gt;
+
+  &lt;xsd:simpleType name="null-charType"&gt;
+    &lt;xsd:restriction base="xsd:string"&gt;
+      &lt;xsd:enumeration value=""/&gt;
+    &lt;/xsd:restriction&gt;
+  &lt;/xsd:simpleType&gt;
+
+&lt;!-- **************************************************** --&gt;
+
+  &lt;xsd:complexType name="security-constraintType"&gt;
+    &lt;xsd:annotation&gt;
+      &lt;xsd:documentation&gt;
+
+	The security-constraintType is used to associate
+	security constraints with one or more web resource
+	collections
+
+	Used in: web-app
+
+      &lt;/xsd:documentation&gt;
+    &lt;/xsd:annotation&gt;
+
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element name="display-name"
+		   type="javaee:display-nameType"
+		   minOccurs="0"
+		   maxOccurs="unbounded"/&gt;
+      &lt;xsd:element name="web-resource-collection"
+		   type="javaee:web-resource-collectionType"
+		   maxOccurs="unbounded"/&gt;
+      &lt;xsd:element name="auth-constraint"
+		   type="javaee:auth-constraintType"
+		   minOccurs="0"/&gt;
+      &lt;xsd:element name="user-data-constraint"
+		   type="javaee:user-data-constraintType"
+		   minOccurs="0"/&gt;
+    &lt;/xsd:sequence&gt;
+    &lt;xsd:attribute name="id" type="xsd:ID"/&gt;
+  &lt;/xsd:complexType&gt;
+
+&lt;!-- **************************************************** --&gt;
+
+  &lt;xsd:complexType name="servlet-mappingType"&gt;
+    &lt;xsd:annotation&gt;
+      &lt;xsd:documentation&gt;
+
+	The servlet-mappingType defines a mapping between a
+	servlet and a url pattern.
+
+	Used in: web-app
+
+      &lt;/xsd:documentation&gt;
+    &lt;/xsd:annotation&gt;
+
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element name="servlet-name"
+		   type="javaee:servlet-nameType"/&gt;
+      &lt;xsd:element name="url-pattern"
+		   type="javaee:url-patternType"
+           minOccurs="1" maxOccurs="unbounded"/&gt;
+    &lt;/xsd:sequence&gt;
+    &lt;xsd:attribute name="id" type="xsd:ID"/&gt;
+  &lt;/xsd:complexType&gt;
+
+&lt;!-- **************************************************** --&gt;
+
+  &lt;xsd:complexType name="servlet-nameType"&gt;
+    &lt;xsd:annotation&gt;
+      &lt;xsd:documentation&gt;
+
+	The servlet-name element contains the canonical name of the
+	servlet. Each servlet name is unique within the web
+	application.
+
+      &lt;/xsd:documentation&gt;
+    &lt;/xsd:annotation&gt;
+
+    &lt;xsd:simpleContent&gt;
+      &lt;xsd:extension base="javaee:nonEmptyStringType"/&gt;
+    &lt;/xsd:simpleContent&gt;
+  &lt;/xsd:complexType&gt;
+
+&lt;!-- **************************************************** --&gt;
+
+  &lt;xsd:complexType name="servletType"&gt;
+    &lt;xsd:annotation&gt;
+      &lt;xsd:documentation&gt;
+
+	The servletType is used to declare a servlet.
+	It contains the declarative data of a
+	servlet. If a jsp-file is specified and the load-on-startup
+	element is present, then the JSP should be precompiled and
+	loaded.
+
+	Used in: web-app
+
+      &lt;/xsd:documentation&gt;
+    &lt;/xsd:annotation&gt;
+
+    &lt;xsd:sequence&gt;
+      &lt;xsd:group ref="javaee:descriptionGroup"/&gt;
+      &lt;xsd:element name="servlet-name"
+		   type="javaee:servlet-nameType"/&gt;
+      &lt;xsd:choice&gt;
+	&lt;xsd:element name="servlet-class"
+		     type="javaee:fully-qualified-classType"&gt;
+	  &lt;xsd:annotation&gt;
+	    &lt;xsd:documentation&gt;
+
+	      The servlet-class element contains the fully
+	      qualified class name of the servlet.
+
+	    &lt;/xsd:documentation&gt;
+	  &lt;/xsd:annotation&gt;
+	&lt;/xsd:element&gt;
+
+	&lt;xsd:element name="jsp-file"
+		     type="javaee:jsp-fileType"/&gt;
+
+      &lt;/xsd:choice&gt;
+
+      &lt;xsd:element name="init-param"
+		   type="javaee:param-valueType"
+		   minOccurs="0" maxOccurs="unbounded"/&gt;
+      &lt;xsd:element name="load-on-startup"
+		   type="javaee:load-on-startupType"
+		   minOccurs="0"&gt;
+	&lt;xsd:annotation&gt;
+	  &lt;xsd:documentation&gt;
+
+	    The load-on-startup element indicates that this
+	    servlet should be loaded (instantiated and have
+	    its init() called) on the startup of the web
+	    application. The optional contents of these
+	    element must be an integer indicating the order in
+	    which the servlet should be loaded. If the value
+	    is a negative integer, or the element is not
+	    present, the container is free to load the servlet
+	    whenever it chooses. If the value is a positive
+	    integer or 0, the container must load and
+	    initialize the servlet as the application is
+	    deployed. The container must guarantee that
+	    servlets marked with lower integers are loaded
+	    before servlets marked with higher integers. The
+	    container may choose the order of loading of
+	    servlets with the same load-on-start-up value.
+
+	  &lt;/xsd:documentation&gt;
+	&lt;/xsd:annotation&gt;
+      &lt;/xsd:element&gt;
+      &lt;xsd:element name="enabled"
+		   type="javaee:generic-booleanType"
+		   minOccurs="0"/&gt;
+      &lt;xsd:element name="async-support"
+		   type="javaee:generic-booleanType"
+		   minOccurs="0"/&gt;
+      &lt;xsd:element name="async-timeout"
+		   type="javaee:xsdIntegerType"
+		   minOccurs="0"/&gt;
+      &lt;xsd:element name="run-as"
+		   type="javaee:run-asType"
+		   minOccurs="0"/&gt;
+      &lt;xsd:element name="security-role-ref"
+		   type="javaee:security-role-refType"
+		   minOccurs="0" maxOccurs="unbounded"/&gt;
+    &lt;/xsd:sequence&gt;
+    &lt;xsd:attribute name="id" type="xsd:ID"/&gt;
+  &lt;/xsd:complexType&gt;
+
+&lt;!-- **************************************************** --&gt;
+
+  &lt;xsd:complexType name="session-configType"&gt;
+    &lt;xsd:annotation&gt;
+      &lt;xsd:documentation&gt;
+
+	The session-configType defines the session parameters
+	for this web application.
+
+	Used in: web-app
+
+      &lt;/xsd:documentation&gt;
+    &lt;/xsd:annotation&gt;
+
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element name="session-timeout"
+		   type="javaee:xsdIntegerType"
+		   minOccurs="0"&gt;
+	&lt;xsd:annotation&gt;
+	  &lt;xsd:documentation&gt;
+
+	    The session-timeout element defines the default
+	    session timeout interval for all sessions created
+	    in this web application. The specified timeout
+	    must be expressed in a whole number of minutes.
+	    If the timeout is 0 or less, the container ensures
+	    the default behaviour of sessions is never to time
+	    out. If this element is not specified, the container
+	    must set its default timeout period.
+
+	  &lt;/xsd:documentation&gt;
+	&lt;/xsd:annotation&gt;
+      &lt;/xsd:element&gt;
+    &lt;/xsd:sequence&gt;
+    &lt;xsd:attribute name="id" type="xsd:ID"/&gt;
+  &lt;/xsd:complexType&gt;
+
+&lt;!-- **************************************************** --&gt;
+
+  &lt;xsd:complexType name="transport-guaranteeType"&gt;
+    &lt;xsd:annotation&gt;
+      &lt;xsd:documentation&gt;
+
+	The transport-guaranteeType specifies that the communication
+	between client and server should be NONE, INTEGRAL, or
+	CONFIDENTIAL. NONE means that the application does not
+	require any transport guarantees. A value of INTEGRAL means
+	that the application requires that the data sent between the
+	client and server be sent in such a way that it can't be
+	changed in transit. CONFIDENTIAL means that the application
+	requires that the data be transmitted in a fashion that
+	prevents other entities from observing the contents of the
+	transmission. In most cases, the presence of the INTEGRAL or
+	CONFIDENTIAL flag will indicate that the use of SSL is
+	required.
+
+	Used in: user-data-constraint
+
+      &lt;/xsd:documentation&gt;
+    &lt;/xsd:annotation&gt;
+
+    &lt;xsd:simpleContent&gt;
+      &lt;xsd:restriction base="javaee:string"&gt;
+	&lt;xsd:enumeration value="NONE"/&gt;
+	&lt;xsd:enumeration value="INTEGRAL"/&gt;
+	&lt;xsd:enumeration value="CONFIDENTIAL"/&gt;
+      &lt;/xsd:restriction&gt;
+    &lt;/xsd:simpleContent&gt;
+  &lt;/xsd:complexType&gt;
+
+&lt;!-- **************************************************** --&gt;
+
+  &lt;xsd:complexType name="user-data-constraintType"&gt;
+    &lt;xsd:annotation&gt;
+      &lt;xsd:documentation&gt;
+
+	The user-data-constraintType is used to indicate how
+	data communicated between the client and container should be
+	protected.
+
+	Used in: security-constraint
+
+      &lt;/xsd:documentation&gt;
+    &lt;/xsd:annotation&gt;
+
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element name="description"
+		   type="javaee:descriptionType"
+		   minOccurs="0"
+		   maxOccurs="unbounded"/&gt;
+      &lt;xsd:element name="transport-guarantee"
+		   type="javaee:transport-guaranteeType"/&gt;
+    &lt;/xsd:sequence&gt;
+    &lt;xsd:attribute name="id" type="xsd:ID"/&gt;
+  &lt;/xsd:complexType&gt;
+
+&lt;!-- **************************************************** --&gt;
+
+  &lt;xsd:complexType name="war-pathType"&gt;
+    &lt;xsd:annotation&gt;
+      &lt;xsd:documentation&gt;
+
+	The elements that use this type designate a path starting
+	with a "/" and interpreted relative to the root of a WAR
+	file.
+
+      &lt;/xsd:documentation&gt;
+    &lt;/xsd:annotation&gt;
+    &lt;xsd:simpleContent&gt;
+      &lt;xsd:restriction base="javaee:string"&gt;
+	&lt;xsd:pattern value="/.*"/&gt;
+      &lt;/xsd:restriction&gt;
+    &lt;/xsd:simpleContent&gt;
+  &lt;/xsd:complexType&gt;
+
+&lt;!-- **************************************************** --&gt;
+
+  &lt;xsd:simpleType name="web-app-versionType"&gt;
+    &lt;xsd:annotation&gt;
+      &lt;xsd:documentation&gt;
+
+	This type contains the recognized versions of
+	web-application supported. It is used to designate the
+	version of the web application.
+
+      &lt;/xsd:documentation&gt;
+    &lt;/xsd:annotation&gt;
+    &lt;xsd:restriction base="xsd:token"&gt;
+      &lt;xsd:enumeration value="3.0"/&gt;
+    &lt;/xsd:restriction&gt;
+  &lt;/xsd:simpleType&gt;
+
+&lt;!-- **************************************************** --&gt;
+
+  &lt;xsd:complexType name="web-appType"&gt;
+
+    &lt;xsd:choice minOccurs="0" maxOccurs="unbounded"&gt;
+      &lt;xsd:group ref="javaee:descriptionGroup"/&gt;
+      &lt;xsd:element name="distributable"
+		   type="javaee:emptyType"/&gt;
+      &lt;xsd:element name="context-param"
+		   type="javaee:param-valueType"&gt;
+
+	&lt;xsd:annotation&gt;
+	  &lt;xsd:documentation&gt;
+
+	    The context-param element contains the declaration
+	    of a web application's servlet context
+	    initialization parameters.
+
+	  &lt;/xsd:documentation&gt;
+	&lt;/xsd:annotation&gt;
+      &lt;/xsd:element&gt;
+
+      &lt;xsd:element name="filter"
+		   type="javaee:filterType"/&gt;
+      &lt;xsd:element name="filter-mapping"
+		   type="javaee:filter-mappingType"/&gt;
+      &lt;xsd:element name="listener"
+		   type="javaee:listenerType"/&gt;
+      &lt;xsd:element name="servlet"
+		   type="javaee:servletType"/&gt;
+      &lt;xsd:element name="servlet-mapping"
+		   type="javaee:servlet-mappingType"/&gt;
+      &lt;xsd:element name="session-config"
+		   type="javaee:session-configType"/&gt;
+      &lt;xsd:element name="mime-mapping"
+		   type="javaee:mime-mappingType"/&gt;
+      &lt;xsd:element name="welcome-file-list"
+		   type="javaee:welcome-file-listType"/&gt;
+      &lt;xsd:element name="error-page"
+		   type="javaee:error-pageType"/&gt;
+      &lt;xsd:element name="jsp-config"
+		   type="javaee:jsp-configType"/&gt;
+      &lt;xsd:element name="security-constraint"
+		   type="javaee:security-constraintType"/&gt;
+      &lt;xsd:element name="login-config"
+		   type="javaee:login-configType"/&gt;
+      &lt;xsd:element name="security-role"
+		   type="javaee:security-roleType"/&gt;
+      &lt;xsd:group ref="javaee:jndiEnvironmentRefsGroup"/&gt;
+      &lt;xsd:element name="message-destination"
+		   type="javaee:message-destinationType"/&gt;
+      &lt;xsd:element name="locale-encoding-mapping-list"
+		   type="javaee:locale-encoding-mapping-listType"/&gt;
+    &lt;/xsd:choice&gt;
+
+    &lt;xsd:attribute name="version"
+		   type="javaee:web-app-versionType"
+		   use="required"/&gt;
+    &lt;xsd:attribute name="id" type="xsd:ID"/&gt;
+
+    &lt;xsd:attribute name="metadata-complete" type="xsd:boolean"&gt;
+      &lt;xsd:annotation&gt;
+	&lt;xsd:documentation&gt;
+
+	  The metadata-complete attribute defines whether this
+	  deployment descriptor and other related deployment
+	  descriptors for this module (e.g., web service
+	  descriptors) are complete, or whether the class
+	  files available to this module and packaged with
+	  this application should be examined for annotations
+	  that specify deployment information.
+
+	  If metadata-complete is set to "true", the deployment
+	  tool must ignore any annotations that specify deployment
+	  information, which might be present in the class files
+	  of the application.
+
+	  If metadata-complete is not specified or is set to
+	  "false", the deployment tool must examine the class
+	  files of the application for annotations, as
+	  specified by the specifications.
+
+	&lt;/xsd:documentation&gt;
+      &lt;/xsd:annotation&gt;
+    &lt;/xsd:attribute&gt;
+
+  &lt;/xsd:complexType&gt;
+
+&lt;!-- **************************************************** --&gt;
+
+  &lt;xsd:complexType name="web-resource-collectionType"&gt;
+    &lt;xsd:annotation&gt;
+      &lt;xsd:documentation&gt;
+
+	The web-resource-collectionType is used to identify a subset
+	of the resources and HTTP methods on those resources within
+	a web application to which a security constraint applies. If
+	no HTTP methods are specified, then the security constraint
+	applies to all HTTP methods.
+
+	Used in: security-constraint
+
+      &lt;/xsd:documentation&gt;
+    &lt;/xsd:annotation&gt;
+
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element name="web-resource-name"
+		   type="javaee:string"&gt;
+	&lt;xsd:annotation&gt;
+	  &lt;xsd:documentation&gt;
+
+	    The web-resource-name contains the name of this web
+	    resource collection.
+
+	  &lt;/xsd:documentation&gt;
+	&lt;/xsd:annotation&gt;
+      &lt;/xsd:element&gt;
+      &lt;xsd:element name="description"
+		   type="javaee:descriptionType"
+		   minOccurs="0"
+		   maxOccurs="unbounded"/&gt;
+      &lt;xsd:element name="url-pattern"
+		   type="javaee:url-patternType"
+		   maxOccurs="unbounded"/&gt;
+      &lt;xsd:element name="http-method"
+		   type="javaee:http-methodType"
+		   minOccurs="0" maxOccurs="unbounded"/&gt;
+    &lt;/xsd:sequence&gt;
+    &lt;xsd:attribute name="id" type="xsd:ID"/&gt;
+  &lt;/xsd:complexType&gt;
+
+&lt;!-- **************************************************** --&gt;
+
+  &lt;xsd:complexType name="welcome-file-listType"&gt;
+    &lt;xsd:annotation&gt;
+      &lt;xsd:documentation&gt;
+
+	The welcome-file-list contains an ordered list of welcome
+	files elements.
+
+	Used in: web-app
+
+      &lt;/xsd:documentation&gt;
+    &lt;/xsd:annotation&gt;
+
+    &lt;xsd:sequence&gt;
+      &lt;xsd:element name="welcome-file"
+		   type="xsd:string"
+		   maxOccurs="unbounded"&gt;
+	&lt;xsd:annotation&gt;
+	  &lt;xsd:documentation&gt;
+
+	    The welcome-file element contains file name to use
+	    as a default welcome file, such as index.html
+
+	  &lt;/xsd:documentation&gt;
+	&lt;/xsd:annotation&gt;
+      &lt;/xsd:element&gt;
+    &lt;/xsd:sequence&gt;
+    &lt;xsd:attribute name="id" type="xsd:ID"/&gt;
+  &lt;/xsd:complexType&gt;
+
+&lt;/xsd:schema&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>web-fragment_3_0.xsd</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;xsd:schema xmlns="http://www.w3.org/2001/XMLSchema"
+	    targetNamespace="http://java.sun.com/xml/ns/javaee"
+	    xmlns:javaee="http://java.sun.com/xml/ns/javaee"
+	    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	    elementFormDefault="qualified"
+	    attributeFormDefault="unqualified"
+	    version="3.0"&gt;
+  &lt;xsd:annotation&gt;
+    &lt;xsd:documentation&gt;
+      @(#)web-common_3_0.xsds
+    &lt;/xsd:documentation&gt;
+  &lt;/xsd:annotation&gt;
+
+  &lt;xsd:annotation&gt;
+    &lt;xsd:documentation&gt;
+
+      DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+      Copyright 2003-2007 Sun Microsystems, Inc. All rights reserved.
+
+      The contents of this file are subject to the terms of either the
+      GNU General Public License Version 2 only ("GPL") or the Common
+      Development and Distribution License("CDDL") (collectively, the
+      "License").  You may not use this file except in compliance with
+      the License. You can obtain a copy of the License at
+      https://glassfish.java.net/public/CDDL+GPL.html or
+      glassfish/bootstrap/legal/LICENSE.txt.  See the License for the
+      specific language governing permissions and limitations under the
+      License.
+
+      When distributing the software, include this License Header
+      Notice in each file and include the License file at
+      glassfish/bootstrap/legal/LICENSE.txt.  Sun designates this
+      particular file as subject to the "Classpath" exception as
+      provided by Sun in the GPL Version 2 section of the License file
+      that accompanied this code.  If applicable, add the following
+      below the License Header, with the fields enclosed by brackets []
+      replaced by your own identifying information:
+      "Portions Copyrighted [year] [name of copyright owner]"
+
+      Contributor(s):
+
+      If you wish your version of this file to be governed by only the
+      CDDL or only the GPL Version 2, indicate your decision by adding
+      "[Contributor] elects to include this software in this
+      distribution under the [CDDL or GPL Version 2] license."  If you
+      don't indicate a single choice of license, a recipient has the
+      option to distribute your version of this file under either the
+      CDDL, the GPL Version 2 or to extend the choice of license to its
+      licensees as provided above.  However, if you add GPL Version 2
+      code and therefore, elected the GPL Version 2 license, then the
+      option applies only if the new code is made subject to such
+      option by the copyright holder.
+
+    &lt;/xsd:documentation&gt;
+  &lt;/xsd:annotation&gt;
+
+  &lt;xsd:annotation&gt;
+    &lt;xsd:documentation&gt;
+      &lt;![CDATA[
+
+	This is the XML Schema for the Servlet 3.0 deployment descriptor.
+	The deployment descriptor must be named "WEB-INF/web.xml" in the
+	web application's war file.  All Servlet deployment descriptors
+	must indicate the web application schema by using the Java EE
+	namespace:
+
+	http://java.sun.com/xml/ns/javaee
+
+	and by indicating the version of the schema by
+	using the version element as shown below:
+
+	    &lt;web-app xmlns="http://java.sun.com/xml/ns/javaee"
+	      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	      xsi:schemaLocation="..."
+	      version="3.0"&gt;
+	      ...
+	    &lt;/web-app&gt;
+
+	The instance documents may indicate the published version of
+	the schema using the xsi:schemaLocation attribute for Java EE
+	namespace with the following location:
+
+	http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd
+
+	]]&gt;
+    &lt;/xsd:documentation&gt;
+  &lt;/xsd:annotation&gt;
+
+  &lt;xsd:annotation&gt;
+    &lt;xsd:documentation&gt;
+
+      The following conventions apply to all Java EE
+      deployment descriptor elements unless indicated otherwise.
+
+      - In elements that specify a pathname to a file within the
+	same JAR file, relative filenames (i.e., those not
+	starting with "/") are considered relative to the root of
+	the JAR file's namespace.  Absolute filenames (i.e., those
+	starting with "/") also specify names in the root of the
+	JAR file's namespace.  In general, relative names are
+	preferred.  The exception is .war files where absolute
+	names are preferred for consistency with the Servlet API.
+
+    &lt;/xsd:documentation&gt;
+  &lt;/xsd:annotation&gt;
+
+  &lt;xsd:include schemaLocation="web-common_3_0.xsd"/&gt;
+
+
+&lt;!-- **************************************************** --&gt;
+
+  &lt;xsd:element name="web-fragment" type="javaee:web-appType"&gt;
+    &lt;xsd:annotation&gt;
+      &lt;xsd:documentation&gt;
+
+	The web-app element is the root of the deployment
+	descriptor for a web application.  Note that the sub-elements
+	of this element can be in the arbitrary order. Because of
+	that, the multiplicity of the elements of distributable,
+	session-config, welcome-file-list, jsp-config, login-config,
+	and locale-encoding-mapping-list was changed from "?" to "*"
+	in this schema.  However, the deployment descriptor instance
+	file must not contain multiple elements of session-config,
+	jsp-config, and login-config. When there are multiple elements of
+	welcome-file-list or locale-encoding-mapping-list, the container
+	must concatenate the element contents.  The multiple occurence
+	of the element distributable is redundant and the container
+	treats that case exactly in the same way when there is only
+	one distributable.
+
+      &lt;/xsd:documentation&gt;
+    &lt;/xsd:annotation&gt;
+
+    &lt;xsd:unique name="web-app-servlet-name-uniqueness"&gt;
+      &lt;xsd:annotation&gt;
+	&lt;xsd:documentation&gt;
+
+	  The servlet element contains the name of a servlet.
+	  The name must be unique within the web application.
+
+	&lt;/xsd:documentation&gt;
+      &lt;/xsd:annotation&gt;
+      &lt;xsd:selector xpath="javaee:servlet"/&gt;
+      &lt;xsd:field    xpath="javaee:servlet-name"/&gt;
+    &lt;/xsd:unique&gt;
+
+    &lt;xsd:unique name="web-app-filter-name-uniqueness"&gt;
+      &lt;xsd:annotation&gt;
+	&lt;xsd:documentation&gt;
+
+	  The filter element contains the name of a filter.
+	  The name must be unique within the web application.
+
+	&lt;/xsd:documentation&gt;
+      &lt;/xsd:annotation&gt;
+      &lt;xsd:selector xpath="javaee:filter"/&gt;
+      &lt;xsd:field    xpath="javaee:filter-name"/&gt;
+    &lt;/xsd:unique&gt;
+
+    &lt;xsd:unique name="web-app-ejb-local-ref-name-uniqueness"&gt;
+      &lt;xsd:annotation&gt;
+	&lt;xsd:documentation&gt;
+
+	  The ejb-local-ref-name element contains the name of an EJB
+	  reference. The EJB reference is an entry in the web
+	  application's environment and is relative to the
+	  java:comp/env context.  The name must be unique within
+	  the web application.
+
+	  It is recommended that name is prefixed with "ejb/".
+
+	&lt;/xsd:documentation&gt;
+      &lt;/xsd:annotation&gt;
+      &lt;xsd:selector xpath="javaee:ejb-local-ref"/&gt;
+      &lt;xsd:field    xpath="javaee:ejb-ref-name"/&gt;
+    &lt;/xsd:unique&gt;
+
+    &lt;xsd:unique name="web-app-ejb-ref-name-uniqueness"&gt;
+      &lt;xsd:annotation&gt;
+	&lt;xsd:documentation&gt;
+
+	  The ejb-ref-name element contains the name of an EJB
+	  reference. The EJB reference is an entry in the web
+	  application's environment and is relative to the
+	  java:comp/env context.  The name must be unique within
+	  the web application.
+
+	  It is recommended that name is prefixed with "ejb/".
+
+	&lt;/xsd:documentation&gt;
+      &lt;/xsd:annotation&gt;
+      &lt;xsd:selector xpath="javaee:ejb-ref"/&gt;
+      &lt;xsd:field    xpath="javaee:ejb-ref-name"/&gt;
+    &lt;/xsd:unique&gt;
+
+    &lt;xsd:unique name="web-app-resource-env-ref-uniqueness"&gt;
+      &lt;xsd:annotation&gt;
+	&lt;xsd:documentation&gt;
+
+	  The resource-env-ref-name element specifies the name of
+	  a resource environment reference; its value is the
+	  environment entry name used in the web application code.
+	  The name is a JNDI name relative to the java:comp/env
+	  context and must be unique within a web application.
+
+	&lt;/xsd:documentation&gt;
+      &lt;/xsd:annotation&gt;
+      &lt;xsd:selector xpath="javaee:resource-env-ref"/&gt;
+      &lt;xsd:field    xpath="javaee:resource-env-ref-name"/&gt;
+    &lt;/xsd:unique&gt;
+
+    &lt;xsd:unique name="web-app-message-destination-ref-uniqueness"&gt;
+      &lt;xsd:annotation&gt;
+	&lt;xsd:documentation&gt;
+
+	  The message-destination-ref-name element specifies the name of
+	  a message destination reference; its value is the
+	  environment entry name used in the web application code.
+	  The name is a JNDI name relative to the java:comp/env
+	  context and must be unique within a web application.
+
+	&lt;/xsd:documentation&gt;
+      &lt;/xsd:annotation&gt;
+      &lt;xsd:selector xpath="javaee:message-destination-ref"/&gt;
+      &lt;xsd:field    xpath="javaee:message-destination-ref-name"/&gt;
+    &lt;/xsd:unique&gt;
+
+    &lt;xsd:unique name="web-app-res-ref-name-uniqueness"&gt;
+      &lt;xsd:annotation&gt;
+	&lt;xsd:documentation&gt;
+
+	  The res-ref-name element specifies the name of a
+	  resource manager connection factory reference.  The name
+	  is a JNDI name relative to the java:comp/env context.
+	  The name must be unique within a web application.
+
+	&lt;/xsd:documentation&gt;
+      &lt;/xsd:annotation&gt;
+      &lt;xsd:selector xpath="javaee:resource-ref"/&gt;
+      &lt;xsd:field    xpath="javaee:res-ref-name"/&gt;
+    &lt;/xsd:unique&gt;
+
+    &lt;xsd:unique name="web-app-env-entry-name-uniqueness"&gt;
+      &lt;xsd:annotation&gt;
+	&lt;xsd:documentation&gt;
+
+	  The env-entry-name element contains the name of a web
+	  application's environment entry.  The name is a JNDI
+	  name relative to the java:comp/env context.  The name
+	  must be unique within a web application.
+
+	&lt;/xsd:documentation&gt;
+      &lt;/xsd:annotation&gt;
+
+      &lt;xsd:selector xpath="javaee:env-entry"/&gt;
+      &lt;xsd:field    xpath="javaee:env-entry-name"/&gt;
+    &lt;/xsd:unique&gt;
+
+    &lt;xsd:key name="web-app-role-name-key"&gt;
+      &lt;xsd:annotation&gt;
+	&lt;xsd:documentation&gt;
+
+	  A role-name-key is specified to allow the references
+	  from the security-role-refs.
+
+	&lt;/xsd:documentation&gt;
+      &lt;/xsd:annotation&gt;
+      &lt;xsd:selector xpath="javaee:security-role"/&gt;
+      &lt;xsd:field    xpath="javaee:role-name"/&gt;
+    &lt;/xsd:key&gt;
+
+    &lt;xsd:keyref name="web-app-role-name-references"
+		refer="javaee:web-app-role-name-key"&gt;
+      &lt;xsd:annotation&gt;
+	&lt;xsd:documentation&gt;
+
+	  The keyref indicates the references from
+	  security-role-ref to a specified role-name.
+
+	&lt;/xsd:documentation&gt;
+      &lt;/xsd:annotation&gt;
+      &lt;xsd:selector xpath="javaee:servlet/javaee:security-role-ref"/&gt;
+      &lt;xsd:field    xpath="javaee:role-link"/&gt;
+    &lt;/xsd:keyref&gt;
+  &lt;/xsd:element&gt;
+
+&lt;/xsd:schema&gt;</pre> 
+       </div> 
+      </div>
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Nov 07, 2011 by 
+<font color="#0050B2">rajivmordani</font>. Exported from wikis.oracle.com on May 27, 2015 20:44.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

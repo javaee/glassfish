@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : AddingBinaryDependency</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="AddingBinaryDependency-AddingBinarydependencyinV3"></a>Adding Binary dependency in V3</h1> <h4><a name="AddingBinaryDependency-HowtopublishbinaryinV3mavenrepository%3F"></a>How to publish binary in V3 maven repository?</h3> <p>Before adding new binary dependency, check at maven public repository if the dependency is already present there. URL of public maven repository: <a href="http://www.mvnrepository.com">http://www.mvnrepository.com</a> or <a href="http://www.mvnbrowser.com/">http://www.mvnbrowser.com/</a>, there is a search at the top of the page. </p> <p>If its not present in maven repository, then you can upload your artifacts using the web-application deployed here: <a href="http://kohsuke.sfbay/deploy2java.net">http://kohsuke.sfbay/deploy2java.net</a> (Available inside Sun Firewall only).</p> <p>You will have to add binaries as well source files for the binary dependency into the repository. Binary jar will contain .class files with full package, and source jar will contain .java files with the same package.</p> <p><b>Group ID</b>: Package name e.g. org.apache.tools.ant or com.sun.jdbc</p> <p><b>Artifact ID</b>: Jar filename e.g. ant or jdbc without any version or suffix.</p> <p><b>Classifier</b>: (Optional) "sources" for Source jar</p> <p><b>Packaging</b>: (Optional) filename extention, used for .war, .ear, shell scripts, default is jar, so no need to pass anything here. </p> <p><b>Version</b>: Version of the binary e.g 1.0, 2.1 etc</p> <p><b>File</b>: Local Path of the file to upload</p> <p>You will have to upload 2 jars for each binary dependency, first for actual binary jar and second for sources of the binary dependency with Classifier as "sources"</p> <h4><a name="AddingBinaryDependency-UsePublishedArtifactintoyourproject%3A"></a>Use Published Artifact into your project:</h3> <p>Once you publish binary dependency in maven repository with above steps, you can access it in your project by adding it in "dependencies" section of pom.xml, see the snippet from pom.xml</p> <p>POM Dependency</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;dependency&gt;
+    &lt;groupId&gt;org.apache.ant&lt;/groupId&gt;
+    &lt;artifactId&gt;ant&lt;/artifactId&gt;
+    &lt;version&gt;1.7.0&lt;/version&gt;
+&lt;/dependency&gt;</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="AddingBinaryDependency-Browsetherepository"></a>Browse the repository</h3> <p>You can browse GlassFish V3 - maven2 repository information at <a href="https://maven2-repository.java.net">https://maven2-repository.java.net</a><br> or Repository listing at: <a href="http://download.java.net/maven/2">http://download.java.net/maven/2</a></p> <p>GlassFish V2 Repository information is at: <a href="https://maven-repository.java.net">https://maven-repository.java.net</a> or listing at <a href="http://download.java.net/maven/1">http://download.java.net/maven/1</a></p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 08, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:42.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

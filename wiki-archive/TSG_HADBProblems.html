@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : TSG_HADBProblems</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p><a href="TroubleshootingGuide.html" title="TroubleshootingGuide">Main</a> <a href="TSG_CommonProblems.html" title="TSG_CommonProblems">Previous</a> <a href="TSG_SecurityProblems.html" title="TSG_SecurityProblems">Next</a></p> <h4><a name="TSG_HADBProblems-HADBProblems"></a>HADB Problems</h1> <p>This section covers problems you may encounter when using the Application Server 9.1 product with the High Availability Database (HADB) module, HADB Management Client, or the load balancer plugin. These components can be installed separately or with the rest of the Application Server.</p> <p>[</p> 
+     <div class="error">
+      <span class="error">Unknown macro: {TableOfContents title='On This Page'}</span> 
+     </div> <p>|(TableOfContentstitle='OnThisPage')]</p> 
+     <hr> <h4><a name="TSG_HADBProblems-HADBDatabaseCreationFails"></a>HADB Database Creation Fails</h2> <p>Database creation may fail with the following error:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">failed to start database : HADB Database creation failed</pre> 
+       </div> 
+      </div>
+     </div> <p>To determine the cause of the problem, use the Log Viewer and/or inspect the <tt>install_dir/hadb/4/log</tt> directory. Some possible errors are:</p> 
+     <ul> 
+      <li>Problems Related to Shared Memory</li> 
+      <li>Too Few Semaphores</li> 
+      <li>Database Nodes Cannot Be Reached and the Database Does Not Function</li> 
+      <li>The Management Agents Could Not Establish a Domain</li> 
+      <li><tt>hadbm create</tt> or <tt>hadbm addnodes</tt> Command Hangs</li> 
+      <li><tt>ma</tt> (Management Agent Process) Crashes</li> 
+     </ul> <h4><a name="TSG_HADBProblems-ProblemsRelatedtoSharedMemory"></a>Problems Related to Shared Memory</h3> 
+     <ul> 
+      <li><b>Description</b><br> \This problem may occur due to any of several reasons:</li> 
+     </ul> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li>Cause 1*<br> \Shared memory is not configured or the configuration is not working.</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li><b>Solution 1</b><br> \Follow the instructions described in the <a href="./InstallationGuide.html">Sun Java System Application Server 9.1 Installation Guide</a>. Remember to reboot the system after configuring shared memory settings.</li> 
+     </ul> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li>Cause 2*<br> \The physical memory is not enough to satisfy the node requirements. You may see the following error message:\ 
+         <div class="code panel" style="border-width: 1px;">
+          <div class="codeContent panelContent"> 
+           <div id="root"> 
+            <pre class="theme: Confluence; brush: java; gutter: false">HADB-S-05512: Attaching shared memory segment with key &lt;xx\&gt; failed, 
+OS status=12 OS message: Not enough space.</pre> 
+           </div> 
+          </div>
+         </div></li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li><b>Solution 2</b><br> \Verify that shared memory is configured and the configuration is working, as mentioned above.<br> \For production systems, reduce the number of nodes on the host or increase the physical memory on the host.<br> \For test/development systems, reduce the shared memory usage by setting the <tt>LogBufferSize</tt> and <tt>DataBufferPoolSize</tt> to a value lower than the default values of <tt>48</tt> and <tt>200MB</tt>, respectively. The allowed minimum for these variables are <tt>32</tt> and <tt>64</tt> MB, respectively.</li> 
+     </ul> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li>Cause 3*<br> \The size of a shared memory segment has exceeded the allowed maximum size.<br> {code}HADB-S-05510: Getting shared memory segment with key &lt;xx\&gt; failed, <br> OS status=22. OS message: Invalid argument.
+         <div class="code panel" style="border-width: 1px;">
+          <div class="codeContent panelContent"> 
+           <div id="root"> 
+            <pre class="theme: Confluence; brush: java; gutter: false">* *Solution 3*
+\Verify that shared memory is configured and the configuration is working, as mentioned above.
+\If shared memory is configured correctly, check whether you have specified any shared memory segment size ({{LogBufferSize}} or {{DataBufferPoolSize}}) larger than the system-configured maximum value set in the operating system configuration files ({{shmsys:shminfo_shmmax}} in {{/etc/system}} on Solaris).
+
+** Cause 4*
+\There is already a shared memory segment created with the specified identifier:\</pre> 
+           </div> 
+          </div>
+         </div>HADB-S-05515: Shared memory segment with key &lt;segment_key\&gt; exists already.
+         <div class="code panel" style="border-width: 1px;">
+          <div class="codeContent panelContent"> 
+           <div id="root"> 
+            <pre class="theme: Confluence; brush: java; gutter: false">* *Solution 4*
+\List the shared memory segments and check. The {{ipcs}} command can be used to list the segments in UNIX. Windows uses memory mapped files for shared memory.
+\HADB uses the {{getTempPath}} system call to get the system-defined temporary directory where these files, named as {{f_segmentid}}, are stored.
+\Check whether there is already another running database or any other program using the shared memory segment with this identifier. If so, create a database with another port base. If there are no running databases or other programs using this segment, free the segment with {{hadbm delete unused_database}}.
+\Check whether the segments are freed. If they are still there, remove them (use {{ipcrm}} in UNIX and delete {{$TMP/f_*}} in Windows). The file name consists of the {{f_}} prefix followed by the {{segment_key}} translated into hexadecimal. For example, if the error message indicates that segment key {{15201}} still exists, the temp file would be named {{f_3B61}}.
+
+h3. Too Few Semaphores
+
+* *Description*\\\\\~UWC_TOKEN_START~1278691907167~UWC_TOKEN_END
+\This can be caused when the number of semaphores is too low. Since the semaphores are provided as a global resource by the operating system, the configuration depends on all processes running on the host, not only the HADB. This can occur either while starting the HADB, or during runtime.
+
+* *Solution*
+\Configure the semaphore settings by editing the {{/etc/system}} file. Instructions and guidelines are contained in the Configuring Shared Memory and Semaphores section of the Preparing for HADB Setup chapter of the [Sun Java System Application Server Installation Guide|http://wiki.glassfish.java.net/Wiki.jsp?page=InstallationGuide].
+
+h3. Database Nodes Cannot Be Reached and the Database Does Not Function
+
+* *Solution*
+\The IP addresses of the involved hosts should be fixed. HADB uses the fixed IP addresses present at database creation, so you cannot use dynamic IP addresses (DHCP) for production systems.
+
+h3. The Management Agents Could Not Establish a Domain
+
+* *Description*
+\The HADB management system is dependent on UDP Multicast messages on multicast address {{228.8.8.8}}. If these messages cannot get through, the createdomain command fails with the following message:\\\\\~UWC_TOKEN_START~1278691907168~UWC_TOKEN_END
+\Possible causes include:\
+** The agents are running on hosts with several network interfaces on different subnets.
+\
+** There is a switch on the network that does not forward multicast messages.
+\
+** There is router on the network that does not route multicast messages with the address 228.8.8.8.
+\
+** Multicast messages are disabled in the operating system (for example, on Solaris 10).
+
+* *Solution 1*
+\If the hosts have several network interfaces on different subnets, the management agent must be configured to use one of the subnets. Set the {{ma.server.mainternal.interfaces}} attribute.
+
+* *Solution 2*
+\Configure the needed network infrastructure to support multicast messages.
+
+
+h3. {{hadbm create}} or {{hadbm addnodes}} Command Hangs
+
+* *Description*
+\Some hosts in the host list given to hadbm create or addnodes have multiple network interfaces, while others have only one, and the hadbm create/addnodes command hangs.
+
+* *Solution*
+\For the hosts having multiple network interfaces, specify the dotted IP address of the network interface (for example, {{129.241.111.23}}) to be used by hadb when issuing {{hadbm create}}/{{addnodes}}. If the host name is used instead of IP address, the first interface registered on the host will be used, and there is no guarantee that the nodes will be able to communicate.
+
+h3. {{ma}} (Management Agent Process) Crashes
+
+* *Description*
+\The {{ma}} (Management Agent process) crashes for various reasons.
+
+* *Solution*
+\Display diagnostic information by using {{hadbm listdomain}}. Typically, the remedy is to restart the failed agent. If that does not help, restart all agents in turn.
+
+----
+^[Top of Page|http://wiki.glassfish.java.net/Wiki.jsp?page=TSG_HADBProblems]^
+h2. Server Responds Slowly After Idle Period
+
+* *Description*
+\The server takes a long time to service a request after a long period of idleness, and the sever log shows "lost connection" messages of the form:\\\\\~UWC_TOKEN_START~1278691907169~UWC_TOKEN_END
+\In such cases, the server needs to recreate the JDBC pool for HADB.
+
+* *Solution*
+\Change the timeout value. The default HADB connection timeout value is {{1800}} seconds. If the Application Server does not send any request over a JDBC connection during this period, HADB closes the connection, and the application server needs to re-establish it. To change the timeout value, use the {{hadbm set SessionTimeout=}} command.
+\*Note:* Make sure the HADB connection timeout is greater than the JDBC connection pool timeout. If the JDBC connection timeout is greater than the HADB connection time out, the connection will be closed from the HADB side, but will remain in the Application Server connection pool. When the application then tries to use the connection, the Application Server will need to recreate the connection, which incurs significant overhead.
+
+----
+^[Top of Page|http://wiki.glassfish.java.net/Wiki.jsp?page=TSG_HADBProblems]^
+h2. Requests Are Not Succeeding
+
+The following problems are addressed in this section:
+
+* Is the Load Balancer Timeout Correct?
+* Are the System Clocks Synchronized?
+* Is the Application Server Communicating With HADB?
+
+h3. Is the Load Balancer Timeout Correct?
+
+* *Description*
+\When configuring the {{response-timeout-in-seconds}} property in the {{loadbalancer.xml}} file, you must take into account the maximum timeouts for all the applications that are running. If the response timeout it is set to a very low value, numerous in-flight requests will fail because the load balancer will not wait long enough for the Application Server to respond to the request.
+\Conversely, setting the response timeout to an inordinately large value will result in requests being queued to an instance that has stopped responding, resulting in numerous failed requests.
+
+* *Solution*
+\Set the {{response-timeout-in-seconds}} value to the maximum response time of all the applications.
+
+h3. Are the System Clocks Synchronized?
+
+* *Description*
+\When a session is stored in HADB, it includes some time information, including the last time the session was accessed and the last time it was modified. If the clocks are not synchronized, then when an instance fails and another instance takes over (on another machine), that instance may think the session was expired when it was not, or worse yet, that the session was last accessed in the future!
+\*Note:* In a non-colocated configuration, it is important to synchronize the clocks on that machines that are hosting HADB nodes. For more information, see the [Installation Guide|./InstallationGuide] chapter, "Preparing for HADB Setup..html"
+
+* *Solution*
+\Verify that clocks are synchronized for all systems in the cluster.
+
+h3. Is the Application Server Communicating With HADB?
+
+* *Description*
+\HADB may be created and running, but if the persistence store has not yet been created, the Application Server will not be able to communicate with the HADB. This situation is accompanied by the following message:\</pre> 
+           </div> 
+          </div>
+         </div>WARNING (7715): ConnectionUtilgetConnectionsFromPool failed using<br> connection URL: connection URL
+         <div class="code panel" style="border-width: 1px;">
+          <div class="codeContent panelContent"> 
+           <div id="root"> 
+            <pre class="theme: Confluence; brush: java; gutter: false">* *Solution*
+\Create the session store in the HADB with a command like the following:\</pre> 
+           </div> 
+          </div>
+         </div>asadmin create-session-store --storeurl connection URL --storeuser haadmin <br> --storepassword hapasswd --dbsystempassword super123
+         <div class="code panel" style="border-width: 1px;">
+          <div class="codeContent panelContent"> 
+           <div id="root"> 
+            <pre class="theme: Confluence; brush: java; gutter: false">----
+^[Top of Page|http://wiki.glassfish.java.net/Wiki.jsp?page=TSG_HADBProblems]^
+h2. Session Persistence Problems
+
+The following problems are addressed in this section:
+
+* The create-session-store Command Failed
+* Configuring Instance-Level Session Persistence Did Not Work
+* Session Data Seems To Be Corrupted
+
+h3. The {{create-session-store}} Command Failed
+
+* *Description*
+\The {{asadmin create-session-store}} command cannot run across firewalls. Therefore, for the {{create-session-store}} command to work, the Application Server instance and the HADB must be on the same side of a firewall.
+\The {{create-session-store}} command communicates with the HADB and not with the application server instance.
+
+* *Solution*
+\Locate the HADB and the application server instance on the same side of a firewall.
+
+h3. Configuring Instance-Level Session Persistence Did Not Work
+
+The application-level session persistence configuration always takes precedence over instance-level session persistence configuration. Even if you change the instance-level session persistence configuration after an application has been deployed, the settings for the application still override the settings for the application server instance.
+
+h3. Session Data Seems To Be Corrupted
+
+* *Description*
+\Session data may be corrupted if the system log reports errors under the following circumstances:\
+** During session persistence
+** When the session state is read during session activation
+** When the session state is read after session failover
+
+If the data has been corrupted, there are three possible solutions for bringing the session store back to a consistent state.
+
+* *Solution 1*
+\Use the {{asadmin clear-session-store}} command to clear the session store.
+
+* *Solution 2*
+\If clearing the session store does not work, reinitialize the data space on all the nodes and clear the data in the HADB using the {{hadbm clear}} command.
+
+* *Solution 3*
+\If clearing the HADB does not work, delete and then recreate the database.
+\For Solutions 2 and 3, above, after clearing the HADB, recreate the session store to restablish the database schema.
+
+----
+^[Top of Page|http://wiki.glassfish.java.net/Wiki.jsp?page=TSG_HADBProblems]^
+h2. HADB Performance Problems
+
+Performance is affected when the transactions to HADB get delayed or aborted. This situation is generally caused by a shortage of system resources. Any wait beyond five seconds causes the transactions to abort. Any node failures also cause the active transaction on that node at crash time to abort. Any double failures (failure of both mirrors) will make the HADB unavailable. The causes of the failures can generally be found in the HADB history files.
+
+To isolate the problem, consider the following:
+
+* Is There a Shortage of CPU or Memory Resources, or Too Much Swapping?
+* Is There Disk Contention?
+* Is There a Shortage of HADB Data Device Space?
+* Is There a Shortage of Other HADB Resources?
+
+h3. Is There a Shortage of CPU or Memory Resources, or Too Much Swapping?
+
+* *Description*
+\Node restarts or double failures due to "Process blocked for x sec, max block time is 2.500000 sec." In this case, _x_ is the length of time the process was blocked, and it was greater than 2.5 seconds.
+\The HADB Node Supervisor Process ({{NSUP/clu_nsup_srv}}) tracks the time elapsed since the last time it did some monitoring work. If that time duration exceeds a specified maximum ({{2500ms}} by default), NSUP concludes that it was blocked too long and restarts the node.
+\NSUP being blocked for more than 2.5 seconds cause the node to restart. If mirror nodes are placed on the same host, the likelihood of double failure is high. Simultaneous occurrence of the blocking on the mirror hosts may also lead to double failures.
+\The situation is especially likely to arise when there are other processes -- for example, in a colocated configuration --  in the system that compete for CPU, or memory which produces extensive swapping and multiple page faults as processes are rescheduled.
+\NSUP being blocked can also be caused by negative system clock adjustments.
+
+* *Solution*
+\Ensure that HADB nodes get enough system resources. Ensure also that the time synchronization daemon does not make large (not higher than 2 seconds) jumps.
+
+
+h3. Is There Disk Contention?
+
+* *Description*
+\A disk contention can have a negative impact on user data read/writes to the disk devices, as well as on HADB writing to history files. Severe disk contention may delay or abort user transactions. Delay in history file writing may cause node restarts and, in the worst case, lead to double failures.
+\The disk contention can be identified by monitoring the disk I/O from the OS, for the disks used for data, log devices and history files. History file write delays are written to the HADB history files. This can be identified by "NSUP   BEWARE timestamp Last flush took too long (x msecs)."
+\This warning shows that disk I/O took too long. If the delay exceeds ten seconds, the node supervisor restarts the trans process with the error message:\\\\\~UWC_TOKEN_START~1278691907172~UWC_TOKEN_END
+\This message indicates that a trans ({{clu_trans_srv}}) process has been too busy doing other things (for example, waiting to write to the history file) to reply to the node supervisor's request checking the heartbeat of the trans process. This causes the nsup to believe that the trans has died and then restarts it.
+\When the operating system is overloaded with too many processes (many HADB nodes co-located with other processes), the scheduling of I/O operations may be delayed. When the HADB related I/O work is delayed, HADB nodes write the following in the history files, "HADB warning: Schedule of async &lt;read,write\&gt; operation took ..."
+\This problem is observed especially in Red Hat AS 2.1 when multiple HADB nodes are placed on the same host and all the nodes use the same disk to place their devices.
+
+* *Solution*
+\Use one disk per node to place the devices used by that node. If the node has more than one data devices and the disk contention is observed, move one data device to another disk. The same applies to the history file as well.
+\Make sure that all data and log devices and all history files reside on local disks (not NFS-mounted or other remotely mounted disks).
+\If the monitoring tools still show contention on the HADB disks, the data buffer pool size can be increased.
+
+
+h3. Is There a Shortage of HADB Data Device Space?
+
+* *Description*
+\One possible reason for transaction failure is running out of data device space. If this situation occurs, HADB will write warnings to the history file, and abort the transaction which tried to insert and/or update data.
+\Typical messages are:\\\\\~UWC_TOKEN_START~1278691907173~UWC_TOKEN_END
+\The general rule of thumb is that the data devices must have room for at least four times the volume of the user data. Please refer to the Tuning Guide for additional explanation.
+
+* *Solution 1*
+\Increase the size of the data devices using the following command:\\\\\~UWC_TOKEN_START~1278691907174~UWC_TOKEN_END
+\This solution requires that there is space available on the physical disks which are used for the HADB data devices on all nodes.
+\HADBM automatically restarts each node of the database.
+
+* *Solution 2*
+\Stop and delete the HADB, and create a new instance with more nodes and/or larger data devices and/or several data devices per node. Unfortunately, using this solution will erase all persistent data and the schemas created by the Application Server. See the Administrator's Guide for more information about this procedure.
+
+h3. Is There a Shortage of Other HADB Resources?
+
+When an HADB node is started, it will allocate:
+
+* Several shared memory segments of fixed size
+* Internal data structures of fixed size
+
+If an HADB node runs out of resources it will delay and/or abort transactions. Resource usage information is shipped between mirror nodes, so that a node can delay or abort an operation which is likely to fail on its mirror node.
+
+Transactions that are delayed repeatedly may time out and return an error message to the client. If they do not time out, the situation will be visible to the client only as decreased performance during the periods in which the system is short on resources.
+
+These problems frequently occur in "High Load" situations. For details, see [High Load Problems|http://wiki.glassfish.java.net/Wiki.jsp?page=TSG_HADBProblems#section-TSG_HADBProblems-HighLoadProblems]
+
+----
+^[Top of Page|http://wiki.glassfish.java.net/Wiki.jsp?page=TSG_HADBProblems]^
+h2. High Load Problems
+
+High load scenarios are recognizable by the following symptoms:
+
+* User requests do not succeed
+* The database gives multiple timeout and "transaction aborted" messages
+* Frequent "{{HIGH LOAD}}" warnings in the history file
+* Sporadic failures
+
+If a high load problem is suspected, consider the following:
+
+* Is the Tuple Log Out Of Space?
+* Is the node-internal Log Full?
+* Are There Enough Locks?
+* Can You Fix the Problem by Doing Some Performance Tuning?
+
+*Note:* Frequently, all of these problems can be solved by making more CPU horsepower available.
+
+h3. Is the Tuple Log Out Of Space?
+
+All user operations (delete, insert, update) are logged in the tuple log and executed. There tuple log may fill up because:
+
+* Execution slows due to CPU or disk I/O contention
+
+* The mirror node is slow in receiving the log records, which can happen as a result of:\
+** Network contention, so the log records do not reach the mirror node
+\
+** CPU and disk contention at the mirror node, which keeps it from processing the received log records quickly enough ("log throw due to..." messages in the history files).
+\If the tuple log is out of space, the history files contain messages showing {{HIGH LOAD}} on the tuple log.
+
+* *Solution 1*
+\Check CPU usage, as described in [Improving CPU Utilization|http://wiki.glassfish.java.net/Wiki.jsp?page=TSG_HADBProblems#section-TSG_HADBProblems-ImprovingCPUUtilization]
+
+* *Solution 2*
+\If CPU utilization is not a problem, check the disk I/O. If the disk shows contention, avoid page faults when log records are being processed by increasing the data buffer size with {{hadbm set DataBufferPoolSize=}}. If there is disk contention, follow the solutions suggested in [Is There Disk Contention?|http://wiki.glassfish.java.net/Wiki.jsp?page=TSG_HADBProblems#section-TSG_HADBProblems-IsThereDiskContention]
+
+* *Solution 3*
+\Look for evidence of network contention, and resolve bottlenecks.
+
+* *Solution 4*
+\Increase the tuple log buffer {{using hadbm set LogBufferSize=}}.
+
+
+h3. Is the node-internal Log Full?
+
+Too many node-internal operations are scheduled but not processed due to CPU or disk I/O problems.
+\If the node-internal log is out of space, the history files contain messages showing HIGH LOAD on the node internal log.
+
+* *Solution 1*
+\Check CPU usage, as described in [Improving CPU Utilization|http://wiki.glassfish.java.net/Wiki.jsp?page=TSG_HADBProblems#section-TSG_HADBProblems-ImprovingCPUUtilization]
+
+* *Solution 2*
+\If CPU utilization is not a problem, check the disk I/O. If the disk shows contention, avoid page faults when log records are being processed by increasing the data buffer size with hadbm set {{DataBufferPoolSize=}}. If there is disk contention, follow the solutions suggested in [Is There Disk Contention?|http://wiki.glassfish.java.net/Wiki.jsp?page=TSG_HADBProblems#section-TSG_HADBProblems-IsThereDiskContention]
+
+h3. Are There Enough Locks?
+
+Some extra symptoms that identify this condition are:
+
+* Error code {{2080}} or {{2096}} delivered to the client.
+
+* {{hadbm resourceinfo --locks}} shows locks allocated, and all are in use all the time
+
+* *Solution 1: Split Long Transactions*
+\A transaction running on a node is not allowed to use more than 25% of the number of locks allocated on that node. Read transactions running at the "repeatable read" isolation level and the update/insert/delete transactions hold the locks until the transaction terminates. Therefore, it is recommended to split long transactions into small batch of separate transactions.
+
+* *Solution 2: Increase the number of locks*
+\Use {{hadbm set NumberOfLocks=}} to increase the number of locks.
+
+h3. Can You Fix the Problem by Doing Some Performance Tuning?
+
+In most situations, reducing load or increasing the availability of resources will improve host performance. Some of the more common steps to take are:
+
+* Run the nodes on hosts with better hardware characteristics (more internal memory, higher processor speed, more processors).
+
+* Add physical disks and use several data devices, not more than one device on each physical disk.
+
+* Add more nodes, on new hosts, and refragment the data to utilize the new nodes.
+
+* Change configuration variables to allocate larger memory segments or internal data structures.
+
+In addition, the following resources can be adjusted to improve "{{HIGH LOAD}}" problems, as described in the [Performance and Tuning Guide|http://wiki.glassfish.java.net/Wiki.jsp?page=PerformanceTuningGuide]:
+
+||Resource||Property ||
+| Size of Database Buffer |{{hadbm attribute DataBufferPoolSize}} |
+| Size of Tuple Log Buffer |{{hadbm attribute LogBufferSize}} |
+| Size of Node Internal Log Buffer |{{hadbm attribute InternalLogBufferSize}} |
+| Number of Database Locks |{{hadbm attribute NumberOfLocks}} |
+
+----
+^[Top of Page|http://wiki.glassfish.java.net/Wiki.jsp?page=TSG_HADBProblems]^
+h2. Connection Problem Caused by Lack of Semaphore Resources
+
+* *Description*
+\This problem is accompanied by a message in the history file:\\\\\~UWC_TOKEN_START~1278691907175~UWC_TOKEN_END
+\You must configure more semaphore unso structures on the host computer. See the "Preparing for HADB Setup" chapter in the [Sun Java System Application Server 9.1 Installation Guide|http://wiki.glassfish.java.net/Wiki.jsp?page=InstallationGuide] for information on how to configure {{semmnu}} on your operating system.
+
+* *Solution*
+\Stop the affected HADB node, reconfigure and reboot the affected host, restart the HADB node. HADB will be available during the process.
+
+----
+^[Top of Page|http://wiki.glassfish.java.net/Wiki.jsp?page=TSG_HADBProblems]^
+h2. Improving CPU Utilization
+
+* *Description*
+\Available CPU cycles and I/O capacity can impose severe restrictions on performance. Resolving and preventing such issues is necessary to optimize system performance (in addition to configuring the HADB optimally.)
+
+* *Solution*
+\If there are additional CPUs on the host that are not exploited, add new nodes to the same host. Otherwise add new machines and add new nodes on them.
+\If the machine has enough memory, increase the {{DataBufferPoolSize}}, and increase other internal buffers that may be putting warnings into the log files. Otherwise, add new machines and add new nodes on them.
+\For more information on this subject, consult the [Performance and Tuning Guide|http://wiki.glassfish.java.net/Wiki.jsp?page=PerformanceTuningGuide].
+
+----
+^[Top of Page|http://wiki.glassfish.java.net/Wiki.jsp?page=TSG_HADBProblems]^
+h2. HADB Administration Problems
+
+The hadbm command and its many subcommands and options are provided for administering the high-availability database (HADB). The {{hadbm}} command is located in the install_dir/SUNWhadb/4/bin directory.
+
+Refer to the chapter on Configuring the High Availability Database in the [Sun Java System Application Server Administrator's Guide|http://wiki.glassfish.java.net/Wiki.jsp?page=AdministrationGuide] for a full explanation of this command. Specifics on the various {{hadbm}} subcommands are explained in the {{hadbm man}} pages.
+
+The following problems are addressed in this section:
+
+* {{hadbm}} Command Fails: The agents could not be reached
+* {{hadbm}} Command Fails: command not found
+* {{hadbm}} Command Fails: JAVA_HOME not defined
+* {{hadbm createdomain}} fails, but two split domains are created
+* {{create}} Fails: path does not exist on a host
+* Database Does Not Start
+* {{clear}} Command Failed
+* {{create-session-store}} Failed
+* {{hadbm}} Command Hangs
+* Cannot Restart the HADB
+
+h3. {{hadbm}} Command Fails: The agents could not be reached
+
+* *Description*
+\The command fails with the error:\\\\\~UWC_TOKEN_START~1278691907176~UWC_TOKEN_END
+\The hosts in the URL could be unreachable either because the hosts are down, because the communication pathway has not been established, because the port number in the URL is wrong, or because the management agents are down.
+
+* *Solution*
+\Verify that the URL is correct. If the URL is correct, verify that the hosts are up and running and are ready to accept communications; for example:\</pre> 
+           </div> 
+          </div>
+         </div>ping hostname1ping hostname2...
+         <div class="code panel" style="border-width: 1px;">
+          <div class="codeContent panelContent"> 
+           <div id="root"> 
+            <pre class="theme: Confluence; brush: java; gutter: false">h3. {{hadbm}} Command Fails: command not found
+
+* *Description*
+\The {{hadbm}} command can be run from the current directory, or you can set the search {{PATH}} to access the hadb commands from anywhere, which is much more convenient. The error, "{{hadbm: Command not found}}," indicates that neither of these conditions has been met.
+
+* *Solution 1*
+\{{cd}} to the directory that contains the {{hadbm}} command and run it from there:\</pre> 
+           </div> 
+          </div>
+         </div>cd install_dir/SUNWhadb/4/bin/<br> ./hadbm
+         <div class="code panel" style="border-width: 1px;">
+          <div class="codeContent panelContent"> 
+           <div id="root"> 
+            <pre class="theme: Confluence; brush: java; gutter: false">* *Solution 2*
+\Use the full path to invoke the {{hadbm}} command:\</pre> 
+           </div> 
+          </div>
+         </div>install_dir/SUNWhadb/4/bin/hadbm
+         <div class="code panel" style="border-width: 1px;">
+          <div class="codeContent panelContent"> 
+           <div id="root"> 
+            <pre class="theme: Confluence; brush: java; gutter: false">* *Solution 3*
+\You can use the {{hadbm}} command from anywhere by setting the {{PATH}} variable. Instructions for setting the {{PATH}} variable are contained in the "Preparing for HADB Setup" chapter of the [Sun Java System Application Server 9.1 Installation Guide|http://wiki.glassfish.java.net/Wiki.jsp?page=InstallationGuide].
+\To verify that the {{PATH}} settings are correct, run the following commands:\\\\\~UWC_TOKEN_START~1278691907180~UWC_TOKEN_END
+\These commands should echo the paths to the utilities.
+
+h3. hadbm Command Fails: {{JAVA_HOME}} not defined
+
+* *Description*
+\The message "{{hadbm: &lt;path\&gt;: Invalid Java home location}}" indicates that the {{JAVA_HOME}} environment variable has not been set properly.
+
+* *Solution*
+\If multiple Java versions are installed on the system, ensure that the {{JAVA_HOME}} environment variable points to the correct Java version (1.4.1_03 or above for Enterprise Edition).
+\Instructions for setting the {{PATH}} variable are contained in the "Preparing for HADB Setup" chapter of the [Sun Java System Application Server 9.1 Installation Guide|http://wiki.glassfish.java.net/Wiki.jsp?page=InstallationGuide].
+
+h3. {{hadbm createdomain}} fails, but two split domains are created
+
+* *Description*
+\If running the HADB management agent on a host with multiple network interfaces, the createdomain command may fail if not all network  interfaces are on the same subnet:\\\\\~UWC_TOKEN_START~1278691907181~UWC_TOKEN_END
+\By default, the management agents use the "first" interface for UDP multicasts ("first" as returned by {{java.net.NetworkInterface.getNetworkInterfaces()}}).
+
+* *Solution*
+\The best solution is to tell the management agent which subnet to use by setting {{ma.server.mainternal.interfaces}} in the configuration file; for example:\\\\\~UWC_TOKEN_START~1278691907182~UWC_TOKEN_END
+\Alternatively, one may  configure the router between the subnets to route multicast packets. By default, the management agent uses multicast address {{228.8.8.8}}.
+
+h3. {{create}} Fails: path does not exist on a host
+
+* *Description*
+\After issuing the {{hadbm create}} command, an error similar to the following appears on the console:\\\\\~UWC_TOKEN_START~1278691907183~UWC_TOKEN_END
+\This error message can also appear when new nodes are added without the specified paths do not exist on the machines.
+
+* *Solution*
+\Log in to the host and create paths for the HADB devices and HADB history files. Run {{hadbm create}} and specify the {{--devicepath}} and {{--historypath}} options to the paths created. Also make sure that the user running the management agent on the host has read and write access to these directories.
+\*Note:* HADB executables cannot be installed on different paths on different hosts.
+
+h3. Database Does Not Start
+
+The {{create}} or {{start}} command fails with the console error message:\\\\\~UWC_TOKEN_START~1278691907184~UWC_TOKEN_END
+\Consider the following possibilities:
+
+* *Was there a shared memory get segment failure?*
+\
+** *Description*
+\Start may fail if the resources (shared memory, disk space) allocated for that node are taken by some other processes, after the node is stopped.
+\
+** *Solution*
+\Refer to [Problems Related to Shared Memory|http://wiki.glassfish.java.net/Wiki.jsp?page=TSG_HADBProblems#section-TSG_HADBProblems-ProblemsRelatedToSharedMemory] for suggestions on resolving this issue.
+
+** Do the History Files Contain Errors?*
+\
+** *Description*
+\If the problem still persists, inspect the HADB history files. Some of the more likely error messages to look for are:\
+*** {{Could not verify node address}}
+\This message occurs when another process is using the port that an HADB server is trying to process. It can occur in several situations:\
+-- The {{portBase}} is used by another process running on this host machine.
+\Set the {{PortBase}} attribute to another value using the following command:\\\\\~UWC_TOKEN_START~1278691907185~UWC_TOKEN_END
+\-- An attempt to stop the HADB node for maintenance failed.
+\Try again to stop the node with the {{hadbm}} command. If that fails, kill the OS process {{clu_nsup_srv}} for this node without the {{-9}} option. The {{nsup}} process should then stop its {{hadb}} child process. If the parent process {{nsup}} does not exist, kill all the child processes using {{kill -9}}.
+\-- The HADB node was stopped for maintenance and an inetd process restarted the HADB node before you intended to start it.
+\Make sure that {{inetd}} does not start the HADB node before stopping it.
+\
+*** {{hadbm}} command fails with internal error:"{{The database could not be started}}"
+\Check the following:\
+-- Shared memory is all correct on all machines in the HADB configuration.
+\-- No other HADB databases are running on the machines, or any other processes that could be using the same port numbers.
+\-- All necessary directories exist and have write permissions.
+\-- There is enough space in directory where devices are going to be written.
+\
+** *Solutions*
+\After verifying that none of the above errors have occurred, try the following remedies, in order:\
+*** Delete the database and retry.
+*** Delete the database, reboot, and retry.
+*** Delete database, reinstall the HADB software, and retry.
+*** Contact Support.
+\For more information, refer to the [Error Message Reference|http://wiki.glassfish.java.net/Wiki.jsp?page=ErrorMessageReference].
+
+h3. {{clear}} Command Failed
+
+The {{clear}} command reinitializes the database device files residing on disks. This may fail due to problems with disk or disk access. Check whether any error message from hadbm indicates this. If not, look into the {{ma.log}} files and check whether devinit has generated any error messages.
+
+h3. {{create-session-store}} Failed
+
+The {{asadmin create-session-store}} command could fail for one of these reasons:
+
+* Invalid user name or password
+* {{SQLException: No suitable driver}}
+
+** Invalid user name or password*
+\This error occurs when the {{--dbsystempassword}} supplied to the {{create-session-store}} command is not the same password as the one given at the time of database creation.
+\
+** *Solution 1*
+\Try the command again with the correct password.
+\
+** *Solution 2*
+\If you cannot remember the {{dbsystem}} password, you need to clear the database using {{hadbm clear}} and provide a new {{dbsystem}} system password.
+
+** {{SQLException: No suitable driver}}*
+\The {{create-session-store}} produces the error: {{SessionStoreException: java.sql.SQLException: No suitable driver.}}
+\
+** *Solution 1*
+\This error can occur when {{asadmin}} is not able to find {{hadbjdbc4.jar}} from the {{AS_HADB}} path defined in {{asenv.conf}} in the Application Server config directory.
+\The solution is to change {{AS_HADB}} to point to the location of the HADB installation.
+\Here is a sample {{AS_HADB}} entry from an {{asenv.conf}} file:\\\\\~UWC_TOKEN_START~1278691907186~UWC_TOKEN_END
+\
+** *Solution 2*
+\This error can also occur if you provide the incorrect value for {{--storeUrl}}. To solve this problem, obtain the correct URL using {{hadbm get jdbcURL}}.
+
+h3. {{hadbm}} Command Hangs
+
+If the management agent with which the {{hadbm}} communicates dies before the operation finishes, then the {{hadbm}} process may hang. Check whether the all the agents are running.
+
+h3. Cannot Restart the HADB
+
+** Description*
+\HADB restart does not work after a double node failure. Additional recovery actions are needed before HADB can be restarted.
+\Symptoms of a double node failure include:\
+-- {{hadbm status}} shows that the HADB status is non-operational.
+\-- The node status shows that the nodes are in Starting or Recovering state. Even after stopping and then restarting each of the nodes, they remain in the Starting state. Eventually, the node status changes to Stopped.
+\This problem occurs when mirror HADB host machines have failed or been rebooted, typically after a power outage, or when a machine is rebooted without first stopping the HADB (in a single-machine installation), or when a pair of mirror machines from both Data Redundancy Units (DRUs) are rebooted.
+\HADB cannot heal itself automatically in such "double failure" situations because the part of the data that resided on the pair nodes is lost. In such cases, the hadbm start command does not succeed, and the hadbm status command shows that HADB is in a non-operational state.
+\For more information on the DRUs and HADB confutation, see "Administering the High Availability Database" in the [Administration Guide|http://wiki.glassfish.java.net/Wiki.jsp?page=HighAvailabilityAdministrationGuide], and the [Deployment Guide|http://wiki.glassfish.java.net/Wiki.jsp?page=DeploymentPlanningGuide].
+\*Tip:* If the HADB exhibits strange behavior (for example consistent timeout problems), and you want to check whether a restart cures the problem, use the hadbm restart command.
+\When the HADB is restarted in this manner, HADB services remain available. Conversely, if HADB is started and stopped in separate operations using {{hadbm stop}} and {{hadbm start}}, HADB services are unavailable while HADB is stopped.
+
+** Solution*
+\Verify that the node states show Starting/Recovering, then reset the database. Follow the instructions under "Recovering from Session Data Corruption" in the "Administering the High Availability Database" chapter of the [Administration Guide|http://wiki.glassfish.java.net/Wiki.jsp?page=HighAvailabilityAdministrationGuide].
+
+----
+^[Top of Page|http://wiki.glassfish.java.net/Wiki.jsp?page=TSG_HADBProblems#section-TSG_HADBProblems-CannotRestartTheHADB]^
+h2. Shared Memory Segment Key Already Exists (Windows only)
+
+* *Description*
+\The {{hadbm}} process returns the following error:\\\\\~UWC_TOKEN_START~1278691907187~UWC_TOKEN_END
+\This can happen during HADB instance creation following a controlled stop without deleting a previously created instance that is using the same portbase. The problem may also be the result of a failed HADB instance deletion for any reason.
+
+* *Solution*
+\Delete all stopped {{hadb}} instances to make sure all HADB resources are free before attempting to reuse them.
+\If the problem persists, manually remove the HADB Shared Memory segments by deleting the HADB files in {{$TMP/f_*}}.
+
+----
+^[Top of Page|http://wiki.glassfish.java.net/Wiki.jsp?page=TSG_HADBProblems]^
+h2. Failure in {{configure-ha-cluster}}
+
+* *Description*
+\Creation of an HADB domain comprising some host names appears to succeed, and the {{listdomain}} command confirms it:\\\\\~UWC_TOKEN_START~1278691907188~UWC_TOKEN_END
+\The database is then created with the {{hadbm create}} command, and the appropriate host names including the full domain names are used as parameters for the {{--hosts}} option:\\\\\~UWC_TOKEN_START~1278691907189~UWC_TOKEN_END
+\The following error is then returned:\</pre> 
+           </div> 
+          </div>
+         </div>hadbm:Error 22176: The host host1.xyz.abc.com is not registered in the HADB management domain. Use hadbm createdomain to set up the management domain or hadbm extenddomain to include new hosts in an existing domain.
+         <div class="code panel" style="border-width: 1px;">
+          <div class="codeContent panelContent"> 
+           <div id="root"> 
+            <pre class="theme: Confluence; brush: java; gutter: false">* *Solution 1*
+\Use the names that {{listdomain}} displays; for example:\</pre> 
+           </div> 
+          </div>
+         </div>hadbm create --hosts=host1,host2...
+         <div class="code panel" style="border-width: 1px;">
+          <div class="codeContent panelContent"> 
+           <div id="root"> 
+            <pre class="theme: Confluence; brush: java; gutter: false">* *Solution 2*
+\Use decimal IP addresses (DDN); for example:\</pre> 
+           </div> 
+          </div>
+         </div>hadbm create --hosts=128.139.113.110,128.139.113.111
+         <div class="code panel" style="border-width: 1px;">
+          <div class="codeContent panelContent"> 
+           <div id="root"> 
+            <pre class="theme: Confluence; brush: java; gutter: false">----
+^[Top of Page|http://wiki.glassfish.java.net/Wiki.jsp?page=TSG_HADBProblems]^
+h2. Unable to Run {{configure-ha-cluster}}
+
+* *Description*
+\Two different installations of HADB are configured: one on server hosts, and another on the {{hadbm}} client host(s), each running different versions of HADB. The management agents are started with one HADB versions, and then {{hadbm create}} is run with the other version. The following error is returned:\</pre> 
+           </div> 
+          </div>
+         </div>HADBMGMT007:hadbm create command failed. Return value: 1 STDOUT:<br> STDERR: hadbm:Error 22170: The software package V4.4.x could not be<br> found at path &lt;pacakgepath\&gt;/4.4-x on host &lt;hostname\&gt;.<br> CLI137 Command configure-ha-cluster failed.
+         <div class="code panel" style="border-width: 1px;">
+          <div class="codeContent panelContent"> 
+           <div id="root"> 
+            <pre class="theme: Confluence; brush: java; gutter: false"></pre> 
+           </div> 
+          </div>
+         </div></li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li><b>Solution</b><br> \Use the same HADB version for the management agents and all <tt>hadbm</tt> clients.</li> 
+     </ul> 
+     <hr> <p><sup><a href="./TSG_HADBProblems.html">Top of Page</a></sup></p> <h4><a name="TSG_HADBProblems-%7B%7Bhadbmset%7D%7DCommandFails"></a><tt>hadbm set</tt> Command Fails</h2> 
+     <ul> 
+      <li><b>Description</b><br> <tt>hadbm set</tt> brings the database instance to a state that is hard to recover from.<br> \Changing a database configuration variable with the <tt>hadbm set</tt> command fails. For example, setting <tt>DataBufferPoolSize</tt> to a larger size fails due to lack of shared memory on <tt>node-0</tt>. The <tt>hadbm set</tt> command leaves the database with <tt>node-0</tt> in a stopped state and <tt>node-1</tt> in a running state. Resetting the pool size back to the original value with the help of <tt>hadbm set</tt> fails with the message:\\\\\~UWC_TOKEN_START~1278691907194~UWC_TOKEN_END<br> \The <tt>hadbm startnode 0</tt> command is also of no use in this situation.</li> 
+     </ul> 
+     <ul> 
+      <li><b>Solution</b><br> \Stop the database, then restore the old values using <tt>hadbm set</tt>, then restart the database.</li> 
+     </ul> 
+     <hr> <p><sup><a href="./TSG_HADBProblems.html">Top of Page</a></sup></p> <h4><a name="TSG_HADBProblems-Failurein%7B%7Bconfigurehacluster%7D%7D%3ACreatinganHADBInstanceFails"></a>Failure in <tt>configure-ha-cluster</tt>: Creating an HADB Instance Fails</h2> 
+     <ul> 
+      <li><b>Description</b><br> \Creation of an HADB cluster fails with the message:\\\\\~UWC_TOKEN_START~1278691907195~UWC_TOKEN_END<br> \This indicates that the booting transaction populating the SQL dictionary tables was aborted.</li> 
+     </ul> 
+     <ul> 
+      <li><b>Solution</b><br> \Run the <tt>configure-ha-cluster</tt> again. If the <tt>hadbm create</tt> command fails with the above message, rerun the command.</li> 
+     </ul> 
+     <hr> <p><a href="TroubleshootingGuide.html" title="TroubleshootingGuide">Main</a> <a href="TSG_CommonProblems.html" title="TSG_CommonProblems">Previous</a> <a href="TSG_SecurityProblems.html" title="TSG_SecurityProblems">Next</a></p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 09, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

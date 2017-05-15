@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : SipLoanProcessingApplication</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="SipLoanProcessingApplication-SIPLoanProcessingBankingApplication"></a>SIP Loan Processing Banking Application</h2> <p>Using the converged container, HTTP session can be associated with the SipApplicationSession, SIP component &amp; JavaEE components (eg., MDB) can share the resources, and SIP functionality can be used inside the EJB.</p> <p>This sample illustrates how the SailFin converged container can be used for SIP, HTTP and MDB convergence.</p> <h4><a name="SipLoanProcessingApplication-Aboutthesample"></a>About the sample</h3> <p>The following figure depicts what the sample is all about.</p> <p><span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20875903/21364832.png" style="border: 0px solid black"></span></p> <p>As shown in the picture, the customer can acess the bank's website and apply for a loan. After applying for the loan, the customer receives a phone call (on his SIP softphone) from the Bank Executive, while the loan application is being processed. During the conversation, Bank Executive will be able to access the details submitted by the customer. The sample is written in a way that, if there is only one Bank Executive, the simultaneous applications submitted by the different customers will be queued in the JMS Queue (<a href="http://en.wikipedia.org/wiki/Sun_Java_System_Message_Queue">SJSMQ</a>) and processed one by one. </p> <h4><a name="SipLoanProcessingApplication-Whereisthesample%3F"></a>Where is the sample?</h3> <p>If you have the source code repository, you can find this sample under sailfin/samples/OnlineBank directory.</p> <p>If you just have the SailFin image, you can find this sample under $SAILFIN_INSTALL_DIR/samples/sipservlet/OnlineBank directory.</p> <p>README.html/README.txt included in the sample gives more details.</p> <h4><a name="SipLoanProcessingApplication-Flashdemo"></a>Flash demo</h3> <p>Quick flash demo of how to run this application is available <a href="http://weblogs.java.net/blog/bhavanishankar/archive/onlinebank-quickdemo.htm">here</a>.</p> <p>The complete flash demo explaing the steps used in developing this application is available <a href="http://weblogs.java.net/blog/bhavanishankar/archive/onlinebank-demo.htm">here </a></p> <p>Lot more functionality has been added to the sample since the time flash demos are created. So, the flash demos are quite outdated, but serve the purpose of understanding how to develop such an application using NetBeans w/ SIP development plugin, and how to deploy it to SailFin sever, and how to run it.</p> 
+     <hr> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875903/21364832.png">Demo.png</a> (image/png) 
+      <br> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 08, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

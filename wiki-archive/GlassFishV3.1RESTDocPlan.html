@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFishV3.1RESTDocPlan</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GlassFishV3.1RESTDocPlan-RESTfulAPIDocumentationPlanforGlassFishServerOpenSourceEdition3.1"></a><em>RESTful API</em> Documentation Plan for GlassFish Server Open Source Edition 3.1</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#GlassFishV3.1RESTDocPlan-RESTfulAPIDocumentationPlanforGlassFishServerOpenSourceEdition3.1"> <em>RESTful API</em> Documentation Plan for GlassFish Server Open Source Edition 3.1</a></li> 
+       <ul> 
+        <li><a href="#GlassFishV3.1RESTDocPlan-PeopleandRoles">People and Roles</a></li> 
+        <li><a href="#GlassFishV3.1RESTDocPlan-Audience">Audience</a></li> 
+        <li><a href="#GlassFishV3.1RESTDocPlan-SummaryoftheFeatureFromaUser%27sPerspective">Summary of the Feature From a User's Perspective</a></li> 
+        <li><a href="#GlassFishV3.1RESTDocPlan-Availability">Availability</a></li> 
+        <li><a href="#GlassFishV3.1RESTDocPlan-StatementofWork">Statement of Work</a></li> 
+        <ul> 
+         <li><a href="#GlassFishV3.1RESTDocPlan-ChangestoBooks">Changes to Books</a></li> 
+         <ul> 
+          <li><a href="#GlassFishV3.1RESTDocPlan-AdministrationGuideChanges"> <em>Administration Guide</em> Changes</a></li> 
+          <li><a href="#GlassFishV3.1RESTDocPlan-AddOnComponentDevelopmentGuideChanges"> <em>Add-On Component Development Guide</em> Changes</a></li> 
+         </ul> 
+         <li><a href="#GlassFishV3.1RESTDocPlan-ChangestoOnlineHelp">Changes to Online Help</a></li> 
+         <li><a href="#GlassFishV3.1RESTDocPlan-ChangestoManPages">Changes to Man Pages</a></li> 
+        </ul> 
+        <li><a href="#GlassFishV3.1RESTDocPlan-ReviewSchedule">Review Schedule</a></li> 
+        <li><a href="#GlassFishV3.1RESTDocPlan-RelatedInformation">Related Information</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="GlassFishV3.1RESTDocPlan-PeopleandRoles"></a>People and Roles</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Name </th> 
+         <th class="confluenceTh"> Role </th> 
+         <th class="confluenceTh"> Location </th> 
+         <th class="confluenceTh"> Time Zone </th> 
+         <th class="confluenceTh"> Email </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Paul Davies </td> 
+         <td class="confluenceTd"> Documentation Feature Owner </td> 
+         <td class="confluenceTd"> Santa Clara, CA, USA </td> 
+         <td class="confluenceTd"> US/Pacific </td> 
+         <td class="confluenceTd"> <tt>pauldavies@glassfish.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Ludovic Champenois </td> 
+         <td class="confluenceTd"> Software Engineer </td> 
+         <td class="confluenceTd"> Santa Clara, CA, USA </td> 
+         <td class="confluenceTd"> US/Pacific </td> 
+         <td class="confluenceTd"> <tt>ludo@glassfish.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Jason Lee </td> 
+         <td class="confluenceTd"> Software Engineer </td> 
+         <td class="confluenceTd"> OK, USA </td> 
+         <td class="confluenceTd"> US/Central </td> 
+         <td class="confluenceTd"> <tt>jdlee@glassfish.java.net</tt> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3.1RESTDocPlan-Audience"></a>Audience</h2> <p>The RESTful API feature is aimed at system administrators. A secondary audience is application developers who are developing client applications of the RESTful API.</p> <h4><a name="GlassFishV3.1RESTDocPlan-SummaryoftheFeatureFromaUser%27sPerspective"></a>Summary of the Feature From a User's Perspective</h2> <p>This feature enables system administrators to access monitoring, logging, and configuration data for GlassFish Server through REST resources.</p> <h4><a name="GlassFishV3.1RESTDocPlan-Availability"></a>Availability</h2> <p>The RESTful API feature is supplied in the Web Profile distribution and the Full Platform distribution.</p> <h4><a name="GlassFishV3.1RESTDocPlan-StatementofWork"></a>Statement of Work</h2> <p>This section describes in detail for each document the work that is required by the introduction of the feature, such as changes, addition of new material, relocation of existing material, and removal of existing material.</p> <p>Documentation Impact:</p> 
+     <ul> 
+      <li>None</li> 
+      <li>Minor</li> 
+      <li>Moderate</li> 
+      <li>Major</li> 
+      <li>New</li> 
+     </ul> 
+     <hr> <p><b>Note -</b> If a document is task based (as opposed to reference), the changes should be determined from the user task analysis for the feature.</p> 
+     <hr> <h4><a name="GlassFishV3.1RESTDocPlan-ChangestoBooks"></a>Changes to Books</h3> <p>Changes are relative to the documentation for Release 3.0.1. Links to the affected documentation are provided where appropriate.</p> <h4><a name="GlassFishV3.1RESTDocPlan-AdministrationGuideChanges"></a><em>Administration Guide</em> Changes</h4> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Section </th> 
+         <th class="confluenceTh"> Documentation Impact </th> 
+         <th class="confluenceTh"> Writer </th> 
+         <th class="confluenceTh"> Reviewers </th> 
+         <th class="confluenceTh"> Description of Change </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.oracle.com/docs/cd/E19798-01/821-1751/gjipx/index.html">Using REST Interfaces to Administer GlassFish Server</a> </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Paul Davies </td> 
+         <td class="confluenceTd"> Ludivic Champenois <br class="atl-forced-newline"> Jason Lee </td> 
+         <td class="confluenceTd"> Update <a href="http://download.oracle.com/docs/cd/E19798-01/821-1751/gjipk/index.html">Using REST URLs to Administer GlassFish Server</a> to reflect support for clustering by stating that the path part of a URL includes instance names.<br class="atl-forced-newline"> <br class="atl-forced-newline"> Update Figure 2-1 to show the current format of the page.<br class="atl-forced-newline"> <br class="atl-forced-newline"> Change the title of <a href="http://download.oracle.com/docs/cd/E19798-01/821-1751/gjjdg/index.html">Child Resources for Non-CRUD Operations</a> to Resources for asadmin Subcommands. Delete Table 2-2 from this section and rewrite the remainder of this section to explain how to access asadmin subcommands as children of REST resources for the objects on which the subcommands act.<br class="atl-forced-newline"> <br class="atl-forced-newline"> Explain how to specify the format of the output in the extension of a URL.<br class="atl-forced-newline"> <br class="atl-forced-newline"> Explain how to access log files through a REST URL.<br class="atl-forced-newline"> <br class="atl-forced-newline"> Explain how to secure REST resources by using session tokens.<br class="atl-forced-newline"> <br class="atl-forced-newline"> Describe the output formats for monitoring statistics.<br class="atl-forced-newline"> <br class="atl-forced-newline"> Describe the output formats for log file entries.<br class="atl-forced-newline"> <br class="atl-forced-newline"> Describe the consume types: JSON, XML, and formencoded.</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3.1RESTDocPlan-AddOnComponentDevelopmentGuideChanges"></a><em>Add-On Component Development Guide</em> Changes</h4> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Section </th> 
+         <th class="confluenceTh"> Documentation Impact </th> 
+         <th class="confluenceTh"> Writer </th> 
+         <th class="confluenceTh"> Reviewers </th> 
+         <th class="confluenceTh"> Description of Change </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.oracle.com/docs/cd/E19798-01/821-1749/ghmos/index.html">Chapter 5. Adding Monitoring Capabilities</a> </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Paul Davies </td> 
+         <td class="confluenceTd"> Ludovic Champenois <br class="atl-forced-newline"> Jason Lee </td> 
+         <td class="confluenceTd"> Explain how to create a REST resource to represent an add-on component's monitoring and configuration data.<br class="atl-forced-newline"> <br class="atl-forced-newline"> Provide the URLs to REST resources for a component's monitoring data. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.oracle.com/docs/cd/E19798-01/821-1749/gjlpe/index.html">Chapter 6. Adding Configuration Data for a Component</a> </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Paul Davies </td> 
+         <td class="confluenceTd"> Ludovic Champenois <br class="atl-forced-newline"> Jason Lee </td> 
+         <td class="confluenceTd"> Cross-refer to the procedure for creating a REST resource to represent an add-on component's monitoring and configuration data.<br class="atl-forced-newline"> <br class="atl-forced-newline"> Provide the URLs to REST resources for a component's configuration data. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3.1RESTDocPlan-ChangestoOnlineHelp"></a>Changes to Online Help</h3> <p>None.</p> <h4><a name="GlassFishV3.1RESTDocPlan-ChangestoManPages"></a>Changes to Man Pages</h3> <p>None.</p> <h4><a name="GlassFishV3.1RESTDocPlan-ReviewSchedule"></a>Review Schedule</h2> <p>The review schedule for the documentation items that are affected by this feature is provided in the following table.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item </th> 
+         <th class="confluenceTh"> Review Start Date </th> 
+         <th class="confluenceTh"> Review End Date </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <em>Administration Guide</em> changes<br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <em>Add-On Component Development Guide</em> changes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>Reviewers are listed in the <em>Statement of Work</em>.</p> <h4><a name="GlassFishV3.1RESTDocPlan-RelatedInformation"></a>Related Information</h2> 
+     <ul> 
+      <li><a href="V3.1RESTfulApiOnePager.html" title="V3.1RESTfulApiOnePager">1-pager</a></li> 
+      <li>User task analysis</li> 
+      <li>Design document</li> 
+      <li><a href="3.1RestApi.html" title="3.1RestApi">Project page</a></li> 
+     </ul> <p>Email aliases:</p> 
+     <ul> 
+      <li><a href="mailto:admin@glassfish.java.net">admin@glassfish.java.net</a></li> 
+      <li><a href="mailto:users@glassfish.java.net">users@glassfish.java.net</a></li> 
+      <li><a href="mailto:docs@glassfish.java.net">docs@glassfish.java.net</a></li> 
+     </ul> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Mar 09, 2011 by 
+<font color="#0050B2">pauldavies</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

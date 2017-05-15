@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : DashboardNucleus3.0SNAPSHOT</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="DashboardNucleus3.0SNAPSHOT-Dashboardforthenucleus%3A3.0SNAPSHOTDistribution"></a>Dashboard for the nucleus:3.0-SNAPSHOT Distribution</h1> <h4><a name="DashboardNucleus3.0SNAPSHOT-ModulesList"></a>Modules List</h2> <h4><a name="DashboardNucleus3.0SNAPSHOT-Group%3Acom.sun.enterprise"></a>Group : com.sun.enterprise</h3> 
+     <div class="panel" style="border-width: 1px;">
+      <div class="panelContent"> 
+       <div class="table-wrap"> 
+        <table class="confluenceTable">
+         <tbody> 
+          <tr> 
+           <th class="confluenceTh"> module-id </th> 
+           <th class="confluenceTh"> version </th> 
+           <th class="confluenceTh"> size </th> 
+           <th class="confluenceTh"> repository </th> 
+           <th class="confluenceTh"> lead </th> 
+           <th class="confluenceTh"> mailing-lists </th> 
+           <th class="confluenceTh"> imports </th> 
+           <th class="confluenceTh"> importedBy </th> 
+           <th class="confluenceTh"> SCM </th> 
+           <th class="confluenceTh"> license </th> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> &lt;a name="hk2"/&gt;hk2 </td> 
+           <td class="confluenceTd"> 0.3.50-SNAPSHOT </td> 
+           <td class="confluenceTd"> 2 KB </td> 
+           <td class="confluenceTd"> <a href="http:--maven.dyndns.org-glassfish--com-sun-enterprise-hk2-0.3.50-SNAPSHOT">glassfish-repository-wsinterop </a> </td> 
+           <td class="confluenceTd"> <a href="http:--blogs.oracle.com-dochez">Jerome Dochez </a> </td> 
+           <td class="confluenceTd"> <a href="https:--hk2.java.net-servlets-SummarizeList?listName=dev">dev </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=users">users </a> <a href="https:--hk2.java.net-servlets-SummarizeList?listName=issues">issues </a> <a href="https:--hk2.java.net-servlets-SummarizeList?listName=commits">commits </a> </td> 
+           <td class="confluenceTd"> &lt;a href=#hk2-core&gt;hk2-core:0.3.50-SNAPSHOT&lt;/a&gt; &lt;a href=#config&gt;config:0.3.50-SNAPSHOT&lt;/a&gt; &lt;a href=#auto-depends&gt;auto-depends:0.3.50-SNAPSHOT&lt;/a&gt; </td> 
+           <td class="confluenceTd"> &lt;a href=#glassfish-api&gt;glassfish-api:3.0-SNAPSHOT&lt;/a&gt; &lt;a href=#annotation-framework&gt;annotation-framework:3.0-SNAPSHOT&lt;/a&gt; &lt;a href=#kernel&gt;kernel:3.0-SNAPSHOT&lt;/a&gt; &lt;a href=#deployment-common&gt;deployment-common:3.0-SNAPSHOT&lt;/a&gt; &lt;a href=#deployment-autodeploy&gt;deployment-autodeploy:3.0-SNAPSHOT&lt;/a&gt; &lt;a href=#config-api&gt;config-api:3.0-SNAPSHOT&lt;/a&gt; &lt;a href=#deployment-admin&gt;deployment-admin:3.0-SNAPSHOT&lt;/a&gt; &lt;a href=#internal-api&gt;internal-api:3.0-SNAPSHOT&lt;/a&gt; &lt;a href=#flashlight-framework&gt;flashlight-framework:3.0-SNAPSHOT&lt;/a&gt; &lt;a href=#dol&gt;dol:3.0-SNAPSHOT&lt;/a&gt; &lt;a href=#branding&gt;branding:3.0-SNAPSHOT&lt;/a&gt; &lt;a href=#common-util&gt;common-util:3.0-SNAPSHOT&lt;/a&gt; </td> 
+           <td class="confluenceTd"> <sup><a href="#DashboardNucleus3.0SNAPSHOT-1">1</a></sup> </td> 
+           <td class="confluenceTd">unknown </td> 
+          </tr> 
+         </tbody>
+        </table> 
+       </div> 
+       <hr> 
+       <p>Jspwiki style: sortable</p> 
+      </div>
+     </div> <h4><a name="DashboardNucleus3.0SNAPSHOT-Group%3Aorg.glassfish.admin"></a>Group : org.glassfish.admin</h3> 
+     <div class="panel" style="border-width: 1px;">
+      <div class="panelContent"> 
+       <div class="table-wrap"> 
+        <table class="confluenceTable">
+         <tbody> 
+          <tr> 
+           <th class="confluenceTh"> module-id </th> 
+           <th class="confluenceTh"> version </th> 
+           <th class="confluenceTh"> size </th> 
+           <th class="confluenceTh"> repository </th> 
+           <th class="confluenceTh"> lead </th> 
+           <th class="confluenceTh"> mailing-lists </th> 
+           <th class="confluenceTh"> imports </th> 
+           <th class="confluenceTh"> importedBy </th> 
+           <th class="confluenceTh"> SCM </th> 
+           <th class="confluenceTh"> license </th> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> &lt;a name="admin-cli"/&gt;admin-cli </td> 
+           <td class="confluenceTd"> 3.0-SNAPSHOT </td> 
+           <td class="confluenceTd"> 110 KB </td> 
+           <td class="confluenceTd"> <a href="http:--maven.dyndns.org-glassfish--org-glassfish-admin-admin-cli-3.0-SNAPSHOT">glassfish-repository-wsinterop </a> </td> 
+           <td class="confluenceTd"> Jane Young </td> 
+           <td class="confluenceTd"> Byron Nevins </td> 
+           <td class="confluenceTd"> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=dev">dev </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=users">users </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=issues">issues </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=cvs">cvs </a> </td> 
+           <td class="confluenceTd"> &lt;a href=#cli-framework&gt;cli-framework:3.0-SNAPSHOT&lt;/a&gt; &lt;a href=#glassfish&gt;glassfish:3.0-SNAPSHOT&lt;/a&gt; &lt;a href=#common-util&gt;common-util:3.0-SNAPSHOT&lt;/a&gt; &lt;a href=#launcher&gt;launcher:3.0-SNAPSHOT&lt;/a&gt; &lt;a href=#config-api&gt;config-api:3.0-SNAPSHOT&lt;/a&gt; &lt;a href=#glassfish-api&gt;glassfish-api:3.0-SNAPSHOT&lt;/a&gt; </td> 
+           <td class="confluenceTd"> nucleus:3.0-SNAPSHOT </td> 
+           <td class="confluenceTd"> <sup><a href="#DashboardNucleus3.0SNAPSHOT-2">2</a></sup> </td> 
+           <td class="confluenceTd"> <a href="https://glassfish.java.net/nonav/public/CDDLGPL.html">CDDL + GPLv2 with classpath exception </a> </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> &lt;a name="glassfish-api"/&gt;glassfish-api </td> 
+           <td class="confluenceTd"> 3.0-SNAPSHOT </td> 
+           <td class="confluenceTd"> 61 KB </td> 
+           <td class="confluenceTd"> <a href="http:--maven.dyndns.org-glassfish--org-glassfish-common-glassfish-api-3.0-SNAPSHOT">glassfish-repository-wsinterop </a> </td> 
+           <td class="confluenceTd"> <a href="http:--blogs.oracle.com-dochez">Jerome Dochez </a> </td> 
+           <td class="confluenceTd"> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=dev">dev </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=users">users </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=issues">issues </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=cvs">cvs </a> </td> 
+           <td class="confluenceTd"> &lt;a href=#hk2&gt;hk2:0.3.50-SNAPSHOT&lt;/a&gt; &lt;a href=#grizzly-utils&gt;grizzly-utils:1.9.10&lt;/a&gt; </td> 
+           <td class="confluenceTd"> &lt;a href=#admin-cli&gt;admin-cli:3.0-SNAPSHOT&lt;/a&gt; &lt;a href=#kernel&gt;kernel:3.0-SNAPSHOT&lt;/a&gt; &lt;a href=#deployment-common&gt;deployment-common:3.0-SNAPSHOT&lt;/a&gt; &lt;a href=#deployment-autodeploy&gt;deployment-autodeploy:3.0-SNAPSHOT&lt;/a&gt; &lt;a href=#config-api&gt;config-api:3.0-SNAPSHOT&lt;/a&gt; &lt;a href=#deployment-admin&gt;deployment-admin:3.0-SNAPSHOT&lt;/a&gt; &lt;a href=#internal-api&gt;internal-api:3.0-SNAPSHOT&lt;/a&gt; &lt;a href=#dol&gt;dol:3.0-SNAPSHOT&lt;/a&gt; &lt;a href=#branding&gt;branding:3.0-SNAPSHOT&lt;/a&gt; &lt;a href=#common-util&gt;common-util:3.0-SNAPSHOT&lt;/a&gt; </td> 
+           <td class="confluenceTd"> <sup><a href="#DashboardNucleus3.0SNAPSHOT-3">3</a></sup> </td> 
+           <td class="confluenceTd"> <a href="https://glassfish.java.net/nonav/public/CDDLGPL.html">CDDL + GPLv2 with classpath exception </a> </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> &lt;a name="annotation-framework"/&gt;annotation-framework </td> 
+           <td class="confluenceTd"> 3.0-SNAPSHOT </td> 
+           <td class="confluenceTd"> 33 KB </td> 
+           <td class="confluenceTd"> <a href="http:--maven.dyndns.org-glassfish--org-glassfish-common-annotation-framework-3.0-SNAPSHOT">glassfish-repository-wsinterop </a> </td> 
+           <td class="confluenceTd"> <a href="http:--blogs.oracle.com-dochez">Jerome Dochez </a> </td> 
+           <td class="confluenceTd"> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=dev">dev </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=users">users </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=issues">issues </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=cvs">cvs </a> </td> 
+           <td class="confluenceTd"> &lt;a href=#hk2&gt;hk2:0.3.50-SNAPSHOT&lt;/a&gt; </td> 
+           <td class="confluenceTd"> &lt;a href=#dol&gt;dol:3.0-SNAPSHOT&lt;/a&gt; </td> 
+           <td class="confluenceTd"> <sup><a href="#DashboardNucleus3.0SNAPSHOT-4">4</a></sup> </td> 
+           <td class="confluenceTd"> <a href="https://glassfish.java.net/nonav/public/CDDLGPL.html">CDDL + GPLv2 with classpath exception </a> </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> &lt;a name="kernel"/&gt;kernel </td> 
+           <td class="confluenceTd"> 3.0-SNAPSHOT </td> 
+           <td class="confluenceTd"> 441 KB </td> 
+           <td class="confluenceTd"> <a href="http:--maven.dyndns.org-glassfish--org-glassfish-core-kernel-3.0-SNAPSHOT">glassfish-repository-wsinterop </a> </td> 
+           <td class="confluenceTd"> <a href="http:--blogs.oracle.com-dochez">Jerome Dochez </a> </td> 
+           <td class="confluenceTd"> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=dev">dev </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=users">users </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=issues">issues </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=cvs">cvs </a> </td> 
+           <td class="confluenceTd"> &lt;a href=#glassfish-api&gt;glassfish-api:3.0-SNAPSHOT&lt;/a&gt; &lt;a href=#internal-api&gt;internal-api:3.0-SNAPSHOT&lt;/a&gt; &lt;a href=#config-api&gt;config-api:3.0-SNAPSHOT&lt;/a&gt; &lt;a href=#hk2&gt;hk2:0.3.50-SNAPSHOT&lt;/a&gt; &lt;a href=#grizzly-utils&gt;grizzly-utils:1.9.10&lt;/a&gt; &lt;a href=#grizzly-framework&gt;grizzly-framework:1.9.10&lt;/a&gt; &lt;a href=#grizzly-http&gt;grizzly-http:1.9.10&lt;/a&gt; &lt;a href=#common-util&gt;common-util:3.0-SNAPSHOT&lt;/a&gt; &lt;a href=#deployment-common&gt;deployment-common:3.0-SNAPSHOT&lt;/a&gt; &lt;a href=#asm-all-repackaged&gt;asm-all-repackaged:3.0-SNAPSHOT&lt;/a&gt; &lt;a href=#pkg-client&gt;pkg-client:1.0.7-15.1269&lt;/a&gt; &lt;a href=#flashlight-framework&gt;flashlight-framework:3.0-SNAPSHOT&lt;/a&gt; </td> 
+           <td class="confluenceTd"> nucleus:3.0-SNAPSHOT </td> 
+           <td class="confluenceTd"> <sup><a href="#DashboardNucleus3.0SNAPSHOT-5">5</a></sup> </td> 
+           <td class="confluenceTd"> <a href="https://glassfish.java.net/nonav/public/CDDLGPL.html">CDDL + GPLv2 with classpath exception </a> </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> &lt;a name="deployment-common"/&gt;deployment-common </td> 
+           <td class="confluenceTd"> 3.0-SNAPSHOT </td> 
+           <td class="confluenceTd"> 67 KB </td> 
+           <td class="confluenceTd"> <a href="http:--maven.dyndns.org-glassfish--org-glassfish-deployment-deployment-common-3.0-SNAPSHOT">glassfish-repository-wsinterop </a> </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=dev">dev </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=users">users </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=issues">issues </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=cvs">cvs </a> </td> 
+           <td class="confluenceTd"> &lt;a href=#hk2&gt;hk2:0.3.50-SNAPSHOT&lt;/a&gt; &lt;a href=#glassfish-api&gt;glassfish-api:3.0-SNAPSHOT&lt;/a&gt; &lt;a href=#internal-api&gt;internal-api:3.0-SNAPSHOT&lt;/a&gt; &lt;a href=#common-util&gt;common-util:3.0-SNAPSHOT&lt;/a&gt; </td> 
+           <td class="confluenceTd"> &lt;a href=#kernel&gt;kernel:3.0-SNAPSHOT&lt;/a&gt; &lt;a href=#deployment-autodeploy&gt;deployment-autodeploy:3.0-SNAPSHOT&lt;/a&gt; &lt;a href=#deployment-admin&gt;deployment-admin:3.0-SNAPSHOT&lt;/a&gt; &lt;a href=#dol&gt;dol:3.0-SNAPSHOT&lt;/a&gt; </td> 
+           <td class="confluenceTd"> <sup><a href="#DashboardNucleus3.0SNAPSHOT-6">6</a></sup> </td> 
+           <td class="confluenceTd"> <a href="https://glassfish.java.net/nonav/public/CDDLGPL.html">CDDL + GPLv2 with classpath exception </a> </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> &lt;a name="deployment-autodeploy"/&gt;deployment-autodeploy </td> 
+           <td class="confluenceTd"> 3.0-SNAPSHOT </td> 
+           <td class="confluenceTd"> 39 KB </td> 
+           <td class="confluenceTd"> <a href="http:--maven.dyndns.org-glassfish--org-glassfish-deployment-deployment-autodeploy-3.0-SNAPSHOT">glassfish-repository-wsinterop </a> </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=dev">dev </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=users">users </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=issues">issues </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=cvs">cvs </a> </td> 
+           <td class="confluenceTd"> &lt;a href=#hk2&gt;hk2:0.3.50-SNAPSHOT&lt;/a&gt; &lt;a href=#glassfish-api&gt;glassfish-api:3.0-SNAPSHOT&lt;/a&gt; &lt;a href=#common-util&gt;common-util:3.0-SNAPSHOT&lt;/a&gt; &lt;a href=#deployment-common&gt;deployment-common:3.0-SNAPSHOT&lt;/a&gt; &lt;a href=#deployment-admin&gt;deployment-admin:3.0-SNAPSHOT&lt;/a&gt; </td> 
+           <td class="confluenceTd"> nucleus:3.0-SNAPSHOT </td> 
+           <td class="confluenceTd"> <sup><a href="#DashboardNucleus3.0SNAPSHOT-7">7</a></sup> </td> 
+           <td class="confluenceTd"> <a href="https://glassfish.java.net/nonav/public/CDDLGPL.html">CDDL + GPLv2 with classpath exception </a> </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> &lt;a name="cli-framework"/&gt;cli-framework </td> 
+           <td class="confluenceTd"> 3.0-SNAPSHOT </td> 
+           <td class="confluenceTd"> 84 KB </td> 
+           <td class="confluenceTd"> <a href="http:--maven.dyndns.org-glassfish--org-glassfish-admin-cli-framework-3.0-SNAPSHOT">glassfish-repository-wsinterop </a> </td> 
+           <td class="confluenceTd"> <a href="http:--blogs.oracle.com-janeyoung">Jane Young </a> </td> 
+           <td class="confluenceTd"> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=dev">dev </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=users">users </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=issues">issues </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=cvs">cvs </a> </td> 
+           <td class="confluenceTd"> &lt;a href=#common-util&gt;common-util:3.0-SNAPSHOT&lt;/a&gt; </td> 
+           <td class="confluenceTd"> &lt;a href=#admin-cli&gt;admin-cli:3.0-SNAPSHOT&lt;/a&gt; </td> 
+           <td class="confluenceTd"> <sup><a href="#DashboardNucleus3.0SNAPSHOT-8">8</a></sup> </td> 
+           <td class="confluenceTd"> <a href="https://glassfish.java.net/nonav/public/CDDLGPL.html">CDDL + GPLv2 with classpath exception </a> </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> &lt;a name="config-api"/&gt;config-api </td> 
+           <td class="confluenceTd"> 3.0-SNAPSHOT </td> 
+           <td class="confluenceTd"> 270 KB </td> 
+           <td class="confluenceTd"> <a href="http:--maven.dyndns.org-glassfish--org-glassfish-admin-config-api-3.0-SNAPSHOT">glassfish-repository-wsinterop </a> </td> 
+           <td class="confluenceTd"> <a href="http:--weblogs.java.net-blog-km">Kedar Mahswade </a> </td> 
+           <td class="confluenceTd"> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=dev">dev </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=users">users </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=issues">issues </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=cvs">cvs </a> </td> 
+           <td class="confluenceTd"> &lt;a href=#hk2&gt;hk2:0.3.50-SNAPSHOT&lt;/a&gt; &lt;a href=#common-util&gt;common-util:3.0-SNAPSHOT&lt;/a&gt; &lt;a href=#glassfish-api&gt;glassfish-api:3.0-SNAPSHOT&lt;/a&gt; &lt;a href=#javax.xml.stream&gt;javax.xml.stream:3.0-SNAPSHOT&lt;/a&gt; </td> 
+           <td class="confluenceTd"> &lt;a href=#admin-cli&gt;admin-cli:3.0-SNAPSHOT&lt;/a&gt; &lt;a href=#kernel&gt;kernel:3.0-SNAPSHOT&lt;/a&gt; &lt;a href=#internal-api&gt;internal-api:3.0-SNAPSHOT&lt;/a&gt; </td> 
+           <td class="confluenceTd"> <sup><a href="#DashboardNucleus3.0SNAPSHOT-9">9</a></sup> </td> 
+           <td class="confluenceTd"> <a href="https://glassfish.java.net/nonav/public/CDDLGPL.html">CDDL + GPLv2 with classpath exception </a> </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> &lt;a name="launcher"/&gt;launcher </td> 
+           <td class="confluenceTd"> 3.0-SNAPSHOT </td> 
+           <td class="confluenceTd"> 37 KB </td> 
+           <td class="confluenceTd"> <a href="http:--maven.dyndns.org-glassfish--org-glassfish-admin-launcher-3.0-SNAPSHOT">glassfish-repository-wsinterop </a> </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=dev">dev </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=users">users </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=issues">issues </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=cvs">cvs </a> </td> 
+           <td class="confluenceTd"> &lt;a href=#common-util&gt;common-util:3.0-SNAPSHOT&lt;/a&gt; &lt;a href=#glassfish&gt;glassfish:3.0-SNAPSHOT&lt;/a&gt; </td> 
+           <td class="confluenceTd"> &lt;a href=#admin-cli&gt;admin-cli:3.0-SNAPSHOT&lt;/a&gt; </td> 
+           <td class="confluenceTd"> <sup><a href="#DashboardNucleus3.0SNAPSHOT-10">10</a></sup> </td> 
+           <td class="confluenceTd"> <a href="https://glassfish.java.net/nonav/public/CDDLGPL.html">CDDL + GPLv2 with classpath exception </a> </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> &lt;a name="glassfish"/&gt;glassfish </td> 
+           <td class="confluenceTd"> 3.0-SNAPSHOT </td> 
+           <td class="confluenceTd"> 53 KB </td> 
+           <td class="confluenceTd"> <a href="http:--maven.dyndns.org-glassfish--org-glassfish-core-glassfish-3.0-SNAPSHOT">glassfish-repository-wsinterop </a> </td> 
+           <td class="confluenceTd"> <a href="http:--blogs.oracle.com-dochez">Jerome Dochez </a> </td> 
+           <td class="confluenceTd"> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=dev">dev </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=users">users </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=issues">issues </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=cvs">cvs </a> </td> 
+           <td class="confluenceTd"> &lt;a href=#hk2-core&gt;hk2-core:0.3.50-SNAPSHOT&lt;/a&gt; </td> 
+           <td class="confluenceTd"> &lt;a href=#admin-cli&gt;admin-cli:3.0-SNAPSHOT&lt;/a&gt; &lt;a href=#launcher&gt;launcher:3.0-SNAPSHOT&lt;/a&gt; </td> 
+           <td class="confluenceTd"> <sup><a href="#DashboardNucleus3.0SNAPSHOT-11">11</a></sup> </td> 
+           <td class="confluenceTd"> <a href="https://glassfish.java.net/nonav/public/CDDLGPL.html">CDDL + GPLv2 with classpath exception </a> </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> &lt;a name="deployment-admin"/&gt;deployment-admin </td> 
+           <td class="confluenceTd"> 3.0-SNAPSHOT </td> 
+           <td class="confluenceTd"> 60 KB </td> 
+           <td class="confluenceTd"> <a href="http:--maven.dyndns.org-glassfish--org-glassfish-deployment-deployment-admin-3.0-SNAPSHOT">glassfish-repository-wsinterop </a> </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=dev">dev </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=users">users </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=issues">issues </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=cvs">cvs </a> </td> 
+           <td class="confluenceTd"> &lt;a href=#hk2&gt;hk2:0.3.50-SNAPSHOT&lt;/a&gt; &lt;a href=#glassfish-api&gt;glassfish-api:3.0-SNAPSHOT&lt;/a&gt; &lt;a href=#common-util&gt;common-util:3.0-SNAPSHOT&lt;/a&gt; &lt;a href=#deployment-common&gt;deployment-common:3.0-SNAPSHOT&lt;/a&gt; &lt;a href=#dol&gt;dol:3.0-SNAPSHOT&lt;/a&gt; </td> 
+           <td class="confluenceTd"> &lt;a href=#deployment-autodeploy&gt;deployment-autodeploy:3.0-SNAPSHOT&lt;/a&gt; </td> 
+           <td class="confluenceTd"> <sup><a href="#DashboardNucleus3.0SNAPSHOT-12">12</a></sup> </td> 
+           <td class="confluenceTd"> <a href="https://glassfish.java.net/nonav/public/CDDLGPL.html">CDDL + GPLv2 with classpath exception </a> </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> &lt;a name="internal-api"/&gt;internal-api </td> 
+           <td class="confluenceTd"> 3.0-SNAPSHOT </td> 
+           <td class="confluenceTd"> 42 KB </td> 
+           <td class="confluenceTd"> <a href="http:--maven.dyndns.org-glassfish--org-glassfish-common-internal-api-3.0-SNAPSHOT">glassfish-repository-wsinterop </a> </td> 
+           <td class="confluenceTd"> <a href="http:--blogs.oracle.com-dochez">Jerome Dochez </a> </td> 
+           <td class="confluenceTd"> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=dev">dev </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=users">users </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=issues">issues </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=cvs">cvs </a> </td> 
+           <td class="confluenceTd"> &lt;a href=#hk2&gt;hk2:0.3.50-SNAPSHOT&lt;/a&gt; &lt;a href=#glassfish-api&gt;glassfish-api:3.0-SNAPSHOT&lt;/a&gt; &lt;a href=#config-api&gt;config-api:3.0-SNAPSHOT&lt;/a&gt; &lt;a href=#grizzly-utils&gt;grizzly-utils:1.9.10&lt;/a&gt; </td> 
+           <td class="confluenceTd"> &lt;a href=#kernel&gt;kernel:3.0-SNAPSHOT&lt;/a&gt; &lt;a href=#deployment-common&gt;deployment-common:3.0-SNAPSHOT&lt;/a&gt; &lt;a href=#flashlight-framework&gt;flashlight-framework:3.0-SNAPSHOT&lt;/a&gt; </td> 
+           <td class="confluenceTd"> <sup><a href="#DashboardNucleus3.0SNAPSHOT-13">13</a></sup> </td> 
+           <td class="confluenceTd"> <a href="https://glassfish.java.net/nonav/public/CDDLGPL.html">CDDL + GPLv2 with classpath exception </a> </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> &lt;a name="flashlight-framework"/&gt;flashlight-framework </td> 
+           <td class="confluenceTd"> 3.0-SNAPSHOT </td> 
+           <td class="confluenceTd"> 36 KB </td> 
+           <td class="confluenceTd"> <a href="http:--maven.dyndns.org-glassfish--org-glassfish-flashlight-flashlight-framework-3.0-SNAPSHOT">glassfish-repository-wsinterop </a> </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=dev">dev </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=users">users </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=issues">issues </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=cvs">cvs </a> </td> 
+           <td class="confluenceTd"> &lt;a href=#hk2&gt;hk2:0.3.50-SNAPSHOT&lt;/a&gt; &lt;a href=#flashlight-agent&gt;flashlight-agent:3.0-SNAPSHOT&lt;/a&gt; &lt;a href=#internal-api&gt;internal-api:3.0-SNAPSHOT&lt;/a&gt; &lt;a href=#osgi_R4_core&gt;osgi_R4_core:1.0&lt;/a&gt; &lt;a href=#asm-all-repackaged&gt;asm-all-repackaged:3.0-SNAPSHOT&lt;/a&gt; </td> 
+           <td class="confluenceTd"> &lt;a href=#kernel&gt;kernel:3.0-SNAPSHOT&lt;/a&gt; </td> 
+           <td class="confluenceTd"> <sup><a href="#DashboardNucleus3.0SNAPSHOT-14">14</a></sup> </td> 
+           <td class="confluenceTd"> <a href="https://glassfish.java.net/nonav/public/CDDLGPL.html">CDDL + GPLv2 with classpath exception </a> </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> &lt;a name="dol"/&gt;dol </td> 
+           <td class="confluenceTd"> 3.0-SNAPSHOT </td> 
+           <td class="confluenceTd"> 932 KB </td> 
+           <td class="confluenceTd"> <a href="http:--maven.dyndns.org-glassfish--org-glassfish-deployment-dol-3.0-SNAPSHOT">glassfish-repository-wsinterop </a> </td> 
+           <td class="confluenceTd"> <a href="http:--blogs.oracle.com-misty">Hong Zhang </a> </td> 
+           <td class="confluenceTd"> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=dev">dev </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=users">users </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=issues">issues </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=cvs">cvs </a> </td> 
+           <td class="confluenceTd"> &lt;a href=#hk2&gt;hk2:0.3.50-SNAPSHOT&lt;/a&gt; &lt;a href=#javax.servlet&gt;javax.servlet:3.0-SNAPSHOT&lt;/a&gt; &lt;a href=#javax.annotation&gt;javax.annotation:3.0-SNAPSHOT&lt;/a&gt; &lt;a href=#javax.transaction&gt;javax.transaction:3.0-SNAPSHOT&lt;/a&gt; &lt;a href=#javax.enterprise.deploy&gt;javax.enterprise.deploy:3.0-SNAPSHOT&lt;/a&gt; &lt;a href=#javax.persistence&gt;javax.persistence:2.0.0-M1&lt;/a&gt; &lt;a href=#javax.resource&gt;javax.resource:3.0-SNAPSHOT&lt;/a&gt; &lt;a href=#common-util&gt;common-util:3.0-SNAPSHOT&lt;/a&gt; &lt;a href=#deployment-common&gt;deployment-common:3.0-SNAPSHOT&lt;/a&gt; &lt;a href=#glassfish-api&gt;glassfish-api:3.0-SNAPSHOT&lt;/a&gt; &lt;a href=#annotation-framework&gt;annotation-framework:3.0-SNAPSHOT&lt;/a&gt; </td> 
+           <td class="confluenceTd"> &lt;a href=#deployment-admin&gt;deployment-admin:3.0-SNAPSHOT&lt;/a&gt; </td> 
+           <td class="confluenceTd"> <sup><a href="#DashboardNucleus3.0SNAPSHOT-15">15</a></sup> </td> 
+           <td class="confluenceTd"> <a href="https://glassfish.java.net/nonav/public/CDDLGPL.html">CDDL + GPLv2 with classpath exception </a> </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> &lt;a name="branding"/&gt;branding </td> 
+           <td class="confluenceTd"> 3.0-SNAPSHOT </td> 
+           <td class="confluenceTd"> 4 KB </td> 
+           <td class="confluenceTd"> <a href="http:--maven.dyndns.org-glassfish--org-glassfish-branding-branding-3.0-SNAPSHOT">glassfish-repository-wsinterop </a> </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=dev">dev </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=users">users </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=issues">issues </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=cvs">cvs </a> </td> 
+           <td class="confluenceTd"> &lt;a href=#hk2&gt;hk2:0.3.50-SNAPSHOT&lt;/a&gt; &lt;a href=#hk2-core&gt;hk2-core:0.3.50-SNAPSHOT&lt;/a&gt; &lt;a href=#glassfish-api&gt;glassfish-api:3.0-SNAPSHOT&lt;/a&gt; </td> 
+           <td class="confluenceTd"> nucleus:3.0-SNAPSHOT </td> 
+           <td class="confluenceTd"> <sup><a href="#DashboardNucleus3.0SNAPSHOT-16">16</a></sup> </td> 
+           <td class="confluenceTd"> <a href="https://glassfish.java.net/nonav/public/CDDLGPL.html">CDDL + GPLv2 with classpath exception </a> </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> &lt;a name="flashlight-agent"/&gt;flashlight-agent </td> 
+           <td class="confluenceTd"> 3.0-SNAPSHOT </td> 
+           <td class="confluenceTd"> 3 KB </td> 
+           <td class="confluenceTd"> <a href="http:--maven.dyndns.org-glassfish--org-glassfish-flashlight-flashlight-agent-3.0-SNAPSHOT">glassfish-repository-wsinterop </a> </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=dev">dev </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=users">users </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=issues">issues </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=cvs">cvs </a> </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+           <td class="confluenceTd"> &lt;a href=#flashlight-framework&gt;flashlight-framework:3.0-SNAPSHOT&lt;/a&gt; </td> 
+           <td class="confluenceTd"> <sup><a href="#DashboardNucleus3.0SNAPSHOT-17">17</a></sup> </td> 
+           <td class="confluenceTd"> <a href="https://glassfish.java.net/nonav/public/CDDLGPL.html">CDDL + GPLv2 with classpath exception </a> </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> &lt;a name="common-util"/&gt;common-util </td> 
+           <td class="confluenceTd"> 3.0-SNAPSHOT </td> 
+           <td class="confluenceTd"> 357 KB </td> 
+           <td class="confluenceTd"> <a href="http:--maven.dyndns.org-glassfish--org-glassfish-common-common-util-3.0-SNAPSHOT">glassfish-repository-wsinterop </a> </td> 
+           <td class="confluenceTd"> <a href="http:--blogs.oracle.com-foo">Byron Nevins </a> </td> 
+           <td class="confluenceTd"> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=dev">dev </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=users">users </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=issues">issues </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=cvs">cvs </a> </td> 
+           <td class="confluenceTd"> &lt;a href=#hk2&gt;hk2:0.3.50-SNAPSHOT&lt;/a&gt; &lt;a href=#glassfish-api&gt;glassfish-api:3.0-SNAPSHOT&lt;/a&gt; &lt;a href=#javax.xml.stream&gt;javax.xml.stream:3.0-SNAPSHOT&lt;/a&gt; </td> 
+           <td class="confluenceTd"> &lt;a href=#admin-cli&gt;admin-cli:3.0-SNAPSHOT&lt;/a&gt; &lt;a href=#kernel&gt;kernel:3.0-SNAPSHOT&lt;/a&gt; &lt;a href=#deployment-common&gt;deployment-common:3.0-SNAPSHOT&lt;/a&gt; &lt;a href=#deployment-autodeploy&gt;deployment-autodeploy:3.0-SNAPSHOT&lt;/a&gt; &lt;a href=#cli-framework&gt;cli-framework:3.0-SNAPSHOT&lt;/a&gt; &lt;a href=#config-api&gt;config-api:3.0-SNAPSHOT&lt;/a&gt; &lt;a href=#launcher&gt;launcher:3.0-SNAPSHOT&lt;/a&gt; &lt;a href=#deployment-admin&gt;deployment-admin:3.0-SNAPSHOT&lt;/a&gt; &lt;a href=#dol&gt;dol:3.0-SNAPSHOT&lt;/a&gt; </td> 
+           <td class="confluenceTd"> <sup><a href="#DashboardNucleus3.0SNAPSHOT-18">18</a></sup> </td> 
+           <td class="confluenceTd"> <a href="https://glassfish.java.net/nonav/public/CDDLGPL.html">CDDL + GPLv2 with classpath exception </a> </td> 
+          </tr> 
+         </tbody>
+        </table> 
+       </div> 
+       <hr> 
+       <p>Jspwiki style: sortable</p> 
+      </div>
+     </div> <h4><a name="DashboardNucleus3.0SNAPSHOT-LibrariesList"></a>Libraries List</h2> 
+     <div class="panel" style="border-width: 1px;">
+      <div class="panelContent"> 
+       <div class="table-wrap"> 
+        <table class="confluenceTable">
+         <tbody> 
+          <tr> 
+           <th class="confluenceTh"> group-id</th> 
+           <th class="confluenceTh"> module-id </th> 
+           <th class="confluenceTh"> version </th> 
+           <th class="confluenceTh"> size </th> 
+           <th class="confluenceTh"> repository </th> 
+           <th class="confluenceTh"> lead </th> 
+           <th class="confluenceTh"> mailing-lists </th> 
+           <th class="confluenceTh"> imports </th> 
+           <th class="confluenceTh"> importedBy </th> 
+           <th class="confluenceTh"> SCM </th> 
+           <th class="confluenceTh"> license </th> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> org.glassfish.external </td> 
+           <td class="confluenceTd"> &lt;a name="asm-all-repackaged"/&gt;asm-all-repackaged </td> 
+           <td class="confluenceTd"> 3.0-SNAPSHOT </td> 
+           <td class="confluenceTd"> 100 KB </td> 
+           <td class="confluenceTd"> <a href="http:--maven.dyndns.org-glassfish--org-glassfish-external-asm-all-repackaged-3.0-SNAPSHOT">glassfish-repository-wsinterop </a> </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=dev">dev </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=users">users </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=issues">issues </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=cvs">cvs </a> </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+           <td class="confluenceTd"> &lt;a href=#kernel&gt;kernel:3.0-SNAPSHOT&lt;/a&gt; &lt;a href=#flashlight-framework&gt;flashlight-framework:3.0-SNAPSHOT&lt;/a&gt; </td> 
+           <td class="confluenceTd"> <sup><a href="#DashboardNucleus3.0SNAPSHOT-19">19</a></sup> </td> 
+           <td class="confluenceTd"> <a href="https://glassfish.java.net/nonav/public/CDDLGPL.html">CDDL + GPLv2 with classpath exception </a> </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> com.sun.enterprise </td> 
+           <td class="confluenceTd"> &lt;a name="osgi-main"/&gt;osgi-main </td> 
+           <td class="confluenceTd"> 0.3.50-SNAPSHOT </td> 
+           <td class="confluenceTd"> 5 KB </td> 
+           <td class="confluenceTd"> <a href="http:--maven.dyndns.org-glassfish--com-sun-enterprise-osgi-main-0.3.50-SNAPSHOT">glassfish-repository-wsinterop </a> </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> <a href="https:--hk2.java.net-servlets-SummarizeList?listName=dev">dev </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=users">users </a> <a href="https:--hk2.java.net-servlets-SummarizeList?listName=issues">issues </a> <a href="https:--hk2.java.net-servlets-SummarizeList?listName=commits">commits </a> </td> 
+           <td class="confluenceTd"> &lt;a href=#osgi_R4_core&gt;osgi_R4_core:1.0&lt;/a&gt; </td> 
+           <td class="confluenceTd"> nucleus:3.0-SNAPSHOT </td> 
+           <td class="confluenceTd"> <sup><a href="#DashboardNucleus3.0SNAPSHOT-20">20</a></sup> </td> 
+           <td class="confluenceTd">unknown </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> com.sun.grizzly </td> 
+           <td class="confluenceTd"> &lt;a name="grizzly-framework"/&gt;grizzly-framework </td> 
+           <td class="confluenceTd"> 1.9.10 </td> 
+           <td class="confluenceTd"> 221 KB </td> 
+           <td class="confluenceTd"> <a href="http:--maven.dyndns.org-glassfish--com-sun-grizzly-grizzly-framework-1.9.10">glassfish-repository-wsinterop </a> </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> <span class="error">[Grizzly Dev List ]</span> <span class="error">[Grizzly Support List ]</span> <span class="error">[Grizzly Announce List ]</span> </td> 
+           <td class="confluenceTd"> &lt;a href=#grizzly-utils&gt;grizzly-utils:1.9.10&lt;/a&gt; </td> 
+           <td class="confluenceTd"> &lt;a href=#kernel&gt;kernel:3.0-SNAPSHOT&lt;/a&gt; &lt;a href=#grizzly-http&gt;grizzly-http:1.9.10&lt;/a&gt; &lt;a href=#grizzly-rcm&gt;grizzly-rcm:1.9.10&lt;/a&gt; &lt;a href=#grizzly-portunif&gt;grizzly-portunif:1.9.10&lt;/a&gt; &lt;a href=#grizzly-portunif&gt;grizzly-portunif:1.9.10&lt;/a&gt; </td> 
+           <td class="confluenceTd"> <sup><a href="#DashboardNucleus3.0SNAPSHOT-21">21</a></sup> </td> 
+           <td class="confluenceTd"> <a href="https://glassfish.java.net/public/CDDLv1.0.html">CDDL </a> </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> com.sun.grizzly </td> 
+           <td class="confluenceTd"> &lt;a name="grizzly-http"/&gt;grizzly-http </td> 
+           <td class="confluenceTd"> 1.9.10 </td> 
+           <td class="confluenceTd"> 148 KB </td> 
+           <td class="confluenceTd"> <a href="http:--maven.dyndns.org-glassfish--com-sun-grizzly-grizzly-http-1.9.10">glassfish-repository-wsinterop </a> </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> <span class="error">[Grizzly Dev List ]</span> <span class="error">[Grizzly Support List ]</span> <span class="error">[Grizzly Announce List ]</span> </td> 
+           <td class="confluenceTd"> &lt;a href=#grizzly-framework&gt;grizzly-framework:1.9.10&lt;/a&gt; &lt;a href=#grizzly-rcm&gt;grizzly-rcm:1.9.10&lt;/a&gt; &lt;a href=#grizzly-portunif&gt;grizzly-portunif:1.9.10&lt;/a&gt; </td> 
+           <td class="confluenceTd"> &lt;a href=#kernel&gt;kernel:3.0-SNAPSHOT&lt;/a&gt; </td> 
+           <td class="confluenceTd"> <sup><a href="#DashboardNucleus3.0SNAPSHOT-22">22</a></sup> </td> 
+           <td class="confluenceTd"> <a href="https://glassfish.java.net/public/CDDLv1.0.html">CDDL </a> </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> org.glassfish.osgi-platforms </td> 
+           <td class="confluenceTd"> &lt;a name="felix"/&gt;felix </td> 
+           <td class="confluenceTd"> 3.0-SNAPSHOT </td> 
+           <td class="confluenceTd"> 398 KB </td> 
+           <td class="confluenceTd"> <a href="http:--maven.dyndns.org-glassfish--org-glassfish-osgi-platforms-felix-3.0-SNAPSHOT">glassfish-repository-wsinterop </a> </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=dev">dev </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=users">users </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=issues">issues </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=cvs">cvs </a> </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+           <td class="confluenceTd"> nucleus:3.0-SNAPSHOT </td> 
+           <td class="confluenceTd"> <sup><a href="#DashboardNucleus3.0SNAPSHOT-23">23</a></sup> </td> 
+           <td class="confluenceTd"> <a href="https://glassfish.java.net/nonav/public/CDDLGPL.html">CDDL + GPLv2 with classpath exception </a> </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> org.glassfish </td> 
+           <td class="confluenceTd"> &lt;a name="javax.servlet"/&gt;javax.servlet </td> 
+           <td class="confluenceTd"> 3.0-SNAPSHOT </td> 
+           <td class="confluenceTd"> 69 KB </td> 
+           <td class="confluenceTd"> <a href="http:--maven.dyndns.org-glassfish--org-glassfish-javax.servlet-3.0-SNAPSHOT">glassfish-repository-wsinterop </a> </td> 
+           <td class="confluenceTd"> <a href="http:--weblogs.java.net-blog-mode">Rajiv Mordani </a> </td> 
+           <td class="confluenceTd"> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=dev">dev </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=users">users </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=issues">issues </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=cvs">cvs </a> </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+           <td class="confluenceTd"> &lt;a href=#dol&gt;dol:3.0-SNAPSHOT&lt;/a&gt; </td> 
+           <td class="confluenceTd"> <sup><a href="#DashboardNucleus3.0SNAPSHOT-24">24</a></sup> </td> 
+           <td class="confluenceTd"> <a href="https://glassfish.java.net/nonav/public/CDDLGPL.html">CDDL + GPLv2 with classpath exception </a> </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> com.sun.grizzly </td> 
+           <td class="confluenceTd"> &lt;a name="grizzly-utils"/&gt;grizzly-utils </td> 
+           <td class="confluenceTd"> 1.9.10 </td> 
+           <td class="confluenceTd"> 392 KB </td> 
+           <td class="confluenceTd"> <a href="http:--maven.dyndns.org-glassfish--com-sun-grizzly-grizzly-utils-1.9.10">glassfish-repository-wsinterop </a> </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> <span class="error">[Grizzly Dev List ]</span> <span class="error">[Grizzly Support List ]</span> <span class="error">[Grizzly Announce List ]</span> </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+           <td class="confluenceTd"> &lt;a href=#glassfish-api&gt;glassfish-api:3.0-SNAPSHOT&lt;/a&gt; &lt;a href=#kernel&gt;kernel:3.0-SNAPSHOT&lt;/a&gt; &lt;a href=#grizzly-framework&gt;grizzly-framework:1.9.10&lt;/a&gt; &lt;a href=#internal-api&gt;internal-api:3.0-SNAPSHOT&lt;/a&gt; </td> 
+           <td class="confluenceTd"> <sup><a href="#DashboardNucleus3.0SNAPSHOT-25">25</a></sup> </td> 
+           <td class="confluenceTd"> <a href="https://glassfish.java.net/public/CDDLv1.0.html">CDDL </a> </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> org.glassfish.core </td> 
+           <td class="confluenceTd"> &lt;a name="api-exporter"/&gt;api-exporter </td> 
+           <td class="confluenceTd"> 3.0-SNAPSHOT </td> 
+           <td class="confluenceTd"> 2 KB </td> 
+           <td class="confluenceTd"> <a href="http:--maven.dyndns.org-glassfish--org-glassfish-core-api-exporter-3.0-SNAPSHOT">glassfish-repository-wsinterop </a> </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=dev">dev </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=users">users </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=issues">issues </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=cvs">cvs </a> </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+           <td class="confluenceTd"> nucleus:3.0-SNAPSHOT </td> 
+           <td class="confluenceTd"> <sup><a href="#DashboardNucleus3.0SNAPSHOT-26">26</a></sup> </td> 
+           <td class="confluenceTd"> <a href="https://glassfish.java.net/nonav/public/CDDLGPL.html">CDDL + GPLv2 with classpath exception </a> </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> com.sun.enterprise </td> 
+           <td class="confluenceTd"> &lt;a name="config"/&gt;config </td> 
+           <td class="confluenceTd"> 0.3.50-SNAPSHOT </td> 
+           <td class="confluenceTd"> 115 KB </td> 
+           <td class="confluenceTd"> <a href="http:--maven.dyndns.org-glassfish--com-sun-enterprise-config-0.3.50-SNAPSHOT">glassfish-repository-wsinterop </a> </td> 
+           <td class="confluenceTd"> <a href="http:--blogs.oracle.com-dochez">Jerome Dochez </a> </td> 
+           <td class="confluenceTd"> <a href="https:--hk2.java.net-servlets-SummarizeList?listName=dev">dev </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=users">users </a> <a href="https:--hk2.java.net-servlets-SummarizeList?listName=issues">issues </a> <a href="https:--hk2.java.net-servlets-SummarizeList?listName=commits">commits </a> </td> 
+           <td class="confluenceTd"> &lt;a href=#auto-depends&gt;auto-depends:0.3.50-SNAPSHOT&lt;/a&gt; &lt;a href=#tiger-types-osgi&gt;tiger-types-osgi:0.3.50-SNAPSHOT&lt;/a&gt; </td> 
+           <td class="confluenceTd"> &lt;a href=#hk2-core&gt;hk2-core:0.3.50-SNAPSHOT&lt;/a&gt; &lt;a href=#hk2&gt;hk2:0.3.50-SNAPSHOT&lt;/a&gt; </td> 
+           <td class="confluenceTd"> <sup><a href="#DashboardNucleus3.0SNAPSHOT-27">27</a></sup> </td> 
+           <td class="confluenceTd">unknown </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> com.sun.pkg </td> 
+           <td class="confluenceTd"> &lt;a name="pkg-client"/&gt;pkg-client </td> 
+           <td class="confluenceTd"> 1.0.7-15.1269 </td> 
+           <td class="confluenceTd"> 78 KB </td> 
+           <td class="confluenceTd"> <a href="http:--download.java.net-maven-2--com-sun-pkg-pkg-client-1.0.7-15.1269">maven2-repository.java.net </a> </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> none </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+           <td class="confluenceTd"> &lt;a href=#kernel&gt;kernel:3.0-SNAPSHOT&lt;/a&gt; </td> 
+           <td class="confluenceTd"> unknown </td> 
+           <td class="confluenceTd">unknown </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> com.sun.enterprise </td> 
+           <td class="confluenceTd"> &lt;a name="hk2-core"/&gt;hk2-core </td> 
+           <td class="confluenceTd"> 0.3.50-SNAPSHOT </td> 
+           <td class="confluenceTd"> 92 KB </td> 
+           <td class="confluenceTd"> <a href="http:--maven.dyndns.org-glassfish--com-sun-enterprise-hk2-core-0.3.50-SNAPSHOT">glassfish-repository-wsinterop </a> </td> 
+           <td class="confluenceTd"> <a href="http:--blogs.oracle.com-dochez">Jerome Dochez </a> </td> 
+           <td class="confluenceTd"> <a href="https:--hk2.java.net-servlets-SummarizeList?listName=dev">dev </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=users">users </a> <a href="https:--hk2.java.net-servlets-SummarizeList?listName=issues">issues </a> <a href="https:--hk2.java.net-servlets-SummarizeList?listName=commits">commits </a> </td> 
+           <td class="confluenceTd"> &lt;a href=#config&gt;config:0.3.50-SNAPSHOT&lt;/a&gt; </td> 
+           <td class="confluenceTd"> &lt;a href=#osgi-adapter&gt;osgi-adapter:0.3.50-SNAPSHOT&lt;/a&gt; &lt;a href=#glassfish&gt;glassfish:3.0-SNAPSHOT&lt;/a&gt; &lt;a href=#hk2&gt;hk2:0.3.50-SNAPSHOT&lt;/a&gt; &lt;a href=#branding&gt;branding:3.0-SNAPSHOT&lt;/a&gt; </td> 
+           <td class="confluenceTd"> <sup><a href="#DashboardNucleus3.0SNAPSHOT-28">28</a></sup> </td> 
+           <td class="confluenceTd">unknown </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> com.sun.enterprise </td> 
+           <td class="confluenceTd"> &lt;a name="osgi-adapter"/&gt;osgi-adapter </td> 
+           <td class="confluenceTd"> 0.3.50-SNAPSHOT </td> 
+           <td class="confluenceTd"> 42 KB </td> 
+           <td class="confluenceTd"> <a href="http:--maven.dyndns.org-glassfish--com-sun-enterprise-osgi-adapter-0.3.50-SNAPSHOT">glassfish-repository-wsinterop </a> </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> <a href="https:--hk2.java.net-servlets-SummarizeList?listName=dev">dev </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=users">users </a> <a href="https:--hk2.java.net-servlets-SummarizeList?listName=issues">issues </a> <a href="https:--hk2.java.net-servlets-SummarizeList?listName=commits">commits </a> </td> 
+           <td class="confluenceTd"> &lt;a href=#osgi_R4_core&gt;osgi_R4_core:1.0&lt;/a&gt; &lt;a href=#osgi_R4_compendium&gt;osgi_R4_compendium:1.0&lt;/a&gt; &lt;a href=#hk2-core&gt;hk2-core:0.3.50-SNAPSHOT&lt;/a&gt; </td> 
+           <td class="confluenceTd"> nucleus:3.0-SNAPSHOT </td> 
+           <td class="confluenceTd"> <sup><a href="#DashboardNucleus3.0SNAPSHOT-29">29</a></sup> </td> 
+           <td class="confluenceTd">unknown </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> org.glassfish </td> 
+           <td class="confluenceTd"> &lt;a name="javax.enterprise.deploy"/&gt;javax.enterprise.deploy </td> 
+           <td class="confluenceTd"> 3.0-SNAPSHOT </td> 
+           <td class="confluenceTd"> 35 KB </td> 
+           <td class="confluenceTd"> <a href="http:--maven.dyndns.org-glassfish--org-glassfish-javax.enterprise.deploy-3.0-SNAPSHOT">glassfish-repository-wsinterop </a> </td> 
+           <td class="confluenceTd"> <a href="http:--blog.sun.com-dochez">Jerome Dochez </a> </td> 
+           <td class="confluenceTd"> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=dev">dev </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=users">users </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=issues">issues </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=cvs">cvs </a> </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+           <td class="confluenceTd"> &lt;a href=#dol&gt;dol:3.0-SNAPSHOT&lt;/a&gt; </td> 
+           <td class="confluenceTd"> <sup><a href="#DashboardNucleus3.0SNAPSHOT-30">30</a></sup> </td> 
+           <td class="confluenceTd"> <a href="https://glassfish.java.net/nonav/public/CDDLGPL.html">CDDL + GPLv2 with classpath exception </a> </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> org.glassfish </td> 
+           <td class="confluenceTd"> &lt;a name="javax.annotation"/&gt;javax.annotation </td> 
+           <td class="confluenceTd"> 3.0-SNAPSHOT </td> 
+           <td class="confluenceTd"> 20 KB </td> 
+           <td class="confluenceTd"> <a href="http:--maven.dyndns.org-glassfish--org-glassfish-javax.annotation-3.0-SNAPSHOT">glassfish-repository-wsinterop </a> </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=dev">dev </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=users">users </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=issues">issues </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=cvs">cvs </a> </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+           <td class="confluenceTd"> &lt;a href=#dol&gt;dol:3.0-SNAPSHOT&lt;/a&gt; </td> 
+           <td class="confluenceTd"> <sup><a href="#DashboardNucleus3.0SNAPSHOT-31">31</a></sup> </td> 
+           <td class="confluenceTd"> <a href="https://glassfish.java.net/nonav/public/CDDLGPL.html">CDDL + GPLv2 with classpath exception </a> </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> org.glassfish.osgi-platforms </td> 
+           <td class="confluenceTd"> &lt;a name="equinox"/&gt;equinox </td> 
+           <td class="confluenceTd"> 3.0-SNAPSHOT </td> 
+           <td class="confluenceTd"> 2 KB </td> 
+           <td class="confluenceTd"> <a href="http:--maven.dyndns.org-glassfish--org-glassfish-osgi-platforms-equinox-3.0-SNAPSHOT">glassfish-repository-wsinterop </a> </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=dev">dev </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=users">users </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=issues">issues </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=cvs">cvs </a> </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+           <td class="confluenceTd"> nucleus:3.0-SNAPSHOT </td> 
+           <td class="confluenceTd"> <sup><a href="#DashboardNucleus3.0SNAPSHOT-32">32</a></sup> </td> 
+           <td class="confluenceTd"> <a href="https://glassfish.java.net/nonav/public/CDDLGPL.html">CDDL + GPLv2 with classpath exception </a> </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> org.eclipse.persistence </td> 
+           <td class="confluenceTd"> &lt;a name="javax.persistence"/&gt;javax.persistence </td> 
+           <td class="confluenceTd"> 2.0.0-M1 </td> 
+           <td class="confluenceTd"> 89 KB </td> 
+           <td class="confluenceTd"> <a href="http:--maven.glassfish.org-content-groups-glassfish-org-eclipse-persistence-javax.persistence-2.0.0-M1">glassfish-repo-archive-dummy </a> </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> <a href="http:--dev.eclipse.org-mhonarc-lists-eclipselink-dev">EclipseLink Developer List </a> <a href="http:--dev.eclipse.org-mhonarc-lists-eclipselink-users">EclipseLink User List </a> </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+           <td class="confluenceTd"> &lt;a href=#dol&gt;dol:3.0-SNAPSHOT&lt;/a&gt; </td> 
+           <td class="confluenceTd"> unknown </td> 
+           <td class="confluenceTd"> <a href="http://www.eclipse.org/legal/epl-v10.html">Eclipse Public License - v 1.0 </a> </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> org.glassfish.docs </td> 
+           <td class="confluenceTd"> &lt;a name="basedocs"/&gt;basedocs </td> 
+           <td class="confluenceTd"> 3.0-Prelude </td> 
+           <td class="confluenceTd"> 26 KB </td> 
+           <td class="confluenceTd"> <a href="http:--maven.dyndns.org-glassfish--org-glassfish-docs-basedocs-3.0-Prelude">glassfish-repository-wsinterop </a> </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=dev">dev </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=users">users </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=issues">issues </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=cvs">cvs </a> </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+           <td class="confluenceTd"> nucleus:3.0-SNAPSHOT </td> 
+           <td class="confluenceTd"> <sup><a href="#DashboardNucleus3.0SNAPSHOT-33">33</a></sup> </td> 
+           <td class="confluenceTd"> <a href="https://glassfish.java.net/nonav/public/CDDLGPL.html">CDDL + GPLv2 with classpath exception </a> </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> com.sun.enterprise </td> 
+           <td class="confluenceTd"> &lt;a name="auto-depends"/&gt;auto-depends </td> 
+           <td class="confluenceTd"> 0.3.50-SNAPSHOT </td> 
+           <td class="confluenceTd"> 66 KB </td> 
+           <td class="confluenceTd"> <a href="http:--maven.dyndns.org-glassfish--com-sun-enterprise-auto-depends-0.3.50-SNAPSHOT">glassfish-repository-wsinterop </a> </td> 
+           <td class="confluenceTd"> <a href="http:--blogs.oracle.com-dochez">Jerome Dochez </a> </td> 
+           <td class="confluenceTd"> <a href="https:--hk2.java.net-servlets-SummarizeList?listName=dev">dev </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=users">users </a> <a href="https:--hk2.java.net-servlets-SummarizeList?listName=issues">issues </a> <a href="https:--hk2.java.net-servlets-SummarizeList?listName=commits">commits </a> </td> 
+           <td class="confluenceTd"> &lt;a href=#tiger-types-osgi&gt;tiger-types-osgi:0.3.50-SNAPSHOT&lt;/a&gt; </td> 
+           <td class="confluenceTd"> &lt;a href=#config&gt;config:0.3.50-SNAPSHOT&lt;/a&gt; &lt;a href=#hk2&gt;hk2:0.3.50-SNAPSHOT&lt;/a&gt; </td> 
+           <td class="confluenceTd"> <sup><a href="#DashboardNucleus3.0SNAPSHOT-34">34</a></sup> </td> 
+           <td class="confluenceTd">unknown </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> org.glassfish </td> 
+           <td class="confluenceTd"> &lt;a name="javax.resource"/&gt;javax.resource </td> 
+           <td class="confluenceTd"> 3.0-SNAPSHOT </td> 
+           <td class="confluenceTd"> 63 KB </td> 
+           <td class="confluenceTd"> <a href="http:--maven.dyndns.org-glassfish--org-glassfish-javax.resource-3.0-SNAPSHOT">glassfish-repository-wsinterop </a> </td> 
+           <td class="confluenceTd"> <a href="http:--blogs.oracle.com-sivakumart-">Sivakumar Thyagarajan </a> </td> 
+           <td class="confluenceTd"> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=dev">dev </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=users">users </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=issues">issues </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=cvs">cvs </a> </td> 
+           <td class="confluenceTd"> &lt;a href=#javax.transaction&gt;javax.transaction:3.0-SNAPSHOT&lt;/a&gt; </td> 
+           <td class="confluenceTd"> &lt;a href=#dol&gt;dol:3.0-SNAPSHOT&lt;/a&gt; </td> 
+           <td class="confluenceTd"> <sup><a href="#DashboardNucleus3.0SNAPSHOT-35">35</a></sup> </td> 
+           <td class="confluenceTd"> <a href="https://glassfish.java.net/nonav/public/CDDLGPL.html">CDDL + GPLv2 with classpath exception </a> </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> com.sun.grizzly </td> 
+           <td class="confluenceTd"> &lt;a name="grizzly-rcm"/&gt;grizzly-rcm </td> 
+           <td class="confluenceTd"> 1.9.10 </td> 
+           <td class="confluenceTd"> 8 KB </td> 
+           <td class="confluenceTd"> <a href="http:--maven.dyndns.org-glassfish--com-sun-grizzly-grizzly-rcm-1.9.10">glassfish-repository-wsinterop </a> </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> <span class="error">[Grizzly Dev List ]</span> <span class="error">[Grizzly Support List ]</span> <span class="error">[Grizzly Announce List ]</span> </td> 
+           <td class="confluenceTd"> &lt;a href=#grizzly-framework&gt;grizzly-framework:1.9.10&lt;/a&gt; </td> 
+           <td class="confluenceTd"> &lt;a href=#grizzly-http&gt;grizzly-http:1.9.10&lt;/a&gt; </td> 
+           <td class="confluenceTd"> <sup><a href="#DashboardNucleus3.0SNAPSHOT-36">36</a></sup> </td> 
+           <td class="confluenceTd"> <a href="https://glassfish.java.net/public/CDDLv1.0.html">CDDL </a> </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> org.glassfish </td> 
+           <td class="confluenceTd"> &lt;a name="javax.transaction"/&gt;javax.transaction </td> 
+           <td class="confluenceTd"> 3.0-SNAPSHOT </td> 
+           <td class="confluenceTd"> 23 KB </td> 
+           <td class="confluenceTd"> <a href="http:--maven.dyndns.org-glassfish--org-glassfish-javax.transaction-3.0-SNAPSHOT">glassfish-repository-wsinterop </a> </td> 
+           <td class="confluenceTd"> <a href="http:--weblogs.java.net-blog-sankara-">Sankara Rao </a> </td> 
+           <td class="confluenceTd"> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=dev">dev </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=users">users </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=issues">issues </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=cvs">cvs </a> </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+           <td class="confluenceTd"> &lt;a href=#javax.resource&gt;javax.resource:3.0-SNAPSHOT&lt;/a&gt; &lt;a href=#dol&gt;dol:3.0-SNAPSHOT&lt;/a&gt; </td> 
+           <td class="confluenceTd"> <sup><a href="#DashboardNucleus3.0SNAPSHOT-37">37</a></sup> </td> 
+           <td class="confluenceTd"> <a href="https://glassfish.java.net/nonav/public/CDDLGPL.html">CDDL + GPLv2 with classpath exception </a> </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> com.sun.grizzly </td> 
+           <td class="confluenceTd"> &lt;a name="grizzly-portunif"/&gt;grizzly-portunif </td> 
+           <td class="confluenceTd"> 1.9.10 </td> 
+           <td class="confluenceTd"> 16 KB </td> 
+           <td class="confluenceTd"> <a href="http:--maven.dyndns.org-glassfish--com-sun-grizzly-grizzly-portunif-1.9.10">glassfish-repository-wsinterop </a> </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> <span class="error">[Grizzly Dev List ]</span> <span class="error">[Grizzly Support List ]</span> <span class="error">[Grizzly Announce List ]</span> </td> 
+           <td class="confluenceTd"> &lt;a href=#grizzly-framework&gt;grizzly-framework:1.9.10&lt;/a&gt; </td> 
+           <td class="confluenceTd"> &lt;a href=#grizzly-http&gt;grizzly-http:1.9.10&lt;/a&gt; </td> 
+           <td class="confluenceTd"> <sup><a href="#DashboardNucleus3.0SNAPSHOT-38">38</a></sup> </td> 
+           <td class="confluenceTd"> <a href="https://glassfish.java.net/public/CDDLv1.0.html">CDDL </a> </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> org.glassfish.distributions </td> 
+           <td class="confluenceTd"> &lt;a name="nucleus-base"/&gt;nucleus-base </td> 
+           <td class="confluenceTd"> 3.0-SNAPSHOT </td> 
+           <td class="confluenceTd"> 179 KB </td> 
+           <td class="confluenceTd"> <a href="http:--maven.dyndns.org-glassfish--org-glassfish-distributions-nucleus-base-3.0-SNAPSHOT">glassfish-repository-wsinterop </a> </td> 
+           <td class="confluenceTd"> no owner </td> 
+           <td class="confluenceTd"> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=dev">dev </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=users">users </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=issues">issues </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=cvs">cvs </a> </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+           <td class="confluenceTd"> nucleus:3.0-SNAPSHOT </td> 
+           <td class="confluenceTd"> <sup><a href="#DashboardNucleus3.0SNAPSHOT-39">39</a></sup> </td> 
+           <td class="confluenceTd"> <a href="https://glassfish.java.net/nonav/public/CDDLGPL.html">CDDL + GPLv2 with classpath exception </a> </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> com.sun.enterprise </td> 
+           <td class="confluenceTd"> &lt;a name="tiger-types-osgi"/&gt;tiger-types-osgi </td> 
+           <td class="confluenceTd"> 0.3.50-SNAPSHOT </td> 
+           <td class="confluenceTd"> 20 KB </td> 
+           <td class="confluenceTd"> <a href="http:--maven.dyndns.org-glassfish--com-sun-enterprise-tiger-types-osgi-0.3.50-SNAPSHOT">glassfish-repository-wsinterop </a> </td> 
+           <td class="confluenceTd"> <a href="http:--blogs.oracle.com-dochez">Jerome Dochez </a> </td> 
+           <td class="confluenceTd"> <a href="https:--hk2.java.net-servlets-SummarizeList?listName=dev">dev </a> <a href="https:--glassfish.java.net-servlets-SummarizeList?listName=users">users </a> <a href="https:--hk2.java.net-servlets-SummarizeList?listName=issues">issues </a> <a href="https:--hk2.java.net-servlets-SummarizeList?listName=commits">commits </a> </td> 
+           <td class="confluenceTd"> &lt;a href=#tiger-types&gt;tiger-types:RELEASE&lt;/a&gt; </td> 
+           <td class="confluenceTd"> &lt;a href=#config&gt;config:0.3.50-SNAPSHOT&lt;/a&gt; &lt;a href=#auto-depends&gt;auto-depends:0.3.50-SNAPSHOT&lt;/a&gt; </td> 
+           <td class="confluenceTd"> <sup><a href="#DashboardNucleus3.0SNAPSHOT-40">40</a></sup> </td> 
+           <td class="confluenceTd">unknown </td> 
+          </tr> 
+         </tbody>
+        </table> 
+       </div> 
+       <hr> 
+       <p>Jspwiki style: sortable</p> 
+      </div>
+     </div> <p><a name="DashboardNucleus3.0SNAPSHOT-1"></a>svn:<a href="https://hk2.java.net/svn/hk2/hk2">https://hk2.java.net/svn/hk2/hk2</a><br> <a name="DashboardNucleus3.0SNAPSHOT-2"></a>svn:<a href="https://svn.java.net/svn/glassfish-svn/trunk/v3/admin/admin-cli">https://svn.java.net/svn/glassfish-svn/trunk/v3/admin/admin-cli</a><br> <a name="DashboardNucleus3.0SNAPSHOT-3"></a>svn:<a href="https://svn.java.net/svn/glassfish-svn/trunk/v3/glassfish-api">https://svn.java.net/svn/glassfish-svn/trunk/v3/glassfish-api</a><br> <a name="DashboardNucleus3.0SNAPSHOT-4"></a>svn:<a href="https://svn.java.net/svn/glassfish-svn/trunk/v3/common/annotation-framework">https://svn.java.net/svn/glassfish-svn/trunk/v3/common/annotation-framework</a><br> <a name="DashboardNucleus3.0SNAPSHOT-5"></a>svn:<a href="https://svn.java.net/svn/glassfish-svn/trunk/v3/core/kernel">https://svn.java.net/svn/glassfish-svn/trunk/v3/core/kernel</a><br> <a name="DashboardNucleus3.0SNAPSHOT-6"></a>svn:<a href="https://svn.java.net/svn/glassfish-svn/trunk/v3/deployment/deployment-common">https://svn.java.net/svn/glassfish-svn/trunk/v3/deployment/deployment-common</a><br> <a name="DashboardNucleus3.0SNAPSHOT-7"></a>svn:<a href="https://svn.java.net/svn/glassfish-svn/trunk/v3/deployment/deployment-autodeploy">https://svn.java.net/svn/glassfish-svn/trunk/v3/deployment/deployment-autodeploy</a><br> <a name="DashboardNucleus3.0SNAPSHOT-8"></a>svn:<a href="https://svn.java.net/svn/glassfish-svn/trunk/v3/admin/cli-framework">https://svn.java.net/svn/glassfish-svn/trunk/v3/admin/cli-framework</a><br> <a name="DashboardNucleus3.0SNAPSHOT-9"></a>svn:<a href="https://svn.java.net/svn/glassfish-svn/trunk/v3/admin/config-api">https://svn.java.net/svn/glassfish-svn/trunk/v3/admin/config-api</a><br> <a name="DashboardNucleus3.0SNAPSHOT-10"></a>svn:<a href="https://svn.java.net/svn/glassfish-svn/trunk/v3/admin/launcher">https://svn.java.net/svn/glassfish-svn/trunk/v3/admin/launcher</a><br> <a name="DashboardNucleus3.0SNAPSHOT-11"></a>svn:<a href="https://svn.java.net/svn/glassfish-svn/trunk/v3/core/glassfish">https://svn.java.net/svn/glassfish-svn/trunk/v3/core/glassfish</a><br> <a name="DashboardNucleus3.0SNAPSHOT-12"></a>svn:<a href="https://svn.java.net/svn/glassfish-svn/trunk/v3/deployment/deployment-admin">https://svn.java.net/svn/glassfish-svn/trunk/v3/deployment/deployment-admin</a><br> <a name="DashboardNucleus3.0SNAPSHOT-13"></a>svn:<a href="https://svn.java.net/svn/glassfish-svn/trunk/v3/common/internal-api">https://svn.java.net/svn/glassfish-svn/trunk/v3/common/internal-api</a><br> <a name="DashboardNucleus3.0SNAPSHOT-14"></a>svn:<a href="https://svn.java.net/svn/glassfish-svn/trunk/v3/common/flashlight-framework">https://svn.java.net/svn/glassfish-svn/trunk/v3/common/flashlight-framework</a><br> <a name="DashboardNucleus3.0SNAPSHOT-15"></a>svn:<a href="https://svn.java.net/svn/glassfish-svn/trunk/v3/deployment/dol">https://svn.java.net/svn/glassfish-svn/trunk/v3/deployment/dol</a><br> <a name="DashboardNucleus3.0SNAPSHOT-16"></a>svn:<a href="https://svn.java.net/svn/glassfish-svn/trunk/v3/branding">https://svn.java.net/svn/glassfish-svn/trunk/v3/branding</a><br> <a name="DashboardNucleus3.0SNAPSHOT-17"></a>svn:<a href="https://svn.java.net/svn/glassfish-svn/trunk/v3/common/flashlight-agent">https://svn.java.net/svn/glassfish-svn/trunk/v3/common/flashlight-agent</a><br> <a name="DashboardNucleus3.0SNAPSHOT-18"></a>svn:<a href="https://svn.java.net/svn/glassfish-svn/trunk/v3/common/common-util">https://svn.java.net/svn/glassfish-svn/trunk/v3/common/common-util</a><br> <a name="DashboardNucleus3.0SNAPSHOT-19"></a>svn:<a href="https://svn.java.net/svn/glassfish-svn/trunk/v3/external/asm-all-repackaged">https://svn.java.net/svn/glassfish-svn/trunk/v3/external/asm-all-repackaged</a><br> <a name="DashboardNucleus3.0SNAPSHOT-20"></a>svn:<a href="https://hk2.java.net/svn/hk2/osgi-main">https://hk2.java.net/svn/hk2/osgi-main</a><br> <a name="DashboardNucleus3.0SNAPSHOT-21"></a>svn:<a href="https://www.java.net/svn/grizzly/grizzly-framework">https://www.java.net/svn/grizzly/grizzly-framework</a><br> <a name="DashboardNucleus3.0SNAPSHOT-22"></a>svn:<a href="https://www.java.net/svn/grizzly/grizzly-http">https://www.java.net/svn/grizzly/grizzly-http</a><br> <a name="DashboardNucleus3.0SNAPSHOT-23"></a>svn:<a href="https://svn.java.net/svn/glassfish-svn/trunk/v3/osgi-platforms/felix">https://svn.java.net/svn/glassfish-svn/trunk/v3/osgi-platforms/felix</a><br> <a name="DashboardNucleus3.0SNAPSHOT-24"></a>svn:<a href="https://svn.java.net/svn/glassfish-svn/trunk/v3/api-pom/javax.servlet">https://svn.java.net/svn/glassfish-svn/trunk/v3/api-pom/javax.servlet</a><br> <a name="DashboardNucleus3.0SNAPSHOT-25"></a>svn:<a href="https://www.java.net/svn/grizzly/grizzly-utils">https://www.java.net/svn/grizzly/grizzly-utils</a><br> <a name="DashboardNucleus3.0SNAPSHOT-26"></a>svn:<a href="https://svn.java.net/svn/glassfish-svn/trunk/v3/core/api-exporter">https://svn.java.net/svn/glassfish-svn/trunk/v3/core/api-exporter</a><br> <a name="DashboardNucleus3.0SNAPSHOT-27"></a>svn:<a href="https://hk2.java.net/svn/hk2/config">https://hk2.java.net/svn/hk2/config</a><br> <a name="DashboardNucleus3.0SNAPSHOT-28"></a>svn:<a href="https://hk2.java.net/svn/hk2/hk2-core">https://hk2.java.net/svn/hk2/hk2-core</a><br> <a name="DashboardNucleus3.0SNAPSHOT-29"></a>svn:<a href="https://hk2.java.net/svn/hk2/osgi-adapter">https://hk2.java.net/svn/hk2/osgi-adapter</a><br> <a name="DashboardNucleus3.0SNAPSHOT-30"></a>svn:<a href="https://svn.java.net/svn/glassfish-svn/trunk/v3/api-pom/javax.enterprise.deploy">https://svn.java.net/svn/glassfish-svn/trunk/v3/api-pom/javax.enterprise.deploy</a><br> <a name="DashboardNucleus3.0SNAPSHOT-31"></a>svn:<a href="https://svn.java.net/svn/glassfish-svn/trunk/v3/javaee-api/javax.annotation">https://svn.java.net/svn/glassfish-svn/trunk/v3/javaee-api/javax.annotation</a><br> <a name="DashboardNucleus3.0SNAPSHOT-32"></a>svn:<a href="https://svn.java.net/svn/glassfish-svn/trunk/v3/osgi-platforms/equinox">https://svn.java.net/svn/glassfish-svn/trunk/v3/osgi-platforms/equinox</a><br> <a name="DashboardNucleus3.0SNAPSHOT-33"></a>svn:<a href="https://kohsuke@glassfish-svn.java.net/glassfish-svn/gfsvn/trunk/v3-docs/basedocs">https://kohsuke@glassfish-svn.java.net/glassfish-svn/gfsvn/trunk/v3-docs/basedocs</a><br> <a name="DashboardNucleus3.0SNAPSHOT-34"></a>svn:<a href="https://hk2.java.net/svn/hk2/auto-depends">https://hk2.java.net/svn/hk2/auto-depends</a><br> <a name="DashboardNucleus3.0SNAPSHOT-35"></a>svn:<a href="https://svn.java.net/svn/glassfish-svn/trunk/v3/api-pom/javax.resource">https://svn.java.net/svn/glassfish-svn/trunk/v3/api-pom/javax.resource</a><br> <a name="DashboardNucleus3.0SNAPSHOT-36"></a>svn:<a href="https://www.java.net/svn/grizzly/grizzly-rcm">https://www.java.net/svn/grizzly/grizzly-rcm</a><br> <a name="DashboardNucleus3.0SNAPSHOT-37"></a>svn:<a href="https://svn.java.net/svn/glassfish-svn/trunk/v3/api-pom/javax.transaction">https://svn.java.net/svn/glassfish-svn/trunk/v3/api-pom/javax.transaction</a><br> <a name="DashboardNucleus3.0SNAPSHOT-38"></a>svn:<a href="https://www.java.net/svn/grizzly/grizzly-portunif">https://www.java.net/svn/grizzly/grizzly-portunif</a><br> <a name="DashboardNucleus3.0SNAPSHOT-39"></a>svn:<a href="https://svn.java.net/svn/glassfish-svn/trunk/v3/distributions/nucleus-base">https://svn.java.net/svn/glassfish-svn/trunk/v3/distributions/nucleus-base</a><br> <a name="DashboardNucleus3.0SNAPSHOT-40"></a>svn:<a href="https://hk2.java.net/svn/hk2/tiger-types-osgi">https://hk2.java.net/svn/hk2/tiger-types-osgi</a></p> <p>Generated by dochez on Mon Apr 06 21:46:51 PDT 2009</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:48.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

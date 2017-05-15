@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : SuspendableRequests</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   
+     <hr> <h4><a name="SuspendableRequests-SuspendableRequestProposal"></a>Suspendable Request Proposal</h1> 
+     <hr> <h4><a name="SuspendableRequests-Overview"></a>Overview</h1> <p>This proposal aims to meet some of the <a href="AsynchronousServlets.html" title="AsynchronousServlets">Asynchronous Servlets</a> requirements of JSR315<br> by allowing request handling to be suspended and resumed.</p> <h4><a name="SuspendableRequests-UseCases"></a>Use-Cases</h1> <p>This proposal does not address the use-cases of asynchronous IO, which are addressed in the<br> <a href="AsyncContentHandlers.html" title="AsyncContentHandlers">Async Content Handlers</a> proposal.</p> <h4><a name="SuspendableRequests-WaitingforResources."></a>Waiting for Resources.</h2> <p>After processing a request, a filter/servlet needs to wait for a resource before generating a response. The waited for resource may be a JMS message, a JDBC connection from a Datasource, a <br> response to a remote web services request or some other asynchronous event. </p> <h4><a name="SuspendableRequests-QualityofService"></a>Quality of Service</h2> <p>In order to provide quality of service, A web application may wish to be able to give priority to some request over others. Request of lower priority are suspended until there are no higher priority requests to be dispatched/handled. </p> <h4><a name="SuspendableRequests-SuspendedRequests"></a>Suspended Requests </h1> <p>The request handling lifecycle is<br> extended so that the handling of a single request can span multiple<br> dispatches to the filter chain and the servlet service method. This<br> allows the handling of a request and the completion of a response to<br> be delayed until resources are available or asynchronous events occur<br> or complete.<br> A request life cycle is started when<br> a request/response pair is first dispatched. Normally the request<br> life cycle will complete when a the dispatch returns and the response<br> will be committed, flushed and completed. However, the extension<br> allows for a request to be suspended, so that when the dispatch<br> returns to the container, the request lifecycle is not completed.<br> A suspended request is held by the<br> container until either it is resumed or a timeout expires. The<br> request is then retried by being dispatched to the normal filter<br> chain and servlet service method. </p> <p>This cycle can repeat more that once<br> and the suspension effectively turns the existing dispatch mechanism<br> into an asynchronous callback.<br> To allow this mechanism to work with<br> existing frameworks and code that is unaware of suspension, when a<br> request is suspended, the response object is disabled so that headers<br> and content may not be written. </p> <h4><a name="SuspendableRequests-JavaAPI"></a>Java API</h1> <h4><a name="SuspendableRequests-ServletRequest"></a>ServletRequest</h2> <p>The existing<br> <tt>ServletRequest</tt><br> interface is extended with methods to<br> suspend request handling:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">public interface ServletRequest 
+{
+ /**
+  * Suspend the processing of the request and associated {@link ServletResponse}.
+  * 
+  * &lt;p&gt;After this method has been called, the lifecycle of the request 
+  * will be extended beyond the return to the container from the 
+  * {@link Servlet#service(ServletRequest, ServletResponse)}  method and 
+  * {@link Filter#doFilter(ServletRequest, ServletResponse, FilterChain)} calls. If a 
+  * request is suspended, then the container will not commit the associated response 
+  * when the call to the filter chain and/or servlet service method returns to the 
+  * container. Instead the container will wait until either 
+  * {@link ServletRequest#complete()} is called, {@link ServletRequest#resume()is
+  * called or the passed timeout expires.  If resume is called or the timeout expires
+  * then the request will be redispatched via the filter and servlet processing.
+  * &lt;/p&gt;
+  * 
+  * &lt;p&gt;If a request is already suspended, any subsequent calls to suspend will set
+  * the timeout to the minimum of the previous timeout and the newly passed 
+  * timeout&lt;/p&gt;
+  * 
+  * &lt;p&gt;Suspend may only be called by a thread that is within the service calling 
+  * stack of {@link Filter#doFilter(ServletRequest, ServletResponse, FilterChain)}
+  * and/or {@link Servlet#service(ServletRequest, ServletResponse)}. A request that has    
+  * been dispatched for error handling may not be suspended.
+  * &lt;/p&gt;
+  * 
+  * @see {@link #resume()}
+  * @see {@link #complete()}
+  * @since 3.0
+  * 
+  * @param timeoutMs The time in milliseconds to wait before retrying this request.
+  * 
+  * @exception IllegalStateException If the calling thread is not within the calling 
+  * stack of  {@link Filter#doFilter(ServletRequest, ServletResponse, FilterChain)}
+  * and/or {@link Servlet#service(ServletRequest, ServletResponse)} or if the request 
+  * has been dispatched for error handling.
+  */
+  void suspend(long timeoutMs);
+    
+ /**
+  * Resume a suspended request.
+  * 
+  * &lt;p&gt;This method can be called by any thread that has been passed a reference to 
+  * a suspended request. When called the request is redispatched to the normal filter 
+  * chain and servlet processing.&lt;/p&gt;
+  * 
+  * &lt;p&gt;If resume is called before a suspended request is returned to the container 
+  * (ie the thread that called {@link #suspend()} is still within the filter
+  * chain and/or servlet service method), then the resume does not take effect until
+  * the call to the filter chain and/or servlet returns to the container. In this 
+  * case both {@link #isSuspended()} and {@link isResumed()} continue to return true.
+  * until the request is returned to the container.&lt;/p&gt;
+  * 
+  * &lt;p&gt;Multiple calls to resume are ignored&lt;/p&gt;
+  * 
+  * @see {@link #suspend()}
+  * @since 3.0
+  * @exception IllegalStateException if the request is not suspended.
+  * 
+  */
+  void resume();
+
+ /**
+  * Complete a suspended request.
+  * 
+  * &lt;p&gt;This method can be called by any thread that has been passed a reference to 
+  * a suspended request. When a request is completed, the associated response object 
+  * commited and flushed. The request is not redispatched.&lt;/p&gt;
+  * 
+  * &lt;p&gt;If complete is called before a suspended request is returned to the container 
+  * (ie the thread that called {@link #suspend(long)} is still within the filter
+  * chain and/or servlet service method), then the complete does not take effect until
+  * the call to the filter chain and/or servlet returns to the container. In this 
+  * case {@link #isSuspended()} continues to return true until the request is returned to the container.&lt;/p&gt;
+  * &lt;p&gt;Closing the response output stream or writer is equivalent to a call to complete()&lt;/p&gt;
+  * 
+  * @see {@link #suspend()}
+  * @since 3.0
+  * @exception IllegalStateException if the request is not suspended.
+  * 
+  */
+  void complete();
+
+ /**
+  * @return true after {@link #suspend(long)} has been called and before the request 
+  * has been resumed or timed out.
+  * @since 3.0
+  */
+  boolean isSuspended();
+
+ /**
+  * @return true if the request has been redispatched by a call to {@link #resume()} or 
+  * by a timeout.   Returns false after any subsequent call to suspend
+  * @since 3.0
+  */
+  boolean isResumed();
+
+ /**
+  * @return true after a request has been redispatched as the result of a timeout. 
+  * Returns false after any subsequent call to suspend.
+  * @since 3.0
+  */
+  boolean isTimeout();
+
+ // existing methods not shown
+}</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="SuspendableRequests-ServletRequestListener"></a>ServletRequestListener</h2> <p>The existing<br> <tt>ServletRequesListener</tt><br> interface is extended with methods to notify resumes and suspensions:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">public interface ServletRequest 
+{
+ // existing methods not shown
+
+ /**
+  * A request has been suspended.
+  * Called by the thread that dispatched the servlet when it
+  * has returned to the container.
+  */
+ void requestSuspended(ServletRequestEvent rre);
+
+ /**
+  * A request has been resumed.
+  * Called by the thread that will dispatch to the servlet 
+  * immediately before dispatch. 
+  */
+ void requestResumed(ServletRequestEvent rre);
+
+ /**
+  * A request has been completed.
+  * Called from a call to {@ServletRequest#complete()} 
+  * @since 3.0
+  */
+ void requestCompleted(ServletRequestEvent rre);
+
+}</pre> 
+       </div> 
+      </div>
+     </div> 
+     <hr> <h4><a name="SuspendableRequests-Examples"></a>Examples</h1> 
+     <hr> <h4><a name="SuspendableRequests-QualityofServiceFilterandResourcethrottling."></a>Quality of Service Filter and Resource throttling.</h1> <p>This example shows how delayed<br> request handling can be applied to an existing web application using<br> a Filter. This filter ensures quality of service by ensuring that no<br> more than 20 requests are simultaneously being handled. Any<br> additional requests are suspended and delayed until previous requests<br> complete. Moreover, authentication and authorization are used to<br> maintain two priority queues of delayed requests. The requests in the<br> higher priority queue are preferentially resumed.<br> Because the delayed request handling<br> can be implemented in a standard filter, it would be possible for<br> this filter to be configured after application supplied filters. Thus<br> if the application provided it's own authentication and authorization<br> mechanisms in a filter, these would be able to be used by this<br> filter.</p> <h4><a name="SuspendableRequests-QosFilter.java%3A"></a>QosFilter.java:</h3> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">public class QosFilter implements Filter
+{
+    private final static String PASS = "PASS";
+    int _passes = 20;
+    Queue&lt;ServletRequest&gt; _lowPriority = new LinkedList&lt;ServletRequest&gt;();
+    Queue&lt;ServletRequest&gt; _highPriority = new LinkedList&lt;ServletRequest&gt;();
+    
+    public void init(FilterConfig filterConfig) {}
+    public void destroy(){}
+
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) 
+        throws IOException, ServletException
+    {
+        synchronized(this)
+        {
+            boolean has_pass=Boolean.TRUE.equals(request.getAttribute(PASS));
+        
+            if (!has_pass)
+            {
+                if (request.isResumed())
+                {
+                    _lowPriority.remove(request);
+                    _highPriority.remove(request);
+                    ((HttpServletResponse)response)
+                        .sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
+                    return;
+                }
+                
+                if (_passes&gt;0)
+                {
+                    has_pass=true;
+                    _passes--;
+                }
+                else
+                {
+                    request.suspend();
+                    if (((HttpServletRequest)request).isUserInRole("priority"))
+                        _highPriority.add(request);
+                    else
+                        _lowPriority.add(request);
+                    return;
+                }
+            }
+        }
+        
+        
+        try
+        {
+            assert has_pass;
+            chain.doFilter(request,response);
+        }
+        finally
+        {
+            synchronized(this)
+            {
+                ServletRequest waiting = _highPriority.poll();
+                if (waiting==null)
+                    waiting = _lowPriority.poll();
+                if (waiting==null)
+                    _passes++;
+                else
+                {
+                    waiting.setAttribute(PASS,Boolean.TRUE);
+                    waiting.resume();
+                }
+            }
+        }
+    }
+}</pre> 
+       </div> 
+      </div>
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:49.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

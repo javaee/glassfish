@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : WebTierV2SQESchedule</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="WebTierV2SQESchedule-WebTierV2SQESchedule"></a>WebTier V2 SQE Schedule</h2> <p>Also, see the <a href="WebTierV2Schedule.html" title="WebTierV2Schedule">Main Schedule </a></p> 
+     <ul> 
+      <li>Vacations: 
+       <ul> 
+        <li>Tuong - Last 2 weeks of Dec.</li> 
+       </ul> </li> 
+      <li>General tasks: 
+       <ul> 
+        <li>Tuong (tuongn) 
+         <ul> 
+          <li>Overhead - 10%</li> 
+          <li>Test execution, result and failure analysis - 15%</li> 
+          <li>Multiple versions (8.1, 8.2, 9.0, 9.1) of SQE test workspaces maintenance - 25%</li> 
+          <li>Cross-functional teams (Sustaining, Compatibility, JES Pre-int,...) support - 10%</li> 
+         </ul> </li> 
+       </ul> </li> 
+      <li>SQE tasks (Develop and automate tests): 
+       <ul> 
+        <li><a href="https://github.com/javaee/glassfish/issues/983">bug id 983</a> - 1 day - p1 - sep 22 (DONE) - appserver-sqe\pe\tomcat\http_file_cache</li> 
+        <li>Configure http file cache, then making multiple http requests and ensuring that the subsequent renderings are coming from the cache - 2 days - p1 - sep 29 (DONE) - appserver-sqe\pe\tomcat\stress\file_cache</li> 
+        <li>FileCache mishandles keep-alives request - <a href="https://github.com/javaee/glassfish/issues/1133">bug id 1133</a> - 2 days - p1 - oct 27 (DONE) - appserver-sqe\pe\tomcat\http_file_cache</li> 
+        <li>Make 100+ concurrent http request, then monitor for any degradation or corruptions to the response and also monitor for any socket leaks - 4 days - p1 - nov 3 (DONE) - appserver-sqe\pe\tomcat\stress\https</li> 
+        <li>FileCache locking of static resource on Win32 - <a href="https://github.com/javaee/glassfish/issues/979">bug id 979</a> - 2 days - p1 - nov 10 (DONE) - appserver-sqe\pe\tomcat\http_file_cache</li> 
+        <li>Add https stress testing - <a href="http://bt2ws.central.sun.com/CrPrint-6499326">bug id 6499326</a> - 1 week - p1 - Jan 5, 07 (DONE)</li> 
+        <li>Upgrade the 1000+ existing Tomcat/webtier SQE tests to use https - <a href="http://bt2ws.central.sun.com/CrPrint-6499326">bug id 6499326</a> - 10 weeks - p2</li> 
+        <li>For each Grizzly configuration option change, run the SQE QuickLook tests, then monitor for the memory and socket leaks - p2</li> 
+        <li>Configure the virtual servers, listeners and verify that they are dynamically set and used - 2 days - p2</li> 
+        <li>Simulating load traffic onto port 8080 or 4848 - <a href="https://github.com/javaee/glassfish/issues/677">bug id 677</a> - 2 days - p2</li> 
+        <li>Verify the monitoring mechanism by adding then removing the virtual servers - 2 days - p2</li> 
+        <li>Apache <a href="http://weblogs.java.net/blog/jfarcand/archive/2006/03/running_glassfi_1.html">mod_jk</a>, <a href="http://weblogs.java.net/blog/amyroh/archive/2006/08/glassfish_suppo.html">AJP Connector</a> testing (setup &amp; configuration) - 2 days - p2</li> 
+        <li>Add support for alternate docroots (virtual-directory-mapping) - <a href="https://github.com/javaee/glassfish/issues/948">bug id 948</a> - 5 days - p2</li> 
+        <li>Resetting default web module requires restarting - <a href="https://github.com/javaee/glassfish/issues/463">bug id 463</a> - 2 days - p2</li> 
+        <li>IP address in protocol redirected - <a href="https://github.com/javaee/glassfish/issues/1677">bug id 1677</a> - 2 days - p2</li> 
+        <li>protocol redirect, app is getting redirected - <a href="https://github.com/javaee/glassfish/issues/1678">bug id 1678</a> - 2 days - p2</li> 
+        <li>Class loader leaks - <a href="http://svn.apache.org/viewvc?view=rev&amp;revision=332801">bug id 332801</a> - 2 days - p3</li> 
+        <li>Grizzly configurations aren't applied - <a href="https://github.com/javaee/glassfish/issues/464">bug id 464</a> - 2 days - p3</li> 
+        <li>SSL socket leaks - <a href="https://github.com/javaee/glassfish/issues/746">bug id 746</a> - p3</li> 
+        <li>NPE /w ServletOutputStream in 9.1SE - <a href="http://bt2ws.central.sun.com/CrPrint-6440605">bug id 6440605</a> - 2 days - p3</li> 
+        <li><a href="https://github.com/javaee/glassfish/issues/462">bug id 462</a> - 1 day - p3</li> 
+        <li>Make some good and some rogue (i.e. wrong content-length) http requests, verify that the server won't go down (or doing Denial-Of-Services) - 3 days - p3</li> 
+        <li>Extra classpath attribute in class-loader should allow path relative to docroot - <a href="https://github.com/javaee/glassfish/issues/904">bug id 904</a> - 2 days - p3</li> 
+        <li>Port SJSWS GAT (900+) tests to run on AS 9.1 - p3 
+         <ul> 
+          <li>1st 150 tests - 5 days</li> 
+          <li>2nd 150 tests - 5 days</li> 
+          <li>3rd 150 tests - 5 days</li> 
+          <li>4th 150 tests - 5 days</li> 
+          <li>5th 150 tests - 5 days</li> 
+          <li>6th 150 tests - 5 days</li> 
+         </ul> </li> 
+        <li>Port SJSWS WebDAV tests to run on SJSAS - 4 weeks - p3</li> 
+       </ul> </li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:49.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : ClusterDynamicReconfig</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="ClusterDynamicReconfig-GlassFishServerOpenSourceEdition3.1DynamicReconfiguration"></a>GlassFish Server Open Source Edition 3.1 - Dynamic Reconfiguration</h1> <p>This wiki page / document details how dynamic reconfiguration will work when cluster support is added to GlassFish 3.1.</p> 
+     <ul> 
+      <li>Jerome Dochez (dochez@dev.java.net)</li> 
+      <li>Vijay Ramachandran (vijaysr@dev.java.net)</li> 
+     </ul> 
+     <div> 
+      <ul> 
+       <li><a href="#ClusterDynamicReconfig-GlassFishServerOpenSourceEdition3.1DynamicReconfiguration">GlassFish Server Open Source Edition 3.1 - Dynamic Reconfiguration</a></li> 
+       <li><a href="#ClusterDynamicReconfig-ScopeoftheProject">Scope of the Project</a></li> 
+       <li><a href="#ClusterDynamicReconfig-HighLevelOverviewoftheFeatures">High Level Overview of the Features</a></li> 
+       <li><a href="#ClusterDynamicReconfig-Implementationdetails">Implementation details</a></li> 
+       <ul> 
+        <li><a href="#ClusterDynamicReconfig-HookingintoGlassFish3.0">Hooking into GlassFish 3.0</a></li> 
+        <li><a href="#ClusterDynamicReconfig-CommandReplicationusingClusterExecutor">Command Replication using ClusterExecutor</a></li> 
+        <li><a href="#ClusterDynamicReconfig-Supplementalcommands">Supplemental commands</a></li> 
+        <li><a href="#ClusterDynamicReconfig-Undoablecommands">Undoable commands</a></li> 
+        <li><a href="#ClusterDynamicReconfig-Commandreplicationresultsandactiontaken">Command replication results and action taken</a></li> 
+        <li><a href="#ClusterDynamicReconfig-SecuringDASInstancecommuncations">Securing DAS-Instance communcations</a></li> 
+       </ul> 
+       <li><a href="#ClusterDynamicReconfig-MilestoneSchedule">Milestone Schedule</a></li> 
+       <li><a href="#ClusterDynamicReconfig-TaskList">Task List</a></li> 
+       <li><a href="#ClusterDynamicReconfig-Demo">Demo</a></li> 
+       <li><a href="#ClusterDynamicReconfig-Documentation">Documentation</a></li> 
+       <ul> 
+        <li><a href="#ClusterDynamicReconfig-DevTests">Dev Tests</a></li> 
+       </ul> 
+       <li><a href="#ClusterDynamicReconfig-References%2FLinks">References / Links</a></li> 
+       <li><a href="#ClusterDynamicReconfig-EmailAlias%28WhereDiscussionsareTakingPlace%29">Email Alias (Where Discussions are Taking Place)</a></li> 
+      </ul>
+     </div> <h4><a name="ClusterDynamicReconfig-ScopeoftheProject"></a>Scope of the Project</h1> <p>Dynamic reconfiguration feature for clustering in GlassFish Server Open Source Edition 3.1 refers to the way CLI commands (for example, <tt><em>asadmin create-jdbc-resource some-options --target some-target</em></tt>) from user to DAS gets reflected in the server instance (if the user specified target is a server instance) or all server instances that are part of the cluster (if user specified target is a cluster).</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Feature ID </th> 
+         <th class="confluenceTh"> Priority </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> Eng Response </th> 
+         <th class="confluenceTh"> Owner(s) </th> 
+         <th class="confluenceTh"> Estimate (Man Days) </th> 
+         <th class="confluenceTh"> Source of Requirement </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> DYREC-001 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Provide infrastructure to apply configuration changes dynamically (--target option in CLI) across a cluster </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Vijay, Jerome, Sheetal </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Feature parity </td> 
+         <td class="confluenceTd"> Started, Issue <a href="https://github.com/javaee/glassfish/issues/12030">12030 </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> DYREC-002 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Show 'restart required' status for each server instance. If a server instance needs to be re-started, this status will reflect that </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Vijay </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Feature parity </td> 
+         <td class="confluenceTd"> This status should survive across DAS re-start until the server instance is synchronized with DAS; if DAS is unavailable during re-start synchronization will be skipped, Issue <a href="https://github.com/javaee/glassfish/issues/12034">12034 </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> DYREC-003 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Support for dynamic-reconfiguration-enabled=false flag. This is needed for <a href="http://docs.sun.com/doc/821-0182/abdik">rolling upgrade </a> </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Vijay </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Feature parity </td> 
+         <td class="confluenceTd"> Issue <a href="https://github.com/javaee/glassfish/issues/12035">12035 </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> DYREC-004 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Clearly show status at the end of each operations. For all server instances where dynamic reconfiguration failed, please identify the server instances and suggest next steps to users to recover from this error (example, restart the server instances) </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Vijay </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Feature parity </td> 
+         <td class="confluenceTd"> Issue <a href="https://github.com/javaee/glassfish/issues/12031">12031 </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> DYREC-005 </td> 
+         <td class="confluenceTd"> See issue<br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Provide support (status, --target) for <a href="GlassFishv3.1.html" title="GlassFishv3.1">infrastructure related CLIs </a> </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Vijay </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Feature parity </td> 
+         <td class="confluenceTd"> list-* commands show the status such as running, restart required, etc. We need to add that support, Issue <a href="https://github.com/javaee/glassfish/issues/12038">12038 </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> DYREC-006 </td> 
+         <td class="confluenceTd"> See issue<br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Show a list of changes that were not dynamic and/or failed for some reason during dynamic re-config. This list will help system administrators to determine why a server instance should be re-started </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Vijay </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Issue <a href="https://github.com/javaee/glassfish/issues/12037">12037 </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> DYREC-008 </td> 
+         <td class="confluenceTd"> See issue<br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Provide detailed diagnostics to debug dynamic reconfiguration related failures in customer environment </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Vijay </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Feature parity </td> 
+         <td class="confluenceTd"> Issue <a href="https://github.com/javaee/glassfish/issues/12036">12036 </a>, Issue <a href="https://github.com/javaee/glassfish/issues/12039">12039 </a> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="ClusterDynamicReconfig-HighLevelOverviewoftheFeatures"></a>High Level Overview of the Features</h1> <p>To be able to effect the user requested changes (like creating resources as mentioned above) on a server instance / or all instances of a cluster, the following steps have to happen.</p> 
+     <ol> 
+      <li>Execute the command on DAS; ensure that the command goes through; If the command succeeds on DAS, then</li> 
+      <li>Replicate the same command on the target server instance or all server instances that are part of a specified cluster; report progress status back to client</li> 
+      <li>Ensure that all replicated commands go through fine. If there are errors, report back errors to user while marking instances where the command failed for restart; Handle all error scenarios; Differentiate complete failure of a command (which may trigger a rollback) from a partial failure (the command failed in a small subset of target only which may not require a rollback); In failure scenarios, ensure that information on what failed is clearly available</li> 
+      <li>Ensure that, when commands are replicated successfully on all instances, subsequent restart of any instance does not result in unnecessary synchronization (one scenario is the mismatch of timestamps of domain.xml between DAS and instance)</li> 
+      <li>Take care of supplemental commands (these are commands that cannot be replicated just as they were done in DAS. For example creation of references in instances will be done as a supplemental command to the deploy command - <a href="V3.1Clustering.html#V3.1Clustering-sectionV3.1ClusteringDeploymentInClusteredEnvi...">click here</a> for more information on this example).</li> 
+      <li>From a user perspective, the behavior from CLI/console should remain the same except for the need to specify the target cluster / instance for the command. The CLI/console will continue to talk to DAS (just as in GlassFish v3) and DAS will take decision on whether to replicate the command or not (depending on the command, the RuntimeType specified etc.) The command replication infrastructure will ensure that the instances obey only the commands from DAS and no direct commands to instances from anywhere else will be obeyed.</li> 
+     </ol> <p>The first step listed above is already happening in GlassFish 3.0 and it is common whether we are in a clustered environment or a stand alone environment. Since the rest of the steps listed above are essentially kicked off after step #1 is completed successfully, rest of this document will only go into the details of the step 2 onwards.</p> <h4><a name="ClusterDynamicReconfig-Implementationdetails"></a>Implementation details</h1> <p><b>TBD : API reference below is internal javadoc - got to point it to an external javadoc - how?</b><br> A <a href="http://javaweb.central.sun.com/~dochez/cluster/cluster/target/site/apidocs/index.html">new set of annotations and interfaces</a> have been added to GlassFish 3.1 towards implementation of the dynamic reconfiguration feature. The implementation approach is as follows :</p> <h4><a name="ClusterDynamicReconfig-HookingintoGlassFish3.0"></a>Hooking into GlassFish 3.0</h2> <p>This section gives a high level view of how new code for dynamic reconfiguration will hook into / affect existing (GlassFish 3.0) command execution code on the server side.</p> 
+     <ul> 
+      <li>Every CLI command should annotate itself with <tt><em>@ExecuteOn</em></tt>. It should also specify the <tt><em>RuntimeType</em></tt> of this command as part of <tt><em>@ExecuteOn</em></tt>. If the command is expected to be executed only on DAS, <tt><em>RuntimeType</em></tt> should be DAS. If the command has to executed on DAS and replicated on applicable instances, <tt><em>RuntimeType</em></tt> for <tt><em>@ExecuteOn</em></tt> of this command should be set to DAS and INSTANCE.</li> 
+      <li>If a command does not have <tt><em>@ExecuteOn</em></tt>, then the implementation will consider that command to have <tt><em>RuntimeType</em></tt> set to DAS and INSTANCE. This way all existing non-local commands in GlassFish 3.0 will not have to be changed and will be executed on DAS and all applicable server instances.</li> 
+      <li>The RemoteCommand facility, currently used for communication between user/cli and DAS, will be used (after some refactoring) for communication between DAS and instances for command replication.</li> 
+      <li>The <tt><em>GlassfishClusterExecutor</em></tt> will plugged into the current server-side command execution as follows : 
+       <ul> 
+        <li>Currently, a non-local CLI command reaches the server through the <tt><em>AdminAdapter</em></tt> and, after authentication and other checks, the command flows into <tt><em>CommanRunnerImpl.doCommand</em></tt> where parameters are injected and the actual command is executed.</li> 
+        <li>Once the command is executed and is successful, instead of returning and if the server environment is <tt><em>RunType.DAS</em></tt>, we will give control to the ClusterExecutor which will take over control. Details of ClusterExecutor are present in the next section.</li> 
+       </ul> </li> 
+     </ul> <h4><a name="ClusterDynamicReconfig-CommandReplicationusingClusterExecutor"></a>Command Replication using ClusterExecutor</h2> 
+     <ul> 
+      <li>GlassFish 3.1 will have an implementation of <tt><em>ClusterExecutor</em></tt> interface, the <tt><em>GlassfishClusterExecutor</em></tt>. This will be the default <tt><em>ClusterExecutor</em></tt> implementation that will be used if <tt><em>@ExecuteOn</em></tt> is not specified with a <tt><em>ClusterExecutor</em></tt> type. (Which in turn means, <tt><em>GlassFishClusterExecutor</em></tt> will be used for doing command replication for all GlassFish3.0 remote commands).</li> 
+      <li>As detailed in the previous section, control comes to the ClusterExecutor only for DAS - not on the instances.</li> 
+      <li>It will be the job of the cluster executor to 
+       <ul> 
+        <li>decode the target type and extract all instances on which the command has to be replicated</li> 
+        <li>change the parameters (if required)</li> 
+        <li>Add DAS timestamp as part of the parameters and ensure that instance has updated timestamp of its domain.xml</li> 
+        <li>send the command across to all instances</li> 
+        <li>collect progress status / result from instances to which command was sent</li> 
+        <li>Take care of errors (more details on this in the next section)</li> 
+        <li>report success / error to the user</li> 
+        <li>Upon successful completion, execute supplemental commands</li> 
+        <li>In case of failures, set restart required state as appropriate</li> 
+        <li>In case of failures, if the command is an <tt><em>UndoableCommand</em></tt>, try to undo the command</li> 
+       </ul> </li> 
+     </ul> <h4><a name="ClusterDynamicReconfig-Supplementalcommands"></a>Supplemental commands</h2> <p>Supplemental commands are commands that are specified by the user to be executed upon successful completion of a CLI command.For example, deployment in a cluster will be using supplemental command to deploy the bits in various instances as explained <a href="V3.1Clustering.html#V3.1Clustering-sectionV3.1ClusteringDeploymentInClusteredEnvi...">here</a>. The <tt><em>GlassfishClusterExecutor</em></tt> will look up the habitat to see if supplemental commands have been registered for the current CLI command.</p> 
+     <ul> 
+      <li>If supplemental commands are specified for execution <b>before</b> CLI execution (by using <tt><em>Supplemental.Before</em></tt>, then the supplemental command will be executed on all nodes and the primary CLI command will be executed if and only if the supplemental command's <tt><em>FailurePolicy</em></tt> is <tt><em>FailurePolicy.Ignore</em></tt> or <tt><em>FailurePolicy.Warn</em></tt>.</li> 
+      <li>The behaviour of supplemental commands that are specified to be executed <b>after</b> that primary CLI command (and the effect of supplemental command execution on overall command replication result) is detailed in the table in the next section.</li> 
+     </ul> <h4><a name="ClusterDynamicReconfig-Undoablecommands"></a>Undoable commands</h2> <p>Undoable commands give the command implementor a way to rollback a failed command execution. The table in the next section details the behaviour of command replication if the command implementor chooses to implement the <tt><em>UndoableCommand</em></tt> interface.</p> <h4><a name="ClusterDynamicReconfig-Commandreplicationresultsandactiontaken"></a>Command replication results and action taken</h2> <p>The table below gives details on the action taken upon completion of command replication for various scenarios</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Result of Command Replication </th> 
+         <th class="confluenceTh"> Is command undoable ? </th> 
+         <th class="confluenceTh"> Supplemental commands present ? </th> 
+         <th class="confluenceTh"> Overall result </th> 
+         <th class="confluenceTh"> Action taken </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Failure on DAS </td> 
+         <td class="confluenceTd"> Does not matter </td> 
+         <td class="confluenceTd"> Does not matter </td> 
+         <td class="confluenceTd"> Failure </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Success on all instances </td> 
+         <td class="confluenceTd"> Does not matter </td> 
+         <td class="confluenceTd"> None </td> 
+         <td class="confluenceTd"> Success </td> 
+         <td class="confluenceTd"> Report success </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Success on all instances </td> 
+         <td class="confluenceTd"> Does not matter </td> 
+         <td class="confluenceTd"> Supplemental.After </td> 
+         <td class="confluenceTd"> Result of supplemental command(s) execution and its <tt><em>FailurePolicy</em></tt> </td> 
+         <td class="confluenceTd"> Merged report of primary and supplemental command execution </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Failure on all instances </td> 
+         <td class="confluenceTd"> Does not matter </td> 
+         <td class="confluenceTd"> Does not matter </td> 
+         <td class="confluenceTd"> Report failure </td> 
+         <td class="confluenceTd"> Try to make error report as specific as possible (network error, instances down etc) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Failure on one or more instances </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Failure </td> 
+         <td class="confluenceTd"> Report reason for each command failure; Set server-restart </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Failure on one or more instances </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Supplemental.After </td> 
+         <td class="confluenceTd"> Failure </td> 
+         <td class="confluenceTd"> Execute Supplemental command only on the instances where command succeeded; Report reason for each command failure; Set server-restart </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Failure on one or more instances </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Failure </td> 
+         <td class="confluenceTd"> Try to undo command on instances where it succeeded; Report reason for each command failure; If undo fails, report that also </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Failure on one or more instances </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Supplemental.After </td> 
+         <td class="confluenceTd"> Failure </td> 
+         <td class="confluenceTd"> Do not execute Supplemental command anywhere; Try to undo command on instances where it succeeded; Report reason for each command failure; If undo fails, report that also </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="ClusterDynamicReconfig-SecuringDASInstancecommuncations"></a>Securing DAS-Instance communcations</h2> <p><b>TBD : How DAS will authenticate itself with instance while doing command replication; Do we use SSL by default for communicating with instances or the way admin adapter is configured; Currently investigation various possibilities</b></p> <h4><a name="ClusterDynamicReconfig-MilestoneSchedule"></a>Milestone Schedule</h1> <p>Note: for deliverables that have a link to an issue i the status column, see IssueTracker for the status.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover </th> 
+         <th class="confluenceTh"> Status </th> 
+         <th class="confluenceTh"> Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 01. </td> 
+         <td class="confluenceTd"> MS1 </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> Detailed investigation and impl spec </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Completed </td> 
+         <td class="confluenceTd"> Impl details ready; Review completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 02. </td> 
+         <td class="confluenceTd"> MS1 </td> 
+         <td class="confluenceTd"> DYREC-001 </td> 
+         <td class="confluenceTd"> Provide infrastructure to apply configuration changes dynamically (--target option in CLI) across a cluster </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Completed </td> 
+         <td class="confluenceTd"> Will enable basic command replication; Completes 40-50% of DYREC-001; Partial support for Supplemental commands to enable deployment team make progress; Will not support features like undoable commands etc </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 03. </td> 
+         <td class="confluenceTd"> MS1 </td> 
+         <td class="confluenceTd"> DYREC-005 </td> 
+         <td class="confluenceTd"> Provide --target support for <a href="GlassFishv3.1.html" title="GlassFishv3.1">infrastructure related CLIs </a> </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Completed </td> 
+         <td class="confluenceTd"> Will enable basic command replication; We will select 2 commands (create-iiop-listener, createJDBCConnectionPool) and show it getting replicated end to end </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 04. </td> 
+         <td class="confluenceTd"> MS1 </td> 
+         <td class="confluenceTd"> DYREC-004 </td> 
+         <td class="confluenceTd"> Clearly show status at the end of each operations. For all server instances where dynamic reconfiguration failed, please identify the server instances and suggest next steps to users to recover from this error (example, restart the server instances) </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Completed </td> 
+         <td class="confluenceTd"> Will have some amount of consolidated results; Completes 30-40% of DYREC-004 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 05. </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd"> DYREC-001 </td> 
+         <td class="confluenceTd"> Provide infrastructure to apply configuration changes dynamically (--target option in CLI) across a cluster </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Issue <a href="https://github.com/javaee/glassfish/issues/12030">12030 </a> </td> 
+         <td class="confluenceTd"> QA will be able test proper command replication with all scenarios handled for createJDBCResource and createJDBCConnectionPool commands </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 06. </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd"> DYREC-004 </td> 
+         <td class="confluenceTd"> Clearly show status at the end of each operations. For all server instances where dynamic reconfiguration failed, please identify the server instances and suggest next steps to users to recover from this error (example, restart the server instances) </td> 
+         <td class="confluenceTd"> yes </td> 
+         <td class="confluenceTd"> Issue <a href="https://github.com/javaee/glassfish/issues/12031">12031 </a> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 08. </td> 
+         <td class="confluenceTd"> See issue </td> 
+         <td class="confluenceTd"> DYREC-002 </td> 
+         <td class="confluenceTd"> Show 'restart required' status for each server instance. If a server instance needs to be re-started, this status will reflect that </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Issue <a href="https://github.com/javaee/glassfish/issues/12034">12034 </a> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 09. </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> DYREC-003 </td> 
+         <td class="confluenceTd"> Support for dynamic-reconfiguration-enabled=false flag. This is needed for <a href="http://docs.sun.com/app/docs/doc/821-0182/abdik?l=en&amp;a=view">rolling upgrade </a> </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Issue <a href="https://github.com/javaee/glassfish/issues/12035">12035 </a> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 10. </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> DYREC-008 </td> 
+         <td class="confluenceTd"> Provide detailed diagnostics to debug dynamic reconfiguration related failures in customer environment </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Issue <a href="https://github.com/javaee/glassfish/issues/12036">12036 </a> </td> 
+         <td class="confluenceTd"> Provide proposal </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 12. </td> 
+         <td class="confluenceTd"> See issue<br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> DYREC-006 </td> 
+         <td class="confluenceTd"> Show a list of changes that were not dynamic and/or failed for some reason during dynamic re-config. This list will help system administrators to determine why a server instance should be re-started </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Issue <a href="https://github.com/javaee/glassfish/issues/12037">12037 </a> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 13. </td> 
+         <td class="confluenceTd"> See issue<br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> DYREC-005 </td> 
+         <td class="confluenceTd"> Provide --target support for <a href="GlassFishv3.1.html" title="GlassFishv3.1">infrastructure related CLIs </a> </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Issue <a href="https://github.com/javaee/glassfish/issues/12038">12038 </a> </td> 
+         <td class="confluenceTd"> Complete test and verification for all listed infrastructure commands </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 14. </td> 
+         <td class="confluenceTd"> See issue<br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> DYREC-008 </td> 
+         <td class="confluenceTd"> Provide detailed diagnostics to debug dynamic reconfiguration related failures in customer environment </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Issue <a href="https://github.com/javaee/glassfish/issues/12039">12039 </a> </td> 
+         <td class="confluenceTd"> Complete Implementation </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="ClusterDynamicReconfig-TaskList"></a>Task List</h1> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task </th> 
+         <th class="confluenceTh"> Target Milestone </th> 
+         <th class="confluenceTh"> Start </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Owner(s) </th> 
+         <th class="confluenceTh"> Feature ID </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Refactor existing CLI-DAS communication mechanism for use in DAS-instance communication </td> 
+         <td class="confluenceTd"> Milestone 1 (5/24) </td> 
+         <td class="confluenceTd"> 4/19/10 </td> 
+         <td class="confluenceTd"> 4/23/10 </td> 
+         <td class="confluenceTd"> Bill shannon </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Get basic communication working between DAS and instances </td> 
+         <td class="confluenceTd"> Milestone 1 (5/24) </td> 
+         <td class="confluenceTd"> 4/26/10 </td> 
+         <td class="confluenceTd"> 4/30/10 </td> 
+         <td class="confluenceTd"> Vijay </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Completed; Works with everything hardcoded </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Send a command to remote instances and get response back </td> 
+         <td class="confluenceTd"> Milestone 1 (5/24) </td> 
+         <td class="confluenceTd"> 5/3/10 </td> 
+         <td class="confluenceTd"> 5/10/10 </td> 
+         <td class="confluenceTd"> Vijay </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Remove hardcoded instance values and get command replication working with domain lookup </td> 
+         <td class="confluenceTd"> Milestone 1 (5/24) </td> 
+         <td class="confluenceTd"> 5/11/10 </td> 
+         <td class="confluenceTd"> 5/17/10 </td> 
+         <td class="confluenceTd"> Vijay </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Collect response status from all instances and report back to CLI </td> 
+         <td class="confluenceTd"> Milestone 1 (5/24) </td> 
+         <td class="confluenceTd"> 5/18/10 </td> 
+         <td class="confluenceTd"> 5/21/10 </td> 
+         <td class="confluenceTd"> Vijay </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Complete command replication infrastructure and error reporting </td> 
+         <td class="confluenceTd"> Milestone 2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Vijay </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Design persistent way to report server-restart </td> 
+         <td class="confluenceTd"> Milestone 3 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Vijay </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Complete support for restart server required status </td> 
+         <td class="confluenceTd"> Milestone 3 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Vijay </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Support for dynamic-reconfig-enabled flag </td> 
+         <td class="confluenceTd"> Milestone 3 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Vijay </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Support a queue for commands </td> 
+         <td class="confluenceTd"> Milestone 4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Vijay </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Domain.xml timestamp updates in instances </td> 
+         <td class="confluenceTd"> Milestone 4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Vijay </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Test infrastructure, iiop commands </td> 
+         <td class="confluenceTd"> Milestone 4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Vijay </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Take care of failure recovery cases </td> 
+         <td class="confluenceTd"> Milestone 4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Vijay </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Study authentication and security requirements for DAS-Instance communication </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Tim </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Complete implementation of DAS-Instance security </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Tim </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Propose solution for securing DAS-Instance communication and get it approved </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Tim </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Prelim implementation for securing DAS-Instance communication </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Tim </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="ClusterDynamicReconfig-Demo"></a>Demo</h1> <p><a href="CommandReplicationDemoForMS1.html" title="CommandReplicationDemoForMS1">Command replication demo for MS1</a></p> <h4><a name="ClusterDynamicReconfig-Documentation"></a>Documentation</h1> 
+     <ul> 
+      <li><a href="CLIDeveloperGuide.html" title="CLIDeveloperGuide">Info for CLI Owner/Developer</a></li> 
+     </ul> <h4><a name="ClusterDynamicReconfig-DevTests"></a>Dev Tests</h2> 
+     <ul> 
+      <li><a href="AdminTests.html" title="AdminTests">Developer Tests </a></li> 
+     </ul> <h4><a name="ClusterDynamicReconfig-References%2FLinks"></a>References / Links</h1> <p><a href="PlanForGlassFish3.1.html" title="PlanForGlassFish3.1">GlassFish Server Open Source Edition 3.1 Plan</a><br> <a href="V3.1Clustering.html" title="V3.1Clustering">GlassFish Server Open Source Edition 3.1 Clustering design Spec</a></p> <h4><a name="ClusterDynamicReconfig-EmailAlias%28WhereDiscussionsareTakingPlace%29"></a>Email Alias (Where Discussions are Taking Place)</h1> 
+     <ul> 
+      <li>Please contact us at <a href="mailto:admin@glassfish.java.net">admin@glassfish.java.net</a></li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Aug 27, 2010 by 
+<font color="#0050B2">vijay_s_r</font>. Exported from wikis.oracle.com on May 27, 2015 20:43.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

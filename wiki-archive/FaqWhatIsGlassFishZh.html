@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : FaqWhatIsGlassFishZh</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="FaqWhatIsGlassFishZh-%E4%BB%80%E4%B9%88%E6%98%AFGlassFish%E9%A1%B9%E7%9B%AE%EF%BC%9F"></a>什么是 GlassFish 项目？</h2> <p><a href="http://glassfish.java.net">GlassFish 社区</a>正在开创免费、开源、生产级品质的企业软件。主要的交付产品包括应用服务器（Java EE 5 参考实现）和 Java Persistence API 参考实现 (TopLink Essentials)。</p> <p>成熟的代码库是 Sun 将 Sun Java System Application Server 8.x 贡献给该社区的结果。严格来讲，该社区由 Sun 领导，当前<a href="http://blogs.oracle.com/theaquarium/entry/glassfish_wants_your_suggestions_glassfish">正在制定</a>管理方法。Oracle 和 Ericsson 也是主要贡献者，分别贡献了 <a href="http://oss.oracle.com/toplink-essentials-jpa.html">Toplink Essentials</a> 和 <a href="http://sailfin.java.net">SIP Servlet</a> 技术。</p> <p><b>由 GlassFish 提供的可立即用于企业的功能包括：</b></p> 
+     <ul> 
+      <li><a href="http://blogs.oracle.com/nazrul/entry/under_the_hood_of_glassfish">群集</a> 
+       <ul> 
+        <li>内存会话复制，可调节应用程序部署以满足要求。可以动态增大（或缩小）群集以满足客户要求。</li> 
+        <li>高可用性在服务器发生故障时可提供持续的服务可用性。</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li><a href="https://glassfish.java.net/javaee5/admin-gui/admin-gui.html">高级集中管理</a> 
+       <ul> 
+        <li>管理群集（和单个实例）生命周期。动态创建、启动、停止和删除群集及实例。</li> 
+        <li>集中式群集配置</li> 
+        <li>集中式应用程序生命周期管理。从中央位置部署/取消部署应用程序。</li> 
+        <li>集中式监视（<a href="http://blogs.oracle.com/JagadishPrasath/entry/monitoring_jdbc_connection_pool_glassfish">此处</a>）（<a href="http://blogs.oracle.com/janeyoung/entry/new_and_improve_cli_monitoring">此处</a>）（<a href="http://blogs.oracle.com/sv96363/entry/monitoring_web_services_in_glassfish">此处</a>），也可以通过 JMX 公开给第三方工具。</li> 
+        <li><a href="http://download.java.net/javaee5/screencasts/callflow">调用流监视</a>，用于详细说明事务在应用服务器中的哪个位置花费了时间。</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li><a href="http://blogs.oracle.com/theaquarium/entry/883_66_jops">业界最佳的性能</a></li> 
+     </ul> 
+     <ul> 
+      <li>Microsoft .NET 3.0 的 Web 服务<a href="http://java.sun.com/developer/technicalArticles/glassfish/ProjectTango/">互操作性</a></li> 
+     </ul> <p> <b>那 GlassFish 有什么大不了的？</b><a href="http://blogs.oracle.com/arungupta/">Arun</a> 提供了一个<a href="http://blogs.oracle.com/arungupta/entry/what_s_the_big_deal">列表</a>。</p> 
+     <hr> <p><a href="FaqWhatIsGlassFish.html" title="FaqWhatIsGlassFish">英文 </a></p> 
+     <hr> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 02, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:44.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

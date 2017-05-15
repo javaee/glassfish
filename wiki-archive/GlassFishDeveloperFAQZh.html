@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFishDeveloperFAQZh</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p><b>译文:</b><br class="atl-forced-newline"> 日本语</p> <h4><a name="GlassFishDeveloperFAQZh-GlassFish%E5%BC%80%E5%8F%91%E8%80%85FAQ"></a>GlassFish 开发者 FAQ</h1> <p>这个开发者FAQ列出了GlassFish应用服务器开发过程中的常见问题，它为开发者向GlassFish项目贡献修正bug、新的代码以及其它改进的地方提供帮助。关于使用GlassFish和GlassFish本身的问题，请参照<a href="GlassFishUserFAQZh.html" title="GlassFishUserFAQZh">Galssfish 使用者 FAQ </a>.</p> <p>在真正的wiki或者是开源代码的做法中，开发者FAQ是一个社区的努力。回答问题或者增加新的FAQ将使该FAQ成为你和其他GLassFish开发者有价值的资源。 <br> *这是一个社区的资源，它的成功及有效与否取决于你。*所以让我们通过提出新的FAQ以及更新改善现有的，一起来向社区做贡献吧。</p> <h4><a name="GlassFishDeveloperFAQZh-%E5%A6%82%E4%BD%95%E5%8F%82%E4%B8%8E"></a>如何参与</h2> <p>作为一个新人，可以添加新的、强化或者更新已经存在的FAQs。这是一项循序渐进的工作，我们非常需要大家的参与。首先请阅读<a href="FaqContributeToDeveloperFAQ.html" title="FaqContributeToDeveloperFAQ">我如何为开发者FAQ做贡献?</a>, 其中包括有关内容和格式方面的准则。没有限制性很强的内容，只是应该注意的一些事项。同样的，你可以定期地检查是否能回答罗列在<a href="GlassFishDeveloperFAQ.html#GlassFishDeveloperFAQ-DeveloperFAQWishList">开发者FAQ 待解决问题一览</a> 部分的问题。</p> <p>如果您对 wiki 不熟悉，请参见 <a href="http://www.jspwiki.org/wiki/OneMinuteWiki">One Minute Wiki</a>（一分钟 Wiki）和 <a href="http://www.jspwiki.org/wiki/TextFormattingRules">Text Formatting Rules</a>（文本格式规则）。要进行测试，请尝试 <a href="http://sandbox.jspwiki.org/">沙箱</a>。与往常一样，请记住 <a href="http://www.jspwiki.org/wiki/WikiEtiquette">Wiki Etiquette</a>（Wiki 规矩）。</p> <p>如果您有与此 FAQ 有关的问题或建议，请发送电子邮件至 <span class="error">[docs@glassfish.java.net]</span>。您可以通过 GlassFish <a href="https://glassfish.java.net/servlets/ProjectMailingListList">邮件列表</a>页面订阅列表。</p> <p>*也需要翻译为其他语言！*有关详细信息，请参见 <a href="Translate_UserAndDeveloperFAQs.html" title="Translate_UserAndDeveloperFAQs">Translating User and Developer FAQs</a>（翻译用户和开发者 FAQ）。目前仅存在完整的日文版开发者FAQ日本语. <a href="Translate_FAQStatus.html#Translate_FAQStatus-sectionTranslateFAQStatusRussian">俄语</a> 和<a href="Translate_FAQStatus.html#Translate_FAQStatus-sectionTranslateFAQStatusItalian">意大利语</a> 版本的翻译也在进行中。</p> <h4><a name="GlassFishDeveloperFAQZh-%E7%9B%AE%E5%BD%95"></a>目录</h2> <h4><a name="GlassFishDeveloperFAQZh-%E4%B8%80%E8%88%AC%E4%B8%BB%E9%A2%98"></a><em>一般主题</em></h3> 
+     <ul> 
+      <li><a href="GlassFishDeveloperFAQ.html#GlassFishDeveloperFAQ-AboutGlassFish">关于GlassFish</a> <a href="GlassFishDeveloperFAQ.html#GlassFishDeveloperFAQ-AboutGlassFish">(英文)</a></li> 
+      <li><a href="GlassFishDeveloperFAQ.html#GlassFishDeveloperFAQ-CommunityAndContribution">社区和贡献</a><a href="GlassFishDeveloperFAQ.html#GlassFishDeveloperFAQ-CommunityAndContribution">(英文)</a></li> 
+      <li><a href="GlassFishDeveloperFAQ.html#GlassFishDeveloperFAQ-DocumentationAndResources">文档和资源</a><a href="GlassFishDeveloperFAQ.html#GlassFishDeveloperFAQ-DocumentationAndResources">(英文)</a></li> 
+      <li><a href="GlassFishDeveloperFAQ.html#GlassFishDeveloperFAQ-GeneralBuildInformation">一般的编译信息</a><a href="GlassFishDeveloperFAQ.html#GlassFishDeveloperFAQ-GeneralBuildInformation">(英文)</a></li> 
+      <li><a href="GlassFishDeveloperFAQ.html#GlassFishDeveloperFAQ-GeneralDevelopmentInformation">一般的开发信息</a>|<a href="GlassFishDeveloperFAQ.html#GlassFishDeveloperFAQ-GeneralDevelopmentInformation">(英文)</a></li> 
+      <li><a href="UpgradeCompatibilityRequirements.html" title="UpgradeCompatibilityRequirements">升级开发的兼容性需求</a><a href="UpgradeCompatibilityRequirements.html" title="UpgradeCompatibilityRequirements">(英文)</a></li> 
+      <li><a href="GlassFishDeveloperFAQ.html#GlassFishDeveloperFAQ-GlassFishV2Development">GlassFish V2 开发</a><a href="GlassFishDeveloperFAQ.html#GlassFishDeveloperFAQ-GlassFishV2Development">(英文)</a></li> 
+      <li><a href="GlassFishDeveloperFAQ.html#GlassFishDeveloperFAQ-GlassFishV3Development">GlassFish V3 开发</a><a href="GlassFishDeveloperFAQ.html#GlassFishDeveloperFAQ-GlassFishV3Development">(英文)</a></li> 
+      <li><a href="GlassFishDeveloperFAQ.html#GlassFishDeveloperFAQ-LicenseAndLega">许可和合法</a>|<a href="GlassFishDeveloperFAQ.html#GlassFishDeveloperFAQ-LicenseAndLega">(英文)</a></li> 
+     </ul> <h4><a name="GlassFishDeveloperFAQZh-%E7%89%B9%E5%88%AB%E4%B8%BB%E9%A2%98"></a><em>特别主题</em></h3> 
+     <ul> 
+      <li><a href="GlassFishDeveloperFAQ.html#GlassFishDeveloperFAQ-Classloaders">类加载器</a><a href="GlassFishDeveloperFAQ.html#GlassFishDeveloperFAQ-Classloaders">(英文)</a></li> 
+      <li><a href="GlassFishDeveloperFAQ.html#GlassFishDeveloperFAQ-Deployment">部署</a><a href="GlassFishDeveloperFAQ.html#GlassFishDeveloperFAQ-Deployment">(英文)</a></li> 
+      <li><a href="GlassFishDeveloperFAQ.html#GlassFishDeveloperFAQ-Persistence">持久化</a><a href="GlassFishDeveloperFAQ.html#GlassFishDeveloperFAQ-Persistence">(英文)</a></li> 
+      <li><a href="V3DomainStartupAndShutdown.html" title="V3DomainStartupAndShutdown">V3域启动和停止</a><a href="V3DomainStartupAndShutdown.html" title="V3DomainStartupAndShutdown">(英文)</a></li> 
+      <li><a href="GlassFishDeveloperFAQ.html#GlassFishDeveloperFAQ-UsageProfiles">使用配置文件</a><a href="GlassFishDeveloperFAQ.html#GlassFishDeveloperFAQ-UsageProfiles">(英文)</a></li> 
+     </ul> <h4><a name="GlassFishDeveloperFAQZh-%E5%85%B3%E4%BA%8EGlassFish"></a>关于GlassFish</h3> 
+     <ul> 
+      <li><a href="FaqBasicInformation.html" title="FaqBasicInformation">从何处可以找到关于GlassFish的基本信息?</a><a href="FaqBasicInformation.html" title="FaqBasicInformation">(英文)</a></li> 
+      <li><a href="FaqGlassFishRoadMap.html" title="FaqGlassFishRoadMap">什么是路标?</a><a href="FaqGlassFishRoadMap.html" title="FaqGlassFishRoadMap">(英文)</a></li> 
+     </ul> <h4><a name="GlassFishDeveloperFAQZh-%E7%A4%BE%E5%8C%BA%E5%92%8C%E8%B4%A1%E7%8C%AE"></a>社区和贡献</h3> 
+     <ul> 
+      <li><a href="FaqWhosDeveloping.html" title="FaqWhosDeveloping">谁正在开发GlassFish?</a><a href="FaqWhosDeveloping.html" title="FaqWhosDeveloping">(英文)</a></li> 
+      <li><a href="FaqUsingInProduction.html" title="FaqUsingInProduction">谁在使用GlassFish?</a><a href="FaqUsingInProduction.html" title="FaqUsingInProduction">(英文)</a></li> 
+      <li><a href="FaqContributeDevelopment.html" title="FaqContributeDevelopment">如何向开发做贡献?</a><a href="FaqContributeDevelopment.html" title="FaqContributeDevelopment">(英文)</a></li> 
+      <li><a href="FaqContributeToDeveloperFAQ.html" title="FaqContributeToDeveloperFAQ">如何向开发者FAQ中做贡献?</a><a href="FaqContributeToDeveloperFAQ.html" title="FaqContributeToDeveloperFAQ">(英文)</a></li> 
+      <li><a href="FaqContributeToDocumentation.html" title="FaqContributeToDocumentation">如何向GlassFish的文档做贡献?</a><a href="FaqContributeToDocumentation.html" title="FaqContributeToDocumentation">(英文)</a></li> 
+      <li><a href="FaqGAP.html" title="FaqGAP">什么是GlassFish Community Awards (GAP)? 谁可以参加?</a> <a href="FaqGAP.html" title="FaqGAP">(英文)</a></li> 
+     </ul> <h4><a name="GlassFishDeveloperFAQZh-%E6%96%87%E6%A1%A3%E5%92%8C%E8%B5%84%E6%BA%90"></a>文档和资源 </h3> 
+     <ul> 
+      <li><a href="FaqWhereIsDocumentation.html" title="FaqWhereIsDocumentation">文档在哪里?有什么其他资源存在?</a><a href="FaqWhereIsDocumentation.html" title="FaqWhereIsDocumentation">(英文)</a></li> 
+      <li><a href="FaqGetHelpWithGlassFish.html" title="FaqGetHelpWithGlassFish">如何得到GlassFish的帮助?</a><a href="FaqGetHelpWithGlassFish.html" title="FaqGetHelpWithGlassFish">(英文)</a></li> 
+      <li><a href="FaqStayingUpToDate.html" title="FaqStayingUpToDate">如何及时获得GlassFish 的新闻内容?</a><a href="FaqStayingUpToDate.html" title="FaqStayingUpToDate">(英文)</a></li> 
+      <li><a href="FaqTipsAndBlogs.html" title="FaqTipsAndBlogs">在哪里可以找到技术提示和博客?</a><a href="FaqTipsAndBlogs.html" title="FaqTipsAndBlogs">(英文)</a></li> 
+      <li><a href="FaqSupportOfferings.html" title="FaqSupportOfferings">有什么支持被提供?</a><a href="FaqSupportOfferings.html" title="FaqSupportOfferings">(英文)</a></li> 
+      <li><a href="FaqDeveloperInfo.html" title="FaqDeveloperInfo">如何得到更多开发者信息?</a><a href="FaqDeveloperInfo.html" title="FaqDeveloperInfo">(英文)</a></li> 
+      <li><a href="FaqWiki.html" title="FaqWiki">有关于GlassFish wiki的FAQ吗?</a><a href="FaqWiki.html" title="FaqWiki">(英文)</a><br> <b><a href="FaqEvents.html" title="FaqEvents">发生了什么你感兴趣的事件?</a></b><a href="FaqEvents.html" title="FaqEvents">(英文)</a></li> 
+     </ul> <h4><a name="GlassFishDeveloperFAQZh-%E4%B8%80%E8%88%AC%E7%9A%84%E7%BC%96%E8%AF%91%E4%BF%A1%E6%81%AF"></a>一般的编译信息 </h3> 
+     <ul> 
+      <li><a href="FaqBuildGlassFish.html" title="FaqBuildGlassFish">如何编译GlassFish?</a><a href="FaqBuildGlassFish.html" title="FaqBuildGlassFish">(英文)</a></li> 
+      <li><a href="FaqBuildFAQ.html" title="FaqBuildFAQ">有关于编译问题的FAQ吗?</a><a href="FaqBuildFAQ.html" title="FaqBuildFAQ">(英文)</a></li> 
+      <li><a href="FaqNetBeansBuildGlassFish.html" title="FaqNetBeansBuildGlassFish">可以使用NetBean编译GlassFish吗?</a><a href="FaqNetBeansBuildGlassFish.html" title="FaqNetBeansBuildGlassFish">(英文)</a></li> 
+      <li><a href="FaqMavenSubset.html" title="FaqMavenSubset">为什么只有一个Maven features的子集被使用?</a><a href="FaqMavenSubset.html" title="FaqMavenSubset">(英文)</a></li> 
+      <li><a href="FaqMavenObjectives.html" title="FaqMavenObjectives">Maven-based框架要完成什么目标?</a><a href="FaqMavenObjectives.html" title="FaqMavenObjectives">(英文)</a></li> 
+      <li><a href="FaqTypesOfModules.html" title="FaqTypesOfModules">什么是各模块间的不同类型?</a><a href="FaqTypesOfModules.html" title="FaqTypesOfModules">(英文)</a></li> 
+      <li><a href="FaqUsefulMavenGoals.html" title="FaqUsefulMavenGoals">什么是有用的Maven目标?</a><a href="FaqUsefulMavenGoals.html" title="FaqUsefulMavenGoals">(英文)</a></li> 
+     </ul> <h4><a name="GlassFishDeveloperFAQZh-%E4%B8%80%E8%88%AC%E5%BC%80%E5%8F%91%E4%BF%A1%E6%81%AF"></a>一般开发信息 </h3> 
+     <ul> 
+      <li><a href="FaqCommitter.html" title="FaqCommitter">如何成为一个committer?</a><a href="FaqCommitter.html" title="FaqCommitter">(英文)</a><br> <b><a href="FaqCommitCode.html" title="FaqCommitCode">提交代码的步骤是什么?</a></b><a href="FaqCommitCode.html" title="FaqCommitCode">(英文)</a> <br> <b><a href="FaqSubmitPatch.html" title="FaqSubmitPatch">如何提交一个patch?</a></b><a href="FaqSubmitPatch.html" title="FaqSubmitPatch">(英文)</a> <br> <b><a href="FaqSubmitBug.html" title="FaqSubmitBug">如何提交一个bug?</a></b><a href="FaqSubmitBug.html" title="FaqSubmitBug">(英文)</a></li> 
+     </ul> <h4><a name="GlassFishDeveloperFAQZh-GlassFishv2%E5%BC%80%E5%8F%91"></a>GlassFish v2 开发 </h3> 
+     <ul> 
+      <li><a href="FaqBuildGlassFish.html" title="FaqBuildGlassFish">如何编译GlassFish?</a><a href="FaqBuildGlassFish.html" title="FaqBuildGlassFish">(英文)</a></li> 
+     </ul> <h4><a name="GlassFishDeveloperFAQZh-GlassFishv3%E5%BC%80%E5%8F%91"></a>GlassFish v3 开发 </h3> 
+     <ul> 
+      <li><a href="FaqGlassFishV3.html" title="FaqGlassFishV3">在哪里可以学到更多关于GlassFish V3的知识?</a><a href="FaqGlassFishV3.html" title="FaqGlassFishV3">(英文)</a></li> 
+      <li><a href="FaqV3DevGetStarted.html" title="FaqV3DevGetStarted">如何开始开发GlassFish V3?</a><a href="FaqV3DevGetStarted.html" title="FaqV3DevGetStarted">(英文)</a></li> 
+      <li><a href="FaqGlassFishV3.html#FaqGlassFishV3-v3build">构筑和测试V3的方针在哪里?</a><a href="FaqGlassFishV3.html#FaqGlassFishV3-v3build">(英文)</a></li> 
+      <li><a href="FaqGlassFishV3.html#FaqGlassFishV3-v3ql">GlassFish v3快速的说明在哪里?</a><a href="FaqGlassFishV3.html#FaqGlassFishV3-v3ql">(英文)</a></li> 
+      <li><a href="FaqV3QuicklookTutorial.html" title="FaqV3QuicklookTutorial">关于简明的快速教程?</a></li> 
+      <li><a href="FaqV3BuildStatus.html" title="FaqV3BuildStatus">在哪里可以看到最新的GlassFish构筑状态?</a><a href="FaqV3BuildStatus.html" title="FaqV3BuildStatus">(英文)</a></li> 
+      <li>V3模块的所有者列表在哪里?(英文)</li> 
+      <li><a href="FaqV3BestDebugIDE.html" title="FaqV3BestDebugIDE">调试V3最好的IDE是什么?</a><a href="FaqV3BestDebugIDE.html" title="FaqV3BestDebugIDE">(英文)</a></li> 
+      <li><a href="FaqV3DevTool.html" title="FaqV3DevTool">有没有一个需要懂的好的开发工具? 它是什么?为什么重要?</a><a href="FaqV3DevTool.html" title="FaqV3DevTool">(英文)</a></li> 
+      <li><a href="FaqV3DebugBuildProcess.html" title="FaqV3DebugBuildProcess">编译的过程能被调试吗? 如何调试？</a><a href="FaqV3DebugBuildProcess.html" title="FaqV3DebugBuildProcess">(英文)</a></li> 
+      <li><a href="FaqV3UnderstandBuildProcess.html" title="FaqV3UnderstandBuildProcess">为什么编译过程很难被理解?</a><a href="FaqV3UnderstandBuildProcess.html" title="FaqV3UnderstandBuildProcess">(英文)</a></li> 
+      <li><a href="FaqV3UnderstandModuleSystem.html" title="FaqV3UnderstandModuleSystem">最好的理解模块系统,重要的注释,模块结构的方法?</a><a href="FaqV3UnderstandModuleSystem.html" title="FaqV3UnderstandModuleSystem">(英文)</a></li> 
+      <li><a href="FaqV3AsadminCommands.html" title="FaqV3AsadminCommands">现在时点有多少个被实现asadmin命令?</a><a href="FaqV3AsadminCommands.html" title="FaqV3AsadminCommands">(英文)</a></li> 
+      <li><a href="FaqV3ProjectDependencies.html" title="FaqV3ProjectDependencies">整理pom.xml-1: 如何知道我的工程依赖是正确的?</a><a href="FaqV3ProjectDependencies.html" title="FaqV3ProjectDependencies">(英文)</a></li> 
+      <li><a href="FaqV3JavacArgumentsAndCompilation.html" title="FaqV3JavacArgumentsAndCompilation">如何传递javac参数使产生额外的编译信息?</a><a href="FaqV3JavacArgumentsAndCompilation.html" title="FaqV3JavacArgumentsAndCompilation">(英文)</a></li> 
+      <li><a href="FaqV3MavenGFPrefixedGoals.html" title="FaqV3MavenGFPrefixedGoals">Maven多喝理解类似gf:run的gf prefixed goals?</a><a href="FaqV3MavenGFPrefixedGoals.html" title="FaqV3MavenGFPrefixedGoals">(英文)</a></li> 
+      <li><a href="FaqV3ViewModulePOM.html" title="FaqV3ViewModulePOM">如何更好地看待模块POM?</a><a href="FaqV3ViewModulePOM.html" title="FaqV3ViewModulePOM">(英文)</a></li> 
+      <li><a href="FaqV3DebugDAS.html" title="FaqV3DebugDAS">有没有什么调试DAS的建议?</a><a href="FaqV3DebugDAS.html" title="FaqV3DebugDAS">(英文)</a></li> 
+      <li><a href="FaqV3DebugAsadminDAS.html" title="FaqV3DebugAsadminDAS">同时调试asadmin和DAS?</a><a href="FaqV3DebugAsadminDAS.html" title="FaqV3DebugAsadminDAS">(英文)</a></li> 
+      <li><a href="FaqV3DebugUnitTest.html" title="FaqV3DebugUnitTest">我想调试一个单元测试-- 但是比较难!!</a><a href="FaqV3DebugUnitTest.html" title="FaqV3DebugUnitTest">(英文)</a></li> 
+      <li><a href="FaqV3OutOfMemoryErrory.html" title="FaqV3OutOfMemoryErrory">构筑时出现out-of-memory错误 – 为什么?</a><a href="FaqV3OutOfMemoryErrory.html" title="FaqV3OutOfMemoryErrory">(英文)</a></li> 
+     </ul> <h4><a name="GlassFishDeveloperFAQZh-%E8%AE%B8%E5%8F%AF%E5%92%8C%E6%B3%95%E5%BE%8B"></a>许可和法律 </h3> <p><em>本部分正在构建中</em></p> <h4><a name="GlassFishDeveloperFAQZh-%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%99%A8"></a>类加载器 </h3> 
+     <ul> 
+      <li><a href="FaqClassloadersGeneral.html" title="FaqClassloadersGeneral">在哪里可以找到更多关于类加载器的信息?</a><a href="FaqClassloadersGeneral.html" title="FaqClassloadersGeneral">(英文)</a></li> 
+      <li><a href="FaqClasspathSuffix.html" title="FaqClasspathSuffix">在启动时，如何动态传递应用的类路径前缀到GlassFish V2中去?</a><a href="FaqClasspathSuffix.html" title="FaqClasspathSuffix">(英文)</a></li> 
+     </ul> <h4><a name="GlassFishDeveloperFAQZh-%E9%83%A8%E7%BD%B2"></a>部署 </h3> 
+     <ul> 
+      <li><a href="FaqDeploymentGeneral.html" title="FaqDeploymentGeneral">在哪里可以找到更多关于应用程序部署的信息?</a><a href="FaqDeploymentGeneral.html" title="FaqDeploymentGeneral">(英文)</a></li> 
+     </ul> <h4><a name="GlassFishDeveloperFAQZh-%E6%8C%81%E4%B9%85%E5%8C%96"></a>持久化 </h3> 
+     <ul> 
+      <li><a href="FaqJavaPersistenceAPI.html" title="FaqJavaPersistenceAPI">在哪里可以找到我关于持久化和JPA的提问?</a><a href="FaqJavaPersistenceAPI.html" title="FaqJavaPersistenceAPI">(英文)</a></li> 
+     </ul> <h4><a name="GlassFishDeveloperFAQZh-%E4%BD%BF%E7%94%A8%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"></a>使用配置文件 </h3> 
+     <ul> 
+      <li><a href="FaqUsageProfiles.html" title="FaqUsageProfiles">如何理解使用配置文件?</a><a href="FaqUsageProfiles.html" title="FaqUsageProfiles">(英文)</a></li> 
+     </ul> <h4><a name="GlassFishDeveloperFAQZh-%E5%BC%80%E5%8F%91%E8%80%85FAQ%E6%9C%9F%E6%9C%9B%E5%88%97%E8%A1%A8"></a>开发者FAQ期望列表</h2> <p>还有哪些问题未提到？哪些问题是您想看到答案却没有答案的问题？哪些问题是您遇到的首要问题而且填写 FAQ 会对您特别有帮助？请将这些问题添加到此需求列表中！此外，如果您知道下面这些问题中一个或多个问题的答案，请提供。请让 GlassFish 开发者 FAQ 成为有用的资源－无论是供社区使用，还是由社区提供。</p> <h4><a name="GlassFishDeveloperFAQZh-%E9%9C%80%E8%A6%81%E5%9B%9E%E7%AD%94%E7%9A%84%E9%97%AE%E9%A2%98%E5%A6%82%E4%B8%8B%3A"></a>需要回答的问题如下: </h2> 
+     <ul> 
+      <li><em>你的问题</em></li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 02, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:44.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

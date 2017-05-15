@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : AdminTests</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   
+     <div> 
+      <ul> 
+       <li><a href="#AdminTests-AdminDeveloperTests%28devtests%29">Admin Developer Tests (devtests)</a></li> 
+       <ul> 
+        <li><a href="#AdminTests-WorkspaceInfo">Workspace Info</a></li> 
+        <li><a href="#AdminTests-AddingaNewTest">Adding a New Test</a></li> 
+        <li><a href="#AdminTests-InstructionstoRuntheTests">Instructions to Run the Tests</a></li> 
+        <ul> 
+         <li><a href="#AdminTests-RunningasubsetoftheTests">Running a subset of the Tests</a></li> 
+        </ul> 
+        <li><a href="#AdminTests-HudsonJobs">Hudson Jobs</a></li> 
+       </ul> 
+       <li><a href="#AdminTests-OldAdminDevtestDevelopment">Old Admin Devtest Development</a></li> 
+       <ul> 
+        <li><a href="#AdminTests-WorkspaceInfo">Workspace Info</a></li> 
+        <li><a href="#AdminTests-Byron%27sListofTipsandGotchas">Byron's List of Tips and Gotchas</a></li> 
+        <ul> 
+         <li><a href="#AdminTests-Gotchas">Gotchas</a></li> 
+         <li><a href="#AdminTests-Tips">Tips</a></li> 
+         <li><a href="#AdminTests-June22">June 22</a></li> 
+        </ul> 
+        <li><a href="#AdminTests-Instructionstorunthedevtests">Instructions to run the devtests</a></li> 
+        <li><a href="#AdminTests-Instructionstorunasubsetofthetests">Instructions to run a subset of the tests</a></li> 
+        <li><a href="#AdminTests-"> <span style="color: #000000">Instructions to run more tests based on the num_tests parameter</span></a></li> 
+        <li><a href="#AdminTests-Addinganewtest">Adding a new test</a></li> 
+        <li><a href="#AdminTests-JustInTimeDebugging">Just-In-Time Debugging</a></li> 
+        <li><a href="#AdminTests-Todo">Todo</a></li> 
+        <li><a href="#AdminTests-HudsonJobs">Hudson Jobs</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="AdminTests-AdminDeveloperTests%28devtests%29"></a>Admin Developer Tests (devtests)</h1> <p>Developer tests for administration functionality, especially tests that run asadmin commands, currently exist in two places, as we migrate from one framework to another. Information about the old location is further down on the page in a section called "Old Admin Devtest Development". Information about developing new tests immediately follows this introduction.</p> <p>Developer tests are integration tests developed by developers. These tests depend on a fully built distribution consisting of many modules, unlike unit tests that only depend on a single module. The source code for the developer tests is centrally located, apart from any specific modules.</p> <p>The new devtests are based on the TestNG framework and they reside within the GlassFish source code directory tree.&nbsp; This means that as GlassFish is branched, the devtests will automatically be branched with the code.&nbsp; No more having to have separate branches for devtests. The way that tests are counted is different between the old and new framework.&nbsp; With the old framework, every call to "report" is consisted a test and counted. With the TestNG framework, only the test methods are counted, even if a test method has many assert statements in it. So keep this in mind when converting tests; the number of tests will appear to go down.</p> <h4><a name="AdminTests-WorkspaceInfo"></a>Workspace Info</h2> <p>Tests that depend only on nucleus features are here: <b>main/nucleus/tests/admin</b></p> <p>To checkout the tests, just following the <a href="FullBuildInstructions.html" title="FullBuildInstructions">regular procedure for checking out GlassFish</a>, which includes nucleus.</p> <h4><a name="AdminTests-AddingaNewTest"></a>Adding a New Test</h2> <p>Tests are contained within Java files in the org.glassfish.nucleus.admin package. To add a test to an existing class, just add a method to the class. To add a new suite of tests in new class, just create a new class within this package (or any other package within the module).&nbsp; Copy an existing test class to get started. When a new test is added, there is no need to edit the POM file or any other file within the module.</p> <p>The devtests make use of a utility module (utils-ng) for some useful functions when writing tests.&nbsp; These include, for example, the "nadmin" method which is used to run the nadmin (aka asadmin) command. Look at the <b>NucleusTestUtils</b> class for more details.</p> <h4><a name="AdminTests-InstructionstoRuntheTests"></a>Instructions to Run the Tests</h2> <p>To run the tests, build nucleus and then do:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">cd main/nucleus/tests/admin
+mvn test</pre> 
+       </div> 
+      </div>
+     </div> <p>This will run the tests against the nucleus distribution that is staged in main/distributions/nucleus. To run the tests against an installation of your choice, use the nucleus.home property setting, as in:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">cd main/nucleus/tests/admin
+mvn -Dnucleus.home=$HOME/test/glassfish3 test</pre> 
+       </div> 
+      </div>
+     </div> <p>The nucleus.home can point to any distribution of GlassFish based on nucleus.</p> <h4><a name="AdminTests-RunningasubsetoftheTests"></a>Running a subset of the Tests</h3> <p>To run a subset of the tests, use the -Dtest property.&nbsp; The test property is a list of test classes to run. See the pom.xml file for an example of how to run a subset of the tests.</p> <h4><a name="AdminTests-HudsonJobs"></a>Hudson Jobs</h2> <p>(Oracle internal) The "nucleus-admin-devtests-trunk" job on the hudson-sca internal hudson server runs the nucleus admin devtests after every build:</p> 
+     <ul> 
+      <li><a href="http://hudson-sca.us.oracle.com/job/nucleus-admin-devtests-trunk/">http://hudson-sca.us.oracle.com/job/nucleus-admin-devtests-trunk/</a> 
+       <hr> <h4><a name="AdminTests-OldAdminDevtestDevelopment"></a>Old Admin Devtest Development</h1></li> 
+     </ul> <h4><a name="AdminTests-WorkspaceInfo"></a>Workspace Info</h2> <p>If you have an extra hour or three and want to see everything (50,000+ directories) do this:<br> *svn co <a href="https://svn.java.net/svn/glassfish~svn/trunk/v2/appserv-tests*">https://svn.java.net/svn/glassfish~svn/trunk/v2/appserv-tests*</a></p> <p>To get just exactly what you need for our devtests run the following (Windows version)</p> <p>__<br> md \gf\v2\appserv-tests<br> cd \gf\v2\appserv-tests<br> svn co <a href="https://svn.java.net/svn/glassfish~svn/trunk/v2/appserv-tests/lib">https://svn.java.net/svn/glassfish~svn/trunk/v2/appserv-tests/lib</a> <a href="https://svn.java.net/svn/glassfish~svn/trunk/v2/appserv-tests/config">https://svn.java.net/svn/glassfish~svn/trunk/v2/appserv-tests/config</a> <a href="https://svn.java.net/svn/glassfish~svn/trunk/v2/appserv-tests/util">https://svn.java.net/svn/glassfish~svn/trunk/v2/appserv-tests/util</a><br> svn co <a href="https://svn.java.net/svn/glassfish~svn/trunk/v2/appserv-tests/devtests/admin/cli">https://svn.java.net/svn/glassfish~svn/trunk/v2/appserv-tests/devtests/admin/cli</a> devtests\admin\cli<br> cd ..<br> svn co -N <a href="https://svn.java.net/svn/glassfish~svn/trunk/v2/appserv-tests">https://svn.java.net/svn/glassfish~svn/trunk/v2/appserv-tests</a><br> __</p> <p>Mac/Unix version</p> <p>__<br> mkdir -p gf/v2/appserv-tests<br> cd gf/v2/appserv-tests<br> svn co <a href="https://svn.java.net/svn/glassfish~svn/trunk/v2/appserv-tests/lib">https://svn.java.net/svn/glassfish~svn/trunk/v2/appserv-tests/lib</a> <a href="https://svn.java.net/svn/glassfish~svn/trunk/v2/appserv-tests/config">https://svn.java.net/svn/glassfish~svn/trunk/v2/appserv-tests/config</a> <a href="https://svn.java.net/svn/glassfish~svn/trunk/v2/appserv-tests/util">https://svn.java.net/svn/glassfish~svn/trunk/v2/appserv-tests/util</a><br> svn co <a href="https://svn.java.net/svn/glassfish~svn/trunk/v2/appserv-tests/devtests/admin/cli">https://svn.java.net/svn/glassfish~svn/trunk/v2/appserv-tests/devtests/admin/cli</a> devtests/admin/cli<br> cd ..<br> svn co -N <a href="https://svn.java.net/svn/glassfish~svn/trunk/v2/appserv-tests">https://svn.java.net/svn/glassfish~svn/trunk/v2/appserv-tests</a><br> __</p> <h4><a name="AdminTests-Byron%27sListofTipsandGotchas"></a>Byron's List of Tips and Gotchas</h2> <h4><a name="AdminTests-Gotchas"></a>Gotchas</h3> 
+     <ul> 
+      <li>the report(string, boolean) does some pretty unexpected stuff: 
+       <ol> 
+        <li>If the string has a space in it – everything before the first space is thrown away!!</li> 
+        <li>If you have 100 tests all with the same string – it will show up as one test. Only the very first test will count as pass fail. The other 99 tests and their results are totally ignored.</li> 
+        <li>June 10 – There is now a base class, AdminBaseDevTest, that has report functions that solve these two problems. All admin tests should extend this base class.</li> 
+       </ol> </li> 
+     </ul> <h4><a name="AdminTests-Tips"></a>Tips</h3> 
+     <ul> 
+      <li>If you run asadmin(String label, String... args) it will return a boolean and print everything out. The text is gone.</li> 
+      <li>If you run asadminWithOutput(String label, String... args) then the output text will <b>not</b> be printed. But the Object it returns has all of the output and your boolean result. You can use the output for more sophisticated testing. I added this capability June 3,2010 
+       <ul> 
+        <li>Example I create 10 instances. Then I run list-instances. Then delete the 10 instances and run list-instances again. list-instances always return success. Were ALL 10 really deleted? An easy way to find out is to check the return string for "Nothing to list."</li> 
+       </ul> </li> 
+     </ul> <p>1) the get command is laborious and nasty to parse from devtests. Let your baseclass take the drudgery out of it for you like so:</p> <p>report("i3-server-element-uses-24850", doesGetMatch(<br> "servers.server.i3.system-property.ASADMIN_LISTENER_PORT.value",<br> "24850"));</p> <p>– here it verifies that the value of that key is "24850".</p> <p>1B) or you can use the get method:</p> <p>String s = get("servers.server.i3.system-property.ASADMIN_LISTENER_PORT.value");</p> <p>2) I added a "server" that will run for the duration of the JVM with a port that you specify. It is a daemon so it will die when the tests are done.<br> – I use it to clog up a port to test how the port-assigning code reacts</p> <p>runFakeServerDaemon(24851);</p> <h4><a name="AdminTests-June22"></a>June 22</h3> <p>I can't stand the tens of thousands of lines of junk printed out anymore! I added a verbose option. By default the devtests for everyone else will be as chatty as ever. For our tests they will be non-verbose by default. I hardcoded a call to setVerbose(false) in our base class. If you want to help – then figure out a nice way to do it via -D commandline args.</p> <p><b>What it does</b>: It only prints out the commands that officially fail. You will see a dramatic change in the amount of output.</p> <p><b>Important: If you simply set AS_LOGFILE=your-path then EVERY CLI command and result will be saved there. So you can always locate all the commands that were run. THis technique is also handy with QL tests.</b></p> <p><b>October 27, 2011</b></p> <p><b>I have a handy dandy script I use on UNIX and Windows that checks out the devtests, 3.1.2 branch and the trunk all into one tree.&nbsp; I'm putting it here for safe-keeping</b></p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">svn=https://svn.java.net/svn/glassfish~svn
+cd  /export/home/bnlocal
+svn co -N $svn gf
+cd gf
+svn co -N $svn/trunk
+svn co -N $svn/branches
+cd trunk
+svn co -N $svn/trunk/v2
+cd v2
+svn co -N $svn/trunk/v2/appserv-tests
+cd appserv-tests
+svn co $svn/trunk/v2/appserv-tests/lib
+svn co $svn/trunk/v2/appserv-tests/config
+svn co $svn/trunk/v2/appserv-tests/util
+svn co $svn/trunk/v2/appserv-tests/devtests/admin/cli devtests/admin/cli
+svn co $svn/trunk/v2/appserv-tests/devtests/cluster
+
+cd  /export/home/bnlocal/gf
+svn co $svn/trunk/main trunk/main
+cd  /export/home/bnlocal/gf/branches
+svn co $svn/branches/3.1.2</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="AdminTests-Instructionstorunthedevtests"></a>Instructions to run the devtests</h2> <p>There is a build file which will build and run all the tests. All you need are these 4 basic steps. These steps are for running the tests on the trunk.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">cd appserv-tests/devtests/admin/cli
+
+export APS_HOME=&lt;appserv-tests-dir&gt;
+export S1AS_HOME=&lt;directory where glassfish is installed&gt; if I unzip glassfish.zip into $HOME/test, S1AS_HOME=$HOME/test/glassfishv3/glassfish
+
+ant all</pre> 
+       </div> 
+      </div>
+     </div> <p>__Results are stored in $APS_HOME/test_results.html</p> <p>__</p> <h4><a name="AdminTests-Instructionstorunasubsetofthetests"></a>Instructions to run a subset of the tests</h2> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">ant -Dteststorun=[cluster|instance|...] all</pre> 
+       </div> 
+      </div>
+     </div> <p>The value to use (cluster, instance, etc), should match a target name in build.xml.</p> <h4><a name="AdminTests-"></a><font color="#000000">Instructions to run more tests based on the num_tests parameter</font></h2> <p>The num_tests property determines how many instances are created in the instances test. &nbsp;The default value is 2.&nbsp;</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">ant -Dnum_tests=45 all</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="AdminTests-Addinganewtest"></a>Adding a new test</h2> <p>Adding a new test is easy.<br> For easy reporting and simplicity there is a separate class for each suite of tests.<br> Under admin/cli/src/admin there are different classes like ClusterTest, InstanceTest, etc.</p> <p>The easiest way to add tests is to add them to one of the existing classes. The "run" method of the test must be modified to actually call your test method.</p> <p>Another option is to create a new class, say NodeTest, for which you want to add tests. Add a target to the build.xml to run the new tests, and add the test to the list of dependencies for the "cli" test.</p> <p>Copy one of the existing test files, such as InstanceTest.java.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Override
+    protected String getTestName() {
+        return "cluster";
+    }
+
+    @Override
+    protected String getTestDescription() {
+        return "Unit test for create/delete/list cluster";
+    }</pre> 
+       </div> 
+      </div>
+     </div> <p>Now to add new tests, all you need is to add a line like this in the run method or define a separate method for your test.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">report("create-cluster", asadmin("create-cluster","cl1"));</pre> 
+       </div> 
+      </div>
+     </div> <p>The following shows an example of adding system properties,passing other params to the cli command</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">report("create-cluster-system-props", asadmin("create-cluster",
+                "--systemproperties" ,"foo=bar",
+                "cl4"));</pre> 
+       </div> 
+      </div>
+     </div> <p>An example of how to use AsadminReturn to check for system properties in domain.xml</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">AsadminReturn ret = asadminWithOutput("get", "clusters.cluster.cl4.system-property.foo.name");
+        boolean success = ret.outAndErr.indexOf("clusters.cluster.cl4.system-property.foo.name=foo") &gt;= 0;
+        report("check-cluster-syspropname", success);
+
+        ret = asadminWithOutput("get", "clusters.cluster.cl4.system-property.foo.value");
+        success = ret.outAndErr.indexOf("clusters.cluster.cl4.system-property.foo.value=bar") &gt;= 0;
+        report("check-cluster-syspropvalue", success);</pre> 
+       </div> 
+      </div>
+     </div> <p>An example on how to use XPath apis to check for certain values</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">//evaluate using xpath that there are 3 elements in the domain.xml
+        String xpathExpr = "count"+"("+"/domain/clusters/cluster"+")";
+
+        Object o = evalXPath(xpathExpr, XPathConstants.NUMBER);
+        System.out.println ("No of cluster elements in cluster: "+o);
+        if (o instanceof Double) {
+            report ("evaluation-xpath-create-cluster",o.equals(new Double("3")));
+        } else {
+            report ("evaluation-xpath-create-cluster",false);
+        }</pre> 
+       </div> 
+      </div>
+     </div> <p>Some tests will require some cleanup at the end to ensure the next round is successful like deleting clusters, instances etc.</p> <p>Take a look at the AdminBaseDevTest for useful methods that can be used in tests.</p> <p>Finally commit the files</p> <p>The whole source code of a test is here <a href="https://glassfish-svn.java.net/source/browse/glassfish-svn/trunk/v2/appserv-tests/devtests/admin/cli/src/admin/ClusterTest.java">https://glassfish-svn.java.net/source/browse/glassfish-svn/trunk/v2/appserv-tests/devtests/admin/cli/src/admin/ClusterTest.java</a></p> <p>There is a file created called test.out which will show how the commands got executed. Here is how a sample file looks :</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">asadmin --host localhost --port 4848 --user admin --interactive=false --echo=true --terse=false create-cluster cl1
+
+Command create-cluster executed successfully.
+
+asadmin --host localhost --port 4848 --user admin --interactive=false --echo=true --terse=false create-cluster --config cl1-config cl2
+
+Command create-cluster executed successfully.
+
+asadmin --host localhost --port 4848 --user admin --interactive=false --echo=true --terse=false create-cluster cl1
+Command create-cluster failed.
+org.glassfish.api.admin.CommandException: remote failure: Exception while adding the new configuration org.jvnet.hk2.config.TransactionFailure: A Cluster instance with a "cl1" name already exist in the configuration : org.jvnet.hk2.config.TransactionFailure: A Cluster instance with a "cl1" name already exist in the configuration
+asadmin --host localhost --port 4848 --user admin --interactive=false --echo=true --terse=false create-cluster --config junk-config cl3
+Command create-cluster failed.</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="AdminTests-JustInTimeDebugging"></a>Just-In-Time Debugging</h2> <p>Our DevTests are all-or-none. One test failing is just exactly as bad as 100 tests failing. I added a feature that makes it a bit easier to debug problems.</p> <p>The monitoring devtests ALWAYS run with jpda debugging turned on (suspend = "n", of course!!). The moment ANY test fails the screen is cleared and output is displayed that describes what to do. The code will sit and wait 60 seconds for you to attach your debugger to port 9999. It even tells you how to force it to stop waiting early so you can start debugging – by setting a static variable to true.</p> <p>This will add one minute to every failed test so I suppose this could create hudson issues. If there are many failures then we'd wait one minute for each.</p> <p>You must do something to enable the JIT debugging. You can set either an environmental variable or System Property as below – and then and only then will the JIT Debugging become enabled.</p> <p>export APS_WAIT=true<br> set APS_WAIT=true</p> <p>-DAPS_WAIT="true"</p> <p>Now if we get some weird issue where Hudson fails but your environment succeeds – then simply change hudson.sh and set the variable and then you can debug at the exact right moment on the Hudson machine!</p> <p>– Currently this only applies to monitoring devtests but it can be used for all devtests. The main work is adding the right jvmargs to the bazillion different ant targets in build.xml</p> <p>A very useful technique is to attach and then set a breakpoint in the code right after the failed test (look in the call stack). Once it hits, I can leave the debugger and I now have full access to the server(s) in exactly the state I want. I can run plenty of manual tests directly with the server (what does get -m return? Which instances are really running? etc., etc.)</p> <h4><a name="AdminTests-Todo"></a>Todo</h2> <h4><a name="AdminTests-HudsonJobs"></a>Hudson Jobs</h2> 
+     <ul> 
+      <li>Trunk: <a href="http://hudson-sca.us.oracle.com/job/admin-devtests-trunk/">http://hudson-sca.us.oracle.com/job/admin-devtests-trunk/</a></li> 
+      <li>Branch: <a href="http://hudson-sca.us.oracle.com/job/admin-devtests-3.1.2/">http://hudson-sca.us.oracle.com/job/admin-devtests-3.1.2/</a><br> <font color="blue"><a href="./AdminTests.html">https://wikis.sun.com/display/glassfish/AdminTests</a></font></li> 
+     </ul> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jun 27, 2012 by 
+<font color="#0050B2">10103</font>. Exported from wikis.oracle.com on May 27, 2015 20:43.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : V3deployment_beta_plan</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>Beta release: (April to Nov, 32 weeks, assuming two full resources on deployment), 32 x 2 = 64 weeks</p> 
+     <ul> 
+      <li>Modularized and pluggable deployment <a href="./V3DeploymentImprovements.html">Deploy-001</a> (26 weeks) 
+       <ul> 
+        <li>Finish moving v2 backend code to v3 (2 weeks)</li> 
+        <li>Add support for cluster scenario (6 weeks) 
+         <ul> 
+          <li>Common interface for application registration (2 weeks)</li> 
+          <li>Invoke deployer in instance and necessary events mechanism (4 weeks)</li> 
+         </ul> </li> 
+        <li>Work with various container teams, make all JavaEE module types work including ear (12 weeks) 
+         <ul> 
+          <li>Web (2 weeks)</li> 
+          <li>Ejb (3 weeks)</li> 
+          <li>Connector (2 weeks)</li> 
+          <li>Appclient (2 weeks)</li> 
+          <li>Ear (3 weeks)</li> 
+         </ul> </li> 
+        <li>Work with IEC and Ericsson, make extension module, more specifically sip module work in v3 code base (6 weeks) 
+         <ul> 
+          <li>Verify deployer framework sufficient for extension module (2 weeks)</li> 
+          <li>Add sip module deployment support (2 weeks)</li> 
+          <li>Any other sip related work, AMF, application lifecycle event support (2 weeks)</li> 
+         </ul> </li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li>JavaEE 6 requirements (10 weeks) 
+       <ul> 
+        <li>EJBs in war (4 weeks)</li> 
+        <li>EJB3.1 DOL changes (2 weeks)</li> 
+        <li>Servlet DOL changes (2 weeks)</li> 
+        <li>Place Holder for other JavaEE6 related work (2 weeks)</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li>New Features (22 weeks) 
+       <ul> 
+        <li>Application versioning, rolling upgrade (8 weeks). This estimate does not include the support for runtime versioning (or container versioning), different versions of the application will not be able to run at the same time. 
+         <ul> 
+          <li>Application versioning <a href="./V3DeploymentImprovements.html">Deploy-004</a>(4 weeks)</li> 
+          <li>Application environment versioning <a href="./V3DeploymentImprovements.html">Deploy-005</a>: The connector/jdbc team will lead the work on resource versioning (and application-scope resources). Any dependency work required from them. (2 weeks)</li> 
+          <li>Additional work to address sailfin rolling upgrade requirement <a href="./V3DeploymentImprovements.html">Deploy-009</a> (2 weeks)</li> 
+         </ul> </li> 
+        <li>Application managment <a href="./V3DeploymentImprovements.html">Deploy-007</a> (6 weeks) 
+         <ul> 
+          <li>Support environment dependencies editing (4 weeks)</li> 
+          <li>Other (2 weeks)</li> 
+         </ul> </li> 
+        <li>Deployment plan edit support for admin-console <a href="./V3DeploymentImprovements.html">Deploy-008</a>(2 weeks)</li> 
+        <li>Backend support for other admin-console features (2 weeks)</li> 
+        <li>Other Sailfin requirements (4 weeks) 
+         <ul> 
+          <li>Package custom MBean in application. Admin team will drive this effort. Dependency work. (2 weeks)</li> 
+          <li>Package resource in application. Connector team will drive this effort. Dependency work. (2 weeks)</li> 
+         </ul> </li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li>Interative deployment performance <a href="./V3DeploymentImprovements.html">Deploy-002</a>(6 weeks) 
+       <ul> 
+        <li>Optimize the redeployment process (2 weeks)</li> 
+        <li>Web (2 weeks)</li> 
+        <li>Other module types (2 weeks)</li> 
+       </ul> </li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 09, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

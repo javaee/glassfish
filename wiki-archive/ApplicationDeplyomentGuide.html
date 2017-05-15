@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : ApplicationDeplyomentGuide</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="ApplicationDeplyomentGuide-ApplicationDeploymentGuideCommentsPage"></a>Application Deployment Guide Comments Page</h2> <p>The Application Deployment Guide explains how to deploy applications and modules to the Sun GlassFish Enterprise Server by using the command-line utility. This guide also includes information about deployment descriptors. (Instructions for using the Administration Console to perform app deployment tasks are contained in the Administration Console online help.)</p> <p>The latest version of this manual is available in <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874966/21364969.pdf">PDF format</a>.<b>This version applies to GlassFish v3.</b></p> 
+     <ul> 
+      <li><a href="GlassFishV3DocPlanAppDepGuide.html#GlassFishV3DocPlanAppDepGuide-sectionGlassFishV3DocPlanAppDepGuideReviewerDa...">Reviewer dashboard</a></li> 
+      <li>Return to <a href="GlassFishDocs.html" title="GlassFishDocs">main comments page</a></li> 
+     </ul> <p>Please add your comments to the table in the following format.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Comment ID </th> 
+         <th class="confluenceTh"> Date </th> 
+         <th class="confluenceTh"> Section, Page Number/URL </th> 
+         <th class="confluenceTh"> Comment </th> 
+         <th class="confluenceTh">Status – (<font color="lime">RESOLVED</font>/<font color="red">UNRESOLVED</font>) </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Example: <em>jsmith-001</em> </td> 
+         <td class="confluenceTd"> <em>Date comment entered</em> </td> 
+         <td class="confluenceTd"> <em>Detailed pointer to location in the doc</em> </td> 
+         <td class="confluenceTd"> <em>Detailed comment</em> </td> 
+         <td class="confluenceTd"><em>Leave blank – the writer will provide status</em> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> tjquinn-001 </td> 
+         <td class="confluenceTd"> 25-Nov-2009 </td> 
+         <td class="confluenceTd"> Gen'l Depl. Functionality, p. 36 </td> 
+         <td class="confluenceTd"> The "Deployment Plan Deployment" bullet is accurate as written, but using deployment plans is an option open to users for any of the other five techniques listed in the other bullet points. It's orthogonal to those other five choices. Can we pull that out of the bullet list in a way that clarifies that it can apply to any of the deployment techniques? I'm not sure if that means the detailed description on p. 58 should be moved or amended. </td> 
+         <td class="confluenceTd"> 11/25/9 Edited and move the text to after the bullet list. I think p. 58 is OK as is. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> tjquinn-002 </td> 
+         <td class="confluenceTd"> 25-Nov-2009 </td> 
+         <td class="confluenceTd"> Deployment Descriptors and Annotations, p. 37 </td> 
+         <td class="confluenceTd"> The first part of the second sentence should read "Each deployment descriptor XML file has a corresponding Document Type Definition (DTD) file <em>or schema (XSD) file</em>..." (The first bullet point does mention that the EE 6 spec uses schemas, but this early sentence should probably be generalized.) At the moment, the more recent EE versions use schemas but GlassFish continues to support all the older formats, the oldest of which are defined by DTDs. Also at the moment, the GlassFish-specific descriptors (sun-xxx.xml) are defined by DTDs although this could change at some point in the future. </td> 
+         <td class="confluenceTd">11/25/9 schema text added. If you want any of rest of this material added, I don't know where so did not do anything with it. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> tjquinn-003 </td> 
+         <td class="confluenceTd"> 25-Nov-2009 </td> 
+         <td class="confluenceTd"> p. 51, example 2-2 </td> 
+         <td class="confluenceTd"> The example is a little confusing and I don't think it would actually be accepted. To match the description, the example should be 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">asadmin&gt; deploy --retrieve .  ejb.jar</pre> 
+            </div> 
+           </div>
+          </div> (note the added dot). </td> 
+         <td class="confluenceTd"> 11/25/9 Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> tjquinn-004 </td> 
+         <td class="confluenceTd"> 25-Nov-2009 </td> 
+         <td class="confluenceTd"> p. 58, Reviewer remark 2-1 </td> 
+         <td class="confluenceTd"> Using deployment plans is indeed suitable for production or development use. See my earlier note. </td> 
+         <td class="confluenceTd"> 11/25/9 Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> tjquinn-005 </td> 
+         <td class="confluenceTd"> 25-Nov-2009 </td> 
+         <td class="confluenceTd"> p. 59, "To Deploy ... Directory Format", second sentence </td> 
+         <td class="confluenceTd"> It looks to me as if "archive" and "use" have run together. </td> 
+         <td class="confluenceTd"> 11/25/9 Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> tjquinn-006 </td> 
+         <td class="confluenceTd"> 25-Nov-2009 </td> 
+         <td class="confluenceTd"> p. 59, Example 2-21 </td> 
+         <td class="confluenceTd"> Maybe it's me, but I have no idea what it means that "The path name is accessed in the domain configuration file (domain.xml)." Does it mean that the path name is stored in the domain.xml file? If that's what it means, then that's accurate but that seems like an implementation detail that does not really help with the user's overall understanding of how to use directory deployment. </td> 
+         <td class="confluenceTd"> I changed to "stored". Do you want anything else changed? </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> tjquinn-007 </td> 
+         <td class="confluenceTd"> 25-Nov-2009 </td> 
+         <td class="confluenceTd"> p. 61, To Set a Web Context Parameter </td> 
+         <td class="confluenceTd"> Are we being clear enough that by using the set-web-context-param command the user either (1) adds a new parameter that did not appear in the original web module's descriptor or (2) overrides the descriptor's setting of the parameter? (The same comment applies to the set-web-env-entry command.) Further, there's an additional aspect to these two set commands. If the user includes the --ignoreDescriptorItem=true option then the server will ignore any setting for that context param (or env entry) in the descriptor, and the user does <em>not</em> need to specify an overriding value on the set command. The server behaves as if the descriptor had never contained a setting for that context param (or env entry). </td> 
+         <td class="confluenceTd"> Added material to both set- procedures. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> tjquinn-008 </td> 
+         <td class="confluenceTd"> 25-Nov-2009 </td> 
+         <td class="confluenceTd"> p. 70, item #5 </td> 
+         <td class="confluenceTd"> Probably clearer to change "...retrieve the client JAR file" so it reads "...retrieve the client files" given the change in what we download in v3. Similar comment for the first bullet under #5: change it so it reads "use the deploy(1) subcommand with the --retrieve option to retrieve the client files as part of deploying the application." The second bullet might be clearer as: "Use the get-client-stubs(1) subcommand to retrieve the client files for a previously-deployed application." We should also emphasize that for a given application users need to use either but not both of "deploy --retrieve" and "get-client-stubs." </td> 
+         <td class="confluenceTd"> 11/25/9 Made these four changes. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> tjquinn-009 </td> 
+         <td class="confluenceTd"> 25-Nov-2009 </td> 
+         <td class="confluenceTd"> p. 70, item #6 </td> 
+         <td class="confluenceTd"> I think this is redundant with #5. </td> 
+         <td class="confluenceTd"> 11/25/9 Deleted </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> tjquinn-010 </td> 
+         <td class="confluenceTd"> 25-Nov-2009 </td> 
+         <td class="confluenceTd"> p. 70, item #7 </td> 
+         <td class="confluenceTd"> This step is purely optional. The preceding steps are really necessary in order to run the client. </td> 
+         <td class="confluenceTd"> 11/25/9 Made the step Optional. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> tjquinn-011 </td> 
+         <td class="confluenceTd"> 25-Nov-2009 </td> 
+         <td class="confluenceTd"> p. 71, "Before You Begin" note </td> 
+         <td class="confluenceTd"> This note implies that users can use <em>either</em> the appclient script <em>or</em> Java Web Start but not both. In fact users can use either or both. So the note should probably read "This task applies if you want to run the app client on a system other than where the server runs." All the system files needed by the appclient script are included in the server installation, so no extra prep is needed for that case. But to launch clients on other systems, the user needs to prepare that system as described. </td> 
+         <td class="confluenceTd">11/25/9 Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> bhaktimehta-001 </td> 
+         <td class="confluenceTd"> 25 nov 2009 </td> 
+         <td class="confluenceTd"> Pg 73 </td> 
+         <td class="confluenceTd"> Remark 2-3 Webservice Management is supported on admin console.In answer to your question since the doc only says about CLI maybe you can remove the whole paragraph on webservice management. Also am not sure if the publishing to registry is implemented and working so safer to remove that para </td> 
+         <td class="confluenceTd">This doc is only CLI. Can I remove the sentences about Admin GUI? If so, do we need to say more about the deploy command mentioned? 12/8/9 Hid the Web Service Mgmt bullet item. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <hr> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874966/21364969.pdf">SJSASEEADG.pdf</a> (application/pdf) 
+      <br> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 02, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:43.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

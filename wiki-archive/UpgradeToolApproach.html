@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : UpgradeToolApproach</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   
+     <div> 
+      <ul> 
+       <li><a href="#UpgradeToolApproach-ManualTrialoftheUpgradeProcedure">Manual Trial of the Upgrade Procedure</a></li> 
+       <ul> 
+        <li><a href="#UpgradeToolApproach-Copytransformapproach8.2EE%3E9.1EE">Copy transform approach 8.2EE-&gt;9.1EE</a></li> 
+       </ul> 
+       <li><a href="#UpgradeToolApproach-Trial2%3ARemovingthereferencesofSystemAppsbeforestartingdomain%3A">Trial 2: Removing the references of System Apps before starting domain:</a></li> 
+      </ul>
+     </div> <p>This is a discussion about what approach would be best for the Upgrade tool to follow. In an 8.x <del>&gt; 8.x EE upgrade, the method followed for upgrade was simply to copy the domain configuration from source to target. The same method does not work well in 8.x</del>&gt;9.1 upgrade because of the following reasons.</p> <h4><a name="UpgradeToolApproach-ManualTrialoftheUpgradeProcedure"></a>Manual Trial of the Upgrade Procedure</h1> <h4><a name="UpgradeToolApproach-Copytransformapproach8.2EE%3E9.1EE"></a>Copy transform approach 8.2EE-&gt;9.1EE</h2> <p>1. Copied all the directories apart from bin,imq,session-store,generated and docroot. The old directories of these exceptions remain intact in the 9.1ee domains directory.</p> <p>2. Made the cluster related changes :</p> <p> --&gt; cluster attributes</p> <p> --&gt; group-management-service</p> <p> --&gt; module-log-levels</p> <p>3. Changed DOCTYPE to 1.3</p> <p>4. Added appserv-launch.jar to the system-classpath of the java-config element.</p> <p>5. Modified the default-web.xml : changed com.sun.enterprise.web.servlets.DefaultServlet to org.apache.catalina.servlets.DefaultServlet.</p> <p>6. Started the domain.</p> <p>7. Redeployed the apps from 8.2ee (hello.war and stateless-simple.ear after creating a jar out of the directories manually, as done by the upgrade tool).<br> Redeploy was successful. After this, i observed the generated directory getting updated with the contents.</p> <p>8. Stopped the domain.</p> <p>9. Removed the references to the com_sun_web_ui web module in domain.xml.</p> <p>10. Started domain.</p> <p>11. Domain started up, but with an exception</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">[#|2006-12-26T11:48:29.893+0530|SEVERE|sun-appserver-ee9.1|javax.enterprise.system.core.classloading|_ThreadID=10;_ThreadName=main;_RequestID=400741ca-082f-4f18-bd8c-c7244cf78a85;|LDR5004: UnExpected error occured while creating ejb container
+java.lang.ClassNotFoundException: com.sun.ejb.containers.TimerBean_2100919770_ConcreteImpl
+        at com.sun.enterprise.loader.EJBClassLoader.findClassData(EJBClassLoader.java:724)
+        at com.sun.enterprise.loader.EJBClassLoader.findClass(EJBClassLoader.java:614)
+        at java.lang.ClassLoader.loadClass(ClassLoader.java:306)
+        at java.lang.ClassLoader.loadClass(ClassLoader.java:251)
+        at com.sun.ejb.containers.BaseContainer.&lt;init&gt;(BaseContainer.java:410)
+        at com.sun.ejb.containers.EntityContainer.&lt;init&gt;(EntityContainer.java:236)
+        at com.sun.ejb.containers.TimerBeanContainer.&lt;init&gt;(TimerBeanContainer.java:59)
+        at com.sun.ejb.containers.ContainerFactoryImpl.createContainer(ContainerFactoryImpl.java:282)
+        at com.sun.enterprise.server.AbstractLoader.loadEjbs(AbstractLoader.java:484)
+        at com.sun.enterprise.server.ApplicationLoader.load(ApplicationLoader.java:183)
+        at com.sun.enterprise.server.TomcatApplicationLoader.load(TomcatApplicationLoader.java:113)
+        at com.sun.enterprise.server.AbstractManager.loadOneSystemApp(AbstractManager.java:331)
+        at com.sun.enterprise.server.AbstractManager.loadSystem(AbstractManager.java:289)
+        at com.sun.enterprise.server.SystemAppLifecycle.loadSystemApps(SystemAppLifecycle.java:149)
+        at com.sun.enterprise.server.SystemAppLifecycle.onStartup(SystemAppLifecycle.java:95)
+        at com.sun.enterprise.server.ApplicationServer.onStartup(ApplicationServer.java:332)
+        at com.sun.enterprise.server.ondemand.OnDemandServer.onStartup(OnDemandServer.java:112)
+        at com.sun.enterprise.server.PEMain.run(PEMain.java:326)
+        at com.sun.enterprise.server.PEMain.main(PEMain.java:260)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+        at java.lang.reflect.Method.invoke(Method.java:585)
+        at com.sun.enterprise.server.PELaunch.main(PELaunch.java:272)
+|#]</pre> 
+       </div> 
+      </div>
+     </div> <p>The class TimerBean_2100919770_ConcreteImpl.class was missing in generated/ejb/j2ee-apps/ejb_container_timer_app/com/sun/ejb/containers/ directory. Whereas it is found in the 8.2ee generated directory of ejb container. Since we did not copy over the generated directory and since it is a system app and we do not redeploy this one, this exception is thrown. </p> <p> Apart from these, we have to configure the following</p> <p>1. Self Management service by adding the top level element &lt;management-rules&gt; to domain.xml.<br> Adding the new rules by using the asadmin create-management-rule is upto us.</p> <p>2. EJB Life cycle module : automatic timer migration component for DAS instance.</p> <p>3. Load-balancers - top level element</p> <p>4. lb-configs - top level element</p> <p>5. diagnostic-service to all the configs</p> <p>6. module-log-levels with self-management="INFO" management-event="INFO"</p> <p>(3) and (4) are required when the apps are accessed via the admin gui. If they are not there, the following exception is thrown while apps are accessed.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">[#|2006-12-26T12:19:18.257+0530|INFO|sun-appserver-ee9.1|javax.enterprise.system.tools.admin|_ThreadID=13;_ThreadName=httpSSLWorkerThread-4849-21;|ERROR in IndexTreeNode.ensureChildren.
+com.sun.enterprise.tools.guiframework.exception.FrameworkException: com.sun.enterprise.tools.guiframework.exception.FrameworkException: javax.management.InstanceNotFoundException: MBean instance not found: com.sun.appserv:type=load-balancers,category=config
+        at com.sun.enterprise.tools.admingui.util.MBeanUtil.invoke(MBeanUtil.java:71)
+        at com.sun.enterprise.tools.admingui.tree.DynamicTreeNode.getChildObjectNames(DynamicTreeNode.java:196)
+        at com.sun.enterprise.tools.admingui.tree.DynamicTreeNode.updateKids(DynamicTreeNode.java:72)
+        at com.sun.enterprise.tools.admingui.tree.DynamicTreeNode.ensureChildren(DynamicTreeNode.java:58)
+        at com.sun.enterprise.tools.admingui.tree.IndexTreeNode.getChildren(IndexTreeNode.java:426)
+        at com.sun.enterprise.tools.admingui.tree.IndexTreeView.beginHasContainerKidsDisplay(IndexTreeView.java:411)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+        at java.lang.reflect.Method.invoke(Method.java:585)
+        at com.iplanet.jato.view.ContainerViewBase.beginChildDisplay(ContainerViewBase.java:834)
+        at com.iplanet.jato.taglib.ContentTag.doStartTag(ContentTag.java:94)
+        at org.apache.jsp.jsp.Index_jsp._jspx_meth_jato_content_4(Index_jsp.java:735)
+        at org.apache.jsp.jsp.Index_jsp._jspx_meth_jato_treeNode_3(Index_jsp.java:699)
+        at org.apache.jsp.jsp.Index_jsp._jspx_meth_jato_treeNode_2(Index_jsp.java:660)
+        at org.apache.jsp.jsp.Index_jsp._jspService(Index_jsp.java:207)
+        at org.apache.jasper.runtime.HttpJspBase.service(HttpJspBase.java:111)
+        at javax.servlet.http.HttpServlet.service(HttpServlet.java:820)
+        at org.apache.jasper.servlet.JspServletWrapper.service(JspServletWrapper.java:373)
+        at org.apache.jasper.servlet.JspServlet.serviceJspFile(JspServlet.java:464)
+        at org.apache.jasper.servlet.JspServlet.service(JspServlet.java:358)
+        at javax.servlet.http.HttpServlet.service(HttpServlet.java:820)
+        at org.apache.catalina.core.ApplicationFilterChain.servletService(ApplicationFilterChain.java:398)
+        at org.apache.catalina.core.ApplicationDispatcher.doInvoke(ApplicationDispatcher.java:839)
+        at org.apache.catalina.core.ApplicationDispatcher.invoke(ApplicationDispatcher.java:687)
+        at org.apache.catalina.core.ApplicationDispatcher.processRequest(ApplicationDispatcher.java:528)
+        at org.apache.catalina.core.ApplicationDispatcher.doForward(ApplicationDispatcher.java:461)
+        at org.apache.catalina.core.ApplicationDispatcher.forward(ApplicationDispatcher.java:353)
+        at com.iplanet.jato.view.ViewBeanBase.forward(ViewBeanBase.java:340)
+        at com.iplanet.jato.view.ViewBeanBase.forwardTo(ViewBeanBase.java:261)
+        at com.iplanet.jato.ApplicationServletBase.dispatchRequest(ApplicationServletBase.java:981)
+        at com.iplanet.jato.ApplicationServletBase.processRequest(ApplicationServletBase.java:615)
+        at com.sun.enterprise.tools.guiframework.view.BaseServlet.processRequest(BaseServlet.java:204)
+        at com.iplanet.jato.ApplicationServletBase.doGet(ApplicationServletBase.java:459)
+        at javax.servlet.http.HttpServlet.service(HttpServlet.java:707)
+        at javax.servlet.http.HttpServlet.service(HttpServlet.java:820)
+        at org.apache.catalina.core.ApplicationFilterChain.servletService(ApplicationFilterChain.java:398)
+        at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:277)
+        at org.apache.catalina.core.StandardContextValve.invokeInternal(StandardContextValve.java:255)
+        at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:188)
+        at org.apache.catalina.core.StandardPipeline.doInvoke(StandardPipeline.java:586)
+        at com.sun.enterprise.web.WebPipeline.invoke(WebPipeline.java:73)
+        at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:186)
+        at org.apache.catalina.core.StandardPipeline.doInvoke(StandardPipeline.java:586)
+        at org.apache.catalina.core.StandardPipeline.invoke(StandardPipeline.java:556)
+        at org.apache.catalina.core.ContainerBase.invoke(ContainerBase.java:1032)
+        at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:137)
+        at org.apache.catalina.core.StandardPipeline.doInvoke(StandardPipeline.java:586)
+        at org.apache.catalina.core.StandardPipeline.invoke(StandardPipeline.java:556)
+        at org.apache.catalina.core.ContainerBase.invoke(ContainerBase.java:1032)
+        at org.apache.coyote.tomcat5.CoyoteAdapter.service(CoyoteAdapter.java:250)
+        at com.sun.enterprise.web.connector.grizzly.DefaultProcessorTask.invokeAdapter(DefaultProcessorTask.java:618)
+        at com.sun.enterprise.web.connector.grizzly.DefaultProcessorTask.processNonBlocked(DefaultProcessorTask.java:549)
+        at com.sun.enterprise.web.connector.grizzly.DefaultProcessorTask.process(DefaultProcessorTask.java:790)
+        at com.sun.enterprise.web.connector.grizzly.DefaultReadTask.executeProcessorTask(DefaultReadTask.java:326)
+        at com.sun.enterprise.web.connector.grizzly.ssl.SSLReadTask.process(SSLReadTask.java:397)
+        at com.sun.enterprise.web.connector.grizzly.ssl.SSLReadTask.doTask(SSLReadTask.java:210)
+        at com.sun.enterprise.web.connector.grizzly.TaskBase.run(TaskBase.java:252)
+        at com.sun.enterprise.web.connector.grizzly.ssl.SSLWorkerThread.run(SSLWorkerThread.java:93)
+Caused by: com.sun.enterprise.tools.guiframework.exception.FrameworkException: javax.management.InstanceNotFoundException: MBean instance not found: com.sun.appserv:type=load-balancers,category=config
+        at com.sun.enterprise.tools.admingui.util.MBeanUtil.invoke(MBeanUtil.java:169)
+        at com.sun.enterprise.tools.admingui.util.MBeanUtil.invoke(MBeanUtil.java:60)
+        ... 58 more
+Caused by: javax.management.InstanceNotFoundException: MBean instance not found: com.sun.appserv:type=load-balancers,category=config
+        at com.sun.enterprise.admin.server.core.jmx.SunoneInterceptor.manufactureAndRegisterMBean(SunoneInterceptor.java:675)
+        at com.sun.enterprise.admin.server.core.jmx.SunoneInterceptor.registerWithPersistenceCheck(SunoneInterceptor.java:697)
+        at com.sun.enterprise.admin.server.core.jmx.SunoneInterceptor.invoke(SunoneInterceptor.java:295)
+        at com.sun.enterprise.tools.admingui.util.MBeanUtil.invoke(MBeanUtil.java:162)
+        ... 59 more
+|#]</pre> 
+       </div> 
+      </div>
+     </div> <p>The autodeploy of the system apps happens only when the 9.1ee domain is started for the first time.<br> When i created the 9.1ee installation, i did not start the domain before i proceeded with the upgrade procedure.<br> After i start the domain, the domain.xml is updated with these j2ee-application elements.<br> And the generated directory contains the TimerBean_2100919770_ConcreteImpl.class in ejb container.</p> <h4><a name="UpgradeToolApproach-Trial2%3ARemovingthereferencesofSystemAppsbeforestartingdomain%3A"></a>Trial 2: Removing the references of System Apps before starting domain:</h1> <p>1. Install 9.1ee with a default domain.</p> <p>2. Copy operation (from 8.2) : copied config, logs, lib and applications (apart from the system apps) directories and master-password file into 9.1ee domain directory</p> <p>3. Did a transformation manually adding the following</p> <p> 3.1. Modified DOCTYPE to 1.3</p> <p> 3.2. Added appserv-launch.jar to the system-classpath</p> <p> 3.3. Added Cluster related attributes</p> <p> 3.4. Removed references of com_sun_web_ui module from the domain.xml</p> <p> 3.5. Modified default-web.xml to change the package name of DefaultServlet.</p> <p>4. Started domain</p> <p>The system apps that are present in the domain.xml (already from 8.2) viz., ejb_container_timer and MejbApp give a problem since they cannot be autodeployed.</p> <p>5. Stoppped domain and removed the references of the above two j2ee-apps and started the domain again.</p> <p>Now, the autodeploy phase happens and ejb_container_timer and MejbApp are deployed successfully. However, another app called JWSappclients throws a WARNING message as mentioned below.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">[#|2006-12-27T15:11:31.297+0530|INFO|sun-appserver-ee9.1|javax.enterprise.system.tools.deployment|_ThreadID=10;_ThreadName=main;|[AutoDeploy] Autodeploy failed : /opt/appserver-trial-1-91/lib/install/applications/__JWSappclients.ear.|#]
+
+[#|2006-12-27T15:11:31.298+0530|WARNING|sun-appserver-ee9.1|javax.enterprise.system.core|_ThreadID=10;_ThreadName=main;_RequestID=fd41ca2f-d7d4-4a61-a325-8fb3a7ffe9e8;|Exception occured while accessing :__JWSappclients.ear_deployFailed|#]
+
+[#|2006-12-27T15:11:31.299+0530|INFO|sun-appserver-ee9.1|javax.enterprise.system.tools.deployment|_ThreadID=10;_ThreadName=main;|[AutoDeploy] Selecting file /opt/appserver-trial-1-91/lib/install/applications/__JWSappclients.ear for autodeployment.|#]
+
+[#|2006-12-27T15:11:31.318+0530|INFO|sun-appserver-ee9.1|javax.enterprise.system.tools.deployment|_ThreadID=10;_ThreadName=main;|Autoundeploying application :__JWSappclients|#]
+
+[#|2006-12-27T15:11:31.319+0530|WARNING|sun-appserver-ee9.1|javax.enterprise.system.tools.admin|_ThreadID=10;_ThreadName=main;_RequestID=fd41ca2f-d7d4-4a61-a325-8fb3a7ffe9e8;|ADM1024:Undeployment failed - Detailed Message:
+com.sun.enterprise.admin.common.exception.MBeanConfigException: Cannot undeploy a system component
+    at com.sun.enterprise.admin.mbeans.ApplicationsConfigMBean.validate(ApplicationsConfigMBean.java:3784)
+    at com.sun.enterprise.admin.mbeans.ApplicationsConfigMBean.undeploy(ApplicationsConfigMBean.java:582)
+    at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+    at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+    at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+    at java.lang.reflect.Method.invoke(Method.java:585)
+    at com.sun.enterprise.admin.MBeanHelper.invokeOperationInBean(MBeanHelper.java:353)
+    at com.sun.enterprise.admin.MBeanHelper.invokeOperationInBean(MBeanHelper.java:336)
+    at com.sun.enterprise.admin.config.BaseConfigMBean.invoke(BaseConfigMBean.java:448)
+    at com.sun.jmx.mbeanserver.DynamicMetaDataImpl.invoke(DynamicMetaDataImpl.java:213)
+    at com.sun.jmx.mbeanserver.MetaDataImpl.invoke(MetaDataImpl.java:220)
+    at com.sun.jmx.interceptor.DefaultMBeanServerInterceptor.invoke(DefaultMBeanServerInterceptor.java:815)
+    at com.sun.jmx.mbeanserver.JmxMBeanServer.invoke(JmxMBeanServer.java:784)
+    at sun.reflect.GeneratedMethodAccessor20.invoke(Unknown Source)
+    at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+    at java.lang.reflect.Method.invoke(Method.java:585)
+    at com.sun.enterprise.admin.util.proxy.ProxyClass.invoke(ProxyClass.java:77)
+    at $Proxy1.invoke(Unknown Source)
+    at com.sun.enterprise.admin.server.core.jmx.SunoneInterceptor.invoke(SunoneInterceptor.java:297)
+    at com.sun.enterprise.deployment.autodeploy.AutoDeployer.invokeUndeploymentService(AutoDeployer.java:818)
+    at com.sun.enterprise.deployment.autodeploy.AutoDeployer.undeployJavaEEArchive(AutoDeployer.java:340)
+    at com.sun.enterprise.deployment.autodeploy.AutoDeployer.undeployApplication(AutoDeployer.java:322)
+    at com.sun.enterprise.deployment.autodeploy.AutoDeployer.deployJavaEEArchive(AutoDeployer.java:476)
+    at com.sun.enterprise.deployment.autodeploy.AutoDeployer.deploy(AutoDeployer.java:436)
+    at com.sun.enterprise.deployment.autodeploy.AutoDeployer.deployAll(AutoDeployer.java:253)
+    at com.sun.enterprise.deployment.autodeploy.AutoDeployer.deployAll(AutoDeployer.java:206)
+    at com.sun.enterprise.server.SystemAppLifecycle.deployToTarget(SystemAppLifecycle.java:196)
+    at com.sun.enterprise.server.SystemAppLifecycle.deploySystemApps(SystemAppLifecycle.java:171)
+    at com.sun.enterprise.server.SystemAppLifecycle.onStartup(SystemAppLifecycle.java:93)
+    at com.sun.enterprise.server.ApplicationServer.onStartup(ApplicationServer.java:332)
+    at com.sun.enterprise.server.ondemand.OnDemandServer.onStartup(OnDemandServer.java:112)
+    at com.sun.enterprise.server.PEMain.run(PEMain.java:326)
+    at com.sun.enterprise.server.PEMain.main(PEMain.java:260)
+    at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+    at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+    at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+    at java.lang.reflect.Method.invoke(Method.java:585)
+    at com.sun.enterprise.server.PELaunch.main(PELaunch.java:272)
+|#]
+
+[#|2006-12-27T15:11:31.322+0530|SEVERE|sun-appserver-ee9.1|javax.enterprise.system.tools.deployment|_ThreadID=10;_ThreadName=main;Cannot undeploy a system component
+;_RequestID=fd41ca2f-d7d4-4a61-a325-8fb3a7ffe9e8;|"DPL8011: autodeployment failure while deploying the application : Cannot undeploy a system component
+"|#]
+
+[#|2006-12-27T15:11:31.322+0530|INFO|sun-appserver-ee9.1|javax.enterprise.system.tools.deployment|_ThreadID=10;_ThreadName=main;|[AutoDeploy] Autoundeploy failed : /opt/appserver-trial-1-91/lib/install/applications/__JWSappclients.ear.|#]</pre> 
+       </div> 
+      </div>
+     </div> <p>Hence i resorted to the method of create-process-transform method of doing things.<br> With the SBS case, there is absolutely no problem after an upgrade in starting up the domain, node-agent, cluster and instances (stand-alone and clustered).<br> With the IP case, the domain starts up fine but when the node-agent starts up, there is a synchronization problem. This is found in <font color="#ff6600"><a href="./NodeAgentSynchronization.html">Nodegent Synchronization</a></font> link.</p> <p>The node-agent/MA/agent/config/domain.xml is processed before a synchronization could happen. This when done would reflect the 8.2ee domain.xml that has some missing elements (mentioned above in the transformation step). This will throw an exception.</p> <p>As a workaround, Nandini asked me to copy the domain.xml from domains dir to NA config dir and start the node-agent with a syncinstances=true option. This starts up the node-agent fine. This problem would occur in any case - a copy approach or create approach. Since it is an inplace upgrade, we will not modify the node-agent config directory. We expect the synchronization to happen automatically when we start the node-agent. Parsing the domain.xml before the synchronization happens might throw this exception any time.</p> <p><font color="#ff6600"> <a href="./UpgradeToolApproach.html">Back</a></font></p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : InlineUpgradePage</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="InlineUpgradePage-EnhancementstoInlineUpgrade"></a><b>Enhancements to Inline Upgrade</b></h1> <h4><a name="InlineUpgradePage-ProblemStatement"></a><b>Problem Statement</b></h3> <p>The asadmin command currently passes-in only the essential arguments (ie. source server, target server, admin user and password file) while doing an inline upgrade. It does not handle certificate migration. There are a host of other arguments that the upgrade tool takes in that need to be addressed. The other arguments that need to be addressed are - nsspwdfile, targetnsspwdfile, jkspwdfile, capwdfile and clinstancefiles. Technically, there are three possible options for taking in the additional arguments - (a) Make the process interactive and prompt the user for these options during the upgrade process (b) Allow the user to upload the arguments through a state file (c) Add more arguments to the asadmin command. The approach we plan to take is to prompt the user for these options.</p> <h4><a name="InlineUpgradePage-Comments"></a><b>Comments</b></h3> <p>Discussed this with Kedar on 12/12/06. Kedar's comments: We could assume that the user has not changed the master password and proceed. In case the JKS password has changed, we could ask him to change it back to the default before the upgrade process.</p> <h4><a name="InlineUpgradePage-Todo"></a><b>To do</b></h3> <p>Need to decide if we will support certificate migration through inline upgrade. If we do, we will need to prompt the user to check if he would like to migrate certificates and in case he does, he needs to prompted for the JKS password. If we choose not to support certificate migation, we will need to print a warning message stating that certificates are not migrated through inline upgrade and the asupgrade script needs to be invoked if certificates are to be migrated.</p> <h4><a name="InlineUpgradePage-Kedar%27sUpdate"></a>Kedar's Update</h3> <p>I have updated the dashboard. Please let me know what I am missing (again).</p> <p><font color="#ff6600"><a href="./UTDashboard.html">Back</a></font></p> <h4><a name="InlineUpgradePage-Optiontoturnoffinlineupgradeforbetterperformance"></a><b>Option to turn off inline upgrade for better performance</b></h1> <h4><a name="InlineUpgradePage-ProblemStatement"></a><b>Problem Statement</b></h3> <p>Since StartDomainCommand.java currently checks if the specified domain needs to be upgraded each time the start-domain command is invoked, this could have an impact on the performance. We have introduced a new system property in StartDomainCommand to turn off the inline upgrade feature (and hence this check). The feature can be disabled by setting the 'com.sun.aas.EnableAutoUpgrade' property to 'n'. This check has, however, existed for a while (from 9.0?). Profiling has shown that about 8.8% of the total start up time is spent on doing the StartDomainCommand.checkAndExecuteUpgrade.</p> <h4><a name="InlineUpgradePage-Comments"></a><b>Comments</b></h3> <p>Discussed this with Kedar on 12/12/06. Kedar's comments: Would like a publicly exposed interface to allow users to turn-on/off the option rather than having them change the value of the system property in the asadmin script.</p> <h4><a name="InlineUpgradePage-Todo"></a><b>To do</b></h3> <p>Kedar to check with Jane if it would be possible to introduce a new argument to the start domain command to enable users to turn-on and turn-off auto upgrade</p> <h4><a name="InlineUpgradePage-Kedar%27sUpdate"></a>Kedar's Update</h3> <p>I am still not convinced that this cannot be done differently. Actually, start-domain command ALWAYS needs the config context to be created. We can easily reuse that config context. So, this means that we will need to implement the checkAndExecuteUpgrade method differently. Can you please create a bug and assign it to Jane for the time being? The synopsis of the bug should say something like: parse the domain.xml during start-domain.xml <b>exactly once</b>.</p> <p><font color="#ff6600"><a href="./UTDashboard.html">Back</a></font></p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : 3.2VirtualizationPlugins</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="3.2VirtualizationPlugins-IaaSVirtualizationProviderPlugins"></a>IaaS Virtualization Provider Plugins</h1> <p>(template version 1.92)</p> 
+     <div> 
+      <ul> 
+       <li><a href="#3.2VirtualizationPlugins-IaaSVirtualizationProviderPlugins">IaaS Virtualization Provider Plugins</a></li> 
+       <li><a href="#3.2VirtualizationPlugins-1.Introduction">1. Introduction</a></li> 
+       <ul> 
+        <li><a href="#3.2VirtualizationPlugins-1.1.Project%2FComponentWorkingName%3A">1.1. Project/Component Working Name:</a></li> 
+        <li><a href="#3.2VirtualizationPlugins-1.2.Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier%3A">1.2. Name(s) and e-mail address of Document Author(s)/Supplier:</a></li> 
+        <li><a href="#3.2VirtualizationPlugins-1.3.DateofThisDocument%3A">1.3. Date of This Document:</a></li> 
+       </ul> 
+       <li><a href="#3.2VirtualizationPlugins-2.ProjectSummary">2. Project Summary</a></li> 
+       <ul> 
+        <li><a href="#3.2VirtualizationPlugins-2.1.ProjectDescription%3A">2.1. Project Description:</a></li> 
+        <li><a href="#3.2VirtualizationPlugins-2.2.RisksandAssumptions%3A">2.2. Risks and Assumptions:</a></li> 
+       </ul> 
+       <li><a href="#3.2VirtualizationPlugins-3.ProblemSummary">3. Problem Summary</a></li> 
+       <ul> 
+        <li><a href="#3.2VirtualizationPlugins-3.1.ProblemArea%3A">3.1. Problem Area:</a></li> 
+        <li><a href="#3.2VirtualizationPlugins-3.2.Justification%3A">3.2. Justification:</a></li> 
+       </ul> 
+       <li><a href="#3.2VirtualizationPlugins-4.TechnicalDescription%3A">4. Technical Description:</a></li> 
+       <ul> 
+        <li><a href="#3.2VirtualizationPlugins-4.1.Details%3A">4.1. Details:</a></li> 
+        <ul> 
+         <li><a href="#3.2VirtualizationPlugins-4.1.1libvirt%2FKVM">4.1.1 libvirt/KVM</a></li> 
+         <li><a href="#3.2VirtualizationPlugins-4.1.2OracleVM2.2%28OVM%29">4.1.2 Oracle VM 2.2 (OVM)</a></li> 
+         <ul> 
+          <li><a href="#3.2VirtualizationPlugins-OVMTemplates">OVM Templates</a></li> 
+          <li><a href="#3.2VirtualizationPlugins-OVMVirtualMachineLifecycle">OVM Virtual Machine Lifecycle</a></li> 
+         </ul> 
+         <li><a href="#3.2VirtualizationPlugins-4.1.3VirtualBox">4.1.3 VirtualBox</a></li> 
+        </ul> 
+        <li><a href="#3.2VirtualizationPlugins-4.2.Bug%2FRFENumber%28s%29%3A">4.2. Bug/RFE Number(s):</a></li> 
+        <li><a href="#3.2VirtualizationPlugins-4.3.InScope%3A">4.3. In Scope:</a></li> 
+        <li><a href="#3.2VirtualizationPlugins-4.4.OutofScope%3A">4.4. Out of Scope:</a></li> 
+        <li><a href="#3.2VirtualizationPlugins-4.5.Interfaces%3A">4.5. Interfaces:</a></li> 
+        <ul> 
+         <li><a href="#3.2VirtualizationPlugins-4.5.1PublicInterfaces">4.5.1 Public Interfaces</a></li> 
+         <ul> 
+          <li><a href="#3.2VirtualizationPlugins-CLI">CLI</a></li> 
+          <ul> 
+           <li><a href="#3.2VirtualizationPlugins-libvirt%2FKVMCLI">libvirt/KVM CLI</a></li> 
+           <li><a href="#3.2VirtualizationPlugins-OracleVM2.2CLI">Oracle VM 2.2 CLI</a></li> 
+           <li><a href="#3.2VirtualizationPlugins-VirtualBox4CLI">VirtualBox 4 CLI</a></li> 
+          </ul> 
+         </ul> 
+         <li><a href="#3.2VirtualizationPlugins-4.5.2PrivateInterfaces">4.5.2 Private Interfaces</a></li> 
+         <li><a href="#3.2VirtualizationPlugins-4.5.3Deprecated%2FRemovedInterfaces%3A">4.5.3 Deprecated/Removed Interfaces:</a></li> 
+        </ul> 
+        <li><a href="#3.2VirtualizationPlugins-4.6.DocImpact%3A">4.6. Doc Impact:</a></li> 
+        <li><a href="#3.2VirtualizationPlugins-4.7.Admin%2FConfigImpact%3A">4.7. Admin/Config Impact:</a></li> 
+        <li><a href="#3.2VirtualizationPlugins-4.8.HAImpact%3A">4.8. HA Impact:</a></li> 
+        <li><a href="#3.2VirtualizationPlugins-4.9.I18N%2FL10NImpact%3A">4.9. I18N/L10N Impact:</a></li> 
+        <li><a href="#3.2VirtualizationPlugins-4.10.Packaging%2CDelivery%26Upgrade%3A">4.10. Packaging, Delivery &amp; Upgrade:</a></li> 
+        <ul> 
+         <li><a href="#3.2VirtualizationPlugins-4.10.1.Packaging">4.10.1. Packaging</a></li> 
+         <li><a href="#3.2VirtualizationPlugins-4.10.2.Delivery">4.10.2. Delivery</a></li> 
+         <li><a href="#3.2VirtualizationPlugins-4.10.3.UpgradeandMigration%3A">4.10.3. Upgrade and Migration:</a></li> 
+        </ul> 
+        <li><a href="#3.2VirtualizationPlugins-4.11.SecurityImpact%3A">4.11. Security Impact:</a></li> 
+        <li><a href="#3.2VirtualizationPlugins-4.12.CompatibilityImpact">4.12. Compatibility Impact</a></li> 
+        <li><a href="#3.2VirtualizationPlugins-4.13.Dependencies%3A">4.13. Dependencies:</a></li> 
+        <ul> 
+         <li><a href="#3.2VirtualizationPlugins-4.13.1InternalDependencies">4.13.1 Internal Dependencies</a></li> 
+         <li><a href="#3.2VirtualizationPlugins-4.13.2ExternalDependencies">4.13.2 External Dependencies</a></li> 
+         <ul> 
+          <li><a href="#3.2VirtualizationPlugins-4.13.2.1libvirt%2FKVMExternalDependencies">4.13.2.1 libvirt/KVM External Dependencies</a></li> 
+          <li><a href="#3.2VirtualizationPlugins-4.13.2.2OracleVM2.2ExternalDependencies">4.13.2.2 Oracle VM 2.2 External Dependencies</a></li> 
+          <li><a href="#3.2VirtualizationPlugins-4.13.2.3VirtualBox4ExternalDependencies">4.13.2.3 Virtual Box 4 External Dependencies</a></li> 
+         </ul> 
+        </ul> 
+        <li><a href="#3.2VirtualizationPlugins-4.14.TestingImpact%3A">4.14. Testing Impact:</a></li> 
+       </ul> 
+       <li><a href="#3.2VirtualizationPlugins-5.ReferenceDocuments%3A">5. Reference Documents:</a></li> 
+       <li><a href="#3.2VirtualizationPlugins-6.Schedule%3A">6. Schedule:</a></li> 
+       <ul> 
+        <li><a href="#3.2VirtualizationPlugins-6.1.ProjectedAvailability%3A">6.1. Projected Availability:</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="3.2VirtualizationPlugins-1.Introduction"></a>1. Introduction</h1> <h4><a name="3.2VirtualizationPlugins-1.1.Project%2FComponentWorkingName%3A"></a>1.1. Project/Component Working Name:</h2> <p>IaaS Management Service Virtualization Provider Plugins</p> <h4><a name="3.2VirtualizationPlugins-1.2.Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier%3A"></a>1.2. Name(s) and e-mail address of Document Author(s)/Supplier:</h2> <p>Joe Di Pol: jfdipol@java.net</p> <h4><a name="3.2VirtualizationPlugins-1.3.DateofThisDocument%3A"></a>1.3. Date of This Document:</h2> <p>04/22/2011</p> <h4><a name="3.2VirtualizationPlugins-2.ProjectSummary"></a>2. Project Summary</h1> <h4><a name="3.2VirtualizationPlugins-2.1.ProjectDescription%3A"></a>2.1. Project Description:</h2> <p>Virtualization plugin providers for the IaaS Management Service (IMS).</p> <h4><a name="3.2VirtualizationPlugins-2.2.RisksandAssumptions%3A"></a>2.2. Risks and Assumptions:</h2> 
+     <ol> 
+      <li>Unknows: due to newness of this area there may be things we don't know that we don't know.</li> 
+      <li>Immaturity of programmatic interfaces to some virtualization providers may uncover shortcomings and instabilities.</li> 
+     </ol> <h4><a name="3.2VirtualizationPlugins-3.ProblemSummary"></a>3. Problem Summary</h1> <h4><a name="3.2VirtualizationPlugins-3.1.ProblemArea%3A"></a>3.1. Problem Area:</h2> <p>The GlassFish IaaS Management Service (IMS) must speak to a variety of virtualization providers. IMS support an SPI so that plugins may be written for specific providers. See the <a href="3.2Virtualization.html" title="3.2Virtualization">IaaS Management Service specification</a> for more information on this API.</p> <p>This one-pagers covers the plugins that we intend to implement for GlassFish 3.2. Specifically it covers the plugins for:</p> 
+     <ol> 
+      <li>libvirt/KVM (may be covered in IMS spec)</li> 
+      <li>Oracle VM using OVM Manager</li> 
+      <li>Oracle VirtualBox</li> 
+     </ol> <h4><a name="3.2VirtualizationPlugins-3.2.Justification%3A"></a>3.2. Justification:</h2> <p>These plugins are required for the IaaS support in GlassFish 3.2.</p> <h4><a name="3.2VirtualizationPlugins-4.TechnicalDescription%3A"></a>4. Technical Description:</h1> <h4><a name="3.2VirtualizationPlugins-4.1.Details%3A"></a>4.1. Details:</h2> <p>A Java plugin will be written for each provider that implements the interfaces of the IMS SPI. The general capabilities required of the SPI include (but are not limited to):</p> 
+     <ol> 
+      <li>Creating a VM from a VM template</li> 
+      <li>Starting a VM</li> 
+      <li>Stopping a VM</li> 
+      <li>Getting status information from a VM (running state)</li> 
+      <li>Getting metrics information from a VM (such as CPU and memory usage)</li> 
+      <li>Setting and Getting IP addresses for VMs</li> 
+     </ol> <p>A set of IMS related asadmin commands will be used to configure the plugins for use in IMS. These commands are described in the <a href="3.2Virtualization.html" title="3.2Virtualization">IMS specification</a> . This document will describe any provider specific difference from the base commands described in the IMS specification.</p> <p>How the SPI is implemented may vary significantly by providers.</p> <h4><a name="3.2VirtualizationPlugins-4.1.1libvirt%2FKVM"></a>4.1.1 libvirt/KVM</h3> <p>TBD</p> <h4><a name="3.2VirtualizationPlugins-4.1.2OracleVM2.2%28OVM%29"></a>4.1.2 Oracle VM 2.2 (OVM)</h3> <p>The OVM 2.2 product consists of the OVM Server, a Xen based virtualization server, and OVM Manager, a management console which manages collections of OVM Servers.</p> <p>OVM Manager provides a WUI admin console as well as a web services API that exposes all of the capabilities available via the console. An optional CLI is also available for OVM Manager that sits on top of the web services API.</p> <p>OVM Servers are assigned to pools in OVM Manager. OVM Manager communicates with the OVM Servers using the OVM Agent that runs in dom0 of each OVM Server.</p> <p>The GlassFish OVM plugin uses the OVM Manager Web Services interface and therfore requires the use of the OVM Manager. The goal is to use the OVM Manager WS interface exclusively, but due to limitations in that interface the plugin may need to access dom0 of a server pool master directly. At this time there are no plans to use the OVM Manager CLI.</p> <p>The basic VM lifecycle operations will be implemented using the OVM Manager WS API. Specifically: importing of a template, creation of a VM from a template, destruction of a VM, starting and stopping of a VM, and getting VM status.</p> <p>A limited number of operations may require either SSH access to dom0 of the server pool master or direct filesystem access to the VM repository. These operations are:</p> 
+     <ul> 
+      <li>Importing of a template. While the OVM Manager WS API supports importing of a remote template, the implementation is inefficient – it essentially does a wget of an OVM template directory and copies over the uncompressed template. As an optimization we may choose to copyover a zipped form of the template directly to the server pool master's repository, unzip it, then use OVM manager to import it directly from the server pool master (a supported operation).</li> 
+      <li>Passing of parameters to a VM at boot time. One of the main challenges of implementing an IMS plugin is passing parameters to a VM at boot time. OVM provides no convenient support for this. It appears as though we will need to do this either using xenstore (a simple persistent store shared between dom0 and a guest) or via a small supplemental disk image that is created by the plugin and mount and read by the guest.</li> 
+     </ul> <h4><a name="3.2VirtualizationPlugins-OVMTemplates"></a>OVM Templates</h4> <p>OVM templates will be constructed using the Oracle JeOS toolkit and will include:</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Disk Image </th> 
+         <th class="confluenceTh"> Contents </th> 
+         <th class="confluenceTh"> Description </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> System.img </td> 
+         <td class="confluenceTd">
+          <ul> 
+           <li>JeOS install of Oracle Linux 5</li> 
+           <li>Supplemental packages such as wget, zip/unzip, etc</li> 
+           <li>Java SE 6</li> 
+           <li>Linux OS tuning as appropriate (<a href="http://download.oracle.com/docs/cd/E18930_01/html/821-2431/abeji.html">GlassFish Linux Tuning</a>)</li> 
+           <li>OS boot configuration scripts</li> 
+          </ul> </td> 
+         <td class="confluenceTd"> This is the system disk image </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Application.img </td> 
+         <td class="confluenceTd">
+          <ul> 
+           <li>Application installation, for example GlassFish 3.2</li> 
+           <li>Application boot configuration scripts</li> 
+          </ul> </td> 
+         <td class="confluenceTd"> This is the application disk image </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Bootparams.img </td> 
+         <td class="confluenceTd">
+          <ul> 
+           <li>bootparams.conf</li> 
+          </ul> </td> 
+         <td class="confluenceTd"> Very small disk image holding data file with boot parameters </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> vm.cfg </td> 
+         <td class="confluenceTd">
+          <ul> 
+           <li>Virtual Machine meta-data</li> 
+          </ul> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>Why have three separate virtual disk images?</p> 
+     <ol> 
+      <li>By having the application image separate from the OS it makes it easy to update a template without touching the OS image – you just drop in a new Application.img.</li> 
+      <li>Separating the application mitigates licensing concerns since it separates application binaries from Linux (GPL) binaries (I don't fully understand this, but it is recommended in the <a href="http://download.oracle.com/docs/cd/E18930_01/html/821-2431/abeji.htm">Creating Pre-Built VMs white paper </a>).</li> 
+      <li>Keeping the Bootparams.img separate reduces the risk of mounting a VM filesystem in dom0 and causing filesystem corruption if the virtual disk is in use by the guest. The guest can immediately unmount this filesystem after boot, so the virtual disk will only be in use during OS bootup.</li> 
+     </ol> <h4><a name="3.2VirtualizationPlugins-OVMVirtualMachineLifecycle"></a>OVM Virtual Machine Lifecycle</h4> <p>The following table describes the current thinking for how the major lifecycle operations will be implemented.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Operation </th> 
+         <th class="confluenceTh"> Description </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Import template into OVM </td> 
+         <td class="confluenceTd">
+          <ul> 
+           <li>scp template *.tgz bundle into dom0 of OVM server pool master</li> 
+           <li>Use SSH to dom0 to extract template into /OVS/seed_pool</li> 
+           <li>Use OVM Manager WS api to import and approve template</li> 
+          </ul> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Create virtual machine from template </td> 
+         <td class="confluenceTd">
+          <ul> 
+           <li>Use OVM Manager WS api to create VM from template</li> 
+           <li>This copies the template in /OVS/seed_pool (and its virtual disks) into /OVS/running_pool</li> 
+          </ul> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Boot virtual machine </td> 
+         <td class="confluenceTd">
+          <ul> 
+           <li>Create boot params data file (bootparams.conf)</li> 
+           <li>scp bootparams.conf to dom0 of OVM server pool master</li> 
+           <li>Use SSH to dom0 to mount configuration virtual disk (Bootparams.img file) of the virtual machine on a temporary mount point and copy bootparams.conf into virtual disk</li> 
+           <li>Optionally update MAC address in virtual machine's vm.cfg file</li> 
+           <li>Use OVM Manager WS api to power on virtual machine</li> 
+           <li>Virtual Machine boot scripts read bootparams.conf file and configure OS and application</li> 
+          </ul> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> shutdown, suspend, resume, delete, etc </td> 
+         <td class="confluenceTd">
+          <ul> 
+           <li>All can be accomplished using OVM Manager WS api</li> 
+          </ul> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.2VirtualizationPlugins-4.1.3VirtualBox"></a>4.1.3 VirtualBox</h3> <p>TBD</p> <h4><a name="3.2VirtualizationPlugins-4.2.Bug%2FRFENumber%28s%29%3A"></a>4.2. Bug/RFE Number(s):</h2> <p><a href="https://github.com/javaee/glassfish/issues/16379">GLASSFISH-16379</a> Oracle VM 2.2 plugin for IMS<br> <a href="https://github.com/javaee/glassfish/issues/16380">GLASSFISH-16380</a> VirtualBox 4 plugin for IMS<br> <a href="https://github.com/javaee/glassfish/issues/16381">GLASSFISH-16381</a> libvirt/KVM plugin for IMS<br> <a href="https://github.com/javaee/glassfish/issues/16382">GLASSFISH-16382</a> Oracle VM templates for IMS</p> <h4><a name="3.2VirtualizationPlugins-4.3.InScope%3A"></a>4.3. In Scope:</h2> <p>TBD</p> <h4><a name="3.2VirtualizationPlugins-4.4.OutofScope%3A"></a>4.4. Out of Scope:</h2> <p>TBD</p> <h4><a name="3.2VirtualizationPlugins-4.5.Interfaces%3A"></a>4.5. Interfaces:</h2> <h4><a name="3.2VirtualizationPlugins-4.5.1PublicInterfaces"></a>4.5.1 Public Interfaces</h3> <h4><a name="3.2VirtualizationPlugins-CLI"></a>CLI</h4> <p>The base IMS asadmin commands are described in the <a href="3.2Virtualization.html" title="3.2Virtualization">IMS specification</a> . The plugins will not add any new asadmin commands, but may have plugin specific options and parameters that are described here.</p> <h5><a name="3.2VirtualizationPlugins-libvirt%2FKVMCLI"></a>libvirt/KVM CLI</h5> <p>TBD</p> <h5><a name="3.2VirtualizationPlugins-OracleVM2.2CLI"></a>Oracle VM 2.2 CLI</h5> <p>TBD</p> <h5><a name="3.2VirtualizationPlugins-VirtualBox4CLI"></a>VirtualBox 4 CLI</h5> <p>TBD</p> <h4><a name="3.2VirtualizationPlugins-4.5.2PrivateInterfaces"></a>4.5.2 Private Interfaces</h3> <p>domain.xml?</p> <h4><a name="3.2VirtualizationPlugins-4.5.3Deprecated%2FRemovedInterfaces%3A"></a>4.5.3 Deprecated/Removed Interfaces:</h3> <p>N/A</p> <h4><a name="3.2VirtualizationPlugins-4.6.DocImpact%3A"></a>4.6. Doc Impact:</h2> <p>The doc impact is mainly by the base IMS support. The impact for the IMS feature as a whole will be significant and include:</p> 
+     <ol> 
+      <li>New man pages for new asadmin commands</li> 
+      <li>New sections in admin guide/reference</li> 
+     </ol> <h4><a name="3.2VirtualizationPlugins-4.7.Admin%2FConfigImpact%3A"></a>4.7. Admin/Config Impact:</h2> <p>New CLI's will be needed as described in section 4.5.1</p> <p>Corresponding enhancements will need to be made to the admin console.</p> <h4><a name="3.2VirtualizationPlugins-4.8.HAImpact%3A"></a>4.8. HA Impact:</h2> <p>N/A</p> <h4><a name="3.2VirtualizationPlugins-4.9.I18N%2FL10NImpact%3A"></a>4.9. I18N/L10N Impact:</h2> <p>Moderate, as needed for new admin commands.</p> <h4><a name="3.2VirtualizationPlugins-4.10.Packaging%2CDelivery%26Upgrade%3A"></a>4.10. Packaging, Delivery &amp; Upgrade:</h2> <h4><a name="3.2VirtualizationPlugins-4.10.1.Packaging"></a>4.10.1. Packaging</h3> <p>TBD. These providers will likely be contained in the same package that contains the base IaaS Management Service.</p> <h4><a name="3.2VirtualizationPlugins-4.10.2.Delivery"></a>4.10.2. Delivery</h3> <p>N/A</p> <h4><a name="3.2VirtualizationPlugins-4.10.3.UpgradeandMigration%3A"></a>4.10.3. Upgrade and Migration:</h3> <p>Should be covered in IMS spec.</p> <h4><a name="3.2VirtualizationPlugins-4.11.SecurityImpact%3A"></a>4.11. Security Impact:</h2> <p>At this time the assumption is that we can leverage current security related interfaces.</p> <h4><a name="3.2VirtualizationPlugins-4.12.CompatibilityImpact"></a>4.12. Compatibility Impact</h2> <p>N/A</p> <h4><a name="3.2VirtualizationPlugins-4.13.Dependencies%3A"></a>4.13. Dependencies:</h2> <h4><a name="3.2VirtualizationPlugins-4.13.1InternalDependencies"></a>4.13.1 Internal Dependencies</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Component </th> 
+         <th class="confluenceTh"> Interfaces </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="3.2Virtualization.html" title="3.2Virtualization">3.2 Iaas Management Service</a> </td> 
+         <td class="confluenceTd">
+          <ul> 
+           <li>IMS SPI</li> 
+           <li>IMS API</li> 
+          </ul> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GlassFish produced OVM templates </td> 
+         <td class="confluenceTd">
+          <ul> 
+           <li>GlassFish specific vm.cfg attributes</li> 
+           <li>Possibly naming conventions for disk images (Bootparams.img)</li> 
+          </ul> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.2VirtualizationPlugins-4.13.2ExternalDependencies"></a>4.13.2 External Dependencies</h3> <h4><a name="3.2VirtualizationPlugins-4.13.2.1libvirt%2FKVMExternalDependencies"></a>4.13.2.1 libvirt/KVM External Dependencies</h4> <p>TBD</p> <h4><a name="3.2VirtualizationPlugins-4.13.2.2OracleVM2.2ExternalDependencies"></a>4.13.2.2 Oracle VM 2.2 External Dependencies</h4> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Component </th> 
+         <th class="confluenceTh"> License </th> 
+         <th class="confluenceTh"> Interfaces </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Oracle VM Server 2.2 </td> 
+         <td class="confluenceTd"> GPL </td> 
+         <td class="confluenceTd">
+          <ul> 
+           <li>SSH/SCP access to dom0 of server pool master</li> 
+           <li>/OVS filesystem layout</li> 
+           <li>OVM Template filesystem structure</li> 
+           <li>OVM Virtual Machine vm.cfg file contents</li> 
+          </ul> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Oracle VM Manager 2.2 </td> 
+         <td class="confluenceTd"> OTN? </td> 
+         <td class="confluenceTd">
+          <ul> 
+           <li><a href="http://download.oracle.com/docs/cd/E15458_01/doc.22/e15441/wsapi.htm">OVM Manager 2.2 WSDL</a></li> 
+          </ul> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.2VirtualizationPlugins-4.13.2.3VirtualBox4ExternalDependencies"></a>4.13.2.3 Virtual Box 4 External Dependencies</h4> <p>TBD</p> <h4><a name="3.2VirtualizationPlugins-4.14.TestingImpact%3A"></a>4.14. Testing Impact:</h2> <p>How will the new feature(s) introduced by this project be tested?<br> Do tests exist from prior releases (e.g. v2) that can be reused?<br> Will new tests need to be written? Can they be automated?</p> <h4><a name="3.2VirtualizationPlugins-5.ReferenceDocuments%3A"></a>5. Reference Documents:</h1> 
+     <ul> 
+      <li><a href="3.2Virtualization.html" title="3.2Virtualization">3.2 Virtualization (IMS) Specification</a></li> 
+      <li><a href="http://aseng-wiki.us.oracle.com/asengwiki/display/GlassFish/Oracle+VM+-+Creating+a+Template">Creating a GlassFish OVM Template</a> (internal)</li> 
+      <li><a href="http://download.oracle.com/docs/cd/E15458_01/doc.22/e15446/toc.htm">OVM Manager 2.2 Web Services Javadoc</a></li> 
+     </ul> <h4><a name="3.2VirtualizationPlugins-6.Schedule%3A"></a>6. Schedule:</h1> <h4><a name="3.2VirtualizationPlugins-6.1.ProjectedAvailability%3A"></a>6.1. Projected Availability:</h2> <p>Indicate which milestones from the current schedule the project<br> will be:</p> 
+     <ul> 
+      <li>Initially integrated (may not be feature complete)</li> 
+      <li>Feature complete (ready for handoff to QA)</li> 
+      <li>At production quality level</li> 
+     </ul> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874285/21365303.png">OVM Plugin.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874285/21365300.png">OVM Plugin.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874285/21365301.png">OVM Plugin.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874285/21365298.png">OVM Plugin.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874285/21365299.png">OVM Plugin.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874285/21365302.png">OVM Plugin.png</a> (image/png) 
+      <br> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Aug 28, 2012 by 
+<font color="#0050B2">10193</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

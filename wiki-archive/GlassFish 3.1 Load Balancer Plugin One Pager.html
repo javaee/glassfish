@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFish 3.1 Load Balancer Plugin One Pager</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GlassFish3.1LoadBalancerPluginOnePager-GlassFish3.1LoadBalancerPluginOnePager"></a>GlassFish 3.1 Load Balancer Plugin One Pager</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#GlassFish3.1LoadBalancerPluginOnePager-GlassFish3.1LoadBalancerPluginOnePager">GlassFish 3.1 Load Balancer Plugin One Pager</a></li> 
+       <ul> 
+        <li><a href="#GlassFish3.1LoadBalancerPluginOnePager-1.Introduction">1. Introduction</a></li> 
+        <ul> 
+         <li><a href="#GlassFish3.1LoadBalancerPluginOnePager-1.1.Project%2FComponentWorkingName"> <b>1.1. Project/Component Working Name</b></a></li> 
+         <li><a href="#GlassFish3.1LoadBalancerPluginOnePager-1.2.Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier"> <b>1.2. Name(s) and e-mail address of Document Author(s)/Supplier</b></a></li> 
+         <li><a href="#GlassFish3.1LoadBalancerPluginOnePager-1.3.DateofThisDocument"> <b>1.3. Date of This Document</b></a></li> 
+        </ul> 
+        <li><a href="#GlassFish3.1LoadBalancerPluginOnePager-2.ProjectSummary">2. Project Summary</a></li> 
+        <ul> 
+         <li><a href="#GlassFish3.1LoadBalancerPluginOnePager-2.1.ProjectDescription"> <b>2.1. Project Description</b></a></li> 
+         <li><a href="#GlassFish3.1LoadBalancerPluginOnePager-2.2.RisksandAssumptions"> <b>2.2. Risks and Assumptions</b></a></li> 
+        </ul> 
+        <li><a href="#GlassFish3.1LoadBalancerPluginOnePager-3.ProblemSummary">3. Problem Summary</a></li> 
+        <ul> 
+         <li><a href="#GlassFish3.1LoadBalancerPluginOnePager-3.1.ProblemArea"> <b>3.1. Problem Area</b></a></li> 
+         <li><a href="#GlassFish3.1LoadBalancerPluginOnePager-3.2.Justification"> <b>3.2. Justification</b></a></li> 
+        </ul> 
+        <li><a href="#GlassFish3.1LoadBalancerPluginOnePager-4.TechnicalDescription">4. Technical Description</a></li> 
+        <ul> 
+         <li><a href="#GlassFish3.1LoadBalancerPluginOnePager-4.1.Details"> <b>4.1. Details</b></a></li> 
+         <ul> 
+          <li><a href="#GlassFish3.1LoadBalancerPluginOnePager-4.1.1.Loadbalancerpluginconfiguration"> <b>4.1.1. Load-balancer plugin configuration</b></a></li> 
+          <li><a href="#GlassFish3.1LoadBalancerPluginOnePager-4.1.2.Installerforloadbalancerplugin"> <b>4.1.2. Installer for load-balancer plugin</b></a></li> 
+          <li><a href="#GlassFish3.1LoadBalancerPluginOnePager-4.1.4Supportedplatforms"> <b>4.1.4 Supported platforms</b></a></li> 
+          <li><a href="#GlassFish3.1LoadBalancerPluginOnePager-4.1.5Supportedwebservers"> <b>4.1.5 Supported web-servers</b></a></li> 
+         </ul> 
+         <li><a href="#GlassFish3.1LoadBalancerPluginOnePager-4.2.Bug%2FRFENumber%28s%29"> <b>4.2. Bug/RFE Number(s)</b></a></li> 
+         <li><a href="#GlassFish3.1LoadBalancerPluginOnePager-4.3.InScope"> <b>4.3. In Scope</b></a></li> 
+         <li><a href="#GlassFish3.1LoadBalancerPluginOnePager-4.4.OutofScope"> <b>4.4. Out of Scope</b></a></li> 
+         <li><a href="#GlassFish3.1LoadBalancerPluginOnePager-4.5.Interfaces."> <b>4.5. Interfaces</b>.</a></li> 
+         <ul> 
+          <li><a href="#GlassFish3.1LoadBalancerPluginOnePager-4.5.1PublicInterfaces">4.5.1 Public Interfaces</a></li> 
+          <li><a href="#GlassFish3.1LoadBalancerPluginOnePager-4.5.2Privateinterfaces"> <b>4.5.2 Private interfaces</b></a></li> 
+          <li><a href="#GlassFish3.1LoadBalancerPluginOnePager-4.5.3Deprecated%2FRemovedInterfaces"> <b>4.5.3 Deprecated/Removed Interfaces</b></a></li> 
+         </ul> 
+         <li><a href="#GlassFish3.1LoadBalancerPluginOnePager-4.6.DocImpact"> <b>4.6. Doc Impact</b></a></li> 
+         <li><a href="#GlassFish3.1LoadBalancerPluginOnePager-4.7.Admin%2FConfigImpact"> <b>4.7. Admin/Config Impact</b></a></li> 
+         <li><a href="#GlassFish3.1LoadBalancerPluginOnePager-4.8.HAImpact"> <b>4.8. HA Impact</b></a></li> 
+         <li><a href="#GlassFish3.1LoadBalancerPluginOnePager-4.9.I18N%2FL10NImpact"> <b>4.9. I18N/L10N Impact</b></a></li> 
+         <li><a href="#GlassFish3.1LoadBalancerPluginOnePager-4.10.Packaging%2CDelivery%26Upgrade"> <b>4.10. Packaging, Delivery &amp; Upgrade</b></a></li> 
+         <ul> 
+          <li><a href="#GlassFish3.1LoadBalancerPluginOnePager-4.10.1Packaging"> <b>4.10.1 Packaging</b></a></li> 
+          <li><a href="#GlassFish3.1LoadBalancerPluginOnePager-4.10.2Delivery"> <b>4.10.2 Delivery</b></a></li> 
+          <li><a href="#GlassFish3.1LoadBalancerPluginOnePager-4.10.3UpgradeandMigration"> <b>4.10.3 Upgrade and Migration</b></a></li> 
+         </ul> 
+         <li><a href="#GlassFish3.1LoadBalancerPluginOnePager-4.11.SecurityImpact"> <b>4.11. Security Impact</b></a></li> 
+         <li><a href="#GlassFish3.1LoadBalancerPluginOnePager-4.12.CompatibilityImpact"> <b>4.12. Compatibility Impact</b></a></li> 
+         <li><a href="#GlassFish3.1LoadBalancerPluginOnePager-4.13.Dependencies"> <b>4.13. Dependencies</b></a></li> 
+         <ul> 
+          <li><a href="#GlassFish3.1LoadBalancerPluginOnePager-4.13.1InternalDependencies%5C"> <b>4.13.1 Internal Dependencies</b> |</a></li> 
+          <li><a href="#GlassFish3.1LoadBalancerPluginOnePager-4.13.2ExternalDependencies"> <b>4.13.2 External Dependencies</b></a></li> 
+         </ul> 
+         <li><a href="#GlassFish3.1LoadBalancerPluginOnePager-4.14.TestingImpact"> <b>4.14. Testing Impact</b></a></li> 
+        </ul> 
+        <li><a href="#GlassFish3.1LoadBalancerPluginOnePager-5.ReferenceDocuments">5. Reference Documents</a></li> 
+        <li><a href="#GlassFish3.1LoadBalancerPluginOnePager-6.Schedule">6. Schedule</a></li> 
+        <ul> 
+         <li><a href="#GlassFish3.1LoadBalancerPluginOnePager-6.1.ProjectedAvailability"> <b>6.1. Projected Availability</b></a></li> 
+        </ul> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="GlassFish3.1LoadBalancerPluginOnePager-1.Introduction"></a>1. Introduction</h2> <h4><a name="GlassFish3.1LoadBalancerPluginOnePager-1.1.Project%2FComponentWorkingName"></a><b>1.1. Project/Component Working Name</b></h3> <p>GlassFish 3.1/Load Balancer Plugin</p> <h4><a name="GlassFish3.1LoadBalancerPluginOnePager-1.2.Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier"></a><b>1.2. Name(s) and e-mail address of Document Author(s)/Supplier</b></h3> <p>Kshitiz Saxena : kshitiz.saxena@sun.com <br class="atl-forced-newline"></p> <h4><a name="GlassFish3.1LoadBalancerPluginOnePager-1.3.DateofThisDocument"></a><b>1.3. Date of This Document</b></h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Date </th> 
+         <th class="confluenceTh"> Revision </th> 
+         <th class="confluenceTh"> Comments </th> 
+         <th class="confluenceTh"> Author </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2010-05-20 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> 1.0 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Initial draft <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Kshitiz Saxena <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2010-06-09 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> 1.1 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Incorporated review comments of Joe and Mahesh. Also added an option based on consistent hash algorithm. All changes are marked in <font color="blue">blue</font>. <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Kshitiz Saxena <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2010-06-22 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> 1.2 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Incorporated suggestions on Nazrul for upgrade and default values of lb-enabled. All changes are marked in shade of <font color="#cc00ff">blue</font>. <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Kshitiz <br class="atl-forced-newline"> Saxena <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2010-07-05 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> 1.3 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Incorporated ASARCH review comments. All changes are marked in shade of <font color="#000099">blue</font>.<font color="#cc00ff">&nbsp;</font> </td> 
+         <td class="confluenceTd"> Kshitiz Saxena <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2010-08-31 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> 1.4 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Incorporated CCC review comments. All changes are marked in shade of <font color="#009999">blue</font><font color="black">.</font><br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Kshitiz Saxena <br class="atl-forced-newline"> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFish3.1LoadBalancerPluginOnePager-2.ProjectSummary"></a>2. Project Summary</h2> <h4><a name="GlassFish3.1LoadBalancerPluginOnePager-2.1.ProjectDescription"></a><b>2.1. Project Description</b></h3> <p>&nbsp;In GlassFish 3.1 the support for clustering of application server instances is being introduced, thus there is a evident need to have a load-balancer to front-end the cluster of instances. GlassFish 2.1.1 already had a load-balancer and same will be leveraged for GlassFish 3.1. The load-balancer for GlassFish is a native plugin which need to be installed on a web-server. After installing load-balancer plugin on web-server and configuring it, web-server will start distributing&nbsp; requests across cluster of GlassFish instances and handle fail-over among many other features. A variety of web-server are supported by load-balancer plugin. The list includes Sun Java System Web Server, Apache HTTP server and Internet Information Service(IIS). Being a external component, which is installed on a web-server, there are no functional changes required to make it work with GlassFish 3.1. <br class="atl-forced-newline"> <br class="atl-forced-newline"> The load-balancer plugin gathers information on back-end cluster using a xml file usually referred to as load-balancer xml. The load-balancer xml need to be generated by GlassFish admin framework. The commands existing in GlassFish 2.1.1 will be supported in GlassFish 3.1 to provide same user experience. <br class="atl-forced-newline"> <br class="atl-forced-newline"> The load-balancer plugin need to be installed on web-server and then needs certain amount of configuration in web-server. The process is tedious and error-prone if done manually. An installer which automates most of the work required for load-balancer plugin installation and configuration will be provided to the user. <br class="atl-forced-newline"> The session replication framework in GlassFish is based on replica partner. So in case an instance handling session goes down, it will preferred to fail-over request to instance which acts as replica. This feature will enable higher throughput even in case of instance failure with session replication enabled. <br class="atl-forced-newline"></p> <h4><a name="GlassFish3.1LoadBalancerPluginOnePager-2.2.RisksandAssumptions"></a><b>2.2. Risks and Assumptions</b></h3> <p>Load-balancer plugin pushes certain information as proxy headers alone with request. GlassFish implementation must be able to interpret these headers and populate request object appropriately. Also GlassFish web-container is required to stamp sticky information provided by load-balancer plugin in proxy header either as cookie or url-rewriting for correct functioning of load-balancer plugin. <br class="atl-forced-newline"> The new feature of preferred fail-over instance will require sharing information of replica partner for a particular session.</p> <h4><a name="GlassFish3.1LoadBalancerPluginOnePager-3.ProblemSummary"></a>3. Problem Summary</h2> <h4><a name="GlassFish3.1LoadBalancerPluginOnePager-3.1.ProblemArea"></a><b>3.1. Problem Area</b></h3> <p>With introduction of clustering feature in GlassFish 3.1, there is a basic requirement of having a load-balancer to front-end the cluster. A load-balancer is required to distribute incoming requests to instances in cluster to provide higher throughput. It need to detect instance's health and route requests only to healthy instances thereby providing high availability. <br class="atl-forced-newline"> In most production environment, a web-server tier frond-ends a application-server tier. Such deployments can serve static content from web-server tier itself, sending only requests for dynamic content to application-server tier thus increasing the system throughput. So a load-balancer which can be installed and configured on a web-server tier will be a ideal choice. <br class="atl-forced-newline"> To provide high availability in true sense, session data need to be replicated to another instance to handle instance failure scenarios. Replica will hold session information in case current instance handling session goes down. This information can be retrieved by any instance in cluster, however to further optimize request for that session can be failed over to replica instance itself. This will provide higher throughput even in case of instance failure. <br class="atl-forced-newline"></p> <h4><a name="GlassFish3.1LoadBalancerPluginOnePager-3.2.Justification"></a><b>3.2. Justification</b></h3> <p>High Availability(HA) is one the release driver for GlassFish 3.1 and load-balancer is one of the core component.</p> <h4><a name="GlassFish3.1LoadBalancerPluginOnePager-4.TechnicalDescription"></a>4. Technical Description</h2> <h4><a name="GlassFish3.1LoadBalancerPluginOnePager-4.1.Details"></a><b>4.1. Details</b></h3> <h4><a name="GlassFish3.1LoadBalancerPluginOnePager-4.1.1.Loadbalancerpluginconfiguration"></a><b>4.1.1. Load-balancer plugin configuration</b></h4> <p>The load-balancer acts as a front-end to GlassFish cluster/instances. It will distribute load to configured GlassFish instances for applications deployed on them. It gathers information on back-end GlassFish instances from file known as load-balancer xml. The load-balancer xml provides following information : <br class="atl-forced-newline"></p> 
+     <ol> 
+      <li> 
+       <ol> 
+        <li>The clusters front-ended by this load-balancer. It can front-end multiple clusters having heterogeneous deployment of applications.</li> 
+        <li>Instances in each cluster with following details : 
+         <ol> 
+          <li>HTTP/HTTPS listeners for the instance</li> 
+          <li>State of the instance - enabled/disabled</li> 
+          <li>Weight associated with each instance. This is useful in case of deployment over heterogeneous system.</li> 
+         </ol> </li> 
+        <li>Applications deployed in each cluster with following details : 
+         <ol> 
+          <li>Context root of the web application</li> 
+          <li>State of the instance - enabled/disabled</li> 
+         </ol> </li> 
+        <li>Health checker used to detect instance recovery</li> 
+        <li>HTTP request-uri used to ping failed instance</li> 
+        <li>Interval between health check pings</li> 
+        <li>Response time-out for health check ping</li> 
+       </ol> </li> 
+     </ol> <p>To generate a load-balancer xml, a load-balancer view need to be defined in domain.xml. It is used to create an association between load-balancer and cluster/standalone instances among other details. Below is snippet from domain.xml from GlassFish 2.1.1. Same elements and structure will exist for GlassFish 3.1 as well. <br class="atl-forced-newline"> &nbsp; <br class="atl-forced-newline"> The load-balancer configuration element for cluster and standalone instances is provided below : <br class="atl-forced-newline"> &nbsp;<b><em>&lt;lb-configs&gt;</em></b> <br class="atl-forced-newline"> <b><em>&nbsp;&nbsp;&nbsp; &lt;lb-config https-routing="false" monitoring-enabled="false" name="cluster-http-lb-config" reload-poll-interval-in-seconds="60" response-timeout-in-seconds="60" &gt;</em></b> <br class="atl-forced-newline"> <b><em>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;cluster-ref lb-policy="round-robin" ref="cluster2"&gt;</em></b> <br class="atl-forced-newline"> <b><em>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;health-checker interval-in-seconds="30" timeout-in-seconds="10" url="/"/&gt;</em></b> <br class="atl-forced-newline"> <b><em>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/cluster-ref&gt;</em></b> <br class="atl-forced-newline"> <b><em>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;cluster-ref lb-policy="round-robin" ref="cluster1"&gt;</em></b> <br class="atl-forced-newline"> <b><em>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;health-checker interval-in-seconds="30" timeout-in-seconds="10" url="/"/&gt;</em></b> <br class="atl-forced-newline"> <b><em>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/cluster-ref&gt;</em></b> <br class="atl-forced-newline"> <b><em>&nbsp;&nbsp;&nbsp; &lt;/lb-config&gt;</em></b> <br class="atl-forced-newline"> <b><em>&nbsp;&nbsp;&nbsp; &lt;lb-config https-routing="false" monitoring-enabled="false" name="standalone-http-lb-config" reload-poll-interval-in-seconds="60" response-timeout-in-seconds="60" &gt;</em></b> <br class="atl-forced-newline"> <b><em>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;server-ref disable-timeout-in-minutes="30" enabled="true" lb-enabled="true" ref="standalone-instance"&gt;</em></b> <br class="atl-forced-newline"> <b><em>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;health-checker interval-in-seconds="30" timeout-in-seconds="10" url="/"/&gt;</em></b> <br class="atl-forced-newline"> <b><em>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/server-ref&gt;</em></b> <br class="atl-forced-newline"> <b><em>&nbsp;&nbsp;&nbsp; &lt;/lb-config&gt;</em></b> <br class="atl-forced-newline"> <b><em>&nbsp; &lt;/lb-configs&gt;</em></b> <br class="atl-forced-newline"> <b>Note</b> :The load-balancer config can either have server reference or cluster reference. It cannot have a mix of both. It is assumed that information on instances within cluster and deployed applications can be retrieved by referencing the cluster configuration. <br class="atl-forced-newline"></p> <p>The load-balancer element having reference to associated lb-config is provided below : <br class="atl-forced-newline"> &nbsp;<b><em>&lt;load-balancers&gt;</em></b> <br class="atl-forced-newline"> <b><em>&nbsp;&nbsp;&nbsp;&nbsp; &lt;load-balancer lb-config-name="cluster-http-lb-config" name="cluster-http-lb"</em></b> <b><em>device-host="test.com"</em></b> <b><em>device-port="8080"/&gt;</em></b> <br class="atl-forced-newline"> <b><em>&nbsp;&nbsp;&nbsp; &lt;/load-balancer&gt;</em></b> <br class="atl-forced-newline"> <b><em>&nbsp; &lt;/load-balancers&gt;</em></b> <br class="atl-forced-newline"> <br class="atl-forced-newline"> This will be required for automatically pushing load-balancer xml over the wire to web-server. The above element is not needed if command <b><em>apply-http-lb-changes</em></b> is not supported. <br class="atl-forced-newline"> <br class="atl-forced-newline"> Also each server-ref will have <b><em>lb-enabled</em></b> attribute, to indicate whether an instance is enabled or disabled from load-balancer perspective. <br class="atl-forced-newline"> <b><em>&lt;server-ref disable-timeout-in-minutes="30" enabled="true" lb-enabled="true" ref="instance1"/&gt;</em></b> <br class="atl-forced-newline"> <br class="atl-forced-newline"> Similarly all application-ref will also have lb-enabled attribute, to indicate whether an application is enabled or disabled from load-balancer perspective. <br class="atl-forced-newline"> <b><em>&lt;application-ref disable-timeout-in-minutes="30" enabled="true" lb-enabled="true" ref="test-application"/&gt;</em></b> <br class="atl-forced-newline"> <b><em>&nbsp;</em></b> <br class="atl-forced-newline"> Also user can assign weight to a particular instance. This will be stored as attribute on server element. <br class="atl-forced-newline"> <b><em>&lt;server config-ref="cluster1-config" lb-weight="400" name="instance1" node-agent-ref="nodeagent1"&gt;</em></b> <br class="atl-forced-newline"> <br class="atl-forced-newline"> Below is list of commands to create load-balancer view in domain.xml :</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Commands </th> 
+         <th class="confluenceTh"> Details </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-http-lb-config </td> 
+         <td class="confluenceTd"> Creates the lb-config element with provided values. <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-http-lb-ref <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Creates cluster-ref or server-ref under lb-config element with provided values <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-http-health-checker <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Creates health-checker element with provided values <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> enable-http-lb-server <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Sets the lb-enabled flag to true for the given instance. If cluster name is used, then for all instances in cluster lb-enabled flag is set to true. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> enable-http-lb-application <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Sets the lb-enabled flag to true for the given application. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> delete-http-lb-config </td> 
+         <td class="confluenceTd"> Deletes the given lb-config <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> delete-http-lb-ref </td> 
+         <td class="confluenceTd"> Deletes the given cluster-ref or server-ref. All instances need to be disabled to execute this command successfully. <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> delete-http-health-checker <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Deletes the given health-checker <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> disable-http-lb-server </td> 
+         <td class="confluenceTd"> Sets the lb-enabled flag to false for the given instance. If cluster name is used, then for all instances in cluster lb-enabled flag is set to false. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> disable-http-lb-application </td> 
+         <td class="confluenceTd"> Sets the lb-enabled flag to false for the given application. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> configure-lb-weight <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Configures the weight for a particular instance. <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-http-lb-configs <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Lists all the lb-config elements <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-http-lb <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Creates the load-balancer element. It can create lb-config, cluster-ref/server-ref, enable instance/application by running a single command. This command will be needed if apply-http-lb-changes command is supported. <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> delete-http-lb <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Delete the given load-balancer. This command will be needed if apply-http-lb-changes command is supported. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-http-lbs <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Lists all the load-balancer elements. This command will be needed if apply-http-lb-changes command is supported. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>Main purpose of creating load-balancer view in domain.xml is to facilitate generation of load-balancer xml to be consumed by load-balancer plugin. Below is the list of commands to achieve the same :</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Commands <br class="atl-forced-newline"> </th> 
+         <th class="confluenceTh"> Details <br class="atl-forced-newline"> </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> export-http-lb-config <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Generates the load-balancer xml corresponding to given lb-config. User can provide a lb-config or load-balancer name. It will be exported to provided file name. <font color="#cc33cc">This command will be further over-loaded to provide a new parameter target. This will enable user to generate load-balancer xml for a set of cluster/standalone-instance, without a need to create a lb-config or load-balancer element in domain.xml.</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> apply-http-lb-changes <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Generates the load-balancer xml corresponding to given load-balancer and pushes it over the wire to configured web-server host name and port number. Web-server require some specific configuration for this feature to work. This command may not be supported in GlassFish 3.1. <br class="atl-forced-newline"> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>The generated load-balancer must conform to <b><em>glassfish-loadbalancer_1_2.dtd</em></b>. <br class="atl-forced-newline"> <br class="atl-forced-newline"> For more details on these command refer to <a href="http://docs.sun.com/app/docs/doc/821-0179/6nl8hchmr?l=en&amp;a=expand">GlassFish 2.1.1 documentation</a>. <br class="atl-forced-newline"> <br class="atl-forced-newline"> <font color="#cc00ff">In addition to support for above commands, there will be following changes with respect to GlassFish 2.1.1</font><br class="atl-forced-newline"></p> 
+     <ol> 
+      <li> 
+       <ol> 
+        <li><font color="#cc00ff">The default value of</font> <font color="#cc00ff"><b><em>lb-enabled</em></b></font> <font color="#cc00ff">attribute for a newly created instance will be</font> <font color="#cc00ff"><b><em>true</em></b></font><font color="#cc00ff">. In</font> <font color="#cc00ff">GlassFish</font> <font color="#cc00ff">2.1.1, the default value was false.</font></li> 
+        <li><font color="#cc00ff">The default value of</font> <font color="#cc00ff"><b><em>lb-enabled</em></b></font> <font color="#cc00ff">attribute for a newly deployed application will be</font> <font color="#cc00ff"><b><em>true</em></b></font><font color="#cc00ff">. In</font> <font color="#cc00ff">GlassFish</font> <font color="#cc00ff">2.1.1, the default value was false.</font></li> 
+        <li><font color="#cc00ff">An additional parameter will be added to asadmin</font> <font color="#cc00ff"><b><em>create-instance</em></b></font> <font color="#cc00ff">command to enable user to set lb-enabled attribute to desired value.</font></li> 
+        <li><font color="#cc00ff">An additional parameter will be added to asadmin</font> <font color="#cc00ff"><b><em>deploy</em></b></font> <font color="#cc00ff">command to enable user to set lb-enabled attribute to desired value.</font>&nbsp;</li> 
+       </ol> </li> 
+     </ol> <p><font color="#009999">Additional changes for backward compatibility</font> <font color="#009999">are as follows :</font><br class="atl-forced-newline"></p> 
+     <ol> 
+      <li> 
+       <ol> 
+        <li><font color="#009999">Auto-apply feature will not be supported in GlassFish 3.1.</font> 
+         <ol> 
+          <li><font color="#009999">Asadmin command</font> <font color="#009999"><b><em>create-http-lb</em></b></font> <font color="#009999">will still accept</font> <font color="#009999"><b><em>autoapplyenabled</em></b></font> <font color="#009999">argument. It will ignore its value and print out a warning message.</font></li> 
+          <li><font color="#009999">During upgrade</font> <font color="#009999"><b><em>autoapplyenabled</em></b></font> <font color="#009999">attribute will be removed from</font> <font color="#009999"><b><em>load-balancer</em></b></font> <font color="#009999">element. A warning message will be logged to indicate the same.</font><br class="atl-forced-newline"></li> 
+         </ol> </li> 
+        <li><font color="#009999">Properties upgraded to attributes for</font> <font color="#009999"><b><em>load-balancer</em></b></font> <font color="#009999">element</font> 
+         <ol> 
+          <li><font color="#009999">Properties</font> <font color="#009999"><b><em>device-host</em></b></font> <font color="#009999">and</font> <font color="#009999"><b><em>device-port</em></b></font> <font color="#009999">has been upgraded to attributes. Ugrade tool must take care of these changes.</font></li> 
+         </ol> </li> 
+        <li><font color="#009999">Controlling</font> <font color="#009999"><b><em>lb-enabled</em></b></font> <font color="#009999">default values</font></li> 
+        <li><font color="#009999">Since</font> <font color="#009999"><b><em>lb-enabled</em></b></font> <font color="#009999">attribute default value for instance and application have been changed from</font> <font color="#009999"><b><em>false</em></b></font> <font color="#009999">to</font> <font color="#009999"><b><em>true</em></b></font><font color="#009999">, user is provided with an additional option to control the default value using system property. The system property that will be used for this purpose is</font> <font color="#009999"><b><em>org.glassfish.lb-enabled-default</em></b></font><font color="#009999">. This property need to be defined in DAS. If defined, provided value will be used as default value for</font> <font color="#009999"><b><em>lb-enabled</em></b></font> <font color="#009999">attribute. If not defined, default value of</font> <font color="#009999"><b><em>true</em></b></font> <font color="#009999">will be used.</font></li> 
+        <li><font color="#009999">A detour to above behavior is that if all instances in a cluster has</font> <font color="#009999"><b><em>lb-enabled</em></b></font> <font color="#009999">attribute set to</font> <font color="#009999"><b><em>false</em></b></font><font color="#009999">, then a newly created instance will have</font> <font color="#009999"><b><em>lb-enabled</em></b></font> <font color="#009999">attribute set to</font> <font color="#009999"><b><em>false</em></b></font> <font color="#009999">as well.</font>&nbsp;</li> 
+       </ol> </li> 
+     </ol> <h4><a name="GlassFish3.1LoadBalancerPluginOnePager-4.1.2.Installerforloadbalancerplugin"></a><b>4.1.2. Installer for load-balancer plugin</b></h4> <p>The load-balancer plugin need to be installed on web-server and then web-server need to be configured. If configured correctly, web-server will use the plugin to handle the requests. The installation and configuration is a tedious task and error prone if done manually. To ease out this process, a tool will be provided to enable users to install and configure the loadbalancer plugin on the web server. <br class="atl-forced-newline"> In GlassFish 2.1.1., a tool called GlassFish LoadBalancer Configurator was developed to provide above mentioned capability. The same tool will be leveraged for GlassFish 3.1 as well. It is a IzPack based installer and requires JAVA to execute. It accepts user inputs and perform installation and configuration tasks based on that. The tool performs&nbsp; installation and configuration in a two step process :&nbsp;</p> 
+     <ol> 
+      <li>In first step, loadbalancer plugin is exploded and installed</li> 
+      <li>In second step, web server is configured to use loadbalancer plugin</li> 
+     </ol> <p>The tool also provides Post Installation steps, if any. User can also generate a automation script which can be used for silent install at a later point of time. It also provides an uninstall script, which can be used to remove the load-balancer configuration and plugin from the web server.</p> <p><br class="atl-forced-newline"> <font color="#cc00ff">The tool will also provide support for upgrade. User will be able to perform upgrade from GlassFish 2.x to GlassFish 3.1 using this tool. It will detect that load-balancer configuration already exists in web-server, and will only update the load-balancer plugin binary. In future, it can also be used to distribute new load-balancer plugin binaries having bug fixes or new features.</font></p> <h4><a name="GlassFish3.1LoadBalancerPluginOnePager-4.1.3.Preferredfailoverinstance%5C%5C"></a><b>4.1.3. Preferred fail-over instance</b><br class="atl-forced-newline"></h4> <p>Load-balancer detects instance failure and fails over requests being serviced by that instance to another healthy instance thus providing high availability. This newly selected instance is called fail-over instance. In current implementation of load-balancer plugin, the selection of fail-over instance is done using round-robin algorithm.&nbsp; Since round-robin algorithm is in general stateless, there is no preferred fail-over instance. <br class="atl-forced-newline"> <br class="atl-forced-newline"> The session replication framework in GlassFish replicates session to a partner to provide high availability of session. The partner is know as replica. In case of instance failure, the session can be restored on any instance from replica. <font color="blue">When request is failed over to another instance, it needs to figure out the replica to load the session. Session replication now uses consistent hash algorithm to identify the replica. In case identified replica does not hold the session, it resorts to the broadcast mechanism to identify the replica.</font> This will happen for all sessions being handled by failed instance resulting in lot of network traffic and loss of throughput. However if load-balancer plugin take intelligent decision, based on some information available in request, it can directly route request to replica instance.&nbsp; The replica instance can directly load session from its local cache without a need for broadcast mechanism. This will provide better performance and throughput even in case of instance failure. <br class="atl-forced-newline"> <br class="atl-forced-newline"> <font color="blue"><b><ins>Option 1 : A contract between session replication framework and load-balancer to identify the replica for a session</ins></b></font><br class="atl-forced-newline"> The information of replica must be available in incoming request to enable load-balancer plugin to select that instance for handling session fail-over. This information can be present either as cookie or parameter in request-uri. The load-balancer plugin depends on web-container to stamp session stickiness information on response, so that it is available in subsequent requests. Now it will further depend on web-container to stamp replica information on response as well. <br class="atl-forced-newline"> <br class="atl-forced-newline"> One important point to note here is that information of instance currently handling session is not stamped in clear text. Load-balancer plugin actually generates unique identification for each instance and use that value instead of instance name in clear text. Thus it will expect replica instance information being stamped to be its unique identification. It must be same as one generated by load-balancer plugin for that instance. Due to this constraint, there are two approaches to implement this feature. <br class="atl-forced-newline"> <br class="atl-forced-newline"> <b>Approach 1 -</b> <b>Load-balancer plugin selects replica partner</b> : When load-balancer gets a new request(request not belonging to any session), it will select an instance to service the request. It will also select another instance using same round-robin algorithm to act as replica partner.&nbsp; The replica instance name, both in clear text and its unique identification, will be added as proxy headers on request. The request will then be forwarded to GlassFish instance. The session replication framework can extract replica instance name from proxy headers and use it as replica partner. Also web-container can extract unique identification for replica instance from proxy header, and stamp that information either as cookie or parameter on uri(url-rewriting).&nbsp; Upon instance failure, load-balancer will select instance corresponding to replica instance information available in request to act as a fail-over instance.. It will also select a new replica partner and add it as proxy headers on request. In this approach, a replica partner will be selected for all new requests, even those which does not create any session. <br class="atl-forced-newline"> <br class="atl-forced-newline"> <b>Approach 2</b>&nbsp; - <b>Session replication framework selects replica partner</b> : The load-balancer plugin will not modify a new request in any manner. In case session is created by the new request, the session replication framework will select an instance to act as replica. The information is made available to web-container.&nbsp; The web-container then generates a unique identification for that instance using the mechanism used by load-balancer plugin. This will require that logic to generate instance identification is duplicated in web-container as well. Also it need to be ensured that both implementations remain same even in future. Upon instance failure, load-balancer will select instance corresponding to replica instance information available in request to act as a fail-over instance. <font color="#000099">It will perform a check whether identified replica instance is with-in cluster boundary. This will guard against</font> <font color="#000099">malicious</font> <font color="#000099">requests trying to move session to another cluster, which will result in loss of session.</font> The session replication framework will select a new replica partner. <br class="atl-forced-newline"> <br class="atl-forced-newline"> <font color="blue"><b><ins>Option 2 : Using consistent hash algorithm in both session replication framework and load-balancer</ins></b></font><br class="atl-forced-newline"> <font color="blue">Using a consistent hash algorithm across load-balancer and session replication framework is another option to handle this scenario. There will be no contract between load-balancer and session replication framework and they can work independent of each other. However both of them need to use identical implementation of</font> <font color="blue">consistent hash</font> <font color="blue">algorithm.</font><br class="atl-forced-newline"> <br class="atl-forced-newline"> <font color="blue">This approach was used in SailFin and can be used here as well. The load-balancer uses consistent hash algorithm to distribute incoming traffic. The consistent hash algorithm is stateless in nature and thus yield same result for a given key. This implies for a given key, it will select same instance on load-balancer as well as session replication framework. The session replication</font> <font color="blue">framework</font> <font color="blue">will use same algorithm to select a replica partner.</font><br class="atl-forced-newline"> <br class="atl-forced-newline"> <font color="blue">Main drawback of this approach is that distribution will not be as fair as round robin mechanism. However in SailFin, it provided close to round robin distribution.</font><br class="atl-forced-newline"></p> <h4><a name="GlassFish3.1LoadBalancerPluginOnePager-4.1.4Supportedplatforms"></a><b>4.1.4 Supported platforms</b></h4> <p><br class="atl-forced-newline"> Supported platforms by load-balancer plugin will be subset of platforms supported by GlassFish 3.1. It will continue to support platforms already supported in GlassFish 2.1.1. As of now there is plan to support any new platform. Below is the list of supported platforms.</p> 
+     <ul> 
+      <li>Solaris 9/10</li> 
+      <li>RHEL 3/4/5</li> 
+      <li>Windows 2003 Advanced Server Edition</li> 
+     </ul> <h4><a name="GlassFish3.1LoadBalancerPluginOnePager-4.1.5Supportedwebservers"></a><b>4.1.5 Supported web-servers</b></h4> <p><br class="atl-forced-newline"> It will continue to support web servers which were supported by load-balancer plugin in GlassFish 2.1.1. Below is the list of supported web servers :</p> 
+     <ul> 
+      <li>Sun Java System Web Server 6.1SPx/7.x</li> 
+      <li>Apache HTTP server 2.0.x/2.2.x</li> 
+      <li>Internet Information Services(IIS) 5.0/6.0</li> 
+     </ul> <h4><a name="GlassFish3.1LoadBalancerPluginOnePager-4.2.Bug%2FRFENumber%28s%29"></a><b>4.2. Bug/RFE Number(s)</b></h3> <p>N.A. <br class="atl-forced-newline"></p> <h4><a name="GlassFish3.1LoadBalancerPluginOnePager-4.3.InScope"></a><b>4.3. In Scope</b></h3> <p>All features described in this one pager are with-in scope of this document. <br class="atl-forced-newline"></p> <h4><a name="GlassFish3.1LoadBalancerPluginOnePager-4.4.OutofScope"></a><b>4.4. Out of Scope</b></h3> <p>N.A. <br class="atl-forced-newline"></p> <h4><a name="GlassFish3.1LoadBalancerPluginOnePager-4.5.Interfaces."></a><b>4.5. Interfaces</b>.</h3> <h4><a name="GlassFish3.1LoadBalancerPluginOnePager-4.5.1PublicInterfaces"></a>4.5.1 Public Interfaces</h4> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Interface </th> 
+         <th class="confluenceTh"> Comments </th> 
+         <th class="confluenceTh"> <br class="atl-forced-newline"> </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> asadmin commands </td> 
+         <td class="confluenceTd"> Newly added asadmin commands to create load-balancer view in domain.xml and also to generate load-balancer xml <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> load-balancer xml <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Load-balancer xml to be consumed by load-balancer plugin <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> sun-loadbalancer_1_2.dtd <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> DTD for load-balancer xml </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFish3.1LoadBalancerPluginOnePager-4.5.2Privateinterfaces"></a><b>4.5.2 Private interfaces</b></h4> <p>None <br class="atl-forced-newline"></p> <h4><a name="GlassFish3.1LoadBalancerPluginOnePager-4.5.3Deprecated%2FRemovedInterfaces"></a><b>4.5.3 Deprecated/Removed Interfaces</b></h4> <p>None <br class="atl-forced-newline"></p> <h4><a name="GlassFish3.1LoadBalancerPluginOnePager-4.6.DocImpact"></a><b>4.6. Doc Impact</b></h3> <p>Load-balancer documentation will be part of high availability guide. Documentation existing from GlassFish 2.1.1 can be reused. It will require man pages for admin commands(CLI as well as GUI). Need additional documentation for preferred fail-over instance feature. <br class="atl-forced-newline"></p> <h4><a name="GlassFish3.1LoadBalancerPluginOnePager-4.7.Admin%2FConfigImpact"></a><b>4.7. Admin/Config Impact</b></h3> <p>A set of new commands are being added to GlassFish 3.1 for creating http load-balancer element in domain.xml and then to generate load-balancer xml based on that. These commands will be available in both CLI and GUI. <br class="atl-forced-newline"></p> <h4><a name="GlassFish3.1LoadBalancerPluginOnePager-4.8.HAImpact"></a><b>4.8. HA Impact</b></h3> <p>Load-balancer is a core feature of high-availability. <br class="atl-forced-newline"></p> <h4><a name="GlassFish3.1LoadBalancerPluginOnePager-4.9.I18N%2FL10NImpact"></a><b>4.9. I18N/L10N Impact</b></h3> <p>The i18n/l10n impact consists of making sure that the output from the new sub commands follows the patterns that are already established for administrative commands. <br class="atl-forced-newline"></p> <h4><a name="GlassFish3.1LoadBalancerPluginOnePager-4.10.Packaging%2CDelivery%26Upgrade"></a><b>4.10. Packaging, Delivery &amp; Upgrade</b></h3> <h4><a name="GlassFish3.1LoadBalancerPluginOnePager-4.10.1Packaging"></a><b>4.10.1 Packaging</b></h4> <p>Load-balancer plugin will be packaged a jar file generated using IzPack. <br class="atl-forced-newline"></p> <h4><a name="GlassFish3.1LoadBalancerPluginOnePager-4.10.2Delivery"></a><b>4.10.2 Delivery</b></h4> <p>IzPack based bundle will be delivered as an add-on feature. <br class="atl-forced-newline"></p> <h4><a name="GlassFish3.1LoadBalancerPluginOnePager-4.10.3UpgradeandMigration"></a><b>4.10.3 Upgrade and Migration</b></h4> <p>Since load-balancer is a standalone component outside GlassFish, there is no upgrade or migration requirement for it. <br class="atl-forced-newline"></p> <h4><a name="GlassFish3.1LoadBalancerPluginOnePager-4.11.SecurityImpact"></a><b>4.11. Security Impact</b></h3> <p>Load-balancer plugin is installed on web-server and thus utilizes security framework of web-server without impacting it adversely. <br class="atl-forced-newline"></p> <h4><a name="GlassFish3.1LoadBalancerPluginOnePager-4.12.CompatibilityImpact"></a><b>4.12. Compatibility Impact</b></h3> <p>This feature is compatible with older version of GlassFish. All features except newly introduced feature of preferred fail-over instance will continue to work. <br class="atl-forced-newline"></p> <h4><a name="GlassFish3.1LoadBalancerPluginOnePager-4.13.Dependencies"></a><b>4.13. Dependencies</b></h3> <h4><a name="GlassFish3.1LoadBalancerPluginOnePager-4.13.1InternalDependencies%5C"></a><b>4.13.1 Internal Dependencies</b> |</h4> 
+     <ol> 
+      <li>The GlassFish 3.1 administration framework will be used to write all admin commands.</li> 
+      <li>Dependency on web-container to parse proxy headers and populate request object appropriately.</li> 
+      <li>Also web-container is responsible for stamping sticky information to maintain session stickiness. This need to be enhanced to stamp replica information as well.</li> 
+      <li>For preferred fail-over instance feature to work correctly, there is a need to maintain contract between load-balancer plugin and replication framework.</li> 
+     </ol> <h4><a name="GlassFish3.1LoadBalancerPluginOnePager-4.13.2ExternalDependencies"></a><b>4.13.2 External Dependencies</b></h4> <p>GlassFish LoadBalancer Configurator is a IzPack based installer and configurator. Thus it has dependency on IzPack. <br class="atl-forced-newline"></p> <h4><a name="GlassFish3.1LoadBalancerPluginOnePager-4.14.TestingImpact"></a><b>4.14. Testing Impact</b></h3> <p>The feature need to be tested in fashion similar to GlassFish 2.1.1. All functional test cases from GlassFish 2.1.1 need to be executed. <br class="atl-forced-newline"> The GlassFish Loadbalancer Configurator provided to install and configure load-balancer plugin need to be exhaustively tested. <br class="atl-forced-newline"> The preferred fail-over instance feature introduced in GlassFish 3.1 will require writing and execution of new set of test cases.</p> <h4><a name="GlassFish3.1LoadBalancerPluginOnePager-5.ReferenceDocuments"></a>5. Reference Documents</h2> <p>1. <a href="http://docs.sun.com/app/docs/doc/821-0182/gchvt?a=view">GlassFish 2.1.1 documentation on load-balancer plugin</a><br class="atl-forced-newline"> 2. <a href="http://docs.sun.com/app/docs/doc/821-0182/abdgs?a=view">GlassFish 2.1.1 documentation on load-balancer administration</a><br class="atl-forced-newline"> 3. <a href="http://docs.sun.com/app/docs/doc/821-0179/6nl8hchmr?l=en&amp;a=expand">GlassFish 2.1.1 documentation on load-balancer admin commands</a><br class="atl-forced-newline"> 4. <a href="https://www.sun.com/offers/details/GlassFish_Load_Balancer.xml">White paper on GlassFish load-balancer</a><br class="atl-forced-newline"> 5. <a href="http://blogs.oracle.com/kshitiz/entry/one_stop_for_glassfish_load">Blog on GlassFish load-balancer plugin</a></p> <h4><a name="GlassFish3.1LoadBalancerPluginOnePager-6.Schedule"></a>6. Schedule</h2> <h4><a name="GlassFish3.1LoadBalancerPluginOnePager-6.1.ProjectedAvailability"></a><b>6.1. Projected Availability</b></h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> MS1 </td> 
+         <td class="confluenceTd"> N.A. </td> 
+         <td class="confluenceTd"> Load-balancer one pager describing features and implementation details </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> LBREC-001 </td> 
+         <td class="confluenceTd"> Admin command to create load-balancer elements in domain xml </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3 </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> LBREC-002 </td> 
+         <td class="confluenceTd"> Admin command to generate load-balancer xml </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4 </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd"> LBREC-004 </td> 
+         <td class="confluenceTd"> Preferred fail-over instance </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5 </td> 
+         <td class="confluenceTd"> MS5 </td> 
+         <td class="confluenceTd"> LBREC-003 </td> 
+         <td class="confluenceTd"> Installer support for Load-balancer plugin </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6 </td> 
+         <td class="confluenceTd"> ? </td> 
+         <td class="confluenceTd"> LBREC-005 </td> 
+         <td class="confluenceTd"> Pushing load-balancer xml over the wire to web-server </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> This feature will be implemented if time permits. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Nov 11, 2011 by 
+<font color="#0050B2">kshitiz_s</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

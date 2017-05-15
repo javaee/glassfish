@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : V3BuildToDoList</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="V3BuildToDoList-V3BuildSystemProject"></a>V3 Build System Project</h1> <p>GlassFish V3 build system is based on the principles outlined at <a href="HowDoesV3BuildWorks.html" title="HowDoesV3BuildWorks">HowDoesV3BuildWorks</a>. <span class="error">[Kohsuke]</span> created a slightly detailed <a href="http://wiki.glassfish.java.net/attach/V3BuildToDoList/GlassFish%20v3%20build.pdf">presentation</a> which is another good starting point. The implementation of the build system involves several infrastructure and engineering tasks. This wiki is used to track the status of build system.</p> 
+     <div> 
+      <ul> 
+       <li><a href="#V3BuildToDoList-V3BuildSystemProject">V3 Build System Project</a></li> 
+       <ul> 
+        <li><a href="#V3BuildToDoList-Team">Team</a></li> 
+        <ul> 
+         <li><a href="#V3BuildToDoList-CoreImplementationTeam">Core Implementation Team</a></li> 
+         <li><a href="#V3BuildToDoList-AdvisorsandOversight">Advisors and Oversight</a></li> 
+        </ul> 
+        <li><a href="#V3BuildToDoList-TaskList">Task List</a></li> 
+        <ul> 
+         <li><a href="#V3BuildToDoList-InProcessTasks">In-Process Tasks</a></li> 
+         <li><a href="#V3BuildToDoList-CompletedTasks">Completed Tasks</a></li> 
+        </ul> 
+        <li><a href="#V3BuildToDoList-OpenItems">Open Items</a></li> 
+        <li><a href="#V3BuildToDoList-MeetingMinutes">Meeting Minutes</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="V3BuildToDoList-Team"></a>Team</h2> <h4><a name="V3BuildToDoList-CoreImplementationTeam"></a>Core Implementation Team</h3> 
+     <ul> 
+      <li><span class="error">[dpatil]</span></li> 
+      <li><span class="error">[anilam]</span></li> 
+      <li><span class="error">[psterk]</span></li> 
+      <li><span class="error">[tcfujii]</span></li> 
+     </ul> <h4><a name="V3BuildToDoList-AdvisorsandOversight"></a>Advisors and Oversight</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <td class="confluenceTd"> <span class="error">[kcavanaugh ]</span> </td> 
+         <td class="confluenceTd">SCM Expert </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <span class="error">[kohsuke ]</span> </td> 
+         <td class="confluenceTd">Maven and Build System Expert </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <span class="error">[dochez ]</span> </td> 
+         <td class="confluenceTd">Oversight </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="V3BuildToDoList-TaskList"></a>Task List</h2> <h4><a name="V3BuildToDoList-InProcessTasks"></a>In-Process Tasks</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task Description </th> 
+         <th class="confluenceTh"> Owner </th> 
+         <th class="confluenceTh"> Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Create List of Modules </td> 
+         <td class="confluenceTd"> dochez </td> 
+         <td class="confluenceTd"> WIP </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Create Continuous build infrastructure (hudson). Note: may not be available outside Sun </td> 
+         <td class="confluenceTd"> tcfujii </td> 
+         <td class="confluenceTd"> WIP </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Support the automated creation of the <a href="http:--download.java.net-maven-glassfish-com-sun-enterprise-glassfish-pe-base-10.0-SNAPSHOT-pe-base-10.0-SNAPSHOT.zip">pe-base-10.0-SNAPSHORT.zip </a> file: call maven from ant to download artifacts </td> 
+         <td class="confluenceTd"> psterk </td> 
+         <td class="confluenceTd"> WIP: see <a href="./V3BuildEnv.html">v3 Build Environement Page </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Support the automated creation of the <a href="http:--download.java.net-maven-glassfish-com-sun-enterprise-glassfish-pe-base-10.0-SNAPSHOT-pe-base-10.0-SNAPSHOT.zip">pe-base-10.0-SNAPSHORT.zip </a> file: write reusable ant build.xml files to create pe-base, ee-base, nucleus-base, tomcat and other builds </td> 
+         <td class="confluenceTd"> psterk </td> 
+         <td class="confluenceTd"> WIP: see <a href="V3BuildEnv.html" title="V3BuildEnv">v3 Build Environement Page </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Send the steps to build V3 to Terena, and installer to publish on java.net </td> 
+         <td class="confluenceTd"> Dinesh </td> 
+         <td class="confluenceTd">WIP </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Check with J2SE group for tools, versions available in /dev/javatools </td> 
+         <td class="confluenceTd"> Abhijit </td> 
+         <td class="confluenceTd">WIP </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Talk to Deepa for any progress/update on quicklook / tests ready for V3 to verify. </td> 
+         <td class="confluenceTd"> psterk </td> 
+         <td class="confluenceTd">WIP </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Reorganize glassfish files to conform to the <a href="http:--maven.apache.org-guides-introduction-introduction-to-the-standard-directory-layout.html">Maven Standard Directory Layout </a> </td> 
+         <td class="confluenceTd"> psterk </td> 
+         <td class="confluenceTd">Not started </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="V3BuildToDoList-CompletedTasks"></a>Completed Tasks</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task Description </th> 
+         <th class="confluenceTh"> Owner </th> 
+         <th class="confluenceTh"> Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Create build framework </td> 
+         <td class="confluenceTd"> kohsuke </td> 
+         <td class="confluenceTd"> Decision to use maven 2 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Dry run on using Mercurial: convert repo using convert-repo script </td> 
+         <td class="confluenceTd"> psterk </td> 
+         <td class="confluenceTd"> Lost some file history. Consider use of tailor with new cvs repo instead. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Obtain glassfish RCS ,v files </td> 
+         <td class="confluenceTd"> psterk </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="V3BuildToDoList-OpenItems"></a>Open Items</h2> <p>Most of the following items should convert to one or more tasks on the task list above.</p> 
+     <ol> 
+      <li>Which SCM tool is appropriate for GlassFish?<br> Use svn for now. Migrate to hg in CY 2008</li> 
+      <li>What is the correct frequency of builds for a module?</li> 
+      <li>Who is the decision maker on when to integrate into GlassFish?</li> 
+      <li>What is the required information for a module's maven POM file?</li> 
+      <li>How to make hudson reports available to GlassFish community?</li> 
+      <li>Is there a common test framework that all modules can use?</li> 
+      <li>How to deal with the merge of GFV3_PREWORK_BRANCH and SJSAS91_FCS_BRANCH?</li> 
+      <li>How do we communicate the changes to GlassFish developer community? Who creates training/tutorials on the new process?</li> 
+      <li>Project Planning – How do we know that we are done (in other words, what are the success metrics)? Are there phases?</li> 
+      <li>svn -&gt; hg conversion plan for different modules.<br> Work has started on the project plan. Goal is to finish by CY 2007</li> 
+      <li>How do we build native (C/C++) code?</li> 
+     </ol> <h4><a name="V3BuildToDoList-MeetingMinutes"></a>Meeting Minutes</h2> 
+     <ul> 
+      <li><a href="V3BuildMeetingMinutes20071205.html" title="V3BuildMeetingMinutes20071205">20071205</a></li> 
+      <li><a href="V3BuildMeetingMinutes20071129.html" title="V3BuildMeetingMinutes20071129">20071129</a></li> 
+      <li><a href="V3BuildMeetingMinutes20071024.html" title="V3BuildMeetingMinutes20071024">20071024</a></li> 
+      <li><a href="V3BuildMeetingMinutes20071017.html" title="V3BuildMeetingMinutes20071017">20071017</a></li> 
+      <li><a href="V3MeetingMinutes20070919.html" title="V3MeetingMinutes20070919">20070919</a></li> 
+      <li><a href="V3MeetingMinutes20070914.html" title="V3MeetingMinutes20070914">20070914</a></li> 
+     </ul> 
+     <hr> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20873658/21364746.pdf">GlassFish v3 build.pdf</a> (application/pdf) 
+      <br> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 09, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : M2GLimitations</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="M2GLimitations-Limitations"></a>Limitations</h1> <p>The following sections describe limitations of the Migration Tool:</p> 
+     <ul> 
+      <li>Custom JSP Tags Implementation</li> 
+      <li>Proprietary API Implementation</li> 
+      <li>Build Scripts Generation</li> 
+      <li>Application Server Differences</li> 
+      <li>Other Migration Limitations</li> 
+      <li>OS/Platform Issues</li> 
+     </ul> <h4><a name="M2GLimitations-CustomJSPTagsImplementation"></a>Custom JSP Tags Implementation</h2> <p>The limitations of proprietary custom JSP tags supported in this version are as follows:</p> <h4><a name="M2GLimitations-CustomJSPTagsforWAS4.0"></a>Custom JSP Tags for WAS 4.0</h3> <p>The <tt>&lt;tsx:getProperty&gt;</tt> tag is not supported for bean operations.</p> <h4><a name="M2GLimitations-CustomJSPTagsforWLS5.1"></a>Custom JSP Tags for WLS 5.1</h3> <p>The <tt>&lt;wl:cache&gt;</tt> tag is recognized by the Application Server but is considered a no-op. The caching functionality provided by this tag in WLS 5.1 is not supported. It is implemented as a no-op to prevent the JSP that uses this tag from failing after migration.</p> <h4><a name="M2GLimitations-CustomJSPTagsforWLS6.x"></a>Custom JSP Tags for WLS 6.x</h3> <p>The <tt>&lt;wl:prefetch&gt;</tt> and <tt>&lt;wl:beanparam&gt;</tt> tags are not supported. The implementation of the <tt>&lt;wl:cache&gt;</tt> tag does not support "cluster" scope and administration of the cache.</p> <h4><a name="M2GLimitations-ProprietaryAPIImplementation"></a>Proprietary API Implementation</h2> <h4><a name="M2GLimitations-UnsupportedProprietaryAPIsforWAS4.0"></a>Unsupported Proprietary APIs for WAS 4.0</h3> <p>Besides a partial implementation of the <tt>com.ibm.websphere.servlet.cache</tt> package (see the <a href="M2GCapabilties.html" title="M2GCapabilties">Capabilities of the tool</a> section), the Migration Tool does not support any package starting with <tt>com.ibm</tt> except those listed in the Proprietary API Implementation section.</p> <h4><a name="M2GLimitations-UnsupportedProprietaryAPIsforWLS5.1"></a>Unsupported Proprietary APIs for WLS 5.1</h3> <p>Besides a partial implementation of the <tt>weblogic.common</tt> T3 services (see the <a href="M2GCapabilties.html" title="M2GCapabilties">Capabilities of the tool</a> section), the Migration Tool does not support the following WLS 5.1 packages:</p> 
+     <ul> 
+      <li>All packages starting with <tt>bea.jolt.</tt> except those listed in the Table&nbsp;6-9 section.</li> 
+      <li>All packages starting with <tt>weblogic.</tt> except those listed in the Table&nbsp;6-9 section.</li> 
+     </ul> <h4><a name="M2GLimitations-UnsupportedProprietaryAPIsforWLS6.0%2F6.1"></a>Unsupported Proprietary APIs for WLS 6.0/6.1</h3> <p>Besides a partial implementation of the <tt>weblogic.common</tt> T3 services (see the <a href="M2GCapabilties.html" title="M2GCapabilties">Capabilities of the tool</a> section), the Migration Tool does not support the following WLS 6.0/6.1 packages:</p> 
+     <ul> 
+      <li>All packages starting with <tt>bea.jolt.</tt> except those listed in the Table&nbsp;6-10 section.</li> 
+      <li>All packages starting with <tt>weblogic.</tt> except those listed in the Table&nbsp;6-10 section.</li> 
+     </ul> <h4><a name="M2GLimitations-UnsupportedProprietaryAPIsforSunONEApplicationServer6.5"></a>Unsupported Proprietary APIs for Sun ONE Application Server 6.5</h3> <p>Sun ONE Application Server 6.5 proprietary APIs are not supported.</p> <h4><a name="M2GLimitations-BuildScriptsGeneration"></a>Build Scripts Generation</h2> <p>The following limitations apply to the generation of the build scripts:</p> 
+     <ul> 
+      <li>The build scripts generated by the migration tool are not valid if there is more that one <tt>application.xml</tt> file given in the input. The generated <tt>build_ear.xml</tt> file(s) are invalid.</li> 
+      <li>The build scripts generated by the Migration Tool have a dependency on the directory structure in the output directory. After migration, if you change the name of any directory or move the output directory to another directory, the scripts will not work.</li> 
+     </ul> <p> If you want to transfer the code to a different machine before running the build, you have to maintain the same directory structure on that machine as well.<br> As mentioned in the the <a href="M2GCapabilties.html" title="M2GCapabilties">Capabilities of the tool</a> section, for the generated build scripts to work properly, the scripts assume the input to the migration tool is in the form of a directory structure that conforms to the JAR file and WAR file structure as required by the Java EE specification. If this is not the case, the build scripts might not execute properly.<br> To enable the Migration Tool to create a <tt>build_jar</tt> build script, which, when executed, creates a JAR file containing the enterprise beans, the input to the Migration Tool should adhere to the following structure:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;_app-dir_&gt;/META-INF/*.xml or &lt;_app-dir_&gt;/*.xml
+&lt;_app-dir_&gt;/sample/app/*.java</pre> 
+       </div> 
+      </div>
+     </div> <p> To enable the Migration Tool to create a <tt>build_war</tt> script, which, when executed, creates a WAR file containing the Web application, the input to the tool should adhere to the following structure:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;_app-dir_&gt;/WEB-INF/*.xml or &lt;_app-dir_&gt;/*.xml
+&lt;_app-dir_&gt;/sample/app/*.java 
+&lt;_app-dir_&gt;/docroot/[_helper files such as HTML and JSP_]</pre> 
+       </div> 
+      </div>
+     </div> <p>To enable the Migration Tool to create a <tt>build_ear</tt> script, which, when executed, creates an EAR file containing the enterprise beans and the Web application, the input to the migration tool should adhere to the following structure:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;_app-dir_&gt;/META-INF/*.xml or &lt;_app-dir_&gt;/*.xml
+&lt;_app-dir_&gt;/[_directory structure for creating JAR_] 
+&lt;_app-dir_&gt;/[_directory structure for creating WAR_]</pre> 
+       </div> 
+      </div>
+     </div> <p>In the case of an EAR file, the directory structure just noted is ideal. An input directory structured as follows is also acceptable for the build scripts to be generated and executed with no trouble:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;_app-dir_&gt;/META-INF/application.xml, ejb-jar.xml, *.xml 
+&lt;_app-dir_&gt;/WEB-INF/web.xml
+&lt;_app-dir_&gt;/sample/app/*.java
+&lt;_app-dir_&gt;/docroot/[_helper files such as HTML and JSP_]</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>The Application Server classloader does not allow the same class to be present in both the JAR files and WAR files by default. The build scripts take care of this only to a certain extent. If the class file of a JAR file depends on a file that is inside the directory of a WAR file (the directory in which the <tt>web.xml</tt> file is present), this file is packaged inside both the JAR file and the WAR file. To avoid this conflict, the file should be placed inside the directory of the JAR file and removed from the WAR file directory. The other option is to delete from inside the compile task of the <tt>build_war.xml</tt> file the reference to the file that is passed as an argument to the Java compiler, <tt>javac</tt>.</li> 
+     </ul> <h4><a name="M2GLimitations-ApplicationServerDifferences"></a>Application Server Differences</h2> <p>This section lists the known differences in the Java EE implementation between the source and target application servers. </p> 
+     <ul> 
+      <li>Implementation difference of <tt>&lt;ejb-ref&gt;</tt> between WebLogic 6.x and the Application Server</li> 
+     </ul> <p> The session or entity bean description inside the <tt>ejb-jar.xml</tt> file can contain an optional <tt>&lt;ejb-ref&gt;</tt> entry. This <tt>ejb-ref</tt> tag, in turn, might contain an optional <tt>&lt;ejb-link&gt;</tt> tag. WebLogic 6.x gives preference to the <tt>&lt;ejb-link&gt;</tt> tag over the mandatory <tt>&lt;ejb-ref-name&gt;</tt> entry of the <tt>ejb-ref</tt> tag. This becomes an issue when the <tt>ejb-ref-name</tt> entries inside the <tt>weblogic-ejb-jar.xml</tt> and <tt>ejb-jar.xml</tt> files do not match for a particular bean.<br> To elaborate, the presence of an <tt>ejb-link</tt> tag inside the <tt>ejb-jar.xml</tt> file makes the <tt>ejb-ref-name</tt> entry inside the <tt>weblogic-ejb-jar.xml</tt> file irrelevant for WebLogic 6.x. The Migration Tool generates the <tt>sun-ejb-jar.xml</tt> file from the <tt>weblogic-ejb-jar.xml</tt> file. Using the generated <tt>sun-ejb-jar.xml</tt> file leads to the inability to deploy the module on the Application Server.<br> The example that follows shows a case where the <tt>ejb-ref-name</tt> entries do not match on WebLogic 6.x. Incidentally, these are valid DD contents for WebLogic 6.x. <br> The contents of the <tt>ejb-jar.xml</tt> file are as follows:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;session&gt;
+      &lt;description&gt;This is the Cart ejb &amp;lt;/description&gt;
+      &lt;display-name&gt;The Cart &lt;/display-name&gt;
+      &lt;ejb-name&gt;TheCart&lt;/ejb-name&gt;
+      &lt;home&gt;com.sun.j2ee.blueprints.shoppingcart.cart.ejb.ShoppingCartHome&lt;/home&gt;
+      &lt;remote&gt;com.sun.j2ee.blueprints.shoppingcart.cart.ejb.ShoppingCart&lt;/remote&gt;
+      &lt;ejb-class&gt;com.sun.j2ee.blueprints.shoppingcart.cart.ejb.ShoppingCartEJB
+      &lt;/ejb-class&gt;
+      &lt;session-type&gt;Stateful&lt;/session-type&gt;
+      &lt;transaction-type&gt;Container&lt;/transaction-type&gt;
+      &lt;ejb-ref&gt;
+        &lt;ejb-ref-name&gt;ejb/catalog/Catalog&lt;/ejb-ref-name&gt;
+        &lt;ejb-ref-type&gt;Session&lt;/ejb-ref-type&gt;
+        &lt;home&gt;com.sun.j2ee.blueprints.shoppingcart.catalog.ejb.CatalogHome&lt;/home&gt;
+        &lt;remote&gt;com.sun.j2ee.blueprints.shoppingcart.catalog.ejb.Catalog&lt;/remote&gt;
+        &lt;ejb-link&gt;TheCatalog&lt;/ejb-link&gt;
+      &lt;/ejb-ref&gt;
+&lt;/session&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p> The contents of the <tt>weblogic-ejb-jar.xml</tt> file are as follows. Note the differences shown in bol;dface.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;weblogic-enterprise-bean&gt;
+                &lt;ejb-name&gt;TheCart&lt;/ejb-name&gt;
+                &lt;stateful-session-descriptor/&gt;
+                &lt;reference-descriptor&gt;
+                        &lt;ejb-reference-description&gt;
+                                &lt;ejb-ref-name&gt;ejb/catalog&lt;/ejb-ref-name&gt;
+                                &lt;jndi-name&gt;estore/catalog&lt;/jndi-name&gt;
+                        &lt;/ejb-reference-description&gt;
+                 &lt;/reference-descriptor&gt;
+                 &lt;jndi-name&gt;estore/cart&lt;/jndi-name&gt;
+&lt;/weblogic-enterprise-bean&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p> The workaround for this limitation is to modify either the source-side DDs or the generated <tt>sun-ejb-jar.xml</tt> file to correct this problem.</p> 
+     <ul> 
+      <li>Migrating applications using Container-Managed Relationships (CMR) from the Java EE Reference Implementation to the Application Server</li> 
+     </ul> <p> In the Java EE RI, all CMRs are maintained using the LINK table approach. However, in the Application Server, the LINK table should be used only for many-to-many relationships. For all other cases, a foreign key approach is mandated for maintaining the relationship.<br> If the source-side application contains a one-to-many relationship and uses the LINK table approach, the Migration Tool migrates the application keeping the LINK table approach intact. As a result, the migrated application does not function as expected on the Application Server. <br> To get past this limitation, before you migrate the application, manually change the LINK table approach to the foreign key approach. These changes must be reflected in the database schema for the application.</p> 
+     <ul> 
+      <li>Response buffer size variance in migrating Servlets and JSPs</li> 
+     </ul> <p> In a Servlet/JSP, the header information should not be set after the response body has been committed to the output stream. This also holds true for cookie/session management, as these also are part of the header information. If the cookie/session object is manipulated/updated after some HTML has been committed to the outputstream, this updated information may be lost and the desired effect may not be seen. Much of this depends upon the default buffer size of the <tt>response</tt> object in the Application Server. For example, consider the code snippet, which was taken from a Servlet, below. Pay attention to the comments in bold<br> The original code is as follows.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">public void service(HttpServletRequest req, HttpServletResponse res)  
+throws IOException  
+{
+    boolean cookieFound = false;
+    Cookie thisCookie = null;
+
+    res.setContentType("text/html");
+    PrintWriter out = res.getWriter();
+
+    Cookie[] cookies = req.getCookies();          //Get Cookie information
+    for(int i=0; i &lt; cookies.length; i++) {
+      thisCookie = cookies[i];
+      if (thisCookie.getName().equals("CookieCount")) {
+        cookieFound = true;
+        break;
+      }
+    }
+    
+if (cookieFound == false) {
+      thisCookie = new Cookie("CookieCount", "1");
+      thisCookie.setMaxAge(60*1);
+      res.addCookie(thisCookie);
+}    
+
+out.println("&lt;html&gt;&lt;head&gt;\n" +              //Writing some html response
+      "&lt;title&gt;Cookie Counter&lt;/title&gt;\n" +
+      "&lt;/head&gt;\n" +
+      "&lt;body bgcolor=#ffffff&gt; &lt;font face=\"Comic Sans MS\" size+=4 color=red&gt;" +
+      "&lt;center&gt;&lt;h1&gt;Cookie Counter&lt;/h1&gt;&lt;/center&gt;");    
+pageCount++;    
+out.println("&lt;p&gt;&lt;img src=\"/images/cookie.jpg\" align=left&gt;");    
+out.println("&lt;font color=blue&gt;");    
+out.println("&lt;p&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;This page has been visited " + pageCount +
+       (pageCount==1?" time":" times") +
+       " before.\n");    
+if (cookieFound) {                          //Manipulating Cookie again!
+      int cookieCount = Integer.parseInt(thisCookie.getValue());
+      cookieCount++;
+      thisCookie.setValue(String.valueOf(cookieCount));
+                                                //Updating Cookie information after
+                                                //some response has been written to
+                                                //the response buffer! Bad move.
+      thisCookie.setMaxAge(10);
+          res.addCookie(thisCookie);
+
+      out.println("&lt;p&gt;You have visited this page " +
+                  thisCookie.getValue() +
+                  (cookieCount==1?" time":" times") +
+                  " within the past 10 seconds.\n");    
+    } else {
+      out.println("&lt;p&gt;Either you haven't visited this page recently, "+
+                  "or your browser doesn't like cookies!\n");
+    }
+    out.println("&lt;/body&gt;&lt;/html&gt;");  
+}</pre> 
+       </div> 
+      </div>
+     </div> <p> This code displays inconsistent behavior when it is run on different application servers. This is due to the following reasons:</p> 
+     <ul> 
+      <li>If the default Response Buffer Size of that particular application server is more than the size of the response written to the Buffer, the Cookie information updated after writing the response reflects in the working of the code. On WebLogic 5.1 and WebSphere Application Server 4.0, the default buffer size is 8 KB and 4 KB, respectively. Although the above code works on these application servers (the response size written to the buffer in this code before updating the Cookie object is less than 4 KB), the code is not effective in other cases when the size of the response written to the buffer is higher than the buffer size.</li> 
+      <li>If the default Response Buffer Size of that particular application server is less than the size of the response written to the Buffer, the Cookie information updated after writing the response is lost. This is because the response has already been committed to the client browser, and the headers cannot be set after that. The default buffer size on Sun ONE Application Server 6.5 is 0 KB, so this code does not work in a consistent fashion on that application server.</li> 
+     </ul> <p> To get past this limitation, modify the code of the Servlet/JSP to do all header manipulation and updating before writing to the buffer. This is a healthy practice and is advised in the Servlet/JSP specification. The modified code for the previous example follows. Note the modifications, which have been highlighted in boldface.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">public void service(HttpServletRequest req, HttpServletResponse res)  
+throws IOException  
+{
+    boolean cookieFound = false;
+    Cookie thisCookie = null;
+
+    res.setContentType("text/html");
+    PrintWriter out = res.getWriter();
+
+    Cookie[] cookies = req.getCookies();                //Get Cookie information
+    for(int i=0; i &lt; cookies.length; i++) {
+      thisCookie = cookies[i];
+      if (thisCookie.getName().equals("CookieCount")) {
+        cookieFound = true;
+        break;
+      }
+    }
+
+    if (cookieFound == false) {                          //Manipulating Cookie
+      thisCookie = new Cookie("CookieCount", "1");
+      thisCookie.setMaxAge(60*1);
+      res.addCookie(thisCookie);
+    }
+                int cookieCount = 0;
+    if (cookieFound) {
+      cookieCount = Integer.parseInt(thisCookie.getValue());
+      cookieCount++;
+      thisCookie.setValue(String.valueOf(cookieCount));
+                                                //Update Cookie information before
+                                                //some response is written to
+                                                //the response buffer.
+                                                //Good move! Truly portable code
+      thisCookie.setMaxAge(10);
+      res.addCookie(thisCookie);
+        }
+
+    out.println("&lt;html&gt;&lt;head&gt;\n" +       //Now Write your response
+         "&lt;title&gt;Cookie Counter&lt;/title&gt;\n" +
+         "&lt;/head&gt;\n" +
+         "&lt;body bgcolor=#ffffff&gt; +
+                 "&lt;font face=\"Comic Sans MS\" size+=4 color=red&gt;" +
+         "&lt;center&gt;&lt;h1&gt;Cookie Counter&lt;/h1&gt;&lt;/center&gt;");
+    pageCount++;
+    out.println("&lt;p&gt;&lt;img src=\""+req.getContextPath()+
+                "/images/cookie.jpg\" align=left&gt;");
+    out.println("&lt;font color=blue&gt;");
+    out.println("&lt;p&gt;&lt;br&gt;&lt;br&gt; +
+                 "&lt;br&gt;This page has been visited " + pageCount +
+                (pageCount==1?" time":" times") +
+                " before.\n");
+
+    if (cookieFound) {
+      out.println("&lt;p&gt;You have visited this page " +
+                  thisCookie.getValue() +
+                  (cookieCount==1?" time":" times") +
+                  " within the past 10 seconds.\n");
+    } else {
+      out.println("&lt;p&gt;Either you haven't visited this page recently, "+
+                  "or your browser doesn't like cookies!\n");
+    }
+    out.println("&lt;/body&gt;&lt;/html&gt;");
+    out.close();
+  }</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>Difference in the implementation of {{HttpServletRequest}}interface between WLS5.1/6.x/Sun ONE Application Server 6.5 and the Application Server</li> 
+     </ul> <p> The <tt>getCookies()</tt> method of the <tt>HttpServletRequest</tt> interface is implemented differently by WLS5.1/WLS 6.x/Sun ONE Application Server 6.5 and the Application Server. This may lead to inconsistent behavior by a server-side component that contains a call to this method, similar to the following sample code.<br> Before looking at the sample code, examine how the Servlet Specification defines this method. As per the documentation of both J2EE 1.2.x, which is the J2EE standard for WLS5.1 and Sun ONE Application Server 6.5, and J2EE 1.3.x, which is the J2EE standard for WLS 6.x, API, the <tt>getCookies()</tt> method of the <tt>HttpServletRequest</tt> interface is described as:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">getCookies
+
+        public Cookie[] getCookies()
+
+                Returns an array containing all of the Cookie objects the client sent with this
+                request. This method returns null if no cookies were sent.
+
+                Returns:
+                an array of all the Cookies included with this request, or null if the request
+                has no cookies</pre> 
+       </div> 
+      </div>
+     </div> <p> This implies that the first call to the <tt>getCookies()</tt> method (when there are no cookies), shown in the code below, results in returning a <tt>null</tt>. This, in turn, results in a NullPointerException on execution of the lines following the call to the <tt>getCookies()</tt> method.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Cookie[] cookies = req.getCookies();        &lt;-----&gt; Problem    
+for(int i=0; i &amp;lt; cookies.length; i++) {            &lt;-----&gt; NullPointerException here
+      thisCookie = cookies[i];
+      if (thisCookie.getName().equals("CookieCount")) {
+        cookieFound = true;
+        break;
+      }
+    }</pre> 
+       </div> 
+      </div>
+     </div> <p>Note - However, an aberration exists on the part of WLS 5.1/6.x as well as Sun ONE AS 6.5. The first call to the <tt>getCookies()</tt> method returns an empty array (an array with zero elements) instead of <tt>null</tt> (as specified by the documentation), which, in turn, makes the previous sample code work on these application servers.<br> Since this is <em>not</em> the case in the Application Server, which acts according to the Java EE documentation, this piece of code throws a NullPointerException.<br> To get beyond this limitation, before deployment you should modify the code manually as follows. </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Cookie[] cookies = req.getCookies();            
+if(cookies != null)              &lt;-----&gt; Escape NullPointerException here
+    {
+        for(int i=0; i &amp;lt; cookies.length; i++) {            
+                     thisCookie = cookies[i];
+                     if (thisCookie.getName().equals("CookieCount")) {
+                             cookieFound = true;
+                             break;
+                     }
+        }
+    }</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="M2GLimitations-OtherMigrationLimitations"></a>Other Migration Limitations</h2> 
+     <ul> 
+      <li>Migrating enterprise beans that comply with the EJB 1.0 Specification</li> 
+     </ul> <p> WebSphere Application Server 4.0 supports enterprise beans developed as per the EJB 1.0 specification. The Application Server does not support these EJB 1.0 beans. Although the Migration Tool takes a minimal approach to migrating such enterprise beans to make them compliant to the EJB 1.1 specification, this implementation is not fully reliable and may lead to discrepancies, which will surface during deployment of the migrated application.<br> To get past this limitation, modify the code of the bean so that it is EJB 1.1-compliant before migration.</p> 
+     <ul> 
+      <li>Migrating applications from WebLogic Application Server 6.0/6.1</li> 
+      <li>WebLogic 6.1 provides built-in automatic key generation for primary key values of CMP entity beans. When you create a bean using this key-generation approach, the WebLogic EJB container assigns the primary key automatically during the database insert.Note -</li> 
+     </ul> <p>This feature is not migrated as part of the application because no equivalent feature is available on the Application Server.<br> To get past this limitation, modify the code of a CMP entity bean so it does not use this feature. Some useful suggestions are available in <em>EJB Design Patterns</em> by Floyd Marinescu.</p> 
+     <ul> 
+      <li>WebLogic 6.0 allows EJB relationships (CMRs) between two beans only through remote interfaces, which is prohibited by the EJB 2.0 specification. EJB relationships are now based on the local interface. Any enterprise bean that participates in a relationship must have a local interface. Relationships using remote interfaces were removed from the EJB 2.0 specification. Also, the related beans must be deployed within the same EJB JAR file.</li> 
+     </ul> <p> Since these restrictions were not in place at the time WebLogic 6.0 was released, an application that uses these now prohibited features must be modified manually to ensure adherence to the EJB 2.0 specification. <a href="http://edocs.bea.com/wls/docs61/notes/migrate60to61.html">http://edocs.bea.com/wls/docs61/notes/migrate60to61.html</a>.<br> To get past this limitation, modify the application manually before or after migration to ensure that all CMRs are between CMP entity beans with local interfaces and that these related beans are located within the same EJB JAR file.</p> 
+     <ul> 
+      <li>WebLogic 6.x standalone applications cannot be migrated to the Application Server</li> 
+      <li>WebLogic 6.0 allows WLQL in place of EJB-QL inside the <tt>ejb-jar.xml</tt> file. This WLQL will not be migrated by the Migration Tool.</li> 
+     </ul> <p> To get past this limitation, after migration, manually replace the WLQL expression(s) to the equivalent EJB-QL expression(s) before deploying the application to the Application Server.</p> 
+     <ul> 
+      <li>Migrating applications assumed to be local to the server</li> 
+     </ul> <p> The Migration Tool assumes that applications being migrated are local to the server. That is, all method calls/object calls in the applications to be migrated refer to a method/object existing locally on the server. To illustrate this point, the following code shows the modifications done by the Migration Tool to code that provides such connection information. <br> The original code is as follows.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Properties h = new Properties();
+h.put(Context.INITIAL_CONTEXT_FACTORY, m_INITIAL_CONTEXT_FACTORY);        
+h.put(Context.PROVIDER_URL, m_PROVIDER_URL);        
+h.put(Context.SECURITY_PRINCIPAL, user);        
+h.put(Context.SECURITY_CREDENTIALS, password);        
+.....        
+InitialContext ctx = new InitialContext(h);</pre> 
+       </div> 
+      </div>
+     </div> <p> This code snippet is replaced by the empty <tt>IntialContext</tt> constructor, as shown below.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">InitialContext ctx = new InitialContext();
+.....</pre> 
+       </div> 
+      </div>
+     </div> <p> Therefore, when migrating an application that is NOT local to the server, keep this issue in mind as the tool assumes the non-existence of remote object calls.<br> To get past this limitation, before migration, examine the application for all calls to remote objects. Pass the application through the Migration Tool. Then modify the specific changed code snippets so they revert back to the original remote object calls. Specifically, manually add the URL that was originally present and any other connection properties to look up.</p> 
+     <ul> 
+      <li>Migration Tool does not properly handle getter and setter methods of JSP custom tags</li> 
+     </ul> <p> The Application Server supports the JSP 1.2 and JSP 2.0 specification. The implementation of the JSP 1.2 specification requires that the getter and setter methods of an attribute inside a custom tag must return and accept the same data type. The migration tool cannot handle this scenario, as the following example illustrates.<br> The original tag handler class is as follows.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">public class Listtag extends TagSupport{
+  int numIterms;  public int getNumItems() {
+      return numItems;
+  }
+  
+  public void setNumItems(String numItemsStr) 
+    numItems = Integer.parseInt(numItemsStr);
+  } 
+  
+}</pre> 
+       </div> 
+      </div>
+     </div> <p> The tag handler class that the Application Server requires is as follows.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">public class Listtag extends TagSupport{
+  int numIterms;  public int getNumItems() {
+      return numItems;
+  }
+  
+  public void setNumItems(int numItemsStr) 
+    numItems = Integer.parseInt(numItemsStr);
+  } 
+  
+}</pre> 
+       </div> 
+      </div>
+     </div> <p> To get past this limitation, manually make changes inside the tag handler classes so that the migrated application works as expected on the Application Server.</p> 
+     <ul> 
+      <li>Impact of commented method calls in the migrated code</li> 
+     </ul> <p> The Application Server restricts the use of some system calls, such as <tt>System.setOut()</tt>, which, if made, results in a runtime access control exception. Typically, the <tt>System.out</tt> stream is directed to the <tt>server.log</tt> file and redirecting it disturbs the server's logging functionality. To avoid this runtime exception, the Migration Tool comments out such calls in the migrated code, as shown in the following example.<br> The original code is as follows.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">public void init(ServletConfig config) throws ServletException{
+        super.init(config);
+        Logger.initialize("astp.query.log", "Console");
+        Logger.log(Logger.LOGTYPEISMESSAGE, "SrvQueryControlloer", "init", "got here!");
+
+        try{
+        System.setOut(new PrintStream(new ServletOutputStreamAdapter
+                (new FileOutputStream("sys.out"))));
+        }catch(IOException eio){throw new ServletException(eio);}
+}</pre> 
+       </div> 
+      </div>
+     </div> <p> After commenting, the migrated code is as follows.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">public void init(ServletConfig config) throws ServletException{
+        super.init(config);
+        Logger.initialize("astp.query.log", "Console");
+        Logger.log(Logger.LOGTYPEISMESSAGE, "SrvQueryControlloer", "init", "got here!");
+
+        try{
+        /*Removed call to System.setOut()*/
+        }catch(IOException eio){throw new ServletException(eio);}
+}</pre> 
+       </div> 
+      </div>
+     </div> <p> However, note in this case that, since the only method call inside the try/catch block is commented out, the IOException is never thrown from inside the try/catch block and a compile time error results. The Migration Tool is currently limited since it does not have the ability to detect the following:</p> 
+     <ul> 
+      <li>The commented out method call is the one that originally raised the exception that the try/catch block is handling.</li> 
+      <li>The commented out method call is the only call in the try/catch block.</li> 
+     </ul> <p> To get past this limitation, look in the migration report, which informs you of this condition, and take the necessary action, by commenting out the specific exception-causing lines, if required.</p> 
+     <ul> 
+      <li>Impact of directory structure inside the EAR file to be migrated</li> 
+     </ul> <p> The Migration Tool expects the JAR files to be directly under the EAR file. The tool does not support the migration of nested JAR files. All of the JAR files must be directly under the EAR file for the migration to be successful.<br> The following example shows the original unsupported EAR file structure.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">EAR
+ |
+ |
+ |---Lib/lib.jar
+ |
+ |
+ |---EJBs
+ |    |---EJB1.jar
+ |    |---EJB2.jar
+ |
+ |---WEB
+ |    |---WEB1.war
+ |    |---WEB2.war</pre> 
+       </div> 
+      </div>
+     </div> <p> The EAR file structure needs to be modified to a supported configuratiuon, as shown in the following example, for the migration to be successful.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">EAR
+ |
+ |
+ |---lib.jar
+ |
+ |---EJB1.jar
+ |
+ |---EJB2.jar
+ |
+ |---WEB1.war
+ |
+ |---WEB2.war</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>Unsupported encoding type "Cp1252" on Solaris</li> 
+     </ul> <p> The encoding type "Cp1252" in deployment descriptors is not supported on Solaris.<br> To get beyond this limitation, either perform the migration on a Windows platform, such as Windows 2000/NT/XP only, or change the encoding type to "UTF-8", which is supported on Solaris as well as Windows platforms.</p> <h4><a name="M2GLimitations-OS%2FPlatformIssues"></a>OS/Platform Issues</h2> <p>This section lists the known limitations/bugs of the underlying operating system or J2SE SDK. </p> <h4><a name="M2GLimitations-JavaDevelopmentKit%28JDK%291.5.x"></a>Java Development Kit (JDK) 1.5.x</h3> <p>There are some incompatibilities when using different versions of J2SE SDK.</p> 
+     <ul> 
+      <li>J2SE SDK is required for running the migration tool; the JRE alone is not sufficient.</li> 
+      <li>The Migration Tool requires J2SE SDK Version 1.5.x.</li> 
+     </ul> <h4><a name="M2GLimitations-Windows2000ServicePack2"></a>Windows 2000 Service Pack 2</h3> <p>The Migration Tool requires Service Pack 2 or higher for Windows 2000. If a Service Pack lower than SP2 is used, the Migration Tool might exhibit erratic behavior when it displays files in the input panel.</p> <h4><a name="M2GLimitations-FileChooser%27sFeatures"></a>File Chooser's Features</h3> <p>The File Chooser, which pops up for selecting the output directory, lacks some functionality, due to a feature deficiency in J2SE SDK. The "Create New Folder" button creates a new folder, but does not highlight the newly created folder. To some, this may be confusing.</p> <h4><a name="M2GLimitations-Problemwithselectingthefloppydrive%28A%3A%29"></a>Problem with selecting the floppy drive (A<img class="emoticon" src="images/icons/emoticons/smile.gif" height="20" width="20" align="absmiddle" alt="" border="0"></h3> <p>While choosing an input or output directory on Windows, if you click floppy drive (A:), a popup window titled "java.exe - No Disk" with three buttons, Abort, Retry, Ignore appears (in case it is empty). This popup comes up twice, even if you click the Ignore button.</p> <h4><a name="M2GLimitations-ProblemwithJAR%2CWAR%2CRAR%2CoranEARFilenamesasInput"></a>Problem with JAR, WAR, RAR, or an EAR Filenames as Input</h3> <p>The Migration Tool does not accept, as input, archives that have whitespace in their file name(s).</p> <p><a href="M2GCapabilties.html" title="M2GCapabilties">Previous</a> </p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

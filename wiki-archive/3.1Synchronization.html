@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : 3.1Synchronization</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="3.1Synchronization-GlassFishServerOpenSourceEdition3.1Synchronization"></a>GlassFish Server Open Source Edition 3.1 - Synchronization</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#3.1Synchronization-GlassFishServerOpenSourceEdition3.1Synchronization">GlassFish Server Open Source Edition 3.1 - Synchronization</a></li> 
+       <ul> 
+        <li><a href="#3.1Synchronization-Introduction">Introduction</a></li> 
+        <li><a href="#3.1Synchronization-Scope">Scope</a></li> 
+        <li><a href="#3.1Synchronization-FeatureOverview">Feature Overview</a></li> 
+        <li><a href="#3.1Synchronization-DesignDocument">Design Document</a></li> 
+        <li><a href="#3.1Synchronization-MilestoneSchedule">Milestone Schedule</a></li> 
+        <li><a href="#3.1Synchronization-TaskList">Task List</a></li> 
+        <li><a href="#3.1Synchronization-DevTests">Dev Tests</a></li> 
+        <li><a href="#3.1Synchronization-References">References</a></li> 
+        <li><a href="#3.1Synchronization-EmailAlias">Email Alias</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="3.1Synchronization-Introduction"></a>Introduction</h2> <p>This project will focus on remote server instance synchronization infrastructure for GlassFish Server Open Source Edition 3.1. We will look at the following high level tasks:</p> 
+     <ul> 
+      <li>Synchronization with DAS during server boot 
+       <ul> 
+        <li>Improved diagnostics</li> 
+       </ul> </li> 
+      <li>Cleanup of stale files</li> 
+     </ul> <h4><a name="3.1Synchronization-Scope"></a>Scope</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Feature ID </th> 
+         <th class="confluenceTh"> Priority </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> Eng Response </th> 
+         <th class="confluenceTh"> Owner(s) </th> 
+         <th class="confluenceTh"> Estimate (Man Days) </th> 
+         <th class="confluenceTh"> Source of Requirement </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> SYNC-001 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Sync during startup. Remote server instance downloads necessary configuration and application from DAS during startup </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Bill, Tom </td> 
+         <td class="confluenceTd"> 30 </td> 
+         <td class="confluenceTd"> Feature parity </td> 
+         <td class="confluenceTd"> Remote server instance should talk to DAS over SSL (secure by default) , Issue <a href="https://github.com/javaee/glassfish/issues/12028">12028 </a> for SSL part </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> SYNC-002 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Clean up old stale files. Keep repository cache in-sync with central repository. If a file is removed from central repository, it should also be removed from repository cache under remote server instance at the end of synchronization process </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Bill, Tom </td> 
+         <td class="confluenceTd"> 10 </td> 
+         <td class="confluenceTd"> Feature parity </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> SYNC-003 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Server startup should not fail if DAS is not available </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Bill, Tom </td> 
+         <td class="confluenceTd"> 5 </td> 
+         <td class="confluenceTd"> Feature parity </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> SYNC-004 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Clearly define how symlinks are handled during synchronization. Implement the behavior </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Bill, Tom </td> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd"> Feature parity </td> 
+         <td class="confluenceTd"> Issue <a href="https://github.com/javaee/glassfish/issues/12025">12025 </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> SYNC-005 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> DAS should scale if multiple server instances are synchronizing at the same time </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Bill, Tom </td> 
+         <td class="confluenceTd"> 20 </td> 
+         <td class="confluenceTd"> Feature parity </td> 
+         <td class="confluenceTd"> Issue <a href="https://github.com/javaee/glassfish/issues/4357">4357 </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> SYNC-006 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Provide a mechanism to trigger full synchronization. Expose the mechanism in CLI </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Bill, Tom <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> 5 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> SYNC-007 </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> Provide a mechanism to exclude user created files from being removed by cleaning process. Refer to <a href="http://docs.sun.com/doc/821-0182/abdkk">v2.x docs </a>. </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Bill, Tom </td> 
+         <td class="confluenceTd"> 5 </td> 
+         <td class="confluenceTd"> Feature parity </td> 
+         <td class="confluenceTd"> Issue <a href="https://github.com/javaee/glassfish/issues/12026">12026 </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> SYNC-008 </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> Provide improved diagnostics to debug synchronization errors </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Bill, Tom </td> 
+         <td class="confluenceTd"> 5 </td> 
+         <td class="confluenceTd"> Feature parity </td> 
+         <td class="confluenceTd"> Issue <a href="https://github.com/javaee/glassfish/issues/12027">12027 </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> SYNC-009 </td> 
+         <td class="confluenceTd"> See issue<br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Leverage SSH implementation for synchronization when available </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Tom </td> 
+         <td class="confluenceTd"> 10 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Issue <a href="https://github.com/javaee/glassfish/issues/12029">12029 </a> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.1Synchronization-FeatureOverview"></a>Feature Overview</h2> <p>During server startup, each instance contacts DAS (Domain Administration Server) to download the necessary configuration and application bits. Synchronization process also cleans up any deleted files from the repository cache. Refer to "<a href="V3.1Clustering.html#V3.1Clustering-sectionV3.1ClusteringDataSynchronization">Data Synchronization</a>" section and "<a href="V3.1Clustering.html#V3.1Clustering-sectionV3.1ClusteringSynchronizationIssues">Synchronization Issues</a>" section for more details.</p> <h4><a name="3.1Synchronization-DesignDocument"></a>Design Document</h2> 
+     <ul> 
+      <li><a href="V3.1Clustering.html" title="V3.1Clustering">GlassFish Server Open Source Edition 3.1 Clustering Design Spec</a></li> 
+     </ul> <h4><a name="3.1Synchronization-MilestoneSchedule"></a>Milestone Schedule</h2> <p>Note: For those deliverables that have a link to an issue in the status/comments column, see IssueTracker for status.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 01. </td> 
+         <td class="confluenceTd"> MS2 (6/21) </td> 
+         <td class="confluenceTd"> SYNC-001 </td> 
+         <td class="confluenceTd"> Sync during startup </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 02. </td> 
+         <td class="confluenceTd"> MS2 (6/21) </td> 
+         <td class="confluenceTd"> SYNC-002 </td> 
+         <td class="confluenceTd"> Clean up stale files </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 03. </td> 
+         <td class="confluenceTd"> MS2 (6/21) </td> 
+         <td class="confluenceTd"> SYNC-003 </td> 
+         <td class="confluenceTd"> Graceful handing of DAS not available during startup </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 04. </td> 
+         <td class="confluenceTd"> MS2 (6/21) </td> 
+         <td class="confluenceTd"> SYNC-004 </td> 
+         <td class="confluenceTd"> Handle symlinks </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Issue <a href="https://github.com/javaee/glassfish/issues/12025">12025 </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 06. </td> 
+         <td class="confluenceTd"> MS2 (6/21) </td> 
+         <td class="confluenceTd"> SYNC-006 </td> 
+         <td class="confluenceTd"> Ability to trigger full sync </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 07. </td> 
+         <td class="confluenceTd"> MS3 (7/19) </td> 
+         <td class="confluenceTd"> SYNC-007 </td> 
+         <td class="confluenceTd"> Exclude user created files from cleanup </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Issue <a href="https://github.com/javaee/glassfish/issues/12026">12026 </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 08. </td> 
+         <td class="confluenceTd"> MS3 (7/19) </td> 
+         <td class="confluenceTd"> SYNC-008 </td> 
+         <td class="confluenceTd"> Improved diagnostics </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Issue <a href="https://github.com/javaee/glassfish/issues/12027">12027 </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 09. </td> 
+         <td class="confluenceTd"> See issue<br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> SYNC-009 </td> 
+         <td class="confluenceTd"> Leverage SSH </td> 
+         <td class="confluenceTd"> May be </td> 
+         <td class="confluenceTd"> Issue <a href="https://github.com/javaee/glassfish/issues/12029">12029 </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 10. </td> 
+         <td class="confluenceTd"> See issue<br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> SYNC-005 </td> 
+         <td class="confluenceTd"> DAS scaling with multiple servers </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Issue <a href="https://github.com/javaee/glassfish/issues/4357">4357 </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 11. </td> 
+         <td class="confluenceTd"> See issue<br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> SYNC-001 </td> 
+         <td class="confluenceTd"> Sync during startup over SSL </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Issue <a href="https://github.com/javaee/glassfish/issues/12028">12028 </a> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.1Synchronization-TaskList"></a>Task List</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task </th> 
+         <th class="confluenceTh"> Target Milestone </th> 
+         <th class="confluenceTh"> Start Date </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Owner(s) </th> 
+         <th class="confluenceTh"> Feature ID </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Synchronization backend </td> 
+         <td class="confluenceTd"> MS1 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 5/24 </td> 
+         <td class="confluenceTd"> Bill </td> 
+         <td class="confluenceTd"> SYNC-001 </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Integrate with GlassFish </td> 
+         <td class="confluenceTd"> MS1 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 5/24 </td> 
+         <td class="confluenceTd"> Bill </td> 
+         <td class="confluenceTd"> SYNC-001 </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Clean up stale files </td> 
+         <td class="confluenceTd"> MS1 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 5/24 </td> 
+         <td class="confluenceTd"> Bill </td> 
+         <td class="confluenceTd"> SYNC-002 </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> DAS scaling - perf test </td> 
+         <td class="confluenceTd"> MS1 </td> 
+         <td class="confluenceTd"> 5/6 </td> 
+         <td class="confluenceTd"> 5/14 </td> 
+         <td class="confluenceTd"> Bill, Tom </td> 
+         <td class="confluenceTd"> SYNC-005 </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Triggering full sync </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd"> 5/26 </td> 
+         <td class="confluenceTd"> 6/2 </td> 
+         <td class="confluenceTd"> Bill </td> 
+         <td class="confluenceTd"> SYNC-006 </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> DAS scaling with multiple servers </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd"> 6/3 </td> 
+         <td class="confluenceTd"> 6/18 </td> 
+         <td class="confluenceTd"> Bill, Tom </td> 
+         <td class="confluenceTd"> SYNC-007 </td> 
+         <td class="confluenceTd"> Planned </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Exclude user created files </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> 7/8 </td> 
+         <td class="confluenceTd"> 7/14 </td> 
+         <td class="confluenceTd"> Bill, Tom </td> 
+         <td class="confluenceTd"> SYNC-007 </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Secure communication between remote instance and DAS </td> 
+         <td class="confluenceTd"> See issue<br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> 7/22 </td> 
+         <td class="confluenceTd"> 8/6 </td> 
+         <td class="confluenceTd"> Bill, Tom </td> 
+         <td class="confluenceTd"> SYNC-001 </td> 
+         <td class="confluenceTd"> Planned </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.1Synchronization-DevTests"></a>Dev Tests</h2> 
+     <ul> 
+      <li><a href="AdminTests.html" title="AdminTests">Developer Tests </a></li> 
+     </ul> <h4><a name="3.1Synchronization-References"></a>References</h2> 
+     <ul> 
+      <li><a href="http://docs.sun.com/app/docs/doc/821-0179/6nl8hchmr?l=en&amp;a=expand">Oracle GlassFish Server 2.x CLI Commands</a></li> 
+      <li><a href="GlassFishV2Architecture.html" title="GlassFishV2Architecture">Oracle GlassFish Serer 2.x Cluster Architecture </a></li> 
+     </ul> <h4><a name="3.1Synchronization-EmailAlias"></a>Email Alias</h2> 
+     <ul> 
+      <li>Please contact us at <a href="mailto:admin@glassfish.java.net">admin@glassfish.java.net</a></li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Aug 03, 2010 by 
+<font color="#0050B2">trmueller</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

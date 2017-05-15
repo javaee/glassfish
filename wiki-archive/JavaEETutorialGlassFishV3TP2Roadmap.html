@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : JavaEETutorialGlassFishV3TP2Roadmap</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   
+     <div> 
+      <ul> 
+       <li><a href="#JavaEETutorialGlassFishV3TP2Roadmap-UsingtheJavaEE5TutorialwithGlassFishV3TechnologyPreview2%28TP2%29">Using the Java EE 5 Tutorial with GlassFish V3 Technology Preview 2 (TP2)</a></li> 
+       <ul> 
+        <li><a href="#JavaEETutorialGlassFishV3TP2Roadmap-PartI%3AIntroduction"> <span class="nobr">Part I: Introduction <sup><img border="0" alt="" align="absmiddle" width="7" height="7" src="images/icons/linkext7.gif" class="rendericon"></sup></span></a></li> 
+        <li><a href="#JavaEETutorialGlassFishV3TP2Roadmap-PartII%3ATheWebTier"> <span class="nobr">Part II: The Web Tier <sup><img border="0" alt="" align="absmiddle" width="7" height="7" src="images/icons/linkext7.gif" class="rendericon"></sup></span></a></li> 
+        <li><a href="#JavaEETutorialGlassFishV3TP2Roadmap-PartIII%3AWebServices"> <span class="nobr">Part III: Web Services <sup><img border="0" alt="" align="absmiddle" width="7" height="7" src="images/icons/linkext7.gif" class="rendericon"></sup></span></a></li> 
+        <li><a href="#JavaEETutorialGlassFishV3TP2Roadmap-PartIV%3AEnterpriseBeans">Part IV: Enterprise Beans</a></li> 
+        <li><a href="#JavaEETutorialGlassFishV3TP2Roadmap-PartV%3APersistence">Part V: Persistence</a></li> 
+        <li><a href="#JavaEETutorialGlassFishV3TP2Roadmap-PartVI%3AServices">Part VI: Services</a></li> 
+        <li><a href="#JavaEETutorialGlassFishV3TP2Roadmap-PartVII%3ACaseStudies">Part VII: Case Studies</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="JavaEETutorialGlassFishV3TP2Roadmap-UsingtheJavaEE5TutorialwithGlassFishV3TechnologyPreview2%28TP2%29"></a>Using the Java EE 5 Tutorial with GlassFish V3 Technology Preview 2 (TP2)</h1> <p><a href="GlassFishV3TP2Content.html" title="GlassFishV3TP2Content">Technology Preview 2 (TP2)</a> is the first public release of the <a href="PlanForGlassFishV3.html" title="PlanForGlassFishV3">GlassFish V3</a> application server, currently in development. The TP2 release includes the core V3 modules, Java EE web tier technologies, the Java Persistence API, and non-Java programming language containers, among other features detailed elsewhere.</p> <p>The <a href="http://java.sun.com/javaee/5/docs/tutorial/doc/">Java EE 5 Tutorial</a> content and example applications cover the full set of technologies in the Java EE 5 platform. Because GlassFish V3 TP2 only supports the web tier, Persistence, and security technologies defined by Java EE 5, only parts of the Java EE 5 Tutorial are relevant to TP2 users. This document provides a roadmap for users who want to use the Java EE 5 Tutorial example applications and chapters with TP2.</p> <p><b>Note:</b> TP2 is pre-release software. The Java EE 5 Tutorial team has not fully tested the example applications included in the Java EE 5 Tutorial bundle against TP2. If you encounter any problems running the example applications on TP2, we recommend deploying and running the examples on <a href="PlanForGlassFishV2UR2.html" title="PlanForGlassFishV2UR2">GlassFish V2 UR2</a>, a fully compliant Java EE 5 server.</p> <h4><a name="JavaEETutorialGlassFishV3TP2Roadmap-PartI%3AIntroduction"></a><a href="http://java.sun.com/javaee/5/docs/tutorial/doc/gfirp.html">Part I: Introduction</a></h2> <p>This section of the Tutorial describes the Java EE 5 platform, and provides information on downloading and configuring the Java EE 5 Tutorial example applications. Only the technologies described in this document are relevant to TP2 users.</p> <h4><a name="JavaEETutorialGlassFishV3TP2Roadmap-PartII%3ATheWebTier"></a><a href="http://java.sun.com/javaee/5/docs/tutorial/doc/bnadp.html">Part II: The Web Tier</a></h2> <p>All the technologies discussed in the chapters and used in the examples explained in Part II: The Web Tier are supported by TP2.</p> <h4><a name="JavaEETutorialGlassFishV3TP2Roadmap-PartIII%3AWebServices"></a><a href="http://java.sun.com/javaee/5/docs/tutorial/doc/bnayk.html">Part III: Web Services</a></h2> <p>TP2 supports the technologies discussed in Part III: Web Services through the optional Metro module, available through the Update Center. You must install this module in order to deploy and run the examples in Part III: Web Services.</p> <p>TP2 does not support Java EE application clients, so you must use the web client for the <tt>helloservice</tt> example.</p> <h4><a name="JavaEETutorialGlassFishV3TP2Roadmap-PartIV%3AEnterpriseBeans"></a>Part IV: Enterprise Beans</h2> <p>TP2 does not support enterprise beans.</p> <h4><a name="JavaEETutorialGlassFishV3TP2Roadmap-PartV%3APersistence"></a>Part V: Persistence</h2> <p>TP2 users should read the following chapters:</p> 
+     <ul> 
+      <li><a href="http://java.sun.com/javaee/5/docs/tutorial/doc/bnbpz.html">Introduction to the Java Persistence API</a>, keeping in mind that TP2 doesn't support enterprise beans or the Java Transaction API</li> 
+      <li><a href="http://java.sun.com/javaee/5/docs/tutorial/doc/bnbrl.html">Persistence in the Web Tier</a></li> 
+      <li><a href="http://java.sun.com/javaee/5/docs/tutorial/doc/bnbtg.html">The Java Persistence Query Language</a></li> 
+     </ul> <h4><a name="JavaEETutorialGlassFishV3TP2Roadmap-PartVI%3AServices"></a>Part VI: Services</h2> <p>TP2 users should read the following chapters:</p> 
+     <ul> 
+      <li><a href="http://java.sun.com/javaee/5/docs/tutorial/doc/bnbwj.html">Introduction to Security in the Java EE Platform</a>, keeping in mind TP2 only supports file and JDBC realm authentication and authorization</li> 
+      <li><a href="http://java.sun.com/javaee/5/docs/tutorial/doc/bnbyk.html">Securing Java EE Applications</a>, keeping in mind that TP2 doesn't support enterprise beans or Java EE application clients.</li> 
+      <li><a href="http://java.sun.com/javaee/5/docs/tutorial/doc/bncas.html">Securing Web Applications</a></li> 
+     </ul> <p>None of the other chapters in Part VI: Services apply to TP2.</p> <h4><a name="JavaEETutorialGlassFishV3TP2Roadmap-PartVII%3ACaseStudies"></a>Part VII: Case Studies</h2> <p>The <a href="http://java.sun.com/javaee/5/docs/tutorial/doc/bncko.html">Coffee Break</a> case study application should run on TP2 provided you have installed the optional Metro module. You can install the Metro module through the Update Center.</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

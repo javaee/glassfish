@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : C2DInNB6WithSipToolingSuite</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>{ALLOW comment All }<br> {ALLOW rename Authenticated }</p> <h4><a name="C2DInNB6WithSipToolingSuite-DeployingandDebuggingtheClickToDialsamplefromNetBeans6.0withtheSIPTestAgent"></a>Deploying and Debugging the ClickToDial sample from NetBeans 6.0 with the SIP Test Agent</h1> <p>This is an example of using the SIP test agent modules that are being developed for NetBeans to deploy and debug the ClickToDial sample. You can read through a <a href="./SipClickToDialExample2.html">description of the ClickToDial sample</a> to get more information about the sample application.</p> <p>The code for ClickToDial is available for download <a href="http://wiki.glassfish.java.net/attach/SipClickToDialExample2/ClickToDial.zip">here</a>.</p> <h4><a name="C2DInNB6WithSipToolingSuite-TheEnvironment"></a>The Environment</h2> <p>I am using <a href="https://sailfin.java.net/downloads/v1-b14.html">Sailfin build 14</a>, <a href="http://download.netbeans.org/netbeans/6.0/final/">NetBeans 6.0 (the Web and Java EE bundle)</a> and <a href="https://sailfin.java.net/servlets/ProjectDocumentList?folderID=8492&amp;expandFolder=8492&amp;folderID=8491">release 0.1 of the Test Agent</a>.</p> <p>This tutorial assumes that you have successfully:</p> 
+     <ol> 
+      <li>Installed Sailfin</li> 
+      <li>Installed NB 6.0</li> 
+      <li>Downloaded the ClickToDial sample</li> 
+     </ol> <h4><a name="C2DInNB6WithSipToolingSuite-Thesteps"></a>The steps</h2> 
+     <ol> 
+      <li><b>Install the Test Agent</b> 
+       <ol> 
+        <li>Download the modules that implement the test agent</li> 
+        <li>Install these modules into NetBeans 6.0\\!installAgent1.png!<br class="atl-forced-newline">!installAgent2.png!<br> <span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20874192/21365377.png" style="border: 0px solid black"></span></li> 
+       </ol> </li> 
+      <li><b>Prepare the server</b> 
+       <ol> 
+        <li>Register the Sailfin domain in the IDE</li> 
+        <li>Start the domain in "Debug mode"</li> 
+        <li>Verify that there is a JDBC Resource named jdbc/sample registered with the server</li> 
+        <li>Open the ClickToDial project in the IDE</li> 
+        <li>Use the "Undeploy and Deploy" item from The ClickToDial project's right click menu to deploy the code to the domain.</li> 
+        <li>Open your browser and access http;//localhost:8080/ClickToDial<br> <span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20874192/21365363.png" style="border: 0px solid black"></span></li> 
+        <li>Press the login button<br> <span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20874192/21365385.png" style="border: 0px solid black"></span></li> 
+       </ol> </li> 
+      <li><b>Register Alice</b> 
+       <ol> 
+        <li>Click the Test Agent tool in the Build bar<br> This Test Agent will be Alice's "phone".<br> <span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20874192/21365380.png" style="border: 0px solid black"></span></li> 
+        <li>Press the New Request button in the Test Agent window<br> <span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20874192/21365374.png" style="border: 0px solid black"></span></li> 
+        <li>Press the Send button</li> 
+        <li>Reload the page in the browser<br> Alice still doesn't have a SIP URI!<br> <span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20874192/21365382.png" style="border: 0px solid black"></span></li> 
+        <li>Open the source to clicktodial.sip.RegistrarServlet in the IDE and set a breakpoint in the doRegister method<br> <span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20874192/21365384.png" style="border: 0px solid black"></span></li> 
+        <li>Attach to the server<br> <span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20874192/21365366.png" style="border: 0px solid black"></span></li> 
+        <li>Switch back to the Test Agent tab and press the 'Send Message' button</li> 
+        <li>Step through the doRegister method and discover that the REGISTER method needs to have an Expires header<br> <span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20874192/21365378.png" style="border: 0px solid black"></span></li> 
+        <li>Switch back to the Test Agent tab and presse the New Request button. Add an Expires header to the message and press Send.<br> <span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20874192/21365379.png" style="border: 0px solid black"></span></li> 
+        <li>Step through the doRegister method again and see that expire has a value &gt; 0!</li> 
+        <li>Switch back to the browser and reload the page.<br> Now Alice's "phone" (the test agent) is registered.<br> <span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20874192/21365373.png" style="border: 0px solid black"></span></li> 
+       </ol> </li> 
+      <li><b>Register Bob</b> 
+       <ol> 
+        <li>Log out as Alice and login as Bob.</li> 
+        <li>Switch back to the IDE and press the Test Agent tool, to open a second test agent tab.</li> 
+        <li>Double click on the new tab to make the window "full screen".<br> <span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20874192/21365375.png" style="border: 0px solid black"></span></li> 
+        <li>Change the Listening Port to 6061 and press the Apply button.</li> 
+        <li>Double click the tab again to reduce the back to its original size.</li> 
+        <li>Press the New request button and change all reference to Alice to Bob.<br> Add an Expires header to this message and Send it.<br class="atl-forced-newline">!bobRegistrationReady.png!<br> <span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20874192/21365364.png" style="border: 0px solid black"></span></li> 
+        <li>Reload the page in the browser.<br> Bob's "phone" is registered, and he can click the Call link.<br> <span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20874192/21365383.png" style="border: 0px solid black"></span><br> <a href="http://c12.statcounter.com/counter.php?sc_project=1230527&amp;java=0&amp;security=cfcfc796&amp;invisible=0">http://c12.statcounter.com/counter.php?sc_project=1230527&amp;java=0&amp;security=cfcfc796&amp;invisible=0</a> 
+         <hr> </li>
+       </ol> </li> 
+     </ol> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874192/21365384.png">doRegisterBP.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874192/21365383.png">readyToCallAlice.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874192/21365382.png">psych.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874192/21365381.png">startToRegisterBob.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874192/21365385.png">postLoginAlice.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874192/21365379.png">addExpiresHeader.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874192/21365378.png">expireHeaderMissing.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874192/21365377.png">agentInstalled.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874192/21365380.png">deployedAndOpen.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874192/21365376.png">installAgent1.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874192/21365375.png">fullSizeWindow.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874192/21365374.png">prepRegisterAliceRequest.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874192/21365373.png">aliceRegistered.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874192/21365366.png">attachToServer.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874192/21365365.png">installAgent2.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874192/21365364.png">bobRegistered.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874192/21365362.png">bobRegistrationReady.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874192/21365363.png">IndexJsp.png</a> (image/png) 
+      <br> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:48.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

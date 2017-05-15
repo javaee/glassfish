@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : V3.1MetroOnePager</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="V3.1MetroOnePager-Metro2.1OnePager"></a>Metro 2.1 One Pager</h1> <style type="text/css">/*<![CDATA[*/
+div.rbtoc1279126255896 {margin-left: 1.5em;padding: 0px;}
+div.rbtoc1279126255896 ul {list-style: disc;margin-left: 0px;}
+div.rbtoc1279126255896 li {margin-left: 0px;padding-left: 0px;}
+
+/*]] >*/</style>
+     <div class="rbtoc1279126255896"> 
+      <ul> 
+       <li><a href="#V3.1MetroOnePager-Metro2.1OnePager">Metro 2.1 One Pager</a></li> 
+       <li><a href="#V3.1MetroOnePager-1.Introduction">1. Introduction</a></li> 
+       <ul> 
+        <li><a href="#V3.1MetroOnePager-1.1.Project%2FComponentWorkingName%3A">1.1. Project/Component Working Name:</a></li> 
+        <li><a href="#V3.1MetroOnePager-1.2.Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier%3A">1.2. Name(s) and e-mail address of Document Author(s)/Supplier:</a></li> 
+        <li><a href="#V3.1MetroOnePager-1.3.DateofThisDocument%3A">1.3. Date of This Document:</a></li> 
+       </ul> 
+       <li><a href="#V3.1MetroOnePager-2.ProjectSummary">2. Project Summary</a></li> 
+       <ul> 
+        <li><a href="#V3.1MetroOnePager-2.1.ProjectDescription%3A">2.1. Project Description:</a></li> 
+        <li><a href="#V3.1MetroOnePager-2.2.RisksandAssumptions%3A">2.2. Risks and Assumptions:</a></li> 
+        <ul> 
+         <li><a href="#V3.1MetroOnePager-2.2.1PolicyAlternativesinMetroSecurity">2.2.1 Policy Alternatives in Metro Security</a></li> 
+         <li><a href="#V3.1MetroOnePager-2.2.2MetroHighAvailabilitySupport">2.2.2 Metro High Availability Support</a></li> 
+        </ul> 
+       </ul> 
+       <li><a href="#V3.1MetroOnePager-3.ProblemSummary">3. Problem Summary</a></li> 
+       <ul> 
+        <li><a href="#V3.1MetroOnePager-3.1.ProblemArea%3A">3.1. Problem Area:</a></li> 
+        <ul> 
+         <li><a href="#V3.1MetroOnePager-3.1.1PolicyAlternativesinMetroSecurity">3.1.1 Policy Alternatives in Metro Security</a></li> 
+         <li><a href="#V3.1MetroOnePager-3.1.2MetroHighAvailabilitySupport">3.1.2 Metro High Availability Support</a></li> 
+         <li><a href="#V3.1MetroOnePager-3.1.3WSICompliance">3.1.3 WS-I Compliance</a></li> 
+         <li><a href="#V3.1MetroOnePager-3.1.4Mavenization">3.1.4 Mavenization</a></li> 
+         <li><a href="#V3.1MetroOnePager-3.1.5UnifiedConfiguration">3.1.5 Unified Configuration</a></li> 
+         <li><a href="#V3.1MetroOnePager-3.1.6SupportforErrorHandlinginWSTrust">3.1.6 Support for Error Handling in WS-Trust</a></li> 
+         <li><a href="#V3.1MetroOnePager-3.1.7TimeSkewforWSTrustandWSSecureConversationTokenLifetime">3.1.7 Time Skew for WS-Trust and WS-SecureConversation Token Lifetime</a></li> 
+         <li><a href="#V3.1MetroOnePager-3.1.8Servlet3.0AsyncSupport">3.1.8 Servlet 3.0 Async Support</a></li> 
+         <li><a href="#V3.1MetroOnePager-3.1.9TestharnesssupportforGlassFishv3.x">3.1.9 Test harness support for GlassFish v3.x</a></li> 
+         <li><a href="#V3.1MetroOnePager-3.1.10wsimportclientjaroption">3.1.10 wsimport -clientjar option</a></li> 
+         <li><a href="#V3.1MetroOnePager-3.1.11Embeddedglassfishandwebservices">3.1.11 Embedded glassfish and webservices</a></li> 
+         <li><a href="#V3.1MetroOnePager-3.1.12SupportWebLogic109deploymentdescriptors">3.1.12 Support Web Logic 109 deployment descriptors</a></li> 
+         <li><a href="#V3.1MetroOnePager-3.1.13UpdatingWSATimplementationtosupportstandardversion">3.1.13 Updating WS-AT implementation to support standard version</a></li> 
+        </ul> 
+        <li><a href="#V3.1MetroOnePager-3.2.Justification%3A">3.2. Justification:</a></li> 
+        <ul> 
+         <li><a href="#V3.1MetroOnePager-3.2.1PolicyAlternativesinMetroSecurity">3.2.1 Policy Alternatives in Metro Security</a></li> 
+         <li><a href="#V3.1MetroOnePager-3.2.2MetroHighAvailabilitySupport">3.2.2 Metro High Availability Support</a></li> 
+         <li><a href="#V3.1MetroOnePager-3.2.3WSICompliance">3.2.3 WS-I Compliance</a></li> 
+         <li><a href="#V3.1MetroOnePager-3.2.4Mavenization">3.2.4 Mavenization</a></li> 
+         <li><a href="#V3.1MetroOnePager-3.2.5UnifiedConfiguration">3.2.5 Unified Configuration</a></li> 
+         <li><a href="#V3.1MetroOnePager-3.2.6SupportforErrorHandlinginWSTrust">3.2.6 Support for Error Handling in WS-Trust</a></li> 
+         <li><a href="#V3.1MetroOnePager-3.2.7TimeSkewforWSTrustandWSSecureConversationTokenLifetime">3.2.7 Time Skew for WS-Trust and WS-SecureConversation Token Lifetime</a></li> 
+         <li><a href="#V3.1MetroOnePager-3.2.8Servlet3.0AsyncSupport">3.2.8 Servlet 3.0 Async Support</a></li> 
+         <li><a href="#V3.1MetroOnePager-3.2.9TestharnesssupportforGlassFishv3.x">3.2.9 Test harness support for GlassFish v3.x</a></li> 
+         <li><a href="#V3.1MetroOnePager-3.2.10wsimportclientjaroption">3.2.10 wsimport -clientjar option</a></li> 
+         <li><a href="#V3.1MetroOnePager-3.2.11EmbeddedGlassFishandwebservices">3.2.11 Embedded GlassFish and web services</a></li> 
+         <li><a href="#V3.1MetroOnePager-3.2.12SupportWebLogic109deploymentdescriptors">3.2.12 Support Web Logic 109 deployment descriptors</a></li> 
+         <li><a href="#V3.1MetroOnePager-3.2.13UpdatingWSATimplementationtosupportstandardversion">3.2.13 Updating WS-AT implementation to support standard version</a></li> 
+        </ul> 
+       </ul> 
+       <li><a href="#V3.1MetroOnePager-4.TechnicalDescription%3A">4. Technical Description:</a></li> 
+       <ul> 
+        <li><a href="#V3.1MetroOnePager-4.1.Details%3A">4.1. Details:</a></li> 
+        <ul> 
+         <li><a href="#V3.1MetroOnePager-4.1.1PolicyAlternativesinMetroSecurity">4.1.1 Policy Alternatives in Metro Security</a></li> 
+         <li><a href="#V3.1MetroOnePager-4.1.2MetroHighAvailabilitySupport">4.1.2 Metro High Availability Support</a></li> 
+         <li><a href="#V3.1MetroOnePager-4.1.3WSICompliance">4.1.3 WS-I Compliance</a></li> 
+         <li><a href="#V3.1MetroOnePager-4.1.4Mavenization">4.1.4 Mavenization</a></li> 
+         <li><a href="#V3.1MetroOnePager-4.1.5UnifiedConfiguration">4.1.5 Unified Configuration</a></li> 
+         <li><a href="#V3.1MetroOnePager-4.1.6SupportforErrorHandlinginWSTrust">4.1.6 Support for Error Handling in WS-Trust</a></li> 
+         <li><a href="#V3.1MetroOnePager-4.1.7TimeSkewforWSTrustandWSSecureConversationTokenLifetime">4.1.7 Time Skew for WS-Trust and WS-SecureConversation Token Lifetime</a></li> 
+         <li><a href="#V3.1MetroOnePager-4.1.8Servlet3.0AsyncSupport">4.1.8 Servlet 3.0 Async Support</a></li> 
+         <li><a href="#V3.1MetroOnePager-4.1.9TestharnesssupportforGlassFishv3.x">4.1.9 Test harness support for GlassFish v3.x</a></li> 
+         <li><a href="#V3.1MetroOnePager-4.1.10wsimportclientjaroption">4.1.10 wsimport -clientjar option</a></li> 
+         <li><a href="#V3.1MetroOnePager-4.1.11Embeddedglassfishandwebservices">4.1.11 Embedded glassfish and webservices</a></li> 
+         <li><a href="#V3.1MetroOnePager-4.1.12SupportWebLogic109deploymentdescriptors">4.1.12 Support Web Logic 109 deployment descriptors</a></li> 
+         <li><a href="#V3.1MetroOnePager-4.1.13UpdatingWSATimplementationtosupportstandardversion">4.1.13 Updating WS-AT implementation to support standard version</a></li> 
+        </ul> 
+        <li><a href="#V3.1MetroOnePager-4.2.Bug%2FRFENumber%28s%29%3A">4.2. Bug/RFE Number(s):</a></li> 
+        <ul> 
+         <li><a href="#V3.1MetroOnePager-4.2.1Servlet3.0AsyncSupport">4.2.1 Servlet 3.0 Async Support</a></li> 
+        </ul> 
+        <li><a href="#V3.1MetroOnePager-4.3.InScope%3A">4.3. In Scope:</a></li> 
+        <li><a href="#V3.1MetroOnePager-4.4.OutofScope%3A">4.4. Out of Scope:</a></li> 
+        <li><a href="#V3.1MetroOnePager-4.5.Interfaces%3A">4.5. Interfaces:</a></li> 
+        <ul> 
+         <li><a href="#V3.1MetroOnePager-4.5.1PublicInterfaces">4.5.1 Public Interfaces</a></li> 
+         <li><a href="#V3.1MetroOnePager-4.5.2PrivateInterfaces">4.5.2 Private Interfaces</a></li> 
+         <li><a href="#V3.1MetroOnePager-4.5.3Deprecated%2FRemovedInterfaces%3A">4.5.3 Deprecated/Removed Interfaces:</a></li> 
+        </ul> 
+        <li><a href="#V3.1MetroOnePager-4.6.DocImpact%3A">4.6. Doc Impact:</a></li> 
+        <li><a href="#V3.1MetroOnePager-4.7.Admin%2FConfigImpact%3A">4.7. Admin/Config Impact:</a></li> 
+        <ul> 
+         <li><a href="#V3.1MetroOnePager-4.7.1UnifiedConfiguration">4.7.1 Unified Configuration</a></li> 
+        </ul> 
+        <li><a href="#V3.1MetroOnePager-4.8.HAImpact%3A">4.8. HA Impact:</a></li> 
+        <li><a href="#V3.1MetroOnePager-4.9.I18N%2FL10NImpact%3A">4.9. I18N/L10N Impact:</a></li> 
+        <li><a href="#V3.1MetroOnePager-4.10.Packaging%2CDelivery%26Upgrade%3A">4.10. Packaging, Delivery &amp; Upgrade:</a></li> 
+        <ul> 
+         <li><a href="#V3.1MetroOnePager-4.10.1.Packaging">4.10.1. Packaging</a></li> 
+         <li><a href="#V3.1MetroOnePager-4.10.2.Delivery">4.10.2. Delivery</a></li> 
+         <li><a href="#V3.1MetroOnePager-4.10.3.UpgradeandMigration%3A">4.10.3. Upgrade and Migration:</a></li> 
+        </ul> 
+        <li><a href="#V3.1MetroOnePager-4.11.SecurityImpact%3A">4.11. Security Impact:</a></li> 
+        <li><a href="#V3.1MetroOnePager-4.12.CompatibilityImpact">4.12. Compatibility Impact</a></li> 
+        <li><a href="#V3.1MetroOnePager-4.13.Dependencies%3A">4.13. Dependencies:</a></li> 
+        <ul> 
+         <li><a href="#V3.1MetroOnePager-4.13.1InternalDependencies">4.13.1 Internal Dependencies</a></li> 
+         <li><a href="#V3.1MetroOnePager-4.13.2ExternalDependencies">4.13.2 External Dependencies</a></li> 
+        </ul> 
+        <li><a href="#V3.1MetroOnePager-4.14.TestingImpact%3A">4.14. Testing Impact:</a></li> 
+       </ul> 
+       <li><a href="#V3.1MetroOnePager-5.ReferenceDocuments%3A">5. Reference Documents:</a></li> 
+       <li><a href="#V3.1MetroOnePager-6.Schedule%3A">6. Schedule:</a></li> 
+       <ul> 
+        <li><a href="#V3.1MetroOnePager-6.1.ProjectedAvailability%3A">6.1. Projected Availability:</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="V3.1MetroOnePager-1.Introduction"></a>1. Introduction</h1> <h4><a name="V3.1MetroOnePager-1.1.Project%2FComponentWorkingName%3A"></a>1.1. Project/Component Working Name: </h2> <p>Metro 2.1</p> <h4><a name="V3.1MetroOnePager-1.2.Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier%3A"></a>1.2. Name(s) and e-mail address of Document Author(s)/Supplier:</h2> 
+     <ul> 
+      <li>Bhakti Mehta: bhakti.mehta at oracle.com</li> 
+      <li>Jiandong Guo: jiandong.guo at oracle.com</li> 
+      <li>Jitendra Kotamraju: jitendra.kotamraju at oracle.com</li> 
+      <li>Kumar Jayanti: vbkumar.jayanti at sun.com</li> 
+      <li>Marek Potociar: marek.potociar at sun.com</li> 
+      <li>Rama Pulavarthi: rama.pulavarthi at oracle.com</li> 
+     </ul> <h4><a name="V3.1MetroOnePager-1.3.DateofThisDocument%3A"></a>1.3. Date of This Document:</h2> <p>05/20/10</p> <h4><a name="V3.1MetroOnePager-2.ProjectSummary"></a>2. Project Summary</h1> <h4><a name="V3.1MetroOnePager-2.1.ProjectDescription%3A"></a>2.1. Project Description:</h2> <p>This project comprises various features and improvements that are targeted for Metro 2.1 release. The main focus is on:</p> 
+     <ul> 
+      <li>Policy alternatives in security</li> 
+      <li>Fixes for licensee challenges and CTS failures</li> 
+      <li>Implementing HA support in Metro</li> 
+      <li>Various architectural clean-ups and usability improvement features</li> 
+      <li>Interoperability (WS-I, .NET 4.0, other Oracle stacks)</li> 
+      <li>Embedded glassfish and webservices</li> 
+      <li>Support Web Logic 109 deployment descriptors</li> 
+      <li>Updating WS-AT implementation to support standard version</li> 
+     </ul> <h4><a name="V3.1MetroOnePager-2.2.RisksandAssumptions%3A"></a>2.2. Risks and Assumptions:</h2> <h4><a name="V3.1MetroOnePager-2.2.1PolicyAlternativesinMetroSecurity"></a>2.2.1 Policy Alternatives in Metro Security</h3> <p> The design for Policy Alternatives in Metro 2.1 is being tracked <a href="Metro2.1PolicyAlternatives.html" title="Metro2.1PolicyAlternatives">here</a>. The design is work-in-progress and is in intial stages. Please see the risks section of the document.</p> <h4><a name="V3.1MetroOnePager-2.2.2MetroHighAvailabilitySupport"></a>2.2.2 Metro High Availability Support</h3> <p>Metro HA support has a direct dependencies on the Glassish HA API and depends on the ability of GF HA infrastructure to deal with replication of the unacknowledged SOAP message payloads. While the size of a SOAP message payload is not limited in general, we assume that 90% of the common SOAP messaging use cases can be satisfied by message payloads of size less than 100KB. </p> <p>Metro HA needs to be able to specify different SLAs for different backing stores and relies on the GF HA API to at least provide the ability to specify different SLAs. Note that Metro HA does not require all the SLAs to be initially supported/implemented by GF HA API.</p> <p>Metro components are used upstack and all of Metro is used in other containers. Since Metro will introduce a dependency on the GF HA API, it is critical that GF HA API remains be independent of other GF code. This should also ensure that Metro standalone bundle size does not increase unreasonably.</p> <h4><a name="V3.1MetroOnePager-3.ProblemSummary"></a>3. Problem Summary</h1> <h4><a name="V3.1MetroOnePager-3.1.ProblemArea%3A"></a>3.1. Problem Area:</h2> <h4><a name="V3.1MetroOnePager-3.1.1PolicyAlternativesinMetroSecurity"></a>3.1.1 Policy Alternatives in Metro Security</h3> <p> The design for Policy Alternatives in Metro 2.1 is being tracked <a href="Metro2.1PolicyAlternatives.html" title="Metro2.1PolicyAlternatives">here</a>.</p> <h4><a name="V3.1MetroOnePager-3.1.2MetroHighAvailabilitySupport"></a>3.1.2 Metro High Availability Support</h3> <p>Nonce manager, Secured conversation and Reliable messaging domains provide stateful conversation. In clustered environment, these states must be properly replicated to provide NM, SC and RM fail-over. We do NOT plan to provide HA support for stateful web services.</p> <h4><a name="V3.1MetroOnePager-3.1.3WSICompliance"></a>3.1.3 WS-I Compliance</h3> <p>The goal is to support latest versions of standardized interoperability profiles and specifications in Metro.</p> <h4><a name="V3.1MetroOnePager-3.1.4Mavenization"></a>3.1.4 Mavenization</h3> <p>With WSIT/Metro mavenization we aim to decouple Metro and WSIT builds and switch the build system from ANT to MAVEN to better align our build system to the one used by GFv3.</p> <h4><a name="V3.1MetroOnePager-3.1.5UnifiedConfiguration"></a>3.1.5 Unified Configuration</h3> <p>A new single configuration file capable to capture all configuration aspects of a WS developed and deployed on top of the Metro stack will be introduced.</p> <h4><a name="V3.1MetroOnePager-3.1.6SupportforErrorHandlinginWSTrust"></a>3.1.6 Support for Error Handling in WS-Trust</h3> <p>Standard error codes are introduced in WS-Trust/SC spec.</p> <h4><a name="V3.1MetroOnePager-3.1.7TimeSkewforWSTrustandWSSecureConversationTokenLifetime"></a>3.1.7 Time Skew for WS-Trust and WS-SecureConversation Token Lifetime</h3> <p>We will add support for configuring skew of time for the difference allowed for the system clocks of the sender and recipient.</p> <h4><a name="V3.1MetroOnePager-3.1.8Servlet3.0AsyncSupport"></a>3.1.8 Servlet 3.0 Async Support</h3> <p>We will add an asynchronous transport using Servlet 3.0 API for AsyncProvider endpoints.</p> <h4><a name="V3.1MetroOnePager-3.1.9TestharnesssupportforGlassFishv3.x"></a>3.1.9 Test harness support for GlassFish v3.x</h3> <p>Existing test harness will be extended to support GlassFish v3.x as one of the test platforms.</p> <h4><a name="V3.1MetroOnePager-3.1.10wsimportclientjaroption"></a>3.1.10 wsimport -clientjar option</h3> <p>The proposed switch will provide a complete solution for avioding the need to fetch the WSDL/schemas from the remote endpoint during a service creation.</p> <h4><a name="V3.1MetroOnePager-3.1.11Embeddedglassfishandwebservices"></a>3.1.11 Embedded glassfish and webservices</h3> <p>The jsr 109 devtests will be modified to support deployment in embedded GlassFish</p> <h4><a name="V3.1MetroOnePager-3.1.12SupportWebLogic109deploymentdescriptors"></a>3.1.12 Support Web Logic 109 deployment descriptors</h3> <p>Web Logic application server provides extensions to the standard configuration allowed by JSR-109 deployment descriptors and uses weblogic-webservices.xml for storing such configuration. The goal is to first support the configuration that require minimal work using existing functionality in Metro/GlassFish.</p> <h4><a name="V3.1MetroOnePager-3.1.13UpdatingWSATimplementationtosupportstandardversion"></a>3.1.13 Updating WS-AT implementation to support standard version</h3> <p>Out-dated implementation of pre-standardized version of WS-AtomicTransactions protocol will be updated to support standardized WS-AtomicTransactions protocol/specification.</p> <h4><a name="V3.1MetroOnePager-3.2.Justification%3A"></a>3.2. Justification:</h2> <h4><a name="V3.1MetroOnePager-3.2.1PolicyAlternativesinMetroSecurity"></a>3.2.1 Policy Alternatives in Metro Security</h3> <p>Product Management has defined Interop Scenarios between Metro 2.1 and OWSM/WLS some of which require support for Policy Alternatives within Metro in the most generic sense.</p> <h4><a name="V3.1MetroOnePager-3.2.2MetroHighAvailabilitySupport"></a>3.2.2 Metro High Availability Support</h3> <p>Currently, the stateful features in Metro are not usable in clustered environment. Since Metro provides WS runtime for GlassFish, GlassFish HA story cannot be complete without Metro HA support. Our effort in this task aim to address these issues.</p> <h4><a name="V3.1MetroOnePager-3.2.3WSICompliance"></a>3.2.3 WS-I Compliance</h3> <p>To maintain the position of the leading open-source Java WS stack, Metro needs to make sure it is interoperable with other vendors' implementations. The best way how to achieve this is by making sure Metro is compliant with the latest WS-I profiles, namely</p> 
+     <ul> 
+      <li>BP 1.2/2.0</li> 
+      <li>BSP 1.1</li> 
+      <li>RSP 1.0</li> 
+     </ul> <h4><a name="V3.1MetroOnePager-3.2.4Mavenization"></a>3.2.4 Mavenization</h3> <p>Metro/WSIT mavenization should result in a transparent and simplified dependency management, improved modularization of the code, natural identification of inter-module dependencies and (internal) APIs as well as reduced cost of build and RE maintenance.</p> <h4><a name="V3.1MetroOnePager-3.2.5UnifiedConfiguration"></a>3.2.5 Unified Configuration</h3> <p>Improved developer and system administrator user experience.</p> <h4><a name="V3.1MetroOnePager-3.2.6SupportforErrorHandlinginWSTrust"></a>3.2.6 Support for Error Handling in WS-Trust</h3> <p>Usability improvement - resolving problems with the user transactions being interrupted in certain cases.</p> <h4><a name="V3.1MetroOnePager-3.2.7TimeSkewforWSTrustandWSSecureConversationTokenLifetime"></a>3.2.7 Time Skew for WS-Trust and WS-SecureConversation Token Lifetime</h3> <p>Issued tokens and security contexts are only valid in a period of time. The support for configuring skew of time for the difference allowed for the system clocks of the sender and recipient will address the expiration issues in cases when the clocks of a sender and a receiver are not in sync.</p> <h4><a name="V3.1MetroOnePager-3.2.8Servlet3.0AsyncSupport"></a>3.2.8 Servlet 3.0 Async Support</h3> <p>Servlet 3.0 Async API+ AsyncProvider will provide a scalable solution on the server side. This can also be used to evaluate SEI async support.</p> <h4><a name="V3.1MetroOnePager-3.2.9TestharnesssupportforGlassFishv3.x"></a>3.2.9 Test harness support for GlassFish v3.x</h3> <p>JAX-WS unit tets can be run in multiple environments: Tomcat, GlassFish v2, in-vm, lwshs, JaxwsInJDK. Test harness will be extended so that JAX-WS/Metro unit tests can also be run on GlassFish v3.x.</p> <h4><a name="V3.1MetroOnePager-3.2.10wsimportclientjaroption"></a>3.2.10 wsimport -clientjar option</h3> <p>There are currently few solutions in the client-side programming model to avoid fetching a rempte WSDL during service creation (e.g. using catalog), but they are not complete. The proposed switch gets the WSDL/schemas, fixes the import locations, jars all the generated artifacts. Generated service is also modified to refer to the WSDL in the jar file.</p> <h4><a name="V3.1MetroOnePager-3.2.11EmbeddedGlassFishandwebservices"></a>3.2.11 Embedded GlassFish and web services</h3> <p>This is a requirement in 3.1 to support embedded GlassFish and deployment of web services.</p> <h4><a name="V3.1MetroOnePager-3.2.12SupportWebLogic109deploymentdescriptors"></a>3.2.12 Support Web Logic 109 deployment descriptors</h3> <p>This allows for Web Services developed for Web Logic to run on GlassFish with little intervention.</p> <h4><a name="V3.1MetroOnePager-3.2.13UpdatingWSATimplementationtosupportstandardversion"></a>3.2.13 Updating WS-AT implementation to support standard version</h3> <p>Existing outdated WS-AT implementation will be updated to support widely adopted standard WS-AT version for increased interoperability.</p> <h4><a name="V3.1MetroOnePager-4.TechnicalDescription%3A"></a>4. Technical Description:</h1> <h4><a name="V3.1MetroOnePager-4.1.Details%3A"></a>4.1. Details:</h2> <h4><a name="V3.1MetroOnePager-4.1.1PolicyAlternativesinMetroSecurity"></a>4.1.1 Policy Alternatives in Metro Security</h3> <p> The design for Policy Alternatives in Metro 2.1 is being tracked <a href="Metro2.1PolicyAlternatives.html" title="Metro2.1PolicyAlternatives">here</a>. The design is work-in-progress and is in its initial stages.</p> <h4><a name="V3.1MetroOnePager-4.1.2MetroHighAvailabilitySupport"></a>4.1.2 Metro High Availability Support</h3> <p>As part of this feature, Metro HA is intended to be available only on GlassFish 3.1 and later. To support the stateful features in a clustered environment we need to identify all the state information that needs to be saved and replicated and update Metro implementation to support the state saving as well as state recovery from a replica in case of a node failure. Our focus is primarily on HA support in the areas of SC and RM. Optionally, we may be supporting HA for stateful web services. We do NOT plan to support HA for transactional WS.</p> <p>Metro needs to run also on containers that are not expected to provide support for GF HA API. To avoid multiple execution paths in the Metro code when running on containers other than GF, Metro will provide an own "NO-OP" implementation of GF HA API, that will be used when running outside GF. As the name suggests, this "NO-OP" implementation will not provide any HA support but will ensure that Metro can internally is able to maintain only a single code execution path that uses GF HA API even if running outside of GF.</p> <h4><a name="V3.1MetroOnePager-4.1.3WSICompliance"></a>4.1.3 WS-I Compliance</h3> <p>We need to develop a sets of predefined test scenarios for each supported WS-I profile and validate the compliance by successfully running these test cases against our own implementation as well as against implementations of other vendors (MS, IBM). The actual test scenarios in RSP and BSP domains will be implemented by external contractors.</p> <h4><a name="V3.1MetroOnePager-4.1.4Mavenization"></a>4.1.4 Mavenization</h3> <p>Currently, the Metro build process is ant-based and is tightly integrated into the build of WSIT/Tango. As a project with a significant number of dependencies, dependency management becomes more and more challenging. At the same time, Metro needs to provide maven artifacts to correctly integrate with GF. </p> <p>In this effort we aim to decouple Metro and WSIT builds and switch the build system from ANT to MAVEN to better align our build system to the one used by GFv3. As a result, we plan to achieve a transparent and simplified dependency management, improved modularization of the code, natural identification of inter-module dependencies and (internal) APIs as well as reduced cost of build and RE maintenance.</p> <h4><a name="V3.1MetroOnePager-4.1.5UnifiedConfiguration"></a>4.1.5 Unified Configuration</h3> <p>As part of this feature we plan to introduce a new single configuration file for all domains and all configuration options of the Metro stack as opposed to current approach that may require users to use multiple configuration files to configure a single web service. The new configuration file format should also be better aligned with the standard webservices.xml format as defined in JSR109. As part of the feature we plan to design mechanisms that would allow us to provide unified support for other deployment descriptors, with an initial focus on the support for the WebLogic Web Services deployment descriptor.</p> <h4><a name="V3.1MetroOnePager-4.1.6SupportforErrorHandlinginWSTrust"></a>4.1.6 Support for Error Handling in WS-Trust</h3> <p>Standard error codes are introduced in WS-Trust/SC spec. We will use some of them as thrown by the server to enable automatic session renew to avoid that the user transaction being interrupted.</p> <h4><a name="V3.1MetroOnePager-4.1.7TimeSkewforWSTrustandWSSecureConversationTokenLifetime"></a>4.1.7 Time Skew for WS-Trust and WS-SecureConversation Token Lifetime</h3> <p>Issued tokens and security contexts are only valid in a period of time. We will add support for configuring skew of time for the difference allowed for the system clocks of the sender and recipient. Used in case that the clocks may not be in sync.</p> <h4><a name="V3.1MetroOnePager-4.1.8Servlet3.0AsyncSupport"></a>4.1.8 Servlet 3.0 Async Support</h3> <p>ServletAdapter needs to recognize that an application is deployed in a Servlet 3 container, and uses Servlet 3 asynchronous API for AsyncProvider endpoints. It wouldn't affect applications deployed in Servlet 2.x containers. This support will be added for both sun-jaxws.xml and 109 deployments.</p> <h4><a name="V3.1MetroOnePager-4.1.9TestharnesssupportforGlassFishv3.x"></a>4.1.9 Test harness support for GlassFish v3.x</h3> <p>Test harness will be extended to support GlassFish v3.x by using asadmin/REST api.</p> <h4><a name="V3.1MetroOnePager-4.1.10wsimportclientjaroption"></a>4.1.10 wsimport -clientjar option</h3> <p>Client side programming model involves creating a Service object and that in turn fetches WSDL during service creation. There are few solutions to avoid this(using catalog), but they are not complete. The proposed switch gets the WSDL/schemas, fixes the import locations, jars all the generated artifacts. Generated service is also modified to refer to the WSDL in the jar file.</p> <h4><a name="V3.1MetroOnePager-4.1.11Embeddedglassfishandwebservices"></a>4.1.11 Embedded glassfish and webservices</h3> <p>For the first pass we will modify our devtests to start glassfish in embedded mode and run our tests and identify the issues. Then we will target on fixing these issues by M5</p> <h4><a name="V3.1MetroOnePager-4.1.12SupportWebLogic109deploymentdescriptors"></a>4.1.12 Support Web Logic 109 deployment descriptors</h3> <p>Web Logic application server provides extensions to the standard configuration allowed by JSR-109 deployment descriptors and uses weblogic-webservices.xml for storing such configuration. The <span class="error">[wiki page|^SupportWLDDInContainers#section-SupportWLDDInContainers-WebservicesWeblogicWebservices.xml]</span> captures the extra configuration elements in weblogic-webservices.xml. The goal is to first support processing weblogic-webservices.xml which contains the standard configuration allowed by JSR-109. Then the possible next step is to support the configuration/features that require minimal work using existing functionality in Metro/GlassFish.</p> <h4><a name="V3.1MetroOnePager-4.1.13UpdatingWSATimplementationtosupportstandardversion"></a>4.1.13 Updating WS-AT implementation to support standard version</h3> <p>Obsolete existing implementation will be replaced by an implementation that provides support for standard version of WS-AT protocol. The new implementation will also deprecate the manual step of deploying wstx-services.war, which is currently required to enable WS-AT support in Metro. </p> <h4><a name="V3.1MetroOnePager-4.2.Bug%2FRFENumber%28s%29%3A"></a>4.2. Bug/RFE Number(s):</h2> <h4><a name="V3.1MetroOnePager-4.2.1Servlet3.0AsyncSupport"></a>4.2.1 Servlet 3.0 Async Support</h3> 
+     <ul> 
+      <li>This transport will help in evaluating(but not resolving) issue <a href="https://jax-ws.java.net/issues/show_bug.cgi-787">787</a></li> 
+     </ul> <h4><a name="V3.1MetroOnePager-4.3.InScope%3A"></a>4.3. In Scope:</h2> <p>See chapter 4.1 above.</p> <h4><a name="V3.1MetroOnePager-4.4.OutofScope%3A"></a>4.4. Out of Scope:</h2> <p>See chapter 4.1 above.</p> <h4><a name="V3.1MetroOnePager-4.5.Interfaces%3A"></a>4.5. Interfaces:</h2> <h4><a name="V3.1MetroOnePager-4.5.1PublicInterfaces"></a>4.5.1 Public Interfaces</h3> <p><b>Unified Configuration</b></p> 
+     <ul> 
+      <li><tt>metro-webservices.xml</tt> - new single Metro configuration file</li> 
+     </ul> <p><b>Updating WS-AT implementation to support standard version</b></p> 
+     <ul> 
+      <li><tt>@Transactional</tt> annotation, <tt>TransactionalFeature</tt> web service feature - programming API enablers of WS-AT feature</li> 
+      <li><tt>wsat:ATAssertion</tt>, <tt>wsat:ATAllwaysCapability</tt> standard WS-AtomicTransaction policy assertions</li> 
+     </ul> <h4><a name="V3.1MetroOnePager-4.5.2PrivateInterfaces"></a>4.5.2 Private Interfaces</h3> <p>None identified at this time</p> <h4><a name="V3.1MetroOnePager-4.5.3Deprecated%2FRemovedInterfaces%3A"></a>4.5.3 Deprecated/Removed Interfaces:</h3> <p>None identified at this time</p> <h4><a name="V3.1MetroOnePager-4.6.DocImpact%3A"></a>4.6. Doc Impact:</h2> 
+     <ul> 
+      <li><a href="https://metro.java.net/guide">Metro User Guide</a></li> 
+     </ul> <h4><a name="V3.1MetroOnePager-4.7.Admin%2FConfigImpact%3A"></a>4.7. Admin/Config Impact:</h2> <h4><a name="V3.1MetroOnePager-4.7.1UnifiedConfiguration"></a>4.7.1 Unified Configuration</h3> <p>A new deployment descriptor/configuration file will be supported for web service configuration. No changes to GlassFish GUIs, CLI, agents, plugins are expected however.</p> <h4><a name="V3.1MetroOnePager-4.8.HAImpact%3A"></a>4.8. HA Impact:</h2> <p>Cluster support is a planned feature of the module. We have additional requirements on GlassFish HA API module - see section <a href="#V3.1MetroOnePager-sectionV3.1MetroOnePager4.1.2MetroHighAvailabi...">4.1.2</a> for more details</p> <h4><a name="V3.1MetroOnePager-4.9.I18N%2FL10NImpact%3A"></a>4.9. I18N/L10N Impact:</h2> <p>Not anticipated.</p> <h4><a name="V3.1MetroOnePager-4.10.Packaging%2CDelivery%26Upgrade%3A"></a>4.10. Packaging, Delivery &amp; Upgrade:</h2> <h4><a name="V3.1MetroOnePager-4.10.1.Packaging"></a>4.10.1. Packaging</h3> <p>Proposal will affect only the existing set of Metro OSGi bundles already shipped with the GlassFish server.</p> <h4><a name="V3.1MetroOnePager-4.10.2.Delivery"></a>4.10.2. Delivery</h3> <p>No impact on delivery. The module is already included in the distribution. </p> <h4><a name="V3.1MetroOnePager-4.10.3.UpgradeandMigration%3A"></a>4.10.3. Upgrade and Migration:</h3> <p>All changes either introduce a new functionality or are intended to remain backward-compatible. There is no known impact on existing instances or clients at this time.</p> <h4><a name="V3.1MetroOnePager-4.11.SecurityImpact%3A"></a>4.11. Security Impact:</h2> <p>Metro security is fully aligned with GlassFish security concepts, mechanisms and APIs.</p> <h4><a name="V3.1MetroOnePager-4.12.CompatibilityImpact"></a>4.12. Compatibility Impact</h2> <p>Metro HA feature has a dependency on the GlassFish 3.1 HA API module. As such Metro 2.1 will only work with GlassFish 3.1 or later, unless the Metro 2.1 OSGi module is modified to bundle HA API classes. Another option is to generate a separate Metro 2.1 OSGi bundle for GlassFish 3.0.x.</p> <p>Newly updated WS-AT implementation will not be fully backward compatible with the existing implementation in case of applications developed using the "from Java" programming model. Additional annotation or entry in the external Metro configuration file will have to be added to re-enable WS-AT capability of such applications. A migration path will be documented as part of the official Metro User's Guide. </p> <h4><a name="V3.1MetroOnePager-4.13.Dependencies%3A"></a>4.13. Dependencies:</h2> <h4><a name="V3.1MetroOnePager-4.13.1InternalDependencies"></a>4.13.1 Internal Dependencies </h3> 
+     <ul> 
+      <li><a href="GlassFish3.1HAOnePager.html" title="GlassFish3.1HAOnePager">In-memory session replication API</a></li> 
+      <li><a href="3.1Security1Pager.html" title="3.1Security1Pager">Security </a></li> 
+     </ul> <h4><a name="V3.1MetroOnePager-4.13.2ExternalDependencies"></a>4.13.2 External Dependencies </h3> 
+     <ul> 
+      <li><a href="https://metro.java.net/">Metro</a></li> 
+     </ul> <h4><a name="V3.1MetroOnePager-4.14.TestingImpact%3A"></a>4.14. Testing Impact:</h2> <p>Existing Metro test suite will be extended with additional SQE, E2E and unit tests as appropriate for each feature of the project.</p> <h4><a name="V3.1MetroOnePager-5.ReferenceDocuments%3A"></a>5. Reference Documents:</h1> 
+     <ul> 
+      <li><a href="3.1Metro.html" title="3.1Metro">Project page</a></li> 
+     </ul> <h4><a name="V3.1MetroOnePager-6.Schedule%3A"></a>6. Schedule:</h1> <h4><a name="V3.1MetroOnePager-6.1.ProjectedAvailability%3A"></a>6.1. Projected Availability:</h2> <p>See <a href="3.1Metro.html#3.1Metro-section3.1MetroTaskList">project task list</a></p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 14, 2010 by 
+<font color="#0050B2">marek_potociar</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

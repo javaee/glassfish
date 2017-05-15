@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : V3GuiAccessURL</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p><a href="GlassFishV3AdminConsole.html" title="GlassFishV3AdminConsole">Back to GlassFish V3 Admin Console </a></p> <h4><a name="V3GuiAccessURL-WhatURLdoIusetoaccessGlassFishv3PreludeAdminConcole%3F"></a>What URL do I use to access GlassFish v3 Prelude Admin Concole ?</h2> <p>It should be </p> <h4><a name="V3GuiAccessURL-http%3A%2F%2F%26lt%3Bhostname%3E%3A4848%2F"></a><b><a href="http://<hostname">http://&amp;lt;hostname</a>&gt;:4848/</b></h2> <p>and by default, the login screen will be by-passed and you should be at the CommonTask Page.</p> <p><b>The information below was out-dated, and was there for the builds before v3 Prelude was released.</b></p> <p>This page really shouldn't be needed, but ...<br> The URL you use depends on which build or version you are running. Unless you have modified the port # or the default value in domain.xml, this is the only URL that will be supported.</p> 
+     <div class="panel" style="border-width: 1px;">
+      <div class="panelContent"> 
+       <div class="table-wrap"> 
+        <table class="confluenceTable">
+         <tbody> 
+          <tr> 
+           <th class="confluenceTh"> Build and Version </th> 
+           <th class="confluenceTh"> Date Released </th> 
+           <th class="confluenceTh"> URL to use </th> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> <a href="http:--download.java.net-glassfish-v3-promoted-glassfish-v3-prelude-b19.zip">SCF promoted build 19 </a> </td> 
+           <td class="confluenceTd"> Aug 16, 2008 </td> 
+           <td class="confluenceTd"> Sorry, no luck. </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> Nightly build before 8/26 </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+           <td class="confluenceTd"> Sorry, no luck </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> <a href="http:--download.java.net-glassfish-v3-promoted-glassfish-v3-prelude-b20.zip">Promoted build 20 </a> </td> 
+           <td class="confluenceTd"> Aug 20, 2008 </td> 
+           <td class="confluenceTd"> <a href="http://localhost:8080/admin">http://localhost:8080/admin</a> </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> <a href="http:--download.java.net-glassfish-v3-nightly-">Nightly build ON or AFTER 8/26 </a> </td> 
+           <td class="confluenceTd"> 8/26 -&gt; </td> 
+           <td class="confluenceTd"> <a href="http://localhost:4848/">http://localhost:4848/</a> </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> <a href="http:--download.java.net-glassfish-v3-promoted-glassfish-v3-prelude-b21.zip">Promoted build 21 </a> </td> 
+           <td class="confluenceTd"> Aug 28, 2008 </td> 
+           <td class="confluenceTd"> <a href="http://localhost:4848/">http://localhost:4848/</a> </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> <a href="http:--download.java.net-glassfish-v3-promoted-">Any promoted build after 21 </a> </td> 
+           <td class="confluenceTd">&nbsp;</td> 
+           <td class="confluenceTd"> <a href="http://localhost:4848/">http://localhost:4848/</a> </td> 
+          </tr> 
+         </tbody>
+        </table> 
+       </div> 
+       <hr> 
+       <p>Jspwiki style: sortable</p> 
+      </div>
+     </div> <p><b>Note: starting from promoted build 22, we have fixed it so that the consent page shown below is gone.</b><br> If this is the first time you access the admin console, you will see the following image expecting you to press 'ok'. Admin Console still needs to be deployed and loaded even though the admin console bits is included in the installation. Please press OK to continue. You won't need internet access. This page and wording will be changed to avoid the confusion. <br> <span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20875910/21364853.jpg" style="border: 0px solid black"></span></p> <h4><a name="V3GuiAccessURL-%21%21Workaroundifyoubuildyourownweb.zip"></a>!! Work around if you build your own web.zip</h2> <p>If you are building the sever yourself, <tt>distributions/web/target/web.zip</tt> does not include the admingui war. In this case, the code will try to download that from update center repository. However, update center meta data is not available either.<br> Note: Starting from nightly build of 09/06, you HAVE to name the directory 'glassfish'. This is because, the installation is supposed to be YOUR_INSTALLATION/glassfish, YOUR_INSTALLATION/bin, YOUR_INSTALLATION/pkg, etc. and any IPS package downloaded from the UpdateCenter is expecting to be put under YOUR_INSTALLATION/glassfish.</p> <p>Here is what you can do:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">cd v3
+unzip distributions/web/target/web.zip
+cp admingui/war/target/admingui.war glassfish/lib/install/applications/admingui.war
+glassfish/bin/asadmin start-domain</pre> 
+       </div> 
+      </div>
+     </div> <p>Access the console by <a href="http://localhost:4848/">http://localhost:4848/</a></p> <p>Page last updated on Sep 8, 2008.</p> 
+     <hr> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875910/21364853.jpg">console-install.jpg</a> (image/pjpeg) 
+      <br> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 08, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : NodeAgentSynchronization</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   
+     <div> 
+      <ul> 
+       <li><a href="#NodeAgentSynchronization-Description">Description</a></li> 
+       <li><a href="#NodeAgentSynchronization-Evaluation">Evaluation</a></li> 
+       <li><a href="#NodeAgentSynchronization-Updateon10%2F1%2F2007">Update on 10/1/2007</a></li> 
+       <ul> 
+        <li><a href="#NodeAgentSynchronization-Keywords%3AInplaceUpgrade%2CSynchronization%2Cdomain.xml">Keywords: Inplace Upgrade, Synchronization, domain.xml</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="NodeAgentSynchronization-Description"></a>Description</h1> <p>a.install 8.2ee in /opt/SUNWappserver</p> <p>b. start domain1 and default node-agent "mynodeagent". Create few stand alone instances, cluster and some clustered instances.</p> <p>c. stop node-agent and domain.</p> <p>d. install 9.1ee in /opt/SUNWappserver</p> <p>e. the installer asks for 3 components (to install) - nodeagent/loadbalancer/high availability (since this is an inplace upgrade). Atleast one of the components should be chosen. So i choose node-agent. The installation proceeds and fails at the end because of node-agent creation failure. (since it is already existent).</p> <p>f. Invoke asupgrade from the bin directory of /opt/SUNWappserver.</p> <p>g. During an upgrade, the domain is started up and the cluster, stand alone instances and clustered instances are created in the default node-agent "mynodeagent", that has already rendezvoused with the DAS. The entries for these clusters/stand-alone instances are populated in /opt/SUNWappserver/domains/domain1/config/domain.xml.</p> <p>h. After a successful upgrade, the domain is started up fine.</p> <p>i. While starting up the node-agent, the synchronization fails. The config context is not refreshed because of Exception in initializing SunPKCS11.</p> <p>j. Because of this, the older domain.xml (8.2ee) remains in the nodeagent config directory and the startup will fail with some missing attributes like "heartbeat-port" in the &lt;cluster&gt; element.</p> <p>Why does the synchronization fail here? Any ideas? </p> <h4><a name="NodeAgentSynchronization-Evaluation"></a>Evaluation</h1> <p>When the node-agent tries to synchronize with the DAS, the domain.xml in the nodeagent/config directory is parsed. When the parsing is done, the old domain.xml (8.2ee) exists in this directory and it does not match the sun-domain_1_3.dtd. Hence the exceptions related to the missing attributes are thrown. The synchronization fails because of this and the nde-agent does not start up.</p> <p>However, when the domain.xml is copied over from domains/domain1/config directory to the nodeagents/mynodeagent/agent/config directory, the node-agent start up goes through fine.</p> <p>According to Nandini, eventhough we copy the domain.xml from DAS config to node-agent config, the node-agent should not start up, since the domain was created afresh by the upgrade process and the domain's cert would be different.</p> <p>This is still under investigation.</p> <p>-Shalini.</p> <p>The node-agent synchronization would not be a problem in the SBS Upgrade scenario. In the inplace upgrade, the node-agent would have synchronized (while creation of clusters and instances) in the 8.2ee installation before an upgrade to 9.1ee. During the upgrade, the domain.xml in the node-agent config directory is not modified. Upgrade tool assumes that the old domain.xml should work seamlessly with the new runtime. ie., 8.2ee domain.xml should work with the 9.1ee runtime binaries.</p> <p>After upgrade process, during the synchronization process, the domain.xml in 8.2ee node-agent config directory is parsed first. But since this will be the 8.2ee domain.xml, the parsing fails due to the fact that it is incompatible with the new runtime. This is the issue. </p> <p>-Shalini.</p> <h4><a name="NodeAgentSynchronization-Updateon10%2F1%2F2007"></a>Update on 10/1/2007</h1> <h4><a name="NodeAgentSynchronization-Keywords%3AInplaceUpgrade%2CSynchronization%2Cdomain.xml"></a>Keywords: Inplace Upgrade, Synchronization, domain.xml</h3> <p><font color="#ff6600"><b>Shalini :</b></font> The node-agent synchronization would be a problem in an <b>inplace</b> upgrade from 8.2ee to 9.1ee because the domain.xml in node-agent/config directory is parsed before synchronization happens. Since the domain.xml would refer to an older dtd in case of 8.x-&gt;9.x upgrade, the synchronization would fail. </p> <p>Changing the rendezvous status of the node-agent(in das.properties, nodeagent.properties and domain.xml) before starting it up does not help it much since the failure is at the synchronization step. </p> <p>The node-agent would have synchronized (while creation of clusters and instances) in the 8.2ee installation before an upgrade to 9.1ee. During the upgrade, the domain.xml in the node-agent config directory is not modified. Upgrade tool assumes that the old domain.xml should work seamlessly with the new runtime. ie., 8.2ee domain.xml should work with the 9.1ee runtime binaries.</p> <p>After upgrade process, during the synchronization process, the domain.xml in 8.2ee node-agent config directory is parsed first. But since this will be the 8.2ee domain.xml, the parsing fails due to the fact that it is incompatible with the new runtime. This is the issue. </p> <p>The transforms will be applied on the domain.xml in the domain1/config directory. But not in the domain.xml in the node-agent config directory. This has to be achieved via synchronization. </p> <p><font color="#ff6600"><b>Nandini :</b></font> This is an issue... Basically you have to force NA to sync for this special case disregarding the DAS trust-check part. Is there something like a CLI option for upgrade indicating the NA that it is being started post inplace upgrade (I doubt it)... Couple of hacks could be to use that option and insert the special logic or perhaps take NA to unbound state. Let me take a look at it and get back to you should we decide to take this approach.</p> <p>Before that : Has it been decided that we live with the domain.xml incompatibility?</p> <p><font color="#ff6600"><b>Prasad :</b></font> I think there has been no decision on this, but at the same time Sreedhar has not been told that this might need to change. We might need to look at this option too. </p> <p><font color="#ff6600"><b>Shalini :</b></font> Upgrade tool will take care of domain.xml<br> incompatibilities within the domain configuration. But when it comes to<br> node-agent, it does not modify the domain.xml in the agent config. The<br> domain.xml that is in node-agent config should get synchronized after an<br> upgrade, to get the latest domain.xml that has been upgraded.</p> <p>Hence, this is not an upgrade issue, since upgrade tool expects the<br> synchronization to happen by itself. It cannot take care of the<br> node-agent config incompatibilities with the upgraded domain.</p> <p><font color="#ff6600"><b>Nandini :</b></font> NA upgraded bits will not complain<br> to start with if the domain config is backward compatible.</p> <p><font color="#ff6600"><b>Shalini :</b></font> That is exactly the problem. The 9.1ee domain is not backward<br> compatible. Till it is backward compatible, the upgrade tool procedure is not going to be successful, whatever approach we follow to upgrade the domain configuration. Kedar suggested (1) for an upgrade process.</p> <p>(1) Copy the 8.2ee domain config over to the 9.1ee domain config and add the required cluster attributes and other elements, so that the domain can start up successfully after an upgrade.</p> <p>Even in this case, the domain.xml that is in the node-agent config directory is going to remain as 8.2ee's domain.xml. The DTD of the upgraded domain would have changed to sun-domain_1.3.dtd whereas the dtd of domain in node-agent config would be sun-domain_1.1.dtd. The node-agent config cannot be modified by the upgrade tool, since it expects the domain config to be backward compatible or else the<br> synchronization should go through without the domain validation in process. If either of these is true, then the upgraded domain will be synched with the node-agent config and the upgrade process will be a<br> success. Else the node-agent is never going to start up because the synchronization will fail.</p> <p>From all these, it can be made clear that the node-agent config WILL NOT be modified by the upgrade tool It expects the node-agent to start up without exceptions after an upgrade, synching up the instances.</p> <p>The problem will happen with the copy approach or create approach - whichever is taken by the upgrade procedure. </p> <p><font color="#ff6600"><b>Nandini :</b></font> Are we not going to maintain compatibility of domain.xml across<br> 8.2 and 9.x?. Prasad had replied no decision has been made and that option can be looked at.</p> <p>I suggest we explore this route. I believe Kedar was also inclined towards this solution. From the data we have about incompatibility, it does not look difficult to make it compatible.</p> <p>So, If domain.xml is made compatible(it is not presently; we know that), issue will be resolved. So let's try to fix that.</p> <p><font color="#ff6600"><b>Prasad :</b></font> I guess that this means that we go and make the #REQUIRED attributes as #IMPLIED right ?</p> <p><font color="#ff6600"><b>Shalini :</b></font> Does this mean it is okay if the upgraded domain.xml has the cluster<br> attributes IMPLIED? If so, the domain will not start up after an upgrade. The doctype will be sun-domain_1.3.dtd in the upgraded domain and it says the "heartbeat-enabled", "heartbeat-port"and<br> "heartbeat-attribute" are REQUIRED.</p> <p>Also i would like to know here, if "compatible" means "forward compatible" or "backward compatible"? The domain.xml from 8.2ee can be made 9.1ee compliant by adding these REQUIRED attributes that were<br> introduced in 9.1. A 9.1 domain cannot be made an 8.2, because the doctype changes in 9.1. Till the attributes are made IMPLIED in the 1.3 dtd, this is going to be a problem with node-agent synchronization.</p> <p><font color="#ff6600"><b>Kedar :</b></font> There could be 2 workarounds for this issue.</p> <p>1. Modify the sun-domain_1.3.dtd to make the attributes : heartbeat-enabled, heartbeat-port and heartbeat-address IMPLIED. Bundle this in the appserv-rt.jar and test out the node-agent startup. If the node-agent startup goes through fine, then we can conclude that these are the only 3 hurdles that prevent the synchronzation. </p> <p>2. To make the validation work, we should modify the node-agent domain.xml. In short, the following would have to be done. </p> 
+     <ul> 
+      <li>When asadmin start-domain is invoked, an inline upgrade would be started up, if an old domain is found in the domains directory.The upgrade would go through fine and domain started up after that.</li> 
+     </ul> <p>On Similar lines, </p> 
+     <ul> 
+      <li>When asadmin start-node-agent is started, a DTD check has to be made and if the DTD is an older one, then the domain.xml validation might not go through fine. So the domain.xml has to be modified by some kind of upgrade process that will add the REQUIRED attributes so that validation goes through fine. After the validation, the latest domain.xml will be synchronized from the central repository.</li> 
+     </ul> <p><font color="#ff6600"><a href="./UTDashboard.html">Back</a></font></p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

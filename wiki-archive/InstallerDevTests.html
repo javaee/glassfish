@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : InstallerDevTests</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>Installer Dev Tests Automation framework</p> <p>Author: Sathyan Catari(<a href="mailto:Sathyan.Catari@oracle.com">Sathyan.Catari@oracle.com</a>)</p> <p>Date: 11/22/2010.</p> <h4><a name="InstallerDevTests-1.Introduction"></a>1. Introduction</h3> <p>This document details the testing infrastructure created for 3.1 GlassFish installer using Abbott tools. The intention of this document is not to introduce the GlassFish installer, Junit and automated test infrastructure, abbott. The reader is assumed to have a good understanding of GlassFish 3.1 installer and knowledge of Junit and abbott are required to develop test cases.</p> <h4><a name="InstallerDevTests-2.Purpose%2FObjectiveofthisframework"></a>2. Purpose/Objective of this framework</h3> <p>Automate the process of installing GlassFish 3.1 installation programs(covering all bundles) in Graphical user interface mode by capturing the user input as abbott scripts and later running them.</p> <h4><a name="InstallerDevTests-3.Outofscope"></a>3. Out of scope</h3> <p>Using the procedure explained in this doc, one should be able to run the installers in various scenarios(covering different use-cases) without any intervention. This procedure replaces existing install procedure in the overall test suite. It does not substitute the pre-install test related environment setup and post-install validations.</p> <h4><a name="InstallerDevTests-4.HowdoIrunthesetests%3F"></a>4. How do I run these tests?</h3> <p>Follow these steps</p> <p>4.1. cvs :pserver:&lt;userid&gt;@jescvs.sfbay.sun.com:/m/jws get appserver-sqe/pe/installer/gui</p> <p>4.2. Update appserver-sqe/pe/installer/gui/glassfish.properties. Refer to the table below for details on the properties stored in this file.</p> <p>glassfish.properties</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Property Name </th> 
+         <th class="confluenceTh"> Value </th> 
+         <th class="confluenceTh"> Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> installprogram.location <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Path where the GlassFish 3.1 installer executable(.exe|.sh) is available </td> 
+         <td class="confluenceTd"> This installer will be used by the framework during runtime. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> installprogram.name </td> 
+         <td class="confluenceTd"> Name of the .exe | .sh file.(Do not include path) </td> 
+         <td class="confluenceTd"> <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> install.dir </td> 
+         <td class="confluenceTd"> Path to GlassFish 3.x installer. </td> 
+         <td class="confluenceTd"> Should be an empty directory to perform a fresh installation or a valid GlassFish install directory to be used for "Configure Existing installation" mode. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> domain.name </td> 
+         <td class="confluenceTd"> Name of the domain </td> 
+         <td class="confluenceTd"> Domain to be created or an existing one in case of scenarios that create a stand-alone or a clustered instance to an existing domain. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> cluster.name </td> 
+         <td class="confluenceTd"> Name of the cluster </td> 
+         <td class="confluenceTd"> Domain to be created or an existing one in case of scenarios that create a clustered instance. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> admin.password </td> 
+         <td class="confluenceTd"> Password </td> 
+         <td class="confluenceTd"> Can be left blank for anonymous logins when "admin" is used as "admin.user". </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> admin.port </td> 
+         <td class="confluenceTd"> Valid Port in the range(1-65535) </td> 
+         <td class="confluenceTd"> Do not use reserved port 6666 to be used by OSGI container. Do not duplicate port values of http.port. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> http.port </td> 
+         <td class="confluenceTd"> Valid Port in the range(1-65535) </td> 
+         <td class="confluenceTd"> Do not use reserved port 6666 to be used by OSGI container. Do not duplicate port values of admin.port. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> instance.name </td> 
+         <td class="confluenceTd"> Name of the instance. </td> 
+         <td class="confluenceTd"> Instance name to be created(standalone or clustered) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> host.name </td> 
+         <td class="confluenceTd"> Fully qualified hostname or "localhost" </td> 
+         <td class="confluenceTd"> Name of the DAS host. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> admin.user <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Administration username. </td> 
+         <td class="confluenceTd"> Use "admin" and leave password empty for anonymous logins. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>4.3. Use the appropriate test script available under appserver-sqe/pe/installer/gui/src/test/xml. Refer to the table below for the scenarios supported by the currently checked in scripts.</p> <p>NOTE: These scripts read GlassFish specific properties from appserver-sqe/pe/installer/gui/glassfish.properties.</p> <p>Available Testing scenarios.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <td class="confluenceTd"> Script Name </td> 
+         <td class="confluenceTd"> Scenario </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Configure_Existing_domain.xml </td> 
+         <td class="confluenceTd"> Create a Domain using "Configure existing installation" mode. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Configure_Existing_skipconfiguration.xml </td> 
+         <td class="confluenceTd"> Skip configuration after validating existing install directory in "Configure existing installation" mode. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Configure_Existing_standaloneinstance.xml </td> 
+         <td class="confluenceTd"> Create a stand-alone instance in "Configure existing installation" mode. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Install_Config_domain.xml </td> 
+         <td class="confluenceTd"> Perform a fresh installation on the given directory and create a domain. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Install_Config_skipconfiguration.xml </td> 
+         <td class="confluenceTd"> Perform a fresh installation in "Install and Config" mode and skip configuation. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Install_Config_standaloneinstance.xml </td> 
+         <td class="confluenceTd"> Perform a fresh installation in "Install and Config" mode and skip create a stand-alone instance. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Install_Only.xml </td> 
+         <td class="confluenceTd"> Perform a fresh installation in "Install Only" mode. No configuration happens in this mode. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Configure_Existing_clusteredinstance.xml </td> 
+         <td class="confluenceTd"> Create a clustered instance in "Configure existing installation" mode. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Typical_Install.xml </td> 
+         <td class="confluenceTd"> Perform a typical install that always creates a domain. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>4.4. Run test here refers to running a single scenario from the table above. Running for each scenario involves three steps.</p> <p>Step 1). Make sure that you update appserver-sqe/pe/installer/gui/glassfish.properties with appropriate values</p> <p>Step 2). setup the pre-installed environment for the tests to run by running the following command from "appserver-sqe/pe/installer/gui" directory</p> <p>ant -Dtmpdir=&lt;Provide any writable directory as a temporary directory&gt; -Dtest.script=&lt;Pick a script that matches your scenario from the table above&gt; setuptest</p> <p>Ex: ant -Dtmpdir=/tmp -Dtest.script=Typical_Install.xml setuptest</p> <p>Step 3). Run the actual test scenario by running the following command from "appserver-sqe/pe/installer/gui" directory</p> <p>ant -Dtmpdir=&lt;Provide any writable directory as a temporary directory&gt; -Dtest.script=&lt;Pick a script that matches your scenario from the table above&gt; runtest</p> <p>Ex: ant -Dtmpdir=/tmp -Dtest.script=Typical_Install.xml runtest</p> <h4><a name="InstallerDevTests-5.FilelayoutofTestinginfrastructure"></a>5. Filelayout of Testing infrastructure</h3> <p>The source code is rooted under CVS as <b>:pserver:&lt;userid&gt;@jescvs.sfbay.sun.com:/m/jws appserver-sqe/pe/installer/gui</b></p> <h4><a name="InstallerDevTests-5.1Files%2FDirectoriesofsignificance"></a>5.1 Files/Directories of significance</h4> <p>appserver-sqe/pe/installer/gui/build.xml(Top level build.xml that contains various build/test related ant targets)</p> <p>appserver-sqe/pe/installer/gui/build/glassfish.properties (Properties file that contains both environment and GlassFish related properties to be set by user as a pre-run step)</p> <p>appserver-sqe/pe/installer/gui/openinstaller.properties(Generated by the build scripts, overwritten for every use, internal use only, not to be edited by users)</p> <p>appserver-sqe/pe/installer/gui/src/java/com/oracle/glassfish/installer/test(Test framework entry point)</p> <p>appserver-sqe/pe/installer/gui/src/test/xml(Location where abbott test scripts, *.xml are searched for by framework)</p> <p>appserver-sqe/pe/installer/gui/lib(Libraries used by the framework including abbott specific ones)</p> <p>appserver-sqe/pe/installer/gui/build(Output of Java compilation)</p> <p>appserver-sqe/pe/installer/gui/util(Framework utilities)</p> <p>appserver-sqe/pe/installer/gui/results(Results of the run are recorded here, to be extended to have meaningful results in future releases of GlassFish)</p> <h4><a name="InstallerDevTests-6.References"></a>6. References</h3> <p>Abbott Test framework: <a href="http://abbot.sourceforge.net/doc/overview.shtml">http://abbot.sourceforge.net/doc/overview.shtml</a></p> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Nov 22, 2010 by 
+<font color="#0050B2">sathyan_catari</font>. Exported from wikis.oracle.com on May 27, 2015 20:43.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

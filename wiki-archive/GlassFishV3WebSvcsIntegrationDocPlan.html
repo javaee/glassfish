@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFishV3WebSvcsIntegrationDocPlan</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>&lt;h1&gt;Web Services Integration Documentation Plan&lt;/h1&gt;</p> 
+     <div> 
+      <ul> 
+       <li><a href="#GlassFishV3WebSvcsIntegrationDocPlan-PeopleandRoles">People and Roles</a></li> 
+       <li><a href="#GlassFishV3WebSvcsIntegrationDocPlan-Audience">Audience</a></li> 
+       <li><a href="#GlassFishV3WebSvcsIntegrationDocPlan-SummaryoftheFeatureFromaUser%27sPerspective">Summary of the Feature From a User's Perspective</a></li> 
+       <li><a href="#GlassFishV3WebSvcsIntegrationDocPlan-Availability">Availability</a></li> 
+       <li><a href="#GlassFishV3WebSvcsIntegrationDocPlan-StatementofWork">Statement of Work</a></li> 
+       <ul> 
+        <li><a href="#GlassFishV3WebSvcsIntegrationDocPlan-ChangestoBooks">Changes to Books</a></li> 
+        <ul> 
+         <li><a href="#GlassFishV3WebSvcsIntegrationDocPlan-GlassFishv3AdministrationGuideChanges"> <em>GlassFish v3 Administration Guide</em> Changes</a></li> 
+         <li><a href="#GlassFishV3WebSvcsIntegrationDocPlan-GlassFishv3ApplicationDeveloper%27sGuideChanges"> <em>GlassFish v3 Application Developer's Guide</em> Changes</a></li> 
+         <li><a href="#GlassFishV3WebSvcsIntegrationDocPlan-GlassFishv3ApplicationDeploymentGuideChanges"> <em>GlassFish v3 Application Deployment Guide</em> Changes</a></li> 
+        </ul> 
+        <li><a href="#GlassFishV3WebSvcsIntegrationDocPlan-ChangestoOnlineHelp">Changes to Online Help</a></li> 
+        <ul> 
+         <li><a href="#GlassFishV3WebSvcsIntegrationDocPlan-OnlineHelpSetChanges">Online Help Set Changes</a></li> 
+        </ul> 
+        <li><a href="#GlassFishV3WebSvcsIntegrationDocPlan-ChangestoManPages">Changes to Man Pages</a></li> 
+       </ul> 
+       <li><a href="#GlassFishV3WebSvcsIntegrationDocPlan-ReviewSchedule">Review Schedule</a></li> 
+       <li><a href="#GlassFishV3WebSvcsIntegrationDocPlan-RelatedInformation">Related Information</a></li> 
+      </ul>
+     </div> <h4><a name="GlassFishV3WebSvcsIntegrationDocPlan-PeopleandRoles"></a>People and Roles</h1> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Name</th> 
+         <th class="confluenceTh">Role </th> 
+         <th class="confluenceTh">Location</th> 
+         <th class="confluenceTh">Time Zone</th> 
+         <th class="confluenceTh">Email </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Eric Jendrock </td> 
+         <td class="confluenceTd"> Doc Plan Creator </td> 
+         <td class="confluenceTd"> Burlington, MA </td> 
+         <td class="confluenceTd"> EDT </td> 
+         <td class="confluenceTd">jendrock{{@dev.java.net}} </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> June Parks </td> 
+         <td class="confluenceTd"> Writer </td> 
+         <td class="confluenceTd"> Santa Clara, CA </td> 
+         <td class="confluenceTd"> PDT </td> 
+         <td class="confluenceTd">junesm{{@dev.java.net}} </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Paul Davies </td> 
+         <td class="confluenceTd"> Writer </td> 
+         <td class="confluenceTd"> Santa Clara, CA </td> 
+         <td class="confluenceTd"> PDT </td> 
+         <td class="confluenceTd">pauldavies{{@dev.java.net}} </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Dixie Pine </td> 
+         <td class="confluenceTd"> Writer </td> 
+         <td class="confluenceTd"> Santa Clara, CA </td> 
+         <td class="confluenceTd"> PDT </td> 
+         <td class="confluenceTd">dixiep{{@dev.java.net}} </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Bhakti Mehta </td> 
+         <td class="confluenceTd"> Reviewer </td> 
+         <td class="confluenceTd"> Santa Clara, CA </td> 
+         <td class="confluenceTd"> PDT </td> 
+         <td class="confluenceTd">bahktimehta{{@dev.java.net}} </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3WebSvcsIntegrationDocPlan-Audience"></a>Audience</h1> <p>The Web Services Integration features described herein may be used by Java EE and GlassFish developers or by GlassFish administrators who either deploy applications containing or consuming web services or supported clients, such as another web service, a Java EE component including a Java EE application client, or an arbitrary Java application.</p> <h4><a name="GlassFishV3WebSvcsIntegrationDocPlan-SummaryoftheFeatureFromaUser%27sPerspective"></a>Summary of the Feature From a User's Perspective</h1> <p>The features described herein provide a better integration of web services in GlassFish v3, including letting users who deployed web services or Enterprise applications that contain web services use the Admin Console to view the deployed web services, undeploy those web services, and view their deployment descriptors. </p> <h4><a name="GlassFishV3WebSvcsIntegrationDocPlan-Availability"></a>Availability</h1> <p>These web services features have been integrated in GlassFish v3.</p> <h4><a name="GlassFishV3WebSvcsIntegrationDocPlan-StatementofWork"></a>Statement of Work</h1> <p>The user-visible integrated web services features available through the Admin Console have been documented in the OLH for the Admin Console. The command scripts for xjc, schemagen, wsimport, wsgen, wscompile, and wsdeploy need to be documented in the CLI manpages. They are already sufficiently documented in the Developer's Guide, the Java EE 5 Tutorial (xjc and schemagen in the JAXB chapter), and the Java EE 6 Tutorial (wsimport and wsgen are documented in the JAX-WS chapter).</p> <p>Documentation Impact:</p> 
+     <ul> 
+      <li>None</li> 
+      <li>Minor</li> 
+      <li>Moderate</li> 
+      <li>Major</li> 
+      <li>New</li> 
+     </ul> 
+     <hr> <p><b>Note -</b> If a document is task based (as opposed to reference), the changes should be determined from the user task analysis for the feature.</p> 
+     <hr> <h4><a name="GlassFishV3WebSvcsIntegrationDocPlan-ChangestoBooks"></a>Changes to Books</h2> <h4><a name="GlassFishV3WebSvcsIntegrationDocPlan-GlassFishv3AdministrationGuideChanges"></a><em>GlassFish v3 Administration Guide</em> Changes</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Section</th> 
+         <th class="confluenceTh">Documentation Impact</th> 
+         <th class="confluenceTh">Writer</th> 
+         <th class="confluenceTh">Reviewers</th> 
+         <th class="confluenceTh">Description of Change </th> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <td class="confluenceTd"> Section on deploying/undeploying web services </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Dixie Pine </td> 
+         <td class="confluenceTd"> ? </td> 
+         <td class="confluenceTd">According to the web services integration one-pager, the Admin Console was enhanced to allow users to view deployed standalone web services and web services that were deployed as part of an Enterprise application. Users can also undeploy deployed web services and view the deployment descriptor for any deployed web service. Need to add information about these features to the appropriate section(s). </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3WebSvcsIntegrationDocPlan-GlassFishv3ApplicationDeveloper%27sGuideChanges"></a><em>GlassFish v3 Application Developer's Guide</em> Changes</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Section</th> 
+         <th class="confluenceTh">Documentation Impact</th> 
+         <th class="confluenceTh">Writer</th> 
+         <th class="confluenceTh">Reviewers</th> 
+         <th class="confluenceTh">Description of Change </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Sections for JAX-WS, JAXB, JAX-RPC development </td> 
+         <td class="confluenceTd"> Minor or None </td> 
+         <td class="confluenceTd"> June Parks </td> 
+         <td class="confluenceTd"> ? </td> 
+         <td class="confluenceTd">The JAX-RPC command scripts for wscompile and wsdeploy have already been documented in the J2EE 1.4 Tutorial. The JAXB command scripts xjc and schemagen have already been documented in the JAXB chapter in the Java EE 5 Tutorial. The wsimport and wsgen command scripts have already been documented in the JAX-WS chapters in both the Java EE 5 Tutorial and the Java EE 6 Tutorial. Based on these findings, no substantial documentation is needed in the Developers Guide. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3WebSvcsIntegrationDocPlan-GlassFishv3ApplicationDeploymentGuideChanges"></a><em>GlassFish v3 Application Deployment Guide</em> Changes</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Section</th> 
+         <th class="confluenceTh">Documentation Impact</th> 
+         <th class="confluenceTh">Writer</th> 
+         <th class="confluenceTh">Reviewers</th> 
+         <th class="confluenceTh">Description of Change </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Section on deploying web services </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Dixie Pine </td> 
+         <td class="confluenceTd"> ? </td> 
+         <td class="confluenceTd">Possibly add content that explains how use the Admin Console to view deployed web services, undeploy deployed web services, and view, but not modify, deployment descriptors of deployed web services. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3WebSvcsIntegrationDocPlan-ChangestoOnlineHelp"></a>Changes to Online Help</h2> <h4><a name="GlassFishV3WebSvcsIntegrationDocPlan-OnlineHelpSetChanges"></a>Online Help Set Changes</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Topic Title</th> 
+         <th class="confluenceTh">Documentation Impact</th> 
+         <th class="confluenceTh">Writer</th> 
+         <th class="confluenceTh">Reviewers</th> 
+         <th class="confluenceTh">Description of Change </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Deployed Applications </td> 
+         <td class="confluenceTd"> None </td> 
+         <td class="confluenceTd"> Kim Haase </td> 
+         <td class="confluenceTd"> ? </td> 
+         <td class="confluenceTd">After reviewing the OLH for web services, no additional descriptions, instructions, or information is required. The OLH is helpful and accurate as is. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3WebSvcsIntegrationDocPlan-ChangestoManPages"></a>Changes to Man Pages</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Man Page Name and Section</th> 
+         <th class="confluenceTh">Documentation Impact</th> 
+         <th class="confluenceTh">Writer</th> 
+         <th class="confluenceTh">Reviewers</th> 
+         <th class="confluenceTh">Description of Change </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> xjc; command scripts </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Paul Davies </td> 
+         <td class="confluenceTd"> ? </td> 
+         <td class="confluenceTd">Add EE5 manpage to EE6. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> schemagen; command scripts </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Paul Davies </td> 
+         <td class="confluenceTd"> ? </td> 
+         <td class="confluenceTd">Add EE5 manpage to EE6. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> wscompile; command scripts </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Paul Davies </td> 
+         <td class="confluenceTd"> ? </td> 
+         <td class="confluenceTd">Add EE5 manpage to EE6. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> wsdeploy; command scripts </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Paul Davies </td> 
+         <td class="confluenceTd"> ? </td> 
+         <td class="confluenceTd">Add EE5 manpage to EE6. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> wsimport; command scripts </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Paul Davies </td> 
+         <td class="confluenceTd"> ? </td> 
+         <td class="confluenceTd">Add EE5 manpage to EE6. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> wsgen; command scripts </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Paul Davies </td> 
+         <td class="confluenceTd"> ? </td> 
+         <td class="confluenceTd">Add EE5 manpage to EE6. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3WebSvcsIntegrationDocPlan-ReviewSchedule"></a>Review Schedule</h1> <p>The review schedule for the documentation items that are affected by this feature is provided in the following table.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Item</th> 
+         <th class="confluenceTh">First Draft Start Date</th> 
+         <th class="confluenceTh">First Draft End Date</th> 
+         <th class="confluenceTh">Second Draft Start Date</th> 
+         <th class="confluenceTh">Second Draft End Date</th> 
+         <th class="confluenceTh">Final Version End Date</th> 
+         <th class="confluenceTh">Final Version End Date </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>Reviewers are listed in the <em>Statement of Work</em>.</p> <h4><a name="GlassFishV3WebSvcsIntegrationDocPlan-RelatedInformation"></a>Related Information</h1> 
+     <ul> 
+      <li>1-pager</li> 
+      <li>User task analysis</li> 
+      <li>Design document</li> 
+     </ul> <p>Email aliases:</p> 
+     <ul> 
+      <li><span class="error">[admin@glassfish.java.net]</span></li> 
+      <li><span class="error">[users@glassfish.java.net]</span></li> 
+      <li><span class="error">[docs@glassfish.java.net]</span></li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 02, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

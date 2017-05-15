@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : QualityMetrics</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="QualityMetrics-"></a></h2> <h4><a name="QualityMetrics-TwoWayBugBridgebetweenBugtraqandIssuetracker"></a>Two Way BugBridge between Bugtraq and Issuetracker</h2> <p>Data contained in this page are for historical purposes only. Oracle customers can access defect information through <a href="http://support.oracle.com">support.oracle.com</a>. GlassFish project members can access defect information at the GlassFish JIRA: <a href="http://java.net/jira/browse/GLASSFISH">http://java.net/jira/browse/GLASSFISH</a></p> 
+     <hr> <p>Sun has internal Bugtracking system called BugTraq and external bugtraq system called "Issuetracker"<br> Currently , Bugtraq system is not exposed outside, and until that happens , a temporary two way bridge solution has been put into place which synchs up bugs in these two systems on periodic basis.<br> This two way bridge will transfer internal bugs outside to Issuetracker and import issues from IssueTracker to it's internal BugTraq system.<br> <b>Why is BugBridge required?</b><br> Some bugs are still filed in internal tool and we want external community to be engaged in GlassFish project.Hence, it is mandatory that internal bugs should be exposed outside.Ideally,everyone should be using only one tool i.e Issuetracker,but until that happens,we will continue to bugbridge.<br> <b>Bugs are not synchronized.Which system should I follow?</b><br> Please lookup both bugtraq and Issuetracker to get latest assigned bugs.BugBridge is required so that bug trends,bug metrics can be obtained from one consolidated database.As a responsible engineer for a Issue/Bug, make sure that originally filed Bug/Issue gets updated properly.Synchronization will be handled by management/Quality Team.</p> <p><b>I am Quality Engineer,external developer. I found a bug.Where should I file it?</b><br> Please file bugs in external Issuetracker as much as possible unless bug information contains customer sensitive proprietary sensitive data.In that case, bug should be filed at BugTraq.</p> <p><b>What subcategories are online for GlassFish?</b><br> Two way bugbridge tool is going to be online for following subcategories of GlassFish</p> 
+     <ul> 
+      <li>web_container,deployment,web_services,jbi,admin,admin_gui,command_line_interface,ejb_container</li> 
+     </ul> <p>,group_management_service,jca,orb,web_services_mgmt,amx,jms,jts,verifier,jdbc,sample_apps,packaging,<br> logging,standalone_client,build_system,configuration,hadb_admin,i18n,lifecycle_modules,load_balancer<br> rmi_iiop_load_balancer,upgrade_tool</p> <p>is already online for past couple of weeks..<br> Note: Two way bugbridge is deployed only for Glassfish project.</p> <p><b>What does this mean for internal &amp; external developers and Quality Team?</b><br> Bugs Transferred from Bugtraq to Issuetracker</p> 
+     <ul> 
+      <li>Bugs filed under 9.1 PE are going to be visible outside as "mirrored bugs". Bugs exposed outside in Issuetracker will have a comments beginning with &lt;BTXXXXXXX&gt; where XXXX reflects bugtraq state number</li> 
+      <li>BugBridge tool will take care of synching up of bug states and update between originally filed bug and mirrored bug.</li> 
+      <li>It is expected that bugs will be filed in Issuetracker as much as possible, and internal BugTraq will be used for only customer specific bugs</li> 
+      <li>BugBridge tool is to be used for easy management of bugs for BugSWAT meetings and enable external community to access internal bugs.</li> 
+      <li>Note:Internal bugs can also be seen at following link</li> 
+     </ul> <p><a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=<bug-id>">http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=&lt;bug-id&gt;</a></p> 
+     <ul> 
+      <li>This link is available in mirrored bugs in Issuetracker also for easy browsing.</li> 
+     </ul> <p><b>What bugs are exposed outside</b></p> 
+     <ul> 
+      <li>BugTraq product "sunone_application_server"</li> 
+      <li>Release 9.1PE</li> 
+      <li>Issues are transferred inside bugtraq system under product "sunone_application_server" and release "9.1PE"</li> 
+      <li>Internal Bugs are transferred outside to component "glassfish" and release "9.1PE"</li> 
+      <li>Engineering Notes of type "Comments" are not shared to the community.</li> 
+     </ul> <p><b>How to exclude a customer sensitive internal bug from being visible outside</b></p> 
+     <ul> 
+      <li>put hook6 field as "nojdc".</li> 
+      <li>File BugTraq request under 9.1EE</li> 
+      <li>All security bugs are not transferred outside.</li> 
+      <li>"Comments" Eng Notes in BugTraq are not shared with the community.</li> 
+     </ul> <p><b>How to setup a e-mail filter</b></p> 
+     <ul> 
+      <li>Bugbridge username on Issuetracker is gfbugbridge@dev.java.net.</li> 
+      <li>Submitting engineers won't get a confirmation e-mail about "mirrored" bugs.However,original bugs will have a corresponding mirrored bug information at end of engineering note or Description section.</li> 
+      <li>Every time originally filed bug changes,there will be update to mirrored bug/issue and email sent out issues@glassfish.java.net.Cumulative changes in last 24 hour period are taken.</li> 
+      <li>To keep inbox happy and clean, it is advisable that an email filter is setup for <b>gfbugbridge@dev.java.net</b> for both internal and external users, and one for <b>glassfish-bugbridge@sun.com</b> for internal users.</li> 
+     </ul> <p><b>Mirrored Bugs Characteristics</b></p> 
+     <ul> 
+      <li>Bugs are submitted by gfbugbridge@dev.java.net in Issuetracker and by glassfish-bugbridge@sun.com in BugTraq</li> 
+      <li>Mirrored bugs/Issue are read-only.Any change to them are not propagated back.</li> 
+      <li>Mirrored Issue begins with &lt;BTXXXXXXX&gt; where XXXX.. is originally filed bugtraq request</li> 
+      <li>Mirrored Bug beings with &lt;IT :XXXX..] where XXXX.. is originally filed Issuetracker Issue.</li> 
+      <li>Mirrored bugs synch up state with originally filed Issue/ChangeRequest once in 24 hour</li> 
+      <li>Submitting engineers won't get a confirmation e-mail about "mirrored" bugs.However,original bugs will have a corresponding mirrored bug information at end of engineering note or Description section.</li> 
+     </ul> <p><b>BugSWAT Query Change: How to exclude mirrored bugs from Issuetracker or BugTraq from Query</b></p> 
+     <ol> 
+      <li>From Issuetracker-put additional clause "not reported by gfbugbridge@dev.java.net i.e</li> 
+     </ol> <p><a href="https://glassfish.java.net/issues/query.cgi">https://glassfish.java.net/issues/query.cgi</a></p> 
+     <ol> 
+      <li>From BugTraq-exclude bugs with hook1="issue-tracker" OR 
+       <ol> 
+        <li>exclude bugs filed by glassfish-bugbridge@sun.com</li> 
+       </ol> </li> 
+     </ol> <p><b>What is corresponding Evaluated State in Issuetracker</b></p> 
+     <ul> 
+      <li>Target_milestone in Issuetracker should not be empty to mark an issue as "evaluated".</li> 
+     </ul> <p>Thanks,<br> Bugbridge Team<br> quality@glassfish.java.net</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Apr 03, 2012 by 
+<font color="#0050B2">10193</font>. Exported from wikis.oracle.com on May 27, 2015 20:49.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

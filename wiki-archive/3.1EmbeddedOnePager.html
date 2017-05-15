@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : 3.1EmbeddedOnePager</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="3.1EmbeddedOnePager-GlassFishServerOpenSourceEdition3.1EmbeddedOnePager"></a>GlassFish Server Open Source Edition 3.1 - Embedded One Pager</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#3.1EmbeddedOnePager-GlassFishServerOpenSourceEdition3.1EmbeddedOnePager">GlassFish Server Open Source Edition 3.1 - Embedded One Pager</a></li> 
+       <li><a href="#3.1EmbeddedOnePager-1.Introduction">1. Introduction</a></li> 
+       <ul> 
+        <li><a href="#3.1EmbeddedOnePager-1.1.Project%2FComponentWorkingName%3A">1.1. Project/Component Working Name:</a></li> 
+        <li><a href="#3.1EmbeddedOnePager-1.2.Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier%3A">1.2. Name(s) and e-mail address of Document Author(s)/Supplier:</a></li> 
+        <li><a href="#3.1EmbeddedOnePager-1.3.DateofThisDocument%3A">1.3. Date of This Document:</a></li> 
+       </ul> 
+       <li><a href="#3.1EmbeddedOnePager-2.ProjectSummary">2. Project Summary</a></li> 
+       <ul> 
+        <li><a href="#3.1EmbeddedOnePager-2.1.ProjectDescription%3A">2.1. Project Description:</a></li> 
+        <li><a href="#3.1EmbeddedOnePager-2.2.RisksandAssumptions%3A">2.2. Risks and Assumptions:</a></li> 
+       </ul> 
+       <li><a href="#3.1EmbeddedOnePager-3.ProblemSummary">3. Problem Summary</a></li> 
+       <ul> 
+        <li><a href="#3.1EmbeddedOnePager-3.1.ProblemArea%3A">3.1. Problem Area:</a></li> 
+        <li><a href="#3.1EmbeddedOnePager-3.2.Justification%3A">3.2. Justification:</a></li> 
+       </ul> 
+       <li><a href="#3.1EmbeddedOnePager-4.TechnicalDescription%3A">4. Technical Description:</a></li> 
+       <ul> 
+        <li><a href="#3.1EmbeddedOnePager-4.1.Details%3A">4.1. Details:</a></li> 
+        <ul> 
+         <li><a href="#3.1EmbeddedOnePager-4.1.1Modesanddistributions%3A">4.1.1 Modes and distributions :</a></li> 
+         <li><a href="#3.1EmbeddedOnePager-4.1.2EmbeddedAPI%3A">4.1.2 Embedded API :</a></li> 
+         <li><a href="#3.1EmbeddedOnePager-4.1.3Tooling%3A">4.1.3 Tooling :</a></li> 
+         <li><a href="#3.1EmbeddedOnePager-Mavenplugin">Maven plugin</a></li> 
+         <li><a href="#3.1EmbeddedOnePager-Anttasks">Ant tasks</a></li> 
+        </ul> 
+        <li><a href="#3.1EmbeddedOnePager-4.2.Bug%2FRFENumber%28s%29%3A">4.2. Bug/RFE Number(s):</a></li> 
+        <li><a href="#3.1EmbeddedOnePager-4.3.InScope%3A">4.3. In Scope:</a></li> 
+        <li><a href="#3.1EmbeddedOnePager-4.4.OutofScope%3A">4.4. Out of Scope:</a></li> 
+        <li><a href="#3.1EmbeddedOnePager-4.5.Interfaces%3A">4.5. Interfaces:</a></li> 
+        <ul> 
+         <li><a href="#3.1EmbeddedOnePager-4.5.1PublicInterfaces">4.5.1 Public Interfaces</a></li> 
+         <li><a href="#3.1EmbeddedOnePager-4.5.2PrivateInterfaces">4.5.2 Private Interfaces</a></li> 
+         <li><a href="#3.1EmbeddedOnePager-4.5.3Deprecated%2FRemovedInterfaces%3A">4.5.3 Deprecated/Removed Interfaces:</a></li> 
+        </ul> 
+        <li><a href="#3.1EmbeddedOnePager-4.6.DocImpact%3A">4.6. Doc Impact:</a></li> 
+        <li><a href="#3.1EmbeddedOnePager-4.7.Admin%2FConfigImpact%3A">4.7. Admin/Config Impact:</a></li> 
+        <li><a href="#3.1EmbeddedOnePager-4.8.HAImpact%3A">4.8. HA Impact:</a></li> 
+        <li><a href="#3.1EmbeddedOnePager-4.9.I18N%2FL10NImpact%3A">4.9. I18N/L10N Impact:</a></li> 
+        <li><a href="#3.1EmbeddedOnePager-4.10.Packaging%2CDelivery%26Upgrade%3A">4.10. Packaging, Delivery &amp; Upgrade:</a></li> 
+        <ul> 
+         <li><a href="#3.1EmbeddedOnePager-4.10.1.Packaging">4.10.1. Packaging</a></li> 
+         <li><a href="#3.1EmbeddedOnePager-4.10.2.Delivery">4.10.2. Delivery</a></li> 
+         <li><a href="#3.1EmbeddedOnePager-4.10.3.UpgradeandMigration%3A">4.10.3. Upgrade and Migration:</a></li> 
+        </ul> 
+        <li><a href="#3.1EmbeddedOnePager-4.11.SecurityImpact%3A">4.11. Security Impact:</a></li> 
+        <li><a href="#3.1EmbeddedOnePager-4.12.CompatibilityImpact">4.12. Compatibility Impact</a></li> 
+        <li><a href="#3.1EmbeddedOnePager-4.13.Dependencies%3A">4.13. Dependencies:</a></li> 
+        <li><a href="#3.1EmbeddedOnePager-4.14.TestingImpact%3A">4.14. Testing Impact:</a></li> 
+       </ul> 
+       <li><a href="#3.1EmbeddedOnePager-5.ReferenceDocuments%3A">5. Reference Documents:</a></li> 
+       <li><a href="#3.1EmbeddedOnePager-6.Schedule%3A">6. Schedule:</a></li> 
+       <ul> 
+        <li><a href="#3.1EmbeddedOnePager-6.1.ProjectedAvailability%3A">6.1. Projected Availability:</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="3.1EmbeddedOnePager-1.Introduction"></a>1. Introduction</h1> <h4><a name="3.1EmbeddedOnePager-1.1.Project%2FComponentWorkingName%3A"></a>1.1. Project/Component Working Name:</h2> <p>Embedded Glassfish</p> <h4><a name="3.1EmbeddedOnePager-1.2.Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier%3A"></a>1.2. Name(s) and e-mail address of Document Author(s)/Supplier:</h2> 
+     <ul> 
+      <li>Bhavanishankara Sapaliga (bhavanishankar@java.net)</li> 
+      <li>Siraj Ghaffar (sirajg@java.net)</li> 
+      <li>Amy Roh (amyroh@java.net)</li> 
+     </ul> <h4><a name="3.1EmbeddedOnePager-1.3.DateofThisDocument%3A"></a>1.3. Date of This Document:</h2> <p>05/19/2010</p> <h4><a name="3.1EmbeddedOnePager-2.ProjectSummary"></a>2. Project Summary</h1> <h4><a name="3.1EmbeddedOnePager-2.1.ProjectDescription%3A"></a>2.1. Project Description:</h2> <p>The objective of the embedded GlassFish project is to enable running of GlassFish in the JVM of the user's application. This means that GlassFish should run inside a user's application, instead of the other way around. No GlassFish installation or configuration should be required. A related objective is that the embedded functionality should work with the regular installation of GlassFish as well. Embedded glassfish would work with the same set of JVMs as regular glassfish.</p> <p>3.0 introduced the embedded feature for the first time. Objectives of GlassFish Server Open Source Edition 3.1 release are :</p> 
+     <ol> 
+      <li>Formalize the embedded API.</li> 
+      <li>Improve parity with regular GlassFish, so that more applications working in regular glassfish, work in embedded mode. This involves testing and fixing issues found while using various components of GlassFish in embedded mode. Priority to be given to web tests, as that seems to be more relevant to embedded users.</li> 
+      <li>Look into specific customer use cases and make sure those requirements are met.</li> 
+     </ol> <h4><a name="3.1EmbeddedOnePager-2.2.RisksandAssumptions%3A"></a>2.2. Risks and Assumptions:</h2> 
+     <ol> 
+      <li>To improve parity with regular glassfish (2.1/2 above), testing will be done by running devtests in embedded mode.</li> 
+      <li>Additional specific customer requirements may result in some changes in plans.</li> 
+     </ol> <h4><a name="3.1EmbeddedOnePager-3.ProblemSummary"></a>3. Problem Summary</h1> <h4><a name="3.1EmbeddedOnePager-3.1.ProblemArea%3A"></a>3.1. Problem Area:</h2> <p>Problem areas addresses by embedded are :</p> 
+     <ul> 
+      <li>Developer Productivity</li> 
+      <li>Application Testing</li> 
+      <li>ISVs - can bundle glassfish as a "library"</li> 
+     </ul> <p>Two primary categories of users are expected :</p> 
+     <ul> 
+      <li>Maven users, mainly developers who want to run and test their applications in embedded glassfish using the embedded maven plugin</li> 
+      <li>More advanced users who would want to directly use the Embedded APIs.</li> 
+     </ul> <h4><a name="3.1EmbeddedOnePager-3.2.Justification%3A"></a>3.2. Justification:</h2> <p>Embedded is an important developer feature, used by members of the GlassFish community. It also offers potential opportunities with respect to the ISV use case.</p> <h4><a name="3.1EmbeddedOnePager-4.TechnicalDescription%3A"></a>4. Technical Description:</h1> <h4><a name="3.1EmbeddedOnePager-4.1.Details%3A"></a>4.1. Details:</h2> <h4><a name="3.1EmbeddedOnePager-4.1.1Modesanddistributions%3A"></a>4.1.1 Modes and distributions :</h3> <p>• implanted: This uses an existing GlassFish installation and requires having glassfish/lib/embedded/glassfish-embedded-static-shell.jar in your classpath. The JAR itself is an empty shell. The Class-Path entry in META-INF/MANIFEST.MF of the jar has relative references to most of the JARs in the modules directory of the glassfish distribution. The shell jar is part of the glassfish and web distributions. For 3.0, EJB embedded API is supported in this mode only.</p> <p>• autonomous: This does not require an existing GlassFish installation. When there is no installation pointed to, a temporary file system is created. Applications deployed to the embedded server reside in this directory. For easier distribution this mode is available in all-in-one jar in 3 flavors. These jars are not generated as part of regular glassfish build and are not part of the regular glassfish distribution.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Profile </th> 
+         <th class="confluenceTh"> Jar Name </th> 
+         <th class="confluenceTh"> Size </th> 
+         <th class="confluenceTh"> Dependencies </th> 
+         <th class="confluenceTh"> Download Location </th> 
+         <th class="confluenceTh"> Description </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> full </td> 
+         <td class="confluenceTd"> glassfish-embedded-all.jar </td> 
+         <td class="confluenceTd"> about 60 MB </td> 
+         <td class="confluenceTd"> <a href="https://svn.java.net/svn/glassfish~svn/trunk/v3/extras/embedded/all/pom.xml">pom.xml </a> </td> 
+         <td class="confluenceTd"> <a href="http://download.java.net/maven/glassfish/org/glassfish/extras/glassfish-embedded-all/">download </a> </td> 
+         <td class="confluenceTd"> Meant for users interested in the full set of features supported by embedded </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> web </td> 
+         <td class="confluenceTd"> glassfish-embedded-web.jar </td> 
+         <td class="confluenceTd"> about 35 MB </td> 
+         <td class="confluenceTd"> <a href="https://svn.java.net/svn/glassfish~svn/trunk/v3/extras/embedded/web/pom.xml">pom.xml </a> </td> 
+         <td class="confluenceTd"> <a href="http://download.java.net/maven/glassfish/org/glassfish/extras/glassfish-embedded-web/">download </a> </td> 
+         <td class="confluenceTd"> Meant for users of the web profile </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> nucleus </td> 
+         <td class="confluenceTd"> glassfish-embedded-nucleus.jar </td> 
+         <td class="confluenceTd"> about 5 MB </td> 
+         <td class="confluenceTd"> <a href="https://svn.java.net/svn/glassfish~svn/trunk/v3/extras/embedded/nucleus/pom.xml">pom.xml </a> </td> 
+         <td class="confluenceTd"> <a href="http://download.java.net/maven/glassfish/org/glassfish/extras/glassfish/embedded/nucleus/">download </a> </td> 
+         <td class="confluenceTd"> Corresponds to the nucleus distribution. Most users would need to add further packages to do something meaningful. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>The complete application+runtime bundle can then be deployed using a variety of deployment mechanisms - for example, using maven, an installer, zip or even Java Web Start.</p> <p>In both the implanted and autonomous modes, a custom domain.xml can be specified.</p> <h4><a name="3.1EmbeddedOnePager-4.1.2EmbeddedAPI%3A"></a>4.1.2 Embedded API :</h3> <p>The <a href="http://embedded-glassfish.java.net/nonav/apidocs">embedded API</a> provides convenient methods to control the life cycle of the embedded server and to deploy applications to it.</p> <p>This is the common import statement for all the code snippets below:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">import org.glassfish.embeddable.GlassFish;
+import org.glassfish.embeddable.GlassFishProperties;
+import org.glassfish.embeddable.GlassFishRuntime;
+import org.glassfish.embeddable.web.Context;
+import org.glassfish.embeddable.web.HttpListener;
+import org.glassfish.embeddable.web.VirtualServer;
+import org.glassfish.embeddable.web.WebContainer;
+import org.glassfish.embeddable.web.WebListener;</pre> 
+       </div> 
+      </div>
+     </div> <p>A sample piece of code that binds the web container to a specific port and deploys a packaged .war to the embedded server.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">// Create a Embedded GlassFish instance to listen at 9090 http port
+        GlassFishProperties glassfishProperties = new GlassFishProperties();
+        glassfishProperties.setPort("http-listener", 9090);
+        GlassFish glassfish = GlassFishRuntime.bootstrap().newGlassFish(glassfishProperties);
+
+        // Start Embedded GlassFish
+        glassfish.start();
+
+        // Deploy an application to the Embedded GlassFish
+        Deployer deployer = glassfish.getDeployer();
+        String appName = deployer.deploy(new File("hello.war"),
+                "--contextroot=hello", "--name=app1");
+
+        // Undeploy the application
+        deployer.undeploy(appName);
+
+        // Stop Embedded GlassFish
+        glassfish.stop();
+
+        // Dispose Embedded GlassFish. This will clean up any temporary file system created by Embedded GlassFish
+        glassfish.dispose();</pre> 
+       </div> 
+      </div>
+     </div> <p>Sample of using embedded server with an existing domain.xml. Any custom port configuration can be done in the domain.xml that is passed in here.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">// Create a Embedded GlassFish instance using a preconfigured domain.xml
+        GlassFishProperties glassfishProperties = new GlassFishProperties();
+        glassfishProperties.setConfigFileURI(new File("myExistingdomain.xml").toURI().toString()); // this is the only change to the above code.
+        GlassFish glassfish = GlassFishRuntime.bootstrap().newGlassFish(glassfishProperties);
+
+        // Start Embedded GlassFish
+        glassfish.start();
+
+        // Deploy an application to the Embedded GlassFish
+        Deployer deployer = glassfish.getDeployer();
+        String appName = deployer.deploy(new File("hello.war"),
+                "--contextroot=hello", "--name=app1");
+
+        // Undeploy the application
+        deployer.undeploy(appName);
+
+        // Stop Embedded GlassFish
+        glassfish.stop();
+
+        // Dispose Embedded GlassFish. This will clean up any temporary file system created by Embedded GlassFish
+        glassfish.dispose();</pre> 
+       </div> 
+      </div>
+     </div> <p>Scattered Archive sample :</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">// Create a Embedded GlassFish instance to listen at 9090 http port
+        GlassFishProperties glassfishProperties = new GlassFishProperties();
+        glassfishProperties.setPort("http-listener", 9090);
+        GlassFish glassfish = GlassFishRuntime.bootstrap().newGlassFish(glassfishProperties);
+
+        // Start Embedded GlassFish
+        glassfish.start();
+
+        // Deploy a scattered application to the Embedded GlassFish
+        Deployer deployer = glassfish.getDeployer();
+
+         // Build a scattered web archive.
+         ScatteredArchive archive = new ScatteredArchive("testapp", ScatteredArchive.Type.WAR);
+         // target/classes directory contains my complied servlets
+         archive.addClassPath(new File("target", "classes"));
+         // resources/sun-web.xml is my WEB-INF/sun-web.xml
+         archive.addMetadata(new File("resources", "sun-web.xml"));
+         // resources/web.xml is my WEB-INF/web.xml
+         archive.addMetadata(new File("resources", "web.xml"));
+
+        // Deploy the scattered web archive.
+        String appName = deployer.deploy(archive.toURI(), "--contextroot=hello");
+
+        // Undeploy the scattered web application
+        deployer.undeploy(appName);
+
+        // Stop Embedded GlassFish
+        glassfish.stop();
+
+        // Dispose Embedded GlassFish. This will clean up any temporary file system created by Embedded GlassFish
+        glassfish.dispose();</pre> 
+       </div> 
+      </div>
+     </div> <p>Sample of using embedded web API to create an application context and add a http listener for it.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">// Create a Embedded GlassFish instance which listens at 9090 http port
+        GlassFishProperties glassfishProperties = new GlassFishProperties();
+        glassfishProperties.setPort("http-listener", 9090);
+        GlassFish glassfish = GlassFishRuntime.bootstrap().newGlassFish(glassfishProperties);
+
+        // Start Embedded GlassFish
+        glassfish.start();
+
+        /* Create an application context and a http listener */
+        // Get WebContainer service
+        WebContainer webContainer = glassfish.getService(WebContainer.class);
+
+        // Create a http listener to listen at port 9292 and add it to the web container.
+        HttpListener httpListener = webContainer.createWebListener(
+                "test-listener", HttpListener.class);
+        httpListener.setPort(9292);
+        webContainer.addWebListener(httpListener);
+
+        // Create a web application context
+        Context context = webContainer.createContext(new File("/tmp/hello-app"));
+        webContainer.addContext(context, "hello");
+
+        // With that, you can access http://localhost:9292/hello
+
+        // Stop Embedded GlassFish
+        glassfish.stop();
+
+        // Dispose Embedded GlassFish. This will clean up any temporary file system created by Embedded GlassFish
+        glassfish.dispose();</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="3.1EmbeddedOnePager-4.1.3Tooling%3A"></a>4.1.3 Tooling :</h3> <h4><a name="3.1EmbeddedOnePager-Mavenplugin"></a>Maven plugin</h3> <p>3.0 introduced a maven plugin that allows users to start, stop and configure the server and to deploy and undeploy applications. Following are the various goals supported by the plugin. The artifactID for the plugin is glassfish-embedded-maven-plugin. The various parameters used in different goals are summarized below :</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Name </th> 
+         <th class="confluenceTh"> Optional </th> 
+         <th class="confluenceTh"> Default </th> 
+         <th class="confluenceTh"> Description </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> app </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> None </td> 
+         <td class="confluenceTd"> Location of packaged application or application directory. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> serverID </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> "maven" </td> 
+         <td class="confluenceTd"> id of server. one could work with multiple embedded servers. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> containerType </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> "all" </td> 
+         <td class="confluenceTd"> container to start("web", ejb", "jpa", "all"). </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> installRoot </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> temporary directory </td> 
+         <td class="confluenceTd"> root directory of already installed server, if using an already existing install. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> instanceRoot </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> temporary directory </td> 
+         <td class="confluenceTd"> directory of the instance of already installed server, if using an already existing install. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> configFile </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> packaged domain.xml at core/kernel/src/main/resources/org/glassfish/embed/domain.xml </td> 
+         <td class="confluenceTd"> location of domain.xml. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> port </td> 
+         <td class="confluenceTd"> yes </td> 
+         <td class="confluenceTd"> if no configFile and port are specified, 8080 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> name </td> 
+         <td class="confluenceTd"> yes </td> 
+         <td class="confluenceTd"> default deployment value </td> 
+         <td class="confluenceTd"> name of application. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> contextRoot </td> 
+         <td class="confluenceTd"> yes </td> 
+         <td class="confluenceTd"> default deployment value </td> 
+         <td class="confluenceTd"> Applicable for web applications. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> precompileJsp </td> 
+         <td class="confluenceTd"> yes </td> 
+         <td class="confluenceTd"> default deployment value </td> 
+         <td class="confluenceTd"> boolean </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> dbVendorName </td> 
+         <td class="confluenceTd"> yes </td> 
+         <td class="confluenceTd"> default deployment value </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> createTables </td> 
+         <td class="confluenceTd"> yes </td> 
+         <td class="confluenceTd"> default deployment value </td> 
+         <td class="confluenceTd"> boolean </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> dropTables </td> 
+         <td class="confluenceTd"> yes </td> 
+         <td class="confluenceTd"> default deployment value </td> 
+         <td class="confluenceTd"> boolean </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> cascade </td> 
+         <td class="confluenceTd"> yes </td> 
+         <td class="confluenceTd"> default undeployment value </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> autoDelete </td> 
+         <td class="confluenceTd"> yes </td> 
+         <td class="confluenceTd"> true </td> 
+         <td class="confluenceTd"> temporary directory will be deleted when server is stopped. If temporary directory was not created and a pre-existing directory was pointed to, this is ignored. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>Following is a summary for the various plugin goals :</p> <p>• embedded-glassfish:run</p> <p>The goal will start the server, deploy the application and will keep running. The user can chose to redeploy while the plugin is running, if changes are made to the application. It is interactive - when the user presses "Enter" on console the application is redeployed.</p> <p>Parameters :</p> <p>app, serverID, containerType, installRoot, instanceRoot, configFile, port, name, contextRoot, precompileJsp, dbVendorName, createTables, dropTables, autoDelete.</p> <p>• embedded-glassfish:start</p> <p>This will start the embedded server with specified container(s)</p> <p>Parameters :</p> <p>serverID, installRoot, instanceRoot, configFile, port, containerType, autoDelete</p> <p>• embedded-glassfish:deploy</p> <p>Parameters :</p> <p>Deploys the specified archive to the embedded server.</p> <p>serverID, name, app, contextRoot , precompileJsp, createTables, dbVendorName, createTables</p> <p>• embedded-glassfish:undeploy</p> <p>Parameters :</p> <p>serverID, name, dropTables, cascade - if no name is specifed all applications will be undeployed.</p> <p>• embedded-glassfish:stop</p> <p>serverID</p> <p>• embedded-glassfish:admin</p> <p>Runs appserver administration commands in embedded. Either command+commandParameters or commandLine should be specified.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Name </th> 
+         <th class="confluenceTh"> Optional </th> 
+         <th class="confluenceTh"> Default </th> 
+         <th class="confluenceTh"> Description </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> serverID </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> "maven" </td> 
+         <td class="confluenceTd"> ID of server to run the command on </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> command </td> 
+         <td class="confluenceTd"> if commandLine is specified this is ignored and is not necessary </td> 
+         <td class="confluenceTd"> None </td> 
+         <td class="confluenceTd"> Name of asadmin command </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> commandParameters </td> 
+         <td class="confluenceTd"> Yes. if commandLine is specified this is ignored </td> 
+         <td class="confluenceTd"> None </td> 
+         <td class="confluenceTd"> Map of command parameters </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> commandLine </td> 
+         <td class="confluenceTd"> if command is specified this is not necessary </td> 
+         <td class="confluenceTd"> None </td> 
+         <td class="confluenceTd"> asadmin style commandline. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.1EmbeddedOnePager-Anttasks"></a>Ant tasks</h3> <p>3.1 will also support ant tasks for embedded. These are expected to be mostly used for running dev tests in embedded mode. Following is a summary of the tasks :</p> <p>• glassfish-embedded-start :<br> serverID, port, installRoot, instanceRoot, configFile, containerType, autoDelete.</p> <p>• glassfish-embedded-stop :<br> serverID</p> <p>• glassfish-embedded-deploy :<br> name, app, contextRoot , precompileJsp, createTables, dbVendorName, createTables</p> <p>• glassfish-embedded-undeploy :<br> serverID, name, cascade</p> <p>• glassfish-embedded-admin :<br> serverID, command, commandParameters, commandLine</p> <h4><a name="3.1EmbeddedOnePager-4.2.Bug%2FRFENumber%28s%29%3A"></a>4.2. Bug/RFE Number(s):</h2> <p><a href="https://glassfish.java.net/issues/buglist.cgi?Submitquery=Submitquery&amp;component=glassfish&amp;subcomponent=embedded&amp;issue_status=UNCONFIRMED&amp;issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=fulltext&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=&amp;cmdtype=doit&amp;newqueryname=&amp;order=Reusesamesortaslasttime">P1-P3</a> bugs in the embedded category filed in issuetracker will be addressed.</p> <h4><a name="3.1EmbeddedOnePager-4.3.InScope%3A"></a>4.3. In Scope:</h2> <p>Priority would be given to technologies related to web profile, since that appears to be the more relevant to most users.</p> <h4><a name="3.1EmbeddedOnePager-4.4.OutofScope%3A"></a>4.4. Out of Scope:</h2> <p>Clustering will not be supported in embedded mode.</p> <h4><a name="3.1EmbeddedOnePager-4.5.Interfaces%3A"></a>4.5. Interfaces:</h2> <p>Interfaces may be commands, files, directory structure, ports,<br> DTD/Schema, tools, APIs, CLIs, etc.<br> Note: In lieu of listing the interfaces in the one pager, providing<br> a link to another specification which defines the interfaces<br> is acceptable.</p> <h4><a name="3.1EmbeddedOnePager-4.5.1PublicInterfaces"></a>4.5.1 Public Interfaces</h3> <p>List new, public interfaces this project exports.</p> 
+     <ul> 
+      <li>Interface: <a href="http://embedded-glassfish.java.net/nonav/apidocs">Embedded API</a></li> 
+      <li>Interface: glassfish-embedded-plugin, a maven plugin for embedded, documented in section 4.1.3</li> 
+      <li>Interface: Ant tasks, documented in section 4.1.3</li> 
+     </ul> <h4><a name="3.1EmbeddedOnePager-4.5.2PrivateInterfaces"></a>4.5.2 Private Interfaces</h3> <p>None identified at this time.</p> <h4><a name="3.1EmbeddedOnePager-4.5.3Deprecated%2FRemovedInterfaces%3A"></a>4.5.3 Deprecated/Removed Interfaces:</h3> <p>None identified at this time</p> <h4><a name="3.1EmbeddedOnePager-4.6.DocImpact%3A"></a>4.6. Doc Impact:</h2> <p>Embedded API usage and maven plugin will need to be documented</p> <h4><a name="3.1EmbeddedOnePager-4.7.Admin%2FConfigImpact%3A"></a>4.7. Admin/Config Impact:</h2> <p>None</p> <p>Identify changes to GUIs, CLI, agents, plugins...<br> None</p> <h4><a name="3.1EmbeddedOnePager-4.8.HAImpact%3A"></a>4.8. HA Impact:</h2> <p>None</p> <h4><a name="3.1EmbeddedOnePager-4.9.I18N%2FL10NImpact%3A"></a>4.9. I18N/L10N Impact:</h2> <p>Some user visible messages will need to be localized.</p> <h4><a name="3.1EmbeddedOnePager-4.10.Packaging%2CDelivery%26Upgrade%3A"></a>4.10. Packaging, Delivery &amp; Upgrade:</h2> <h4><a name="3.1EmbeddedOnePager-4.10.1.Packaging"></a>4.10.1. Packaging</h3> 
+     <ul> 
+      <li>What packages does this proposal impact? None</li> 
+      <li>How will the packages be impacted? None</li> 
+      <li>Will new IPS/pkg(5) packages need to be created? New IPS package for ant-tasks.</li> 
+     </ul> <h4><a name="3.1EmbeddedOnePager-4.10.2.Delivery"></a>4.10.2. Delivery</h3> 
+     <ul> 
+      <li>glassfish-embedded-static-shell is part of glassfish and web distributions.</li> 
+      <li>glassfish-embedded-all.jar, glassfish-embedded-web and glassfish-embedded-nucleus.jar are downloadable separately. The download locations are specified in section 4.1.1. These would additionally be available from Update Center.</li> 
+      <li>The embedded maven plugin, glassfish-embedded-maven-plugin, is released separately and is available from maven repository.</li> 
+      <li>Embedded ant tasks will be available from the update center.</li> 
+     </ul> <p>What impact will this proposal have on product installation?<br> None</p> <h4><a name="3.1EmbeddedOnePager-4.10.3.UpgradeandMigration%3A"></a>4.10.3. Upgrade and Migration:</h3> <p>No impact on upgrade and migration.</p> <h4><a name="3.1EmbeddedOnePager-4.11.SecurityImpact%3A"></a>4.11. Security Impact:</h2> <p>None</p> <h4><a name="3.1EmbeddedOnePager-4.12.CompatibilityImpact"></a>4.12. Compatibility Impact</h2> <p>None</p> <h4><a name="3.1EmbeddedOnePager-4.13.Dependencies%3A"></a>4.13. Dependencies:</h2> 
+     <ul> 
+      <li><a href="WebTierv3.1.html" title="WebTierv3.1">WebTier - WEB-6</a></li> 
+      <li><a href="GlassFishv3.1EJB.html" title="GlassFishv3.1EJB">EJB</a></li> 
+      <li><a href="V3.1_Connectors_Pooling_Resources_JDBC.html" title="V3.1_Connectors_Pooling_Resources_JDBC">Connectors/resource - JCA-5</a></li> 
+      <li><a href="V3.1Security.html" title="V3.1Security">Security - SEC-017</a></li> 
+      <li><a href="3.1Persistence.html" title="3.1Persistence">JPA </a></li> 
+     </ul> <h4><a name="3.1EmbeddedOnePager-4.14.TestingImpact%3A"></a>4.14. Testing Impact:</h2> <p>Existing dev tests from various components will be used to test embedded. These tests will run in an optional embedded mode. Priority will be given to running web dev tests.</p> <h4><a name="3.1EmbeddedOnePager-5.ReferenceDocuments%3A"></a>5. Reference Documents:</h1> 
+     <ul> 
+      <li>Project details including milestone details : <a href="GlassFish3.1Embedded.html" title="GlassFish3.1Embedded">Project Page</a></li> 
+     </ul> <h4><a name="3.1EmbeddedOnePager-6.Schedule%3A"></a>6. Schedule:</h1> <h4><a name="3.1EmbeddedOnePager-6.1.ProjectedAvailability%3A"></a>6.1. Projected Availability:</h2> <p>Milestone 7. Refer to the <a href="GlassFish3.1Embedded.html" title="GlassFish3.1Embedded">Milestone Planning Document</a> for more details.</p> 
+     <div class="tabletitle"> 
+      <a name="comments"> <h4>Comments:</h2> </a> 
+     </div> 
+     <table border="0" width="100%"> 
+      <tbody>
+       <tr> 
+        <td> <a name="comment-20880122"></a> <font class="smallfont"><p>Please note that the ScatteredArchive class is present in the org.glassfish.embedded.api package in Glassfish 3.1-SNAPSHOT as of 2011-01-31, even though the Javadoc says it should be in the org.glassfish.embeddable.archive package.</p></font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by ljnelson at Jan 31, 2011 10:13 
+         </div> </td> 
+       </tr> 
+      </tbody>
+     </table> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Aug 28, 2012 by 
+<font color="#0050B2">10193</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

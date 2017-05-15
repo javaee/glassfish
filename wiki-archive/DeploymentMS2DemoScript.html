@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : DeploymentMS2DemoScript</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="DeploymentMS2DemoScript-Createaclusterwithtwoinstances"></a>Create a cluster with two instances</h3> <p>export ENABLE_REPLICATION=true</p> <p>asadmin start-domain</p> <p>asadmin create-cluster cluster1</p> <p>asadmin create-local-instance --cluster cluster1 --systemproperties HTTP_LISTENER_PORT=18080:HTTP_SSL_LISTENER_PORT=18181:IIOP_SSL_LISTENER_PORT=13800:IIOP_LISTENER_PORT=13700:JMX_SYSTEM_CONNECTOR_PORT=17676:IIOP_SSL_MUTUALAUTH_PORT=13801:JMS_PROVIDER_PORT=18686:ASADMIN_LISTENER_PORT=14848 instance1</p> <p>asadmin create-local-instance --cluster cluster1 --systemproperties HTTP_LISTENER_PORT=38080:HTTP_SSL_LISTENER_PORT=38181:IIOP_SSL_LISTENER_PORT=33800:IIOP_LISTENER_PORT=33700:JMX_SYSTEM_CONNECTOR_PORT=37676:IIOP_SSL_MUTUALAUTH_PORT=33801:JMS_PROVIDER_PORT=38686:ASADMIN_LISTENER_PORT=34848 instance2</p> <p>asadmin start-local-instance instance1</p> <p>asadmin start-local-instance instance2</p> <h4><a name="DeploymentMS2DemoScript-Demothedeploy%2Cdisable%2Cenable%2Cshowcomponentstatus"></a>Demo the deploy, disable, enable, show-component-status</h3> <p>asadmin deploy --target cluster1 stateless-simple.ear</p> <p>(go to browser: <a href="http://localhost:18080/helloworld">http://localhost:18080/helloworld</a>)</p> <p>(go to browser: <a href="http://localhost:38080/helloworld">http://localhost:38080/helloworld</a>)</p> <p>(go to browser: <a href="http://localhost:8080/helloworld">http://localhost:8080/helloworld</a>)</p> <p>(show the domain.xml on DAS and instance)</p> <p>asadmin show-component-status --target cluster1 stateless-simple</p> <p>asadmin disable --target cluster1 stateless-simple</p> <p>asadmin show-component-status --target cluster1 stateless-simple</p> <p>(go to browser: <a href="http://localhost:18080/helloworld">http://localhost:18080/helloworld</a>)</p> <p>asadmin enable --target cluster1 stateless-simple</p> <p>asadmin show-component-status --target cluster1 stateless-simple</p> <p>(go to browser: <a href="http://localhost:18080/helloworld">http://localhost:18080/helloworld</a>)</p> <h4><a name="DeploymentMS2DemoScript-Demothelistcomponents%2Credeploy"></a>Demo the list-components, redeploy</h3> <p>asadmin list-components cluster1</p> <p>asadmin deploy --target cluster1 webapps-simple.war</p> <p>(go to browser: <a href="http://localhost:38080/webapps-simple">http://localhost:38080/webapps-simple</a>)</p> <p>asadmin list-components cluster1</p> <p>asadmin list-components --verbose cluster1</p> <p>asadmin disable --target cluster1 stateless-simple</p> <p>asadmin list-components --verbose cluster1</p> <p>asadmin redeploy --name webapps-simple --target cluster1 --contextroot foo webapps-simple.war</p> <p>(go to browser: <a href="http://localhost:18080/webapps-simple">http://localhost:18080/webapps-simple</a>)</p> <p>(go to browser: <a href="http://localhost:18080/foo">http://localhost:18080/foo</a>)</p> <h4><a name="DeploymentMS2DemoScript-Demotheundeploy"></a>Demo the undeploy</h3> <p>asadmin undeploy --target cluster1 webapps-simple</p> <p>(show the domain.xml on DAS and instance)</p> <p>asadmin list-components cluster1</p> <p>asadmin undeploy --target cluster1 stateless-simple</p> <p>asadmin list-components cluster1</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 16, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:43.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

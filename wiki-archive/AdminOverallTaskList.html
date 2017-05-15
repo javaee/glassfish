@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : AdminOverallTaskList</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="AdminOverallTaskList-MasterTaskList"></a>Master Task List</h1> <p><a href="GlassFishV3AdministrationStartingPoint.html" title="GlassFishV3AdministrationStartingPoint">Back to Admin Starting Point</a></p> <h4><a name="AdminOverallTaskList-Introduction"></a>Introduction</h2> <p>This is the overall master task list for all the tasks we need to do. I would request all the admin developers to take a good look at this list and enhance it. Too much of information (especially if it is not coordinated) leads to confusion. So, I have tried to be precise here. This list should be contacted by everyone involved in administration for GlassFish V3, only because I think it is more convenient to do so. I know this is not WYSIWYG, but I couldn't help it. I encourage everyone to make this document more and more dependable and accurate. This should reflect the state of various projects/tasks in the administration area at a given point in time. I would also request everyone to be as precise as possible when defining the tasks. Note that these tasks are also to be linked to from the <a href="./GlassFishV3SubProjects.html">sub-projects page</a>.</p> <p>Ideally, an entry in this table should be one line wide. The focus of this list is on TP-2 release, but it may well go beyond that. The document that describes a task in sufficient detail should be a Wiki page or a plain HTML (no fluff) and should give all the details for a specific task.</p> 
+     <ul class="alternate" type="square"> 
+      <li>Kedar</li> 
+     </ul> <p><b>Start with High Priority Items (P1, P2) first. For TP-2, these items have to be done by 03/28/2008.</b></p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">ID </th> 
+         <th class="confluenceTh"> Task </th> 
+         <th class="confluenceTh"> Owner(s) </th> 
+         <th class="confluenceTh"> Date </th> 
+         <th class="confluenceTh"> Link to document describing the task in sufficient detail </th> 
+         <th class="confluenceTh"> Priority </th> 
+         <th class="confluenceTh"> DONE? (Yes/No) </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> A0 </td> 
+         <td class="confluenceTd"> Make administration available on admin port </td> 
+         <td class="confluenceTd"> Kedar </td> 
+         <td class="confluenceTd"> *05 Mar 2008* </td> 
+         <td class="confluenceTd"> RestoreAdminPortGFV3 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> No </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> A1 </td> 
+         <td class="confluenceTd"> Finalize a list of admin commands for TP-2 </td> 
+         <td class="confluenceTd"> Jane, Kedar, Sreeni </td> 
+         <td class="confluenceTd"> *25 Jan 2008* </td> 
+         <td class="confluenceTd"> <a href="CLICommandsForGlassFishV3TP2.html" title="CLICommandsForGlassFishV3TP2">AdminCommandsForGFV3 TP2 </a> </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> *YES* </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> A2 </td> 
+         <td class="confluenceTd"> Make changes to config API to include default values </td> 
+         <td class="confluenceTd"> Kedar </td> 
+         <td class="confluenceTd"> *12 Feb 2008* </td> 
+         <td class="confluenceTd"> ReinstatingV3ConfigDefaults </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> No </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> A3-a </td> 
+         <td class="confluenceTd"> Bring up MBeanServer and AMX global MBeans in DAS </td> 
+         <td class="confluenceTd"> Lloyd </td> 
+         <td class="confluenceTd"> *05 Feb 2008* </td> 
+         <td class="confluenceTd"> <a href="LoadingAMXandMBeanServerV3.html" title="LoadingAMXandMBeanServerV3">LoadingAMXandMBeanServerV3</a> </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> *YES* </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> A3-b </td> 
+         <td class="confluenceTd"> Bring up AMX Config MBeans in DAS </td> 
+         <td class="confluenceTd"> Lloyd </td> 
+         <td class="confluenceTd"> *14 Feb 2008* </td> 
+         <td class="confluenceTd"> <a href="LoadingAMXandMBeanServerV3.html" title="LoadingAMXandMBeanServerV3">LoadingAMXandMBeanServerV3</a> </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> *YES* </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> A3-c </td> 
+         <td class="confluenceTd"> AMXConfig MBeans working fully </td> 
+         <td class="confluenceTd"> Lloyd </td> 
+         <td class="confluenceTd"> *15 March 2008* </td> 
+         <td class="confluenceTd"> <a href="LoadingAMXandMBeanServerV3.html" title="LoadingAMXandMBeanServerV3">LoadingAMXandMBeanServerV3</a> </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> *YES* </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> A3-d </td> 
+         <td class="confluenceTd"> AMX annotations to use strings instead of classes </td> 
+         <td class="confluenceTd"> Lloyd </td> 
+         <td class="confluenceTd"> *17 March 2008* </td> 
+         <td class="confluenceTd"> <a href="LoadingAMXandMBeanServerV3.html" title="LoadingAMXandMBeanServerV3">LoadingAMXandMBeanServerV3</a> </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> *NO* </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> A3-e </td> 
+         <td class="confluenceTd"> AMXConfig MBeans to support create/remove sub-elements </td> 
+         <td class="confluenceTd"> Lloyd </td> 
+         <td class="confluenceTd"> *25 March 2008* </td> 
+         <td class="confluenceTd"> <a href="LoadingAMXandMBeanServerV3.html" title="LoadingAMXandMBeanServerV3">LoadingAMXandMBeanServerV3</a> </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> *NO* </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> A3-f </td> 
+         <td class="confluenceTd"> Implement base hierarchy for AMX JSR 77 MBeans (blocking, work with Sreeni) </td> 
+         <td class="confluenceTd"> Lloyd </td> 
+         <td class="confluenceTd"> *25 March 2008* </td> 
+         <td class="confluenceTd"> <a href="LoadingAMXandMBeanServerV3.html" title="LoadingAMXandMBeanServerV3">LoadingAMXandMBeanServerV3</a> </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> *NO* </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> A3-g </td> 
+         <td class="confluenceTd"> Support "official" (non-platform) MBeanServer </td> 
+         <td class="confluenceTd"> Lloyd </td> 
+         <td class="confluenceTd"> *25 March 2008* </td> 
+         <td class="confluenceTd"> <a href="LoadingAMXandMBeanServerV3.html" title="LoadingAMXandMBeanServerV3">LoadingAMXandMBeanServerV3</a> </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> *NO* </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> A4 </td> 
+         <td class="confluenceTd"> Identify all the @Services we need for V3 DAS </td> 
+         <td class="confluenceTd"> Kedar </td> 
+         <td class="confluenceTd"> *10 Mar 2008* </td> 
+         <td class="confluenceTd"> ServicesAdminV3 </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> No </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> A5 </td> 
+         <td class="confluenceTd"> Identify all the @Contracts we need for V3 DAS </td> 
+         <td class="confluenceTd"> Kedar </td> 
+         <td class="confluenceTd"> *10 Mar 2008* </td> 
+         <td class="confluenceTd"> ContractsAdminV3 </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> No </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> A6 </td> 
+         <td class="confluenceTd"> Make stop-domain a local command </td> 
+         <td class="confluenceTd"> Byron </td> 
+         <td class="confluenceTd"> *21 Mar 2008* </td> 
+         <td class="confluenceTd"> *<a href="MakeStopDomainLocal.html" title="MakeStopDomainLocal">MakeStopDomainLocal</a>* </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> *YES* </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> A7 </td> 
+         <td class="confluenceTd"> Identify Admin Modules and Workspace Structure </td> 
+         <td class="confluenceTd"> Kedar, Siraj, Nandini, Ken, Hong, Jane, Lloyd, Sreeni </td> 
+         <td class="confluenceTd"> *20 Feb 2008* </td> 
+         <td class="confluenceTd"> <a href="V3AdminWorkspaceStructure.html" title="V3AdminWorkspaceStructure">AdminV3Modules </a> </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> *YES* </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> A8 </td> 
+         <td class="confluenceTd"> Reinstate Validation in Config </td> 
+         <td class="confluenceTd"> Kedar </td> 
+         <td class="confluenceTd"> *20 Mar 2008* </td> 
+         <td class="confluenceTd"> ValidationAdminV3 </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> No </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> A9 </td> 
+         <td class="confluenceTd"> Reinstate Dynamic Reconfiguration in Config </td> 
+         <td class="confluenceTd"> Kedar </td> 
+         <td class="confluenceTd"> *10 Mar 2008* </td> 
+         <td class="confluenceTd"> DynamicReconfigV3 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> No </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> A10 </td> 
+         <td class="confluenceTd"> Implement Dotted Name Support in <b>Config</b> </td> 
+         <td class="confluenceTd"> Lloyd, Kedar </td> 
+         <td class="confluenceTd"> *10 Mar 2008* </td> 
+         <td class="confluenceTd"> DottedNamesinV3 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> No </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> A11 </td> 
+         <td class="confluenceTd"> Reinstate CreateDomain Command </td> 
+         <td class="confluenceTd"> Siraj </td> 
+         <td class="confluenceTd"> *03 Mar 2008* </td> 
+         <td class="confluenceTd"> <a href="ReinstateCreateDomainV3.html" title="ReinstateCreateDomainV3">ReinstateCreateDomainV3</a> </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> No </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> A12 </td> 
+         <td class="confluenceTd"> Reinstate Launcher Start Domain </td> 
+         <td class="confluenceTd"> Byron </td> 
+         <td class="confluenceTd"> *19 Mar 2008* </td> 
+         <td class="confluenceTd"> *<a href="ReinstateLauncherasAPIV3.html" title="ReinstateLauncherasAPIV3">ReinstateLauncherasAPIV3</a>* </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> YES </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> A13 </td> 
+         <td class="confluenceTd"> Reinstate Runtime MBean Infrastructure (not needed for TP-2) </td> 
+         <td class="confluenceTd"> Sreeni </td> 
+         <td class="confluenceTd"> *25 Apr 2008* </td> 
+         <td class="confluenceTd"> ReinstateRuntimeMBeans </td> 
+         <td class="confluenceTd"> No </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> A14 </td> 
+         <td class="confluenceTd"> Create the overall admin commands (CLI) Infrastructure </td> 
+         <td class="confluenceTd"> Byron </td> 
+         <td class="confluenceTd"> *11 Mar 2008* </td> 
+         <td class="confluenceTd"> <a href="GlassFishV3AdminCommandLineInterface.html" title="GlassFishV3AdminCommandLineInterface">V3 CLI </a> <a href="InstallationWideV3Environment.html" title="InstallationWideV3Environment">Universal Environment </a> </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> *YES* </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> A15 </td> 
+         <td class="confluenceTd"> Create a pseudo-schema that helps manage changes to the config API </td> 
+         <td class="confluenceTd"> Kedar </td> 
+         <td class="confluenceTd"> *05 Mar 2008* </td> 
+         <td class="confluenceTd"> PsuedoSchemaForDomain </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd">No </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> A16 </td> 
+         <td class="confluenceTd"> Discuss pros and cons of providing various exit codes on asadmin commands </td> 
+         <td class="confluenceTd"> Byron </td> 
+         <td class="confluenceTd"> *6 Mar 2008* </td> 
+         <td class="confluenceTd"> <a href="ProsAndConsOfAsadminExitCodes.html" title="ProsAndConsOfAsadminExitCodes">ProsAndConsOfAsadminExitCodes</a> </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> *YES* </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> A17 </td> 
+         <td class="confluenceTd"> Support for stop-domain command duplicate of A6 </td> 
+         <td class="confluenceTd"> Byron </td> 
+         <td class="confluenceTd"> *07 Mar 2008* </td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd">*YES* </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> A18 </td> 
+         <td class="confluenceTd"> Support for delete/list domain commands </td> 
+         <td class="confluenceTd"> Siraj </td> 
+         <td class="confluenceTd"> *14 Mar 2008* </td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> No </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> A19 </td> 
+         <td class="confluenceTd"> Support for get/set/list commands </td> 
+         <td class="confluenceTd"> Kedar </td> 
+         <td class="confluenceTd"> *29 Feb 2008* </td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> No </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> A20 </td> 
+         <td class="confluenceTd"> Support for create/delete/list-jvm-options commands </td> 
+         <td class="confluenceTd"> Kedar </td> 
+         <td class="confluenceTd"> *07 Mar 2008* </td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> No </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> A21 </td> 
+         <td class="confluenceTd"> Support for create/delete/list-file-user commands - (added update-file-user P2 on 17th March) </td> 
+         <td class="confluenceTd"> Nandini </td> 
+         <td class="confluenceTd"> *28 Mar 2008* </td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> *YES* </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> A22 </td> 
+         <td class="confluenceTd"> Support for create/delete/list-mbean commands </td> 
+         <td class="confluenceTd"> Kedar </td> 
+         <td class="confluenceTd"> *25 Mar 2008* </td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> No </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> A23 </td> 
+         <td class="confluenceTd"> Support for backup/restore domain commands </td> 
+         <td class="confluenceTd"> Byron </td> 
+         <td class="confluenceTd"> *21 Mar 2008* </td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> *YES* </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> A24 </td> 
+         <td class="confluenceTd"> Support for create/delete-ssl commands - create ssl --type iiop-service to be done after TP2 </td> 
+         <td class="confluenceTd"> Nandini </td> 
+         <td class="confluenceTd"> *07 Mar 2008* </td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> *YES* </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> A25 </td> 
+         <td class="confluenceTd"> Support for create/delete/list-auth-realm commands </td> 
+         <td class="confluenceTd"> Nandini </td> 
+         <td class="confluenceTd"> *28 Mar 2008* </td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd">*YES* </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> A26 </td> 
+         <td class="confluenceTd"> <del>Support for change-admin-password command</del> </td> 
+         <td class="confluenceTd"> Nandini </td> 
+         <td class="confluenceTd"> *14 Mar 2008* </td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> No admin password support for TP2 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> A27 </td> 
+         <td class="confluenceTd"> Support for help, version commands </td> 
+         <td class="confluenceTd"> Lloyd </td> 
+         <td class="confluenceTd"> *14 Mar 2008* </td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> No </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> A28 </td> 
+         <td class="confluenceTd"> CLI framework support in option validation, man pages support, etc. areas </td> 
+         <td class="confluenceTd"> Jane </td> 
+         <td class="confluenceTd"> *21 Mar 2008* </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> No </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> A29 </td> 
+         <td class="confluenceTd"> Support for Restarting the domain (Launcher stays behind?) (P3) </td> 
+         <td class="confluenceTd"> Byron </td> 
+         <td class="confluenceTd"> *21 Mar 2008* </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> No </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> A30 </td> 
+         <td class="confluenceTd"> Do a robust implementation for status determination of the server </td> 
+         <td class="confluenceTd"> Kedar </td> 
+         <td class="confluenceTd"> *25 Mar 2008* </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> No </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> A31 </td> 
+         <td class="confluenceTd"> Make asadmin channel password-protected </td> 
+         <td class="confluenceTd"> Siraj </td> 
+         <td class="confluenceTd"> *30 Apri 2008* </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> *YES* </td> 
+         <td class="confluenceTd"><a href="AdminChannelAuthenticationSupport.html" title="AdminChannelAuthenticationSupport">AdminChannelAuthenticationSupport</a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> A32 </td> 
+         <td class="confluenceTd"> Provide scripts that hide the concepts of <b>domain</b> from developers Related to A27 </td> 
+         <td class="confluenceTd"> Byron </td> 
+         <td class="confluenceTd"> *20 Mar 2008* </td> 
+         <td class="confluenceTd"> <a href="ProvidingScriptsInBinFolder2HideDomains.html" title="ProvidingScriptsInBinFolder2HideDomains">ProvidingScriptsInBinFolder2HideDomains</a> </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> *YES* </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> A33 </td> 
+         <td class="confluenceTd"> Make asadmin a simple one-line script. </td> 
+         <td class="confluenceTd"> Byron </td> 
+         <td class="confluenceTd"> *17 Mar 2008* </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> *YES* </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> A34 </td> 
+         <td class="confluenceTd"> Implement the admin GUI download on first access </td> 
+         <td class="confluenceTd"> Kedar, Ken, Anissa </td> 
+         <td class="confluenceTd"> *28 Mar 2008* </td> 
+         <td class="confluenceTd"> <a href="HowAdminConsoleDownloadWorksForV3TP2.html" title="HowAdminConsoleDownloadWorksForV3TP2">HowAdminConsoleDownloadWorksForV3TP2</a> </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd">*NO* </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="AdminOverallTaskList-References"></a>References</h2> 
+     <ul> 
+      <li><a href="./Rt_tp2_tasks.html">Runtime Management Task List</a></li> 
+      <li><a href="./GUIPagesForGlassFishV3TP2.html">Admin GUI Task List</a></li> 
+      <li><a href="./V3deployment_tp2_tasklist.html">Application Management Task List</a></li> 
+      <li><a href="JConsole_connectivity_in_V3.html" title="JConsole_connectivity_in_V3">JConsole Connectivity in GFv3 </a></li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 17, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:48.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : 11may2010</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>Admin iTeam Meeting Minutes May 11, 2010</p> 
+     <ul> 
+      <li>Hosted by Byron</li> 
+      <li>Discuss Config. A server instance has up to 4 different config &amp; server elements to get its true configuration. Is this known/planned/working ?? 
+       <ul> 
+        <li><b>No resolution yet</b></li> 
+       </ul> </li> 
+      <li>Related to previous bullet – If we allow stand-alone instances then they have *<b>2</b>* config &amp; server elements. An example of the frequent special-case code for stand-alone instances. I still recommend not allowing them. Let's decide today! 
+       <ul> 
+        <li><b>not decided</b></li> 
+       </ul> </li> 
+      <li>Let's discuss how we are going to pass information back and forth to the remote ssh gizmo. 
+       <ul> 
+        <li><b>done</b></li> 
+       </ul> </li> 
+      <li>list-instance – It would be great if I could call RemoteCommand in admin-cli from the server-side in core/kernel. Is there any reason to NOT do this? 
+       <ul> 
+        <li>__not a good idea. Instead Bill Shannmon developed RemoteAdminCommand in admin/util that is designed to be called from the server-side.</li> 
+       </ul> </li> 
+      <li>Progress report from developers. This is a good time for more detailed debriefing. What have you been up to? 
+       <ul> 
+        <li>Byron reported that he has the initial versions of start-local-instance, stop-instance and list-instances working. Delete-instance is next for Byron.</li> 
+       </ul> </li> 
+     </ul> <h4><a name="11may2010-OldResolvedActionItems"></a>Old Resolved Action Items</h2> 
+     <ul> 
+      <li>BYRON: What happens when you add a property to a cluster that has a reference to a config. Does it go into the cluster or the config elements? 
+       <ul> 
+        <li><b>Answer: tested by creating a cluster with "--systemproperties foo=goo". It goes into the cluster element only.</b></li> 
+       </ul> </li> 
+      <li>BYRON: Can you use server-config as a config-ref when making a new cluster in V2? 
+       <ul> 
+        <li>__Answer - No! See below:</li> 
+       </ul> </li> 
+     </ul> <p>-<del>config Creates a shared cluster. The specified configuration name must exist and must not be default-config (the standalone cluster configuration template) or a stan</del> dalone configuration (including server-config). If this option is omitted, a standalone cluster is created.</p> <p>~/eric/sailfin/bin&gt;./aa_d2 create-cluster --config server-config cl3 The configuration of the Domain Administration Server (named server-config) cannot be referenced by a shared server instance or shared cluster. CLI137 Command create-cluster failed. __</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:42.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

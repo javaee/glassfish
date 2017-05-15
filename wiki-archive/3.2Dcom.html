@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : 3.2Dcom</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="3.2Dcom-GlassFishServerOpenSourceEdition3.1.2DCOMClusteringForWindowsOnePager"></a>GlassFish Server Open Source Edition 3.1.2 - DCOM Clustering For Windows One Pager</h1> <p>(template version 1.92)</p> 
+     <div> 
+      <ul> 
+       <li><a href="#3.2Dcom-GlassFishServerOpenSourceEdition3.1.2DCOMClusteringForWindowsOnePager">GlassFish Server Open Source Edition 3.1.2 - DCOM Clustering For Windows One Pager</a></li> 
+       <ul> 
+        <li><a href="#3.2Dcom-1.Introduction">1. Introduction</a></li> 
+        <ul> 
+         <li><a href="#3.2Dcom-1.1Project%2FComponentWorkingName%3A">1.1 Project/Component Working Name:</a></li> 
+         <li><a href="#3.2Dcom-1.2NameandEmailAddressofAuthor">1.2 Name and Email Address of Author</a></li> 
+         <li><a href="#3.2Dcom-1.3.DateofThisDocument%3A">1.3. Date of This Document:</a></li> 
+         <li><a href="#3.2Dcom-1.4Glossary">1.4 Glossary</a></li> 
+        </ul> 
+        <li><a href="#3.2Dcom-2.ProjectSummary">2. Project Summary</a></li> 
+        <ul> 
+         <li><a href="#3.2Dcom-2.1.ProjectDescription%3A">2.1. Project Description:</a></li> 
+         <li><a href="#3.2Dcom-2.2.RisksandAssumptions%3A">2.2. Risks and Assumptions:</a></li> 
+        </ul> 
+        <li><a href="#3.2Dcom-3.ProblemSummary">3. Problem Summary</a></li> 
+        <ul> 
+         <li><a href="#3.2Dcom-3.1.ProblemArea%3A">3.1. Problem Area:</a></li> 
+         <li><a href="#3.2Dcom-3.2.Justification%3A">3.2. Justification:</a></li> 
+        </ul> 
+        <li><a href="#3.2Dcom-4.TechnicalDescription%3A">4. Technical Description:</a></li> 
+        <ul> 
+         <li><a href="#3.2Dcom-4.1.Details%3A">4.1. Details:</a></li> 
+         <ul> 
+          <li><a href="#3.2Dcom-4.1.1SampleUsage">4.1.1 Sample Usage</a></li> 
+         </ul> 
+         <li><a href="#3.2Dcom-4.2.Bug%2FRFENumber%3A">4.2. Bug/RFE Number:</a></li> 
+         <li><a href="#3.2Dcom-4.3.InScope%3A">4.3. In Scope:</a></li> 
+         <li><a href="#3.2Dcom-4.4.OutofScope%3A">4.4. Out of Scope:</a></li> 
+         <li><a href="#3.2Dcom-4.5.Interfaces%3A">4.5. Interfaces:</a></li> 
+         <ul> 
+          <li><a href="#3.2Dcom-4.5.1PublicInterfaces">4.5.1 Public Interfaces</a></li> 
+          <li><a href="#3.2Dcom-4.5.1.1createnodedcom">4.5.1.1 create-node-dcom</a></li> 
+          <li><a href="#3.2Dcom-4.5.1.2deletenodedcom">4.5.1.2 delete-node-dcom</a></li> 
+          <li><a href="#3.2Dcom-4.5.1.3listnodesdcom">4.5.1.3 list-nodes-dcom</a></li> 
+          <li><a href="#3.2Dcom-4.5.1.4pingnodedcom">4.5.1.4 ping-node-dcom</a></li> 
+          <li><a href="#3.2Dcom-4.5.1.5updatenodedcom">4.5.1.5 update-node-dcom</a></li> 
+          <li><a href="#3.2Dcom-4.5.1.6setupdcom">4.5.1.6 setup-dcom</a></li> 
+          <li><a href="#3.2Dcom-4.5.1.7installnode">4.5.1.7 install-node</a></li> 
+          <li><a href="#3.2Dcom-4.5.1.8uninstallnode">4.5.1.8 uninstall-node</a></li> 
+          <li><a href="#3.2Dcom-4.5.2PrivateInterfaces">4.5.2 Private Interfaces</a></li> 
+          <li><a href="#3.2Dcom-4.5.3Deprecated%2FRemovedInterfaces%3A">4.5.3 Deprecated/Removed Interfaces:</a></li> 
+         </ul> 
+         <li><a href="#3.2Dcom-4.6.DocImpact%3A">4.6. Doc Impact:</a></li> 
+         <li><a href="#3.2Dcom-4.7.Admin%2FConfigImpact%3A">4.7. Admin/Config Impact:</a></li> 
+         <ul> 
+          <li><a href="#3.2Dcom-4.7.1AdminConsoleSupport%3A">4.7.1 Admin Console Support:</a></li> 
+         </ul> 
+         <li><a href="#3.2Dcom-4.8.HAImpact%3A">4.8. HA Impact:</a></li> 
+         <li><a href="#3.2Dcom-4.9.I18N%2FL10NImpact%3A">4.9. I18N/L10N Impact:</a></li> 
+         <li><a href="#3.2Dcom-4.10.Packaging%2CDelivery%26Upgrade%3A">4.10. Packaging, Delivery &amp; Upgrade:</a></li> 
+         <ul> 
+          <li><a href="#3.2Dcom-4.10.1.Packaging">4.10.1. Packaging</a></li> 
+          <li><a href="#3.2Dcom-4.10.2.Delivery">4.10.2. Delivery</a></li> 
+          <li><a href="#3.2Dcom-4.10.3.UpgradeandMigration%3A">4.10.3. Upgrade and Migration:</a></li> 
+         </ul> 
+         <li><a href="#3.2Dcom-4.11.SecurityImpact%3A">4.11. Security Impact:</a></li> 
+         <li><a href="#3.2Dcom-4.12.CompatibilityImpact">4.12. Compatibility Impact</a></li> 
+         <li><a href="#3.2Dcom-4.13.Dependencies%3A">4.13. Dependencies:</a></li> 
+         <ul> 
+          <li><a href="#3.2Dcom-4.13.1InternalDependencies">4.13.1 Internal Dependencies</a></li> 
+          <li><a href="#3.2Dcom-4.13.2ExternalDependencies">4.13.2 External Dependencies</a></li> 
+         </ul> 
+         <li><a href="#3.2Dcom-4.14.TestingImpact%3A">4.14. Testing Impact:</a></li> 
+         <li><a href="#3.2Dcom-4.15.JIRAIssues">4.15. JIRA Issues</a></li> 
+         <li><a href="#3.2Dcom-5.ReferenceDocuments%3A">5. Reference Documents:</a></li> 
+         <li><a href="#3.2Dcom-5.1BuildingExternalProjectsfromSource">5.1 Building External Projects from Source</a></li> 
+         <ul> 
+          <li><a href="#3.2Dcom-5.1.1JCIFS%28SAMBA%29">5.1.1 JCIFS (SAMBA)</a></li> 
+         </ul> 
+        </ul> 
+        <li><a href="#3.2Dcom-6.Schedule%3A">6. Schedule:</a></li> 
+        <li><a href="#3.2Dcom-7.ReviewerComments">7. Reviewer Comments</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="3.2Dcom-1.Introduction"></a>1. Introduction</h2> <h4><a name="3.2Dcom-1.1Project%2FComponentWorkingName%3A"></a>1.1 Project/Component Working Name:</h3> <p>GlassFish Server Open Source Edition 3.1.2 SSH Improvements For Windows<br> GlassFish Server Open Source Edition 4.0 SSH Improvements For Windows</p> <h4><a name="3.2Dcom-1.2NameandEmailAddressofAuthor"></a>1.2 Name and Email Address of Author</h3> <p><a href="mailto://byron.nevins@oracle.com">Byron Nevins</a></p> <h4><a name="3.2Dcom-1.3.DateofThisDocument%3A"></a>1.3. Date of This Document:</h3> <p>Started: 04/25/11</p> <h4><a name="3.2Dcom-1.4Glossary"></a>1.4 Glossary</h3> <p>MS-RPC Microsoft Remote Procedure Call<br> OSI - Open Systems Interconnection<br> COM - Component Object Model<br> DCOM Distributed COM<br> CORBA - Common Object Request Broker Architecture<br> DCE/RPC - Distributed Computing Environment / Remote Procedure Calls<br> MSRPC - Microsoft Remote Procedure Call (Microsoft's enhancement of DCE/RPC)<br> NT - Windows Platform – <em>New Technology</em> (not so new now!)<br> NTLM - NT Lan Manager<br> NTLMSSP - NT LAN Manager Security Support Provider</p> <h4><a name="3.2Dcom-2.ProjectSummary"></a>2. Project Summary</h2> <p>What we are proposing is using DCOM for communicating with Windows directly. It is a <em>replacement</em> for SSH on Windows.</p> <h4><a name="3.2Dcom-2.1.ProjectDescription%3A"></a>2.1. Project Description:</h3> <p>Change how we do inter-host communications in a Windows environment.<br> This is a change to just the distributed communication that is currently done with SSH and SCP. This doesn't change anything related to GMS or asadmin command replication via HTTP.</p> <h4><a name="3.2Dcom-2.2.RisksandAssumptions%3A"></a>2.2. Risks and Assumptions:</h3> <p>DCOM is a very complex part of Windows. It will likely take a surprisingly large amount of effort to produce a production-quality solution.</p> <p>Assumption:</p> 
+     <ul> 
+      <li>I will have access to the appropriate hardware so that I can develop and test on multiple platforms</li> 
+      <li>I will be able to purchase reference materials and have time to do the necessary research about the nitty-gritty details of DCOM on Windows.</li> 
+      <li>I will be given access to Microsoft's IDE for developing DCOM apps in different languages. We will not put any such native code applications into our installations but it will be essential for developing the GlassFish changes to support DCOM directly on Java.</li> 
+      <li>There will be no legal or other problems with using <b>JInterop</b>, an open source utility in GlassFish.</li> 
+     </ul> <h4><a name="3.2Dcom-3.ProblemSummary"></a>3. Problem Summary</h2> <p>Make configuring a Distributed GlassFish installation on Windows servers just as easy as on UNIX or Linux.</p> <h4><a name="3.2Dcom-3.1.ProblemArea%3A"></a>3.1. Problem Area:</h3> <p>We currently support using SSH on Windows in order to run a distributed GlassFish system of multiple instances and/or clusters. SSH is not native to Windows. Through bitter experience we have learned that getting SSH working smoothly and perfectly on Windows is extremely difficult. Moreover it is the user himself whom is forced to do a lot of complicated configuring and software installation.</p> <h4><a name="3.2Dcom-3.2.Justification%3A"></a>3.2. Justification:</h3> <p>It is too difficult for Windows users to configure and use GlassFish 3.1 for Windows environments. We need to provide an easier all-Java solution for Windows that leverages the software built into Windows. Windows has a rich architecture and history for providing tools for inter-host communications. We need to start using these tools.</p> <h4><a name="3.2Dcom-4.TechnicalDescription%3A"></a>4. Technical Description:</h2> <p>DCOM: Distributed Component Object Model<br> DCOM is used for communications between Windows computers. It is the Windows equivalent of CORBA or RMI. It is used with TCP/IP and HTTP. DCOM is available on all supported Windows platforms. It is pre-installed and ready to go unlike SSH.</p> <h4><a name="3.2Dcom-4.1.Details%3A"></a>4.1. Details:</h3> <p>How do I <em>know</em> that DCOM will work?<br> Hudson uses DCOM to provision Windows slaves and then uses it to communicate back and forth with them.<br> Hudson uses Jinterop, an open source Java-DCOM library for communicating with DCOM directly from Java.</p> <p>So in other words Hudson was the guinea pig and has provided the proof of concept and guarantees that all of the technology pieces <em>will</em> work together correctly.</p> 
+     <ul> 
+      <li>DAS contacts the DCOM server on the remote machine. The DCOM server is built-in to Windows and is normally running by default. It is in fact running as a Windows Service.</li> 
+      <li>DAS orders the DCOM server to fire-up a GlassFish program (most likely it will simply be the asadmin script) that will in turn start the instance.</li> 
+     </ul> <p>As you can see it is conceptually a literal plug-in replacement for SSH.</p> <h4><a name="3.2Dcom-4.1.1SampleUsage"></a>4.1.1 Sample Usage</h4> <p>Here is a simple example to give you the flavor of the j-interop API. This example will write to the Windows Registry.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">// The 3 args used below are Strings that you supply for auth
+            IJIAuthInfo authInfo = new JIDefaultAuthInfoImpl(domainName, userName, password);
+
+            IJIWinReg registry = JIWinRegFactory.getSingleTon().getWinreg(authInfo,args[0],true);
+            //Open HKLM
+            JIPolicyHandle policyHandle = registry.winreg_OpenHKLM();
+            //Open a key here
+            JIPolicyHandle policyHandle2 = registry.winreg_OpenKey(policyHandle,"Software\\Classes",IJIWinReg.KEY_ALL_ACCESS);
+
+            System.out.println("Printing first 1000 entries under \"Software\\Classes\"...");
+            for (int i = 0;i &lt; 1000;i++)
+            {
+                String[] values = registry.winreg_EnumKey(policyHandle2,i);
+                System.out.println(values[0] + " , " + values[1]);
+            }
+            System.out.println("****************************************************");
+            String key = "MyNewRegistryKey";            System.out.println("\nCreating Key " + key + " under \"Software\\Classes\"...");
+            JIPolicyHandle policyHandle3 = registry.winreg_CreateKey(policyHandle2,
+                   key,IJIWinReg.REG_OPTION_NON_VOLATILE,IJIWinReg.KEY_ALL_ACCESS);
+
+            System.out.println("Setting values to " + key);
+            registry.winreg_SetValue(policyHandle3,"j-Interop_None");
+            registry.winreg_SetValue(policyHandle3,"j-Interop_String",".".getBytes(),false,false);
+            Object[] values1 = registry.winreg_QueryValue(policyHandle3,"j-Interop_String",1024);
+            registry.winreg_SetValue(policyHandle3,"j-Interop_String_Ex","%PATH%\\Test12345".getBytes(),false,true);
+            registry.winreg_SetValue(policyHandle3,"j-Interop_Bin","123456789".getBytes(),true,false);
+            registry.winreg_SetValue(policyHandle3,"j-Interop_Dword",100);
+
+            String[] strings = {"123", "456", "6789", "10","11"};
+            byte[][] data = new byte[strings.length][];
+            for (int i = 0; i &lt; strings.length;i++)
+            {
+                data[i] = strings[i].getBytes();
+            }
+
+            registry.winreg_SetValue(policyHandle3,"j-Interop_Multi_sz",data);
+
+            for (int i = 0; i &lt; 6;i++)
+            {
+                Object[] values = registry.winreg_EnumValue(policyHandle3,i);
+                System.out.println(values[0] + " , " + values[1]);
+            }
+
+            System.out.println("Retrieving j-Interop_String_Ex value " + key);
+            Object[] values = registry.winreg_QueryValue(policyHandle3,"j-Interop_String_Ex",1024);
+            System.out.println(new String((byte[])values[1]));
+
+            System.out.println("Deleting j-Interop_Bin value");
+            registry.winreg_DeleteKeyOrValue(policyHandle3,"j-Interop_Bin",false);
+
+            System.out.println("Saving the " + key + " in a file to local server location as c:\\temp\\j-Interop");
+            registry.winreg_SaveFile(policyHandle3,"c:\\temp\\j-Interop");
+
+            registry.winreg_CloseKey(policyHandle3);
+            registry.winreg_CloseKey(policyHandle2);
+            registry.winreg_CloseKey(policyHandle);
+            registry.closeConnection();
+
+//</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="3.2Dcom-4.2.Bug%2FRFENumber%3A"></a>4.2. Bug/RFE Number:</h3> <p><a href="https://github.com/javaee/glassfish/issues/16248">RFE</a></p> <h4><a name="3.2Dcom-4.3.InScope%3A"></a>4.3. In Scope:</h3> <p>here are the 6 SSH related asadmin commands in GlassFish 3.1</p> 
+     <ul> 
+      <li>create-node-ssh</li> 
+      <li>delete-node-ssh</li> 
+      <li>list-nodes-ssh</li> 
+      <li>ping-node-ssh</li> 
+      <li>setup-ssh</li> 
+      <li>update-node-ssh</li> 
+     </ul> <p>Note the unfortunate wiring in of the name of the actual implementation instead of using something more generic. Then we could have simply slipped in DCOM. In order to avoid confusion we'll have to implement 6 new commands. It would be too confusing to setup DCOM, for instance, by calling <em>setup-ssh</em>. The plan is to introduce these new commands:</p> 
+     <ul> 
+      <li>create-node-dcom</li> 
+      <li>delete-node-dcom</li> 
+      <li>list-nodes-dcom</li> 
+      <li>ping-node-dcom</li> 
+      <li>update-node-dcom</li> 
+      <li>setup-dcom</li> 
+     </ul> <p>These existing commands' API&nbsp; shall be modified to support DCOM:</p> 
+     <ul> 
+      <li>install-node</li> 
+      <li>uninstall-node</li> 
+     </ul> <p>Lifecycle commands will work using DCOM as appropriate with no API change.&nbsp; E.g.</p> 
+     <ul> 
+      <li>create-instance</li> 
+      <li>start-instance</li> 
+      <li>stop-instance</li> 
+      <li>delete-instance</li> 
+     </ul> <h4><a name="3.2Dcom-4.4.OutofScope%3A"></a>4.4. Out of Scope:</h3> <p>N/A</p> <h4><a name="3.2Dcom-4.5.Interfaces%3A"></a>4.5. Interfaces:</h3> <h4><a name="3.2Dcom-4.5.1PublicInterfaces"></a>4.5.1 Public Interfaces</h4> <p>As mentioned before the new public interfaces are the new asadmin commands discussed above.<br> Note that commands that need a password get them precisely the same way as the corresponding ssh commands get them. Namely by either a password file passed in as the -W parameter to asadmin. Or by the user typing it in at the command line when requested interactively. The password will be saved in domain.xml if appropriate exactly like it is done for ssh commands.<br> The variable in the password file is:<br> <b>AS_ADMIN_DCOMPASSWORD</b></p> <h4><a name="3.2Dcom-4.5.1.1createnodedcom"></a>4.5.1.1 create-node-dcom</h4> <p>The create-node-dcom subcommand creates a node that is enabled for communication over DCOM.</p> <p>By default, the subcommand fails and the node is not created if the DAS cannot contact the node's host through DCOM. To force the node to be created in the DAS configuration even if the host cannot be contacted through DCOM, set the --force option to true.</p> <p>Options:</p> 
+     <ul> 
+      <li><b>--nodehost</b> <em>required The name of the remote host</em></li> 
+      <li><b>--installdir</b> <em>optional The remote GlassFish product installation dir.&nbsp;</em> <b><em>Note this is the parent directory of the GlassFish directory.</em></b></li> 
+      <li><b>--nodedir</b> <em>optional The name of the parent directory for instance directories belonging to this node</em></li> 
+      <li><b>--dcomuser</b> <em>optional The name of the remote Windows user default=the current username</em></li> 
+      <li><b>--force</b> <em>optional Force the creation of this node even if there are connection errors</em></li> 
+      <li><b>--install</b> <em>optional Specifies whether or not to also install GlassFish on the remote host</em></li> 
+      <li><b>--archive</b> <em>optional Specifies the GlassFish installation archive file.</em></li> 
+      <li><b>--windowsdomain</b> <em>optional Specifies the Windows Domain Name&nbsp; default is the hostname</em></li> 
+      <li><b>name</b> the node name</li> 
+     </ul> <h4><a name="3.2Dcom-4.5.1.2deletenodedcom"></a>4.5.1.2 delete-node-dcom</h4> <p>The delete-node-dcom subcommand deletes a node that is enabled for communication over DCOM. <br class="atl-forced-newline"></p> <p>Options: <br class="atl-forced-newline"></p> 
+     <ul> 
+      <li><b>--force</b> <em>optional Forces the deletion of this node</em></li> 
+      <li><b>--uninstall</b> <em>optional Specifies whether or not to uninstall GlassFish on the remote host</em></li> 
+      <li><b>name</b> the node name</li> 
+     </ul> <h4><a name="3.2Dcom-4.5.1.3listnodesdcom"></a>4.5.1.3 list-nodes-dcom</h4> <p>The list-nodes-dcom subcommand List the nodes that are enabled for communication over DCOM in the domain.</p> <p>Options: <br class="atl-forced-newline"></p> 
+     <ul> 
+      <li><b>-l|--long</b> <em>optional Provide more information for each node</em></li> 
+     </ul> <h4><a name="3.2Dcom-4.5.1.4pingnodedcom"></a>4.5.1.4 ping-node-dcom</h4> <p>The ping-node-dcom command verifies end-to-end communications using DCOM with a remote host.</p> <p>Options: <br class="atl-forced-newline"></p> 
+     <ul> 
+      <li><b>--validate -v</b> <em>optional Verifies that GlassFish is installed and operational on the remote host</em></li> 
+      <li><b>name</b> the node name</li> 
+     </ul> <h4><a name="3.2Dcom-4.5.1.5updatenodedcom"></a>4.5.1.5 update-node-dcom</h4> <p>The update-node-dcom command updates the configuration data of a DCOM node.</p> <p>Options:</p> 
+     <ul> 
+      <li><b>--nodehost</b> <em>optional The name of the remote host</em></li> 
+      <li><b>--installdir</b> <em>optional The remote GlassFish (parent) installation dir</em></li> 
+      <li><b>--nodedir</b> <em>optional The name of the parent directory for instance directories belonging to this node</em></li> 
+      <li><b>--dcomuser</b> <em>optional The name of the remote Windows user default=the current username</em></li> 
+      <li><b>--windowsdomain</b> <em>optional The name of the Windows Domain the user is a member of. default=the nodehost</em></li> 
+      <li><b>--force</b> <em>optional Force the modification of this node</em></li> 
+      <li><b>name</b> the node name</li> 
+     </ul> <h4><a name="3.2Dcom-4.5.1.6setupdcom"></a>4.5.1.6 setup-dcom</h4> <p>No setup per se is required. The user has to make sure that the DCOM ports (135, 445) are available and that the Server Service is enabled.&nbsp; What this command does is test the connection with the remote host by copying a file to the remote host and running a script.&nbsp; The name is re-used to make it look similar to setup-ssh.</p> <p>Note: It could be renamed to test-dcom if desired?</p> <p>Options:</p> 
+     <ul> 
+      <li><b>--dcomuser</b> <em>optional The name of the remote Windows user default=the current username</em></li> 
+      <li><b>--windowsdomain</b> <em>optional Specifies the Windows Domain Name default is the hostname</em></li> 
+      <li><b>--remotetestdir</b> _optional Specifies a writable and accessible folder on the remote host default is C:_</li> 
+     </ul> <h4><a name="3.2Dcom-4.5.1.7installnode"></a>4.5.1.7 install-node</h4> <p>I'm not going to duplicate existing documentation here.&nbsp; Instead here are the changes:<br> Note that it will use DCOM to copy files and run a script on the remote Windows node.</p> <p>Added Options:</p> 
+     <ul> 
+      <li><b>-d|--dcom&nbsp;</b> <em>optional Make the new node a DCOM node</em></li> 
+      <li><b>-w|--windowsdomain</b> <em>optional Specifies the Windows Domain Name default is the hostname</em></li> 
+      <li><b>--dcomuser</b> <em>optional The name of the remote Windows user default=the current username (Note: this is an alias.&nbsp; It does not show up in automatically generated help displays.&nbsp; --sshuser wil also work)</em></li> 
+     </ul> <p>Different Meanings for Existing Options</p> 
+     <ul> 
+      <li>--<b>sshport</b> disallowed</li> 
+      <li>--<b>sshkeyfile</b> disallowed</li> 
+      <li>--<b>sshuser</b> accepted as an alias for --dcomuser</li> 
+     </ul> <h4><a name="3.2Dcom-4.5.1.8uninstallnode"></a>4.5.1.8 uninstall-node</h4> <p>I'm not going to duplicate existing documentation here.&nbsp; Instead here are the changes:</p> <p>Added Options:</p> 
+     <ul> 
+      <li><b>--dcomuser</b> <em>optional The name of the remote Windows user default=the current username (Note: this is an alias.&nbsp; It does not show up in automatically generated help displays.&nbsp; --sshuser wil also work)</em></li> 
+     </ul> <p>Different Meanings for Existing Options</p> 
+     <ul> 
+      <li><b>--type</b> Here you must enter the value: "DCOM" as the type.&nbsp; (This is strange-looking but backwards-compatible)</li> 
+      <li>--<b>sshport</b> disallowed</li> 
+      <li>--<b>sshkeyfile</b> disallowed</li> 
+      <li>--<b>sshuser</b> accepted as an alias for --dcomuser</li> 
+     </ul> <p><b>NOTE FOR doc team – the "type " parameter is not documented in the help pages.</b></p> <h4><a name="3.2Dcom-4.5.2PrivateInterfaces"></a>4.5.2 Private Interfaces</h4> <p>No new private interfaces that are observable externally.&nbsp; Here is a snippet from domain.xml showing the actual generated element from creating a node:</p> 
+     <div class="preformatted panel" style="border-width: 1px;">
+      <div class="preformattedContent panelContent"> 
+       <pre>&nbsp;&nbsp; &lt;node node-host="wnevins-lnr" name="lnr" windows-domain="wnevins-lnr" type="DCOM"
+            install-dir="${com.sun.aas.productRoot}"&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;ssh-connector ssh-port="135"&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;ssh-auth password="REAL_PASSWORD_HERE"&gt;&lt;/ssh-auth&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/ssh-connector&gt;
+&nbsp;&nbsp;&nbsp; &lt;/node&gt;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+</pre> 
+      </div>
+     </div> <h4><a name="3.2Dcom-4.5.3Deprecated%2FRemovedInterfaces%3A"></a>4.5.3 Deprecated/Removed Interfaces:</h4> <p>None.</p> <h4><a name="3.2Dcom-4.6.DocImpact%3A"></a>4.6. Doc Impact:</h3> <p>Rather extensive new documentation will be required for this feature.</p> <h4><a name="3.2Dcom-4.7.Admin%2FConfigImpact%3A"></a>4.7. Admin/Config Impact:</h3> <p>The Admin Console will need to support the new DCOM configuration and commands.<br> The GlassFish Configuration will require new elements.</p> <h4><a name="3.2Dcom-4.7.1AdminConsoleSupport%3A"></a>4.7.1 Admin Console Support:</h4> <p>Admin Console will be enhanced to support the new commands related to DCOM. &nbsp;User can list, &nbsp;create, &nbsp;edit and delete DCOM nodes.</p> <p>The table that lists out existing Nodes will include DCOM nodes and user can differentiate different types of nodes by the Type Column.&nbsp; <a href="http://wikis.sun.com/download/attachments/241215078/nodes.png">Listing Table screenshot </a>&nbsp;. &nbsp;An action column will be added, with Ping being the action available. &nbsp;This allows user to ping the existing Node.</p> <p>Another button which brings user to the 'validate dcom' page will be added to the listing table. &nbsp;</p> <p>This allows user to test&nbsp;if a remote Windows machine is setup correctly for DCOM connectivity.</p> <p>The Node creation screen will add the option of "DCOM" to the Types dropdown so user can select to create a DCOM node. &nbsp;The 2 optional fields related to DCOM will be available as a text box for user to fill in if desired. <a href="http://wikis.sun.com/download/attachments/241215078/create-dcom-node.png">Create DCOM Node screenshot </a></p> <p>Currently user can switch from CONFIG node to SSH node and vise versa after the node has been created. &nbsp;With the addition of DCOM nodes, &nbsp;user can switch between CONFIG, SSH and DCOM, and the appropriate fields will be displayed.</p> <p>In 3.1.1, &nbsp;install-node and uninstall-node is not supported in the console because it is local command. &nbsp;If these commands can be changed to remote command in 3.1.2, &nbsp;console may add in support to that. &nbsp; If thats the case, &nbsp;install-node-dcom and uninstall-node-dcom will be supported too.</p> <h4><a name="3.2Dcom-4.8.HAImpact%3A"></a>4.8. HA Impact:</h3> <p>None.</p> <h4><a name="3.2Dcom-4.9.I18N%2FL10NImpact%3A"></a>4.9. I18N/L10N Impact:</h3> <p>No impact other than the usual for any new code.</p> <h4><a name="3.2Dcom-4.10.Packaging%2CDelivery%26Upgrade%3A"></a>4.10. Packaging, Delivery &amp; Upgrade:</h3> <h4><a name="3.2Dcom-4.10.1.Packaging"></a>4.10.1. Packaging</h4> <p>A new external package is used to OSGi-ify j-interop, jinterop-deps and jcifs.<br> The name of the jar is: <b>j-interop-repackaged.jar</b></p> <p>The location in the source code is:<br> <b><a href="https://svn.java.net/svn/glassfish~svn/trunk/main/nucleus/packager/external/j-interop">https://svn.java.net/svn/glassfish~svn/trunk/main/nucleus/packager/external/j-interop</a></b></p> <p><b><a href="https://svn.java.net/svn/glassfish~svn/branches/3.1.2/packager/external/j-interop_">https://svn.java.net/svn/glassfish~svn/branches/3.1.2/packager/external/j-interop_</a></b></p> <h4><a name="3.2Dcom-4.10.2.Delivery"></a>4.10.2. Delivery</h4> <p>No impact.</p> <h4><a name="3.2Dcom-4.10.3.UpgradeandMigration%3A"></a>4.10.3. Upgrade and Migration:</h4> <p>No backward compatibility issues. There will be no upgrade issues since this is a new feature.</p> <h4><a name="3.2Dcom-4.11.SecurityImpact%3A"></a>4.11. Security Impact:</h3> <p>Of course we will have to be careful to maintain good security since it involves communications between hosts.</p> <h4><a name="3.2Dcom-4.12.CompatibilityImpact"></a>4.12. Compatibility Impact</h3> <p>Old interfaces remain the same. We are adding new commands and functionality - not modifying the existing behavior.</p> <h4><a name="3.2Dcom-4.13.Dependencies%3A"></a>4.13. Dependencies:</h3> <h4><a name="3.2Dcom-4.13.1InternalDependencies"></a>4.13.1 Internal Dependencies</h4> <p>Common utilities.</p> <h4><a name="3.2Dcom-4.13.2ExternalDependencies"></a>4.13.2 External Dependencies</h4> 
+     <div class="preformatted panel" style="border-width: 1px;">
+      <div class="preformattedContent panelContent"> 
+       <pre> &lt;dependency&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;groupId&gt;org.jinterop&lt;/groupId&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;artifactId&gt;j-interop&lt;/artifactId&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;version&gt;2.0.4&lt;/version&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;optional&gt;true&lt;/optional&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/dependency&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;dependency&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;groupId&gt;org.jinterop&lt;/groupId&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;artifactId&gt;j-interopdeps&lt;/artifactId&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;version&gt;2.0.4&lt;/version&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;optional&gt;true&lt;/optional&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/dependency&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;dependency&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;groupId&gt;org.samba.jcifs&lt;/groupId&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;artifactId&gt;jcifs&lt;/artifactId&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;version&gt;1.2.19&lt;/version&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;optional&gt;true&lt;/optional&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/dependency&gt;
+</pre> 
+      </div>
+     </div> <p>The Oracle Legal Department is working on the licensing of the open source projects that we require. Progress is available at an Oracle internal wiki page.</p> <h4><a name="3.2Dcom-4.14.TestingImpact%3A"></a>4.14. Testing Impact:</h3> <p>A lot of testing will be required. This will be challenging to create Dev Tests. It would definitely require several dedicated Windows machines to make that happen.</p> <p>Oracle Wide Area Network configured machines are a worst-case scenario.&nbsp; Security on Windows machines is extremely high.&nbsp; DCOM access is disallowed by Oracle IT.&nbsp; I think that QA will need to go off of OWAN completely and run machines on private local LANs.</p> <h4><a name="3.2Dcom-4.15.JIRAIssues"></a>4.15. JIRA Issues</h3> <p>A new component was created and it should be used for filing all issues: <b>distributed management</b></p> <h4><a name="3.2Dcom-5.ReferenceDocuments%3A"></a>5. Reference Documents:</h3> <p><a href="http://www.j-interop.org">JInterop</a><br> <a href="http://www.j-interop.org/docs/index.html">JInterop JavaDoc</a><br> <a href="https://j-interop.svn.sourceforge.net/svnroot/j-interop/trunk/j-interop">Subversion URL for j-interop trunk</a><br> <a href="https://j-interop.svn.sourceforge.net/svnroot/j-interop/trunk/j-interopdeps">Subversion URL for j-interopdeps trunk</a></p> <h4><a name="3.2Dcom-5.1BuildingExternalProjectsfromSource"></a>5.1 Building External Projects from Source</h3> <h4><a name="3.2Dcom-5.1.1JCIFS%28SAMBA%29"></a>5.1.1 JCIFS (SAMBA)</h4> <p>The source is not available in a version control system. The version that j-interop uses is 1.2.19 from May 22, 2008. Below are the URLs to get the source zipped into a jar and the javadoc.</p> 
+     <ul> 
+      <li><a href="http://ftp.cica.es/mirrors/maven2/org/samba/jcifs/jcifs/1.2.19/jcifs-1.2.19-sources.jar">Source</a></li> 
+      <li><a href="http://ftp.cica.es/mirrors/maven2/org/samba/jcifs/jcifs/1.2.19/jcifs-1.2.19-javadoc.jar">JavaDoc</a></li> 
+      <li><a href="http://ftp.cica.es/mirrors/maven2/org/samba/jcifs/jcifs/1.2.19/jcifs-1.2.19.jar">jar file(binaries)</a></li> 
+      <li><a href="http://ftp.cica.es/mirrors/maven2/org/samba/jcifs/jcifs/1.2.19/jcifs-1.2.19.pom">pom file</a></li> 
+     </ul> <h4><a name="3.2Dcom-6.Schedule%3A"></a>6. Schedule:</h2> <p>October 14, 2011 - Complete with no known P1 bugs. One-Pager updated. DevTests created. Handoff One-Pager to QA and DOC teams. Asarch approved.</p> <h4><a name="3.2Dcom-7.ReviewerComments"></a>7. Reviewer Comments</h2> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20873234/21365100.png">create-dcom-node.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20873234/21365099.png">nodes.png</a> (image/png) 
+      <br> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Oct 18, 2012 by 
+<font color="#0050B2">10191</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

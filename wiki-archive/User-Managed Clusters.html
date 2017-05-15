@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : User-Managed Clusters</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="User-ManagedClusters-GlassFishServerOpenSourceEditionUserManagedClusters"></a>GlassFish Server Open Source Edition - User-Managed Clusters</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#User-ManagedClusters-GlassFishServerOpenSourceEditionUserManagedClusters">GlassFish Server Open Source Edition - User-Managed Clusters</a></li> 
+       <li><a href="#User-ManagedClusters-1.Introduction">1. Introduction</a></li> 
+       <ul> 
+        <li><a href="#User-ManagedClusters-1.1.Project%2FComponentWorkingName">1.1. Project/Component Working Name</a></li> 
+        <li><a href="#User-ManagedClusters-1.2.NamesandEmailAddressofDocumentAuthors">1.2. Names and E-mail Address of Document Authors</a></li> 
+       </ul> 
+       <li><a href="#User-ManagedClusters-2.ProjectSummary">2. Project Summary</a></li> 
+       <ul> 
+        <li><a href="#User-ManagedClusters-2.1.ProjectDescription">2.1. Project Description</a></li> 
+        <li><a href="#User-ManagedClusters-2.2.RisksandAssumptions">2.2. Risks and Assumptions</a></li> 
+       </ul> 
+       <li><a href="#User-ManagedClusters-3.ProblemSummary">3. Problem Summary</a></li> 
+       <ul> 
+        <li><a href="#User-ManagedClusters-3.1.FeatureOverview">3.1. Feature Overview</a></li> 
+        <ul> 
+         <li><a href="#User-ManagedClusters-EnvironmentConsiderations">Environment Considerations</a></li> 
+         <li><a href="#User-ManagedClusters-UseCases">Use Cases</a></li> 
+         <ul> 
+          <li><a href="#User-ManagedClusters-GlassFishClustersinanEC2AutoScaleEnvironment">GlassFish Clusters in an EC2 AutoScale Environment</a></li> 
+          <li><a href="#User-ManagedClusters-CustomSolutionforIndependentClusterManagementforMultiTenancy">Custom Solution for Independent Cluster Management for Multi-Tenancy</a></li> 
+         </ul> 
+         <li><a href="#User-ManagedClusters-Terms">Terms</a></li> 
+        </ul> 
+        <li><a href="#User-ManagedClusters-3.2.FeatureList%28TechnicalRequirements%29">3.2. Feature List (Technical Requirements)</a></li> 
+        <ul> 
+         <li><a href="#User-ManagedClusters-1.ClusterManagement">1. Cluster Management</a></li> 
+         <li><a href="#User-ManagedClusters-2.ApplicationDeployment">2. Application Deployment</a></li> 
+         <li><a href="#User-ManagedClusters-3.HighAvailability">3. High Availability</a></li> 
+         <li><a href="#User-ManagedClusters-4.Administration">4. Administration</a></li> 
+         <li><a href="#User-ManagedClusters-5.Installation">5. Installation</a></li> 
+         <li><a href="#User-ManagedClusters-6.Miscellaneous">6. Miscellaneous</a></li> 
+         <li><a href="#User-ManagedClusters-NonRequirements">Non-Requirements</a></li> 
+        </ul> 
+        <li><a href="#User-ManagedClusters-3.3.Justification">3.3. Justification</a></li> 
+       </ul> 
+       <li><a href="#User-ManagedClusters-4.TechnicalDescription">4. Technical Description</a></li> 
+       <ul> 
+        <li><a href="#User-ManagedClusters-4.1.Details">4.1. Details</a></li> 
+        <ul> 
+         <li><a href="#User-ManagedClusters-PossibleDesignApproaches">Possible Design Approaches</a></li> 
+         <li><a href="#User-ManagedClusters-CurrentSituationwithGlassFish3.1">Current Situation with GlassFish 3.1</a></li> 
+         <li><a href="#User-ManagedClusters-Option1%3AUnmanagedInstances">Option 1: Unmanaged Instances</a></li> 
+         <ul> 
+          <li><a href="#User-ManagedClusters-DomainConceptandUnmanagedInstances">Domain Concept and Unmanaged Instances</a></li> 
+          <li><a href="#User-ManagedClusters-DataLocation">Data Location</a></li> 
+          <li><a href="#User-ManagedClusters-DASDetermination">DAS Determination</a></li> 
+          <li><a href="#User-ManagedClusters-UserManagedClusteringandGMS">User-Managed Clustering and GMS</a></li> 
+         </ul> 
+         <li><a href="#User-ManagedClusters-Option2%3ASimpleApproachforOnDemandDAS">Option 2: Simple Approach for On-Demand DAS</a></li> 
+         <li><a href="#User-ManagedClusters-ComparisonoftheTwoApproaches">Comparison of the Two Approaches</a></li> 
+        </ul> 
+        <li><a href="#User-ManagedClusters-4.2.Bug%2FRFENumber%28s%29">4.2. Bug/RFE Number(s)</a></li> 
+        <li><a href="#User-ManagedClusters-4.3.InScope">4.3. In Scope</a></li> 
+        <li><a href="#User-ManagedClusters-4.4.OutofScope">4.4. Out of Scope</a></li> 
+        <li><a href="#User-ManagedClusters-4.5.Interfaces">4.5. Interfaces</a></li> 
+        <ul> 
+         <li><a href="#User-ManagedClusters-4.5.1PublicInterfaces">4.5.1 Public Interfaces</a></li> 
+         <ul> 
+          <li><a href="#User-ManagedClusters-CLI">CLI</a></li> 
+         </ul> 
+         <li><a href="#User-ManagedClusters-4.5.2PrivateInterfaces">4.5.2 Private Interfaces</a></li> 
+         <ul> 
+          <li><a href="#User-ManagedClusters-GMS">GMS</a></li> 
+         </ul> 
+         <li><a href="#User-ManagedClusters-4.5.3Deprecated%2FRemovedInterfaces">4.5.3 Deprecated/Removed Interfaces</a></li> 
+        </ul> 
+        <li><a href="#User-ManagedClusters-4.6.DocImpact">4.6. Doc Impact</a></li> 
+        <li><a href="#User-ManagedClusters-4.7.Admin%2FConfigImpact">4.7. Admin/Config Impact</a></li> 
+        <li><a href="#User-ManagedClusters-4.8.HAImpact">4.8. HA Impact</a></li> 
+        <li><a href="#User-ManagedClusters-4.9.I18N%2FL10NImpact">4.9. I18N/L10N Impact</a></li> 
+        <li><a href="#User-ManagedClusters-4.10.Packaging%2CDelivery%26Upgrade">4.10. Packaging, Delivery &amp; Upgrade</a></li> 
+        <ul> 
+         <li><a href="#User-ManagedClusters-4.10.1.Packaging">4.10.1. Packaging</a></li> 
+         <li><a href="#User-ManagedClusters-4.10.2.Delivery">4.10.2. Delivery</a></li> 
+         <li><a href="#User-ManagedClusters-4.10.3.UpgradeandMigration">4.10.3. Upgrade and Migration</a></li> 
+        </ul> 
+        <li><a href="#User-ManagedClusters-4.11.SecurityImpact">4.11. Security Impact</a></li> 
+        <li><a href="#User-ManagedClusters-4.12.CompatibilityImpact">4.12. Compatibility Impact</a></li> 
+        <li><a href="#User-ManagedClusters-4.13.Dependencies">4.13. Dependencies</a></li> 
+        <ul> 
+         <li><a href="#User-ManagedClusters-4.13.1InternalDependencies">4.13.1 Internal Dependencies</a></li> 
+         <li><a href="#User-ManagedClusters-4.13.2ExternalDependencies">4.13.2 External Dependencies</a></li> 
+        </ul> 
+        <li><a href="#User-ManagedClusters-4.14.TestingImpactandDevTests">4.14. Testing Impact and Dev Tests</a></li> 
+       </ul> 
+       <li><a href="#User-ManagedClusters-5.ReferenceDocuments">5. Reference Documents</a></li> 
+       <li><a href="#User-ManagedClusters-6.Schedule">6. Schedule</a></li> 
+       <ul> 
+        <li><a href="#User-ManagedClusters-6.1.ProjectedAvailability">6.1. Projected Availability</a></li> 
+       </ul> 
+       <li><a href="#User-ManagedClusters-7.OtherInformation">7. Other Information</a></li> 
+       <ul> 
+        <li><a href="#User-ManagedClusters-Demos">Demos</a></li> 
+        <li><a href="#User-ManagedClusters-Workspace">Workspace</a></li> 
+        <li><a href="#User-ManagedClusters-Research">Research</a></li> 
+        <li><a href="#User-ManagedClusters-Notes">Notes</a></li> 
+        <li><a href="#User-ManagedClusters-EmailAlias">Email Alias</a></li> 
+        <li><a href="#User-ManagedClusters-OpenIssues">Open Issues</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="User-ManagedClusters-1.Introduction"></a>1. Introduction</h1> <p>This project will focus on providing a User-Managed Clusters capability in GlassFish based on requirement CLUST-2 from the <a href="http://aseng-wiki.us.oracle.com/asengwiki/display/GlassFish/3.2+PRD+with+PCD+Response">3.2 PRD</a> (internal link).</p> <h4><a name="User-ManagedClusters-1.1.Project%2FComponentWorkingName"></a>1.1. Project/Component Working Name</h2> <p>User-Managed Clusters</p> <h4><a name="User-ManagedClusters-1.2.NamesandEmailAddressofDocumentAuthors"></a>1.2. Names and E-mail Address of Document Authors</h2> <p>Tom Mueller &lt;tmueller@java.net&gt;<br> Rajiv Mordani &lt;mode@java.net&gt;<br> Chris Kasso &lt;kasso@java.net&gt;<br> Jennifer Chou &lt;jc129909@java.net&gt;</p> <h4><a name="User-ManagedClusters-2.ProjectSummary"></a>2. Project Summary</h1> <h4><a name="User-ManagedClusters-2.1.ProjectDescription"></a>2.1. Project Description</h2> <p>The purpose of this project is to provide a user-managed clusters feature for GlassFish that allows clusters to be created without a domain administration server (DAS).&nbsp;</p> <h4><a name="User-ManagedClusters-2.2.RisksandAssumptions"></a>2.2. Risks and Assumptions</h2> <p>Risks</p> 
+     <ul> 
+      <li>Depending on how the requirements are defined for this feature and which requirements are selected for implementation, this may or may not require a fairly large change to the GlassFish implementation. &nbsp;A large change represents greater risk.</li> 
+      <li>This feature may be difficult to test due to the need to test it with an external management infrastructure.&nbsp;</li> 
+     </ul> <p>Assumptions</p> 
+     <ul> 
+      <li>Some solution ideas for this feature assume the availability of shared storage between the instances in the cluster.</li> 
+     </ul> <h4><a name="User-ManagedClusters-3.ProblemSummary"></a>3. Problem Summary</h1> <h4><a name="User-ManagedClusters-3.1.FeatureOverview"></a>3.1. Feature Overview</h2> <p>The requirement for this feature is:&nbsp;</p> <p><em>CLUST-2 Domain Admins must be able to establish homogeneous clusters without a DAS. Instances must have a homogenous configuration. Configurations can be kept in sync through out of band mechanisms like file copying and shared disks. This is a form of manual scaling that can delegate to other autoscaling environments like EC2 AutoScale</em>.</p> <p>The idea of having a cluster "without a DAS" is motivated from several perspectives:</p> 
+     <ol> 
+      <li>A GlassFish deployment may have another (non-GlassFish) management infrastructure that is already available to manage instances. &nbsp;The goal in this case is to perform the operations that would normally be done via a DAS directly with this management infrastructure. This "management infrastructure" may be a software system or it may be a person. Reasons for using another management infrastructure include: 
+       <ol> 
+        <li>It may be able to outperform the DAS, thereby allowing a larger cluster.</li> 
+        <li>It may be better tuned for the environment where the cluster is running (for example, operate clusters in different domains from a single management process)</li> 
+        <li>It may be managing services other than Java EE containers, e.g., databases, etc. and may be provided a single interface for that</li> 
+        <li>The need for a dedicated host for the DAS can be avoided.</li> 
+       </ol> </li> 
+      <li>The DAS currently is a single point of failure for administration in the clustered architecture. To provide a higher level of availability, either DAS availability can be increased, or the DAS can be eliminated, and responsibility for providing highly available management can be delegated to another management infrastructure (see #1). &nbsp;</li> 
+     </ol> <h4><a name="User-ManagedClusters-EnvironmentConsiderations"></a>Environment Considerations</h3> <p>Some of the motivation for having an user-managed cluster is due to environmental considerations:</p> 
+     <ul> 
+      <li>VMs (or even processes) are relatively expensive so we want to limit the need for them. &nbsp;For example, given the need for 100 clusters in 100 logical domains, i.e., separate domain.xml files, auth realms, etc., with no sharing between the instances in the clusters, it might be undesirable to have to have 100 DAS processes to manage those clusters. &nbsp;Instead, a user of this feature could develop a management tool that would manage the all 100 clusters in a single process.&nbsp;</li> 
+     </ul> <h4><a name="User-ManagedClusters-UseCases"></a>Use Cases</h3> <p>This section describes some sample use cases for this feature. &nbsp;This is not a complete list of the ways this feature can be used. &nbsp;This is meant to provide an illustration of typical use cases to assist in making design and implementation decisions.</p> <h4><a name="User-ManagedClusters-GlassFishClustersinanEC2AutoScaleEnvironment"></a>GlassFish Clusters in an EC2 AutoScale Environment</h4> <p>The <a href="http://aws.amazon.com/documentation/autoscaling/">Amazon EC2 AutoScale</a> feature allows a user to configure a group of virtual machine instances that are created and deleted automatically based on scaling rules. With this feature, it will be possible for the instances in an autoscale group to form a GlassFish cluster, such that the application provides session failover and other high availability features that are available with standard GlassFish clusters. Here is how it is expected to work:</p> 
+     <ol> 
+      <li>The user creates an AMI that contains the GlassFish installation and additional scripts.&nbsp;&nbsp; These scripts use user data (a cluster name and application WAR file) associated with the AutoScale launch configuration created in the next step to create a cluster and install the application.&nbsp; Alternatively this user data could be embedded into the AMI itself if a custom AMI is created for each autoscale group.</li> 
+      <li>The user creates an AutoScale launch configuration that specifies AMI from step 1 and the name of the cluster and the application to be deployed.&nbsp;</li> 
+      <li>The user creates an AutoScale group, specifying the &nbsp;launch configuration from step 2.&nbsp;</li> 
+      <li>This results in the first VM being created. When the VM boots, a user-provided script within the AMI uses commands provided by this feature to create a GlassFish instance in the specified cluster (see req. 1.1 and 1.3 below), start the instance (see req. 1.7), and deploy the application to the instance (see req. 2.1). When the instance is created, the GMS information needed to form the cluster is provided (see req. 3.6). At this point, a single instance is running the application.</li> 
+      <li>When AutoScale causes another VM to be created, the same process as in step 4 happens. However, this time, the GMS group is formed between the two instances, and they start sharing session failover information. Amazon has updated the load balancer information for the AutoScale group so that requests are being routed to both instances, and if one of the instances fails, sessions will automatically fail over to the other instance (see req. 3.1 and 3.2) &nbsp;</li> 
+     </ol> <h4><a name="User-ManagedClusters-CustomSolutionforIndependentClusterManagementforMultiTenancy"></a>Custom Solution for Independent Cluster Management for Multi-Tenancy</h4> <p>Company Example.com wants to offer a hosting solution based on GlassFish that provides customers with the ability to deploy highly-available applications to clusters. They are expecting to serve hundreds of customers, each needing relatively small clusters (2-10 instances each). &nbsp;Example.com already has an infrastructure to create and manage virtual machines (VMs), with the ability to create VMs for other services such as a database. Each of Example.com's customers (the tenants) must have an independent configuration, i.e., it is not acceptable for tenant A and tenant B to have configuration data in the same domain.xml file. With GlassFish 3.1, Example.com could create a separate domain for each tenant, but this would mean running a DAS for each tenant. &nbsp;To avoid this, Example.com uses this feature to implement a custom cluster management solution that creates clustered GlassFish instances on virtual machines, each with completely independent configuration information. This custom cluster management solution runs in its own GlassFish cluster (a standard 3.1 cluster). It maintains isolation of tenant data. &nbsp;When a customer deploys an application, the following steps happen:</p> 
+     <ol> 
+      <li>The required number of VMs are allocated for the instances. &nbsp;Each VM instance already has GlassFish installed and is accessible via SSH.</li> 
+      <li>The custom cluster management program uses SSH to run commands on each VM that create a GlassFish instance in a user-managed cluster (see req 1.1 and 1.3),&nbsp;start the instance (see req. 1.7), and deploy the application to the instance (see req. 2.1). When the instance is created, the GMS information needed to form the cluster is provided (see req. 3.6). At this point, a single instance is running the application.</li> 
+     </ol> <p>The custom cluster management solution provides the ability to monitor the instances (see req. 4.3), redeploy new versions of the application (see req. 2.3), add and remove instances from the cluster (see req. 1.3 and 1.4), and make other configuration changes to the cluster (see req. 4.1).&nbsp;</p> <h4><a name="User-ManagedClusters-Terms"></a>Terms</h3> <p>The concept of a <em>domain</em> as it relates to a user-managed cluster is unclear. When one has a DAS, the domain is the thing that the DAS manages. If there is no DAS, then what is the domain?</p> <p>The concept of a <em>node</em> as it relates to a user-managed cluster is unclear. Nodes are the entities used by a DAS to manage instances. If there is no DAS, does there have to be a node?&nbsp;</p> <p>The term&nbsp;<em>standard cluster</em>&nbsp;refers to a normal 3.1 cluster that is managed by a DAS. &nbsp;</p> <p>The term <em>user-managed cluster</em> refers to a cluster that is being provided based on these requirements.</p> <p>All of the requirements in the list below are to be interpreted within the context of the CLUST-2 requirement, i.e., without a DAS (whatever that means).</p> <p>In each case, the ability to provide a certain feature may require a person or the (non-GlassFish) administration infrastructure to interact with one or more of the instances according to some protocol that is specified by the implementation.</p> <h4><a name="User-ManagedClusters-3.2.FeatureList%28TechnicalRequirements%29"></a>3.2. Feature List (Technical Requirements)</h2> <p>Umbrella RFE: <a href="https://github.com/javaee/glassfish/issues/16431">GLASSFISH-16431</a></p> <h4><a name="User-ManagedClusters-1.ClusterManagement"></a>1. Cluster Management</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> # </th> 
+         <th class="confluenceTh"> Priority </th> 
+         <th class="confluenceTh"> Name </th> 
+         <th class="confluenceTh"> Description </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1.1 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> create one user-managed cluster </td> 
+         <td class="confluenceTd"> Provide the ability to create a cluster consisting of instances that can be started </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1.2 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> create multiple user-managed clusters </td> 
+         <td class="confluenceTd"> Provide the ability to create multiple clusters, i.e., clusters that have different names, different sets of applications, and which each have their own HA environment. This builds on the previous requirement (so if this is met, then the previous one is met too). </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1.3 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> add instances to cluster </td> 
+         <td class="confluenceTd"> Add an instance to a cluster. &nbsp;This requires passing in sufficient information so that the instance joins the cluster. For the EC2 Autoscale case, this is what would be used as part of the launch config. <br class="atl-forced-newline"> <br class="atl-forced-newline"> Should there be a limit on how many? </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1.4 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> delete instances from cluster </td> 
+         <td class="confluenceTd"> Delete an instance from a cluster </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1.5 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> choose instance names </td> 
+         <td class="confluenceTd"> Allow the names of the instances to be of the user's choosing. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1.6 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> choose cluster names </td> 
+         <td class="confluenceTd"> Allow the names of clusters to be of the user's choosing </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1.7 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> instance start </td> 
+         <td class="confluenceTd"> Allow instances in a user-managed cluster to be started </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1.8 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> instance stop </td> 
+         <td class="confluenceTd"> Allow instances in a user-managed cluster to be stopped </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1.9 </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> list local instances </td> 
+         <td class="confluenceTd"> List the user-managed cluster instances that have been defined on the local system (similar to list-domains in that it is a local command). This command should provide information about the cluster the instance is in. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="User-ManagedClusters-2.ApplicationDeployment"></a>2. Application Deployment</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> # </th> 
+         <th class="confluenceTh"> Priority </th> 
+         <th class="confluenceTh"> Name </th> 
+         <th class="confluenceTh"> Description </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2.1 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> single application deployment </td> 
+         <td class="confluenceTd"> Allow an application to be deployed to an instance in a user-managed cluster </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2.2 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> multiple application deployment </td> 
+         <td class="confluenceTd"> Allow multiple applications to be deployed to an instance in a user-managed cluster.&nbsp;This builds on the previous requirement (so if this is met, then the previous one is met too). </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2.3 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> application redeploy </td> 
+         <td class="confluenceTd"> Allow an application that has been deployed to the user-managed cluster to be redeployed, i.e., undeployed and a new version deployed (or deploy --force) without recreating the cluster. This means that any cluster-specific configuration is retained. &nbsp;JMS messages are preserved, etc. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2.4 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> application undeploy </td> 
+         <td class="confluenceTd"> Allow an application to be removed from a user-managed cluster. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2.5 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> get-client-stubs </td> 
+         <td class="confluenceTd"> Support get-client-stubs and other app client related commands for an application deployed to a user-managed cluster </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="User-ManagedClusters-3.HighAvailability"></a>3. High Availability</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> # </th> 
+         <th class="confluenceTh"> Priority </th> 
+         <th class="confluenceTh"> Name </th> 
+         <th class="confluenceTh"> Description </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3.1 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> session failover </td> 
+         <td class="confluenceTd"> Sessions state must failover from instance to instance as it does with standard clusters </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3.2 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> SFSB failover </td> 
+         <td class="confluenceTd"> State for stateful session beans must failover from instance to instance as it does with standard clusters </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3.3 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> HA messaging </td> 
+         <td class="confluenceTd"> Metro HA aspect must work </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3.4 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> migrate timers </td> 
+         <td class="confluenceTd"> Move timers from one instance to another </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3.5 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> transactions </td> 
+         <td class="confluenceTd"> Support the various transaction related commands (freeze, etc.) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3.6 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> GMS clusters </td> 
+         <td class="confluenceTd"> Support all methods that GMS provides for forming the cluster, i.e., multicast, non-multicast, etc. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3.7 </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> load balancer configuration </td> 
+         <td class="confluenceTd"> Support configuration of a load balancer from the user-managed cluster. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3.8 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> JMS conventional clusters </td> 
+         <td class="confluenceTd"> Support JMS &nbsp;conventional clusters </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3.9 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> JMS enhanced clusters </td> 
+         <td class="confluenceTd"> Support JMS enhanced clusters (supports high availability of the messages) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3.10 </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> span EC2 AZ </td> 
+         <td class="confluenceTd"> Support forming a user-managed cluster with instances in multiple EC2 availability zones </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="User-ManagedClusters-4.Administration"></a>4. Administration</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <td class="confluenceTd"> 4.1 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> configuration changes </td> 
+         <td class="confluenceTd"> Allow any configuration change that is possible with asadmin on a standard cluster to be accomplished on a user-managed cluster without recreating the cluster. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.2 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> non-homogeneous error handling </td> 
+         <td class="confluenceTd"> The system must handle the situation where the user-managed cluster of instances is not homogeneous gracefully with error messages indicating that an inconsistency has been detected. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.3 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> monitoring </td> 
+         <td class="confluenceTd"> Gather monitoring data from instances </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.4 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> collect log files </td> 
+         <td class="confluenceTd"> Collect log files from instances </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.5 </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> backup </td> 
+         <td class="confluenceTd"> Provide backup for an instance within a user-managed cluster </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.6 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> GMS get-health </td> 
+         <td class="confluenceTd"> Support the get-health command on any instance in a user-managed cluster </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4.7 </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> console </td> 
+         <td class="confluenceTd"> Allow the console to be used with a user-managed cluster (need to define what needs to work within the console) </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="User-ManagedClusters-5.Installation"></a>5. Installation</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <td class="confluenceTd"> 5.1 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> separate installs </td> 
+         <td class="confluenceTd"> Instances can be created on different hosts using different installs of GlassFish, i.e., GlassFish does not need to be installed into a shared directory. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5.2 </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> remote install and create instance </td> 
+         <td class="confluenceTd"> Provide a command similar to the setup-ssh, install-node, create-node-ssh, create-instance sequence which would allow a user to copy the GlassFish bits to another host and create a cluster for a user-managed instance there. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5.3 </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> installer </td> 
+         <td class="confluenceTd"> Offer option in installer to create instance for user-managed cluster </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5.4 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> supported environments </td> 
+         <td class="confluenceTd"> The feature must be usable in a virtualized environment such as with EC2 Autoscale, but it also must be usable on a physical server or in a manually created virtualized environment. &nbsp;The feature must be usable with all of the operating systems that GlassFish supports. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="User-ManagedClusters-6.Miscellaneous"></a>6. Miscellaneous</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <td class="confluenceTd"> 6.1 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> security </td> 
+         <td class="confluenceTd"> Appropriate for safeguards must be provided for preventing unauthorized modifications to an instance configuration. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6.2 </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> create-service </td> 
+         <td class="confluenceTd"> Support the create-service functionality for an instance in user-managed cluster </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6.3 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> uptime </td> 
+         <td class="confluenceTd"> Support uptime for an instance in a user-managed cluster. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="User-ManagedClusters-NonRequirements"></a>Non-Requirements</h3> 
+     <ol> 
+      <li>Data for instances in a user-managed cluster may or may not be stored in directories associated with domains and nodes. This is an implementation decision.</li> 
+      <li>The implementation may or may not require a shared file system or some other form of shared storage to work over and above what is required for a standard cluster. This is an implementation decision.</li> 
+     </ol> <h4><a name="User-ManagedClusters-3.3.Justification"></a>3.3. Justification</h2> <p>This is a P1 requirement from the PRD.</p> <h4><a name="User-ManagedClusters-4.TechnicalDescription"></a>4. Technical Description</h1> <p>For the details about the design for user-managed clusters, see the <a href="GlassFish User-Managed Clusters Design - take 1 (obsolete).html" title="GlassFish User-Managed Clusters Design - take 1 (obsolete)">design specification</a>. &nbsp;The information below is preliminary information that led to the eventual design.</p> <h4><a name="User-ManagedClusters-4.1.Details"></a>4.1. Details</h2> <h4><a name="User-ManagedClusters-PossibleDesignApproaches"></a>Possible Design Approaches</h3> <p>There are several basic approaches for implementing a user-managed cluster (not sure if these all qualify as "without a DAS"):</p> 
+     <ol> 
+      <li><b>Independent Instances:</b> Delegate responsibility for instance synchronization (the process of keeping the cluster homogeneous) to the non-GlassFish management infrastructure. This means that each instance is administered independently and the instances do not communicate with one another for administration. This is how instances operate in 3.1 when a DAS is present. &nbsp;With this approach, the management infrastructure is responsible for keeping the overall administrative state for the cluster and the domain, as an individual instance may not have the complete state. From a GlassFish perspective, instances are a hybrid between the DAS and clustered instances of 3.1. &nbsp;They are like the DAS in that they can execute admin commands, but they are like clustered instances in that they can join GMS groups for clustering.&nbsp;</li> 
+      <li><b>On-Demand DAS</b>: Use the DAS as needed to configure the cluster. This might involve moving the DAS functionality to an "on-demand" DAS that could run as part of the asadmin command itself. The console would not be available with this approach. &nbsp;The on-demand DAS would need to have access to the complete domain state, possible stored on shared storage that is highly available. The on-demand DAS would be started as needed to perform management of the cluster, essentially acting as a configuration editor. If the configuration of the cluster doesn't need to be modified after initial creation, then the DAS can be used to create the initial cluster (with deployment of an application) and then the DAS is not needed. 
+       <ol> 
+        <li>One way to doing this is to perform the config update on one of the instances, export the sync-bundle again, and reimport the sync-bundle on all other instances.</li> 
+        <li>Another way to do this is to have the DAS do command replication (this has problems if the instances aren't up, and the node hosts have to be right)&nbsp;&nbsp;</li> 
+       </ol> </li> 
+      <li><b>Distributed DAS</b>: Move the DAS functionality to a "floating DAS" that runs in an instance. &nbsp;With this approach, each instance that is capable of becoming the DAS has to have access to the complete state for the domain. The DAS can be elected using a service such as GMS. Instance-to-instance communication must be possible to perform instance synchronization (at startup and for command replication). &nbsp;An asadmin command could be targeted at any instance, and if that instance isn't the DAS (at the moment), then it would forward the command to the one that is the DAS. The console too could run on any instance, with commands being forwarded to the instance that is operating as the DAS. One concern of this approach is that the instances in a cluster are no longer equal in the sense that the one that is the DAS has more work to do.</li> 
+      <li><b>Clustered DAS</b>: Modify a DAS so that is can be a member of a cluster. Each member of the cluster would be its own domain, i.e., it would have an entry in the "domains" directory and would be started with the start-domain command. &nbsp;However, the domain.xml would have a &lt;cluster&gt; element, with the same cluster name and configuration for each member of the cluster. The DAS would join the GMS group as a core member rather than an observer.</li> 
+     </ol> <p>With the second and third approaches, GlassFish still provides centralized management for the cluster; it is just that the single point of failure for the DAS has been eliminated.</p> <p>The sections below provide design ideas for the first two approaches. The "Unmanaged Instances" design is a form of the independent instance approach is a stepping stone towards the Distributed DAS approach. For the 3.2 release, the Distributed DAS approach is too much to attempt. &nbsp;The "Simple Approach for On-Demand DAS" provides a very limited functionality.</p> <h4><a name="User-ManagedClusters-CurrentSituationwithGlassFish3.1"></a>Current Situation with GlassFish 3.1</h3> <p>With GlassFish 3.1, there are only two types of GlassFish servers, the DAS and an instance (either clustered or stand-alone).&nbsp; The DAS is not able to be part of a cluster for HA, only a clustered instance can do that.&nbsp; An application cannot be directly deployed to a clustered instance.&nbsp; The data for a DAS, e.g., config, log, autodeploy, generated directories, is in a "domains directory", by default the "glassfish/domains" directory in a GlassFish install.&nbsp; The data for instances is organized under "nodes" that represent servers where the instances are running.&nbsp; The default nodes directory is "glassfish/nodes" in a GlassFish install.</p> <h4><a name="User-ManagedClusters-Option1%3AUnmanagedInstances"></a>Option 1: Unmanaged Instances</h3> <p>Define a new type of instance that has the clustering characteristics of a clustered instance, but the deployment and admin command processing characteristics of a DAS.&nbsp; Since the clustered instances in GlassFish are managed by a DAS, this new type of instance can be called an "unmanaged instance" because it isn't managed by a DAS. This type of instance would accept asadmin commands (such as deploy) and the autodeploy directory would work, but it would also have the capability of being in a cluster, i.e., it would join a GMS group as a "CORE" member, HA sessions and other HA features would work, etc. What one would not get with an "unmanaged instance" is centralized management from the GlassFish DAS and the guarantee that the configuration of the instance stays in sync with other unmanaged instances that are in the same cluster. That guarantee would have to come from something else, such as the (non-GlassFish) management infrastructure.</p> <p>Name ideas for this type of instance:</p> 
+     <ul> 
+      <li>"unmanaged instance" because the instance isn't managed by a GlassFish DAS.&nbsp; The current types of instances would be called "managed instances", either clustered or standalone.</li> 
+      <li>"independent instance" because the instances do not communicate with one another for administration purposes</li> 
+      <li>"user-managed instances" because the instances are part of user-managed clusters</li> 
+      <li>"self managed instance" is a more positive spin, but the instance really isn't managing itself.&nbsp; There's the non-GlassFish management infrastructre that is actually managing it. &nbsp;</li> 
+      <li>"externally-managed instance"&nbsp; But that seems to be too much of a mouthful.&nbsp;</li> 
+      <li>"pe instance that can join a cluster" This is a relic from the V2,&nbsp; should we use this in v3?</li> 
+     </ul> <p>For the remainder of this proposal, this new instance type will be called an "unmanaged instance".</p> <p>There are (at least) two areas of the system that would be effected by this.&nbsp;</p> 
+     <ul> 
+      <li>One is the ServerEnvironment.isDas() and Server.isDas() calls that are spread throughout the system. We would need to look at each of those to determine whether an unmanaged instance should return true or false.&nbsp;</li> 
+      <li>The other area is in the RuntimeType class that is used with the command infrastructure.&nbsp; We would need to add a new type, RuntimeType.UNMANAGED_INSTANCE, and then we would need to look at everywhere RuntimeType.DAS is used and determine whether RuntimeType.UNMANAGED_INSTANCE should be added.&nbsp; Also, the default value for @ExecuteOn might have to be changed to include an unmanaged instance.</li> 
+     </ul> <p>When a command is annotated with @ExecuteOn(DAS, INSTANCE) it means that the command should be executed on both a DAS and an INSTANCE. But since an instance cannot be both, it does not mean to execute it twice. Adding UNMANAGED_INSTANCE to this would mean that the command should be executed on an UNMANAGED_INSTANCE too.</p> <p>For an unmanaged instance, the deploy subcommand would work similarly to how it works when the target is the DAS (with no replication). Generally, whenever a command is executed on an unmanaged instance, the command would not be replicated to other unmanaged instances in the same cluster.&nbsp; It is the responsibility of the EBS software and the host manager to make sure that every command that modifies the configuration of the instance is executed on every instance. For example, if an instance is down at the time that a configuration change is made, it is the responsibility of the host manager to make sure that any configuration updates that were missed while the instance was done are applied to the instance when it is restarted.</p> <h4><a name="User-ManagedClusters-DomainConceptandUnmanagedInstances"></a>Domain Concept and Unmanaged Instances</h4> <p>In the current system, a DAS and instances, whether stand-alone or clustered are organized into domains. Logically, the domain.xml in the instances contains the same information as the domain.xml in the DAS, and it is the DAS's responsibility to keep this synchronized. This is also true of the other data associated with a domain (logging.properties, file user files, deployed applications, password files, etc.).&nbsp; Since there can be only one DAS for a domain, the configuration data for the DAS itself is in the domains/<em>domainname</em> directory. Configuration data for the instances associated with a domain are in various node directories.</p> <p>With unmanaged instances, there is still the concept of a domain (at least the instances will still have a "domain.xml" file), but how this is represented on disk is not as clear.&nbsp; There isn't a DAS for a set of unmanaged instances, to it doesn't make sense to have something under the "domains" directory.&nbsp;</p> <h4><a name="User-ManagedClusters-DataLocation"></a>Data Location</h4> <p>The data for unmanaged instances would need to go into a different area under the glassfish directory.&nbsp; This doesn't really belong under domains and it doesn't belong under nodes. Maybe an "instances" directory?</p> <h4><a name="User-ManagedClusters-DASDetermination"></a>DAS Determination</h4> <p>I'm not yet sure what to do with the isDas method.&nbsp; I expect that it will need to return false. However, we would need to add an isUnmanagedInstance method that would need to be called in many places where isDas is called, i.e.,</p> <p>if (serverenv.isDas() || serverenv.isUnmanagedInstance()) ...</p> <p>Currently, there is some inconsistency in how "DAS determination" is done.&nbsp; The Server config bean, which has an isDas method, just compares the instance name to "server".&nbsp; However, there is also a "-type" option that is passed to the server when it is stared, and it can take the value of DAS or INSTANCE.&nbsp; The ServerEnvironment class uses this value to determine the return value for its isDas method. This needs to be cleaned up.</p> <p>For example, in an experiment that I ran yesterday, I created an instance called "cl2" and passed in the -type DAS and -instancename cl2 arguments, and it would happily run commands and it acted like a DAS, even though server.isDas was returning false.&nbsp; (I did have to have a &lt;server name="server"/&gt; in the domain.xml.) When I changed the argument to -type INSTANCE, then it wouldn't run commands from asadmin and it formed a cluster with other similar instances.&nbsp;</p> <p>For an unmanaged instance, the only information one needs is for the instance you are running in. And that is available via:</p> <p>@Inject Server server;</p> <p>server.isDas()<br> server.isInstance()<br> etc.</p> <p>But it is also available via ServerEnvironment methods.</p> <p>Instance type information is available in the domain.xml.</p> <p>In the deployment code, there are checks like isDASTarget by checking if the target name equals to "server" and then handle things differently. We would have to change that too. And we need to be able to find out if an instance is an unmanaged server instance with the target name.<br> IMHO, we need to eliminate any hardcoded references to "server" as the name of the DAS.</p> <h4><a name="User-ManagedClusters-UserManagedClusteringandGMS"></a>User-Managed Clustering and GMS</h4> <p>Currently, a DAS joins a GMS group as a SPECTATOR while clustered instances join the GMS group a CORE member. Only the CORE members are involved in session replication and other HA functions. An unmanaged instance must:</p> 
+     <ul> 
+      <li>Be part of a cluster from the perspective of the GMS service.&nbsp; So there must be a &lt;cluster&gt; element in the domain.xml to provide the data to GMS on what cluster to join.&nbsp;</li> 
+      <li>Join the cluster as a CORE member so that it can participate in the HA functions of the cluster.&nbsp;</li> 
+     </ul> <p>Since multicast may not be supported within the user's environment, there will need to be changes to GMS to provide the ability for cluster members to find each other through another mechanism. This design is being done by another project.&nbsp; But the effect on this design is that the creator of the unmanaged instance will be expected to provide coordinates that are then stored in the &lt;cluster&gt; information, similarly to how the multicast bind address is stored today.&nbsp; GMS will then use this to be able to connect with other members of the cluster. It is assumed that the management infrastructure or the person creating the instance will have information that uniquely identifies the cluster so that GMS can associate cluster members with each other.</p> <p>To make an unmanaged instance part of a cluster, the domain.xml template that is used to create a GMS cluster will have a &lt;cluster&gt; element in it, prepopulated with this information that is passed in from the management infrastructure.</p> <h4><a name="User-ManagedClusters-Option2%3ASimpleApproachforOnDemandDAS"></a>Option 2: Simple Approach for On-Demand DAS</h3> <p>(Proposal from Bill Shannon).</p> <p>When an instance is being created, it needs to figure out whether it's the first instance for this application or not. This assumes that we have writable shared storage for the cluster.</p> <p>If it's the first instance, do this:</p> 
+     <ul class="alternate" type="square"> 
+      <li>create a domain</li> 
+      <li>start the domain</li> 
+      <li>create a cluster with the maximum number of instances</li> 
+      <li>fetch the app</li> 
+      <li>deploy the app to the cluster</li> 
+      <li>export the sync bundle for the cluster</li> 
+      <li>save the sync bundle to shared storage</li> 
+      <li>create the first instance</li> 
+      <li>start the instance</li> 
+      <li>stop the domain</li> 
+     </ul> <p>For other instances, do this:</p> 
+     <ul class="alternate" type="square"> 
+      <li>wait for the first instance to finish creating the sync bundle</li> 
+      <li>fetch the sync bundle from shared storage</li> 
+      <li>create an instance from the sync bundle</li> 
+      <li>start the instance with --nosync</li> 
+     </ul> <p>Once the instance is running, it works (almost) exactly as it does today. No need to handle a different type of instance or some DAS/instance hybrid.</p> <p>Obviously there's some important details glossed over...</p> 
+     <ul class="alternate" type="square"> 
+      <li>GMS has to work in this environment with no multicast and with some other mechanism for finding the group master. Perhaps the group master should write its address to shared storage.</li> 
+      <li>Each instance needs to find other instances by asking GMS instead of relying on configured host names.</li> 
+      <li>When each instance is created, a name for the instance must be chosen that doesn't conflict with any running instance from the set of names that were used when the first instance was created. GMS could help with that, or some other data stored in shared storage could be used.</li> 
+     </ul> <p>You can imagine some ways to optimize this around the edges, especially for large applications. The key aspect of this approach is that the core of GlassFish is (almost) unchanged. Pretty much all the code continues to be used in the same environment it's used in today, which we know already works. The changes are almost all at the GMS level.</p> <p>This may not be the most efficient or elegant approach, but I think it's the least risky approach and should be relatively cheap to implement.</p> <h4><a name="User-ManagedClusters-ComparisonoftheTwoApproaches"></a>Comparison of the Two Approaches</h3> <p>Note: both approaches can be made to meet all of the requirements.</p> <p>Advantages of Option 1</p> 
+     <ul> 
+      <li>WRT admin, dovetails into what we had with v3 before clusters. This is where the product has been before. &nbsp;V3 had PE instances only. Clustering tho, is new.</li> 
+      <li>Doesn't depend on shared storage</li> 
+      <li>Faster for configuration changes (no need to start/stop DAS, do backups/exports)</li> 
+      <li>Faster for other asadmin commands&nbsp;(such as uptime) because there is no need for the DAS</li> 
+      <li>Instance configuration via asadmin is just like for a DAS, i.e., just run asadmin with the address of the instance (no need for front end as in option 2)</li> 
+      <li>Implementation of the console for one of these instances would be easier (P3)</li> 
+      <li>Potentially, the software that needs to be distributed to each host could be smaller</li> 
+      <li>In the longer term, this might be easier to extend to provide the distributed DAS capability</li> 
+     </ul> <p>Advantages of Option 2</p> 
+     <ul> 
+      <li>Uses the GlassFish software as it is currently designed, in a way that we already know works</li> 
+      <li>Don't need to take care of application id syncing (need for EJBs) because it is already handled via domain.xml</li> 
+      <li>Implementing export of load balancer data would be easier with this option</li> 
+     </ul> <p>Design/Implementation tasks for Option 1</p> 
+     <ul> 
+      <li>Setup FSD outline (D:Tom)</li> 
+      <li>Use INSTANCE &nbsp;RuntimeType &nbsp;for new type of instance (D: Tom)</li> 
+      <li>Check the isDas() calls to see what question is really being asked, and identify new configuration information needed to answer question for these instances. &nbsp;(about 128 calls) (D: Jennifer)</li> 
+      <li>Look at DAS-only @ExecuteOn for asadmin commands to see which ones apply for the new instance type (D: Chris)</li> 
+      <li>Figure out how deploy and _deploy can be merged, and how the extra options for first/last instance (D: Rajiv)</li> 
+      <li>Change the security such that asadmin can work against the new type (D: Tom)</li> 
+      <li>Plan to use the existing nodes directory structure for storing data files for the new instance type, cluster/domain name the same, one cluster per domain, instances put into nodes/localhost-&lt;domainname&gt; (D: Tom)</li> 
+      <li>create asadmin local commands for create/delete/start/stop of new instance type (D: Tom) 
+       <ul> 
+        <li>create the template that is used with create-local-instance</li> 
+        <li>work with GMS team to define create-local-instance options for GMS configuration for non-multicast (D: Tom)</li> 
+       </ul> </li> 
+      <li>Need to make sure that application id stays the same for all instances (needed for EJBs) - investigate using hash on app content to determine id (D: Rajiv)</li> 
+      <li>Need to make sure that stuff that happens only on DAS only happen in one instance (e.g., creating a database instance) (D: Rajiv)</li> 
+      <li>Modify list-commands so that it only returns the commands that can actually be executed on the new instance type (D: Tom)</li> 
+      <li>Work with JMS/MQ team as to how JMS cluster will work with this feature (D:Chris)</li> 
+      <li>Look at migrate timers and transactions (D: Chris)</li> 
+      <li>Backup for an instance has to be implemented (P3) (D: Chris)</li> 
+      <li>Need to modify create-service to support the new instance type (P3) (D: Jennifer)</li> 
+     </ul> <p>Implementation tasks for Option 2 (draft)</p> 
+     <ul> 
+      <li>create asadmin local commands for create/delete/start/stop of new instance type</li> 
+      <li>Need a start instance that will import from a sync bundle</li> 
+      <li>for any configuration command, a front-end or something would need to be written for asadmin in order to start the DAS, run the command, export, stop the DAS, etc.</li> 
+     </ul> <p>Team recommendation: Option 1</p> <p>However, there was a meeting on June 27, where Option 4 was discussed, and the decision was made to go with option 4 rather than option 1.</p> <h4><a name="User-ManagedClusters-4.2.Bug%2FRFENumber%28s%29"></a>4.2. Bug/RFE Number(s)</h2> <p><a href="https://github.com/javaee/glassfish/issues/16431">GLASSFISH-16431</a> user-managed Clusters</p> <h4><a name="User-ManagedClusters-4.3.InScope"></a>4.3. In Scope</h2> <p>The P1 requirements are "must haves". &nbsp;The P3 requirements are generally extra credit and will only be permitted if time permits. &nbsp;The P2 requirements are "nice to have".</p> <h4><a name="User-ManagedClusters-4.4.OutofScope"></a>4.4. Out of Scope</h2> <p>The following commands will not be supported for user-managed clusters (at least not in their current form). &nbsp;If it is possible to run asadmin commands on an instance in a user-managed cluster (see req. 4.1), then these commands will not be available.</p> 
+     <ol> 
+      <li>start/stop-cluster&nbsp;</li> 
+      <li>start/stop-instance for the other instances in the cluster</li> 
+      <li>list-instances</li> 
+      <li>list-clusters</li> 
+      <li>create/delete-cluster</li> 
+     </ol> <h4><a name="User-ManagedClusters-4.5.Interfaces"></a>4.5. Interfaces</h2> <h4><a name="User-ManagedClusters-4.5.1PublicInterfaces"></a>4.5.1 Public Interfaces</h3> <h4><a name="User-ManagedClusters-CLI"></a>CLI</h4> <p>For specifics on the CLI interface changes for this feature, see the <a href="GlassFish User-Managed Clusters Design - take 1 (obsolete).html" title="GlassFish User-Managed Clusters Design - take 1 (obsolete)">design specification</a> .</p> <p>All of these are local asadmin commands. This means there is no REST or GUI interface for these commands.</p> <h4><a name="User-ManagedClusters-4.5.2PrivateInterfaces"></a>4.5.2 Private Interfaces</h3> <h4><a name="User-ManagedClusters-GMS"></a>GMS</h4> <p>The user-managed clusters administration software has an interface with GMS for setting up the cluster. Specifically, this is....</p> <h4><a name="User-ManagedClusters-4.5.3Deprecated%2FRemovedInterfaces"></a>4.5.3 Deprecated/Removed Interfaces</h3> <p>N/A</p> <h4><a name="User-ManagedClusters-4.6.DocImpact"></a>4.6. Doc Impact</h2> <p>The documentation impact is in the following areas:</p> 
+     <ol> 
+      <li>New man pages for new asadmin commands in the Reference Manual</li> 
+      <li>New sections in High Availability Administration Guide explaining user-managed clusters.</li> 
+      <li>Administration Guide overview section to introduce user-managed clusters where domains are explained</li> 
+      <li>Deployment Planning Guide to talk about user-managed clusters where clusters are introduced</li> 
+      <li>If req 5.3 is implemented, then the Installation Guide would be impacted.</li> 
+     </ol> <h4><a name="User-ManagedClusters-4.7.Admin%2FConfigImpact"></a>4.7. Admin/Config Impact</h2> <p>This entire feature is about administration and configuration impact.</p> <h4><a name="User-ManagedClusters-4.8.HAImpact"></a>4.8. HA Impact</h2> <p>The following area related to HA are impacted:</p> 
+     <ul> 
+      <li>GMS to support the new ways of forming clusters without multicast</li> 
+      <li>Potentially in the IIOP area to provide the ability to create clusters without each cluster have to have the list of other instances in the domain.xml configuration data.</li> 
+     </ul> <h4><a name="User-ManagedClusters-4.9.I18N%2FL10NImpact"></a>4.9. I18N/L10N Impact</h2> <p>Moderate, as needed for new admin commands.</p> <h4><a name="User-ManagedClusters-4.10.Packaging%2CDelivery%26Upgrade"></a>4.10. Packaging, Delivery &amp; Upgrade</h2> <h4><a name="User-ManagedClusters-4.10.1.Packaging"></a>4.10.1. Packaging</h3> <p>The changes due to this feature are expected to be in the Cluster Admin CLI module, cluster-cli.jar, in the <b>glassfish-cluster</b> IPS package. No new packages will be created.</p> <h4><a name="User-ManagedClusters-4.10.2.Delivery"></a>4.10.2. Delivery</h3> <p>The feature will be delivered with the GlassFish download files that already include the glassfish-cluster package.</p> <h4><a name="User-ManagedClusters-4.10.3.UpgradeandMigration"></a>4.10.3. Upgrade and Migration</h3> <p>There are no requirements for being able to take any existing instance, cluster or otherwise, and covert it to be an instance in a user-managed cluster. So there is no upgrade or migration aspect of this feature.</p> <h4><a name="User-ManagedClusters-4.11.SecurityImpact"></a>4.11. Security Impact</h2> <p>The implementation of requirement 6.1 may have a security impact. It is TBD as to exactly what that impact is.</p> <h4><a name="User-ManagedClusters-4.12.CompatibilityImpact"></a>4.12. Compatibility Impact</h2> <p>If any existing commands, such as start-local-instance, are reused, compatibility will be maintained.&nbsp;</p> <h4><a name="User-ManagedClusters-4.13.Dependencies"></a>4.13. Dependencies</h2> <h4><a name="User-ManagedClusters-4.13.1InternalDependencies"></a>4.13.1 Internal Dependencies</h3> <p>TBD</p> <h4><a name="User-ManagedClusters-4.13.2ExternalDependencies"></a>4.13.2 External Dependencies</h3> <p>TBD</p> <h4><a name="User-ManagedClusters-4.14.TestingImpactandDevTests"></a>4.14. Testing Impact and Dev Tests</h2> <p>The admin devtest will be enhanced to create test cases for this feature. a user-managed cluster will be created with multiple instances on a single machine, and an application will be deployed to each instance, HA tested, etc.&nbsp;</p> <p>A similar structure can be used for QA testing. &nbsp;At least one test should be written to demonstrate that the feature can be used in the Amazon AutoScale environment.</p> <p>The tests from 3.1 that were used to test clustering cannot be used because they depend on the availability of the DAS. &nbsp;So essentially all clustering tests that perform administration have to be rewritten.&nbsp;</p> <p>The admin devtests are already automated in the hudson environment.</p> <h4><a name="User-ManagedClusters-5.ReferenceDocuments"></a>5. Reference Documents</h1> 
+     <ul> 
+      <li><a href="GlassFish User-Managed Clusters Design.html" title="GlassFish User-Managed Clusters Design">Design Specification</a></li> 
+      <li>Quality Test Plan (To be provided later)</li> 
+      <li>Documentation Plan (To be provided later)</li> 
+      <li><a href="GMS3.2WithoutMulticast.html" title="GMS3.2WithoutMulticast">GMS Without Multicast</a> 
+       <ul> 
+        <li><a href="http://wikis.sun.com/download/attachments/209655406/gmsconfig_gfv3_1.pdf">GlassFish 3.1 GMS configuration document</a></li> 
+        <li><a href="GF 3.2 GMS Configuration in domain.xml.html" title="GF 3.2 GMS Configuration in domain.xml">GlassFish 3.2 GMS configuration domain.xml markup</a></li> 
+       </ul> </li> 
+     </ul> <p>Information on Other Cluster Implementations</p> 
+     <ul> 
+      <li>Resin <a href="http://caucho.com/resin-4.0/admin/clustering-overview.xtp">automatic application deployment to a cluster</a></li> 
+      <li>JBoss <a href="http://docs.jboss.org/jbossas/docs/Clustering_Guide/beta422/html/clustering-intro-farm.html">farming deployment</a>,&nbsp;dynamic clustering <a href="http://vimeo.com/13189666">video 1</a>, <a href="http://vimeo.com/13180921">video 2</a>, <a href="http://www.datadisk.co.uk/html_docs/java_app/jboss5/jboss5_clustering.htm">configuration changes to clusters</a></li> 
+      <li>WebLogic <a href="http://download.oracle.com/docs/cd/E17904_01/web.1111/e13709/planning.htm#CLUST382">cluster architectures</a></li> 
+     </ul> <h4><a name="User-ManagedClusters-6.Schedule"></a>6. Schedule</h1> <h4><a name="User-ManagedClusters-6.1.ProjectedAvailability"></a>6.1. Projected Availability</h2> <p>See the JIRA issues listed in 4.2.</p> <h4><a name="User-ManagedClusters-7.OtherInformation"></a>7. Other Information</h1> <h4><a name="User-ManagedClusters-Demos"></a>Demos</h2> 
+     <ul> 
+      <li>To be filled in as demos come up each milestone or as appropriate.</li> 
+     </ul> <h4><a name="User-ManagedClusters-Workspace"></a>Workspace</h2> <p>This feature is being developed in the following branch:</p> 
+     <div class="preformatted panel" style="border-width: 1px;">
+      <div class="preformattedContent panelContent"> 
+       <pre>https://svn.java.net/svn/glassfish~svn/branches/umc
+</pre> 
+      </div>
+     </div> <p>This branch was created from the 3.1.1 branch on June 12, 2011 based on revision 47473.</p> <h4><a name="User-ManagedClusters-Research"></a>Research</h2> <h4><a name="User-ManagedClusters-Notes"></a>Notes</h2> 
+     <ul> 
+      <li><a href="umc-asarch-notes-5-17.html" title="umc-asarch-notes-5-17">Notes from 2011-May-17 ASARCH Review</a></li> 
+     </ul> <h4><a name="User-ManagedClusters-EmailAlias"></a>Email Alias</h2> 
+     <ul> 
+      <li>Please contact us at <a href="mailto:admin@glassfish.java.net">admin@glassfish.java.net</a></li> 
+     </ul> <h4><a name="User-ManagedClusters-OpenIssues"></a>Open Issues</h2> 
+     <ol> 
+      <li>What should instances that are part of a user-managed cluster be called?&nbsp;</li> 
+      <li>Which commands should be supported in these instances? (with floating DAS, everything?)</li> 
+      <li>What's the security model for having 4848 open on every instance with redirection to the floating DAS?</li> 
+      <li>How do you determine which instance is the DAS from start-local-instance?</li> 
+      <li>With option 3, how do you solve all of the "distributed database" problems?</li> 
+      <li>Should the floating DAS be based on storing configuration data in an HA database?</li> 
+      <li>When a DAS fails, sessions as well as the DAS functionality itself has to migrate to another instance. &nbsp;How is this done in such a way that one instance doesn't get overloaded?</li> 
+     </ol> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Aug 28, 2012 by 
+<font color="#0050B2">10193</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

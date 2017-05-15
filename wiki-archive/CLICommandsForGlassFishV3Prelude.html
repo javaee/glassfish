@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : CLICommandsForGlassFishV3Prelude</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p><b>List of CLI commands for Prelude</b></p> 
+     <div> 
+      <ul> 
+       <li><a href="#CLICommandsForGlassFishV3Prelude-PreludeRequirement">Prelude <span class="nobr">Requirement <sup><img border="0" alt="" align="absmiddle" width="7" height="7" src="images/icons/linkext7.gif" class="rendericon"></sup></span></a></li> 
+       <li><a href="#CLICommandsForGlassFishV3Prelude-TP2Spillover">TP2 <span class="nobr">Spillover <sup><img border="0" alt="" align="absmiddle" width="7" height="7" src="images/icons/linkext7.gif" class="rendericon"></sup></span></a></li> 
+       <li><a href="#CLICommandsForGlassFishV3Prelude-InfrastructureEnhancements">Infrastructure Enhancements</a></li> 
+       <li><a href="#CLICommandsForGlassFishV3Prelude-PostPrelude">Post Prelude</a></li> 
+      </ul>
+     </div> <h4><a name="CLICommandsForGlassFishV3Prelude-PreludeRequirement"></a>Prelude <a href="./GlassFishV3LiteExpressContent.html">Requirement</a></h2> 
+     <ul> 
+      <li>Pluggability/Extensibility (mostly done, any thing more ?),</li> 
+      <li>Validation, Error messages, man page/usage,</li> 
+      <li>Finalize REST syntax, etc. to productize CLI.</li> 
+      <li>Configuration: Security (User Mgmt) - create/list/delete-file-user</li> 
+      <li>Monitoring - asadmin monitor, get -m, and list -m corresponding to prelude</li> 
+      <li>Update Cetner - CLI support for download/update</li> 
+      <li>Dotted names - support for set/get and list</li> 
+      <li>Lifecycle (Create/Delete/Start/Stop)</li> 
+      <li>Domain Management</li> 
+      <li>CTS harness requirement to run TCKs for Servlet, JSP, JSTL, JSF, JPA</li> 
+      <li>QA test automation requirements</li> 
+     </ul> <h4><a name="CLICommandsForGlassFishV3Prelude-TP2Spillover"></a>TP2 <a href="./CLICommandsForGlassFishV3TP2.html">Spillover</a></h2> 
+     <ul> 
+      <li>create/delete-jvm-options need to be extended to work with profilers - Kedar</li> 
+      <li>start-database/stop-database - implement as remote command, needs CCC - Jennifer</li> 
+      <li>generate-jvm-report - Kedar</li> 
+      <li>create/delete/list-javamail-resource(NTH) - Rajeshwar</li> 
+      <li>create/delete/list-system-properties - Lloyd</li> 
+     </ul> <h4><a name="CLICommandsForGlassFishV3Prelude-InfrastructureEnhancements"></a>Infrastructure Enhancements</h2> 
+     <ul> 
+      <li>Re-architect backend to support multiple operands.</li> 
+      <li>Make CLI "aware" of all remote commands which would allow validation, syntax, options, help, man pages. This is a <b>big</b> task and is discussed <a href="RemoteCommandAwareCLI.html" title="RemoteCommandAwareCLI">here</a></li> 
+     </ul> <h4><a name="CLICommandsForGlassFishV3Prelude-PostPrelude"></a>Post Prelude</h2> 
+     <ul> 
+      <li>CLI Shell (jline ?)</li> 
+      <li>Detatched cli for jbi</li> 
+      <li>Command completion and history (jline ?)</li> 
+      <li>Persist User preferences</li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:48.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

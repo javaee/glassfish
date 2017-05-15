@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : UnifyingAdminPort</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="UnifyingAdminPort-UnifyingAdminPort"></a>Unifying Admin Port</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#UnifyingAdminPort-UnifyingAdminPort">Unifying Admin Port</a></li> 
+       <ul> 
+        <li><a href="#UnifyingAdminPort-Introduction">Introduction</a></li> 
+        <li><a href="#UnifyingAdminPort-Details">Details</a></li> 
+        <li><a href="#UnifyingAdminPort-CompatibilityImpact">Compatibility Impact</a></li> 
+        <li><a href="#UnifyingAdminPort-ActionItems">Action Items</a></li> 
+       </ul> 
+      </ul>
+     </div> <p>Status of the document: <b>Under Consideration</b></p> <h4><a name="UnifyingAdminPort-Introduction"></a>Introduction</h2> <p>Unfortunately, in the previous major release of Application Server (8.1), it was decided that domains created using the Enterprise Edition will use 4849 as the default admin port with security being enabled and those created using Platform Edition will use 4848 as the default admin port with security being disabled.<br> This has caused rather too much of confusion and we cannot afford the loss of usability because of this decision anymore. Hence, this particular document proposes that we make the default admin port as 4848 for all application server distributions. The only impacted distribution by this decision is the Enterprise Edition. The <b>GlassFish distribution</b>, Sun's Application Server <b>Platform Edition</b> and Java EE SDK (<b>Application Platform SDK</b>) distributions thereof are _not_affected by this proposal. It is important that this proposal is approved by compatibility impact team.</p> <h4><a name="UnifyingAdminPort-Details"></a>Details</h2> <p>Recently, <a href="http://weblogs.java.net/blog/jfarcand/archive/2006/11/one_port_to_rul.html">Jeanfrancois implemented</a> the port unification at the TCP layer and we initially thought that this would help in this regard. Well, it can help, but not without a penalty under the covers in terms of reserving port 4848 every time you need port 4849 for administrative purposes. This means that we have one more port to occupy at the domain startup for the domain that needs 4849. In addition to this, the asadmin needs to implement the redirection (See IssueTracker issue <a href="https://github.com/javaee/glassfish/issues/1514">1514</a>) and we don't have enough time to do that for GlassFish V2 release. Thus, we have decided that we will not fix the issue <a href="https://github.com/javaee/glassfish/issues/1713">1713</a> that asks for <b>admin port redirection</b>, for this release. Note however, that protocol has already been proxied for whatever admin port there is (in other words, the admin console/asadmin are available at both <b>http</b>://host:admin-port and <b>https</b>://host:admin-port).</p> <p>Owing to the above reasons, what's being proposed hereby is that we truly unify the port in that, by default, the admin port is reserved to be 4848 for all the distributions.</p> <h4><a name="UnifyingAdminPort-CompatibilityImpact"></a>Compatibility Impact</h2> <p>In order to preserve the backward compatibility, we can take help of the the recently introduced asadminenv.conf. Please take a look at the order of <a href="./AsadminOptionPrecedence.html">preferences with which asadmin processes the options</a>. According to that, following is the (relevant) order in which the <b>port</b> and <b>secure</b> status of admin listener is determined:</p> 
+     <ol> 
+      <li>Look into asadminenv.conf preferences file.</li> 
+      <li>Look into the defaults that are set in the code.</li> 
+     </ol> <p>If the upgrade procedure does the following:</p> 
+     <ol> 
+      <li>create asadminenv.conf file if not present</li> 
+      <li>populate it as the following when target installation is <b>PE</b>: 
+       <ul> 
+        <li>AS_ADMIN_PORT=<b>4848</b></li> 
+        <li>AS_ADMIN_SECURE=false</li> 
+        <li>AS_ADMIN_PROFILE=developer</li> 
+       </ul> </li> 
+      <li>populate it as the following when target installation is <b>EE</b>: (This is just for this release) 
+       <ul> 
+        <li>AS_ADMIN_PORT=<b>4848</b></li> 
+        <li>AS_ADMIN_SECURE=true</li> 
+        <li>AS_ADMIN_PROFILE=enterprise</li> 
+       </ul> </li> 
+     </ol> 
+     <ul> 
+      <li>The asadmin CLI will use previous admin ports as defaults.</li> 
+      <li>The admin console will continue to be available at default port(s) as the upgrade tool <b>does not</b> modify the domain's configuration unnecessarily. Thus if the user has changed the value of the port to the non-default one, then upgrade tool preserves those changed ports.</li> 
+      <li>If the users want to preserve the default port to 4849 after the upgrade, then they have to modify the asadminenv.conf file to reflect it. This is the incompatible change and workaround. If we don't want to keep this manual step, then upgrade tool has to set it to 4849 for this release and then next release of upgrade tool should set it to 4848. (This is rather convoluted).</li> 
+     </ul> <h4><a name="UnifyingAdminPort-ActionItems"></a>Action Items</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">ID </th> 
+         <th class="confluenceTh"> Details </th> 
+         <th class="confluenceTh"> Owner(s) </th> 
+         <th class="confluenceTh"> Done? (Y/N) </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Installer </td> 
+         <td class="confluenceTd">
+          <ul> 
+           <li>All types of installers should show only <b>4848</b> as the port for<br> administration. * Installer screens should be modified to display 4848 by default. Setup scripts (e.g. <br> GlassFish) should only have 4848 as admin port. </li> 
+          </ul> </td> 
+         <td class="confluenceTd"> Snjezana, Dinesh </td> 
+         <td class="confluenceTd"> N </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Upgrade Tool </td> 
+         <td class="confluenceTd"> See above. Also, change the class-action script (i.asadminenv) to have the default values for package based installation. This should be defaults, no token replacement involved. We should document that if the users want to preserve the old behavior, they change the asadminenv.conf file manually. </td> 
+         <td class="confluenceTd"> Prasad, Satish </td> 
+         <td class="confluenceTd"> N </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> asadmin </td> 
+         <td class="confluenceTd"> Remove occurrences of 4849 if any. Fix usage text to only display 4848. </td> 
+         <td class="confluenceTd"> Jane, Kedar </td> 
+         <td class="confluenceTd"> N </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Documentation </td> 
+         <td class="confluenceTd"> Remove all occurrences of 4849 from manpages and admin guide, other guides. </td> 
+         <td class="confluenceTd"> Paul, Vipin </td> 
+         <td class="confluenceTd"> N </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <div> 
+      <ul> 
+       <li><a href="#UnifyingAdminPort-UnifyingAdminPort">Unifying Admin Port</a></li> 
+       <ul> 
+        <li><a href="#UnifyingAdminPort-Introduction">Introduction</a></li> 
+        <li><a href="#UnifyingAdminPort-Details">Details</a></li> 
+        <li><a href="#UnifyingAdminPort-CompatibilityImpact">Compatibility Impact</a></li> 
+        <li><a href="#UnifyingAdminPort-ActionItems">Action Items</a></li> 
+       </ul> 
+      </ul>
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 25, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:49.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

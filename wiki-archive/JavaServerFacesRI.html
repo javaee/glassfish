@@ -1,0 +1,1179 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : JavaServerFacesRI</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="JavaServerFacesRI-FrequentlyAskedQuestionsaboutMojarra%28Oracle%27sJSFimplementation%29"></a>Frequently Asked Questions about Mojarra (Oracle's JSF implementation)</h1> <p>This Wiki page is for questions about Mojarra (Oracle's JSF implementation). General FAQs about the JSF Specification are covered in <a href="JavaServerFacesSpecFaq.html" title="JavaServerFacesSpecFaq">The FAQ for the JSF Specification</a>.</p> <h4><a name="JavaServerFacesRI-TableofContents%3A"></a>Table of Contents:</h2> 
+     <div> 
+      <ul> 
+       <li><a href="#JavaServerFacesRI-FrequentlyAskedQuestionsaboutMojarra%28Oracle%27sJSFimplementation%29">Frequently Asked Questions about Mojarra (Oracle's JSF implementation)</a></li> 
+       <ul> 
+        <li><a href="#JavaServerFacesRI-TableofContents%3A">Table of Contents:</a></li> 
+        <li><a href="#JavaServerFacesRI-Workingwiththesourcecode">Working with the source code</a></li> 
+        <ul> 
+         <li><a href="#JavaServerFacesRI-HowdoIaccessthesourcetreeviaversioncontrol%3F">How do I access the source tree via version control?</a></li> 
+         <li><a href="#JavaServerFacesRI-WhatarethetagsforthecurrentreleasesofMojarra%3F">What are the tags for the current releases of Mojarra?</a></li> 
+         <li><a href="#JavaServerFacesRI-DoIneedtodownloadanydependenciesbeforeIattempttobuildthesource%3F">Do I need to download any dependencies before I attempt to build the source?</a></li> 
+         <li><a href="#JavaServerFacesRI-HowdoIbuildtheMojarrasources%3F">How do I build the Mojarra sources?</a></li> 
+         <li><a href="#JavaServerFacesRI-HowdoIruntheautomatedtests%3F">How do I run the automated tests?</a></li> 
+         <li><a href="#JavaServerFacesRI-HowcanIcontribute%3F">How can I contribute?</a></li> 
+         <li><a href="#JavaServerFacesRI-Howdoweavoidsvnerror%22svn%3AE155017%3AChecksummismatchwhileupdating...%22">How do we avoid svn error "svn: E155017: Checksum mismatch while updating..."</a></li> 
+         <li><a href="#JavaServerFacesRI-HowdoIcreateaShortSelfcontainedCorrect%28Compilable%29Exampleforabugreport%3F">How do I create a Short Self-contained Correct (Compilable) Example for a bug report?</a></li> 
+         <li><a href="#JavaServerFacesRI-Howdowetriageandassignbugs%3F">How do we triage and assign bugs?</a></li> 
+         <li><a href="#JavaServerFacesRI-WhatFixVersion%2FsdoIsetwhenIcloseanissue%3F">What Fix Version/s do I set when I close an issue?</a></li> 
+         <li><a href="#JavaServerFacesRI-HowdoIprepareachangebundle%3F">How do I prepare a change bundle?</a></li> 
+         <li><a href="#JavaServerFacesRI-Whatisthecodecheckinprocedure%3F">What is the code checkin procedure?</a></li> 
+         <li><a href="#JavaServerFacesRI-HowdoIbecomeacommitter%3F">How do I become a committer?</a></li> 
+         <li><a href="#JavaServerFacesRI-HowdoImakesurethatchangestothespechavethecorrectversionchangebarattributions%3F">How do I make sure that changes to the spec have the correct version changebar attributions?</a></li> 
+         <li><a href="#JavaServerFacesRI-WhatfilesneedtobemodifiedtoaffectchangesintheCSSforthegeneratedportionsofthespecification.">What files need to be modified to affect changes in the CSS for the generated portions of the specification.</a></li> 
+        </ul> 
+        <li><a href="#JavaServerFacesRI-QuestionspertainingonlytoOracle%27simplementationoftheJSFspecification">Questions pertaining only to Oracle's implementation of the JSF specification</a></li> 
+        <ul> 
+         <li><a href="#JavaServerFacesRI-HowcanIturnonlogging%3F">How can I turn on logging?</a></li> 
+         <li><a href="#JavaServerFacesRI-HowdoIturnonlogginginJDeveloper%3F">How do I turn on logging in JDeveloper?</a></li> 
+         <li><a href="#JavaServerFacesRI-WhatisrequiredtobuildJSF1.2.x%3F">What is required to build JSF 1.2.x?</a></li> 
+         <li><a href="#JavaServerFacesRI-HowdoIbuildthecode%3F">How do I build the code?</a></li> 
+         <li><a href="#JavaServerFacesRI-HowdoIruntheautomatedunitandsystemtestsusingGlassfish%3F">How do I run the automated unit and system tests using Glassfish?</a></li> 
+         <li><a href="#JavaServerFacesRI-HowdoIdebugaJSFApplicationusingGlassfish%2FNetBeans4.1%3F">How do I debug a JSF Application using Glassfish/NetBeans 4.1?</a></li> 
+         <li><a href="#JavaServerFacesRI-HowdoIupdatetheJSFimplementationintheJavaEESDK%28orglassfish%29withthemostrecentversion%3F">How do I update the JSF implementation in the Java EE SDK (or glassfish) with the most recent version?</a></li> 
+         <li><a href="#JavaServerFacesRI-Whatcontextparametersareavailableandwhatdotheydo%3F">What context parameters are available and what do they do?</a></li> 
+         <li><a href="#JavaServerFacesRI-Iseethiserror%3AJSF1033%3AResourceinjectionisDISABLED">I see this error: JSF1033: Resource injection is DISABLED</a></li> 
+         <li><a href="#JavaServerFacesRI-IreceiveanIllegalStateExceptionwhenrestoringaviewthatusesanonymousclassesforitemssuchasListeners">I receive an IllegalStateException when restoring a view that uses anonymous classes for items such as Listeners</a></li> 
+         <li><a href="#JavaServerFacesRI-Mycontainerdoesn%27tsupportServletContextListenersdefinedinTLDs%2CwhatlistenersareusedbytheMojarra%3F">My container doesn't support ServletContextListeners defined in TLDs, what listeners are used by the Mojarra?</a></li> 
+         <li><a href="#JavaServerFacesRI-WhenIdepoyMojarraasasharedlibraryinTomcat%2CanapplicationdoesnotworkandIseeaConfigurationException%3Anoweb.xmlpresenterrorinthelog">When I depoy Mojarra as a shared library in Tomcat, an application does not work and I see a ConfigurationException: no web.xml present error in the log</a></li> 
+         <li><a href="#JavaServerFacesRI-I%27mrunningMojarrawithmvnjetty%3Arun%2Candmy@ManagedBean%2C@Validator%2Cand@Converterclassesaremissing%2Cnotfound.Icangetittoworkwithmvnjetty%3Arunwar%2CbutthisisveryslowandcumbersomeandkillstheproductivityofembeddedJetty....">I'm running Mojarra with mvn jetty:run, and my @ManagedBean, @Validator, and @Converter classes are missing, not found. I can get it to work with mvn jetty:run-war, but this is very slow and cumbersome and kills the productivity of embedded Jetty. How can I get it working?</a></li> 
+         <li><a href="#JavaServerFacesRI-WhataresomeFrameMakertips%3F">What are some FrameMaker tips?</a></li> 
+         <ul> 
+          <li><a href="#JavaServerFacesRI-Howtodealwiththespecingeneral">How to deal with the spec in general</a></li> 
+          <li><a href="#JavaServerFacesRI-HowtogeneratethePDF">How to generate the PDF</a></li> 
+          <li><a href="#JavaServerFacesRI-HowTotellFrameMakertoexpandornotexpandtheTOCwhengeneratingthePDF">How To tell FrameMaker to expand or not expand the TOC when generating the PDF</a></li> 
+          <li><a href="#JavaServerFacesRI-Howtodealwithchangebars">How to deal with changebars</a></li> 
+          <li><a href="#JavaServerFacesRI-Revisiontaggingprocess">Revision tagging process</a></li> 
+          <li><a href="#JavaServerFacesRI-Specialcharacterstuff">Special character stuff</a></li> 
+          <li><a href="#JavaServerFacesRI-Specialparagraphstuff">Special paragraph stuff</a></li> 
+          <li><a href="#JavaServerFacesRI-Howtodocrossreferencesinframe">How to do cross references in frame</a></li> 
+          <li><a href="#JavaServerFacesRI-Images">Images</a></li> 
+          <li><a href="#JavaServerFacesRI-HowdoyoufixthePDFbookmarkstobecorrect%3F">How do you fix the PDF bookmarks to be correct?</a></li> 
+          <li><a href="#JavaServerFacesRI-ConditionalText">Conditional Text</a></li> 
+          <ul> 
+           <li><a href="#JavaServerFacesRI-Howtoshow%2Fhideconditionaltextinframe.">How to show/hide conditional text in frame.</a></li> 
+           <li><a href="#JavaServerFacesRI-Howtoaddnewconditionaltext">How to add new conditional text</a></li> 
+           <li><a href="#JavaServerFacesRI-Howtosearchinconditionaltext">How to search in conditional text</a></li> 
+          </ul> 
+         </ul> 
+        </ul> 
+        <li><a href="#JavaServerFacesRI-WhataresomeWebLogicServer%28WLS%29Tips%3F">What are some WebLogic Server (WLS) Tips?</a></li> 
+        <ul> 
+         <li><a href="#JavaServerFacesRI-HowdoIinstallWLS%3F">How do I install WLS?</a></li> 
+        </ul> 
+        <li><a href="#JavaServerFacesRI-WhereistheJSFbinarycodeinsideWLS">Where is the JSF binary code inside WLS</a></li> 
+        <li><a href="#JavaServerFacesRI-GeneralJSFrelatedquestions">General JSF-related questions</a></li> 
+        <ul> 
+         <li><a href="#JavaServerFacesRI-HowdoIwriteaJSFcomponent%3F">How do I write a JSF component?</a></li> 
+         <li><a href="#JavaServerFacesRI-CanIdownloadtheMojarrajarsfromaMavenrepository%3F">Can I download the Mojarra jars from a Maven repository?</a></li> 
+         <li><a href="#JavaServerFacesRI-I%27mtryingtodeploytoanonEEserver.WheredoIfindtheELjars%3F">I'm trying to deploy to a non-EE server. Where do I find the EL jars?</a></li> 
+         <li><a href="#JavaServerFacesRI-WhatarethedifferencesbetweenServerandClientsidestatesavingandwhatarethebenefits%2Fdrawbacksofeach%3F">What are the differences between Server and Client side state saving and what are the benefits/drawbacks of each?</a></li> 
+         <li><a href="#JavaServerFacesRI-HowcanIsecureviewstatewhenusingclientsidestatesaving%3F">How can I secure view state when using client side state saving?</a></li> 
+         <li><a href="#JavaServerFacesRI-WhenItrytorunmyapplication%2CIseethisexception%3Ajavax.servlet.ServletException%3ACannotfindFacesContextHowdoIfixthis%3F">When I try to run my application, I see this exception: javax.servlet.ServletException: Cannot find FacesContext How do I fix this?</a></li> 
+         <li><a href="#JavaServerFacesRI-Whydoesn%27tmynavigationruletriggeramatchingsecurityconstraint%3F">Why doesn't my navigation rule trigger a matching security constraint?</a></li> 
+         <li><a href="#JavaServerFacesRI-DoIhavetouseaJSP2.1%2FServlet2.5containerwiththeMojarraversion1.2%3F">Do I have to use a JSP 2.1/Servlet 2.5 container with the Mojarra version 1.2?</a></li> 
+         <li><a href="#JavaServerFacesRI-HowdoesresourceinjectionwiththeMojarrawork%3F">How does resource injection with the Mojarra work?</a></li> 
+         <li><a href="#JavaServerFacesRI-I%27mtryingtointegratetheMojarra1.2withourEE5container%2Cbutresourceinjectionofmanagedbeansdoesn%27twork.Why%3F">I'm trying to integrate the Mojarra 1.2 with our EE5 container, but resource injection of managed beans doesn't work. Why?</a></li> 
+         <li><a href="#JavaServerFacesRI-IwanttouseMojarrawithGoogleAppEngine%28GAE%29">I want to use Mojarra with Google App Engine (GAE)</a></li> 
+         <li><a href="#JavaServerFacesRI-IwanttouseMojarra2.2.xonGlassFish3.1.2.2">I want to use Mojarra 2.2.x on GlassFish 3.1.2.2</a></li> 
+         <li><a href="#JavaServerFacesRI-IwanttouseMojarra1.2inGlassfishv3">I want to use Mojarra 1.2 in Glassfish v3</a></li> 
+         <li><a href="#JavaServerFacesRI-IwanttouseMojarra2.0inGlassfishv2%28orOracleAppServer9.1%29">I want to use Mojarra 2.0 in Glassfish v2 (or Oracle App Server 9.1)</a></li> 
+         <li><a href="#JavaServerFacesRI-IwanttouseMojarra2.0withthenewELinTomcat">I want to use Mojarra 2.0 with the new EL in Tomcat</a></li> 
+        </ul> 
+        <li><a href="#JavaServerFacesRI-Hudsonconcerns">Hudson concerns</a></li> 
+        <ul> 
+         <li><a href="#JavaServerFacesRI-IkeepgettingOutOfMemoryError.HowdoIfixit%3F">I keep getting OutOfMemoryError. How do I fix it?</a></li> 
+        </ul> 
+        <li><a href="#JavaServerFacesRI-Mojarra2.0.0Schedule">Mojarra 2.0.0 Schedule</a></li> 
+        <li><a href="#JavaServerFacesRI-MojarraCodeCoverageInformation">Mojarra Code Coverage Information</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="JavaServerFacesRI-Workingwiththesourcecode"></a>Working with the source code</h2> <h4><a name="JavaServerFacesRI-HowdoIaccessthesourcetreeviaversioncontrol%3F"></a>How do I access the source tree via version control?</h3> <p>Access to the source code for Oracle's implementation of the JCP JSF Specification is subject to the terms of either the GNU<br> General Public License Version 2 only ("GPL") or the Common Development<br> and Distribution License("CDDL") (collectively, the "License"). You<br> may not use this file except in compliance with the License. You can obtain<br> a copy of the License at <a href="http://glassfish.java.net/public/CDDL+GPL_1_1.html">here</a>.</p> <p>Refer to the <a href="http://javaserverfaces.java.net/checkout.html">version control instructions</a> for details on configuring your client.</p> <p>If you don't have a java.net ID, you can check out the source anonymously by using the <em>guest</em> account.</p> <p>The <a href="http://javaserverfaces.java.net/checkout.html">version control instructions</a> also contains information pertaining<br> to branch names which will be important depending on which version of JSF you're interested in working with.</p> <h4><a name="JavaServerFacesRI-WhatarethetagsforthecurrentreleasesofMojarra%3F"></a>What are the tags for the current releases of Mojarra?</h3> 
+     <ul> 
+      <li>Latest 2.2 
+       <ul> 
+        <li> 
+         <ul> 
+          <li><a href="https://svn.java.net/svn/mojarra~svn/tags/2.2.0/">https://svn.java.net/svn/mojarra~svn/tags/2.2.0/</a></li> 
+         </ul> </li> 
+       </ul> </li> 
+      <li>Latest Mojarra 2.1 
+       <ul> 
+        <li><a href="https://svn.java.net/svn/mojarra~svn/tags/2.1.22/">https://svn.java.net/svn/mojarra~svn/tags/2.1.22/</a></li> 
+       </ul> </li> 
+      <li>Latest Mojarra 2.0 
+       <ul> 
+        <li><a href="https://svn.java.net/svn/mojarra~svn/tags/2.0.11/">https://svn.java.net/svn/mojarra~svn/tags/2.0.11/</a></li> 
+       </ul> </li> 
+      <li>Latest Mojarra 1.2 
+       <ul> 
+        <li>JSF_1_2_15_B01 (cvs tag)</li> 
+       </ul> </li> 
+     </ul> <h4><a name="JavaServerFacesRI-DoIneedtodownloadanydependenciesbeforeIattempttobuildthesource%3F"></a>Do I need to download any dependencies before I attempt to build the source?</h3> <p>No, though we don't use Maven, we do have a system in place to download all the necessary dependencies<br> you will need in order to build and test the implementation.</p> <h4><a name="JavaServerFacesRI-HowdoIbuildtheMojarrasources%3F"></a>How do I build the Mojarra sources?</h3> <p>Assuming <em>SOURCE_HOME</em> is the directory containing the javaserverfaces-sources...</p> 
+     <ol> 
+      <li>Copy build.properties.glassfish to build.properties</li> 
+      <li>Edit build.properties and set jsf.build.home to <em>SOURCE_HOME</em></li> 
+      <li>From SOURCE_HOME run <em>ant clean main</em> - this will build the API as well as the implementation</li> 
+     </ol> <p><font color="#ff6600">Note: The first time you build you should use</font> <font color="#ff6600"><em>ant main clean main.</em></font> <font color="#ff6600">After that use</font> <font color="#ff6600"><em>ant clean main</em></font> <font color="#ff6600">as mentioned above.</font></p> <p>The jsf-api.jar will be in <em>SOURCE_HOME/jsf-api/build/lib</em> and jsf-impl.jar will be in <em>SOURCE_HOME/jsf-ri/build/lib</em>.</p> <h4><a name="JavaServerFacesRI-HowdoIruntheautomatedtests%3F"></a>How do I run the automated tests?</h3> <p>There are two major sets of tests in the source tree. One set for the API, and the other<br> set for the implementation. All of them can be run by invoking a single ant command from the root source directory: <em>ant test.with.container.refresh</em>. This target will cause the JSF API and implementation to be deployed to the GlassFish server<br> that is downloaded as part of the build process and run the tests after the server has finished starting up.</p> <p>Ed Burns wrote a blog entry about the tests. &nbsp;See &lt;<a href="http://www.java.net/blog/edburns/archive/2011/03/15/summary-mojarra-hudson-jobs-and-automated-tests-they-run">http://www.java.net/blog/edburns/archive/2011/03/15/summary-mojarra-hudson-jobs-and-automated-tests-they-run</a>&gt;.</p> <h4><a name="JavaServerFacesRI-HowcanIcontribute%3F"></a>How can I contribute?</h3> <p>Please note the following:</p> 
+     <ul> 
+      <li>Your feedback is valuable to us, so join our <a href="http://java.net/projects/javaserverfaces/lists">mailing lists</a> and give input.</li> 
+      <li>Bug reports are very helpful to developers and a great way to contribute to the project. Use the <a href="http://java.net/jira/browse/JAVASERVERFACES">issue tracker</a> to report a bug. Please be sure to include as much information with your report as possible such as a test case, your platform, version number and steps to reproduce the problem.</li> 
+      <li>If you like to propose a new feature, file an enhancement issue for it.</li> 
+      <li>You are welcome to submit a patch for a feature you'd like to see or a bug you'd like to get fixed. All contributors must complete the <a href="http://www.oracle.com/technetwork/oca-405177.pdf">Oracle Contributor Agreement</a> form before contributions can be included in the project. Print, complete, sign, scan and email the Oracle Contributor Agreement form to:</li> 
+     </ul> <p>oracle-ca_us [at] oracle [dot] com</p> <p>If you wish to fax the form, ask for the fax number by sending an email to the preceding address.</p> <p>For more information on the OCA, see the <a href="http://www.oracle.com/technetwork/community/oca-486395.html">FAQ</a>.</p> <p>Follow the instructions in <em>How do I prepare a change bundle?</em> for quick acceptance of your patch. If your patch doesn't include a test case, we would have to create or update an existing test for it which would delay the acceptance of your patch. If you are unable to do so, you can do the following:</p> <p>The developer responsible for the section of code affected should either apply the patch and mark the issue FIXED; or add a comment with an objection if the patch does not seem safe, does not appear to fix the problem, or there is not really a problem to begin with. Developers must also confirm that the contributor has filled in and submitted a JCA before commiting their patch.</p> <p>Notifications of any changes to Issue Tracking, as well as CVS checkins, are automatically sent to the appropriate bug and CVS mailing lists, so you can monitor if the patch has really been applied. Make sure you subscribe to at least the CVS and bug mailing lists for the module you are working on - see the <a href="http://java.net/projects/javaserverfaces/lists">mailing lists</a> page for details.</p> <h4><a name="JavaServerFacesRI-Howdoweavoidsvnerror%22svn%3AE155017%3AChecksummismatchwhileupdating...%22"></a>How do we avoid svn error "svn: E155017: Checksum mismatch while updating..."</h3> <p>This error happens when svn merge is allowed to create directories.&nbsp; If you are merging using svn and you see that files have been added as a result of the merge, <b>DO NOT COMMIT</b>. Instead, save aside the now files, svn revert them locally, replace the new files and then svn add them.</p> <h4><a name="JavaServerFacesRI-HowdoIcreateaShortSelfcontainedCorrect%28Compilable%29Exampleforabugreport%3F"></a>How do I create a Short Self-contained Correct (Compilable) Example for a bug report?</h3> 
+     <ul> 
+      <li>The first step in resolving a bug is to ensure the bug report has all the information necessary to reproduce the bug and as little other information as possible.&nbsp; This usually means stripping out any third party libraries such as PrimeFaces, RichFaces, ICEfaces, etc.</li> 
+      <li>Starting out with a high quality bug report is the best way to see that a bug is resolved.&nbsp; Bug reports should be short, self contained, correct (compilable), examples of the problem to be resolved.&nbsp; See &lt;<a href="http://sscce.org/">http://sscce.org/</a>&gt;.&nbsp; If the bug report falls short of being an SSCCE, the Mojarra team will usually request help from the reporter to arrive at an SSCCE before starting on a fix.</li> 
+      <li>A maven archetype is available to bootstrap the creation of an SSCCE. For JSF 2.1 use: 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">mvn archetype:generate -DarchetypeGroupId=com.sun.faces \
+ -DarchetypeArtifactId=faces-2.1-test-war-archetype \
+ -DarchetypeVersion=0.1 \
+ -DarchetypeCatalog=https://maven.java.net/content/repositories/releases/archetype-catalog.xml</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ul> <p>For JSF 2.2 use</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">mvn archetype:generate -DarchetypeGroupId=com.sun.faces \
+ -DarchetypeArtifactId=faces-2.2-test-war-archetype \
+ -DarchetypeVersion=0.1 \
+ -DarchetypeCatalog=https://maven.java.net/content/repositories/releases/archetype-catalog.xml</pre> 
+       </div> 
+      </div>
+     </div> <p>After answering the questions, add the necessary content to the webapp and build with the <b>-Pfaces-test</b> profile enabled.&nbsp; If this profile is omitted, the project will not build.</p> <h4><a name="JavaServerFacesRI-Howdowetriageandassignbugs%3F"></a>How do we triage and assign bugs?</h3> <p>Bugs filed in the <a href="https://java.net/jira/browse/JAVASERVERFACES">Mojarra Issue Tracker</a> are triaged by the Mojarra team with the goal of maximizing the number of bugs resolved and minimizing the effort taken to resolve them.&nbsp; The most important ingredient to achieve this goal is responsiveness: first on the part of the Mojarra team and second on the part of the reporter.</p> <p>The Mojarra team will do its best to respond to all bugs within four weeks of filing, and to take some concrete action towards resolving the bug at least once every four weeks.</p> <p>The remainder of this answer will describe the lifetime of a bug in two scenarios.</p> 
+     <ol> 
+      <li>The fully responsive reporter. 
+       <ol> 
+        <li>Arrive at an SSCCE.&nbsp; See <a href="" title="JavaServerFacesRI">the preceding question</a>.</li> 
+        <li>Work on the bug begins in earnest 
+         <ol> 
+          <li>Once an SSCCE for the bug is in hand, work on the fix can begin.&nbsp; During&nbsp;&nbsp;&nbsp; the bug fix, the Mojarra team may need more information to work toward a&nbsp;&nbsp;&nbsp; resolution.&nbsp; With a fully responsive reporter, this information is&nbsp;&nbsp;&nbsp; provided within four weeks of its being requested by the Mojarra team.&nbsp;&nbsp;&nbsp; As long as no more than four weeks go by without a response, the bug&nbsp;&nbsp;&nbsp; will remain in the "fully responsive reporter" process.&nbsp; In this case,&nbsp;&nbsp;&nbsp; the Mojarra team works on the bug and makes regular progresses at least&nbsp;&nbsp;&nbsp; once every four weeks.&nbsp; Occasionally progress becomes blocked awaiting a&nbsp;&nbsp;&nbsp; response from the reporter.&nbsp; If four weeks go by without a response, the&nbsp;&nbsp;&nbsp; bug will enter the "unresponsive reporter" process.</li> 
+         </ol> </li> 
+        <li>Bug resolution 
+         <ol> 
+          <li>Once the bug has been resolved, it is committed to the appropriate&nbsp;&nbsp;&nbsp; source code lines and made available for the next release of Mojarra.</li> 
+         </ol> </li> 
+       </ol> </li> 
+      <li>The unresponsive reporter. 
+       <ol> 
+        <li>Request for information 
+         <ol> 
+          <li>If the Mojarra team requests more information on a bug report, such as to arrive at an SSCCE, or to ask if the bug still exists when tried with the latest available appropriate mojarra release, but the reporter does not respond to the request within four weeks, the bug will be de-prioritized one level from its existing priority. 
+           <ol> 
+            <li>after four weeks of inactivity: Major is de-prioritized to Minor</li> 
+            <li>after eight weeks of inactivity: Minor is de-prioritized to Trivial</li> 
+            <li>In all cases, the "Major" JIRA priority is the maximim allowable&nbsp;&nbsp;&nbsp; priority for bugs in the triage process.&nbsp; The Mojarra team uses the&nbsp;&nbsp;&nbsp; "Critical" and "Blocker" priorities to prioritize bugs on which work&nbsp;&nbsp;&nbsp; has actively started.</li> 
+            <li>If a response is given by the reporter, the bug leaves the&nbsp;&nbsp;&nbsp; "unresonsive reporter" process and returns to the "responsive&nbsp;&nbsp;&nbsp; reporter" process.</li> 
+           </ol> </li> 
+         </ol> </li> 
+        <li>Bug resolution 
+         <ol> 
+          <li>After twelve weeks of inactivity, the trivial issue is closed as&nbsp;&nbsp;&nbsp; Incomplete.</li> 
+         </ol> </li> 
+        <li>&nbsp;</li> 
+       </ol> </li> 
+     </ol> <h4><a name="JavaServerFacesRI-WhatFixVersion%2FsdoIsetwhenIcloseanissue%3F"></a>What Fix Version/s do I set when I close an issue?</h3> <p>For work on the trunk, set the Fix Version/s to be the next milestone, such as 2.3.0-m02 and also the next release, such as 2.3.0.</p> <h4><a name="JavaServerFacesRI-HowdoIprepareachangebundle%3F"></a>How do I prepare a change bundle?</h3> <p>The JavaServer Faces team practices Test Driven Design. All code checked in must be accompanied by a new automated testcase that exercises that code, or changes to an existing automated testcase that exercises the code. When writing your code, you have the choice of whether a unit test or a system test would be more appropriate to verify the correctness of your code. Unit tests live in the jsf-ri/test directory, and system tests live in the jsf-ri/systest directory.</p> <p>Please read <a href="http://www.xprogramming.com/xpmag/test_first_intro.htm">this article</a>, or other literature for an introduction to Test Driven Design.</p> 
+     <ul> 
+      <li>As a general note, please turn off any auto-formatting in your IDE to keep your diffs to a minimum. Encountering lots of semantically meaningless changes in the version history of a file, mixed in with semantically meaningfull ones, is very confusing. If you must make formatting changes, do so in a separate change-bundle.<br> <b>BEFORE CHECKIN</b>, each significant code change to the 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">repository</pre> 
+         </div> 
+        </div>
+       </div>is described in a "change bundle" and sent to dev@javaserverfaces.java.net for review by module owners. If the change-bundle is to fix a bug, the change-bundle can be posted to the bug (either as an attachment or a comment) and a pointer to the bug can be sent to <a href="mailto:dev@javaserverfaces.java.net">dev@javaserverfaces.java.net</a>.<br> The change bundle should be sent in a way that is easiest for the reviewer to review. Examples of change-bundles can be found <a href="http://java.net/jira/browse/JAVASERVERFACES-8">here</a>.<br> There is an ant target that generates a file "changebundle.txt" that can then be edited to give you something suitable to send via email and/or attach to an issue.</li> 
+      <li>cd to the top level of your workarea where you have made the changes you want reviewed.</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">ant cb</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>If any files are to be svn added or removed, make sure svn knows that they should be added or removed appropriately.</li> 
+     </ul> <p>Please refer to the issue "id" in the bundle and in the subject of your email.</p> 
+     <ul> 
+      <li>The module owner reviews the change bundle 
+       <ul> 
+        <li>If the reviewer gives approval, you can check it in as is. Please follow <a href="#JavaServerFacesRI-WhatIsTheCodeCheckinProcedure">the checkin process</a>. Approval is signified by the reviewer replying to the change bundle mail with r=userid.</li> 
+       </ul> </li> 
+     </ul> <p>For example: </p>
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Looks good, r=edburns</pre> 
+       </div> 
+      </div>
+     </div><p></p> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li>If the reviewer requests revisions, you need to produce another change bundle and seek approval. Repeat until approval is given.</li> 
+       </ul> </li> 
+     </ul> <h4><a name="JavaServerFacesRI-Whatisthecodecheckinprocedure%3F"></a>What is the code checkin procedure?</h3> <p>Once you have completed <a href="#JavaServerFacesRI-HowDoIPrepareAChangeBundle">the review process</a>, please follow this process to ensure a smooth checkin that doesn't break the tree.</p> 
+     <ul> 
+      <li>cd to the top level of your workarea. <b>Make sure everything still compiles and runs.</b> This means you do the following on jsf-api as well as on jsf-ri. This will run all the unit tests on jsf-api and run all the unit tests and systest on jsf-ri. 
+       <ul> 
+        <li>
+         <div class="code panel" style="border-width: 1px;">
+          <div class="codeContent panelContent"> 
+           <div id="root"> 
+            <pre class="theme: Confluence; brush: java; gutter: false">ant</pre> 
+           </div> 
+          </div>
+         </div></li> 
+        <li>
+         <div class="code panel" style="border-width: 1px;">
+          <div class="codeContent panelContent"> 
+           <div id="root"> 
+            <pre class="theme: Confluence; brush: java; gutter: false">ant test</pre> 
+           </div> 
+          </div>
+         </div>on jsf-api/ and 
+         <div class="code panel" style="border-width: 1px;">
+          <div class="codeContent panelContent"> 
+           <div id="root"> 
+            <pre class="theme: Confluence; brush: java; gutter: false">ant test</pre> 
+           </div> 
+          </div>
+         </div>on jsf-ri/</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li>If the checkin contains non-documentation files, you cannot checkin until both the "ant" and the "ant test" commands have run successfully on your machine.</li> 
+      <li>Make sure jsf-guessNumber, jsf-cardemo, jsf-components demos run successfully.</li> 
+      <li>Run 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">ant test</pre> 
+         </div> 
+        </div>
+       </div>on the jsf-demo/// directory. This will run the HTMLUnit automated tests on the demos.</li> 
+      <li>Once you have run all the tests successfully, you are ready to commit. Run this command</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">cvs -n update -d -P</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>Examine the output. <b>Most importantly</b>, make sure that every file marked with a ? is <b>not</b> intended for check in. Doing this check ensures that your complete set of files will be checked in without omissions. If there are files marked with a ? that <b>are</b> intended for check in, 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">cvs add</pre> 
+         </div> 
+        </div>
+       </div>them and go back to the beginning of this Process.<br> If there are any files marked with a P or a U, you must update your tree before checking in. Do a top level 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">cvs update -d -P</pre> 
+         </div> 
+        </div>
+       </div> <p>and go to the top of this process.</p></li> 
+      <li>Use the output from the previous step as the basis for your checkin message. Make sure you describe what has changed in each modified or added file.</li> 
+      <li>It's time to commit. At this point you're certain that your workarea is completely up to date, all files intended for checkin are marked for checkin, and everything compiles and works. Try to issue the cvs commit command from the lowest possible directory that is a parent of all the directories in which the files have been changed or added. If you can avoid doing a toplevel commit, then please do so. Run the command</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">cvs commit</pre> 
+       </div> 
+      </div>
+     </div> <p>Type in your log message, or import it from a message file via cut and past or some such.</p> <h4><a name="JavaServerFacesRI-HowdoIbecomeacommitter%3F"></a>How do I become a committer?</h3> <p>Follow <a href="#JavaServerFacesRI-HowCanIContribute">How can I contribute?</a> and start contributing enough [#HowToBundle]solid patches] that get accepted into the codebase so that we can get a feel for the quality of your code. Contributors who give frequent and valuable contributions will be nominated for "developer" role if they desire. We would appreciate if commiters could abide by the code review and <a href="#JavaServerFacesRI-HowDoIRunTheAutomatedUnitAndSystemTestsUsingGl...">test driven development</a> process we use.</p> <p>If you think this process is too onerous, please send your comments to <a href="mailto:javaserverfowner@java.net">project owner</a>.</p> <h4><a name="JavaServerFacesRI-HowdoImakesurethatchangestothespechavethecorrectversionchangebarattributions%3F"></a>How do I make sure that changes to the spec have the correct version changebar attributions?</h3> <p>This answer was taken from an email sent to one of the engineers working on Mojarra in response to a similar question.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">There's another question that covers the css attributes that make the changebars in the generated
+portions of the specification work.  Here we show how to use them.
+
+The attributes are applied to three levels of documentation, and they all
+need to be updated as the spec is edited.  For all levels, there are two
+kinds of attributions.
+
+"First Word" attributions.
+
+This kind of attribution makes the first word of the level show the, "changed"
+attribution.  It's called "first word" because only the first word is marked
+to give the reader a quick notice that "something changed in this" section of
+the spec, where section is spec section, package, class, etc.
+
+"body text" attributions
+
+This kind of attribution marks the whole of the changed section with the appropriate
+attribution, "changed", "modified", or "deleted".
+
+Level 1: jsf-api/src/main/resources/overview.html
+
+Add "first word" attributions for all sections of the spec that changed within
+a spec iteration.  For example, at this point in JSF 2.2, all spec sections
+except for the JSP Taglibrary docs have been changed.  Therefore, the table
+titled "The Java Server Faces Specification is composed of several documents:"
+shows changed_modified_2_2 first word attributions for all those sections.
+
+Level 2: package.html
+
+Add "first word" attribution for each package that changed within a spec iteration.
+
+Level 3: Compilation Unit level
+
+Add "first word" attribution for each Class/Interface/TagHandler/Renderer/JavaScriptObject
+that changed during a spec iteration.
+
+Level 4: Leaf level
+
+Add "first" word attribution on the individual method, etc, and also add
+"body text" attribution.  This last bit is the really important part, because
+all the other levels simply point to "body text" attributions.
+
+Here is some example text.
+
+&nbsp;Finally, to let the developer know that ResourceHandler was modified
+during JSF 2.1, make it so the very first word in the javadoc for the
+class has the changed_modified_2_1 CSS attribute.  In the case of
+ResourceHandler.java, this means adding the changed_modified_2_1 CSS
+class to the value of the "class" attribute on the &lt;strong&gt; element that
+wraps the word "ResourceHandler".
+
+To see your change in action, note which class has the CSS changes you
+expect then cd to jsf-api and do "ant javadocs".  Look at the build
+output to see where the javadocs are generated.  Open up the top level
+index.html file in a browser, navigate to the javadoc for the class that
+has the changes, and verify that the color coding is correct as you
+expect.</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="JavaServerFacesRI-WhatfilesneedtobemodifiedtoaffectchangesintheCSSforthegeneratedportionsofthespecification."></a>What files need to be modified to affect changes in the CSS for the generated portions of the specification.</h3> <p>Look at this log message when these changes were made for JSF 2.1.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Create CSS and images for 2.1 changebars.
+
+M       jsf-tools/src/main/resources/com/sun/faces/generate/facesdoc/stylesheet.css
+A       jsf-api/doc/changed_added_2_1.png
+A       jsf-api/doc/changed_modified_2_1_cursor.cur
+A       jsf-api/doc/changed_added_2_1_cursor.cur
+A       jsf-api/doc/changed_deleted_2_1.png
+A       jsf-api/doc/changed_deleted_2_1_cursor.cur
+A       jsf-api/doc/changed_modified_2_1.png
+M       jsf-api/src/main/resources/jsf-api.css
+M       jsf-ri/conf/share/tlddoc-resources/stylesheet.css
+M       jsf-api/doc/jsdoc-template/static/default.css</pre> 
+       </div> 
+
+       <p>Note: the changebars that apply to the generated documentation
+       for the XSD files are handled using CSS selectors in the
+       jsf-api.css file.</p>
+
+      </div>
+     </div> <h4><a name="JavaServerFacesRI-QuestionspertainingonlytoOracle%27simplementationoftheJSFspecification"></a>Questions pertaining only to Oracle's implementation of the JSF specification</h2> <h4><a name="JavaServerFacesRI-HowcanIturnonlogging%3F"></a>How can I turn on logging?</h3> 
+     <ul> 
+      <li>Learn which logger you want to turn on. If you look in 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">com.sun.faces.util.Util</pre> 
+         </div> 
+        </div>
+       </div>you find some useful constants for logging. It lists every logger:</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">FACES_LOGGER=javax.enterprise.resource.webcontainer.jsf</pre> 
+       </div> 
+      </div>
+     </div> <p>Other logger constants are (as of Mojarra 2.2.x on 2015-01-09):</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">APPLICATION("application")
+APPLICATION_VIEW("application.view")
+RESOURCE("resource")
+CONFIG("config")
+CONTEXT("context")
+FACELETS_COMPILER("facelets.compiler")
+FACELETS_COMPONENT("facelets.tag.component")
+FACELETS_EL("facelets.el")
+FACELETS_META("facelets.tag.meta")
+FACELETS_COMPOSITION("facelets.tag.ui.composition")
+FACELETS_DECORATE("facelets.tag.ui.decorate")
+FACELETS_INCLUDE("facelets.tag.ui.include")
+FACELETS_FACELET("faclets.facelet")
+FACELETS_FACTORY("facelets.factory")
+FLOW("flow")
+LIFECYCLE("lifecycle")
+MANAGEDBEAN("managedbean")
+RENDERKIT("renderkit")
+TAGLIB("taglib")
+TIMING("timing")
+UTIL("util")
+FLASH("flash")</pre> 
+       </div> 
+      </div>
+     </div> <p>If you want to turn on only the logger for render kit, for exmple, the logger is </p>
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">javax.enterprise.resource.webcontainer.jsf.renderkit</pre> 
+       </div> 
+      </div>
+     </div>.<p></p> 
+     <ul> 
+      <li>If using Glassfish V2 
+       <ul> 
+        <li>Going on with the intent of turning on the logger for render kit, make a logging config file, for example "jsf-log-config", containing only this line:</li> 
+       </ul> </li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">javax.enterprise.resource.webcontainer.jsf.renderkit.level=FINEST</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li>Edit your domain.xml file:</li> 
+       </ul> </li> 
+     </ul> <p>Look for a </p>
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;java-config&gt;</pre> 
+       </div> 
+      </div>
+     </div>element, and add there a 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;jvm-options&gt;</pre> 
+       </div> 
+      </div>
+     </div>. If you have put the "jsf-log-config" file in "domains/domain1/config/", for example, your jvm-options looks like this:<p></p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;jvm-options&gt;-Djava.util.logging.config.file=${com.sun.aas.instanceRoot}/config/jsf-log-config&lt;/jvm-options&gt;</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>If using Glassfish V3 prelude or later, rather than creating a separate file and</li> 
+     </ul> <p>domain.xml to point to it, modify the "logging.properties" file, which is in the same<br> directory as the domain.xml file. Place entries in the logging.properties file as you<br> would place them in the log-config file from the Glassfish V2 instructions.</p> 
+     <ul> 
+      <li>Run the appserver. The messages will appear in the regular application server log.</li> 
+     </ul> <h4><a name="JavaServerFacesRI-HowdoIturnonlogginginJDeveloper%3F"></a>How do I turn on logging in JDeveloper?</h3> 
+     <ul> 
+      <li>Run/debug your app in JDev</li> 
+      <li>In the IntegratedWeblogicServer Log tab, select Actions -&gt; Configure Oracle Diagnostic Logging</li> 
+      <li>In the logging.xml tab, click the green plus icon and then "Add Persistent Logger..."</li> 
+      <li>Specify "javax.enterprise.resource.webcontainer.jsf.config" for the name and INFO for the level.</li> 
+      <li>Save changes.</li> 
+      <li>Terminate Integrated WLS.</li> 
+      <li>Re-run/debug your app.</li> 
+     </ul> <p>The Mojarra version message is logged to the DefaultDomain/servers/DefaultServer/logs/DefaultServer.log under your system directory.</p> <p>Note that for ADF applications, another way to determine the Mojarra version is to:</p> 
+     <ul> 
+      <li>Ensure that JSF's project stage is something other than production - eg. set the javax.faces.PROJECT_STAGE context parameter to "Development".</li> 
+      <li>Set the oracle.adf.view.rich.versionString.HIDDEN context parameter to "false"<br> With this configuration, ADF writes out a comment at the bottom of each page rendered by ADF Faces.</li> 
+     </ul> <p>The comment looks something like this:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;!--Created by Oracle ADF (ADF RichClient API - ASPEN (custom:
+12.2.1.0.42.141113.1513) / ADF RichClient Impl - ASPEN (custom:
+12.2.1.0.42.141113.1513) / ADF-Richclient-API{Implementation-Title=ADF
+RichClient API,
+Oracle-Label-JDEVADF=JDEVADF_MAIN_GENERIC_141113.1513.S,
+Implementation-Version=ASPEN (custom: 12.2.1.0.42.141113.1513),
+Oracle-Version=12.2.1.0.42.141113.1513,
+Specification-Vendor=${manifest.spec.vendor}, Support-String=ASPEN,
+RCF-revision: 55207 (branch: 12-aspen-SNAPSHOT, plugins: 2.0.2),
+Trinidad-revision: 1127 (branch: 2.1.1-SNAPSHOT, plugins: 2.0.9),
+build: JDEVADF_MAIN_GENERIC_141113.1513.S, libNum: 4317,
+Created-By=Oracle-BuildSystem,
+Oracle-Label=JDEVADF_MAIN_GENERIC_141113.1513.S,
+Oracle-BuildTimestamp=2014-11-13 05:21:16 -0800,
+Implementation-Vendor=Oracle Corporation, Oracle-BuildSystem=Linux -
+java - 1.7.0_51-b13, Oracle-Internal-Release=12.1.4.0.0ADF-FAREL12-BP,
+Implementation-Vendor-Id=oracle.adfinternal.view.faces,
+Build-Jdk=1.7.0_51-b13, Specification-Title=ADF RichClient API,
+Oracle-Builder=user=aime host=slc03tva, Specification-Version=ASPEN,
+Build-By=aime} ADF-Controller{Oracle-BuildSystem=Linux - java -
+1.7.0_51-b13, Oracle-Label-JDEVADF=JDEVADF_MAIN_GENERIC_141113.1513.S,
+Oracle-Version=12.2.1.0.42.141113.1513,
+Oracle-Internal-Release=12.1.4.0.0ADF-FAREL12-BP, Created-By=24.51-b03
+(Oracle Corporation), Oracle-Builder=user=aime host=slc03tva,
+Oracle-Label=JDEVADF_MAIN_GENERIC_141113.1513.S,
+Oracle-BuildTimestamp=2014-11-13 06:30:41 -0800}
+ADF-Model{Oracle-BuildSystem=Linux - java - 1.7.0_51-b13,
+Oracle-Label-JDEVADF=JDEVADF_MAIN_GENERIC_141113.1513.S,
+Oracle-Version=12.2.1.0.42.141113.1513,
+Oracle-Internal-Release=12.1.4.0.0ADF-FAREL12-BP, Created-By=24.51-b03
+(Oracle Corporation), Oracle-Builder=user=aime host=slc03tva,
+Oracle-Label=JDEVADF_MAIN_GENERIC_141113.1513.S,
+Oracle-BuildTimestamp=2014-11-13 05:26:05 -0800}
+ADF-Share{Oracle-BuildSystem=Linux - java - 1.7.0_51-b13,
+Oracle-Label-JDEVADF=JDEVADF_MAIN_GENERIC_141113.1513.S,
+Oracle-Version=12.2.1.0.42.141113.1513,
+Oracle-Internal-Release=12.1.4.0.0ADF-FAREL12-BP, Created-By=24.51-b03
+(Oracle Corporation), Oracle-Builder=user=aime host=slc03tva,
+Oracle-Label=JDEVADF_MAIN_GENERIC_141113.1513.S,
+Oracle-BuildTimestamp=2014-11-13 04:30:00 -0800} / powered by
+JavaServer Faces - 2.2.8-02), accessibility (mode:null,
+contrast:standard, size:medium), skin:skyros-v1.desktop (skyros)--&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>This part is of interest:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">powered by JavaServer Faces - 2.2.8-02</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="JavaServerFacesRI-WhatisrequiredtobuildJSF1.2.x%3F"></a>What is required to build JSF 1.2.x?</h3> 
+     <ul> 
+      <li><a href="https://glassfish.java.net/">GlassFish</a> or any JSP2.1/J2EE 5.0 based container</li> 
+      <li><a href="http://java.sun.com/j2se/1.5.0/index.jsp">J2SE 5.0</a> or later</li> 
+     </ul> <h4><a name="JavaServerFacesRI-HowdoIbuildthecode%3F"></a>How do I build the code?</h3> <p>Make sure you have installed everything outlined in <a href="#JavaServerFacesRI-WhatIsRequiredToBuildJSF1.1.xAndJSF1.2.x">What is required to build JSF 1.1.x and JSF 1.2.x?</a> and <a href="#JavaServerFacesRI-WhatIsRequiredToBuildJSF1.2.x">What is required to build JSF 1.2.x?</a>. Make it so JDK and Ant are runnable from the command line. This involves setting up the environment per the Ant instructions.</p> <p><b>Steps</b></p> 
+     <ul> 
+      <li>If you are planning on running the unit tests, copy $JUNIT_HOME/junit.jar to your $ANT_HOME/lib directory.</li> 
+      <li>Change directory to the location of the checked out source.</li> 
+      <li>Copy 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">build.properties.glassfish</pre> 
+         </div> 
+        </div>
+       </div>to 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">build.properties</pre> 
+         </div> 
+        </div>
+       </div>and set the following properties: 
+       <ul> 
+        <li>jsf.build.home - this must be set to the same directory of the checked out source</li> 
+        <li>container.home - this is the base directory of your GlassFish installation. This property defaults to 
+         <div class="code panel" style="border-width: 1px;">
+          <div class="codeContent panelContent"> 
+           <div id="root"> 
+            <pre class="theme: Confluence; brush: java; gutter: false">${jsf.build.home}/dependencies/glassfish</pre> 
+           </div> 
+          </div>
+         </div>. Only override it if you wish to point to a different GlassFish installation (for testing purposes).</li> 
+        <li>glassfish.password.file - this specifies the file containing the GlassFish administrative password. The property file details the contents of this file. This defaults to 
+         <div class="code panel" style="border-width: 1px;">
+          <div class="codeContent panelContent"> 
+           <div id="root"> 
+            <pre class="theme: Confluence; brush: java; gutter: false">${jsf.build.home}/dependencies/glassfish/password.txt</pre> 
+           </div> 
+          </div>
+         </div>. The password in this file is the default of 'adminadmin'. Override this propery if you have a custom password for your GlassFish instance.</li> 
+       </ul> </li> 
+     </ul> <p>There are various other properties that can be toggled to modify the build/test behavior. Review the property file for details on the different properties.</p> 
+     <ul> 
+      <li>Run <em>ant</em>. This will download the necessary dependencies and build the jsf-api and jsf-impl JARs. The jsf-api.jar will be located under jsf-api/build/lib and jsf-impl.jar will be located under jsf-ri/build/lib.</li> 
+      <li>In order for GlassFish to take advantage of any changes you may make, run the <em>container.deploy</em> target (this can be run from <em>jsf.build.home</em> or any subdirectory therein. This target will update the appropriate GlassFish artifacts. If you are using some other container, this target could still be used, but confirm with the container's docs. If you are not building from source but just want to override the JSF JARs in GlassFish, do the following: 
+       <ul> 
+        <li>Restart the server for the updates to take effect.</li> 
+        <li>To build and deploy the JSF sample applications, change directory to jsf-demo directory. Run <em>ant</em>. This will build all the demos that ship with the JSF distribution namely guessNumber, cardemo, component and nonjsp.</li> 
+        <li>To deploy the application to GlassFish, you have two options. You can copy the war file to container's <em>autodeploy</em> directory which is under (GLASSFISH.HOME/domains/domain1/autodeploy) or you can use the asadmin utility to deploy the war file.</li> 
+       </ul> </li> 
+     </ul> <h4><a name="JavaServerFacesRI-HowdoIruntheautomatedunitandsystemtestsusingGlassfish%3F"></a>How do I run the automated unit and system tests using Glassfish?</h3> <p>Get to the point where you can build the code by following the above steps. Set the required properties in build.properties.</p> 
+     <ul> 
+      <li>On the Mac OS X 10.4 Platform, you need to copy &lt;code&gt;$JAVA_HOME/lib/ext/sunjce_provider.jar&lt;/code&gt; to glassfish.home/lib.</li> 
+      <li>You will probably find it necessary to add -Xms512m -Xmx786m -XX:MaxPermSize=786m to your ANT_OPTS envinorment variable.</li> 
+      <li>To run all tests, run <em>ant test.with.container.refresh</em></li> 
+      <li>To run the API tests, run <em>ant test</em> from jsf-api. This will run all API tests.</li> 
+      <li>To run the RI tests: 
+       <ul> 
+        <li>If you have GlassFish running, stop the server. Run <em>ant config.container</em>. This performs the necessary configuration modifications. Restart the server.</li> 
+        <li>Stop Glassfish, if it's currently running. Run <em>ant container.deploy</em> from the top directory. Restart Glassfish.</li> 
+        <li>Run <em>ant test</em> from jsf-ri. This will run all unit tests.</li> 
+       </ul> </li> 
+      <li>For your information: There are four separate suites of tests run when <em>ant test</em> is invoked from jsf-ri and can be invoked using the following targets: 
+       <ul> 
+        <li>run.junit.test -&gt; runs a small suite of standalone tests that do not require the container</li> 
+        <li>run.cactus.test -&gt; runs the cactus-based tests</li> 
+        <li>run.systest -&gt; runs the system tests (basically end-to-end tests simulating http clients)</li> 
+        <li>run.systest-per-webapp -&gt; similar to the systests above, but these tests are run in separate web applications to keep the environment clean.</li> 
+       </ul> </li> 
+     </ul> <p>If you encounter any problems running the unit tests, ensure that the target <em>config.container</em> was invoked. If the command was invoked, verify the following settings exist glassfish.home/domains/domain1/config/server.policy.</p> 
+     <ul> 
+      <li>java.util.PropertyPermission set to "read,write" (not just "read")</li> 
+      <li>permission java.lang.reflect.ReflectPermission "*";</li> 
+     </ul> <p>Also, ensure the keepalive timeout is set to 70 seconds in glassfish.home/domains/domain1/config/domain.xml (search for keep-alive). These changes are necessary because some of the unit tests access system properties and access package private variables from jsf-impl in order to test some functionality. The keepalive change is necessary as one of the tests sleeps for a minute before continuing. Without this change, the test would fail due to the connection being reset.</p> <h4><a name="JavaServerFacesRI-HowdoIdebugaJSFApplicationusingGlassfish%2FNetBeans4.1%3F"></a>How do I debug a JSF Application using Glassfish/NetBeans 4.1?</h3> 
+     <ul> 
+      <li>Start Glassfish in debug mode. To do this, edit 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">GlassFish.home/domains/domain1/config/domain.xml</pre> 
+         </div> 
+        </div>
+       </div>. Look for java-config element. Set "debug-enabled" to "true". Restart the server.</li> 
+      <li>Attach NetBeans debugger. Use the following values for Attach and click on "OK". 
+       <ul> 
+        <li>Debugger: JDPA Debugger</li> 
+        <li>Connector: SocketAttach</li> 
+        <li>Transport: dt_socket</li> 
+        <li>Host: <em>your host name</em></li> 
+        <li>Port: 9009 (If you modified domain.xml to use a different port, use that port number)</li> 
+       </ul> </li> 
+     </ul> <p>Now, when you deploy and run your JSF application, you should see the debuuger stop at your break points.</p> <h4><a name="JavaServerFacesRI-HowdoIupdatetheJSFimplementationintheJavaEESDK%28orglassfish%29withthemostrecentversion%3F"></a>How do I update the JSF implementation in the Java EE SDK (or glassfish) with the most recent version?</h3> <p>Starting with GlassFish 3.1.2, and continuing on with every future release, we plan to distribute Mojarra as a single jar file, javax.faces.jar. This is consistent with the <a href="./Maven+Versioning+Rules.html">rules laid down by the JavaEE architects</a>. So, forget everything you read about jsf-api.jar and jsf-impl.jar. We suggest you rm -rf your existing GlassFish 3.1.2.2 installation and start over again.</p> 
+     <ol> 
+      <li>Visit <a href="http://maven.java.net">maven.java.net</a>.</li> 
+      <li>Type the following into the search box. <br class="atl-forced-newline"> 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">org.glassfish:javax.faces:&lt;version number&gt;</pre> 
+         </div> 
+        </div>
+       </div> <p><br class="atl-forced-newline"> Where &lt;version number&gt; is one of the versions advertised as released at <a href="http://jsf.java.net/">http://jsf.java.net/</a>.&nbsp; Incidentally, this value is called a maven GAV (groupId, artifactId, version).</p></li> 
+      <li>Expand the tree browser in the lower left corner of the screen to expose the subtree for &lt;version number&gt;.</li> 
+      <li>Select the javax.faces-&lt;version number&gt;.jar</li> 
+      <li>In the tab panel to the right of the tree browser, select "Artifact Information" and click the "Download" button.</li> 
+      <li>Overwrite the file "javax.faces.jar" in the GlassFish 3.1.2.2 (or later) "modules" directory with the bytes of this downloaded file. The name of the file when the download is complete must continue to be javax.faces.jar.</li> 
+      <li>For GlassFish 3.1.2.2 and earlier, you must also update the javax.el.jar in the GlassFish "modules" directory with the one with this GAV: org.glassfish.web:javax.el:2.2.5.</li> 
+     </ol> <h4><a name="JavaServerFacesRI-Whatcontextparametersareavailableandwhatdotheydo%3F"></a>What context parameters are available and what do they do?</h3> <p>The following context parameters are supported the reference implementation and are specific to that implementation. Thanks to Adrian Mitev for compiling this table.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Parameter name </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> Default Value </th> 
+         <th class="confluenceTh"> Introduced in Version </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> com.sun.faces.allowTextChildren </td> 
+         <td class="confluenceTd"> If true, allow children of h:inputText and h:outputText to be rendered. In 1.2, they would always be rendered before the value of tag. In 2.0, they will not be rendered at all unless this flag is set. </td> 
+         <td class="confluenceTd"> false <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> 2.2 <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> com.sun.faces.annotationScanPackages <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> The value of this context init parameter is a whitespace separated list of values that control which class packages are scanned for annotations.&nbsp;&nbsp; To restrict which jars/packages are scanned, use the following entry format: jar:&lt;jar name&gt;:&lt;comma separated list of packages&gt; So an example would be: jar:a.jar:com.acme.package1,com.acme.package2 </td> 
+         <td class="confluenceTd"> "" <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> 2.0 <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> com.sun.faces.autoCompleteOffOnViewState </td> 
+         <td class="confluenceTd"> If false, don't use autocomplete="off" when saving view state. </td> 
+         <td class="confluenceTd"> true <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> 2.0 <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> com.sun.faces.cacheResourceModificationTimestamp </td> 
+         <td class="confluenceTd"> If true, cache the modification time of the resource and use the cached time to tell if the resource needs to be refreshed<br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> false<br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> 2.0<br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> com.sun.faces.numberOfViewsInSession </td> 
+         <td class="confluenceTd"> (note the implementation unintentionally has swapped the meaning, as we cannot change this without breaking what people have become used to we have updated this here) </td> 
+         <td class="confluenceTd"> 15 </td> 
+         <td class="confluenceTd"> 1.2 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> com.sun.faces.numberOfLogicalViews </td> 
+         <td class="confluenceTd"> Defines the maximum number of serialized views stored in the session. Works with server state saving (note the implementation unintentionally has swapped the meaning, as we cannot change this without breaking what people have become used to we have updated this here) </td> 
+         <td class="confluenceTd"> 15 </td> 
+         <td class="confluenceTd"> 1.2 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> com.sun.faces.preferXHTML </td> 
+         <td class="confluenceTd"> For the case where a browser supports xhtml and html without a quality. When enabled and this case occurs, then xhtml will be set as the content type. </td> 
+         <td class="confluenceTd"> false </td> 
+         <td class="confluenceTd"> 1.2 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> com.sun.faces.compressViewState </td> 
+         <td class="confluenceTd"> When true the view is compressed after it is serialized and before base64 encoded. Works with client state saving. As of 1.2_09, this option also impacts server side state saving when com.sun.faces.serializeServerState is set to true (this has a large impact of the size of the state in the session when using this option, at the expense of more CPU of course) </td> 
+         <td class="confluenceTd"> true </td> 
+         <td class="confluenceTd"> 1.2 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> com.sun.faces.disableVersionTracking </td> 
+         <td class="confluenceTd"> Version tracking detects 1.1 artifacts (FacesContext or Application implementations as an example) within the 1.2 runtime. If you have a pure 1.2 environment, then you could disable it. </td> 
+         <td class="confluenceTd"> false </td> 
+         <td class="confluenceTd"> 1.2 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> com.sun.faces.enableMissingResourceLibraryDetection </td> 
+         <td class="confluenceTd"> If enabled, the runtime will check for the existence of a resource library before checking for the resource itself.&nbsp; If not found, an appropriate error message will be included in the log and in the view if ProjectStage is Development. <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> false <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> 2.1 <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> com.sun.faces.sendPoweredByHeader </td> 
+         <td class="confluenceTd"> The servlet specification defines an optional header that can be sent by a container to communicate the version of the JSP/Servlet the response was generated by. If this is enabled, then JSF/1.2 is included in this header. </td> 
+         <td class="confluenceTd"> true </td> 
+         <td class="confluenceTd"> 1.2 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> com.sun.faces.verifyObjects </td> 
+         <td class="confluenceTd"> When true JSF makes sure all managed beans components,validators, etc can be instantiated by the runtime </td> 
+         <td class="confluenceTd"> false </td> 
+         <td class="confluenceTd"> 1.2 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> com.sun.faces.validateXml </td> 
+         <td class="confluenceTd"> When true JSF validates the configuration files. </td> 
+         <td class="confluenceTd"> false </td> 
+         <td class="confluenceTd"> 1.2 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> com.sun.faces.displayConfiguration </td> 
+         <td class="confluenceTd"> If true then all web configuration information (context initialization parameters and environment entries) will be written to the log. This is useful during development to confirm your application is configured as expected. Valid values for this parameter are true and false </td> 
+         <td class="confluenceTd"> false </td> 
+         <td class="confluenceTd"> 1.2_01 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> com.sun.faces.injectionProvider </td> 
+         <td class="confluenceTd"> This parameter specifies a class that implements the <a href="https://javaserverfaces.java.net/nonav/rlnotes/1.2_01-changelog.html#serialization">InjectionProvider </a>for more details </td> 
+         <td class="confluenceTd"> NONE </td> 
+         <td class="confluenceTd"> 1.2_01 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> com.sun.faces.serializationProvider </td> 
+         <td class="confluenceTd"> This parameter specifies a class that implements the <a href="https:://javaserverfaces.java.net/nonav/rlnotes/1.2_01-changelog.html#serialization">SerializationProvider </a>SPI. This implementation represents a hook the JSF implementation will use in order to allow the use of alternate Serialization implementations. See the documentation of the <a href="https://javaserverfaces.java.net/nonav/rlnotes/1.2_01/changelog.html#serialization">interface </a>for more details </td> 
+         <td class="confluenceTd"> NONE </td> 
+         <td class="confluenceTd"> 1.2_01 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> com.sun.faces.responseBufferSize </td> 
+         <td class="confluenceTd"> This parameter specifies the size, in bytes, of the buffer that is used to write all generated content <em>excluding</em> state. </td> 
+         <td class="confluenceTd"> 4096 </td> 
+         <td class="confluenceTd"> 1.2_01 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> com.sun.faces.clientStateWriteBufferSize </td> 
+         <td class="confluenceTd"> This parameter specifies the size, in bytes, of the buffer that is used to write client state. It should be noted, that the buffer used is split - half is for raw bytes, the other half is for the Base64 encoded characters of said bytes. So, for example, if the default, 8192, is used, then 4096 of that is used for the bytes, and the other 4096 is used for the Base64 encoded characters. </td> 
+         <td class="confluenceTd"> 8192 </td> 
+         <td class="confluenceTd"> 1.2_01 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> com.sun.faces.compressJavaScript </td> 
+         <td class="confluenceTd"> If true, then the JavaScript rendered by h:commandLink will be compressed to reduce the amount of whitespace transmitted in the response. If false then the JavaScript will be rendered to the client in a well formatted manner. </td> 
+         <td class="confluenceTd"> true </td> 
+         <td class="confluenceTd"> 1.2_02 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> com.sun.faces.externalizeJavaScript </td> 
+         <td class="confluenceTd"> When true a script element with a src attribute. This allows browsers to cache the JS resource instead of having to write it each time the page is accessed. </td> 
+         <td class="confluenceTd"> false </td> 
+         <td class="confluenceTd"> 1.2_03 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> com.sun.faces.enabledJSStyleHiding </td> 
+         <td class="confluenceTd"> If true, inlined JavaScript rendered by the HTML ResponseWriter implementation will be rendered so that the script is hidden from older browser implementations. </td> 
+         <td class="confluenceTd"> false </td> 
+         <td class="confluenceTd"> 1.2_03 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> com.sun.faces.writeStateAtFormEnd </td> 
+         <td class="confluenceTd"> Per the renderkit doc specification, the state information for the view will be written out prior to closing the form tag. However, it may be desirable to have the state information written out after the opening form tag. If this is the case, specifiy this parameter in the web.xml with a value of false. </td> 
+         <td class="confluenceTd"> false </td> 
+         <td class="confluenceTd"> 1.2_04 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> com.sun.faces.enableLazyBeanValidation </td> 
+         <td class="confluenceTd"> If true, managed beans will be scurtinized when first created. If false, managed beans will be validated when the application is started, at the expense of a slightly slower start time. </td> 
+         <td class="confluenceTd"> true </td> 
+         <td class="confluenceTd"> 1.2_05 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> com.sun.faces.enabledLoadBundle11Compatibility </td> 
+         <td class="confluenceTd"> See Issue 577 for details. When this flag is true, The f:loadBundle will behave as it did in JSF 1.1. If you've migrated from 1.1 to 1.2, and haven't had any issues with f:loadBundle it is safe to ignore this option. </td> 
+         <td class="confluenceTd"> false </td> 
+         <td class="confluenceTd"> 1.2_05 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> com.sun.faces.clientStateTimeout </td> 
+         <td class="confluenceTd"> This specifies the maximum time (in seconds) that client state will be considered valid by the default StateManager/ResponseStateManager implementations. If the time between requests exceeds the configured time, a javax.faces.application.ViewExpiredException. will be thrown. It is important to note that if this feature is enabled, and client requests are recieved with view state produced from a previous version, the ViewExpiredException will be thrown immediately. </td> 
+         <td class="confluenceTd"> NONE </td> 
+         <td class="confluenceTd"> 1.2_05 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> com.sun.faces.serializeServerState </td> 
+         <td class="confluenceTd"> If enabled the component state (not the tree) will be serialized before being stored in the session. This may be desirable for applications that may have issues with view state being sensitive to model changes. </td> 
+         <td class="confluenceTd"> false </td> 
+         <td class="confluenceTd"> 1.2_05 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> com.sun.faces.enableViewStateIdRendering </td> 
+         <td class="confluenceTd"> If true, the view state hidden field will be rendered with both the id and name attributes having the value of "javax.faces.ViewState".This is what the spec requires, however, if there are multiple forms within a view and the response content-type is XHTML, the result will be XHTML that will fail validation due to multiple ID attributes with the same value: javax.faces.ViewState. Setting this parameter to false will result in the ID attribute not being rendered. Keep in mind however, that doing this may break integration with AJAX frameworks that get the state field via ID. See issue 433 for details. </td> 
+         <td class="confluenceTd"> true </td> 
+         <td class="confluenceTd"> 1.2_08 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> com.sun.faces.enableScriptsInAttributeValues </td> 
+         <td class="confluenceTd"> If false, attribute values with javascript: or script: will not be rendered within attribute values to prevent potential XSS attacks. </td> 
+         <td class="confluenceTd"> true </td> 
+         <td class="confluenceTd"> 1.2_08 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> com.sun.faces.disableUnicodeEscaping </td> 
+         <td class="confluenceTd"> By default any characters above a certain range will be escaped as either an HTML entity or a decimal reference. This behavior is not always desirable. To allow more flexibility how content is rendered to a client, this option was introduced. Valid configuration values are: false, true, and auto with false being the default. When the option value is false, Mojarra will continue to escaped no matter the response encoding type. If the configuration value is true, Then no escaping will occur assuming that the response encoding can properly handle all characters. If the configuration option is auto then the response encoding will be checked. If the encoding is of the UTF family of encodings no unicode or html entity encoding will occur, however, if the response stream encoding is ISO-8859-1 then the ISO characters above a certain range will be encoded as HTML entities and any characters above that range will be written as decimal references. </td> 
+         <td class="confluenceTd"> false </td> 
+         <td class="confluenceTd"> 1.2_09 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> com.sun.faces.developmentMode </td> 
+         <td class="confluenceTd"> When true, class caching is disabled so that dynamic loading of Groovy artifacts can take place. (Groovy artifacts must be placed in WEB-INF/groovy, and <a href="http://repo1.maven.org/maven2/org/codehaus/groovy/groovy-all/1.6.9/">groovy-all-1.6.9.jar</a> must be in the classpath). Additionally, any changes made to WEB-INF/faces-config.xml or any configuration resource referenced by the javax.faces.CONFIG_FILES context parameter will cause the JSF application to reload itself (without re-deploying). </td> 
+         <td class="confluenceTd"> false </td> 
+         <td class="confluenceTd"> 1.2_09 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> com.sun.faces.enableMultiThreadedStartup </td> 
+         <td class="confluenceTd"> By default, Mojarra starts threads at startup, for a faster startup time. Because generating threads is forbidden in Google App Engine, this option must be set to false when deploying to GAE. </td> 
+         <td class="confluenceTd"> true </td> 
+         <td class="confluenceTd"> 1.2_13 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> javax.faces.LIFECYCLE_ID <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Context initialization parameter name for the lifecycle identifier of the Lifecycle instance to be utilized </td> 
+         <td class="confluenceTd"> "" <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> 1.0 <br class="atl-forced-newline"> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>In addition to the above context parameters, the following JNDI environment entries are available</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> JNDI Environment Entry Name <br class="atl-forced-newline"> </th> 
+         <th class="confluenceTh"> Description <br class="atl-forced-newline"> </th> 
+         <th class="confluenceTh"> Default Value <br class="atl-forced-newline"> </th> 
+         <th class="confluenceTh"> Version introduced <br class="atl-forced-newline"> </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> java:comp/env/jsf/ClientSideSecretKey </td> 
+         <td class="confluenceTd"> The value of this entry is passed through DatatypeConverter.parseBase64Binary() and then passed as the first argument to SecretKeySpec(byte [], "AES").&nbsp; This secret key is used to encrypt the view state. <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> If not specified, KeyGenerator.generateKey() is used to generate the Secret Key. <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> 2.2.7 <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> java:comp/env/jsf/FlashSecretKey </td> 
+         <td class="confluenceTd"> The value of this entry is passed through DataTypeConverter.parseBase64Binary() and then passed as the first argument to SecretKeySpec(byte [], "AES"). This secret key is used to encrypt the value of the flash cookie. <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> If not specified, KeyGenerator.generateKey() is used to generate the Secret Key. </td> 
+         <td class="confluenceTd"> 2.2.7 <br class="atl-forced-newline"> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="JavaServerFacesRI-Iseethiserror%3AJSF1033%3AResourceinjectionisDISABLED"></a>I see this error: JSF1033: Resource injection is DISABLED</h3> <p>This is not necessary if you're using a milestone build of GlassFish UR1 or GlassFish V2. Edit your APPSERV_HOME/domains/&lt;domain-name&gt;/config/default-web.xml and add the following context init parameter:</p> 
+     <ul> 
+      <li>Param Name: com.sun.faces.injectionProvider – Param Value: com.sun.faces.vendor.GlassFishInjectionProvider</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;context-param&gt;
+&lt;param-name&gt;com.sun.faces.injectionProvider&lt;/param-name&gt;
+&lt;param-value&gt;com.sun.faces.vendor.GlassFishInjectionProvider&lt;/param-value&gt;
+&lt;/context-param&gt;</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>Restart the modified domain.</li> 
+     </ul> <h4><a name="JavaServerFacesRI-IreceiveanIllegalStateExceptionwhenrestoringaviewthatusesanonymousclassesforitemssuchasListeners"></a>I receive an IllegalStateException when restoring a view that uses anonymous classes for items such as Listeners</h3> <p>This isn't a bug in JSF state saving. In fact, serialization of anonymous class instances is discouraged due to<br> several known complications. These are spelled out in section 1.10 of the serialization specification.</p> <p>This has been raised as an issue with the JVM team, but closed as NOT A BUG. Please see bug <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4862448">4862448</a> for further details.</p> <h4><a name="JavaServerFacesRI-Mycontainerdoesn%27tsupportServletContextListenersdefinedinTLDs%2CwhatlistenersareusedbytheMojarra%3F"></a>My container doesn't support ServletContextListeners defined in TLDs, what listeners are used by the Mojarra?</h3> 
+     <ul> 
+      <li>com.sun.faces.config.ConfigureListener (used to parse configuration resources and bootstrap the application)</li> 
+      <li>com.sun.faces.application.WebappLifecycleListener (used by resource injection)</li> 
+      <li>com.sun.faces.util.ReflectionUtils$ReflectionUtilsListener (used to init and clear reflection caches)</li> 
+     </ul> <p>As of 1.2_05, there is only one listener - com.sun.faces.config.ConfigureListener. <br class="atl-forced-newline"></p> <h4><a name="JavaServerFacesRI-WhenIdepoyMojarraasasharedlibraryinTomcat%2CanapplicationdoesnotworkandIseeaConfigurationException%3Anoweb.xmlpresenterrorinthelog"></a>When I depoy Mojarra as a shared library in Tomcat, an application does not work and I see a ConfigurationException: no web.xml present error in the log</h3> <p>One of your Tomcat&nbsp;applications&nbsp;has no web.xml in its&nbsp;WAR file / directory structure. A work-around for this problem is to ship Mojarra in each of your JSF applications, or to add a valid web.xml to the offending application.&nbsp;</p> <h4><a name="JavaServerFacesRI-I%27mrunningMojarrawithmvnjetty%3Arun%2Candmy@ManagedBean%2C@Validator%2Cand@Converterclassesaremissing%2Cnotfound.Icangetittoworkwithmvnjetty%3Arunwar%2CbutthisisveryslowandcumbersomeandkillstheproductivityofembeddedJetty...."></a>I'm running Mojarra with mvn jetty:run, and my @ManagedBean, @Validator, and @Converter classes are missing, not found. I can get it to work with mvn jetty:run-war, but this is very slow and cumbersome and kills the productivity of embedded Jetty. How can I get it working?</h3> <p>The problem is that Mojarra (JSF 2 RI) scans three places for classes annotated with @ManagedBean:</p> 
+     <ol> 
+      <li>WEB-INF/classes</li> 
+      <li>JARS in WEB-INF/lib</li> 
+      <li>classpath with META-INF/faces-config.xml</li> 
+     </ol> <p>Since Jetty reads the class files from target/classes in embedded mode, JSF 2 doesn't know to scan them there (unless META-INF/faces-config.xml is present). Basically, instead of just scanning all classpath entries, Mojarra is very specific.</p> <p>If you really want to get productive with JSF 2 right out of the box w/ embedded Jetty, I recommend looking into the weld-jsf-servlet-minimal artifact, which prepares a JSF 2.0 and CDI 1.0 application for you.</p> <p><a href="http://tinyurl.com/weld-archetypes">http://tinyurl.com/weld-archetypes</a></p> <p>If you use @Named classes (from CDI) rather than @ManagedBean (from JSF 2), a substitue I recommend anyway, then you can get the productive you want.</p> <p>Here is the workaround with Mojarra with regard to the scanning: <a href="http://java.net/jira/browse/JAVASERVERFACES-1111">http://java.net/jira/browse/JAVASERVERFACES-1111</a>. If you put faces-config.xml in src/main/resources/META-INF, then it will find the classes you want.</p> <h4><a name="JavaServerFacesRI-WhataresomeFrameMakertips%3F"></a>What are some FrameMaker tips?</h3> <p>Here is a dump of Ed's collected Frame Crib Sheet</p> <h4><a name="JavaServerFacesRI-Howtodealwiththespecingeneral"></a>How to deal with the spec in general</h4> <p>Launch frame by double clicking on the book. Then open all the chapters.</p> <h4><a name="JavaServerFacesRI-HowtogeneratethePDF"></a>How to generate the PDF</h4> <p>Update dates. On TitlePage .fm update the expert draft version.</p> <p>Make sure page numbers are updated. File-&gt;Edit-&gt;Update Book, make sure all boxes are checked.</p> <p>File-&gt;Save as Book. Choose PDF type and location, and accept defaults in setting window, pressing Set on that window.</p> <h4><a name="JavaServerFacesRI-HowTotellFrameMakertoexpandornotexpandtheTOCwhengeneratingthePDF"></a>How To tell FrameMaker to expand or not expand the TOC when generating the PDF</h4> <p>It's in the Settings window:</p> <p><span class="error">Cannot resolve external resource into attachment.</span></p> <h4><a name="JavaServerFacesRI-Howtodealwithchangebars"></a>How to deal with changebars</h4> <p>How to get rid of them.</p> <p>Format-&gt;Document-&gt;Change Bars. Do this for each chapter.</p> <h4><a name="JavaServerFacesRI-Revisiontaggingprocess"></a>Revision tagging process</h4> <p>When all of the work for a spec revision has been completed, check the work in, tag the workspace, then clear the changebars in all the chapters, and re-check in the files so they're ready for more revisions.</p> <h4><a name="JavaServerFacesRI-Specialcharacterstuff"></a>Special character stuff</h4> <p>The character catalog is accessed with the little "f" icon in the upper right hand corner of the inividual MDI window. The Default Font mode is the normal mode. The code mode is for code. The emphasis mode is for italics. Don't use the Italic button.</p> <h4><a name="JavaServerFacesRI-Specialparagraphstuff"></a>Special paragraph stuff</h4> <p>The paragraph catalog is like the character catalog, but it's a paragraph symbol that accesses it. Commonly used ones are:</p> <p>Paragraph is the default</p> <p>Code Bullet 1 is when quoting the API method and signature</p> <p>Bullet 1 is a bulletted list.</p> <p>*Codeline is nice for showing XML code. You have to hit the tab key one more time than you think.</p> <p>Tables</p> <p>Like word, but not as nice.</p> <h4><a name="JavaServerFacesRI-Howtodocrossreferencesinframe"></a>How to do cross references in frame</h4> <p>Make sure the both the source and target documents are loaded into Frame.</p> <p>Go to where you want to put the "source" of the reference, and usually, you type "please see". Right click and choose "Cross-Reference".</p> <p>In the "Cross-Reference" dialog, twiddle the "Document:" drop-down to choose the document in which the target resides.</p> <p>Twiddle the "Source Type" widget to say "Paragraphs"</p> <p>Twiddle the "Paragraph Tags" option list to choose the paragraph type, say "Head2" to which you want to refer. As you choose different paragraph types, the section headers should show up in the "Paragraphs" list, to the right. Choose the one you want!</p> <p>Twiddle the "Format" widget to show the right style, usually "SectionNumber&amp;Title".</p> <p>Press Insert.</p> <h4><a name="JavaServerFacesRI-Images"></a>Images</h4> <p>If you can re-create those images as PCX files, you can import them in to the document and they should look good.</p> <h4><a name="JavaServerFacesRI-HowdoyoufixthePDFbookmarkstobecorrect%3F"></a>How do you fix the PDF bookmarks to be correct?</h4> <p>Here are the tags and their order:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">TitleText
+.ChapTitle
+.ChapTitleC
+.ChapTitleP
+..Head1
+..Head1P
+...Head2
+...Head2P
+....Head3
+....Head3P</pre> 
+       </div> 
+      </div>
+     </div> <p>To reorder them:</p> 
+     <ol> 
+      <li>Open the Book file.</li> 
+      <li>Open Format-&gt;Document-&gt;PDF Setup.</li> 
+      <li>Shift-click the right arrow button (---&gt;) to remove all tags from the Include Paragraph box.</li> 
+      <li>Select the tags listed above click the left arrow button (&lt;---) to move them to the Include Paragraph box.</li> 
+      <li>Adjust the bookmark levels according to the list above by selecting the tag and moving them with the &lt;&lt; and &gt;&gt; buttons. For example, move the TitleText tag all the way to the left by selecting TitleText and clicking &lt;&lt; until it moves to the far left of the Include Paragraph box. ChapterTitle should be one click to the right of TitleText . Head1 should be two clicks, and so on.</li> 
+      <li>Save the Book file.</li> 
+      <li>Generate the PDF.</li> 
+     </ol> <h4><a name="JavaServerFacesRI-ConditionalText"></a>Conditional Text</h4> <h5><a name="JavaServerFacesRI-Howtoshow%2Fhideconditionaltextinframe."></a>How to show/hide conditional text in frame.</h5> <p>Frame doesn't strip it out, but you can show/hide conditional text before you generate the PDF.</p> 
+     <ol> 
+      <li>Open the Conditional Text dialog box by selecting Special&gt;Condition Text....</li> 
+      <li>Click Show/Hide.</li> 
+      <li>Move Comment and any other conditional text you want hidden to the Hidden column.</li> 
+      <li>Click Set.</li> 
+     </ol> <p>The Show Condition Indicators checkbox toggles whether conditional text should use colors <img class="emoticon" src="images/icons/emoticons/lightbulb_on.gif" height="16" width="16" align="absmiddle" alt="" border="0"> or be black <img class="emoticon" src="images/icons/emoticons/lightbulb.gif" height="16" width="16" align="absmiddle" alt="" border="0"> . For instance, the Comment conditional text setting makes the text red and underlined when Show Condition Indicators is checked.</p> <p>A tip on hiding all conditional text in a book:</p> 
+     <ol> 
+      <li>Follow the above steps to hide the conditional text in one of the chapter files.</li> 
+      <li>Open the book file.</li> 
+      <li>Select File&gt;Import&gt;Formats.</li> 
+      <li>In Import From Document select the chapter file you worked on.</li> 
+      <li>Uncheck all the boxes in Import and Update except Conditional Text Settings.</li> 
+      <li>Uncheck the boxes in While Updating, Remove.</li> 
+      <li>Click Import.</li> 
+     </ol> <h5><a name="JavaServerFacesRI-Howtoaddnewconditionaltext"></a>How to add new conditional text</h5> 
+     <ol> 
+      <li>Open the Conditional Text dialog box.</li> 
+      <li>Type the text you want conditionalized.</li> 
+      <li>Select the text.</li> 
+      <li>In the Conditional Text dialog box, double click, for instance, Comment from the Not In or As Is column to move it to the In column. This automatically selects the Conditional radio button in Currect Selection Is.</li> 
+      <li>Click Apply.</li> 
+     </ol> <p>If you are marking an entire paragraph as conditional text, make sure you select the paragraph marker (viewable when you select View&gt;Text Symbols). If you don't, there will be empty lines in the book when you turn off the conditional text.</p> <h5><a name="JavaServerFacesRI-Howtosearchinconditionaltext"></a>How to search in conditional text</h5> 
+     <ol> 
+      <li>Open the search dialog box (Edit&gt;Find/Change).</li> 
+      <li>In the Find field select Conditional Text....</li> 
+      <li>Select the Conditional Text setting.</li> 
+      <li>Enter the search terms.</li> 
+      <li>Click Find.</li> 
+     </ol> <h4><a name="JavaServerFacesRI-WhataresomeWebLogicServer%28WLS%29Tips%3F"></a>What are some WebLogic Server (WLS) Tips?</h2> <h4><a name="JavaServerFacesRI-HowdoIinstallWLS%3F"></a>How do I install WLS?</h3> <p>WLS 12.1.1 has Mojarra 2.0.4-b07.&nbsp; Here's how to run it.</p> 
+     <ol> 
+      <li>Download this jar <a href="http://home.us.oracle.com/results/release/src1211/wls1211_generic.jar">wls1211_generic.jar</a> and run java -jar on it.&nbsp; Run through the "Typical" prompts.&nbsp; Set the userid and password to be weblogic:weblogic1.&nbsp;</li> 
+      <li>When this is done the server can be started by cding to &lt;install_dir&gt;/user_projects/domains/base_domain/bin and running the ./startWebLogic.sh script (or OS specific equivalent).</li> 
+      <li>If the server doesn't start and complains about java endorsed dirs, modify this script &lt;install_dir&gt;/wlserver_12.1/common/bin/commEnv.sh so that wherever the -Djava.endorsed.dirs system property is mentioned, point to one that works.&nbsp; It's been found that the one from GlassFish works well. See this diff for the idea. 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">-    JAVA_OPTIONS="${JAVA_OPTIONS} -Djava.endorsed.dirs=${JAVA_HOME}/jre/lib/endorsed${PATHSEP}${MODULES_DIR}/endorsed"
++    JAVA_OPTIONS="${JAVA_OPTIONS} -Djava.endorsed.dirs=/home/ejburns/Documents/JavaEE/workareas/mojarra-1HEAD/glassfish-3.1.2/glassfish3/glassfish/modules/endorsed"</pre> 
+         </div> 
+        </div>
+       </div></li> 
+      <li>If you want to enable debugger attaching, edit this script &lt;install_dir&gt;/user_projects/domains/base_domain/bin/setDomainEnv.sh 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">--- setDomainEnv.sh~    2012-07-31 11:52:47.343586000 -0700
++++ setDomainEnv.sh     2012-07-31 12:05:07.122841000 -0700
+@@ -71,6 +71,8 @@
+ BEA_JAVA_HOME=""
+ export BEA_JAVA_HOME
+
++debugFlag="true"
++
+ SUN_JAVA_HOME="/scratch/ejburns/SunOS_5.10_i86pc/usr/jdk/instances/jdk1.6.0"
+ export SUN_JAVA_HOME
+
+@@ -341,6 +343,8 @@
+ JAVA_DEBUG=""
+ export JAVA_DEBUG
+
++debugFlag="true"
++
+ if [ "${debugFlag}" = "true" ] ; then
+        JAVA_DEBUG="-Xdebug -Xnoagent -Xrunjdwp:transport=dt_socket,address=${DEBUG_PORT},server=y,suspend=n -Djava.compiler=NONE"
+        export JAVA_DEBUG</pre> 
+         </div> 
+        </div>
+       </div> <p>Once this is done, the debugging port is 8543 by default.</p></li> 
+      <li>When you start the server, the Admin GUI is at http://&lt;hostname&gt;:7001/console/ by default.</li> 
+     </ol> <h4><a name="JavaServerFacesRI-WhereistheJSFbinarycodeinsideWLS"></a>Where is the JSF binary code inside WLS</h2> <p>This varies from release to release, but in 12.1.1, for JSF 2.0.4-b07, jsf-api.jar is &lt;install_dir&gt;/modules/javax.jsf_1.0.0.0_2-0.jar and jsf-ri.jar is &lt;install_dir&gt;/modules/glassfish.jsf_1.0.0.0_2-0-4.jar.&nbsp; These files can be patched with updated .class files as necessary for debugging purposes.</p> 
+     <ol> 
+      <li><h4><a name="JavaServerFacesRI-GeneralJSFrelatedquestions"></a>General JSF-related questions</h2></li> 
+     </ol> <h4><a name="JavaServerFacesRI-HowdoIwriteaJSFcomponent%3F"></a>How do I write a JSF component?</h3> <p>Component writing can be, at least at first, an almost overwhelming task. To make things a bit simpler, Mojarra committer Jason Lee has written a <a href="http://blogs.steeplesoft.com/2006/12/14/jsf-component-writing-check-list/">quick check list</a> of things to do when writing components, with special attention paid to those areas where the 1.1 and 1.2 specs differ.</p> <h4><a name="JavaServerFacesRI-CanIdownloadtheMojarrajarsfromaMavenrepository%3F"></a>Can I download the Mojarra jars from a Maven repository?</h3> <p>Maven 2 Repository for JSF 2.0 and Later</p> <p>&lt;repository&gt;<br> &lt;id&gt;java.net&lt;/id&gt;<br> &lt;name&gt;java.net&lt;/name&gt;<br> &lt;url&gt;<a href="http://download.java.net/maven/2">http://download.java.net/maven/2</a>&lt;/url&gt;<br> &lt;/repository&gt;</p> <p>Maven 1 Repository for JSF 1.2 and Earlier</p> <p>&lt;repository&gt;<br> &lt;id&gt;java.net.maven1&lt;/id&gt;<br> &lt;name&gt;java.net&lt;/name&gt;<br> &lt;url&gt;<a href="http://download.java.net/maven/1">http://download.java.net/maven/1</a>&lt;/url&gt;<br> &lt;/repository&gt;</p> <h4><a name="JavaServerFacesRI-I%27mtryingtodeploytoanonEEserver.WheredoIfindtheELjars%3F"></a>I'm trying to deploy to a non-EE server. Where do I find the EL jars?</h3> <p>The EL jars are also available via java.net's Maven <a href="http://download.java.net/maven/1/javax.el/jars/">repository</a>.</p> <h4><a name="JavaServerFacesRI-WhatarethedifferencesbetweenServerandClientsidestatesavingandwhatarethebenefits%2Fdrawbacksofeach%3F"></a>What are the differences between Server and Client side state saving and what are the benefits/drawbacks of each?</h3> <p>Server side state saving is where the component tree and all component state are stored within<br> the user's session. This entry within the session is tracked by writing a key in the response<br> that is used to lookup the entry on subsequent post-backs.</p> <p>Client side state saving doesn't leverage the server side session mechanism at all, instead,<br> the component tree and state will be serialized using Java Serialization, GZIP compressed<br> (at least that is the default), Base64 encoded, and written to the response. When a post-back<br> occurs, the encoding process will be reversed which will result in the tree and state we started<br> with.</p> <p>As to the benefits/drawbacks, review the following table.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> State Saving Method </th> 
+         <th class="confluenceTh"> Server Side Memory Usage </th> 
+         <th class="confluenceTh"> CPU Usage </th> 
+         <th class="confluenceTh"> Bandwidth Usage </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Server without compression </td> 
+         <td class="confluenceTd"> High </td> 
+         <td class="confluenceTd"> Low </td> 
+         <td class="confluenceTd"> Low </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Server with compression </td> 
+         <td class="confluenceTd"> Low/Medium </td> 
+         <td class="confluenceTd"> High </td> 
+         <td class="confluenceTd"> Low </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Client with compression </td> 
+         <td class="confluenceTd"> Low </td> 
+         <td class="confluenceTd"> High </td> 
+         <td class="confluenceTd"> Medium </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Client without compression </td> 
+         <td class="confluenceTd"> Low </td> 
+         <td class="confluenceTd"> Med </td> 
+         <td class="confluenceTd"> High </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>Mojarra has three context initialization parameters that affect client side state saving:</p> 
+     <ul> 
+      <li>com.sun.faces.compressViewState - Defaults to <b>true</b>. If disabled, GZIP compression will not be used</li> 
+      <li>com.sun.faces.clientStateWriteBufferSize - Defaults to <b>8192</b>. This parameter specifies the size, in bytes, of the buffer that is used to write client state. It should be noted, that the buffer is split - half is for raw bytes, the other half is for the Base64 encoded characters of said bytes. So, for example, if the default, 8192, is used, then 4096 of that is used for the bytes, and the other 4096 is used for the Base64 encoded characters. This is 8192, per request. Depending on the average complexity of the views in the application, this parameter may be adjusted up or down as appropriate.</li> 
+      <li>com.sun.faces.serializationProvider - This parameter specifies a class that implements the <a href="http://fisheye5.cenqua.com/browse/javaserverfaces-sources/jsf-ri/src/com/sun/faces/spi/SerializationProvider.java?r=1.3">SerializationProvider SPI</a>. This implementation represents a hook the JSF implementation will use in order to allow the use of alternate Serialization implementations.</li> 
+     </ul> <p>There are four context initialization parameters for server side state saving:</p> 
+     <ul> 
+      <li>com.sun.faces.numberOfViewsInSession - Defaults to <b>15</b>. This parameter defines the maximum number of JSF views stored in the session for per logical view. The map used to store the views uses an LRU algorithm to keep the map from growing beyond the configured value.</li> 
+      <li>com.sun.faces.numberOfLogicalViews - Defaults to <b>15</b>. This parameter defines the maximum number of logical views to store per session. The map used to store the logical views uses an LRU algorighm to keep the map from growing beyone the configured value.</li> 
+      <li>com.sun.faces.serializeServerState - Defaults to <b>false</b>. When set to true, the state for the view will be serialized within the session. This may be desirable in the case where view state is sensitive to model changes (as of 1.2_08)</li> 
+      <li>com.sun.faces.compressViewState - Defaults to <b>true</b>. This option is only taken into account when com.sun.faces.serializeViewState is set to true. Compressing the serialized view state shows a significant reduction in retained memory for the server state within the session. This reduction in memory comes at the cost of increased CPU utilization (mostly from the serialization). This compression flag is only considered in 1.2_09 or later.</li> 
+     </ul> <p>A comment on the numberOfXXX parameters. Logical views are best defined as top level view that may have one or more actual views inside<br> of it. A new logical view entry will be created any time a GET occurs (a new request, a frameset, two browser windows...). The value<br> of this logical entry is another Map that will be used to store the view information (i.e. the structure and state). As a user progresses<br> through an application using standard JSF navigation mechanisms, additional view state will be added to the Map associated with a single<br> logical view.</p> <p>As an example, using the jsf-guessNumber application.</p> 
+     <ul> 
+      <li>First request results in a state marker value of j_id1:j_id2. j_id1 represents the logical view, and j_id2 represents the actual view state.</li> 
+      <li>Next, enter a guess. The new state marker value is j_id1:j_id3 - again j_id1 being the logical view, and j_id3 being the actual view. So at this point, the Map associated with logical view j_id1 has two entries, j_id2, and i_id3.</li> 
+      <li>Next, click the <em>Back</em> button, and the new marker is j_id1:j_id4.</li> 
+      <li>Now, issue a request to the context root of the application and notice that the state marker has now changed to j_id5:j_id6. As stated above, each GET will cause a new logical entry to be created. At this point, there are two logical Maps, j_id1 and j_id5. Logical Map j_id1, has three entries, j_id2, j_id3, and j_id4. Logical Map j_id5, has a single entry, j_id6.</li> 
+     </ul> <h4><a name="JavaServerFacesRI-HowcanIsecureviewstatewhenusingclientsidestatesaving%3F"></a>How can I secure view state when using client side state saving?</h3> <p>By default, view state will not be encrypted. However, there is a way to do this within the Mojarra.</p> <p>Specify a environment entry like so:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;env-entry&gt;
+        &lt;env-entry-name&gt;jsf/ClientSideSecretKey&lt;/env-entry-name&gt;
+        &lt;env-entry-type&gt;java.lang.String&lt;/env-entry-type&gt;
+        &lt;env-entry-value&gt;[SOME VALUE]&lt;/env-entry-value&gt;
+    &lt;/env-entry&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>The presence of this JNDI entry will cause the state to be encrypted using<br> the specified password. We realize this isn't the most secure way of conveying<br> a password, however, this cannot be accessed easily without having code executed<br> on the server side.</p> <h4><a name="JavaServerFacesRI-WhenItrytorunmyapplication%2CIseethisexception%3Ajavax.servlet.ServletException%3ACannotfindFacesContextHowdoIfixthis%3F"></a>When I try to run my application, I see this exception: javax.servlet.ServletException: Cannot find FacesContext How do I fix this?</h3> <p>This is most probably caused by a request going to your server but not being picked up by the FacesServlet. Make sure you have properly mapped the FacesServlet. You need to follow the insructions in <a href="http://java.sun.com/j2ee/1.4/docs/tutorial/doc/JSFConfigure10.html">Writing the web.xml File</a> and <a href="http://java.sun.com/j2ee/1.4/docs/tutorial/doc/JSFConfigure10.html#wp1002707">Invoking the FacesServlet</a> in the JavaServer Faces Tutorial.</p> <h4><a name="JavaServerFacesRI-Whydoesn%27tmynavigationruletriggeramatchingsecurityconstraint%3F"></a>Why doesn't my navigation rule trigger a matching security constraint?</h3> <p>This occurs because security constraints aren't applied by the container when using<br> RequestDispatcher.forward() as the default NavigationHandler implementation will do.<br> In order to overcome this, you must configure the navigation to perform a redirect instead.<br> You can do this by adding an empty <b>redirect</b> element to the rule.</p> <h4><a name="JavaServerFacesRI-DoIhavetouseaJSP2.1%2FServlet2.5containerwiththeMojarraversion1.2%3F"></a>Do I have to use a JSP 2.1/Servlet 2.5 container with the Mojarra version 1.2?</h3> <p>If you're using JSPs for your view descriptions, then yes, you will need to use a<br> JSP 2.1/Servlet 2.5 compliant container. However, if you're using another view<br> technology, such as <a href="https://facelets.java.net">Facelets</a> or <a href="https://jsftemplating.java.net">JSFTemplating</a>, you can run JSF 1.2 within a Servlet<br> 2.4 container with out issue.</p> <h4><a name="JavaServerFacesRI-HowdoesresourceinjectionwiththeMojarrawork%3F"></a>How does resource injection with the Mojarra work?</h3> <p>First, some general webtier resource injection information can be found <a href="http://java.sun.com/developer/technicalArticles/J2EE/injection/">here</a>. This documents what all EE5 containers will provide at the webtier level. This provides some basic examples that should get the typical application developer started.</p> <h4><a name="JavaServerFacesRI-I%27mtryingtointegratetheMojarra1.2withourEE5container%2Cbutresourceinjectionofmanagedbeansdoesn%27twork.Why%3F"></a>I'm trying to integrate the Mojarra 1.2 with our EE5 container, but resource injection of managed beans doesn't work. Why?</h3> <p>Mojarra doesn't provide it's own resource injection mechanism. Instead, it exposes an <b>InjectionProvider</b> SPI that container vendors can<br> implement which will allow Mojarra to take advantage of the container's resource injection mechanisms. This <a href="http://blogs.oracle.com/rlubke/entry/jsf_ri_1_2_and">blog</a> entry covers the details of the SPI and how it works.</p> <p>That said, Mojarra includes InjectionProviders for the following containers: GlassFish, Tomcat 6, and Jetty 6.</p> <p>It should be noted that in all cases what can be injected in a ManagedBean is purely a semantic of what the host<br> container supports. If you're application was written with JavaEE 5 in mind, the application would be portable to<br> all EE5 compliant containers, but may not run in, say, Tomcat 6 or Jetty 6. In those two cases, we only inject<br> what the container itself supports.</p> <h4><a name="JavaServerFacesRI-IwanttouseMojarrawithGoogleAppEngine%28GAE%29"></a>I want to use Mojarra with Google App Engine (GAE)</h3> <p>There are instructions for this at <a href="https://sites.google.com/a/wildstartech.com/adventures-in-java/Java-Platform-Enterprise-Edition/JavaServer-Faces/sun-javaserver-faces-reference-implementation">this site</a>.</p> <h4><a name="JavaServerFacesRI-IwanttouseMojarra2.2.xonGlassFish3.1.2.2"></a>I want to use Mojarra 2.2.x on GlassFish 3.1.2.2</h3> <p>You must update three jar files in the GlassFish modules directory.</p> 
+     <ul> 
+      <li>replace javax.faces.jar with the one for 2.2.x</li> 
+      <li>replace javax.el.jar with javax.el-2.2.5.jar</li> 
+      <li>replace weld-osgi-bundle.jar with weld-osgi-bundle-1.1.11.Final.jar.</li> 
+     </ul> <p>All of these are in the Maven Central repository.</p> <h4><a name="JavaServerFacesRI-IwanttouseMojarra1.2inGlassfishv3"></a>I want to use Mojarra 1.2 in Glassfish v3</h3> <p>Include a sun-web.xml file in the war that has the following lines:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;class-loader delegate="false"/&gt;
+&lt;property name="useBundledJsf" value="true" /&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>and bundle Mojarra 1.2 into the WAR as well, and it should work.</p> <h4><a name="JavaServerFacesRI-IwanttouseMojarra2.0inGlassfishv2%28orOracleAppServer9.1%29"></a>I want to use Mojarra 2.0 in Glassfish v2 (or Oracle App Server 9.1)</h3> <p>For a per-app basis, do this:</p> <p>Include a sun-web.xml file in the war that has the following lines:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;sun-web-app&gt;
+&lt;class-loader delegate="false"/&gt;
+&lt;property name="useMyFaces" value="true"/&gt;
+&lt;/sun-web-app&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>and bundle Mojarra 2.0 into the WAR as well, and it should work.</p> <p>For upgrading the whole app server to Mojarra 2.0, see <a href="https://javaserverfaces.java.net/nonav/rlnotes/2.0.2/releasenotes.html">the release notes</a></p> <h4><a name="JavaServerFacesRI-IwanttouseMojarra2.0withthenewELinTomcat"></a>I want to use Mojarra 2.0 with the new EL in Tomcat</h3> <p>Please see <a href="http://weblogs.java.net/blog/cayhorstmann/archive/2009/12/29/jsf-20-and-tomcat">Cay's blog on the topic</a></p> <h4><a name="JavaServerFacesRI-Hudsonconcerns"></a>Hudson concerns</h2> <h4><a name="JavaServerFacesRI-IkeepgettingOutOfMemoryError.HowdoIfixit%3F"></a>I keep getting OutOfMemoryError. How do I fix it?</h3> <p>Make sure your -Xmx is high enough. 4096 works. Also, I've seen the need to add ulimit -h 4096 to the system.</p> <h4><a name="JavaServerFacesRI-Mojarra2.0.0Schedule"></a>Mojarra 2.0.0 Schedule</h2> <p><a href="MojarraSchedule200.html" title="MojarraSchedule200">Mojarra 2.0.0 Schedule</a></p> <h4><a name="JavaServerFacesRI-MojarraCodeCoverageInformation"></a>Mojarra Code Coverage Information</h2> <p><a href="mojarraCodeCoverage.html" title="mojarraCodeCoverage">Mojarra Code Coverage Information</a></p> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Feb 25, 2015 by 
+<font color="#0050B2">11415</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : 3.1SSHProvisioningOnePager</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="3.1SSHProvisioningOnePager-GlassFishServerOpenSourceEdition3.1SSHProvisioningOnePager"></a>GlassFish Server Open Source Edition 3.1 - SSH Provisioning One Pager</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#3.1SSHProvisioningOnePager-GlassFishServerOpenSourceEdition3.1SSHProvisioningOnePager">GlassFish Server Open Source Edition 3.1 - SSH Provisioning One Pager</a></li> 
+       <li><a href="#3.1SSHProvisioningOnePager-1.Introduction">1. Introduction</a></li> 
+       <ul> 
+        <li><a href="#3.1SSHProvisioningOnePager-1.1.Project%2FComponentWorkingName%3A">1.1. Project/Component Working Name:</a></li> 
+        <li><a href="#3.1SSHProvisioningOnePager-1.2.Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier%3A">1.2. Name(s) and e-mail address of Document Author(s)/Supplier:</a></li> 
+        <li><a href="#3.1SSHProvisioningOnePager-1.3.DateofThisDocument%3A">1.3. Date of This Document:</a></li> 
+       </ul> 
+       <li><a href="#3.1SSHProvisioningOnePager-2.ProjectSummary">2. Project Summary</a></li> 
+       <ul> 
+        <li><a href="#3.1SSHProvisioningOnePager-2.1.ProjectDescription%3A">2.1. Project Description:</a></li> 
+        <li><a href="#3.1SSHProvisioningOnePager-2.2.RisksandAssumptions%3A">2.2. Risks and Assumptions:</a></li> 
+       </ul> 
+       <li><a href="#3.1SSHProvisioningOnePager-3.ProblemSummary">3. Problem Summary</a></li> 
+       <ul> 
+        <li><a href="#3.1SSHProvisioningOnePager-3.1.ProblemArea%3A">3.1. Problem Area:</a></li> 
+        <li><a href="#3.1SSHProvisioningOnePager-3.2.Justification%3A">3.2. Justification:</a></li> 
+       </ul> 
+       <li><a href="#3.1SSHProvisioningOnePager-4.TechnicalDescription%3A">4. Technical Description:</a></li> 
+       <ul> 
+        <li><a href="#3.1SSHProvisioningOnePager-4.1.Details%3A">4.1. Details:</a></li> 
+        <li><a href="#3.1SSHProvisioningOnePager-4.2.Bug%2FRFENumber%28s%29%3A">4.2. Bug/RFE Number(s):</a></li> 
+        <li><a href="#3.1SSHProvisioningOnePager-4.3.InScope%3A">4.3. In Scope:</a></li> 
+        <li><a href="#3.1SSHProvisioningOnePager-4.4.OutofScope%3A">4.4. Out of Scope:</a></li> 
+        <li><a href="#3.1SSHProvisioningOnePager-4.5.Interfaces%3A">4.5. Interfaces:</a></li> 
+        <ul> 
+         <li><a href="#3.1SSHProvisioningOnePager-4.5.1PublicInterfaces">4.5.1 Public Interfaces</a></li> 
+         <li><a href="#3.1SSHProvisioningOnePager-4.5.2PrivateInterfaces">4.5.2 Private Interfaces</a></li> 
+         <li><a href="#3.1SSHProvisioningOnePager-4.5.3Deprecated%2FRemovedInterfaces%3A">4.5.3 Deprecated/Removed Interfaces:</a></li> 
+        </ul> 
+        <li><a href="#3.1SSHProvisioningOnePager-4.6.DocImpact%3A">4.6. Doc Impact:</a></li> 
+        <li><a href="#3.1SSHProvisioningOnePager-4.7.Admin%2FConfigImpact%3A">4.7. Admin/Config Impact:</a></li> 
+        <li><a href="#3.1SSHProvisioningOnePager-4.8.HAImpact%3A">4.8. HA Impact:</a></li> 
+        <li><a href="#3.1SSHProvisioningOnePager-4.9.I18N%2FL10NImpact%3A">4.9. I18N/L10N Impact:</a></li> 
+        <li><a href="#3.1SSHProvisioningOnePager-4.10.Packaging%2CDelivery%26Upgrade%3A">4.10. Packaging, Delivery &amp; Upgrade:</a></li> 
+        <ul> 
+         <li><a href="#3.1SSHProvisioningOnePager-4.10.1.Packaging">4.10.1. Packaging</a></li> 
+         <li><a href="#3.1SSHProvisioningOnePager-4.10.2.Delivery">4.10.2. Delivery</a></li> 
+         <li><a href="#3.1SSHProvisioningOnePager-4.10.3.UpgradeandMigration%3A">4.10.3. Upgrade and Migration:</a></li> 
+        </ul> 
+        <li><a href="#3.1SSHProvisioningOnePager-4.11.SecurityImpact%3A">4.11. Security Impact:</a></li> 
+        <li><a href="#3.1SSHProvisioningOnePager-4.12.CompatibilityImpact">4.12. Compatibility Impact</a></li> 
+        <li><a href="#3.1SSHProvisioningOnePager-4.13.Dependencies%3A">4.13. Dependencies:</a></li> 
+        <ul> 
+         <li><a href="#3.1SSHProvisioningOnePager-4.13.1InternalDependencies">4.13.1 Internal Dependencies</a></li> 
+         <li><a href="#3.1SSHProvisioningOnePager-4.13.2ExternalDependencies">4.13.2 External Dependencies</a></li> 
+        </ul> 
+        <li><a href="#3.1SSHProvisioningOnePager-4.14.TestingImpact%3A">4.14. Testing Impact:</a></li> 
+       </ul> 
+       <li><a href="#3.1SSHProvisioningOnePager-5.ReferenceDocuments">5. Reference Documents</a></li> 
+       <li><a href="#3.1SSHProvisioningOnePager-6.Schedule%3A">6. Schedule:</a></li> 
+       <ul> 
+        <li><a href="#3.1SSHProvisioningOnePager-6.1.ProjectedAvailability%3A">6.1. Projected Availability:</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="3.1SSHProvisioningOnePager-1.Introduction"></a>1. Introduction</h1> <h4><a name="3.1SSHProvisioningOnePager-1.1.Project%2FComponentWorkingName%3A"></a>1.1. Project/Component Working Name:</h2> <p>GlassFish Server Open Source Edition 3.1 SSH Provisioning</p> <h4><a name="3.1SSHProvisioningOnePager-1.2.Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier%3A"></a>1.2. Name(s) and e-mail address of Document Author(s)/Supplier:</h2> <p>Joe Di Pol: jfdipol@java.net<br> Carla Mott: carlavmott@java.net<br> Rajiv Mordani: mode@java.net</p> <h4><a name="3.1SSHProvisioningOnePager-1.3.DateofThisDocument%3A"></a>1.3. Date of This Document:</h2> <p>May 21, 2010</p> <h4><a name="3.1SSHProvisioningOnePager-2.ProjectSummary"></a>2. Project Summary</h1> <h4><a name="3.1SSHProvisioningOnePager-2.1.ProjectDescription%3A"></a>2.1. Project Description:</h2> <p>Support for invoking instance lifecycle commands on remote nodes over SSH.<br> Partial replacement for the GlassFish v2 node agent.</p> <h4><a name="3.1SSHProvisioningOnePager-2.2.RisksandAssumptions%3A"></a>2.2. Risks and Assumptions:</h2> 
+     <ol> 
+      <li>Assumes customer has suitably configured SSH on all nodes involved in GlassFish cluster. This feature does nothing to aid SSH configuration.</li> 
+      <li>Assumes customers running on Windows acquire SSH provider. No alternate implementation is provided for Windows. We will select one SSH provider to test with and support on Windows – this will likely be Cygwin SSHD.</li> 
+      <li>Assumes customers must install GlassFish first on all nodes that will participate in a cluster.</li> 
+      <li>Assumes that the user that the DAS runs as has SSH access to all nodes in the cluster. In other words the administrator must configure ssh access for the user that the DAS runs as, and this may not be the same as the user that installed GlassFish.</li> 
+      <li>The intention is to support the bundled SSHD implementation on our supported Unix platforms. This assumes that bundled SSHD implementations on Unix based systems are relatively compatible.</li> 
+     </ol> <h4><a name="3.1SSHProvisioningOnePager-3.ProblemSummary"></a>3. Problem Summary</h1> <h4><a name="3.1SSHProvisioningOnePager-3.1.ProblemArea%3A"></a>3.1. Problem Area:</h2> <p>SSH Provisioning attempts to accomplish two things:</p> 
+     <ol> 
+      <li>Support the provisioning of a remote system (node) so that the user can use that system to host server instances for a cluster.</li> 
+      <li>Support the remote execution of cluster and instance lifecycle asadmin commands on provisioned nodes.</li> 
+     </ol> <p>In simple terms SSH Provisioning attempts to provide some of the capability that was provided by the node agent in GF v2. The provisioning of a system is somewhat analagous to creating a node agent on a system. Once a system is provisioned it can participate in a cluster.</p> <p>In the long term we would like the operation of provisioning a system to include the capability of installing GlassFish on the system. But for 3.1 we will likely require users to install GlassFish on remote systems directly and the provisioning step will simply do some initialization on the system and register the system with the DAS.</p> <p>SSHD is typically standard in current Unix distributions and is widely used for remote administration of systems. There are also popular implementations for Windows such as Cygwin SSHD. Java implementations of the SSH client exist. Hudson uses solution based on Trilead-ssh2. The intention is to leverage the work Hudson has done where possible.</p> <h4><a name="3.1SSHProvisioningOnePager-3.2.Justification%3A"></a>3.2. Justification:</h2> <p>Without this feature clusters are inconvenient to configure and manage. Users<br> would need to create and start server instances directly on the server<br> instance systems – not remotely via the DAS. This feature is needed to support the start-cluster command.</p> <h4><a name="3.1SSHProvisioningOnePager-4.TechnicalDescription%3A"></a>4. Technical Description:</h1> <h4><a name="3.1SSHProvisioningOnePager-4.1.Details%3A"></a>4.1. Details:</h2> <p>Design details are provided in the <a href="3.1SSHProvisioningDesign.html" title="3.1SSHProvisioningDesign">design specification</a>.</p> <p>The general approach is to use SSH as a mechanism to execute local admin commands on remote nodes. So instead of the user logging into the remote node and executing the local command, we let them execute the command via the DAS. Using the target of the command we can determine what node the target is running on and execute the command on the remote system using SSH.</p> <p>This means that all the heavy lifting for these commands is performed by the local version of the command that is run (locally) on the remote system. Since SSH is an optional capability the user must always have the capability of running the remote command against the DAS, and if SSH is not operational subsequently run the local version of the command manually on the remote system.</p> <h4><a name="3.1SSHProvisioningOnePager-4.2.Bug%2FRFENumber%28s%29%3A"></a>4.2. Bug/RFE Number(s):</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Issue </th> 
+         <td class="confluenceTd"> Description </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/12000">12000 </a> </td> 
+         <td class="confluenceTd"> SSHPRO-002: create-node-<b>, delete-node-</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/12001">12001 </a> </td> 
+         <td class="confluenceTd"> SSHPRO-017: list-node-* </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/12002">12002 </a> </td> 
+         <td class="confluenceTd"> SSHPRO-003: create-instance/delete-instance over SSH </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/12003">12003 </a> </td> 
+         <td class="confluenceTd"> SSHPRO-004 start-instance over SSH </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/12004">12004 </a> </td> 
+         <td class="confluenceTd"> SSHPRO-016 Handle upgrade of v2 node agents </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/12006">12006 </a> </td> 
+         <td class="confluenceTd"> SSHPRO-001: client SSH support </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/4372">4372 </a> </td> 
+         <td class="confluenceTd"> Provide a light-weight provisioning system for enterprises </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.1SSHProvisioningOnePager-4.3.InScope%3A"></a>4.3. In Scope:</h2> <p>See RFE's above.</p> <h4><a name="3.1SSHProvisioningOnePager-4.4.OutofScope%3A"></a>4.4. Out of Scope:</h2> 
+     <ol> 
+      <li>Providing an SSH alternative implementation on Windows</li> 
+      <li>Support for watch dog restart of instances (provided by v2 node agent)</li> 
+      <li>Support for remote viewing of failed server instance log files (provided by v2 node agent)</li> 
+      <li>Execution of attrbitrary commands on a remote node via SSH (beyond what a user can do today using SSH independent of GlassFish).</li> 
+      <li>Installation of GlassFish software on a remote node as part of node creation.</li> 
+     </ol> <h4><a name="3.1SSHProvisioningOnePager-4.5.Interfaces%3A"></a>4.5. Interfaces:</h2> <h4><a name="3.1SSHProvisioningOnePager-4.5.1PublicInterfaces"></a>4.5.1 Public Interfaces</h3> <p>List new, public interfaces this project exports.</p> 
+     <ul> 
+      <li>Interface: asadmin commands as defined in the <a href="3.1SSHProvisioningDesign.html" title="3.1SSHProvisioningDesign">design specification</a>.</li> 
+      <li>Comment:</li> 
+     </ul> <h4><a name="3.1SSHProvisioningOnePager-4.5.2PrivateInterfaces"></a>4.5.2 Private Interfaces</h3> 
+     <ul> 
+      <li>Interface: domain.xml syntax for "nodes"</li> 
+      <li>Comment:</li> 
+     </ul> <h4><a name="3.1SSHProvisioningOnePager-4.5.3Deprecated%2FRemovedInterfaces%3A"></a>4.5.3 Deprecated/Removed Interfaces:</h3> <p>None with respect to 3.0</p> <h4><a name="3.1SSHProvisioningOnePager-4.6.DocImpact%3A"></a>4.6. Doc Impact:</h2> <p>asadmin help for new and modified commands</p> <p>asadmin reference manual</p> <p>Any documentation that describes how to configure and manage a cluster</p> <h4><a name="3.1SSHProvisioningOnePager-4.7.Admin%2FConfigImpact%3A"></a>4.7. Admin/Config Impact:</h2> <p>This project has moderate impact to CLI administration and some impact<br> on the admin console. Details in the <a href="3.1SSHProvisioningDesign.html" title="3.1SSHProvisioningDesign">design specification</a>.</p> <h4><a name="3.1SSHProvisioningOnePager-4.8.HAImpact%3A"></a>4.8. HA Impact:</h2> <p>Minor. Makes clusters easier to setup and maintain, otherwise does not impact high availablilty.</p> <h4><a name="3.1SSHProvisioningOnePager-4.9.I18N%2FL10NImpact%3A"></a>4.9. I18N/L10N Impact:</h2> <p>Moderate impact. New error messages will be introduced by additions and enhancements to the CLI.</p> <h4><a name="3.1SSHProvisioningOnePager-4.10.Packaging%2CDelivery%26Upgrade%3A"></a>4.10. Packaging, Delivery &amp; Upgrade:</h2> <h4><a name="3.1SSHProvisioningOnePager-4.10.1.Packaging"></a>4.10.1. Packaging</h3> <p>The final packaging is still being determined. The basic CLI functionality will be in the same package as the basic clustering (glassfish-cluster). We may choose to create a new package (glassfish-ssh) that contains the general SSH support.</p> <h4><a name="3.1SSHProvisioningOnePager-4.10.2.Delivery"></a>4.10.2. Delivery</h3> <p>No impact on installation.</p> <h4><a name="3.1SSHProvisioningOnePager-4.10.3.UpgradeandMigration%3A"></a>4.10.3. Upgrade and Migration:</h3> <p>We will make a best effort to migrate v2 node agents from domain.xml to the new "node" element. Details are in the <a href="3.1SSHProvisioningDesign.html" title="3.1SSHProvisioningDesign">design specification</a>.</p> <h4><a name="3.1SSHProvisioningOnePager-4.11.SecurityImpact%3A"></a>4.11. Security Impact:</h2> <p>The feature does not introduce any new services or ports. It does require that the user configure SSH on the systems that will be participating in a cluster. Authentication to SSH will be done using SSH public key authentication. Details are in the <a href="3.1SSHProvisioningDesign.html" title="3.1SSHProvisioningDesign">design specification</a>.</p> <h4><a name="3.1SSHProvisioningOnePager-4.12.CompatibilityImpact"></a>4.12. Compatibility Impact</h2> <p>This feature does not introduce any incompatibilities relative to 3.0. It does introduce a feature that is similar to, but not completely compatible with the node-agent feature in v2. We make some attempt to ease migration to this feature from node agents, but this feature is not compatible with node-agents. See the upgrade and compatibility sections of the <a href="3.1SSHProvisioningDesign.html" title="3.1SSHProvisioningDesign">design specification</a>.</p> <h4><a name="3.1SSHProvisioningOnePager-4.13.Dependencies%3A"></a>4.13. Dependencies:</h2> <h4><a name="3.1SSHProvisioningOnePager-4.13.1InternalDependencies"></a>4.13.1 Internal Dependencies</h3> 
+     <ol> 
+      <li><a href="V3.1ClusteringInfraOnePager.html" title="V3.1ClusteringInfraOnePager">Cluster Infrastructure</a>. In particular: 
+       <ol> 
+        <li>_create_local_filesystem / _delete_local_filesystem</li> 
+        <li>start-local-instance</li> 
+       </ol> </li> 
+     </ol> <h4><a name="3.1SSHProvisioningOnePager-4.13.2ExternalDependencies"></a>4.13.2 External Dependencies</h3> 
+     <ol> 
+      <li><a href="http://github.com/hudson/trilead-ssh2">Trilead SSH2 client library</a> (BSD License, OSR 11750)</li> 
+      <li>SSH support of the native operating system. On Windows we will need to choose an SSH provider to test with which will likely be Cygwin SSHD.</li> 
+     </ol> <h4><a name="3.1SSHProvisioningOnePager-4.14.TestingImpact%3A"></a>4.14. Testing Impact:</h2> <p>It should be possible to re-use clustering tests from v2, but they will need to be modified to use the new "node" construct instead of node agents.</p> <p>New unit tests may need to be written to validate behavior of new <b><del>node</del></b> commands.</p> <h4><a name="3.1SSHProvisioningOnePager-5.ReferenceDocuments"></a>5. Reference Documents</h1> 
+     <ul> 
+      <li><a href="3.1SSHProvisioningDesign.html" title="3.1SSHProvisioningDesign">SSH Provisioning Design Specification</a></li> 
+      <li><a href="V3.1ClusteringInfraOnePager.html" title="V3.1ClusteringInfraOnePager">Clustering Infrastructure Specification</a></li> 
+      <li><a href="http://docs.sun.com/app/docs/doc/820-4334/gatqf?a=view">2.1 Quick Start Guide</a></li> 
+     </ul> <h4><a name="3.1SSHProvisioningOnePager-6.Schedule%3A"></a>6. Schedule:</h1> <h4><a name="3.1SSHProvisioningOnePager-6.1.ProjectedAvailability%3A"></a>6.1. Projected Availability:</h2> <p>Indicate which milestones from the current schedule the project<br> will be:</p> 
+     <ul> 
+      <li>Initially integrated (may not be feature complete): MS2</li> 
+      <li>Feature complete (ready for handoff to QA): MS3</li> 
+      <li>At production quality level: MS5</li> 
+     </ul> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Aug 28, 2012 by 
+<font color="#0050B2">10193</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : FunctionalSpecsOnePagers</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="FunctionalSpecsOnePagers-FunctionalSpecificationDocumentforSailFin"></a>Functional Specification Document for SailFin</h1> <h4><a name="FunctionalSpecsOnePagers-NewFunctionalityinSailFin"></a>New Functionality in SailFin</h2> <p>The Functional Specification document is meant for consumption by Architecture Review Committee, Documentation teams, QE/QA, SEs and other developers who may need to understand the high level workings and interfaces.</p> <p>Please use <a href="http://download.java.net/glassfish/wiki-archive/attachments/21856258/21987354.pdf">this\</a> template for authoring the functional specification and <a href="http://download.java.net/glassfish/wiki-archive/attachments/21856258/21987347.pdf">this\</a> for providing review comments.</p> <p>Please refer to author guidelines or reviewer guidelines below for more information.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Document </th> 
+         <th class="confluenceTh"> Authors </th> 
+         <th class="confluenceTh"> Reviewer </th> 
+         <th class="confluenceTh"> Status </th> 
+         <th class="confluenceTh"> Testing Owner </th> 
+         <th class="confluenceTh"> Test Spec </th> 
+         <th class="confluenceTh"> Test Spec Status </th> 
+         <th class="confluenceTh"> No. of Unit Tests </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/21856258/21987360.pdf">Umbrella Functional Specification</a> </td> 
+         <td class="confluenceTd"> Binod, Sreeram </td> 
+         <td class="confluenceTd"> Kristoffer <a href="Umbrella_asarch.html" title="Umbrella_asarch">asarch_APs </a> </td> 
+         <td class="confluenceTd"> Review Completed </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/21856258/21987350.pdf" title="|">Converged Load Balancer </a> </td> 
+         <td class="confluenceTd"> Pankaj Jairath, Joel Binnquist </td> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/21856258/21987335.pdf" title="\||">Binod </a> </td> 
+         <td class="confluenceTd"> Review Completed </td> 
+         <td class="confluenceTd"> Sony Manuel, Andreas Nyberg(SIP) </td> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/21856258/21987339.pdf" title="\||">Test Specification </a> </td> 
+         <td class="confluenceTd"> 1st draft </td> 
+         <td class="confluenceTd"> 36 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Tools </td> 
+         <td class="confluenceTd"> Ajay Acharya </td> 
+         <td class="confluenceTd"> Vince Kraemer </td> 
+         <td class="confluenceTd"> Review Completed </td> 
+         <td class="confluenceTd"> Elena Asarina </td> 
+         <td class="confluenceTd"> <a href="ToolingForNetBeansTestSpec.html" title="ToolingForNetBeansTestSpec">Test Spec </a> </td> 
+         <td class="confluenceTd"> 1st draft </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://wiki.glassfish.java.net/PageInfo.jsp?page=FunctionalSpecsOnePagers/sailfin_admin.doc">Admin GUI/CLI </a> </td> 
+         <td class="confluenceTd"> Yamini/Kedar/Eltjo/Irfan/vijay </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Review Completed </td> 
+         <td class="confluenceTd"> Sankar Periyathambi(CLI), Sujatha Chintalapati(GUI) </td> 
+         <td class="confluenceTd"> [ Admin CLI Test Spec </td> 
+         <td class="confluenceTd"> ^AdminCLI_Test_Specification.htm], <a href="http://download.java.net/glassfish/wiki-archive/attachments/21856258/21987331.pdf" title="\||">Admin GUI Test Spec </a>, [ Monitoring &amp; CallFlow Test Spec </td> 
+         <td class="confluenceTd"> ^SailFin_Monitoring_Test_Specification.html] </td> 
+         <td class="confluenceTd"> 1st draft </td> 
+         <td class="confluenceTd"> 8 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/21856258/21987362.pdf" title="\||">Deployment SPI </a> </td> 
+         <td class="confluenceTd"> Prasad </td> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/21856258/21987342.pdf" title="\||">June Parks </a> <a href="http://download.java.net/glassfish/wiki-archive/attachments/21856258/21987348.pdf" title="\||">Binod </a> </td> 
+         <td class="confluenceTd"> Under Review </td> 
+         <td class="confluenceTd"> Jothir Ganesan </td> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/21856258/21987336.pdf" title="\||">Deployment Test Spec </a> </td> 
+         <td class="confluenceTd"> 1st draft </td> 
+         <td class="confluenceTd"> 12 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/21856258/21987337.pdf" title="\||">Session Replication </a> <a href="http://download.java.net/glassfish/wiki-archive/attachments/21856258/21987338.pdf" title="\||">Geek notes </a> <a href="http://wiki.glassfish.java.net/PageInfo.jsp?page=FunctionalSpecsOnePagers/spi-javadocs.jar">SPI javadocs </a> </td> 
+         <td class="confluenceTd"> Erik/Jan/Larry/Joel Binnquist </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Andrzej Lisowski, Varun Rupela </td> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/21856258/21987332.pdf" title="\||">Test Spec 1st Draft </a> </td> 
+         <td class="confluenceTd"> 1st Draft </td> 
+         <td class="confluenceTd"> No response so far </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/21856258/21987340.pdf" title="\||">ConvergedHTTP </a> </td> 
+         <td class="confluenceTd"> Jan Luehe </td> 
+         <td class="confluenceTd"> Binod, Kristoffer </td> 
+         <td class="confluenceTd"> Review Completed </td> 
+         <td class="confluenceTd"> Sony Manuel, Sudhir Prabhu, Jagadesh Munta </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Draft by Oct 1st week </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/21856258/21987333.pdf" title="\||">Security </a> </td> 
+         <td class="confluenceTd"> Venu/Ron </td> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/21856258/21987345.pdf" title="\||">June Parks </a><a href="Security_arch_review_comments.html" title="Security_arch_review_comments">arch_review </a> <a href="http://download.java.net/glassfish/wiki-archive/attachments/21856258/21987334.pdf" title="\||">Binod </a> </td> 
+         <td class="confluenceTd"> Review Completed </td> 
+         <td class="confluenceTd"> Jagadesh Munta </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Draft by Oct 1st week </td> 
+         <td class="confluenceTd"> 5 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/21856258/21987349.pdf" title="\||">ConvergedLBProxy </a> </td> 
+         <td class="confluenceTd"> Ramesh Parthasarathy </td> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/21856258/21987357.pdf" title="\||">Prasad </a> </td> 
+         <td class="confluenceTd"> Review Completed </td> 
+         <td class="confluenceTd"> Sony Manuel </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Draft by Oct 1st week </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/21856258/21987344.pdf" title="\||">Installer </a> </td> 
+         <td class="confluenceTd"> Naman Mehta </td> 
+         <td class="confluenceTd"> <a href="http://wiki.glassfish.java.net/attach/FunctionalSpecsOnePagers/SailFin_Test_Spec_Installer_Review_Sankar.eml">Naman </a> <a href="http://wiki.glassfish.java.net/PageInfo.jsp?page=FunctionalSpecsOnePagers/SailFin_Test_Spec_Installer_Review_Sankar.eml">Sankar </a> </td> 
+         <td class="confluenceTd"> Review Completed </td> 
+         <td class="confluenceTd"> Nolan Luu </td> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/21856258/21987330.pdf" title="||\||">Installer Test Spec </a> </td> 
+         <td class="confluenceTd"> 3rd draft </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JSR289 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Jens Tinfors </td> 
+         <td class="confluenceTd"> [ JSR289 Test spec </td> 
+         <td class="confluenceTd"> ^SailFin_Test_Spec_SSA1.1.odt.pdf] </td> 
+         <td class="confluenceTd"> 1st draft </td> 
+         <td class="confluenceTd"> 302 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Load Regulation </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Andreas Nyberg </td> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/21856258/21987352.pdf" title="|\||">Test Specification </a> </td> 
+         <td class="confluenceTd"> 1st draft </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/21856258/21987353.pdf" title="|\||">Container Integration </a> </td> 
+         <td class="confluenceTd"> Eltjo/Peter </td> 
+         <td class="confluenceTd"> Binod, Yamini </td> 
+         <td class="confluenceTd"> Under Review </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/21856258/21987351.pdf" title="|\||">Integration with SAF </a> </td> 
+         <td class="confluenceTd"> Nandini/Hong </td> 
+         <td class="confluenceTd"> Binod, asarch </td> 
+         <td class="confluenceTd"> Review Completed </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/21856258/21987359.pdf" title="|\||">Application Router </a> </td> 
+         <td class="confluenceTd"> Yvo Bogers </td> 
+         <td class="confluenceTd"> Binod, Prasad </td> 
+         <td class="confluenceTd"> Review Completed (Except for the EG prposal) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> TLS SIPS </td> 
+         <td class="confluenceTd"> Kristoffer Gronowski </td> 
+         <td class="confluenceTd"> Binod, Prasad </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Jens Tinfors </td> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/21856258/21987329.pdf" title="|\||">Test Specification </a> </td> 
+         <td class="confluenceTd"> Under Review </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/21856258/21987361.pdf" title="|\||">Number Normalization and URI Canonicalization </a> </td> 
+         <td class="confluenceTd"> Joel Binnquist </td> 
+         <td class="confluenceTd"> Binod, Sreeram, Johan, Lars </td> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/21856258/21987356.pdf" title="|\||">Review completed </a> </td> 
+         <td class="confluenceTd"> TBD </td> 
+         <td class="confluenceTd"> TBD </td> 
+         <td class="confluenceTd"> TBD </td> 
+         <td class="confluenceTd"> 70 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>-------------<br> <b>Guidelines for Authors:</b></p> 
+     <ul> 
+      <li>The Functional Specification document is meant for consumption by ARCs, Docs, QE/QA, SEs and other developers who may need to understand the high level workings and interfaces. Please use the standard templates given below 
+       <ul> 
+        <li><a href="http://download.java.net/glassfish/wiki-archive/attachments/21856258/21987354.pdf">FunctionalSpecs\</a></li> 
+       </ul> </li> 
+      <li>When the document is ready for review: 
+       <ul> 
+        <li>Send a mail to selected reviewers and dev@sailfin.java.net thread soliciting feedback/comments on the new feature by providing a link to the relevant FS document here. For changes in GlassFish modules, if the module owner is different from the author of the functional specs, the module owner should be included as a mandatory reviewer. List of GlassFish module owners is available in this <a href="http://wiki.java.net/bin/view/Projects/GlassFishModuleOwners">page</a>.</li> 
+        <li>The subject of the thread should say something about the new feature.</li> 
+        <li>Change the status to <em>Under Review</em>.</li> 
+       </ul> </li> 
+      <li>The entire review process should be completed within 2 weeks period from the time it is started.</li> 
+      <li>At the end of this period: 
+       <ul> 
+        <li>Announce to the identified reviewers and dev@sailfin.java.net thread that the review period is over and update the FS document with all relevant feedback/comments received during this period.</li> 
+        <li>Incorporate any feedback that is useful and relevant for this release into the FS document and update it on this page.</li> 
+        <li>Change the status to <em>Review Completed</em></li> 
+       </ul> </li> 
+     </ul> <p><b>Guidelines for Reviewers:</b></p> 
+     <ul> 
+      <li>Please use standard template for providing review feedback. 
+       <ul> 
+        <li><a href="http://download.java.net/glassfish/wiki-archive/attachments/21856258/21987347.pdf">ReviewTemplate\</a></li> 
+       </ul> </li> 
+      <li>Please update this template with your comments and add a link to your reviews in the Reviewer column. Instructions on how to update this page is provided in the review template.</li> 
+      <li>Notify the author that the review comments are available.</li> 
+      <li>During this period, author is expected to respond to feedback/comments posted by others on the forum.</li> 
+      <li>At the end of this period the author will update the one pager with all relevant feedback/comments received during this period.</li> 
+      <li>Any feedback/comments received after this period will not be considered for this release.</li> 
+     </ul> 
+     <hr> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/21856258/21987329.pdf">TS23_SIPS_TLS.odt.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/21856258/21987330.pdf">SailFin_Test_Spec_Installer.odt.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/21856258/21987331.pdf">SailFin_Admingui_Test_Specification.odt.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/21856258/21987332.pdf">SailFin_Test_Spec_Session_Replication_0.21.odt.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/21856258/21987333.pdf">sailfin_fsd_security.odt.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/21856258/21987334.pdf">security_review_binod.odt.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/21856258/21987335.pdf">clb_review_binod.odt.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/21856258/21987336.pdf">sailfin-deployment-test-spec.odt.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/21856258/21987337.pdf">FSD-SSR-2.3.odt.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/21856258/21987338.pdf">SAD-SSR-2.2.odt.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/21856258/21987339.pdf">TestSpec_CLB.odt.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/21856258/21987340.pdf">ConvergedHttpSession_FunctionalSpec.doc.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/21856258/21987341.pdf">Deployment_jparks.doc.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/21856258/21987342.pdf">Deployment_jparks2.doc.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/21856258/21987343.pdf">NumberNormalization-FSD.doc.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/21856258/21987344.pdf">PackagerInstaller_FunctionalSpec.doc.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/21856258/21987345.pdf">Security_jparks.doc.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/21856258/21987347.pdf">fs_review_template.doc.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/21856258/21987348.pdf">deployment_review_binod.doc.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/21856258/21987349.pdf">lb_proxy_fsd.doc.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/21856258/21987350.pdf">ConvergedLB-FSD.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/21856258/21987351.pdf">SAF-AMF-One-Pager.html.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/21856258/21987352.pdf">TestSpec_LoadRegulation.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/21856258/21987353.pdf">sailfin_fsd_integration.doc.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/21856258/21987354.pdf">sailfin_fsd_template.doc.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/21856258/21987355.pdf">sailfin_admin.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/21856258/21987356.pdf">Review-record-NumberNormalization-FSD.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/21856258/21987357.pdf">proxy_fs_review_prasad.doc.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/21856258/21987358.pdf">clb_review_binod.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/21856258/21987359.pdf">FSD_AR_v0_6.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/21856258/21987360.pdf">sailfin_umbrella.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/21856258/21987361.pdf">NumberNormalization-FSD.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/21856258/21987362.pdf">sailfin_fsd_deployment.doc.pdf</a> (application/pdf) 
+      <br> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Dec 12, 2011 by 
+<font color="#0050B2">10006</font>. Exported from wikis.oracle.com on May 27, 2015 20:49.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

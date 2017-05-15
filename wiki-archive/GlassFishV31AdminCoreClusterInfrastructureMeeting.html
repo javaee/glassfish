@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFishV31AdminCoreClusterInfrastructureMeeting</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GlassFishV31AdminCoreClusterInfrastructureMeeting-GlassFish3.1CoreClusteringInfrastructureMeeting"></a>GlassFish 3.1 Core Clustering Infrastructure Meeting</h1> <h4><a name="GlassFishV31AdminCoreClusterInfrastructureMeeting-NOTE%3AThismeetingisnolongerbeingheld."></a>NOTE: This meeting is no longer being held.</h2> <p>The detailed work of implementing the core clustering infrastructure for GlassFish 3.1 has been completed. &nbsp;Issues related to this are discussed in the <a href="AdminIteam.html" title="AdminIteam">Admin Iteam</a> meeting now.&nbsp;</p> <h4><a name="GlassFishV31AdminCoreClusterInfrastructureMeeting-MeetingDetails%3A"></a>Meeting Details:</h2> <p>Tuesdays 1PM Pacific<br> Room: Mr. Toad's Wild Ride, SCA 14, 3rd floor, 3580<br> (866)682-4770 (US Toll-Free)<br> (408)774-4073 (International-Caller Paid)<br> Conference Code: 1485398#<br> Security Code: 4321#<br> Online meeting: see calendar appointment<br> Email alias: admin@glassfish.java.net</p> <h4><a name="GlassFishV31AdminCoreClusterInfrastructureMeeting-Purpose"></a>Purpose</h2> <h4><a name="GlassFishV31AdminCoreClusterInfrastructureMeeting-Purposeofthismeeting%3A"></a>Purpose of this meeting:</h3> 
+     <ul> 
+      <li>Coordinate technical progress on four subprojects related to clustering admin infrastructure in 3.1: 
+       <ul> 
+        <li><a href="V3.1ClusteringInfraOnePager.html" title="V3.1ClusteringInfraOnePager">One pager</a></li> 
+        <li><a href="V3.1Clustering.html" title="V3.1Clustering">Clustering Design Spec</a> 
+         <ul> 
+          <li><a href="3.1BasicClustering.html" title="3.1BasicClustering">Basic Clustering</a></li> 
+          <li><a href="3.1Config.html" title="3.1Config">Config</a></li> 
+          <li><a href="3.1Synchronization.html" title="3.1Synchronization">Synchronization</a></li> 
+          <li><a href="ClusterDynamicReconfig.html" title="ClusterDynamicReconfig">Dynamic Reconfiguration</a></li> 
+         </ul> </li> 
+       </ul> </li> 
+     </ul> <h4><a name="GlassFishV31AdminCoreClusterInfrastructureMeeting-Agenda%3AAugust10%2C2010%3A"></a>Agenda: August 10, 2010:</h2> 
+     <ul> 
+      <li>multi-address servers and clustering 
+       <ul> 
+        <li>Should Server.getHost access admin-listener.address before looking at node? &nbsp;Should it be named getAdminHost?</li> 
+        <li>How should das.properties host get set? &nbsp;issue 12941</li> 
+       </ul> </li> 
+      <li>generate-sync-bundle options for downloading file (compare to export-http-lb-config)</li> 
+      <li>Upgrade implementation status</li> 
+      <li>Last meeting? &nbsp;(move content to 3pm meeting)</li> 
+     </ul> <h4><a name="GlassFishV31AdminCoreClusterInfrastructureMeeting-ReferenceLinks"></a><b>Reference Links</b></h2> 
+     <ul> 
+      <li>MS4 deliverables (<a href="GF3.1MS4.html" title="GF3.1MS4">milestone table</a> , <a href="https://glassfish.java.net/issues/buglist.cgi?Submitquery=Submitquery&amp;issue_type=ENHANCEMENT&amp;issue_type=FEATURE&amp;issue_type=DEFECT&amp;component=glassfish&amp;subcomponent=admin&amp;issue_status=UNCONFIRMED&amp;issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED&amp;issue_status=RESOLVED&amp;issue_status=VERIFIED&amp;issue_status=CLOSED&amp;target_milestone=3.1_ms04&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=fulltext&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=&amp;cmdtype=doit&amp;newqueryname=&amp;order=Reusesamesortaslasttime">issue query</a>)</li> 
+     </ul> <h4><a name="GlassFishV31AdminCoreClusterInfrastructureMeeting-Futuremeetingtopics"></a>Future meeting topics</h2> 
+     <ul> 
+      <li>&nbsp;</li> 
+     </ul> <h4><a name="GlassFishV31AdminCoreClusterInfrastructureMeeting-ActionItems"></a>Action Items</h2> <h4><a name="GlassFishV31AdminCoreClusterInfrastructureMeeting-MeetingMinutes"></a>Meeting Minutes</h2> <p>To see the minutes from previous meetings, click on the Info link at the bottom of the page and select the appropriate version of this document. </p> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875258/21365446.pdf">CreateInstance.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875258/21365450.pdf">CreateInstance.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875258/21364936.pdf">CreateInstance.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875258/21365327.pdf">AdminSecurity-ClusterInfraMeeting-2010-jul-13.pdf</a> (application/pdf) 
+      <br> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Aug 10, 2010 by 
+<font color="#0050B2">trmueller</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

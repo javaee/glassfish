@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : Javaintegration_glassfish_1Ja</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="Javaintegration_glassfish_1Ja-Rails%E3%81%A8JavaEE%E3%81%AE%E9%80%A3%E6%90%BARails%E3%81%8B%E3%82%89%E3%82%B5%E3%83%BC%E3%83%96%E3%83%AC%E3%83%83%E3%83%88%E3%82%92%E5%91%BC%E3%81%B3%E5%87%BA%E3%81%99"></a>Rails と Java EE の連携 - Rails からサーブレットを呼び出す</h1> <p>Posted by arungupta on April 04, 2008 at 08:04 AM</p> <p><a href="http://glassfish.java.net">GlassFish</a> に Rails アプリケーションを配備する<a href="http://developers.sun.com/appserver/reference/techart/rails_gf/#advantages">利点</a>の一つは、 <a href="http://rubyonrails.org">Rails</a>と Java EE アプリケーションを同一のコンテナ上で連携させられるということでしょう。<br> <a href="http://blogs.oracle.com/arungupta/entry/screencast_web_9_jruby_on">スクリーンキャスト#web9</a>は、 GlassFish への Rails アプリケーションの配備がいかに容易に行えるかをご紹介しています。</p> <p>このブログでは、JRuby-on-Rails (jRoR) と Java EE の融合について、少し踏み込んで考えてみたいと思います。<br> jRoRアプリケーション上でJava EE のサーブレットを呼び出す方法について触れ、RailsのViewからとても簡単にサーブレットを呼び出せることを示します。</p> <p>なお、GlassFishへのjRoRアプリケーションの配備には <a href="http://developers.sun.com/appserver/reference/techart/rails_gf/#deploying">WAR ベースモード</a> を利用します。</p> <p>くわしい手順はこちら：</p> <p>1. インストール済みの <a href="http://dist.codehaus.org/jruby/">JRuby1.1 RC3</a> （ Rails を含む）に、必要な gem をインストール:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">~/testbed/jruby-1.1RC3&gt;bin/jruby -S gem install activerecord-jdbc-adapter
+
+JRuby limited openssl loaded. gem install jruby-openssl for full support.
+http://wiki.jruby.org/wiki/JRuby_Builtin_OpenSSL
+Successfully installed activerecord-jdbc-adapter-0.8
+1 gem installed
+Installing ri documentation for activerecord-jdbc-adapter-0.8...
+Installing RDoc documentation for activerecord-jdbc-adapter-0.8...</pre> 
+       </div> 
+      </div>
+     </div> <p>2. Rails アプリケーションを作成:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">~/testbed/jruby-1.1RC3/samples/rails&gt;../../bin/jruby -S rails railsee1
+create  
+create  app/controllers
+create  app/helpers
+create  app/models
+create  app/views/layouts
+create  config/environments
+create  config/initializers
+create  db
+create  doc
+create  lib
+create  lib/tasks
+create  log
+create  public/images
+create  public/javascripts
+create  public/stylesheets
+create  script/performance
+create  script/process
+create  test/fixtures
+create  test/functional
+create  test/integration
+create  test/mocks/development
+create  test/mocks/test
+create  test/unit
+create  vendor
+create  vendor/plugins
+create  tmp/sessions
+create  tmp/sockets
+create  tmp/cache
+create  tmp/pids
+create  Rakefile
+create  README
+create  app/controllers/application.rb
+create  app/helpers/application_helper.rb
+create  test/test_helper.rb
+create  config/database.yml
+create  config/routes.rb
+create  public/.htaccess
+create  config/initializers/inflections.rb
+create  config/initializers/mime_types.rb
+create  config/boot.rb
+create  config/environment.rb
+create  config/environments/production.rb
+create  config/environments/development.rb
+create  config/environments/test.rb
+create  script/about
+create  script/console
+create  script/destroy
+create  script/generate
+create  script/performance/benchmarker
+create  script/performance/profiler
+create  script/performance/request
+create  script/process/reaper
+create  script/process/spawner
+create  script/process/inspector
+create  script/runner
+create  script/server
+create  script/plugin
+create  public/dispatch.rb
+create  public/dispatch.cgi
+create  public/dispatch.fcgi
+create  public/404.html
+create  public/422.html
+create  public/500.html
+create  public/index.html
+create  public/favicon.ico
+create  public/robots.txt
+create  public/images/rails.png
+create  public/javascripts/prototype.js
+create  public/javascripts/effects.js
+create  public/javascripts/dragdrop.js
+create  public/javascripts/controls.js
+create  public/javascripts/application.js
+create  doc/README_FOR_APP
+create  log/server.log
+create  log/production.log
+create  log/development.log
+create  log/test.log</pre> 
+       </div> 
+      </div>
+     </div> <p>3. アプリケーションに Goldspike プラグインをインストール:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">~/testbed/jruby-1.1RC3/samples/rails/railsee1&gt;../../../bin/jruby script/plugin install 
+　　svn://rubyforge.org/var/svn/jruby-extras/trunk/rails-integration/plugins/goldspike
+A/Users/arungupta/testbed/jruby-1.1RC3/samples/rails/railsee1/vendor/plugins/goldspike
+A/Users/arungupta/testbed/jruby-1.1RC3/samples/rails/railsee1/vendor/plugins/goldspike/test
+A/Users/arungupta/testbed/jruby-1.1RC3/samples/rails/railsee1/vendor/plugins/goldspike/test/war_config_test_config.rb
+A/Users/arungupta/testbed/jruby-1.1RC3/samples/rails/railsee1/vendor/plugins/goldspike/test/test_java_library.rb
+A/Users/arungupta/testbed/jruby-1.1RC3/samples/rails/railsee1/vendor/plugins/goldspike/test/test_maven_library.rb
+A/Users/arungupta/testbed/jruby-1.1RC3/samples/rails/railsee1/vendor/plugins/goldspike/test/test_create_war.rb
+A/Users/arungupta/testbed/jruby-1.1RC3/samples/rails/railsee1/vendor/plugins/goldspike/Rakefile
+A/Users/arungupta/testbed/jruby-1.1RC3/samples/rails/railsee1/vendor/plugins/goldspike/init.rb
+A/Users/arungupta/testbed/jruby-1.1RC3/samples/rails/railsee1/vendor/plugins/goldspike/tasks
+A/Users/arungupta/testbed/jruby-1.1RC3/samples/rails/railsee1/vendor/plugins/goldspike/tasks/war.rake
+A/Users/arungupta/testbed/jruby-1.1RC3/samples/rails/railsee1/vendor/plugins/goldspike/lib
+A/Users/arungupta/testbed/jruby-1.1RC3/samples/rails/railsee1/vendor/plugins/goldspike/lib/util.rb
+A/Users/arungupta/testbed/jruby-1.1RC3/samples/rails/railsee1/vendor/plugins/goldspike/lib/war_config.rb
+A/Users/arungupta/testbed/jruby-1.1RC3/samples/rails/railsee1/vendor/plugins/goldspike/lib/run.rb
+A/Users/arungupta/testbed/jruby-1.1RC3/samples/rails/railsee1/vendor/plugins/goldspike/lib/java_library.rb
+A/Users/arungupta/testbed/jruby-1.1RC3/samples/rails/railsee1/vendor/plugins/goldspike/lib/packer.rb
+A/Users/arungupta/testbed/jruby-1.1RC3/samples/rails/railsee1/vendor/plugins/goldspike/lib/create_war.rb
+A/Users/arungupta/testbed/jruby-1.1RC3/samples/rails/railsee1/vendor/plugins/goldspike/install.rb
+A/Users/arungupta/testbed/jruby-1.1RC3/samples/rails/railsee1/vendor/plugins/goldspike/generators
+A/Users/arungupta/testbed/jruby-1.1RC3/samples/rails/railsee1/vendor/plugins/goldspike/generators/goldspike
+A/Users/arungupta/testbed/jruby-1.1RC3/samples/rails/railsee1/vendor/plugins/goldspike/generators/goldspike/goldspike_generator.rb
+A/Users/arungupta/testbed/jruby-1.1RC3/samples/rails/railsee1/vendor/plugins/goldspike/generators/goldspike/templates
+A/Users/arungupta/testbed/jruby-1.1RC3/samples/rails/railsee1/vendor/plugins/goldspike/generators/goldspike/templates/web.xml.erb
+A/Users/arungupta/testbed/jruby-1.1RC3/samples/rails/railsee1/vendor/plugins/goldspike/generators/goldspike/templates/war.rb
+A/Users/arungupta/testbed/jruby-1.1RC3/samples/rails/railsee1/vendor/plugins/goldspike/README
+Exported revision 960.
+ existsconfig
+ createconfig/war.rb
+ createWEB-INF
+ createWEB-INF/web.xml.erb</pre> 
+       </div> 
+      </div>
+     </div> <p>パッケージングに <a href="http://blog.nicksieger.com/articles/2007/09/04/warbler-a-little-birdie-to-introduce-your-rails-app-to-java">Warbler</a> を使用し、GoldSpike を使ってディスパッチを行う方法もあります。</p> <p>4. サーブレットのコードを含む Java のライブラリを作成：</p> 
+     <ul> 
+      <li>1) NetBeans IDE を使って、"HelloServlet" という名前の "Javaクラスライブラリ" プロジェクトを作成してください。</li> 
+     </ul> 
+     <ul> 
+      <li>2) プロジェクトを右クリックして "新規" ⇒ "サーブレット..." をクリックします。クラス名に "HelloServlet" 、パッケージ名には "server" と入力してください（下図参照）</li> 
+     </ul> <p><span class="error">Cannot resolve external resource into attachment.</span></p> 
+     <ul> 
+      <li>3) プロジェクトを右クリックして "プロパティー" をクリックし、"カテゴリ" で "ライブラリ" を選択します。続いて "コンパイル" タブをクリックし、<a href="https://glassfish.java.net/downloads/v2ur1-b09d.html">GlassFish v2 UR1 </a> の "lib"ディレクトリ内にある "javaee.jar"を追加してください。</li> 
+     </ul> 
+     <ul> 
+      <li>4) さらに、 "processRequest" メソッド内の "try" ブロックを以下のように書き換えましょう：</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">String name = request.getParameter("name");
+if (name == null || name.equals(""))
+  name = "Duke";
+out.println("&lt;h1&gt;Servlet HelloServlet at " + request.getContextPath () + " says Hello " + name + "!&lt;/h1&gt;");</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>5) プロジェクトを右クリックし、 "生成物を削除して構築" をクリック</li> 
+     </ul> <p>5. Railsアプリをサーブレット用に設定</p> 
+     <ul> 
+      <li>1) Rails アプリケーションのディレクトリにある "WEB-INF/web.xml.erb" に以下の設定を追加します：</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;servlet&gt;
+      &lt;servlet-name&gt;hello&lt;/servlet-name&gt;
+      &lt;servlet-class&gt;server.HelloServlet&lt;/servlet-class&gt;
+&lt;/servlet&gt;</pre> 
+       </div> 
+      </div>
+     </div> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;hello&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;/hello&lt;/url-pattern&gt;
+&lt;/servlet-mapping&gt;</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>2) "WEB-INF/lib" ディレクトリを作成し、NetBeans プロジェクトの "dist" ディレクトリから "HelloServlet.jar" をコピー。</li> 
+     </ul> <p>6. WARファイルの作成と配備</p> 
+     <ul> 
+      <li>1) 以下のようにしてWARファイルを作成してください：</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">~/testbed/jruby-1.1RC3/samples/rails/railsee1＞../../../bin/jruby -S rake war:standalone:create
+(in /Users/arungupta/testbed/jruby-1.1RC3/samples/rails/railsee1)
+info: Assembling web application
+info: Packing needed Java libraries ...
+info: adding Java library jruby-complete-1.1RC3
+info: adding Java library goldspike-1.6
+info: adding Java library activation-1.1
+info: adding Java library commons-pool-1.3
+info: adding Java library bcprov-jdk14-124
+info: Packing needed Ruby gems ...
+info: adding Ruby gem rails version 2.0.2
+info: adding Ruby gem rake version 0.8.1
+info: adding Ruby gem activesupport version 2.0.2
+info: adding Ruby gem activerecord version 2.0.2
+info: adding Ruby gem actionpack version 2.0.2
+info: adding Ruby gem actionmailer version 2.0.2
+info: adding Ruby gem activeresource version 2.0.2
+info: adding Ruby gem activerecord-jdbc-adapter
+version 0.8
+info: Packing needed files ...
+info: Creating web archive</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>2) WAR ファイルを <a href="https://glassfish.java.net/downloads/v2ur1-b09d.html">GlassFish v2 UR1 </a> に配備：</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">~/testbed/jruby-1.1RC3/samples/rails/railsee1 ＞~/testbed/glassfish/v2ur1/glassfish/bin/asadmin deploy railsee1.war
+Command deploy executed successfully.</pre> 
+       </div> 
+      </div>
+     </div> <p>7. これで、"http://localhost:8080/railsee1/hello" というURLにてサーブレットにアクセスすることができます。<br> デフォルトの状態ではブラウザに次のように表示されます：</p> <p><span class="error">Cannot resolve external resource into attachment.</span></p> <p>ちなみに、 "http://localhost:8080/railsee1/hello?name=Arun" のように URL にパラメータを指定すると次のように表示されます：</p> <p><span class="error">Cannot resolve external resource into attachment.</span></p> <p>さて、これで GlassFish v2 UR1 上の Rails アプリケーションに Java EE のサーブレットが追加されました。<br> 今度はRailsアプリケーションにコントローラとビューを追加して、そこからサーブレットを呼び出してみましょう。</p> <p>まさに Rails と Java EE の完全なる統合です。</p> <p>8. 以下のように新規コントローラとビューを作成します：</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">~/testbed/jruby-1.1RC3/samples/rails/railsee1&gt;
+../../../bin/jrubyscript/generate controller home index
+JRuby limited openssl loaded. gem install jruby-openssl for full support.
+http://wiki.jruby.org/wiki/JRuby_Builtin_OpenSSL
+ existsapp/controllers/
+ existsapp/helpers/
+ createapp/views/home
+ existstest/functional/
+ createapp/controllers/home_controller.rb
+ createtest/functional/home_controller_test.rb
+ createapp/helpers/home_helper.rb
+ createapp/views/home/index.html.erb</pre> 
+       </div> 
+      </div>
+     </div> <p>9. 作成されたコントローラ（ "app/controllers/home_controller.rb" ）を次のように変更：</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">class HomeController &lt; ApplicationController
+
+include Java
+
+  def index
+        url = java.net.URL.new("http://localhost:8080/railsee1/hello");
+        conn = url.open_connection;
+        reader = java.io.BufferedReader.new(java.io.InputStreamReader.new(conn.get_input_stream));
+        @servlet_output = "";
+        input_line = reader.read_line;
+        while input_line != nil
+                @servlet_output &lt;&lt; input_line;
+                input_line = reader.read_line;
+        end
+        reader.close;
+  end
+end</pre> 
+       </div> 
+      </div>
+     </div> <p>10. 作成されたビュー（ "app/views/home/index.rhtml.erb" ）を次のように変更：</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;h1&gt;Home#index&lt;/h1&gt;
+&lt;p&gt;Find me in app/views/home/index.html.erb&lt;/p&gt;
+&lt;%= @servlet_output %&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>11. 上記 # 6 の手順に従って WAR ファイルを再作成 &amp; 再配備。<br> "http://localhost:8080/railsee1/home/index" にアクセスすると、以下のような画面が表示されます：</p> <p><span class="error">Cannot resolve external resource into attachment.</span></p> <p>以上、 GlassFish 上に配備した Rails アプリケーション から Java EE 5 サーブレットを呼び出す手順をご紹介しました。<br> JRuby-on-Rails と GlassFish により、Rails アプリケーションの開発効率を活かしつつ Java EE アプリケーションに蓄積されたビジネス・ナレッジを活用することが可能となります。</p> 
+     <hr> <p>日本語翻訳: <a href="http://apercu-j.blogspot.com/">Kana</a></p> <p><a href="http://weblogs.java.net/blog/arungupta/archive/2008/04/rails_and_java.html">原文</a></p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 08, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

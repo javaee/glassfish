@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : AddingModule</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="AddingModule-AddingaModuletoGlassFishV3"></a>Adding a Module to GlassFish V3</h1> <p>Addding a module to GlassFish is pretty easy, first you create the module and have it published in the maven repository, then you add entries in the distribution pom.xml to package it in the distribution.</p> <h4><a name="AddingModule-ModuleCreation"></a>Module Creation</h2> <p>When creating a module, you either already have the source files (coming from v2 codebase most likely) or you create new sources alltogeher. The latter is a lot more simple to handle. </p> <h4><a name="AddingModule-Case1%3AIdon%27thavethesources"></a>Case 1 : I don't have the sources</h1> <p>Create a new directory under glassfish or create a new java.net project if you think your artifact can be reused independently of GlassFish. In this directory, create a src/java directory and place your sources there. There is in fact documentation on the maven web site that describe how projects should be organized. You can also look at the hk2.java.net for examples. </p> <p>Once you have your sources you need to create a pom.xml to compile everything. The simplest pom.xml can be found in appserv-api/pom.xml</p> <p>This pom file insures that the maven plugins for v3 are invoked when compiling, declares it's dependency on the hk2 APIs and produces a full module with the right manifest entries.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+
+&lt;project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"&gt;
+
+
+    &lt;parent&gt;
+        &lt;artifactId&gt;bootstrap&lt;/artifactId&gt;
+        &lt;groupId&gt;com.sun.enterprise.glassfish&lt;/groupId&gt;
+        &lt;version&gt;10.0-SNAPSHOT&lt;/version&gt;
+    &lt;/parent&gt;    
+    &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+    &lt;groupId&gt;org.jvnet.glassfish&lt;/groupId&gt;
+    &lt;artifactId&gt;glassfish-api&lt;/artifactId&gt;
+    &lt;packaging&gt;hk2-jar&lt;/packaging&gt;
+    &lt;version&gt;${project.parent.version}&lt;/version&gt;
+    &lt;name&gt;Public APIs of Glassfish V3&lt;/name&gt;
+
+    &lt;build&gt;
+        &lt;sourceDirectory&gt;src/java&lt;/sourceDirectory&gt;
+		&lt;plugins&gt;
+        &lt;plugin&gt;
+            &lt;groupId&gt;com.sun.enterprise&lt;/groupId&gt;
+            &lt;artifactId&gt;hk2-maven-plugin&lt;/artifactId&gt;
+        &lt;/plugin&gt;
+	&lt;/plugins&gt;
+	&lt;/build&gt;
+    &lt;dependencies&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;com.sun.enterprise&lt;/groupId&gt;
+            &lt;artifactId&gt;hk2&lt;/artifactId&gt;
+            &lt;version&gt;${hk2.version}&lt;/version&gt;
+        &lt;/dependency&gt;
+    &lt;/dependencies&gt;
+&lt;/project&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>Be aware of the following points :</p> 
+     <ul> 
+      <li>use hk2-jar as the packaging so you get the manifest file generated automatically</li> 
+      <li>use the sourceDirectory to point to your source directory</li> 
+      <li>rememember to put the hk2-maven-plugin in your plugins so the META-INF/Services files are generated automatically.</li> 
+     </ul> <h4><a name="AddingModule-Case2%3AIalreadyhavethesourcessomewhereandIwanttocompileandpackagethemall"></a>Case 2 : I already have the sources somewhere and I want to compile and package them all</h1> <p>Easy enough, it's like case 1, except you don't get to choose the sourceDirectory.</p> <h4><a name="AddingModule-Case3%3AIhavethesourcesandIonlywantasubsetofthem"></a>Case 3 : I have the sources and I only want a subset of them</h1> <p>On top of what you have to do in case 1, you need to configure the plugin compiler to include or exclude sources. glassfish/appserv-commons is a good place to look at how this is done. I have splitted the appserv-commons sources in 2 modules, one is the commons module, the other is the DOL. </p> <p>I created a maven subdirectory and placed each pom.xml in a separate subdir (commons and dol). I did not move the sources under these directories because I want to retain the ability to merge the code with the trunk and for that the sources cannot be moved, therefore the sourceDirectory in the pom.xml points to ../../src/java</p> <p>After that it's pretty simple albeit a bit combersome :</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+    &lt;artifactId&gt;commons&lt;/artifactId&gt;
+    &lt;packaging&gt;hk2-jar&lt;/packaging&gt;
+    &lt;name&gt;Appserver V3 Common Classes&lt;/name&gt;
+    &lt;description&gt;Glassfish appserver V3 common launcher classes&lt;/description&gt;
+
+    &lt;build&gt;
+        &lt;sourceDirectory&gt;../../src/java&lt;/sourceDirectory&gt;
+        &lt;plugins&gt;
+            &lt;plugin&gt;
+                &lt;groupId&gt;com.sun.enterprise&lt;/groupId&gt;
+                &lt;artifactId&gt;hk2-maven-plugin&lt;/artifactId&gt;
+                &lt;configuration&gt;
+                    &lt;includes&gt;
+                        &lt;include&gt;com/sun/logging/LogDomains.*&lt;/include&gt;
+                        &lt;include&gt;com/sun/enterprise/util/LocalStringManager.java&lt;/include&gt;
+                        &lt;include&gt;com/sun/enterprise/util/LocalStringManagerImpl.java&lt;/include&gt;
+                        &lt;include&gt;com/sun/enterprise/util/StringUtils.java&lt;/include&gt;
+                        &lt;include&gt;com/sun/enterprise/util/SystemPropertyConstants.java&lt;/include&gt;
+                        &lt;include&gt;com/sun/enterprise/util/OS.java&lt;/include&gt;
+                        &lt;include&gt;com/sun/enterprise/util/io/FileUtils.java&lt;/include&gt;
+                        &lt;include&gt;com/sun/enterprise/util/io/FileLister.java&lt;/include&gt;
+                        &lt;include&gt;com/sun/enterprise/util/io/FileListerRelative.java&lt;/include&gt;
+                        &lt;include&gt;com/sun/enterprise/util/zip/**&lt;/include&gt;
+                        &lt;include&gt;com/sun/enterprise/util/i18n/**&lt;/include&gt;
+                        &lt;include&gt;com/sun/enterprise/admin/monitor/callflow/**&lt;/include&gt;                        
+                        &lt;include&gt;com/sun/enterprise/config/**&lt;/include&gt;
+                        &lt;include&gt;com/sun/enterprise/util/RelativePathResolver.java&lt;/include&gt;
+                        &lt;include&gt;com/sun/enterprise/security/store/**&lt;/include&gt;
+                        &lt;include&gt;com/sun/enterprise/deployment/deploy/shared/**&lt;/include&gt;
+                        &lt;include&gt;com/sun/enterprise/deployment/util/DOLUtils.java&lt;/include&gt;
+                        &lt;include&gt;com/sun/enterprise/util/shared/ArchivistUtils.java&lt;/include&gt;
+                        &lt;include&gt;com/sun/enterprise/deployment/backend/IASDeploymentException.java&lt;/include&gt;
+                    &lt;/includes&gt;
+                    &lt;excludes&gt;
+                        &lt;exclude&gt;com/sun/enterprise/config/ConfigBeansFactory.java&lt;/exclude&gt;
+                        &lt;exclude&gt;com/sun/enterprise/config/ConfigBeanBase.java&lt;/exclude&gt;
+                        &lt;exclude&gt;com/sun/enterprise/config/ConfigChangeFactory.java&lt;/exclude&gt;
+                        &lt;exclude&gt;com/sun/enterprise/config/clientbeans/**&lt;/exclude&gt;
+                        &lt;exclude&gt;com/sun/enterprise/config/impl/ConfigContextImpl.java&lt;/exclude&gt;
+                        &lt;exclude&gt;com/sun/enterprise/config/ConfigFactory.java&lt;/exclude&gt;
+                        &lt;exclude&gt;com/sun/enterprise/config/ConfigContextFactory.java&lt;/exclude&gt;
+                        &lt;exclude&gt;com/sun/enterprise/config/ConfigRegistry.java&lt;/exclude&gt;
+                    &lt;/excludes&gt;
+                &lt;/configuration&gt;
+            &lt;/plugin&gt;
+        &lt;/plugins&gt;
+        &lt;resources&gt;
+            &lt;resource&gt;
+                &lt;directory&gt;../../src/java&lt;/directory&gt;
+                &lt;includes&gt;
+                    &lt;include&gt;**/*.properties&lt;/include&gt;
+                &lt;/includes&gt;
+            &lt;/resource&gt;
+        &lt;/resources&gt;
+    &lt;/build&gt;
+    
+    &lt;dependencies&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;javax.xml.bind&lt;/groupId&gt;
+            &lt;artifactId&gt;jaxb-api&lt;/artifactId&gt;
+            &lt;version&gt;2.1&lt;/version&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.jvnet.glassfish&lt;/groupId&gt;
+            &lt;artifactId&gt;glassfish-api&lt;/artifactId&gt;
+            &lt;version&gt;${project.version}&lt;/version&gt;
+        &lt;/dependency&gt;        
+    &lt;/dependencies&gt;
+&lt;/project&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>As you can see, there are resources in this examples too but overall it ressembles the case 1, just more complicated.</p> <h4><a name="AddingModule-Howtogetyourbundledshippedwiththedistribution"></a>How to get your bundled shipped with the distribution</h2> <p>So now you have create your new modules, you want to have them being packaged with the glassfish distribution to start testing.</p> <p>Say you have the following new module : </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+    &lt;groupId&gt;com.sun.enterprise&lt;/groupId&gt;
+    &lt;artifactId&gt;random-module&lt;/artifactId&gt;
+    &lt;version&gt;${random-module.version}&lt;/version&gt;
+    &lt;packaging&gt;hk2-jar&lt;/packaging&gt;
+    &lt;name&gt;Some Random classes that are needed&lt;/name&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>in the glassfish/distributions/pe/pom.xml, just add you module in the list of dependencies : </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;dependency&gt;
+      &lt;groupId&gt;com.sun.enterprise&lt;/groupId&gt;
+      &lt;artifactId&gt;random-module&lt;/artifactId&gt;
+      &lt;version&gt;${random-module.version}&lt;/version&gt;
+      &lt;scope&gt;runtime&lt;/scope&gt;
+    &lt;/dependency&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>and that's it, you should find your new module in the glassfish/lib directory after the packaging. Any dependent jar will be placed in the glassfish/lib/jars and the system will hook things up automatically at runtime.</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

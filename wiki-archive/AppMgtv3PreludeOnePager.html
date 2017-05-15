@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : AppMgtv3PreludeOnePager</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="AppMgtv3PreludeOnePager-ApplicationManagementOnePager"></a>Application Management One Pager</h1> <p>[</p> 
+     <div class="error">
+      <span class="error">Unknown macro: {TableOfContents title=' '}</span> 
+     </div> <p>|(TableOfContentstitle='')]</p> <h4><a name="AppMgtv3PreludeOnePager-1.Introduction"></a>1. Introduction</h1> <h4><a name="AppMgtv3PreludeOnePager-1.1.Project%2FComponentWorkingName%3A"></a>1.1. Project/Component Working Name:</h2> <p>Application management</p> <h4><a name="AppMgtv3PreludeOnePager-1.2.Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier%3A"></a>1.2. Name(s) and e-mail address of Document Author(s)/Supplier:</h2> <p>Tim Quinn (timothy.quinn@sun.com) &amp; Hong Zhang (hong.zhang@sun.com)</p> <h4><a name="AppMgtv3PreludeOnePager-1.3.DateofThisDocument%3A"></a>1.3. Date of This Document:</h2> <p>original - 06/26/08<br> rev. 1 - 7/28/08<br> rev. 2 - 7/30/08 - clarification of new </p>
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;application-config&gt;</pre> 
+       </div> 
+      </div>
+     </div> element and its use and revision of some internal details<br> rev. 3 - 9/17/08 - updates based on recent engineering progress<br> rev. 4 - 9/24/08 - updates after the asarch review<p></p> <h4><a name="AppMgtv3PreludeOnePager-2.ProjectSummary"></a>2. Project Summary</h1> <h4><a name="AppMgtv3PreludeOnePager-2.1.ProjectDescription%3A"></a>2.1. Project Description:</h2> <p>Limited post-deployment editing of web app configuration</p> <h4><a name="AppMgtv3PreludeOnePager-2.2.RisksandAssumptions%3A"></a>2.2. Risks and Assumptions:</h2> <p>For web apps in particular, there are several points at which users can customize their configuration: using this new application management feature, using the default-web.xml file, and using context.xml support provided by the web container. Exposing the application management customization point through the GUI could give the incorrect impression that the values configured there would be the ones the web app would see when it started. But because there is no GUI access to either default-web.xml or context.xml, and because those are other sources of customization, we have withdrawn GUI access to the application management configuration. Possibly an update to the GUI, delivered via the update center, might expose all of these sources of customization and therefore give the user a complete and accurate picture of how each web app will start up.</p> <p>Users will be able to use the CLI get and set commands to change and see the customized configuration information once it has been added to domain.xml. For prelude the CLI does not have the ability to create or remove web app customizations. So users can hand-edit domain.xml to record the first customization of it after its deployment. Thereafter the CLI set and get commands provide access to those customization. </p> <p>We are still exploring how best to provide the ability to add and remove customizations using the CLI.</p> <h4><a name="AppMgtv3PreludeOnePager-3.ProblemSummary"></a>3. Problem Summary</h1> <h4><a name="AppMgtv3PreludeOnePager-3.1.ProblemArea%3A"></a>3.1. Problem Area:</h2> <p>Users want to be able to fine-tune the configuration of web apps during <br> and after deployment. Examples: changing env-entry values and changing <br> context-param settings. A key point is to avoid forcing the user <br> to go back, edit the original descriptor, and then repackage and redeploy <br> the application. The effect is similar to what Tomcat users can <br> do by editing the context.xml file to override various settings from a web app's descriptor. </p> <p>The customizations should survive redeployments of the application. Customizations will <b>not</b> survive an undeployment of the app followed by a subsequent deployment.</p> <p>Although only web app customization is supported in prelude the overall approach and the infrastructure additions to support this feature are general and were designed to work for any type of module. The common infrastructure of GlassFish is unaware of the particular customizations that a container and its GUI plug-in expose. Based on the requirements and additional feedback we targeted the initial implementation in prelude to env-entries and context-params in web apps. In general, each team that develops a container would choose what items of application configuration make sense to expose and then implement that container and the container's GUI plug-in to work together.</p> <h4><a name="AppMgtv3PreludeOnePager-3.2.Justification%3A"></a>3.2. Justification:</h2> <p>User requirements and competitive parity.</p> <h4><a name="AppMgtv3PreludeOnePager-4.TechnicalDescription%3A"></a>4. Technical Description:</h1> <h4><a name="AppMgtv3PreludeOnePager-4.1.Details%3A"></a>4.1. Details:</h2> <p>For prelude, users can customize the values of environment entries and context parameters that are specified in a web app's deployment descriptor. Other containers may add similar support in future releases.</p> <h4><a name="AppMgtv3PreludeOnePager-UserExperience"></a>User Experience</h3> <p>Initially users will edit domain.xml to add or remove customizations for an application. Subsequently they can use the CLI set and get commands to access those customizations. </p> <h4><a name="AppMgtv3PreludeOnePager-DesignPersistenceforthecustomizationsandaccesstothem"></a>Design - Persistence for the customizations and access to them</h3> <p>Each app's customizations are stored as subelements under the existing </p>
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;application&gt;</pre> 
+       </div> 
+      </div>
+     </div> element in domain.xml. For web apps, the child element under 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;application&gt;</pre> 
+       </div> 
+      </div>
+     </div> is 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;web-module-config&gt;</pre> 
+       </div> 
+      </div>
+     </div> with zero or more children of 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;env-entry&gt;</pre> 
+       </div> 
+      </div>
+     </div> and 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;context-param&gt;</pre> 
+       </div> 
+      </div>
+     </div>. The structure of the 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;env-entry&gt;</pre> 
+       </div> 
+      </div>
+     </div> and 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;context-param&gt;</pre> 
+       </div> 
+      </div>
+     </div> elements are as in web.xml. <p></p> <p>For example, here is what a fragment of domain.xml might look like after a user had customized an app's configuration:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;application ...&gt;
+   &lt;web-module-config&gt;
+      &lt;env-entry&gt;
+         &lt;env-entry-name&gt;SomeName&lt;/env-entry-name&gt;
+         &lt;env-entry-type&gt;java.lang.Integer&lt;/env-entry-type&gt;
+         &lt;env-entry-value&gt;7&lt;/env-entry-value&gt;
+      &lt;/env-entry&gt;
+      ...
+      &lt;context-param&gt;
+         &lt;param-name&gt;greeting&lt;/param-name&gt;
+         &lt;param-value&gt;Hello&lt;/param-value&gt;
+      &lt;/context-param&gt;
+      ...
+  &lt;/web-module-config&gt;
+&lt;/application&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>Further, the user can suppress the effect of a context-param or an env-entry that might be present in the descriptor by specifying the attribute </p>
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">ignoreDescriptorItem="true"</pre> 
+       </div> 
+      </div>
+     </div> in the XML for the element:<p></p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;context-param ignoreDescriptorItem="true"&gt;
+      &lt;param-name&gt;greeting&lt;/param-name&gt;
+   &lt;/context-param&gt;
+   ...
+   &lt;env-entry ignoreDescriptorItem="true"&gt;
+      &lt;env-entry-name&gt;Name2&lt;/env-entry-name&gt;
+   &lt;/env-entry&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>Because the app customizations are stored in domain.xml user-written management clients can use AMX to retrieve and modify the customizations.</p> <h4><a name="AppMgtv3PreludeOnePager-DesignRuntime"></a>Design - Runtime</h3> <p>During app start-up the container reads both the app's deployment descriptor and, from the current configuration (loaded at start-up from domain.xml), the customized app config information (if the app has been previously deployed). The container combines the descriptor and the customizations to prepare the runtime environment for the app:</p> 
+     <ul> 
+      <li>The value from a customized 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">&lt;context-param&gt;</pre> 
+         </div> 
+        </div>
+       </div> item overrides the corresponding value from the descriptor. The value, type, and description from a customized 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">&lt;env-entry&gt;</pre> 
+         </div> 
+        </div>
+       </div> item override the corresponding settings from the descriptor.</li> 
+      <li>If the customized config omits a context-param or an env-entry that is present in the descriptor then the web container sets up that item in the runtime environment for the app as the descriptor specifies.</li> 
+      <li>If the customized config contains an item with no counterpart in the descriptor, then the container does set up that item for the app.</li> 
+      <li>If the customized config contains an item with the ignoreDescriptorItem attribute then the container will ignore the corresponding item, if present, from the descriptor.</li> 
+     </ul> <p>Note that nothing is added to, removed from, or changed in the descriptor itself. Also, </p> <h4><a name="AppMgtv3PreludeOnePager-Design@Configuredinterfaces"></a>Design - @Configured interfaces</h3> <p>The new module web/gui-plugin-common includes the classes that would be used by both the GUI plug-in and the container: the additional @Configured interfaces which extend ConfigBeanProxy. </p> <p>The new interface ApplicationConfig is added to admin/config-api. This interface is the "abstract superinterface" for all container-specific interfaces that actually record customizations for their respective module types. </p> <p>The existing Application interface is expanded to give access to its child ApplicationConfig items, taking advantage of the hk2 configuration framework feature that allows the actual children of Application which are of type ApplicationConfig to be any interface that extends ApplicationConfig:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Configured
+public interface Application ... {
+...
+    @Element("*")
+    public List&lt;ApplicationConfig&gt; getApplicationConfig();
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>In the new web/webgui-plugin-common module resides</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Configured
+public interface WebModuleConfig extends ApplicationConfig ... {
+...
+   @Element
+   public List&lt;EnvEntry&gt; getEnvEntry();
+
+   @Element
+   public List&lt;ContextParam&gt; getContextparam();
+...
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>In the future other containers can define their own subinterfaces of ApplicationConfig, tailored to their own customization needs, and package them in their own container-specific modules.</p> <p>Note that domain.xml will never contain any elements like </p>
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;application-config&gt;</pre> 
+       </div> 
+      </div>
+     </div> but rather will contain 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;web-module-config&gt;</pre> 
+       </div> 
+      </div>
+     </div> (or, in the future, other container-specific elements) nested under 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;application&gt;</pre> 
+       </div> 
+      </div>
+     </div>.<p></p> <h4><a name="AppMgtv3PreludeOnePager-DesignMultiplecontainertypesperapplication"></a>Design - Multiple container types per application</h3> <p>More than one sniffer (and the associated deployer and container) can handle a given application. For example, web apps are handled by the web sniffer and also the security sniffer. The infrastructure changes for application management allow for all containers that handle an application to record and retrieve customizations related to that container type. The Application interface provides a method for retrieving ApplicationConfig objects of a certain requested type, so <br> a container can select only the customization items relevant to that type of container. Because a container team builds both the container and the sniffer (and the GUI plug-in for the container type) they all know what container type the sniffer will report and therefore what value to use in retrieving the correct customizations.</p> <h4><a name="AppMgtv3PreludeOnePager-4.2.Bug%2FRFENumber%28s%29%3A"></a>4.2. Bug/RFE Number(s):</h2> <p><a href="https://github.com/javaee/glassfish/issues/4105">4105</a></p> <h4><a name="AppMgtv3PreludeOnePager-4.3.InScope%3A"></a>4.3. In Scope:</h2> <p>User can edit custom config for web app env-entry values and context-param value once the web app has been deployed. </p> <p>The customizations survive redeployment.</p> <h4><a name="AppMgtv3PreludeOnePager-4.4.OutofScope%3A"></a>4.4. Out of Scope:</h2> <p>Editing the config during deployment. Initially, the application management feature will require the app to be deployed before config editing is possible. To do otherwise might require the GUI to open the app being deployed to gain access to the descriptor. Currently the GUI does not need to read the archive as part of deploying it.</p> <p>Maintaining customizations across an undeployment followed by a later deployment of the same app.</p> <p>Container-specific commands to provide convenient CLI access to the customized application config.</p> <p>GUI access to add, remove, and change customizations.</p> <h4><a name="AppMgtv3PreludeOnePager-4.5.Interfaces%3A"></a>4.5. Interfaces:</h2> <h4><a name="AppMgtv3PreludeOnePager-4.5.1ExportedInterfaces"></a>4.5.1 Exported Interfaces</h3> 
+     <ul> 
+      <li>Interface: AMX</li> 
+      <li>Stability: committed</li> 
+      <li>Former Stability (if changing):</li> 
+      <li>Comments: Addition of methods to get and set the custom config data</li> 
+     </ul> 
+     <ul> 
+      <li>Interface: CLI</li> 
+      <li>Stability: committed</li> 
+      <li>Former Stability (if changing):</li> 
+      <li>Comments: The get and set commands will provide access to the custom config data from the CLI.</li> 
+     </ul> <h4><a name="AppMgtv3PreludeOnePager-4.5.2Importedinterfaces"></a>4.5.2 Imported interfaces</h3> <p>n/a</p> <h4><a name="AppMgtv3PreludeOnePager-4.5.3Otherinterfaces%28Optional%29"></a>4.5.3 Other interfaces (Optional)</h3> <p>Any private interfaces that may be of interest?</p> 
+     <ul> 
+      <li>Interface: domain.xml</li> 
+      <li>Stability: volatile <img class="emoticon" src="images/icons/emoticons/help_16.gif" height="16" width="16" align="absmiddle" alt="" border="0"></li> 
+      <li>Exporting Project: GlassFish v3</li> 
+      <li>Comments: This internal interface - the domain.xml format - is</li> 
+     </ul> <p>strictly speaking internal but is widely used in practice. See admin/config impact below.</p> <h4><a name="AppMgtv3PreludeOnePager-4.6.DocImpact%3A"></a>4.6. Doc Impact:</h2> <p>Deployment guide; admin reference</p> <h4><a name="AppMgtv3PreludeOnePager-4.7.Admin%2FConfigImpact%3A"></a>4.7. Admin/Config Impact:</h2> <p>No impact to admin of the product itself. So that application-level custom config can survive redeployments the server will store the custom config information in domain.xml as explained in the technical description. </p> <h4><a name="AppMgtv3PreludeOnePager-4.8.HAImpact%3A"></a>4.8. HA Impact:</h2> <p>none</p> <h4><a name="AppMgtv3PreludeOnePager-4.9.I18N%2FL10NImpact%3A"></a>4.9. I18N/L10N Impact:</h2> <p>The user interface will need to display localizable labels for the <br> customizable config for web apps. </p> <h4><a name="AppMgtv3PreludeOnePager-4.10.Packaging%26Delivery%3A"></a>4.10. Packaging &amp; Delivery:</h2> <p>No new modules. </p> <h4><a name="AppMgtv3PreludeOnePager-4.11.SecurityImpact%3A"></a>4.11. Security Impact:</h2> <p>no changes</p> <h4><a name="AppMgtv3PreludeOnePager-4.12.CompatibilityImpact"></a>4.12. Compatibility Impact</h2> <p>Additions to AMX, GUI. <br> (w/ thanks to Lloyd for the input) The AMX ApplicationConfig will gain methods to get and set the children.</p> <p>AMX will gain a new ApplicationConfigConfig interface to provide access to the ApplicationConfig information.</p> <p>The AMX ApplicationConfig will gain methods to create a new ApplicationConfigConfig and return a Map of the existing ones.</p> <p>The additions to domain.xml and AMX are backward-compatible. Additions to domain.xml are optional elements, not required ones. </p> <p>No affect on migration or upgrade tools. </p> <h4><a name="AppMgtv3PreludeOnePager-4.13.Dependencies%3A"></a>4.13. Dependencies:</h2> <p>none</p> <h4><a name="AppMgtv3PreludeOnePager-5.ReferenceDocuments%3A"></a>5. Reference Documents:</h1> <p>n/a</p> <h4><a name="AppMgtv3PreludeOnePager-6.Schedule%3A"></a>6. Schedule:</h1> <h4><a name="AppMgtv3PreludeOnePager-6.1.ProjectedAvailability%3A"></a>6.1. Projected Availability:</h2> <p>The fall '08 release of v3 Prelude.</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 08, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:43.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

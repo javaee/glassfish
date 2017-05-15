@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : CommentsOnEffectiveJava1Companion</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="CommentsOnEffectiveJava1Companion-CommentsonEffectiveJava1Companion"></a>Comments on Effective Java - 1 Companion</h1> <p>This is the Wiki topic that is devoted to your comments on <a href="http://wiki.glassfish.java.net/attach/JavaProgramming/ej.html">Effective Java - 1 Companion</a>. All you need is a <a href="http://wiki.glassfish.java.net/Login.jsp">GFWiki user name and password</a>. At the moment, it is (unfortunately) different from your java.net ID. Please comment based on the anchors in above document.</p> <h4><a name="CommentsOnEffectiveJava1Companion-Usenullobjectdesignpattern"></a>Use null object design pattern</h1> <p>If you return &lt;code&gt;null&lt;/code&gt; from a method, consider to return a &lt;it&gt;null object&lt;/it&gt;.<br> For example, Java contains the following code in many places:</p> <p>&lt;pre&gt;<br> SecurityManager security = System.getSecurityManager();<br> if (security != null) {<br> //...<br> }<br> &lt;/pre&gt;</p> <p>If we used null object design pattern, the code could have been simplified as follows:</p> <p>&lt;pre&gt;<br> // we also add interface SecurityManager<br> public class NullSecurityManager implements SecurityManager </p> 
+     <div class="error">
+      <span class="error">Unknown macro: { // all methods of SecurityManager will be empty public void checkRead(String name) { }</span> 
+     </div> <p> //...<br> }</p> <p>public class FileInputStream extends InputStream {<br> //...<br> public FileInputStream(File file) throws FileNotFoundException {<br> //...<br> SecurityManager security = System.getSecurityManager();<br> //if (security != null) </p> 
+     <div class="error">
+      <span class="error">Unknown macro: { // security.checkRead(name); //}</span> 
+     </div> <p> security.checkRead(name);<br> }<br> //...<br> }<br> &lt;/pre&gt;</p> <h4><a name="CommentsOnEffectiveJava1Companion-Donotrelyonenum%27sordinals"></a>Do not rely on enum's ordinals</h1> <p>Do not use enum's ordinals e.g. for indexing in array. If you need to assign an integer to each enum constant, you can declare a field:</p> <p>&lt;pre&gt;<br> public enum Makes {<br> MAZDA(1),<br> SKODA(2), // Škoda is a Czech car<br> JAGUAR(3);</p> <p> public final int n;</p> <p> Makes(int n) </p> 
+     <div class="error">
+      <span class="error">Unknown macro: { this.n = n; }</span> 
+     </div> <p>}<br> &lt;/pre&gt;</p> <h4><a name="CommentsOnEffectiveJava1Companion-Favorcompositionoverinheritance"></a>Favor composition over inheritance</h1> <p>A recommended way to design the relationships between classes is to use relationships between objects described. For example, for classes &lt;code&gt;Computer&lt;/code&gt; and<br> &lt;code&gt;Processor&lt;/code&gt; we will use composition because computers contain processors (relationship "has a"). For &lt;code&gt;ElectricalAppliance&lt;/code&gt; and &lt;code&gt;Computer&lt;/code&gt;<br> we will use inheritance because computers are electrical appliances (relationship "is a").</p> <p>The decorator design pattern should not be mentioned here (or at least not the way it is). The purpose of the decorator is to change the behaviour of another object (decoratee). And this is not the case here.</p> <p>Concerning the question whether to make classes final or not, it would depend on the project. For open source libraries and frameworks, I personally think that if we do not have very good reasons (e.g. security) to make a class final, it should not be final. If we do not want somebody to extend the class, we can write it to the documentation. But why to restrict users of our classes if we do not have to? For company projects, it could be reasonable to make classes final because we can keep colleagues from extending them. So, this supports the usage we want to.</p> <h4><a name="CommentsOnEffectiveJava1Companion-Forgetaboutsynchronizedandusejava.util.concurrent"></a>Forget about synchronized and use java.util.concurrent</h1> <p>For common tasks, such as producer-consumer, there are already classes in <br> &lt;code&gt;java.util.concurrent&lt;/code&gt;. E.g. producer-consumer can be implemented using<br> &lt;code&gt;BlockingQueue&lt;/code&gt;. Furthermore, there usually a better alternative to <br> synchronized collections. For example, instead of using synchronized map <br> (&lt;code&gt;Collections.synchronizedMap(...)&lt;/code&gt;), one should consider<br> &lt;code&gt;ConcurrentHashMap&lt;/code&gt;, which enables several threads at the same time.<br> For example, three threads can read and two threads can update the map without any<br> blocking.</p> <p>If you really need locking, use &lt;code&gt;Lock&lt;/code&gt; and &lt;code&gt;ReentrantLock&lt;/code&gt;.<br> It is more intuitive and more flexible than &lt;code&gt;synchronized&lt;/code&gt;.<br> The following code is from the spec:</p> <p>&lt;pre&gt;<br> class X {<br> private final Lock lock = new ReentrantLock();</p> <p> public void m() {<br> lock.lock(); // block until condition holds<br> try </p> 
+     <div class="error">
+      <span class="error">Unknown macro: { // ... method body }</span> 
+     </div> <p> finally </p> 
+     <div class="error">
+      <span class="error">Unknown macro: { lock.unlock() }</span> 
+     </div> <p> }<br> }<br> &lt;/pre&gt;<br> Both &lt;code&gt;synchronized&lt;/code&gt; and &lt;code&gt;Lock&lt;/code&gt; enable exclusive locking. However,<br> &lt;code&gt;Lock&lt;/code&gt; offers more. For example non-blocking locking (&lt;code&gt;tryLock()&lt;/code&gt;)<br> and fairness (it prevents starvation).</p> <h4><a name="CommentsOnEffectiveJava1Companion-Lazyinitialization"></a>Lazy initialization</h1> <p>Lazy initialization is not very useful in Java because classes are loaded just before the first use. For example:</p> <p>&lt;pre&gt;<br> public class Singleton </p> 
+     <div class="error">
+      <span class="error">Unknown macro: { private static Singleton instance = new Singleton(); private Singleton() { }</span> 
+     </div> <p> public static Singleton getInstance() </p> 
+     <div class="error">
+      <span class="error">Unknown macro: { return instance; }</span> 
+      <p> ...<br> }<br> &lt;/pre&gt;</p> 
+      <p>Class Singleton is fetched at the time of first call to Singleton.getInstance(), so the initialization of 'instance' is postponed till this time. One can also say that it is lazy initialization due to dynamic class loading.</p> 
+      <p>It has some limitations: e.g. if we had a class variable in Singleton, an access to this variable would have initialized 'instance'.</p> 
+      <h4><a name="CommentsOnEffectiveJava1Companion-Methodoverloading"></a>Method overloading</h1> 
+      <p>I agree that method overloading should be used cautiously. However, I do not see any motivation for the rule "don't overload methods if they take same number of parameters". Should not the rule be rather "overload methods ONLY if they do the same job"? For example:</p> 
+      <p>&lt;pre&gt;<br> public class X {<br> void sendMessage(String content) </p> 
+      <div class="error">
+       <span class="error">Unknown macro: { ... }</span> 
+       <p><br> void sendMessage(List&lt;String&gt; content) </p>
+      </div> 
+      <p>}<br> &lt;/pre&gt;</p> 
+      <p><b>km</b>:<br> &lt;pre&gt;<br> Zdenek, the idea is to make the intent clear in the "name" of method, e.g.:<br> public class X {<br> void sendMessage(String content) </p> 
+      <div class="error">
+       <span class="error">Unknown macro: { ... }</span> 
+       <p><br> void sendConcatenatedMessage(List&lt;String&gt; content) </p>
+      </div> 
+      <p>&lt;/pre&gt;</p> 
+      <p><b>Zdenek</b>: <br> Kedar, if you apply this approach, you do not need method overloading at all. You could have had printInt(), printShort(), printBoolean(), etc. in PrintStream. But do you really think that this approach would have been better than overloaded methods print()? I do not, because the name of the method is descriptive enough and the programmer does not have to remember if there is printShort() or not (and in case if not what method should be used for short values). She only calls print() and the compiler finds the most suitable method.</p> 
+      <p>Concerning the sendMessage() above, if the messages sent by these two methods are of same type and differ only in content (for example, both of them are JMS TextMessage), I think overloading should be preferred here. A clue can be in this case: can a recipient of the message distinguish between messages sent by sendMessage() and sendConcatenatedMessage()? If not, it means that the methods do the same job (but with different data) and thus they should have the same name. Different names should be used only if they send different messages. For example, if sendMessage() sends TextMessage and sendConcatenatedMessage() sends ObjectMessage.<br> &lt;hr&gt;</p> 
+      <p>One more argument to support my view to overloading: imagine that you know the sendMessage(List&lt;String&gt; content) method (you read the javadoc and used it several times). And now you want to send a message containing a single string. The context help will offer the sendMessage(String content) method. What will you do? I will expect that the method does the same as sendMessage(List&lt;String&gt; content) and probably call it without reading the javadoc.<br> &lt;hr&gt;</p> 
+      <p>Now it seems to me that the right rule should be: We should use overload methods &lt;i&gt;if and only if&lt;/i&gt; they do the same jobs. It is logical to use the same name for methods that produce the same result and it is misleading to use different names for the same actions. The only exception allowed from this rule is when overloading is not possible. For example, when two methods do the same and accept the arguments of same types:</p> 
+      <p>&lt;pre&gt;<br> class Math {<br> double determineCircleArea(double radius) </p> 
+      <div class="error">
+       <span class="error">Unknown macro: { ... }</span> 
+       <p><br> double determineCircleArea2(double diameter) </p>
+      </div> 
+      <p>}<br> &lt;/pre&gt;</p> 
+      <p>&lt;i&gt;Does anybody know when overloading appeared the first time in a programming language?<br> Could anybody point at any original paper concerning with overloading?<br> &lt;/i&gt;</p> 
+      <p>&lt;hr&gt;</p> 
+      <p>From the sentence "All overloaded methods are implemented in a given class only." one could possibly think that you cannot overload a method from a superclass, which is not true:</p> 
+      <p>&lt;pre&gt;<br> class Parent {<br> void m(int x, double d) </p> 
+      <div class="error">
+       <span class="error">Unknown macro: { System.out.println("int, double"); }</span> 
+      </div> 
+      <p>}</p> 
+      <p>class Child extends Parent {<br> void m(double d, int x) </p> 
+      <div class="error">
+       <span class="error">Unknown macro: { System.out.println("double, int"); }</span> 
+      </div> 
+      <p>}<br> &lt;/pre&gt;</p> 
+      <p>BTW, would not be nice to have annotation @Overload here?</p> 
+      <p><b>km</b>: <br> &lt;pre&gt;<br> Zdenek, I agree with you regarding annotation. It would be nice to have such annotation. <br> Also, I will remove the statement that says "overloading can be done in the same class only".<br> &lt;/pre&gt;</p> 
+      <h4><a name="CommentsOnEffectiveJava1Companion-Methodoverriding"></a>Method overriding</h1> 
+      <p>Should not be mentioned here that you can override only a method that is visible? Example:</p> 
+      <p>&lt;pre&gt;<br> package first;</p> 
+      <p>public class Parent </p> 
+      <div class="error">
+       <span class="error">Unknown macro: { protected void m() { }</span> 
+       <p>}<br> &lt;/pre&gt;<br> &lt;pre&gt;<br> package second;</p> 
+       <p>import first.Parent;</p> 
+       <p>public class Child extends Parent </p>
+      </div> 
+      <p> // this is not overriding<br> }<br> &lt;/pre&gt;</p> 
+      <p><b>km</b>:<br> &lt;pre&gt;<br> Zdenek, I am confused. It is obvious that method to be overridden is to be visible. <br> But the example cited by you already satisfies it. <br> So, I wonder why is it is NOT an example of overriding?<br> &lt;/pre&gt;</p> 
+      <p><b>Zdenek</b>:<br> I apologize, I really do not have any clue who added 'protected' to my code :o). Of course, it should be:<br> &lt;pre&gt;<br> package first;</p> 
+      <p>public class Parent </p> 
+      <div class="error">
+       <span class="error">Unknown macro: { void m() { }</span> 
+       <p>}<br> &lt;/pre&gt;<br> &lt;pre&gt;<br> package second;</p> 
+       <p>import first.Parent;</p> 
+       <p>public class Child extends Parent </p>
+      </div> 
+      <p> // this is not overriding<br> }<br> &lt;/pre&gt;</p> 
+      <h4><a name="CommentsOnEffectiveJava1Companion-Immutableclasses"></a>Immutable classes</h1> 
+      <p>Maybe one could mention that even final fields can be modified by reflection:</p> 
+      <p>&lt;pre&gt;<br> import java.lang.reflect.Field;</p> 
+      <p>final class Final {<br> private final int X = (int) (Math.random() * 42);<br> void printX() </p> 
+      <div class="error">
+       <span class="error">Unknown macro: { System.out.println(X); }</span> 
+      </div> 
+      <p>}</p> 
+      <p>public class Main {<br> public static void main(String[] args) throws Exception </p> 
+      <div class="error">
+       <span class="error">Unknown macro: { Final p = new Final(); p.printX(); Field f = Final.class.getDeclaredField("X"); f.setAccessible(true); f.setInt(p, 42); p.printX(); }</span> 
+      </div> 
+      <p>}<br> &lt;/pre&gt;</p> 
+      <p>Item 3 of "Recipe for Writing Correct Immutable Classes": the memory model has already been reworked.</p> 
+      <h4><a name="CommentsOnEffectiveJava1Companion-Useexceptionsproperly"></a>Use exceptions properly</h1> 
+      <p>In languages like C, where we do not have any exceptions, the code looks like as follows:</p> 
+      <p>&lt;pre&gt;<br> openFile();<br> if (error) </p> 
+      <div class="error">
+       <span class="error">Unknown macro: { ... }</span> 
+       <p>readFile();<br> if (error) </p>
+      </div> 
+      <p>closeFile();<br> if (error) </p> 
+      <div class="error">
+       <span class="error">Unknown macro: { ... }</span> 
+       <p>&lt;/pre&gt;</p> 
+       <p>A drawback of this approach is that we have to check if something bad happened after each call. The code of application is mixed with checking for errors in such case and we must be careful not to miss any checking.</p> 
+       <p>Exceptions remove this drawback and make the programmer's life easier if they are used properly. However, the proper use is not this:</p> 
+       <p>&lt;pre&gt;<br> try {<br> openFile();<br> } catch (...) </p>
+      </div> 
+      <p>try {<br> readFile();<br> } catch (...) </p> 
+      <div class="error">
+       <span class="error">Unknown macro: { ... }</span> 
+       <p>try {<br> closeFile();<br> } catch (...) </p>
+      </div> 
+      <p>&lt;/pre&gt;</p> 
+      <p>One of the main advantages of exceptions, processing of errors in one place, is not used here. One should prefer the following style:</p> 
+      <p>&lt;pre&gt;<br> try {<br> openFile();<br> readFile();<br> closeFile();<br> } catch (...) { <br> ... <br> } catch (...) { <br> ... <br> } catch (...) {<br> ...<br> }<br> &lt;/pre&gt;</p> 
+      <h4><a name="CommentsOnEffectiveJava1Companion-Singletons"></a>Singletons</h1> 
+      <p>Let us answer the question "Should I implement the Singleton design pattern as a class with static methods or as a class with private constructor and static field?". Although the approach "class with static methods" is correct in some cases, it has a serious drawback. The drawback is that we lose many benefits of objects and late binding. For example, we cannot pass the singleton as a parameter to a method or exchange the implementation.<br> If &lt;code&gt;Math&lt;/code&gt; was implemented as a class with private constructor, we could have used it as a method parameter:</p> 
+      <p>&lt;pre&gt;<br> interface Math </p> 
+      <div class="error">
+       <span class="error">Unknown macro: { ... }</span> 
+      </div> 
+      <p>class MathImpl implements Math </p> 
+      <div class="error">
+       <span class="error">Unknown macro: { private static final MathImpl instance = new MathImpl(); private MathImpl() { }</span> 
+      </div> 
+      <p> public static Math getInstance() </p>
+     </div> <p> ...<br> }<br> class Calculus {<br> public void figureOutLengthOfEllipse(Math m, double a, double b) </p> 
+     <div class="error">
+      <span class="error">Unknown macro: { ... }</span> 
+      <p>}<br> &lt;/pre&gt;</p> 
+      <p>Also, we can permit more implementations and let the user select one, e.g. by a system property:</p> 
+      <p>&lt;pre&gt;<br> public abstract class Math {<br> private static Math instance;<br> static {<br> try </p> 
+      <div class="error">
+       <span class="error">Unknown macro: { String className = System.getProperty("mathimpl"); Class&lt;?&gt; clazz = Class.forName(className); Constructor&lt;?&gt; constructor = clazz.getDeclaredConstructor(); constructor.setAccessible(true); instance = (Math) constructor.newInstance(); }</span> 
+      </div> 
+      <p> catch (Exception e) </p> 
+      <div class="error">
+       <span class="error">Unknown macro: { e.printStackTrace(); }</span> 
+      </div> 
+      <p> }<br> Math() { }<br> public static Math getInstance() </p> 
+      <div class="error">
+       <span class="error">Unknown macro: { return instance; }</span> 
+      </div> 
+      <p>}<br> class MathImpl1 extends Math </p> 
+      <div class="error">
+       <span class="error">Unknown macro: { private MathImpl1() { }</span> 
+      </div> 
+      <p> //...<br> }<br> class MathImpl2 extends Math </p> 
+      <div class="error">
+       <span class="error">Unknown macro: { private MathImpl2() { }</span> 
+      </div> 
+      <p> //...<br> }<br> &lt;/pre&gt;</p> 
+      <p>In this case, we relieved the Singleton property because other subclasses of Math can be created. If this is not desirable, we can combine this approach with the Factory method pattern:</p> 
+      <p>&lt;pre&gt;<br> public interface MathInt </p>
+     </div> <p>// Math has package access<br> abstract class Math implements MathInt </p> 
+     <div class="error">
+      <span class="error">Unknown macro: { ... }</span> 
+     </div> <p>public class MathFactory {<br> public static MathInt createInstance() </p> 
+     <div class="error">
+      <span class="error">Unknown macro: { return Math.getInstance(); }</span> 
+     </div> <p>}<br> &lt;/pre&gt;</p> <h4><a name="CommentsOnEffectiveJava1Companion-NewStrings"></a>New Strings</h1> <p>Let us investigate the question "Does it make sense to call the constructor<br> &lt;code&gt;String()&lt;/code&gt; explicitly?". That is, &lt;code&gt;String s2 = new String(s1);&lt;/code&gt;.</p> <p>&lt;i&gt;Zdenek: This is my answer to a similar question from the alias of Java instructors:&lt;/i&gt;</p> <p>Let's have a look at the source code of String first: </p> <p>&lt;pre&gt;<br> public final class String <br> implements java.io.Serializable, Comparable&lt;String&gt;, CharSequence </p> 
+     <div class="error">
+      <span class="error">Unknown macro: { /** The value is used for character storage. */ private final char value[]; /** The offset is the first index of the storage that is used. */ private final int offset; /** The count is the number of characters in the String. */ private final int count; ... }</span> 
+     </div> <p> <br> &lt;/pre&gt;</p> <p>So, a string is represented by an array of chars. Let's continue with <br> the substring method: </p> <p>&lt;pre&gt;<br> public String substring(int beginIndex, int endIndex) { <br> if (beginIndex &lt; 0) </p> 
+     <div class="error">
+      <span class="error">Unknown macro: { throw new StringIndexOutOfBoundsException(beginIndex); }</span> 
+     </div> <p> <br> if (endIndex &gt; count) </p> 
+     <div class="error">
+      <span class="error">Unknown macro: { throw new StringIndexOutOfBoundsException(endIndex); }</span> 
+     </div> <p> <br> if (beginIndex &gt; endIndex) </p> 
+     <div class="error">
+      <span class="error">Unknown macro: { throw new StringIndexOutOfBoundsException(endIndex - beginIndex); }</span> 
+     </div> <p> <br> return ((beginIndex == 0) &amp;&amp; (endIndex == count)) ? this : <br> new String(offset + beginIndex, endIndex - beginIndex, value); <br> } <br> // Package private constructor which shares value array for speed. <br> String(int offset, int count, char value[]) </p> 
+     <div class="error">
+      <span class="error">Unknown macro: { this.value = value; this.offset = offset; this.count = count; }</span> 
+     </div> <p> <br> &lt;/pre&gt;</p> <p>So, when we call &lt;code&gt;substring()&lt;/code&gt; on a string, a new string will share the <br> array of chars with the original string. For example: </p> <p>&lt;pre&gt;<br> String s1 = "abcdef"; <br> String s2 = s1.substring(2, 4); // s2 will be "cd" <br> &lt;/pre&gt;</p> <p>There will be only one array of chars ('a', 'b', 'c', 'd', 'e', 'f'). <br> So, both &lt;code&gt;s1.value&lt;/code&gt; and &lt;code&gt;s2.value&lt;/code&gt; will have the same value. Further: <br> &lt;code&gt;s1.offset&lt;/code&gt; will be 0, &lt;code&gt;s1.count&lt;/code&gt; 6, <br> &lt;code&gt;s2.offset&lt;/code&gt; 2, and &lt;code&gt;s2.count&lt;/code&gt; 2. </p> <p>Further, let's have a look at the constructor: </p> <p>&lt;pre&gt;<br> public String(String original) { <br> int size = original.count; <br> char[] originalValue = original.value; <br> char[] v; <br> if (originalValue.length &gt; size) </p> 
+     <div class="error">
+      <span class="error">Unknown macro: { // The array representing the String is bigger than the new // String itself. Perhaps this constructor is being called // in order to trim the baggage, so make a copy of the array. int off = original.offset; v = Arrays.copyOfRange(originalValue, off, off+size); }</span> 
+     </div> <p> else </p> 
+     <div class="error">
+      <span class="error">Unknown macro: { // The array representing the String is the same // size as the String, so no point in making a copy. v = originalValue; }</span> 
+     </div> <p> <br> this.offset = 0; <br> this.count = size; <br> this.value = v; <br> } <br> &lt;/pre&gt;</p> <p>The constructor distinguishes two cases: <br> 1) In the string parameter 'original', &lt;code&gt;count&lt;/code&gt; equals &lt;code&gt;value.length&lt;/code&gt;, i.e. all the character of the array belong to this string. Then, a new <br> string will share the array of chars with the original string. <br> 2) The string parameter is a substring of some other string, i.e. <br> &lt;code&gt;count&lt;/code&gt; is less than &lt;code&gt;value.length&lt;/code&gt;. Then a new array of chars is created because if original string is not referenced anymore, we want it to be <br> deallocated (see the comments in the source). This also answers <br> the question when it makes sense to call this constructor. </p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">ID </th> 
+         <th class="confluenceTh"> Anchor </th> 
+         <th class="confluenceTh"> Comment </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 0 </td> 
+         <td class="confluenceTd"> No anchor, overall. </td> 
+         <td class="confluenceTd"> Looks good, useful <img class="emoticon" src="images/icons/emoticons/smile.gif" height="20" width="20" align="absmiddle" alt="" border="0"> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:48.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

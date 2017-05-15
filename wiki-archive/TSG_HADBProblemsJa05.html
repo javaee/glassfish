@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : TSG_HADBProblemsJa05</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="TSG_HADBProblemsJa05-HADB%E3%83%91%E3%83%95%E3%82%A9%E3%83%BC%E3%83%9E%E3%83%B3%E3%82%B9%E3%81%AE%E5%95%8F%E9%A1%8C"></a>HADB パフォーマンスの問題</h2> <p>パフォーマンスは HADB に対するトランザクションが、遅延、または、強制停止した時に影響します。こうした状況の一般的な原因は、システムリソースの不足によるものです。いくつかのトランザクションに対する、５秒間以上のウェイトが原因となり、強制停止します。いくつかのノードが失敗することも又原因となり、そのノードで実行中のトランザクションクラッシュ時に、強制停止します。いくつかの二重の失敗は、 (ミラー両方の失敗) HADB を使用不可能にします。それら失敗の原因は、一般的には HADB の履歴ファイルから見つけ出すことができます。</p> <p>問題を切り分けする為には、次のことに着眼してください。 :</p> 
+     <ul> 
+      <li>CPU 、又は、メモリーリソース不足、あるいはスワッピングが多発しているか ?</li> 
+      <li>競合しているディスクがあるか ?</li> 
+      <li>HADB データデバイス領域が不足しているか ?</li> 
+      <li>他の HADB リソースが不足しているか ?</li> 
+     </ul> <h4><a name="TSG_HADBProblemsJa05-CPU%E3%80%81%E5%8F%88%E3%81%AF%E3%80%81%E3%83%A1%E3%83%A2%E3%83%AA%E3%83%BC%E3%83%AA%E3%82%BD%E3%83%BC%E3%82%B9%E4%B8%8D%E8%B6%B3%E3%80%81%E3%81%82%E3%82%8B%E3%81%84%E3%81%AF%E3%82%B9%E3%83%AF%E3%83%83%E3%83%94%E3%83%B3%E3%82%B0%E3%81%8C%E5%A4%9A%E7%99%BA%E3%81%97%E3%81%A6%E3%81%84%E3%82%8B%E3%81%8B%3F"></a>CPU 、又は、メモリーリソース不足、あるいはスワッピングが多発しているか ?</h3> 
+     <ul> 
+      <li><b>解説</b><br> \このケースでは、ノードの再起動、又は、二重の失敗は、 "プロセスが x 秒間ブロックされた、最長ブロック時間は、 2.500000 秒" に起因しており、 <em>x</em> は、そのプロセスがブロックされた時間の長さを示していて、 そしてその時間が 2.5 秒よりも長いと言うことです。<br> \HADB ノード管理プロセス (<tt>NSUP/clu_nsup_srv</tt>) が監視した、最終時刻からの時間経過を記録します。持続時間が exceeds a 指定されている最大 ( デフォルト <tt>2500ms</tt>) を超えた場合、 NSUP は、そのプロセスがブロックされた時間が長すぎるため終了し、そして、ノードを再起動します。<br> \NSUP が 2.5 秒を超えてブロックされる原因は、ノードの再起動です。もし、ミラーノードが、同一ホスト上に配備されているのであれば、高い確率で、二重の障害を引き起こす可能性があります。また同時に、ミラーホスト上のブロッキングの発生も、二重の障害を引き起こすでしょう。<br> \その状況は、他のプロセスが存在するとき、著しく発生するようです。 – たとえば、 共存構成における – CPU 又は、メモリが競合するシステム上で、多数のスワッピングの発生や、複数のプロセスが、再スケジュールされるような、多重ページの欠点などが揚げられます。<br> \又、 NSUP がブロックされることは、システムクロックを調整する妨げによる原因になりえます。</li> 
+     </ul> 
+     <ul> 
+      <li><b>解決方法</b><br> \安全を保障するには、 HADB ノードが、十分なシステムリソースを取得することです。時刻同期デーモンが、長時間 (2 以上とならない ) に及ばないことも又、安全を保障します。</li> 
+     </ul> <h4><a name="TSG_HADBProblemsJa05-%E7%AB%B6%E5%90%88%E3%81%97%E3%81%A6%E3%81%84%E3%82%8B%E3%83%87%E3%82%A3%E3%82%B9%E3%82%AF%E3%81%8C%E3%81%82%E3%82%8B%E3%81%8B%3F"></a>競合しているディスクがあるか ?</h3> 
+     <ul> 
+      <li><b>解説</b><br> \ディスクの競合は、 HADB が、履歴ファイルに書き込むことと同様に、ユーザーデータを、ディスクデバイスへ、 読み込み / 書き込みする上で、悪影響を及ぼす可能性があります。深刻なディスクの競合は、ユーザーのトランザクションを、遅延、または、停止することが想定されます。ノードの再起動が原因である、履歴ファイル書き込みの遅延は、更に悪いことに、二重の障害を引き起こすことが想定されます。<br> \ディスク競合は、 OS のディスクデータの利用に対する、デバイスログと履歴ファイルからの、ディスク I/O の監視によって、確認できます。履歴ファイル書き込み遅延は、 HADB 履歴ファイルに書き込まれます。これは、 "NSUP BEWARE timestamp Last flush took too long (x msecs)." 警告メッセージによって確認できます。<br> \この警告は、ディスク I/O に時間がかかりすぎていることを示しています。もし遅延が 10 秒を超えた場合、ノードスーパーバイザはエラーメッセージによって、トランザクション処理を再起動します。 :\\\\\~UWC_TOKEN_START~1278691906832~UWC_TOKEN_END<br> \このメッセージは、トランザクション処理の処理感覚チェックをノードスーパーバイザが要求している為に、トランザクション (<tt>clu_trans_srv</tt>) 処理が、ほかの処理によって ( 履歴ファイル出力待ち等 ) ビジー状態であることを示しています。この原因は、 nsup が、トランザクションが消滅してから、それを再起動していることを信頼しているからです。<br> \オペレーティングシステムが、 莫大な量のプロセス (HADB ノードと、他のプロセスとの共同構成が多い ) によって、過重負荷を与えられている場合、 I/O 処理のスケジュールは遅延することが想定されます。HADB が、 I/O 処理の遅延に関連している場合、 HADB ノードは次の履歴ファイルを書き込みます。 "HADB warning: Schedule of async &lt;read,write\&gt; operation took ..."<br> \この問題は、とりわけ Red Hat AS 2.1 上では、多重 HADB ノードが同一ホスト上に配置されていて、全てのノードが、それらデバイスが配置されている同一のディスクを使用している場合に、記録されています。</li> 
+     </ul> 
+     <ul> 
+      <li><b>解決方法</b>\\\\\ノードによって使用されるデバイスを配置し、ノードごとにひとつのディスクが使用されるようにてください。そのノードがひとつ以上のデータデバイスを持っているにも関わらず、ディスク競合が記録された場合は、データデバイスをほかのディスクへ移動して下さい。履歴ファイルに対しても、同様に適応してください。<br> \全てのデータ、及びログデバイスと、履歴ファイルが、ローカルディスク ( NFS マウント、あるいは、リモートにマウントされたディスクではない ) 上に存在するか確認してください。<br> \未だ尚監視ツールが、 HADB ディスク上の競合を表示する場合は、データバッファプールサイズが、上昇している可能性があります。</li> 
+     </ul> <h4><a name="TSG_HADBProblemsJa05-HADB%E3%83%87%E3%83%BC%E3%82%BF%E3%83%87%E3%83%90%E3%82%A4%E3%82%B9%E9%A0%98%E5%9F%9F%E3%81%8C%E4%B8%8D%E8%B6%B3%E3%81%97%E3%81%A6%E3%81%84%E3%82%8B%E3%81%8B%3F"></a>HADB データデバイス領域が不足しているか ?</h3> 
+     <ul> 
+      <li><b>解説</b><br> \トランザクション失敗の理由付けが出来るものの 1 つは、データデバイス領域外で実行することです。この状況が発生する場合、 HADB は、履歴ファイルへ警告を書き込みすることが想定され、行の挿入、若しくは、更新を試行したトランザクションが、停止します。<br> \代表的なメッセージは、次のとおりです。 :\\\\\~UWC_TOKEN_START~1278691906833~UWC_TOKEN_END<br> \サムの一般的なルールは、ユーザーデータボリュームの空間を、最低４回はデータデバイスに持つ必要があると言うことです。ガイドに戻って、付加説明を参照してください。</li> 
+     </ul> 
+     <ul> 
+      <li><b>解決方法 1</b><br> \データデバイスサイズを大きくするには、次のコマンドを利用します。 :\\\\\~UWC_TOKEN_START~1278691906834~UWC_TOKEN_END<br> \この解決方法は、全てのノード上にある、 HADB データデバイスによって利用されている、利用可能な動作中のディスク空間が、存在することを要求しています。<br> \HADBM は、データベースノード毎に、自動的に再起動します。</li> 
+     </ul> 
+     <ul> 
+      <li><b>解決方法 2</b><br> \HADB の停止と消去を行い、 より多くのノード、より大きなデータデバイス、あるいはノード毎のデータデバイスに、新しいインスタンスを作成してください。残念ながらこの解決方法の利用は、 GlassFish アプリケーション・サーバーによって作成された、永続的なデータやスキーマを、消去してしまいます。この手続きについてのより詳しい情報として、管理者ガイドを見てください。</li> 
+     </ul> <h4><a name="TSG_HADBProblemsJa05-%E4%BB%96%E3%81%AEHADB%E3%83%AA%E3%82%BD%E3%83%BC%E3%82%B9%E3%81%8C%E4%B8%8D%E8%B6%B3%E3%81%97%E3%81%A6%E3%81%84%E3%82%8B%E3%81%8B%3F"></a>他の HADB リソースが不足しているか ?</h3> <p>HADB ノードが起動された時、 それは割り当てられます。 :</p> 
+     <ul> 
+      <li>永続的に固定化されたサイズで配分された、メモリーセグメント</li> 
+      <li>固定化されたサイズの、データ内部構造</li> 
+     </ul> <p>HADB ノードが、リソース外で実行している場合、それは、トランザクションの遅延、若しくは、停止を引き起こします。リソース使用情報は、ミラーノードの両方に適用されるので、一方のノードが遅延、あるいは停止すると、ミラーノードでも障害が発生した様に見えます。</p> <p>トランザクションが、繰り返し遅延しタイムアウトすると、クライアントへ、エラーメッセージを返信します。もしタイムアウトしなかった場合、この状況は、システムリソース不足による、クライアントへの処理終了までの間のパフォーマンス劣化として明白です。</p> <p>それら問題は、高負荷な状況で、頻繁に発生します。詳細については、<a href="./TSG_HADBProblemsJa06.html">高負荷の問題</a>を参照ください。</p> <p><sup><a href="./TSG_HADBProblemsJa.html">Back</a></sup></p> <p>日本語翻訳: <a href="http://www3.atword.jp/jacksparrow/2008/08/22/gfv2%e3%81%ae-xa-%e3%82%92%e4%bd%bf%e3%81%86%ef%bc%81-part1-%e5%89%8d%e6%ba%96%e5%82%99/">jack spallaw</a></p> <p><a href="./TSG_HADBProblems#section-TSG_HADBProblems-HADBPerformanceProblems.html">英文</a> (翻訳したバージョン: 49)</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 09, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

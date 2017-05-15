@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : 3.1BasicClustering</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="3.1BasicClustering-GlassFishServerOpenSourceEdition3.1BasicClustering"></a>GlassFish Server Open Source Edition 3.1 - Basic Clustering</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#3.1BasicClustering-GlassFishServerOpenSourceEdition3.1BasicClustering">GlassFish Server Open Source Edition 3.1 - Basic Clustering</a></li> 
+       <ul> 
+        <li><a href="#3.1BasicClustering-Introduction">Introduction</a></li> 
+        <li><a href="#3.1BasicClustering-Scope">Scope</a></li> 
+        <li><a href="#3.1BasicClustering-FeatureOverview">Feature Overview</a></li> 
+        <li><a href="#3.1BasicClustering-OutofScope">Out of Scope</a></li> 
+        <li><a href="#3.1BasicClustering-DesignDocument">Design Document</a></li> 
+        <li><a href="#3.1BasicClustering-Quality">Quality</a></li> 
+        <li><a href="#3.1BasicClustering-Documentation">Documentation</a></li> 
+        <li><a href="#3.1BasicClustering-Demos">Demos</a></li> 
+        <li><a href="#3.1BasicClustering-Workspace">Workspace</a></li> 
+        <li><a href="#3.1BasicClustering-MilestoneSchedule">Milestone Schedule</a></li> 
+        <li><a href="#3.1BasicClustering-TaskList">Task List</a></li> 
+        <li><a href="#3.1BasicClustering-Research">Research</a></li> 
+        <li><a href="#3.1BasicClustering-References">References</a></li> 
+        <li><a href="#3.1BasicClustering-DevTests">Dev Tests</a></li> 
+        <li><a href="#3.1BasicClustering-Estimates">Estimates</a></li> 
+        <li><a href="#3.1BasicClustering-EmailAlias">Email Alias</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="3.1BasicClustering-Introduction"></a>Introduction</h2> <p>This project will focus on creating the basic clustering infrastructure for GlassFish 3.1. We will look at the following high level tasks:</p> 
+     <ul> 
+      <li>Lifecycle (install, create, delete, start, stop, restart) management</li> 
+      <li>Configuration management 
+       <ul> 
+        <li>Ability to manage multiple cluster configurations</li> 
+        <li>Support for offline config</li> 
+        <li>Size of domain.xml should not be a bottleneck for startup and administration</li> 
+       </ul> </li> 
+      <li>Provide support for existing infrastructure for 3.1 release</li> 
+     </ul> <h4><a name="3.1BasicClustering-Scope"></a>Scope</h2> <p>Note: for requirements that have an IssueTracker link in the Status/Comments column, see IssueTracker for status.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Feature ID </th> 
+         <th class="confluenceTh"> Priority </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> Eng Response </th> 
+         <th class="confluenceTh"> Owner(s) </th> 
+         <th class="confluenceTh"> Estimate (Man Days) </th> 
+         <th class="confluenceTh"> Source of Requirement </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> INFRA-001 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> create-domain --template support </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Byron </td> 
+         <td class="confluenceTd"> 10 </td> 
+         <td class="confluenceTd"> Feature parity </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/12016">12016 </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> INFRA-002A </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> create-instance </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Jennifer </td> 
+         <td class="confluenceTd"> 5 </td> 
+         <td class="confluenceTd"> Feature parity </td> 
+         <td class="confluenceTd"> CRUD domain.xml entry completed by Jerome </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> INFRA-002B </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> delete-instance </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Byron </td> 
+         <td class="confluenceTd"> 5 </td> 
+         <td class="confluenceTd"> Feature parity </td> 
+         <td class="confluenceTd"> Started May 14 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> INFRA-002C </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> create-local-instance </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Jennifer </td> 
+         <td class="confluenceTd"> 5 </td> 
+         <td class="confluenceTd"> Feature parity </td> 
+         <td class="confluenceTd"> Completed(no security/savemasterpassword) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> INFRA-002D </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> list-instances </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Byron </td> 
+         <td class="confluenceTd"> 5 </td> 
+         <td class="confluenceTd"> Feature parity </td> 
+         <td class="confluenceTd"> <b>Completed</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> INFRA-003A </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> start-local-instance </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Byron </td> 
+         <td class="confluenceTd"> 30 </td> 
+         <td class="confluenceTd"> Feature parity </td> 
+         <td class="confluenceTd"> <b>Completed</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> INFRA-003A1 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Perfect XML Parsing </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Byron </td> 
+         <td class="confluenceTd"> 30 </td> 
+         <td class="confluenceTd"> Feature parity </td> 
+         <td class="confluenceTd"> <b>Completed</b> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> INFRA-003B </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> stop-instance </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Byron </td> 
+         <td class="confluenceTd"> 5 </td> 
+         <td class="confluenceTd"> Feature parity </td> 
+         <td class="confluenceTd"> <b>Completed</b> local&amp;remote </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> INFRA-004 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> default-config template </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Jennifer </td> 
+         <td class="confluenceTd"> 15 </td> 
+         <td class="confluenceTd"> Feature parity </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> INFRA-005 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> create/delete/list-cluster </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Bhakti </td> 
+         <td class="confluenceTd"> 15 </td> 
+         <td class="confluenceTd"> Feature parity </td> 
+         <td class="confluenceTd">Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> INFRA-006 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> start/stop-cluster </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Tom, Bhakti </td> 
+         <td class="confluenceTd"> 10 </td> 
+         <td class="confluenceTd"> Feature parity </td> 
+         <td class="confluenceTd"> Issue <a href="https://github.com/javaee/glassfish/issues/12124">12124 </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> INFRA-007 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> copy/delete/list-config </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Bhakti </td> 
+         <td class="confluenceTd"> 10 </td> 
+         <td class="confluenceTd"> Feature parity </td> 
+         <td class="confluenceTd">Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> INFRA-008 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Support for infrastructure related CLIs. Refer to <a href="GlassFishv3.1.html" title="GlassFishv3.1">features wiki </a> </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Tom, Bhakti, Byron, Jennifer </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Feature parity </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> INFRA-009 </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> Support for manual synchronization </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Jennifer </td> 
+         <td class="confluenceTd"> 5 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Issue <a href="https://github.com/javaee/glassfish/issues/12120">12120 </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> INFRA-010 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Support for offline-config </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Byron </td> 
+         <td class="confluenceTd"> 5 </td> 
+         <td class="confluenceTd"> Feature parity </td> 
+         <td class="confluenceTd"> Issue <a href="https://github.com/javaee/glassfish/issues/12121">12121 </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> INFRA-011 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Support for existing probe based monitoring infrastructure </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Byron, Jennifer </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Feature introduced in 3.0 release </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> INFRA-012 </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> Rename infrastructure related (ex. sun-domain_1_3.dtd, sun-loadbalancer_1_2.dtd, sun-resources_1_3.dtd, etc.) sun-* DTDs to glassfish-* </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Byron </td> 
+         <td class="confluenceTd"> 5 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Issue <a href="https://github.com/javaee/glassfish/issues/12122">12122 </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> INFRA-013 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Support for create-service </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Byron </td> 
+         <td class="confluenceTd"> 15 </td> 
+         <td class="confluenceTd"> Feature parity* </td> 
+         <td class="confluenceTd"> * create-service is working for Solaris and Windows; need to add support for Linux, Issue <a href="https://github.com/javaee/glassfish/issues/12125">12125 </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> INFRA-014 </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> Support for restarting instance remotely </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Byron </td> 
+         <td class="confluenceTd"> 5 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Issue <a href="https://github.com/javaee/glassfish/issues/12123">12123 </a> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.1BasicClustering-FeatureOverview"></a>Feature Overview</h2> <p>At the end of this effort, we will be able to create a GlassFish 3.1 cluster with multiple instances (involves manual synchronization step). User will be able to do the following tasks:</p> 
+     <ol> 
+      <li>Install and Setup a <a href="CreateDAS.html" title="CreateDAS">DAS</a> Server 
+       <ul> 
+        <li>Install GlassFish 3.1 on DAS machine</li> 
+        <li>Create a domain with default cluster config</li> 
+        <li>Inject only associated config for DAS (server-config) runtime</li> 
+        <li>Load other configuration elements on-demand for management (performance improvement)</li> 
+       </ul> </li> 
+      <li>Create a <a href="CreateCluster.html" title="CreateCluster">Cluster</a> 
+       <ul> 
+        <li>Create a cluster with members</li> 
+        <li>Deploy applications to the cluster and/or make configuration changes for that cluster</li> 
+        <li>Get a zip with all necessary applications and configuration for the cluster</li> 
+       </ul> </li> 
+      <li><a href="CreateInstance.html" title="CreateInstance">Create Remote Instance(s)</a> for the Cluster (or Standalone Instance) 
+       <ul> 
+        <li>Install GlassFish 3.1 on an instance machine</li> 
+        <li>Create instance(s) and register them with DAS</li> 
+        <li>For each instance, FTP and apply the zip that has applications and configuration</li> 
+       </ul> </li> 
+      <li><a href="StartInstance.html" title="StartInstance">Start</a> the Remote Instance(s) 
+       <ul> 
+        <li>Read the correct configuration</li> 
+        <li>Load all associated resources/applications to the cluster or stand alone instance</li> 
+        <li>Read only associated config (ex. cluster1-config) and skip all others configs (ex. cluster2-config) in domain.xml</li> 
+       </ul> </li> 
+     </ol> <h4><a name="3.1BasicClustering-OutofScope"></a>Out of Scope</h2> <p>Synchronization during sever startup, load-balancer administration, dynamic reconfiguration and hot deployment, SSH support for provisioning, clustering support in console, etc. are outside the scope of this project. They will be handled in separate projects. </p> <h4><a name="3.1BasicClustering-DesignDocument"></a>Design Document</h2> 
+     <ul> 
+      <li><a href="V3.1Clustering.html" title="V3.1Clustering">GlassFish Server Open Source Edition 3.1 Clustering Design Spec</a></li> 
+     </ul> <h4><a name="3.1BasicClustering-Quality"></a>Quality </h2> 
+     <ul> 
+      <li>Link to Test Plan</li> 
+     </ul> <h4><a name="3.1BasicClustering-Documentation"></a>Documentation </h2> 
+     <ul> 
+      <li><a href="GlassFishV3.1ClusterInfrastructureDocPlan.html" title="GlassFishV3.1ClusterInfrastructureDocPlan">Cluster Infrastructure Documentation Plan</a></li> 
+     </ul> <h4><a name="3.1BasicClustering-Demos"></a>Demos</h2> 
+     <ul> 
+      <li><a href="3.1MS1ClusteringDemo.html" title="3.1MS1ClusteringDemo">Milestone 1 Demo</a></li> 
+     </ul> <h4><a name="3.1BasicClustering-Workspace"></a>Workspace</h2> 
+     <ul> 
+      <li>module name: clustering as sub-module under top-level admin module ?</li> 
+      <li>package name: org.glassfish.admin.clustering ?</li> 
+     </ul> <h4><a name="3.1BasicClustering-MilestoneSchedule"></a>Milestone Schedule</h2> <p>Note: for milestone deliveries that have an IssueTracker link in the Status/Comments column, see IssueTracker for status.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item #</th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 01. </td> 
+         <td class="confluenceTd"> MS1 (5/24) </td> 
+         <td class="confluenceTd"> INFRA-005 </td> 
+         <td class="confluenceTd"> create/delete/list-cluster </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> FINISHED </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 02. </td> 
+         <td class="confluenceTd"> MS1 (5/24) </td> 
+         <td class="confluenceTd"> INFRA-002A, INFRA-002C, INFRA-002B, INFRA-002D </td> 
+         <td class="confluenceTd"> create/delete/list-instance </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> create-local-instance: Basic function completed; create-instance: domain.xml entry completed; list: FINISHED </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 03. </td> 
+         <td class="confluenceTd"> MS1 (5/24) </td> 
+         <td class="confluenceTd"> INFRA-003A, INFRA-003B </td> 
+         <td class="confluenceTd"> start/stop-instance </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> FINISHED </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 03X. </td> 
+         <td class="confluenceTd"> MS1 (5/24) </td> 
+         <td class="confluenceTd"> INFRA-003A1 </td> 
+         <td class="confluenceTd"> Perfect Xml Parsing for Instances </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> TESTING NOW </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 04. </td> 
+         <td class="confluenceTd"> MS2 (6/21) </td> 
+         <td class="confluenceTd"> INFRA-005, INFRA-002A, INFRA-002C, INFRA-002B, INFRA-003A, INFRA-003B </td> 
+         <td class="confluenceTd"> create/delete/list-cluster, create/delete/list-instance, start/stop-instance </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Planned - will do QA/Docs handover with proper Dev Tests, Issues <a href="https://github.com/javaee/glassfish/issues/12042">12042 </a>, <a href="https://github.com/javaee/glassfish/issues/12043">12043 </a>, <a href="https://github.com/javaee/glassfish/issues/12044">12044 </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 05. </td> 
+         <td class="confluenceTd"> MS2 (6/21) </td> 
+         <td class="confluenceTd"> INFRA-001 </td> 
+         <td class="confluenceTd"> create-domain template support </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Issue <a href="https://github.com/javaee/glassfish/issues/12016">12016 </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 06. </td> 
+         <td class="confluenceTd"> MS2 (6/21) </td> 
+         <td class="confluenceTd"> INFRA-007 </td> 
+         <td class="confluenceTd"> copy/delete/list-config </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Issue <a href="https://github.com/javaee/glassfish/issues/12017">12017 </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 07. </td> 
+         <td class="confluenceTd"> MS3 (7/19) </td> 
+         <td class="confluenceTd"> INFRA-009 </td> 
+         <td class="confluenceTd"> manual sync </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Issue <a href="https://github.com/javaee/glassfish/issues/12120">12120 </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 08. </td> 
+         <td class="confluenceTd"> MS3 (7/19) </td> 
+         <td class="confluenceTd"> INFRA-010 </td> 
+         <td class="confluenceTd"> offline-config </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Issue <a href="https://github.com/javaee/glassfish/issues/12121">12121 </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 09. </td> 
+         <td class="confluenceTd"> MS3 (7/19) </td> 
+         <td class="confluenceTd"> INFRA-012 </td> 
+         <td class="confluenceTd"> Rename infrastructure related DTDs </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Issue <a href="https://github.com/javaee/glassfish/issues/12122">12122 </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 10. </td> 
+         <td class="confluenceTd"> MS3 (7/19) </td> 
+         <td class="confluenceTd"> INFRA-014 </td> 
+         <td class="confluenceTd"> restart instance </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Issue <a href="https://github.com/javaee/glassfish/issues/12123">12123 </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 11. </td> 
+         <td class="confluenceTd"> MS3 (7/19) </td> 
+         <td class="confluenceTd"> INFRA-006 </td> 
+         <td class="confluenceTd"> start/stop-cluster </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Issue <a href="https://github.com/javaee/glassfish/issues/12124">12124 </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 12. </td> 
+         <td class="confluenceTd"> MS4 (7/19) </td> 
+         <td class="confluenceTd"> INFRA-013 </td> 
+         <td class="confluenceTd"> create-service </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Issue <a href="https://github.com/javaee/glassfish/issues/12125">12125 </a> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.1BasicClustering-TaskList"></a>Task List</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task </th> 
+         <th class="confluenceTh"> Target Milestone </th> 
+         <th class="confluenceTh"> Start </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Owner(s) </th> 
+         <th class="confluenceTh"> Feature ID </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Sophisticated Minimum Config Parsing </td> 
+         <td class="confluenceTd"> MS1 </td> 
+         <td class="confluenceTd"> 5/17 </td> 
+         <td class="confluenceTd"> 5/24 </td> 
+         <td class="confluenceTd"> Byron </td> 
+         <td class="confluenceTd"> INFRA-003A </td> 
+         <td class="confluenceTd"> Extreme Testing Now. The most complex code I've written in at least one year! All instances end up with either 2 or 4 config elements. While retaining 2 levels of performance enhancements. Would have taken 2 hours w/o optimizations. It took 50 hours with optimization. This was INTENSE!!! Optimizations and readability was essential. It was worth the effort. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Analysis of v2 profiles and templates </td> 
+         <td class="confluenceTd"> MS1 </td> 
+         <td class="confluenceTd"> 3/16 </td> 
+         <td class="confluenceTd"> 3/18 </td> 
+         <td class="confluenceTd"> Jennifer </td> 
+         <td class="confluenceTd"> INFRA-004 </td> 
+         <td class="confluenceTd"> Completed. <a href="V2DeveloperClusterProfile.html" title="V2DeveloperClusterProfile">See Research </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Support for multi-config support (section 4) </td> 
+         <td class="confluenceTd"> MS1 </td> 
+         <td class="confluenceTd"> 4/8/10 </td> 
+         <td class="confluenceTd"> 4/15/10 </td> 
+         <td class="confluenceTd"> Byron </td> 
+         <td class="confluenceTd"> INFRA-003A </td> 
+         <td class="confluenceTd">Correct config elem parsing; make sure v3 code looks for the correct config </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Support for <a href="CreateCluster.html" title="CreateCluster">create-cluster </a>/delete/list-cluster (section 2) </td> 
+         <td class="confluenceTd"> MS1 </td> 
+         <td class="confluenceTd"> 5/3 </td> 
+         <td class="confluenceTd"> 5/14 </td> 
+         <td class="confluenceTd"> Bhakti </td> 
+         <td class="confluenceTd"> INFRA-005 </td> 
+         <td class="confluenceTd">Completed Supported --config, done basic validation </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Support for <a href="CreateCluster.html" title="CreateCluster">ref </a> (section 2.4) </td> 
+         <td class="confluenceTd"> MS1 </td> 
+         <td class="confluenceTd"> 5/17 </td> 
+         <td class="confluenceTd"> 5/21 </td> 
+         <td class="confluenceTd"> Bhakti </td> 
+         <td class="confluenceTd"> INFRA-005 </td> 
+         <td class="confluenceTd"> Completed Added support for system-all application and resource refs </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Support for <a href="CreateInstance.html" title="CreateInstance">create-instance </a>/delete/list-instance (section 3) </td> 
+         <td class="confluenceTd"> MS1 </td> 
+         <td class="confluenceTd"> 4/26 </td> 
+         <td class="confluenceTd"> 5/14 </td> 
+         <td class="confluenceTd"> Jennifer, Byron </td> 
+         <td class="confluenceTd"> INFRA-002A, INFRA-002B, INFRA-002C </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Support for <a href="StartInstance.html" title="StartInstance">start-instance </a> (section 4) </td> 
+         <td class="confluenceTd"> MS1 </td> 
+         <td class="confluenceTd"> 4/1/10 </td> 
+         <td class="confluenceTd"> 4/7/10 </td> 
+         <td class="confluenceTd"> Byron </td> 
+         <td class="confluenceTd"> INFRA-003A, INFRA-003B </td> 
+         <td class="confluenceTd"> Completed. Can run in a restricted mode. See <a href="GlassFish3.1StartInstanceIssues.html" title="GlassFish3.1StartInstanceIssues">current status and open issues </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Support for <a href="StartInstance.html" title="StartInstance">stop-instance </a> (section 4) </td> 
+         <td class="confluenceTd"> MS1 </td> 
+         <td class="confluenceTd"> 5/10 </td> 
+         <td class="confluenceTd"> 5/14 </td> 
+         <td class="confluenceTd"> Byron </td> 
+         <td class="confluenceTd"> INFRA-003A, INFRA-003B </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Support for running QuickLook on instances </td> 
+         <td class="confluenceTd"> MS1 </td> 
+         <td class="confluenceTd"> 5/17 </td> 
+         <td class="confluenceTd"> 5/21 </td> 
+         <td class="confluenceTd"> Byron </td> 
+         <td class="confluenceTd"> INFRA-003A, INFRA-003B </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Move start-domain code to a common base class or to utilities </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Byron </td> 
+         <td class="confluenceTd"> INFRA-003A </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Necessary support for <a href="CreateDAS.html" title="CreateDAS">create-domain </a> (section 1) </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd"> 5/26 </td> 
+         <td class="confluenceTd"> 6/9 </td> 
+         <td class="confluenceTd"> Byron </td> 
+         <td class="confluenceTd"> INFRA-001 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Write dev tests for create/delete/list-instance </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd"> 5/26 </td> 
+         <td class="confluenceTd"> 6/9 </td> 
+         <td class="confluenceTd"> Jennifer </td> 
+         <td class="confluenceTd"> INFRA-002 </td> 
+         <td class="confluenceTd">Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Write dev tests for create/delete/list-cluster </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd"> 5/26 </td> 
+         <td class="confluenceTd"> 6/9 </td> 
+         <td class="confluenceTd"> Bhakti </td> 
+         <td class="confluenceTd"> INFRA-005 </td> 
+         <td class="confluenceTd"> FINISHED </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Write dev tests for start/stop-instance </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd"> 6/9 </td> 
+         <td class="confluenceTd"> 6/16 </td> 
+         <td class="confluenceTd"> Byron </td> 
+         <td class="confluenceTd"> INFRA-005 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> monitoring:Support probe providers in applications directory </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> 6/30 </td> 
+         <td class="confluenceTd"> 7/1 </td> 
+         <td class="confluenceTd"> Jennifer </td> 
+         <td class="confluenceTd"> INFRA-011: <a href="https://github.com/javaee/glassfish/issues/11927">Issue 11927 </a> </td> 
+         <td class="confluenceTd">Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> monitoring refactoring </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> 6/9 </td> 
+         <td class="confluenceTd"> 6/11 </td> 
+         <td class="confluenceTd"> Jennifer </td> 
+         <td class="confluenceTd"> INFRA-011: <a href="https://github.com/javaee/glassfish/issues/11256">Issue 11256 </a> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Fix bugs </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd"> 5/26 </td> 
+         <td class="confluenceTd"> 6/9 </td> 
+         <td class="confluenceTd"> Jennifer </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/7144">Issue 7144 </a> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Support for <a href="GlassFishv3.1.html#GlassFishv3.1-sectionGlassFishv3.1ClusteringInfrastructure">infrastructure CLIs </a> </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> ALL </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Support for <a href="CreateInstance.html" title="CreateInstance">offline-config </a> (section 3) </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> 6/23 </td> 
+         <td class="confluenceTd"> 6/30 </td> 
+         <td class="confluenceTd"> Byron </td> 
+         <td class="confluenceTd"> INFRA-010 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Support for <a href="CreateCluster.html" title="CreateCluster">manual sync </a> (section 2.3) </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> 6/23 </td> 
+         <td class="confluenceTd"> 6/30 </td> 
+         <td class="confluenceTd"> Jennifer </td> 
+         <td class="confluenceTd"> INFRA-009 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Hand off Performance Tuner to QA/Docs/Perf - add more tests </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> 6/23 </td> 
+         <td class="confluenceTd"> 6/30 </td> 
+         <td class="confluenceTd"> Jennifer </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Support for restarting remote instance </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> 7/1 </td> 
+         <td class="confluenceTd"> 7/8 </td> 
+         <td class="confluenceTd"> Byron </td> 
+         <td class="confluenceTd"> INFRA-014 </td> 
+         <td class="confluenceTd"> Should continue to work </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Cluster infrastructure security </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Tom </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Co-ordinate with security team </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Support for start/stop-cluster </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> 6/23 </td> 
+         <td class="confluenceTd"> 7/7 </td> 
+         <td class="confluenceTd"> Tom, Bhakti </td> 
+         <td class="confluenceTd"> INFRA-006 </td> 
+         <td class="confluenceTd"> Co-ordinate with SSH team </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Support for create-service </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd"> 7/21 </td> 
+         <td class="confluenceTd"> 8/11 </td> 
+         <td class="confluenceTd"> Byron </td> 
+         <td class="confluenceTd"> INFRA-013 </td> 
+         <td class="confluenceTd"> Solaris and Windows are working; need to add support for Linux </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Support for upgrade </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Jennifer </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Fix P1 bugs </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> ALL </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> MS4 is the SCF for infrastructure. All P1 bugs need to be addressed </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.1BasicClustering-Research"></a>Research </h2> 
+     <ul> 
+      <li><a href="3.1ConfigChanges.html" title="3.1ConfigChanges">Required v3 Config Changes</a> (Byron, March 16, 2010)</li> 
+      <li><a href="V2Clustering.html" title="V2Clustering">Research on v2 Clustering Behavior</a> (Byron, March 15, 2010)</li> 
+      <li><a href="V2DeveloperClusterProfile.html" title="V2DeveloperClusterProfile">v2.x Developer vs Cluster Profile </a> (Jennifer, March 18, 2010)</li> 
+      <li><a href="V3domain.html" title="V3domain">v3 domain</a> (Jennifer, March 19, 2010)</li> 
+      <li><a href="ServerConfig_vs_defaultConfig.html" title="ServerConfig_vs_defaultConfig">server-config/default-config</a> (Jennifer, March 24, 2010)</li> 
+     </ul> <h4><a name="3.1BasicClustering-References"></a>References</h2> 
+     <ul> 
+      <li><a href="http://docs.sun.com/app/docs/doc/821-0179/6nl8hchmr?l=en&amp;a=expand">GlassFish v2.x CLI Commands</a></li> 
+      <li><a href="GlassFishV2Architecture.html" title="GlassFishV2Architecture">GlassFish v2 Cluster Architecture </a></li> 
+      <li><a href="http://docs.sun.com/app/docs/doc/821-0182/gjfom?l=en&amp;a=view">GlassFish v2.1.1 High Availability Administration Guide Chapter 6 Setting Up Clusters in Enterprise Server </a></li> 
+      <li><a href="PlanForGlassFish3.1.html" title="PlanForGlassFish3.1">GlassFish v3.1 Plans including Sub Prokects</a></li> 
+      <li><a href="3.1PlatformServices.html" title="3.1PlatformServices">Platform Services</a></li> 
+     </ul> <h4><a name="3.1BasicClustering-DevTests"></a>Dev Tests </h2> 
+     <ul> 
+      <li><a href="AdminTests.html" title="AdminTests">Developer Tests </a></li> 
+     </ul> <h4><a name="3.1BasicClustering-Estimates"></a>Estimates</h2> <p>The list is somewhat order-dependent. </p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Area </th> 
+         <th class="confluenceTh"> When </th> 
+         <th class="confluenceTh"> Notes </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Specs </td> 
+         <td class="confluenceTd"> 2 man-weeks </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> start/create/stop/delete-instance all working, possibly in a simple mode </td> 
+         <td class="confluenceTd"> 1 man-month </td> 
+         <td class="confluenceTd"> Started </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> start/create/stop/delete-cluster/cluster-ref all working, possibly in a simple mode </td> 
+         <td class="confluenceTd"> 1 man-month </td> 
+         <td class="confluenceTd"> Started </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Fix internals of v3 to work as an instance (mainly no admin!) </td> 
+         <td class="confluenceTd"> 2 man-weeks </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Fix instance/cluster code to final production, now that v3 proper is cooperating </td> 
+         <td class="confluenceTd"> 3 man-months </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Make Changes based on performance and bug fixes </td> 
+         <td class="confluenceTd"> 3 man-months </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.1BasicClustering-EmailAlias"></a>Email Alias</h2> 
+     <ul> 
+      <li>Please contact us at <a href="mailto:admin@glassfish.java.net">admin@glassfish.java.net</a></li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 27, 2010 by 
+<font color="#0050B2">bnevins</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

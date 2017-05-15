@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : V3.1Clustering</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="V3.1Clustering-GlassFishServerOpenSourceEdition3.1ClusteringDesignSpec"></a>GlassFish Server Open Source Edition 3.1 - Clustering Design Spec</h1> <p>This is the design specification for the 3.1 clustering support.</p> 
+     <ul> 
+      <li>Bill Shannon (bill.shannon@sun.com)</li> 
+      <li>Kedar Mhaswade (km@dev.java.net)</li> 
+      <li>Jerome Dochez (dochez@dev.java.net)</li> 
+      <li>Tom Mueller (tmueller@dev.java.net)</li> 
+     </ul> 
+     <div> 
+      <ul> 
+       <li><a href="#V3.1Clustering-GlassFishServerOpenSourceEdition3.1ClusteringDesignSpec">GlassFish Server Open Source Edition 3.1 - Clustering Design Spec</a></li> 
+       <li><a href="#V3.1Clustering-Introduction">Introduction</a></li> 
+       <li><a href="#V3.1Clustering-DetailedDiscussionofArchitectureComponents">Detailed Discussion of Architecture Components</a></li> 
+       <ul> 
+        <li><a href="#V3.1Clustering-HighlevelComponents">High-level Components</a></li> 
+        <li><a href="#V3.1Clustering-Installation">Installation</a></li> 
+        <li><a href="#V3.1Clustering-DataSynchronization">Data Synchronization</a></li> 
+        <ul> 
+         <li><a href="#V3.1Clustering-Detailsofthesynchronizationalgorithmonserverstartup%3A">Details of the synchronization algorithm on server startup:</a></li> 
+        </ul> 
+        <li><a href="#V3.1Clustering-Synchronizationcriteria">Synchronization criteria</a></li> 
+        <li><a href="#V3.1Clustering-Whentodostartupsynchronization%3F">When to do startup synchronization?</a></li> 
+        <li><a href="#V3.1Clustering-Communication%28Transport%29Layer">Communication (Transport) Layer</a></li> 
+        <li><a href="#V3.1Clustering-CommandReplication">Command Replication</a></li> 
+        <ul> 
+         <li><a href="#V3.1Clustering-domain.xmlsynchronization">domain.xml synchronization</a></li> 
+         <li><a href="#V3.1Clustering-Applicationdeployment">Application deployment</a></li> 
+        </ul> 
+        <li><a href="#V3.1Clustering-SynchronizationIssues">Synchronization Issues</a></li> 
+        <ul> 
+         <li><a href="#V3.1Clustering-ApplicationDeploymentIssues">Application Deployment Issues</a></li> 
+         <li><a href="#V3.1Clustering-docrootDirectory">docroot Directory</a></li> 
+        </ul> 
+        <li><a href="#V3.1Clustering-ColdStartofaServerInstanceWithoutNodeAgent">Cold Start of a Server Instance Without Node Agent</a></li> 
+        <li><a href="#V3.1Clustering-ServerSoftwareUpgradeImplications">Server Software Upgrade Implications</a></li> 
+        <li><a href="#V3.1Clustering-ClusterInstallationandConfiguration">Cluster Installation and Configuration</a></li> 
+        <li><a href="#V3.1Clustering-StandaloneInstances">Stand-alone Instances</a></li> 
+        <li><a href="#V3.1Clustering-InstanceStates">Instance States</a></li> 
+        <ul> 
+         <li><a href="#V3.1Clustering-TheBigPicture">The Big Picture</a></li> 
+         <li><a href="#V3.1Clustering-Fileformatandrestrictions">File format and restrictions</a></li> 
+         <li><a href="#V3.1Clustering-PhasedImplementation">Phased Implementation</a></li> 
+        </ul> 
+        <li><a href="#V3.1Clustering-Upgrade">Upgrade</a></li> 
+       </ul> 
+       <li><a href="#V3.1Clustering-SoftwarePartitioning">Software Partitioning</a></li> 
+       <li><a href="#V3.1Clustering-ClusterAdminCommands">Cluster Admin Commands</a></li> 
+       <ul> 
+        <li><a href="#V3.1Clustering-createcluster">create-cluster</a></li> 
+        <li><a href="#V3.1Clustering-createinstance">create-instance</a></li> 
+        <li><a href="#V3.1Clustering-createlocalinstance">create-local-instance</a></li> 
+        <li><a href="#V3.1Clustering-"> <span style="color: #000000"><b>create-service</b></span></a></li> 
+        <li><a href="#V3.1Clustering-copyconfig">copy-config</a></li> 
+        <li><a href="#V3.1Clustering-deletecluster">delete-cluster</a></li> 
+        <li><a href="#V3.1Clustering-deleteinstance">delete-instance</a></li> 
+        <li><a href="#V3.1Clustering-deletelocalinstance">delete-local-instance</a></li> 
+        <li><a href="#V3.1Clustering-deleteconfig">delete-config</a></li> 
+        <li><a href="#V3.1Clustering-"> <span style="color: #000000"><b>export-sync-bundle</b></span></a></li> 
+        <li><a href="#V3.1Clustering-"> <span style="color: #000000"><b>import-sync-bundle</b></span></a></li> 
+        <li><a href="#V3.1Clustering-startcluster">start-cluster</a></li> 
+        <li><a href="#V3.1Clustering-startinstance">start-instance</a></li> 
+        <li><a href="#V3.1Clustering-restartinstance">restart-instance</a></li> 
+        <li><a href="#V3.1Clustering-restartlocalinstance">restart-local-instance</a></li> 
+        <li><a href="#V3.1Clustering-startlocalinstance">start-local-instance</a></li> 
+        <li><a href="#V3.1Clustering-stopcluster">stop-cluster</a></li> 
+        <li><a href="#V3.1Clustering-stopinstance">stop-instance</a></li> 
+        <li><a href="#V3.1Clustering-stoplocalinstance">stop-local-instance</a></li> 
+        <li><a href="#V3.1Clustering-listclusters">list-clusters</a></li> 
+        <li><a href="#V3.1Clustering-listinstances">list-instances</a></li> 
+        <li><a href="#V3.1Clustering-listconfigs">list-configs</a></li> 
+        <li><a href="#V3.1Clustering-createnodessh">create-node-ssh</a></li> 
+        <li><a href="#V3.1Clustering-createnodeconfig">create-node-config</a></li> 
+       </ul> 
+       <li><a href="#V3.1Clustering-ChangestoExistingCommands">Changes to Existing Commands</a></li> 
+       <ul> 
+        <li><a href="#V3.1Clustering-createdomain">create-domain</a></li> 
+        <li><a href="#V3.1Clustering-deletedomain">delete-domain</a></li> 
+        <li><a href="#V3.1Clustering-stopdomain">stop-domain</a></li> 
+        <li><a href="#V3.1Clustering-restartdomain">restart-domain</a></li> 
+       </ul> 
+       <li><a href="#V3.1Clustering-Deploymentinclusteredenvironment">Deployment in clustered environment</a></li> 
+       <ul> 
+        <li><a href="#V3.1Clustering-Deploy">Deploy</a></li> 
+        <li><a href="#V3.1Clustering-Undeploy">Undeploy</a></li> 
+        <li><a href="#V3.1Clustering-Redeploy">Redeploy</a></li> 
+       </ul> 
+       <li><a href="#V3.1Clustering-OpenIssues">Open Issues</a></li> 
+       <ul> 
+        <ul> 
+         <li><a href="#V3.1Clustering-Regardingdocrootsynchronization%2CherearesomemoreideasfromNazrul%3A">Regarding docroot synchronization, here are some more ideas from Nazrul:</a></li> 
+        </ul> 
+       </ul> 
+      </ul>
+     </div> 
+     <hr> <h4><a name="V3.1Clustering-Introduction"></a>Introduction</h1> <p>Adding clustering support to GlassFish v3 involves a number of separate&nbsp;tasks. Here's a partial list:</p> 
+     <ul> 
+      <li>Centralized administration support. This is the primary topic of this&nbsp;design spec.</li> 
+      <li>Maintaining configurations for multiple servers in the Domain Admin Server.&nbsp;By carrying over the domain.xml design from v2, this is largely done.</li> 
+      <li>Propagating changes to those configurations to individual servers.&nbsp;Jerome is designing this aspect, which will be written up elsewhere.</li> 
+      <li>Synchronizing the state of individual servers with the DAS after restart.</li> 
+      <li>Server lifecycle support - install, create, start, stop, restart.</li> 
+      <li>Cluster membership and messaging support.&nbsp;This is largely a matter of porting and cleaning up the GMS API&nbsp;and implementation from v2.</li> 
+      <li>Session state replication for HA.&nbsp;This is largely a matter of porting and cleaning up the replication SPI&nbsp;and implementation from v2.</li> 
+      <li>Java EE spec required management support.&nbsp;This is still TBD.</li> 
+      <li>JMS clustering support.&nbsp;This is still TBD.</li> 
+      <li>AMX support.&nbsp;Current thinking is that we're going to deprecate AMX, but we need to&nbsp;assess the impact on the admin GUI, which is the biggest (maybe only)&nbsp;user of AMX.</li> 
+     </ul> <h4><a name="V3.1Clustering-DetailedDiscussionofArchitectureComponents"></a>Detailed Discussion of Architecture Components</h1> <h4><a name="V3.1Clustering-HighlevelComponents"></a>High-level Components</h2> <p>The overall architecture for cluster support in GlassFish v3 is largely&nbsp;the same as it was for GlassFish v2.&nbsp;One significant change is that we will make the node agent optional.&nbsp;There is a single admin server for the entire cluster&nbsp;(DAS - Domain Admin Server). The individual instances that are part of&nbsp;the same or different "clusters" run on the same or different nodes. A domain&nbsp;corresponds to a running process called Domain Admin Server and&nbsp;different domains can share the same installation. A domain's file&nbsp;system is termed the "central repository" and it is the one that should&nbsp;be protected at all costs. Various nodes make copies of a subset of&nbsp;this structure. This is a subset because not all&nbsp;application/configuration applies to every cluster/node. A node&nbsp;replicates only the portion that it needs. DAS is the single entry&nbsp;point into administration and it is a single point of failure for cluster&nbsp;administration, but not application operation.</p> <p>Following things are (still) not planned:</p> 
+     <ul> 
+      <li>DAS failover. Several customers have asked for this, and it may be possible&nbsp;to do this later if we do the infrastructure right.</li> 
+      <li>An efficient configuration backup/restore solution.</li> 
+     </ul> <p>Following changes can be considered:</p> 
+     <ul> 
+      <li>Monitoring of server instances can be done without going through DAS. In&nbsp;GlassFish v2, a high-overhead cascading solution was present to&nbsp;cascade the MBeans from server instances onto DAS. We may rethink that&nbsp;solution. At the same time, it may be desirable to let sysadmins monitor&nbsp;a particular cluster instance individually.</li> 
+     </ul> <h4><a name="V3.1Clustering-Installation"></a>Installation</h2> <p>In GlassFish v2, every machine (node) that participates in clustering needs to&nbsp;be managed separately as far as product installation is concerned. This is&nbsp;probably manageable for a small number of nodes, but when the cluster size&nbsp;grows, it becomes unmanabeable. We don't plan to change this approach for 3.1.</p> <h4><a name="V3.1Clustering-DataSynchronization"></a>Data Synchronization</h2> <p>The application server data is of three types:</p> <p>a) server software (modules and libraries)<br> b) server configuration (regular files)<br> c) application data and configuration (regular files)</p> <p>In order to avoid the need to install the software on each node,&nbsp;we would need to be able to synchronize a); that's something to consider<br> for a future release.&nbsp;To support cluster management, we have to support synchronization&nbsp;of b) and c). This section talks about b) and c).</p> <p>All the clients (server instances) and the DAS have to agree on the relative&nbsp;paths.</p> <p>The domain's folder looks like the following:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">(| implies a file, || implies a folder)
+
+||---- &lt;domain-name&gt;
+     ||---- config (config files common to all servers including the DAS)
+            |---- admin-keyfile
+            |---- cacerts.jks
+            |---- default-web.xml
+            |---- domain-passwords
+            |---- domain.xml
+            |---- keyfile
+            |---- keystore.jks
+            |---- logging.properties
+            |---- login.conf
+            |---- server.policy
+            |---- sun-acc.xml
+            |---- wss-server-config-1.0.xml
+            |---- wss-server-config-2.0.xml
+            |---- [XXX - any others?]
+            ||---- &lt;server/cluster-name&gt;-config (cluster/server-specific data
+                                         copied to instance's config folder)
+     ||---- addons (only if domain was a v2 domain)
+     ||---- applications
+            ||---- &lt;application-name&gt;
+                   | ---- &lt;application-specific-paths&gt;
+     ||---- autodeploy (apps deployed to DAS only)
+     ||---- bin (currently empty, used to contain startserv and stopserv)
+     ||---- docroot (the default web-container docroot, files are copied to
+		     instance's docroot)
+     ||---- generated
+            ||---- ejb
+                   ||---- &lt;application-name&gt;
+            ||---- jsp
+                   ||---- &lt;application-name&gt;
+            ||---- policy
+                   ||---- &lt;application-name&gt;
+            ||---- xml
+                   ||---- &lt;application-name&gt;
+     ||---- imq
+     ||---- java-web-start
+	    ||---- &lt;application-name&gt;
+     ||---- jbi
+     ||---- lib (libraries common to all servers including the DAS)
+     ||---- logs
+     |----  master-password
+     ||---- session-store</pre> 
+       </div> 
+      </div>
+     </div> <p>The filesystem under the nodeagents directory (at the same level as the&nbsp;domains directory) is:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">||---- &lt;node-agent-name&gt;
+       ||---- agent
+              ||---- config
+                     |---- das.properties
+       ||---- &lt;server-instance-1&gt;
+              ||---- config
+              ||---- applications
+              ||---- generated
+              ||---- (etc.)
+       ||---- &lt;server-instance-2&gt;
+              ||---- config
+              ||---- applications
+              ||---- generated
+              ||---- (etc.)</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="V3.1Clustering-Detailsofthesynchronizationalgorithmonserverstartup%3A"></a>Details of the synchronization algorithm on server startup:</h3> <p>This simplistic synchronization algorithm is based on file's modtime and the&nbsp;java.io.File.setLastModifiedTime(long time) API. DAS&nbsp;does not keep any delta-information as far as modtimes are concerned. All it&nbsp;has is a specific modtime on all the files it manages. DAS does no calculations&nbsp;so that a "difference" between two modtimes is presented in terms of a patch&nbsp;(traditional Unix term) that can be applied at the client's file system.&nbsp;The API however, is kept independent of actual criterion applied. A file's&nbsp;(or folder's) modtime is the criterion we use for this release, but it is&nbsp;possible that a better, more suitable criterion is chosen for subsequent&nbsp;releases. It's intended that the criterion is configurable, though it is&nbsp;not a must for this release.</p> <p>The synchronization algorithm is file-based for files in the config&nbsp;directory, and directory-based in other cases (e.g., application directories).&nbsp;In the directory-based cases, only the modtime of the top level directory&nbsp;is considered. Thus, any management operations the effect the contents&nbsp;of one of these directories needs to be sure to change the mod time of&nbsp;the directory itself.</p> <p>Another important aspect of the algorithm is that by default, contents&nbsp;of the entire folder (recursive traversal) are sent when requested.&nbsp;Standard compression schemes are employed when sending the contents.</p> <p>As you probably know, we "upload" the archive (.jar/.war/.ear) when we do the&nbsp;archive deployment to the DAS. Till now, this archive was "uploaded" to a&nbsp;temporary location, which means it was thrown away. Going ahead we will be&nbsp;retaining this archive because the exploded view of an application is a&nbsp;"true extraction" of its archive. When the archive is not available, one will&nbsp;be copied (e.g. when asadmin deploy --upload=false myapp.war). This is a&nbsp;simple optimization that we must do.</p> 
+     <ul> 
+      <li>Client synchronization algorithm</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Is there a DAS configuration available?
+	no, then done
+
+    Collect the mod times of the known files in the config directory.
+    Send them to the DAS, asking for anything newer in the config directory.
+    Was the DAS down?
+	yes, then done
+    Save the newer files the DAS returns.
+    Was the domain.xml file updated?
+	no, then done
+
+    Synchronize other content as described below.</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>Server synchronization algorithm</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Get requested filenames from client.
+	All filenames are assumed to be relative to the specified directory.
+	Ignore any filenames that start with non-alphanumeric characters.
+	[XXX - what are the limitations on application names?]
+
+    Is synchronization disabled for this client?
+	yes, then done
+
+    Is the request for the config directory?
+	Is domain.xml out of date?
+	    no, then done
+	Compare the config files with what the client sent.
+	Only &lt;server/cluster-name&gt;-config for *this* client is considered.
+	Return missing or out-of-date items.
+
+    Is this the applications directory?
+	Figure out which applications the client *should* have.
+	    Only applications deployed to *this* server are considered.
+	    Skip any directory-deployed applications.
+	    XXX - what if the application directory is a symlink?
+	Compare the existing applications with what the client sent.
+	Return missing or out-of-date items.
+	Return some sort of flag for applications that the client has
+		that should be removed.
+
+	XXX - return the application directory, or the original archive?
+	XXX - what if the user modifies the contents of the application dir?</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="V3.1Clustering-Synchronizationcriteria"></a>Synchronization criteria</h2> <p>To avoid unnecessary overhead in the common cases, different criteria are&nbsp;used for different content for synchronization. In particular, we don't&nbsp;want the client, and especially the server, to spend a lot of time&nbsp;collecting modification times for files if we can avoid it. The&nbsp;compromise is that in some cases extra steps may be required to&nbsp;notify the instance that data needs to be synchronized, and unchanged&nbsp;data may be sent as part of that synchronization. This is an area for&nbsp;future optimization if needed.</p> <p>As described above, the primary optimization is based on whether the&nbsp;domain.xml file is out of date or not. The following table describes&nbsp;the synchronization approach for other content:</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Content </th> 
+         <th class="confluenceTh"> Synchronization approach </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>domain.xml</tt> </td> 
+         <td class="confluenceTd"> Key special case, see above. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> config files </td> 
+         <td class="confluenceTd"> File by file mod time check. Only modified files are sent. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> applications </td> 
+         <td class="confluenceTd"> Check mod time of each top level application directory. If the application has changed, all the application files are sent, as well as all the generated content related to the application. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>docroot</tt> </td> 
+         <td class="confluenceTd"> Check the mod time of each file or directory in the <tt>docroot</tt> directory, but not subdirectories. For each modified file or directory, send that file or (recursively) directory. The <tt>docroot</tt> directory might be very large, so we don't want to check every file all the time. By checking files in the <tt>docroot</tt> directory, we pick up changes to <tt>index.html</tt>. See the Open Issue section for some more discussion about docroot synchronization. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>lib</tt> </td> 
+         <td class="confluenceTd"> Recursively check mod time of each file. For each modified file, send that file. We assume that typically there are relatively few files in the <tt>lib</tt> directory (less than 20). </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> config-specific directory </td> 
+         <td class="confluenceTd"> The config-specific directory is an optional subdirectory of the <tt>config</tt> directory, with the name of the instance's config. We check the mod time of any files or directories in the config-specifig directory, but not any subdirectories. The config-specific directory may commonly contain <tt>lib</tt> and <tt>docroot</tt> subdirectories, and so might be very large. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>In all cases, if the instance has a file or directory in the check&nbsp;list that the server does not, the server will tell the instance to&nbsp;remove that file or directory. The same approach applies to applications&nbsp;(which includes all their generated content).</p> <p>The specific list of config files to consider specified in an internal default file, config-files. &nbsp;This file can be overridden by supplying a config-files file in the config directory of the domain. &nbsp;The file contains the list of config files to be synchronized, with one file name per line.</p> <p>XXX - What about commands that touch other files but don't change domain.xml,<br> such as create-file-user?</p> <p>XXX - What about add-on modules that need to modify or extend the synchronization algorithm?</p> <p>XXX - Should we externalize the entire synchronization algorithm in an xml file, as v2 did?</p> <h4><a name="V3.1Clustering-Whentodostartupsynchronization%3F"></a>When to do startup synchronization?</h2> <p>I've considered two different approaches to startup synchronization:</p> 
+     <ol> 
+      <li>Synchronization is done early in the server process,&nbsp;before it reads domain.xml.</li> 
+      <li>Synchronization is done in the asadmin start-local-instance command,before the server process is started.</li> 
+     </ol> <p>A big advantage of #2 is that the asadmin client already has all the&nbsp;infrastructure necessary to talk to the DAS. #1 would require a special&nbsp;startup service that was sure to run before anything else that might use&nbsp;the configuration information. That seems fragile at best.</p> <p>However, one of the issues is that the DAS will likely need to know that&nbsp;an instance is "starting", but not yet fully "started". This seems like&nbsp;something GMS could help with. I don't know whether we could run GMS&nbsp;in the asadmin process and notify the group that the server is starting,&nbsp;and then run GMS in the server process, continue in the "starting" state,&nbsp;and then finally enter the "started" state. Alternatively, with approach #1,&nbsp;can GMS be started very early in the server startup process? GMS gets its <a href="http://wiki.glassfish.java.net/attach/V3FunctionalSpecs/gmsconfig_gfv3_1.rtf">configuration&nbsp;data</a> from the domain.xml file, which is a problem with this proposal.</p> <p>More research is needed to determine the best approach, and to determine if&nbsp;GMS can be used during startup synchronization.</p> <h4><a name="V3.1Clustering-Communication%28Transport%29Layer"></a>Communication (Transport) Layer</h2> <p>The synchronization protocol uses the standard asadmin remote command&nbsp;facility. We need one command, something like "_get_newer_files".&nbsp;The body of the request should be an XML document of the form:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;get-files&gt;
+	&lt;instance&gt;name&lt;/instance&gt;
+	&lt;directory&gt;dir&lt;/directory&gt;
+	&lt;files&gt;
+	    &lt;file&gt;
+		&lt;name&gt;name&lt;/name&gt;
+		&lt;time&gt;time&lt;/time&gt;
+	    &lt;/file&gt;
+	    ...
+	&lt;/files&gt;
+    &lt;/get-files&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>The response to this command is a zip file containing the newer files.&nbsp;It may contain more files than were requested. The mod times for the&nbsp;files are included in the zip file metadata. The existing mechanism&nbsp;for returning files (e.g., for get-client-stubs) can be used.</p> <h4><a name="V3.1Clustering-CommandReplication"></a>Command Replication</h2> <p>Administrative commands that are executed on the DAS are replicated to&nbsp;the effected server instances. This is done by sending to the server instances&nbsp;the same admin command request that was sent to the DAS. Thus, each server&nbsp;instance will need the same admin command listener as the DAS.&nbsp;<a href="ClusterDynamicReconfig.html" title="ClusterDynamicReconfig">This wiki page</a>&nbsp;goes into the finer details of command replication feature. As a result replicating&nbsp;commands on DAS and individual instances, the DAS and the instances will make the&nbsp;same changes to the domain's configuration. There are two aspects of this approach&nbsp;that interact with what we've described here.</p> <h4><a name="V3.1Clustering-domain.xmlsynchronization"></a>domain.xml synchronization</h3> <p>If the server instance is updating and rewriting its version of domain.xml,&nbsp;the mod time of its domain.xml will likely be different than the version&nbsp;on the DAS. When the server instance restarts, it would find out that its&nbsp;domain.xml is out of date, which would trigger the full synchronization&nbsp;algorithm.</p> <p>To prevent this, the DAS will need to send additional&nbsp;metadata with each request, describing the mod time that the domain.xml file&nbsp;must have after the command completes.</p> <h4><a name="V3.1Clustering-Applicationdeployment"></a>Application deployment</h3> <p>To allow deployment operations to be executed on the server instances as&nbsp;well as the DAS, the DAS needs to keep the original application archive,&nbsp;and send it to the instances so they can do the same deployment operation.&nbsp;See also the next section on application deployment issues.</p> <p>XXX - are there any operations that are done during deployment that could&nbsp;not safely be executed identically on each server instance? For instance,&nbsp;does EJB CMP deployment access the database? We probably don't want every&nbsp;instance accessing the database to generate EJB CMP classes based on the&nbsp;database tables.</p> <p>There are also interesting issues with handling application references,&nbsp;which Jerome will need to describe.</p> <h4><a name="V3.1Clustering-SynchronizationIssues"></a>Synchronization Issues</h2> <h4><a name="V3.1Clustering-ApplicationDeploymentIssues"></a>Application Deployment Issues</h3> <p>Note that the application synchronization approach will not&nbsp;allow for (e.g.) hand-editing of deployment descriptors after deployment&nbsp;if we switch to synchronizing the original archive instead of the expanded&nbsp;application directory, e.g., for performance reasons.</p> <h4><a name="V3.1Clustering-docrootDirectory"></a>docroot Directory</h3> <p>It's not clear how heavily used this directory is. Certainly people are&nbsp;expecting to modify the content in this directory directly. If there is&nbsp;typically lots of content here, synchronization might be expensive.&nbsp;Similar to above, we may need a command that says "please synchronize&nbsp;the docroot now".</p> <h4><a name="V3.1Clustering-ColdStartofaServerInstanceWithoutNodeAgent"></a>Cold Start of a Server Instance Without Node Agent</h2> <p>A node agent is a process that controls the life cycle of the server instances.&nbsp;On each node (machine) we have a node agent process per GlassFish domain. For&nbsp;example, if a GlassFish domain d1 contains a cluster c1 spanning machines m1,&nbsp;m2 and m3 with three server instances s1, s2, s3 on each of them, we need three&nbsp;node agents n1, n2 and n3. This is how it was in GlassFish v2.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">____________________
+                  |    _____________   |
+                  |   |             |  |
+                  |   |  s1 &lt;--&gt; n1 |  |
+                  |   |             |  |
+     _______      |   |_____________|  |
+    |       |     |        m1          |
+    |       |     |    _____________   |
+    |  DAS  |     |   |             |  |
+    |   d1  |     |   |  s2 &lt;--&gt; n1 |  |
+    |_______|     |   |             |  |
+                  |   |_____________|  |  c1 = {s1, s2, s3}
+    d1 contains c1|        m2          |
+    d1 contacts   |    _____________   |
+    n1, n2, n3    |   |             |  |
+                  |   |  s3 &lt;--&gt; n1 |  |
+                  |   |             |  |
+                  |   |_____________|  |
+                  |        m3          |
+                  |____________________|</pre> 
+       </div> 
+      </div>
+     </div> <p>Since n1, n2 and n3 are separate processes themselves, their life cycle needs to&nbsp;be managed by human administrators. Since we are making node agents optional for&nbsp;this release, we need an alternate mechanism for situations like:</p> 
+     <ul> 
+      <li>start-cluster, which starts all the cluster instances</li> 
+      <li>start-instance, which starts a clustered or non-clustered server instance</li> 
+     </ul> <p>As a first step, for GlassFish v3.1, we will assume that server instances&nbsp;are managed manually, or by using the platform-specific facilities<br> (Windows Servers, Linux rc files, Solaris SMF).</p> <p>In a future release we will consider an approach such as the following:</p> <p>To remotely start the server processes from a DAS process, we propose a&nbsp;solution that depends on the ubiquitous sshd which is both standard and secure.&nbsp;Thus, when we want to start a process remotely from a DAS process, we contact&nbsp;the ssh daemon running on a given port (default: 22) on a given machine and ask&nbsp;it to start the GlassFish server process. If sshd is not running, administrator&nbsp;needs to manually start the server (by using a local asadmin command&nbsp;start-server) or manually restart the sshd.</p> <p>For this to happen, DAS needs to be an ssh client and pure Java libraries are&nbsp;available for the same in the public domain. In fact, Hudson project uses this&nbsp;technique to remotely configure the secondary Hudson machines. Thus, the above&nbsp;picture now looks like:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">____________________
+                  |    _____________   |
+                  |   |             |  |
+                  |   |  s1 (sshd)  |  |
+                  |   |             |  |
+     _______      |   |_____________|  |
+    |       |     |        m1          |
+    |       |     |    _____________   |
+    |  DAS  |     |   |             |  |
+    |   d1  |     |   |  s2 (sshd)  |  |
+    |_______|     |   |             |  |
+                  |   |_____________|  |  c1 = {s1, s2, s3}
+    d1 contains c1|        m2          |
+    d1 contacts   |    _____________   |
+    sshd on each  |   |             |  |
+    of m1,m2,m3   |   |  s3 (sshd)  |  |
+                  |   |             |  |
+                  |   |_____________|  |
+                  |        m3          |
+                  |____________________|</pre> 
+       </div> 
+      </div>
+     </div> <p>Once a server is started on a machine, it follows the synchronization algorithm&nbsp;as described above.</p> <h4><a name="V3.1Clustering-ServerSoftwareUpgradeImplications"></a>Server Software Upgrade Implications</h2> <p>It is possible that when a cluster size grows, not all nodes in the cluster are&nbsp;upgraded simultaneously because that means service downtime. In order to&nbsp;cut the downtime and ensure service availability, the system should be designed&nbsp;in such a way that for limited period, different nodes can be running slightly&nbsp;different versions of GlassFish. This means that we need to carefully&nbsp;manage compatibility of the synchronization protocol and the config files.</p> <h4><a name="V3.1Clustering-ClusterInstallationandConfiguration"></a>Cluster Installation and Configuration</h2> <p>To install and configure a cluster, the following steps are needed:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Install the software on the DAS machine.
+    Create the domain.
+    Create a cluster with no members.
+    Install the software on an instance machine (if a different machine).
+    Create a local instance, providing:
+	DAS host, port
+	admin username, password
+	instance name (defaults to local host name)
+	optionally, name of cluster to join
+    Optionally, use "asadmin create-service" to manage the instance.</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="V3.1Clustering-StandaloneInstances"></a>Stand-alone Instances</h2> <p>Instances can be created that are not part of a cluster. These are called stand-alone instances. Stand-alone instances share some behaviors with instances that are part of a cluster, but they are different in other ways.</p> <p>Like clustered instances, a stand-alone instance:</p> 
+     <ul> 
+      <li>is synchronized with the DAS when it starts,</li> 
+      <li>can be the target of instance commands such as start-instance, stop-instance, list-instances, etc.</li> 
+      <li>can be the target of various dynamic configuration commands, e.g., ping-connection-pool.</li> 
+      <li>is configured with an application by deploying the application via the DAS. However, with a stand-alone instance, the target would be the instance rather than the cluster. An application cannot be deployed directly to a stand-alone instance because DeployCommand only runs on the DAS. This is a HiddenDeployCommand that runs on the instance.</li> 
+     </ul> <p>Stand-alone instances are implemented primarily to preserve conceptual compatibility with GlassFish 2 and to provide simpler operation for people that want multiple independent instances without having to deal with the configuration of a cluster. A stand-alone instance cannot become part of a cluster at a later time.</p> <p>The design consequence of supporting stand-alone instances is when administration software is performing on operation on an instance and it retrieves the information about the cluster for the instance, the cluster may be null.</p> <h4><a name="V3.1Clustering-InstanceStates"></a>Instance States</h2> <p>This section gives details how DAS keeps track of the states of instances and how various events force an instance's state to change. Since there are various commands / subsystems that need to know the state of an instance before taking an action, a new service, called InstanceStateService, will be made available which can be used by those interested by doing </p>
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Inject InstanceStateService states;</pre> 
+       </div> 
+      </div>
+     </div> in their code. Once this service is available, it is hoped that all those commands and subsystems that are using various ways (like executing uptime, version commands) to ping an instance from DAS can move away from that and use this service to get to known the state of an instance at any time.<p></p> <h4><a name="V3.1Clustering-TheBigPicture"></a>The Big Picture</h3> <p>The following image shows the instance state diagram. The oval / circular boxes are various events and the rectangular / square boxes are the state of an instance as held in DAS.</p> <p><span class="image-wrap" style="display: block; text-align: center"><img src="http://download.java.net/glassfish/wiki-archive/attachments/20875079/21365802.jpg" style="border: 1px solid black"></span></p> <p>The following image explains the various events that force state changes.</p> <p><span class="image-wrap" style="display: block; text-align: center"><img src="http://download.java.net/glassfish/wiki-archive/attachments/20875079/21365801.jpg" style="border: 1px solid black"></span></p> <p>Here are is a broad overview of how the DAS will keep track of the state of the instances :</p> 
+     <ul> 
+      <li>The DAS will use two files (.instancestate and .replicationstate) to keep track of 
+       <ul> 
+        <li>the state of instances and</li> 
+        <li>the state of a command that is going through replication</li> 
+       </ul> </li> 
+      <li>The above files will be present in the $GF_HOME/domains/&lt;domain-name&gt;/config directory and are required to ensure that the DAS can keep track of the state of the instance across DAS crashes / reboots.</li> 
+      <li>The .instancestate file will have one line of information per instance (for those instances that were started at least once after their creation). The info stored will be the 
+       <ul> 
+        <li>state of an instance</li> 
+        <li>details of commands that failed in that instance, if any</li> 
+        <li>details of commands that are waiting to be executed on the instance, if any</li> 
+       </ul> </li> 
+      <li>The .replicationstate file will either be empty (which indicates that the DAS did not get restarted while a command was getting replicated) or it will have details of the command that was getting replicated, the target specifed for the command by the user, the instances where the command had already succeeded by the time DAS crashed / was brought down.</li> 
+      <li>When DAS is started, it will read the above two state files, do a GMS poll and reconcile the state of instances based on events 1, 2, 3, 15, 16</li> 
+      <li>When DAS receives the <em>_synchronize-files</em> command, the state moves to STARTING state and at this time a timer is started for that instance. If the GMS JOIN_AND_READY event is not received within the timeout, then it is assumed that the sync of instances with DAS failed and the instance goes back to NOT_RUNNING state</li> 
+      <li>All commands received while an instance is in STARTING state are queued and the queue is emptied once the JOIN_AND_READY event is received from GMS for that instance. In case some error happens while the commands are being dequeued, then those commands are moved to failed commands and state of that instance is changed as per diagram</li> 
+     </ul> <p>To make life easy for the potential users of this service :</p> 
+     <ul> 
+      <li>The current instance states defined in <em>ServerEnvironment</em> will be removed; the states defined in <em>InstanceState</em> will be only one</li> 
+      <li>Those who are interested in displaying the state of an instance (like <em>list-instances</em> command or GUI) should just use the 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">InstanceState.StateType.getDescription()</pre> 
+         </div> 
+        </div>
+       </div> to display the state of an instance</li> 
+      <li>Those who are interested in a live instance only may want to focus only on instances that are in RUNNING or RESTART_REQUIRED states, in that order of preference. For example, the <em>recover-transactions</em> command (which has to move an existing transaction from one instance to another) may want to move the transaction from source to destination only if the destination is in RUNNING or RESTART_REQUIRED state.</li> 
+     </ul> <p>The one known drawback of this approach is that there is a chance that an instance is put in the RESTART_REQUIRED state even though a command got replicated at that instance successfully. This can happen in the following scenario :</p> 
+     <ul> 
+      <li>The command went through OK on DAS</li> 
+      <li>The DAS was trying to replicate the command on applicable instance(s)</li> 
+      <li>The instances received the replicated command and the replicated commands executed successfully at the instance(s) and the response was sent back to DAS</li> 
+      <li>For whatever reason DAS never got the response</li> 
+     </ul> <p>In the above sequence, the DAS will mark the instance as RETART_REQUIRED which is actually redundant. We will live with this drawback for now (and, if possible, find a solution also) because the alternative approach of keeping the state at instances has potential issues such as :</p> 
+     <ol> 
+      <li>If a replicated command never reaches an instance, then the instance can never put itself in RESTART_REQUIRED state unless the DAS also keeps track of such missing commands. If DAS starts keeping track of missing commands, then the state calculation becomes complicated because everytime the state at DAS an instance have to be reconciled with each other</li> 
+      <li>Storing state at instance is definitely light weight but if there is a temporary n/w error when DAS pings an instance, DAS has to mark that instance as NOT_REACHABLE and there is no clear way of getting that instance out of NOT_REACHABLE state unless DAS periodically pings that instance. Also, if an instance is in NOT_REACHABLE state, what to do with command replication is also not a straightforward decision (we can either not replicate to that instance which means penalizing the instance unnecessarily or ping again at the time of replication which means more time for command replication and not scalable)</li> 
+      <li>Storing all state at DAS will require DAS to read the .instancestate file at startup and this file will have the last known state of all instances (one line per instance). For a developer who will (most likely) not have any instances, this will not add to the startup time (because the file will be empty). In a large installation with many instances, this will add a very small time (time to read a file with number of lines = number of instances). If state was maintained in instances, then DAS will have to ping all instances at startup to get their state and this will likely take more time than reading a file and not that scalable. Even if we can assume availability of GMS, still DAS will have to ping the instances to see if the instance required RESTART or not.</li> 
+     </ol> <h4><a name="V3.1Clustering-Fileformatandrestrictions"></a>File format and restrictions</h3> <p>Since the state is going to be saved in file .instancestate</p> <h4><a name="V3.1Clustering-PhasedImplementation"></a>Phased Implementation</h3> <p>Due to time and resource constraints, the above will be implemented in different phases :</p> 
+     <ol> 
+      <li><a href="Phase 1.html" title="Phase 1">Phase 1</a> : No command queueing (for commands that arrive when an instance is in STARTING state); No .replicationstate file (so state change if DAS crashes during replication of a command will not be covered); No GMS events (so state changes because of unplanned instance shutdowns will not happen) ; Basically this will be a simple implementation that won't take care of all failure scenarios</li> 
+      <li>Phase 2 : Support for GMS events (if GMS is present); Look at additional useful info that can be added to state based on different GMS event types</li> 
+      <li>Phase 3 : Add support for queueing of commands, storing state in .replicationstate</li> 
+     </ol> <p><b><em>Note 1 : TBD : Can we queue deploy command; Is there a way to invoke the postDeploy/create-app/ref command alone on instances where a queued deploy command has to be executed; needs more investigation</em></b><br> <b><em>Note 2 : TBD : A first look at resource commands indicates that they can be queued and executed on instances later; needs more investigation before we can take the final decision</em></b><br> <b><em>Note 3 : TBD : Versioning the state files - need to take care of it ? How important is it ?</em></b></p> <h4><a name="V3.1Clustering-Upgrade"></a>Upgrade</h2> <p>The clustering implementation for 3.1 must support upgrades of clusters from a GlassFish v2 installation. This section describes design details for accomplishing an upgrade.&nbsp;</p> <p>Generally, the steps for upgrading a domain with a cluster from v2 to 3.1 are:</p> 
+     <ol> 
+      <li>Upgrade the DAS for the domain.</li> 
+      <li>Establish the instances.</li> 
+     </ol> <p>There are several options for step (2):</p> <p>2a) Use the manual synchronization commands, export-sync-bundle and import-sync-bundle to establish the instances on each node.</p> <p>2b) Use a sequence of create-local-instance commands to establish the instances on each node.</p> <p>2c) Copy the nodeagents directory tree from the existing node, and run some command to cause the instances to be upgrade for 3.1</p> <p>2d) Use a new "recreate-cluster-instances" command that would use the SSH capability to establish the instances on each node.</p> <p>Of these, the 3.1 release will support (2a) and (2b). If application-specific data must be preserved from the v2 instances, it will be up to the user to get that data copied to the instances under 3.1. Note: having instance-specific data is discouraged. An enhancement for (2b) would be to have a single command, "recreate-local-node", that would run the the right create- local-instance commands for a node so that the user doesn't have to worry about what instances are on which nodes. A recreate-local-node command is not planned for 3.1.&nbsp;</p> <p>To upgrade the DAS for the domain, the clustering data from v2 must be converted to the format for 3.1. &nbsp;This includes the clusters, servers, configs, and node-agent elements in the domain.xml file, and all elements that they reference. Conversion of this data is implemented using the upgrade framework that is already in place for GlassFish.</p> <p>Since the supported options do not make use of the v2 nodeagents directory tree, there is no need to copy that over from the v2 installation. The node directory tree is recreated when the instances are reestablished in step 2.</p> <h4><a name="V3.1Clustering-SoftwarePartitioning"></a>Software Partitioning</h1> <p>The clustering software is partitioned into the following modules within the GlassFish source tree:</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Module Name </th> 
+         <th class="confluenceTh"> Source Tree Subdirectory </th> 
+         <th class="confluenceTh"> Jar </th> 
+         <th class="confluenceTh"> Purpose </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Cluster Admin CLI </td> 
+         <td class="confluenceTd"> cluster/cli </td> 
+         <td class="confluenceTd"> cluster-cli.jar </td> 
+         <td class="confluenceTd"> Contains only <b>local</b> asadmin commands. This module should <b>never</b> be loaded by the server. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Cluster Admin </td> 
+         <td class="confluenceTd"> cluster/admin </td> 
+         <td class="confluenceTd"> cluster-admin.jar </td> 
+         <td class="confluenceTd"> Contains (among other things) the <b>remote</b> admin commands that run in the server. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Cluster Common </td> 
+         <td class="confluenceTd"> cluster/commmon </td> 
+         <td class="confluenceTd"> cluster-common.jar </td> 
+         <td class="confluenceTd"> Contains classes that are shared among the other modules. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Cluster SSH Provisioning </td> 
+         <td class="confluenceTd"> cluster/ssh </td> 
+         <td class="confluenceTd"> cluster-ssh.jar </td> 
+         <td class="confluenceTd"> Contains software related to ssh support for remote nodes. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GlassFish GMS Boostrap Module </td> 
+         <td class="confluenceTd"> cluster/gms-bootstrap </td> 
+         <td class="confluenceTd"> gms-bootstrap.jar </td> 
+         <td class="confluenceTd"> Software for detecting whether there are clusters that require loading the GMS software. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GlassFish GMS Module </td> 
+         <td class="confluenceTd"> cluster/gms-adapter </td> 
+         <td class="confluenceTd"> gms-adapter.jar </td> 
+         <td class="confluenceTd"> Software that integrates the Shoal module into GlassFish for use in the group management service. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="V3.1Clustering-ClusterAdminCommands"></a>Cluster Admin Commands</h1> <p>The following new commands are used to configure and manage a cluster:</p> <h4><a name="V3.1Clustering-createcluster"></a>create-cluster</h2> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Usage: create-cluster
+        [--config &lt;config&gt;]
+        [--systemproperties (name=value)[:name=name]*]
+        [--multicastport &lt;multicastport&gt;]
+        [--multicastaddress &lt;multicastaddress&gt;]
+        cluster_name</pre> 
+       </div> 
+      </div>
+     </div> <p><tt>--multicastaddress</tt> and <tt>--multicastport</tt> are used to broadcast messages to all instances in the cluster. GMS uses it to monitor health of instances in the cluster.</p> <p><tt>--multicastaddress</tt> is a renaming of undocumented v2.x <tt>--heartbeataddress</tt>. <tt>--heartbeataddress</tt> is an alias of <tt>--multicastaddress</tt>. Valid values range from 224.0.0.0 through 239.255.255.255. Default is "228.9.XX.YY" where XX and YY are independent values between 0..255.</p> <p><tt>--multicastport</tt> is a renaming of undocumented v2.1 <tt>--heartbeatport</tt>. <tt>--heartbeatport</tt> is an alias of <tt>--multicastport</tt>. Valid values are from 2048 to 32000. Default value is a generated value between the valid ranges.</p> <p>HADB options are no longer needed. They are ignored, with a warning that the option has been deprecated and may not be supported in a future release.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">[--hosts hadb-host-list]
+[--haagentport port_number]
+[--haadminpassword password]
+[--haadminpasswordfile file_name] [--devicesize devicesize ]
+[--haproperty (name=value)[:name=value]*]
+[--autohadb=false]</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="V3.1Clustering-createinstance"></a>create-instance</h2> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Usage: create-instance
+	--node &lt;node_name&gt;
+       [--config &lt;config_name&gt; | --cluster &lt;cluster_name&gt;]
+       [--systemproperties (name=value)[:name=name]*]
+       [--portbase &lt;port_number&gt;]
+       [--checkports[=&lt;checkports(default:true)&gt;]]
+        instance_name</pre> 
+       </div> 
+      </div>
+     </div> <p>See discussion on admin@glassfish.dev.jav.net. Most likely this&nbsp;command will not be present in 3.1, but will be added later when&nbsp;we have node agent support, or the ssh-based equivalent.</p> <h4><a name="V3.1Clustering-createlocalinstance"></a>create-local-instance</h2> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Usage: create-local-instance
+       [--node &lt;node_name&gt;]
+       [--nodedir &lt;node_path&gt;]
+       [--savemasterpassword[=&lt;savemasterpassword(default:false)&gt;]]
+       [--config &lt;config_name&gt; | --cluster &lt;cluster_name&gt;]
+       [--systemproperties (name=value)[:name=name]*]
+       [--portbase &lt;portbase&gt;]
+       [--checkports[=&lt;checkports(default:true)&gt;]]
+       instance_name</pre> 
+       </div> 
+      </div>
+     </div> <p>See discussion on admin@glassfish.dev.jav.net. This&nbsp;new local command will be used on a node to initialize a server&nbsp;instance on that node.</p> <p>The create-local-instance command also performs part of the function that was performed by create-node-agent in v2. It creates the file system structure, including the <tt>das.properties</tt> file so that instances have the information that they need to contact the DAS.</p> <p>Many of those options wouldn't apply to the remote create-instance command,&nbsp;so that's progbably a good reason to have two separate commands instead of&nbsp;a --local option on create-instance.</p> <p>The --portbase and --checkports options work just like the corresponding arguments to create-domain.</p> <h4><a name="V3.1Clustering-"></a><font color="#000000"><b>create-service</b></font></h2> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Usage: create-service [--name &lt;name&gt;]&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [--serviceproperties &lt;serviceproperties&gt;]&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [--dry-run[=&lt;dry-run(default:false)&gt;]]&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [--force[=&lt;force(default:false)&gt;]] [--domaindir &lt;domaindir&gt;]&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [--serviceuser &lt;serviceuser&gt;] [--nodedir &lt;nodedir&gt;] [--node &lt;node&gt;]&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [-?|--help[=&lt;help(default:false)&gt;]] [server_name]</pre> 
+       </div> 
+      </div>
+     </div> <p>Changes to the create-service command include:</p> 
+     <ul> 
+      <li>added the generic parameters that all commands that work with local instances use namely&nbsp;</li> 
+     </ul> <p>--nodedir<br> --node</p> 
+     <ul> 
+      <li>&nbsp;the operand was changed from "domain_name(sp?)" to "server_name".&nbsp; 
+       <ul> 
+        <li>The command is smart enough to figure out if the server is a domain or an instance.&nbsp;I.e. the same asadmin command will create services for both DAS's and instances.&nbsp;</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li>&nbsp;--serviceuser&nbsp; 
+       <ul> 
+        <li>This applies only to Linux.&nbsp; You <b>*</b><b>must</b><b>*</b> run the command itself with root privileges.&nbsp; This tells the command to set things up so that the specified user is who will be running GlassFish at runtime.&nbsp; This is very useful for security reasons.&nbsp; Users don't always (ever?) want root running GlassFish.</li> 
+       </ul> </li> 
+     </ul> <h4><a name="V3.1Clustering-copyconfig"></a>copy-config</h2> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Usage: copy-config
+ 	[--systemproperties  (name=value)[:name=value]*]
+	source_configuration_name destination_configuration_name</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="V3.1Clustering-deletecluster"></a>delete-cluster</h2> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Usage: delete-cluster
+ 	cluster_name</pre> 
+       </div> 
+      </div>
+     </div> <p><tt>--autohadboverride</tt> option is to be ignored, with a warning that the option has been deprecated and may not be supported in a future release.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">[ --autohadboverride={true|false} ]</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="V3.1Clustering-deleteinstance"></a>delete-instance</h2> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Usage: delete-instance
+ 	instance_name</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="V3.1Clustering-deletelocalinstance"></a>delete-local-instance</h2> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Usage: delete-local-instance
+       [--node &lt;node_name&gt;]
+       [--nodedir &lt;node_path&gt;]
+       instance_name</pre> 
+       </div> 
+      </div>
+     </div> <p>Unregisters an instance from domain.xml and deletes the filesystem structure for a local instance. The instance must&nbsp;be stopped. If this is the last instance using the node agent directory structure, then then that directory structure is also removed.&nbsp;</p> <h4><a name="V3.1Clustering-deleteconfig"></a>delete-config</h2> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Usage: delete-config
+	configuration_name</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="V3.1Clustering-"></a><font color="#000000"><b>export-sync-bundle</b></font></h2> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Usage: export-sync-bundle
+	--target cluster_std-alone-instance [--retrieve true|false] [file_name]</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="V3.1Clustering-"></a><font color="#000000"><b>import-sync-bundle</b></font></h2> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Usage: export-sync-bundle
+	[--node node_name] [--nodedir node_path] --file xyz-sync-bundle.zip instance_name</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="V3.1Clustering-startcluster"></a>start-cluster</h2> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Usage: start-cluster
+	[--verbose[=&lt;verbose(default:false)&gt;]] ?
+	cluster_name</pre> 
+       </div> 
+      </div>
+     </div> <p>Always and only a remote command, as in v2.</p> <p><tt>--autohadboverride</tt> option is to be ignored, with a warning that the option has been deprecated and may not be supported in a future release.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">[ --autohadboverride={true|false} ]</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="V3.1Clustering-startinstance"></a>start-instance</h2> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Usage: start-instance
+        [--nosync[=&lt;nosync(default:false)&gt;]]
+        [--fullsync[=&lt;fullsync(default:false)&gt;]]
+        [--debug={true|false}]
+	instance_name</pre> 
+       </div> 
+      </div>
+     </div> <p>Need a variant of start-instance that works locally. It should probably&nbsp;mirror create-instance, either having a --local option or a start-local-instance&nbsp;command.</p> <p><tt>--setenv</tt> option is to be ignored, with a warning that the option has been deprecated and may not be supported in a future release.<br> </p>
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">[--setenv (name=value)[:name=name]*]</pre> 
+       </div> 
+      </div>
+     </div>setenv added the given properties to the environment of the instance. Not needed in 3.1.<p></p> <h4><a name="V3.1Clustering-restartinstance"></a>restart-instance</h2> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Usage: restart-instance
+	[--debug={true|false}]
+	instance_name</pre> 
+       </div> 
+      </div>
+     </div> <p><font color="inherit">--debug is a boolean argument.</font></p> <p><font color="inherit">true --&gt; restart the server with JPDA debugging enabled</font><br> <font color="inherit">false--&gt; restart the server with JPDA debugging disabled</font><br> <font color="inherit">not set: restart with whatever it is set to now in the running server</font></p> <p>Restarts itself. If you call restart-instance on DAS it restarts itself.</p> <h4><a name="V3.1Clustering-restartlocalinstance"></a>restart-local-instance</h2> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Usage: restart-local-instance
+        [--node &lt;node&gt;]
+        [--nodedir &lt;nodedir&gt;]
+	instance_name</pre> 
+       </div> 
+      </div>
+     </div> <p>Uses the instance_name to get host:port. Then calls restart-instance on the instance itself</p> <h4><a name="V3.1Clustering-startlocalinstance"></a>start-local-instance</h2> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Usage: start-local-instance
+       [--verbose[=&lt;verbose(default:false)&gt;]]
+       [--debug[=&lt;debug(default:false)&gt;]]
+       [--nosync[=&lt;nosync(default:false)&gt;]]
+       [--syncfull[=&lt;syncfull(default:false)&gt;]]
+       [--node &lt;node_name&gt;]
+       [--nodedir &lt;node_path&gt;]
+       instance_name</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="V3.1Clustering-stopcluster"></a>stop-cluster</h2> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Usage: stop-cluster
+        [--verbose[=&lt;verbose(default:false)&gt;]
+	cluster_name</pre> 
+       </div> 
+      </div>
+     </div> <p><tt>--autohadboverride</tt> option is to be ignored, with a warning that the option has been deprecated and may not be supported in a future release.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">[ --autohadboverride={true|false} ]</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="V3.1Clustering-stopinstance"></a>stop-instance</h2> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Usage: stop-instance
+        [--force[=&lt;force(default:true)&gt;]]
+        instance_name</pre> 
+       </div> 
+      </div>
+     </div> <p>Always and only a remote command, as in v2.</p> <h4><a name="V3.1Clustering-stoplocalinstance"></a>stop-local-instance</h2> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Usage: stop-local-instance
+        [--node &lt;node&gt;]
+        [--nodedir &lt;nodedir&gt;]
+        [--force[=&lt;force(default:true)&gt;]]
+	instance_name</pre> 
+       </div> 
+      </div>
+     </div> <p>Do we need this? How does it work? Or do we just leave it to "kill"&nbsp;and the local services facility to stop the instance?</p> <h4><a name="V3.1Clustering-listclusters"></a>list-clusters</h2> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Usage: list-clusters [target]</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="V3.1Clustering-listinstances"></a>list-instances</h2> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Usage: list-instances [--timeoutmsec=n] [--nostatus] [--standaloneonly] [target]</pre> 
+       </div> 
+      </div>
+     </div> <p>The three options to the list-instances command are new for 3.1. The timeoutmsec option limits the time that will be spent trying to determine the status of instances. The default is 2 sec. The nostatus option causes list-instances to not display status about whether instances are running. And --standaloneonly option lists only stand-alone instances.</p> <h4><a name="V3.1Clustering-listconfigs"></a>list-configs</h2> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Usage: list-configs [target]</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="V3.1Clustering-createnodessh"></a>create-node-ssh</h2> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Usage: create-node-ssh
+        --nodehost &lt;nodehost&gt;
+        [--installdir &lt;installdir&gt;]
+        [--nodedir &lt;nodedir&gt;]
+        [--sshport &lt;sshport&gt;]
+        [--sshuser &lt;sshuser&gt;]
+        [--sshkeyfile &lt;sshkeyfile&gt;]
+        [--force[=&lt;force(default:false)&gt;]]
+        node_name</pre> 
+       </div> 
+      </div>
+     </div> <p><tt>--installdir</tt> default is the DAS installation directory.</p> <h4><a name="V3.1Clustering-createnodeconfig"></a>create-node-config</h2> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Usage: create-node-config
+        [--nodedir &lt;nodedir&gt;]
+        [--nodehost &lt;nodehost&gt;]
+        [--installdir &lt;installdir&gt;]
+        node_name</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="V3.1Clustering-ChangestoExistingCommands"></a>Changes to Existing Commands</h1> <p>This section describes changes (or the lack of needed changes) for administrative commands that already exist in GlassFish.</p> <h4><a name="V3.1Clustering-createdomain"></a>create-domain</h2> <p>Support for the <tt>--template domain_template</tt> option will be added to the command as part of this feature.</p> <h4><a name="V3.1Clustering-deletedomain"></a>delete-domain</h2> <p>No changes to delete-domain are required to support clusters.</p> <h4><a name="V3.1Clustering-stopdomain"></a>stop-domain</h2> <p>As a stretch goal, it would be nice to have an option to stop-domain that would stop all clusters and instances in the domain. However, no changes to stop-domain are required to support clusters.</p> <h4><a name="V3.1Clustering-restartdomain"></a>restart-domain</h2> <p>Add the following argument:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">[--debug={color}{true|false}]</pre> 
+       </div> 
+      </div>
+     </div> <p>--debug is a boolean argument.</p> <p>true--&gt; restart the server with JPDA debugging enabled<br> false--&gt; restart the server with JPDA debugging disabled<br> not set: restart with whatever it is set to now in the running server</p> <h4><a name="V3.1Clustering-Deploymentinclusteredenvironment"></a>Deployment in clustered environment</h1> <h4><a name="V3.1Clustering-Deploy"></a>Deploy</h2> <p>Deployment to the DAS will be largely unmodified as compared to the non clustered version of the application server. &nbsp;Deployment to remote instances from the DAS will be handled by a hidden (glassfish private) deploy command. This command will take 2 parameters :</p> 
+     <ul> 
+      <li>Original unmodified archive that was originally deployed</li> 
+      <li>Zipped up generated directory for the deployed bits on the DAS</li> 
+     </ul> <p>The deploy command on the DAS will first perform a normal deployment on the DAS (without loading like in v2) and a supplemental command will be registered for this DeployCommand. This supplemental command will be responsible for sending the hidden command invocation on all necessary (as determined by the application-refs added). The following diagram shows the invocation path.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Client                            DAS                            DAS                    Remote Instance            Remote Instance
+                              Admin Framework               deploy backend              hidden __deploy            deploy backend
+
+asadmin deploy X.war
+          |---------------&gt;   Receives deploy
+                                  |--------------------&gt;  @ExecuteOn(runtime=DAS)
+                                                          DeployCommand
+                                                              |--&gt; unpack archive
+                                                              |--&gt; deploy phases
+                                                              |--&gt; optional start
+                                                              |--&gt; writes domain.xml
+                                   if failure&lt;----------------|
+       failure   &lt;--------------------|
+                                   if success
+                                     |-&gt; for each server
+                                          |---------------------------------------------&gt;@ExecuteOn(Runtime=Server)
+                                                                                           HiddenDeployCommand
+                                                                                             |--&gt; unpack archive
+                                                                                             |--&gt; unpack generated
+                                                                                             |--&gt; writes domain.xml
+                                                                                             |--&gt; invokes load
+                                                                                                        |-------------&gt; loadApp()
+                                          result &lt;---------------------------------------------------------------------|
+                                     |-&gt; collect all results
+     results    &lt;----------------------------|</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="V3.1Clustering-Undeploy"></a>Undeploy</h2> <p>Nothing specific should be put in place to support undeployment in clustered mode. The undeploy command implementation will be annotated with the @ExecuteOn annotation to run on both the DAS and remote instances.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@ExecuteOn(runtimes={DAS, INSTANCE}
+@Service
+public UndeployCommand implements AdminCommand {
+...
+}</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="V3.1Clustering-Redeploy"></a>Redeploy</h2> <p>On the DAS the redeploy command is basically implemented today as a succession of undeploy command followed by a deploy command. As seen above the undeploy() command invocation will naturally take care of cleaning up the deployed bits on both the DAS and the remote instances. The followup deploy() command will be unchanged from first time deployment.</p> <h4><a name="V3.1Clustering-OpenIssues"></a>Open Issues</h1> 
+     <ul> 
+      <li>Need to describe how the master password is handled on server instances.</li> 
+     </ul> 
+     <ul> 
+      <li>Can/should we optimize the synchronization algorithms for the case where&nbsp;the DAS and the server instance is on the same machine, e.g., to avoid&nbsp;copying the application data? Maybe it's enough to just support&nbsp;"directory deployed" applications that are deployed to a shared filesystem?</li> 
+     </ul> 
+     <ul> 
+      <li>Describe how a rolling upgrade is done, both for applications and for the&nbsp;server code itself. <em>See</em> <em><a href="V3.1RollingUpgrade.html" title="V3.1RollingUpgrade">this separate page</a></em> for early discussion on rolling upgrade.</li> 
+     </ul> <h4><a name="V3.1Clustering-Regardingdocrootsynchronization%2CherearesomemoreideasfromNazrul%3A"></a>Regarding docroot synchronization, here are some more ideas from Nazrul:</h3> <p><em>This was an open issue during our AS ARCH review. Current implementation does not pick up changes to files (ex. in docroot) if they are two or more level down in the directory hierarchy.</em></p> <p><em>Here are some thoughts on how we may want to position this with end users..</em></p> <p><em>We could have something like a synchronize command that user will have to invoke to get their content synchronized.</em></p> <p><em>% asadmin synchronize --target &lt;cluster | std-alone-instance&gt;</em></p> <p><em>synchronize command may also have additional option to help us identify a sub-set of content that needs to be synchronized.</em></p> <p><em>For example,</em><br> <em>%asadmin synchronize --application &lt;name-of-application&gt;&nbsp;&nbsp;&nbsp;&nbsp; OR</em></p> <p><em>%asadmin synchronize --docroot&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; OR</em></p> <p><em>%asadmin synchronize --config</em></p> <p><em>It would be great if we can synchronize while the server is running so that user can shutdown DAS afterwards and/or does not have to wait until the instances are shutdown.</em></p> <p><em>One option would be to use the SSH based SCP feature that Rajiv is adding. We could save the synchronization zip in a known location that server startup can pickup.</em></p> <p><em>User may also use --fullsync option during instance startup. But, this may be expensive in certain cases to do full synchronization.</em></p> <p><em>docroot location</em><br> <em>============</em><br> <em>Since our current implementation is not compatible with GlassFish v2.x (docroot, changes to deployment descriptors, JSPs, etc. are not picked up), we may also want to take this opportunity to point to config specific directory for docroot. For example,</em></p> <p><em>Currently, docroot is global. Every config points to &lt;instanceRoot&gt;/docroot</em><br> <em>All the contents are globally synchronized across the domain. This can be a problem when we have 100 instances (10 cluster with 10 instances each)</em></p> <p><em>Alternative to consider: Use &lt;instanceRoot&gt;</em><em>/</em><em>config</em><em>/</em><em>&lt;config-name&gt;/docroot</em></p> <p><em>Example of config-name is "cluster1-config". In this scheme, only associated clustered instances get the docroot content.</em></p> <p>A more complex method of synchronizing docroot has been deferred for the 3.1 release. &nbsp;See issue <a href="https://github.com/javaee/glassfish/issues/12029">12029</a> for the rational.&nbsp;</p> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875079/21365802.jpg">InstanceStateAtDAS-State.jpg</a> (image/jpeg) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875079/21365801.jpg">InstanceStateAtDAS-Events.jpg</a> (image/jpeg) 
+      <br> 
+     </div> 
+     <div class="tabletitle"> 
+      <a name="comments"> <h4>Comments:</h2> </a> 
+     </div> 
+     <table border="0" width="100%"> 
+      <tbody>
+       <tr> 
+        <td> <a name="comment-20883751"></a> <font class="smallfont"><p>I put this comment here, because I found the&nbsp;&nbsp;Glassfish&nbsp;"OS-process-view" optimisation here in this document. I wait it for long time, so I appreciate it.</p> <p>But I have&nbsp;two other recommendations (wishes) to make more easy-to-use the instance OS&nbsp;processes:</p> 
+          <ul> 
+           <li> 
+            <ul> 
+             <li>Please don't plan&nbsp;any other process-hierarchy in the future&nbsp; (like the earlier nodeagent and messagebroker)</li> 
+             <li>Please provide a commandline&nbsp;option for a&nbsp;system.propeties file,&nbsp;where can be put several system properties which are currently put one by one on the commandline, so an adminstrator can keep clear the commandline,&nbsp;holding there&nbsp;only those things, which are necessary see in&nbsp;ps command's output.</li> 
+            </ul> </li> 
+          </ul> <p>All these things are important if a man has lot of instances on one host, to able easely overview them.</p> <p>Thanks</p></font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by rezsekzs at Sep 04, 2010 21:33 
+         </div> </td> 
+       </tr> 
+      </tbody>
+     </table> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Nov 08, 2011 by 
+<font color="#0050B2">bbissett</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

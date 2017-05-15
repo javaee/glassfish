@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GuidelinesOnBugFixesFor311</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GuidelinesOnBugFixesFor311-GlassFishServerOpenSourceEdition3.1.1"></a>GlassFish Server Open Source Edition 3.1.1</h1> <h4><a name="GuidelinesOnBugFixesFor311-HowdoIdetermineifIshouldfixmybugsin3.1.1%3F"></a>How do I determine if I should fix my bugs in 3.1.1?</h3> <p>The following types of issues are good candidates to be fixed</p> 
+     <ul> 
+      <li>Bugs that prevent product certification with JDK 7.</li> 
+      <li>Bugs that prevent product certification with JRockit.</li> 
+      <li>Required changes to make GlassFish run on AIX.</li> 
+      <li>Impact product security</li> 
+      <li>Represent a CTS failure</li> 
+      <li>Is a regression of functionality or performance available in a prior release</li> 
+      <li>Introduces an incompatibility</li> 
+      <li>Likely to generate a customer support call</li> 
+      <li>An in-your-face issue that will touch the majority of users</li> 
+      <li>Issues that are directly reported by community or have been created from forum data.</li> 
+      <li><a href="http://java.net/jira/secure/IssueNavigator.jspa?reset=true&amp;customfield_10002=3_1-release-notes">Release noted bugs from 3.1</a></li> 
+     </ul> <h4><a name="GuidelinesOnBugFixesFor311-ImayhaveidentifiedapotentialbugthatIthinkshouldbefixedin3.1.1.HowdoIgetanapprovalforthefix%3F"></a>I may have identified a potential bug that I think should be fixed in 3.1.1. How do I get an approval for the fix?</h3> <p>Please use the following process to request approval to work on a bug fix:</p> <p>1. Add the "3_1_1-review" tag to the issue.<br> 2. Provide justification on why we should consider this for 3.1.1?. Your write up(no particular format) must include the answers to the following questions.</p> 
+     <ul> 
+      <li>Why fix this issue in 3.1.1?</li> 
+     </ul> 
+     <ul> 
+      <li>Which is the targeted build of 3.1.1 for this fix?</li> 
+     </ul> 
+     <ul> 
+      <li>Do regression tests exist for this issue?</li> 
+     </ul> 
+     <ul> 
+      <li>Which tests should QA (re)run to verify the fix did not destabilize GlassFish?</li> 
+     </ul> <p>3. Send mail to scatari@java.net</p> 
+     <div class="code panel" style="border-style: solid;border-width: 1px;">
+      <div class="codeHeader panelHeader" style="border-bottom-width: 1px;border-bottom-style: solid;">
+       <b>Email Template</b>
+      </div>
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">To: scatari@java.net
+Subject: 3.1.1 Change Request
+
+Component Name: XXXXX
+Issue: https://github.com/javaee/glassfish/issues/NNNNN</pre> 
+       </div> 
+      </div>
+     </div> <p>4. I will take this to the approving team for review after removing the 3_1_1-review tag.<br> 4.1 If it is approved the 3_1_1-approved tag will be added to the issue. The Fix Version/s will be changed to the appropriate milestone with an "Approved" comment added to the issue.<br> 4.2 If it is rejected the 3_1_1-exclude tag will be added to the issue. If the deferred issue is a candidate for the next update release then the 3_1_1-next tag will be added.<br> 4.3 The decision(approved/rejected) will be emailed to the issue owner.</p> <h4><a name="GuidelinesOnBugFixesFor311-Whogetstodecideonwhatgoesinto3.1.1%3F"></a>Who gets to decide on what goes into 3.1.1?</h3> <p>It is a collective decision by many(Developers, QA, Perf, Sustaining and other teams). Please look through the bugs, and let us know if you would like to address anything for 3.1.1, we will mark them appropriately and track them.</p> <p>We are also in the process of scrubbing the current open bugs and will contact you if we need fixes for specific issues, but<br> don't wait for us to ping you, if you have already identified your list of bugs.</p> <p><b>NOTE: We will have formal bugswat meetings after our MS2(05/05/2011).</b></p> <h4><a name="GuidelinesOnBugFixesFor311-HowmuchtimeIhavetofixissues%3F"></a>How much time I have to fix issues?</h3> <p>P1-P3 bugs are allowed until 05/05/2011.(MS2).<br> P1-P2 bugs are allowed until 05/17/2011.(MS3).</p> <p>Only stopper bugs are allowed after 05/17/2011(MS3).</p> <p>Complete build <a href="./3.1.1BuildSchedule.html">schedule </a>.</p> <h4><a name="GuidelinesOnBugFixesFor311-CanIaddanewproductfeaturein3.1.1%3F"></a>Can I add a new product feature in 3.1.1?</h3> <p><b>3.1.1 is an update release to 3.1, No new features are allowed to be checked in.</b></p> <p>Code changes related to porting GlassFish 3.1.1 on AIX need not be tracked as bugs till 05/17. After 05/17, all changes must have an associated bug id.</p> <h4><a name="GuidelinesOnBugFixesFor311-Whatisthecheckinprocedure%3F"></a>What is the check-in procedure?</h3> <p>3.1.1 SVN Branching details:<a href="./3.1.1+Branch+Info.html">http://wikis.sun.com/display/GlassFish/3.1.1+Branch+Info</a></p> <p>Please get the changes reviewed by your peer,and other module leads if it spreads across your module.</p> 
+     <ul> 
+      <li>If the fix applies to 3.2(Which we assume will be for most of the fixes), then please make sure that you check-in in both 3.2(Trunk) and 3.1.1 branch. In JIRA, you can mark them as fixed in both "3.1.1_bXX and 3.2_bXX" numbers. Please contact Rajiv Mordani(mode@java.net) if you have any questions related to 3.2.</li> 
+     </ul> 
+     <ul> 
+      <li>If the fix does not apply to 3.2, then please add the keyword "3_2-na" to the bug. Though we assume that all the bugs fixed in 3.1.1 apply automatically to 3.2, there may be cases where this will not be true.</li> 
+     </ul> <p><b>NOTE: All the check-in records(SVN messages for both Trunk and 3.1.1 branch) should be copied in the bug tracking system within the data for relevant bug(s). If we don't see a check-in message for trunk, then that bug should have 3_2-na in the keyword.</b></p> <h4><a name="GuidelinesOnBugFixesFor311-IcheckedinafixinTrunkafter3.1FCSbutbefore04%2F04.HowdoIpullinthechangesto3.1.1codebase%3F"></a>I checked in a fix in Trunk after 3.1 FCS but before 04/04. How do I pull in the changes to 3.1.1 code base?</h3> <p>The 3.1.1 branch was created on 04/04/2011 from the trunk so it already contains the fixes done on the trunk during this time period. Just make sure that your fix is marked as fix integrated with appropriate fix in version including build numbers.</p> <h4><a name="GuidelinesOnBugFixesFor311-IcheckedinafixintheTrunkbetween04%2F04and04%2F13%283.1.1MS1%29.HowdoIpullinthechangesto3.1.1codebase%3F"></a>I checked in a fix in the Trunk between 04/04 and 04/13(3.1.1 MS1). How do I pull in the changes to 3.1.1 code base?</h3> <p>Please make sure that you also check-in your bug fix to the 3.1.1 branch(after going through the approval process) if it applies and mark the fixed in version field with appropriate values.</p> <h4><a name="GuidelinesOnBugFixesFor311-Ifixedabugin3.2%2Cnotsureifthishastogointo3.1.1%2CwhatdoIdo%3F"></a>I fixed a bug in 3.2, not sure if this has to go into 3.1.1, what do I do?</h3> <p>Please contact me(scatari@java.net) and I will get you the answer.</p> <h4><a name="GuidelinesOnBugFixesFor311-Iamworkingonacustomerescalation%2CHowdoIgetthefixcheckedinto3.1.1workspace%3F"></a>I am working on a customer escalation, How do I get the fix checked into 3.1.1 workspace?</h3> <p>Please work with Manoj Kumar Malhotra(manojmalhotra@java.net), so that we can track the fix as part of 3.1.1 release.</p> <h4><a name="GuidelinesOnBugFixesFor311-Useful3.1.1Links"></a>Useful 3.1.1 Links</h3> <p><a href="./3.1.1BuildSchedule.html">Schedule </a><br> <a href="./PlanForGlassFish3.1.1.html">Overall </a></p> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Aug 28, 2012 by 
+<font color="#0050B2">10193</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

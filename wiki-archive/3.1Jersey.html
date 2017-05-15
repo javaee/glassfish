@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : 3.1Jersey</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="3.1Jersey-GlassFishServerOpenSourceEdition3.1Jersey"></a>GlassFish Server Open Source Edition 3.1 - Jersey</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#3.1Jersey-GlassFishServerOpenSourceEdition3.1Jersey">GlassFish Server Open Source Edition 3.1 - Jersey</a></li> 
+       <ul> 
+        <li><a href="#3.1Jersey-Introduction">Introduction</a></li> 
+        <li><a href="#3.1Jersey-Scope">Scope</a></li> 
+        <li><a href="#3.1Jersey-FeatureOverview">Feature Overview</a></li> 
+        <li><a href="#3.1Jersey-DesignDocument">Design Document</a></li> 
+        <li><a href="#3.1Jersey-MilestoneSchedule">Milestone Schedule</a></li> 
+        <li><a href="#3.1Jersey-TaskList">Task List</a></li> 
+        <li><a href="#3.1Jersey-DevTests">Dev Tests</a></li> 
+        <li><a href="#3.1Jersey-References">References</a></li> 
+        <li><a href="#3.1Jersey-EmailAlias">Email Alias</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="3.1Jersey-Introduction"></a>Introduction</h2> <p>Jersey related features/tasks mostly associated with GlassFish.</p> <h4><a name="3.1Jersey-Scope"></a>Scope </h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Feature ID </th> 
+         <th class="confluenceTh"> Priority </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> Eng Response </th> 
+         <th class="confluenceTh"> Owner(s) </th> 
+         <th class="confluenceTh"> Estimate (Man Days) </th> 
+         <th class="confluenceTh"> Source of Requirement </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Modularization of Jersey distribution </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Jakub </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Jersey community </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> Deployment of Jersey OSGi-war bundles </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Jakub </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Jersey community </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3 </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> GlassFish integration - samples embedded-glassfish:run </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Pavel </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Jersey community </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Improved CDI and JAX-RS integration </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Paul </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> JAX-RS specification </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Improved JSON support using Jackson </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Jakub </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Jersey community </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6 </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> Jersey with JRebel </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Pavel </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Jersey community </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 7 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Improved hypermedia support on client </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Paul,Team </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Jersey community </td> 
+         <td class="confluenceTd"> Started </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 8 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Improved hypermedia support on server </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Paul,Team </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Jersey community </td> 
+         <td class="confluenceTd"> Started </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 9 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> DTrace probes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Team </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Add support for <a href="http://java.sun.com/javaee/6/docs/api/">Java EE API </a> - javax.ws.* </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 10 </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> GlassFish integration - testing samples on embedded glassfish </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Pavel </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Jersey community </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 11 </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> GlassFish integration - embedded glassfish in jersey test framework </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Pavel </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Jersey community </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.1Jersey-FeatureOverview"></a>Feature Overview </h2> <p>Jersey currently ships a jersey bundle to GF (in addition to other jars) containing a number of jersey modules. This will be changed so that each jersey module is shipped directly and aligns with OSGi support of Jersey in and outside of GlassFish.</p> <p>Deployment of Jersey applications to GlassFish as an OSGI-bundle will enable multiple versions of Jersey to be installed in isolation. Currently many developers are having issues with running later versions of Jersey to that which is installed in GlassFish. The class loader delegation feature of GlassFish is not sufficient. This feature us not really Jersey specific but Jersey will provide input to requirements and will test deployments.</p> <p>Jersey currently uses a very old version of the GlassFish embedded API. This needs to be updated to use the latest API for embedded tests and for use with the jersey test framework. Additionally we need to support maven target embedded-glassfish:run in webapp samples (and be sure that correct jersey version will be used) and test samples which use CDI, EJB and Managed beans on embedded glassfish.</p> <p>Jersey needs to improve it's integration with CDI such that the optional aspects of the JAX-RS spec in this regard are investigated and implemented. Specifically this means providing bindings such @Inject works for JAX-RS/Jersey related injection points. </p> <p>The JAXB JSON support in Jersey can work for simple cases but developers are struggling to understand the how the JSON relates to the classes and there are many edge cases that are hard to support because of the mismatch between the JSON data model and the XML infoset model that JAXB uses. Jackson is an excellent library that provides a clearer mapping from POJOs to JSON. Jersey is already depending on it for low-level support.</p> <p>Jersey caches runtime information generated from Java reflection for performance reasons. This does not work so well when Jersey developers utilize JRebel for rapid development. A Jersey/JRebel plugin will solve this. Such a plugin was prototyped over a year ago. This is technically feasible and requires that JRebel cause Jersey to reload (a feature which Jersey already supports).</p> <p>Hypermedia support for RESTful application is an important area that JAX-RS 1.x left for a future JAX-RS specification. Jersey can provide useful APIs on the client and server that can be input to a future JAX-RS specification. These APIs will be public thus it is important to get these APIs right before being shipped with a stable release of Jersey, hence why these features are closer to the end of the GlassFish 3.1 release schedule. These APIs will be shipped in the experimental area of Jersey and distributed with SNAPSHOTs before becoming part of the stable API.</p> <h4><a name="3.1Jersey-DesignDocument"></a>Design Document</h2> 
+     <ul> 
+      <li></li> 
+     </ul> <h4><a name="3.1Jersey-MilestoneSchedule"></a>Milestone Schedule</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1. </td> 
+         <td class="confluenceTd"> MS 2 6/21 </td> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> Modularization of Jersey distribution </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2. </td> 
+         <td class="confluenceTd"> MS 2 6/21 </td> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd"> Deployment of Jersey OSGi-war bundles </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3. </td> 
+         <td class="confluenceTd"> MS 2 6/21 </td> 
+         <td class="confluenceTd"> 3 </td> 
+         <td class="confluenceTd"> Use the GlassFish 3 embedded API </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4. </td> 
+         <td class="confluenceTd"> MS 4 8/16 </td> 
+         <td class="confluenceTd"> 4 </td> 
+         <td class="confluenceTd"> Improved CDI and JAX-RS integration </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5. </td> 
+         <td class="confluenceTd"> MS 4 8/16 </td> 
+         <td class="confluenceTd"> 5 </td> 
+         <td class="confluenceTd"> Improved JSON support using Jackson </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6. </td> 
+         <td class="confluenceTd"> MS 4 8/16 </td> 
+         <td class="confluenceTd"> 6 </td> 
+         <td class="confluenceTd"> Jersey with JRebel </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 7. </td> 
+         <td class="confluenceTd"> MS 5 9/13 </td> 
+         <td class="confluenceTd"> 7 </td> 
+         <td class="confluenceTd"> Improved hypermedia support on client </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 8. </td> 
+         <td class="confluenceTd"> MS 5 9/13 </td> 
+         <td class="confluenceTd"> 8 </td> 
+         <td class="confluenceTd"> Improved hypermedia support on server </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.1Jersey-TaskList"></a>Task List</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task </th> 
+         <th class="confluenceTh"> Target Milestone </th> 
+         <th class="confluenceTh"> Start </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Owner(s) </th> 
+         <th class="confluenceTh"> Feature ID </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Modularization of Jersey distribution </td> 
+         <td class="confluenceTd"> MS 2 6/21 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 6/21 </td> 
+         <td class="confluenceTd"> See feature </td> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> Dependency on GlassFish OSGi </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Deployment of Jersey OSGi-war bundles </td> 
+         <td class="confluenceTd"> MS 2 6/21 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 6/21 </td> 
+         <td class="confluenceTd"> See feature </td> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd"> Dependency on GlassFish OSGi </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Use the GlassFish 3 embedded API </td> 
+         <td class="confluenceTd"> MS 2 6/21 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 6/21 </td> 
+         <td class="confluenceTd"> See feature </td> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd"> Dependency on GlassFish Embedded API </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Improved CDI and JAX-RS integration investigation </td> 
+         <td class="confluenceTd"> MS 2 6/21 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 6/21 </td> 
+         <td class="confluenceTd"> See feature </td> 
+         <td class="confluenceTd"> 4 </td> 
+         <td class="confluenceTd"> Dependency on Weld </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Improved CDI and JAX-RS integration </td> 
+         <td class="confluenceTd"> MS 4 8/16 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 8/16 </td> 
+         <td class="confluenceTd"> See feature </td> 
+         <td class="confluenceTd"> 4 </td> 
+         <td class="confluenceTd"> Dependency on Weld </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Improved JSON support using Jackson </td> 
+         <td class="confluenceTd"> MS 4 8/16 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 8/16 </td> 
+         <td class="confluenceTd"> See feature </td> 
+         <td class="confluenceTd"> 5 </td> 
+         <td class="confluenceTd"> Dependency on Jackson </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Jersey with JRebel </td> 
+         <td class="confluenceTd"> MS 4 8/16 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 8/16 </td> 
+         <td class="confluenceTd"> See feature </td> 
+         <td class="confluenceTd"> 5 </td> 
+         <td class="confluenceTd"> Dependency on JRebel </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Improved hypermedia support on client </td> 
+         <td class="confluenceTd"> MS 5 9/13 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 9/13 </td> 
+         <td class="confluenceTd"> See feature </td> 
+         <td class="confluenceTd"> 6 </td> 
+         <td class="confluenceTd"> No current external dependency </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Improved hypermedia support on server </td> 
+         <td class="confluenceTd"> MS 5 9/13 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 9/13 </td> 
+         <td class="confluenceTd"> See feature </td> 
+         <td class="confluenceTd"> 7 </td> 
+         <td class="confluenceTd"> Dependency on javax.el </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.1Jersey-DevTests"></a>Dev Tests </h2> 
+     <ul> 
+      <li></li> 
+     </ul> <h4><a name="3.1Jersey-References"></a>References</h2> 
+     <ul> 
+      <li></li> 
+     </ul> <h4><a name="3.1Jersey-EmailAlias"></a>Email Alias</h2> 
+     <ul> 
+      <li>Please contact us at <a href="mailto:users@jersey.java.net">users@jersey.java.net</a></li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 27, 2010 by 
+<font color="#0050B2">pavel_bucek</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

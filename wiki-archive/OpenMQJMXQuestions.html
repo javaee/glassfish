@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : OpenMQJMXQuestions</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="OpenMQJMXQuestions-FAQforJMXrelatedissuesinOpenMessageQueue%21https%3A%2F%2Fmq.java.net%2Fimages%2Fdukemqicon.gif%21"></a>FAQ for JMX related issues in Open Message Queue <span class="error">Cannot resolve external resource into attachment.</span></h1> <p>If you are interested in contributing to this FAQ, please read the <a href="MQWikiContributionGuidelines.html" title="MQWikiContributionGuidelines">Contribution Guidelines</a>.</p> <p><a href="OpenMQFAQ.html" title="OpenMQFAQ">Back to main Open MQ FAQ page</a><br> <a href="https://mq.java.net">Back to Open MQ</a></p> <p><b>Q: How do I connect to the broker using jconsole ?</b><br> <b>A:</b> jconsole is a JMX monitoring tool that is bundled with the JDK. You can connect to the broker using jconsole as a local process (ie a broker running on the same machine as jconsole) or as a remote process.<br> <b>Local process</b><br> If you are using JDK 1.6 for the broker and jconsole, you can simply launch jconsole and the broker process will appear in the local process list. Select it and you will be monitoring the broker. No credentials are required here as long as you are running the broker and jconsole as the same user. Note that there is a bug in JDK 1.6 that causes the broker to exit when jconsole is used to connect to it as a local process: <a href="http://bugs.sun.com/view_bug.do?bug_id=6583000">6583000 - Attaching to local MQ broker process via jconsole causes broker JVM to seg fault</a>. This bug is fixed in JDK 1.6u10.<br> If you are using JDK 1.5, the broker needs to be started up with additional command line options to allow for local process monitoring. This is done by starting up the broker using the '-vmargs' option to specify the 'com.sun.management.jmxremote' property to the Java VM as follows:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">-vmargs -Dcom.sun.management.jmxremote</pre> 
+       </div> 
+      </div>
+     </div> <p>For example:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">imqbrokerd -tty -name mybroker -vmargs -Dcom.sun.management.jmxremote</pre> 
+       </div> 
+      </div>
+     </div> <p>Once the above is done, the broker process will appear in jconsole's local process list.<br> <b>Remote process</b><br> If the broker you want to monitor is running on another machine or if it is running JDK 1.5 and you cannot restart it with the '-vmargs' option as described above, then you will need to access it remotely. This means that you cannot rely on the broker process appearing on the local processes list in jconsole. What is needed here is the JMX URL to connect to. This can be done by running the 'imqcmd list jmx' command. Sample output:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">% imqcmd list jmx
+Listing JMX Connectors on the broker specified by:
+
+-------------------------
+Host         Primary Port
+-------------------------
+localhost    7676
+
+Name      Active  URL
+jmxrmi    true    service:jmx:rmi://yourhost/stub/rO0ABdmVyLlJlpIDJyGvQkwAAAARod97VdgAEAeA==
+
+ssljmxrmi false
+
+Successfully listed JMX Connectors.</pre> 
+       </div> 
+      </div>
+     </div> <p>The URL seen above (shortened for convenience) i.e.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">service:jmx:rmi://yourhost/stub/rO0ABdmVyLlJlpIDJyGvQkwAAAARod97VdgAEAeA==</pre> 
+       </div> 
+      </div>
+     </div> <p>can be used to connect to the broker.<br> If 'imqcmd list jmx' does not list a URL e.g. it displays 'There are no JMX Connectors on the broker', check the broker log to check for any startup/initialization errors.<br> The MQ broker's JMX URL can be entered in the Advanced tab of the JDK 1.5 jconsole 'Connect to Agent' dialog:<br> <span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20876004/21364865.gif" style="border: 0px solid black"></span><br> or the Remote Process URL in the JDK 1.6 jconsole 'New Connection' dialog:<br> <span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20876004/21364860.gif" style="border: 0px solid black"></span><br> The User Name and Password here is whatever administrator credentials that are configured for the broker. The default administrator username and password are "admin" and "admin".<br> <b>NOTE:</b><br> The JMX URL above is dynamic - this URL cannot be used for the broker if it is restarted. If the broker is restarted, 'imqcmd list jmx' needs to be run to determine the JMX URL once again. The URL above basically contains the serialized RMI JMX Connector stub that is used for making the JMX connection. If a JMX URL that is unchanging is needed, the broker can be started up with this additional option:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">-startRmiRegistry</pre> 
+       </div> 
+      </div>
+     </div> <p>As the option suggests, an RMI registry will be launched as part of broker startup. The default RMI port used here is 1099. If this port is used on your machine, a different port can be specfied for this via:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">-rmiRegistryPort</pre> 
+       </div> 
+      </div>
+     </div> <p>So, as an example, a broker can be started via:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">imqbrokerd -startRmiRegistry -rmiRegistryPort 1098</pre> 
+       </div> 
+      </div>
+     </div> <p>A run of 'imqcmd list jmx will now show something like:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">% imqcmd list jmx -u admin -pw admin
+Listing JMX Connectors on the broker specified by:
+
+-------------------------
+Host         Primary Port
+-------------------------
+localhost    7676
+
+Name      Active URL
+jmxrmi    true   service:jmx:rmi://yourhost/jndi/rmi://yourhost:1098/yourhost/7676/jmxrmi
+ssljmxrmi false
+
+Successfully listed JMX Connectors.</pre> 
+       </div> 
+      </div>
+     </div> <p>The relevant URL is now:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">service:jmx:rmi://yourhost/jndi/rmi://yourhost:1098/yourhost/7676/jmxrmi</pre> 
+       </div> 
+      </div>
+     </div> <p>which can be used across broker restarts. This URL no longer contains a serialized stub but points<br> to its location (in a RMI registry that is started by the broker).<br> One thing that is worth pointing out - the URL above is of the form:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">service:jmx:rmi://yourhost/jndi/rmi://yourhost:1098/yourhost/7676/jmxrmi</pre> 
+       </div> 
+      </div>
+     </div> <p>Note that the host name 'yourhost' appears 3 times:</p> 
+     <ol> 
+      <li>The first occurrence of 'yourhost' specifies the host (and possibly port - see this FAQ entry: How do I start up an MQ broker so that jconsole can connect to it through a firewall ?) used for the RMI connection objects</li> 
+      <li>yourhost:1098 is the rmi registry host/port</li> 
+      <li>/yourhost/7676/jmxrmi is the location on the rmi registry where the RMI stub is stored</li> 
+     </ol> <p>While the hostname in (1) and (2) above can be substituted with "localhost" (if it is the localhost), the hostname in (3) cannot be changed - the string that is seen here is a named location in the RMI registry that has nothing to do with the physical network host or IP.</p> 
+     <hr> <p><b>Q: How do I view MBeans exposed as part of MQ's JMX API in jconsole ?</b><br> <b>A:</b> First you need to connect to the broker using jconsole. This is described in a separate FAQ entry: <em>How do I connect to the broker using jconsole ?</em><br> Once jconsole is up and running and connected to the broker, select/view the MBeans tab. This tab will list the MBeans in the broker in a hierarchical list view, grouped according to domains. The MQ MBeans are in the domain</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">com.sun.messaging.jms.server</pre> 
+       </div> 
+      </div>
+     </div> <p>Expand this node. You will see a collection of other nodes. This list hierarchy is based on the ObjectName of the MQ MBeans. For example, the Object Name of the Destination Monitor MBean of the queue "SimpleQueue" is</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">com.sun.messaging.jms.server:type=Destination,subtype=Monitor,desttype=q,name="SimpleQueue"</pre> 
+       </div> 
+      </div>
+     </div> <p>The name above is of the form:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">domain:key1=value1,key2=value2,...</pre> 
+       </div> 
+      </div>
+     </div> <p>The list nodes in jconsole are named after the values of the keys in the Object Name of the MBeans.</p> <p>So to get to this MBean, the following nodes in the MBeans tab need to be expanded:</p> 
+     <ul> 
+      <li>com.sun.messaging.jms.server</li> 
+      <li>Destination</li> 
+      <li>Monitor</li> 
+      <li>q</li> 
+     </ul> <p>and clicking or expanding the leaf node "SimpleQueue" will show you information on this MBean as shown below.</p> <p><span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20876004/21364864.gif" style="border: 0px solid black"></span></p> 
+     <hr> <p><b>Q: How do I start up an MQ broker so that jconsole can connect to it through a firewall ?</b><br> <b>A:</b> It is useful to know the ports that are used in making a JMX connection especially if the broker is sitting behind a firewall. In this case, if a monitoring client (for example, jconsole) is outside the firewall and needs to connect to the broker:</p> 
+     <ul> 
+      <li>the broker needs to be configured to specify the relevant ports for JMX traffic.</li> 
+      <li>the firewall needs to allow traffic on these same ports.</li> 
+     </ul> <p>The ports that are relevant for making a JMX connection to the broker are listed in the table below:</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Port </th> 
+         <th class="confluenceTh"> Default value </th> 
+         <th class="confluenceTh"> Description </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> RMI Registry Port </td> 
+         <td class="confluenceTd"> 1099 </td> 
+         <td class="confluenceTd">This is the port used by the RMI Registry. As described in the FAQ entry <em>How do I connect to the broker using jconsole ?</em> the broker can be started with the options -startRmiRegistry and -rmiRegistryPort. If this is done, the JMX connection process will involve traffic on this port. The client will first connect to the RMIRegistry to obtain the RMI Connector stub which it will then use to create the actual JMX connection. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Port used by RMI Connector </td> 
+         <td class="confluenceTd"> None. This is dynamically allocated. </td> 
+         <td class="confluenceTd">This is the port that is actually used by the RMI Connector. This is set via the MQ broker property <b>imq.jmx.connector.<em>connector_name</em>.port</b> The default connector name is 'jmxrmi', so the property that would be used here is imq.jmx.connector.jmxrmi.port. This property can be set in the broker's config.properties file or specified on the command line when starting up the broker using the -D option. If this property is not specified, the port used will be allocated dynamically. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p><b>Example Usage</b><br> If the broker is using an RMI Registry, it can be started up via the following:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">imqbrokerd -startRmiRegistry -rmiRegistryPort 1098 -Dimq.jmx.connector.jmxrmi.port=5656</pre> 
+       </div> 
+      </div>
+     </div> <p>The JMX URL that is seen in the output of 'imqcmd list jmx' will contain the port numbers specified. For example:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">% imqcmd list jmx
+Listing JMX Connectors on the broker specified by:
+
+-------------------------
+Host         Primary Port
+-------------------------
+localhost    7676
+
+Name      Active URL
+jmxrmi    true   service:jmx:rmi://yourhost:5656/jndi/rmi://yourhost:1098/yourhost/7676/jmxrmi
+ssljmxrmi false
+
+Successfully listed JMX Connectors.</pre> 
+       </div> 
+      </div>
+     </div> <p>After starting the broker as above, the firewall needs to allow traffic on ports 1098 and 5656 for JMX clients. Note that the firewall may need to also allow traffic on additional ports - for JMS traffic.<br> If the broker is not using an RMI Registry, the port used by the RMI Connector can still be specified with the imq.jmx.connector.jmxrmi.port property as follows:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">imqbrokerd -Dimq.jmx.connector.jmxrmi.port=5656</pre> 
+       </div> 
+      </div>
+     </div> <p>In this case, the firewall needs to only allow traffic on port 5656 (in addition to other ports used by jms traffic).</p> 
+     <hr> 
+     <hr> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876004/21365389.gif">jconsole1.5.gif</a> (image/gif) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876004/21365388.gif">jconsole1.6.gif</a> (image/gif) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876004/21365390.gif">simplequeue.gif</a> (image/gif) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876004/21364864.gif">simplequeue.gif</a> (image/gif) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876004/21364860.gif">jconsole1.6.gif</a> (image/gif) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876004/21364865.gif">jconsole1.5.gif</a> (image/gif) 
+      <br> 
+     </div> 
+     <div class="tabletitle"> 
+      <a name="comments"> <h4>Comments:</h2> </a> 
+     </div> 
+     <table border="0" width="100%"> 
+      <tbody>
+       <tr> 
+        <td> <a name="comment-20878922"></a> <font class="smallfont"><p>Is there a possibility for a read only user to be able to connect to the jmx service? All I see is the ability for an admin to have access.</p></font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by jgriff at Nov 02, 2010 11:44 
+         </div> </td> 
+       </tr> 
+      </tbody>
+     </table> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 26, 2010 by 
+<font color="#0050B2">nigeldeakin</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

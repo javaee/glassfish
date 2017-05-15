@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : JavaEEServiceUnits</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="JavaEEServiceUnits-JavaEEServiceUnits"></a>Java EE Service Units</h1> <p>With GlassFish V2, a Java EE application can be packaged as part of a JBI service assembly. Such a service assembly can contain one more Java EE applications (ejbs/wars/ears/rars) apart from service units belonging to other JBI components. The only difference between such a Java EE application packaged inside the service assembly will be a jbi.xml file in the META-INF directory of the Java EE archive.</p> <p>Lets call such a Java EE archive as Java EE Service Unit.</p> <h4><a name="JavaEEServiceUnits-Example"></a>Example</h2> <p>An example of contents such a service assembly is shown below.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">bash-3.00# jar -tvf TestApp.zip
+     0 Tue Jan 23 07:08:08 IST 2007 META-INF/
+   106 Tue Jan 23 07:08:06 IST 2007 META-INF/MANIFEST.MF
+  1213 Tue Jan 23 07:08:06 IST 2007 META-INF/jbi.xml
+  1977 Tue Jan 23 07:08:06 IST 2007 com.sun.httpsoapbc-1.0-2.jar
+  3957 Tue Jan 23 07:08:06 IST 2007 miscejb.jar</pre> 
+       </div> 
+      </div>
+     </div> <p>The service assembly TestApp.zip contains two service units. miscejb.jar of Java EE Service Engine and com.sun.httpsoapbc-1.0.2.jar of the HTTP/SOAP binding component. The details of these service units are specified in the <a href="http://wiki.glassfish.java.net/attach/JavaEEServiceUnits/jbisa.xml">jbi.xml</a> of the service assembly.</p> <p>The miscejb.jar will contain a jbi.xml in it's META-INF directory, making it a service unit.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">bash-3.00# jar -tvf miscejb.jar
+   304 Tue Jan 23 07:08:04 IST 2007 META-INF/jbi.xml
+     0 Tue Jan 23 07:08:00 IST 2007 META-INF/
+   106 Tue Jan 23 07:07:58 IST 2007 META-INF/MANIFEST.MF
+     0 Tue Jan 23 07:08:00 IST 2007 sqetests/
+     0 Tue Jan 23 07:08:00 IST 2007 sqetests/jbi/
+     0 Tue Jan 23 07:08:00 IST 2007 sqetests/jbi/ejbws/
+   255 Tue Jan 23 07:08:00 IST 2007 META-INF/sun-ejb-jar.xml
+   603 Tue Jan 23 07:08:00 IST 2007 sqetests/jbi/ejbws/Account.class
+  1713 Tue Jan 23 07:08:00 IST 2007 sqetests/jbi/ejbws/Misc.class</pre> 
+       </div> 
+      </div>
+     </div> <p>A Java EE Service Unit will declare the services it consumes or provides in its' jbi.xml. For an <a href="http://fisheye5.cenqua.com/browse/~raw,r=1.1/glassfish/appserv-tests/sqetests/jbi/helloca/projects/miscejb/src/java/sqetests/jbi/ejbws/Misc.java">EJB webservice</a> , to enable it in JBI, a jbi.xml like the following need to be provided. </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&amp;lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt;
+&amp;lt;jbi xmlns="http://java.sun.com/xml/ns/jbi" xmlns:ns0="http://ejbws.jbi.sqetests/" version="1.0"&gt;
+&amp;lt;services binding-component="false"&gt;
+&amp;lt;provides endpoint-name="MiscPort" interface-name="ns0:Misc" service-name="ns0:MiscService"/&gt;
+&amp;lt;/services&gt;
+&amp;lt;/jbi&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>It basically specifies the Service Name and Port Name of the EJB webservice. Java EE Service Engine will enable an endpoint in the normalized message router with these details, so that the EJB webservice can be accessed from a JBI application.</p> <p>Similarly, if a Java EE application (Servlet or EJB) need to access a service exposed by a JBI application, it will specify the jbi.xml as follows.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&amp;lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt;
+&amp;lt;jbi xmlns="http://java.sun.com/xml/ns/jbi" xmlns:ns0="http://message.helloca.jbi/" version="1.0"&gt;
+&amp;lt;services binding-component="false"&gt;
+&amp;lt;consumes endpoint-name="MessageBPELPort" interface-name="ns0:MessageBPEL" service-name="ns0:MessageBPELService"/&gt;
+&amp;lt;/services&gt;
+&amp;lt;/jbi&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>Now, a webservice invocation from Java EE application using normal JAXWS client apis will be directed to<br> NMR by Java EE Service Engine.</p> <h4><a name="JavaEEServiceUnits-DeployingaServiceAssemblythatcontainsaJavaEEServiceUnit."></a>Deploying a Service Assembly that contains a Java EE Service Unit.</h2> <p>asadmin command deploy-jbi-service-assembly (or admin GUI) can be used to deploy the service assembly that contain the Java EE service unit. This is just the same as deploying a normal JBI service assembly. When this happens, the Java EE service unit will be deployed to Java EE containers by the Java EE Service Engine.</p> <p>Note that the Java EE Service unit will not be started until the service assembly is started using start-jbi-service-assembly command or by starting via admin GUI.</p> <h4><a name="JavaEEServiceUnits-Netbeanstoolingsupport"></a>Netbeans tooling support</h2> <p>Netbeans enterprise pack provide tooling support for Java EE Service Unit. The details are available at<br> <a href="http://www.glassfishwiki.org/jbiwiki/Wiki.jsp?page=JavaEECompositeApp">netbeans tooling page</a></p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Dec 01, 2011 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:48.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFishV3DottedNamesForPrelude</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GlassFishV3DottedNamesForPrelude-GlassFishv3DottedNamesforPreludeRelease"></a>GlassFish v3 Dotted Names for Prelude Release</h1> <p>[</p> 
+     <div class="error">
+      <span class="error">Unknown macro: {TableOfContents title=' '}</span> 
+     </div> <p>|(TableOfContentstitle='')]</p> <h4><a name="GlassFishV3DottedNamesForPrelude-1CurrentBehavior"></a>1 Current Behavior</h1> <p>In V2, the dotted names are implemented such that when some one queries for server.*, it also returns the names corresponding to all of server references such as application-ref, resource-ref, etc. In V3, the dotted names are returned corresponding to domain.xml representation without additional processing.</p> <h4><a name="GlassFishV3DottedNamesForPrelude-1.1References"></a>1.1 References</h2> <p>&lt;pre&gt;<br> jyothi <sup><a href="#GlassFishV3DottedNamesForPrelude-154">154</a></sup> : ./asadmin lsit "server.*"</p> <p>server.resource-ref.jdbc/__CallFlowPool<br> server.resource-ref.jdbc/__TimerPool<br> server.resource-ref.jdbc/__default<br> server.resources<br> server.resources.jdbc-connection-pool.DerbyPool<br> server.resources.jdbc-connection-pool.__CallFlowPool<br> server.resources.jdbc-connection-pool.__TimerPool<br> server.resources.jdbc-resource.jdbc/__CallFlowPool<br> server.resources.jdbc-resource.jdbc/__TimerPool<br> server.resources.jdbc-resource.jdbc/__default<br> server.security-service<br> &lt;/pre&gt;</p> <p>In V3, it returns <br> &lt;pre&gt;<br> punit <sup><a href="#GlassFishV3DottedNamesForPrelude-455">455</a></sup> : ./asadmin list "server.*"</p> <p>resource-ref.jdbc/__default<br> application-ref.WSTXServices<br> application-ref.WSTCPConnectorLCModule<br> resource-ref.jdbc/__TimerPool<br> application-ref.JBIFramework<br> resource-ref.jdbc/__CallFlowPool<br> application-ref.adminapp<br> &lt;/pre&gt;</p> <h4><a name="GlassFishV3DottedNamesForPrelude-1.2Behaviouroflist%22%22"></a>1.2 Behaviour of list "*"</h2> <p>In V2, it returns the names corresponding to entities, for ex. server.http-service.connection-pool and in V3 it returns the domain elements as is, for example: configs.config.server-config.http-service.connection-pool.</p> <p>In V2:</p> <p>&lt;pre&gt;<br> asadmin list "*"</p> <p>server-config.admin-service<br> server<br> ...<br> &lt;/pre&gt;</p> <p>In V3:</p> <p>&lt;pre&gt;<br> asadmin list "*"</p> <p>configs.config.server-config.admin-service<br> servers.server.server<br> ...<br> &lt;/pre&gt;</p> <h4><a name="GlassFishV3DottedNamesForPrelude-1.3Domain."></a>1.3 Domain.*</h2> <p>In V2:</p> <p>&lt;pre&gt;<br> jyothi <sup><a href="#GlassFishV3DottedNamesForPrelude-155">155</a></sup> : ./asadmin list "domain.*"</p> <p>cl1<br> cl1-config<br> default-config<br> domain.applications<br> domain.applications.j2ee-application.MEjbApp<br> domain.clusters<br> domain.configs<br> domain.lb-configs<br> domain.load-balancers<br> domain.node-agent.na1<br> domain.node-agent.na1.auth-realm<br> domain.node-agents<br> domain.resources<br> domain.resources.jdbc-connection-pool.DerbyPool<br> domain.servers<br> server<br> ...<br> &lt;/pre&gt;</p> <p>In V3, no values are returned.<br> &lt;pre&gt;<br> punit <sup><a href="#GlassFishV3DottedNamesForPrelude-456">456</a></sup> : ./asadmin list "domain.*"</p> <p>Command list executed successfully.<br> &lt;/pre&gt;</p> <h4><a name="GlassFishV3DottedNamesForPrelude-1.4GetandSet"></a>1.4 Get and Set</h2> <p>Similarly without doing extensive investigation, I noticed some differences in the areas of get and set. For ex. asadmin get "<b>.</b>" returns all values on all dotted name prefixes in V2 but does not return any values in V3.</p> <h4><a name="GlassFishV3DottedNamesForPrelude-2ProposedSolutiontobeCompatiblewithV2"></a>2 Proposed Solution to be Compatible with V2</h1> <p>The motive here is just to be compatible with V2 and not expose any V3 behavior of showing dotted names as domain names.</p> 
+     <ul> 
+      <li>list "*" will return only dotted names corresponding to entities server, config, cluster, and domain elements which are not reflected in others. The returned dotted-names are reference resolved.</li> 
+     </ul> 
+     <ul> 
+      <li>get and set will base on the above list behavior.</li> 
+     </ul> 
+     <ul> 
+      <li>Pseudocode</li> 
+     </ul> <p>&lt;pre&gt;<br> if ("*") {<br> //generate and return dotted names for all entities (server, cluster, etc.) in domain; <br> generateDottedNames(domain);<br> } else if ("server") {<br> generateDottedNames(server);<br> } else if ("cluster") {<br> generateDottedNames(cluster);<br> } </p> <p>Map generateDottedNames(String entity) {<br> // the entity could be one of server, cluster, config<br> fill the map with entity and its children nodes;<br> fill the map with resolved references for entity's resource-refs, application-refs, etc.;<br> return map;<br> }<br> &lt;/pre&gt;</p> <h4><a name="GlassFishV3DottedNamesForPrelude-3AlternativesConsidered"></a>3 Alternatives Considered</h1> <h4><a name="GlassFishV3DottedNamesForPrelude-3.1V3BehaviorandcompatiblewithV2"></a>3.1 V3 Behavior and compatible with V2</h2> <p>If the command is specific to V3 then return the dotted names the way it is done now. However if the command is for V2 then using decorator pattern provide V2 wrapper implementation to resolve the references and return the dotted names in V2 format. One risk is that there is no specification for V2 behavior so the compatibility will be ensured to satisfy the existing sqe/cts test cases. </p> <p>Whenever the command received is for V2, a deprecation message will be sent along with the response informing that V2 style support will be removed in next release.</p> 
+     <ul> 
+      <li>Pseudocode</li> 
+     </ul> <p>&lt;pre&gt;</p> <p>Set getDottedNames("pattern") {<br> node = determine the domain node (server, cluster, etc.) based on given pattern;<br> // if ambiguous, assume it is V2<br> version = determine the command version based on given pattern;<br> map = generateDottedNames(node);<br> if (version == V2) </p> 
+     <div class="error">
+      <span class="error">Unknown macro: { map = addV2dottednames(map); }</span> 
+     </div> <p> // filter based on given matching pattern<br> set = filter(map, pattern);<br> if (version == V2) </p> 
+     <div class="error">
+      <span class="error">Unknown macro: { set = filterV2(map, pattern); }</span> 
+     </div> <p> <br> resturn set;<br> }</p> <p>Note, both generateDottedNames and addV2dottednames implement the <br> same interface and provides for separate implementation based on <br> version. This allows for clean separation of code and easy maintenance.</p> <p>Map generateDottedNames(node) {<br> // the prefix mentioned below is used to<br> // - ensure consistency <br> // - avoid confusion with V2<br> // - provide for filtering for V2 based on common and consistent prefix<br> if ("*") </p> 
+     <div class="error">
+      <span class="error">Unknown macro: { generate dotted names for the entire domain without resolving the references with prefix domain; }</span> 
+     </div> <p> else if ("server") </p> 
+     <div class="error">
+      <span class="error">Unknown macro: { generate and return dotted names for server with prefix domain.servers.server without resolving references; }</span> 
+     </div> <p> else if ("cluster") </p> 
+     <div class="error">
+      <span class="error">Unknown macro: { generate and return dotted names for cluster with prefix domain.clusters.cluster without resolving references; }</span> 
+     </div> <p> <br> }</p> <p>&lt;/pre&gt;</p> <h4><a name="GlassFishV3DottedNamesForPrelude-3.2JustV3Behavior."></a>3.2 Just V3 Behavior.</h2> <p>I am not sure if this is acceptable. If this is OK then we can keep the existing code.</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 09, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : PlanForGlassFishV3</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="PlanForGlassFishV3-WhatisGlassFishv3%3F"></a>What is GlassFish v3?</h1> <p>GlassFish v3 is the next major release of the GlassFish Application Server and is currently under development by the GlassFish Community. GlassFish v3 has a modular, lightweight, extensible architecture. The goals are to provide the following:</p> 
+     <ul> 
+      <li>An open, modular, extensible platform</li> 
+      <li>A fast, easy, reliable application server</li> 
+      <li>An enterprise-ready application server with massive scalability and sophisticated administration</li> 
+      <li>Product updates and add-ons through the industry-strength <a href="http://wiki.updatecenter.java.net">Update Center 2.0</a></li> 
+      <li>Support for OSGi</li> 
+      <li>Support for dynamic languages such as Ruby and Groovy</li> 
+      <li>Support for Java EE 6</li> 
+     </ul> <p>This page points you to GlassFish v3 information and resources.</p> 
+     <hr> 
+     <div> 
+      <ul> 
+       <li><a href="#PlanForGlassFishV3-WhatisGlassFishv3%3F">What is GlassFish v3?</a></li> 
+       <ul> 
+        <li><a href="#PlanForGlassFishV3-Overview">Overview</a></li> 
+        <li><a href="#PlanForGlassFishV3-LatestRelease">Latest Release</a></li> 
+        <li><a href="#PlanForGlassFishV3-Engineering">Engineering</a></li> 
+        <ul> 
+         <li><a href="#PlanForGlassFishV3-BuildRelated%3A">Build Related:</a></li> 
+         <li><a href="#PlanForGlassFishV3-WholesaleIntegrationofNonSunImplementedTechnologies">Wholesale Integration of Non-Sun Implemented Technologies</a></li> 
+         <li><a href="#PlanForGlassFishV3-DesignDocuments%3A">Design Documents:</a></li> 
+         <li><a href="#PlanForGlassFishV3-Packaging">Packaging</a></li> 
+         <li><a href="#PlanForGlassFishV3-DefectQueries">Defect Queries</a></li> 
+        </ul> 
+        <li><a href="#PlanForGlassFishV3-QualityEngineering">Quality Engineering</a></li> 
+        <li><a href="#PlanForGlassFishV3-Documentation">Documentation</a></li> 
+        <li><a href="#PlanForGlassFishV3-Planning">Planning</a></li> 
+        <ul> 
+         <li><a href="#PlanForGlassFishV3-Features">Features</a></li> 
+         <li><a href="#PlanForGlassFishV3-Releases">Releases</a></li> 
+         <li><a href="#PlanForGlassFishV3-Schedule">Schedule</a></li> 
+        </ul> 
+        <li><a href="#PlanForGlassFishV3-Miscellaneous">Miscellaneous</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="PlanForGlassFishV3-Overview"></a>Overview</h2> <p>GlassFish v3 is the current release of the GlassFish application server. The focus of the release was Java EE 6, modularization, enablement of non Java EE containers, and embedability. </p> <p>Experiment with the <a href="https://glassfish.java.net/downloads/v3/">GlassFish v3</a> yourself! Try some <a href="V3Examples.html" title="V3Examples">simple examples</a>.</p> <h4><a name="PlanForGlassFishV3-LatestRelease"></a>Latest Release</h2> <p>The latest release is <a href="https://glassfish.java.net/downloads/v3">GlassFish v3 </a>. See the download page for more information.</p> <p>For latest nightly and promoted v3.0.1 builds, see <a href="http://download.java.net/glassfish/v3.0.1/">http://download.java.net/glassfish/v3.0.1/</a>.</p> <h4><a name="PlanForGlassFishV3-Engineering"></a>Engineering</h2> <p><a href="V3EngineersGuide.html" title="V3EngineersGuide">Introduction to v3</a> document that covers overall architecture, building and tips on how to work on V3.</p> <h4><a name="PlanForGlassFishV3-BuildRelated%3A"></a>Build Related: </h3> 
+     <ul> 
+      <li><a href="AddingBinaryDependency.html" title="AddingBinaryDependency">AddingBinaryDependency</a> for instructions on how to add new binary dependency in v3</li> 
+      <li><a href="AddingModule.html" title="AddingModule">AddingModule</a> for instructions on how to add a new module to v3.</li> 
+      <li><a href="V3AdminWorkspaceStructure.html" title="V3AdminWorkspaceStructure">Admin Workspace Structure</a></li> 
+      <li><a href="V3BrownBags.html" title="V3BrownBags">Brown Bags related to Builds </a></li> 
+      <li><a href="V3BuildToDoList.html" title="V3BuildToDoList">Build To Do List</a></li> 
+      <li><a href="V3BuildToDoList.html" title="V3BuildToDoList">Build system/infrastructure To Do List</a></li> 
+      <li><a href="V3DistributionAssembly.html" title="V3DistributionAssembly">Details about how we create glassfish.zip</a></li> 
+      <li><a href="V3WorkspaceStructure.html" title="V3WorkspaceStructure">Draft workspace layout proposal</a></li> 
+      <li><a href="HowDoesV3BuildWorks.html" title="HowDoesV3BuildWorks">How does GF v3 build/development work?</a></li> 
+      <li>Source code management</li> 
+      <li><a href="V3UnifiedDistroBuild.html" title="V3UnifiedDistroBuild">Unified Distribution Build Proposal</a></li> 
+      <li><a href="DevelopmentInstructions.html" title="DevelopmentInstructions">DevelopmentInstructions</a> to productively develop GF v3.</li> 
+      <li><a href="FullBuildInstructions.html" title="FullBuildInstructions">FullBuildInstructions</a> for instructions how to fully rebuild everything in v3 from scratch.</li> 
+      <li><a href="V3BuildPackageTigerTeam.html" title="V3BuildPackageTigerTeam">v3 Build/Packaging Tiger Team</a></li> 
+      <li><a href="V3BuildTests.html" title="V3BuildTests">v3 Build/Tests Guidelines</a></li> 
+      <li><a href="ExternalDependencies.html" title="ExternalDependencies">List of External Dependencies </a></li> 
+      <li><a href="SourceBuildProposal.html" title="SourceBuildProposal">Source Build Proposal </a></li> 
+      <li><a href="BuildingWithoutNexus.html" title="BuildingWithoutNexus">How to build if Nexus is down </a></li> 
+     </ul> <h4><a name="PlanForGlassFishV3-WholesaleIntegrationofNonSunImplementedTechnologies"></a>Wholesale Integration of Non-Sun Implemented Technologies</h3> <p>Glassfish leverages the work of several non-Sun entities to deliver key parts of the Glassfish Application Server. Further information about which parts of Glassfish originate outside of Sun can be found on the <a href="V3NonSunIntegration.html" title="V3NonSunIntegration">V3 Non-Sun Integration Landing Page</a>.</p> <h4><a name="PlanForGlassFishV3-DesignDocuments%3A"></a>Design Documents:</h3> 
+     <ul> 
+      <li><a href="V3FunctionalSpecs.html" title="V3FunctionalSpecs">One Pagers or Functional Specs </a></li> 
+      <li>Modules Subsystem info available at <a href="http://hk2.java.net">http://hk2.java.net</a></li> 
+      <li><a href="DependencyMechanism.html" title="DependencyMechanism">DependencyMechanism</a></li> 
+      <li>Container Startup and Shutdown SPI : <a href="ContainerSPI.html" title="ContainerSPI">ContainerSPI</a></li> 
+      <li>Administrative Command Infrastructure : <a href="AdminCommandSPI.html" title="AdminCommandSPI">AdminCommandSPI</a></li> 
+      <li><a href="http://wiki.glassfish.java.net/attach/PlanForGlassFishV3/config_asarch.html">Config API Discussion on 10 Dec 2007 – This is not current, please treat it as brain-storming only</a></li> 
+     </ul> <h4><a name="PlanForGlassFishV3-Packaging"></a>Packaging</h3> 
+     <ul> 
+      <li><a href="GlassFishV3IPS.html" title="GlassFishV3IPS">IPS Packaging for GlassFish - How To</a></li> 
+      <li><a href="GlassFishV3IPSList.html" title="GlassFishV3IPSList">GlassFish v3 IPS Package List</a></li> 
+     </ul> <h4><a name="PlanForGlassFishV3-DefectQueries"></a>Defect Queries</h3> 
+     <ul> 
+      <li>v3 Release 
+       <ul> 
+        <li>GlassFish Core Project - <a href="https://glassfish.java.net/issues/buglist.cgi?issue_type=DEFECT&amp;component=glassfish&amp;issue_status=UNCONFIRMED&amp;issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED&amp;priority=P1&amp;priority=P2&amp;priority=P3&amp;status_whiteboard=v3_exclude&amp;status_whiteboard_type=notregexp&amp;cmdtype=doit&amp;Submitquery=Submitquery">Open P1-P3 Defects</a></li> 
+        <li>Projects integrated into GlassFish 
+         <ul> 
+          <li><a href="https://javaserverfaces.java.net/issues/buglist.cgi?issue_type=DEFECT&amp;component=javaserverfaces&amp;issue_status=UNCONFIRMED&amp;issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED&amp;priority=P1&amp;priority=P2&amp;priority=P3&amp;target_milestone=2.0.0-FCS&amp;target_milestone=2.0.0-RC1&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=fulltext&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=&amp;cmdtype=doit&amp;namedcmd=BetaIssues&amp;newqueryname=&amp;order=Reusesamesortaslasttime&amp;Submitquery=Submitquery">JSF</a></li> 
+          <li><a href="https://jax-ws.java.net/issues/buglist.cgi?Submitquery=Submitquery&amp;issue_type=DEFECT&amp;component=jax-ws&amp;issue_status=UNCONFIRMED&amp;issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED&amp;priority=P1&amp;priority=P2&amp;priority=P3&amp;rep_platform=All&amp;op_sys=All&amp;version=2.2&amp;version=current&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=fulltext&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=&amp;cmdtype=doit&amp;order=IssueNumber">JAX-WS</a></li> 
+          <li>JSR-299 - <a href="https://jira.jboss.org/jira/browse/WBRI/component/12312194">All Open issues filed by GlassFish team</a> <a href="https://jira.jboss.org/jira/secure/IssueNavigator.jspa?reset=true&amp;&amp;pid=12310650&amp;resolution=-1&amp;priority=1&amp;priority=2&amp;priority=3&amp;sorter/field=issuekey&amp;sorter/order=DESC">Open P1-P3 issues</a></li> 
+          <li><a href="http://opensource.atlassian.com/projects/hibernate/secure/IssueNavigator.jspa?reset=true&amp;&amp;pid=10060&amp;resolution=-1&amp;priority=1&amp;priority=2&amp;priority=3&amp;sorter/field=issuekey&amp;sorter/order=DESC">Bean validation</a></li> 
+         </ul> </li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li>All Defects for version v3 
+       <ul> 
+        <li><a href="https://glassfish.java.net/issues/buglist.cgi?Submitquery=Submitquery&amp;issue_type=DEFECT&amp;component=glassfish&amp;issue_status=UNCONFIRMED&amp;issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED&amp;priority=P1&amp;priority=P2&amp;version=V3&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=fulltext&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=&amp;cmdtype=doit&amp;order=Reusesamesortaslasttime">Open P1 &amp; P2 Defects</a> <a href="https://glassfish.java.net/issues/buglist.cgi?Submitquery=Submitquery&amp;issue_type=DEFECT&amp;component=glassfish&amp;issue_status=UNCONFIRMED&amp;issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED&amp;priority=P1&amp;priority=P2&amp;&amp;priority=P3&amp;version=V3&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=fulltext&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=&amp;cmdtype=doit&amp;order=Reusesamesortaslasttime">Open P1-P3 Defects</a> <a href="https://glassfish.java.net/issues/buglist.cgi?Submitquery=Submitquery&amp;issue_type=DEFECT&amp;component=glassfish&amp;issue_status=UNCONFIRMED&amp;issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED&amp;version=V3&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=fulltext&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=&amp;cmdtype=doit&amp;order=Reusesamesortaslasttime">All Open Defects</a></li> 
+        <li><a href="https://glassfish.java.net/issues/buglist.cgi?Submitquery=Submitquery&amp;issue_type=DEFECT&amp;component=glassfish&amp;issue_status=RESOLVED&amp;issue_status=VERIFIED&amp;issue_status=CLOSED&amp;priority=P1&amp;priority=P2&amp;version=V3&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfield=issue_status&amp;chfieldfrom=2008-01-01&amp;chfieldto=Now&amp;chfieldvalue=RESOLVED&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=fulltext&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=&amp;cmdtype=doit&amp;order=Reusesamesortaslasttime">Resolved P1 &amp; P2 Defects</a> <a href="https://glassfish.java.net/issues/buglist.cgi?Submitquery=Submitquery&amp;issue_type=DEFECT&amp;component=glassfish&amp;issue_status=RESOLVED&amp;issue_status=VERIFIED&amp;issue_status=CLOSED&amp;priority=P1&amp;priority=P2&amp;priority=P3&amp;version=V3&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfield=issue_status&amp;chfieldfrom=2008-01-01&amp;chfieldto=Now&amp;chfieldvalue=RESOLVED&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=fulltext&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=&amp;cmdtype=doit&amp;order=Reusesamesortaslasttime">Resolved P1-P3 Defects</a> <a href="https://glassfish.java.net/issues/buglist.cgi?issue_type=DEFECT&amp;component=glassfish&amp;issue_status=RESOLVED&amp;issue_status=VERIFIED&amp;issue_status=CLOSED&amp;version=V3&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfield=issue_status&amp;chfieldfrom=2008-01-01&amp;chfieldto=Now&amp;chfieldvalue=RESOLVED&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=fulltext&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=&amp;cmdtype=doit&amp;order=Reusesamesortaslasttime&amp;Submitquery=Submitquery">All Resolved Defects</a></li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li>Prelude Release ARCHIVE 
+       <ul> 
+        <li><a href="https://glassfish.java.net/issues/buglist.cgi?issue_type=DEFECT&amp;component=glassfish&amp;issue_status=UNCONFIRMED&amp;issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED&amp;version=V3&amp;chfield=creation_ts&amp;chfieldfrom=2008-08-14&amp;chfieldto=Now&amp;chfieldvalue=&amp;status_whiteboard=gfv3-prelude-%5Bi%7Ce%5D%5Bn%7Cx%5Dcluded&amp;status_whiteboard_type=notregexp&amp;Submitquery=Submitquery">New Defects</a></li> 
+        <li><a href="https://glassfish.java.net/issues/buglist.cgi?issue_type=DEFECT&amp;component=glassfish&amp;issue_status=UNCONFIRMED&amp;issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED&amp;priority=P1&amp;priority=P2&amp;version=V3&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=gfv3-prelude-included&amp;status_whiteboard_type=regexp&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=&amp;cmdtype=doit&amp;order=Reusesamesortaslasttime&amp;Submitquery=Submitquery">Open P1 &amp; P2 Defects</a> <a href="https://glassfish.java.net/issues/buglist.cgi?issue_type=DEFECT&amp;component=glassfish&amp;issue_status=UNCONFIRMED&amp;issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED&amp;priority=P1&amp;priority=P2&amp;priority=P3&amp;version=V3&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=gfv3-prelude-included&amp;status_whiteboard_type=regexp&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=&amp;cmdtype=doit&amp;order=Reusesamesortaslasttime&amp;Submitquery=Submitquery">Open P1-P3 Defects</a><a href="https://glassfish.java.net/issues/buglist.cgi?issue_type=DEFECT&amp;component=glassfish&amp;issue_status=UNCONFIRMED&amp;issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED&amp;version=V3&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=gfv3-prelude-included&amp;status_whiteboard_type=regexp&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=&amp;cmdtype=doit&amp;order=Reusesamesortaslasttime&amp;Submitquery=Submitquery">All Open Defects</a></li> 
+        <li><a href="https://glassfish.java.net/issues/buglist.cgi?Submitquery=Submitquery&amp;issue_type=DEFECT&amp;component=glassfish&amp;issue_status=RESOLVED&amp;issue_status=VERIFIED&amp;issue_status=CLOSED&amp;priority=P1&amp;priority=P2&amp;version=V3&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfield=issue_status&amp;chfieldfrom=2008-01-01&amp;chfieldto=Now&amp;chfieldvalue=RESOLVED&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=gfv3-prelude-included&amp;status_whiteboard_type=regexp&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=&amp;cmdtype=doit&amp;order=Reusesamesortaslasttime">Resolved P1 &amp; P2 Defects</a> <a href="https://glassfish.java.net/issues/buglist.cgi?Submitquery=Submitquery&amp;issue_type=DEFECT&amp;component=glassfish&amp;issue_status=RESOLVED&amp;issue_status=VERIFIED&amp;issue_status=CLOSED&amp;priority=P1&amp;priority=P2&amp;priority=P3&amp;version=V3&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfield=issue_status&amp;chfieldfrom=2008-01-01&amp;chfieldto=Now&amp;chfieldvalue=RESOLVED&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=gfv3-prelude-included&amp;status_whiteboard_type=regexp&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=&amp;cmdtype=doit&amp;order=Reusesamesortaslasttime">Resolved P1-P3 Defects</a> <a href="https://glassfish.java.net/issues/buglist.cgi?Submitquery=Submitquery&amp;issue_type=DEFECT&amp;component=glassfish&amp;issue_status=RESOLVED&amp;issue_status=VERIFIED&amp;issue_status=CLOSED&amp;version=V3&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfield=issue_status&amp;chfieldfrom=2008-01-01&amp;chfieldto=Now&amp;chfieldvalue=RESOLVED&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=gfv3-prelude-included&amp;status_whiteboard_type=regexp&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=&amp;cmdtype=doit&amp;order=Reusesamesortaslasttime">All Resolved Defects</a></li> 
+       </ul> </li> 
+     </ul> <h4><a name="PlanForGlassFishV3-QualityEngineering"></a>Quality Engineering</h2> 
+     <ul> 
+      <li><a href="GlassFishV3Quality.html" title="GlassFishV3Quality">GlassFish v3 Quality</a></li> 
+     </ul> <h4><a name="PlanForGlassFishV3-Documentation"></a>Documentation</h2> 
+     <ul> 
+      <li><a href="GlassFishV3DocPlan.html" title="GlassFishV3DocPlan">Plan for GlassFish v3 documentation</a></li> 
+      <li><a href="GlassFishDocs.html" title="GlassFishDocs">Review drafts of GlassFish v3 documentation</a></li> 
+      <li><a href="GlassFishV3DocMeetings.html" title="GlassFishV3DocMeetings">Meeting details for GlassFish v3 documentation planning</a></li> 
+     </ul> <h4><a name="PlanForGlassFishV3-Planning"></a>Planning</h2> <h4><a name="PlanForGlassFishV3-Features"></a>Features</h3> 
+     <ul> 
+      <li><a href="GlassFishV3Themes.html" title="GlassFishV3Themes">GlassFish v3 Themes</a></li> 
+      <li><a href="GlassFishV3Requirements.html" title="GlassFishV3Requirements">GlassFish v3 Requirements</a></li> 
+      <li><a href="ContainersConfiguration.html" title="ContainersConfiguration">ContainersConfiguration</a> for configuring RoR, Phobos and PHP containers in V3</li> 
+      <li>Web Tier Featurelist : <a href="V3WebTier.html" title="V3WebTier">V3WebTier</a> 
+       <ul> 
+        <li><a href="V3_FCS_WebTier.html" title="V3_FCS_WebTier">Web Tier v3 Tasklist </a></li> 
+       </ul> </li> 
+      <li>Deployment: <a href="V3Deployment.html" title="V3Deployment">V3Deployment</a></li> 
+      <li>Admin Console: <a href="GlassFishV3AdminConsole.html" title="GlassFishV3AdminConsole">GlassFishV3AdminConsole</a></li> 
+      <li><a href="V3AdminCommands.html" title="V3AdminCommands">V3AdminCommands</a> for the list of available administrative commands</li> 
+      <li><a href="GlassFishV3AdministrationStartingPoint.html" title="GlassFishV3AdministrationStartingPoint">GlassFish V3 Administration Starting Point</a> 
+       <ul> 
+        <li><a href="V3AdministrationImprovements.html" title="V3AdministrationImprovements">V3 Administration Improvements</a></li> 
+       </ul> </li> 
+      <li><a href="UC2Integration.html" title="UC2Integration">Updatecenter 2.0 Integration </a></li> 
+      <li><a href="GlassFishV3EclipsePlugin.html" title="GlassFishV3EclipsePlugin">Eclipse v3 Plugin Features </a></li> 
+      <li><a href="V3cli.html" title="V3cli">GlassFish v3 Administration CLI </a></li> 
+      <li><a href="GFv3EngDiscussion.html" title="GFv3EngDiscussion">Engineering Discussions</a></li> 
+      <li><a href="GlassFishV3Clustering.html" title="GlassFishV3Clustering">GlassFish v3 Clustering</a></li> 
+      <li><a href="JavaEE6Samples.html" title="JavaEE6Samples">Java EE 6 Samples</a></li> 
+      <li><a href="GlassFishV3Logging.html" title="GlassFishV3Logging">GlassFish v3 logging </a></li> 
+      <li><a href="V3UpgradeDashboard.html" title="V3UpgradeDashboard">GlassFish v3 Upgrade Dashboard </a></li> 
+     </ul> <h4><a name="PlanForGlassFishV3-Releases"></a>Releases</h3> 
+     <ul> 
+      <li><a href="GLassFishV3Distributions.html" title="GLassFishV3Distributions">GlassFish v3 Distributions</a></li> 
+      <li><a href="GlassFishV3TP2Content.html" title="GlassFishV3TP2Content">GlassFish v3 Technology Preview 2</a></li> 
+      <li><a href="GlassFishV3LiteExpressContent.html" title="GlassFishV3LiteExpressContent">GlassFish v3 Prelude</a></li> 
+     </ul> <h4><a name="PlanForGlassFishV3-Schedule"></a>Schedule</h3> 
+     <ul> 
+      <li><a href="GlassFishV3Schedule.html" title="GlassFishV3Schedule">Draft Engineering Schedule</a></li> 
+     </ul> <h4><a name="PlanForGlassFishV3-Miscellaneous"></a>Miscellaneous </h2> 
+     <ul> 
+      <li><a href="ToDoList.html" title="ToDoList">Growing list of ToDos</a></li> 
+      <li><a href="http://blogs.oracle.com/arungupta/entry/screencast_24_getting_started_with">Getting Started with TP2 Screencast</a></li> 
+      <li>First <a href="http://blogs.oracle.com/dochez/entry/first_glassfish_v3_screencast1">Screencast of v3</a>.</li> 
+      <li><a href="UpdateCenterForGlassFishV3.html" title="UpdateCenterForGlassFishV3">Comparison of potential technologies for the next update center</a></li> 
+      <li><a href="GlassFishV3Planning.html" title="GlassFishV3Planning">GlassFish v3 Planning Meeting</a></li> 
+      <li><a href="V3EngineersGuide.html" title="V3EngineersGuide">Engineer's Guide</a></li> 
+      <li><a href="V3embedded.html" title="V3embedded">Running v3 Embedded: Requirements</a></li> 
+      <li><a href="GlassfishEclipse.html" title="GlassfishEclipse">GlassFish for Eclipse Bundle</a></li> 
+      <li><a href="GlassFishDeveloperFAQ.html#GlassFishDeveloperFAQ-sectionGlassFishDeveloperFAQGlassFishV3Development">Developer FAQs</a></li> 
+      <li><a href="UpgradeCompatibilityRequirements.html" title="UpgradeCompatibilityRequirements">Upgrade Compatibility Requirements</a></li> 
+      <li><a href="V3CommandLineCompatibilityIssues.html" title="V3CommandLineCompatibilityIssues">V3CommandLineCompatibilityIssues</a></li> 
+      <li><a href="GlassFishV3InCloud.html" title="GlassFishV3InCloud">GlassFish v3 In Cloud</a></li> 
+     </ul> 
+     <hr> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875354/21364909.pdf">v3-introduction.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875354/21365209.pdf">config_asarch.html.pdf</a> (application/pdf) 
+      <br> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 22, 2011 by 
+<font color="#0050B2">jane.young</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

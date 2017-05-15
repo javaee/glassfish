@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : AddOnComponentDevelopmentGuideResolved</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="AddOnComponentDevelopmentGuideResolved-AddOnComponentDevelopmentGuideResolvedCommentsPage"></a>Add-On Component Development Guide Resolved Comments Page</h2> <p>This page records the resolved comments on the <em>Add-On Component Development Guide</em>.</p> <p>Return to <a href="AddOnComponentDevelopmentGuide.html" title="AddOnComponentDevelopmentGuide">Add-On Component Development Guide Comments Page</a></p> <h4><a name="AddOnComponentDevelopmentGuideResolved-Comments"></a>Comments</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Comment ID </th> 
+         <th class="confluenceTh"> Date</th> 
+         <th class="confluenceTh">Section, Page Number/URL </th> 
+         <th class="confluenceTh"> Comment </th> 
+         <th class="confluenceTh">Status – (<font color="lime">RESOLVED</font>/<font color="red">UNRESOLVED</font>) </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> tjquinn-001 </td> 
+         <td class="confluenceTd"> 20-Oct-2008 </td> 
+         <td class="confluenceTd"> p. 85, first sentence after the completion of the table </td> 
+         <td class="confluenceTd"> Sentence claims that implementations of WriteableArchive provide <em>read and</em> write access. In fact, the interface requires only that they provide write access. </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> tjquinn-002 </td> 
+         <td class="confluenceTd"> 20-Oct-2008 </td> 
+         <td class="confluenceTd"> p. 87, second sentence </td> 
+         <td class="confluenceTd"> "Once a Sniffer implementation has decided that it owns the deployment request artifact, the setUp method is called." is ambiguous as to whether GlassFish invokes the setUp method or whether the container developer should write the Sniffer's handles to invoke setUp. In fact, GlassFish will invoke this method. </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> tjquinn-003 </td> 
+         <td class="confluenceTd"> 20-Oct-2008 </td> 
+         <td class="confluenceTd"> p. 87, remark 6-2 </td> 
+         <td class="confluenceTd"> Jerome should weigh in on this also, but I think the reference to Repository on the Container SPI page is to the hk2 Repository interface, or more precisely an implementation of that interface provided by the container developer. The developer of the new container will create one or more OSGi modules that make up the container, modules which contain the classes and resources (property files, images, etc.) that the container will need as it runs. The Repository referred to here is (I believe) an implementation of the hk2 Repository interface that can locate and describe such modules. The hk2 library includes a DirectoryBasedRepository which implements the Repository interface for modules that reside as files in a directory. </td> 
+         <td class="confluenceTd"> Did not hear from Jerome, but <font color="lime">RESOLVED</font>, I hope </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> tjquinn-004 </td> 
+         <td class="confluenceTd"> 20-Oct-2008 </td> 
+         <td class="confluenceTd"> p. 87, remark 6-3 </td> 
+         <td class="confluenceTd"> In line with the previous comment, a module (somewhat simplified) is a collection of classes, resources, and other files that can be loaded and unloaded as a unit. Modules are often implemented as JAR files with additional content in the manifest file to convey module-system information. The idea here is that the Sniffer, because the container developer knows what module(s) are needed by the container, can prepare the array of Module objects (which is the return value of the Sniffer.setUp method). Then GlassFish, with that list of modules needed by the container of which that sniffer is a part, can load them so it (GlassFish) can create an instance of that container's Deployer or Container implementations when it needs to. </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> tjquinn-005 </td> 
+         <td class="confluenceTd"> 20-Oct-2008 </td> 
+         <td class="confluenceTd"> p. 88, getDeploymentConfigurations discussion </td> 
+         <td class="confluenceTd"> (In case it helps...) An application of a given type might contain zero or more sets of configuration information. For example, a web application can contain two web-related deployment descriptors: web.xml (the standard web deployment descriptor) and sun-web.xml (the so-called runtime descriptor which is specific to GlassFish) but not all web apps will contain both. The getDeploymentConfigurations method lets GlassFish ask the container for all the different sets of configuration information in a given application - the one accessible by the ReadableArchive argument. The return value is a Map from a name the container chooses to the actual configuration information information associated with that name. Continuing the web example, the possible names are WEB-INF/web.xml and WEB-INF/sun-web.xml. GlassFish uses this method primarily to find out this configuration information so it can be made available to an administrator for customizing the application's configuration after he or she has deployed the app. This customization feature is only partially implemented in prelude but container developers should implement this method as the contract in the JavaDoc explains if they want to take advantage of the customization features when GlassFish supports them fully. </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> -- </td> 
+         <td class="confluenceTd"> -- </td> 
+         <td class="confluenceTd"> -- </td> 
+         <td class="confluenceTd"> -- </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> anissa-001 </td> 
+         <td class="confluenceTd"> 22-Oct-2008 </td> 
+         <td class="confluenceTd"> pg32, Remark3-3 </td> 
+         <td class="confluenceTd"> I think it is ok to use add-on instead of plugin. I don't see any problem in that following paragraph </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> anissa-002 </td> 
+         <td class="confluenceTd"> 22-Oct-2008 </td> 
+         <td class="confluenceTd"> pg 32 </td> 
+         <td class="confluenceTd"> @Service The console provider allows the Enterprise Server runtime to <b>efficiently</b> locate all add-on components. This is not just for efficiency, it is required. Maybe we should remove this word. </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> anissa-003 </td> 
+         <td class="confluenceTd"> 22-Oct-2008 </td> 
+         <td class="confluenceTd"> Remark3-4 </td> 
+         <td class="confluenceTd"> If the user wants to rename the file from console-config.xml to something else, or they want to place this file in another location instead of under META-INF/admingui, they can generate the URL representation of that file and return it, instead of returning null, which means takes the default. </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> anissa-004 </td> 
+         <td class="confluenceTd"> 22-Oct-2008 </td> 
+         <td class="confluenceTd"> pg 33 </td> 
+         <td class="confluenceTd"> I found the paragraph 'About Administration Console Templates' very odd here. It doesn't give any more info about the template, and we are in the middle of discussing Integration point, how to specify it etc. Should we move this paragraph to some other place? </td> 
+         <td class="confluenceTd"> We'd like to introduce these major concepts at the beginning. I don't think there's another logical place to put the section where it can easily be found. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> anissa-005 </td> 
+         <td class="confluenceTd"> 22-Oct-2008 </td> 
+         <td class="confluenceTd"> pg 35 Priority </td> 
+         <td class="confluenceTd"> priority is compared among all the add-on module that targets the same parentId. They will be placed 'after' those that is in the original/core gui. eg. the added tree node. It will always be placed after all the other top level tree node, but it will be compared to the 'updateTool' tree node since the updateTool node is also from a add-on. </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> anissa-006 </td> 
+         <td class="confluenceTd"> 22-Oct-2008 </td> 
+         <td class="confluenceTd"> pg 40, about tabs </td> 
+         <td class="confluenceTd"> Maybe want to mention something about the session attribute "serverInstTabs". You need to set that to the jsf page name that correspond to that tab. Under the line where it says sampleSubTab1.jsf and sampleSubTab2.jsf are almost identical, tell the user to take a look at the setting of this session attribute. </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> anissa-007 </td> 
+         <td class="confluenceTd"> 22-Oct-2008 </td> 
+         <td class="confluenceTd"> pg 41 Remark3-7 </td> 
+         <td class="confluenceTd"> true for v3 prelude. monitoring and deployment is the only 'group' that you can add on. Or you can create your own group. </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> anissa-008 </td> 
+         <td class="confluenceTd"> 22-Oct-2008 </td> 
+         <td class="confluenceTd"> pg42 Remark3-8 </td> 
+         <td class="confluenceTd"> parent.location is NOT for the woodstock commonTask component. It is part of the javascript for onClick and onKeyPress. This is used to specify which page you want to go to when user click on it. </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> anissa-009 </td> 
+         <td class="confluenceTd"> 22-Oct-2008 </td> 
+         <td class="confluenceTd"> pg 43, Remark3-9 </td> 
+         <td class="confluenceTd"> the extra line got there by mistake. Also notice an error regarding the selectTreeNodeById. I have fixed and checked in another copy. Please update your workspace. </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> anissa-010 </td> 
+         <td class="confluenceTd"> 22-Oct-2008 </td> 
+         <td class="confluenceTd"> pg 44, Remark3-10 </td> 
+         <td class="confluenceTd"> Usually a type is specific to a page. There are other 'type' you have seen before, eg org.glassfish.admingui:commonTask. It is just that for the resources page, the type is 'org.glassfish.admingui:configuration </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> assuming you mean org.glassfish.admingui:resources </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> anissa-011 </td> 
+         <td class="confluenceTd"> 22-Oct-2008 </td> 
+         <td class="confluenceTd"> pg 92, Remark A-2 </td> 
+         <td class="confluenceTd"> There isn't any limit for the priority. They are used to decide the location of the add on component IF there are more than 1 integration point in the page with the same type and same parent ID. They are just used for comparison, relative to each other. </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> anissa-012 </td> 
+         <td class="confluenceTd"> 22-Oct-2008 </td> 
+         <td class="confluenceTd"> pg 93 list of parentId for tree node </td> 
+         <td class="confluenceTd"> Note that webContainer and httpService comes from the GUI for web container management, this means that if console-web-gui package is not installed, and you use this as parentID to add sub-node to it,you won't see this. </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> anissa-013 </td> 
+         <td class="confluenceTd"> 22-Oct-2008 </td> 
+         <td class="confluenceTd"> pg 94 Remark A-3 </td> 
+         <td class="confluenceTd"> Answer is NO. They are unrelated. However, you want to point out that the sun:tab id must be the value for setting the session attribute. The id for the Integration Point only comes into the picture if you want to add anything under it, so that you can specify that as the parent Id. </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> anissa-014 </td> 
+         <td class="confluenceTd"> 22-Oct-2008 </td> 
+         <td class="confluenceTd"> pg 94 RemarkA-4 </td> 
+         <td class="confluenceTd"> There are no id value specified for your list here. We can easily add that, but we have passed timeline for v3 Prelude. You can mention that after v3 prelude, we will enhance the page so that all common task group in that page can be extended. </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> -- </td> 
+         <td class="confluenceTd"> -- </td> 
+         <td class="confluenceTd"> -- </td> 
+         <td class="confluenceTd"> -- </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ana-001 </td> 
+         <td class="confluenceTd"> 22-Oct-2008 </td> 
+         <td class="confluenceTd"> Remark 3-11 </td> 
+         <td class="confluenceTd"> It does not have to be at the top level. The user can put it in a directory and specify the location of the file. </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ana-002 </td> 
+         <td class="confluenceTd"> 22-Oct-2008 </td> 
+         <td class="confluenceTd"> p.49 </td> 
+         <td class="confluenceTd"> I think you need to point out that if they require changes to the "theme" of the Administration Console they will need to create their own theme jar file with all necessary CSS properties and images required by the woodstock component. In order to accomplish this it is recommended that they use a script provided by woodstock to clone an existing theme and then modify files and properties as necessary(See <a href="http://webdev2.sun.com/woodstock-theme-doc/creating-themes.html">http://webdev2.sun.com/woodstock-theme-doc/creating-themes.html</a> <p>). Once the theme jar file is created it will need to be placed in the Administration Console's "WEB-INF\lib" directory in order for the woodstock theme component to load the theme. It is also necessary to modify your "myOwnBrand.properties" file with the name and version of your theme. </p></td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ana-003 </td> 
+         <td class="confluenceTd"> 22-Oct-2008 </td> 
+         <td class="confluenceTd"> Branding Section </td> 
+         <td class="confluenceTd"> I don't see any mention of how the "priority" property is used when the integration points are read. Since multiple branding plugins can be placed in the modules directory and only one branding and theme can be applied to the Administration Console, a priority feature was established to determine which branding images and theme will be used. Priority values are supported from 1 to 100 and the lower the number the higher the priority. </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ana-A </td> 
+         <td class="confluenceTd"> 23-Oct-2008 </td> 
+         <td class="confluenceTd"> Remarks A-5 p.96 </td> 
+         <td class="confluenceTd"> The key name should be "com.sun.webui.theme.DEFAULT_THEME". You can learn more about how this paramter is used on the following page: <a href="http://webdev2.sun.com/woodstock-theme-doc/creating-themes.html">http://webdev2.sun.com/woodstock-theme-doc/creating-themes.html</a> <p> </p></td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> -- </td> 
+         <td class="confluenceTd"> -- </td> 
+         <td class="confluenceTd"> -- </td> 
+         <td class="confluenceTd"> -- </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> sreeni-001 </td> 
+         <td class="confluenceTd"> 22-Oct-2008 </td> 
+         <td class="confluenceTd"> pg. 19, The component must provide configuration data, management data, and monitoring data ? to other Enterprise Server components in the same way as other Enterprise Server components. </td> 
+         <td class="confluenceTd"> I think this should be optional since some add-ons may not have the need for monitoring or management, based on our v3 architecture, even configuration is optional. Same applies to the next item. </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> sreeni-002 </td> 
+         <td class="confluenceTd"> 22-Oct-2008 </td> 
+         <td class="confluenceTd"> Remark 4-2 </td> 
+         <td class="confluenceTd"> Extending the asadmin utility does not provide access to server configuration. But it is automatically available thru dotted name infrastructure, for ex. asadmin list, get and set. We'll talk about configuration pluggability post prelude. </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> sreeni-003 </td> 
+         <td class="confluenceTd"> 22-Oct-2008 </td> 
+         <td class="confluenceTd"> Remark 4-3 </td> 
+         <td class="confluenceTd"> Could you pl. elaborate on what is missing ? </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> sreeni-004 </td> 
+         <td class="confluenceTd"> 22-Oct-2008 </td> 
+         <td class="confluenceTd"> pg. 51, Changing the Brand of the of the asadmin CLI? </td> 
+         <td class="confluenceTd"> It is not changing the Brand of the of the asadmin CLI but the product itself and the way it gets exposed thru admin cli. Pl.let me know if you need more clarification. </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> sreeni-005 </td> 
+         <td class="confluenceTd"> 22-Oct-2008 </td> 
+         <td class="confluenceTd"> Remark 4-5 </td> 
+         <td class="confluenceTd"> It is a good idea to talk about best practices/conventions for naming. </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> sreeni-006 </td> 
+         <td class="confluenceTd"> 22-Oct-2008 </td> 
+         <td class="confluenceTd"> Remark 4-6 </td> 
+         <td class="confluenceTd"> We could mention about annotations @Singleton @Perlookup to indicate whether the command needs to be created for each lookup or for the entire session. </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> sreeni-007 </td> 
+         <td class="confluenceTd"> 22-Oct-2008 </td> 
+         <td class="confluenceTd"> Remark 4-7 </td> 
+         <td class="confluenceTd"> Pl. see response to 4-6 </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> sreeni-008 </td> 
+         <td class="confluenceTd"> 22-Oct-2008 </td> 
+         <td class="confluenceTd"> Remark 4-8 </td> 
+         <td class="confluenceTd"> Thru @Service annotation and by virtue of implementing AdminCommand. Pl. let me know if you are looking for more. </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> sreeni-009 </td> 
+         <td class="confluenceTd"> 22-Oct-2008 </td> 
+         <td class="confluenceTd"> Remark 4-9 </td> 
+         <td class="confluenceTd"> Perhaps Jerome can clarify. </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> sreeni-010 </td> 
+         <td class="confluenceTd"> 22-Oct-2008 </td> 
+         <td class="confluenceTd"> Remark 4-12 </td> 
+         <td class="confluenceTd"> I think it should be obvious from simple description. </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> sreeni-012 </td> 
+         <td class="confluenceTd"> 22-Oct-2008 </td> 
+         <td class="confluenceTd"> Remark 4-18 </td> 
+         <td class="confluenceTd"> Can you elaborate pl. </td> 
+         <td class="confluenceTd">DECLINE See comment janey-19 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> sreeni-013 </td> 
+         <td class="confluenceTd"> 22-Oct-2008 </td> 
+         <td class="confluenceTd"> pg. 60, Changing the Brand of the of the asadmin CLI </td> 
+         <td class="confluenceTd"> Pl. refer my comment for pg. 51 </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> sreeni-014 </td> 
+         <td class="confluenceTd"> 22-Oct-2008 </td> 
+         <td class="confluenceTd"> pg. 60 </td> 
+         <td class="confluenceTd"> Pages 60 &amp; 61 need to be changed and I'll send the details in a separate email </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> kenpaulsen-001 </td> 
+         <td class="confluenceTd"> 22-Oct-2008 </td> 
+         <td class="confluenceTd"> p32 Remark 3-3 </td> 
+         <td class="confluenceTd"> I think it is OK to rename it provided that when you mention the bundle or tell them where to find it or to use it that you make the filename clear. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> kenpaulsen-002 </td> 
+         <td class="confluenceTd"> 22-Oct-2008 </td> 
+         <td class="confluenceTd"> p32 paragraph 4 </td> 
+         <td class="confluenceTd"> You mention the "Hundred Kilobytes Kernel (HK2)". I am not certain, but I think should have the word "project" after it. Not sure if this name requires that or not... </td> 
+         <td class="confluenceTd"> Have inquired, but leaving it out for the time being. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> kenpaulsen-003 </td> 
+         <td class="confluenceTd"> 22-Oct-2008 </td> 
+         <td class="confluenceTd"> p32 paragraph 5 </td> 
+         <td class="confluenceTd"> Change this paragraph (which starts "To create a console provider...") to: Each Add-On Component contains a "console provider" implementation. This is a Java class that implements the org.glassfish.api.admingui.ConsoleProvider interface and uses the HK2 @Service annotation. The console provider allows your Add-On Component to specify where your integration point configuration file is located. This is how your Add-On Component communicates to the Console Add-On Component Service what customizations you will be making to the Administration Console. </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> kenpaulsen-004 </td> 
+         <td class="confluenceTd"> 22-Oct-2008 </td> 
+         <td class="confluenceTd"> p33 Remark 3-4 </td> 
+         <td class="confluenceTd"> If the user chooses for some reason to store the console-config.xml file in an different location, he would have to return a URL that points to that different location. Although we have not run into this situation, it may be possible for 2 plugins to exist in the same jar file... that would require 2 console-config.xml files which, obviously, can't have the same name. It would also be possible for the developer to return a URL which is resolved outside the jar file (i.e. a web service) which calculates the integration points based on the users credentials or day of the week, etc. I'm not sure if you want to put this information in this document, though... 99% of the time it should simply use the default and return null. Anyone advanced enough to want to do something else should already know that they can do it (it's a URL). </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> kenpaulsen-005 </td> 
+         <td class="confluenceTd"> 22-Oct-2008 </td> 
+         <td class="confluenceTd"> p49 Remark 3-12 </td> 
+         <td class="confluenceTd"> If your Add-On Component provides new content which you would like other people to extend, you may define your own Integration Point Types. For example, if you add a new page which provides tabs of monitoring information, you may want to allow others to add their own tabs to compliment your default tabs. This enables your page to behave like many of the existing Administration Console pages which may be extended by you or others. To do this, you simply need to decide on a Integration Point Type, and include a couple handlers in your JSF page. The Integration Point Type must be a unique identifier, a good choice might be the package name of your IntegrationPoint with a meaningful name appended to the end. Perhaps something like this: org.company.project:myMonitoringTabs If you would like others to be able to take advantage of this Integration Point, you should then document it at the GlassFish Integration Point Wiki (only do this if your content is publicly available). Once you have an Integration Point ID, your next step is to include the following code below the place in your JSF file where you would like to enable others to add their Integration Point implementations: ~UWC_TOKEN_START~1278938933053~UWC_TOKEN_END Change "clientId:of:root" to match the clientId of the outer-most component in which you want others to be able to add their content (in this example, the tabset is the most likely choice). Also include your Integration Point ID in place of "org.company.project:myMonitoringTabs". (Note: If you omit the "root" argument to includeIntegrations, all components on the entire page may be used for the "parentId" of the Integration Points.) That's it! You or others may not provide an Integration Point which will be integrated into this page. For more information about the "includeIntegrations" or "getUIComponent" handlers, see the JavaDoc. </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> kenpaulsen-006 </td> 
+         <td class="confluenceTd"> 22-Oct-2008 </td> 
+         <td class="confluenceTd"> misc </td> 
+         <td class="confluenceTd"> I updated the directives / events information on the JSFTemplating web site. You can find the latest documentation at: <a href="https://jsftemplating.java.net/doc">https://jsftemplating.java.net/doc</a> <p> </p></td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> kenpaulsen-007 </td> 
+         <td class="confluenceTd"> 22-Oct-2008 </td> 
+         <td class="confluenceTd"> Many </td> 
+         <td class="confluenceTd"> I uploaded an attachment to this wiki page called chap3.pdf. This PDF contains many notes and corrections to chapter 3. Please see the .pdf file for details. </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jdlee-001 </td> 
+         <td class="confluenceTd"> 23-Oct-2008 </td> 
+         <td class="confluenceTd"> B-2 </td> 
+         <td class="confluenceTd"> I think that would be correct. </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jdlee-002 </td> 
+         <td class="confluenceTd"> 23-Oct-2008 </td> 
+         <td class="confluenceTd"> B-3 </td> 
+         <td class="confluenceTd"> propSheetPropTableTemplate.tpl is the correct name, but I don't see it in the other wiki page. Perhaps it was fixed after you read it. </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jdlee-003 </td> 
+         <td class="confluenceTd"> 23-Oct-2008 </td> 
+         <td class="confluenceTd"> B-4 </td> 
+         <td class="confluenceTd"> The phrase "is automatic" is probably a better choice. It's at least a little more professional. <img class="emoticon" src="images/icons/emoticons/tongue.gif" height="20" width="20" align="absmiddle" alt="" border="0"> </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jdlee-004 </td> 
+         <td class="confluenceTd"> 23-Oct-2008 </td> 
+         <td class="confluenceTd"> B-5 </td> 
+         <td class="confluenceTd"> propertySheetTemplate.tpl is the correct name. I will correct that table. </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jdlee-005 </td> 
+         <td class="confluenceTd"> 23-Oct-2008 </td> 
+         <td class="confluenceTd"> B-6 </td> 
+         <td class="confluenceTd"> Fixed: "The id of the glassfish server configuration." </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ana-A </td> 
+         <td class="confluenceTd"> 23-Oct-2008 </td> 
+         <td class="confluenceTd"> Remarks A-5 p.96 </td> 
+         <td class="confluenceTd"> The key name should be "com.sun.webui.theme.DEFAULT_THEME". You can learn more about how this paramter is used on the following page: <a href="http://webdev2.sun.com/woodstock-theme-doc/creating-themes.html">http://webdev2.sun.com/woodstock-theme-doc/creating-themes.html</a> <p> </p></td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> sreeni-015 </td> 
+         <td class="confluenceTd"> 24-Oct-2008 </td> 
+         <td class="confluenceTd"> Remark 5-2 </td> 
+         <td class="confluenceTd"> Events are used to compute the monitoring statistics. @Param is used to compute the statistic and @Param itsel is not a statistic. </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> sreeni-016 </td> 
+         <td class="confluenceTd"> 24-Oct-2008 </td> 
+         <td class="confluenceTd"> Remark 5-3 </td> 
+         <td class="confluenceTd"> One pager seems to be corrected. Pl. use the example as reference for this purpose. </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> sreeni-017 </td> 
+         <td class="confluenceTd"> 24-Oct-2008 </td> 
+         <td class="confluenceTd"> Remark 5-4 </td> 
+         <td class="confluenceTd"> If one wants to pass params as part of event then it needs to be declared as @ProbeParam annotation. For other requirements, I request Mahesh/Prashant to comment. </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> sreeni-018 </td> 
+         <td class="confluenceTd"> 24-Oct-2008 </td> 
+         <td class="confluenceTd"> Remark 5-5 </td> 
+         <td class="confluenceTd"> They do not have correspondence to dotted names. I think it is best not to provide complete description as this may change. Request Mahesh/Prashnt to comment. </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> sreeni-019 </td> 
+         <td class="confluenceTd"> 24-Oct-2008 </td> 
+         <td class="confluenceTd"> pg. 69, Getting parent object </td> 
+         <td class="confluenceTd"> MonitoringRuntimeDataRegistry holds references to top level server nodes and it is not used to return any node. One uses server node to start with and add the cild node at an appropriate place. </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> sreeni-020 </td> 
+         <td class="confluenceTd"> 24-Oct-2008 </td> 
+         <td class="confluenceTd"> pg 70 </td> 
+         <td class="confluenceTd"> I don't think we need a separate section on 'Creating Event Listeners' as the implementation of listener thru annotations is covered under 'Subscribing to Events From Event Provider Classes'. </td> 
+         <td class="confluenceTd">DECLINE after discussion with sreeni. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> sreeni-021 </td> 
+         <td class="confluenceTd"> 24-Oct-2008 </td> 
+         <td class="confluenceTd"> Remark 5-10 </td> 
+         <td class="confluenceTd"> The returned handles could be used to enable/disable monitoring, for ex. the implementation for provider interface will now generate actual calls insted of no-ops </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> sreeni-022 </td> 
+         <td class="confluenceTd"> 24-Oct-2008 </td> 
+         <td class="confluenceTd"> pg. 74, The example shows the definition of the ModuleProbeProvider interface. The event provider sends events when a request starts and stops. </td> 
+         <td class="confluenceTd"> It is not request but whenever the count increments and decrements </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> sreeni-023 </td> 
+         <td class="confluenceTd"> 24-Oct-2008 </td> 
+         <td class="confluenceTd"> chapter 5 </td> 
+         <td class="confluenceTd"> I don't see writeup on asadmin monitor, did we decide not to have it for prelude ? </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> I was told that this interface is not exposed at Prelude. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> janey-01 </td> 
+         <td class="confluenceTd"> 24-Oct-2008 </td> 
+         <td class="confluenceTd"> pg 51, Remark 4-2 </td> 
+         <td class="confluenceTd"> No, extending the asadmin utility does not provide an easy access to config data. </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> janey-02 </td> 
+         <td class="confluenceTd"> 24-Oct-2008 </td> 
+         <td class="confluenceTd"> pg 51 Remark 4-3 </td> 
+         <td class="confluenceTd"> I don't understand what is the <em>import</em> clauses. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> janey-03 </td> 
+         <td class="confluenceTd"> 24-Oct-2008 </td> 
+         <td class="confluenceTd"> pg 52 Remark 4-5 </td> 
+         <td class="confluenceTd"> That's a good idea. We should add a guideline and also make sure that commands are not duplicated. </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> janey-04 </td> 
+         <td class="confluenceTd"> 24-Oct-2008 </td> 
+         <td class="confluenceTd"> pg 52 Remark 4-6 </td> 
+         <td class="confluenceTd"> You want the command class to be stateless so that multiple clients can execute the command at the same time. </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> janey-05 </td> 
+         <td class="confluenceTd"> 24-Oct-2008 </td> 
+         <td class="confluenceTd"> pg 52 Remark 4-7 </td> 
+         <td class="confluenceTd"> use @Scoped(PerLookup.class) to instantiate a new instances of the command class.<font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> janey-06 </td> 
+         <td class="confluenceTd"> 24-Oct-2008 </td> 
+         <td class="confluenceTd"> pg 52 Remark 4-8 </td> 
+         <td class="confluenceTd"> by using @Service </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> janey-07 </td> 
+         <td class="confluenceTd"> 24-Oct-2008 </td> 
+         <td class="confluenceTd"> pg 53 Remark 4-9 </td> 
+         <td class="confluenceTd"> There are two reasons I can think of why a setter method is useful. (1) data (field) encapsulation. (2) add code to validate the parameter before setting the field. </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> janey-08 </td> 
+         <td class="confluenceTd"> 24-Oct-2008 </td> 
+         <td class="confluenceTd"> pg 55 Short form and Long form </td> 
+         <td class="confluenceTd"> The example you have use -t and --terse. This option is used in local command. You may want to use -m and --monitor instead. </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> janey-09 </td> 
+         <td class="confluenceTd"> 24-Oct-2008 </td> 
+         <td class="confluenceTd"> pg 55 Specifying te shortFomr of an Option Name </td> 
+         <td class="confluenceTd"> Since password option is not used, please use a different example than -p and --password. Use -m and --monitor instead. </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> janey-10 </td> 
+         <td class="confluenceTd"> 24-Oct-2008 </td> 
+         <td class="confluenceTd"> pg 55 Remark 4-10 </td> 
+         <td class="confluenceTd"> Good idea. An example should be added. Example: @Param(acceptableValues="http-listener, iiop-listener"). The acceptable values are delimited by ",". </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> janey-11 </td> 
+         <td class="confluenceTd"> 24-Oct-2008 </td> 
+         <td class="confluenceTd"> pg 55 Remark 4-11 </td> 
+         <td class="confluenceTd"> Yes, and defaultValue example should also be added. Example: @Param(defaultValue="false") </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> janey-12 </td> 
+         <td class="confluenceTd"> 24-Oct-2008 </td> 
+         <td class="confluenceTd"> pg 56 Remark 4-12 </td> 
+         <td class="confluenceTd"> Not sure if there should be a guideline. The command developers determines if the parameter is required or optional. </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> janey-13 </td> 
+         <td class="confluenceTd"> 24-Oct-2008 </td> 
+         <td class="confluenceTd"> pg 56 Examples </td> 
+         <td class="confluenceTd"> Remove ... between @Param(name="bar", optional="true") and String renamedTooManyTimes. </td> 
+         <td class="confluenceTd">DECLINE The ... denotes the missing line of code that contains <tt>@Param</tt> in a later example. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> janey-15 </td> 
+         <td class="confluenceTd"> 24-Oct-2008 </td> 
+         <td class="confluenceTd"> pg 57-58 Remark 4-14 </td> 
+         <td class="confluenceTd"> Agree with the remark that this section is incomplete especially the Example. The Example code should demonstrate how localized message is used. Let me know if you need help with this. </td> 
+         <td class="confluenceTd">DEFER </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> janey-16 </td> 
+         <td class="confluenceTd"> 24-Oct-2008 </td> 
+         <td class="confluenceTd"> pg 59 Remark 4-15 </td> 
+         <td class="confluenceTd"> Yes, the parameters are passed through AdminCommandContext </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> janey-19 </td> 
+         <td class="confluenceTd"> 24-Oct-2008 </td> 
+         <td class="confluenceTd"> pg 59 Remark 4-18 </td> 
+         <td class="confluenceTd"> Parameter is not removed. </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> janey-20 </td> 
+         <td class="confluenceTd"> 24-Oct-2008 </td> 
+         <td class="confluenceTd"> pg 59 Remark 4-19 </td> 
+         <td class="confluenceTd"> Yes, that is correct. public void execute(AdminCommandContext context). Command developer needs to implement the execute(AdminCommandContext context) method. </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:48.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

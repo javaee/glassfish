@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : 3.1Metro</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="3.1Metro-GlassFishServerOpenSourceEdition3.1Metro"></a>GlassFish Server Open Source Edition 3.1 - Metro</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#3.1Metro-GlassFishServerOpenSourceEdition3.1Metro">GlassFish Server Open Source Edition 3.1 - Metro</a></li> 
+       <ul> 
+        <li><a href="#3.1Metro-Introduction">Introduction</a></li> 
+        <li><a href="#3.1Metro-Scope">Scope</a></li> 
+        <li><a href="#3.1Metro-FeatureOverview">Feature Overview</a></li> 
+        <ul> 
+         <li><a href="#3.1Metro-PolicyAlternatives">Policy Alternatives</a></li> 
+         <li><a href="#3.1Metro-MetroHighAvailabilitySupport">Metro High Availability Support</a></li> 
+         <li><a href="#3.1Metro-WSICompliance">WS-I Compliance</a></li> 
+         <li><a href="#3.1Metro-Mavenization">Mavenization</a></li> 
+         <li><a href="#3.1Metro-UnifiedConfiguration">Unified Configuration</a></li> 
+         <li><a href="#3.1Metro-SupportforErrorHandlinginWSTrust">Support for Error Handling in WS-Trust</a></li> 
+         <li><a href="#3.1Metro-TimeSkewforWSTrustandWSSecureConversationTokenLifetime">Time Skew for WS-Trust and WS-SecureConversation Token Lifetime</a></li> 
+         <li><a href="#3.1Metro-Servlet3.0AsyncSupport">Servlet 3.0 Async Support</a></li> 
+         <li><a href="#3.1Metro-TestharnesssupportforGlassFishv3.x">Test harness support for GlassFish v3.x</a></li> 
+         <li><a href="#3.1Metro-wsimport%5Cclientjaroption">wsimport -clientjar option</a></li> 
+        </ul> 
+        <li><a href="#3.1Metro-DesignDocument">Design Document</a></li> 
+        <li><a href="#3.1Metro-MilestoneSchedule">Milestone Schedule</a></li> 
+        <li><a href="#3.1Metro-TaskList">Task List</a></li> 
+        <li><a href="#3.1Metro-DevTests">Dev Tests</a></li> 
+        <li><a href="#3.1Metro-References">References</a></li> 
+        <li><a href="#3.1Metro-EmailAlias">Email Alias</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="3.1Metro-Introduction"></a>Introduction</h2> <p>There are 3 main focus areas for the Project Metro in scope of GF 3.1:</p> 
+     <ul> 
+      <li>High availability 
+       <ul> 
+        <li>focused on RM and SC session failover</li> 
+        <li>optional: stateful WS failover</li> 
+       </ul> </li> 
+      <li>Architectural cleanups 
+       <ul> 
+        <li>unified configuration</li> 
+        <li>proper split into modules/mavenization</li> 
+        <li>other cleanups and updates (removing GFv2 dependencies, dropping support for transactional WS, compiling against Java 6, etc.)</li> 
+       </ul> </li> 
+      <li>Interoperability (WS-I, .NET 4.0, other Oracle stacks)</li> 
+     </ul> <h4><a name="3.1Metro-Scope"></a>Scope</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Feature ID </th> 
+         <th class="confluenceTh"> Priority </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> Eng Response </th> 
+         <th class="confluenceTh"> Owner(s) </th> 
+         <th class="confluenceTh"> Estimate (Man Days) </th> 
+         <th class="confluenceTh"> Source of Requirement </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> METRO-001 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Policy alternatives in security </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Kumar Jayanti </td> 
+         <td class="confluenceTd"> 20 </td> 
+         <td class="confluenceTd"> Interoperability with OWSM </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> METRO-002 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Metro HA (RM and SC session failover) </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Marek Potociar </td> 
+         <td class="confluenceTd"> 50 </td> 
+         <td class="confluenceTd"> Customers, consistency with other GF features </td> 
+         <td class="confluenceTd"> This feature depends on the new GF HA API </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> METRO-003 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Compliance: WS-I BP 2.0, RSP 1.0 and BSP 1.1 </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Jitendra Kotamraju, Kumar Jayanti, Marek Potociar </td> 
+         <td class="confluenceTd"> 40 </td> 
+         <td class="confluenceTd"> Customers, General interoperability </td> 
+         <td class="confluenceTd"> DONE </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> METRO-004 </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> Mavenization/modularization </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Marek Potociar </td> 
+         <td class="confluenceTd"> 50 </td> 
+         <td class="confluenceTd"> Maven users, Internal </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> METRO-005 </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> Unified configuration </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Fabian Ritzmann </td> 
+         <td class="confluenceTd"> 50 </td> 
+         <td class="confluenceTd"> User requests, WLS team, Internal </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> METRO-006 </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> Support for Error Handling in WS-Trust spec </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Jiandong Guo </td> 
+         <td class="confluenceTd"> 10 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> METRO-007 </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> Time skew for trust and SC token lifetime </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Jiandong Guo </td> 
+         <td class="confluenceTd"> 10 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> METRO-008 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Servlet 3.0 Async support </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Jitu </td> 
+         <td class="confluenceTd"> 30 </td> 
+         <td class="confluenceTd"> JAX-WS community, internal </td> 
+         <td class="confluenceTd"> Also, required to evaluate asynchrous SEI proposals (may come in future spec) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> METRO-009 </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> Test harness support for GlassFish v3.x </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Jitu </td> 
+         <td class="confluenceTd"> 20 </td> 
+         <td class="confluenceTd"> Internal </td> 
+         <td class="confluenceTd"> DONE </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> METRO-010 </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> wsimport -clientjar option </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Jitu </td> 
+         <td class="confluenceTd"> 30 </td> 
+         <td class="confluenceTd"> JAX-WS community </td> 
+         <td class="confluenceTd"> DONE </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> METRO-011 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Bug/Performance fixes in JAX-WS RI </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Ryan Eberhard </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> METRO-012 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> DTrace probes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Cover <a href="http://java.sun.com/javaee/6/docs/api/">Java EE API </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> METRO-013 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Updating WS-TX implementation </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Marek Potociar </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 109-01 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> WLS deployment descriptor support </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Rama </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 3.1 </td> 
+         <td class="confluenceTd"> Implement basic dd. Require deployment team to provide priority </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 109-02 </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> WS support in embedded GF </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Bhakti </td> 
+         <td class="confluenceTd"> 30 </td> 
+         <td class="confluenceTd"> 3.1 </td> 
+         <td class="confluenceTd"> Modify tests by M3 and fix all issues by M5 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 109-03 </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> Support webservices using embedded EJB 3.1 apis </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Bhakti </td> 
+         <td class="confluenceTd"> 20 </td> 
+         <td class="confluenceTd"> 3.1 </td> 
+         <td class="confluenceTd"> Nice to have feature will be implemented if time permits </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 109-04 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> CTS failures </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Bhakti and Rama </td> 
+         <td class="confluenceTd"> Ongoing </td> 
+         <td class="confluenceTd"> 3.1 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 109-05 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Licensee challenges, bug fixes </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Bhakti,Rama,Jitu </td> 
+         <td class="confluenceTd"> Ongoing </td> 
+         <td class="confluenceTd"> 3.1 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.1Metro-FeatureOverview"></a>Feature Overview</h2> <h4><a name="3.1Metro-PolicyAlternatives"></a>Policy Alternatives</h3> <p>The goal is to support multiple alternatives for authentication (username password or SAML token, etc.).<br> We see less demand for alternatives outside of the security domain, so the scope of this feature is to support alternatives just for security assertions/authentication mechanisms.</p> <h4><a name="3.1Metro-MetroHighAvailabilitySupport"></a>Metro High Availability Support</h3> <p>Metro WS stack provides certain stateful features, such as secured conversation, reliable messaging or stateful web services. To support the stateful features in a clustered environment we need to identify all the state information that needs to be saved and replicated and update Metro implementation to support the state saving as well as state recovery from a replica in case of a node failure.</p> <p>NOTE: Our focus is primarily on HA support in the areas of SC and RM. Optionally, we may be supporting HA for stateful web services. We do NOT plan to support HA for transactional WS as the feature, in its current implementation, is already proposed for dropping completely from the Metro stack.</p> <h4><a name="3.1Metro-WSICompliance"></a>WS-I Compliance</h3> <p>In addition to standardized WS-* specification, WS-I organization is chartered to define a set of interoperability profiles that attempt to resolve ambiguities of the original WS-* specifications to improve interoperability. The goal is to support these profiles in Metro. We need to develop a sets of predefined test scenarios for each supported WS-I profile and validate the compliance by successfully passing these test cases against our own implementation as well as against implementations of other vendors (MS, IBM). The actual test scenarios in RSP and BSP domains will be implemented by external contractors.</p> <h4><a name="3.1Metro-Mavenization"></a>Mavenization</h3> <p>Currently, the Metro build process is ant-based and is tightly integrated into the build of WSIT/Tango. As a project with a significant number of dependencies, dependency management becomes more and more challenging. At the same time, Metro needs to provide maven artifacts to correctly integrate with GF.</p> <p>In this effort we aim to decouple Metro and WSIT builds and switch the build system from ANT to MAVEN to better align our build system to the one used by GFv3. As a result, we plan to achieve a transparent and simplified dependency management, improved modularization of the code, natural identification of inter-module dependencies and (internal) APIs as well as reduced cost of build and RE maintenance.</p> <h4><a name="3.1Metro-UnifiedConfiguration"></a>Unified Configuration</h3> <p>As part of this feature we plan to introduce a new single configuration file for all domains and all configuration options of the Metro stack as opposed to current approach that may require users to use multiple configuration files to configure a single web service. The new configuration file format should also be better aligned with the standard webservices.xml format as defined in JSR109. As part of the feature we plan to design mechanisms that would allow us to provide unified support for other deployment descriptors, with an initial focus on the support for the WebLogic Web Services deployment descriptor.</p> <h4><a name="3.1Metro-SupportforErrorHandlinginWSTrust"></a>Support for Error Handling in WS-Trust</h3> <p>Standard error codes are introduced in WS-Trust/SC spec. We will use some of them as thrown by the server to enable automatic session renew to avoid that the user transaction being interrupted.</p> <h4><a name="3.1Metro-TimeSkewforWSTrustandWSSecureConversationTokenLifetime"></a>Time Skew for WS-Trust and WS-SecureConversation Token Lifetime</h3> <p>Issued tokens and security contexts are only valid in a period of time. We will add support for configuring skew of time for the difference allowed for the system clocks of the sender and recipient. Used in case that the clocks may not be in sync.</p> <h4><a name="3.1Metro-Servlet3.0AsyncSupport"></a>Servlet 3.0 Async Support</h3> <p>Servlet 3.0 has asynchronous support and it can be used to process a HTTP request using multiple threads. Servlet 3.0 + AsyncProvider will provide a scalable solution on the server side. This can also be used to evaluate SEI async support proposal <a href="https://jax-ws.java.net/issues/show_bug.cgi-787">787</a>. This doesn't affect servlet 2.x deployments.</p> <h4><a name="3.1Metro-TestharnesssupportforGlassFishv3.x"></a>Test harness support for GlassFish v3.x</h3> <p>JAX-WS unit tets can be run in multiple enviornments: Tomcat, GlassFish v2, in-vm, lwshs, JaxwsInJDK. Test harness will be extended so that JAX-WS/Metro unit tests can also be run on GlassFish v3.x.</p> <h4><a name="3.1Metro-wsimport%5Cclientjaroption"></a>wsimport -clientjar option</h3> <p>Client side programming model involves creating a Service object and that in turn fetches WSDL during service creation. There are few solutions to avoid this(using catalog), but they are not complete. The proposed switch gets the WSDL/schemas, fixes the import locations, jars all the generated artifacts. Generated service is also modified to refer to the WSDL in the jar file.</p> <h4><a name="3.1Metro-DesignDocument"></a>Design Document</h2> 
+     <ul> 
+      <li>Please see the <a href="V3.1MetroOnePager.html" title="V3.1MetroOnePager">Metro 2.1 One Pager</a></li> 
+     </ul> <h4><a name="3.1Metro-MilestoneSchedule"></a>Milestone Schedule</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> MS1 (5/24) </td> 
+         <td class="confluenceTd"> METRO-003 </td> 
+         <td class="confluenceTd"> complete the feature </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> DONE </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> MS2 (6/21) </td> 
+         <td class="confluenceTd"> METRO-007 </td> 
+         <td class="confluenceTd"> complete the feature </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> DONE </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> MS3 (7/19) </td> 
+         <td class="confluenceTd"> METRO-008 </td> 
+         <td class="confluenceTd"> complete the feature </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> DONE </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> MS3 (7/19) </td> 
+         <td class="confluenceTd"> METRO-009 </td> 
+         <td class="confluenceTd"> complete the feature </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> DONE </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> MS3(7/19) </td> 
+         <td class="confluenceTd"> 109-02 </td> 
+         <td class="confluenceTd"> complete modifying the tests to run in embedded </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> DONE </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> MS4 (8/16) </td> 
+         <td class="confluenceTd"> METRO-001 </td> 
+         <td class="confluenceTd"> complete the feature </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> MS4 (8/16) </td> 
+         <td class="confluenceTd"> METRO-002 </td> 
+         <td class="confluenceTd"> complete the feature </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> MS4 (8/16) </td> 
+         <td class="confluenceTd"> METRO-006 </td> 
+         <td class="confluenceTd"> complete the feature </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> MS4 (8/16) </td> 
+         <td class="confluenceTd"> METRO-010 </td> 
+         <td class="confluenceTd"> complete the feature </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> DONE </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> MS5 (9/13) </td> 
+         <td class="confluenceTd"> METRO-004 </td> 
+         <td class="confluenceTd"> complete the feature </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> MS5 (9/13) </td> 
+         <td class="confluenceTd"> METRO-005 </td> 
+         <td class="confluenceTd"> complete the feature </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> MS5 (9/13) </td> 
+         <td class="confluenceTd"> METRO-011 </td> 
+         <td class="confluenceTd"> complete the feature </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> MS5 (9/13) </td> 
+         <td class="confluenceTd"> METRO-013 </td> 
+         <td class="confluenceTd"> complete the feature </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> MS5 (9/13) </td> 
+         <td class="confluenceTd"> 109-02 </td> 
+         <td class="confluenceTd"> fix all issues </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> MS5 (9/13) </td> 
+         <td class="confluenceTd"> 109-01 </td> 
+         <td class="confluenceTd"> complete the feature </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.1Metro-TaskList"></a>Task List</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task </th> 
+         <th class="confluenceTh"> Target Milestone </th> 
+         <th class="confluenceTh"> Start </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Owner(s) </th> 
+         <th class="confluenceTh"> Feature ID - Task ID </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Define and deliver to GF team state saving API requirements </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd"> 5/5 </td> 
+         <td class="confluenceTd"> 5/14 </td> 
+         <td class="confluenceTd"> Marek </td> 
+         <td class="confluenceTd"> METRO-002-01 </td> 
+         <td class="confluenceTd"> DONE </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Identify and collect all Metro state information that needs to be saved </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd"> 5/10 </td> 
+         <td class="confluenceTd"> 5/28 </td> 
+         <td class="confluenceTd"> Marek, Jiandong, (Jitu) </td> 
+         <td class="confluenceTd"> METRO-002-02 </td> 
+         <td class="confluenceTd"> DONE </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Define backing stores - scopes, names, data types, storing strategies </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd"> 5/10 </td> 
+         <td class="confluenceTd"> 5/28 </td> 
+         <td class="confluenceTd"> Marek, Jiandong, (Jitu) </td> 
+         <td class="confluenceTd"> METRO-002-03 </td> 
+         <td class="confluenceTd"> DONE </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Design and implement common API &amp; runtime support for Metro HA </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd"> 7/19 </td> 
+         <td class="confluenceTd"> 7/30 </td> 
+         <td class="confluenceTd"> Marek, Jitu </td> 
+         <td class="confluenceTd"> METRO-002-04 </td> 
+         <td class="confluenceTd"> DONE </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Implement RM failover </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd"> 7/19 </td> 
+         <td class="confluenceTd"> 8/16 </td> 
+         <td class="confluenceTd"> Marek </td> 
+         <td class="confluenceTd"> METRO-002-05 </td> 
+         <td class="confluenceTd"> DONE </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Implement SC failover </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd"> 7/19 </td> 
+         <td class="confluenceTd"> 8/16 </td> 
+         <td class="confluenceTd"> Jiandong </td> 
+         <td class="confluenceTd"> METRO-002-06 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Implement NonceManager failover </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd"> 7/19 </td> 
+         <td class="confluenceTd"> 8/16 </td> 
+         <td class="confluenceTd"> Kumar </td> 
+         <td class="confluenceTd"> METRO-002-07 </td> 
+         <td class="confluenceTd"> DONE </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Implement &amp; run BP test scenarios, fix issues </td> 
+         <td class="confluenceTd"> MS1 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Jitu, Rama </td> 
+         <td class="confluenceTd"> METRO-003-01 </td> 
+         <td class="confluenceTd"> DONE </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Provide support to external contractors with RSP, BSP test scenarios development, fix issues </td> 
+         <td class="confluenceTd"> MS1 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Jiandong, Kumar, Marek, Suresh </td> 
+         <td class="confluenceTd"> METRO-003-02 </td> 
+         <td class="confluenceTd"> DONE </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Create general migration scripts infrastructure </td> 
+         <td class="confluenceTd"> MS1 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Marek </td> 
+         <td class="confluenceTd"> METRO-004-01 </td> 
+         <td class="confluenceTd"> DONE </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Define initial WSIT modules </td> 
+         <td class="confluenceTd"> MS1 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Marek </td> 
+         <td class="confluenceTd"> METRO-004-02 </td> 
+         <td class="confluenceTd"> DONE </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Refactor and resolve WSIT intermodule dependencies </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 5/6 </td> 
+         <td class="confluenceTd"> Marek </td> 
+         <td class="confluenceTd"> METRO-004-03 </td> 
+         <td class="confluenceTd"> DONE </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Migrate WSIT sources and unit tests </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 5/6 </td> 
+         <td class="confluenceTd"> Marek </td> 
+         <td class="confluenceTd"> METRO-004-04 </td> 
+         <td class="confluenceTd"> DONE </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Migrate standard Metro bundle ANT scripts </td> 
+         <td class="confluenceTd"> MS5 </td> 
+         <td class="confluenceTd"> 8/19 </td> 
+         <td class="confluenceTd"> 9/13 </td> 
+         <td class="confluenceTd"> Marek </td> 
+         <td class="confluenceTd"> METRO-004-05 </td> 
+         <td class="confluenceTd"> In Progress </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Migrate OSGi Metro bundle ANT scripts </td> 
+         <td class="confluenceTd"> MS5 </td> 
+         <td class="confluenceTd"> 8/19 </td> 
+         <td class="confluenceTd"> 9/13 </td> 
+         <td class="confluenceTd"> Marek </td> 
+         <td class="confluenceTd"> METRO-004-06 </td> 
+         <td class="confluenceTd"> In Progress </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Migrate samples </td> 
+         <td class="confluenceTd"> MS5 </td> 
+         <td class="confluenceTd"> 8/19 </td> 
+         <td class="confluenceTd"> 9/13 </td> 
+         <td class="confluenceTd"> Marek </td> 
+         <td class="confluenceTd"> METRO-004-07 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Create all infrastructure&amp;logic that reads metro-webservices.xml and translates the config into features </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd"> 5/10 </td> 
+         <td class="confluenceTd"> 8/27 </td> 
+         <td class="confluenceTd"> Fabian </td> 
+         <td class="confluenceTd"> METRO-005-01 </td> 
+         <td class="confluenceTd"> In Progress </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Migrate metro.xml into metro-webservices.xml </td> 
+         <td class="confluenceTd"> MS5 </td> 
+         <td class="confluenceTd"> 8/16 </td> 
+         <td class="confluenceTd"> 8/31 </td> 
+         <td class="confluenceTd"> Fabian </td> 
+         <td class="confluenceTd"> METRO-005-02 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Migrate WSIT config files into metro-webservices.xml </td> 
+         <td class="confluenceTd"> MS5 </td> 
+         <td class="confluenceTd"> 8/26 </td> 
+         <td class="confluenceTd"> 9/16 </td> 
+         <td class="confluenceTd"> Fabian </td> 
+         <td class="confluenceTd"> METRO-005-03 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> OPTIONAL: Migrate JAXWS RI config files into metro-webservices.xml </td> 
+         <td class="confluenceTd"> MS5 </td> 
+         <td class="confluenceTd"> 9/16 </td> 
+         <td class="confluenceTd"> end </td> 
+         <td class="confluenceTd"> Fabian </td> 
+         <td class="confluenceTd"> METRO-005-04 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Analysis standard and custom exception handling </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd"> 7/14 </td> 
+         <td class="confluenceTd"> 7/16 </td> 
+         <td class="confluenceTd"> Jiandong </td> 
+         <td class="confluenceTd"> METRO-006-01 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Support for automatic renew/reissue of security context with standard error code </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd"> 8/2 </td> 
+         <td class="confluenceTd"> 8/6 </td> 
+         <td class="confluenceTd"> Jiandong </td> 
+         <td class="confluenceTd"> METRO-006-02 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Writing dev test case </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> 8/9 </td> 
+         <td class="confluenceTd"> 8/13 </td> 
+         <td class="confluenceTd"> Jiandong </td> 
+         <td class="confluenceTd"> METRO-006-03 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Analysis of use case </td> 
+         <td class="confluenceTd"> MS1 </td> 
+         <td class="confluenceTd"> 5/20 </td> 
+         <td class="confluenceTd"> 5/21 </td> 
+         <td class="confluenceTd"> Jiandong </td> 
+         <td class="confluenceTd"> METRO-007-01 </td> 
+         <td class="confluenceTd"> DONE </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Support for issued token lifetime </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd"> 5/26 </td> 
+         <td class="confluenceTd"> 5/28 </td> 
+         <td class="confluenceTd"> Jiandong </td> 
+         <td class="confluenceTd"> METRO-007-02 </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Support for security context lifetime </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd"> 6/7 </td> 
+         <td class="confluenceTd"> 6/9 </td> 
+         <td class="confluenceTd"> Jiandong </td> 
+         <td class="confluenceTd"> METRO-007-03 </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Writing dev test case </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd"> 6/10 </td> 
+         <td class="confluenceTd"> 6/11 </td> 
+         <td class="confluenceTd"> Jiandong </td> 
+         <td class="confluenceTd"> METRO-007-04 </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Studying Servlet 3.0 async API </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd"> 5/24 </td> 
+         <td class="confluenceTd"> 6/21 </td> 
+         <td class="confluenceTd"> Rama </td> 
+         <td class="confluenceTd"> METRO-008-01 </td> 
+         <td class="confluenceTd"> DONE </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Writing Servlet 3.0 async transport </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> 6/21 </td> 
+         <td class="confluenceTd"> 7/19 </td> 
+         <td class="confluenceTd"> Rama </td> 
+         <td class="confluenceTd"> METRO-008-02 </td> 
+         <td class="confluenceTd"> DONE </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Writing Servlet 3.0 async transport testcases </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> 6/21 </td> 
+         <td class="confluenceTd"> 7/19 </td> 
+         <td class="confluenceTd"> Rama </td> 
+         <td class="confluenceTd"> METRO-008-03 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Studying v3.x REST API </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd"> 5/24 </td> 
+         <td class="confluenceTd"> 6/21 </td> 
+         <td class="confluenceTd"> Jitu </td> 
+         <td class="confluenceTd"> METRO-009-01 </td> 
+         <td class="confluenceTd"> DONE </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Writing Test harness support for v3.x </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> 6/21 </td> 
+         <td class="confluenceTd"> 7/19 </td> 
+         <td class="confluenceTd"> Jitu </td> 
+         <td class="confluenceTd"> METRO-009-02 </td> 
+         <td class="confluenceTd"> DONE </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Writing wsimport -clientjar </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd"> 7/19 </td> 
+         <td class="confluenceTd"> 8/16 </td> 
+         <td class="confluenceTd"> Rama </td> 
+         <td class="confluenceTd"> METRO-010-01 </td> 
+         <td class="confluenceTd"> DONE </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Writing -clientjar testcases </td> 
+         <td class="confluenceTd"> MS5 </td> 
+         <td class="confluenceTd"> 8/16 </td> 
+         <td class="confluenceTd"> 9/01 </td> 
+         <td class="confluenceTd"> Rama </td> 
+         <td class="confluenceTd"> METRO-010-02 </td> 
+         <td class="confluenceTd"> DONE </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Modifying tests to support webservices in embedded GF </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> 6/21 </td> 
+         <td class="confluenceTd"> 7/19 </td> 
+         <td class="confluenceTd"> Bhakti </td> 
+         <td class="confluenceTd"> 109-02 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Fixing issues to support webservices in embedded GF </td> 
+         <td class="confluenceTd"> MS5 </td> 
+         <td class="confluenceTd"> 8/16 </td> 
+         <td class="confluenceTd"> 9/01 </td> 
+         <td class="confluenceTd"> Bhakti </td> 
+         <td class="confluenceTd"> 109-02 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Supporting WLS descriptors </td> 
+         <td class="confluenceTd"> MS5 </td> 
+         <td class="confluenceTd"> 6/1 </td> 
+         <td class="confluenceTd"> 9/01 </td> 
+         <td class="confluenceTd"> Rama </td> 
+         <td class="confluenceTd"> 109-01 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Bug/Performance fixes </td> 
+         <td class="confluenceTd"> MS5 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 9/13 </td> 
+         <td class="confluenceTd"> Ryan </td> 
+         <td class="confluenceTd"> METRO-011-01 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Read through WS-TX functional spec </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> 6/21 </td> 
+         <td class="confluenceTd"> 6/23 </td> 
+         <td class="confluenceTd"> Marek </td> 
+         <td class="confluenceTd"> METRO-013-01 </td> 
+         <td class="confluenceTd"> DONE </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Investigate WS-TX system service bootstrapping in GF 3.1 </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> 6/24 </td> 
+         <td class="confluenceTd"> 7/2 </td> 
+         <td class="confluenceTd"> Marek </td> 
+         <td class="confluenceTd"> METRO-013-02 </td> 
+         <td class="confluenceTd"> DONE </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Investigate WS-TX system service hiding in GF 3.1 </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> 6/24 </td> 
+         <td class="confluenceTd"> 7/2 </td> 
+         <td class="confluenceTd"> Marek </td> 
+         <td class="confluenceTd"> METRO-013-03 </td> 
+         <td class="confluenceTd"> DONE </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Implement WS-TX system service boodstrapping and hiding support </td> 
+         <td class="confluenceTd"> MS5 </td> 
+         <td class="confluenceTd"> 8/19 </td> 
+         <td class="confluenceTd"> 9/13 </td> 
+         <td class="confluenceTd"> Marek </td> 
+         <td class="confluenceTd"> METRO-013-04 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Implement support for WS-TX configuration in Metro </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> 7/12 </td> 
+         <td class="confluenceTd"> 7/16 </td> 
+         <td class="confluenceTd"> Marek </td> 
+         <td class="confluenceTd"> METRO-013-05 </td> 
+         <td class="confluenceTd"> DONE </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Port the core WS-TX implementation </td> 
+         <td class="confluenceTd"> MS5 </td> 
+         <td class="confluenceTd"> 7/1 </td> 
+         <td class="confluenceTd"> 9/13 </td> 
+         <td class="confluenceTd"> Paul </td> 
+         <td class="confluenceTd"> METRO-013-06 </td> 
+         <td class="confluenceTd"> In Progress </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.1Metro-DevTests"></a>Dev Tests</h2> 
+     <ul> 
+      <li>Coming soon</li> 
+     </ul> <h4><a name="3.1Metro-References"></a>References</h2> 
+     <ul> 
+      <li><a href="http://docs.sun.com/app/docs/doc/821-0179/6nl8hchmr?l=en&amp;a=expand">GlassFish v2.x CLI Commands</a></li> 
+      <li><a href="GlassFishV2Architecture.html" title="GlassFishV2Architecture">GlassFish v2 Cluster Architecture </a></li> 
+     </ul> <h4><a name="3.1Metro-EmailAlias"></a>Email Alias</h2> 
+     <ul> 
+      <li>Please contact us at <a href="mailto:dev@glassfish.java.net">dev@glassfish.java.net</a></li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Aug 18, 2010 by 
+<font color="#0050B2">jitu_metro</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

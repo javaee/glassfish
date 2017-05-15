@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : 080205MoM</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="080205MoM-Upscale"></a>Upscale </h2> <p>Larry has done some changes in SR and now it is possible to upscale a cluster. <br> What is left is to check that CLB handles upscale. <br> AP Joel: check that CLB handles upscale. </p> <h4><a name="080205MoM-Expat"></a>Expat </h2> <p>Larry and Jan has more or less completed the implementation of Expat-list handling. <br> In order for it to handle the case that CLB does not remap synchronously a 30 s delay is introduced before building the Expat list after a cluster reshape.</p> <h4><a name="080205MoM-LastAccessTime"></a>Last Access Time </h2> <p>We had a discussion about the implementation and finally all agreed on that the current solution is OK. </p> <h4><a name="080205MoM-ForegroundLock"></a>Foreground Lock </h2> <p>Handling of aquiring/releasing foreground lock is postponed to the FCS release, i.e, it is not part of the Beta. <br> The reason is that Peter, Joel and Robert had some discussions about the workings of session invalidation which ended up in that invalidation of sessions could leverage on the same principles that would apply for foreground locking. Rather than trying to push this into the Beta we will take a larger grip and implement a solution that handles all aspects: dialog set life time, session invalidation, foreground locking and unit of work and ensure that they work in harmony.</p> <p>The invalidation problem is something that we have omitted and is primarily caused by the introduction of the SipSessionmanager and DialogFragmentManager. The problem is that when a session is invalidated it is removed from the manager and after that the container cannot retrieve the SS, DF and possible the SAS any more. A typical case where this would occur (and we already have a issue reported on that) is when the application sends a BYE and the invalidates the session in the next line. Later when the 200 response arrives a null pointer exception is thrown dua to that the session can not be found in the manager. We have other scenarios where this occur as well.</p> <p>The solution is the same as for foreground lock: wait with removal from manager until the last transacion in which the dialog is part of, finishes. (Our solution for foreground lock is taht the lock on the dialog structure is released at that point).</p> <p>Since the current purpose of foreground locking is only to minimize the risk of failures in ongoing transactions when the CLB remaps after recovery of a node (which is a relatively slim window), we think this can safely be excluded from the Beta.</p> <p>AP testers: exclude any test case that would test that an ongoing transaction on a backup node (i.e, the node that handles traffic for a failed node) is not disrupted when the failed node recovers.</p> <h4><a name="080205MoM-Repairunderload"></a>Repair-under-load </h2> <p>Repair-under-load is always active in Glassfish. <br> Larrys sends out information on how to disable this. </p> <h4><a name="080205MoM-Misc"></a>Misc </h2> <p>Erik has found some flaws that seems to make the replcation framework to do unnecessary replications. Erik sends diffs to Larry.</p> <p>There are problems when trying to deploy 100+ apps in the cluster. But is this really a requirement? Larry escalates the matter to Binod.</p> <p>Rolling upgrade: While we investigates the MMAS requierements Larry continues with our proposed implementation (but is prepared to change the implementation when the requirements has been defined).</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:48.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

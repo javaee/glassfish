@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : HowDoesV3BuildWorks</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="HowDoesV3BuildWorks-HowdoesGFv3Build%2FDevelopmentWork%3F"></a>How does GF v3 Build/Development Work?</h1> <p>The GFv3 build works somewhat differently from v2. This page explains the model of how it works in v3, in an attempt to help you understand how to work with Glassfish.</p> <p>GFv3 consists of multiple "pieces." Each one of them is a maven module. For example, the JAXB runtime used in GF is packaged as a maven module. JavaMail API is packaged as a maven module, so is the admin GUI. Those modules are used in the binary form (in maven jargon, the "artifacts" of the modules) when you compile and run your workspace, so it's important to understand how they circulate.</p> <p><span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20875305/21365045.png" style="border: 0px solid black"></span></p> <p>There are 3 places that maven modules could land.</p> <h4><a name="HowDoesV3BuildWorks-Java.netrepository"></a>Java.net repository</h3> <p>The java.net maven repositories (<a href="https://maven-repository.java.net/nonav/repository/">here</a> and <a href="https://maven2-repository.java.net/">here</a>) is a shared repository between all GF developers. The java.net repository always contains binaries for all GFv3 modules and their dependencies. Those binaries are generally expected to be stable, and reasonably frequently updated, but they are not always the latest, since the source code keeps evolving.</p> <h4><a name="HowDoesV3BuildWorks-Localrepository"></a>Local repository</h3> <p>Another repository is the local maven repository, which resides on <tt>~/.m2/repository</tt>. This is your personal repository. Whenever you build or run GF modules, all the dependency jars needed will be picked up from this location. For example, when you run <tt>mvn gf:run</tt>, all the modules are picked up from here.</p> <h4><a name="HowDoesV3BuildWorks-Workspace"></a>Workspace</h3> <p>Then there's a workspace, where your latest change is built. If you have multiple modules checked out, there will be many of those lying around in your system.</p> <h4><a name="HowDoesV3BuildWorks-No%7B%7Bglassfish.home%7D%7D"></a>No <tt>glassfish.home</tt></h3> <p>As you can see above, there's no ${glassfish.home} in GF v3.</p> <h4><a name="HowDoesV3BuildWorks-Flowofartifacts"></a>Flow of artifacts</h2> <h4><a name="HowDoesV3BuildWorks-java.net%C3%A2%E2%80%A1%27local"></a>java.netâ‡'local</h3> <p>When maven realizes that it needs an artifact X to perform the requested activity (maybe you are trying to compile module Y that depends on X), it looks for X in your local repository. If X is not present there, maven will download it automatically from the java.net repository. If it exists, Maven occasionally checks the timestamp and see if there's a newer artifact available in the java.net repository. If the java.net repository has a newer version, maven will download it.</p> <p>Maven can be run with <tt>-o</tt> to prevent any downloading from the java.net repository. The <tt>-U</tt> option can be used to force Maven to check updates in the java.net repository.</p> <h4><a name="HowDoesV3BuildWorks-workspace%C3%A2%E2%80%A1%27local"></a>workspaceâ‡'local</h3> <p>When you build your maven module with <tt>mvn install</tt>, maven will put the produced artifact into your local repository.</p> <h4><a name="HowDoesV3BuildWorks-workspace%C3%A2%E2%80%A1%27java.net"></a>workspaceâ‡'java.net</h3> <p>When you build your maven module with <tt>mvn deploy</tt>, maven will first put the produced artifact into your local repository, then it also stages files for uploading to the java.net repository. This step is not fully automated yet and still requires some more work.</p> <h4><a name="HowDoesV3BuildWorks-Puttingitalltogether"></a>Putting it all together</h2> <p>With the understanding of how artifacts flow from one place to another, we now know what to answer the following questions.</p> <h4><a name="HowDoesV3BuildWorks-HowdoIpickupchangesfromJoeinxyzmodule%3F"></a>How do I pick up changes from Joe in xyz module?</h3> <p>Such artifact needs to flow from Joe's workspace to your local repository. So first Joe needs to run <tt>mvn deploy</tt> to publish the artifact to the java.net repository, then you'll need to run mvn with <tt>-U</tt> to pick up his artifact.</p> <p>Alternatively you can check out the xyz module on your local machine and build it by yourself.</p> <h4><a name="HowDoesV3BuildWorks-HowdoIworkontwomodulesXandYatthesametime%3F"></a>How do I work on two modules X and Y at the same time?</h3> <p>Whenever you run <tt>mvn install</tt> on X or Y, the new binary will be placed in your local repository. So if you make changes in X and you need that change to compile Y, you'd:</p> 
+     <ol> 
+      <li><tt>cd X; mvn install</tt></li> 
+      <li><tt>cd Y; mvn install</tt> or <tt>mvn gf:run</tt></li> 
+     </ol> 
+     <hr> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875305/21365045.png">model.png</a> (image/png) 
+      <br> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 07, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

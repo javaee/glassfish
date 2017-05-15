@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFishDeveloperFAQ</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p><b>Translations:</b><br class="atl-forced-newline"> Japanese</p> <h4><a name="GlassFishDeveloperFAQ-GlassFishDeveloperFAQ"></a>GlassFish Developer FAQ</h1> <p>This Developer FAQ lists frequently asked questions related to the development of the GlassFish application server and is for developers contributing bug fixes, new code, and other improvements to Project GlassFish. For FAQs related to the use of GlassFish and general questions about GlassFish itself, see the <a href="GlassFishUserFAQ.html" title="GlassFishUserFAQ">GlassFish User FAQ</a>.</p> <p>In true wiki and open source fashion, this Developer FAQ is a community effort. Help fill in the blanks, add new FAQs, and generally make this a valuable resource for you and other GlassFish developers.</p> <p> <b>This is a community resource. The success and usefulness of this FAQ depends on you.</b> Please help by contributing new FAQs and updating and enhancing existing ones.</p> <h4><a name="GlassFishDeveloperFAQ-HowtoContribute"></a>How to Contribute</h2> <p>For starters, add new FAQs of your own and enhance and update what's already here. This is a work in progress and your contributions are definitely needed. Be sure to read <a href="FaqContributeToDeveloperFAQ.html" title="FaqContributeToDeveloperFAQ">How do I contribute to this Developer FAQ?</a>, which contains guidelines about content and format. Nothing too restrictive, just some things we should all pay attention to. Also check back periodically to see if you can answer any of the questions listed in the <a href="#GlassFishDeveloperFAQ-DeveloperFAQWishList">Developer FAQ Wish List</a> section.</p> <p>If you're new to wiki, see the <a href="http://www.jspwiki.org/wiki/OneMinuteWiki">One Minute Wiki</a> and <a href="http://www.jspwiki.org/wiki/TextFormattingRules">Text Formatting Rules</a>. To test things out, try the <a href="http://sandbox.jspwiki.org/">Sand Box</a>. And as always, remember your <a href="http://www.jspwiki.org/wiki/WikiEtiquette">Wiki Etiquette</a>.</p> <p>If you have questions or suggestions about this FAQ, please contact <a href="mailto:docs@glassfish.java.net">docs@glassfish.java.net</a>. You can subscribe to the list from the GlassFish <a href="https://glassfish.java.net/servlets/ProjectMailingListList">mailing lists</a> page.</p> <p><b>Translation into other languages is also needed.</b> See <a href="Translate_UserAndDeveloperFAQs.html" title="Translate_UserAndDeveloperFAQs">Translating User and Developer FAQs</a> for details. The full Developer FAQ is currently available in Japanese. Translation into <a href="./Translate_FAQStatus#section-Translate_FAQStatus-Italian.html">Italian</a> is also underway.</p> <h4><a name="GlassFishDeveloperFAQ-TableofContents"></a>Table of Contents</h2> <h4><a name="GlassFishDeveloperFAQ-Generaltopics"></a><em>General topics</em></h3> 
+     <ul> 
+      <li><a href="#GlassFishDeveloperFAQ-AboutGlassFish">About GlassFish</a></li> 
+      <li><a href="#GlassFishDeveloperFAQ-CommunityAndContribution">Community and Contribution</a></li> 
+      <li><a href="#GlassFishDeveloperFAQ-DocumentationAndResources">Documentation and Resources</a></li> 
+      <li><a href="#GlassFishDeveloperFAQ-GeneralBuildInformation">General Build Information</a></li> 
+      <li><a href="#GlassFishDeveloperFAQ-GeneralDevelopmentInformation">General Development Information</a></li> 
+      <li><a href="UpgradeCompatibilityRequirements.html" title="UpgradeCompatibilityRequirements">Upgrade Compatibility Requirements of Development</a></li> 
+      <li><a href="#GlassFishDeveloperFAQ-GlassFishV2Development">GlassFish v2 Development</a></li> 
+      <li><a href="#GlassFishDeveloperFAQ-GlassFishV3Development">GlassFish v3 Development</a></li> 
+      <li><a href="#GlassFishDeveloperFAQ-LicenseAndLegal">License and Legal</a></li> 
+     </ul> <h4><a name="GlassFishDeveloperFAQ-Specifictopics%28inalphabeticalorder%29"></a><em>Specific topics (in alphabetical order)</em></h3> 
+     <ul> 
+      <li><a href="#GlassFishDeveloperFAQ-Classloaders">Classloaders</a></li> 
+      <li><a href="#GlassFishDeveloperFAQ-Deployment">Deployment</a></li> 
+      <li><a href="#GlassFishDeveloperFAQ-Persistence">Persistence</a></li> 
+      <li><a href="V3DomainStartupAndShutdown.html" title="V3DomainStartupAndShutdown">V3DomainStartupAndShutdown</a></li> 
+      <li><a href="#GlassFishDeveloperFAQ-UsageProfiles">Usage Profiles</a></li> 
+     </ul> <h4><a name="GlassFishDeveloperFAQ-AboutGlassFish"></a>About GlassFish</h3> 
+     <ul> 
+      <li><a href="FaqBasicInformation.html" title="FaqBasicInformation">Where can I find basic information about GlassFish?</a></li> 
+      <li><a href="FaqGlassFishRoadMap.html" title="FaqGlassFishRoadMap">What is the Roadmap?</a></li> 
+     </ul> <h4><a name="GlassFishDeveloperFAQ-CommunityandContribution"></a>Community and Contribution</h3> 
+     <ul> 
+      <li><a href="FaqWhosDeveloping.html" title="FaqWhosDeveloping">Who's developing GlassFish?</a></li> 
+      <li><a href="FaqUsingInProduction.html" title="FaqUsingInProduction">Who's using GlassFish?</a></li> 
+      <li><a href="FaqContributeDevelopment.html" title="FaqContributeDevelopment">How do I contribute to the development effort?</a></li> 
+      <li><a href="FaqContributeToDeveloperFAQ.html" title="FaqContributeToDeveloperFAQ">How do I contribute to this Developer FAQ?</a></li> 
+      <li><a href="FaqContributeToDocumentation.html" title="FaqContributeToDocumentation">How do I contribute to GlassFish documentation?</a></li> 
+      <li><a href="FaqGAP.html" title="FaqGAP">What is the GlassFish Community Awards (GAP)? Who can participate?</a></li> 
+     </ul> <h4><a name="GlassFishDeveloperFAQ-DocumentationandResources"></a>Documentation and Resources</h3> 
+     <ul> 
+      <li><a href="FaqWhereIsDocumentation.html" title="FaqWhereIsDocumentation">Where is the documentation? What other resources are available?</a></li> 
+      <li><a href="FaqGetHelpWithGlassFish.html" title="FaqGetHelpWithGlassFish">How can I get help with GlassFish?</a></li> 
+      <li><a href="FaqStayingUpToDate.html" title="FaqStayingUpToDate">How can I stay up to date on GlassFish news and views?</a></li> 
+      <li><a href="FaqTipsAndBlogs.html" title="FaqTipsAndBlogs">Where can I find Tech Tips and Blogs?</a></li> 
+      <li><a href="FaqSupportOfferings.html" title="FaqSupportOfferings">What support offerings are available?</a></li> 
+      <li><a href="FaqDeveloperInfo.html" title="FaqDeveloperInfo">How do I get more developer information?</a></li> 
+      <li><a href="FaqWiki.html" title="FaqWiki">Is there a FAQ for the GlassFish wiki?</a></li> 
+      <li><a href="FaqEvents.html" title="FaqEvents">What events are happening that I might be interested in?</a></li> 
+     </ul> <h4><a name="GlassFishDeveloperFAQ-GeneralBuildInformation"></a>General Build Information</h3> 
+     <ul> 
+      <li><a href="FaqBuildGlassFish.html" title="FaqBuildGlassFish">How do I build GlassFish?</a></li> 
+      <li><a href="FaqBuildFAQ.html" title="FaqBuildFAQ">Is there an FAQ for build questions?</a></li> 
+      <li><a href="FaqNetBeansBuildGlassFish.html" title="FaqNetBeansBuildGlassFish">Can I use NetBeans to build GlassFish?</a></li> 
+      <li><a href="FaqMavenSubset.html" title="FaqMavenSubset">Why is only a subset of Maven features used?</a></li> 
+      <li><a href="FaqMavenObjectives.html" title="FaqMavenObjectives">What goals and objectives does this Maven-based framework achieve?</a></li> 
+      <li><a href="FaqTypesOfModules.html" title="FaqTypesOfModules">What are the different types of modules?</a></li> 
+      <li><a href="FaqUsefulMavenGoals.html" title="FaqUsefulMavenGoals">What are the useful Maven goals?</a></li> 
+      <li><a href="BuildingWithoutNexus.html" title="BuildingWithoutNexus">How do I build when Nexus is down? </a></li> 
+     </ul> <h4><a name="GlassFishDeveloperFAQ-GeneralDevelopmentInformation"></a>General Development Information</h3> 
+     <ul> 
+      <li><a href="FaqCommitter.html" title="FaqCommitter">How do I become a committer?</a></li> 
+      <li><a href="FaqCommitCode.html" title="FaqCommitCode">What is the process to commit code?</a></li> 
+      <li><a href="FaqSubmitPatch.html" title="FaqSubmitPatch">How do I submit a patch?</a></li> 
+      <li><a href="FaqSubmitBug.html" title="FaqSubmitBug">How do I submit a bug?</a></li> 
+     </ul> <h4><a name="GlassFishDeveloperFAQ-GlassFishv2Development"></a>GlassFish v2 Development</h3> 
+     <ul> 
+      <li><a href="FaqBuildGlassFish.html" title="FaqBuildGlassFish">How do I build GlassFish?</a></li> 
+     </ul> <h4><a name="GlassFishDeveloperFAQ-GlassFishv3Development"></a>GlassFish v3 Development</h3> 
+     <ul> 
+      <li><a href="FaqGlassFishV3.html" title="FaqGlassFishV3">Where can I learn more about GlassFish v3?</a></li> 
+      <li><a href="FaqV3DevGetStarted.html" title="FaqV3DevGetStarted">How do I get started with GlassFish v3 development?</a></li> 
+      <li><a href="FaqGlassFishV3.html#FaqGlassFishV3-v3build">Where are the v3 build and test guidelines?</a></li> 
+      <li><a href="FaqGlassFishV3.html#FaqGlassFishV3-v3ql">Where are the v3 Quicklook instructions?</a></li> 
+      <li><a href="FaqV3QuicklookTutorial.html" title="FaqV3QuicklookTutorial">What about a simple Quicklook tutorial?</a></li> 
+      <li><a href="FaqV3BuildStatus.html" title="FaqV3BuildStatus">Where can I see the latest GlassFish build status?</a></li> 
+      <li>Where is the list of v3 module owners?</li> 
+      <li><a href="FaqV3BestDebugIDE.html" title="FaqV3BestDebugIDE">What is the best IDE to use for debugging this whole thing?</a></li> 
+      <li><a href="FaqV3DevTool.html" title="FaqV3DevTool">Is there a single tool you want me to understand well? What is it, and why is it so important?</a></li> 
+      <li><a href="FaqV3DebugBuildProcess.html" title="FaqV3DebugBuildProcess">Can the build process be debugged? If so, how?</a></li> 
+      <li><a href="FaqV3UnderstandBuildProcess.html" title="FaqV3UnderstandBuildProcess">Why is the build process so hard to understand?</a></li> 
+      <li><a href="FaqV3UnderstandModuleSystem.html" title="FaqV3UnderstandModuleSystem">What is the best way to understand the module system, important annotations, the modular architecture?</a></li> 
+      <li><a href="FaqV3AsadminCommands.html" title="FaqV3AsadminCommands">How can I tell how many asadmin commands are implemented at a given moment?</a></li> 
+      <li><a href="FaqV3ProjectDependencies.html" title="FaqV3ProjectDependencies">Cleaning up pom.xml-1: How can I tell if the dependencies of my project are correct?</a></li> 
+      <li><a href="FaqV3JavacArgumentsAndCompilation.html" title="FaqV3JavacArgumentsAndCompilation">How do I pass javac arguments to generate additional compilation information?</a></li> 
+      <li><a href="FaqV3MavenGFPrefixedGoals.html" title="FaqV3MavenGFPrefixedGoals">How does Maven understand gf prefixed goals such as gf:run?</a></li> 
+      <li><a href="FaqV3ViewModulePOM.html" title="FaqV3ViewModulePOM">How do I see a better view of my module's POM?</a></li> 
+      <li><a href="FaqV3DebugDAS.html" title="FaqV3DebugDAS">Is there any advice about debugging DAS?</a></li> 
+      <li><a href="FaqV3DebugAsadminDAS.html" title="FaqV3DebugAsadminDAS">What if I want to debug both asadmin and DAS at the same time?</a></li> 
+      <li><a href="FaqV3DebugUnitTest.html" title="FaqV3DebugUnitTest">I want to debug a unit test – but it had better be easy!!</a></li> 
+      <li><a href="FaqV3OutOfMemoryErrory.html" title="FaqV3OutOfMemoryErrory">My build fails with an out-of-memory error – why?</a></li> 
+     </ul> <h4><a name="GlassFishDeveloperFAQ-LicenseandLegal"></a>License and Legal</h3> <p><em>This section is under construction</em></p> <h4><a name="GlassFishDeveloperFAQ-Classloaders"></a>Classloaders</h3> 
+     <ul> 
+      <li><a href="FaqClassloadersGeneral.html" title="FaqClassloadersGeneral">Where can I find more information about classloaders?</a></li> 
+      <li><a href="FaqClasspathSuffix.html" title="FaqClasspathSuffix">How can I dynamically pass in an application classpath suffix to GlassFish v2 at startup?</a></li> 
+     </ul> <h4><a name="GlassFishDeveloperFAQ-Deployment"></a>Deployment</h3> 
+     <ul> 
+      <li><a href="FaqDeploymentGeneral.html" title="FaqDeploymentGeneral">Where can I find more information about application deployment?</a></li> 
+     </ul> <h4><a name="GlassFishDeveloperFAQ-Persistence"></a>Persistence</h3> 
+     <ul> 
+      <li><a href="FaqJavaPersistenceAPI.html" title="FaqJavaPersistenceAPI">Where can I find answers to my questions about persistence and the Java Persistence API?</a></li> 
+     </ul> <h4><a name="GlassFishDeveloperFAQ-UsageProfiles"></a>Usage Profiles</h3> 
+     <ul> 
+      <li><a href="FaqUsageProfiles.html" title="FaqUsageProfiles">How do I make sense of usage profiles?</a></li> 
+     </ul> <h4><a name="GlassFishDeveloperFAQ-DeveloperFAQWishList"></a>Developer FAQ Wish List</h2> <p>What's missing? What questions would you like to see answered that aren't? What are the top issues you run into for which having an FAQ would be<br> especially helpful? Please add those questions to this wish list! And if you know the answer to one or more of these questions, please provide it. Help make this a useful resource – for the community, by the community.</p> <p>Questions for which answers are needed:</p> 
+     <ul> 
+      <li><em>Your question here</em></li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 15, 2010 by 
+<font color="#0050B2">wombat</font>. Exported from wikis.oracle.com on May 27, 2015 20:49.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

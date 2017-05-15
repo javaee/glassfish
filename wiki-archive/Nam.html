@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : Nam</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p><a href="ErrorMessageReference.html" title="ErrorMessageReference">Contents</a> <a href="Mdb.html" title="Mdb">Previous</a> <a href="Rar.html" title="Rar">Next</a></p> <h4><a name="Nam-NAMMessages"></a>NAM Messages</h2> <p>----<tt>NAM0002</tt><br> Problem with serializing or deserializing of the object</p> <h4><a name="Nam-Solution%3A"></a>Solution:</h3> <p>Check the class hierarchy to see if all the classes are Serializable.</p> <p>----<tt>NAM0003</tt><br> Problem in creating a remote object for <tt>SerialContextProvider</tt>.</p> <h4><a name="Nam-Cause%3A"></a>Cause:</h3> <p>Problem during publishing <tt>SerialContextProvider</tt> in <tt>CosNaming</tt> Service.</p> <h4><a name="Nam-Solution%3A"></a>Solution:</h3> <p>Check if ORB <tt>CosNaming</tt> Service initialized. Check if ORB <tt>CosNaming</tt> Service initialized.</p> <p>----<tt>NAM0004</tt><br> Application Server may not be running at port intended.</p> <h4><a name="Nam-Cause%3A"></a>Cause:</h3> <p>Possible Network Error.</p> <h4><a name="Nam-Solution%3A"></a>Solution:</h3> <p>Check to see if the Application Server is up and running on the port intended. The problem could be because of incorrect port. Check to see if you can access the host on which the Application Server is running.</p> <p>----<tt>NAM0005</tt><br> The JMS Connection Factory may not be bound to a JNDI name.</p> <h4><a name="Nam-Solution%3A"></a>Solution:</h3> <p>Check the list of JNDI bindings by clicking on the JNDI tree on the Administrator's console. Check the JMS resource references bindings.</p> <p>----<tt>NAM0006</tt><br> The JMS destination may not be bound to a JNDI name.</p> <h4><a name="Nam-Solution%3A"></a>Solution:</h3> <p>Check the list of JNDI bindings by clicking on the JNDI tree on the Administrator's console. Check the JMS resource references bindings.</p> <p>----<tt>NAM0007</tt><br> Unresolved Message Destination Reference</p> <h4><a name="Nam-Solution%3A"></a>Solution:</h3> <p>Check if the Message Destination has been linked to a Message Destination</p> <p>----<tt>NAM0008</tt><br> Invalid Destination Name</p> <h4><a name="Nam-Solution%3A"></a>Solution:</h3> <p>Check Destination Name</p> <p>----<tt>NAM1000</tt><br> No endpoints selected.</p> <h4><a name="Nam-Solution%3A"></a>Solution:</h3> <p>Check system property <tt>com.sun.appserv.iiop.endpoints</tt>.</p> <p>----<tt>NAM1001</tt><br> No endpoints selected.</p> <h4><a name="Nam-Solution%3A"></a>Solution:</h3> <p>Check system property <tt>com.sun.appserv.iiop.endpoints</tt>.</p> <p>----<tt>NAM1002</tt><br> Bad JNDI provider URL</p> <h4><a name="Nam-Solution%3A"></a>Solution:</h3> <p>Check system property <tt>java.naming.provider.url</tt>.</p> <p>----<tt>NAM1003</tt><br> Bad host:port entry</p> <h4><a name="Nam-Solution%3A"></a>Solution:</h3> <p>Check system property <tt>com.sun.appserv.iiop.endpoints</tt>.</p> <p>----<tt>NAM1004</tt><br> Unknown host</p> <h4><a name="Nam-Solution%3A"></a>Solution:</h3> <p>Check the host entry.</p> <p>----<tt>NAM1005</tt><br> No endpoints selected.</p> <h4><a name="Nam-Solution%3A"></a>Solution:</h3> <p>Check system property <tt>com.sun.appserv.iiop.endpoints</tt>.</p> <p><a href="ErrorMessageReference.html" title="ErrorMessageReference">Contents</a> <a href="Mdb.html" title="Mdb">Previous</a> <a href="Rar.html" title="Rar">Next</a></p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 08, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

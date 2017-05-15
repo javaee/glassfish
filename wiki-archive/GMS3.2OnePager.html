@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GMS3.2OnePager</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p><b>Status: this work will be moved to different future versions....</b></p> <h4><a name="GMS3.2OnePager-GMS3.2OnePager"></a>GMS 3.2 One Pager</h1> <h4><a name="GMS3.2OnePager-1.Introduction"></a>1. Introduction</h2> <h4><a name="GMS3.2OnePager-1.1.Project%2FComponentWorkingName%3A"></a>1.1. Project/Component Working Name:</h3> <p>Dynamic Runtime Clustering Support via Shoal Group Management Service</p> <h4><a name="GMS3.2OnePager-1.2.Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier%3A"></a>1.2. Name(s) and e-mail address of Document Author(s)/Supplier:</h3> <p>Joe Fialli, joe.fialli@oracle.com<br> Bobby Bissett, bobby.bissett@oracle.com</p> <h4><a name="GMS3.2OnePager-1.3.DateofThisDocument%3A"></a>1.3. Date of This Document:</h3> <p>05/05/2011 adapt to non-multicast support design change away from group discovery service and towards auto generation of VIRTUAL_MULTICAST_URI_LIST.<br> 04/29/2011 incorporate impact of DAS-less Ad Hoc Clustering<br> 04/25/2011 adding RFEs<br> 04/11/2011 initial pass, extract info from GMS presentation at GlassFish 3.2 kickoff</p> <h4><a name="GMS3.2OnePager-2.ProjectSummary"></a>2. Project Summary</h2> <h4><a name="GMS3.2OnePager-2.1.ProjectDescription%3A"></a>2.1. Project Description:</h3> <p>Shoal Group Management Service provides the following functionality in a Glassfish cluster:</p> 
+     <ul> 
+      <li>other Glassfish application services register a handler for GMS<br> notification events. GMS notifications include events for clustered<br> member joining, ready, leaving, GroupLeadership change, FailureRecoveryAgent<br> and FailureSuspected.</li> 
+      <li>get the current member status of any member in the cluster.</li> 
+      <li>sending a message to one, some or all clustered instances in the cluster 
+       <ul> 
+        <li>HA uses to replicate session data within the cluster</li> 
+       </ul> </li> 
+      <li>get a list of Core or All clustered instances in the glassfish cluster.</li> 
+     </ul> <p>The above functionality must continue to function despite changes in<br> GlassFish 3.2 environment.</p> 
+     <ul> 
+      <li>A non-multicast configuration mode is being added to enable GMS to run<br> in environments that do not support UDP multicast or it is undesirable.</li> 
+     </ul> 
+     <ul> 
+      <li>Implementation changes may become necessary due to ad hoc clustering's removal of the DAS.</li> 
+     </ul> <h4><a name="GMS3.2OnePager-2.2.RisksandAssumptions%3A"></a>2.2. Risks and Assumptions:</h3> <p>Risks:</p> 
+     <ul> 
+      <li>Ad hoc clustering is eliminating the DAS. The DAS was a member of a GMS group(GlassFish cluster) as a SPECTATOR and initial GMS Master. 
+       <ul> 
+        <li>GMS MASTER_COLLISION_RESOLUTION requires additional testing if multiple glassfish instances for a single cluster start at once.<br> Simply having a DAS around temporarily for configuring and starting a cluster would remove this risk.</li> 
+        <li>The namespace context that a DAS provided for a cluster needs to be considered.&nbsp; Two developers on same subnet could have a GlassFish cluster<br> with same name as long as those clusters were relative to different domains.&nbsp; What provides cluster name space context in this environment.</li> 
+        <li>DAS as the GMS Master was isolated from heavy client load.&nbsp; With no DAS, heavy client load on a GMS Master that is a CORE member of GlassFish<br> cluster (providing HA replication backing storage) could impact GMS system operations such as sending out GMS Notifications, detecting other clustered<br> instances have failed.</li> 
+       </ul> </li> 
+      <li>New environments(both ad hoc clustering and virtual machine env) and non-multicast mode introduced in GlassFish 3.2 increase testing matrix.</li> 
+     </ul> <p>Assumptions:</p> 
+     <ul> 
+      <li>No need to be able to selectively enable security for GMS. Either all GMS TCP communications are secured or they are not.<br> (highly recommended in non-multicast mode to enable UDP unicast when TCP communications is secured. Then GMS heartbeats will not<br> have to be over a secure transport.)</li> 
+     </ul> <h4><a name="GMS3.2OnePager-3.ProblemSummary"></a>3. Problem Summary</h2> <p>Enable GMS to operate in environments to be supported in GlassFish 3.2.</p> <p>These environments include running application server in virtual machine environments that the<br> network interface does not have a static IP address as typical server environments do and<br> to run in environments that do not support UDP multicast, such as in Cloud computing.</p> <p>See complete technical requirements at [ GlassFish 3.2 GMS Technical Requirements | GlassFish+3.2+Group+Management+Service+Requirements].</p> <h4><a name="GMS3.2OnePager-3.1.ProblemArea%3A"></a>3.1. Problem Area:</h3> <p>In past releases, GMS has required UDP multicast traffic in order to dynamically<br> find cluster members at runtime. An alternative GMS configuration mode that does<br> not require UDP multicast traffic between clustered instances is being added for this release.<br> Additionally, an asadmin subcommand validate-cluster(placeholder name subject to change)<br> to validate that this configuration is working properly.</p> <p>See risks section for a description of impact of ad hoc clustering removing the DAS.<br> The DAS has always been the GMS master that performed centralized GMS processing<br> for the cluster isolated from the client load on the core cluster instances.&nbsp; To minimize<br> impact of high client load on GMS system processing, some of GMS centralized processing<br> needs to be made more decentralized and spread evenly among the clustered instances.</p> <p>An administrator should be able to enable security for GMS messaging. This<br> option will enable session data replicated within GlassFish cluster by<br> GMS messaging to be securely transported over the network.</p> <h4><a name="GMS3.2OnePager-3.2.Justification%3A"></a>3.2. Justification:</h3> <p>High Availability of session data in a Glassfish cluster is implemented<br> using GMS messaging between clustered instances. The HA module for session data relies on GMS notifications<br> of clustered instances joining and leaving the cluster.</p> <p>Other cluster services relying on GMS include IIOP, IIOP load balancer,<br> EJB timer migration, delegated transaction recovery, Metro RM.</p> <h4><a name="GMS3.2OnePager-4.TechnicalDescription%3A"></a>4. Technical Description:</h2> <h4><a name="GMS3.2OnePager-4.1.Details%3A"></a>4.1. Details:</h3> <p>In prior GlassFish releases, GMS required UDP multicast between clustered instances<br> comprising a Glassfish cluster. If "asadmin validate-multicast" was not able<br> to validate multicast traffic was being sent and received between two<br> systems hosting glassfish clustered instances, GMS was not be able<br> to work properly for that GlassFish cluster.</p> <p>To address GlassFish 3.2 PRD feature CLUST-1, clustering must not<br> require multicast, a non-multicast configuration mode is being added<br> to GMS. UDP multicast mode will also continue to be supported and<br> will be the default mode of operation in environments that support<br> UDP multicast.</p> <p>New cluster or group management service configuration property(s) will<br> be added to enable non-multicast broadcast. See <a href="GMS3.2WithoutMulticast.html" title="GMS3.2WithoutMulticast">GMS non-multicast design </a><br> for details. The document describes configuration for non-multicast mode<br> and possible optimizations to compensate for loss of UDP multicast efficiencies.</p> <p>New cluster or group management service configuration property(s) will<br> need to be added to support security. The existing ssl element in<br> domain.xml will be leveraged to address GF-14664. This ssl element<br> will be used as a child in cluster or group-management-service<br> to build a SSLConfig java object that Grizzly 2.0 allows to be provided as a filter to enable<br> SSL for TCP Point2Point messages. HA only uses unicast for replicating session data so<br> enabling SSL for TCP results in all replicated session data being secured over network<br> transport.<br> This SSLConfig object is created in cluster/gms-adapter/GMSAdapterImpl initialization and<br> passed as a GMS property for the GMS group and then used within GMS to set the Grizzly 2.0 filter for enabling SSL<br> on TCP connection.</p> <h4><a name="GMS3.2OnePager-4.2.Bug%2FRFENumber%28s%29%3A"></a>4.2. Bug/RFE Number(s):</h3> <p><a href="https://github.com/javaee/glassfish/issues/16413">GF-16413 </a> Administrator shall be able to configure a GMS group discovery mechanism for site.<br> Addresses PRD feature: Clust-1 No Multicast.</p> <p><a href="https://github.com/javaee/glassfish/issues/16414">GF-16414 </a> GMS work without UDP multicast - P1<br> GMS on Virtual Machine with non-static IP address - P1<br> Addresses PRD feature: Clust-1 No Multicast</p> <p><a href="https://github.com/javaee/glassfish/issues/4367">GF-16415 </a> Work through firewalls in hybrid cloud - P2</p> <p><a href="https://github.com/javaee/glassfish/issues/12056">GF-12056 </a> asadmin validate-cluster using existing GMS configurations - P?</p> <p><a href="https://github.com/javaee/glassfish/issues/14664">GF-14664 </a> Security RFE: Configure GMS to use SSL for p2p msgs. - P2</p> <p><a href="https://github.com/javaee/glassfish/issues/14663">GF-14663 </a> Security RFE: Configure GMS to use member authentication. - P3</p> <p><a href="https://github.com/javaee/glassfish/issues/12194">GF-12194 </a> Monitoring Stats Provider</p> <p><a href="https://github.com/javaee/glassfish/issues/16418">GF-16418</a> Minimize degradation of GMS level of Svc when no DAS - P2<br> Related to PRD feature CLUST-2 Ad Hoc Clusters.</p> <p><a href="https://github.com/javaee/glassfish/issues/16421">GF-16421 </a> Factor Shoal GMS grizzly transport dependent classes into one for grizzly 1.9 and one for grizzly 2.0. (default is grizzly 2.0)</p> <h4><a name="GMS3.2OnePager-4.3.InScope%3A"></a>4.3. In Scope:</h3> <p>See possible optimizations in GMS no-multicast design document.</p> <h4><a name="GMS3.2OnePager-4.4.OutofScope%3A"></a>4.4. Out of Scope:</h3> <p>Encryption for GMS notifications and heartbeats messages configured to be sent over UDP transport.</p> <p>Default GMS failure detection config parameters tuned for a local subnet.<br> No automated tuning to adapt to network latencies of geo distributed cluster members<br> or virtual machine environments. Manual configuration of GMS failure detection<br> parameters is required to adapt to these environments in this release.</p> <p>While optimizations are going to be made to compensate when UDP multicast is not<br> used to broadcast between instances in the cluster, certain GMS operations will<br> have higher performance and require less system resources when using UDP multicast<br> rather than simulating broadcast over a unicast transport.</p> <p>Ability to configure some GMS operations/messaging to use security and others to not use it.<br> Security is enabled or disabled for all GMS operations using TCP.</p> <h4><a name="GMS3.2OnePager-4.5.Interfaces%3A"></a>4.5. Interfaces:</h3> <p>// Interfaces may be commands, files, directory structure, ports,<br> // DTD/Schema, tools, APIs, CLIs, etc.<br> // Note: In lieu of listing the interfaces in the one pager, providing<br> // a link to another specification which defines the interfaces<br> // is acceptable.<br> <a href="https://github.com/javaee/glassfish/issues/12056">GF-12056 </a> asadmin validate-cluster validates GMS configuration for instances in the cluster. - P2 or P3</p> <p><a href="https://github.com/javaee/glassfish/issues/16417">GF-16417 </a> asadmin get-health in ad hoc clustering env - P3</p> <p><a href="GF 3.2 GMS Configuration in domain.xml.html" title="GF 3.2 GMS Configuration in domain.xml">GlassFish 3.2 GMS Configuration in domain.xml </a></p> <h4><a name="GMS3.2OnePager-4.5.1.PublicInterfaces%3A"></a>4.5.1. Public Interfaces:</h3> <p>NOTE: Auto-generation of a cluster's VIRTUAL_MULTICAST_URI_LIST is being considered to replace Group Discovery Service.</p> <p>Group Discovery Service implemented as a restful service.&nbsp;<br> Group Discovery Service implemented using Amazon S3.<br> <a href="GMSDiscoveryRegistrationService.html" title="GMSDiscoveryRegistrationService">Shoal GMS in GlassFish 3.2 Discovery service page</a></p> <h4><a name="GMS3.2OnePager-4.5.2.PrivateInterfaces%3A"></a>4.5.2. Private Interfaces:</h3> <p>// List private interfaces which are externally observable.</p> <h4><a name="GMS3.2OnePager-4.5.3.Deprecated%2FRemovedInterfaces%3A"></a>4.5.3. Deprecated/Removed Interfaces:</h3> <p>None at this time.</p> <h4><a name="GMS3.2OnePager-4.6.DocImpact%3A"></a>4.6. Doc Impact:</h3> <p>// List any Documentation (man pages, manuals, service guides...)<br> // that will be impacted by this proposal.</p> <p>Documentation will need to be updated to describe new GMS configurations for:</p> 
+     <ul class="alternate" type="square"> 
+      <li>non-multicast mode</li> 
+      <li>secured TCP communication</li> 
+      <li>enable unicast UDP for heartbeats when in non-multicast mode</li> 
+      <li>new asadmin command "validate-cluster" - validates current gms configuration is working for the cluster.</li> 
+      <li>deploying group discovery service</li> 
+      <li>specifying AWS S3 credentials (hope is that other GlassFish subsystems will need this info and GMS will acquire this info from GlassFish 3.2 commons.</li> 
+     </ul> <p>Also, cluster attributes multicast address and multicast port were required to have a value in GlassFish 3.1.<br> Either values were provided when creating the cluster or were generated at cluster creation time.<br> For GlassFish 3.2, these attributes are not required to be set when non-multicast configuration is provided.</p> <h4><a name="GMS3.2OnePager-4.7.Admin%2FConfigImpact%3A"></a>4.7. Admin/Config Impact:</h3> 
+     <ol> 
+      <li>Administrator can configure a cluster for GMS to use non-multicast mode.<br> - For PaaS, asadmin subcommand create-cluster will get new parameters or generic cluster property.<br> - For ad hoc clustering, default configuration in VM template hopefully will be enough.&nbsp; For EC2 VM template, non-multicast with EC2 auto generation of VIRTUAL_MULTICAST_URI_LIST will be enabled. For non-EC2 environment, TBD.</li> 
+      <li>Administrator can configure GMS messaging over TCP to be secure. (use ssl).</li> 
+     </ol> <p>Design document: <a href="GF 3.2 GMS Configuration in domain.xml.html" title="GF 3.2 GMS Configuration in domain.xml">GlassFish 3.2 GMS Configuration in domain.xml </a></p> <p>New CLI command: validate-cluster</p> <h4><a name="GMS3.2OnePager-4.8.HAImpact%3A"></a>4.8. HA Impact:</h3> <p>HA requires GMS.</p> <p>GMS relies on UDP multicast by default. If that transport mechanism is not available between<br> clustered instances, then this proposal requires the administrator to configure an alternative<br> mechanism that enables GMS to work without UDP multicast.</p> <h4><a name="GMS3.2OnePager-4.9.I18N%2FL10NImpact%3A"></a>4.9. I18N/L10N Impact:</h3> <p>No</p> <h4><a name="GMS3.2OnePager-4.10.Packaging%2CDelivery%26Upgrade%3A"></a>4.10. Packaging, Delivery &amp; Upgrade:</h3> <h4><a name="GMS3.2OnePager-4.10.1.Packaging"></a>4.10.1. Packaging</h3> <p>No.</p> <h4><a name="GMS3.2OnePager-4.10.2.Delivery"></a>4.10.2. Delivery</h3> <p>None</p> <h4><a name="GMS3.2OnePager-4.10.3.UpgradeandMigration%3A"></a>4.10.3. Upgrade and Migration:</h3> <p>Upgrade only needs to properly initialize new properties introduced to support non-multicast. Since non-multicast mode did not exist in GlassFish 3.1, these new properties will be initialized to appropriate values so UDP multicast is still enabled.</p> <h4><a name="GMS3.2OnePager-4.11.SecurityImpact%3A"></a>4.11. Security Impact:</h3> <p>// How does this proposal interact with security-related APIs<br> // or interfaces? Does it rely on any Java policy or platform<br> // user/permissions implication? If the feature exposes any<br> // new ports, Or any similar communication points which may<br> // have security implications, note these here.</p> <p>Introducing capability to specify SSL for TCP connections.</p> <p>Introducing capability to specify using UDP unicast instead of TCP for<br> virtual multicast.</p> <p>Introducing GMS member authentication. (Now a P3 so probably will not make this release with current schedule.)</p> <h4><a name="GMS3.2OnePager-4.12.CompatibilityImpact"></a>4.12. Compatibility Impact</h3> <p>No incompatibilities have been identified at this time.</p> <h4><a name="GMS3.2OnePager-4.13.Dependencies%3A"></a>4.13. Dependencies:</h3> <h4><a name="GMS3.2OnePager-4.13.1InternalDependencies"></a>4.13.1 Internal Dependencies</h3> <p>// List all internal dependencies this proposal has on other<br> // software. Include component version requirements if necessary.</p> 
+     <ul> 
+      <li>Grizzly 2.0.x</li> 
+     </ul> 
+     <ul> 
+      <li>GlassFish 3.2 commons (to get AWS credentials)</li> 
+     </ul> 
+     <ul> 
+      <li>Admin changes removing the DAS for ad hoc clustering.</li> 
+     </ul> <h4><a name="GMS3.2OnePager-4.13.2ExternalDependencies"></a>4.13.2 External Dependencies</h3> <p>Amazon Web Service(AWS) Java SDK&nbsp;&nbsp; Shoal GMS 1.6 may require this to run in Amazon EC2 environment.<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p> <h4><a name="GMS3.2OnePager-4.14.TestingImpact"></a>4.14. Testing Impact</h3> <p>// How will the new feature(s) introduced by this project be tested?</p> <p>// Do tests exist from prior releases (e.g. v2) that can be reused?<br> Existing QE and developer tests from prior release can be reused to<br> validate non-multicast configuration. Probably will only need<br> to change QE scripts that configure a cluster or 2 clusters<br> to configure those clusters with non-multicast mode.</p> <p>Developer and QE scripts for initial configuration and creation of the<br> cluster for the OVM environment and ad hoc clustering env need to change.<br> Gathering of glassfish 3.2 server log files by QE in OVM and ad hoc clustering<br> env are impacted and will require adjustments.</p> <p>// Will new tests need to be written? Can they be automated?<br> No new GMS notifications are planned for this release.<br> So new tests are needed for GMS notifications.</p> <p>However, the ability to configure GMS messaging to be<br> sent over secure TCP needs testing. There are no<br> existing GMS QE test that send messages. This<br> functionality could be tested as part of HA QE testing.<br> The goal of enabling secure TCP for GMS messaging is to<br> ensure that session data (http and ejb) that is replicated to<br> another instance in the cluster is performed over a secure transport.</p> <p>Additionally, new tests for GMS monitoring statistics are needed.</p> <h4><a name="GMS3.2OnePager-5.ReferenceDocuments%3A"></a>5. Reference Documents:</h2> <p><a href="GF 3.2 GMS Configuration in domain.xml.html" title="GF 3.2 GMS Configuration in domain.xml">GlassFish 3.2 GMS Configuration in domain.xml </a><br> <a href="GMS3.2WithoutMulticast.html" title="GMS3.2WithoutMulticast">Shoal GMS in GlassFish 3.2 Design Document</a> - non-multicast and neighbor heartbeat failure detection<br> <b>OLD:</b> <a href="GMSDiscoveryRegistrationService.html" title="GMSDiscoveryRegistrationService">Shoal GMS in GlassFish 3.2 Discovery Service Page</a>: This page documents some of the options we had considered for doing group discovery through an external service when multicast was not available. We are moving away from this now (see next link).<br> <a href="GMSDiscovery.html" title="GMSDiscovery">Shoal GMS in GlassFish 3.2 Group Discovery Page</a>: This page documents our options for doing GMS group discovery in the environments that we will support.<br> <a href="GMS3.2Requirements.html" title="GMS3.2Requirements">Shoal GMS in GlassFish 3.2 Requirements</a></p> <h4><a name="GMS3.2OnePager-6.Schedule%3A"></a>6. Schedule:</h2> <p>See <a href="./GMS3.2Project#GMS3.2Project-MilestoneSchedule.html">GlassFish 3.2 GMS Project Milestone Schedule </a></p> <h4><a name="GMS3.2OnePager-6.1.ProjectedAvailability%3A"></a>6.1. Projected Availability:</h3> <p><a href="GMS3.2Project.html" title="GMS3.2Project">GlassFish 3.2 GMS Project page.</a></p> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Oct 19, 2011 by 
+<font color="#0050B2">joe.fialli</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

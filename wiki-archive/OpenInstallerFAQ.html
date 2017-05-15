@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : OpenInstallerFAQ</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   
+     <div> 
+      <ul> 
+       <li><a href="#OpenInstallerFAQ-Introduction">Introduction</a></li> 
+       <li><a href="#OpenInstallerFAQ-GeneralQuestions">General Questions</a></li> 
+       <ul> 
+        <li><a href="#OpenInstallerFAQ-WhatisopenInstaller%3F">What is openInstaller?</a></li> 
+        <li><a href="#OpenInstallerFAQ-Whatotheropensourceprojectsdoesthisprojectuse%3F">What other open source projects does this project use?</a></li> 
+        <li><a href="#OpenInstallerFAQ-Whatistheoveralltechnicalapproachtakenbythisproject%3F">What is the overall technical approach taken by this project?</a></li> 
+        <li><a href="#OpenInstallerFAQ-WhatOSPlatformsand%2ForHardwarePlatformsisthisprojectdesignedfor%3F">What OS Platforms and/or Hardware Platforms is this project designed for?</a></li> 
+        <li><a href="#OpenInstallerFAQ-Whatlocales%2Flanguagesaresupported%3F">What locales/languages are supported?</a></li> 
+        <li><a href="#OpenInstallerFAQ-Whatinterfacesareexposedtome%2Cwhencreatinganinstaller%3F">What interfaces are exposed to me, when creating an installer?</a></li> 
+        <li><a href="#OpenInstallerFAQ-HowdoIrunopenInstaller%3F">How do I run openInstaller?</a></li> 
+       </ul> 
+       <li><a href="#OpenInstallerFAQ-DownloadingopenInstaller">Downloading openInstaller</a></li> 
+       <ul> 
+        <li><a href="#OpenInstallerFAQ-WherecanIgetopenInstaller%3F">Where can I get openInstaller?</a></li> 
+        <li><a href="#OpenInstallerFAQ-WhatshouldIdownload%3F">What should I download?</a></li> 
+       </ul> 
+       <li><a href="#OpenInstallerFAQ-UsingopenInstaller">Using openInstaller</a></li> 
+       <ul> 
+        <li><a href="#OpenInstallerFAQ-OK%2CI%27vedownloadedit.Nowwhat%3F">OK, I've downloaded it. Now what?</a></li> 
+       </ul> 
+       <li><a href="#OpenInstallerFAQ-QuestionsforDevelopersofopenInstaller">Questions for Developers of openInstaller</a></li> 
+      </ul>
+     </div> <h4><a name="OpenInstallerFAQ-Introduction"></a>Introduction</h1> <h4><a name="OpenInstallerFAQ-GeneralQuestions"></a>General Questions</h1> <h4><a name="OpenInstallerFAQ-WhatisopenInstaller%3F"></a>What is openInstaller?</h2> <p>This project introduces new set of tools and best practices for the delivery, installation and updating of Sun software. Several functional areas are addressed with well defined interface groupings:</p> <p>Installation Platform Data Model: This abstract model provides the metadata and design documentation necessary to produce most of the implementation described below.</p> <p>Packaging and Assembly: Definitions of platform-neutral package data model, tools used to build, assemble, and deliver products to customers. This includes a set of platform packaging abstractions and concrete implementations for supported formats (RPM, SvR4, MSI, etc.)</p> <p>Registry: Registry architecture, including updated software registry APIs, platform-specific registry adaptors, enhancements to existing Solaris registration mechanisms in support of a non-root install, and support for multiple instances of products on a single system.</p> <p>Configuration: initial install configuration APIs and product-specific config adaptors used to do basic product configuration and re-configuration.</p> <p>Install Engine runtime: Architecture of functional components making up the runtime. External control points used by client applications.</p> <h4><a name="OpenInstallerFAQ-Whatotheropensourceprojectsdoesthisprojectuse%3F"></a>What other open source projects does this project use?</h2> <p>Various open source projects are used in this project. The runtime components include:</p> 
+     <ul> 
+      <li><a href="http://commons.apache.org/">Apache Commons</a></li> 
+      <li><a href="http://www.beanshell.org">Beanshell</a></li> 
+      <li><a href="http://www.pitman.co.za/">Charva</a></li> 
+      <li><a href="http://freemarker.sourceforge.net">Freemarker</a></li> 
+      <li><a href="http://www.gnu.org/software/ncurses/">ncurses</a></li> 
+      <li><a href="http://www.swixml.org">Swixml</a></li> 
+     </ul> <p>There are many more optional open source components used in this project (for example, the use of <a href="http://checkstyle.sourceforge.net">checkstyle</a> to optionally check the health of the source code during the building of openInstaller).</p> <h4><a name="OpenInstallerFAQ-Whatistheoveralltechnicalapproachtakenbythisproject%3F"></a>What is the overall technical approach taken by this project?</h2> <p>This project's overall technical approach revolves around a declarative installer engine which takes, as input, a set of human-readable (and editable with widely available tooling) metadata, along with product content, and performs operations on the target host (usually installation, but also incremental install, and uninstall. Upgrade is potentially being added later but is not specifically part of this case.).</p> <p>The operations this project performs are defined in terms related to an abstract model used throughout the project, whenever possible. Operations are then mapped to concrete platform implementations as late as possible during the execution phases.</p> <p>In addition, it is expected that there will be follow-on projects to implement tooling for management of this metadata (e.g. GUI Install Builders), or management of the products themselves (e.g. distributed installers). While no specific interfaces are part of this proposal, the overall architecture is designed to be modular and flexible enough to support such an arrangement.</p> <h4><a name="OpenInstallerFAQ-WhatOSPlatformsand%2ForHardwarePlatformsisthisprojectdesignedfor%3F"></a>What OS Platforms and/or Hardware Platforms is this project designed for?</h2> <p>This project is cross-platform and as such can be supported across popular Unix's and Windows OS releases. There is very minimal platform-specific code (for example, a small shell script to discover the installed OS patches).</p> <h4><a name="OpenInstallerFAQ-Whatlocales%2Flanguagesaresupported%3F"></a>What locales/languages are supported?</h2> <p>Currently, translations are included in the product for the following languages/locales: </p> 
+     <ul> 
+      <li>C (Posix)</li> 
+      <li>American English (en_US)</li> 
+      <li>German (de_DE)</li> 
+      <li>French (fr_FR)</li> 
+      <li>Japanese (ja_JP)</li> 
+      <li>Korean (ko_KR)</li> 
+      <li>Simplified Chinese (zh_CN)</li> 
+      <li>Traditional Chinese (zh_TW)</li> 
+     </ul> <p>Additional translations may be supplied by developers in the future.</p> <h4><a name="OpenInstallerFAQ-Whatinterfacesareexposedtome%2Cwhencreatinganinstaller%3F"></a>What interfaces are exposed to me, when creating an installer?</h2> <p>There are many interfaces (e.g. features) of openInstaller that you can use to create your installer. There are too many to list here. The <a href="https://openinstaller.java.net/docs/index.html">Documentation Depot</a> contains all the user documentation one would need, and a <a href="https://openinstaller.java.net/docs/dev-docs/openInstaller-creating-Installer.html">quick start</a> is available for the impatient.</p> <h4><a name="OpenInstallerFAQ-HowdoIrunopenInstaller%3F"></a>How do I run openInstaller?</h2> <p>It is important to first understand that openInstaller is a <em>framework</em>, not a standalone application. That is, it makes no sense to run openInstaller on its own. You, as an install author, would <em>use</em> openInstaller to <em>create</em> a standalone application which is used to install your software product/project.</p> <p>Having said that, the main entry point for the install engine is called <tt>engine-wrapper</tt> (<tt>engine-wrapper.vbs</tt> on Windows). It is effectively a wrapper around the Java VM invocation, saving the user from discovery and invocation of the often complex and lengthy java VM command line. However, end users will rarely if ever invoke this command. Instead, projects/products which ship will most often supply wrappers around this command, exporting their own CLIs as necessary for the product.</p> <p>In addition, <a href="http://java.sun.com/products/javawebstart/">Java Webstart</a> can also be used to supply a web-enabled startup mechanism. For example, users can simply visit your project's webpage, and click on a link to install and use your product.</p> <h4><a name="OpenInstallerFAQ-DownloadingopenInstaller"></a>Downloading openInstaller</h1> <h4><a name="OpenInstallerFAQ-WherecanIgetopenInstaller%3F"></a>Where can I get openInstaller?</h2> <p>Download the latest version from the <a href="https://openinstaller.java.net/downloads_index.html">downloads page</a>.</p> <h4><a name="OpenInstallerFAQ-WhatshouldIdownload%3F"></a>What should I download?</h2> <p>If you are interested in building an installer for your application, you should download the "Sample Installer" from the <a href="https://openinstaller.java.net/downloads_index.html">downloads page</a>. This sample installer contains a fully-functional installer which installs a fake product. Since openInstaller is fully declarative, all of the files that make up the sample installer are easily editable in-place. Once a file is edited, the install application can be re-run to see the effects of the edits. In this way, one can take the sample installer, change a few strings (e.g. the names of the product, and/or the names of the zip files), and create a new, working installer for a different product!</p> <p>If you have downloaded openInstaller before, and/or have a working installer application, you probably want to download the latest binary istribution of openInstaller (which is also included in the sample product above). This allows you to simply swap in a newer version of openInstaller without changing your metadata.</p> <p>If you are interested in building and changing openInstaller, then you'll need to download the source code code snapshots and follow the <a href="https://openinstaller.java.net/docs/dev-docs/openInstaller-build-Information.html">build instructions</a>. Also, check out the other section of this FAQ, <a href="#OpenInstallerFAQ-QuestionsforDevelopersofopenInstaller">#Questions for Developers of openInstaller</a>.</p> <h4><a name="OpenInstallerFAQ-UsingopenInstaller"></a>Using openInstaller</h1> <h4><a name="OpenInstallerFAQ-OK%2CI%27vedownloadedit.Nowwhat%3F"></a>OK, I've downloaded it. Now what?</h2> <p>If you have downloaded the sample installer, simply extract to a temporary folder, and run the <tt>product-installer</tt> (double-click on <tt>product-installer.vbs</tt> on windows). This will run the sample installer, and you can install the sample product into a different temporary folder. After you've done that a few times, you may want to start playing with the install <em>metadata</em>. For example, go into the <tt>Metadata/dependency</tt> directory, open up <tt>TestProductA.xml</tt> using your favorite text or XML editor, and change the name of the product:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;Description&gt;My New Test Product A Name&lt;/Description&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>save the changes to the file, then re-run the installer to see your changes.</p> <p>The structure of this sample product is a typical structure containing a top-level product script (<tt>product-installer</tt>), which is a simple wrapper around the openInstaller entry point (<tt>engine-wrapper</tt>).</p> <h4><a name="OpenInstallerFAQ-QuestionsforDevelopersofopenInstaller"></a>Questions for Developers of openInstaller</h1> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 02, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

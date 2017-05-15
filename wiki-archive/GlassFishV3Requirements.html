@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFishV3Requirements</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GlassFishV3Requirements-GlassFishServerOpenSourceEditionv3Requirements"></a>GlassFish Server Open Source Edition - v3 Requirements</h1> <p><a href="GlassFishV1UR1.html" title="GlassFishV1UR1">GlassFish V1</a> focused on the Developer. <a href="PlanForGlassFishV2.html" title="PlanForGlassFishV2">GlassFish V2</a> added enterprise features. GlassFish V3 <a href="GlassFishV3Themes.html" title="GlassFishV3Themes">themes</a> focus on ease of use, next generation applications, and advanced production features. Requirements are being gathered from existing <a href="https://glassfish.java.net/issues/query.cgi">Requests for Enhancements (RFEs)</a>, customer feedback and <a href="http://forums.java.net/jive/thread.jspa?messageID=244459">community participation</a>.</p> <p>To provide comments on requirements or to add a requirement, please use the comment link at the bottom of each page or start a thread in the <a href="https://glassfish.java.net/servlets/ProjectMailingListList">GlassFish Users alias</a> (preferable). When describing a requirement, please provide detail and justification, and link to as much relevant content you can find online.</p> <p>Below is a table of linking to requirements grouped by category.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Category </th> 
+         <th class="confluenceTh"> Comments </th> 
+         <th class="confluenceTh"> Eng Owner </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="V3GeneralImprovements.html" title="V3GeneralImprovements">General Requirements</a> </td> 
+         <td class="confluenceTd"> Requirements that generally apply to GlassFish V3. </td> 
+         <td class="confluenceTd"> dochez, All Module Leads </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="V3AdministrationImprovements.html" title="V3AdministrationImprovements">Administration improvements </a> </td> 
+         <td class="confluenceTd"> Improvements related to administration, including console, CLI, ease-of-use, serviceability, etc </td> 
+         <td class="confluenceTd"> km, anilam, sreeni </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="V3ClientContainerImprovements.html" title="V3ClientContainerImprovements">Application Client Container </a> </td> 
+         <td class="confluenceTd"> Application Client Container (<a href="https://glassfish.java.net/javaee5/docs/DG/beakt.html">ACC </a>) improvements </td> 
+         <td class="confluenceTd"> tjquinn </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="V3DeploymentImprovements.html" title="V3DeploymentImprovements">Deployment </a> </td> 
+         <td class="confluenceTd"> Improvements related to related to deployment </td> 
+         <td class="confluenceTd"> hzhang_jn </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="V3CorbaImprovements.html" title="V3CorbaImprovements">CORBA </a> </td> 
+         <td class="confluenceTd"> Improvements related to related to CORBA </td> 
+         <td class="confluenceTd"> kcavanaugh </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="V3DeveloperExperienceImprovements.html" title="V3DeveloperExperienceImprovements">Developer Experience </a> </td> 
+         <td class="confluenceTd"> Features that improve developer experience </td> 
+         <td class="confluenceTd"> ludo, Peter Williams, hzhang_jn, tjquinn </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="V3DiagnosticsDiagnosableImprovements.html" title="V3DiagnosticsDiagnosableImprovements">Diagnostics/Serviceability </a> </td> 
+         <td class="confluenceTd"> Improvements related to administration, including console, CLI, ease-of-use, serviceability, etc </td> 
+         <td class="confluenceTd"> km, sirajg, sreeni </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="V3EJBImprovements.html" title="V3EJBImprovements">EJB Improvements </a> </td> 
+         <td class="confluenceTd"> Improvements related to EJBs </td> 
+         <td class="confluenceTd"> mk111283 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="V3HighAvailabilityImprovements.html" title="V3HighAvailabilityImprovements">High Availability </a> </td> 
+         <td class="confluenceTd"> High availability improvements </td> 
+         <td class="confluenceTd"> lwhite </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="V3JavaEE6Improvements.html" title="V3JavaEE6Improvements">Java EE 6 </a> </td> 
+         <td class="confluenceTd"> Java EE 6 Support </td> 
+         <td class="confluenceTd"> dochez, All Spec Implementation Leads </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="V3JBIImprovements.html" title="V3JBIImprovements">JBI Improvements </a> </td> 
+         <td class="confluenceTd"> JBI Improvements </td> 
+         <td class="confluenceTd"> Mark White, Mike Wright </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="V3InstallerImprovements.html" title="V3InstallerImprovements">Installer </a> </td> 
+         <td class="confluenceTd"> Improvements to the installation experience. </td> 
+         <td class="confluenceTd"> Sathyan, snjezana </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="V3MessageQueueImprovements.html" title="V3MessageQueueImprovements">Message Queue </a> </td> 
+         <td class="confluenceTd"> Improvements related to messaging </td> 
+         <td class="confluenceTd"> Ramesh, Linda </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="V3PersistenceImprovements.html" title="V3PersistenceImprovements">JDBC, Persistence </a> </td> 
+         <td class="confluenceTd"> Improvements related to persistence (JPA, JDBC) </td> 
+         <td class="confluenceTd"> Mitesh (mm110999), Jagadish </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="V3SecurityImprovements.html" title="V3SecurityImprovements">Security </a> </td> 
+         <td class="confluenceTd"> Improvements related to security </td> 
+         <td class="confluenceTd"> monzillo, vbkumar </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="V3TransactionImprovements.html" title="V3TransactionImprovements">Transaction Manager </a> </td> 
+         <td class="confluenceTd"> Improvements related to transaction management </td> 
+         <td class="confluenceTd"> sankar, marina </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="V3QAImprovements.html" title="V3QAImprovements">QA/Test </a> </td> 
+         <td class="confluenceTd"> Requirements for testing and quality assurance </td> 
+         <td class="confluenceTd"> deepa </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="V3WebServicesImprovements.html" title="V3WebServicesImprovements">Web Services </a> </td> 
+         <td class="confluenceTd"> Improvements related to web services </td> 
+         <td class="confluenceTd"> hcarr, jitu </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="V3WebTierImprovements.html" title="V3WebTierImprovements">Web Tier </a> </td> 
+         <td class="confluenceTd"> Improvements related to the web tier </td> 
+         <td class="confluenceTd"> mode, jluehe, jfarcand </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 15, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

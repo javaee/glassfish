@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : 3.1JMS</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="3.1JMS-GlassFishServerOpenSourceEdition3.1JMSandMessageQueueenhancements"></a>GlassFish Server Open Source Edition 3.1 - JMS and Message Queue enhancements</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#3.1JMS-GlassFishServerOpenSourceEdition3.1JMSandMessageQueueenhancements">GlassFish Server Open Source Edition 3.1 - JMS and Message Queue enhancements</a></li> 
+       <ul> 
+        <li><a href="#3.1JMS-ScopeoftheProject">Scope of the Project</a></li> 
+        <li><a href="#3.1JMS-FeatureOverview">Feature Overview</a></li> 
+        <ul> 
+         <li><a href="#3.1JMS-JMSsupportforembeddedGlassfishinstances">JMS support for embedded Glassfish instances</a></li> 
+         <li><a href="#3.1JMS-JMSclusteringandHAsupport">JMS clustering and HA support</a></li> 
+         <li><a href="#3.1JMS-SupportforResourceAdapters">Support for Resource Adapters</a></li> 
+         <li><a href="#3.1JMS-EnhancementstoJMSrelatedAdmincommandsforclustersupport">Enhancements to JMS related Admin commands for cluster support</a></li> 
+         <li><a href="#3.1JMS-IntegrationofMQ%27smonitoringcapabilitieswiththeGlassFish3monitoringframework">Integration of MQ's monitoring capabilities with the GlassFish 3 monitoring framework</a></li> 
+         <li><a href="#3.1JMS-WebLogicDDsupport">WebLogic DD support</a></li> 
+         <li><a href="#3.1JMS-Coherencesupport">Coherence support</a></li> 
+         <li><a href="#3.1JMS-VisualVMPluginEnhancements">VisualVM Plugin Enhancements</a></li> 
+         <li><a href="#3.1JMS-Otherenhancements">Other enhancements</a></li> 
+        </ul> 
+        <li><a href="#3.1JMS-Onepager%2FFunctionalSpecification">One-pager / Functional Specification</a></li> 
+        <li><a href="#3.1JMS-MilestoneSchedule">Milestone Schedule</a></li> 
+        <li><a href="#3.1JMS-TaskList">Task List</a></li> 
+        <li><a href="#3.1JMS-DevTests">Dev Tests</a></li> 
+        <li><a href="#3.1JMS-Quality">Quality</a></li> 
+        <li><a href="#3.1JMS-Documentation">Documentation</a></li> 
+        <li><a href="#3.1JMS-References%2FLinks">References / Links</a></li> 
+        <li><a href="#3.1JMS-EmailAlias">Email Alias</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="3.1JMS-ScopeoftheProject"></a>Scope of the Project</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Desired Improvement </th> 
+         <th class="confluenceTh"> Priority </th> 
+         <th class="confluenceTh"> Source of requirement </th> 
+         <th class="confluenceTh"> Comments </th> 
+         <th class="confluenceTh"> One-pager author or link </th> 
+         <th class="confluenceTh"> Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JMS-01 </td> 
+         <td class="confluenceTd"> JMS support for embedded GF with an Embedded MQ broker (Broker Embedded + GlassFish Embedded) </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> Product management </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Satish (<a href="GlassFish 3.1 Integration Plan (OnePager).html" title="GlassFish 3.1 Integration Plan (OnePager)">One-pager for GF changes </a> ) No MQ changes expected </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JMS-02 </td> 
+         <td class="confluenceTd"> JMS support for embedded GF with a Local MQ broker (GlassFish Embedded + Broker Local) </td> 
+         <td class="confluenceTd"> P4 </td> 
+         <td class="confluenceTd"> Product management </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Satish (One-pager for GF changes TODO) No MQ changes expected </td> 
+         <td class="confluenceTd"> Not scheduled (insufficient time) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JMS-03 </td> 
+         <td class="confluenceTd"> JMS support for embedded GF with a Remote MQ broker (GlassFish Embedded + Broker Remote) </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> Product management </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Satish (<a href="GlassFish 3.1 Integration Plan (OnePager).html" title="GlassFish 3.1 Integration Plan (OnePager)">One-pager for GF changes </a>) No MQ changes expected </td> 
+         <td class="confluenceTd"> Should technically work but hasn't been tested </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JMS-04 </td> 
+         <td class="confluenceTd"> Running embedded MQ broker in embedded GF without starting any ports (GlassFish Embedded + Broker Embedded) </td> 
+         <td class="confluenceTd"> P4 </td> 
+         <td class="confluenceTd"> Engineering </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Nigel (<a href="http://mq.java.net/4.5-content/disablingPorts-one-pager.html">One-pager for MQ changes </a>) Satish (One-pager for GF changes TODO) </td> 
+         <td class="confluenceTd"> Not scheduled (too low priority) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JMS-05 </td> 
+         <td class="confluenceTd"> Running embedded MQ broker in embedded GF with minimum number of ports (GlassFish Embedded + Broker Embedded) </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> Engineering </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Nigel (One-pager for MQ changes see JMS-4) Satish (One-pager for GF changes TODO) </td> 
+         <td class="confluenceTd"> Not scheduled (insufficient time) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JMS-06 </td> 
+         <td class="confluenceTd"> Support for conventional clustering of MQ brokers in Local mode </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Feature parity with GF 2.1 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Satish (<a href="GlassFish 3.1 Integration Plan (OnePager).html" title="GlassFish 3.1 Integration Plan (OnePager)">One-pager for GF changes </a> ) No MQ changes expected </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JMS-07 </td> 
+         <td class="confluenceTd"> Support for enhanced clustering of MQ brokers in Local mode </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Feature parity with GF 2.1 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Satish (<a href="GlassFish 3.1 Integration Plan (OnePager).html" title="GlassFish 3.1 Integration Plan (OnePager)">One-pager for GF changes </a> ) No MQ changes expected </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JMS-08 </td> 
+         <td class="confluenceTd"> Support for conventional clustering of MQ brokers in Remote mode </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Feature parity with GF 2.1 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Satish <a href="GlassFish 3.1 Integration Plan (OnePager).html" title="GlassFish 3.1 Integration Plan (OnePager)">(One-pager for GF changes </a>) No MQ changes expected </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JMS-09 </td> 
+         <td class="confluenceTd"> Support for enhanced clustering of MQ brokers in Remote mode </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Feature parity with GF 2.1 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Satish (<a href="GlassFish 3.1 Integration Plan (OnePager).html" title="GlassFish 3.1 Integration Plan (OnePager)">One-pager for GF changes </a>) No MQ changes expected </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JMS-10 </td> 
+         <td class="confluenceTd"> Support for conventional clustering of MQ brokers in Embedded mode (Broker Embedded) </td> 
+         <td class="confluenceTd"> P1 or P2 </td> 
+         <td class="confluenceTd"> Product management </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Nigel/Amy (<a href="https:--mq.java.net-4.5-content-embeddedBrokersInConventionalClusters-one-pager.html">One-pager for MQ changes </a>) Satish (<a href="GlassFish 3.1 Integration Plan (OnePager).html" title="GlassFish 3.1 Integration Plan (OnePager)">One-pager for GF changes </a> ) </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JMS-11 </td> 
+         <td class="confluenceTd"> Support for enhanced clustering of MQ brokers in Embedded mode (Broker Embedded) </td> 
+         <td class="confluenceTd"> P4 </td> 
+         <td class="confluenceTd"> Product management </td> 
+         <td class="confluenceTd"> Not feasible without extensive changes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Not scheduled (technical reasons) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JMS-12-a </td> 
+         <td class="confluenceTd"> Improve MQ conventional clustering with master broker </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Product management/users </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Amy (<a href="https://mq.java.net/4.5-content/cluster-improvemaster.txt">One-pager for MQ changes </a>) Satish (<a href="GlassFish 3.1 Integration Plan (OnePager).html" title="GlassFish 3.1 Integration Plan (OnePager)">One-pager for GF changes </a>) </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JMS-12-b </td> 
+         <td class="confluenceTd"> MQ conventional clustering without master broker in GlassFish EMBEDED/LOCAL Mode (Broker Embedded or Broker Local) </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Product management/users </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Amy (<a href="https://mq.java.net/4.5-content/cluster-nomaster-db.txt">One-pager for MQ changes </a>) Satish (<a href="GlassFish 3.1 Integration Plan (OnePager).html" title="GlassFish 3.1 Integration Plan (OnePager)">One-pager for GF changes </a>) </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JMS-13 </td> 
+         <td class="confluenceTd"> Integration with IBM Websphere MQ through GenericJMSRA </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Feature parity with GF 2.1 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JMS-13-a </td> 
+         <td class="confluenceTd"> Integration with WebLogic MQ through GenericJMSRA </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Product management </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JMS-14 </td> 
+         <td class="confluenceTd"> Direct mode support for additional RAs </td> 
+         <td class="confluenceTd"> P4 </td> 
+         <td class="confluenceTd"> Engineering </td> 
+         <td class="confluenceTd"> Essentially solving a class loader issue in GF </td> 
+         <td class="confluenceTd"> Satish (One-pager for GF changes TODO) </td> 
+         <td class="confluenceTd"> Not scheduled (too low priority) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JMS-15 </td> 
+         <td class="confluenceTd"> Separation of Life-cycle management components from JMSRA </td> 
+         <td class="confluenceTd"> P4 </td> 
+         <td class="confluenceTd"> Engineering </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Satish (One-pager for GF changes TODO) Nigel (<a href="https:--mq.java.net-4.5-content-mqLifecycleAPI-one-pager.html">One-pager for MQ changes </a>) </td> 
+         <td class="confluenceTd"> Not scheduled (too low priority) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JMS-16 </td> 
+         <td class="confluenceTd"> Enhancements to JMS related Admin commands for cluster support </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Feature parity with GF 2.1 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Satish <a href="GlassFish 3.1 Integration Plan (OnePager).html" title="GlassFish 3.1 Integration Plan (OnePager)">(One-pager for GF changes </a> ) No MQ changes expected </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JMS-17 </td> 
+         <td class="confluenceTd"> Integrating existing JMX based MQ broker metrics with GF monitoring framework </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> Product management </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Satish (<a href="GlassFish 3.1 Integration Plan (OnePager).html" title="GlassFish 3.1 Integration Plan (OnePager)">One-pager for GF changes </a>) No MQ changes expected </td> 
+         <td class="confluenceTd"> Deferred </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JMS-18 </td> 
+         <td class="confluenceTd"> Integrating existing command-line MQ broker metrics with GF 3 </td> 
+         <td class="confluenceTd"> P4 </td> 
+         <td class="confluenceTd"> Engineering </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Nigel (One-pager for MQ changes WILLNOTDO) Satish (One-pager for GF changes WILLNOTDO) </td> 
+         <td class="confluenceTd"> Not scheduled (too low priority) Will not do one-pagers either. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JMS-19 </td> 
+         <td class="confluenceTd"> Adding new MQ client-side metrics </td> 
+         <td class="confluenceTd"> P4 </td> 
+         <td class="confluenceTd"> Engineering </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Nigel (One-pager for MQ changes WILLNOTDO) Satish (One-pager for GF changes WILLNOTDO) </td> 
+         <td class="confluenceTd"> Not scheduled (too low priority) Will not do one-pagers either. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JMS-20 </td> 
+         <td class="confluenceTd"> WebLogic DD support </td> 
+         <td class="confluenceTd"> (No) </td> 
+         <td class="confluenceTd"> Product management </td> 
+         <td class="confluenceTd"> Not feasible without extensive changes </td> 
+         <td class="confluenceTd"> Defer </td> 
+         <td class="confluenceTd"> Not scheduled (Technical reasons) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JMS-21 </td> 
+         <td class="confluenceTd"> Coherence support </td> 
+         <td class="confluenceTd"> (No) </td> 
+         <td class="confluenceTd"> Product management </td> 
+         <td class="confluenceTd"> Not appropriate </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Not scheduled (Technical reasons) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JMS-22 </td> 
+         <td class="confluenceTd"> VisualVM Plugin Enhancements </td> 
+         <td class="confluenceTd"> P4 </td> 
+         <td class="confluenceTd"> Engineering management </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Nigel (<a href="https:--mq.java.net-4.5-content-mq-visualvm-plugin-one-pager.html">One-pager </a>) </td> 
+         <td class="confluenceTd"> Now on hold Not scheduled </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JMS-23 </td> 
+         <td class="confluenceTd"> Glassfish RFE <a href="http://monaco.sfbay/detail.jsf?cr=6893609">6893609 </a> (Glassfish MQ LOCAL startup options should be configurable) </td> 
+         <td class="confluenceTd"> P4 </td> 
+         <td class="confluenceTd"> Users (JMS-12 will reduce need) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Nigel (One-pager for MQ changes WILLNOTDO) Satish (One-pager for GF changes WILLNOTDO) </td> 
+         <td class="confluenceTd"> Not scheduled (Too low priority) Will not do one-pagers either. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JMS-24 </td> 
+         <td class="confluenceTd"> Glassfish issue <a href="https://github.com/javaee/glassfish/issues/11721">11721 </a> (GF does not allow all required passwords to be passed to managed MQ broker) </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Users </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Nigel (<a href="https://mq.java.net/4.5/content/6897519OnePager.html">One-pager for MQ changes </a>) Satish (One-pager for GF changes TODO) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JMS-25 </td> 
+         <td class="confluenceTd"> Dynamic Sync Broker List of MQ Conventional Cluster with GlassFish Cluster </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Amy/Nigel (<a href="https://mq.java.net/4.5/content/sync-brokerlist-in-glassfish.txt">One-pager for MQ changes </a>) Satish (<a href="GlassFish 3.1 Integration Plan (OnePager).html" title="GlassFish 3.1 Integration Plan (OnePager)">One-pager for GF changes </a>&nbsp;) </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>(Note: Broker Embedded = MQ configured to run in same VM as GlassFish, Remote = MQ running on same machine, w/Lifecycle controls, Remote = MQ unmanaged, in remote VM See also <a href="GlassFish3.1Embedded.html" title="GlassFish3.1Embedded">GlassFish Embedded Sub-project</a> page; See also EJB-5 from the <a href="GlassFishv3.1EJB.html" title="GlassFishv3.1EJB">EJB 3.1 Sub-project</a> page.)</p> <h4><a name="3.1JMS-FeatureOverview"></a>Feature Overview</h2> <h4><a name="3.1JMS-JMSsupportforembeddedGlassfishinstances"></a>JMS support for embedded Glassfish instances</h3> 
+     <ul> 
+      <li>Description</li> 
+     </ul> <p>This task involves providing complete JMS support to Glassfish when it is running in an embedded mode. All three modes of MQ integration- embedded/local and remote will be supported. However, MQ clusters will not be supported since cluster service requires some minimum broker properties or commandline parameters and requires portmapper service running.</p> 
+     <ul> 
+      <li>Sub-tasks</li> 
+     </ul> <p>GlassFish Meessage Queue 4.5 will be integrated into GlassFish Server, Open Source Edition 3.1. Please also see the <a href="https://mq.java.net/4.5.html">GlassFish MQ project</a> for more information.</p> <p>Support for different modes of MQ integration within embedded GF:<br> The following subtasks are the first level of support for integrating JMS capabilities with embedded GF.<br> JMS-1: Support for running a stand-alone embedded MQ broker within embedded GlassFish<br> JMS-2: Support for running a stand-alone Local MQ broker within embedded GlassFish<br> JMS-3: Support for running a stand-alone Remote MQ broker within embedded GlassFish</p> <p>Starting MQ with no/minimum ports:<br> MQ currently requires a minimum of four ports to be started- Port mapper, JMS service, Cluster Service and JMS admin. The following two requirements are advanced enhancements to the JMS-1 requirement:</p> <p>JMS-4: Running embedded MQ broker without starting any ports: In cases where the only JMS communication required is within the same JVM, no ports need to be started unnecessarily. Applications would communicate with MQ using the new APIDirect mode.</p> <p>JMS-5: Running embedded MQ broker with minimum number of ports: This would translate into MQ starting only the JMS service and port mapper ports.</p> 
+     <ul> 
+      <li>Owners</li> 
+     </ul> <p>Satish, Nigel/Amy</p> 
+     <ul> 
+      <li>Estimate</li> 
+     </ul> <p>TBD</p> <h4><a name="3.1JMS-JMSclusteringandHAsupport"></a>JMS clustering and HA support</h3> 
+     <ul> 
+      <li>Description:</li> 
+     </ul> <p>This task involves enhancements to GlassFish 3.1 to support MQ's clustering capabilities. MQ currently supports two modes of clustering – conventional clustering (service HA) and enhanced clustering (includes data HA, which relies on a HA database).</p> 
+     <ul> 
+      <li>Subtasks:</li> 
+     </ul> <p>JMS-6: Support for conventional clustering of MQ brokers in Local mode.<br> JMS-7: Support for enhanced clustering of MQ brokers in Local mode<br> JMS-8: Support for conventional clustering of MQ brokers in Remote mode<br> JMS-9: Support for enhanced clustering of MQ brokers in Remote mode</p> <p>This is the level of support that has been available in earlier releases of GlassFish.</p> 
+     <ul> 
+      <li>Related features:</li> 
+     </ul> <p>Clustering of MQ brokers in embedded mode:<br> This has not been supported in earlier releases of GlassFish. To support enhanced cluster in embeded mode, there is an issue with having to restart the MQ broker in the event of a potential split-brain (e.g. under network partition if a broker unable to update its heartbeat within the configured monitor interval). When a potential split-brain is detected, it is very important to terminate any in-flight data access right away hence the broker JVM will need to be halted and restarted. Restarting an embedded broker without exiting the JVM would increase seriously the risk to data integrity. The following two requirements are an extension of this feature:<br> JMS-10: Support for conventional clustering of MQ brokers in Embedded mode<br> JMS-11: Support for enhanced clustering of MQ brokers in Embedded mode</p> <p>JMS-12 Improvements to MQ's conventional clustering (master broker):<br> MQ conventional clustering architecture requires a master broker on creation/update/deletion of durable subscription and physical destination and sync-up with master broker on a broker startup. This imposes the requirement for the master broker to be started before the remaining broker instances can start and function correctly. They have been several complaints from users running into "master broker not started" errors if there are delays in the start-up of the master broker.</p> 
+     <ul> 
+      <li>Owners:</li> 
+     </ul> <p>Satish, Nigel and Amy Kang</p> 
+     <ul> 
+      <li>Schedule:</li> 
+     </ul> <p>TBD</p> <h4><a name="3.1JMS-SupportforResourceAdapters"></a>Support for Resource Adapters</h3> 
+     <ul> 
+      <li>Description:</li> 
+     </ul> <p>GlassFish currently ships with JMSRA as the default resource adapter. JMSRA is a system RA hence in is available out-of-the-box. Currently, JMSRA also manages the broker life-cycle (starting and stopping the broker) in embedded and local modes.</p> 
+     <ul> 
+      <li>Subtasks:</li> 
+     </ul> <p>JMS-13: Integration with IBM Websphere MQ through GenericJMSRA:<br> GlassFish also ships GenericJMSRA for integration with other JMS provides. We currently support integration with IBM Websphere MQ.</p> 
+     <ul> 
+      <li>Related tasks:</li> 
+     </ul> <p>JMS-14: Direct mode support for RAs:<br> This will allow other RA's to use the 'Direct mode' rather than TCP to connect to an in-process MQ broker. Currently, this feature is only available to JMSRA. Performance test suggests this can approximately double messaging performance compared with TCP mode.</p> <p>JMS-15: Separation of Life-cycle management components from JMSRA:<br> At present, JMSRA functions as both a MQ broker lifecycle management component and as a JCA based resource adapter. This means that even if JMSRA is not required as a RA, it must nevertheless be started in order to perform broker lifecycle management. This work would involve spliting JMSRA into separate RA and lifecycle management components. Post this change, there would not be a need to start JMSRA unless it was actually needed.</p> 
+     <ul> 
+      <li>Owners:</li> 
+     </ul> <p>Nigel, Satish</p> 
+     <ul> 
+      <li>Schedule:</li> 
+     </ul> <p>TBD</p> <h4><a name="3.1JMS-EnhancementstoJMSrelatedAdmincommandsforclustersupport"></a>Enhancements to JMS related Admin commands for cluster support</h3> 
+     <ul> 
+      <li>Description:</li> 
+     </ul> <p>JMS-16: Enhance the existing JMS related admin commands (such as - create-jms-host, delete-jms-host, list-jms-hosts, create-jms-resource, delete-jms-resource, list-jms-resources, create-jmsdest, delete-jmsdest, list-jmsdest, flush-jmsdest, jms-ping, etc.) for cluster support.</p> 
+     <ul> 
+      <li>Subtasks:</li> 
+     </ul> <p>None</p> 
+     <ul> 
+      <li>Owners:</li> 
+     </ul> <p>Satish</p> 
+     <ul> 
+      <li>Schedule:</li> 
+     </ul> <p>TBD</p> <h4><a name="3.1JMS-IntegrationofMQ%27smonitoringcapabilitieswiththeGlassFish3monitoringframework"></a>Integration of MQ's monitoring capabilities with the GlassFish 3 monitoring framework</h3> 
+     <ul> 
+      <li>Description:</li> 
+     </ul> <p>The task involves leveraging and enhancing MQ's monitoring capabilities so that they can be accessible using the new Glassfish 3 monitoring framework.</p> 
+     <ul> 
+      <li>Subtasks:</li> 
+     </ul> <p>JMS-17: Integrating of existing JMX based MQ broker metrics with GF monitoring framework: There are currently exposed through JMX<br> JMS-18: Integrating of existing command-line based MQ metrics with GF 3: Currently these can only be accessed through the MQ command line<br> JMS-19: Adding MQ client-side metrics: There are currently no metics available on the MQ client-side.</p> 
+     <ul> 
+      <li>Owners:</li> 
+     </ul> <p>Satish, Nigel</p> 
+     <ul> 
+      <li>Schedule:</li> 
+     </ul> <p>TBD</p> <h4><a name="3.1JMS-WebLogicDDsupport"></a>WebLogic DD support</h3> 
+     <ul> 
+      <li>Description:</li> 
+     </ul> <p>JMS-20: Support for weblogic-jms.xml in GlassFish. A detailed feasability study is available <a href="WeblogicJMSDescriptor.html" title="WeblogicJMSDescriptor">here</a></p> 
+     <ul> 
+      <li>Subtasks:</li> 
+     </ul> <p>None</p> 
+     <ul> 
+      <li>Owners:</li> 
+     </ul> <p>TBD</p> 
+     <ul> 
+      <li>Schedule:</li> 
+     </ul> <p>TBD</p> <h4><a name="3.1JMS-Coherencesupport"></a>Coherence support</h3> 
+     <ul> 
+      <li>Description:</li> 
+     </ul> <p>JMS-21: Enhancement to MQ to use Coherence for high availability in lieu of MySQL.</p> 
+     <ul> 
+      <li>Subtasks:</li> 
+     </ul> <p>None</p> 
+     <ul> 
+      <li>Owners:</li> 
+     </ul> <p>TBD</p> 
+     <ul> 
+      <li>Schedule:</li> 
+     </ul> <p>TBD</p> <h4><a name="3.1JMS-VisualVMPluginEnhancements"></a>VisualVM Plugin Enhancements</h3> 
+     <ul> 
+      <li>Description:</li> 
+     </ul> <p>MQ 4.4U1 currently offers a plugin to VisualVM to allow the state of a running MQ broker to be easily viewed. Description <a href="https://mq.java.net/4.4-content/visual-vm-plugin.html">here</a>. Quick start guide <a href="https://mq.java.net/4.4-content/visualvm/quickstartguide/index.html">here</a>.<br> It is proposed to enhance this to support broker clusters, allow charting of runtime data and provide various other improvements. Proposals <a href="https://mq.java.net/4.5-content/visualvm-plugin/VisualVMPluginStage2.html">here</a>.</p> 
+     <ul> 
+      <li>Tasks:</li> 
+     </ul> <p>JMS-22: VisualVM Plugin Enhancements</p> <h4><a name="3.1JMS-Otherenhancements"></a>Other enhancements</h3> 
+     <ul> 
+      <li>Tasks:</li> 
+     </ul> <p>JMS-23: Glassfish RFE <a href="http://monaco.sfbay/detail.jsf?cr=6893609">6893609</a> (Glassfish MQ LOCAL startup options should be configurable)</p> <p>JMS-24: Glassfish issue <a href="https://github.com/javaee/glassfish/issues/11721">11721</a> (GF does not allow all required passwords to be passed to managed MQ broker))</p> <h4><a name="3.1JMS-Onepager%2FFunctionalSpecification"></a>One-pager / Functional Specification</h2> 
+     <ul> 
+      <li>These will be linked from the table above</li> 
+     </ul> <h4><a name="3.1JMS-MilestoneSchedule"></a>Milestone Schedule</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 01 </td> 
+         <td class="confluenceTd"> M1 </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> All specs completed </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 02 </td> 
+         <td class="confluenceTd"> M2 </td> 
+         <td class="confluenceTd"> JMS-06 </td> 
+         <td class="confluenceTd"> Support for conventional clustering of MQ brokers in LOCAL broker mode </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 03 </td> 
+         <td class="confluenceTd"> M2 </td> 
+         <td class="confluenceTd"> JMS-07 </td> 
+         <td class="confluenceTd"> Support for enhanced clustering of MQ brokers in LOCAL broker mode </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 04 </td> 
+         <td class="confluenceTd"> M2 </td> 
+         <td class="confluenceTd"> JMS-08 </td> 
+         <td class="confluenceTd"> Support for conventional clustering of MQ brokers in REMOTE broker mode </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 05 </td> 
+         <td class="confluenceTd"> M2 </td> 
+         <td class="confluenceTd"> JMS-09 </td> 
+         <td class="confluenceTd"> Support for enhanced clustering of MQ brokers in REMOTE broker mode </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 06 </td> 
+         <td class="confluenceTd"> M3 </td> 
+         <td class="confluenceTd"> JMS-13 </td> 
+         <td class="confluenceTd"> Integration with IBM Websphere MQ through GenericJMSRA </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 07 </td> 
+         <td class="confluenceTd"> M3 </td> 
+         <td class="confluenceTd"> JMS-16 </td> 
+         <td class="confluenceTd"> Enhancements to JMS related admin commands for cluster support </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 08 </td> 
+         <td class="confluenceTd"> M4 </td> 
+         <td class="confluenceTd"> JMS-10 </td> 
+         <td class="confluenceTd"> Support for conventional clustering of MQ brokers in EMBEDDED broker mode </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 09 </td> 
+         <td class="confluenceTd"> M4 </td> 
+         <td class="confluenceTd"> JMS-12a </td> 
+         <td class="confluenceTd"> Improve MQ conventional clustering with master broker </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 10 </td> 
+         <td class="confluenceTd"> M5 </td> 
+         <td class="confluenceTd"> JMS-12b </td> 
+         <td class="confluenceTd"> MQ conventional clustering without master broker in EMBEDDED or LOCAL broker mode </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 11 </td> 
+         <td class="confluenceTd"> M5 </td> 
+         <td class="confluenceTd"> JMS-01 </td> 
+         <td class="confluenceTd"> JMS support for embedded Glassfish with an EMBEDDED broker </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 12 </td> 
+         <td class="confluenceTd"> M5 </td> 
+         <td class="confluenceTd"> JMS-03 </td> 
+         <td class="confluenceTd"> JMS support for embedded Glassfish with a REMOTE broker </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Not tested but should technically work </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 13 </td> 
+         <td class="confluenceTd"> M5 </td> 
+         <td class="confluenceTd"> JMS-17 </td> 
+         <td class="confluenceTd"> Integrating existing JMX-based MQ broker metrics with Glassfish monitoring framework </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 14 </td> 
+         <td class="confluenceTd"> M5 </td> 
+         <td class="confluenceTd"> JMS-24 </td> 
+         <td class="confluenceTd"> Glassfish issue 11721 (GF does not allow all required passwords to be passed to managed MQ broker) </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 15 </td> 
+         <td class="confluenceTd"> On hold </td> 
+         <td class="confluenceTd"> JMS-22 </td> 
+         <td class="confluenceTd"> VisualVM Plugin Enhancements MQ issue <a href="https://mq.java.net/issues/show_bug.cgi-55">55 </a> </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 16 </td> 
+         <td class="confluenceTd"> M5 </td> 
+         <td class="confluenceTd"> JMS-25 </td> 
+         <td class="confluenceTd"> Dynamic Sync Broker List of MQ Conventional Cluster with GlassFish Cluster </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p><b>Dependencies on other Glassfish components:</b></p> <p><b>JMS-06</b>, <b>JMS-07</b>, <b>JMS-08</b>, <b>JMS-09</b>, <b>JMS-16</b>, <b>JMS-10</b> and parts of <b>JMS12a</b>, <b>JMS12b</b> are all dependent on cluster support being added to Glassfish. In particular:</p> 
+     <ul> 
+      <li>config-api to access cluster related information</li> 
+      <li>Listener interfaces for dynamic addition/deletion of instances from a cluster.</li> 
+     </ul> <h4><a name="3.1JMS-TaskList"></a>Task List</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task </th> 
+         <th class="confluenceTh"> Target Milestone </th> 
+         <th class="confluenceTh"> Start </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Owner(s) </th> 
+         <th class="confluenceTh"> Feature ID </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Write and review specs </td> 
+         <td class="confluenceTd"> M1 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Nigel, Amy, Satish </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JMS-06 Support for conventional clustering of MQ brokers in LOCAL broker mode </td> 
+         <td class="confluenceTd"> M2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Satish </td> 
+         <td class="confluenceTd"> JMS-6 </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JMS-07 Support for enhanced clustering of MQ brokers in LOCAL broker mode </td> 
+         <td class="confluenceTd"> M2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Satish </td> 
+         <td class="confluenceTd"> JMS-7 </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JMS-08 Support for conventional clustering of MQ brokers in REMOTE broker mode </td> 
+         <td class="confluenceTd"> M2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Satish </td> 
+         <td class="confluenceTd"> JMS-8 </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JMS-09 Support for enhanced clustering of MQ brokers in REMOTE broker mode </td> 
+         <td class="confluenceTd"> M2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Satish </td> 
+         <td class="confluenceTd"> JMS-9 </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JMS-10 (MQ part only) Support for conventional clustering of MQ brokers in EMBEDDED broker mode MQ issue <a href="https://mq.java.net/issues/show_bug.cgi-53">53 </a> </td> 
+         <td class="confluenceTd"> M3 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Nigel </td> 
+         <td class="confluenceTd"> JMS-10 (MQ part only) </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JMS-12a (MQ part only) Improve MQ conventional clustering with master broker MQ issue <a href="https://mq.java.net/issues/show_bug.cgi-52">52 </a> </td> 
+         <td class="confluenceTd"> M3 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Amy </td> 
+         <td class="confluenceTd"> JMS-12a (MQ part only) </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JMS-13 Integration with IBM Websphere MQ through GenericJMSRA </td> 
+         <td class="confluenceTd"> M3 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Satish </td> 
+         <td class="confluenceTd"> JMS-13 </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JMS-16 Enhancements to JMS related admin commands for cluster support </td> 
+         <td class="confluenceTd"> M3 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Satish </td> 
+         <td class="confluenceTd"> JMS-16 </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JMS-22 VisualVM Plugin Enhancements MQ issue <a href="https://mq.java.net/issues/show_bug.cgi-55">55 </a> </td> 
+         <td class="confluenceTd"> On hold </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Nigel </td> 
+         <td class="confluenceTd"> JMS-22 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JMS-12b (MQ part) MQ conventional clustering without master broker in EMBEDDED or LOCAL broker mode MQ issue <a href="https://mq.java.net/issues/show_bug.cgi-54">54 </a> </td> 
+         <td class="confluenceTd"> M4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Amy </td> 
+         <td class="confluenceTd"> JMS-12b (MQ part only) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JMS-10 (GF part) Support for conventional clustering of MQ brokers in EMBEDDED broker mode </td> 
+         <td class="confluenceTd"> M4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Satish </td> 
+         <td class="confluenceTd"> JMS-10 (completed) </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JMS-12a (GF part) Improve MQ conventional clustering with master broker </td> 
+         <td class="confluenceTd"> M4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Satish </td> 
+         <td class="confluenceTd"> JMS-12a (completed) </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JMS-25 (MQ part) Dynamic Sync Broker List of MQ Conventional Cluster with GlassFish Cluster MQ issue <a href="https://mq.java.net/issues/show_bug.cgi-63">63 </a> </td> 
+         <td class="confluenceTd"> M4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Amy/Nigel </td> 
+         <td class="confluenceTd"> JMS-12a (MQ part only) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JMS-12b (GF part) MQ conventional clustering without master broker in EMBEDDED or LOCAL broker mode </td> 
+         <td class="confluenceTd"> M5 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Satish </td> 
+         <td class="confluenceTd"> JMS-12b (completed) </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JMS-01 JMS support for embedded Glassfish with an EMBEDDED broker </td> 
+         <td class="confluenceTd"> M5 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Satish </td> 
+         <td class="confluenceTd"> JMS-1 </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JMS-03 JMS support for embedded Glassfish with a REMOTE broker </td> 
+         <td class="confluenceTd"> M5 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Satish </td> 
+         <td class="confluenceTd"> JMS-3 </td> 
+         <td class="confluenceTd"> Should work but not tested </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JMS-17 Integrating existing JMX-based MQ broker metrics with Glassfish monitoring framework </td> 
+         <td class="confluenceTd"> M5 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Satish </td> 
+         <td class="confluenceTd"> JMS-17 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JMS-24 Glassfish issue 11721 (GF does not allow all required passwords to be passed to managed MQ broker) </td> 
+         <td class="confluenceTd"> M5 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Satish </td> 
+         <td class="confluenceTd"> JMS-24 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JMS-25 (GF part) Dynamic Sync Broker List of MQ Conventional Cluster with GlassFish Cluster </td> 
+         <td class="confluenceTd"> M5 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Satish </td> 
+         <td class="confluenceTd"> JMS-25 (completed) </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>Here's the same information in a different form, showing the internal dependency between tasks carried out by the MQ team (left column) and by the GF JMS team (right column):</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">&nbsp;</th> 
+         <th class="confluenceTh">&nbsp;</th> 
+         <th class="confluenceTh">&nbsp;</th> 
+         <th class="confluenceTh"> MQ </th> 
+         <th class="confluenceTh"> Glassfish </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> May 14 </td> 
+         <td class="confluenceTd"> One-pagers: initial drafts </td> 
+         <td class="confluenceTd"> One-pagers </td> 
+         <td class="confluenceTd"> One-pagers </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> May 21 </td> 
+         <td class="confluenceTd"> One-pagers: review ready </td> 
+         <td class="confluenceTd"> One-pagers </td> 
+         <td class="confluenceTd"> One-pagers </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> M1 </td> 
+         <td class="confluenceTd"> May 24 </td> 
+         <td class="confluenceTd"> Basic infrastructure Phase 2 review with all planning complete </td> 
+         <td class="confluenceTd"> One-pagers </td> 
+         <td class="confluenceTd"> One-pagers Prototype for monitoring integration </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> M2 </td> 
+         <td class="confluenceTd"> Jun 21 </td> 
+         <td class="confluenceTd"> All initial integrations complete Some P1 features complete </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> *JMS-6* (P1) (Support for conventional clustering of MQ brokers in Local mode) <b>JMS-7</b> (P1) (Support for enhanced clustering of MQ brokers in Local mode) <b>JMS-8</b> (P1) (Support for conventional clustering of MQ brokers in Remote mode) <b>JMS-9</b> (P1) (Support for enhanced clustering of MQ brokers in Remote mode) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> M3 </td> 
+         <td class="confluenceTd"> Jul 19 </td> 
+         <td class="confluenceTd"> Most P1 features complete </td> 
+         <td class="confluenceTd"> *JMS-10* (MQ part only) (P1 or P2) (Support for conventional clustering of MQ brokers in Embedded mode) <b>JMS12a</b> (MQ part only) (P2) (Improve MQ conventional clustering with master broker) </td> 
+         <td class="confluenceTd"> *JMS-13* (P1) (Integration with IBM Websphere MQ through GenericJMSRA) <b>JMS-16</b> (P1) (Enhancements to JMS related Admin commands for cluster support) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> M4 </td> 
+         <td class="confluenceTd"> Aug 16 </td> 
+         <td class="confluenceTd"> SCF for cluster infrastructure and HA All P1 features complete Low P1 bug count Some P2 features complete </td> 
+         <td class="confluenceTd"> *JMS12b* (MQ part only) (P2) (MQ conventional clustering without master broker in GlassFish EMBEDED/LOCAL Mode) <b>JMS25</b> (MQ part only) (P3) (Dynamic Sync Broker List of MQ Conventional Cluster with GlassFish Cluster) </td> 
+         <td class="confluenceTd"> <b>JMS-10</b> (GF part) (P1 or P2) (Support for conventional clustering of MQ brokers in Embedded mode) <b>JMS12a</b> (GF part) (P2) (Improve MQ conventional clustering with master broker) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> M5 </td> 
+         <td class="confluenceTd"> Sep 13 </td> 
+         <td class="confluenceTd"> SCF (zero P1s) All features complete </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> <b>JMS-12b</b> (GF part) (P2) (MQ conventional clustering without master broker in GlassFish EMBEDED/LOCAL Mode) <b>JMS-24</b> (P2) (Glassfish issue 11721 (MQ Password file generated by GF supports only a subset of the MQ passwords list)) <b>JMS-1</b> (P3) (JMS support for embedded GF with an Embedded MQ broker) <b>JMS-3</b> (P3) (JMS support for embedded GF with a Remote MQ broker) <b>JMS-17</b> (P3) (Integrating existing JMX based MQ broker metrics with GF monitoring framework) <b>JMS-25</b> (P3) (Dynamic Sync Broker List of MQ Conventional Cluster with GlassFish Cluster) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> M6 </td> 
+         <td class="confluenceTd"> Nov 22 </td> 
+         <td class="confluenceTd"> HCF (zero P1-P3) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.1JMS-DevTests"></a>Dev Tests</h2> 
+     <ul> 
+      <li>Todo</li> 
+     </ul> <h4><a name="3.1JMS-Quality"></a>Quality</h2> 
+     <ul> 
+      <li>Link to Test Plans</li> 
+     </ul> <h4><a name="3.1JMS-Documentation"></a>Documentation</h2> 
+     <ul> 
+      <li>Link to Documentation</li> 
+     </ul> <h4><a name="3.1JMS-References%2FLinks"></a>References / Links</h2> 
+     <ul> 
+      <li><a href="WeblogicJMSDescriptor.html" title="WeblogicJMSDescriptor">WebLogic DD support </a></li> 
+     </ul> <h4><a name="3.1JMS-EmailAlias"></a>Email Alias</h2> 
+     <ul> 
+      <li>Please contact us at <a href="mailto:dev@glassfish.java.net">dev@glassfish.java.net</a></li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Nov 08, 2011 by 
+<font color="#0050B2">edbratt</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

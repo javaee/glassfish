@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : NIO API</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>We will introduce new classes for readers, writers, input and out streams for NIO. These would be exposed from ServletRequest and ServletResponse.</p> <p>ReadListener:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">package javax.servlet;
+
+import java.util.EventListener;
+
+/**
+ * @since Servlet 3.1
+ */
+
+/**
+ * &lt;p&gt;
+ * This class represents a call-back mechanism that will notify implementations
+ * as HTTP request data becomes available to read without blocking.
+ * &lt;/p&gt;
+ *
+
+ */
+public interface ReadListener extends EventListener {
+
+    /**
+     * &lt;p&gt;
+     * Invoked when data is available to be read without blocking.
+     *
+     */
+    public void onDataAvailable(ServletRequest request);
+
+    /**
+     * &lt;p&gt;
+     * Invoked when all data for the current request has been read.
+     * &lt;/p&gt;
+     *
+     */
+
+    public void onAllDataRead(ServletRequest request);
+
+    /**
+     * &lt;p&gt;
+     * Invoked when an error occurs processing the request.
+     * &lt;/p&gt;
+     */
+    public void onError(Throwable t);
+
+
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>AsyncIOInputSource</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">package javax.servlet;
+
+/**
+ * &lt;p&gt;
+ * This interface defines methods to allow an {@link ServletInputStream} or
+ * {@link ServletReader} to notify the developer &lt;em&gt;when&lt;/em&gt; and &lt;em&gt;how much&lt;/em&gt;
+ * data is ready to be read without blocking.
+ * &lt;/p&gt;
+ *
+ * @since Servlet 3.1
+ */
+
+public interface AsyncIOInputSource {
+
+    /**
+     * @return the number of bytes (or characters) that may be obtained
+     *  without blocking.
+     */
+    public int dataAvailable();
+
+    /**
+     * @return &lt;code&gt;true&lt;/code&gt; when all data for this particular request
+     *  has been read, otherwise returns &lt;code&gt;false&lt;/code&gt;.
+     */
+    public boolean isFinished();
+
+    /**
+     * @return &lt;code&gt;true&lt;/code&gt; if data can be obtained without blocking,
+     *  otherwise returns &lt;code&gt;false&lt;/code&gt;.
+     */
+    public boolean isReady();
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>ServletReader</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">package javax.servlet;
+
+import java.io.Reader;
+
+/**
+ * @since Servlet 3.1
+ */
+
+public abstract class ServletReader extends Reader implements NIOInputSource {
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>WriteListener</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">package javax.servlet;
+
+import java.util.EventListener;
+
+/**
+ *
+ * Callback notification mechanism that signals to the developer it's possible
+ * to write content.
+ *
+ * @since Servlet 3.1
+ */
+public interface WriteListener extends EventListener {
+
+    /**
+     * This callback will be invoked when data can be written.
+     *
+     *
+     * @throws Exception, {@link Exception} might be thrown by the custom
+     *  handler code. This exception will be delegated for processing to
+     *  {@link #onError(java.lang.Throwable)}.
+     */
+    public void onWritePossible(ServletResponse response);
+
+    /**
+     * &lt;p&gt;
+     * Invoked when an error occurs processing the request asynchronously.
+     * &lt;/p&gt;
+     */
+    public void onError(final Throwable t);
+
+    /**
+     * Get the ServletResponse associated
+     * @return
+     */
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>AsyncIOOutputSink</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">package javax.servlet;
+
+/**
+ * &lt;p&gt;
+ * This interface defines methods to allow an {@link javax.servlet.ServletOutputStream} or
+ * {@link ServletWriter} to allow the developer to check with the runtime
+ * whether or not it's possible to write data, or if it's not possible, to
+ * be notified when it is.
+ * &lt;/p&gt;
+ *
+ * @since Servlet 3.1
+ */
+
+public interface AsyncIOOutputSink {
+
+
+  /**
+     *
+     * @return &lt;code&gt;true&lt;/code&gt; if a write to this &lt;code&gt;AsyncIOOutputSink&lt;/code&gt;
+     *  will succeed, otherwise returns &lt;code&gt;false&lt;/code&gt;.
+     */
+    public boolean canWrite(int size);
+
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>ServletWriter</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">package javax.servlet;
+
+import java.io.Writer;
+
+/**
+ * @since Servlet 3.1
+ */
+
+public abstract class ServletWriter extends Writer implements AsyncIOOutputSink {</pre> 
+       </div> 
+      </div>
+     </div> <p>ServletInputStream Changes</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Index: ServletInputStream.java
+===================================================================
+--- ServletInputStream.java	(revision 48095)
++++ ServletInputStream.java	(working copy)
+@@ -84,7 +84,7 @@
+  *
+  */
+ 
+-public abstract class ServletInputStream extends InputStream {
++public abstract class ServletInputStream extends InputStream implements AsyncIOInputSource {</pre> 
+       </div> 
+      </div>
+     </div> <p>ServletOutputStream Changes</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Index: ServletOutputStream.java
+===================================================================
+--- ServletOutputStream.java	(revision 48095)
++++ ServletOutputStream.java	(working copy)
+@@ -81,7 +81,7 @@
+  *
+  */
+ 
+-public abstract class ServletOutputStream extends OutputStream {
++public abstract class ServletOutputStream extends OutputStream implements AsyncIOOutputSink {</pre> 
+       </div> 
+      </div>
+     </div> <p>ServletRequest changes</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Index: ServletRequest.java
+===================================================================
+--- ServletRequest.java	(revision 48095)
++++ ServletRequest.java	(working copy)
+@@ -806,5 +806,38 @@
+      * @since Servlet 3.0
+      */
+     public DispatcherType getDispatcherType();
++
++    /**
++     * Retrieves the body of the request as character data using
++     * a &lt;code&gt;BufferedReader&lt;/code&gt;.  The reader translates the character
++     * data according to the character encoding used on the body.
++     * Either this method or {@link #getInputStream} may be called to read the
++     * body, not both.
++     *
++     * @return	 a &lt;code&gt;ServletReader&lt;/code&gt; containing the body of the request
++     *
++     *
++     * @exception IllegalStateException if {@link #getInputStream} method
++     * has been called on this request
++     *
++     *
++     * @see #getInputStream
++     *
++     * @since Servlet 3.1
++     *
++     */
++
++    public ServletReader getServletReader();
++
++    /**
++       * Instructs the &lt;code&gt;ServletRequest&lt;/code&gt; to invoke the provided
++       * {@link ReadListener} when it is possible to write
++       *
++       * @param listener the {@link ReadListener} that should be notified
++       *  when it's possible to read.
++       *
++       */
++
++    public void addReadListener(ReadListener listener);
+ }</pre> 
+       </div> 
+      </div>
+     </div> <p>ServletResponse Changes</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Index: ServletResponse.java
+===================================================================
+--- ServletResponse.java	(revision 48095)
++++ ServletResponse.java	(working copy)
+@@ -154,7 +154,7 @@
+     
+     
+ 
+-    /**
++  /**
+      * Returns a {@link ServletOutputStream} suitable for writing binary 
+      * data in the response. The servlet container does not encode the
+      * binary data.  
+@@ -486,7 +486,32 @@
+     public Locale getLocale();
+ 
+ 
++    /**
++         * Returns a &lt;code&gt;ServletWriter&lt;/code&gt; object that
++         * can send character text to the client.
++         *
++         *
++         * @return 		a &lt;code&gt;ServletWriter&lt;/code&gt; object that
++         *			can return character data to the client
++         *
++         *
++         * @see 		#getOutputStream
++         *
++         */
++     public ServletWriter getServletWriter();
+ 
++    /**
++       * Instructs the &lt;code&gt;ServletResponse&lt;/code&gt; to invoke the provided
++       * {@link WriteListener} when it is possible to write
++       *
++       *
++       * @param listener the {@link WriteListener} that should be notified
++       *  when it's possible to write.
++       *
++       */
++
++    public void addWriteListener(WriteListener listener);
++
+ }</pre> 
+       </div> 
+      </div>
+     </div> <p>ServletWriter</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">package javax.servlet;
+
+import java.io.Writer;
+
+/**
+ * @since Servlet 3.1
+ */
+
+public abstract class ServletWriter extends Writer implements AsyncIOOutputSink {</pre> 
+       </div> 
+      </div>
+     </div> <p>ServletInputStream Changes</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Index: ServletInputStream.java
+===================================================================
+--- ServletInputStream.java	(revision 48095)
++++ ServletInputStream.java	(working copy)
+@@ -84,7 +84,7 @@
+  *
+  */
+ 
+-public abstract class ServletInputStream extends InputStream {
++public abstract class ServletInputStream extends InputStream implements AsyncIOInputSource {</pre> 
+       </div> 
+      </div>
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Nov 11, 2011 by 
+<font color="#0050B2">rajivmordani</font>. Exported from wikis.oracle.com on May 27, 2015 20:49.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

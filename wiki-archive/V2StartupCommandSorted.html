@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : V2StartupCommandSorted</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   
+     <div class="panel" style="border-width: 1px;">
+      <div class="panelContent"> 
+       <h4><a name="V2StartupCommandSorted-V2JVMCommandOrganizedintoGroups"></a>V2 JVM Command Organized into Groups</h1> 
+       <hr> 
+       <p>Jspwiki style: center</p> 
+      </div>
+     </div> <h4><a name="V2StartupCommandSorted-javaruntimelocationis%2Cofcourse%2Cneeded."></a>java runtime location is, of course, needed.</h2> <p>c:/jdk/jre/..\bin\java</p> <h4><a name="V2StartupCommandSorted-JDKoptions"></a>JDK options</h2> <p><em>Do these need to be specified at startup time as part of the JVM command????</em></p> <p>-Djavax.management.builder.initial=com.sun.enterprise.ee.admin.AppServerMBeanServerBuilder<br> -Djavax.net.ssl.keyStore=D:/as/domains/domain1/config/keystore.jks<br> -Djavax.net.ssl.trustStore=D:/as/domains/domain1/config/cacerts.jks<br> -Djdbc.drivers=org.apache.derby.jdbc.ClientDriver<br> -Djmx.invoke.getters=true<br> -Dsun.rmi.dgc.client.gcInterval=3600000<br> -Dsun.rmi.dgc.server.gcInterval=3600000<br> -client<br> -Xdebug<br> -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=9009<br> -XX:+UnlockDiagnosticVMOptions<br> -XX:MaxPermSize=192m<br> -Xmx512m<br> -XX:NewRatio=2<br> -XX:+LogVMOutput<br> -Xrs<br> -XX:LogFile=D:/as/domains/domain1/logs/jvm.log<br> -cp D:/as/lib/jhall.jar;D:\as\lib\appserv-launch.jar</p> <h4><a name="V2StartupCommandSorted-GlobalAppserverInfo"></a>Global Appserver Info</h2> <p>-Dcom.sun.aas.configRoot=D:/as/config<br> -Dcom.sun.aas.installRoot=D:/as<br> -Dcom.sun.updatecenter.home=D:/as/updatecenter<br> -Djava.endorsed.dirs=D:/as/lib/endorsed<br> -Djava.ext.dirs=c:/jdk/jre/../lib/ext;c:/jdk/jre/../jre/lib/ext;D:/as/domains/domain1/lib/ext;D:/as/javadb/lib;D:/as/lib/jdbcdrivers<br> -Djava.library.path=D:\as\lib;D:\as\lib;D:\as\bin;D:\as\lib;D:\as\lib<br> -Djava.util.logging.manager=com.sun.enterprise.server.logging.ServerLogManager</p> <p><b>I'm not sure about these two...</b><br> -Dcom.sun.appserv.pluggable.features=com.sun.enterprise.ee.server.pluggable.EEPluggableFeatureImpl<br> -Dcom.sun.enterprise.config.config_environment_factory_class=com.sun.enterprise.config.serverbeans.AppserverConfigEnvironmentFactory</p> <h4><a name="V2StartupCommandSorted-GlobalDomainInfo"></a>Global Domain Info </h2> <p><em>I.e. every server in the domain, including DAS, has these System Properties</em></p> <p>-Dcom.sun.aas.domainName=domain1<br> -Ddomain.name=domain1</p> <h4><a name="V2StartupCommandSorted-ServerInstanceSpecific"></a>Server Instance Specific</h2> <p>-Dcom.sun.aas.instanceRoot=D:/as/domains/domain1<br> -Dcom.sun.aas.instanceName=server<br> -Dcom.sun.aas.jdwpOptions=transport=dt_socket,server=y,suspend=n,address=9009<br> -Dcom.sun.aas.configName=server-config<br> -Dcom.sun.aas.defaultLogFile=D:/as/domains/domain1/logs/server.log<br> -Djava.security.auth.login.config=D:/as/domains/domain1/config/login.conf<br> -Djava.security.policy=D:/as/domains/domain1/config/server.policy</p> <h4><a name="V2StartupCommandSorted-ClasspathConfig"></a>Classpath Config</h2> <p>-Dcom.sun.aas.ClassPathPrefix=<br> -Dcom.sun.aas.ClassPathSuffix=<br> -Dcom.sun.aas.ServerClassPath=<br> -Dcom.sun.aas.classloader.appserverChainJars.ee=<br> -Dcom.sun.aas.classloader.appserverChainJars=admin-cli.jar,admin-cli-ee.jar,j2ee-svc.jar<br> -Dcom.sun.aas.classloader.excludesList=admin-cli.jar,appserv-upgrade.jar,sun-appserv-ant.jar<br> -Dcom.sun.aas.classloader.optionalOverrideableChain.ee=<br> -Dcom.sun.aas.classloader.optionalOverrideableChain=webservices-rt.jar,webservices-tools.jar<br> -Dcom.sun.aas.classloader.serverClassPath.ee=/lib/hadbjdbc4.jar,D:/as/lib/SUNWjdmk/5.1/lib/jdmkrt.jar,/lib/dbstate.jar,/lib/hadbm.jar,/lib/hadbmgt.jar,D:/as/lib/SUNWmfwk/lib/mfwk_instrum_tk.jar<br> -Dcom.sun.aas.classloader.serverClassPath=D:/as/lib/install/applications/jmsra/imqjmsra.jar,D:/as/imq/lib/jaxm-api.jar,D:/as/imq/lib/fscontext.jar,D:/as/imq/lib/imqbroker.jar,D:/as/imq/lib/imqjmx.jar,D:/as/lib/ant/lib/ant.jar,D:/as/lib/SUNWjdmk/5.1/lib/jdmkrt.jar<br> -Dcom.sun.aas.classloader.sharedChainJars.ee=appserv-se.jar,appserv-ee.jar,jesmf-plugin.jar,/lib/dbstate.jar,/lib/hadbjdbc4.jar,jgroups-all.jar,D:/as/lib/SUNWmfwk/lib/mfwk_instrum_tk.jar<br> -Dcom.sun.aas.classloader.sharedChainJars=javaee.jar,c:/jdk/jre/../lib/tools.jar,install/applications/jmsra/imqjmsra.jar,com-sun-commons-launcher.jar,com-sun-commons-logging.jar,D:/as/imq/lib/jaxm-api.jar,D:/as/imq/lib/fscontext.jar,D:/as/imq/lib/imqbroker.jar,D:/as/imq/lib/imqjmx.jar,D:/as/imq/lib/imqxm.jar,webservices-rt.jar,webservices-tools.jar,mail.jar,appserv-jstl.jar,jmxremote_optional.jar,D:/as/lib/SUNWjdmk/5.1/lib/jdmkrt.jar,activation.jar,appserv-rt.jar,appserv-admin.jar,appserv-cmp.jar,D:/as/updatecenter/lib/updatecenter.jar,D:/as/jbi/lib/jbi.jar,D:/as/imq/lib/imqjmx.jar,D:/as/lib/ant/lib/ant.jar,dbschema.jar</p> <h4><a name="V2StartupCommandSorted-OldStuffthatcanbeJettisoned"></a>Old Stuff that can be Jettisoned</h2> <p>-Dcom.sun.aas.processLauncher=SE<br> -Dcom.sun.aas.promptForIdentity=true<br> -Dcom.sun.enterprise.overrideablejavaxpackages=javax.help,javax.portlet<br> -Dcom.sun.enterprise.taglibs=appserv-jstl.jar,jsf-impl.jar<br> -Dcom.sun.enterprise.taglisteners=jsf-impl.jar<br> start</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

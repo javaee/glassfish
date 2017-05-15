@@ -1,0 +1,1736 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : L10nTestcase91PEFull</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>AS9.1 PE Full Testing</p> 
+     <hr> <p> ID: 14139</p> <p> Sequence: 1</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1530</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test Install</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.Set the OS locale to your test language (eg. export LC_ALL=es_ES.UTF-8; export LANG=es_ES.UTF-8)
+
+2.Download AS build to your hard drive and run it.</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: A Java installer gets opened</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205690</p> 
+     <hr> <p> ID: 14140</p> <p> Sequence: 2</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: leonfan</p> <p> ModificationDate: 2008-04-08-07:00</p> <p> CategoryID: 1530</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test Install</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.In all following screens click Help and verify that localized help opens.&amp;#xD;
+&amp;#xD;
+2.Try to provide incorrect or empty values where possible and verify that error messages get displayed.&amp;#xD;
+&amp;#xD;
+3.Click [Help] to check online help, then click [OK] back install page&amp;#xD;
+&amp;#xD;
+4.Click [Next] to proceed from the Welcome screen to the License screen, check online help again by click [Help]&amp;#xD;
+&amp;#xD;
+4.Select [Yes] and click [Next].&amp;#xD;
+&amp;#xD;
+5.Leave default installation directory (/opt/SUNWappserver) and click next.&amp;#xD;
+&amp;#xD;
+6.Leave default JDK and click Next. You must have Java installed on your machine to proceed.&amp;#xD;
+&amp;#xD;
+7.Click [Help], then select [Don't Prompt for Admin User Name].&amp;#xD;
+&amp;#xD;
+8.Enter the password and click [Next].&amp;#xD;
+&amp;#xD;
+9.Click [Help] to check help. Click [Next] to [Ready to Install] page&amp;#xD;
+&amp;#xD;
+10.Click [Help] to check, then click [Install Now] to install.&amp;#xD;
+&amp;#xD;
+11.Click [Help] during installation&amp;#xD;
+&amp;#xD;
+12.Verify the results in the installer window once the installation finishes.&amp;#xD;
+&amp;#xD;
+13.Check the install log file</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: All installer messages should be localized including help screens. <br> <br> All values should be validated and display error messages on incorrect values. <br> <br> License should be updated from 9.1 u1 <br> <br> Name should be updated as following: <br> <br> Java EE 5 SDK Update 4 --&gt; Java EE 5 SDK Update 5 <br> Java Application Platform SDK Update 4 --&gt; Java Application Platform SDK Update 5 <br> Sun Java System Application Server 9.1 UR1 --&gt; Sun Java System Application Server 9.1 UR2 <br> Glassfish V2 UR1 --&gt; Glassfish V2 UR2 <br> Sun Java System Application Server Native Packages --&gt; No Change <br> Sun Java System Application Server 9.1 UR1 with HADB --&gt; Sun Java System Application Server 9.1 UR2 with HADB (I realize that we are not releasing it) <br> Sun Java System Application Server 9.1 Update 1 with MySQL Community Server --&gt; Sun Java System Application Server 9.1 Update 2 with MySQL Community Server (Again, we may not be releasing this)</p> <p> Comments: Testcase imported from TCM1. Old TCM1 CID: 205691</p> 
+     <hr> <p> ID: 14161</p> <p> Sequence: 3</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1531</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test start-domain</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1. Go to /opt/SUNWappserver/appserver/bin directory.
+
+2. start the domain using the following command: 
+
+  './asadmin start-domain --user admin'</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: The domain is successfully start</p> <p>Check the log /opt/SUNWappserver/domains/cliTestDomain/logs/server.log without any error</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205712</p> 
+     <hr> <p> ID: 14067</p> <p> Sequence: 4</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1519</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test index page</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1. In the browser invoke this url: http://&amp;lt;host name&amp;gt;:&amp;lt;port&amp;gt;/
+
+   In default, the application port is 8080.
+
+2. Check all link and message in index page</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: The log page and error message are fully localized.</p> <p>Admin GUI is also localized and displays in the browser preferred language.</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205617</p> 
+     <hr> <p> ID: 14068</p> <p> Sequence: 5</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1520</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test Admin GUI's login page</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1. To invoke the admin gui, in the browser invoke this url: http://&amp;lt;host name&amp;gt;:&amp;lt;admin port&amp;gt;/
+
+   In default, the admin port is 4848.
+
+2. Try to login without providing user name and/or password and verify the error message.
+
+3. Provide a valid user name (admin) and password and login to AS admin console.</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: The log page and error message are fully localized.</p> <p>Admin GUI is also localized and displays in the browser preferred language.</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205619</p> 
+     <hr> <p> ID: 14069</p> <p> Sequence: 6</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1520</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Overall Check for Admin GUI</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.Select any node in the left tree except the first one (Common Tasks).
+
+2.Select Home in the top bar. It should bring you back to initial page (Common Tasks).
+
+3.Select Version in the top bar. Verify the version window.
+
+4.Select Registration in the top bar. A new browser with the AS registration page should open.
+
+5.Place the mouse pointer over all top bar buttons and wait until tooltip message appears.
+
+6.Select Logout and logout from the admin GUI.
+
+7.Login back to the Admin GUI.</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: All UI should be l10ned.</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205620</p> 
+     <hr> <p> ID: 14070</p> <p> Sequence: 7</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1521</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Check 'content' page for Online Help</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.Click on the Help link on the right corner of the Admin GUI.
+
+2.Application Server Admin Console OnLine Help window is displayed
+
+3.Move the mouse over the button and links to check the tips
+
+3.Click on a couple of links of the help to verify that the correct corresponding page is displayed</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: All UI and online help should be l10ned.</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205621</p> 
+     <hr> <p> ID: 14071</p> <p> Sequence: 8</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1521</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Check 'Index' page for Online Help</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.Click 'Index' tab on the Help page, the 'index' tab page displayed
+
+2.Click links in it to verify that the correct corresponding page is displayed</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: All UI and online help should be l10ned.</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205622</p> 
+     <hr> <p> ID: 14072</p> <p> Sequence: 9</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1521</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Check 'Search' page for Online Help</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.Click 'Search' tab on the Help page, the 'Search' tab page displayed
+
+2.Enter multi-byte character in 'search' box and check the search result
+
+3.Click on these result to check the links</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: All UI and online help should be l10ned.</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205623</p> 
+     <hr> <p> ID: 14073</p> <p> Sequence: 10</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1522</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test Common Task and the link in it</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.Select [Common Tasks] in the tree on the left.
+
+2.Click the links in it</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: All UI should be l10ned and these links work very well.</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205624</p> 
+     <hr> <p> ID: 14074</p> <p> Sequence: 11</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1523</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test Quick Start Guide and the link in it</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.Select [Common Tasks] in the tree on the left.
+
+2.Click the link [Quick Start Guide] in it
+
+3.Check all contents and click the links in the 'Quick Start Guide' page.
+
+4.click the link [Copyright] at the end of page
+
+5.check that copyright page</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: All UI should be l10ned and these links work very well.</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205625</p> 
+     <hr> <p> ID: 14075</p> <p> Sequence: 12</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1524</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test Enterprise Applications</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.In the right frame click on [Enterprise Application]
+
+2.click [Deploy] link to deploy new Enterprise application
+
+3.A Deploy page is displayed in the right frame
+
+4.Enter the location of the .ear file in File Or Directory Field provided.
+
+  (for example: /opt/SUNWappserver/appserver/samples/ejb/cmp/apps/cmpcustomer/cmpcustomer.ear)
+
+5.Use [Browse] button to get from the file system
+
+6.Once .ear file is specified, click on [Next] link in the right corner
+
+7.Deploy EJB Module page is displayed in the right frame
+
+8.Enter required data
+
+9.Enter multibyte in Description field
+
+10.Click [OK] link to deploy the application
+
+11.Click that module in left frame, check the right frame page
+
+12.Click [Undeploy] to undeploy that application</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: All UI should be l10ned and The Enterprise Applications should be deployed and undeployed.</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205626</p> 
+     <hr> <p> ID: 14076</p> <p> Sequence: 13</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1524</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test Web Applications</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.In the right frame click on [Web Applications]
+
+2.click [Deploy] link to deploy new Web Applications
+
+3.A Deploy page is displayed in the right frame
+
+4.Click [Next] without entering the file name. 
+
+5.Check the error message.
+
+6.Enter file name: 
+
+  Solaris: /opt/SUNWappserver/appserver/samples/quickstart/hello.war
+
+  Linux:   /opt/sun/appserver/samples/quickstart/hello.war
+
+7.Select [Next]
+
+7.Select [OK] to deploy the application.
+
+8.Click [Redeploy] link in [Action] column, and do same as step 6, and redeploy it success.
+
+9.Click [Launch] link in [Action] column to invoke that web application in browser</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: Verify that all strings in forms and all error messages are localized.</p> <p>Verify that the application is deployed and works correctly.</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205627</p> 
+     <hr> <p> ID: 14077</p> <p> Sequence: 14</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1524</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test Web Applications</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.Select [Applications]-&amp;gt;[Web Applications] in the left tree.
+
+2.Select the [hello] link to view properties of the hello application.
+
+3.Change the description and select Save.
+
+4.A message must appear that the values have been saved.
+
+5.Select [Applications]-&amp;gt;[Web Applications] again.
+
+6.Select the checkbox by the hello application and click [Undeploy].</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: Verify that all strings in forms and all error messages are localized.</p> <p>Verify that the application is undeployed correctly.</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205628</p> 
+     <hr> <p> ID: 14078</p> <p> Sequence: 15</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1524</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test EJB Modules</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.Select [Applications]-&amp;gt;[EJB Modules] in the left tree.
+
+2.To select an application deployed, set the check box provided.
+
+  On Solaris, use /opt/SUNWappserver/samples/ee-samples/failover/apps/mqfailover/mqFailoverClient.jar
+
+3.Click that module in left frame, check the right frame page
+
+4.check that module in right table and click on [Undeploy] link to undeploy the application</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: Verify that all strings in forms and all error messages are localized.</p> <p>Verify that the EJB Modules deploy and undeploy correctly.</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205629</p> 
+     <hr> <p> ID: 14079</p> <p> Sequence: 16</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1524</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test Connector Modules</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.Select [Applications]-&amp;gt;[Connector Modules] in the left tree.
+
+2.click [Deploy] link, and select an modules '*.rar' file to deploy, set the check box provided.
+
+  On Solaris, use /opt/SUNWappserver/samples/connectors/apps/mailconnector/mailconnector.rar
+
+3.Click [Finished] to deploy it
+
+4.Click that module in left frame, check the right frame page
+
+5.check that module in right table and click on [Undeploy] link to undeploy it</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: Verify that all strings in forms and all error messages are localized.</p> <p>Verify that the Connector Modules deploy and undeploy correctly.</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205630</p> 
+     <hr> <p> ID: 14080</p> <p> Sequence: 17</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1524</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test Lifecycle Modules</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.Select [Applications]-&amp;gt;[Lifecycle Modules] in the left tree.
+
+2.click [New] link, and enter 'lifemodue01' for 'Name' and 'test' for 'Class Name'
+
+3.Click [OK] to save it
+
+4.Click that module in left frame, check the right frame page
+
+5.check that module in right table and click on [delete] link to delete it</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: Verify that all strings in forms and all error messages are localized.</p> <p>Verify that the Lifecycle Modules create and delete correctly.</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205631</p> 
+     <hr> <p> ID: 14081</p> <p> Sequence: 18</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1524</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test App Client Modules</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.Select [Applications]-&amp;gt;[App Client Modules] in the left tree.
+
+2.click [Deploy] link, and choose the correct module to deploy
+
+  On solaris, use /opt/SUNWappserver/samples/ee-samples/failover/apps/mqfailover/mqFailoverClient.jar
+
+3.Click [OK] to save it
+
+4.Click that module in left frame, check the right frame page
+
+5.check that module in right table and click on [delete] link to delete it</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: Verify that all strings in forms and all error messages are localized.</p> <p>Verify that the App Client Modules create and delete correctly.</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205632</p> 
+     <hr> <p> ID: 14082</p> <p> Sequence: 19</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1525</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test Web Services -&gt; General</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.Click link [Applications], then link [Enterprise Applications], and choose an web services to deploy:
+
+  On solaris, use /opt/SUNWappserver/samples/webservices/jaxrpc/apps/simplebean/jaxrpc-simplebean.ear
+
+2.Click link [Web Services] in the left tree and check that page</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: Verify that all strings in forms and all error messages are localized.</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205633</p> 
+     <hr> <p> ID: 14083</p> <p> Sequence: 20</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1525</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test Web Services -&gt; Registry</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.Click link [Web Services] and click [Registry] tab in right frame. Check that page
+
+2.Click [Add] link, enter an name for [JNDI Name:], 
+
+  select &amp;quot;UDDI 3.0&amp;quot; for [Registry Type:] 
+
+  enter &amp;quot;https://localhost/services/uddi/v3/protect/publishapi&amp;quot; for [Publish URL:]
+
+  enter &amp;quot;https://localhost/services/uddi/v3/protect/publishapi&amp;quot; for [Query URL:]
+
+3.Click [OK] button</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: Verify that all strings in forms and all error messages are localized.</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205634</p> 
+     <hr> <p> ID: 14084</p> <p> Sequence: 21</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1525</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test Web Services -&gt; General -&gt; General</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.Click link [Web Services] in the left tree.
+
+2.Click item link in [Name] column, check that page</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: Verify that all strings in forms and all error messages are localized.</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205635</p> 
+     <hr> <p> ID: 14085</p> <p> Sequence: 22</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1525</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test Web Services -&gt; General -&gt; Publish</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.Click link [Web Services] in the left tree.
+
+2.Click item link in [Name] column, and click subtab [Publish], check that page
+
+3.Click link [Publish...], Check that page</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: Verify that all strings in forms and all error messages are localized.</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205636</p> 
+     <hr> <p> ID: 14086</p> <p> Sequence: 23</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1525</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test Web Services -&gt; General -&gt; Monitor</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.Click link [Web Services] in the left tree.
+
+2.Click item link in [Name] column, and click subtab [Monitor], and click subtab [Configuration] under it
+
+3.Check that page, and choose &amp;quot;HIGH&amp;quot; for [Monitoring Level:] and save it.
+
+4.Click sub tab [Statistics], check that page.
+
+4.Click sub tab [Messages], check that page.</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: Verify that all strings in forms and all error messages are localized.</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205637</p> 
+     <hr> <p> ID: 14087</p> <p> Sequence: 24</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1525</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test Web Services -&gt; General -&gt; Transformation</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.Click link [Web Services] in the left tree.
+
+2.Click item link in [Name] column, and click subtab [Transformation], and check that page.
+
+3.Click [Add] link, check that page, drop the list to check all message.
+
+4.Try to enter some multibytes into for [Name] and choose any xml file for [File to Upload:] and click [OK]
+
+  On Solaris, use /opt/SUNWappserver/samples/webservices/jaxrpc/apps/simplebean/build.xml</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: Verify that all strings in forms and all error messages are localized.</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205638</p> 
+     <hr> <p> ID: 14088</p> <p> Sequence: 26</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1526</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test <a href="CustomMBeans.html" title="CustomMBeans">Custom MBeans</a></p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.Click link [Custom MBeans] in the left tree, check the page
+
+2.Click link [Deploy], check that page. And select &amp;quot;Skip. MBean class has been uploaded&amp;quot; and click [Next]
+
+3.Check that page and click [Cancel] to back
+
+4.Click link [Deploy] and select &amp;quot;Package file or a directory path that is accessible from the server.&amp;quot;, check the popup dialog
+
+5.select &amp;quot;Package file to upload to the Application Server. &amp;quot;, and give the jar file, then click [Next]
+
+You can get that jar in http://tula.red.iplanet.com/tcm/tc_data_files/HelloMBean.jar
+
+6.Enter 'com.example.mbeans.Hello' as [Class name], click [Finish], deploy should be success.
+
+7.Click deployed item [HelloMBean] in left tree under [Custom MBeans], add Propery with multibyte value for it.
+
+8.Click [Targets] tab and check it</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: Verify that all strings in forms and all error messages are localized.</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205639</p> 
+     <hr> <p> ID: 14089</p> <p> Sequence: 27</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1527</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test <a href="JDBC.html" title="JDBC">JDBC</a> -&gt; JDBC Resources</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.Select [Resources]-&amp;gt;[JDBC]-&amp;gt;[JDBC Resources] in the left tree
+
+2.Click on the [New] link in the right frame to create new JDBC Resource
+
+3.Click on [Ok] without entering JNDI Name
+
+4.Check the error message
+
+5.Similarly check for Pool Name and check the error message
+
+6.Fill in 'test' as [JNDI name].
+
+7.Fill in all required values and click [OK] to create a new resource.
+
+8.Click created resouces in left fram and check the right frame page</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: Verify that all strings in forms and all error messages are localized.</p> <p>Verify that the resource is created correctly.</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205640</p> 
+     <hr> <p> ID: 14090</p> <p> Sequence: 28</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1527</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test <a href="JDBC.html" title="JDBC">JDBC</a> -&gt; Connection Pools</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.Select [Resources]-&amp;gt;[JDBC]-&amp;gt;[Connection Pools] in the left tree
+
+2.Click on the [New] link in the right frame to create new Connection Pool
+
+3.Click [Next] without entering Name and check the error message
+
+4.Enter Name and click [Next]
+
+5.Click [Next] without entering Datasource class name and check the error message
+
+6.Fill in correct values and click [OK] to create a new pool.</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: Verify that all strings in forms and all error messages are localized.</p> <p>Verify that the pool is created correctly.</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205641</p> 
+     <hr> <p> ID: 14091</p> <p> Sequence: 29</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1527</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test Persistence Managers</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.Select [Resources]-&amp;gt;[Persistence Managers] in the left tree
+
+2.Click on the [New] link on the right frame to create a new Persistence Manager
+
+3.Click on [OK] without entering [JNDI Name] and check the error message
+
+4.Enter 'test' as [JNDI name]. An error must appear that such an object exists. 
+
+5.Fill in all required values and click [OK] to create a new resource.</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: Verify that all strings in forms and all error messages are localized.</p> <p>Verify that the persistant manager is created correctly.</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205642</p> 
+     <hr> <p> ID: 14092</p> <p> Sequence: 30</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1527</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test JMS Resources -&gt; Connection Factories</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.Select [Resources]-&amp;gt;[JMS Resources]-&amp;gt;[Connection Factories] in the left tree
+
+2.Click on the [New] link on the right frame to create a new Destination Resource
+
+3.Click [OK] without entering [JNDI Name] and check the error message
+
+4.Enter [JNDI Name] and click [OK] without entering Type and check the error message
+
+5.Enter all necessary values and click [OK] to create a resource</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: Verify that all strings in forms and all error messages are localized.</p> <p>Verify that the resource is created correctly.</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205643</p> 
+     <hr> <p> ID: 14093</p> <p> Sequence: 31</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1527</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test JMS Resources -&gt; Destination Resources</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.Select [Resources]-&amp;gt;[JMS Resources]-&amp;gt;[Destination Resources] in the left tree
+
+2.Click on the [New] link on the right frame to create a new Destination Resource
+
+3.Click [OK] without entering [JNDI Name] and check the error message
+
+4.Enter JNDI Name and click [OK] without entering Type and check the error message
+
+5.Enter all necessary values and click [OK] to create a resource</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: Verify that all strings in forms and all error messages are localized.</p> <p>Verify that the resource is created correctly.</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205644</p> 
+     <hr> <p> ID: 14094</p> <p> Sequence: 32</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1527</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test JavaMail</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.Select the [Resources]-&amp;gt;[JavaMail] Sessions in the left tree.
+
+2.Click on the [New] link on the right frame to create a new JavaMail Session
+
+3.Click [OK] without entering each of the attributes: 
+
+  [JNDI Name], [Mail Host Name], [Default User], [Default Return Address]. 
+
+  Verify all error messages are localized.</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: Verify the localized error messages</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205645</p> 
+     <hr> <p> ID: 14095</p> <p> Sequence: 33</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1527</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test JNDI -&gt; Custom Resources</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.Select [Resources]-&amp;gt;[JNDI]-&amp;gt;[Custom Resources] in the left tree.
+
+2.Click on [New] link to create new Custom Resource
+
+3.Click [OK] withoug entering [JNDI Name] and check the error message
+
+4.Enter [JNDI Name] and click [OK] without entering the [Resource Type] and check the Error message
+
+5.Click [OK] without selecting the factory class and check the error message
+
+6.Enter all necessary values and click [OK] to create a resource</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: Verify that all strings in forms and all error messages are localized.</p> <p>Verify that the resource is created correctly.</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205646</p> 
+     <hr> <p> ID: 14096</p> <p> Sequence: 34</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1527</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test JNDI -&gt; External Resources</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.Select [Resources]-&amp;gt;[JNDI]-&amp;gt;[External Resources] in the left tree.
+
+2.Click on [New] link to create new [External Resource]
+
+3.Click [OK] without entering [JNDI Name] and check the error message
+
+4.Enter [JNDI Name] and click [OK] without entering the [Resource Type] and check the error message
+
+5.Enter [Resouce type] and click [OK] without entering [JNDI Lookup] and check for error message
+
+6.Enter [JNDI Lookup] and click [OK] without entering [Factory class] and check the error message
+
+7.Enter all necessary values and click [OK] to create a resource</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: Verify that all strings in forms and all error messages are localized.</p> <p>Verify that the resource is created correctly.</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205647</p> 
+     <hr> <p> ID: 14097</p> <p> Sequence: 35</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1527</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test <a href="Connectors.html" title="Connectors">Connectors</a> -&gt; Connector Connection Pools</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.Select [Resources]-&amp;gt;[Connectors]-&amp;gt;[Connector Connection Pools] in left menu tree
+
+2.Click on the [New] link on the right frame to create a new Connection Pool
+
+3.Click [Next] without entering Name
+
+4.Check for error message
+
+5.Enter Name and click [Next] without entering [Resource Adaptor]
+
+6.Check for error message
+
+7.Select [Resource Adaptor] and click [Next].
+
+8.Click [Next] link in the right corner to move to the next frame
+
+9.Click [Next], fill in all required fields and create a Connection Pool</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: Verify that all strings in forms and all error messages are localized.</p> <p>Verify that the connection pool is created correctly.</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205648</p> 
+     <hr> <p> ID: 14098</p> <p> Sequence: 36</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1527</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test <a href="Connectors.html" title="Connectors">Connectors</a> -&gt; Connector Resources</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.Select [Resources]-&amp;gt;[Connectors]-&amp;gt;[Connector Resources] in the left tree.
+
+2.Click on the [New] link on the right frame to create a new Connector Resource
+
+3.Click [OK] without entering [JNDI Name] and check the error message
+
+4.Enter [JNDI Name] and click [OK] without entering [Pool Name] and check the error message
+
+5.Fill in all required fields and create a Connection Resource</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: Verify that all strings in forms and all error messages are localized.</p> <p>Verify that the connector resource is created correctly.</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205649</p> 
+     <hr> <p> ID: 14099</p> <p> Sequence: 37</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1527</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test <a href="Connectors.html" title="Connectors">Connectors</a> -&gt; Admin Object Resources</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.Select [Resources]-&amp;gt;[Connectors]-&amp;gt;[Admin Object Resources] in the left tree.
+
+2.Click on the [New] link on the right frame to create a new Admin Object Resource
+
+3.Click [Next] without entering [JNDI Name] and check the error message
+
+4.Enter [JNDI Name] and click [Next] without entering [Resource Type] and check the error message
+
+5.Type 'javax.jms.Queue' as [Resource Type] and click [Next] without entering [Resource Adaptor] and check the error message
+
+6.Select 'jmsra' as [Resource Adaptor] and proceed to the next form
+
+7.Create the Admin Object Resource</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: Verify that all strings in forms and all error messages are localized.</p> <p>Verify that the admin object resource is created correctly.</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205650</p> 
+     <hr> <p> ID: 14100</p> <p> Sequence: 38</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1528</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test Web Container</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.Select [Configuration]-&amp;gt;[Web Container] in the left tree.
+
+2.Verify the right window for localization.
+
+3.Select [Session Properties] in the right panel and check that all strings are localized.
+
+4.Select [Manager Properties] in the right panel and check that all strings are localized.
+
+5.Select [Store Properties] in the right panel and check that all strings are localized.</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: The windows should be properly localized.</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205651</p> 
+     <hr> <p> ID: 14101</p> <p> Sequence: 39</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1528</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test EJB Container</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.Select [Configuration]-&amp;gt;[EJB Container] in the left tree.
+
+2.Verify the right window for localization.
+
+3.Select [MDB Settings] in the right panel and check that all strings are localized.
+
+4.Select [EJB Timer Service] in the right panel and check that all strings are localized</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: The windows should be properly localized.</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205652</p> 
+     <hr> <p> ID: 14102</p> <p> Sequence: 40</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1528</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test Java Message Service -&gt; JMS Hosts</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.Select [Configuration]-&amp;gt;[Java Message Service]-&amp;gt;[JMS Hosts] in the left tree
+
+2.Click [New] link in the right frame
+
+3.Try to click [OK] without providing Name and Host and verify the error msgs.
+
+4.Enter incorrect (non-numeric) value for [Port] and verify the error msg.
+
+5.Enter correct values and select [OK] to create a new JMS host.
+
+6.Click that created host in left frame and check the right frame</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: Verify that all forms and error messages are localized.</p> <p>JMS Host should be created correctly</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205653</p> 
+     <hr> <p> ID: 14103</p> <p> Sequence: 41</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1528</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test Java Message Service -&gt; Physical Destinations</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.Select [Configuration]-&amp;gt;[Java Message Service]-&amp;gt;[Physical Destinations] in the left tree
+
+2.Click [New] link in the right frame
+
+3.Try to click [OK] without providing Name and Type and verify the error msgs.
+
+4.Enter correct values and select [OK] to create a new physical destination.</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: Verify that all forms and error messages are localized.</p> <p>Physical destination should be created correctly</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205654</p> 
+     <hr> <p> ID: 14104</p> <p> Sequence: 42</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1528</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test <a href="Security.html" title="Security">Security</a> -&gt; Realms</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.Select [Configuration]-&amp;gt;[Security]-&amp;gt;[Realms] in the left tree
+
+2.Click [New] link in the right frame
+
+3.Try to save the form without providing values for [Name] and [Class Name].
+
+4.Provide any [Name] and [Class Name] and click [OK] to create a realm.</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: Verify that all forms and error messages are localized.</p> <p>Realm should be created correctly</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205655</p> 
+     <hr> <p> ID: 14105</p> <p> Sequence: 43</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1528</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test <a href="Security.html" title="Security">Security</a> -&gt; JACC Provider</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.Select [Configuration]-&amp;gt;[Security]-&amp;gt;[JACC Provider] in the left tree
+
+2.Click [New] link in the right frame
+
+3.Try to save the form without providing values for Name, Policy Configuration and Provider.
+
+4.Provide any Name, Policy Configuration and Provider and click [OK] to create a JACC Provider.</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: Verify that all forms and error messages are localized.</p> <p>JACC Provider should be created correctly</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205656</p> 
+     <hr> <p> ID: 14106</p> <p> Sequence: 44</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1528</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test <a href="Security.html" title="Security">Security</a> -&gt; Audit Modules</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.Select [Configuration]-&amp;gt;[Security]-&amp;gt;[Audit Modules] in the left tree
+
+2.Click [New] link in the right frame
+
+3.Try to save the form without providing values for Name and Class Name.
+
+4.Provide any Name and Class Name and click [OK] to create a Audit Module.</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: Verify that all forms and error messages are localized.</p> <p>Audit Module should be created correctly</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205657</p> 
+     <hr> <p> ID: 14107</p> <p> Sequence: 45</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1528</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test <a href="Security.html" title="Security">Security</a> -&gt; Message Security</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.Select [Configuration]-&amp;gt;[Security]-&amp;gt;[Message Security] in the left tree.
+
+2.Click the object name in the table in the right frame (SOAP).
+
+3.Verify that the right panel is localized.
+
+4.Select Providers in the right panel.
+
+5.Verify that the right panel is localized.
+
+6.Click any provider ID in the table.
+
+7.Verify that the Edit Provider Configuration form is localized.</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: Verify that all forms and error messages are localized.</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205658</p> 
+     <hr> <p> ID: 14108</p> <p> Sequence: 46</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1528</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test Transaction Service</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.Select [Configuration]-&amp;gt;[Transaction Service] in the left tree.
+
+2.Try to save the form with incorrect (non-numeric) values and verify error msgs.</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: Verify that all forms and error messages are localized.</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205659</p> 
+     <hr> <p> ID: 14109</p> <p> Sequence: 47</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1528</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test HTTP Service -&gt; HTTP Listeners</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.Select [Configuration]-&amp;gt;[HTTP Service]-&amp;gt;[HTTP Listeners] in the left tree
+
+2.Click [New] link in the right frame
+
+3.Try to click [OK] without providing values of Name, Network Address, Port and Server and verify the error msgs.
+
+4.Enter a name which is already used, e.g. http-listener-1 and verify the error msgs.
+
+5.Provide incorrect values of Network Address and Port and verify the error msgs.
+
+6.Enter correct values and click [OK] to create a new listener.</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: All forms and error messages should be localized.</p> <p>The listener should be created.</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205660</p> 
+     <hr> <p> ID: 14110</p> <p> Sequence: 48</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1528</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test HTTP Service -&gt; Virtual Servers</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.Select [Configuration]-&amp;gt;[HTTP Service]-&amp;gt;[Virtual Servers] in the left tree
+
+2.Click [New] link in the right frame
+
+3.Try to click [OK] without providing values of ID and Hosts and verify the error msgs.
+
+4.Enter a name which is already used, e.g. 'server' and verify the error msg.
+
+5.Enter correct values (Hosts = e.g. 127.0.0.1) and select [OK] to create a new server.</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: Verify that all forms and error messages are localized.</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205661</p> 
+     <hr> <p> ID: 14111</p> <p> Sequence: 49</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1528</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test ORB -&gt; IIOP Listeners</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.Select [Configuration]-&amp;gt;[ORB]-&amp;gt;[IIOP Listeners] in the left tree
+
+2.Click [New] link in the right frame
+
+3.Try to click [OK] without providing values of Name, Network Address and Port and verify the error msgs.
+
+4.Enter a name which is already used, e.g. 'orb-listener-1' and verify the error msg.
+
+5.Enter correct values and select [OK] to create a new IIOP listener.</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: Verify that all forms and error messages are localized.</p> <p>IIOP Listener should be created</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205662</p> 
+     <hr> <p> ID: 14112</p> <p> Sequence: 50</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1528</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test ORB -&gt; Thread Pools</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.Select [Configuration]-&amp;gt;[Thread Pools] in the left tree
+
+2.Click [New] link in the right frame
+
+3.Try to click [OK] without providing ID and verify the error msg.
+
+4.Enter a name which is already used, e.g. 'thread-pool-1' and verify the error msg.
+
+5.Enter incorrect (non-numeric) values for Pool Sizes, Timeout, Queues and verify the error msgs.
+
+6.Enter correct values and select [OK] to create a new thread pool.</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: Verify that all forms and error messages are localized.</p> <p>Thread Pool should be created correctly</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205663</p> 
+     <hr> <p> ID: 14113</p> <p> Sequence: 51</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1528</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test Admin Service</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.Select [Configuration]-&amp;gt;[Admin Service] in the left tree.
+
+2.Verify the right window for localization.
+
+3.Select the default 'system' node under the Admin Service node.
+
+4.Try to save incorrect Address or Port and verify the error msgs.</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: The windows and error messages should be properly localized.</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205664</p> 
+     <hr> <p> ID: 14114</p> <p> Sequence: 52</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1528</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test Connector Service</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.Select [Configuration]-&amp;gt;[Connector Service] in the left tree
+
+2.Enter incorrect (non-numeric) value for Timeout and verify the error msg.</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: Verify that the form and error message are localized.</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205665</p> 
+     <hr> <p> ID: 14115</p> <p> Sequence: 53</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1528</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test <a href="Monitoring.html" title="Monitoring">Monitoring</a></p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.Select [Configuration]-&amp;gt;[Monitoring] in the left tree
+
+2.Choose 'HIGH' or 'LOW' in droplist for some item and save it.</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: Verify that the form are localized.</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205666</p> 
+     <hr> <p> ID: 14116</p> <p> Sequence: 54</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1528</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test Monitor for Management Rules</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.Select [Configuration]-&amp;gt;[Management Rules] in the left tree
+
+2.Click [New] and enter name and choose [monitor] for [Event Type] and click [Next]
+
+3.Enter 'test' for [Observed MBean] and [Observed Attribute], and choose [Monitor Type] as 'String' and enter 'test' for [Value].
+
+4.Click [Finish] to create it</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: Verify that the form are localized.</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205667</p> 
+     <hr> <p> ID: 14117</p> <p> Sequence: 55</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1528</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test notification for Management Rules</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.Select [Configuration]-&amp;gt;[Management Rules] in the left tree
+
+2.Click [New] and enter name and choose 'monitor' for [Event Type] and click [Next]
+
+3.Click [New] and enter another name and choose 'notification' for [Event Type] and click [Next]
+
+4.Select [Enter an Object Name] and enter 'test' for it and click [Finish]</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: Verify that the form are localized.</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205668</p> 
+     <hr> <p> ID: 14118</p> <p> Sequence: 56</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1528</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test System Events for Management Rules</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.Select [Configuration]-&amp;gt;[Management Rules] in the left tree
+
+2.Click [New] and enter name and choose 'lifecycle' for [Event Type] and click [Next], and click [Finish]
+
+3.Click [New] and enter name and choose 'log' for [Event Type] and click [Next], and click [Finish]
+
+4.Click [New] and enter name and choose 'timer' for [Event Type] and click [Next], and enter the 'Date String' 
+
+  according to the data format 'MM/dd/yyyy HH:mm:ss' and click [Finish], restart server, check the server.log to make sure no error when start this rule.
+
+5.Click [New] and enter name and choose 'timer' for [Event Type] and click [Next], and enter the an invalid 'Date String' and click [Finish], restart server, check the server.log to check that error when start this rule.
+
+6.Click [New] and enter name and choose 'trace' for [Event Type] and click [Next], then click [Finish] to create it</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: Verify all forms are localized.</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205669</p> 
+     <hr> <p> ID: 14119</p> <p> Sequence: 57</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1528</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test Diagnostic Service</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.Select [Configuration]-&amp;gt;[Diagnostic Service] in the left tree
+
+2.Enter an invalid number such as '500a' into [Log Entries] and click [Save], an error dialog popup</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: Verify all forms are localized.</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205670</p> 
+     <hr> <p> ID: 14120</p> <p> Sequence: 58</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1529</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test General tab</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.Select [Application Server] link in left menu tree.
+
+2.In [General] tab in the right frame, check the all information.
+
+3.Click on [stop instance], check the UI page
+
+4.According to the instruction on UI, start server from CLI by:
+
+   &amp;lt;appserver-installation-directory&amp;gt;/bin/asadmin start-domain --user admin
+
+5.After the server started, Click the link in UI and login correct username/password to relogin again</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: Verify all forms are localized.</p> <p>All functions works</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205671</p> 
+     <hr> <p> ID: 14121</p> <p> Sequence: 59</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1529</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test General tab - JVM report</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.Select [Application Server] link in left menu tree.
+
+2.In [General] tab in the right frame, click [JVM Report].
+
+3.In popup page, choose [Summary] for [View]
+
+4.In popup page, choose [Memory] for [View]
+
+5.In popup page, choose [Class Loading] for [View]
+
+6.In popup page, choose [Thread dump] for [View]
+
+7.Click [Close] to close it</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: Verify all forms are localized.</p> <p>All functions works</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205672</p> 
+     <hr> <p> ID: 14122</p> <p> Sequence: 60</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1529</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test General tab - View Log Files</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.Select [Application Server] link in left menu tree.
+
+2.In [General] tab in the right frame, click [View Log Files].
+
+3.Log Viewer window is displayed with Timestamp, Log Level, Logger, Message, Name-Value pair information
+
+4.Click on [Details] link in the message coloumn 
+
+5.A Log Entry Details window is displayed with Timestamp, Log Level etc information for a particular log.
+
+6.close the details windows
+
+7.Click on [Records before ...] and [Records after ...] to check page turning function</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: Verify all forms are localized.</p> <p>All functions works</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205673</p> 
+     <hr> <p> ID: 14123</p> <p> Sequence: 61</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1529</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test General -&gt; View Log Files -&gt; Basic Search</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.Select [Application Server] link in left menu tree.
+
+2.In [General] tab in the right frame, click [View Log Files].
+
+3.Log Viewer window is displayed with Timestamp, Log Level, Logger, Message, Name-Value pair information
+
+4.Set the [TimeStamp] as [Specific Range:] and enter any valid date for it.
+
+5.Set the value for [Log Level], [Instance Name] and [Log Files]
+
+6.Click [Search]</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: Verify all forms are localized.</p> <p>All functions works</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205674</p> 
+     <hr> <p> ID: 14124</p> <p> Sequence: 62</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1529</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test General -&gt; View Log Files -&gt; Advanced Search</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.Select [Application Server] link in left menu tree.
+
+2.In [General] tab in the right frame, click [View Log Files].
+
+3.Log Viewer window is displayed with Timestamp, Log Level, Logger, Message, Name-Value pair information
+
+4.Click [Advanced Search]
+
+5.Set the [TimeStamp] as [Specific Range:] and enter any valid date for it.
+
+5.Set the value for [Log Level], [Instance Name] and [Log Files]
+
+6.Click [Search]
+
+7.Click [Basic Search] to back initial page, Click [Close] to close log viewer.</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: Verify all forms are localized.</p> <p>All functions works</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205675</p> 
+     <hr> <p> ID: 14125</p> <p> Sequence: 63</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1529</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test General -&gt; Rotate Log File</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.Select [Application Server] link in left menu tree.
+
+2.In [General] tab in the right frame, click [Rotate Log File].</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: Verify all forms are localized.</p> <p>All functions works</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205676</p> 
+     <hr> <p> ID: 14126</p> <p> Sequence: 64</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1529</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test General -&gt; JNDI Browsing</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.Select [Application Server] link in left menu tree.
+
+2.In [General] tab in the right frame, click [JNDI Browsing].
+
+3.Click any item in the tree, 
+
+  if there haven't, please try to create some in [Config]-&amp;gt;[JNDI]-&amp;gt;[Custom Resources]
+
+4.Click [Close] to close it</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: Verify all forms are localized.</p> <p>All functions works</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205677</p> 
+     <hr> <p> ID: 14127</p> <p> Sequence: 65</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1529</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test JVM Settings</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.Select [Application Server] link in left menu tree.
+
+2.click [JVM Settings] tab in the right frame, check the page.
+
+3.Click [Description] link, check that page, click [back] button.
+
+4.click [Path Settings] tab, check that page
+
+5.Click [JVM Options] tab, check that page
+
+6.Click [Profiler] tab,  don't enter anything, click [Save] to check error message</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: Verify all forms are localized.</p> <p>All functions works</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205678</p> 
+     <hr> <p> ID: 14128</p> <p> Sequence: 66</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1529</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test Logging</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.Select [Application Server] link in left menu tree.
+
+2.click [Logging] tab in the right frame, check the page.
+
+3.click [Log Levels] tab, check that page</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: Verify all forms are localized.</p> <p>All functions works</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205679</p> 
+     <hr> <p> ID: 14129</p> <p> Sequence: 67</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1529</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test Monitor -&gt; Runtime</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.Select [Application Server] link in left menu tree.
+
+2.click [Monitor] tab in the right frame, check the page.
+
+3.choose [jvm] in droplist for [View:]
+
+4.choose [compilation-system] in droplist for [View:]
+
+5.choose [class-loading-system] in droplist for [View:]
+
+6.choose [thread-system] in droplist for [View:]
+
+7.choose [runtime] in droplist for [View:]
+
+8.choose [memory] in droplist for [View:]
+
+9.choose [operating-system] in droplist for [View:]
+
+10.choose [MarkSweepCompat] in droplist for [View:]
+
+11.choose [Copy] in droplist for [View:]
+
+12.choose [connection-queue] in droplist for [View:]
+
+13.choose [file-cache] in droplist for [View:]
+
+14.choose [keep-alive] in droplist for [View:]
+
+15.choose [_asadmin] in droplist for [View:]
+
+16.choose [server] in droplist for [View:]
+
+17.choose [http-listener-2] in droplist for [View:]
+
+18.choose [http-listener-1] in droplist for [View:]
+
+19.choose [request] in droplist for [View:]
+
+20.choose [transaction-service] in droplist for [View:]
+
+
+
+
+
+Pavel: note that you may have to enable the stuff in the configuration link next ot the droblist</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: Verify all forms are localized.</p> <p>All functions works</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205680</p> 
+     <hr> <p> ID: 14130</p> <p> Sequence: 68</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1529</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test Monitor -&gt; <a href="Applications.html" title="Applications">Applications</a></p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.Select [Application Server] link in left menu tree.
+
+2.click [Monitor] tab in the right frame, then click [Applications] subtab, check the page.
+
+3.choose [admingui] in droplist for [Application].
+
+  If no component display in [Component] droplist, Click [Configure Monitoring], 
+
+  then set all to 'HIGH' and click [Save], then back [Monitor]-&amp;gt;[Applications] page
+
+4.try to choose all differents in the drop list and check the page</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: Verify all forms are localized.</p> <p>All functions works</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205681</p> 
+     <hr> <p> ID: 14131</p> <p> Sequence: 69</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1529</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test Monitor -&gt; Resources</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.Select [Application Server] link in left menu tree.
+
+2.click [Monitor] tab in the right frame, then click [Resources] subtab, check the page.</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: Verify all forms are localized.</p> <p>All functions works</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205682</p> 
+     <hr> <p> ID: 14132</p> <p> Sequence: 70</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1529</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test Monitor -&gt; Transactions</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.Select [Application Server] link in left menu tree.
+
+2.click [Monitor] tab in the right frame, then click [Transactions] subtab, check the page.</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: Verify all forms are localized.</p> <p>All functions works</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205683</p> 
+     <hr> <p> ID: 14133</p> <p> Sequence: 71</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1529</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test Monitor -&gt; Log Stats</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.Select [Application Server] link in left menu tree.
+
+2.click [Monitor] tab in the right frame, then click [Log Stats] subtab, check the page.
+
+3.check one item in table, then click [Show Loggers]
+
+4.click [Close] to return</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: Verify all forms are localized.</p> <p>All functions works</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205684</p> 
+     <hr> <p> ID: 14134</p> <p> Sequence: 72</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1529</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test Monitor -&gt; <a href="CallFlow.html" title="CallFlow">Call Flow</a></p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.Select [Application Server] link in left menu tree.
+
+2.click [Monitor] tab in the right frame, then click [Call Flow] subtab, check the page.
+
+3.Choose item in droplist [Filter:]</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: Verify all forms are localized.</p> <p>All functions works</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205685</p> 
+     <hr> <p> ID: 14135</p> <p> Sequence: 73</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1529</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test Monitor -&gt; <a href="CallFlow.html" title="CallFlow">Call Flow</a> and Call Flow Config</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.Select [Application Server] link in left menu tree.
+
+2.click [Monitor] tab in the right frame, then click [Call Flow] subtab, check the page.
+
+3.click link [Call Flow Config], check [Enabled] for [Call Flow Monitoring:] and save it
+
+4.Use browser to access appliation server: http://&amp;lt;machine&amp;gt;:8080/
+
+5.Back the [Call Flow] tab in Admin GUI, click [Refresh] link.
+
+6.Try item in droplist [Filter:]
+
+7.Click one item in table to get page [Call Flow Details]
+
+8.Click [View Tree] and check that new page. close that popup page.
+
+9.Click [Close] to back</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: Verify all forms are localized.</p> <p>All functions works</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205686</p> 
+     <hr> <p> ID: 14136</p> <p> Sequence: 74</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1529</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test Diagnostics</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.Select [Application Server] link in left menu tree.
+
+2.click [Diagnostics] tab in the right frame, check the page.
+
+3.Enter multibyte character for [Description:] and any character for [Bug IDs:], 
+
+  and correct date for [Server Log Start Date:] and [Server Log End Date:]
+
+4.Click [Generate Report], and Click [Save as] in next page.
+
+5.After save file success, click [OK] to back</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: Verify all forms are localized.</p> <p>All functions works</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205687</p> 
+     <hr> <p> ID: 14137</p> <p> Sequence: 75</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1529</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test Password</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.Select [Application Server] link in left menu tree.
+
+2.click [Password] tab in the right frame, check the page.
+
+3.Enter the new password in box and save it.
+
+4.Logout the GUI and try to use the new admin password to login the admin GUI.</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: Verify all forms are localized.</p> <p>All functions works</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205688</p> 
+     <hr> <p> ID: 14138</p> <p> Sequence: 76</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1529</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test Advanced</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.Select [Application Server] link in left menu tree.
+
+2.click [Advanced] tab in the right frame, check the page.
+
+3.click subtab [Domain Attributes], check that page.</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: Verify all forms are localized.</p> <p>All functions works</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205689</p> 
+     <hr> <p> ID: 14143</p> <p> Sequence: 77</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1531</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test Rules and Monitors</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.run 'asadmin create-management-rule --help' to check the output
+
+2.run 'asadmin create-management-rule --eventype test [multibyte character]' to check the error
+
+3.run 'asadmin create-management-rule --eventtype log [multibyte character]'
+
+4.run 'asadmin list-management-rules' to check that rule has been created.
+
+5.run 'asadmin delete-management-rule [multibyte character]' to delete the rule created in previous step.</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: All messages should be properly localized.</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205694</p> 
+     <hr> <p> ID: 14144</p> <p> Sequence: 78</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1531</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test Derby Database</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.run 'asadmin start-database'
+
+2.run 'asadmin start-database' again to check the fail messages
+
+3.run 'asadmin stop-database'.
+
+4.run 'asadmin stop-database' again to check the fail messages.</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: All messages should be properly localized.</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205695</p> 
+     <hr> <p> ID: 14145</p> <p> Sequence: 79</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1532</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test Diagnostic service</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.run 'asadmin generate-diagnostic-report --help' to check the output
+
+2.run 'asadmin generate-diagnostic-report --outputfile [filename.jar]', 
+
+  on windows, can use ./[filename.jar]
+
+3.Enter 'y' to continue and the report can generated success</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: All messages should be properly localized.</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205696</p> 
+     <hr> <p> ID: 14146</p> <p> Sequence: 80</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1531</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test Monitoring Data</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.run 'asadmin start-callflow-monitoring --help' to check the output.
+
+2.run 'asadmin start-callflow-monitoring --filtertype user=[multibyte characters] server'.
+
+3.login Admin GUI, following [Application Server] -&amp;gt; [Monitor]-&amp;gt;[Call Flow Config]
+
+4.In that page, check whether [Call Flow Monitoring:] is enabled and the vale of [User] display correct.
+
+5.run 'asadmin stop-callflow-monitoring server' to stop callflow monitoring
+
+6.Check the status in Admin GUI whether the [Enabled] is unchecked.</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: All messages should be properly localized.</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205697</p> 
+     <hr> <p> ID: 14147</p> <p> Sequence: 81</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1531</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test <a href="JMS.html" title="JMS">JMS</a></p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.run 'asadmin flush-jmsdest --help' to check output
+
+2.run 'asadmin flush-jmsdest -T queue mq.sys.dmq' to purge the physical destination</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: All messages should be properly localized.</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205698</p> 
+     <hr> <p> ID: 14148</p> <p> Sequence: 82</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1531</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test Web Services</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.Check whether an webservice deploy on app, Login Admin GUI, 
+
+  click [Web Services] and see whether some item list in table and get the web service name.
+
+  If not, please deploy an webservice by [Enterprise Applications].
+
+  On Solaris, use /opt/SUNWappserver/samples/webservices/jaxrpc/apps/simplebean/jaxrpc-simplebean.ear
+
+2.run 'asadmin configure-webservice-management --help' to check output
+
+3.run 'asadmin configure-webservice-management [webservice_name]' to config webservice.
+
+  If you deploy jaxrpc-simplebean.ear, the webservice_name is 'jaxrpc-simplebean#jaxrpc-simplebean.war#HelloIF'
+
+4.run 'asadmin configure-webservice-management --monitoring=ON [webservice_name]' to check the error information.
+
+5.run 'asadmin configure-webservice-management --monitoring=HIGH [webservice_name]'
+
+6.Login Admin GUI, click [Web Services], click that web service you just configed in table, 
+
+  click [Monitor]-&amp;gt;[Configuration] to check [Monitoring Level:] is 'HIGH'.</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: All messages should be properly localized.</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205699</p> 
+     <hr> <p> ID: 14149</p> <p> Sequence: 83</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1531</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test Web Services</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.Check whether an webservice deploy on app, Login Admin GUI, 
+
+  click [Web Services] and see whether some item list in table and get the web service name.
+
+  If not, please deploy an webservice by [Enterprise Applications].
+
+  On Solaris, use /opt/SUNWappserver/samples/webservices/jaxrpc/apps/simplebean/jaxrpc-simplebean.ear
+
+2.run 'asadmin create-transformation-rule --help' to check output
+
+3.run 'asadmin create-transformation-rule --webservicename [webservice_name] --rulefilelocation [rulefile] [multibyte characters]'.
+
+  If you deploy jaxrpc-simplebean.ear, the webservice_name is 'jaxrpc-simplebean#jaxrpc-simplebean.war#HelloIF'
+
+  the [rulefile], you can use [appbase]/samples/webservices/jaxrpc/apps/simplebean/build.xml
+
+4.run 'asadmin list-transformation-rules'.
+
+5.run 'asadmin delete-transformation-rule --webservicename [webservice_name] [rule name]' to delete the rule created</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: All messages should be properly localized.</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205700</p> 
+     <hr> <p> ID: 14150</p> <p> Sequence: 84</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1531</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test Web Services</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.Check whether an webservice deploy on app, Login Admin GUI, 
+
+  click [Web Services] and see whether some item list in table and get the web service name.
+
+  If not, please deploy an webservice by [Enterprise Applications].
+
+  On Solaris, use /opt/SUNWappserver/samples/webservices/jaxrpc/apps/simplebean/jaxrpc-simplebean.ear
+
+2.run 'asadmin publish-to-registry' to check output
+
+3.run 'asadmin publish-to-registry --help' to check output
+
+4.run 'list-registry-locations' to check output
+
+5.run 'asadmin unpublish-from-registry --help' to check output</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: All messages should be properly localized.</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205701</p> 
+     <hr> <p> ID: 14151</p> <p> Sequence: 85</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1531</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test Admin Password</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.run 'asadmin change-admin-password --help' to check the output
+
+2.run 'asadmin change-admin-password --user admin', then just enter 3 characters for [old admin password], check the error.
+
+3.run 'asadmin change-admin-password --user admin', enter correct password for all and all should go well.</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: All messages should be properly localized.</p> <p>That password have been changed when login Admin GUI</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205702</p> 
+     <hr> <p> ID: 14152</p> <p> Sequence: 86</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1531</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test Logging and JVM report</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.run 'asadmin display-error-statistics --help' to check the output
+
+2.run 'asadmin display-error-statistics' to check the output.
+
+3.run 'asadmin display-error-distribution --timestamp [timestamp]' to check the output.
+
+4.run 'asadmin display-log-records --timestamp [timestamp] [module id]' to check the output.
+
+5.run 'asadmin generate-jvm-report' to check JVM report</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: All messages should be properly localized.</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205703</p> 
+     <hr> <p> ID: 14153</p> <p> Sequence: 87</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1531</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test <a href="CustomMBeans.html" title="CustomMBeans">Custom MBeans</a></p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.run 'asadmin create-mbean --help' to check the output
+
+2.run 'asadmin create-mbean' to check the output.
+
+3.run 'asadmin list-mbeans' to check the output.
+
+4.run 'asadmin delete-mbean --help' to check he output.</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: All messages should be properly localized.</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205704</p> 
+     <hr> <p> ID: 14154</p> <p> Sequence: 88</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1531</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test Password Alias</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.run 'asadmin create-password-alias admin' to and enter two different password to check the error information
+
+2.run 'asadmin create-password-alias admin' to and enter two same and valid password to create alias
+
+3.run 'asadmin list-password-aliases' to check the output.
+
+4.run 'asadmin delete-password-alias admin' to check the output.
+
+5.run 'asadmin delete-password-alias admin' to check the error information.</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: All messages should be properly localized.</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205705</p> 
+     <hr> <p> ID: 14155</p> <p> Sequence: 89</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1531</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test deploy</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1. Go to /opt/SUNWappserver/appserver/bin directory.
+
+2. Make sure that the admin server is running 
+
+3. Start the domain if not started yet
+
+4. Start the instance if not started yet
+
+5. run './asadmin deploy --user admin --password [your pwd] --host localhost --port 4849 --virtualservers [myinstances] /opt/SUNWappserver/appserver/samples/i18n/apps/simple/i18n-simple.ear'
+
+6. Verify that the deployment is successful in Admin GUI.</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: All messages should be properly localized.</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205706</p> 
+     <hr> <p> ID: 14156</p> <p> Sequence: 90</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1531</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test domain</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1. Go to /opt/SUNWappserver/appserver/bin directory.
+
+2. stop the default domain by 'asadmin stop-domain'
+
+3. run './asadmin create-domain  --domaindir /var/opt/SUNWappserver/domains --adminport 4850 --adminuser admin --adminpassword admin123 --domainproperties test=[multibytes] cliTestDomain'
+
+4. When the domain is successfully created, start the domain using the following command: 
+
+  './asadmin start-domain --user [your admin user name] cliTestDomain'
+
+5. on your browser, access the admin server at https://[hostname]:4850
+
+   Look for the domain property value
+
+6. run 'asadmin list-domains' to check the output
+
+7. run 'asadmin stop-domain cliTestDomain' to stop it
+
+8. run 'asadmin delete-domain cliTestDomain' to delete that domain
+
+9. run 'asadmin start-domain' to start default domain</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: The domain is successfully created, then the domain can create/start/stop/delete successfully.</p> <p>Also multibyte (or your language specific) characters are passed correctly.</p> <p>Check the log /opt/SUNWappserver/domains/cliTestDomain/logs/server.log without any error</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205707</p> 
+     <hr> <p> ID: 14157</p> <p> Sequence: 96</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1531</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test Admin Object</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1. Go to /opt/SUNWappserver/appserver/bin directory.
+
+2. Make sure that the admin server is running
+
+3. run './asadmin create-admin-object --user admin --restype javax.jms.Queue --property cliResName=[multibyte name] --raname jmsra --host localhost --port 4849 jms/samplequeue'
+
+5. When the object is successfully created (look at the log), on your browser, access the admin server at https://[hostname]:4849. 
+
+   Look for JMS Resources &amp;gt; Destination Resources
+
+6. run 'asadmin list-admin-objects' to check the output
+
+7. run 'asadmin delete-admin-object jms/samplequeue' and login Admin GUI to check it has been deleted.</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: The resource is successfully created under JMS Resources &gt; Destination Resources. </p> <p>Check for the additional properties. The value should be correctly displayed as you typed in the CLI.</p> <p>Check the log /opt/SUNWappserver/domains/cliTestDomain/logs/server.log without any error</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205708</p> 
+     <hr> <p> ID: 14158</p> <p> Sequence: 97</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1533</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test Verifier</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1. Go to /opt/SUNWappserver/appserver/bin directory.
+
+2. run 'verifier' to check the output
+
+3. run 'verifier -v -ra -d [temp dir] [application]'
+
+   On solaris, can use /opt/SUNWappserver/samples/i18n/simple/i18n-simple.ear'
+
+4. Check the file created under that temp directory.</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: All message are l10ned, and files created contain the correct information.</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205709</p> 
+     <hr> <p> ID: 14159</p> <p> Sequence: 98</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1533</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test Verifier</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1. Go to /opt/SUNWappserver/appserver/bin directory.
+
+2. run 'verifier -u' to check the output
+
+3. click [Add] to pick up an application and click [OK] to verify
+
+   On solaris, can use /opt/SUNWappserver/samples/i18n/simple/i18n-simple.ear'
+
+4. Click [Help] to check online help</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: All message and UI are l10ned.</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205710</p> 
+     <hr> <p> ID: 14160</p> <p> Sequence: 99</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1533</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test asupgrade</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1. Go to /opt/SUNWappserver/appserver/bin directory.
+
+2. run 'asupgrade -help' to check the output
+
+3. run 'asupgrade' and click [Help] to check</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: All message and UI are l10ned.</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205711</p> 
+     <hr> <p> ID: 14203</p> <p> Sequence: 100</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1533</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test appclient, capture-schema and jspc</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1. Go to /opt/SUNWappserver/appserver/bin directory.
+
+2. run 'appclient' to check the output
+
+3. run 'capture-schema' to check the output
+
+4. run 'jspc' to check the output</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: All message are l10ned.</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 206036</p> 
+     <hr> <p> ID: 14204</p> <p> Sequence: 101</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1533</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test wscompile, wsdeploy, wsgen and wsimport</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1. Go to /opt/SUNWappserver/appserver/bin directory.
+
+2. run 'wscompile' to check the output
+
+3. run 'wsdeploy' to check the output
+
+4. run 'wsgen' to check the output
+
+5. run 'wsimport' to check the output</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: All message are l10ned.</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 206037</p> 
+     <hr> <p> ID: 14141</p> <p> Sequence: 102</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1530</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test Uninstall</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.Make sure your terminal window has locale and display correctly set.
+
+3.Stop all running domains: 
+
+  /opt/SUNWappserver/bin/asadmin stop-domain domain1
+
+  /opt/SUNWappserver/bin/asadmin stop-domain domain2
+
+on Windows:
+
+  /Sun/AppServer/bin/asadmin.bat stop-domain domain1
+
+  /Sun/AppServer/bin/asadmin.bat stop-domain domain2
+
+2.Run: /opt/SUNWappserver/uninstall
+
+  on Windows: Sun/AppServer/uninstall
+
+3.AS Java Uninstaller window should display properly.</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: All uninstaller GUI messages should be properly localized.</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205692</p> 
+     <hr> <p> ID: 14142</p> <p> Sequence: 103</p> <p> CreatedBy: basha</p> <p> CreationDate: 2006-01-24-08:00</p> <p> ModifiedBy: basha</p> <p> ModificationDate: 2007-10-30-07:00</p> <p> CategoryID: 1530</p> <p> Priority: Low</p> <p> Type: L10n</p> <p> Automation: Manual</p> <p> ReviewStatus: Pending</p> <p> Objective: Test Uninstall</p> <p> Steps: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1.In AS uninstaller, select Help and verify that localized help displays.
+
+2.Click [Next]
+
+3.Select [Help] and verify that localized help displays.
+
+4.Click [Uninstall Now]
+
+5.Click [Help] and verify that localized help displays.
+
+6.once the uninstallation finishes, click [Details...], Get the log's position in dialog.
+
+7.Click [Dismiss] and click [Close]
+
+8.Check uninstall log file</pre> 
+       </div> 
+      </div>
+     </div> <p> ExpectedResults: All uninstaller GUI messages should be properly localized.</p> <p> Comments: <br> Testcase imported from TCM1. Old TCM1 CID: 205693</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:49.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

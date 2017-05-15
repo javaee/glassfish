@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : FAQAuthentication</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p><b>DEPRECATED. See <a href="GlassFishWikiFAQ.html" title="GlassFishWikiFAQ">GlassFishWikiFAQ</a> instead.</b></p> 
+     <div> 
+      <ul> 
+       <li><a href="#FAQAuthentication-Whyistherenopagelevelauthentication%3F">Why is there no page-level authentication?</a></li> 
+       <li><a href="#FAQAuthentication-CanImaketheWikiprivateegtojustateamofpeople%3F">Can I make the Wiki private - eg to just a team of people?</a></li> 
+       <li><a href="#FAQAuthentication-HowdoImovetheWikifromonemachinetoanother%3F">How do I move the Wiki from one machine to another?</a></li> 
+       <li><a href="#FAQAuthentication-Usernamenotbeingshownonmodifiedpages">Username not being shown on modified pages</a></li> 
+      </ul>
+     </div> <h4><a name="FAQAuthentication-Whyistherenopagelevelauthentication%3F"></a>Why is there no page-level authentication?</h2> <p>I screwed up. I thought I could do it, but it just turned out to be too much for my abilities (and mainly, my interest). The remnants of the old auth code are still there, and a new auth system is being designed for 2.3.</p> <h4><a name="FAQAuthentication-CanImaketheWikiprivateegtojustateamofpeople%3F"></a>Can I make the Wiki private - eg to just a team of people?</h2> <p>Q: Presumably I have a number of ways of doing this. I can access control to the Apache webserver (if using Apache), or add access control to the Tomcat java servlet engine (if using Tomcat) but is there a third way? Will JSPWiki use a username if specified through Tomcat or Apache?</p> <p>A:If BASIC authentication is enough, take a look at the end of the stock <em>web.xml</em>. There is a <em>security-constraint</em> section that shows how to do default protection; just replace <em>&lt;url-pattern&gt;/Edit.jsp&lt;/url-pattern&gt;</em> with <em>&lt;url-pattern&gt;/*&lt;/url-pattern&gt;</em> to restrict all access. Also consider the <em>Upload.jsp</em> too.</p> <p>;:<em>If you need something more fine-grained, like groups and per-page access definitions - this is being worked on in the 2.3 version of the code.</em></p> <h4><a name="FAQAuthentication-HowdoImovetheWikifromonemachinetoanother%3F"></a>How do I move the Wiki from one machine to another?</h2> <p>Simple. Since most JSPWiki providers (except some contributed providers) use a file database, you can just copy all JSPWiki directories (the page directory), and the JSPWiki webapp directory to the new location. Don't forget to change any references in the jspwiki.properties file either that refer to the old machine.</p> <p>However, note that since the built-in providers do rely on the modify date of the files on disk, you should use a file copy procedure that saves the timestamps, if you don't want your RecentChanges to be completely out-of-order.</p> <h4><a name="FAQAuthentication-Usernamenotbeingshownonmodifiedpages"></a>Username not being shown on modified pages</h2> <p>Q: I keep getting the following message on all pages -<br> "This page last changed on Wed Nov 13 16:44:27 EST 2002 by unknown."<br> Why isn't the "unknown" changed to the username I've logged in as ? My username does showup in the left menu as - "G'day vipul"</p> <p>A: You're not using any of the versioning file providers: RCSFileProvider or VersioningFileProvider. Since v2.1.21 the FileSystemProvider also stores the author information.</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:44.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

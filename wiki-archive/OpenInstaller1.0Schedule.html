@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : OpenInstaller1.0Schedule</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>openInstaller 1.0 High Level Schedule</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Item</th> 
+         <th class="confluenceTh">Date</th> 
+         <th class="confluenceTh">Description </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 0.9.1 release </td> 
+         <td class="confluenceTd"> June 4, 2007 </td> 
+         <td class="confluenceTd"> <a href="https://openinstaller.java.net/servlets/ReadMsg?list=announce&amp;msgNo=5">Announcement </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 0.9.2 gate freeze </td> 
+         <td class="confluenceTd"> June 21, 2007 </td> 
+         <td class="confluenceTd">Only critical bug fixes for MQ customer </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 0.9.2 release </td> 
+         <td class="confluenceTd"> July 12, 2007 </td> 
+         <td class="confluenceTd">Release with complete Upgrade and JDK selection support. All MQ P1-P3 bugs delivered. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1.0 Gate Freeze </td> 
+         <td class="confluenceTd"> July 31, 2007 </td> 
+         <td class="confluenceTd">All Portal features delivered. JNLP support Delivered </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1.0 Testing Complete </td> 
+         <td class="confluenceTd"> August 10, 2007 </td> 
+         <td class="confluenceTd">Full Unit, Regression, Feature testing completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1.0 Release </td> 
+         <td class="confluenceTd"> August 13, 2007 </td> 
+         <td class="confluenceTd">Features include product selection, JNLP support, Patch install </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>openInstaller 1.0 Detailed Feature Schedule</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Complete?</th> 
+         <th class="confluenceTh">Item</th> 
+         <th class="confluenceTh">Date</th> 
+         <th class="confluenceTh">Owner</th> 
+         <th class="confluenceTh">Team</th> 
+         <th class="confluenceTh">Description </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Upgrade </td> 
+         <td class="confluenceTd"> May 31, 2007 </td> 
+         <td class="confluenceTd"> Radhika </td> 
+         <td class="confluenceTd"> Sandeep </td> 
+         <td class="confluenceTd">Upgrade support for legacy and existing OI installed products. Delivered in 0.9.2 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> JDK Selection </td> 
+         <td class="confluenceTd"> May 31, 2007 </td> 
+         <td class="confluenceTd"> Gustave </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">Detect and allow for selection of existing JDK's. Delivered in 0.9.2 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> L10N Selection </td> 
+         <td class="confluenceTd"> July 3, 2007 </td> 
+         <td class="confluenceTd"> Gustave </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">Provide ability to installer or not the L10N deliverables. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> MQ P1-P3 bug fixing </td> 
+         <td class="confluenceTd"> July 3, 2007 </td> 
+         <td class="confluenceTd"> Matt </td> 
+         <td class="confluenceTd"> All </td> 
+         <td class="confluenceTd">Meet ship requirements for MQ release </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Response file support </td> 
+         <td class="confluenceTd"> July 3, 2007 </td> 
+         <td class="confluenceTd"> James </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">Allow specification of a response file generated from config steps. RFE 6571850 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Namespace update </td> 
+         <td class="confluenceTd"> July 3, 2007 </td> 
+         <td class="confluenceTd"> Jayanth </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Change com.sun to org.openinstaller </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> NO </td> 
+         <td class="confluenceTd"> P3 bug fixes cutoff </td> 
+         <td class="confluenceTd"> July 20, 2007 </td> 
+         <td class="confluenceTd"> All </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">All P3's fixed. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Product Selection </td> 
+         <td class="confluenceTd"> July 27, 2007 </td> 
+         <td class="confluenceTd"> Manpreet </td> 
+         <td class="confluenceTd"> Rajkumar </td> 
+         <td class="confluenceTd">Allow user to select products to install. Including ability to do multi session installations. Also move L10N Selection checkbox to this page. See RFE 6515385. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> NO </td> 
+         <td class="confluenceTd"> Bootstrap Install via http </td> 
+         <td class="confluenceTd"> July 27, 2007 </td> 
+         <td class="confluenceTd"> Jayanth </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">Ability to pull down the engine using JNLP script and have the engine retrieve from the server all the rest of the needed parts, including packages. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> NO </td> 
+         <td class="confluenceTd"> Dynamic Progress Support for Configuration </td> 
+         <td class="confluenceTd"> July 27, 2007 </td> 
+         <td class="confluenceTd"> Sandeep </td> 
+         <td class="confluenceTd"> James </td> 
+         <td class="confluenceTd">Provide interface for configurators to accurately update progress </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> NO </td> 
+         <td class="confluenceTd"> P1-P2 and S1 bug fixes cutoff </td> 
+         <td class="confluenceTd"> July 27, 2007 </td> 
+         <td class="confluenceTd"> All </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">All P1-P3's fixed. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Zip Install, All Platforms </td> 
+         <td class="confluenceTd"> Kaarthikraaj </td> 
+         <td class="confluenceTd"> July 27, 2007 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">Allow for zip packages for all platforms </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> LSARC commitment for Engine and SIMS </td> 
+         <td class="confluenceTd"> July 27, 2007 </td> 
+         <td class="confluenceTd"> James </td> 
+         <td class="confluenceTd"> Inception schedule for July 31, 2007 (July 24 LSARC agenda was full) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> LSARC fast tracks for JDK Selection, Upgrade, L10N Selection </td> 
+         <td class="confluenceTd"> July 27, 2007 </td> 
+         <td class="confluenceTd"> Radhika, Gustave </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">new features </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> NO </td> 
+         <td class="confluenceTd"> LSARC fast tracks for PSP, Bootstrap Install, Zip Install </td> 
+         <td class="confluenceTd"> August 10, 2007 </td> 
+         <td class="confluenceTd"> Manpreet, Jayanth </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>Items deferred to post-1.0</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Complete?</th> 
+         <th class="confluenceTh">Item</th> 
+         <th class="confluenceTh">Date</th> 
+         <th class="confluenceTh">Owner</th> 
+         <th class="confluenceTh">Team</th> 
+         <th class="confluenceTh">Description </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Patch installation </td> 
+         <td class="confluenceTd"> July 27, 2007 </td> 
+         <td class="confluenceTd"> Gustave </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">Installables should be able to include patches as issued by Sun. RFE 6514787. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:49.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

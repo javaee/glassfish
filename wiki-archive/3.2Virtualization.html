@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : 3.2Virtualization</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="3.2Virtualization-OnepagerforGlassFish3.2Virtualization"></a>One pager for GlassFish 3.2 Virtualization</h1> <p>The IAAS management service (IMS) is designed so it has no understanding of what Java EE Service types are or what a GlassFish cluster is. It's basically a stateless service that gets asked to provision virtual machines and allow access to low level virtual machines management like start/stop.</p> <p>The IMS is a layered approach where responsibilities are divided by three components :</p> 
+     <ol> 
+      <li>IMS core which contains the implementation of the IAAS interface(s) to be used by the other GlassFish components like the orchestrator. This layer has no understanding of machine topology or virtualization solutions. It is configured with 1 to n server pools definitions that are used to delegate the real work of virtual machines allocation or lifecyle.&nbsp;</li> 
+      <li>Server pool master is responsible for providing a unified API to allocate or retrieve virtual machines from a set of resources it manages. Resources like machines can be added to a server pool to form a physical ServerPool or the ServerPool can act as a proxy to a virtualization management solution like OVM, EC2. ServerPools are configured for a particular virtualization solution but they delegate all the low level native virtualization&nbsp;</li> 
+      <li>Virtualization plugin is implementing low level access to the virtualization solution, we are planning to deliver OVM, libvirt and virtual box plugins.&nbsp;</li> 
+     </ol> <p>Let's have a look at the different combinations :&nbsp;</p> <p><span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20874871/21365310.png" style="border: 0px solid black"></span></p> 
+     <ol> 
+      <li>Case A :<br> In case A, a separate machine is acting as the group master, the IMS is configured with a remote group access configuration to interface with this remote group master. The IMS forwards request for creating virtual machines to the group master that use its configured machines to allocate VM and return the information to the IMS.</li> 
+      <li>Case B :<br> Similar case, the group master is now co-located with the IMS, the only configuration found is the group definition and the IMS+GroupMaster is using a virtualization plugin to interface the low level virtual machine handling.</li> 
+      <li>Case C :<br> In case C, the group master is still co-located but the virtualization plugin is just interfacing with a public cloud infrastructure. The group definition does not contain any machine definitions, it's left to the public cloud how virtual machines are allocated. This is called an abstract group (better name ?). Example of such deployments would be EC2.</li> 
+      <li>Case D :</li> 
+     </ol> <h4><a name="3.2Virtualization-IAAS"></a>IAAS</h2> <p>The IAAS layer is responsible for allocating virtual machines, managing the virtual machine (start, stop) and finally destroy permanently virtual machines.</p> <h4><a name="3.2Virtualization-VirtualMachinecreation"></a>Virtual Machine creation</h2> <p>A virtual machine creation will necessitate a virtual machine template that will be copied over to create the virtual machine disk as well as runtime properties that are specified by the caller and will be passed to the virtual machine instance. This allow for customizing the virtual machine with domain specific information. Such information can be retrieved by software installed in the template (like an init.d script) and can be used to further customize the virtual machine instance.</p> 
+     <div class="code panel" style="border-style: solid;border-width: 1px;">
+      <div class="codeHeader panelHeader" style="border-bottom-width: 1px;border-bottom-style: solid;">
+       <b>Basic IAAS interface</b>
+      </div>
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">/**
+ * Defines the Infrastructure Management Service
+ * @author Jerome Dochez
+ */
+@Contract
+public interface IAAS extends Iterable&lt;ServerPool&gt; {
+
+    /**
+     * Returns the runtime information for the serverPool identified by its name.
+     * @param groupName the serverPool name
+     * @return the serverPool runtime information or null if not found.
+     */
+    ServerPool byName(String groupName);
+
+    /**
+     * Allocate a virtual machine based on the provided template.
+     *
+     * @param order the allocation constraints for the virtual machine allocation
+     * @param listeners list of synchronous {@link Listener} to register before starting any allocation
+     * work.
+     * @return a {@link ListenableFuture} to get asynchronous phases completion notification and the
+     * {@link VirtualMachine} instance upon allocation completion.
+     * @throws VirtException when the virtual machine creation failed.
+     */
+    ListenableFuture&lt;AllocationPhase, VirtualMachine&gt; allocate(VMOrder order,
+                                                               List&lt;Listener&lt;AllocationPhase&gt;&gt; listeners)
+            throws VirtException;
+
+    /**
+     * Allocate a virtual machine based on the provided template.
+     *
+     * @param strategy strategy to allocate the virtual machines within the machine pools.
+     * @param order the allocation constraints for the virtual machine allocation
+     * @return a {@link ListenableFuture} to get asynchronous phases completion notification and the
+     * {@link VirtualMachine} instance upon allocation completion.
+     * @param listeners list of synchronous {@link Listener} to register before starting any allocation
+     * work.
+     * @throws VirtException when the virtual machine creation failed.
+     */
+    ListenableFuture&lt;AllocationPhase, VirtualMachine&gt; allocate(AllocationStrategy strategy,
+                                                               VMOrder order,
+                                                               List&lt;Listener&lt;AllocationPhase&gt;&gt; listeners)
+            throws VirtException;
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>A small variant of the API will be to provide an AllocationStrategy instance to decide in which server pools the virtual machines need to be instantiated. Further customization can be provided by returning a ServerPoolAllocationStrategy to customize how virtual machine are allocated within a server pool (to avoid co-location for instance)&nbsp;</p> <h4><a name="3.2Virtualization-AllocationStrategy"></a>AllocationStrategy</h4> <p>A set of allocation strategy instances will be available for lookup in the hk2 registry, users can define their own. We will use a default one that allocates each virtual machine on a single hardware instance following a round-robin algorithm.</p> <h5><a name="3.2Virtualization-Defaultallocationstrategy."></a>Default allocation strategy.</h5> <p>The default virtual machine allocation strategy will be a simple round-robin based on ServerPools and Machines within each pool. Let's take a few examples on a environment with 3 groups (A, B, C) where Group A and B have 2 machines, and group C has 1 machine :</p> <p>Allocation of 5 virtual machines :</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Group A </th> 
+         <th class="confluenceTh"> Group A </th> 
+         <th class="confluenceTh"> Group B </th> 
+         <th class="confluenceTh"> Group B </th> 
+         <th class="confluenceTh"> Group C </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Machine A </td> 
+         <td class="confluenceTd"> MachineB </td> 
+         <td class="confluenceTd"> Machine A </td> 
+         <td class="confluenceTd"> Machine B </td> 
+         <td class="confluenceTd"> Machine A </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd"> 3 </td> 
+         <td class="confluenceTd"> 4 </td> 
+         <td class="confluenceTd"> 5 </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>Allocation of 3 virtual machines</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Group A </th> 
+         <th class="confluenceTh"> Group A </th> 
+         <th class="confluenceTh"> Group B </th> 
+         <th class="confluenceTh"> Group B </th> 
+         <th class="confluenceTh"> Group C </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Machine A </td> 
+         <td class="confluenceTd"> MachineB </td> 
+         <td class="confluenceTd"> Machine A </td> 
+         <td class="confluenceTd"> Machine B </td> 
+         <td class="confluenceTd"> Machine A </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd"> 3 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>Allocation of 8 virtual machines</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Group A </th> 
+         <th class="confluenceTh"> Group A </th> 
+         <th class="confluenceTh"> Group B </th> 
+         <th class="confluenceTh"> Group B </th> 
+         <th class="confluenceTh"> Group C </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Machine A </td> 
+         <td class="confluenceTd"> MachineB </td> 
+         <td class="confluenceTd"> Machine A </td> 
+         <td class="confluenceTd"> Machine B </td> 
+         <td class="confluenceTd"> Machine A </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1,6 </td> 
+         <td class="confluenceTd"> 2,7 </td> 
+         <td class="confluenceTd"> 3,8 </td> 
+         <td class="confluenceTd"> 4 </td> 
+         <td class="confluenceTd"> 5 </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>Allocation of 13 virtual machines</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Group A </th> 
+         <th class="confluenceTh"> Group A </th> 
+         <th class="confluenceTh"> Group B </th> 
+         <th class="confluenceTh"> Group B </th> 
+         <th class="confluenceTh"> Group C </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Machine A </td> 
+         <td class="confluenceTd"> MachineB </td> 
+         <td class="confluenceTd"> Machine A </td> 
+         <td class="confluenceTd"> Machine B </td> 
+         <td class="confluenceTd"> Machine A </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1,6,11 </td> 
+         <td class="confluenceTd"> 2,7,12 </td> 
+         <td class="confluenceTd"> 3,8,13 </td> 
+         <td class="confluenceTd"> 4,9 </td> 
+         <td class="confluenceTd"> 5,10 </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>Note that the above order is the consideration order for machines to run a particular virtual machine. If the machine resources have already been exhausted, the algorithm will automatically move to the next selectable machine in the order. Machine resources will be represented by processor utilization rate and memory available.</p> <p>So for example, say you want to allocate 3 virtual machines and Machine A of Group B is already fully utilized, the allocation will become :</p> <p>Allocation of 3 virtual machines</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Group A </th> 
+         <th class="confluenceTh"> Group A </th> 
+         <th class="confluenceTh"> Group B </th> 
+         <th class="confluenceTh"> Group B </th> 
+         <th class="confluenceTh"> Group C </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Machine A </td> 
+         <td class="confluenceTd"> MachineB </td> 
+         <td class="confluenceTd"> Machine A </td> 
+         <td class="confluenceTd"> Machine B </td> 
+         <td class="confluenceTd"> Machine A </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 3 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>It is possible to provide a specific allocation strategy when requesting virtual machines by implementing the following interface (final interface tbd) :</p> 
+     <div class="code panel" style="border-style: solid;border-width: 1px;">
+      <div class="codeHeader panelHeader" style="border-bottom-width: 1px;border-bottom-style: solid;">
+       <b>VMOrder</b>
+      </div>
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">/**
+ * An allocation strategy is responsible for allocating virtual machines given
+ * a set of server pools and machines within these server pools.
+ *
+ * @author Jerome Dochez
+ */
+public interface AllocationStrategy {
+
+    /**
+     * allocate a virtual machine within the provided server pools, notifying of progress all listeners
+     *
+     * @param serverPools the server pools elligible to run the virtual machine
+     * @param order the virtual machine requested characteristics
+     * @param listeners listeners to register before any work is performed
+     * @return a listenable future implementation that can be used to monitor progress and get the
+     * result of the allocation as {@link VirtualMachine} instance.
+     * @throws VirtException if the allocation failed.
+     */
+    ListenableFuture&lt;AllocationPhase, VirtualMachine&gt; allocate(Collection&lt;ServerPool&gt; serverPools,
+                                                               VMOrder order,
+                                                               List&lt;Listener&lt;AllocationPhase&gt;&gt; listeners)
+        throws VirtException;
+
+    /**
+     * Returns the server pool allocation strategy for a particular server pool instance.
+     * @param serverPool the server pool instance
+     * @return the server pool allocation strategy
+     */
+    ServerPoolAllocationStrategy getServerPoolStrategy(ServerPool serverPool);
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>If the allocation strategy cannot allocate all requested virtual machines because hardware resources are fully utilized, the returned allocated pools may be smaller than the requested provisioning request. In such case, it is the responsibility of the caller to decide if the reduced return is acceptable or not. If the reduced outcome is not acceptable, it is also the responsibility of the caller to delete all allocated virtual machines.</p> <h4><a name="3.2Virtualization-VMOrder"></a>VMOrder</h4> <p>A VMOrder instance contains the characteristics of the virtual machine provisioning request :</p> 
+     <ul> 
+      <li>virtual machine attributes like memory, number of processors allocated</li> 
+      <li>template to duplicate for each virtual machine</li> 
+      <li>group affinities where these virtual machines should allocated in priority</li> 
+      <li>list of existing virtual machines to no co-locate with.</li> 
+      <li>a set of properties (key-values) to pass to the virtual machine so it can configure itself.</li> 
+     </ul> 
+     <div class="code panel" style="border-style: solid;border-width: 1px;">
+      <div class="codeHeader panelHeader" style="border-bottom-width: 1px;border-bottom-style: solid;">
+       <b>VMOrder</b>
+      </div>
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">/**
+ * Virtual machine procurement order.
+ * @author Jerome Dochez
+ */
+public class VMOrder {
+
+    final TemplateInstance template;
+    final VirtualCluster targetCluster;
+    final List&lt;ServerPool&gt; groups = new ArrayList&lt;ServerPool&gt;();
+    final List&lt;VirtualMachine&gt; noColocationList = new ArrayList&lt;VirtualMachine&gt;();
+    final Properties vmProps = new Properties();
+
+    public VMOrder(TemplateInstance template, VirtualCluster targetCluster) {
+        this.template = template;
+        this.targetCluster = targetCluster;
+    }
+
+    /**
+     * Returns the virtual cluster this allocation is targeted to
+     * @return the target virtual cluster
+     */
+    public VirtualCluster getTargetCluster() {
+        return targetCluster;
+    }
+
+    /**
+     * Returns the requested characteristics for the virtual machines
+     * @return a set of static virtual machine characteristics to use when
+     * allocating the new virtual machines or null if the template characteristics
+     * should apply.
+     */
+    public StaticVirtualMachineInfo getCharacteristics() {
+        return null;
+    }
+
+    /**
+     * Specifies the serverPool in which the number of virtual machines should be allocated.
+     * If no serverPool is specified, it's left to the Infrastructure Management Service to
+     * decide in which groups those Virtual Machines will be allocated.
+     *
+     * @param groups desired serverPool instance
+     * @return itself
+     */
+    public VMOrder in(ServerPool... groups) {
+        this.groups.addAll(Arrays.asList(groups));
+        return this;
+    }
+
+    /**
+     * Specifies the virtual machines that should not be co-located on the same hardware
+     * with the new allocated virtual machines. This is particularly useful when willing
+     * to allocate replication instances for existing virtual machines so they do not end
+     * up being running on the same hardware resource.
+     *
+     * @param vms list of virtual machines to not co-locate with.
+     * @return itself.
+     */
+    public VMOrder noColocationWith(VirtualMachine... vms) {
+        this.noColocationList.addAll(Arrays.asList(vms));
+        return this;
+    }
+
+    /**
+     * Returns the properties for a specific virtual machine allocation. These properties
+     * will be passed to the virtual machine through a provider specific mechanism. Such
+     * properties can be used by the virtual machine to configure itself.
+     *
+     * @return the virtual machine properties
+     */
+    public Properties getVirtualMachineProperties() {
+        return vmProps;
+    }
+
+    /**
+     * Returns the groups this set of virtual machine allocations should be allocated into
+     *
+     * @return the groups we should use to allocate the virtual machines if possible.
+     */
+    public Collection&lt;ServerPool&gt; affinities() {
+        return Collections.unmodifiableList(groups);
+    }
+
+    /**
+     * Returns a list of virtual machine we would like the new virtual machines to not be
+     * co-located with (meaning not running on the same hardware resource).
+     *
+     * @return a list of virtual machines to no co-locate new ones with.
+     */
+    public List&lt;VirtualMachine&gt; separateFrom() {
+        return Collections.unmodifiableList(noColocationList);
+    }
+
+    /**
+     * Returns the template associated with the virtual machine order.
+     *
+     * @return the template to use for the virtual machines allocation.
+     */
+    public TemplateInstance getTemplate() {
+        return template;
+    }
+}</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="3.2Virtualization-CustomizationProperties"></a>Customization Properties</h4> <p>When creating or rebooting a virtual machine, a number of properties are passed from the IAAS layer to the virtual machine instance. How such properties are passed is a virtualization provider specific. The list of properties passed that can be used within the virtual machine is :</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Property Name </th> 
+         <th class="confluenceTh"> Description </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Cluster </td> 
+         <td class="confluenceTd"> Name of the GlassFish cluster this instance will belong too </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Instance </td> 
+         <td class="confluenceTd"> Name of the intended GlassFish instance </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> IMSPort </td> 
+         <td class="confluenceTd"> Port used by the IMS (by default, it's the DAS administration port </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> IMSMachine </td> 
+         <td class="confluenceTd"> IP address used by the IMS (by default, it's the DAS </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> DAS </td> 
+         <td class="confluenceTd"> DAS machine name </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> DASAddress </td> 
+         <td class="confluenceTd"> DAS IP Address </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> DASPort </td> 
+         <td class="confluenceTd"> DAS Administrative Port </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> AuthToken </td> 
+         <td class="confluenceTd"> Authentication token to talk to the DAS </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>Some virtualization technologies will have the ability to add more properties which are private contracts between the virt provider and the template. For instance, libvirt also adds those properties :</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Property Name </th> 
+         <th class="confluenceTh"> Description </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> UserName </td> 
+         <td class="confluenceTd"> User name that will be running GlassFish instance in this virtual machine </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> UserId </td> 
+         <td class="confluenceTd"> User id </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GroupId </td> 
+         <td class="confluenceTd"> User's group id </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>Any virtual machine specific properties passed to the VMOrder instance (see above) will also be stored in the customization properties.</p> <h4><a name="3.2Virtualization-VirtualMachine"></a>Virtual Machine</h3> <p>Once a virtual machine is created, it's possible to get some runtime information like its IP address or performs some life-cycle operations like starting, stopping and destroying.</p> 
+     <div class="code panel" style="border-style: solid;border-width: 1px;">
+      <div class="codeHeader panelHeader" style="border-bottom-width: 1px;border-bottom-style: solid;">
+       <b>VirtualMachine.java</b>
+      </div>
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">/**
+ * Defines a Virtual machine
+ * @author Jerome Dochez
+ */
+public interface VirtualMachine {
+
+    /**
+     * Returns the machine's name
+     * @return machine's name as it is registered in the configuration
+     */
+    String getName();
+
+    /**
+     * Returns the IP address of the machine, which can be varying at runtime
+     *
+     * @return the machine's IP address
+     */
+    String getAddress();
+
+    /**
+     * Sets the IO address of the machine, usually performed by a back end
+     * operation.
+     * @param address the new IP address
+     */
+    void setAddress(String address);
+
+    /**
+     * Starts the virtual machine
+     *
+     * @throws VirtException if the request to start failed.
+     */
+    void start() throws VirtException;
+
+    /**
+     * Suspend the virtual machine
+     * @throws VirtException if the request to suspend failed
+     */
+    void suspend() throws VirtException;
+
+    /**
+     * Resumes the virtual machine.
+     *
+     * @throws VirtException if the request to resume failed
+     */
+    void resume() throws VirtException;
+
+    /**
+     * Stops a virtual machine.
+     *
+     * @throws VirtException if the request to stop failed
+     */
+    void stop() throws VirtException;
+
+    /**
+     * Deletes the virtual machine and all associated storage
+     *
+     * @throws VirtException if the deletion failed
+     */
+    void delete() throws VirtException;
+
+    /**
+     * Returns the current machine information
+     * @return the machine's current information
+     */
+    VirtualMachineInfo getInfo();
+}</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="3.2Virtualization-VirtualMachineinformation"></a>Virtual Machine information</h4> <p>To get runtime information about a particular virtual machine, the VirtualMachineInfo instance for that virtual machine instance must be retrieved.&nbsp;</p> 
+     <div class="code panel" style="border-style: solid;border-width: 1px;">
+      <div class="codeHeader panelHeader" style="border-bottom-width: 1px;border-bottom-style: solid;">
+       <b>VirtualMachineInfo.java</b>
+      </div>
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">/**
+ * Returns the virtual machine information
+ * @author Jerome Dochez
+ */
+public interface VirtualMachineInfo extends StaticVirtualMachineInfo {
+
+    /**
+     * Returns the maximum memory allocated to this virtual machine.
+     *
+     * @return the virtual machine maximum memory.
+     */
+    long maxMemory() throws VirtException;
+
+    /**
+     * Returns the current memory used by this virtual machine
+     * @return the virtual machine current memory usage
+     */
+    long memory() throws VirtException;
+
+    /**
+     * Returns the CPU used by this virtual machine
+     * @return the CPU time used by this VM.
+     * @throws VirtException
+     */
+    long cpuTime() throws VirtException;
+
+    /**
+     * Returns the machine's state
+     * @return the machine's state
+     *
+     * @throws VirtException if the machine's state cannot be obtained
+     */
+    Machine.State getState() throws VirtException;
+
+    /**
+     * Registers a memory changes listener
+     * @param ml the memory listener instance
+     * @param delay notification interval for memory changes polling.
+     * @param unit the time unit to express delay
+     */
+    void registerResourcesListener(VMResourcesListener ml, long delay, TimeUnit unit);
+
+    /**
+     * Un-registers a memory changes listener
+     * @param ml, the listener to un-register.
+     */
+    void unregisterResourcesListener(VMResourcesListener ml);
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>Monitoring code will be able to register listeners to virtual machines to be notified at interval of the memory consumption of the virtual machine.</p> 
+     <div class="code panel" style="border-style: solid;border-width: 1px;">
+      <div class="codeHeader panelHeader" style="border-bottom-width: 1px;border-bottom-style: solid;">
+       <b>VMResourcesListener</b>
+      </div>
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">public interface VMResourcesListener {
+
+    public void notified(VirtualMachine vm, long memory, long cpuTime);
+}</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="3.2Virtualization-Templates"></a>Templates</h2> <p>Templates are virtual machines disks pre-loaded with an operating system and a glassfish installation (tbd if we eventually support the install-node command in templates). Templates are used to create a virtual machine by copying the template to a disk storage, customize the template and eventually run it.</p> <h4><a name="3.2Virtualization-Templatescontent"></a>Templates content</h3> <p>A template must contain the following pages : glassfish, jdk6.</p> <p>Find below an example of the template installation based on an ubuntu operating system :</p> 
+     <div class="code panel" style="border-style: solid;border-width: 1px;">
+      <div class="codeHeader panelHeader" style="border-bottom-width: 1px;border-bottom-style: solid;">
+       <b>Template installation example with ubuntu</b>
+      </div>
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">sudo apt-get -y -q install wget
+sudo apt-get -y -q install sun-java6-jdk
+sudo apt-get -y -q install unzip
+sudo apt-get -y -q install openssh-server
+sudo apt-get clean</pre> 
+       </div> 
+      </div>
+     </div> <p>The template boot must perform a number of tasks that are dependent on the virtualization solution. As an example, in kvm a template must have a script responsible for providing the virtual machine IP address to the DAS at each startup.</p> <h4><a name="3.2Virtualization-Templateconfiguration"></a>Template configuration</h3> <p>Each template implements 1 to many service type. Each service type will carry some configuration that will be used to communicate with the instance one it is up (like its ports, installation directory).</p> <p><font color="inherit">How this information is stored is not yet fully determined : it will be using domain.xml configuration or it might be using the template configuration file it is extensible.</font></p> <h4><a name="3.2Virtualization-JavaEEServiceconfiguration"></a>Java EE Service configuration</h4> <p>Each template will provide the following configuration :</p> 
+     <ul> 
+      <li>glassfish installation directory</li> 
+      <li>user credential&nbsp;</li> 
+     </ul> <h4><a name="3.2Virtualization-ServerPool"></a>ServerPool</h2> <p>A ServerPool defines an interface to allocate virtual machine based on a registered template. Several ServerPools can be registered to a GlassFish configuration, each group representing a boundary, either physical like a set of machines, either functional like a particular virtualization implementation. The IAAS layer internally delegates all lifecycles calls to ServerPools implementation.&nbsp;</p> <p>There are three types of ServerPools possible :</p> <p>The IMS only deals with ServerPool instances, it is immaterial if those instances are abstract ServerPools, physical ServerPools or remote ServerPools.<br> A ServerPool uses a plugin to interface with the virtualization implementation.&nbsp;</p> <h4><a name="3.2Virtualization-AbstractServerPool"></a>Abstract ServerPool</h3> <p>An abstract ServerPool is an interface to an existing virtualization implementation that does not need to manage machines, resource pools (like storage) and the relationship between them. It has the ability to create virtual machines based on templates, and provide basic lifecyle for such virtual machines but it offers very little control over where such virtual machines are allocation and the physical attributes of the bare metal machines running the virtual machines.</p> <p>An example of an abstract group is EC2 where GlassFish does not need to be concerned about the hardware available to run virtual machines.&nbsp;</p> 
+     <div class="code panel" style="border-style: solid;border-width: 1px;">
+      <div class="codeHeader panelHeader" style="border-bottom-width: 1px;border-bottom-style: solid;">
+       <b>ServerPool.java</b>
+      </div>
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">/**
+ * Abstract a set of servers than can be used to provide {@link VirtualMachine}
+ *
+ * @author Jerome Dochez
+ */
+public interface ServerPool {
+
+    /**
+     * Returns the configuration for this server pool.
+     *
+     * @return  the server pool's configuration.
+     */
+    ServerPoolConfig getConfig();
+    void setConfig(ServerPoolConfig config);
+
+
+    /**
+     * Returns this pool's name.
+     * @return  this pool's name
+     */
+    String getName();
+
+    /**
+     * Returns all allocated virtual machine in this server pool
+     * @return the list of allocated virtual machines
+     */
+    Collection&lt;VirtualMachine&gt; getVMs() throws VirtException;
+
+    /**
+     * Returns an allocated virtual machine in this server pool using its name.
+     * @param name virtual machine name
+     * @return virtual machine instance if found or null otherwise.
+     * @throws VirtException if the vm cannot be obtained
+     */
+    VirtualMachine vmByName(String name) throws VirtException;
+
+    /**
+     * Allocates number of virtual machines on any machine belonging to this server pool, each virtual machine
+     * should be based on the provided template.
+     * @param template  template for the virtual machines
+     * @param cluster the virtual cluster instance to allocated virtual machines for
+     * @return Listenable future for the VirtualMachine instance
+     * @throws VirtException when the virtual machine creation failed.
+     */
+    ListenableFuture&lt;AllocationPhase, VirtualMachine&gt; allocate(TemplateInstance template, VirtualCluster cluster) throws VirtException;
+
+    /**
+     * Returns the list of templates installed.
+     * @return list of installed templates or empty list if none
+     */
+    List&lt;VMTemplate&gt; getInstalledTemplates();
+
+    /**
+     * Install a template in this server pool
+     * @param template to install
+     */
+    void install(VMTemplate template);
+}</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="3.2Virtualization-ServerPool"></a>ServerPool</h3> 
+     <div class="code panel" style="border-style: solid;border-width: 1px;">
+      <div class="codeHeader panelHeader" style="border-bottom-width: 1px;border-bottom-style: solid;">
+       <b>ServerPool.java</b>
+      </div>
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">/**
+ * Abstract a set of servers than can be used to provide {@link VirtualMachine}
+ *
+ * @author Jerome Dochez
+ */
+public interface ServerPool {
+
+    /**
+     * Returns the configuration for this server pool.
+     *
+     * @return  the server pool's configuration.
+     */
+    ServerPoolConfig getConfig();
+    void setConfig(ServerPoolConfig config);
+
+
+    /**
+     * Returns this pool's name.
+     * @return  this pool's name
+     */
+    String getName();
+
+    /**
+     * Returns all allocated virtual machine in this server pool
+     * @return the list of allocated virtual machines
+     */
+    Collection&lt;VirtualMachine&gt; getVMs() throws VirtException;
+
+    /**
+     * Returns an allocated virtual machine in this server pool using its name.
+     * @param name virtual machine name
+     * @return virtual machine instance if found or null otherwise.
+     * @throws VirtException if the vm cannot be obtained
+     */
+    VirtualMachine vmByName(String name) throws VirtException;
+
+    /**
+     * Allocates number of virtual machines on any machine belonging to this server pool, each virtual machine
+     * should be based on the provided template.
+     * @param template  template for the virtual machines
+     * @param cluster the virtual cluster instance to allocated virtual machines for
+     * @return Listenable future for the VirtualMachine instance
+     * @throws VirtException when the virtual machine creation failed.
+     */
+    ListenableFuture&lt;AllocationPhase, VirtualMachine&gt; allocate(TemplateInstance template, VirtualCluster cluster) throws VirtException;
+
+    /**
+     * Returns the list of templates installed.
+     * @return list of installed templates or empty list if none
+     */
+    List&lt;VMTemplate&gt; getInstalledTemplates();
+
+    /**
+     * Install a template in this server pool
+     * @param template to install
+     */
+    void install(VMTemplate template);
+}</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="3.2Virtualization-PhysicalServerPool"></a>Physical ServerPool</h3> <p>A physical ServerPool is an abstraction on a set of machines that use the same virtualization technology (in reality they only need to use the same plugin implementation to communicate). Such machines can be grouped by geography, nothing prevents the registration of several groups using the same underlying technology.&nbsp;</p> <p>On top of the interface described above, ServerPool membership is handled by the physical ServerPool so machines can be attached to group using the machine's IP address or DNS name or Mac address (subnet requirements apply).&nbsp;</p> 
+     <div class="code panel" style="border-style: solid;border-width: 1px;">
+      <div class="codeHeader panelHeader" style="border-bottom-width: 1px;border-bottom-style: solid;">
+       <b>PhysicalServerPool.java</b>
+      </div>
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">/**
+ * Represents a serverPool of machines. How machines are allocated to groups is defined
+ * by the user.
+ *
+ * @author  Jerome Dochez
+ */
+@Contract
+public interface PhysicalServerPool extends ServerPool {
+
+    /**
+     * Returns the currently attached machines to this serverPool
+     *
+     * @return iterable of machines attached to this serverPool
+     */
+    Iterable&lt;? extends Machine&gt; machines();
+
+    /**
+     * Returns a @see Machine instance which name is equal to the provided name
+     * @param name  name of the machine looked up
+     * @return  the @see Machine instance if found or null otherwise
+     */
+    Machine byName(String name);
+
+    /**
+     * Returns the size of this serverPool
+     *
+     * @return size of the serverPool.
+     */
+    int size();
+}</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="3.2Virtualization-ServerPoolManagement"></a>ServerPool Management</h3> <p>ServerPools must be defined in the domain.xml configuration, a number of methods are used to alter this configuration.</p> 
+     <div class="code panel" style="border-style: solid;border-width: 1px;">
+      <div class="codeHeader panelHeader" style="border-bottom-width: 1px;border-bottom-style: solid;">
+       <b>ServerPool management commands</b>
+      </div>
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">create-server-pool --virtname=virtname --subnet=subnet --portname=portname name
+    delete-server-pool name
+    list-server-pools</pre> 
+       </div> 
+      </div>
+     </div> <p>Notes : virtName is the virtualization solution used by the ServerPool, subnet is the subnet of this ServerPool, and portname is the port used by the IAAS to communicate with ServerPool members.</p> <h4><a name="3.2Virtualization-ServerPooldefaultUser"></a>ServerPool default User</h4> <p>Machines attached to a ServerPool need a user id to connect to through SSH. ServerPools can define a default user id for all machines within the ServerPool. This might move into the create-server-pool command.</p> 
+     <div class="code panel" style="border-style: solid;border-width: 1px;">
+      <div class="codeHeader panelHeader" style="border-bottom-width: 1px;border-bottom-style: solid;">
+       <b>ServerPool user management commands</b>
+      </div>
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">create-server-pool-user --pool=poolid [--authmethod=authmethod] --userid=userid --groupid=groupid name</pre> 
+       </div> 
+      </div>
+     </div> <p>to do : delete-group-user</p> <h4><a name="3.2Virtualization-Machine"></a>Machine</h4> <p>Machines can be added to a ServerPool using the create-machine command. Each machine can have it's own emulator (paravirtualized versus hardware accelerated), defines where templates and virtual machines disks should be stored. A machine is identified by its name within a group and can be accessed through its mac-address or its network DNS name.</p> <p>A machine will also have the following properties :</p> 
+     <ul> 
+      <li>maximum processor utilization rate (80%)</li> 
+      <li>maximum memory utilization rate (80%)</li> 
+     </ul> 
+     <div class="code panel" style="border-style: solid;border-width: 1px;">
+      <div class="codeHeader panelHeader" style="border-bottom-width: 1px;border-bottom-style: solid;">
+       <b>Machine management commands</b>
+      </div>
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">create-machine [--emulator=emulator] [--templateslocation=templateslocation] [--mac=mac] --serverPool=poolName [--networkname=networkname] [--diskslocation=diskslocation] [--maxcpu=maxcpu] [--maxmem=maxmemory] name
+delete-machine --pool=group name
+list-machines --pool=group</pre> 
+       </div> 
+      </div>
+     </div> <h5><a name="3.2Virtualization-User"></a>User</h5> <p>User id used to ssh into the machine when overriding the ServerPool's default user. Again this might move to the create-machine command.</p> 
+     <div class="code panel" style="border-style: solid;border-width: 1px;">
+      <div class="codeHeader panelHeader" style="border-bottom-width: 1px;border-bottom-style: solid;">
+       <b>Machine management commands</b>
+      </div>
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">create-machine-user --groupid=groupid [--authmethod=authmethod] --userid=userid --machine=machine --pool=poolName name</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="3.2Virtualization-RemoteServerPoolaccess"></a>Remote ServerPool access</h3> <p>A remote group happens when the server pool master is located on a different machine than the IMS. This is particularly useful when the virtualization infrastructure is owned by a different IT group. The APIs are similar, the remoting part of the call for a remote group is left to implementation details (most likely to use the asadmin commands infrastructure).</p> <p>more work needed to express a remote group access : URL ? machine name ? address ? port ?</p> 
+     <div class="code panel" style="border-style: solid;border-width: 1px;">
+      <div class="codeHeader panelHeader" style="border-bottom-width: 1px;border-bottom-style: solid;">
+       <b>Machine management commands</b>
+      </div>
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">create-group-manager --url=url name</pre> 
+       </div> 
+      </div>
+     </div> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874871/21365310.png">layerediaas.png</a> (image/png) 
+      <br> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Nov 07, 2011 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

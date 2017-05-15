@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : AsadminCommands</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   
+     <div> 
+      <ul> 
+       <li><a href="#AsadminCommands-ListsofasadminSubcommands">Lists of asadmin Subcommands</a></li> 
+       <li><a href="#AsadminCommands-UsageComparisonwithPreviousReleases">Usage Comparison with Previous Releases</a></li> 
+       <li><a href="#AsadminCommands-NewSubcommands">New Subcommands</a></li> 
+       <li><a href="#AsadminCommands-SubcommandOutput">Subcommand Output</a></li> 
+      </ul>
+     </div> <h4><a name="AsadminCommands-ListsofasadminSubcommands"></a>Lists of asadmin Subcommands</h1> <p>The following pages contain the official lists of subcommands that are supported by various releases of GlassFish Server:</p> 
+     <ul> 
+      <li><a href="GlassFish Server 4.0 asadmin Subcommands.html" title="GlassFish Server 4.0 asadmin Subcommands">GlassFish Server 4.0 asadmin Subcommands</a></li> 
+      <li><a href="GlassFish Server 3.1 asadmin Subcommands.html" title="GlassFish Server 3.1 asadmin Subcommands">GlassFish Server 3.1 asadmin Subcommands</a></li> 
+     </ul> <p>The list for a release forms the basis of documentation and QA work for the GlassFish Server administration CLI. Note that the list of subcommands for a release does not state the GlassFish Server distribution in which the subcommands are available. For this information, refer to the distributions/packaging specification. A subcommand is a part of a GlassFish Server module and is available only if the module itself is available.</p> <h4><a name="AsadminCommands-UsageComparisonwithPreviousReleases"></a>Usage Comparison with Previous Releases</h1> <p>The <a href="http://java.net/jira/secure/attachment/48015/get-command-usages">get-command-usages</a> and <a href="http://java.net/jira/secure/attachment/48016/get-command-usage-diffs">get-command-usage-diffs</a> scripts can be used to get the differences in commands from one release to another. To use the scripts, first run the get-command-usages script for each release. Start in the directory that holds the "glassfish3" directory for the release, and a "cmds" directory will be created with the usage for each command. Next, run the get-command-usage-diffs script, giving as argument the directory that contains the "cmds" directory for each release. So if you have 3.0 installed in v3.0/glassfishv3 and 3.1 in v3.1/glassfish3, the procedure is as follows:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">cd v3.0
+get-command-usages
+cd ../v3.1
+get-command-usages
+cd ..
+get-command-usage-diffs v3.0 v3.1 &gt; diffs.results</pre> 
+       </div> 
+      </div>
+     </div> <p>See the output of these scripts <a href="http://java.net/jira/secure/attachment/48017/cmd-diffs.v3.0-v3.1">comparing 3.0 and the 3.1 trunk as of 8/26/2010</a>. In this file, the lines marked with "&lt;" are those from 3.0 and the lines marked with "&gt;" are those from 3.1.</p> <p>A similar script was run for comparing 2.1.1 and 3.1. The commands that are in 2.1 but not in 3.1 are ignored for this comparison. &nbsp;See output of these scripts <a href="http://java.net/jira/secure/attachment/48018/cmd-diffs.v2.1-v3.1">comparing 2.1.1 and 3.1 trunk as of 9/1/2010</a>.</p> <h4><a name="AsadminCommands-NewSubcommands"></a>New Subcommands</h1> <p>New commands that are introduced in a release are identified with the release number for the release in the "Source" column.</p> <h4><a name="AsadminCommands-SubcommandOutput"></a>Subcommand Output</h1> <p>Issue <a href="https://github.com/javaee/glassfish/issues/12236">12236</a> requests a review of all subcommands for output consistency and backward compatibility. As a part of that effort, a set of <a href="Asadmin Command Output Guidelines.html" title="Asadmin Command Output Guidelines">guidelines for asadmin subcommand output</a> are being established to help with the evaluation.</p> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Mar 15, 2012 by 
+<font color="#0050B2">10189</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

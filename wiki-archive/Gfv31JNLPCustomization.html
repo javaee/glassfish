@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : Gfv31JNLPCustomization</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="Gfv31JNLPCustomization-GlassFishServerOpenSourceEdition3.1AppClientContainerOnePagerJNLPCustomization"></a>GlassFish Server Open Source Edition 3.1 - App Client Container One Pager - JNLP Customization</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#Gfv31JNLPCustomization-GlassFishServerOpenSourceEdition3.1AppClientContainerOnePagerJNLPCustomization">GlassFish Server Open Source Edition 3.1 - App Client Container One Pager - JNLP Customization</a></li> 
+       <li><a href="#Gfv31JNLPCustomization-1.Introduction">1. Introduction</a></li> 
+       <ul> 
+        <li><a href="#Gfv31JNLPCustomization-1.1.Project%2FComponentWorkingName%3A">1.1. Project/Component Working Name:</a></li> 
+        <li><a href="#Gfv31JNLPCustomization-1.2.Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier%3A">1.2. Name(s) and e-mail address of Document Author(s)/Supplier:</a></li> 
+        <li><a href="#Gfv31JNLPCustomization-1.3.DateofThisDocument%3A">1.3. Date of This Document:</a></li> 
+       </ul> 
+       <li><a href="#Gfv31JNLPCustomization-2.ProjectSummary">2. Project Summary</a></li> 
+       <ul> 
+        <li><a href="#Gfv31JNLPCustomization-2.1.ProjectDescription%3A">2.1. Project Description:</a></li> 
+        <li><a href="#Gfv31JNLPCustomization-2.2.RisksandAssumptions%3A">2.2. Risks and Assumptions:</a></li> 
+       </ul> 
+       <li><a href="#Gfv31JNLPCustomization-3.ProblemSummary">3. Problem Summary</a></li> 
+       <ul> 
+        <li><a href="#Gfv31JNLPCustomization-3.1.ProblemArea%3A">3.1. Problem Area:</a></li> 
+        <li><a href="#Gfv31JNLPCustomization-3.2.Justification%3A">3.2. Justification:</a></li> 
+       </ul> 
+       <li><a href="#Gfv31JNLPCustomization-4.TechnicalDescription%3A">4. Technical Description:</a></li> 
+       <ul> 
+        <li><a href="#Gfv31JNLPCustomization-4.1.Details%3A">4.1. Details:</a></li> 
+        <li><a href="#Gfv31JNLPCustomization-CustomizableJNLP">Customizable JNLP</a></li> 
+        <li><a href="#Gfv31JNLPCustomization-TwoModels">Two Models</a></li> 
+        <li><a href="#Gfv31JNLPCustomization-UserExperience">User Experience</a></li> 
+        <li><a href="#Gfv31JNLPCustomization-IdentifyingtheCustomJNLPFile">Identifying the Custom JNLP File</a></li> 
+        <li><a href="#Gfv31JNLPCustomization-WritingtheCustomJNLPFile">Writing the Custom JNLP File</a></li> 
+        <li><a href="#Gfv31JNLPCustomization-HowGlassFishCombinesDeveloperprovidedJNLPwithGlassFishgeneratedJNLP">How GlassFish Combines Developer-provided JNLP with GlassFish-generated JNLP</a></li> 
+        <li><a href="#Gfv31JNLPCustomization-SomeDesign%2FimplementationDetails">Some Design/implementation Details</a></li> 
+        <ul> 
+         <li><a href="#Gfv31JNLPCustomization-ControllinghowJNLPisCombined">Controlling how JNLP is Combined</a></li> 
+         <li><a href="#Gfv31JNLPCustomization-SecurityforUserreferencedfiles">Security for User-referenced files</a></li> 
+        </ul> 
+        <li><a href="#Gfv31JNLPCustomization-4.2.Bug%2FRFENumber%28s%29%3A">4.2. Bug/RFE Number(s):</a></li> 
+        <li><a href="#Gfv31JNLPCustomization-4.3.InScope%3A">4.3. In Scope:</a></li> 
+        <li><a href="#Gfv31JNLPCustomization-4.4.OutofScope%3A">4.4. Out of Scope:</a></li> 
+        <li><a href="#Gfv31JNLPCustomization-4.5.Interfaces%3A">4.5. Interfaces:</a></li> 
+        <ul> 
+         <li><a href="#Gfv31JNLPCustomization-4.5.1ExportedInterfaces">4.5.1 Exported Interfaces</a></li> 
+         <li><a href="#Gfv31JNLPCustomization-4.5.2Importedinterfaces">4.5.2 Imported interfaces</a></li> 
+         <li><a href="#Gfv31JNLPCustomization-4.5.3Otherinterfaces%28Optional%29">4.5.3 Other interfaces (Optional)</a></li> 
+        </ul> 
+        <li><a href="#Gfv31JNLPCustomization-4.6.DocImpact%3A">4.6. Doc Impact:</a></li> 
+        <li><a href="#Gfv31JNLPCustomization-4.7.Admin%2FConfigImpact%3A">4.7. Admin/Config Impact:</a></li> 
+        <li><a href="#Gfv31JNLPCustomization-4.8.HAImpact%3A">4.8. HA Impact:</a></li> 
+        <li><a href="#Gfv31JNLPCustomization-4.9.I18N%2FL10NImpact%3A">4.9. I18N/L10N Impact:</a></li> 
+        <li><a href="#Gfv31JNLPCustomization-4.10.Packaging%26Delivery%3A">4.10. Packaging &amp; Delivery:</a></li> 
+        <li><a href="#Gfv31JNLPCustomization-4.11.SecurityImpact%3A">4.11. Security Impact:</a></li> 
+        <li><a href="#Gfv31JNLPCustomization-4.12.CompatibilityImpact">4.12. Compatibility Impact</a></li> 
+        <li><a href="#Gfv31JNLPCustomization-4.13.Dependencies%3A">4.13. Dependencies:</a></li> 
+       </ul> 
+       <li><a href="#Gfv31JNLPCustomization-5.ReferenceDocuments%3A">5. Reference Documents:</a></li> 
+       <li><a href="#Gfv31JNLPCustomization-6.Schedule%3A">6. Schedule:</a></li> 
+       <ul> 
+        <li><a href="#Gfv31JNLPCustomization-6.1.ProjectedAvailability%3A">6.1. Projected Availability:</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="Gfv31JNLPCustomization-1.Introduction"></a>1. Introduction</h1> <h4><a name="Gfv31JNLPCustomization-1.1.Project%2FComponentWorkingName%3A"></a>1.1. Project/Component Working Name:</h2> <p>App Client Container</p> <h4><a name="Gfv31JNLPCustomization-1.2.Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier%3A"></a>1.2. Name(s) and e-mail address of Document Author(s)/Supplier:</h2> <p>Tim Quinn (tim.quinn@oracle.com)</p> <h4><a name="Gfv31JNLPCustomization-1.3.DateofThisDocument%3A"></a>1.3. Date of This Document:</h2> <p>03/11/2010<br> Rev. 06/15/2010<br> Rev. 06/16/2010<br> Rev. 06/28/2010<br> Rev. 07/07/2010 - clean-up from wiki migration<br> Rev. 08/03/2010 - add to owned/defaulted/merged discussion<br> Rev. 08/24/2010 - clarify note about not listing all JARs in custom JNLP</p> <h4><a name="Gfv31JNLPCustomization-2.ProjectSummary"></a>2. Project Summary</h1> <h4><a name="Gfv31JNLPCustomization-2.1.ProjectDescription%3A"></a>2.1. Project Description:</h2> <p>This one-pager describes changes and additions to app client support in GlassFish Server Open Source Edition 3.1, focusing on externally-visible changes (but with some comments on internal implementation choices). Currently the key change is to allow developers to influence the JNLP documents which GlassFish generates for Java Web Start support of launching app clients.</p> <h4><a name="Gfv31JNLPCustomization-2.2.RisksandAssumptions%3A"></a>2.2. Risks and Assumptions:</h2> <h4><a name="Gfv31JNLPCustomization-3.ProblemSummary"></a>3. Problem Summary</h1> <h4><a name="Gfv31JNLPCustomization-3.1.ProblemArea%3A"></a>3.1. Problem Area:</h2> 
+     <ul> 
+      <li>Allow developers to influence and customized the generated JNLP documents for Java Web Start support</li> 
+     </ul> <h4><a name="Gfv31JNLPCustomization-3.2.Justification%3A"></a>3.2. Justification:</h2> 
+     <ul> 
+      <li>Developers cannot currently influence, customize, or alter the automatically-generated JNLP in GlassFish 3.0 and earlier. Although the generated JNLP covers many common cases adequately, there are some significant cases which we cannot handle simply because the developer cannot influence the JNLP. (For example, including native libraries in the client.)</li> 
+     </ul> <h4><a name="Gfv31JNLPCustomization-4.TechnicalDescription%3A"></a>4. Technical Description:</h1> <h4><a name="Gfv31JNLPCustomization-4.1.Details%3A"></a>4.1. Details:</h2> <h4><a name="Gfv31JNLPCustomization-CustomizableJNLP"></a>Customizable JNLP</h2> <p>This feature is optional. A developer using it needs to tell GlassFish where the customizing JNLP file is located and needs to package that JNLP, any referenced JNLPs, and any JARs required by the client into the EAR.</p> <h4><a name="Gfv31JNLPCustomization-TwoModels"></a>Two Models</h2> <p>Developers can bring two different perspectives to this task.</p> <p><b><em>App Client-centric</em></b></p> <p>The developer knows about writing and packaging app clients, particularly understanding that JARs needed by the app client will reside within the EAR following the normal EAR packaging model. GlassFish will automatically serve any extra JNLPs and JARs the developer references from the custom JNLP.</p> <p><b><em>Web app-centric</em></b></p> <p>The developer has written Java Web Start apps previously and is familiar with packaging and deploying the JNLP files and JARs in web applications. GlassFish will serve any extra JNLPs and JARs referenced from the developer's custom JNLP through the normal web app support.</p> <p><b><em>Design Center for 3.1</em></b></p> <p>The app client-centric model is the design center in GlassFish 3.1 for allowing customization of the JNLP.</p> <p>Rationale: The original driver behind support for Java Web Start launches was to give developers who have existing app clients or are building new ones a simple, automatic way for end users to launch those app clients using Java Web Start. That is, the starting point has been an app client-centric approach. We have seen steady (although not huge) usage of this feature, judging from forum traffic, with that model. We have not seen requests for the web app-centric model, which could be either because no demand exists or because the demand that does exist is invisible to us. The proposal for 3.1 is to implement the app client-centric model in a way that does not preclude us from also supporting the web app-centric model in a future release if the we learn of demand for it. (some notes on the web app-centric model )</p> <h4><a name="Gfv31JNLPCustomization-UserExperience"></a>User Experience</h2> <h4><a name="Gfv31JNLPCustomization-IdentifyingtheCustomJNLPFile"></a>Identifying the Custom JNLP File</h2> <p>A developer can add an optional element to an app client's <tt>glassfish-application-client.xml</tt> descriptor to point to a JNLP document within the application. When GlassFish loads the application it will combine this JNLP document with JNLP content which GlassFish controls, producing the resulting JNLP that will launch the app client.</p> <p>The <tt>glassfish-application-client.xml</tt> descriptor already supports the optional <tt>&lt;java-web-start-access&gt;</tt> element. This element now adds a new optional subelement, <tt>&lt;jnlp-doc&gt;</tt>. Its text value is a relative URI within the application pointing to the developer's custom JNLP document. (By using the tag "jnlp-doc" rather than "jnlp" we intend to reduce the chance that a developer might think the entire custom JNLP document would be placed into the descriptor itself.)</p> <p>The value of the <tt>&lt;jnlp-doc&gt;</tt> element is a relative path:</p> <p><tt>[path-to-JAR-in-EAR ! ] path-to-JNLP-in-JAR</tt></p> <p>where the default path-to-JAR-in-EAR is the current app client JAR.</p> <p>That is, the developer can put the custom JNLP document into the app client JAR, say at custom/myInfo.jnlp. Then the <tt>glassfish-application-client.xml</tt> descriptor would look like this:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: xml; gutter: false">...
+   &lt;java-web-start-access&gt;
+      &lt;jnlp-doc&gt;custom/myInfo.jnlp&lt;/jnlp-doc&gt;
+...</pre> 
+       </div> 
+      </div>
+     </div> <p>This works both if the client is deployed stand-alone or if it is inside an EAR.</p> <p>If the app client is inside an EAR, the developer can choose instead to place the custom JNLP file inside some other JAR in the EAR. If that other JAR is packaged in the EAR as other/myLib.jar, then the descriptor would contain</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: xml; gutter: false">...
+   &lt;java-web-start-access&gt;
+      &lt;jnlp-doc&gt;other/myLib.jar!custom/myInfo.jnlp&lt;/jnlp-doc&gt;
+...</pre> 
+       </div> 
+      </div>
+     </div> <p>Note that specifying where the custom JNLP resides is from the developer's perspective when he or she builds the app client JAR and/or the EAR. The paths are in the context of the app client JAR itself or the containing EAR if there is one. Further, the custom JNLP is always packaged as part of the app client or the EAR. GlassFish does not support specifying a custom JNLP document that lies outside the deployment unit.</p> <h4><a name="Gfv31JNLPCustomization-WritingtheCustomJNLPFile"></a>Writing the Custom JNLP File</h2> <p>A developer can write the custom JNLP file almost as if he or she were writing a separate JNLP application; GlassFish completely determines a small part of the resulting JNLP content regardless of what the developer writes.</p> <p>As with any JNLP document, the developer's custom JNLP for GlassFish can refer to JARs which the app client requires. </p> 
+     <div class="panelMacro">
+      <table class="noteMacro">
+       <colgroup>
+        <col width="24">
+        <col>
+       </colgroup>
+       <tbody>
+        <tr>
+         <td valign="top"><img src="images/icons/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td>
+         <td>The developer <b>should not</b> specify every JAR on which the client depends. GlassFish will automatically handle JARs that the Java EE spec requires to be available to the app client. This includes JARs listed in the app client JAR's manifest Class-Path and JARs in the EAR's library directory (if any) and their transitive closures. The developer's custom JNLP document should specify only those JARs which the client needs that GlassFish would not otherwise include.</td>
+        </tr>
+       </tbody>
+      </table>
+     </div> <p>The developer packages these JARs - as with any JAR required by an app client - in the EAR. The developer uses relative URIs in his or her <tt>&lt;jar href="..."&gt;</tt> and <tt>&lt;nativelib href="..."&gt;</tt> elements to point to the JARs. The codebase which GlassFish will assign for the final client JNLP document corresponds to the top-level of the EAR, so relative hrefs correspond directly to the relative path to the JARs within the EAR.</p> <p>Note that neither the Java EE spec nor GlassFish supports packaging JARs inside the app client JAR itself. The developer is free to do so, but GlassFish does no special processing of such JARs. They will not appear in the runtime class path and they cannot be referenced from the developer's custom JNLP document.</p> <p>The developer's JNLP can also refer to other developer-written JNLP documents using <tt>&lt;extension href="..."/&gt;</tt> elements. To be consistent with relative hrefs to JARs, the developer's relative hrefs to JNLPs are resolved within the EAR. The developer can place these JNLPs directly in the EAR or inside JARs which the EAR contains. The developer can use the same format for these hrefs as for the <tt>&lt;jnlp-doc&gt;</tt> element:</p> <p><tt>path-to-JAR-in-EAR ! path-in-JAR-to-JNLP</tt><br> <tt>path-in-EAR-to-JNLP</tt></p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Location of JNLP </th> 
+         <th class="confluenceTh"> Referenced JNLP location </th> 
+         <th class="confluenceTh"> href from developer's JNLP </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> in the EAR </td> 
+         <td class="confluenceTd"> stuff/extra.jnlp </td> 
+         <td class="confluenceTd"> stuff/extra.jnlp </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> in a JAR </td> 
+         <td class="confluenceTd"> other/a.jar contains stuff/extra.jnlp </td> 
+         <td class="confluenceTd"> other/a.jar!stuff/extra.jnlp </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>where the JNLP-inside-JAR URI format follows the standard entry-within-a-JAR URI syntax and semantics. Support for this syntax comes from the GlassFish Grizzly adapter which serves requests from the automated Java Web Start support. This is not a feature of Java Web Start or the JNLP standard.</p> <p>Because GlassFish will always set the codebase of all JNLP documents to correspond to the EAR, the developer will need to remember this in writing multiply-nested JNLPs and the hrefs within them, realizing that all relative hrefs will be resolved with respect to the EAR.</p> <h4><a name="Gfv31JNLPCustomization-HowGlassFishCombinesDeveloperprovidedJNLPwithGlassFishgeneratedJNLP"></a>How GlassFish Combines Developer-provided JNLP with GlassFish-generated JNLP</h2> <p>If the developer provides his or her own JNLP file, GlassFish combines that content in a predictable way with its own generated JNLP to come up with the final JNLP used to launch the app client.</p> <p>GlassFish creates the various portions of the final JNLP in one of three ways:</p> 
+     <ul> 
+      <li>owned - GlassFish owns the content and ignores any developer-provided content for that portion</li> 
+      <li>merged - GlassFish merges the GlassFish-generated content and the developer's content for that portion</li> 
+      <li>defaulted - GlassFish uses only the developer's content if it is present; otherwise GlassFish provides default content for that portion</li> 
+     </ul> <p>This means that the developer can (but does not have to) compose a complete JNLP document and package it with the application. GlassFish will know how to combine the right parts from it with the GlassFish-generated JNLP. This is not what we recommend but it will work. Rather, we expect developers will provide small bits of content which will specify only what they want to add to what GlassFish generates. Keep in mind that the developer-provided content must still conform to the general structure of the JNLP format so that GlassFish can tell where in the final JNLP document the custom content belongs. For example, if the developer simply wants to specify a single native library to be included only for Windows systems, the new element he or she wants to add might be</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: xml; gutter: false">&lt;nativelib href="windows/myLib.jar"/&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>But the developer needs to let GlassFish know where in the overall document this element belongs. The actual custom JNLP would need to look something like this:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: xml; gutter: false">&lt;jnlp&gt;
+   &lt;resources os="Windows"&gt;
+      &lt;nativelib href="windows/myLib.jar"/&gt;
+   &lt;/resources&gt;
+&lt;/jnlp&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>in order to "place" the <tt>&lt;nativelib&gt;</tt> element in the right part of the final JNLP document.</p> <p>Generally, developers can:</p> 
+     <ul> 
+      <li><b>Override</b>, for <tt>&lt;information&gt;</tt> elements with <em>no</em> attribute settings for <tt>os</tt>, <tt>arch</tt>, <tt>platform</tt>, and <tt>locale</tt>, the GlassFish defaults for child elements. (These children can be <tt>&lt;title&gt;</tt>, <tt>&lt;vendor&gt;</tt>, <tt>&lt;description&gt;</tt>, <tt>&lt;icon&gt;</tt>, etc.)</li> 
+      <li><b>Add</b> <tt>&lt;information&gt;</tt> elements <em>with</em> <tt>os</tt>, <tt>arch</tt>, <tt>platform</tt>, or <tt>locale</tt> settings and children of such <tt>&lt;information&gt;</tt> elements.</li> 
+      <li><b>Add</b> child elements under the GlassFish-provided <tt>&lt;resources&gt;</tt> element. (The GlassFish-provided <tt>&lt;resources&gt;</tt> element does not specify <tt>os</tt>, <tt>arch</tt>, or <tt>locale</tt>.)</li> 
+      <li><b>Add</b> new <tt>&lt;resources&gt;</tt> elements that specify at least one of <tt>os</tt>, <tt>arch</tt>, or <tt>locale</tt> and children under such <tt>&lt;resources&gt;</tt> elements.</li> 
+     </ul> <p>In particular, this flexibility allows developers to add JARs to the application (including platform-specific native libraries) and set properties to control the behavior of their clients.</p> <p>The following tables give more detail about what parts of the JNLP the developer can add and modify.<br> <b>Owned</b></p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> JNLP fragment </th> 
+         <th class="confluenceTh"> Notes </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>&lt;jnlp codebase="xxx"...&gt;</tt> </td> 
+         <td class="confluenceTd"> GlassFish controls this in the app client-centric case; the host and port are inserted dynamically with each request and the path is GlassFish-private, indicating that the request is for Java Web Start support and identifying which app and client are being addressed; the developer controls this for the web app-centric model. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>&lt;jnlp href="xxx"...&gt;</tt> </td> 
+         <td class="confluenceTd"> URL to the JNLP itself - GlassFish controls the actual URL where the JNLP is reachable in the app client-centric model so it must control this attribute value; the developer owns this value in the web app-centric model. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>&lt;jnlp&gt;</tt> <br class="atl-forced-newline"> <tt>&nbsp; &lt;security&gt;</tt> </td> 
+         <td class="confluenceTd"> GlassFish must control the permissions requested for each JNLP document - all permissions are needed for the main document (which launches the ACC) and the permissions requested for other JNLP documents depend on whether the JARs referenced in those documents are signed or not </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>&lt;jnlp&gt;</tt> <br class="atl-forced-newline"> <tt>&nbsp; &lt;application-desc&gt;</tt> <br class="atl-forced-newline"> <tt>&nbsp;&nbsp;&nbsp; &lt;argument&gt;...</tt> <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> GlassFish sets the main-class and the arguments to be passed to the client </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p><b>Defaulted</b></p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> JNLP fragment </th> 
+         <th class="confluenceTh"> Notes </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>&lt;jnlp spec="xxx"...&gt;</tt> </td> 
+         <td class="confluenceTd"> JNLP spec version </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>&lt;jnlp&gt;</tt> <br class="atl-forced-newline"> <tt>&nbsp; &lt;information (</tt><tt><em>no-attrs</em></tt><tt>)&gt;</tt> </td> 
+         <td class="confluenceTd"> This element contains app title, vendor, homepage, various description text values, icon images, and whether offline execution should be allowed. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>&lt;jnlp&gt;</tt> <br class="atl-forced-newline"> <tt>&nbsp; &lt;resources (</tt><tt><em>no-attrs</em></tt><tt>)&gt;</tt> <br class="atl-forced-newline"> <tt>&nbsp;&nbsp;&nbsp; &lt;java version="xxx" java-vm-args="yyy" ...&gt;</tt> </td> 
+         <td class="confluenceTd"> The Java SE version and/or selected VM parameter settings. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p><b>Merged</b></p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> JNLP fragment </th> 
+         <th class="confluenceTh"> Notes </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>&lt;jnlp&gt;</tt> <br class="atl-forced-newline"> <tt>&nbsp; &lt;information (</tt><tt><em>attrs</em></tt><tt>)&gt;</tt> </td> 
+         <td class="confluenceTd"> Developer specifies one or more of <tt>os=</tt>, <tt>arch=</tt>, <tt>platform=</tt>, <tt>locale=</tt> on the <tt>&lt;information&gt;</tt> element and provides all children; GlassFish provides no default children.</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>&lt;jnlp&gt;</tt> <br class="atl-forced-newline"> <tt>&nbsp; &lt;resources (</tt><tt><em>no-attrs</em></tt><tt>)&gt;</tt> <br class="atl-forced-newline"> <tt>&nbsp;&nbsp;&nbsp; &lt;jar ...&gt;</tt> </td> 
+         <td class="confluenceTd"> Developer adds JAR files to be included in the app to the GlassFish-provided ones </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>&lt;jnlp&gt;</tt> <br class="atl-forced-newline"> <tt>&nbsp; &lt;resources (</tt><tt><em>no-attrs</em></tt><tt>)&gt;</tt> <br class="atl-forced-newline"> <tt>&nbsp;&nbsp;&nbsp; &lt;nativelib ...&gt;</tt> </td> 
+         <td class="confluenceTd"> Developer refers to a native library </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>&lt;jnlp&gt;</tt> <br class="atl-forced-newline"> <tt>&nbsp; &lt;resources (</tt><tt><em>no-attrs</em></tt><tt>)&gt;</tt> <br class="atl-forced-newline"> <tt>&nbsp;&nbsp;&nbsp; &lt;property ...&gt;</tt></td> 
+         <td class="confluenceTd"> Developer adds system property settings to the GlassFish-provided ones </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>&lt;jnlp&gt;</tt> <br class="atl-forced-newline"> <tt>&nbsp; &lt;resources (</tt><tt><em>no-attrs</em></tt><tt>)&gt;</tt> <br class="atl-forced-newline"> <tt>&nbsp;&nbsp;&nbsp; &lt;extension ...&gt;</tt> </td> 
+         <td class="confluenceTd"> Developer refers to another developer-provided JNLP document </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>&lt;jnlp&gt;</tt> <br class="atl-forced-newline"> <tt>&nbsp; &lt;resources (</tt><tt><em>attrs</em></tt><tt>)&gt;</tt> ... </td> 
+         <td class="confluenceTd"> Developer specifies one or more of <tt>os=</tt>, <tt>arch=</tt>, <tt>locale=</tt> on the <tt>&lt;resources&gt;</tt> element and provides all children; GlassFish provides no default children.</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>&lt;jnlp&gt;</tt> <br class="atl-forced-newline"> <tt>&nbsp; &lt;component-desc...&gt;</tt> </td> 
+         <td class="confluenceTd"> Developer "includes" additional JNLP documents from the app </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>Again, the developer will write the custom JNLP knowing that GlassFish will assign the final JNLP document's codebase so relative {{href}}s will resolve correctly within the EAR. (The codebase value is "owned" by GlassFish.) For example, if the developer wants to refer to a native library at windows/myLib.jar then he or she can include</p> <p><tt>&lt;nativelib href="windows/myLib.jar" .../&gt;</tt></p> <p>in the developer-provided JNLP document. (Each entry in a JAR listed in a nativelib element must be a native library for the correct platform. The full syntax of the nativelib element lets the developer specify the platform for that native library.)</p> <p>Note that GlassFish provides default <tt>&lt;information&gt;</tt> and <tt>&lt;resources&gt;</tt> elements, without specifying attributes such as <tt>os</tt>, <tt>arch</tt>, <tt>platform</tt>, or <tt>locale</tt> attributes (shown as <tt><em>no-attrs</em></tt> in the table). GlassFish merges its own content within those elements with developer-provided content under those elements. Further, the developer can provide his or her own <tt>&lt;information&gt;</tt> and <tt>&lt;resources&gt;</tt> elements (and fragments within them) that do specify at least one of the attributes.</p> <h4><a name="Gfv31JNLPCustomization-SomeDesign%2FimplementationDetails"></a>Some Design/implementation Details</h2> <p>These topics do not need to be documented; they are not part of the published, supported interface of this feature.</p> <h4><a name="Gfv31JNLPCustomization-ControllinghowJNLPisCombined"></a>Controlling how JNLP is Combined</h3> <p>Which portions of the JNLP are handled in which way is governed by a properties file client-jnlp-config.properties. GlassFish installs this file into ${installDir}/config. If at deployment time GlassFish finds a copy at ${domainDir}/config then it will use that one instead of the one at ${installDir}/config. We do not expect users to routinely make domain-specific copies of the config file or to edit the copy at ${installDir}. The location and contents of the config file are not part of the published and documented interface to GlassFish.</p> <p>The contents of the properties file assign XPath expressions to properties to indicate what parts of the JNLP document are owned, which are merged, and which are defaulted. The JNLP generation code uses these XPath expressions to extract the relevant parts of the developer's JNLP and the GlassFish-generated JNLP and then combine them properly to get the resulting client JNLP.)</p> <h4><a name="Gfv31JNLPCustomization-SecurityforUserreferencedfiles"></a>Security for User-referenced files</h3> <p>The Java Web Start support in GlassFish has always enforced "positive file service," meaning that GlassFish serves (via the Java Web Start support URLs) only those files that it recognizes as part of the application needed by the app client. This prevents malicious users from using the Java Web Start-related URLs to try to fetch content that should not be exposed over HTTP. For each application, GlassFish recognizes the app client JAR file and any library JARs in the application's library directory as well as JARs referenced from manifest Class-Path entries of referenced JARs.</p> <p>To preserve this protection with developer-provided JNLP content - which can itself add JARs to the client - GlassFish scans the developer-provided JNLP (and any other JNLP documents it in turn refers to) for references to JARs within the application's code base. GlassFish adds each such JAR to the approved list of files that can be served via the Java Web Start URLs. GlassFish does the same for extension JNLP documents to which the developer's JNLP content refers: any extension JNLP documents that lie within the application's codebase are added to the known content so it can be served.</p> <h4><a name="Gfv31JNLPCustomization-4.2.Bug%2FRFENumber%28s%29%3A"></a>4.2. Bug/RFE Number(s):</h2> <p><a href="https://github.com/javaee/glassfish/issues/1118">Issue 1118</a><br> <a href="https://github.com/javaee/glassfish/issues/4113">Issue 4113</a></p> <h4><a name="Gfv31JNLPCustomization-4.3.InScope%3A"></a>4.3. In Scope:</h2> <p>Combination of developer-provided and GlassFish-generated JNLP content, according to well-defined rules for which parts of the resulting JNLP are owned by GlassFish, merged from both sources, and defaulted by GlassFish in the absence of developer-provided content.</p> <h4><a name="Gfv31JNLPCustomization-4.4.OutofScope%3A"></a>4.4. Out of Scope:</h2> <p>Support for references from JNLP in one application to another application. Developers might code such references in an unsupported way by using some of the existing undocumented, unpublished placeholders GlassFish already uses in the generated JNLP documents. We will not support such cross-referencing.</p> <h4><a name="Gfv31JNLPCustomization-4.5.Interfaces%3A"></a>4.5. Interfaces:</h2> <h4><a name="Gfv31JNLPCustomization-4.5.1ExportedInterfaces"></a>4.5.1 Exported Interfaces</h3> 
+     <ul> 
+      <li>Interface: glassfish-application-client.xml (formerly sun-application-client.xml)</li> 
+      <li>Stability: evolving</li> 
+      <li>Former Stability (if changing):</li> 
+      <li>Comments: Revised to add optional jnlp-doc child element of java-web-start-access. Note that in earlier releases of GlassFish developers could set the</li> 
+     </ul> <p><tt>&lt;java-web-start-access&gt; &lt;vendor&gt;</tt></p> <p>value to specially-formatted strings to point to icon images. This feature is continued but we urge developers instead to specify their icon settings (which they can do with more precision) using their own JNLP document which contains icon image URIs.</p> 
+     <ul> 
+      <li>Interface: classification of the parts of the JNLP as owned, merged, and defaulted</li> 
+      <li>Stability: evolving</li> 
+      <li>Former Stability (if changing):</li> 
+      <li>Comments:</li> 
+     </ul> 
+     <ul> 
+      <li>Interface: relative references from developer's JNLP to JARs and other JNLPs</li> 
+      <li>Stability: evolving</li> 
+      <li>Former Stability (if changing):</li> 
+      <li>Comments: The use of straightforward relative path-to-JAR hrefs is consistent with the JNLP spec. The added aspect of path-to-JAR!path-within-JAR.jnlp is supported by the GlassFish Grizzly adapter which serves requests from the generated Java Web Start. This might or might not be supported by Java Web Start itself in other settings.</li> 
+     </ul> <h4><a name="Gfv31JNLPCustomization-4.5.2Importedinterfaces"></a>4.5.2 Imported interfaces</h3> <p>Disclose interfaces this project imports.</p> 
+     <ul> 
+      <li>Interface: JNLP specification</li> 
+      <li>Stability: standard</li> 
+      <li>Exporting Project: Java Network Launching Protocol (<a href="http://www.jcp.org/en/jsr/detail-56">JSR-56</a>)</li> 
+      <li>Comments: This <a href="http://download.oracle.com/javase/6/docs/technotes/guides/javaws/developersguide/syntax.html">link</a> shows the format of the JNLP document in a table. The formal spec is downloadable <a href="http://java.sun.com/javase/technologies/desktop/javawebstart/download-spec.html">here</a>.</li> 
+     </ul> <h4><a name="Gfv31JNLPCustomization-4.5.3Otherinterfaces%28Optional%29"></a>4.5.3 Other interfaces (Optional)</h3> 
+     <ul> 
+      <li>Interface: Location and format of the config files controlling which JNLP fragments are treated how</li> 
+      <li>Stability: private</li> 
+      <li>Exporting Project:</li> 
+      <li>Comments: Obviously the location and content of the file is visible to users, but the format and contents are not part of the official supported interface of GlassFish.</li> 
+     </ul> <h4><a name="Gfv31JNLPCustomization-4.6.DocImpact%3A"></a>4.6. Doc Impact:</h2> <p>Application Development Guide<br> [ Application Deployment Guide |ApplicationDeplyomentGuide], Appendix B, Enterprise Server Deployment Descriptor Files</p> <h4><a name="Gfv31JNLPCustomization-4.7.Admin%2FConfigImpact%3A"></a>4.7. Admin/Config Impact:</h2> <p>No admin impact</p> <h4><a name="Gfv31JNLPCustomization-4.8.HAImpact%3A"></a>4.8. HA Impact:</h2> <p>No HA impact</p> <h4><a name="Gfv31JNLPCustomization-4.9.I18N%2FL10NImpact%3A"></a>4.9. I18N/L10N Impact:</h2> <p>No impact.</p> <h4><a name="Gfv31JNLPCustomization-4.10.Packaging%26Delivery%3A"></a>4.10. Packaging &amp; Delivery:</h2> <p>No impact.</p> <h4><a name="Gfv31JNLPCustomization-4.11.SecurityImpact%3A"></a>4.11. Security Impact:</h2> <p>No impact other than that described earlier, requiring GlassFish to scan user-provided JNLPs and add any referenced JARs to the legal content to serve.</p> <h4><a name="Gfv31JNLPCustomization-4.12.CompatibilityImpact"></a>4.12. Compatibility Impact</h2> <p>No incompatibilities.</p> <p>The new XML element is optional and so does not invalidate existing glassfish-application-client.xml descriptors.</p> <p>No upgrade or migration requirements imposed.</p> <h4><a name="Gfv31JNLPCustomization-4.13.Dependencies%3A"></a>4.13. Dependencies:</h2> <p>No dependencies on other projects or modules.</p> <h4><a name="Gfv31JNLPCustomization-5.ReferenceDocuments%3A"></a>5. Reference Documents:</h1> <p>See earlier list of issues.</p> <h4><a name="Gfv31JNLPCustomization-6.Schedule%3A"></a>6. Schedule:</h1> <h4><a name="Gfv31JNLPCustomization-6.1.ProjectedAvailability%3A"></a>6.1. Projected Availability:</h2> <p>With GlassFish 3.1.</p> 
+     <hr> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875084/21364934.png">customJNLPInAppClient.png</a> (image/png) 
+      <br> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Aug 25, 2010 by 
+<font color="#0050B2">timq</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

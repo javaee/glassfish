@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : MS5 Demo - Automatic Transaction Failover with EJB Timer Migration</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="MS5Demo-AutomaticTransactionFailoverwithEJBTimerMigration-AutomaticTransactionFailoverwithEJBTimerMigrationDemo"></a>Automatic Transaction Failover with EJB Timer Migration Demo</h2> <p>This demo shows automatic transaction failover combined with the timer migration if an instance that owns EJB Timers in a cluster is killed.</p> <p>The demo uses ejb devtest </p>
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">v2/appserv-tests/devtests/transaction/ee/timer_with_autorecovery</pre> 
+       </div> 
+      </div>
+     </div> to step through various stages<p></p> <h4><a name="MS5Demo-AutomaticTransactionFailoverwithEJBTimerMigration-Team"></a>Team</h2> 
+     <ul> 
+      <li>Marina Vatkina</li> 
+     </ul> <h4><a name="MS5Demo-AutomaticTransactionFailoverwithEJBTimerMigration-SetupandClustercreation"></a>Setup and Cluster creation</h2> 
+     <ul> 
+      <li>Compile the classes and create the WAR file to be deployed:</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">ant build</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>Setup:</li> 
+     </ul> 
+     <ol> 
+      <li>Start JavaDB database</li> 
+      <li>Start DAS.</li> 
+      <li>Create an XA resource that can be shared by all instances in the cluster (_<em>jdbc/xa</em>_)</li> 
+      <li>Register this resource as the _<em>ejb-timer-service.timer-datasource</em>_ with the _<em>default-config</em>_.</li> 
+      <li>Create and start the cluster of 2 instances</li> 
+     </ol> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">ant setup</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="MS5Demo-AutomaticTransactionFailoverwithEJBTimerMigration-Runningthetest"></a>Running the test</h2> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">ant run-recover</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>Programmatic timer is created on _<em>in1</em>_ in a separate method call to get it going</li> 
+     </ul> 
+     <ul> 
+      <li>You can see in the instance log _<em>glassfishv3/glassfish/nodes/localhost/in1/logs/server.log</em>_ the following output:</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">[#|2010-09-29T16:18:16.371-0700|INFO|glassfish3.1|javax.enterprise.system.tools.admin.org.glassfish.deployment.admin|_ThreadID=15;_ThreadName=Thread-1;|tx-ee-timer-with-autorecovery-web was successfully deployed in 12,952 milliseconds.|#]
+
+[#|2010-09-29T16:18:48.907-0700|SEVERE|glassfish3.1|null|_ThreadID=15;_ThreadName=Thread-1;|In ___MyBean:timeout___ timer01 28080|#]</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>After that 3 rows are inserted on in1 into the default and xa databases:</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">[#|2010-09-29T16:18:49.993-0700|SEVERE|glassfish3.1|null|_ThreadID=15;_ThreadName=Thread-1;|Call # 1|#]
+
+[#|2010-09-29T16:18:49.996-0700|SEVERE|glassfish3.1|null|_ThreadID=15;_ThreadName=Thread-1;|Call # 2|#]
+
+[#|2010-09-29T16:18:49.998-0700|SEVERE|glassfish3.1|null|_ThreadID=15;_ThreadName=Thread-1;|Call # 3|#]
+
+[#|2010-09-29T16:18:50.001-0700|SEVERE|glassfish3.1|null|_ThreadID=15;_ThreadName=Thread-1;|Insert successfully|#]
+
+[#|2010-09-29T16:18:50.023-0700|SEVERE|glassfish3.1|null|_ThreadID=15;_ThreadName=Thread-1;|Call # 1|#]
+
+[#|2010-09-29T16:18:50.025-0700|SEVERE|glassfish3.1|null|_ThreadID=15;_ThreadName=Thread-1;|Call # 2|#]
+
+[#|2010-09-29T16:18:50.025-0700|SEVERE|glassfish3.1|null|_ThreadID=15;_ThreadName=Thread-1;|Call # 3|#]
+
+[#|2010-09-29T16:18:50.026-0700|SEVERE|glassfish3.1|null|_ThreadID=15;_ThreadName=Thread-1;|Insert successfully|#]</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>... But the transaction is left waiting between 2 phases of the two-phase commit (2PC):</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">[#|2010-09-29T16:18:50.029-0700|WARNING|glassfish3.1|javax.enterprise.system.core.transaction.com.sun.jts.utils.RecoveryHooks|_ThreadID=15;_ThreadName=Thread-1;|JTS5057: FailPoint : [0]|#]
+
+[#|2010-09-29T16:18:50.033-0700|WARNING|glassfish3.1|javax.enterprise.system.core.transaction.com.sun.jts.utils.RecoveryHooks|_ThreadID=15;_ThreadName=Thread-1;|JTS5057: FailPoint : [null]|#]
+
+[#|2010-09-29T16:18:50.040-0700|WARNING|glassfish3.1|javax.enterprise.system.core.transaction.com.sun.jts.utils.RecoveryHooks|_ThreadID=15;_ThreadName=Thread-1;|JTS5057: FailPoint : [1]|#]
+
+[#|2010-09-29T16:18:50.043-0700|WARNING|glassfish3.1|javax.enterprise.system.core.transaction.com.sun.jts.utils.RecoveryHooks|_ThreadID=15;_ThreadName=Thread-1;|JTS5057: FailPoint : [null]|#]
+
+[#|2010-09-29T16:18:50.044-0700|WARNING|glassfish3.1|javax.enterprise.system.core.transaction.com.sun.jts.utils.RecoveryHooks|_ThreadID=15;_ThreadName=Thread-1;|JTS5057: FailPoint : [2]|#]
+
+[#|2010-09-29T16:18:53.745-0700|SEVERE|glassfish3.1|null|_ThreadID=15;_ThreadName=Thread-1;|In ___MyBean:timeout___ timer01 28080|#]</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>At this point _<em>in1</em>_ is killed</li> 
+     </ul> 
+     <ul> 
+      <li>Instance _<em>in2</em>_ receives GMS failure recovery notification after a short period of time (see instance log _<em>glassfishv3/glassfish/nodes/localhost/in2/logs/server.log</em>_)</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">[#|2010-09-29T16:19:15.966-0700|INFO|glassfish3.1|ShoalLogger|_ThreadID=15;_ThreadName=Thread-1;|GMS1016: Analyzing new membership snapshot received as part of event : FAILURE_EVENT for Member: in1 of Group: c1|#]
+
+[#|2010-09-29T16:19:15.966-0700|INFO|glassfish3.1|ShoalLogger|_ThreadID=15;_ThreadName=Thread-1;|GMS1019: The following member has failed: in1 of Group: c1|#]
+
+[#|2010-09-29T16:19:15.968-0700|INFO|glassfish3.1|ShoalLogger|_ThreadID=15;_ThreadName=Thread-1;|GMS1102: Appointed Recovery Server:in2:for failed member:in1:for group:c1|#]
+
+[#|2010-09-29T16:19:15.980-0700|INFO|glassfish3.1|ShoalLogger|_ThreadID=15;_ThreadName=Thread-1;|GMS1004: Sending FailureRecoveryNotification to component TRANSACTION-RECOVERY-SERVICE|#]
+
+[#|2010-09-29T16:19:15.983-0700|INFO|glassfish3.1|ShoalLogger|_ThreadID=15;_ThreadName=Thread-1;|GMS1004: Sending FailureRecoveryNotification to component GlassfishV31|#]
+
+[#|2010-09-29T16:19:15.983-0700|INFO|glassfish3.1|javax.enterprise.system.core.transaction.com.sun.jts.jta|_ThreadID=15;_ThreadName=Thread-1;|[GMSCallBack] failure recovery signal: com.sun.enterprise.ee.cms.impl.common.FailureRecoverySignalImpl@64d74895|#]</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>The Transaction Service waits 60 seconds (or the user set value) to ensure that indoubt xids are updated into the database, otherwise while doing the recovery an instance may not get all the correct indoubt xids.</li> 
+     </ul> 
+     <ul> 
+      <li>The recovery process starts (see messages from _<em>javax.enterprise.system.core.transaction.com.sun.enterprise.transaction.jts.recovery</em>_) and when it is executed, you can see</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">[#|2010-09-29T16:20:16.017-0700|INFO|glassfish3.1|javax.enterprise.resource.resourceadapter.com.sun.enterprise.connectors.inbound|_ThreadID=15;_ThreadName=Thread-1;|Recovery of Inbound Transactions started.|#]</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>When resource recovery completes, automatic EJB Timer migration starts as the after event:</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">[#|2010-09-29T16:20:16.463-0700|INFO|glassfish3.1|javax.enterprise.system.container.ejb.com.sun.ejb.containers|_ThreadID=15;_ThreadName=Thread-1;|[DistributedEJBTimerServiceImpl] afterRecovery event for instance in1|#]
+
+[#|2010-09-29T16:20:16.463-0700|INFO|glassfish3.1|javax.enterprise.system.container.ejb.com.sun.ejb.containers|_ThreadID=15;_ThreadName=Thread-1;|[DistributedEJBTimerServiceImpl] migrating timers from in1|#]
+
+[#|2010-09-29T16:20:16.463-0700|INFO|glassfish3.1|javax.enterprise.system.container.ejb.com.sun.ejb.containers|_ThreadID=15;_ThreadName=Thread-1;|Beginning timer migration process from owner in1 to in2|#]
+
+[#|2010-09-29T16:20:16.699-0700|INFO|glassfish3.1|javax.enterprise.system.container.ejb.com.sun.ejb.containers|_ThreadID=15;_ThreadName=Thread-1;|Timer migration phase 1 complete. Changed ownership of 1 timers.  Now reactivating timers...|#]
+
+[#|2010-09-29T16:20:16.701-0700|INFO|glassfish3.1|javax.enterprise.system.container.ejb.com.sun.ejb.containers|_ThreadID=15;_ThreadName=Thread-1;|Rescheduling missed expiration for periodic timer '1@@1285802327613@@in1@@in1' 'TimedObject = MyBean' 'Application = tx-ee-timer-with-autorecovery-web' 'CREATED' 'PERIODIC' 'Container ID = 84266337573208064' 'Wed Sep 29 16:18:48 PDT 2010' '5000' .  Last timer expiration occurred at Wed Sep 29 16:19:08 PDT 2010|#]</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>Delegated recovery removes the locks, and the EJB Timers are being fired:</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">[#|2010-09-29T16:20:17.735-0700|SEVERE|glassfish3.1|null|_ThreadID=15;_ThreadName=Thread-1;|In ___MyBean:timeout___ timer01 28080|#]
+
+[#|2010-09-29T16:20:18.773-0700|SEVERE|glassfish3.1|null|_ThreadID=15;_ThreadName=Thread-1;|In ___MyBean:timeout___ timer01 28080|#]</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>Validation code queries the table on the XA resource and finds 3 rows:</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">[#|2010-09-29T16:20:35.743-0700|INFO|glassfish3.1|null|_ThreadID=15;_ThreadName=Thread-1;|Found: BAA280800 : BBB280800|#]
+
+[#|2010-09-29T16:20:35.744-0700|INFO|glassfish3.1|null|_ThreadID=15;_ThreadName=Thread-1;|Found: BAA280801 : BBB280801|#]
+
+[#|2010-09-29T16:20:35.744-0700|INFO|glassfish3.1|null|_ThreadID=15;_ThreadName=Thread-1;|Found: BAA280802 : BBB280802|#]</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="MS5Demo-AutomaticTransactionFailoverwithEJBTimerMigration-Cleanup"></a>Cleanup</h2> <p>To undeploy the application, stop and remove the cluster do:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">ant unsetup</pre> 
+       </div> 
+      </div>
+     </div> <p>This is the end of the demo and the test.</p> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Sep 29, 2010 by 
+<font color="#0050B2">-marina</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

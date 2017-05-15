@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : SipBasic3pccHighAvailability</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="SipBasic3pccHighAvailability-ExploreSailFincluster%2ChighavailabilityfeaturesusingBasic3pccsampleapplication"></a>Explore SailFin cluster, high availability features using Basic3pcc sample application</h1> <p>This sample ("Basic3pcc") demonstrates a simple Third Party Call Control (3pcc) application in SailFin cluster.</p> <p>First read <a href="SipBasic3pcc.html" title="SipBasic3pcc">SipBasic3pcc page</a> to get the overall understanding of this sample (don't execute any instructions from that page). </p> <p>This document describes how to use cluster/high-availability features of SailFin using this sample.</p> <h4><a name="SipBasic3pccHighAvailability-InstructionstodeploythesampleapplicationBasic3pcctoSailFincluster"></a>Instructions to deploy the sample application Basic3pcc to SailFin cluster</h2> <p><b>Note: For executing this sample user must have installed SailFin V2 or SGCS 2.0. Here 'SF_HOME' is the sailfin installation directory.</b></p> 
+     <ul> 
+      <li>Set the environment variables SF_HOME=&lt;your sailfin installation dir&gt;, HOST_IP_ADDRESS=&lt;your actual ip address, not localhost/127.0.0.1&gt;</li> 
+     </ul> 
+     <ul> 
+      <li>% cd SF_HOME/bin</li> 
+     </ul> 
+     <ul> 
+      <li>% cd SF_HOME/samples/sipservlet/Basic3pcc</li> 
+     </ul> <p> It would point to the sailfin sample 'Basic3pcc' direcotry</p> 
+     <ul> 
+      <li>% SF_HOME/lib/ant/bin/ant</li> 
+     </ul> <p> It would check your environment variable settings and it would display the available targets for use.</p> 
+     <ul> 
+      <li>% SF_HOME/lib/ant/bin/ant setup-cluster</li> 
+     </ul> <p> it would setup a SailFin cluster as shown in figure below:</p> <p></p>
+     <div class="panel" style="border-width: 1px;">
+      <div class="panelContent"> 
+       <hr> 
+       <p>Jspwiki style: sortable</p> 
+      </div>
+     </div>table-filter<p></p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <td class="confluenceTd"> <span class="error">Cannot resolve external resource into attachment.</span> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>%%<br> %%</p> <p><b><em>Figure 1. SailFin cluster having 4 instances with instance1 used exclusively as a front-end for this demo.</em></b></p> 
+     <ul> 
+      <li>% SF_HOME/lib/ant/bin/ant deploy-cluster</li> 
+     </ul> <p> It would deploy both 3pccConvergedApp.sar and 3pccRegistrarAndProxy.sar files on SailFin cluster with high-availability-enabled=true.</p> 
+     <ul> 
+      <li><b><em>Optional</em></b> % SF_HOME/lib/ant/bin/ant build<br> Execute this step only if you want to modify this sample and rebuild the sample yourself. If you do this step, you need to redeploy the sample using step (6).</li> 
+     </ul> <h4><a name="SipBasic3pccHighAvailability-InstructionstoexecutethesampleapplicationBasic3pcc"></a>Instructions to execute the sample application Basic3pcc</h2> 
+     <ul> 
+      <li>Setup your X-Lite softphones using platform specific steps (1) - (4) described in the <a href="http://fisheye5.cenqua.com/browse/~raw,r=1.3/sailfin/samples/CallSetup/CallSetup.html">CallSetup sample application's "Instructions execute the sample application" section</a> by pointing to Telco AS:15060 instead of Telco AS:5060<br> While configuring make sure that the X-Lite listens on the correct IP address, not on localhost/127.0.0.1. For example, in Linux this can be done by specifying the IP address at Menu &gt; System Settings &gt; Network &gt; Listen on IP.<br> As mentioned in the instruction, you need to register both Alice's and Bob's X-Lite phones with SailFin. The registration happens as per the figure below:</li> 
+     </ul> <p></p>
+     <div class="panel" style="border-width: 1px;">
+      <div class="panelContent"> 
+       <hr> 
+       <p>Jspwiki style: sortable</p> 
+      </div>
+     </div>table-filter<p></p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <td class="confluenceTd"> <span class="error">Cannot resolve external resource into attachment.</span> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>%%<br> %%</p> <p><b><em>Figure 2. Registration of SIP phones of Alice and Bob with SailFin cluster</em></b></p> 
+     <ul> 
+      <li>Now Browse to <a href="http://<your-host>:<your-port>/3pcc">http://&amp;lt;your-host&amp;gt;:&amp;lt;your-port&amp;gt;/3pcc</a> (eg., <a href="http://localhost:18080/3pcc">http://localhost:18080/3pcc</a>) and login as Alice. Use Alice as the the password.<br> Note that the sample has pre-provisioned list of users which are Alice, Bob, Adam, Eve (with password same as user name). If you wish to re-provision the users, you can do so by editing SF_HOME/samples/sipservlet/Basic3pcc/userdb.properties file. If you do that then you need to re-build and re-deploy the sample using step (7) &amp; (6) of the above section.</li> 
+     </ul> 
+     <ul> 
+      <li>Once you are logged in, you will see a list of buddies in your web page. Select the radio button against "Bob" and click "Call" button. This will establish a call between you (i.e., Alice) and Bob, as shown in the figure below:</li> 
+     </ul> <p></p>
+     <div class="panel" style="border-width: 1px;">
+      <div class="panelContent"> 
+       <hr> 
+       <p>Jspwiki style: sortable</p> 
+      </div>
+     </div>table-filter<p></p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <td class="confluenceTd"> <span class="error">Cannot resolve external resource into attachment.</span> </td> 
+         <td class="confluenceTd"> <span class="error">Cannot resolve external resource into attachment.</span> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>%%<br> %%</p> <p><b><em>Figure 3. Alice and Bob are talking</em></b></p> <p>Alice's browser will be updated with the call status and call history, as shown in the figure below:</p> <p></p>
+     <div class="panel" style="border-width: 1px;">
+      <div class="panelContent"> 
+       <hr> 
+       <p>Jspwiki style: sortable</p> 
+      </div>
+     </div>table-filter<p></p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <td class="confluenceTd"> <span class="error">Cannot resolve external resource into attachment.</span> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>%%<br> %%</p> <p><b><em>Figure 4. Alice's browser showing the call status and call history</em></b></p> <p>The call establishment between you (i.e., Alice) and Bob is done as per 3pcc, as shown in Figure 4 of <a href="SipBasic3pcc.html" title="SipBasic3pcc">SipBasic3pcc</a></p> <p>Internal details of how the call establishment between Alice and Bob takes place in the SailFin cluster is described in the figure below:</p> <p></p>
+     <div class="panel" style="border-width: 1px;">
+      <div class="panelContent"> 
+       <hr> 
+       <p>Jspwiki style: sortable</p> 
+      </div>
+     </div>table-filter<p></p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <td class="confluenceTd"> <span class="error">Cannot resolve external resource into attachment.</span> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>%%<br> %%</p> <p><b><em>Figure 5. Internal details of the call establishment between Alice and Bob in the SailFin cluster.</em></b></p> <p><b>Description of various steps shown in Figure 5:</b></p> 
+     <ul> 
+      <li>Alice clicks "Call" Bob@sailfin.org from her browser.</li> 
+     </ul> 
+     <ul> 
+      <li>The http request gets routed to instance4.</li> 
+     </ul> 
+     <ul> 
+      <li>In instance4, upon receiving the http request, the CallInitiatorServlet (of ConvergedApp) creates INVITE Alice@sailfin.org request and sends it to CLB front-end so that the INVITE request gets forwarded to a different application (RegistrarAndProxyApp in this case).<br> The reason for forwarding to a different application is because, in real IMS deployments, ConvergedApp is not expected to maintain the location/registration information of the SIP phones, instead registration/location information is maintained by a different application which is RegistrarAndProxyApp in our deployment. So these two need to be separated as different entities.</li> 
+     </ul> 
+     <ul> 
+      <li>CLB front-end routes this INVITE request to the correct server instance which has Alice's registration information.</li> 
+     </ul> 
+     <ul> 
+      <li>ProxyServlet (of RegistrarAndProxyApp) running in instance4 sends out the INVITE request to Alice's registered location available in Alice's_SipAppSession.</li> 
+     </ul> 
+     <ul> 
+      <li>Once Alice answers the call, the B2BUAServlet (of ConvergedApp) tries to place a call to Bob@sailfin.org by sending a INVITE Bob@sailfin.org request to CLB front end.</li> 
+     </ul> 
+     <ul> 
+      <li>CLB front-end routes this INVITE request to the correct server instance which has Bob's registration information.</li> 
+     </ul> 
+     <ul> 
+      <li>ProxyServlet (of RegistrarAndProxyApp) running in instance3 sends out the INVITE request to Bob's registered location available in Bob's_SipAppSession.</li> 
+     </ul> <h4><a name="SipBasic3pccHighAvailability-TestingthefailovercapabilitiesofSailFin%3A"></a>Testing the failover capabilities of SailFin:</h2> <p>As shown in Figure 4, the current serving instance is 'instance4'.</p> <p>Now, to test the failover, you can stop the instance4 by executing % asadmin stop-instance instance4</p> <p>After the instance4 is stopped, you can click "Refresh Page" link (as shown in Figure 4) in your web page. Once the page reloads, notice the label at the bottom of the page : "This page is served by SailFin ..." gets changed from instance4 to a different instance. You willl also notice that, all other data i.e., call history, login time are not lost. These data were stored in SipApplicationSession and ConvergedHttpSession respectively, and were replicated, and hence there is no data or session loss when the serving instance was brought down.</p> <p>The ongoing call between Alice and Bob also gets handled by the different instance when instance4 is brought down. You can check this by clicking "Hang Up" button in Alice's phone. The BYE request sent from Alice's phone gets routed to a different live instance and the ConvergedApp running in that instance will recover/resume Alice's and Bob's SipSessions, and processes the BYE request, and the call gets ended gracefully on both Alice's and Bob's phones.</p> <h4><a name="SipBasic3pccHighAvailability-ContinuetoreadthedemonstrationofRollingUpgradeinSailFinusingBasic3pccsampleapplicationSipBasic3pccRollingUpgrade"></a><a href="SipBasic3pccRollingUpgrade.html" title="SipBasic3pccRollingUpgrade">Continue to read the demonstration of Rolling Upgrade in SailFin using Basic3pcc sample application</a></h3> 
+     <hr> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875556/21365068.png">callsetup.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875556/21365069.png">sip-registration.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875556/21365070.png">alice.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875556/21365071.png">portal2.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875556/21365072.png">cluster-configuration.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875556/21365073.png">bob.png</a> (image/png) 
+      <br> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 02, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

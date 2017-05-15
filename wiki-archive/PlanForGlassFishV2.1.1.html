@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : PlanForGlassFishV2.1.1</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="PlanForGlassFishV2.1.1-GlassFishv2.1.1Release"></a>GlassFish v2.1.1 Release</h1> <h4><a name="PlanForGlassFishV2.1.1-v2.1.1isFinal%21"></a>v2.1.1 is Final!</h2> <p>We are pleased to confirm that GlassFish v2.1.1 is now final. The final build (31g) is posted to the <a href="https://glassfish.java.net/downloads/v2.1.1-final.html">GlassFish community download</a> and, production bits for GlassFish Enterprise Server are also available in both English only as well as multi-language editions.</p> <h4><a name="PlanForGlassFishV2.1.1-News"></a>News</h2> <p>We are pleased to now include IBM JDK 1.6 support on AIX 5 and 6 with the release of JDK 1.6 SR7. AIX users can obtain this SR from IBM. It is planned to be released by IBM around the start of 2010. Any AIX user who needs a solution sooner can obtain an IBM PMR (56151,756,000) which includes all necessary JDK fixes. Supported customers may contact their support representative. Any community user who requires a fix before SR7 is released can send an e-mail to users@glassfish.java.net and we will respond (off-list), with the directions for obtaining the interim fix. We will recommend that everyone use SR7.</p> <h4><a name="PlanForGlassFishV2.1.1-Updatesinv2.1.1"></a>Updates in v2.1.1</h2> <p>The major focus of this release was to provide a bug-fix platform for customer and community reported bugs. We have fixed just over 170 bugs directly. In addition, we have updated the following component packages:</p> 
+     <ul> 
+      <li>GlassFish (Formely Java) MQ 4.4 – <a href="https://mq.java.net/4.4.html">See info. here</a></li> 
+      <li>Grizzly 1.0.30 – Primarily bug fixes</li> 
+      <li>JSF (Mojarra) 1.2_13 <a href="https://javaserverfaces.java.net/nonav/rlnotes/1.2_13/changelog.html">See changes page here</a></li> 
+      <li>Jersey 1.0.3</li> 
+     </ul> <p>We have added details about using Apache Webserver in a load-balanced configuration, using the mod_jk plugin. (see the release notes)<br> We have added support for IBM AIX v6.1 (<del>JDK 1.6 is still pending, sorry, you'll have to stick with JDK 1.5 for a while longer</del>)</p> <p>Here are the community reported issues that are resolved in this release (<a href="http://tinyurl.com/yf2xubt">Issue Tracker report</a>)</p> <h4><a name="PlanForGlassFishV2.1.1-Newloadbalanceoptionforstatelesssessionbeans"></a>New load-balance option for stateless session beans</h3> <p>A new method for load-balancing stateless EJBs is introduced in GlassFish v2.1.1. This provides for load-balancing with each request. Per-request load balancing chooses the first node in the cluster to use on each request. The old load balancing feature chooses the first node to use when the InitialContext is created; thereafter each request uses the same<br> node (unless a failure occurs).</p> <p>Enabling this feature is done by setting a new property in the sun-ejb-jar.xml file: per-request-load-balancing (boolean). If this property is not set, the original Load Balance behavior is preserved.</p> <p>For example:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;sun-ejb-jar&gt;
+  &lt;enterprise-beans&gt;
+    &lt;unique-id&gt;1&lt;/unique-id&gt;
+    &lt;ejb&gt;
+      &lt;ejb-name&gt;TheGreeter&lt;/ejb-name&gt;
+    &lt;jndi-name&gt;greeter&lt;/jndi-name&gt;
+    &lt;per-request-load-balancing&gt;true&lt;/per-request-load-balancing&gt;
+    &lt;/ejb&gt;
+  &lt;/enterprise-beans&gt;
+&lt;/sun-ejb-jar&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>After this is set, you must redeploy the EJB(s).</p> <p>As a verification check, you can verify that this is configured properly by looking for the following (FINE, in the CORBA logger) log message when the EJB is loaded:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">"Setting per-request-load-balancing policyfor EJB &lt;EJBNAME&gt;"</pre> 
+       </div> 
+      </div>
+     </div> <p>This is only supported for stateless session beans. Use of per-request-load-balancing with any other bean types will result in a deployment error.</p> <h4><a name="PlanForGlassFishV2.1.1-What%27sNext%3F2.1.2"></a>What's Next? 2.1.2</h2> <p>We will begin planning the next GlassFish 2.1 update release. This will, again, be focused on fixing community and customer identified bugs and providing critical enhancements as needed.<br> We do not yet have a schedule for his release however it will likely align with the next update for SailFin (GlassFish Communications Server). Stay tuned for more details about the timing of that release, maybe sometime, mid-2010, but that's very speculative before we know more about the goals and requirements.</p> <h4><a name="PlanForGlassFishV2.1.1-ScopeofRelease%28Goals%29"></a>Scope of Release (Goals)</h2> <p>The primary drivers (from a schedule perspective) for this release are to support the GlassFish Communications Server project and add AIX 6.1+<del>IBM JDK 6</del> (Note, we still don't have this working yet – stay tuned, once we get a patch from IBM, we'll try and add this) support. We're expecting to fix some customer identified bugs and, provide a short list of enhancements along the way.</p> <h4><a name="PlanForGlassFishV2.1.1-ScheduleDatesforGlassFishv2.1.1"></a><b>Schedule Dates for GlassFish v2.1.1</b></h2> <p><em>Please note: Schedule targets are always estimates and subject to change without notice. We'll do our best to let the community know if things change. If you have questions, feel free to post them to <span class="error">[users@glassfish.java.net]</span> and we'll do our best to respond.</em></p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Task</th> 
+         <th class="confluenceTh">End Date</th> 
+         <th class="confluenceTh">Comments </th> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> Milestone 1 </th> 
+         <td class="confluenceTd"> April 30 </td> 
+         <td class="confluenceTd">Complete </td> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> Milestone 2 </th> 
+         <td class="confluenceTd"> June 24 </td> 
+         <td class="confluenceTd"> Complete </td> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> Soft Code-Freeze </th> 
+         <td class="confluenceTd"> July 15 </td> 
+         <td class="confluenceTd"> GF build 23 </td> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> Hard Code-Freeze </th> 
+         <td class="confluenceTd"> Sept 2 </td> 
+         <td class="confluenceTd">GF build 31 </td> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> Release Candidates </th> 
+         <td class="confluenceTd"> Sept. 9 - Oct. 7 </td> 
+         <td class="confluenceTd">Complete </td> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> Release </th> 
+         <td class="confluenceTd"> Oct. 28, 2009 </td> 
+         <td class="confluenceTd">Released </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="PlanForGlassFishV2.1.1-Listoffeaturesandchanges"></a><b>List of features and changes</b></h2> <p>We plan to add the following</p> 
+     <ul> 
+      <li>Per request CORBA load-balancing</li> 
+      <li>Open MQ v4.4 (Upgrade from v4.3) – See: <a href="https://mq.java.net/4.4.html">mq.java.net</a></li> 
+      <li>Support for AIX v6.1 with IBM JDK 1.6</li> 
+     </ul> <p>We expect to provide updates for the following sub-components:</p> 
+     <ul> 
+      <li>Grizzly (see: <a href="https://grizzly.java.net">grizzly.java.net</a>)</li> 
+      <li>Mojarra (see: <a href="https://javaserverfaces.java.net">javaserverfaces.java.net</a>)</li> 
+      <li>Jersey (see: <a href="https://jersey.java.net/">jersey.java.net</a>)</li> 
+     </ul> <h4><a name="PlanForGlassFishV2.1.1-Bugs%2FIssues"></a><b>Bugs / Issues</b></h2> <p>Issues for this release are tracked via v2.1.1 target. There will be a couple hundred customer reported bug fixes added to this release.</p> <h4><a name="PlanForGlassFishV2.1.1-WindowsUsers"></a>Windows Users</h3> <p>Please note, beginning with build 23, you must have the latest version of Microsoft runtime library installed. You can get it from Microsoft's visual studio 9 redistributable installer. <a href="http://www.microsoft.com/downloads/details.aspx?familyid=9B2DA534-3E03-4391-8A4D-074B9F2BC1BF&amp;displaylang=en">Here is a link</a>.</p> <h4><a name="PlanForGlassFishV2.1.1-Builds"></a><b>Builds</b></h2> <p>Build promotions are announced via e-mail at <a href="https://glassfish.java.net/servlets/SummarizeList?listName=dev">dev@glassfish.java.net</a>. Here's <a href="https://glassfish.java.net/servlets/SearchList?list=dev&amp;searchText=glassfishv2.1.1build&amp;defaultField=subject&amp;Search=Search">a link to help you find the latest build</a> (look for the most recent announcement). If you want to be notified of these, you should subscribe to this community alias.<br> See the <a href="BuildInformation.html" title="BuildInformation">Build Information</a> page for details on how to build from source.</p> <h4><a name="PlanForGlassFishV2.1.1-Feedback"></a><b>Feedback</b></h2> <p>If you have comments or questions, please post them to the <a href="mailto:dev@glassfish.java.net">GlassFish developer alias</a>. We'll do our best to respond.</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 21, 2010 by 
+<font color="#0050B2">edbratt</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

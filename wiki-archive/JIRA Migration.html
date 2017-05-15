@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : JIRA Migration</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="JIRAMigration-Migration%3AIssueTracker%3EJIRA"></a>Migration: IssueTracker -&gt; JIRA</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#JIRAMigration-Migration%3AIssueTracker%3EJIRA">Migration: IssueTracker -&gt; JIRA</a></li> 
+       <ul> 
+        <li><a href="#JIRAMigration-Overview">Overview</a></li> 
+        <li><a href="#JIRAMigration-IssueType">Issue Type</a></li> 
+        <li><a href="#JIRAMigration-Priority">Priority</a></li> 
+        <li><a href="#JIRAMigration-Status%2FLifecycle">Status / Lifecycle</a></li> 
+        <li><a href="#JIRAMigration-ResolvedState">Resolved State</a></li> 
+        <li><a href="#JIRAMigration-AffectsVersion%2FFoundinVersion">Affects Version/Found in Version</a></li> 
+        <li><a href="#JIRAMigration-OS%2FPlatform">OS/Platform</a></li> 
+        <li><a href="#JIRAMigration-Keywords%2CTags%2CWhiteboard">Keywords, Tags, Whiteboard</a></li> 
+        <li><a href="#JIRAMigration-IssueCreation">Issue Creation</a></li> 
+        <li><a href="#JIRAMigration-Notifications">Notifications</a></li> 
+        <li><a href="#JIRAMigration-Dependson%2FBlocks">Depends on/Blocks</a></li> 
+        <li><a href="#JIRAMigration-DuplicatinganIssue">Duplicating an Issue</a></li> 
+        <li><a href="#JIRAMigration-GeneralUI">General UI</a></li> 
+        <li><a href="#JIRAMigration-References">References</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="JIRAMigration-Overview"></a>Overview</h2> <p>The GlassFish project is migrating from IssueTracker to JIRA. The two bug tracking system have similarities as well as differences. JIRA allows some of the fields and workflow to be customized. This page compares the two tools and makes recommendations for customizations to JIRA.</p> <h4><a name="JIRAMigration-IssueType"></a>Issue Type</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">IssueTracker</th> 
+         <th class="confluenceTh">JIRA Default</th> 
+         <th class="confluenceTh">Proposed Default</th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Defect </td> 
+         <td class="confluenceTd"> Bug </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Enhancement </td> 
+         <td class="confluenceTd"> Improvement </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Feature </td> 
+         <td class="confluenceTd"> New Feature </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Task </td> 
+         <td class="confluenceTd"> Task </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Patch </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <ul> 
+      <li><a href="https://glassfish.java.net/scdocs/ddIssues_EnterModify.html#issuetype">GF Issue Type Definition</a></li> 
+      <li><a href="http://testjava.net/jira/secure/ShowConstantsHelp.jspa?decorator=popup#IssueTypes">JIRA Issue Type Definition</a></li> 
+     </ul> <h4><a name="JIRAMigration-Priority"></a>Priority</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">IssueTracker</th> 
+         <th class="confluenceTh">JIRA Default</th> 
+         <th class="confluenceTh">Proposed Default</th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Blocker </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Critical </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> Major </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> P4 </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> P5 </td> 
+         <td class="confluenceTd"> Trivial </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <ul> 
+      <li><a href="http://glassfish.java.net/public/IssueTrackerPriority.html">GF Priority Definition</a></li> 
+      <li><a href="http://testjava.net/jira/secure/ShowConstantsHelp.jspa?decorator=popup#PriorityLevels">JIRA Priority Definition</a></li> 
+     </ul> <h4><a name="JIRAMigration-Status%2FLifecycle"></a>Status / Lifecycle</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">IssueTracker</th> 
+         <th class="confluenceTh">JIRA Default</th> 
+         <th class="confluenceTh">Proposed Default</th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> UNCONFIRMED </td> 
+         <td class="confluenceTd"> Open </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> NEW </td> 
+         <td class="confluenceTd"> Open </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> STARTED </td> 
+         <td class="confluenceTd"> In Progress </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> RESOLVED </td> 
+         <td class="confluenceTd"> Resolved </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> REOPENED </td> 
+         <td class="confluenceTd"> Reopened </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> VERIFIED </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> CLOSED </td> 
+         <td class="confluenceTd"> Closed </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <ul> 
+      <li><a href="https://glassfish.java.net/scdocs/issue_lifecycle.html">GF Lifecycle Definition</a></li> 
+      <li><a href="http://testjava.net/jira/secure/ShowConstantsHelp.jspa?decorator=popup#StatusTypes">JIRA Status Definition</a></li> 
+     </ul> <h4><a name="JIRAMigration-ResolvedState"></a>Resolved State</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">IssueTracker</th> 
+         <th class="confluenceTh">JIRA Default</th> 
+         <th class="confluenceTh">Proposed Default</th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> FIXED </td> 
+         <td class="confluenceTd"> Fixed </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> INVALID </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> WONTFIX </td> 
+         <td class="confluenceTd"> Won't Fix </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> LATER </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> REMIND </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> DUPLICATE </td> 
+         <td class="confluenceTd"> Duplicate </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> WORKSFORME </td> 
+         <td class="confluenceTd"> Cannot Reproduce </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Incomplete </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <ul> 
+      <li><a href="https://glassfish.java.net/scdocs/issue_lifecycle.html">GF Lifecycle Definition</a></li> 
+      <li><a href="http://testjava.net/jira/secure/ShowConstantsHelp.jspa?decorator=popup#ResolutionTypes">JIRA State Definition</a></li> 
+     </ul> <h4><a name="JIRAMigration-AffectsVersion%2FFoundinVersion"></a>Affects Version/Found in Version</h2> <p>When submitting an issue in IssueTracker one can only choose from a small set of base releases: </p> <p>3.1, 3.2, 4.0, 9.0pe, 9.0peur1, 9.1.1, 9.1pe, 9.1peur1, 9.1peur2, v2.1, v2.1.1, v2.1.2, v2.2, V3, v3.0.1</p> <p>In IssueTracker's "Enter Issue" interface this field is called: "Found in version".</p> <p>When creating a new issue in JIRA two fields are presented to the submitter:</p> 
+     <ul> 
+      <li>Affects Version/s: this is the version(s) in which the issue is manifesting. For instance, a software bug might affect versions 1.1 and 1.2.</li> 
+      <li>Fix Version/s: this is the version(s) in which the issue was (or will be) fixed. For instance, the bug affecting versions 1.1 and 1.2 might be fixed in version 2.0. Note that issues which do not have a Fix Version are classified as 'Unscheduled'.</li> 
+     </ul> <p>Both fields in JIRA are currently populated with the same values. The values appear to be copied from IssueTracker's "Target Milestone" field. There is about 100 values here (e.g. 9.1pe_b34, etc). We should reduce the number of available choices.</p> <p>We should consider changing:</p> 
+     <ul> 
+      <li>"Affects Version/s" to "Found in version(s)"</li> 
+      <li>"Fix Version/s" to "Fixed in version(s)"</li> 
+     </ul> <p>It is not clear why "Fix Version/s" is exposed in the "create issue" interface.</p> <h4><a name="JIRAMigration-OS%2FPlatform"></a>OS/Platform</h2> <p>In IssueTracker the OS and Platform are entered via predefined pull down lists.</p> <p>In JIRA OS and Platform information is entered in a free-form text field called "Environment" with the follow sub-text: "For example operating system, software platform and/or hardware specifications (include as appropriate for the issue)."</p> <h4><a name="JIRAMigration-Keywords%2CTags%2CWhiteboard"></a>Keywords, Tags, Whiteboard</h2> <p>In IssueTracker one cannot control the Keywords or Whiteboard when submitting an issue. They can be added/modified via the edit issue interface.</p> <p>In IssueTracker Keywords must match a set of predefined values. The Whiteboard field is open to any values.</p> <p>In JIRA the Tags and Whiteboard area can be filled in at issue creation. The user can provide any values in either field. What's the difference between Tags and Whiteboard items in JIRA? It appears a tag becomes a live link which can be used to find other issues tagged with the same value.</p> <p>In JIRA it is not clear how one finds the set of Tags which are current in use.</p> <h4><a name="JIRAMigration-IssueCreation"></a>Issue Creation</h2> <p>It appears in JIRA one can create an issue by only providing a summary. All other values will default or not be provided in the initial issue. </p> <p>At issue creation one can also provide a "Due Date" (Date) as well as an "Original Estimate" which is expected to be in the form of #d or #w or #m (e.g. 1d, 3w, 5m). Not clear if this will be useful to us?</p> <h4><a name="JIRAMigration-Notifications"></a>Notifications</h2> <p>Notification are currently turned off in JIRA so it is difficult to get a sense for how this works.</p> <p>When I change the state of an issue or update a comment, etc it is not clear who will see the update. I suspect it is those users who are watching the issue as well as the submitter and assignee.</p> <p>In IssueTracker one can add users to the CC field to ensure they are notified of changes. I could not find a way to add users to the watch list for an issue in JIRA. A user can choose to add theirself to the watch list but it doesn't appear I can add other users.</p> <h4><a name="JIRAMigration-Dependson%2FBlocks"></a>Depends on/Blocks</h2> <p>In IssueTracker one can link bugs by indicating it depends on other issues or blocks other issues. IssueTracker provides a link to see the dependency tree of an issue.</p> <p>In JIRA there is a "Link Issue" page which allows a user to link issues. When linking an issue they can choose the type of link: </p> 
+     <ul> 
+      <li>depends on</li> 
+      <li>blocks</li> 
+      <li>duplicates</li> 
+      <li>is duplicated by</li> 
+     </ul> <p>This creates the relationship which becomes visible in both issues.</p> <h4><a name="JIRAMigration-DuplicatinganIssue"></a>Duplicating an Issue</h2> <p>In IssueTracker when an issue is resolved as a duplicate one needs to provide the issue id of the issue that is duplicated.</p> <p>In JIRA one can choose the Close or Resolve workflow and choose Duplicate as the resolution but not be required to enter an issue id to identify the issue that is duplicated. As a separate (optional) step one needs to use the Link Issue functionality to link the issue to another and then switch back to the Close/Resolve workflow to resolve the issue.</p> <h4><a name="JIRAMigration-GeneralUI"></a>General UI</h2> <p>From the Issues UI can not find a field to enter an issue (e.g. GLA-13515) to jump directly to that issue. - I found it - Use the "Quick Search" field in the upper right of the interface.</p> <h4><a name="JIRAMigration-References"></a>References</h2> 
+     <ul> 
+      <li><a href="http://confluence.atlassian.com/display/JIRA/JIRA+User%27s+Guide">JIRA User Guide</a></li> 
+      <li><a href="http://confluence.atlassian.com/display/JIRA/What+is+an+Issue">JIRA Issue Definition</a></li> 
+     </ul> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Oct 10, 2011 by 
+<font color="#0050B2">dipol</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

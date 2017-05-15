@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : JRubyJa</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="JRubyJa-JRubyonGlassFish%3Csup%3ETM%3C%2Fsup%3E%E3%82%A2%E3%83%97%E3%83%AA%E3%82%B1%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%82%B5%E3%83%BC%E3%83%90"></a>JRuby on GlassFish&lt;sup&gt;TM&lt;/sup&gt; アプリケーションサーバ </h1> <p><span class="error">Cannot resolve external resource into attachment.</span><br> &lt;br clear=all&gt;</p> <p>このページでは、 GlassFish アプリケーションサーバの JRuby サポートについて解説します。また、NetBeans&lt;sup&gt;TM&lt;/sup&gt; 統合開発環境の Ruby サポートについては、 <a href="http://wiki.netbeans.org/wiki/view/Ruby">NetBeans の Ruby サポート（英語）</a> にて詳しく解説しています。</p> 
+     <div> 
+      <ul> 
+       <li><a href="#JRubyJa-JRubyonGlassFish%3Csup%3ETM%3C%2Fsup%3E%E3%82%A2%E3%83%97%E3%83%AA%E3%82%B1%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%82%B5%E3%83%BC%E3%83%90">JRuby on GlassFish&lt;sup&gt;TM&lt;/sup&gt; アプリケーションサーバ</a></li> 
+       <ul> 
+        <li><a href="#JRubyJa-%E3%81%AA%E3%81%9CJRubyonRails%E3%82%A2%E3%83%97%E3%83%AA%E3%82%B1%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%82%92GlassFish%E3%82%A2%E3%83%97%E3%83%AA%E3%82%B1%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%82%B5%E3%83%BC%E3%83%90%E4%B8%8A%E3%81%A7%E9%96%8B%E7%99%BA%E3%81%99%E3%82%8B%E5%88%A9%E7%82%B9%E3%81%AF%EF%BC%9F">なぜ JRuby-on-Rails アプリケーションを GlassFish アプリケーションサーバ上で開発する利点は？</a></li> 
+        <li><a href="#JRubyJa-%E3%82%AC%E3%82%A4%E3%83%89">ガイド</a></li> 
+        <li><a href="#JRubyJa-ArunGupta%E3%81%95%E3%82%93%E3%81%AEJRubyonRailswithGlassFish3%E5%9B%9E%E3%82%B7%E3%83%AA%E3%83%BC%E3%82%BA">Arun Gupta さんの JRuby-on-Rails with GlassFish 3回シリーズ</a></li> 
+        <li><a href="#JRubyJa-%E3%82%B9%E3%82%AF%E3%83%AA%E3%83%BC%E3%83%B3%E3%82%AD%E3%83%A3%E3%82%B9%E3%83%88">スクリーンキャスト</a></li> 
+        <li><a href="#JRubyJa-%E6%8A%80%E8%A1%93%E6%83%85%E5%A0%B1">技術情報</a></li> 
+        <li><a href="#JRubyJa-%E6%88%90%E5%8A%9F%E4%BA%8B%E4%BE%8B">成功事例</a></li> 
+        <li><a href="#JRubyJa-JRubyonGlassFishPlanningJRubyonGlassFishPlanning"> <span class="nobr">JRuby on GlassFish Planning <sup><img border="0" alt="" align="absmiddle" width="7" height="7" src="images/icons/plus.gif" class="rendericon"></sup></span></a></li> 
+        <li><a href="#JRubyJa-%E5%A4%96%E9%83%A8%E3%83%AA%E3%83%B3%E3%82%AF">外部リンク</a></li> 
+        <li><a href="#JRubyJa-%E3%83%95%E3%82%A3%E3%83%BC%E3%83%89%E3%83%90%E3%83%83%E3%82%AF">フィードバック</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="JRubyJa-%E3%81%AA%E3%81%9CJRubyonRails%E3%82%A2%E3%83%97%E3%83%AA%E3%82%B1%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%82%92GlassFish%E3%82%A2%E3%83%97%E3%83%AA%E3%82%B1%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%82%B5%E3%83%BC%E3%83%90%E4%B8%8A%E3%81%A7%E9%96%8B%E7%99%BA%E3%81%99%E3%82%8B%E5%88%A9%E7%82%B9%E3%81%AF%EF%BC%9F"></a>なぜ JRuby-on-Rails アプリケーションを GlassFish アプリケーションサーバ上で開発する利点は？</h2> <p>この記事（ <a href="http://developers.sun.com/appserver/reference/techart/rails_gf/">GlassFish Application Server 上で Rails を動かす（英語）</a> ）に、GlassFish アプリケーションサーバが Rails アプリケーションの開発と配備に適している理由が書かれています。</p> <p>GlassFish アプリケーションサーバを使う利点を、以下のリストに簡単にまとめます。</p> 
+     <ul> 
+      <li>GlassFish は標準かつ堅牢な Java EE プラットフォームの上に構築されています。</li> 
+      <li>GlassFish は "green" な配備モデルを提供します。つまり、 WAR ファイルを作成してそれをアプリケーションサーバのautodeployディレクトリ（自動配備用ディレクトリ）にコピーするだけで配備が完了します。これに対して典型的な Rails アプリケーションは、複数の Mongrel を連携させた上でフロントエンドに Apache を配置し、 Capistrano を利用して管理する必要があります。</li> 
+      <li>Ruby-on-Rails と Java EE アプリケーションをひとつのコンテナ上で統合させることができます。このため、既に Java EE プラットフォーム に費用を投入している組織が JRuby-on-Rails アプリケーションを容易に採用することができます。</li> 
+      <li>Rails アプリケーションは、革新的なクラスタリング機能や GlassFish アプリケーションサーバの提供する高可用性サポートの恩恵にあずかることができます。</li> 
+      <li>GlassFish アプリケーションサーバは、データベース接続プールを提供します。これを利用して、データベース接続を再利用することができます。</li> 
+      <li>最後に、JRuby-on-Rails アプリケーションから 膨大な Java のライブラリを利用することができます。<br> <b>訳者注：以下のサイトの大半は英語で執筆されていますが、翻訳可能なサイトについては、順次訳していく予定です。翻訳作業に興味のある方は、ぜひ<a href="http://glassfish.jp/wiki/?Translate_GlassFish">こちら</a>からご参加下さい！</b></li> 
+     </ul> <h4><a name="JRubyJa-%E3%82%AC%E3%82%A4%E3%83%89"></a>ガイド </h2> 
+     <ol> 
+      <li><a href="./GettingStartedGuideJa.html">スタートガイド</a></li> 
+      <li><a href="./JRubyGFUserGuideJa.html">ユーザーガイド </a></li> 
+      <li><a href="./JRubyGFFAQJa.html">FAQ </a></li> 
+     </ol> <h4><a name="JRubyJa-ArunGupta%E3%81%95%E3%82%93%E3%81%AEJRubyonRailswithGlassFish3%E5%9B%9E%E3%82%B7%E3%83%AA%E3%83%BC%E3%82%BA"></a>Arun Gupta さんの JRuby-on-Rails with GlassFish 3回シリーズ</h2> 
+     <ol> 
+      <li><a href="./Javaintegration_glassfish_1Ja.html">第1回：Rails と Java EE の連携 - Rails からサーブレットを呼び出す</a></li> 
+      <li><a href="./Javaintegration_glassfish_2Ja.html">第2回：Rails と Java EE の連携 - Goldspike のかわりに Warbler で</a></li> 
+      <li><a href="./Javaintegration_glassfish_3Ja.html">第3回：Rails と Java EE の連携- 生の Rails を GlassFish v3 に配備</a></li> 
+     </ol> <h4><a name="JRubyJa-%E3%82%B9%E3%82%AF%E3%83%AA%E3%83%BC%E3%83%B3%E3%82%AD%E3%83%A3%E3%82%B9%E3%83%88"></a>スクリーンキャスト</h2> 
+     <ol> 
+      <li><a href="http://blogs.oracle.com/arungupta/entry/screencast_web_9_jruby_on">JRuby-on-Rails WAR ファイルをスタンドアロンモード / 共有モードで GlassFish v2 に配備（英語）</a> (Oct 4, 2007)</li> 
+      <li><a href="http://blogs.oracle.com/arungupta/entry/screencast_web6_first_jruby_app">GlassFish v2 で動かす はじめてのJRuby アプリ（英語）</a> (Aug 8, 2007)</li> 
+     </ol> <h4><a name="JRubyJa-%E6%8A%80%E8%A1%93%E6%83%85%E5%A0%B1"></a>技術情報</h2> 
+     <ol> 
+      <li><a href="./Rubyjruby_proceJa.html">JRuby プロセスモデル</a></li> 
+      <li><a href="http://rubyforge.org/projects/glassfishgem/">GlassFish V3 gem</a></li> 
+      <li><a href="./BugReportsJa.html">バグ・レポート</a></li> 
+     </ol> <h4><a name="JRubyJa-%E6%88%90%E5%8A%9F%E4%BA%8B%E4%BE%8B"></a>成功事例</h2> 
+     <ol> 
+      <li><a href="http://blogs.oracle.com/arungupta/entry/single_sign_on_using_sun">SSO using Access Manager</a></li> 
+      <li><a href="http://archive.hausfoundation.org/lists/org.codehaus.jruby.user/msg/8d31fd050808280814w6d2474bbha3ab8abb83729d66@mail.gmail.com">Auktionskompaniet.com</a></li> 
+      <li><a href="http://blog.linkedin.com/blog/2008/08/jdbc-connection.html">LinkedIn</a></li> 
+      <li><a href="http://archive.hausfoundation.org/lists/org.codehaus.jruby.user/msg/004101c9018c$e331c9f0$a9955dd0$@net">Jay McGaffigan</a></li> 
+      <li><a href="http://blogs.oracle.com/arungupta/entry/jruby_and_glassfish_v2_another">WorldxChange Communication NZ</a></li> 
+      <li><a href="http://blogs.oracle.com/arungupta/entry/jruby_on_rails_deployed_on">mediacast.sun.com</a></li> 
+      <li><a href="https://glassfish.java.net/servlets/ReadMsg?list=dev&amp;msgNo=5693">SpringBook</a></li> 
+      <li><a href="Endorsements.html" title="Endorsements">Endorsements</a></li> 
+     </ol> <h4><a name="JRubyJa-JRubyonGlassFishPlanningJRubyonGlassFishPlanning"></a><a href="JRubyOnGlassFishPlanning.html" title="JRubyOnGlassFishPlanning">JRuby on GlassFish Planning</a></h2> <h4><a name="JRubyJa-%E5%A4%96%E9%83%A8%E3%83%AA%E3%83%B3%E3%82%AF"></a>外部リンク</h2> <p><a href="http://wiki.jruby.org/wiki/JRuby_on_Rails_in_GlassFish">JRuby GlassFish wiki</a>&lt;br&gt;<br> <a href="http://blogs.oracle.com/arungupta">Arun Gupta 氏のブログ（英語）</a>&lt;br&gt;<br> <a href="http://blogs.oracle.com/pramodg">Pramod Gopinath 氏のブログ（英語）</a>&lt;br&gt;<br> <a href="http://rubyforge.org/project/stats/index.php?group_id=5450&amp;area=downloads&amp;SPAN=2&amp;start=1199145600&amp;end=1204329600&amp;submit=Refresh">RubyForge ダウンロード統計</a></p> <p>Search for case insensitive - glassfish <a href="http://rubyforge.org/top/mostactive.php?type=week">http://rubyforge.org/top/mostactive.php?type=week</a> <a href="http://gems.rubyforge.org/stats.html">http://gems.rubyforge.org/stats.html</a></p> <h4><a name="JRubyJa-%E3%83%95%E3%82%A3%E3%83%BC%E3%83%89%E3%83%90%E3%83%83%E3%82%AF"></a>フィードバック</h2> <p>質問はメーリングリストへ <b>dev@glassfish.java.net</b>&lt;br&gt;<br> <a href="http://forums.java.net/jive/forum.jspa?forumID=56&amp;start=0">開発者フォーラム（英語）</a>&lt;br&gt; <br> <a href="https://glassfish.java.net/servlets/ProjectIssues">課題の登録（英語）</a>&lt;br&gt;</p> 
+     <hr> <p>日本語翻訳: <a href="http://apercu-j.blogspot.com/">Kana</a></p> <p><a href="JRuby.html" title="JRuby">英文 </a> (翻訳したバージョン: 60)</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 09, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

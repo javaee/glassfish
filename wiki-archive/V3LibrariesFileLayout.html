@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : V3LibrariesFileLayout</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="V3LibrariesFileLayout-FileLayoutinV3"></a>File Layout in V3</h1> <h4><a name="V3LibrariesFileLayout-StateoftheunioninV2%3A"></a>State of the union in V2 :</h2> <p>This table defines the list of location for V2's jars :</p> 
+     <div class="panel" style="border-width: 1px;">
+      <div class="panelContent"> 
+       <div class="table-wrap"> 
+        <table class="confluenceTable">
+         <tbody> 
+          <tr> 
+           <th class="confluenceTh"> directory </th> 
+           <th class="confluenceTh"> description </th> 
+           <th class="confluenceTh"> requires JVM Parameters </th> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> lib </td> 
+           <td class="confluenceTd"> all jars placed in appserver classpath including the appclient jars </td> 
+           <td class="confluenceTd"> no </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> lib/verifier </td> 
+           <td class="confluenceTd"> verifier xml files, jars are in lib </td> 
+           <td class="confluenceTd"> no </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> lib/upgrade </td> 
+           <td class="confluenceTd"> upgrade binaries </td> 
+           <td class="confluenceTd"> no </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> lib/endorsed </td> 
+           <td class="confluenceTd"> endorsed libraries </td> 
+           <td class="confluenceTd"> yes </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> domain/lib </td> 
+           <td class="confluenceTd"> domain specific libraries added to appserver classpath </td> 
+           <td class="confluenceTd"> no </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> domain/lib/applibs </td> 
+           <td class="confluenceTd"> application libraries added to application classpath </td> 
+           <td class="confluenceTd"> no </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> domain/lib/ext </td> 
+           <td class="confluenceTd"> JDK's lib/ext jars per domain </td> 
+           <td class="confluenceTd"> yes </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> domain/lib/classes </td> 
+           <td class="confluenceTd"> ? </td> 
+           <td class="confluenceTd"> ? </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> jbi/lib </td> 
+           <td class="confluenceTd"> JBI jars </td> 
+           <td class="confluenceTd"> no </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> domain/jbi/shared-libraries </td> 
+           <td class="confluenceTd"> shared JBI libraries per domain </td> 
+           <td class="confluenceTd"> no </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> classpath-suffix </td> 
+           <td class="confluenceTd"> domain.xml classpath suffix </td> 
+           <td class="confluenceTd"> no </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> classpath-prefix </td> 
+           <td class="confluenceTd"> domain.xml classpath prefix </td> 
+           <td class="confluenceTd"> no </td> 
+          </tr> 
+         </tbody>
+        </table> 
+       </div> 
+       <hr> 
+       <p>Jspwiki style: sortable</p> 
+      </div>
+     </div> <p></p>
+     <div class="panel" style="border-width: 1px;">
+      <div class="panelContent"> 
+       <p>. Proposal for V3 : </p> 
+       <p>With the Repository facility, it becomes quite easy to control the order the repositories are searched to provide more flexibility than static parameters. </p> 
+       <h4><a name="V3LibrariesFileLayout-V3modulesandlibraries"></a>V3 modules and libraries</h2> 
+       <p>Each repository is organized with a duet of directory, the repository itself where we get the modules and a jars subdirectory where we load all the jars (libaries) directly referenced from a module's manifest CLASSPATH attribute.</p> 
+       <p>On startup V3 should be configured with a few repositories (see table below) each of these repository can have a optional jars subdirectory where all the libraries will be stored and accessed. This point is not to keep the file server layout compatible but try to keep the users experience compatible. </p> 
+       <p>For instance we should not plan to continue support for : </p> 
+       <ul> 
+        <li>domain.xml classpath configuration</li> 
+        <li>in place upgrade from V2 to V3.</li> 
+        <li>any feature that requires JVM parameters (unless customer needs it and adds it to the configuration).</li> 
+       </ul> 
+       <h4><a name="V3LibrariesFileLayout-Additionalglassfishexecutables%3A"></a>Additional glassfish executables : </h2> 
+       <h4><a name="V3LibrariesFileLayout-appclient"></a>appclient</h3> 
+       <p>The appclient today is loading most of the application server code in the client due to lack of modularity. Appclients also inherit most of the shared libaries that users may have added to the configuration.</p> 
+       <h4><a name="V3LibrariesFileLayout-upgrade"></a>upgrade</h3> 
+       <p>tbd</p> 
+       <h4><a name="V3LibrariesFileLayout-verifier"></a>verifier</h3> 
+       <p>tbd</p> 
+       <h4><a name="V3LibrariesFileLayout-Sharedrepository"></a>Shared repository </h2> 
+       <p>For backward compatibility, it might be useful to define a shared repository where jar files (not modules) can be loaded from. This is particularly useful for things like jdbc drivers that can be loaded from a Class.forName() call. This can also be used for other sorts of backward compatibility issues around system libraries in V3. Such libraries would be accessible by all the application server modules as well as the applications themselves, this would be implemented using a parent class loader scheme. We can use a specific directory like lib/shared.</p> 
+       <h4><a name="V3LibrariesFileLayout-Containerpluggability"></a>Container pluggability</h2> 
+       <p>Although nothing prevents container to install themselves in the main lib repository, it is better to separate each container by installing them in a different repository (subdirectory for instance) : </p> 
+       <ul> 
+        <li>quicker startup as we parse less modules metadata</li> 
+        <li>clear separation between the nucleus runtime and the containers</li> 
+        <li>services implementation only discovered once the repository is added to the runtime</li> 
+        <li>easy removal of a particular container (rm -rf...)</li> 
+       </ul> 
+       <p>so for instance, taking the web container as a example, we can install of the web container's module in lib/web (with dependent jars in lib/web/jars). </p> 
+       <h4><a name="V3LibrariesFileLayout-Configuration%2FCLIcommandsdilemma"></a>Configuration/CLI commands dilemma </h3> 
+       <p>The layered approach although tempting introduces some complexity around Services discovery. If a particular container repository is not known to HK2 runtime until the container is started, the configuration and potentially Services implementation like CLI command cannot be discovered until the container is started. This is clearly a problem for things like CLI commands, you would want the EJB container to define EJB specific CLI commands and have these commands available as long as the container is installed not necessarily started. </p> 
+       <p>There is probably a need to a differed initialization of the sub repositories once the V3 has started so it does not impact startup time but this introduce complexity due to the dynamic nature of container's startup in V3 (we don't necessarily know how many we have until sniffers have ran successfully). We could alternatively ask the container developer to install such shared components (CLI commands, configuration elements) in our of our shared repository keeping only the container implementation in a sub directory.</p> 
+       <h4><a name="V3LibrariesFileLayout-Compatibility"></a>Compatibility </h2> 
+       <h4><a name="V3LibrariesFileLayout-lib%2F.jarversuslib%2Fshared."></a>lib/*.jar versus lib/shared.</h3> 
+       <p>In V3, customers had the ability to put jars in the lib directory and have these jars automatically added to the application server classpath. This is not very useful to add such libraries in V3 as they would only be loaded if one of the application server's module CLASSPATH referenced them. It can however be useful for applications to install frameworks like Spring, however people should have used the appLibs directory for that. </p> 
+       <p>For simplicity and backward compatibility we might want to just consider lib/shared for this kind of use case. Should we then rename the lib repository in something like &lt;installRoot&gt;/modules and keep lib empty for backward compatibility. </p> 
+       <h4><a name="V3LibrariesFileLayout-addons"></a>addons </h3> 
+       <p>Add ons developed for previous versions of the application server will need to be massaged to fit in this architecture unless they were not using any appserver services. However, there might be some documentation updates necessary on how to install and remove addons since they will most likely leverage HK2 download facilities. There might also be a need to develop at least one HK2 module that would defines the addon container.</p> 
+       <h4><a name="V3LibrariesFileLayout-ProposedLayout"></a>Proposed Layout </h1> 
+       <p>Assuming we use &lt;installRoot&gt;/modules to store all of our nucleus modules, we could do </p> 
+       <h4><a name="V3LibrariesFileLayout-ApplicationServerlayout"></a>Application Server layout</h2> 
+       <hr> 
+       <p>Jspwiki style: h1</p> 
+      </div>
+     </div>sortable<p></p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> location </th> 
+         <th class="confluenceTh"> type </th> 
+         <th class="confluenceTh"> order </th> 
+         <th class="confluenceTh"> description </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> modules/prefix </td> 
+         <td class="confluenceTd"> HK2 Repository </td> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd"> overriding modules repository </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> modules </td> 
+         <td class="confluenceTd"> HK2 Repository </td> 
+         <td class="confluenceTd"> 5 </td> 
+         <td class="confluenceTd"> main modules </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> domain/lib </td> 
+         <td class="confluenceTd"> HK2 Repository </td> 
+         <td class="confluenceTd"> 4 </td> 
+         <td class="confluenceTd"> domain modules </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> modules/sufix </td> 
+         <td class="confluenceTd"> HK2 Repository </td> 
+         <td class="confluenceTd"> 10 </td> 
+         <td class="confluenceTd"> is this still useful ? </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> lib </td> 
+         <td class="confluenceTd"> directory </td> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> shared libaries </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> lib/ext </td> 
+         <td class="confluenceTd"> directory </td> 
+         <td class="confluenceTd"> none </td> 
+         <td class="confluenceTd"> jdk lib/ext directory </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> lib/appclient </td> 
+         <td class="confluenceTd"> HK2 Repository </td> 
+         <td class="confluenceTd"> appclient modules </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> lib/&lt;container&gt; </td> 
+         <td class="confluenceTd"> HK2 Repository </td> 
+         <td class="confluenceTd"> &lt;container&gt; modules </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &lt;domain&gt;/lib/applibs </td> 
+         <td class="confluenceTd"> directory </td> 
+         <td class="confluenceTd"> none </td> 
+         <td class="confluenceTd"> content added to application classpath </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jbi/lib </td> 
+         <td class="confluenceTd"> HK2 Repository </td> 
+         <td class="confluenceTd"> none </td> 
+         <td class="confluenceTd"> container added when jbi apps are deployed </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>%%<br> </p>
+     <div class="panel" style="border-width: 1px;">
+      <div class="panelContent"> 
+       <p>/ext and &lt;domain&gt;/lib/ext will remain untouched.</p> 
+       <h4><a name="V3LibrariesFileLayout-ApplicationClientContainerlayou"></a>Application Client Container layou</h2> 
+       <hr> 
+       <p>Jspwiki style: lib</p> 
+      </div>
+     </div>sortable<p></p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> location </th> 
+         <th class="confluenceTh"> type </th> 
+         <th class="confluenceTh"> order </th> 
+         <th class="confluenceTh"> description </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> lib </td> 
+         <td class="confluenceTd"> directory </td> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> shared libraries </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> modules/appclient </td> 
+         <td class="confluenceTd"> HK2 Repository </td> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd"> overriding modules repository </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>%%<br> %%</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 09, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:48.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

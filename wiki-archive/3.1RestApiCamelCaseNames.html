@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : 3.1RestApiCamelCaseNames</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="3.1RestApiCamelCaseNames-GlassFishV3.1RESTfulAPICamelCaseNameProposal"></a>GlassFish V3.1 RESTful API Camel Case Name Proposal</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#3.1RestApiCamelCaseNames-GlassFishV3.1RESTfulAPICamelCaseNameProposal">GlassFish V3.1 RESTful API Camel Case Name Proposal</a></li> 
+       <li><a href="#3.1RestApiCamelCaseNames-1.Introduction">1. Introduction</a></li> 
+       <ul> 
+        <li><a href="#3.1RestApiCamelCaseNames-1.1.Project%2FComponentWorkingName%3A">1.1. Project/Component Working Name:</a></li> 
+        <li><a href="#3.1RestApiCamelCaseNames-1.2.Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier%3A">1.2. Name(s) and e-mail address of Document Author(s)/Supplier:</a></li> 
+        <li><a href="#3.1RestApiCamelCaseNames-1.3.DateofThisDocument">1.3. Date of This Document</a></li> 
+       </ul> 
+       <li><a href="#3.1RestApiCamelCaseNames-2.ProblemSummary">2. Problem Summary</a></li> 
+       <ul> 
+        <li><a href="#3.1RestApiCamelCaseNames-2.1.ProblemArea">2.1. Problem Area</a></li> 
+        <li><a href="#3.1RestApiCamelCaseNames-2.2.Justification">2.2. Justification</a></li> 
+       </ul> 
+       <li><a href="#3.1RestApiCamelCaseNames-3.TechnicalDescription">3. Technical Description</a></li> 
+       <ul> 
+        <li><a href="#3.1RestApiCamelCaseNames-3.1TheCurrentSituation">3.1 The Current Situation</a></li> 
+        <li><a href="#3.1RestApiCamelCaseNames-3.2TheProposedSolution">3.2 The Proposed Solution</a></li> 
+        <li><a href="#3.1RestApiCamelCaseNames-3.3ThePrototype">3.3 The Prototype</a></li> 
+        <li><a href="#3.1RestApiCamelCaseNames-3.4NextSteps">3.4 Next Steps</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="3.1RestApiCamelCaseNames-1.Introduction"></a>1. Introduction</h1> <h4><a name="3.1RestApiCamelCaseNames-1.1.Project%2FComponentWorkingName%3A"></a>1.1. Project/Component Working Name:</h2> <p>GlassFish V3.1 RESTful API Camel Case Name Proposal</p> <h4><a name="3.1RestApiCamelCaseNames-1.2.Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier%3A"></a>1.2. Name(s) and e-mail address of Document Author(s)/Supplier:</h2> 
+     <ul> 
+      <li>Jason Lee: jdlee@java.net</li> 
+      <li>Ludovic Champenois: ludovic.champenois</li> 
+      <li>Mitesh Meswani: mm110999@java.net</li> 
+     </ul> <h4><a name="3.1RestApiCamelCaseNames-1.3.DateofThisDocument"></a>1.3. Date of This Document</h2> <p>05/18/2010</p> <h4><a name="3.1RestApiCamelCaseNames-2.ProblemSummary"></a>2. Problem Summary</h1> <h4><a name="3.1RestApiCamelCaseNames-2.1.ProblemArea"></a>2.1. Problem Area</h2> <p>Currently, the REST API returns key names in a couple of different formats: a XML-like dashed name (this-is-an-example) or all lower case (thisisanotherexample). This inconsistency unnecessarily increases the burden on application developers as they have to know what format to expect where, as well as maintaining distinct blocks of code to handle each of the "formats." Additionally, the second format loses any information that might indicate word breaks, making generated code less ready (e.g., the getter in, say, a Python client for this-is-an-example would be getThisIsAnExample, whereas thisisanotherexample would be getThisisanotherexample).</p> <h4><a name="3.1RestApiCamelCaseNames-2.2.Justification"></a>2.2. Justification</h2> <p>Having slightly different but mostly similar blocks of code, whose sole difference is the case/format of key names in Maps, is undesirable. A common, consistent format then, must be decided upon to reduce the amount of work needed to interact with the API. Similarly, to make the API even more useful, it is desirable to present the key names in a manner that is as flexible and meaningful to consuming code, whether it's an actual client or a client/wrapper generator. After some discussion with Jerome and Ludo, camel-cased names was decided upon as the preferred way to present the key names to any consuming code. Camel-cased names in JSON/JavaScript is the defacto standard to name properties.</p> <h4><a name="3.1RestApiCamelCaseNames-3.TechnicalDescription"></a>3. Technical Description</h1> <h4><a name="3.1RestApiCamelCaseNames-3.1TheCurrentSituation"></a>3.1 The Current Situation</h2> <p>In the current code base (as of early May 2010), the parameter names exposed by the REST API come from one of two places, ConfigBeans for GET (Read) and PUT (Update) and sometimes CommandModels (for DELETE (delete-* commands), and POST (create-* commands)). Depending on the requested operation (ConfigBeans for read/GET, or, oftern ModelCommands for create/POST or update/POST), the REST service will scan the object in question and interrogate either the @Attribute (and related field) or @Param. For @Attributes, the field name is converted to dash-separated words (HK2 does that when saving the real domain.xml file), while for @Params, the name attribute is returned. There is no real mapping today between a ConfigBeans attribute name and a CLI param of a command which many times corresponds to a ConfigBean attribute. (There are some cases of CLI params that do not correspond to ConfigBeans attribute, for example the --force param of the redeploy command).</p> <h4><a name="3.1RestApiCamelCaseNames-3.2TheProposedSolution"></a>3.2 The Proposed Solution</h2> <p>Since the REST API leverages the CLI classes for at least some of the create, delete and update operations, these CLI commands must be modified in some way to return the proper casing. The proposed solution is to modify the @Param annotation, adding the camelCaseName attribute:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Param(name="steadypoolsize", camelCaseName = "steadyPoolSize",  optional=true)
+    String steadypoolsize = "8";</pre> 
+       </div> 
+      </div>
+     </div> <p>The existing Attribute of the ConfigBeans is untouched, as:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Attribute (defaultValue="8") @Min(value=0)  @Max(value=Integer.MAX_VALUE)
+    String getSteadyPoolSize();</pre> 
+       </div> 
+      </div>
+     </div> <p>Another use case for this new attribute is name consistency for the any client (including REST) of the CLI framework. For example:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Param(name="maxwait", camelCaseName = "maxWaitTimeInMillis",  optional=true)
+    String maxwait = "60000";</pre> 
+       </div> 
+      </div>
+     </div> <p>While the published CLI param name is "maxwait", it will be easier and consistent to use "maxWaitTimeInMillis" in a JSON document to refer to both the CLI parameter and the JdbcConnectionPool ConfigBean attribute:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Attribute (defaultValue="60000") @Min(value=0) @Max(value=Integer.MAX_VALUE)
+    String getMaxWaitTimeInMillis();</pre> 
+       </div> 
+      </div>
+     </div> <p>The REST service will then be modified to use this value, if it is present, when creating the parameter list:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">String parameterName = (paramModel.getParam().primary())?"id":paramModel.getName();
+    String parameterCamelCasedName = paramModel.getParam().camelCaseName();
+    if(parameterCamelCasedName == null || parameterCamelCasedName.isEmpty()) {
+        parameterCamelCasedName = parameterName;
+    }</pre> 
+       </div> 
+      </div>
+     </div> <p>(Note: the code above should/will ultimately move to the ParamModel class...)</p> <p>The reverse mapping must be done when the POST/PUT command is received. The prototype of this code does this work:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">CommandRunner cr = habitat.getComponent(CommandRunner.class);
+    CommandModel cm = cr.getModel(commandName, logger);
+    Collection&lt;CommandModel.ParamModel&gt; paramModels = cm.getParameters();
+    HashMap&lt;String, String&gt; translatedMap = new HashMap&lt;String, String&gt;();
+    for (CommandModel.ParamModel paramModel : paramModels) {
+        Param param = paramModel.getParam();
+        String camelCaseName = param.camelCaseName();
+        if(sourceMap.containsKey(camelCaseName)) {
+            String paramValue = sourceMap.remove(camelCaseName);
+            translatedMap.put(paramModel.getName(), paramValue);
+        }
+    }
+    //Copy over the remaining values from sourceMap
+    translatedMap.putAll(sourceMap);
+
+    return translatedMap;</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="3.1RestApiCamelCaseNames-3.3ThePrototype"></a>3.3 The Prototype</h2> <p>Some of this code is already in the REST module, though, as of 18-May-2010, has not been checked in. The client to consume these changes is currently under development under the admingui module (v3/admingui/prototype). Basic create functionality on the REST side has been confirmed through Jersey client-based test code, but a more robust solution, modeled after the current production AMX code in the console is being developed by Jason Lee and Ken Paulsen.</p> <h4><a name="3.1RestApiCamelCaseNames-3.4NextSteps"></a>3.4 Next Steps</h2> <p>Assuming the proposal is accepted and the prototype does not uncover show stopping problems, each CLI command in the system must be touched to add this new attribute (where appropriate, i.e mostly on only the create-XXX commands used by the REST POST layer). The REST module team has it as an AI to determine the owner of each command and work with that team to insure that each command is updated as necessary.</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Aug 28, 2012 by 
+<font color="#0050B2">10193</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : WikiTemplates</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>This page describes the Wiki v2 template system, which lets you adjust the <br> appearance of your JSPWiki installation without worrying about losing your<br> changes the next time you update JSPWiki.</p> <p>If you're looking for ready-made templates, please go to <a href="http://www.jspwiki.org/Wiki.jsp?page=ContributedTemplates">http://www.jspwiki.org/Wiki.jsp?page=ContributedTemplates</a>. If you on the other hand are looking for ideas to implement in your templates, go to <a href="http://www.jspwiki.org/Wiki.jsp?page=WantedTemplates">http://www.jspwiki.org/Wiki.jsp?page=WantedTemplates</a>.</p> <p>[</p> 
+     <div class="error">
+      <span class="error">Unknown macro: {TableOfContents title='Table of Contents'}</span> 
+     </div> <p>|(TableOfContentstitle='TableofContents')]</p> 
+     <hr> <h4><a name="WikiTemplates-Introduction"></a>Introduction</h1> <p>JSPWiki v2 now supports the concept of "templates" and "skins". These<br> are actually two different things:</p> 
+     <ul> 
+      <li><em>Templates</em> are set by the site administrator. They are a core set</li> 
+     </ul> <p> of HTML and JSP files, that define how your site looks. All<br> templates are located in the JSPWiki/templates/&lt;template name&gt;<br> directory.</p> 
+     <ul> 
+      <li><em>Styles</em> are modifications on the basic templates. Each template may</li> 
+     </ul> <p> have one or many styles available, and these are chosen by the user.<br> These are based on stylesheets, and some templates might not support<br> any styles at all.</p> <p>JSPWiki comes currently with a single template, called "default".<br> This is also the template that gets used if no template has been<br> defined. Unfortunately, the default template has only one "style".</p> <h4><a name="WikiTemplates-Templates"></a>Templates</h1> <h4><a name="WikiTemplates-Averysimpleexample"></a>A very simple example</h2> <p>This very simple example allows you to create the simplest possible template.</p> <p><b>First, create your own template directory</b></p> <p>Go to the JSPWiki installation directory, then go to "templates". Make a new subdirectory, called "example".</p> <p><b>Create your own ~ViewTemplate</b></p> <p>Put the following example in the "example" directory, and call the file "~ViewTemplate.jsp":</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;%@ taglib uri="/WEB-INF/jspwiki.tld" prefix="wiki" %&gt;
+
+&lt;h1&gt;&lt;wiki:PageName/&gt;&lt;/h1&gt;
+
+&lt;wiki:Content/&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p><b>Modify the <tt>jspwiki.properties</tt> file</b></p> <p>Now find the <tt>jspwiki.properties</tt>-file, which is located under the WEB-INF subdirectory of your JSPWiki installation. Open it in an editor, and find the line which says</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">jspwiki.templateDir=default</pre> 
+       </div> 
+      </div>
+     </div> <p>and change it into</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">jspwiki.templateDir=example</pre> 
+       </div> 
+      </div>
+     </div> <p><b>Restart JSPWiki</b></p> <p>Restart JSPWiki (for example, in Tomcat you can use the manager UI to do this, so you don't have to restart the entire Java Virtual Machine), or you can just restart the entire container.</p> <h4><a name="WikiTemplates-Moredetails%2Caka%22OK%2Chere%27showitworks%22"></a>More details, aka "OK, here's how it works"</h2> <h4><a name="WikiTemplates-MainJSPpages%3AWiki.jsp%2CEdit.jsp%2CPreview.jsp%2CPageInfo.jsp%2Cetc."></a>Main JSP pages: Wiki.jsp, Edit.jsp, Preview.jsp, PageInfo.jsp, etc.</h3> <p>JSPWiki has a bunch of main JSP pages. These work as the "Controller" - they basically control the processing of the request. They take<br> care of saving your document, or making sure that there are no concurrent changes, etc. You can modify these files, if you want - they're written as JSP pages to make your modifications easier. However, when you upgrade to a new JSPWiki version, you'll need to<br> modify these pages again.</p> <p>The main JSP pages will then figure out which template to use, and will include the appropriate template file, which decides what the "View" is going to be like.</p> <p>There are two basic templates: ViewTemplate and EditTemplate. ViewTemplate gets all requests from any page that does not have to care about changing the page contents, and EditTemplate gets all those requests that do.</p> <p>Any template should have at least <em>one</em> of the two files, or else it's essentially useless.</p> <h4><a name="WikiTemplates-Awordaboutthe%22default%22template"></a>A word about the "default" template</h3> <p>If JSPWiki cannot find a template file, it will use the one in the "default" template. This allows you to just copy a single file from the default template in your own template and modify it. You can even keep the ~ViewTemplate and ~EditTemplate from the default directory and change any of the *Content -files.</p> <p>Note that this does <b>not</b> include the CSS -files. You have to still manually specify their location. The "commonheader.jsp" file in the default template will include whatever css files you have in the local directory.</p> <h4><a name="WikiTemplates-Viewpages%3AViewTemplate.jsp%2CEditTemplate.jsp"></a>View pages: ViewTemplate.jsp, EditTemplate.jsp</h3> <p>Basically, all you ever need to do is to modify two files to change the look of your Wiki:</p> <p><b>ViewTemplate.jsp</b> gets all requests from Wiki.jsp, Preview.jsp,<br> PageInfo.jsp, etc. Create a copy to change the visual outlook of your Wiki site, as your average browsing user would see it.</p> <p><b>EditTemplate.jsp</b> on the other hand gets all Edit.jsp requests. Modify this file so that people who edit it get to see stuff.</p> <h4><a name="WikiTemplates-The%3Cwiki%3AContent%3Etagandtherequestcontext"></a>The &lt;wiki:Content&gt; -tag and the request context</h3> <p>OK, so far so good. But we still have a problem: Displaying Page Info is totally different from showing the rendered text - yes? The other one has plenty of lists and items, and the other one has nice HTML text. But they are both handled by ViewTemplate.jsp!</p> <p>Here's where it gets complicated: The "default" template handles this by including different <em>content pages</em> depending on the Page Request<br> Context. The Page ~RequestContext basically tells you whether you're asking for "info", or "diff", or whatever. Each context has a specific string representation - view is "view" etc. You can use the <a href="CheckRequestContextTag.html" title="CheckRequestContextTag">CheckRequestContextTag</a> to change JSPWiki's behaviour depending on the context - to show different text for example.</p> <p>However, there's a JSP tag called ContentTag, which takes care most of the dirty work for you. Just drop it wherever you would like, and it will include the proper content page.</p> <p>For example, the "view" context means that a page called "PageContent.jsp" is included. You may override this by using the "view" argument of the ContentTag. (See for more information).</p> <p>This basically means that "if the request context is 'view', i.e. someone just wanted to see the rendered HTML content, then<br> include a JSP page called 'PageContent.jsp'". The PageContent.jsp then just basically says that:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;wiki:InsertPage /&gt;
+
+      &lt;wiki:NoSuchPage&gt;
+           This page does not exist.  Why don't you go and
+           &lt;wiki:EditLink&gt;create it&lt;/wiki:EditLink&gt;?
+      &lt;/wiki:NoSuchPage&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>That is: "insert the page content in HTML. If there is no such page, display a simple note to the user, requesting him to fix this."</p> <p>So, it's not that difficult. Take a look at the <a href="#WikiTemplates-ListOfRequestContexts">list of request contexts</a> to see what kind of different request contexts there are, and how they're handled by default.</p> <p>Note that this is just the way the default template does things. Your own template is free to do anything it wants; as long as you provide EditTemplate.jsp and ViewTemplate.jsp, you should be set.</p> <h4><a name="WikiTemplates-%22Content%22pages"></a>"Content" pages</h3> <p>These are the different "content" pages that are included by "ViewTemplate.jsp". For example, "PageContent.jsp" displays HTML,<br> "DiffContent.jsp" displays the diff, etc. You can just easily reuse these, or do something else.</p> <h4><a name="WikiTemplates-Aclarifyingpicture"></a>A clarifying picture</h3> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Wiki.jsp, PageInfo.jsp, etc.
+        ==&gt;   templates/&lt;name_of_template&gt;/ViewTemplate.jsp
+
+
+     Edit.jsp
+        ==&gt;   templates/&lt;name_of_template&gt;/EditTemplate.jsp</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="WikiTemplates-Structureofthe%22default%22template"></a>Structure of the "default" template</h3> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">ViewTemplate.jsp
+        (Provide basic layout, incl. SearchBox.jsp)
+        (Include proper content page)
+        ==&gt; PageContent.jsp   (If request was for Wiki.jsp)
+        ==&gt; InfoContent.jsp   (If request was for PageInfo.jsp)
+        etc.
+
+     EditTemplate.jsp
+        (Provide edit page layout)
+        (Includes only SearchBox.jsp)</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="WikiTemplates-Explanationofthedifferenttags"></a>Explanation of the different tags</h2> <p>JSPWiki templates are heavily based on JSP tags. A full explanation of them is available at <a href="JSPWikiTags.html" title="JSPWikiTags">JSPWikiTags</a>.</p> <p>For further examples, just look at the default template, since it<br> basically uses all of the tags. They're not that hard to figure out.</p> 
+     <hr> <h4><a name="WikiTemplates-Styles"></a>Styles</h1> <p><em>This section needs to be written</em></p> 
+     <hr> <h4><a name="WikiTemplates-AfewFrequentlyAskedQuestions"></a>A few Frequently Asked Questions</h1> <h4><a name="WikiTemplates-Problem%3ASettingCSSclassestochangetheappearanceoflinks%2Cetc.onpageparts"></a>Problem: Setting CSS classes to change the appearance of links, etc. on page parts</h3> <p>Something I noticed while playing around with templates: if you want a clear contrast between<br> wiki controls (LeftMenu, the top bar...) and page content, you'd want to be able to make text and links<br> in various locations use different CSS classes. For example, you might want to render the control areas<br> with darkish, earthy tones and light text/links, and normal dark-on-white on the content area.</p> <p>This doesn't seem like a trivial change at the face of it. How could we indicate what css styles to <br> use in the template files? </p> <p><b>Answer</b></p> <p>Trivial. In the template file, wrap the LeftMenu inside a &lt;div class="leftmenu"&gt; ... &lt;/div&gt; block, then use a CSS selector to transform all anchors in that div to something else. Like thus:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">DIV.leftmenu A { font-size: 200px }</pre> 
+       </div> 
+      </div>
+     </div> <p>CSS is cool <img class="emoticon" src="images/icons/emoticons/smile.gif" height="20" width="20" align="absmiddle" alt="" border="0">.</p> 
+     <hr> <h4><a name="WikiTemplates-Listofrequestcontexts"></a>List of request contexts</h1> <p>Here's a clarifying lists of which request contexts are available, and which content page handles what by default:</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Context </th> 
+         <th class="confluenceTh"> Handling JSP page </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> "view" </td> 
+         <td class="confluenceTd"> PageContent.jsp </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> "diff" </td> 
+         <td class="confluenceTd"> DiffContent.jsp </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> "info" </td> 
+         <td class="confluenceTd"> InfoContent.jsp </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> "preview" </td> 
+         <td class="confluenceTd">&nbsp;PreviewContent.jsp </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> "conflict" </td> 
+         <td class="confluenceTd"> ConflictContent.jsp </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> "find" </td> 
+         <td class="confluenceTd">&nbsp;FindContent.jsp </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> "prefs" </td> 
+         <td class="confluenceTd"> PreferencesContent.jsp </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> "error" </td> 
+         <td class="confluenceTd">&nbsp;DisplayMessage.jsp </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> "edit" </td> 
+         <td class="confluenceTd">&nbsp;EditContent.jsp </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> "comment" </td> 
+         <td class="confluenceTd"> CommentContent.jsp </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:49.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,1815 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GFv3FinalMS4</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GFv3FinalMS4-GlassFishv3Milestone4"></a>GlassFish v3 Milestone 4</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#GFv3FinalMS4-GlassFishv3Milestone4">GlassFish v3 Milestone 4</a></li> 
+       <ul> 
+        <li><a href="#GFv3FinalMS4-AdministrationGUI">Administration GUI</a></li> 
+        <li><a href="#GFv3FinalMS4-AdministrationInfrastructure">Administration Infrastructure</a></li> 
+        <ul> 
+         <li><a href="#GFv3FinalMS4-RESTInterface">REST Interface</a></li> 
+         <li><a href="#GFv3FinalMS4-AMX">AMX</a></li> 
+        </ul> 
+        <li><a href="#GFv3FinalMS4-ApplicationClientContainer">Application Client Container</a></li> 
+        <li><a href="#GFv3FinalMS4-Build">Build</a></li> 
+        <li><a href="#GFv3FinalMS4-CommandLineInterface">Command Line Interface</a></li> 
+        <ul> 
+         <li><a href="#GFv3FinalMS4-TransactionClicommands">Transaction Cli commands</a></li> 
+         <li><a href="#GFv3FinalMS4-JndiClicommands">Jndi Cli commands</a></li> 
+        </ul> 
+        <li><a href="#GFv3FinalMS4-Connectors%2CResources%2CPooling%2CJDBC">Connectors, Resources, Pooling, JDBC</a></li> 
+        <li><a href="#GFv3FinalMS4-CORBA">CORBA</a></li> 
+        <li><a href="#GFv3FinalMS4-Deployment">Deployment</a></li> 
+        <li><a href="#GFv3FinalMS4-EJBContainer">EJB Container</a></li> 
+        <li><a href="#GFv3FinalMS4-EmbeddedGlassFish">Embedded GlassFish</a></li> 
+        <li><a href="#GFv3FinalMS4-Gmbal">Gmbal</a></li> 
+        <li><a href="#GFv3FinalMS4-Installer">Installer</a></li> 
+        <li><a href="#GFv3FinalMS4-JavaEEServiceEngine">Java EE Service Engine</a></li> 
+        <li><a href="#GFv3FinalMS4-JavaPersistence">Java Persistence</a></li> 
+        <li><a href="#GFv3FinalMS4-JMSIntegration">JMS Integration</a></li> 
+        <li><a href="#GFv3FinalMS4-JSFIntegration">JSF Integration</a></li> 
+        <li><a href="#GFv3FinalMS4-Logging">Logging</a></li> 
+        <li><a href="#GFv3FinalMS4-Monitoring">Monitoring</a></li> 
+        <li><a href="#GFv3FinalMS4-Naming">Naming</a></li> 
+        <li><a href="#GFv3FinalMS4-PackagingandDistribution">Packaging and Distribution</a></li> 
+        <li><a href="#GFv3FinalMS4-Samples">Samples</a></li> 
+        <li><a href="#GFv3FinalMS4-Scripting">Scripting</a></li> 
+        <li><a href="#GFv3FinalMS4-Security">Security</a></li> 
+        <li><a href="#GFv3FinalMS4-ServerInfrastructure%28OSGi%2CHK2%2CConfiguration%29">Server Infrastructure (OSGi, HK2, Configuration)</a></li> 
+        <li><a href="#GFv3FinalMS4-Transaction">Transaction</a></li> 
+        <li><a href="#GFv3FinalMS4-UpdateCenterIntegration">Update Center Integration</a></li> 
+        <li><a href="#GFv3FinalMS4-Upgrade">Upgrade</a></li> 
+        <li><a href="#GFv3FinalMS4-WebServices%28Metro%2CJAXRS%29">Web Services (Metro, JAX-RS)</a></li> 
+        <li><a href="#GFv3FinalMS4-WebTier%28Grizzly%2CWebContainer%29">Web Tier (Grizzly, Web Container)</a></li> 
+       </ul> 
+      </ul>
+     </div> <p><b>Milestone 4</b></p> <h4><a name="GFv3FinalMS4-AdministrationGUI"></a>Administration GUI</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task/Feature </th> 
+         <th class="confluenceTh"> Owner </th> 
+         <th class="confluenceTh"> Start Date </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http:--sites.google.com-site-glassfishconsole-Home-v3-admin-console-modules">Create all Plugin Modules </a> </td> 
+         <td class="confluenceTd"> Anissa </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> %%strike 90% All plugin module directory hierarchy has been created. The only remaining task is to split up the resources plugin (jdbc-gui) into jdbc, jca and mail resources plugin by moving the files around. Ana working on that. 
+          <div class="panel" style="border-width: 1px;">
+           <div class="panelContent"> 
+            <p>. |</p> 
+            <div class="table-wrap"> 
+             <table class="confluenceTable">
+              <tbody> 
+               <tr> 
+                <td class="confluenceTd"> Migrate GUI to use AMX.v3 </td> 
+                <td class="confluenceTd"> Anissa </td> 
+                <td class="confluenceTd">&nbsp;</td> 
+                <td class="confluenceTd">&nbsp;</td> 
+                <td class="confluenceTd"> DONE. </td> 
+               </tr> 
+               <tr> 
+                <td class="confluenceTd"> <a href="http:--spreadsheets.google.com-ccc?key=rWrcAQ3eoUw11NSlIPgKJ4g&amp;hl=en">more details regarding other tasks is here </a> </td> 
+                <td class="confluenceTd">&nbsp;</td> 
+                <td class="confluenceTd">&nbsp;</td> 
+                <td class="confluenceTd">&nbsp;</td> 
+                <td class="confluenceTd">&nbsp;</td> 
+               </tr> 
+              </tbody>
+             </table> 
+            </div> 
+            <h4><a name="GFv3FinalMS4-AdministrationInfrastructure"></a>Administration Infrastructure</h2> 
+            <p>Launcher, JSR77, AMX, JMX, REST administration interface</p> 
+            <h4><a name="GFv3FinalMS4-RESTInterface"></a>REST Interface</h3> 
+            <div class="table-wrap"> 
+             <table class="confluenceTable">
+              <tbody> 
+               <tr> 
+                <th class="confluenceTh"> Task/Feature </th> 
+                <th class="confluenceTh"> Owner </th> 
+                <th class="confluenceTh"> Start Date </th> 
+                <th class="confluenceTh"> End Date </th> 
+                <th class="confluenceTh"> Status </th> 
+               </tr> 
+               <tr> 
+                <td class="confluenceTd"> Build Integration </td> 
+                <td class="confluenceTd"> Rajeshwar </td> 
+                <td class="confluenceTd">&nbsp;</td> 
+                <td class="confluenceTd">&nbsp;</td> 
+                <td class="confluenceTd">Done </td> 
+               </tr> 
+               <tr> 
+                <td class="confluenceTd"> Verify/Enable monitoring data </td> 
+                <td class="confluenceTd"> Rajeshwar </td> 
+                <td class="confluenceTd">&nbsp;</td> 
+                <td class="confluenceTd"> 03 July 2009 </td> 
+                <td class="confluenceTd">Done </td> 
+               </tr> 
+               <tr> 
+                <td class="confluenceTd"> Provide deployment support </td> 
+                <td class="confluenceTd"> Rajeshwar </td> 
+                <td class="confluenceTd">&nbsp;</td> 
+                <td class="confluenceTd">&nbsp;</td> 
+                <td class="confluenceTd">In progress </td> 
+               </tr> 
+               <tr> 
+                <td class="confluenceTd"> Enable Security </td> 
+                <td class="confluenceTd"> Rajeshwar </td> 
+                <td class="confluenceTd">&nbsp;</td> 
+                <td class="confluenceTd"> Jul 25 2009 </td> 
+                <td class="confluenceTd">Done </td> 
+               </tr> 
+               <tr> 
+                <td class="confluenceTd"> Expose sub-resources for state management </td> 
+                <td class="confluenceTd"> Rajeshwar </td> 
+                <td class="confluenceTd">&nbsp;</td> 
+                <td class="confluenceTd"> 13 July 2009 </td> 
+                <td class="confluenceTd">Done </td> 
+               </tr> 
+              </tbody>
+             </table> 
+            </div> 
+            <h4><a name="GFv3FinalMS4-AMX"></a>AMX</h3> 
+            <div class="table-wrap"> 
+             <table class="confluenceTable">
+              <tbody> 
+               <tr> 
+                <th class="confluenceTh"> Task/Feature </th> 
+                <th class="confluenceTh"> Owner </th> 
+                <th class="confluenceTh"> Start Date </th> 
+                <th class="confluenceTh"> End Date </th> 
+                <th class="confluenceTh"> Status </th> 
+               </tr> 
+               <tr> 
+                <td class="confluenceTd"> Implement all areas, proxies, etc </td> 
+                <td class="confluenceTd"> Lloyd </td> 
+                <td class="confluenceTd">&nbsp;</td> 
+                <td class="confluenceTd">&nbsp;</td> 
+                <td class="confluenceTd">Done </td> 
+               </tr> 
+               <tr> 
+                <td class="confluenceTd"> Support all clients </td> 
+                <td class="confluenceTd"> Lloyd </td> 
+                <td class="confluenceTd">&nbsp;</td> 
+                <td class="confluenceTd">&nbsp;</td> 
+                <td class="confluenceTd">Done </td> 
+               </tr> 
+               <tr> 
+                <td class="confluenceTd"> JSR 77, MEJB </td> 
+                <td class="confluenceTd"> Lloyd </td> 
+                <td class="confluenceTd">&nbsp;</td> 
+                <td class="confluenceTd">&nbsp;</td> 
+                <td class="confluenceTd">Done </td> 
+               </tr> 
+               <tr> 
+                <td class="confluenceTd"> Config create support </td> 
+                <td class="confluenceTd"> Lloyd </td> 
+                <td class="confluenceTd">&nbsp;</td> 
+                <td class="confluenceTd">&nbsp;</td> 
+                <td class="confluenceTd">Done </td> 
+               </tr> 
+               <tr> 
+                <td class="confluenceTd"> Define AMX spec in Gmbal </td> 
+                <td class="confluenceTd"> Lloyd </td> 
+                <td class="confluenceTd">&nbsp;</td> 
+                <td class="confluenceTd">&nbsp;</td> 
+                <td class="confluenceTd">Done </td> 
+               </tr> 
+              </tbody>
+             </table> 
+            </div> 
+            <div class="table-wrap"> 
+             <table class="confluenceTable">
+              <tbody> 
+               <tr> 
+                <th class="confluenceTh"> Task/Feature </th> 
+                <th class="confluenceTh"> Owner </th> 
+                <th class="confluenceTh"> Start Date </th> 
+                <th class="confluenceTh"> End Date </th> 
+                <th class="confluenceTh"> Status </th> 
+               </tr> 
+               <tr> 
+                <td class="confluenceTd">&nbsp;</td> 
+                <td class="confluenceTd">&nbsp;</td> 
+                <td class="confluenceTd">&nbsp;</td> 
+                <td class="confluenceTd">&nbsp;</td> 
+                <td class="confluenceTd">&nbsp;</td> 
+               </tr> 
+              </tbody>
+             </table> 
+            </div> 
+            <h4><a name="GFv3FinalMS4-ApplicationClientContainer"></a>Application Client Container</h2> 
+            <div class="table-wrap"> 
+             <table class="confluenceTable">
+              <tbody> 
+               <tr> 
+                <th class="confluenceTh"> Task/Feature </th> 
+                <th class="confluenceTh"> Owner </th> 
+                <th class="confluenceTh"> Start Date </th> 
+                <th class="confluenceTh"> End Date </th> 
+                <th class="confluenceTh"> Status </th> 
+               </tr> 
+               <tr> 
+                <td class="confluenceTd"> Transaction support </td> 
+                <td class="confluenceTd"> tjquinn </td> 
+                <td class="confluenceTd">&nbsp;</td> 
+                <td class="confluenceTd"> 01 May 2009 / 30 June 2009 </td> 
+                <td class="confluenceTd"> Complete (class path includes tx modules). 
+                 <hr> <p>Jspwiki style: DONE</p></td> 
+               </tr> 
+              </tbody>
+             </table> 
+            </div> 
+           </div>
+          </div>strike Want to add clean-up logic to rollback any outstanding transaction, but currently that requires creating the tx mgr even if the user's client did not do so. Awaiting enhancement to hk2 to allow detection if an inhabitant has been init'd or not.%% 6/30: clean-up logic completed (hk2 change now available) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Persistence support </td> 
+         <td class="confluenceTd"> tjquinn </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 30 June 2009 </td> 
+         <td class="confluenceTd"> Currently supports references to persistence classes (31 May). 6/30: Support for persistence units in the app client completed. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Connector/JMS support </td> 
+         <td class="confluenceTd"> tjquinn </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 14 May 2009 </td> 
+         <td class="confluenceTd"> Complete (class path includes connector-related JARs). </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Java Web Start support </td> 
+         <td class="confluenceTd"> tjquinn </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 13 Jul 2009 </td> 
+         <td class="confluenceTd"> Most of the infrastructure on the server is working now. Java Web Start correctly launches the ACC. Still working on some bugs in the ACC in Java Web Start mode. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Reduced footprint </td> 
+         <td class="confluenceTd"> tjquinn </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Ongoing - not nearly as small as we'd like; will need help from some other modules </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GFv3FinalMS4-Build"></a>Build</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task/Feature </th> 
+         <th class="confluenceTh"> Owner </th> 
+         <th class="confluenceTh"> Start Date </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Add distribution module test for non-OSGi jars in module directory </td> 
+         <td class="confluenceTd"> Snjezana </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 07/13 </td> 
+         <td class="confluenceTd"> Not started </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Produce distribution file manifest target for use in promoted build </td> 
+         <td class="confluenceTd"> Snjezana </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 07/13 </td> 
+         <td class="confluenceTd"> Not started </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Overall source build </td> 
+         <td class="confluenceTd"> janey </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> In-progress </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GFv3FinalMS4-CommandLineInterface"></a>Command Line Interface</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task/Feature </th> 
+         <th class="confluenceTh"> Owner </th> 
+         <th class="confluenceTh"> Start Date </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create/update-connector-security-map </td> 
+         <td class="confluenceTd"> Jennifer Chou </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Issues: 1) how to get password from --passwordfile to update BackendPrincipal 2) Uses ':' as delimiter for --prinicpals and --usergroups. Should use ',' for v2 compatibility. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> delete/list-connector-security-map </td> 
+         <td class="confluenceTd"> Jennifer Chou </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> update-connector-work-security-map </td> 
+         <td class="confluenceTd"> Jennifer Chou </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Not Started </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> flush-connection-pool </td> 
+         <td class="confluenceTd"> Jennifer Chou </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Not Started </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Add support for work-security-map to add-resources </td> 
+         <td class="confluenceTd"> Jennifer Chou </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Not Started </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <td class="confluenceTd"> verify-domain-xml </td> 
+         <td class="confluenceTd"> Nandini Ektare </td> 
+         <td class="confluenceTd"> 24 June </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">In Progress </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GFv3FinalMS4-TransactionClicommands"></a>Transaction Cli commands</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task/Feature </th> 
+         <th class="confluenceTh"> Owner </th> 
+         <th class="confluenceTh"> Start Date </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> freeze-transaction-service unfreeze-transaction-service </td> 
+         <td class="confluenceTd"> nachi </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 7/13/09 </td> 
+         <td class="confluenceTd">Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> rollback-transaction recover-transaction </td> 
+         <td class="confluenceTd"> nachi </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">Started </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GFv3FinalMS4-JndiClicommands"></a>Jndi Cli commands</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task/Feature </th> 
+         <th class="confluenceTh"> Owner </th> 
+         <th class="confluenceTh"> Start Date </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-jndi-entries </td> 
+         <td class="confluenceTd"> nachi </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 7/13/09 </td> 
+         <td class="confluenceTd">Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Create-jndi-resource list-jndi-resources delete-jndi-resource </td> 
+         <td class="confluenceTd"> nachi </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 7/1/09 </td> 
+         <td class="confluenceTd">Done </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GFv3FinalMS4-Connectors%2CResources%2CPooling%2CJDBC"></a>Connectors, Resources, Pooling, JDBC</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task/Feature </th> 
+         <th class="confluenceTh"> Owner </th> 
+         <th class="confluenceTh"> Start Date </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Built in Custom Resources and templates </td> 
+         <td class="confluenceTd"> Jagadish Ramu </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> DONE. Resource Factories &amp; templates are available. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Bean validation for JSR-322 </td> 
+         <td class="confluenceTd"> Jagadish Ramu </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> DONE. Both annotation based as well descriptor based validation mappings are supported. Need more work as there is possibility of more additions/clarifications to this section in the specification. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Monitoring - work management </td> 
+         <td class="confluenceTd"> Jagadish Ramu </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> DONE. (Need to verify it against v2 behavior once core monitoring related issue is fixed) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> connectors - Java SE client support </td> 
+         <td class="confluenceTd"> Jagadish Ramu </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> DONE. (Using StaticModulesRegistry to initialize Connector-Runtime) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JSR-322 minor RFEs </td> 
+         <td class="confluenceTd"> Jagadish Ramu </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> ConfigProperty attributes - DONE ResourceAdapterAssociation with AdminObject - DONE </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> @DataSourceDefinition annotation support </td> 
+         <td class="confluenceTd"> Jagadish, Hong </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">DONE - Support for appclient, application.xml, ejb, web is available comp/module/app/global support available validation for duplicates need to be done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ResourcesUtil </td> 
+         <td class="confluenceTd"> Jagadish Ramu </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Work-manager to use GlassFish's thread pool </td> 
+         <td class="confluenceTd"> Jagadish Ramu </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Work manager support is available. Need to know whether there is centralized thread pool management service and use it accordingly ie., need a similar one as that of com.sun.enterprise.util.S1ASThreadPoolManager in v2 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Web profile related behavior, packaging for connectors </td> 
+         <td class="confluenceTd"> Jagadish Ramu </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Transaction recovery support </td> 
+         <td class="confluenceTd"> Jagadish Ramu </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Mostly available except minor pending items </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ConnectorRuntime API for Admin GUI </td> 
+         <td class="confluenceTd"> Jagadish Ramu </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> DONE. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JSR 77 related support for resources </td> 
+         <td class="confluenceTd"> Jagadish Ramu </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">Automatically taken care by AMX </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> sun-resources.xml to be updated with new attributes, modified attribute defaults, new resource named connector-work-security-map </td> 
+         <td class="confluenceTd"> Jagadish, Shalini </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> sun-resources_1_4.dtd is made available (CLI support is needed) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Mail resource enhancements (if any) </td> 
+         <td class="confluenceTd"> Jagadish Ramu </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> So far one bug is considered, will be fixed after SCF. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Statement Caching support </td> 
+         <td class="confluenceTd"> Shalini M </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Done. config serverbeans updated. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Monitoring changes for Provider listener impl changes </td> 
+         <td class="confluenceTd"> Shalini M </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Monitoring support for CCP </td> 
+         <td class="confluenceTd"> Shalini M </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Custom validation support </td> 
+         <td class="confluenceTd"> Shalini M </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Done. Config serverbeans updated with new attribute. AMX APIs updated for admin CLI/GUI. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Init SQL feature </td> 
+         <td class="confluenceTd"> Shalini M </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Done. Config serverbeans updated. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Tracing SQL statements </td> 
+         <td class="confluenceTd"> Shalini M </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">Done. Config serverbeans updated. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Introspection of jdbc drivers </td> 
+         <td class="confluenceTd"> Shalini M </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Done. ConnectorRuntime API updated for gui/cli to use. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Flush Connection pool </td> 
+         <td class="confluenceTd"> Shalini M </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Done. ConnectorRuntime API updated for gui/cli to use. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Pooling (disable/enable) </td> 
+         <td class="confluenceTd"> Shalini M </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Done. config serverbeans updated. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Connection validation defaulted to table </td> 
+         <td class="confluenceTd"> CLI/GUI </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">Admin GUI to move connection validation section to advanced tab and also default it to "table". Support for validation table names will be provided by jdbc. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Provide connection validation table names to GUI </td> 
+         <td class="confluenceTd"> Shalini M </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">Done. ConnectorRuntime API updated for gui/cli to use. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ping pool during creation </td> 
+         <td class="confluenceTd"> Shalini M </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Done. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> support for java.sql.Driver resType </td> 
+         <td class="confluenceTd"> Shalini M </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Done. AMX APIs updated for CLI/GUI. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GFv3FinalMS4-CORBA"></a>CORBA</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task/Feature </th> 
+         <th class="confluenceTh"> Owner </th> 
+         <th class="confluenceTh"> Start Date </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Issue 8474 </td> 
+         <td class="confluenceTd"> Ken </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 7/20 </td> 
+         <td class="confluenceTd"> In progress </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Lazy Init </td> 
+         <td class="confluenceTd"> Ken </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 7/20 </td> 
+         <td class="confluenceTd"> Designed, code not started yet </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Monitoring 1 (minimal use of probes) </td> 
+         <td class="confluenceTd"> Ken </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 7/27 </td> 
+         <td class="confluenceTd"> In progress </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Monitoring 2 (full gmbal in ORB) </td> 
+         <td class="confluenceTd"> Ken </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 8/10 </td> 
+         <td class="confluenceTd"> In progress (needs another 4 weeks or so) </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GFv3FinalMS4-Deployment"></a>Deployment</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task/Feature </th> 
+         <th class="confluenceTh"> Owner </th> 
+         <th class="confluenceTh"> Start Date </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> EE6 schema integration </td> 
+         <td class="confluenceTd"> Hong </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> On-going as spec is still evolving </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Common Annotations (JSR 250) MR </td> 
+         <td class="confluenceTd"> Hong </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Waiting for spec, not started </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> lifecycle module backend support </td> 
+         <td class="confluenceTd"> Hong </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 06/23/09 </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> lifecycle module related cli commands: create-lifecycle-module delete-lifecycle-module list-lifecycle-modules </td> 
+         <td class="confluenceTd"> Hong </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 06/23/09 </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> show-component-status cli command </td> 
+         <td class="confluenceTd"> Hong </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 06/25/09 </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> list-sub-components cli command </td> 
+         <td class="confluenceTd"> Hong </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 07/07/09 </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> application management </td> 
+         <td class="confluenceTd"> Tim </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 06/30/09 </td> 
+         <td class="confluenceTd"> Infrastructure changes and web app customization commands now complete and tested. GUI support will almost certainly not make the SCF </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> deployment support for verifier </td> 
+         <td class="confluenceTd"> Hong </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">Required DOL APIs for verifier completed. Verifier integration with deployment backend in progress </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> on-going deployment infrastructure support </td> 
+         <td class="confluenceTd"> Hong </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> On-going as requests coming in </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GFv3FinalMS4-EJBContainer"></a>EJB Container</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task/Feature </th> 
+         <th class="confluenceTh"> Owner </th> 
+         <th class="confluenceTh"> Start Date </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> SFSB Passivation </td> 
+         <td class="confluenceTd"> Mahesh </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Partially implemented. Number of passivation scenarios still pending. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> EJB 3.1 Embeddable API </td> 
+         <td class="confluenceTd"> Marina </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> In progress </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> EJB portion of 299 SPI </td> 
+         <td class="confluenceTd"> Ken Saks </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Started. Waiting on latest 299 RI integration </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Monitoring framework support </td> 
+         <td class="confluenceTd"> Mahesh </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">Not started </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> --generatermistubs option </td> 
+         <td class="confluenceTd"> Ken Saks </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Not started </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Singleton module ordering init support </td> 
+         <td class="confluenceTd"> Mahesh </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Not started </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Remaining ejb-jar_3_1.xsd elements </td> 
+         <td class="confluenceTd"> Ken Saks </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Not started </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> EJB 3.1 PFD-&gt;Final draft changes </td> 
+         <td class="confluenceTd"> Ken Saks, Marina </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Not Started </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Support orb lazy init task </td> 
+         <td class="confluenceTd"> Ken Saks </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Waiting on ORB changes </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GFv3FinalMS4-EmbeddedGlassFish"></a>Embedded GlassFish</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task/Feature </th> 
+         <th class="confluenceTh"> Owner </th> 
+         <th class="confluenceTh"> Start Date </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Embedded APIs </td> 
+         <td class="confluenceTd"> Jerome/Siraj </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> In progress </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> EJB embedded </td> 
+         <td class="confluenceTd"> Marina </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> In progress </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Webtier embedded implementation </td> 
+         <td class="confluenceTd"> Amy Roh </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 7/13 </td> 
+         <td class="confluenceTd"> In Progress </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Maven plugin </td> 
+         <td class="confluenceTd"> Siraj </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 7/13 </td> 
+         <td class="confluenceTd"> In Progress </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GFv3FinalMS4-Gmbal"></a>Gmbal</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task/Feature </th> 
+         <th class="confluenceTh"> Owner </th> 
+         <th class="confluenceTh"> Start Date </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> v3 integration </td> 
+         <td class="confluenceTd"> Ken </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 7/13? </td> 
+         <td class="confluenceTd"> In progress </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> I18N support </td> 
+         <td class="confluenceTd"> Ken </td> 
+         <td class="confluenceTd"> not known </td> 
+         <td class="confluenceTd"> post-7/13 </td> 
+         <td class="confluenceTd"> partially designed </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GFv3FinalMS4-Installer"></a>Installer</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task/Feature </th> 
+         <th class="confluenceTh"> Owner </th> 
+         <th class="confluenceTh"> Start Date </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Uninstallation enhancements(Silent installation, JDK Validation, Additional arguments) </td> 
+         <td class="confluenceTd"> Sathyan Catari </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 19th June </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Windows, StartMenu items cleanup/enhancements </td> 
+         <td class="confluenceTd"> Sathyan Catari </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 16th June </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Add support for identifying student during registration </td> 
+         <td class="confluenceTd"> Sathyan Catari </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 13th July </td> 
+         <td class="confluenceTd"> In Progress, Backend support not available yet. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Silent installation configuration </td> 
+         <td class="confluenceTd"> Sathyan Catari </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 13th July </td> 
+         <td class="confluenceTd"> In Progress </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Push openinstaller private fixes back to OI source base </td> 
+         <td class="confluenceTd"> Sathyan Catari </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 13th July </td> 
+         <td class="confluenceTd"> In Progress, Defer it to next milestone. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Fix/Cleanup P1/P2 bugs carried over from J1 Release </td> 
+         <td class="confluenceTd"> Sathyan Catari </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 13th July </td> 
+         <td class="confluenceTd"> In Progress, Late in-coming p2 bugs will not be resolved for this milestone. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Move top level install related artifacts to a subdirectory </td> 
+         <td class="confluenceTd"> Sathyan Catari </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 13th July </td> 
+         <td class="confluenceTd"> Completed, Pending limitation on /var directory from Open Installer, rest of the folders have been relocated. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task/Feature </th> 
+         <th class="confluenceTh"> Owner </th> 
+         <th class="confluenceTh"> Start Date </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GFv3FinalMS4-JavaEEServiceEngine"></a>Java EE Service Engine</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task/Feature </th> 
+         <th class="confluenceTh"> Owner </th> 
+         <th class="confluenceTh"> Start Date </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> EJB webservice support </td> 
+         <td class="confluenceTd"> Mohit </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Devtests </td> 
+         <td class="confluenceTd"> Mohit </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 21/21 tests ported to v3 and all are running </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Security support </td> 
+         <td class="confluenceTd"> Mohit </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Blocked due to <a href="https://github.com/javaee/glassfish/issues/8647">https://github.com/javaee/glassfish/issues/8647</a> <p> </p></td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> asadmin deploy SA.jar </td> 
+         <td class="confluenceTd"> Mohit </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Blocked due to <a href="https://open-esb.java.net/issues/show_bug.cgi-2133">https://open-esb.java.net/issues/show_bug.cgi-2133</a> <p>. Devtests are run using autodeploy feature i.e., by copying the SA.jar to the autodeploy-bundles. So, the end users need to use autodeploy instead of 'asadmin deploy'. </p></td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GFv3FinalMS4-JavaPersistence"></a>Java Persistence</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task/Feature </th> 
+         <th class="confluenceTh"> Owner </th> 
+         <th class="confluenceTh"> Start Date </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Processing persistence.xml for new version of schema </td> 
+         <td class="confluenceTd"> Mitesh </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ACC support for persitence </td> 
+         <td class="confluenceTd"> Tim + Mitesh </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Bean Validation Integration </td> 
+         <td class="confluenceTd"> Mitesh </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> In Progress </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Integration of source build of EclipseLink </td> 
+         <td class="confluenceTd"> Mitesh </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Not Yet Started </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JPA 2.0 features </td> 
+         <td class="confluenceTd"> EclipseLink team </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> In Progress - Expecting MetaModel API, Criteria API (Initial Implementation), JPQL updates to be in by the milestone </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GFv3FinalMS4-JMSIntegration"></a>JMS Integration</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task/Feature </th> 
+         <th class="confluenceTh"> Owner </th> 
+         <th class="confluenceTh"> Start Date </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Appclient support for JMS </td> 
+         <td class="confluenceTd"> Satish </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 06/02/09 </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> flush-jmsdest CLI command </td> 
+         <td class="confluenceTd"> Satish </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 06/07/09 </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jms-ping CLI command </td> 
+         <td class="confluenceTd"> Satish </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 06/07/09 </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Integrating GenericJMSRA </td> 
+         <td class="confluenceTd"> Satish and Snjezana </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 07/02/09 </td> 
+         <td class="confluenceTd"> Packaging changes complete. Snjezana to publish the GRA jars to Update centre </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Lazy initialization of Broker </td> 
+         <td class="confluenceTd"> Satish, Vijay and Nigel </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 07/10/09 </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GFv3FinalMS4-JSFIntegration"></a>JSF Integration</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task/Feature </th> 
+         <th class="confluenceTh"> Owner </th> 
+         <th class="confluenceTh"> Start Date </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Integrate Mojarra 2.0.0 Beta 1 </td> 
+         <td class="confluenceTd"> rlubke </td> 
+         <td class="confluenceTd"> 07/09/09 </td> 
+         <td class="confluenceTd"> 07/09/10 </td> 
+         <td class="confluenceTd"> Not Started </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GFv3FinalMS4-Logging"></a>Logging</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task/Feature </th> 
+         <th class="confluenceTh"> Owner </th> 
+         <th class="confluenceTh"> Start Date </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Admin GUI support for changing log levels </td> 
+         <td class="confluenceTd"> Carla Mott </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 7/13 </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> asadmin command to set logger levels </td> 
+         <td class="confluenceTd"> Carla Mott </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 7/13 </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Upgrade functionality - create default logging.properties file </td> 
+         <td class="confluenceTd"> Carla Mott </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 7/27 </td> 
+         <td class="confluenceTd"> In progress </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Back-end support for getting diagnostic messages from resource bundles </td> 
+         <td class="confluenceTd"> Carla Mott </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> not started </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Back-end Log viewer functionality </td> 
+         <td class="confluenceTd"> Carla Mott </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 7/13 </td> 
+         <td class="confluenceTd"> Done, testing needed with GUI </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GFv3FinalMS4-Monitoring"></a>Monitoring</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task/Feature </th> 
+         <th class="confluenceTh"> Owner </th> 
+         <th class="confluenceTh"> Start Date </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Flashlight Infrastructure </td> 
+         <td class="confluenceTd"> Mahesh/Sreeni </td> 
+         <td class="confluenceTd"> 06/22/09 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> In Progerss </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Telemetry Infrastructure </td> 
+         <td class="confluenceTd"> Prashanth/Jennifer/Sreeni </td> 
+         <td class="confluenceTd"> 06/15/09 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> In Progerss </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMBal integration </td> 
+         <td class="confluenceTd"> Jennifer </td> 
+         <td class="confluenceTd"> 06/15/09 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> CLI commands for monitoring </td> 
+         <td class="confluenceTd"> Prashanth/Jennifer/Sreeni </td> 
+         <td class="confluenceTd"> 06/15/09 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> In Progerss </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GUI </td> 
+         <td class="confluenceTd"> Ana </td> 
+         <td class="confluenceTd"> 06/29/09 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> To Start </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Config API </td> 
+         <td class="confluenceTd"> Nandini </td> 
+         <td class="confluenceTd"> 06/22/09 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> In Progress </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Modules to provide probes and listeners </td> 
+         <td class="confluenceTd"> Module owners </td> 
+         <td class="confluenceTd"> 06/22/09 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> In Progerss </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> DTrace </td> 
+         <td class="confluenceTd"> Byron </td> 
+         <td class="confluenceTd"> 06/22/09 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> In Progerss </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GFv3FinalMS4-Naming"></a>Naming</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task/Feature </th> 
+         <th class="confluenceTh"> Owner </th> 
+         <th class="confluenceTh"> Start Date </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> New EE 6 naming requirements </td> 
+         <td class="confluenceTd"> Ken Saks </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> ~50% implemented. App client not yet supported </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> EE 6 ManagedBean spec </td> 
+         <td class="confluenceTd"> Ken Saks </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> ~40% implemented. JAX-RS/299 spi impact still being evaluated. App client not yet supported </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GFv3FinalMS4-PackagingandDistribution"></a>Packaging and Distribution</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task/Feature </th> 
+         <th class="confluenceTh"> Owner </th> 
+         <th class="confluenceTh"> Start Date </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Finalize IPS package list and package dependencies </td> 
+         <td class="confluenceTd"> Snjezana </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 07/13 </td> 
+         <td class="confluenceTd"> In progress </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Consolidate obsoleted packages </td> 
+         <td class="confluenceTd"> Snjezana </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 07/13 </td> 
+         <td class="confluenceTd"> In progress. Update: partially completed on 7/13; glassfish-amx package content moved to glassfish-common, removal of glassfish-web-gui and glassfish-jdbc-gui packages requires further changes in admin gui dependency handling. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Split glassfish-grizzly package along distribution boundaries </td> 
+         <td class="confluenceTd"> Snjezana </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 07/13 </td> 
+         <td class="confluenceTd"> In progress. Update: partially completed on 7/13; glassfish-grizzly package cleaned up to contain only modules required by nucleus, need to create another dedicated package for remaining grizzly modules required in v3 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Merge distribution specific servicetag source changes from Preview branch </td> 
+         <td class="confluenceTd"> Snjezana </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 07/06 </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Optimize packager dependency graph resolution </td> 
+         <td class="confluenceTd"> Snjezana </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 07/13 </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GFv3FinalMS4-Samples"></a>Samples</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task/Feature </th> 
+         <th class="confluenceTh"> Owner </th> 
+         <th class="confluenceTh"> Start Date </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GFv3FinalMS4-Scripting"></a>Scripting </h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task/Feature </th> 
+         <th class="confluenceTh"> Owner </th> 
+         <th class="confluenceTh"> Start Date </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JRuby container config </td> 
+         <td class="confluenceTd"> Vivek </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> July 10 </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JRuby container config admin CLI </td> 
+         <td class="confluenceTd"> Vivek </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> July 13 </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JRuby Monitoring </td> 
+         <td class="confluenceTd"> Vivek </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> June 29 </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JRuby and Admin UI contract </td> 
+         <td class="confluenceTd"> Admin UI team/Vivek </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> No work identified so far, other than JRuby container config, which is complete </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Source Build of JRuby container </td> 
+         <td class="confluenceTd"> Vivek </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Not part of M4 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Grails run-app using embedded GlassFish </td> 
+         <td class="confluenceTd"> Vivek </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Needs Embedded Web Container </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Grails GlassFish plugin </td> 
+         <td class="confluenceTd"> Vivek </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Needs Embedded Web container distro </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Jython UC module </td> 
+         <td class="confluenceTd"> Jacob </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> July 13 </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GFv3FinalMS4-Security"></a>Security</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task/Feature </th> 
+         <th class="confluenceTh"> Owner </th> 
+         <th class="confluenceTh"> Start Date </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Building From Source </td> 
+         <td class="confluenceTd"> Nithya </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 13th July </td> 
+         <td class="confluenceTd"> DONE </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Fixing issues with features supported so far and making them feature complete </td> 
+         <td class="confluenceTd"> Kumar, Nithya </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 13th July </td> 
+         <td class="confluenceTd"> DONE, one issue with ComponentInvocationHandlers still to be resolved, talking to jerome and ken-saks about it </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Merging a few Modules </td> 
+         <td class="confluenceTd"> Kumar </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 13th July </td> 
+         <td class="confluenceTd"> DONE </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Support for setting KeyStore type to other than JKS such as PKCS12/11 </td> 
+         <td class="confluenceTd"> Kumar </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 13th July </td> 
+         <td class="confluenceTd"> DONE </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Monitoring of Security Modules </td> 
+         <td class="confluenceTd"> Nithya </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 13th July </td> 
+         <td class="confluenceTd"> Coding DONE, Probes are being listed using asadmin list-probes command. Issue registering StatsProviders </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Implementing Logging Guidelines </td> 
+         <td class="confluenceTd"> Nithya, Kumar </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 13th July </td> 
+         <td class="confluenceTd"> DONE, made initial checkin, refinement of diagnostics to be done as a bug fix. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Application Client SSL Broken </td> 
+         <td class="confluenceTd"> Kumar </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 13th July </td> 
+         <td class="confluenceTd"> Coding DONE, testing in Progress </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> WebServices Security Commented code in JSR-109 module w.r.t Security </td> 
+         <td class="confluenceTd"> Kumar </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 13th July </td> 
+         <td class="confluenceTd"> Coding DONE, testing in progress, blocked by QL failure for the WebService Test. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Embedded Container Security Support </td> 
+         <td class="confluenceTd"> Kumar, Nithya </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 13th July </td> 
+         <td class="confluenceTd"> 80% DONE, made sure non-secure apps work correctly, also tested an @DenyAll to see if access is denied and it seems to work. But it is not clear what API's would be available for doing other security tasks such as creating realms, specifying Prinicipals and Roles etc. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GFv3FinalMS4-ServerInfrastructure%28OSGi%2CHK2%2CConfiguration%29"></a>Server Infrastructure (OSGi, HK2, Configuration)</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task/Feature </th> 
+         <th class="confluenceTh"> Owner </th> 
+         <th class="confluenceTh"> Start Date </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Status </th> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GFv3FinalMS4-Transaction"></a>Transaction</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task/Feature </th> 
+         <th class="confluenceTh"> Owner </th> 
+         <th class="confluenceTh"> Start Date </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Monitoring for V2 compatibility </td> 
+         <td class="confluenceTd"> Marina </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 07/21 </td> 
+         <td class="confluenceTd"> Coding DONE, Probes are being listed using asadmin get command. Issues: 1) @ProbeListener is not called; 2) Multi-line StringStatistcs not supported; 3) No ON/OFF notification </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ORB integration </td> 
+         <td class="confluenceTd"> Marina </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 06/30 </td> 
+         <td class="confluenceTd"> Integration is IN. Pending work on dynamic switch between no-ORB state and ORB-integrated state </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GFv3FinalMS4-UpdateCenterIntegration"></a>Update Center Integration</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task/Feature </th> 
+         <th class="confluenceTh"> Owner </th> 
+         <th class="confluenceTh"> Start Date </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Integrate UC 2.2 </td> 
+         <td class="confluenceTd"> Snjezana, Terena </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 06/15 </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Change distribution assembly to use single repository URL instead of os specific URLs </td> 
+         <td class="confluenceTd"> Snjezana </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 06/25 </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Integrate UC 2.2u1 </td> 
+         <td class="confluenceTd"> Snjezana, Terena </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 07/13 </td> 
+         <td class="confluenceTd"> Not started </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GFv3FinalMS4-Upgrade"></a>Upgrade</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task/Feature </th> 
+         <th class="confluenceTh"> Owner </th> 
+         <th class="confluenceTh"> Start Date </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GFv3FinalMS4-WebServices%28Metro%2CJAXRS%29"></a>Web Services (Metro, JAX-RS)</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task/Feature </th> 
+         <th class="confluenceTh"> Owner </th> 
+         <th class="confluenceTh"> Start Date </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Implementing JSR 109 1.3 features </td> 
+         <td class="confluenceTd"> Bhakti </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 13th July </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Fixing cts issues with features supported so far and making them feature complete </td> 
+         <td class="confluenceTd"> Bhakti </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 13th July </td> 
+         <td class="confluenceTd"> In progress fewer issues remain </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Basic JAXRPC war deployment </td> 
+         <td class="confluenceTd"> Vijay </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 20th July </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Durable RM - Design &amp; Implementation </td> 
+         <td class="confluenceTd"> Marek </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 13th July </td> 
+         <td class="confluenceTd"> In Progress </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Monitoring &amp; Management </td> 
+         <td class="confluenceTd"> Harold </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 13th July </td> 
+         <td class="confluenceTd"> In Progress </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GF Probes </td> 
+         <td class="confluenceTd"> Jitu </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 13th July </td> 
+         <td class="confluenceTd"> In Progress </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Renew and cancellation protocol (WS-Trust) </td> 
+         <td class="confluenceTd"> Jiandong </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 13th July </td> 
+         <td class="confluenceTd"> In Progress </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Web Service Configuration Management (includeing state saving) (aka Dynamic Policy Reconfiguration) </td> 
+         <td class="confluenceTd"> Fabian </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 13th July </td> 
+         <td class="confluenceTd"> Complete </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Issued Tokens caching and sharing, SSO among services </td> 
+         <td class="confluenceTd"> Jiandong </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 13th July </td> 
+         <td class="confluenceTd"> Complete </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Jersey Monitoring </td> 
+         <td class="confluenceTd"> Pavel </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 13th July <img class="emoticon" src="images/icons/emoticons/help_16.gif" height="16" width="16" align="absmiddle" alt="" border="0"> </td> 
+         <td class="confluenceTd"> In progress - there is a issue with probes defined in xml file, i can't proceed unless it is fixed. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Jersey JSON namespace support </td> 
+         <td class="confluenceTd"> Jakub </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 13th July </td> 
+         <td class="confluenceTd"> Implemented in the Jersey main trunk (1.1.1-ea-SNAPSHOT), after the next Jersey release just need to integrate this into GFv3 packager </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GFv3FinalMS4-WebTier%28Grizzly%2CWebContainer%29"></a>Web Tier (Grizzly, Web Container)</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task/Feature </th> 
+         <th class="confluenceTh"> Owner </th> 
+         <th class="confluenceTh"> Start Date </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Grizzly Config CLI </td> 
+         <td class="confluenceTd"> Nandini Ektare </td> 
+         <td class="confluenceTd"> 23 June </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JSR77 Lazy Listener </td> 
+         <td class="confluenceTd"> Vijay Ramachandran </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Listener implementation done; MQ is now working with lazy init; Waiting for IIOP team to implement the exported interface </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Grizzly Monitoring </td> 
+         <td class="confluenceTd"> Oleksiy/Jeanfrancois </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 7/13 </td> 
+         <td class="confluenceTd"> Completed, pending major issue with the monitoring framework (waiting for a fix) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Servlet 3.0 - Container Initializer minor implementation changes </td> 
+         <td class="confluenceTd"> Vijay Ramachandran </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 7/13 </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Servlet 3.0 - some spec clarifications may result in implementation changes </td> 
+         <td class="confluenceTd"> Rajiv, Jan, Shing Wai </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 7/13 </td> 
+         <td class="confluenceTd"> In progress </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Servlet 3.0 - JSP container pluggability </td> 
+         <td class="confluenceTd"> Jan, Kin-man </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 7/20 </td> 
+         <td class="confluenceTd"> In progress </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Performance improvement Tasks </td> 
+         <td class="confluenceTd"> Jeanfrancois, Jan, Oleksiy, Kin-man </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> On going </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Grizzly 1.9.17 Integration </td> 
+         <td class="confluenceTd"> Jeanfrancois </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Regression observed with devtest. Pending fixes </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Lazy initialization of https via port unification </td> 
+         <td class="confluenceTd"> Olesksiy </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> On going </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 02, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

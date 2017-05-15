@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : Deploymentv3PreludeOnePager</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="Deploymentv3PreludeOnePager-DeploymentOnePagerForV3PreludeRelease"></a>Deployment One Pager For V3 Prelude Release</h1> <p>[</p> 
+     <div class="error">
+      <span class="error">Unknown macro: {TableOfContents title=' '}</span> 
+     </div> <p>|(TableOfContentstitle='')]</p> <h4><a name="Deploymentv3PreludeOnePager-1.Introduction"></a>1. Introduction</h1> <h4><a name="Deploymentv3PreludeOnePager-1.1.Project%2FComponentWorkingName%3A"></a>1.1. Project/Component Working Name:</h2> <p>Deployment</p> <h4><a name="Deploymentv3PreludeOnePager-1.2.Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier%3A"></a>1.2. Name(s) and e-mail address of Document Author(s)/Supplier:</h2> <p>Hong Zhang , Tim Quinn, Jerome Dochez</p> <p>Email Addresses: hong.zhang@sun.com, timothy.quinn@sun.com, jerome.dochez@sun.com</p> <h4><a name="Deploymentv3PreludeOnePager-1.3.DateofThisDocument%3A"></a>1.3. Date of This Document:</h2> <p>Initial draft: 06/27/08</p> <p>Second draft (incorporated comments from internal reviewers): 07/08/08 </p> <p>Third draft (incorporated comments from Bill/asarch): 07/11/08</p> <p>Final (incorporated comments from user/forum): 07/28/08</p> <h4><a name="Deploymentv3PreludeOnePager-2.ProjectSummary"></a>2. Project Summary</h1> <h4><a name="Deploymentv3PreludeOnePager-2.1.ProjectDescription%3A"></a>2.1. Project Description:</h2> <p>Pluggable/extensible deployment framework and general deployment functionality for web modules.</p> <p>For application management feature (stretch goal for this release), please see the <a href="./AppMgtv3PreludeOnePager.html">application management one-pager</a>.</p> <h4><a name="Deploymentv3PreludeOnePager-2.2.RisksandAssumptions%3A"></a>2.2. Risks and Assumptions:</h2> <p>The pluggable/extensible deployment framework is currently used to implement the deployment of the web modules. We may discover additional work for the framework as we implement other module types, especially the non-JavaEE module types.</p> <h4><a name="Deploymentv3PreludeOnePager-3.ProblemSummary"></a>3. Problem Summary</h1> <h4><a name="Deploymentv3PreludeOnePager-3.1.ProblemArea%3A"></a>3.1. Problem Area: </h2> <p>We need to provide a pluggable/extensible deployment framework for people to work with new module types. And we need to continue providing the equivalent functionality as in v2 with the new modularized code base.</p> <h4><a name="Deploymentv3PreludeOnePager-3.2.Justification%3A"></a>3.2. Justification:</h2> <p>Make it easier to support new module types, it was fairly difficult to support the sip module type with the v2 code base. Competitive with other OSGi modular implementation. Carry forward existing v2 functionality.</p> <h4><a name="Deploymentv3PreludeOnePager-4.TechnicalDescription%3A"></a>4. Technical Description:</h1> <h4><a name="Deploymentv3PreludeOnePager-4.1.Details%3A"></a>4.1. Details:</h2> <h4><a name="Deploymentv3PreludeOnePager-Thetechnicaldetailsofpluggable%2FextensibledeploymentframeworkaredescribedinthecontainerSPIdocument"></a>The technical details of pluggable/extensible deployment framework are described in the <a href="./ContainerSPI.html">container SPI document</a>.</h3> <h4><a name="Deploymentv3PreludeOnePager-Intheareaofprovidingequivalentdeploymentfunctionalityforwebmoduleasinv2%3A"></a>In the area of providing equivalent deployment functionality for web module as in v2:</h3> <p>The web modules can be deployed through these mechanisms as described in v2.</p> 
+     <ol> 
+      <li>Archive deployment: deploy the web module as an archive.</li> 
+      <li>Directory deployment: deploy the web module in a directory format.</li> 
+      <li>Dynamic Reloading: redeploy the web module by creating/modifying a special .reload file in the applications repository.</li> 
+      <li>Automatic deployment: drop the web archive in the autodeploy directory.</li> 
+      <li>Using a deployment plan: deploy a portable archive along with a deployment plan containing application server specific deployment descriptors.</li> 
+     </ol> <p>Please refer to <a href="http://docs.sun.com/app/docs/doc/819-3673/6n5sk1d41?a=view#beadw">v2 doc</a> for the details of the above mechanisms. One exception here, the application's repository for web modules has moved from $DOMAIN_DIR/applications/j2ee-modules to $DOMAIN_DIR/applications. So in the dynamic application reloading case, the path of the .reload file needs to change accordingly.</p> <p>Deploying through <a href="http://jcp.org/en/jsr/detail-88">JSR88</a> is not available in this v3 preclude release. It will be available in the next v3 release (v3.JavaEE6 release). </p> <p>We continue supporting the same set of operations to manipulate the web module lifecycle as in v2: deploy/redeploy, undeploy, enable, disable. These are the limitations/additions in this release:</p> 
+     <ol> 
+      <li>We only support a subset of the v2 deployment options: name, force (with default value changed to false), contextroot, deploymentplan, upload, virtualserver, precompilejsp, enabled, libraries. Options that are not yet supported are implemented as no-op.</li> 
+      <li>A new redeploy command is added which is equivalent to deploy --force=true for a previously-deployed application. Redeploy supports the same options and argument as the deploy command. The redeploy command's "path" option is optional for directory redeployment. The detail of the redeploy command will be documented in the man page.</li> 
+     </ol> <h4><a name="Deploymentv3PreludeOnePager-HTTPbaseddeploymentfunctionality"></a>HTTP based deployment functionality</h3> <p>In addition to the existing interfaces of admin cli and admin console, we also provide the HTTP interface for deployment. </p> <p>The <a href="./V3OverviewFunctionalSpec#section-V3OverviewFunctionalSpec-RESTInterfaceForAdministration.html">v3 overview one-pager</a> describes HTTP interface to GlassFish administration at a high level. </p> <p>Specifically for deployment, following functionalities are available through HTTP interface: deploy/undeploy/redeploy/enable/disable. </p> <p>The http request will be a URL consisting of a prefix </p>
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">"/__asadmin"</pre> 
+       </div> 
+      </div>
+     </div>, the command name, and the encoded parameters. The supported parameters are the same set of the options as supported through admin cli interface. For example, the following is the URL of a http request for deploying a local archive "usr/local/foo.war" at context root "bar". <p></p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">http://localhost:8080/__asadmin/deploy?contextroot=bar&amp;path=%2Fusr%2Flocal%2Ffoo.war</pre> 
+       </div> 
+      </div>
+     </div> <p>The http response can be in different forms based on http request "User-Agent" header. For example, it will be in a Manifest form when the header is set to a string starting with "hk2". The http response will contain the command execution result, and the error messages/exceptions in case of failure. </p> <h4><a name="Deploymentv3PreludeOnePager-4.2.Bug%2FRFENumber%28s%29%3A"></a>4.2. Bug/RFE Number(s):</h2> <p><a href="https://github.com/javaee/glassfish/issues/4103">Issue 4103</a></p> <h4><a name="Deploymentv3PreludeOnePager-4.3.InScope%3A"></a>4.3. In Scope:</h2> <p>Deployment functionality of the web modules and other scripting type applications, with the respective teams building modules to support those module types using the pluggable deployment framework.</p> <h4><a name="Deploymentv3PreludeOnePager-4.4.OutofScope%3A"></a>4.4. Out of Scope:</h2> <p>Deployment functionality of other module types. Container developers can build their own container types and deploy applications to them, as described in the <a href="./ContainerSPI.html">container SPI document</a>.</p> <h4><a name="Deploymentv3PreludeOnePager-4.5.Interfaces%3A"></a>4.5. Interfaces:</h2> <h4><a name="Deploymentv3PreludeOnePager-4.5.1ExportedInterfaces"></a>4.5.1 Exported Interfaces</h3> <p>The pluggable/extensible deployment framework related interfaces are described in the <a href="./ContainerSPI.html">container SPI document</a>.<br> Stability: uncommitted</p> <p>In admin cli deploy command "asadmin deploy", the default value of the "force" option has changed from "true" to "false".<br> The change for the default value of the "force" option was made to prevent user from overwriting the original application accidentally. <br> Stability: uncommitted</p> <p>A new admin cli command "asadmin redeploy" has been added.<br> Stability: committed</p> <p>HTTP based deployment interfaces.<br> Stability: uncommitted</p> <h4><a name="Deploymentv3PreludeOnePager-4.5.2Importedinterfaces"></a>4.5.2 Imported interfaces</h3> <p>N/A</p> <h4><a name="Deploymentv3PreludeOnePager-4.5.3Otherinterfaces%28Optional%29"></a>4.5.3 Other interfaces (Optional)</h3> <p>The internal applications repository layout: the applications repository for web module has moved from $DOMAIN_DIR/applications/j2ee-modules to $DOMAIN_DIR/applications. This change was made to simplify the implementation, avoid unnecessary code branching. Also users will have one uniform place to look for all types of application regardless of the module type.<br> Stability: committed (as-ccc approved)</p> <p>The domain.xml: we use a generic "application" element to represent any module, including a web module, instead of the "web-module" element.<br> Stability: uncommitted</p> <h4><a name="Deploymentv3PreludeOnePager-4.6.DocImpact%3A"></a>4.6. Doc Impact:</h2> <p>Deployment guide, Admin reference, CLI man pages</p> <h4><a name="Deploymentv3PreludeOnePager-4.7.Admin%2FConfigImpact%3A"></a>4.7. Admin/Config Impact:</h2> <p>New "application" element in the domain.xml subsumes the role of the "web-module" element.</p> <h4><a name="Deploymentv3PreludeOnePager-4.8.HAImpact%3A"></a>4.8. HA Impact:</h2> <p>None</p> <h4><a name="Deploymentv3PreludeOnePager-4.9.I18N%2FL10NImpact%3A"></a>4.9. I18N/L10N Impact:</h2> <p>No changes from v2.</p> <h4><a name="Deploymentv3PreludeOnePager-4.10.Packaging%26Delivery%3A"></a>4.10. Packaging &amp; Delivery:</h2> <p>N/A.</p> <h4><a name="Deploymentv3PreludeOnePager-4.11.SecurityImpact%3A"></a>4.11. Security Impact:</h2> <p>No changes from v2.</p> <h4><a name="Deploymentv3PreludeOnePager-4.12.CompatibilityImpact"></a>4.12. Compatibility Impact</h2> <p>The applications repository layout change might impact upgrade depending on the upgrade mechanism we choose.<br> User scripts that currently leverage the dynamic reload functionality will need to be corrected to reflect the new repository layout. <br> User scripts that depend on the default behavior of the v2 deploy subcommand may need to be corrected. For example, to adapt to the new default value of the "force" option. </p> <h4><a name="Deploymentv3PreludeOnePager-4.13.Dependencies%3A"></a>4.13. Dependencies:</h2> <p>Admin infrastructure functional spec.</p> <h4><a name="Deploymentv3PreludeOnePager-5.ReferenceDocuments%3A"></a>5. Reference Documents:</h1> <p><a href="./AppMgtv3PreludeOnePager.html">Application management one-pager</a></p> <p><a href="./ContainerSPI.html">Container SPI document</a></p> <p><a href="./V3OverviewFunctionalSpec.html">V3 overview one-pager</a></p> <h4><a name="Deploymentv3PreludeOnePager-6.Schedule%3A"></a>6. Schedule:</h1> <h4><a name="Deploymentv3PreludeOnePager-6.1.ProjectedAvailability%3A"></a>6.1. Projected Availability:</h2> <p>The fall '08 release of v3 Prelude. </p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:43.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

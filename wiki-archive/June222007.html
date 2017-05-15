@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : June222007</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="June222007-Agenda"></a>Agenda</h3> 
+     <ol> 
+      <li>Discuss the NewComponentDescription Wizard screens.</li> 
+      <li>Discuss the Config. profiles workflow</li> 
+      <li>Other UI related things</li> 
+     </ol> <h4><a name="June222007-Attendies"></a>Attendies</h3> 
+     <ul> 
+      <li>Muthu (X design)</li> 
+      <li>Vadiraj</li> 
+      <li>Mahesh</li> 
+     </ul> <h4><a name="June222007-Minutes"></a>Minutes</h3> <p>The following include the suggestions given my Muthu.</p> 
+     <ol> 
+      <li>There should be indication of the mandatory fields on the wizard panels (using &lt;font color="red"&gt;*&lt;/font&gt;)</li> 
+      <li>Contextual help for each field where required. This should be of smaller font than the regular label fonts.</li> 
+      <li>On panels, left align the labels and other components.</li> 
+      <li>Left align the tables headers and content by 10 pixels (Global) (The pixel measurement is hard here and 'space's can be used instead)</li> 
+      <li>Panel help on top of the fields. Right now its displayed at the bottom of the panel.</li> 
+      <li>Club OS and arch.. For example, 'Solaris x86' should be displayed in the table together.</li> 
+      <li>Have labels for tables and list to tell what it is.</li> 
+      <li>Move the selected list of OS-arch to left side of the os-arch table on the OSInfo Panel.</li> 
+      <li>Headers on the selected package and patch lists and have the patch list side by the package list.</li> 
+      <li>Group the packages and patches have the panel title header.</li> 
+      <li>Confirmation dialog for clicking on close button and cancel.. button on the wizard.</li> 
+      <li>Change to data model on the finish panel.</li> 
+      <li>Change the title of the wizard to 'New Component Descriptor.'</li> 
+      <li>Empty row on the top with focus on the table (dependency) some default text "Type the component name here " selected. This is to enable adding of the new dependency without using a separate 'Add' button.</li> 
+      <li>Put remove on the right side of the table below in dependency panel.</li> 
+      <li>Payload should be same as the wizard panel.. show the tab related to solaris x86 when the Solaris x86 node is selected.</li> 
+      <li>Default config don't have the corresponding view while the data model and view have.</li> 
+      <li>Config profile name contextual help on 'Create new Data model' screen.</li> 
+      <li>Add data, remove data, add group delete group on the datamodel screen.</li> 
+      <li>There should be alert data model of view is changed .. to tell the user. This is on 'editing' data model page.</li> 
+      <li>The views which does not correspond to any data model will be shown right under the component.</li> 
+      <li>Page sequence - install-express install-custom uninstall repair as the main category and under that we have available panel list, selected panel list, add, remove and move up and move down</li> 
+     </ol> <p>&lt;br/&gt;<br> Note: Muthu is on vacation next week.(June 25th to June 29th)</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:49.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

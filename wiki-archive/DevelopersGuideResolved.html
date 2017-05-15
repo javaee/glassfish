@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : DevelopersGuideResolved</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="DevelopersGuideResolved-ResolvedCommentsfortheApplicationDevelopmentGuide"></a>Resolved Comments for the Application Development Guide</h2> <p>The following table lists comments that have been resolved for the <a href="DeveloperSGuide.html" title="DeveloperSGuide">Application Development Guide</a>.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Comment ID </th> 
+         <th class="confluenceTh"> Section, Page Number/URL </th> 
+         <th class="confluenceTh"> Comment </th> 
+         <th class="confluenceTh">Status – (<font color="lime">RESOLVED</font>/<font color="red">UNRESOLVED</font> </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> tjquinn </td> 
+         <td class="confluenceTd"> Developing Java Clients, p. 213 </td> 
+         <td class="confluenceTd"> Somewhere in #6 and/or #7 please mention that changes to sun-acc.xml are not needed (and are in fact not used) if the client will be launched using Java Web Start. Load-balancing settings are handled automatically in that case. </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> tjquinn </td> 
+         <td class="confluenceTd"> Developing Java Clients, p. 213 </td> 
+         <td class="confluenceTd"> The part of #7 that reads "The target-server element specifies" should read "The target-server elements specify" because the user should use one element per endpoint. </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> tjquinn </td> 
+         <td class="confluenceTd"> Developing Java Clients, p. 213 </td> 
+         <td class="confluenceTd"> (pls double-check this with Sheetal) The part of #7 that starts "As an alternative" is true, but this technique is discouraged in favor of using the target-server elements approach. Using the properties triggers a warning message when the app client runs. </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> geertjan </td> 
+         <td class="confluenceTd"> JavaMail, chapter 19 </td> 
+         <td class="confluenceTd"> I found this helpful, the content was detailed. I would like (1) reference to an actual example that I can download and (2) one or two paragraphs discussing alternatives to JavaMail </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jy001 </td> 
+         <td class="confluenceTd"> Chapter 3, pg 43 </td> 
+         <td class="confluenceTd"> In the bullet for #2, you may want to add that "where ANT_HOME is /usr/sfw". It's a bit confusing to say that the ANT_HOME environment must include the following paths where ANT_HOME is not specified. </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jy002 </td> 
+         <td class="confluenceTd"> Chapter 3, pg 47 </td> 
+         <td class="confluenceTd"> In the examples you may want add where ${assemble}, ${default-instance-name} etc are defined. </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jy003 </td> 
+         <td class="confluenceTd"> Chapter 3, pg 51 </td> 
+         <td class="confluenceTd"> Remove "restart" from table 3-6 with attributes, action and debug. </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jy004 </td> 
+         <td class="confluenceTd"> Chapter 3, pg 51 </td> 
+         <td class="confluenceTd"> Remove instanceport attribute from table 3-6 </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jy005 </td> 
+         <td class="confluenceTd"> Chapter 3, pg 58 </td> 
+         <td class="confluenceTd"> Need to change last examples of sun-appserv-admin taks to use explicitcommand attribute </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jy006 </td> 
+         <td class="confluenceTd"> Chapter 3, pg 58 </td> 
+         <td class="confluenceTd"> The default values for table 3-11, sun-appserv-jspc attibutes: destdir=none (Required), src=dir=none, webapp=none, classpath=none, classpathref=none, uriroot=none </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jy007 </td> 
+         <td class="confluenceTd"> Chapter3, pg 61 </td> 
+         <td class="confluenceTd"> In table 3-13, remove "domain" attribute from the table </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jy008 </td> 
+         <td class="confluenceTd"> Chapter3, pg 65 </td> 
+         <td class="confluenceTd"> The JBI Tasks seems incomplete. </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jy009 </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Please add the new asant tasks: wsimport and wsgen. These tasks are documented <a href="NewAsantTasks.html#NewAsantTasks-sectionNewAsantTasksNewAsantTasks">here </a>. <b>JP:</b> Added new tasks to working draft and verified with Jane Young and Vivek Pandey. Posted for second review on 8/27. </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> harsha001 </td> 
+         <td class="confluenceTd"> 38 </td> 
+         <td class="confluenceTd"> No need to reference iPlanet in the 4th major release after iplanet </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> harsha002 </td> 
+         <td class="confluenceTd"> 39 </td> 
+         <td class="confluenceTd"> blogs.oracle.com reference : is it appropriate? <b>JP:</b> As long as the link isn't broken. </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> harsha003 </td> 
+         <td class="confluenceTd"> 72 </td> 
+         <td class="confluenceTd"> optimizeit is no longer available. Check the link in the document </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> harsha004 </td> 
+         <td class="confluenceTd"> 72 </td> 
+         <td class="confluenceTd"> instructions for netbeans profiler are missing!! <b>JP:</b> There's a link to them. </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> harsha005 </td> 
+         <td class="confluenceTd"> 72 </td> 
+         <td class="confluenceTd"> wily introscope no longer available </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> harsha006 </td> 
+         <td class="confluenceTd"> 79 </td> 
+         <td class="confluenceTd"> "authorization for servlets and EJB business logic." should be something like "authorization for Java EE components business logic." because security is not just for servlets and EJBs. </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> harsha007 </td> 
+         <td class="confluenceTd"> 80 </td> 
+         <td class="confluenceTd"> *<a href="http://java.sun.com/webservices/interop/reference/tutorial/doc/index.html">broken link </a>* </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> harsha008 </td> 
+         <td class="confluenceTd"> 92 </td> 
+         <td class="confluenceTd"> Need to insert a link to xwss.java.net and / or wsit.java.net </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> harsha009 </td> 
+         <td class="confluenceTd"> 93 </td> 
+         <td class="confluenceTd"> Is this reference to WS-I BSP correct? " AMClientProvider and AMServerProvider Ã¢Â€Â" These providers secure web services and Simple Object Access Protocol (SOAP) messages using either WS-I BSP or Liberty ID-WSF tokens. </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> harsha010 </td> 
+         <td class="confluenceTd"> 95 </td> 
+         <td class="confluenceTd"> Message security can also be specified using WSIT security policy in wsdl. This has be mentioned here </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> harsha011 </td> 
+         <td class="confluenceTd"> 99 </td> 
+         <td class="confluenceTd"> The instructions to download the sample app may need to be updated. </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> monzillo001 </td> 
+         <td class="confluenceTd"> Chapter 5, p80 </td> 
+         <td class="confluenceTd"> jsr 196 is not "required" by the current, EE 5.0, specification. there may be a reference to 196 in the futures section <b>JP:</b> Goal, not required. </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> monzillo002 </td> 
+         <td class="confluenceTd"> Chapter 5, p83 </td> 
+         <td class="confluenceTd"> you can "activate" a defualt p2r mapping, you can't strictly sepaking define one. Also the quide should describe that the default mapping maps group principals to same named roles. </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> monzillo003 </td> 
+         <td class="confluenceTd"> Chapter 5, p87 </td> 
+         <td class="confluenceTd"> JACC is used to plug in the java policy provider used by the container to perform j2ee caller access decisions, and that is used to perform java policy decisions during application execution. </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> monzillo004 </td> 
+         <td class="confluenceTd"> Chapter 5, p88 </td> 
+         <td class="confluenceTd"> remove the word "standard" from the sentence referring to server.policy. neither this file or its syntax is standard. you may want to refer to this file as the "global" policy file, as its contents apply to all applications/policy contexts deployed within the application server. </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> monzillo005 </td> 
+         <td class="confluenceTd"> Chapter 5, p90 </td> 
+         <td class="confluenceTd"> it would ge useful to include an example of the error message that will occur in server.log (for a failed permission check), and to describe what it means, and how it can be interpretted to create a compensating grant statement. <b>JP:</b> Incorporated for 9.1.1. </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> dkoper </td> 
+         <td class="confluenceTd"> Chapter 2, Using the System Classloader </td> 
+         <td class="confluenceTd"> it says the application/module will be accessible to any other application across the /domain/. Should this not be Server Instance or Cluster using that Configuration? <b>JP:</b> Section says to edit the default config, which applies to the domain. </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Jagadish Ramu </td> 
+         <td class="confluenceTd"> Chapter 15, page 254 </td> 
+         <td class="confluenceTd"> it says "The JDBC 4.0 DataSource implementation in the Application Server provides ... " This feature will be available irrespective of JDBC version. It is available from 9.1. It can be rephrased as "The DataSource implementation in the Application Server provides ..." </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Jagadish Ramu </td> 
+         <td class="confluenceTd"> Chapter 15, page 255 </td> 
+         <td class="confluenceTd"> Indentation of "public java.sql.Connection getNonTxConnection(String user, String password) " is not proper </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> tjquinn004 </td> 
+         <td class="confluenceTd"> Chapter 11, p. 211 </td> 
+         <td class="confluenceTd"> Note about incompatibility refers to "...a server running under a different major ACC version..." The server does not really run under an ACC version; in fact the ACC does not run on the server, only on client systems. The restriction is that an ACC from one major version and a <em>server</em> from a different major version are not guaranteed to interoperate. </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> tjquinn005 </td> 
+         <td class="confluenceTd"> Ch. 11, p. 214, paragraph after the bullet list in list item 4 </td> 
+         <td class="confluenceTd"> This implies that the package-appclient script can be used during development to build the app client prior to deployment. In contrast, the developer assembles the app client using other techiques (NetBeans, etc.), deploys it, and only then uses this script to collect all the files needed to run this client on a remote client system that does not have the app server installed on it. These files are collected into a JAR that the developer or administrator can transport to any number of remote client systems. </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> tjquinn006 </td> 
+         <td class="confluenceTd"> Ch. 11, p. 214-215 </td> 
+         <td class="confluenceTd"> The last graph of no. 6 on p. 214 essentially duplicates the information in no. 7 on p. 215. </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> tjquinn007 </td> 
+         <td class="confluenceTd"> Ch. 11, p. 217 </td> 
+         <td class="confluenceTd"> The sixth and seventh graph describe features that do not exist. We do not provide a way to individually enable or disable Java Web Start support for an app client nested inside an EAR. The administrator can enable or disable the JWS support for all clients in an app, as the discussion just higher on the page. We also allow controlling JWS support for stand-alone app clients as discussed just below on the page. So remove the graph that starts "To disable Java Web Start for one eligible application client in an application" and the example commands just afterwards. </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> tjquinn008 </td> 
+         <td class="confluenceTd"> Ch. 11, p. 218 </td> 
+         <td class="confluenceTd"> Separate e-mail sent to June about the context-root computation and defaults for Java Web Start access to app clients </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> tjquinn009 </td> 
+         <td class="confluenceTd"> Ch. 11, p. 218 </td> 
+         <td class="confluenceTd"> Last graph before the last example on the page - The ampersand is a separator between arguments, not a terminator. </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> rampsarathy001 </td> 
+         <td class="confluenceTd"> Ch. 18, p. 271 </td> 
+         <td class="confluenceTd"> The doc mentions "Sun Java SystemMessage Queue 3.7 UR1" in all the places, the MQ that goes with 9.1 is "Sun Java SystemMessage Queue 4.1", should'nt we point the users to the docs corresponding to this release of MQ rather than an old one. <b>JP:</b> I've notified the doc lead, who has redirected the links for the entire collection. </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> rampsarathy002 </td> 
+         <td class="confluenceTd"> Ch. 18, p. 274 </td> 
+         <td class="confluenceTd"> under "You can also set these properties", please add server.jms-service.property.user-name = server.jms-service.property.password = </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> sivakumart001 </td> 
+         <td class="confluenceTd"> Ch. 2, p. 38 </td> 
+         <td class="confluenceTd"> Application specific classloading. instead of pointing to the blog, could you point to a <b><a href="http://blogs.oracle.com/sivakumart/entry/classloaders_in_glassfish_an_attempt">permalink of the classloaders FAQ entry </a></b> </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> sivakumart002 </td> 
+         <td class="confluenceTd"> Ch. 2, p. 39-40 </td> 
+         <td class="confluenceTd"> Using the system classloader - Could we reword this sentence. "Using the System class loader makes an application or module accessible to any other application or module across the domain." This gives us an indication that updating system-classpath makes it available to the entire domain. We should specify that providing a module in the system classpath of a particular "config" makes it available to all applications deployed in that config.For example modifying server-config makes it available to applications deployed in DAS, modifying "cluster1-config" makes it available to apps in cluster1 etc. This change should also be made to "Using the common classloader section </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> sivakumart003 </td> 
+         <td class="confluenceTd"> Ch. 2, p. 37 </td> 
+         <td class="confluenceTd"> Suggestion. Could we separate out the last two paragraphs of "The ClassLoader Hierarchy" into another section as "Web application classloader delegation" or something like that? This would basically provide a URL anchor that we could use to point to users in forums/mailings lists who are interested in how to invert web app classloader delegation. This is a suggestion and it is okay if we can;t do this </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> sivakumart004 </td> 
+         <td class="confluenceTd"> Ch. 2, p. 38 </td> 
+         <td class="confluenceTd"> To fix <a href="http://bt2ws.central.sun.com/CrPrint-2151460">this page </a>, could we also indicate that libraries are specified as comma-separated entries in the section "Application-Specific class loading" </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> sivakumart005 </td> 
+         <td class="confluenceTd"> Ch. 18, p. 272 </td> 
+         <td class="confluenceTd"> Could we change all references of MQ 3.7 documentation to MQ4.1 as MQ 4.1 is bundled with 9.1 (for example "For details, see Ã¢Â€ÂœMaster BrokerÃ¢Â€Â in Sun Java System Message Queue 3.7 UR1 Administration Guide") <b>JP:</b> I've notified the doc lead, who has redirected the links for the entire collection. </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> sivakumart006 </td> 
+         <td class="confluenceTd"> Ch. 18, p. 273 </td> 
+         <td class="confluenceTd"> "Generic Resource Adapter". Could we explain when a user uses jmsra and when Generic RA for JMS needs to be used? jmsra should be used for users who want the bundled SJSMQ(OpenMQ) for their messaging needs. For users who would like to use other messaging providers like Websphere MQ(MQ Series), Generic RA for JMS needs to be used. </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> sivakumart007 </td> 
+         <td class="confluenceTd"> Ch. 18, p. 275 </td> 
+         <td class="confluenceTd"> "If a message-driven bean is deployed and the physical destination it listens to doesn't exist, the Application Server automatically creates the physical destination and sets the value of the property maxNumActiveConsumers to -1" This is application to only Queues. I also see the same section repeated in the next page under destination resources. It is more application here than under destination resource, so please remove the note in page 276 </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> sivakumart008 </td> 
+         <td class="confluenceTd"> Ch. 18, p. 279 </td> 
+         <td class="confluenceTd"> JMS Service High Availability. Could you mentioned that data availability could only be enabled when the SJSMQ cluster associated with an AS cluster is of "HA-cluster" type. Also indicate that messages are persisted in the common persistence store only in this particular case. The line "You must enable availability for the Application Server instances before you can enable data availability for the corresponding brokers." is also possibly confusing. Are you referring to JMS availability when you say "before you can enable data availabilityfor the corresponding brokers"? If yes, could we replace that phrase with "JMS Availability". If not, then in the case where a user enables JMS availability on an AS cluster which has its JMS service configured as LOCAL, the AS would "automatically" create a MQ cluster of "HA-Cluster" type and hence the user does not need to enable data availablity in the corresponding brokers. Please see "HA cluster support" in <b><a href="http://wiki.glassfish.java.net/attach/OnePagersOrFunctionalSpecs/as-mq-integration-gfv2.txt">this page </a></b> for more information. As you have correctly done, you could point to the HA admin guide for more detailed information and explain the general idea in the developer guide. Thanks. </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> shalm-001 </td> 
+         <td class="confluenceTd"> Page 147 New content to be added under topic Associate With Thread </td> 
+         <td class="confluenceTd"> Description : "This is an option to associate a connection with the thread such that when the same thread is in need of a connection, it can reuse the connection already associated with that thread. In this case, the overhead of getting a connection from the pool is avoided. However when this value is set to true, one should verify that the value of max-pool-size attribute is comparable to the max-thread-pool-size attribute of the thread-pool element. If the max-thread-pool-size value is way high than the max-pool-size, lot of time is spent in associating a connection to the new thread, after dissociating it from an older one. This attribute is basically used in cases where the user needs the thread pool to reuse connections thereby avoiding an overhead." </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> TBD in online help and Reference Manual (man pages). </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> shalm-002 </td> 
+         <td class="confluenceTd"> Page 147 New content to be added under topic Connection Leak Timeout/Connection Leak Reclaim </td> 
+         <td class="confluenceTd"> Description : "These attributes are used together to avoid potential connection leaks from the application. When leak reclaim is set to true, the connection leak timeout would be the amount of time in seconds, to trace the connection leaks in the connection pool. More details are at <a href="http://blogs.oracle.com/kshitiz/entry/connection_leak_tracing">http://blogs.oracle.com/kshitiz/entry/connection_leak_tracing</a> <p>." </p></td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> TBD in online help and Reference Manual (man pages). </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> shalm-003 </td> 
+         <td class="confluenceTd"> Page 147 New content to be added under topic Connection Validation </td> 
+         <td class="confluenceTd"> Description : "The application server can validate database connections in three ways: auto-commit, metadata, and table. auto-commit and metadata - The application server validates a connection by calling the con.getAutoCommit() and con.getMetaData() methods.Because many JDBC drivers cache the results of these calls, they do not always provide reliable validations. Check with the driver vendor to determine whether these calls are cached or not.table - The application queries a database table that is specified. The table must exist and be accessible, but it doesn't require any rows. Do not use an existing table that has a large number of rows or a table that is already frequently accessed. More details can be found at <a href="http://blogs.oracle.com/JagadishPrasath/entry/connection_validation_in_glassfish_jdbc">http://blogs.oracle.com/JagadishPrasath/entry/connection_validation_in_glassfish_jdbc</a> <p>." </p></td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> TBD in online help and Reference Manual (man pages). </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> shalm-004 </td> 
+         <td class="confluenceTd"> Page 147 New content to be added under topic Match Connections </td> 
+         <td class="confluenceTd"> Description : "If the connection pool is used by applications that have multiple user credentials, it is necessary that match-connections is turned ON. Connection pool will match the request's credential with the connections in the pool and return a matched connection for use. In case of new requests with different credentials, unmatched free connections will be automatically purged to provide new connections to satisfy the new requests. This attribute need not be set to true if it is known that there is only one credential used by the applications and hence the pool will have homogeneous connections." </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> TBD in online help and Reference Manual (man pages). </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> shalm-005 </td> 
+         <td class="confluenceTd"> Page 147 New content to be added under topic Statement Timeout </td> 
+         <td class="confluenceTd"> Description : "This is the time in seconds after which abnormally running queries are terminated. A long running jdbc query executed by an application may leave it in a hanging state, unless a timeout is explicitly set on the statement. This provides the user to know that all queries would automatically timeout if not completed within the specified period. When statements are created, the queryTimeout will be set according to the value specified in this property. This will work only when the underlying JDBC driver supports queryTimeout for Statement, PreparedStatement, CallableStatement and ResultSet." </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> shalm-006 </td> 
+         <td class="confluenceTd"> Page 147 New content to be added under topic Wrap JDBC Objects </td> 
+         <td class="confluenceTd"> Description : "When this is set to true, wrapped jdbc objects are got for Statement, PreparedStatement, CallableStatement, ResultSet and DatabaseMetaData. This option makes sure that Statement.getConnection() will be the same as DataSource.getConnection(). Hence this option should be set to true when both Statement.getConnection() and DataSource.getConnection() are done. Default is set to false in the Enterprise server so as to not break the existing applications." </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> shingwai-001 </td> 
+         <td class="confluenceTd"> page 98 Developing Web Applications The Grizzly Implementation of Comet </td> 
+         <td class="confluenceTd"> It mentions that Cometd application consists of ..., a set of Dojo libraries, ... This is not true. We don't need Dojo libraries. A AJAX libraries will work, too. Several lines later, it seems that this is clarified. </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> Added "or Ajax". </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> shingwai-002 </td> 
+         <td class="confluenceTd"> page 99 and 100 Developing Web Applications Grizzly Comet </td> 
+         <td class="confluenceTd"> I think "The Hidden Frame Example" is a better name than "The Hidden Example". </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> shingwai-003 </td> 
+         <td class="confluenceTd"> page 123 Developing Web Applications Enabling WebDAV </td> 
+         <td class="confluenceTd"> The WebDAV example have listings=true and readOnly=false. Besides setting up security constraints (as in the example), it is important to ask them to turn on security manager, too. </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ludo-001 </td> 
+         <td class="confluenceTd"> page 19 first sentence </td> 
+         <td class="confluenceTd"> talsk about GlassFish enterprise server, not saying it is v3 prelude. Not sure if we want it to be generic or not </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> Product Name variable currently set at for-price product. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ludo-002 </td> 
+         <td class="confluenceTd"> page 19 Last sentence </td> 
+         <td class="confluenceTd"> after NetBeans IDE, we need to add a small paragraph stating that there is a GlassFish Enterprise Server plugin for the Eclipse IDE located at ( <a href="http://glassfishplugins.java.net">http://glassfishplugins.java.net</a> <p>) </p></td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> Covered later in chapter. This section is for bundled features only. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ludo-003 </td> 
+         <td class="confluenceTd"> page 21 development tool </td> 
+         <td class="confluenceTd"> add a mention of the "Eclipse IDE" which has a v3 plugin as well </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> Moved Eclipse section to right after NetBeans section. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ludo-004 </td> 
+         <td class="confluenceTd"> page 31 paragraph with AS_NATIVE_LAUNCHER </td> 
+         <td class="confluenceTd"> remove it as there is not more native launcher in v3 prelude </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> mvatkina-001 </td> 
+         <td class="confluenceTd"> page 133 EJBTimer Service </td> 
+         <td class="confluenceTd"> the war file location is now <em>as-install/lib/install/applications</em>, and (if 1.0-SNAPSHOT is removed) the name should be ejb-timer-service-app.war </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> mvatkina-002 </td> 
+         <td class="confluenceTd"> page 134 EJBTimer Service </td> 
+         <td class="confluenceTd"> remove the last bullet: changing Timer DataSource is not yet supported </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> mvatkina-003 </td> 
+         <td class="confluenceTd"> page 151 - tx recovery is not yet supported </td> 
+         <td class="confluenceTd"> remove all configuration settings (or list them as not yet supported) that refer to recovery or transaction logs </td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> Added a note: Transaction recovery is not implemented for GlassFish v3 Prelude, even if the JTS and OMG add-on components are installed. Therefore, all transaction service attributes and properties pertaining to transaction recovery or transaction logs are not implemented. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> mvatkina-004 </td> 
+         <td class="confluenceTd"> remove pages 152-154 </td> 
+         <td class="confluenceTd"> tx recovery is not yet supported </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> maheshk-01 </td> 
+         <td class="confluenceTd"> Page 131, Summary of EJB 3.1 changes </td> 
+         <td class="confluenceTd"> This is really not a summary of all the 3.1 changes. If you really require that I can send it </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> Removed the section, because the doc set need not include info obtainable from public specs. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> maheshk-01 </td> 
+         <td class="confluenceTd"> 1Page 132, Summary of EJB 3.1 changes </td> 
+         <td class="confluenceTd"> We talk about no-interface view and packaging EJBs in .war here. In prelude we also support Singleton EJBs. There must be a separate section on Singleton. </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> Removed the section, because the doc set need not include info obtainable from public specs. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> shalm-01 </td> 
+         <td class="confluenceTd"> Page 233, Handling Invalid Connections </td> 
+         <td class="confluenceTd"> The PreferValidateOverRecreate could be described a bit more. This property prefers validation first before killing the idle connections. Irrespective of whether the property is set or not, non-idle connections will be validated. </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> Added: The PreferValidateOverRecreate property specifies that validating idle connections is preferable to closing them. This property has no effect on non-idle connections. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> shalm-02 </td> 
+         <td class="confluenceTd"> Page 246, Description of fail-all-connections </td> 
+         <td class="confluenceTd"> It should be included that "if a single connection fails, all connections in the pool are closed and re-established. When set to false, individual connections are re-established only when they are used." </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> Changed to: If the fail-all-connections setting in the connection pool configuration is set to true, and a single connection fails, all connections are closed and recreated. If this setting is false, individual connections are recreated only when they are used. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> shalm-03 </td> 
+         <td class="confluenceTd"> Page 246, Handling Invalid Connections </td> 
+         <td class="confluenceTd"> The PreferValidateOverRecreate could be described a bit more. This property prefers validation first before killing the idle connections. Irrespective of whether the property is set or not, non-idle connections will be validated. </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> See shalm-01. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ksaks-001 </td> 
+         <td class="confluenceTd"> Page 123, Packaging an EJB JAR File ... </td> 
+         <td class="confluenceTd"> Instead of "Packaging an EJB JAR File in a Web Application", it's better to say "Packaging enterprise beans in a Web Application". The term "ejb jar" causes confusion with the traditional approach for packaging enterprise beans. </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> Removed the section, because the doc set need not include info obtainable from public specs. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ksaks-002 </td> 
+         <td class="confluenceTd"> Page 182, Minimum Delivery Interval </td> 
+         <td class="confluenceTd"> Default has been changed to 1000 </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> Changed. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ksaks-003 </td> 
+         <td class="confluenceTd"> Page 217 (appclient) , 259 (JNDI) </td> 
+         <td class="confluenceTd"> We need to change (or remove) the notes that talk about installing the EJB container on top of the web distribution. The EJB 3.1 Lite container is now included by default in the web distribution. If the full EJB 3.1 API is needed, the developer should use the full glassfish v3 distribution rather than using the update tool. </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> In classloader, security, persistence, web app, EJB, CMP, appclient, and JNDI chapters, changed note to: The Web distribution of the Enterprise Server supports the EJB 3.1 Lite specification, which allows enterprise beans within web applications, among other features. The full distribution supports the entire EJB 3.1 specification. For details, see JSR 318 ( <a href="http://jcp.org/en/jsr/detail-318">http://jcp.org/en/jsr/detail-318</a> <p>). </p></td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> tjquinn-001 </td> 
+         <td class="confluenceTd"> p. 226-227 </td> 
+         <td class="confluenceTd"> The first bullet point on p. 227 should refer to the <tt>-splash</tt> option on the <tt>java</tt> command, not on the <tt>appclient</tt> command. Users launch programs that use the embedded API with the <tt>java</tt> command, not the <tt>appclient</tt> command. </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> Changed. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Jagadish.Ramu-001 </td> 
+         <td class="confluenceTd"> Chapter 12, page 229 </td> 
+         <td class="confluenceTd"> abbreviation - (CA) is not needed as we do not have a official abbreviation, it may clash with Java Cryptography Architecture </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> "CA" removed. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Jagadish.Ramu-002 </td> 
+         <td class="confluenceTd"> Chapter 12, page 229 </td> 
+         <td class="confluenceTd"> Need to add a new section : Summary of Connector Architecture 1.6 specification changes : content via email </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> Did not add the section, because the doc set need not include info obtainable from public specs. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Jagadish.Ramu-003 </td> 
+         <td class="confluenceTd"> Chapter 12, page 229 </td> 
+         <td class="confluenceTd"> "Note" has to be changed - Support for connector modules that use only outbound communication features, work-management that does not involve inbound communication features, is available in Web distribution </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> Note changed to: If you installed the Web distribution, connector modules that use only outbound communication features and work-management that does not involve inbound communication features are supported. Other connector features are not supported unless the optional Connector add-on component is downloaded from the Update Tool. For information about the Update Tool, see the Installation Guide. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Jagadish.Ramu-006 </td> 
+         <td class="confluenceTd"> Chapter 12, page 232 </td> 
+         <td class="confluenceTd"> Section - Work Security Maps : New Content : content via email </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> Added content with a few edits for clarity. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Jagadish.Ramu-004 </td> 
+         <td class="confluenceTd"> Chapter 12, page 231 </td> 
+         <td class="confluenceTd"> Section-ThreadPools : As we do not have support for configuring thread pools in preview, we can remove all the content except first two lines ie., content starting from "However, you can associate a specific user-created..." can be removed. This will be added for V3 Final release </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> Commented out for Preview. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Jagadish.Ramu-005 </td> 
+         <td class="confluenceTd"> Chapter 12, page 232 </td> 
+         <td class="confluenceTd"> Section - Work Security Maps: Seems like the content is taken from Connector Security Map which is different than Work Security Map. Connector Security Map support is not yet available in preview. </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> Commented out for Preview. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Jagadish.Ramu-007 </td> 
+         <td class="confluenceTd"> Chapter 12, page 233 </td> 
+         <td class="confluenceTd"> Section - Setting shutdown timeout: can be removed as the support is not available for preview </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> Commented out for Preview. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> monzillo006 </td> 
+         <td class="confluenceTd"> Security chapter, message security section </td> 
+         <td class="confluenceTd"> Configuring Message Security for Web Services should be revised to describe the jsr 196 architecture, and the alternative configurations systems incluiding the ws-policy based system, that are integrated in as9.1, and how additional systems are integrated. </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> Added Ron's blog "Adding Authentication Mechanisms to the GlassFish Servlet Container" to the Securing Applications chapter. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> monzillo007 </td> 
+         <td class="confluenceTd"> Security chapter, message security section </td> 
+         <td class="confluenceTd"> that we are using jsr 196 in the web tier to facilitate the injection of pluggable authentication modules within the servlet constraint processing engine. we should aslo describe how one goes about doing this (either here or in the admin guide). </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> Added Ron's blog "Adding Authentication Mechanisms to the GlassFish Servlet Container" to the Securing Applications chapter. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> tjquinn001 </td> 
+         <td class="confluenceTd"> Debugging Apps/App Client Debugging, p. 69 </td> 
+         <td class="confluenceTd"> The text is correct as written. Alternatively, users can (if they want to) specify the debugger options directly on the appclient command, before the client selector. (Also, my impression was that the JDK documentation now tends to use the 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">-agentlib:jdwp=transport=dt_socket,address=8118,server=y,suspend=y</pre> 
+            </div> 
+           </div>
+          </div> notation, but what's written works as well.) </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> tjquinn002 </td> 
+         <td class="confluenceTd"> Signing JAR Files Used in Java Web Start, p. 211, end of 2nd paragraph </td> 
+         <td class="confluenceTd"> The example for a signed system JAR is no longer correct in v3. Instead of 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">as-install/lib/appserv-jwsacc.jar</pre> 
+            </div> 
+           </div>
+          </div> let's use 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">as-install/modules/gf-client.jar</pre> 
+            </div> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> tjquinn003 </td> 
+         <td class="confluenceTd"> Signing JAR Files... </td> 
+         <td class="confluenceTd"> I should have caught this earlier. Ideally, can we remove the discussion about manual signing entirely? The discussion of the default alias is still accurate. But the rest of discussion should focus not on manual signing but on the new deployment-time property 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">jar-signing-alias</pre> 
+            </div> 
+           </div>
+          </div> which causes the signing code to use the user-supplied alias instead of the default alias to sign all JARs - system and application JARs - required for clients in that app. Users can add their own certificate to the domain's keystore using an alias they choose (e.g., myAlias) then can deploy an app using 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">deploy ... --property jar-signing-alias myAlias</pre> 
+            </div> 
+           </div>
+          </div>. The enterprise server will then use the cert associated with that alias to sign any JARs that need signing. </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> tjquinn004 </td> 
+         <td class="confluenceTd"> Running an Application Client... p. 215 </td> 
+         <td class="confluenceTd"> The first sentence makes it sound as if clients can be launched either using Java Web Start or with appclient script but not both. In fact, the appclient script approach is always OK, whether or not the client is eligible for launch using Java Web Start. </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> tjquinn005 </td> 
+         <td class="confluenceTd"> Specifying a splash screen, p. 218 </td> 
+         <td class="confluenceTd"> Please insert a new first bullet point, something like this: Create your app client JAR so that its manifest contains 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">SplashScreen-Image:</pre> 
+            </div> 
+           </div>
+          </div> <em>path-in-client-to-the-image</em>. Java will display your splash screen before starting the ACC or your client, just as with any Java application. </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> bhaktimehta-001 </td> 
+         <td class="confluenceTd"> Pg 115 chapter 6 </td> 
+         <td class="confluenceTd"> JAXWS 2.2 is supported (change jaxws 2.0 to 2.2) </td> 
+         <td class="confluenceTd"><font color="lime">RESOLVED</font> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> bhaktimehta-002 </td> 
+         <td class="confluenceTd"> Pg 116 chapter 6 </td> 
+         <td class="confluenceTd"> Remove this section this is not supported any more You can use the autodeployment feature to deploy a simple JSR 181 ( <a href="http://jcp.org/en/jsr/detail-181">http://jcp.org/en/jsr/detail-181</a> <p>) annotated file. You can compile and deploy in one step, as in the following example: javac -cp webservices.jar -d domain-dir/autodeploy MyWSDemo.java </p></td> 
+         <td class="confluenceTd"> <font color="lime">RESOLVED</font> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>Return to <a href="GlassFishDocs.html" title="GlassFishDocs">main comments page</a></p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 17, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:43.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

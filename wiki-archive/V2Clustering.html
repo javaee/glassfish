@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : V2Clustering</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="V2Clustering-March15%2C2010ByronNevinsResearchonV2ClusteringBehavior"></a>March 15, 2010 Byron Nevins – Research on V2 Clustering Behavior</h3> <p>See the next installment <a href="V2Clustering2.html" title="V2Clustering2">here</a></p> 
+     <ol> 
+      <li>I created a brand spanking new V2 domain.</li> 
+      <li>I added a stand-alone instance, "ui1", with the minimal required args – i.e. only --nodeagent 
+       <ol> 
+        <li>It copies the entire "default-config" over to a new config named "ui1-config"</li> 
+        <li>The default config has 7 system props lines for ports. E.g. 
+         <ol> 
+          <li>system-property name="HTTP_LISTENER_PORT" value="38080"</li> 
+         </ol> </li> 
+        <li>For this first instance – it uses (inherits) the 7 port assignments. I.e. they are NOT mentioned inside ui1-config</li> 
+       </ol> </li> 
+      <li>I added a second stand-alone instance, "ui2". It does the same copying over of the default config – including he exact same 7 sys props.</li> 
+      <li>For this second instance, all 7 ports are overridden in the server element for ui2.</li> 
+      <li>Note that all apps marked as "system-all" have references added to EVERY new config element</li> 
+      <li>Conclusion: the create-instance has some smarts and by default prevents port conflicts.</li> 
+      <li>Removed both instances and repeated above but using a new cluster, "c1"</li> 
+     </ol> <h4><a name="V2Clustering-March17%2C2010"></a>March 17, 2010</h3> <p>Here are the simplified elements of interest that you get from these commands:</p> 
+     <ol> 
+      <li>asadmin create-node-agent na1</li> 
+      <li>asadmin create-cluster c1</li> 
+      <li>asadmin create-instance --nodeagent na1 i1</li> 
+      <li>asadmin create-instance --nodeagent na1 --cluster c1 ci1</li> 
+     </ol> <p>And below is how everything gets hooked-up in domain.xml</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;server name="i1" config-ref="i1-config" node-agent-ref="na1".../&gt;
+&lt;server name="ci1" config-ref="ci1-config" node-agent-ref="na1".../&gt;
+&lt;config name="i1-config".../&gt;
+&lt;config name="ci1-config".../&gt;
+&lt;config name="c1-config".../&gt;
+&lt;cluster name="c1" config-ref="c1-config"...&gt;
+   &lt;server-ref ref="ci1"...&gt;
+&lt;/cluster&gt;</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="V2Clustering-Attachments"></a>Attachments</h2> <p><a href="http://wiki.glassfish.java.net/attach/V2Clustering/add-na.txt">Diff from adding a node agent</a><br> <a href="http://wiki.glassfish.java.net/attach/V2Clustering/add-ui1.txt">Diff from adding a stand-alone instance</a><br> <a href="http://wiki.glassfish.java.net/attach/V2Clustering/add-ui2.txt">Diff from adding a second stand-alone instance</a></p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Dec 01, 2011 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

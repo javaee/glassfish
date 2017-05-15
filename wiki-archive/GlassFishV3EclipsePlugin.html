@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFishV3EclipsePlugin</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GlassFishV3EclipsePlugin-GlassFishv3EclipsePlugin"></a>GlassFish v3 Eclipse Plugin</h2> <h4><a name="GlassFishV3EclipsePlugin-Draft%3AWorkinProgress"></a>Draft: Work in Progress</h3> <h4><a name="GlassFishV3EclipsePlugin-V3PreludeSchedule"></a>V3 Prelude Schedule</h3> 
+     <ul> 
+      <li><a href="./GlassFishV3Schedule.html">http://wiki.glassfish.java.net/Wiki.jsp?page=GlassFishV3Schedule</a></li> 
+     </ul> <h4><a name="GlassFishV3EclipsePlugin-ToalignwithscheduleaboveforV3Preludetargeteddates"></a>To align with schedule above for V3 Prelude - targeted dates</h3> 
+     <ul> 
+      <li>Milestone 1 - 8/11/08: Monday after SCF build (8/6/08)</li> 
+      <li>Milestone 2 - 9/8/08: Monday after HCF build (9/2/08)</li> 
+     </ul> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Category</th> 
+         <th class="confluenceTh">Feature Description</th> 
+         <th class="confluenceTh">Priority/Status/Targeted Milestone</th> 
+         <th class="confluenceTh">Dependencies</th> 
+         <th class="confluenceTh">Notes </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Installation &amp; Configuration </td> 
+         <td class="confluenceTd"> Install a v3 Server Runtime </td> 
+         <td class="confluenceTd"> Done </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Installation &amp; Configuration </td> 
+         <td class="confluenceTd"> Define a new v3 Server including ports/user/password props &amp; apps </td> 
+         <td class="confluenceTd"> Done </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Servers Tab </td> 
+         <td class="confluenceTd"> Show as node in Servers tab </td> 
+         <td class="confluenceTd"> Done </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Servers Tab </td> 
+         <td class="confluenceTd"> Start Server </td> 
+         <td class="confluenceTd"> Done </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Servers Tab </td> 
+         <td class="confluenceTd"> Stop Server </td> 
+         <td class="confluenceTd"> Done </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Servers Tab </td> 
+         <td class="confluenceTd"> Start Server in Debug Mode </td> 
+         <td class="confluenceTd"> Done </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Servers Tab </td> 
+         <td class="confluenceTd"> Expand node to show list of deployed projects </td> 
+         <td class="confluenceTd"> Done </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Servers Tab </td> 
+         <td class="confluenceTd"> Double click server node to modify ports/user/password props </td> 
+         <td class="confluenceTd"> Done </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Servers Tab </td> 
+         <td class="confluenceTd"> Add/Remove on node to modify list of deployed projects </td> 
+         <td class="confluenceTd"> Done </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Servers Tab </td> 
+         <td class="confluenceTd"> Undeploy Project: Right click-&gt;Remove on child node </td> 
+         <td class="confluenceTd"> Done </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Dynamic Web Project </td> 
+         <td class="confluenceTd"> Create with v3 server as target runtime </td> 
+         <td class="confluenceTd"> Done </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Dynamic Web Project </td> 
+         <td class="confluenceTd"> Run on v3 server </td> 
+         <td class="confluenceTd"> Done </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Dynamic Web Project </td> 
+         <td class="confluenceTd"> Debug on v3 server with breakpoints </td> 
+         <td class="confluenceTd"> Done </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Also tested breakpoint in jsp &amp; it works </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Installation &amp; Configuration </td> 
+         <td class="confluenceTd"> Offer v3 server download options as part of config wizard </td> 
+         <td class="confluenceTd"> High/In progress </td> 
+         <td class="confluenceTd"> url from Terena, name from branding </td> 
+         <td class="confluenceTd"> work around broken feedback with standard implementation. see <a href="https://github.com/javaee/glassfish/issues/47">gf plugin bug 47 </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Installation &amp; Configuration </td> 
+         <td class="confluenceTd"> Support new structure of OSGI jars for correct build path </td> 
+         <td class="confluenceTd"> High/In progress </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> done for short term, need longer term solution - asked for advice on wtp-dev. Also see <a href="https://github.com/javaee/glassfish/issues/41">gf plugin bug 41 </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Other </td> 
+         <td class="confluenceTd"> JDBC resources </td> 
+         <td class="confluenceTd"> Done </td> 
+         <td class="confluenceTd"> add-resources command </td> 
+         <td class="confluenceTd"> Wizard for sun-resources file in place, but need to solve permission problem and problem with calling add-resources (eclipse temp file directory problem) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Installation &amp; Configuration </td> 
+         <td class="confluenceTd"> Handle server status synchronization </td> 
+         <td class="confluenceTd"> Medium/In progress </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Some advice on alias, but need to figure out how to attach log output to console. See gf plugin related <a href="https:--glassfishplugins.java.net-issues-show_bug.cgi-53">issues 53 </a> and <a href="https://github.com/javaee/glassfish/issues/23">23 </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Installation &amp; Configuration </td> 
+         <td class="confluenceTd"> Add domain-dir support </td> 
+         <td class="confluenceTd"> Done </td> 
+         <td class="confluenceTd"> admin cli support </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Installation &amp; Configuration </td> 
+         <td class="confluenceTd"> Use domain.xml instead of user entering all ports, etc. </td> 
+         <td class="confluenceTd"> Medium/TBD </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> See <a href="https://github.com/javaee/glassfish/issues/41">gf plugin bug 41 </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Installation &amp; Configuration </td> 
+         <td class="confluenceTd"> Investigate whether can point at a remote server </td> 
+         <td class="confluenceTd"> Low/TBD </td> 
+         <td class="confluenceTd"> admin cli support </td> 
+         <td class="confluenceTd"> Allow remote deploy/undeploy, not start/stop/debug. Does not seem possible without <a href="http:--publib.boulder.ibm.com-wasce-V2.0.0-en-deploying-in-eclipse.html">extra setup </a>. Also see related <a href="https:--glassfishplugins.java.net-issues-show_bug.cgi-25">gf plugin bugs 25 </a> and <a href="https://github.com/javaee/glassfish/issues/22">22 </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Installation &amp; Configuration </td> 
+         <td class="confluenceTd"> Improve our publishing/update site for Eclipse P2 functionality </td> 
+         <td class="confluenceTd"> Low/TBD </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> See <a href="http://wiki.eclipse.org/Equinox_p2_Metadata_Generator">Eclipse instructions for P2 </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Servers Tab </td> 
+         <td class="confluenceTd"> Show/manage list of resources from server node </td> 
+         <td class="confluenceTd"> Medium/TBD </td> 
+         <td class="confluenceTd"> http get/set support </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Servers Tab </td> 
+         <td class="confluenceTd"> Provide jvm properties editor as menu item to the server node </td> 
+         <td class="confluenceTd"> Low/TBD </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> See NB plugin for example of what to show there </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Installation &amp; Configuration </td> 
+         <td class="confluenceTd"> Automatic setup of our update site </td> 
+         <td class="confluenceTd"> Medium/TBD </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Asked on newsgroup, see <a href="http:--www.eclipse.org-newsportal-article.php-17298&amp;group=eclipse.webtools#17298">discussion </a> and <a href="https:--bugs.eclipse.org-bugs-show_bug.cgi-230323">eclipse bug 230323 </a> and <a href="https://github.com/javaee/glassfish/issues/45">gf plugin bug 45 </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Installation &amp; Configuration </td> 
+         <td class="confluenceTd"> Improve error message for invalid server runtime </td> 
+         <td class="confluenceTd"> Medium/TBD </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Asked on wtp alias, no response so far, but see this similar <a href="http://issues.apache.org/jira/browse/GERONIMODEVTOOLS-78?page=com.atlassian.jira.plugin.system.issuetabpanels:all-tabpanel">geronimo bug </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Installation &amp; Configuration </td> 
+         <td class="confluenceTd"> Improve console output - color should not be red unless error/warning </td> 
+         <td class="confluenceTd"> Low/TBD </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Asked on wtp alias, no response so far, but here is related <a href="https:--glassfishplugins.java.net-issues-show_bug.cgi-18">gf plugin bug 18 </a> and related <a href="http://help.eclipse.org/help32/index.jsp?topic=/org.eclipse.gmf.doc/reference/api/runtime/org/eclipse/gmf/runtime/common/ui/util/ConsoleUtil.html">javadoc </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Dynamic Web Project </td> 
+         <td class="confluenceTd"> Directory deployment </td> 
+         <td class="confluenceTd"> High/TBD </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Discussed with Ludo and using ant is not fast enough. Consider overridding publishModule and doing our own. Also see <a href="https://github.com/javaee/glassfish/issues/39">gf plugin bug 39 </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Other </td> 
+         <td class="confluenceTd"> JSF Tooling </td> 
+         <td class="confluenceTd"> Medium/TBD </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Look at <a href="http://balusc.blogspot.com/2008/01/jsf-tutorial-with-eclipse-and-tomcat.html">this JSF tutorial </a> and see if we can automate this setting with GF v2 and/or v3 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Other </td> 
+         <td class="confluenceTd"> Aptana - Ruby Editing </td> 
+         <td class="confluenceTd"> Low/TBD </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Look at how to integrate - is gem enough? </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Other </td> 
+         <td class="confluenceTd"> Compare with Tomcat Plugin Features </td> 
+         <td class="confluenceTd"> TBD </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> a quick search turns up about 4 or 5 eclipse plugins for tomcat, though some are quite old </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 09, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

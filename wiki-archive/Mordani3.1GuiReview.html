@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : Mordani3.1GuiReview</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>Hi Anissa,<br> Sorry haven't gotten to this yet. Here you go -</p> <p> " <em>The Admin Console will be using the Woodstock components, a JSF component set. Since this is an unsupported product, the GUI team has created a branch for our own use and maintains it. It is assumed that this version will not have major fault that prevents the Admin Console from utilizing it or spend significant time in maintaining it.</em>"</p> <p>Not really relevant to the one pager feedback, but there was an issue with the woodstock components in the way it generates sessions. Can we fix that for this release? I had filed an issue for this some time back. Will try to find it and send it to you.</p> <p><b>Anisa:</b> Are you referring to <a href="https://github.com/javaee/glassfish/issues/10945">https://github.com/javaee/glassfish/issues/10945</a> ?<br> Fix Woodstock to use RFC 2109 compliant cookie names.<br> This is P3, we will look into this for this release.</p> 
+     <hr> <p>"<em>The Admin Console is written on top of the JSFTemplating framework, which is a java.net open source project. It is assumed that JSFTemplating will continue to evolve with features to support the Admin Console. However, no major features have been identified for this release.</em>"</p> <p>JSFTemplating builds on jsf-extensions I think. Is there any plan of moving away from jsf-extensions? Cos that is also not really supported and all the features in it are in theory supposed to be in JSF 2.0.</p> <p><b>KenPaulsen:</b> JSFTemplating no longer depends on jsf-extensions and hasn't for some time. FYI, We use JSF 2.0 Ajax for most of our Ajax. In some cases (for full page requests, and in cases where we're not using JSF – i.e. the Online Help), we're using plain JS-based Ajax w/o JSF support.</p> 
+     <hr> <p>Grizzly enhancement - we should probably have a meeting some time to go over the information you may need. Justin has sent out a write up to the dev alias. Please look at it if you haven't done that and let us know what else you need.<br> <b>Anissa:</b> Yes, we do need a meeting to discuss this. I will contact you after i read it through.<br> thanks.<br> Anissa.</p> 
+     <ul class="alternate" type="square"> 
+      <li>Rajiv 
+       <hr> </li>
+     </ul> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

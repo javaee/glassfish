@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : JavaServerFacesSpecFaq</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="JavaServerFacesSpecFaq-FREQUENTLYASKEDQUESTIONSaboutJavaServerFacesTechnology"></a>FREQUENTLY ASKED QUESTIONS about JavaServer Faces Technology</h1> <p>This Wiki page is for questions about the JavaServer Faces Specification. Questions about Oracle's implementation of JSF are covered at <a href="./JavaServerFacesRI.html">The Mojarra FAQ</a>.</p> <h4><a name="JavaServerFacesSpecFaq-TableofContents%3A"></a>Table of Contents:</h2> 
+     <div> 
+      <ul> 
+       <li><a href="#JavaServerFacesSpecFaq-FREQUENTLYASKEDQUESTIONSaboutJavaServerFacesTechnology">FREQUENTLY ASKED QUESTIONS about JavaServer Faces Technology</a></li> 
+       <ul> 
+        <li><a href="#JavaServerFacesSpecFaq-TableofContents%3A">Table of Contents:</a></li> 
+        <li><a href="#JavaServerFacesSpecFaq-GeneralQuestions">General Questions</a></li> 
+        <ul> 
+         <li><a href="#JavaServerFacesSpecFaq-WhatisJavaServerFacestechnology%3F">What is JavaServer Faces technology?</a></li> 
+         <li><a href="#JavaServerFacesSpecFaq-WhatarethebenefitsofJavaServerFacestechnology%3F">What are the benefits of JavaServer Faces technology?</a></li> 
+         <li><a href="#JavaServerFacesSpecFaq-WhoaretheintendedusersofJavaServerFacestechnology%3F">Who are the intended users of JavaServer Faces technology?</a></li> 
+         <li><a href="#JavaServerFacesSpecFaq-WhoisinvolvedindevelopingtheJavaServerFacesspecification%3F">Who is involved in developing the JavaServer Faces specification?</a></li> 
+         <li><a href="#JavaServerFacesSpecFaq-HowdoIgetinvolved%3F">How do I get involved?</a></li> 
+         <ul> 
+          <li><a href="#JavaServerFacesSpecFaq-Jointhejava.netprojectfortheJSFspecification">Join the java.net project for the JSF specification</a></li> 
+          <li><a href="#JavaServerFacesSpecFaq-Usetheissuetracker">Use the issuetracker</a></li> 
+         </ul> 
+        </ul> 
+        <li><a href="#JavaServerFacesSpecFaq-WhatarethedifferencesbetweenJavaServerFacestechnologyandStruts%3F">What are the differences between JavaServer Faces technology and Struts?</a></li> 
+        <ul> 
+         <li><a href="#JavaServerFacesSpecFaq-HowdoesJavaServerFacestechnologyrelatetoJavaServerPages%28JSP%29technology%3F">How does JavaServer Faces technology relate to JavaServer Pages (JSP) technology?</a></li> 
+         <li><a href="#JavaServerFacesSpecFaq-WherecanIfindoutmoreaboutJavaServerFacestechnology%3F">Where can I find out more about JavaServer Faces technology?</a></li> 
+        </ul> 
+        <li><a href="#JavaServerFacesSpecFaq-JSF1.1TroubleshootingQuestions">JSF 1.1 Troubleshooting Questions</a></li> 
+        <ul> 
+         <li><a href="#JavaServerFacesSpecFaq-DoJavaServerFacestagsinteroperatewithJSTLcoretags%2CforEach%2Cif%2Cchooseandwhen%3F">Do JavaServer Faces tags interoperate with JSTL core tags, forEach, if, choose and when?</a></li> 
+        </ul> 
+        <li><a href="#JavaServerFacesSpecFaq-WhenIuse%3Cc%3Aimport%3Eor%3Cjsp%3Ainclude%3EtoincludecontentfromaaJSPpageintoaJavaServerFacespage%2CitproducesincorrectHTMLoutput.Whydoesthishappen%3F">When I use &lt;c:import&gt; or &lt;jsp:include&gt; to include content from a a JSP page into a JavaServer Faces page, it produces incorrect HTML output. Why does this happen?</a></li> 
+        <li><a href="#JavaServerFacesSpecFaq-JSF1.2TroubleshootingQuestions">JSF 1.2 Troubleshooting Questions</a></li> 
+        <ul> 
+         <li><a href="#JavaServerFacesSpecFaq-DoJavaServerFacestagsinteroperatewithJSTLcoretags%2CforEach%2Cif%2Cchooseandwhen%3F">Do JavaServer Faces tags interoperate with JSTL core tags, forEach, if, choose and when?</a></li> 
+         <li><a href="#JavaServerFacesSpecFaq-WhenIuse%3Cc%3Aimport%3Eor%3Cjsp%3Ainclude%3EtoincludecontentfromaaJSPpageintoaJavaServerFacespage%2CitproducesincorrectHTMLoutput.Whydoesthishappen%3F">When I use &lt;c:import&gt; or &lt;jsp:include&gt; to include content from a a JSP page into a JavaServer Faces page, it produces incorrect HTML output. Why does this happen?</a></li> 
+        </ul> 
+        <li><a href="#JavaServerFacesSpecFaq-ForMoreInformation">For More Information</a></li> 
+        <ul> 
+         <li><a href="#JavaServerFacesSpecFaq-IsthereapublicchatroomforJSFdevelopersandusers%3F">Is there a public chat room for JSF developers and users?</a></li> 
+         <li><a href="#JavaServerFacesSpecFaq-IsthereaSunPrivatepublicchatroomforJSFdevelopersandusersinsideofSun%3F">Is there a Sun Private public chat room for JSF developers and users inside of Sun?</a></li> 
+        </ul> 
+        <li><a href="#JavaServerFacesSpecFaq-WhoisusingJSFintheRealWorld%3F">Who is using JSF in the Real World?</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="JavaServerFacesSpecFaq-GeneralQuestions"></a>General Questions</h2> <h4><a name="JavaServerFacesSpecFaq-WhatisJavaServerFacestechnology%3F"></a>What is JavaServer Faces technology?</h3> <p>JavaServer Faces technology is a framework for building user interfaces for web applications. JavaServer Faces technology includes:</p> 
+     <ul> 
+      <li>A set of APIs for: representing UI components and managing their state, handling events and input validation, defining page navigation, and supporting internationalization and accessibility.</li> 
+      <li>A JavaServer Pages (JSP) or Facelets custom tag library for expressing a JavaServer Faces interface within a JSP or Facelets page.</li> 
+     </ul> <p>With the simple, well-defined programming model that JavaServer Faces technology provides, developers of varying skill levels can quickly and easily build Web applications by: assembling reusable UI components in a page, connecting these components to an application data source, and wiring client-generated events to server-side event handlers. With the power of JavaServer Faces technology, these web applications handle all of the complexity of managing the user interface on the server, allowing the application developer to focus on their application code.</p> <h4><a name="JavaServerFacesSpecFaq-WhatarethebenefitsofJavaServerFacestechnology%3F"></a>What are the benefits of JavaServer Faces technology?</h3> <p>The primary benefits of JavaServer Faces technology include:</p> 
+     <ul> 
+      <li><b>Ease-of-Use:</b> Several aspects of the JavaServer Faces architecture contribute to its ease-of-use. For one, JavaServer Faces technology offers a clean separation between logic and presentation, enabling a wide range of users – from web-page designers to component developers-- to take advantage of JavaServer technology, resulting in a division of labor and a shorter development cycle. Also, a user-interface created with JavaServer Faces technology handles all the complexities of user-interface management, including input validation, component-state management, page navigation, and event handling.</li> 
+      <li><b>Standardization:</b> JavaServer Faces technology is being developed through the Java Community Process. Several prominent, respected tools vendors are contributing members of the expert group and are committed to supporting JavaServer Faces technology in their tools.</li> 
+      <li><b>Device Independence:</b> JavaServer Faces technology is designed to be flexible. By defining only component functionality in extensible UI component classes, the JavaServer Faces architecture allows component developers to extend the component classes to generate their own component tag libraries targetted for specific clients.</li> 
+     </ul> <h4><a name="JavaServerFacesSpecFaq-WhoaretheintendedusersofJavaServerFacestechnology%3F"></a>Who are the intended users of JavaServer Faces technology?</h3> <p>Because of the extensibility and ease-of-use that JavaServer Faces technology provides, a wide range of developers and web-page designers can take advantage of the power of JavaServer Faces technology. These users include:</p> 
+     <ul> 
+      <li><b>Page Authors</b>, who build the UI using JavaServer Faces component tags from within web pages, such as JSP pages. This set of users will most likely be the primary users of the JavaServer Faces custom tag library.</li> 
+      <li><b>Application Developers</b>, who write the application code, including the data-access, event-handling, and business logic.</li> 
+      <li><b>Component Writers</b>, who construct reusable UI components, and will take advantage of the extensibility of the UI component classes to build custom components that can be targetted for a specific client.</li> 
+      <li><b>Tools Vendors</b>, who build tools leveraging JavaServer Faces technology to make building a user interface with JavaServer Faces technology even easier.</li> 
+     </ul> <h4><a name="JavaServerFacesSpecFaq-WhoisinvolvedindevelopingtheJavaServerFacesspecification%3F"></a>Who is involved in developing the JavaServer Faces specification?</h3> <p>A number of important industry players are collaborating with Sun to define the first draft of the JavaServer Faces specification. Please see JSR-252 for a complete list of expert group members.</p> <h4><a name="JavaServerFacesSpecFaq-HowdoIgetinvolved%3F"></a>How do I get involved?</h3> <p>JavaServerFaces is a JCP specification.&nbsp; The sponsoring organization of the specification has chosen to use java.net to help make the development process transparent. Here are two avenues for involvement.</p> <h4><a name="JavaServerFacesSpecFaq-Jointhejava.netprojectfortheJSFspecification"></a>Join the java.net project for the JSF specification</h4> 
+     <ol> 
+      <li>Please sign up as a java.net member at &lt;<a href="https://java.net/people/new">https://java.net/people/new</a> &gt;.</li> 
+      <li>Click the "Bookmark This Project" link on &lt;<a href="http://jsf-spec.java.net">http://jsf-spec.java.net</a> &gt; to join the project as an Observer.</li> 
+      <li>Visit &lt;<a href="http://jsf-spec.java.net/lists">http://jsf-spec.java.net/lists</a> &gt; and join the list of your choice.&nbsp; This includes the issuetracker list. Observers of the project can subscribe to the <em>users@javaserverfaces-spec-public.net</em> email list. This list is a reflector for the expert group email list (<em>jsr344-experts@javaserverfaces-spec-public.java.net</em>) and receives all emails that are sent to the experts list. It can also be used for community discussion related to the JSR.</li> 
+     </ol> <h4><a name="JavaServerFacesSpecFaq-Usetheissuetracker"></a>Use the issuetracker</h4> <p>The issuetracker of record for the JavaServer Faces specification is at &lt;<a href="http://jsf.java.net/issues/">http://jsf.java.net/issues/</a> &gt;.</p> <h4><a name="JavaServerFacesSpecFaq-WhatarethedifferencesbetweenJavaServerFacestechnologyandStruts%3F"></a>What are the differences between JavaServer Faces technology and Struts?</h2> <p>Struts is an open-source Java web application framework whose architecture is based on the Model-View-Controller design pattern in which requests are routed through a controller that provides overall application management and dispatches the requests to application components. JavaServer Faces technology is a user-interface framework for Java web applications. It is focussed on the view tier of an MVC-based architecture. The Struts and JavaServer Faces technology frameworks do have some overlapping functionality; however each framework has its advantages, and developers can use certain features of both frameworks in a single application.</p> <p>The primary advantages of Struts as compared to JavaServer Faces technology are as follows:</p> 
+     <ul> 
+      <li>Because Struts is a web application framework, it has a more sophisticated controller architecture than does JavaServer Faces technology. It is more sophisticated partly because the application developer can access the controller by creating an Action object that can integrate with the controller, whereas JavaServer Faces technology does not allow access to the controller. In addition, the Struts controller can do things like access control on each Action based on user roles. This functionality is not provided by JavaServer Faces technology.</li> 
+      <li>Struts includes a powerful layout management framework, called Tiles, which allows you to create templates that you can reuse across multiple pages, thus enabling you to establish an overall look-and-feel for an application.</li> 
+      <li>The Struts validation framework includes a larger set of standard validators, which automatically generate both server-side and client-side validation code based on a set of rules in a configuration file. You can also create custom validators and easily include them in your application by adding definitions of them in your configuration file.</li> 
+     </ul> <p>The greatest advantage that JavaServer Faces technology has over Struts is its flexible, extensible UI component model, which includes:</p> 
+     <ul> 
+      <li>A standard component API for specifying the state and behavior of a wide range of components, including simple components, such as input fields, and more complex components, such as scrollable data tables. Developers can also create their own components based on these APIs, and many third parties have already done so and have made their component libraries publicly available.</li> 
+      <li>A separate rendering model that defines how to render the components in various ways. For example, a component used for selecting an item from a list can be rendered as a menu or a set of radio buttons.</li> 
+      <li>An event and listener model that defines how to handle events generated by activating a component, such as what to do when a user clicks a button.<br> Conversion and validation models for converting and validating component data.</li> 
+     </ul> <p>Because the JavaServer Faces technology architecture separates the definition of a component from its rendering, you can render your components in different ways or even to different clients, such as a WML client. Moreover, the extensible component APIs of JavaServer Faces technology allow you to extend the standard set of components and create entirely new components. None of this is possible with Struts. In fact, Struts has no notion of server-side components, which also means that it has no event model for responding to component events and no facility for saving and restoring component state. While Struts does have a useful tag library for rendering components on the page, these components have no object representation on the server and they can only be rendered to an HTML client.</p> <p>Another distinct advantage of JavaServer Faces technology is that it is standard, which means that it has been developed through the Java Community Process (JCP) and has been designed to allow easy integration into tools. As a result, JavaServer Faces technology already has wide industry support and is being leveraged by several web application development IDEs (such as <a href="http://developers.sun.com/prodtech/javatools/jscreator/index.jsp">Sun Java Studio Creator</a>).</p> <p>Because both JavaServer Faces technology and Struts contribute such valuable features, developers might want to be able to use both of them in a single application. Developers might want to integrate the flexible component model of JavaServer Faces technology into their existing Struts applications while continuing to use the Struts controller architecture. Similarly, developers who have JavaServer Faces technology applications might want to integrate the more powerful client-side validation mechanism and Tiles layout framework found in the Struts architecture into their applications. These goals can be accomplished by using the stuts-faces integration library, which you can download from <a href="http://svn.apache.org/builds/jakarta-struts/nightly/struts-faces/">here</a>.</p> <p>For more information on the relationship of Struts and JavaServer Faces technology, see <a href="http://blogs.oracle.com/roller/page/craigmcc/20040927#struts_or_jsf_struts_and">Craig McClanahan's blog entry on this topic</a>.</p> <h4><a name="JavaServerFacesSpecFaq-HowdoesJavaServerFacestechnologyrelatetoJavaServerPages%28JSP%29technology%3F"></a>How does JavaServer Faces technology relate to JavaServer Pages (JSP) technology?</h3> <p>JavaServer Faces technology, version 1.0 relies on JSP 1.2. Since JSP 2.0 is a superset of JSP 1.2, it is possible to use JavaServer Faces technology, version 1.0 with JSP 2.0. JSF 2.0 supports JSP only as a backwards compatability techtnology, and uses Facelets as its preferred View Declaration Language.</p> <h4><a name="JavaServerFacesSpecFaq-WherecanIfindoutmoreaboutJavaServerFacestechnology%3F"></a>Where can I find out more about JavaServer Faces technology?</h3> <p>See chapters 9 through 13 of the <a href="http://java.sun.com/javaee/5/docs/tutorial/doc/">Java EE 5 Tutorial</a> to learn more about JavaServer Faces technology. If you have additional questions not answered by this FAQ, consult the <a href="http://forums.sun.com/forum.jspa?forumID=427">JavaServer Faces Forum</a>.</p> <h4><a name="JavaServerFacesSpecFaq-JSF1.1TroubleshootingQuestions"></a>JSF 1.1 Troubleshooting Questions</h2> <h4><a name="JavaServerFacesSpecFaq-DoJavaServerFacestagsinteroperatewithJSTLcoretags%2CforEach%2Cif%2Cchooseandwhen%3F"></a>Do JavaServer Faces tags interoperate with JSTL core tags, forEach, if, choose and when?</h3> <p>The forEach tag does not work with JavaServer Faces technology, version 1.0 and 1.1 tags due to an incompatibility between the strategies used by JSTL and and JavaServer Faces technology. Instead, you could use a renderer, such as the Table renderer used by the dataTable tag, that performs its own iteration. The if, choose and when tags work, but the JavaServer Faces tags nested within these tags must have explicit identifiers.</p> <p>This shortcoming has been fixed in JSF 1.2.</p> <h4><a name="JavaServerFacesSpecFaq-WhenIuse%3Cc%3Aimport%3Eor%3Cjsp%3Ainclude%3EtoincludecontentfromaaJSPpageintoaJavaServerFacespage%2CitproducesincorrectHTMLoutput.Whydoesthishappen%3F"></a>When I use &lt;c:import&gt; or &lt;jsp:include&gt; to include content from a a JSP page into a JavaServer Faces page, it produces incorrect HTML output. Why does this happen?</h2> <p>When using &lt;jsp:include&gt; or &lt;c:import&gt; to compose a single view from multiple JSP pages, all JavaServer Faces component tags in the included pages must be nested inside the &lt;f:subview&gt; tag the JavaServer Faces core tag library (which is itself nested inside the &lt;f:view&gt; tag). The &lt;f:subview&gt;</p> <p>tag itself can be present in the including page with the &lt;jsp:include&gt; or &lt;c:import&gt; tag nested inside it, or it can be in the included page.<br> Any template text or non-JavaServer Faces tags present in a page that is included with the &lt;jsp:include&gt; or &lt;c:import&gt; tag, or any other mechanism that uses RequestDispatcher.include, must be enclosed in an &lt;f:verbatim&gt; tag. This restriction has been lifted for JSF 1.2.</p> <h4><a name="JavaServerFacesSpecFaq-JSF1.2TroubleshootingQuestions"></a>JSF 1.2 Troubleshooting Questions</h2> <h4><a name="JavaServerFacesSpecFaq-DoJavaServerFacestagsinteroperatewithJSTLcoretags%2CforEach%2Cif%2Cchooseandwhen%3F"></a>Do JavaServer Faces tags interoperate with JSTL core tags, forEach, if, choose and when?</h3> <p>A new feature of JSP 2.1, called <a href="http://java.sun.com/javaee/5/docs/api/javax/servlet/jsp/tagext/JspIdConsumer.html">JSP Id Consumer</a> allows these tags to work as expected.</p> <h4><a name="JavaServerFacesSpecFaq-WhenIuse%3Cc%3Aimport%3Eor%3Cjsp%3Ainclude%3EtoincludecontentfromaaJSPpageintoaJavaServerFacespage%2CitproducesincorrectHTMLoutput.Whydoesthishappen%3F"></a>When I use &lt;c:import&gt; or &lt;jsp:include&gt; to include content from a a JSP page into a JavaServer Faces page, it produces incorrect HTML output. Why does this happen?</h3> <p>This has been fixed in JSF 1.2</p> <h4><a name="JavaServerFacesSpecFaq-ForMoreInformation"></a>For More Information</h2> <h4><a name="JavaServerFacesSpecFaq-IsthereapublicchatroomforJSFdevelopersandusers%3F"></a>Is there a public chat room for JSF developers and users?</h3> <p>Absolutely! We use ##jsf on irc.freenode.net. Converse with members of the team working on JavaServer Faces technology by joining our public chat room on freenode.net. After you access freenode with your IRC client for the first time, you register yourself with the following command:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">/msg NickServ REGISTER &amp;lt;your password&amp;gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>The password should be one that you don't mind others accessing. In other words, don't use a password that you already use for something else important.<br> Every time you log in thereafter, you need to identify yourself to the NickServ:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">/msg NickServ IDENTIFY &amp;lt;your password&amp;gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>Finally, after you've registered your password or identified yourselfe, you join the channel:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">/join ##jsf</pre> 
+       </div> 
+      </div>
+     </div> <p>(Note the two ##). Happy chatting!</p> <h4><a name="JavaServerFacesSpecFaq-IsthereaSunPrivatepublicchatroomforJSFdevelopersandusersinsideofSun%3F"></a>Is there a Sun Private public chat room for JSF developers and users inside of Sun?</h3> <p>Absolutely! We use #jsfaces on Sun's internal IRC network. Change the domain name to irc.&lt;yourdomain&gt;.sun.com where yourdomain is east, sfbay, central, etc. Converse with members of the team working on JavaServer Faces technology by joining our public chat room on Sun's Intranet. After you access freenode with your IRC client for the first time, you join the channel with the following command:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">/join #jsfaces</pre> 
+       </div> 
+      </div>
+     </div> <p>Happy chatting!</p> <h4><a name="JavaServerFacesSpecFaq-WhoisusingJSFintheRealWorld%3F"></a>Who is using JSF in the Real World?</h2> <p>Here is a wiki page that collects links to <a href="RealWorldJsfLinks.html" title="RealWorldJsfLinks">real world sites using JSF</a>.</p> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Dec 06, 2011 by 
+<font color="#0050B2">edburns00</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

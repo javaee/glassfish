@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : ConsistentHashVsLocationTransparency</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="ConsistentHashVsLocationTransparency-CompilationofMailDiscussion%3AConsistenthashvs.locationtransparency"></a>Compilation of Mail Discussion: Consistent hash vs. location transparency</h2> <p><em>This is a mail discussion initiated by Jan Leuhe 072607 01:27 CET and replied to by Joel Binnquist and Erik van der Velden.</em></p> <p>Larry and I have discussed this issue further, following our subteam's meeting earlier this morning.</p> <p>We have the following questions/recommendations:</p> <p>Building on our conference application example, how does the consistent algorithm accommodate a group of conference participants whose request header information would yield different hashkeys that are mapped to different instances?</p> 
+     <ul> 
+      <li>Reply by Joel 072607 15.46 CET: I am not an expert on conference managers, but I believe that the clients would call in (i.e. INVITE) to conference manager (i.e. the conference manager is what is addressed in the request-URI), where an SipAppSession already has been created, e.g. via a web page and is associated with a conference ID. Then you you just click a link in a webpage pointing to a SIP-URI where this conference ID is encoded, either indirectly via SAS-ID or by a application specific ID. In both cases you end up in that conference manager request-URI (which all participants will use when calling in) contains this ID as a URI parameter, either as the SAS-ID or some application-specific parameter, e.g. conference_id. In case an application specific conference_id is used that value is used as hash key (note that the load balancer will be possible possible so that it might extracts the hash key from different parts of the start-line/message-header depending of existence and session case, etc.). In the other case if the SAS-ID is encoded in the URI, the application shall also have included a route to the back-end, I understod that there existed a parameter/cookie jroute for this purpose. Now, in the converged load balancer I have suggested that we use a similar parameter bekey which holds the hash key that caused the initial request (the one that created the SipApplicationSession), rather than the specific AS instance ID. If the bekey parameter is found the load balancer then uses that hash key for routing messages.<br> Regardless of how the ID is encoded all participants will INVITE the same user, the conference manager.<br> (NOTE: The encode URI feature is deprecated in JSR-289, instead "Session Key Based Targeting Mechanism" shall be used. The consequences of that feature is eleaborated in my comments to the minutes of meeting for the session replication meeting yesterday.)</li> 
+     </ul> <p>Consider conference participants A and B, whose "initial" requests yield hashkeys Hash_A and Hash_B mapped to instances I_1 and I_2, respectively.</p> <p>Assume A initiates the conference, meaning all requests related to this instance of the conference, whether they originate from A or B, must be routed to instance I_1 (apologies for the overloading of the word "instance" <img class="emoticon" src="images/icons/emoticons/wink.gif" height="20" width="20" align="absmiddle" alt="" border="0">.</p> <p>The newly initiated conference will be identified by a unique SAS id, say SAS_AB.</p> <p>In order for B to join the conference, its request must somehow carry Hash_A, because if it didn't, its request would be routed to I_2, which is what Hash_B maps to, right?</p> <p>Now instead of carrying Hash_A, would it be possible for all requests participating in this conference to carry SAS_AB?</p> 
+     <ul> 
+      <li>Reply by Joel 072607 15.46 CET: I am not sure how you vision the signalling here. Again, I beleive that the common denominator in a conference call is some kind of conference ID. However, in case you are thinking of some kind of application where participant A sets up the conference automatically and obtain a SAS-ID encoded in the URI (and then sends this via some out-of-band mechanism to other participants), the encoding should still add the bekey parameter mentioned above.</li> 
+     </ul> <p>In other words, we could use the consistent hashing algorithm only for new requests, but if a request already participates in a SAS, let its SAS id (as opposed to its hashkey) drive the instance selection by the LB.</p> 
+     <ul> 
+      <li>Reply by Joel 072607 15.46 CET: As described in <a href="0725MeetingMinutes.html" title="0725MeetingMinutes">Meeting Minutes - July 25rd</a>, the <em>Session Key Based Targeting Mechanism</em> must be supported by the SIP container (actually it is the preferred method to associate SIP requests to a specific SipApplicationSession, rather than URI encoding, which has been deprecated). When using the <em>Session Key Based Targeting Mechanism</em> there will exists no SAS id encoded in requests. Thus, the propsed solution will not work.</li> 
+     </ul> <p>This way:</p> 
+     <ul class="alternate" type="square"> 
+      <li>The LB could easily provide stickiness at the SAS id level</li> 
+      <li>Requests pertaining to a given SAS id that have failed over to a new<br> instance won't have to migrate back to their original instance</li> 
+      <li>The original instance will continue to receive "initial" requests.</li> 
+     </ul> <p>Of course, this would require some shared knowledge among all LB instances in the cluster about the current mappings of SAS ids to the instances currently servicing those sessions.</p> <p>If I understand correctly, one of the benefits of the consistent hashing algorithm is that it allows all LB instances in the cluster to arrive at the same LB decisions (i.e., the same target instance to which to forward a given request) independently of each other, by strictly following the rules of the algorithm.</p> <p>But since each LB instance already will receive GMS notifications about instances leaving and joining the cluster, Larry mentioned that we might as well leverage some kind of distributed hashmap (over JXTA) with the latest SAS-id-to-instance-id mappings that each LB instance should consider for its LB decisions.</p> <p>This way, we will be able to preserve the location transparency of the replication framework in GlassFish (ie., we won't have to introduce the concept of session ownership by an instance), and we will also avoid the need for a session to have to migrate back to the instance that used to own it when that instance comes back up after a failover.</p> 
+     <ul> 
+      <li>Reply by Joel 072607 15.46 CET: We have already considered such a solution, but again, it would not solve the problems in minutes of meeting comment mentioned above. In addition, wouldn't such a solution have impact on throughput? I mean if we have traffic like 1000 TPS per blade in a 32 blade cluster, totally 32000 TPS (this is the spec of the the EAS), and each transaction must access the global map (which must be protected by some kind of lock), you would have a massive decrease in throughput, don't you think?</li> 
+     </ul> 
+     <ul> 
+      <li>General comment by Larry 072607 17.42 CET</li> 
+     </ul> <p>I'm trying to absorb all the emails that have been triggered by Jan (and my) questions and suggestions here. It does seem there are a slew of difficulties to understand, work through and iron out.</p> <p>I want to add to this some other concerns that impact this discussion and need to be taken into account.</p> <p>According to what I've heard Ericcson has a stated response time goal of 30-50 ms. Some of our folks double-checked and apparently this refers to the HA situation! We must respond back soon to people to manage their expectations on this question. So 2 related points:</p> <p>a) is this even feasible? I have severe doubts. The basic physics of the networks we've been working with is that a simple round trip over the network and back in an unloaded situation takes in the order of 30-50 ms. If we factor in being under high load then this number will likely go up. If it is insisted, as has been mentioned by Ericcson folks, that you believe you always need to know if a replication has succeeded or failed, then you always need an ack and that will be expensive. However, we can and should examine that assumption too. <br> In my<br> thinking about this during Glassfish v2 development, the key question I kept asking myself is "what will you do with the knowledge of e.g.a failure to replicate when you get it". We have experimented and gotten better throughput and latency results by not always acking. We can discuss this at a later meeting in more detail.</p> 
+     <ul> 
+      <li>Reply by Joel 072707 12.53 CET : I agree. In the <em>Session Retainability</em> solution for the EAS 4.1 there is no ACK-ing performed, the replication is done in the background (using no transaction by the way), so I guess this optimistic approach is acceptable in SailFin as well.</li> 
+     </ul> <p>b) if you want good throughput and latency results, you must (repeat must) arrange things so the normal behavior is that you always get a local cache hit when servicing requests. This (and only secondarily any programming issues involved for the replication framework) is why Jan and I are attempting to avoid migration of artifacts except in failure scenarios. If the normal functioning of the system (i.e. no failovers) requires any migrating back and forth of application artifacts - good bye to throughput and latency metrics!</p> 
+     <ul> 
+      <li>Reply by Joel 072707 12.53 CET : I totally agree. But as I've mentioned in <a href="0725MeetingMinutes.html" title="0725MeetingMinutes">Meeting Minutes - July 25rd</a>, the JSR-289 opens up such a scenario (if the application developer is not careful), but maybe we shall consider this a flaw in the application design if it occurs?</li> 
+     </ul> <p>Based on these considerations I too get scared when I see any talk of wanting to migrate live objects back (and forth!) during the normal functioning of the system.</p> 
+     <ul> 
+      <li>Reply by Joel 072707 12.53 CET : Again, I totally agree. My standpoint is that SailFin shall <b>NOT</b> support migration of live objects during normal operation. Moreover, I have started to doubt that it is possible to migrate live objects in fail-over situations as well (see my replies regarding ongoing transactions in <a href="ConsistentHashVsLocationTransparencyStatements.html" title="ConsistentHashVsLocationTransparencyStatements">Discussion - Consistent hash vs. location transparency - Statements</a>), but that is still an open issue. 
+       <ul> 
+        <li>Reply by Joel on 072707 17:39 CET: After thinking of it a bit more (see <a href="0726MettingMinutes.html" title="0726MettingMinutes">Meeting Minutes - July 26th</a>), I have come to the conclusion that it should be acceptable to lose your transactions at recovery. I mean, we do not give any guarantees that transactions are kept when a node fails, consequently it should be OK to not guarantee that transactions are kept at recovery after fail-over.</li> 
+       </ul> </li> 
+     </ul> <p>Finally, the method of Jan and my questions and comments is to step back away from existing implementation details and try to state what are the load balancing requirements needed to deliver on the overall system requirements.<br> Our specific recommendations may or may not prove to have merit and may well need to be replaced by better ideas, but I believe this methodology is crucial to our overall success.</p> 
+     <ul> 
+      <li>Reply by Joel 072707 12.53 CET : It is not that we try to protect the current solution. It is just that when taking all different aspects into considerations we have not been able to find a better solution (yet <img class="emoticon" src="images/icons/emoticons/wink.gif" height="20" width="20" align="absmiddle" alt="" border="0">. But we shall definitly try to see if it can be tweaked in way that you propose.</li> 
+     </ul> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Nov 18, 2011 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:48.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

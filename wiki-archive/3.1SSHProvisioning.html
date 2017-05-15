@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : 3.1SSHProvisioning</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="3.1SSHProvisioning-GlassFishServerOpenSourceEdition3.1SSHProvisioning"></a>GlassFish Server Open Source Edition 3.1 - SSH Provisioning</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#3.1SSHProvisioning-GlassFishServerOpenSourceEdition3.1SSHProvisioning">GlassFish Server Open Source Edition 3.1 - SSH Provisioning</a></li> 
+       <ul> 
+        <li><a href="#3.1SSHProvisioning-Introduction">Introduction</a></li> 
+        <li><a href="#3.1SSHProvisioning-FeatureOverview">Feature Overview</a></li> 
+        <li><a href="#3.1SSHProvisioning-DesignDocument">Design Document</a></li> 
+        <li><a href="#3.1SSHProvisioning-MilestoneSchedule">Milestone Schedule</a></li> 
+        <li><a href="#3.1SSHProvisioning-TaskList">Task List</a></li> 
+        <li><a href="#3.1SSHProvisioning-UsageScenarios">Usage Scenarios</a></li> 
+        <li><a href="#3.1SSHProvisioning-NotesrunningGlassFishProvisioningonWindows">Notes running GlassFish Provisioning on Windows</a></li> 
+        <li><a href="#3.1SSHProvisioning-DevTests">Dev Tests</a></li> 
+        <li><a href="#3.1SSHProvisioning-QAHandoff">QA Handoff</a></li> 
+        <li><a href="#3.1SSHProvisioning-References">References</a></li> 
+        <li><a href="#3.1SSHProvisioning-EmailAlias">Email Alias</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="3.1SSHProvisioning-Introduction"></a>Introduction</h2> <p>SSH Provisioning attempts to accomplish two things:</p> 
+     <ol> 
+      <li>Support the provisioning of a remote system (node) so that the user can use that system to host server instances for a cluster.</li> 
+      <li>Support the remote execution of cluster and instance lifecycle asadmin commands on provisioned nodes.</li> 
+     </ol> <p>In simple terms SSH Provisioning attempts to provide some of the<br> capability that was provided by the node agent in GF v2. The<br> provisioning of a system is somewhat analagous to creating a node<br> agent on a system. Once a system is provisioned it can participate<br> in a cluster.</p> <p>In the long term we would like the operation of provisioning a<br> system to include the capability of installing GlassFish on the<br> system. But for 3.1 we will likely require users to install GlassFish on<br> remote systems directly and the provisioning step will simply do<br> some initialization on the system and register the system with the DAS.</p> <p>SSHD is typically standard in current Unix distributions and is widely<br> used for remote administration of systems. There are also popular<br> implementations for Windows such as Cygwin SSHD. Java implementations<br> of the SSH client exist. Hudson uses solution based on Trilead-ssh2.<br> The intention is to leverage the work Hudson has done where possible.</p> <h4><a name="3.1SSHProvisioning-FeatureOverview"></a>Feature Overview</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Feature ID </th> 
+         <th class="confluenceTh"> Priority </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> Eng Response </th> 
+         <th class="confluenceTh"> Owner(s) </th> 
+         <th class="confluenceTh"> Estimate (Man Days) </th> 
+         <th class="confluenceTh"> Source of Requirement </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> SSHPRO-001 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Support execution of asadmin commands on remote system for supported commands via SSH </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> rajiv </td> 
+         <td class="confluenceTd"> 15 </td> 
+         <td class="confluenceTd"> Feature Parity </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> SSHPRO-002 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> <tt>create-node</tt>: Remotely configure a system for use in a cluster <tt>delete-node</tt>: Remotely remove a system for use in a cluster </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> carla </td> 
+         <td class="confluenceTd"> 15 </td> 
+         <td class="confluenceTd"> Feature Parity </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> SSHPRO-003 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> <tt>create-instance</tt>: Remotely create a server instance on a node <tt>delete-instance</tt>: Remotely delete a server instance from a node </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> carla </td> 
+         <td class="confluenceTd"> 10 </td> 
+         <td class="confluenceTd"> Feature Parity </td> 
+         <td class="confluenceTd"> Remote commands that used to rely on node-agent </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> SSHPRO-004 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> <tt>start-instance</tt>: Remotely start a server instance on a node <tt>stop-instance</tt>: Remotely stop a server instance on a node </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> carla </td> 
+         <td class="confluenceTd"> 5 </td> 
+         <td class="confluenceTd"> Feature Parity </td> 
+         <td class="confluenceTd"> Remote commands that used to rely on node-agent </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> SSHPRO-005 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> <tt>start-cluster</tt>: Remotely start all server instances of a cluster <tt>stop-cluster</tt>: Remotely stop all server instances of a cluster </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> joe </td> 
+         <td class="confluenceTd"> 10 </td> 
+         <td class="confluenceTd"> Feature Parity </td> 
+         <td class="confluenceTd"> Remote commands that used to rely on node-agent </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> SSHPRO-006 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Friendly failure if SSH not available </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> rajiv </td> 
+         <td class="confluenceTd"> 5 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> SSHPRO-007 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Detailed diagnostics about communication errors </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> rajiv </td> 
+         <td class="confluenceTd"> 5 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> ping command that shows communication errors between DAS to remote node, etc. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> SSHPRO-008 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Support SSH public key authentication </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> rajiv </td> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd"> Feature Parity </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> SSHPRO-009 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> <tt>create-node</tt> installs software on system </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> yamini </td> 
+         <td class="confluenceTd"> 20 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> SSHPRO-010 </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> Support SSH password authentication </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> joe </td> 
+         <td class="confluenceTd"> 5 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> SSHPRO-012 </td> 
+         <td class="confluenceTd"> P4 </td> 
+         <td class="confluenceTd"> View log files of failed server instances </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> TBD </td> 
+         <td class="confluenceTd"> TBD </td> 
+         <td class="confluenceTd"> Feature Parity </td> 
+         <td class="confluenceTd"> Remoting of important local commands </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> SSHPRO-013 </td> 
+         <td class="confluenceTd"> P5 </td> 
+         <td class="confluenceTd"> Watchdog restart of failed server instances </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> TBD </td> 
+         <td class="confluenceTd"> TBD </td> 
+         <td class="confluenceTd"> Feature Parity </td> 
+         <td class="confluenceTd"> Remoting of important local commands </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> SSHPRO-014 </td> 
+         <td class="confluenceTd"> P5 </td> 
+         <td class="confluenceTd"> Support alternative to SSH on Windows </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> TBD </td> 
+         <td class="confluenceTd"> TBD </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> SSHPRO-015 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Console support for P2 CLI operations </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> carla, joe </td> 
+         <td class="confluenceTd"> 10 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> SSHPRO-016 </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> Handle "node-agent" elements during v2 upgrade </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> joe </td> 
+         <td class="confluenceTd"> 10 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> SSHPRO-017 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> <tt>list-nodes</tt>: List information about nodes </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> carla </td> 
+         <td class="confluenceTd"> 5 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> SSHPRO-018 </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> Support encrypted key file with SSH public key authentication </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> rajiv </td> 
+         <td class="confluenceTd"> 5 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.1SSHProvisioning-DesignDocument"></a>Design Document</h2> <p><a href="3.1SSHProvisioningDesign.html" title="3.1SSHProvisioningDesign">3.1SSHProvisioningDesign</a></p> <h4><a name="3.1SSHProvisioning-MilestoneSchedule"></a>Milestone Schedule</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd"> SSHPRO-001,6-8 </td> 
+         <td class="confluenceTd"> ssh client library and API </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd"> SSHPRO-002 </td> 
+         <td class="confluenceTd"> remote create/delete node: initial integration </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3 </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd"> SSHPRO-003 </td> 
+         <td class="confluenceTd"> remote create/delete instance: initial integration </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4 </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd"> SSHPRO-004 </td> 
+         <td class="confluenceTd"> remote start/stop instance: initial integration </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5 </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd"> SSHPRO-005 </td> 
+         <td class="confluenceTd"> remote start/stop cluster: initial integration </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6 </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> SSHPRO-001, 6-8 </td> 
+         <td class="confluenceTd"> dev tests for: ssh client library and API </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> TBD <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 7 </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> SSHPRO-002 </td> 
+         <td class="confluenceTd"> dev tests for: remote create/delete node </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 8 </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> SSHPRO-003 </td> 
+         <td class="confluenceTd"> dev tests for: remote create/delete instance </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Partial. Dev tests incomplete. Will continue work for MS4/5. <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 9 </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> SSHPRO-004 </td> 
+         <td class="confluenceTd"> dev tests for: remote start/stop instance </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Partial. Dev tests incomplete. Will continue work for MS4/5. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 10 </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> SSHPRO-005 </td> 
+         <td class="confluenceTd"> dev tests for: remote start/stop cluster </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Partial. Dev tests incomplete. Will continue work for MS4/5. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 11 </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd"> SSHPRO-015 </td> 
+         <td class="confluenceTd"> Console integration </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 13 </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd"> SSHPRO-016 </td> 
+         <td class="confluenceTd"> Handle upgrade of node/node-agents </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 15 </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd"> SSHPRO-010 </td> 
+         <td class="confluenceTd"> Support SSH password authentication </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 15b </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd"> SSHPRO-018 </td> 
+         <td class="confluenceTd"> Support encrypted key file with SSH public key authentication </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 14 </td> 
+         <td class="confluenceTd"> MS5 </td> 
+         <td class="confluenceTd"> SSHPRO-009 </td> 
+         <td class="confluenceTd"> <tt>create-node</tt> installs software on system </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> At risk<br class="atl-forced-newline"> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.1SSHProvisioning-TaskList"></a>Task List</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task </th> 
+         <th class="confluenceTh"> Target Milestone </th> 
+         <th class="confluenceTh"> Start Date </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Owner(s) </th> 
+         <th class="confluenceTh"> Feature ID </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Verify Trilead-ssh2 legal </td> 
+         <td class="confluenceTd"> MS1 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 5/21 </td> 
+         <td class="confluenceTd"> joe </td> 
+         <td class="confluenceTd"> SSHPRO-001 </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Specify domain.xml config changes/additions. </td> 
+         <td class="confluenceTd"> MS1 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 5/21 </td> 
+         <td class="confluenceTd"> joe </td> 
+         <td class="confluenceTd"> SSHPRO-001 </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Specify CLI interfaces. Ensure basic clustering is implementing needed local versions of commands. </td> 
+         <td class="confluenceTd"> MS1 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 5/21 </td> 
+         <td class="confluenceTd"> carla </td> 
+         <td class="confluenceTd"> SSHPRO-002-5 </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Specify remote admin command module API </td> 
+         <td class="confluenceTd"> MS1 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 5/21 </td> 
+         <td class="confluenceTd"> rajiv </td> 
+         <td class="confluenceTd"> SSHPRO-001 </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Integrate Trilead-ssh2 library into GlassFish build </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 5/28 </td> 
+         <td class="confluenceTd"> rajiv </td> 
+         <td class="confluenceTd"> SSHPRO-001 </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Verify support for SSH public key auth </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 5/28 </td> 
+         <td class="confluenceTd"> rajiv </td> 
+         <td class="confluenceTd"> SSHPRO-008 </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Implement remote admin command module (API) on top of trilead-ssh2 </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 6/11 </td> 
+         <td class="confluenceTd"> rajiv </td> 
+         <td class="confluenceTd"> SSHPRO-001 </td> 
+         <td class="confluenceTd"> Done <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Implement remote create/delete-node </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 6/11 </td> 
+         <td class="confluenceTd"> carla </td> 
+         <td class="confluenceTd"> SSHPRO-002 </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Implement remote create/delete-instance </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 6/18 </td> 
+         <td class="confluenceTd"> carla </td> 
+         <td class="confluenceTd"> SSHPRO-003 </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Implement remote start/stop-instance </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 6/18 </td> 
+         <td class="confluenceTd"> carla </td> 
+         <td class="confluenceTd"> SSHPRO-004 </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Implement remote start/stop-cluster </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 6/18 </td> 
+         <td class="confluenceTd"> joe </td> 
+         <td class="confluenceTd"> SSHPRO-005 </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Write dev tests for remoting SSH API </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 6/25 </td> 
+         <td class="confluenceTd"> rajiv </td> 
+         <td class="confluenceTd"> SSHPRO-001 </td> 
+         <td class="confluenceTd"> TBD <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Write dev tests for remote create/delete-node </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 7/2 </td> 
+         <td class="confluenceTd"> carla </td> 
+         <td class="confluenceTd"> SSHPRO-002 </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Write dev tests for remote create/delete-instance </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 7/2 </td> 
+         <td class="confluenceTd"> carla </td> 
+         <td class="confluenceTd"> SSHPRO-003 </td> 
+         <td class="confluenceTd"> Partial. Dev tests incomplete. Will continue work for MS4/5. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Write dev tests for remote start/stop-instance </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 7/2 </td> 
+         <td class="confluenceTd"> carla </td> 
+         <td class="confluenceTd"> SSHPRO-004 </td> 
+         <td class="confluenceTd"> Partial. Dev tests incomplete. Will continue work for MS4/5. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Write dev tests for remote start/stop-cluster </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 7/2 </td> 
+         <td class="confluenceTd"> joel </td> 
+         <td class="confluenceTd"> SSHPRO-005 </td> 
+         <td class="confluenceTd"> Partial. Dev tests incomplete. Will continue work for MS4/5. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Work with console team to add console support </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 8/13 </td> 
+         <td class="confluenceTd"> carla/joe </td> 
+         <td class="confluenceTd"> SSHPRO-015 </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Implement support for SSH password auth </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 8/13 </td> 
+         <td class="confluenceTd"> joe </td> 
+         <td class="confluenceTd"> SSHPRO-010</td> 
+         <td class="confluenceTd">Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Implement support for SSH encrypted key file auth </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 8/13 </td> 
+         <td class="confluenceTd"> joe </td> 
+         <td class="confluenceTd"> SSHPRO-18</td> 
+         <td class="confluenceTd">Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Handle upgrade migration from v2 (node-agents/nodes) </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 8/13 </td> 
+         <td class="confluenceTd"> carla </td> 
+         <td class="confluenceTd"> SSHPRO-016 </td> 
+         <td class="confluenceTd">Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Support software installation as part of create-node </td> 
+         <td class="confluenceTd"> MS5 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> yamini, srini </td> 
+         <td class="confluenceTd"> SSHPRO-009 </td> 
+         <td class="confluenceTd"> At risk<br class="atl-forced-newline"> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.1SSHProvisioning-UsageScenarios"></a>Usage Scenarios</h2> <p><a href="3.1SSHScenarios.html" title="3.1SSHScenarios">3.1 SSH Scenarios</a> describes some CLI usage scenarios.</p> <h4><a name="3.1SSHProvisioning-NotesrunningGlassFishProvisioningonWindows"></a>Notes running GlassFish Provisioning on Windows</h2> <p><a href="./GlassFishProvisioning.html">GlassFish Provisioning page</a> describes some notes about running GlassFish provisioning feature using SSH on Windows.</p> <h4><a name="3.1SSHProvisioning-DevTests"></a>Dev Tests</h2> 
+     <ul> 
+      <li>Coming soon</li> 
+     </ul> <h4><a name="3.1SSHProvisioning-QAHandoff"></a>QA Handoff</h2> <p><a href="3.1SSH DHQA.html" title="3.1SSH DHQA">3.1SSH DHQA</a></p> <p><a href="3.1SSH DHQA setup-ssh install-node.html" title="3.1SSH DHQA setup-ssh install-node">3.1SSH DHQA setup-ssh install-node</a></p> <h4><a name="3.1SSHProvisioning-References"></a>References</h2> 
+     <ul> 
+      <li><a href="3.1SSHSetup.html" title="3.1SSHSetup">GlassFish 3.1 SSH Setup</a></li> 
+      <li><a href="3.1SSH - Installing Windows Cygwin sshd.html" title="3.1SSH - Installing Windows Cygwin sshd">Windows SSH setup using cygwin</a></li> 
+      <li><a href="3.1SSH - MKS sshd tips.html" title="3.1SSH - MKS sshd tips">Windows SSH tips for MKS</a></li> 
+      <li><a href="3.1SSHWindows.html" title="3.1SSHWindows">GlassFish 3.1: Running SSH On Windows</a></li> 
+      <li><a href="3.1SSHAuthentication.html" title="3.1SSHAuthentication">GlassFish 3.1 SSH Authentication </a></li> 
+      <li><a href="3.1SSH_AS_Arch2.html" title="3.1SSH_AS_Arch2">GlassFish 3.1 AS Arch Review: setup-ssh, install-node</a></li> 
+      <li><a href="http://docs.sun.com/app/docs/doc/821-0179/6nl8hchmr?l=en&amp;a=expand">GlassFish v2.x CLI Commands</a></li> 
+      <li><a href="GlassFishV2Architecture.html" title="GlassFishV2Architecture">GlassFish v2 Cluster Architecture </a></li> 
+     </ul> <h4><a name="3.1SSHProvisioning-EmailAlias"></a>Email Alias</h2> 
+     <ul> 
+      <li>Please contact us at <a href="mailto:admin@glassfish.java.net">admin@glassfish.java.net</a></li> 
+     </ul> 
+     <hr> 
+     <div class="error">
+      <span class="error">Unknown macro: {gliffy}</span> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Nov 08, 2011 by 
+<font color="#0050B2">dipol</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

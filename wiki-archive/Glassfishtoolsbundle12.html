@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : Glassfishtoolsbundle12</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="Glassfishtoolsbundle12-GlassFishToolsBundleforEclipse1.2"></a>GlassFish Tools Bundle for Eclipse 1.2</h3> <h4><a name="Glassfishtoolsbundle12-Scopeofthework"></a>Scope of the work</h2> <p>We now need to work on the next version of the bundle, version 1.2. The main areas are:</p> 
+     <ol> 
+      <li>Eclipse 3.5.1 support</li> 
+      <li>GlassFish v3 Java EE 3 support, with decent Java EE 6 wizards, and GF resources see <a href="Javaee6wizards.html" title="Javaee6wizards">link</a></li> 
+      <li>Replace GlassFish v2.1 and v3 Prelude with GlassFish v3</li> 
+      <li>Add v3 documentation links</li> 
+      <li>finish/test directory deployment for EJB Modules and EAR projects</li> 
+      <li>Update components: Metro Plugin, MySQL driver, JDK 1.6, possibly Windows 7</li> 
+      <li>check websynergy?</li> 
+      <li>check Postgres?</li> 
+      <li>3.5.1 for opensolaris</li> 
+      <li>verify if need to update plugin for new Java EE 6 DTDs and/or schemas</li> 
+     </ol> <h4><a name="Glassfishtoolsbundle12-Schedule"></a>Schedule</h2> <p>The overall goal is to ship the GlassFish Tools Bundle v1.2 for Eclipse asap after the GlassFish v3 delivery. If we follow the equivalent NetBeans schedule (that also bundles GlassFish v3), that would be around beginning of December 2009.</p> <p><a href="GlassFishV3Schedule.html" title="GlassFishV3Schedule">GlassFish v3 Schedule </a></p> <p>Eclipse 3.5.1 Schedule </p> <h4><a name="Glassfishtoolsbundle12-GlassFishToolsBundleforEclipsev1.2Draft%3AWorkinProgress"></a>GlassFish Tools Bundle for Eclipse v1.2 - Draft: Work in Progress</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Milestone</th> 
+         <th class="confluenceTh">Start Date</th> 
+         <th class="confluenceTh">End Date</th> 
+         <th class="confluenceTh">Description</th> 
+         <th class="confluenceTh">Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="GFv3FinalMS6.html" title="GFv3FinalMS6">GlassFish SCF </a> </td> 
+         <td class="confluenceTd"> 08/04/09 </td> 
+         <td class="confluenceTd"> 09/02/09 </td> 
+         <td class="confluenceTd"> SCF/Feature Freeze </td> 
+         <td class="confluenceTd">Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Milestone 1 </td> 
+         <td class="confluenceTd"> 08/20/09 </td> 
+         <td class="confluenceTd"> 09/04/09 </td> 
+         <td class="confluenceTd"> GlassFish Plugin initial set of Java EE 6 Wizards </td> 
+         <td class="confluenceTd"> Completed (v1.0.32) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Milestone 2 </td> 
+         <td class="confluenceTd"> 09/9/09 </td> 
+         <td class="confluenceTd"> 09/29/09 </td> 
+         <td class="confluenceTd"> GlassFish Plugin: more Java EE 6 wizards in our plugin </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Milestone 3 </td> 
+         <td class="confluenceTd"> 09/30/09 </td> 
+         <td class="confluenceTd"> 10/15/09 </td> 
+         <td class="confluenceTd"> Eclipse 3.5.1 version and GlassFish v3 HCF in the Bundle </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Milestone 4 </td> 
+         <td class="confluenceTd"> 10/16/09 </td> 
+         <td class="confluenceTd"> 11/13/09 </td> 
+         <td class="confluenceTd"> More EE 6 wizards and Bug fixes, all components to their defined versions </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> FishCAT testing </td> 
+         <td class="confluenceTd"> 10/15/09 </td> 
+         <td class="confluenceTd"> xxx </td> 
+         <td class="confluenceTd"> FishCAT can start when we have a new Bundle with Eclipse 3.5.1 and v3 promoted </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GlassFish HCF </td> 
+         <td class="confluenceTd"> 10/12/09 </td> 
+         <td class="confluenceTd"> 10/12/09 </td> 
+         <td class="confluenceTd"> No P1, P2, P3 bugs. Only showstopper bugs addressed after this. Hard Code Freeze </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Final Test Cycle </td> 
+         <td class="confluenceTd"> 11/13/09 </td> 
+         <td class="confluenceTd"> 11/24/09 </td> 
+         <td class="confluenceTd">Final test cycle </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GlassFish v3 Release </td> 
+         <td class="confluenceTd"> 11/24/09 </td> 
+         <td class="confluenceTd"> 11/24/09 </td> 
+         <td class="confluenceTd"> Final GlassFish v3 release </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Legal Clearance </td> 
+         <td class="confluenceTd"> 11/24/09 ?? </td> 
+         <td class="confluenceTd"> 11/24/09 </td> 
+         <td class="confluenceTd"> 1 or 2 weeks before release... Need coordination! Legal for ALL components </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Bundle PAC Meeting </td> 
+         <td class="confluenceTd"> 11/24/09 ?? </td> 
+         <td class="confluenceTd"> 11/24/09 </td> 
+         <td class="confluenceTd"> 1 or 2 weeks before release... Need coordination! </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GlassFish Tools Bundle for Eclipse 1.2 Release </td> 
+         <td class="confluenceTd"> 12/9/09 </td> 
+         <td class="confluenceTd"> 12/9/09 </td> 
+         <td class="confluenceTd"> Final GlassFish Tools Bundle for Eclipse release </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="Glassfishtoolsbundle12-VersionsandPlatforms"></a>Versions and Platforms</h2> <p></p>
+     <div class="panel" style="border-width: 1px;">
+      <div class="panelContent"> 
+       <div class="table-wrap"> 
+        <table class="confluenceTable">
+         <tbody> 
+          <tr> 
+           <th class="confluenceTh"> Bundled Component </th> 
+           <th class="confluenceTh"> Version </th> 
+           <th class="confluenceTh"> Status </th> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> JDK 1.6 </td> 
+           <td class="confluenceTd"> Update 16 </td> 
+           <td class="confluenceTd"> TBD </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> Eclipse </td> 
+           <td class="confluenceTd"> 3.5.1 </td> 
+           <td class="confluenceTd"> All plaforms except OpenSolaris are from The Eclipse downlod site </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> Eclipse </td> 
+           <td class="confluenceTd"> 3.5.1 OpenSolaris </td> 
+           <td class="confluenceTd"> Need to build it ourself like we did for 3.4.x </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> GlassFish </td> 
+           <td class="confluenceTd"> v3 </td> 
+           <td class="confluenceTd"> For now use promoted builds, do not bundle prelude or v2.1 anymore </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> MySQL Driver </td> 
+           <td class="confluenceTd"> mysql-connector-java-5.1.8 </td> 
+           <td class="confluenceTd"> . </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> Maven Plugins </td> 
+           <td class="confluenceTd"> 0.9.8.20090504 or later </td> 
+           <td class="confluenceTd"> mainly bug fixes available at <a href="http://m2eclipse.sonatype.org/">http://m2eclipse.sonatype.org/</a> <p> </p></td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> GlassFish Plugin </td> 
+           <td class="confluenceTd"> v1.0.3x </td> 
+           <td class="confluenceTd"> x=Whatever dot dot release we have by November 2009 </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> Metro Plugins </td> 
+           <td class="confluenceTd"> 0.1.x </td> 
+           <td class="confluenceTd"> bug fixes only, Our Bundle v1.1 ships with version 0.1.1 for metro plugins </td> 
+          </tr> 
+         </tbody>
+        </table> 
+       </div> 
+       <hr> 
+       <p>Jspwiki style: sortable</p> 
+      </div>
+     </div>sortable<p></p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Supported Platform </th> 
+         <th class="confluenceTh"> Version </th> 
+         <th class="confluenceTh"> Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Windows </td> 
+         <td class="confluenceTd"> XP Professional sp2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Windows </td> 
+         <td class="confluenceTd"> 7 </td> 
+         <td class="confluenceTd"> new support...Released mid October 2009? Need QE agreement if possible </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> RedHat </td> 
+         <td class="confluenceTd"> Enterprise Linux 4.0 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Ubuntu </td> 
+         <td class="confluenceTd"> 8 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Mac OS </td> 
+         <td class="confluenceTd"> Leopard 10.6 </td> 
+         <td class="confluenceTd"> sanity test on 10.5? Only if time permits </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> OpenSolaris </td> 
+         <td class="confluenceTd"> 2009.6 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JDK 1.5 </td> 
+         <td class="confluenceTd"> J2SE 5TM 1.5.0_14 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JDK 1.6 </td> 
+         <td class="confluenceTd"> J2SE 6TM 1.6.0_14? </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 02, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:44.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

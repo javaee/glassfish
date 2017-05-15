@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : V3.1GMSOnePagerReview</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>Referring document: <a href="http://wiki.glassfish.java.net/attach/V3FunctionalSpecs/gms_gfv3_1_onepager.txt">http://wiki.glassfish.java.net/attach/V3FunctionalSpecs/gms_gfv3_1_onepager.txt</a></p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item </th> 
+         <th class="confluenceTh"> Section </th> 
+         <th class="confluenceTh"> Comment </th> 
+         <th class="confluenceTh"> Response </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> MK-1 </td> 
+         <td class="confluenceTd"> 2.2 </td> 
+         <td class="confluenceTd"> Please mention in this section any risks involved due to node agent not available in V3.1 </td> 
+         <td class="confluenceTd"> agree. added a line and referred to complete discussion under section 4.12 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> MK-2 </td> 
+         <td class="confluenceTd"> 4.1 </td> 
+         <td class="confluenceTd"> Are there any significant difference in the way members advertise and discover themselves in the absence of JXTA? A brief overview of how this is done (including any requirement for multicast support etc.) will be good here. </td> 
+         <td class="confluenceTd"> Member discovery is written in GMS Shoal layer code. Only difference between JXTA and Grizzly transport is JXTA <b>may</b> have broadcast on ALL network interfaces on a multihome machine while the Shoal over Grizzly is definitely just broadcasting on first network interface it chooses to use. When one sets gms-bind-interface-address on a multihome machine, there is no difference between GMS over jxta and GMS over Grizzly. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> MK-3 </td> 
+         <td class="confluenceTd"> 4.1 </td> 
+         <td class="confluenceTd"> Looks like LB plugin can detect instance failures far earlier than GMS. This means that replication layer may continue to replicate to a failed instance because it did not receive any failure event from GMS. I mentioned (in the LB feedback document) a possible approach to detect failures far quicker than GMS in the absence of node agent. Let me briefly mention it here: Let us say that LB detects an instance failure (say node n2 failed), it then stamps the failed instance name in every re-directed(or even every request) request (for a certain period of time). A GF valve, installed in the web container layer, can interpret this info and can pass this info (this valve can be thought of as a watchdog implementation) to GMS. GMS can then declare this node to be in FAILED state (may be after doing a ping). This could be an interim solution till we resurrect node agent. The valve itself can be provided by GMS (and discovered by web container using hk2). Also, does Grizzly provide any way to discover node failures faster (I guess not) </td> 
+         <td class="confluenceTd"> Disagree with this assessment. The LB does not detect that an instance has failed, it marks a non-responsive instance as unhealthy in &lt; 30 ms. This state is equivalent to the GMS state of SUSPECT. (the LB info is extracted from <a href="https://www.sun.com/offers/docs/GlassFish_Load_Balancer.pdf">this document</a> ) When the LB marks an instance as <b>unhealthy</b> due to non-responsiveness, it then starts active health monitoring of the instance to detect when it can reinstate it as "healthy". <a href="SampleLoadBalancer.html" title="SampleLoadBalancer"><b>Link to a sample loadbalancer.xml</b> </a> The LB's state of <b>unhealthy</b> is equivalent to the GMS Shoal state of a member as being <b>SUSPECT</b>. Unlike the GF v2.x NodeAgent, the LB does not have a means to detect that an application server has FAILED in faster and more correct manner than GMS. Please read <a href="http://wiki.glassfish.java.net/attach/SFv2FunctionalSpecs/gmsWatchdog.pdf">GMS watchdog </a> to understand the NodeAgent's advantage of running locally in being able to detect FAILURE faster and more correctly than GMS. The nodeagent monitored the process id of the instances it controlled and when it noticed the process id failed, it restarted the node that it controlled. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> MK-4 </td> 
+         <td class="confluenceTd"> 4.12 </td> 
+         <td class="confluenceTd"> Some components (like EJB container) may have registered only failure event handlers in V2. This means that they will miss the REJOINING subevent unless they modify their code. Could you document why GMS did not internally translate this into a FAILURE followed by a JOIN_AND_READY event? </td> 
+         <td class="confluenceTd"> We thought it would be confusing to a GMS client to send a FAILURE notification AFTER the instance has already RESTARTED. This is described in detail in Section 3.1 of <a href="http://wiki.glassfish.java.net/attach/SFv2FunctionalSpecs-gmsWatchdog.pdf">GMS Watchdog </a>. Will document also. The REJOIN subevent indicates that an instantiation of the instance that joined the cluster at a certain time in the past has failed. The JOIN or JOINED_AND_READY notification represents the restarted instance and the REJOIN subevent represents the failure of a past instance. If one was to ask the state of the instance in the JOIN/JOINED_AND_READY, it would be ALIVE. If GMS issued a FAILURE for a restarted instance and its gms member status was ALIVE, GMS clients would find that confusing. If one can not detect the FAILURE before the RESTART, it was just too confusing to report FAILURE for a past instantiation of the instance when the instance had already RESTARTED and was JOINING the cluster. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> MK-5 </td> 
+         <td class="confluenceTd"> GEN </td> 
+         <td class="confluenceTd"> Can you comment on whether GMS will be started eagerly OR will be started only when clients try to access GMS? Also, can the callback handlers be discovered by GMS through hk2? </td> 
+         <td class="confluenceTd"> will add that GMS will be started when an instance belongs to a cluster with cluster attribute gms-enabled set to true. So GMS will be eagerly started when gms-enabled is true in domain.xml This will be documented in gms configuration document also. Design work is needed on how one interacts with GMS via hk2. That has not been done yet. Will add a TBD bullet under GMS one pager 4.5.1 public interfaces for this request. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> MK-6 </td> 
+         <td class="confluenceTd"> GEN </td> 
+         <td class="confluenceTd"> Are there any payload size limitations imposed by GMS or Grizzly </td> 
+         <td class="confluenceTd"> We will make payload size limitations configurable. This is the MAX_MESSAGE_SIZE and the multicastpacketsize . Current defaults are 128K for Message size and 64K for multicast packetsize. Broadcast message with size greater than multicast size will just be virtually broadcast over TCP. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> MK-7 </td> 
+         <td class="confluenceTd"> GEN </td> 
+         <td class="confluenceTd"> Can you comment on whether send APIs are synchronous or asynchronous. </td> 
+         <td class="confluenceTd"> The javadoc for GMS sendMessage does not provide any control over whether sends are synch or asynch. It is implementation dependent. The current GMS sendMessage implementation over Grizzly is synchronous. There is a possibility to use Grizzly asynchronous write capabilities, but would not recommend given that when message sending gets way ahead of message processing, the typical messaging technique to not consuming unbounded memory resources on destination of messages is to throttle senders. That is currently working well in our GMS messaging simulation runs. Not possible to throttle senders when send is asynch. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

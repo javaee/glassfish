@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFishv3.1Packaging</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GlassFishv3.1Packaging-GlassFishServerOpenSourceEdition3.1Packaging"></a>GlassFish Server Open Source Edition 3.1 - Packaging </h1> 
+     <div> 
+      <ul> 
+       <li><a href="#GlassFishv3.1Packaging-GlassFishServerOpenSourceEdition3.1Packaging">GlassFish Server Open Source Edition 3.1 - Packaging</a></li> 
+       <ul> 
+        <li><a href="#GlassFishv3.1Packaging-Introduction">Introduction</a></li> 
+        <li><a href="#GlassFishv3.1Packaging-Scope">Scope</a></li> 
+        <li><a href="#GlassFishv3.1Packaging-FeatureOverview">Feature Overview</a></li> 
+        <li><a href="#GlassFishv3.1Packaging-DesignDocument">Design Document</a></li> 
+        <li><a href="#GlassFishv3.1Packaging-MilestoneSchedule">Milestone Schedule</a></li> 
+        <li><a href="#GlassFishv3.1Packaging-TaskList">Task List</a></li> 
+        <li><a href="#GlassFishv3.1Packaging-DevTests">Dev Tests</a></li> 
+        <li><a href="#GlassFishv3.1Packaging-References">References</a></li> 
+        <li><a href="#GlassFishv3.1Packaging-EmailAlias">Email Alias</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="GlassFishv3.1Packaging-Introduction"></a>Introduction</h2> <p>This project will focus on IPS packaging aspects of GlassFish 3.1</p> <h4><a name="GlassFishv3.1Packaging-Scope"></a>Scope </h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Feature ID </th> 
+         <th class="confluenceTh"> Priority </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> Eng Response </th> 
+         <th class="confluenceTh"> Owner(s) </th> 
+         <th class="confluenceTh"> Estimate (Man Days) </th> 
+         <th class="confluenceTh"> Source of Requirement </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> PKG-001 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Provide IPS based packages for clustering and HA features </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Snjezana Sevo-Zenzerovic </td> 
+         <td class="confluenceTd"> 15 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> PKG-002 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Web profile clustering should not require all packages from full profile </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Snjezana Sevo-Zenzerovic </td> 
+         <td class="confluenceTd"> 5 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> PKG-003 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> In-memory replication packages should be pluggable </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Snjezana Sevo-Zenzerovic </td> 
+         <td class="confluenceTd"> 5 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> When Coherence is used </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> PKG-004 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Clustering and in-memory replication packages should be optional </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Snjezana Sevo-Zenzerovic </td> 
+         <td class="confluenceTd"> 5 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Being able to install initial distribution, remove clustering packages and have working single system (developer) installation </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> PKG-005 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Clustering and in-memory replication packages can be removed from the install image at any time </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Snjezana Sevo-Zenzerovic </td> 
+         <td class="confluenceTd"> 5 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Being able to install initial distribution, configure clusters, uninstall clustering support; remaining installation should behave gracefully and ignore the presence of clusters </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishv3.1Packaging-FeatureOverview"></a>Feature Overview</h2> <p>In addition to the ongoing maintenance of existing 3.0 IPS packages, project will provide packaging infrastructure for new GlassFish 3.1 features with main focus on clustering support. This is preliminary list of new IPS packages and their content. The packaging approach follows 3.0 package design - there are dedicated packages for shared clustering infrastructure content while container specific clustering support content is collocated with the rest of container in an existing IPS package. Workspace modules will need to support the same level of granularity and have appropriate dependencies.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Package </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> Content/Comments </th> 
+         <th class="confluenceTh"> Depends on </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> glassfish-common (existing package) </td> 
+         <td class="confluenceTd"> Commons Package </td> 
+         <td class="confluenceTd"> Addition of clustering API </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> glassfish-cluster </td> 
+         <td class="confluenceTd"> Clustering infrastructure </td> 
+         <td class="confluenceTd"> Clustering infrastructure libraries and generic clustering cli commands </td> 
+         <td class="confluenceTd"> glassfish-common, shoal </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> glassfish-web (existing package) </td> 
+         <td class="confluenceTd"> Web container </td> 
+         <td class="confluenceTd"> Additional clustering/HA content </td> 
+         <td class="confluenceTd"> glassfish-common, glassfish-cluster (optional) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> glassfish-ejb (existing package) </td> 
+         <td class="confluenceTd"> EJB timer support, IIOP support </td> 
+         <td class="confluenceTd"> Additional clustering/HA content; migrate-timer command and corresponding Admin GUI plugin </td> 
+         <td class="confluenceTd"> glassfish-common, glassfish-cluster (optional) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> glassfish-jms (existing package) </td> 
+         <td class="confluenceTd"> JMS </td> 
+         <td class="confluenceTd"> Additional clustering/HA content </td> 
+         <td class="confluenceTd"> glassfish-common, glassfish-cluster (optional) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> metro (existing package) </td> 
+         <td class="confluenceTd"> Metro </td> 
+         <td class="confluenceTd"> Additional clustering/HA content </td> 
+         <td class="confluenceTd"> glassfish-common, glassfish-cluster (optional) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> glassfish-ha </td> 
+         <td class="confluenceTd"> In-memory Session Replication package(s) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> glassfish-cluster </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> shoal </td> 
+         <td class="confluenceTd"> Shoal framework </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> glassfish-jms-ra </td> 
+         <td class="confluenceTd"> GenericJMSRA for WebSpehere and JMSJCA for WebLogic inter-op </td> 
+         <td class="confluenceTd"> Refer to JMS-13, JMS-13a requirement of <span class="error">[JMS sub-project | ^3.1JMS]</span> </td> 
+         <td class="confluenceTd"> glassfish-jms ? </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishv3.1Packaging-DesignDocument"></a>Design Document</h2> 
+     <ul> 
+      <li><a href="3.1PackagingOnePager.html" title="3.1PackagingOnePager">One-pager</a></li> 
+     </ul> <h4><a name="GlassFishv3.1Packaging-MilestoneSchedule"></a>Milestone Schedule</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> Milestone 1 (5/24) </td> 
+         <td class="confluenceTd"> PKG-001 </td> 
+         <td class="confluenceTd"> Create IPS packages for clustering features </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd">Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd"> Milestone 1 (5/24) </td> 
+         <td class="confluenceTd"> PKG-002 </td> 
+         <td class="confluenceTd"> Web profile clustering does not require full profile packages </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd">Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3 </td> 
+         <td class="confluenceTd"> Milestone 2 (6/21) </td> 
+         <td class="confluenceTd"> PKG-001 </td> 
+         <td class="confluenceTd"> Create IPS packages for HA features and other new features </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4 </td> 
+         <td class="confluenceTd"> Milestone 2 (6/21) </td> 
+         <td class="confluenceTd"> PKG-003 </td> 
+         <td class="confluenceTd"> HA packages pluggable </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5 </td> 
+         <td class="confluenceTd"> Milestone 3 </td> 
+         <td class="confluenceTd"> PKG-004 </td> 
+         <td class="confluenceTd"> Clustering and in-memory replication packages should be optional </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Depends on clustering project support </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6 </td> 
+         <td class="confluenceTd"> Milestone 3 </td> 
+         <td class="confluenceTd"> PKG-005 </td> 
+         <td class="confluenceTd"> Clustering and in-memory replication packages can be removed from the install image at any time </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Depends on clustering project support </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 7 </td> 
+         <td class="confluenceTd"> Milestone 4 </td> 
+         <td class="confluenceTd"> PKG-001 - PKG-005 </td> 
+         <td class="confluenceTd"> QA/Docs handover for all 3.1 packaging features </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishv3.1Packaging-TaskList"></a>Task List</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task </th> 
+         <th class="confluenceTh"> Target Milestone </th> 
+         <th class="confluenceTh"> Start </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Owner(s) </th> 
+         <th class="confluenceTh"> Feature ID </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Packaging and file layout one-pagers </td> 
+         <td class="confluenceTd"> Milestone 1 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Snjezana Sevo-Zenzerovic </td> 
+         <td class="confluenceTd"> Done </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Merging relevant 3.0.1 packaging and distribution assembly changes into trunk </td> 
+         <td class="confluenceTd"> Milestone 1 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Snjezana Sevo-Zenzerovic </td> 
+         <td class="confluenceTd"> In progress </td> 
+         <td class="confluenceTd"> Depends on the potential move of internal glassfish workspace to SVN </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Addition of Felix web console package </td> 
+         <td class="confluenceTd"> Milestone 1 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Snjezana Sevo-Zenzerovic </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Addition of clustering package modules </td> 
+         <td class="confluenceTd"> Milestone 1 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Snjezana Sevo-Zenzerovic </td> 
+         <td class="confluenceTd"> PKG-001, PKG-002 </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Addition of HA package modules </td> 
+         <td class="confluenceTd"> Milestone 2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Snjezana Sevo-Zenzerovic </td> 
+         <td class="confluenceTd"> PKG-002, PKG-003 </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Packager and distribution devtests </td> 
+         <td class="confluenceTd"> Milestone 3 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Snjezana Sevo-Zenzerovic </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Making clustering and HA packages optional </td> 
+         <td class="confluenceTd"> Milestone 3 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Snjezana Sevo-Zenzerovic </td> 
+         <td class="confluenceTd"> PKG-004, PKG-005 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Docs/QA handover </td> 
+         <td class="confluenceTd"> Milestone 4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Snjezana Sevo-Zenzerovic </td> 
+         <td class="confluenceTd"> all PKG features </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Switching distribution image configuration to use stable/release repositories </td> 
+         <td class="confluenceTd"> Milestone 6 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Snjezana Sevo-Zenzerovic </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishv3.1Packaging-DevTests"></a>Dev Tests </h2> 
+     <ul> 
+      <li>Coming soon</li> 
+     </ul> <h4><a name="GlassFishv3.1Packaging-References"></a>References</h2> 
+     <ul> 
+      <li><a href="http://docs.sun.com/app/docs/doc/821-0179/6nl8hchmr?l=en&amp;a=expand">GlassFish v2.x CLI Commands</a></li> 
+      <li><a href="GlassFishV2Architecture.html" title="GlassFishV2Architecture">GlassFish v2 Cluster Architecture </a></li> 
+     </ul> <h4><a name="GlassFishv3.1Packaging-EmailAlias"></a>Email Alias</h2> 
+     <ul> 
+      <li>Use <a href="mailto:dev@glassfish.java.net">dev@glassfish.java.net</a></li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 06, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : ProjectIdeasProcess</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="ProjectIdeasProcess-ProcesstoparticipateinProjectIdeas"></a>Process to participate in ProjectIdeas</h2> <p>This page describes the process to participate in <a href="ProjectIdeas.html" title="ProjectIdeas">GlassFish Project Ideas</a>.</p> <p>The projects are arranged in groups (shown in the first column) for convenience. Click on the project name to see more details about the project. Each project is submitted by a GlassFish community member. Some of the projects have a mentor assigned to them. The mentor is an expert in that area and will guide you through out the project. It is highly recommended to pick a project with an assigned mentor. Some projects also provide the amount of effort involved.<br> <b>Sun Contributor Agreement</b> - Each person willing to contribute to the project must sign <a href="http://www.sun.com/software/opensource/sca.pdf">SCA</a>. Please contact <span class="error">[Jagadesh Munta]</span> or <span class="error">[Judy Tang]</span> for getting the process started. One SCA is valid for all Sun-sponsored projects.</p> <p>After mentor/mentee relationship is established and SCAs are signed ...</p> 
+     <ol> 
+      <li>Bootstrap - Mentor &amp; Mentee(s) "meet" over the phone/email/IM/webex/whatever_is_convenient. The expected outcome of this activity is: 
+       <ol> 
+        <li>Mentor creates a new project page linked from the ProjectIdeas wiki. This new page will be the homepage for that project and needs to be updated bi-weekly. It should should have: 
+         <ol> 
+          <li>Team members name, email id and IM (optional)</li> 
+          <li>Design docs</li> 
+          <li>Workspace information</li> 
+          <li>Pointer to latest binary build &amp; docs</li> 
+         </ol> </li> 
+        <li>Mentor marks the project taken by specifying "Started" in "Status" column. Other statuses are 
+         <ol> 
+          <li>"In Progress" - after the initial design is completed</li> 
+          <li>"Review" - after all the design/coding/testing/docs efforts are completed and final review is going</li> 
+          <li>"Finished" - after mentor has signed off the project</li> 
+         </ol> </li> 
+        <li>Mentee(s) need to write a one-pager (may extend to 2 pages) describing their understanding of the project, design, expected outcome and schedule. The schedule should highlight milestone builds with feature sets and their timeline.</li> 
+        <li>Exit criteria - A clearly defined exit criteria needs to be defined. This will allow everybody to agree to a common goal before the project can be concluded.</li> 
+        <li>Mentor/Mentee(s) agree upon a project name - Trying to find out if it needs to be legally approved.</li> 
+       </ol> </li> 
+      <li>Code Contribution - Each mentee in the project need to have a java.net id (from <a href="https://www.java.net/servlets/Join">Register page</a>). A new directory, with the agreed upon project name, is created in "https://spotlight.java.net/svn/spotlight/trunk" (see more below). All the code is contributed to that directory on a continuous basis. Use of Maven is highly recommended. 
+       <ol> 
+        <li>3rd party tools - The projects can use any 3rd-party tools. If the code is consumed in any of the GlassFish related projects then an inbound-OSR needs to be filed.</li> 
+        <li>Please commit code only to your project.</li> 
+        <li>The code may be hosted on a different repository such as jax-ws-commons.java.net or a different java.net project. The reason for choosing the different location needs to be clearly mentioned on the project page.</li> 
+       </ol> </li> 
+      <li>Recommended Artifacts 
+       <ol> 
+        <li>Docs - Documentation is a very important aspect of the project. This is not restricted to adding javadocs and in-line comments but also preparing more detailed docs that describe how to get started, pre-requisites, environment, limitations, etc. It is required for each project to have documentation consistent with the binaries at each milestone.</li> 
+        <li>Tests - Each functionality in the project needs to have fully automated test(s).</li> 
+        <li>Samples - For external users, there should be samples (with READMEs) on how to get started with the project.</li> 
+        <li>Blogs - Highly recommended to get a blogging account on weblogs.java.net/blog</li> 
+       </ol> </li> 
+      <li>Communication - Usage of users@glassfish.java.net alias is recommended for all technical discussion. It is highly recommended to use the project name in the email subject for a clear identification.</li> 
+     </ol> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

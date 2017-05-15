@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : IPS_Debian_Pkgs</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">&nbsp;</th> 
+         <th class="confluenceTh"> Debian package </th> 
+         <th class="confluenceTh"> File Layout </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> felix </td> 
+         <td class="confluenceTd"> glassfishv3-felix </td> 
+         <td class="confluenceTd"> 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">/usr/share/glassfishv3/felix/bin/felix.jar
+/usr/share/glassfishv3/felix/bundle/org.apache.felix.shell.jar
+/usr/share/glassfishv3/felix/bundle/org.apache.felix.shell.remote.jar
+/usr/share/glassfishv3/felix/bundle/org.apache.felix.shell.tui.jar
+/usr/share/glassfishv3/felix/conf/config.properties
+/usr/share/glassfishv3/felix/conf/system.properties</pre> 
+            </div> 
+           </div>
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> glassfish-nucleus </td> 
+         <td class="confluenceTd"> glassfishv3-nucleus </td> 
+         <td class="confluenceTd">
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">There may have to be : glassfishv3-nucleus-bin, glassfishv3-nucleus-doc, glassfishv3-nucleus
+
+/usr/bin/asadmin
+/usr/share/glassfishv3/bin/jspc
+/usr/share/glassfishv3/bin/startserv
+/usr/share/glassfishv3/bin/stopserv
+
+/etc/glassfishv3/config/asadminenv.conf
+/etc/glassfishv3/config/asenv.conf
+/etc/glassfishv3/config/glassfish.container
+
+/usr/share/doc/glassfishv3/3RD-PARTY-LICENSE.txt
+/usr/share/doc/glassfishv3/COPYRIGHT
+/usr/share/doc/glassfishv3/LICENSE.txt
+/usr/share/doc/glassfishv3/about.html
+/usr/share/doc/glassfishv3/copyright.html
+/usr/share/doc/glassfishv3/css/default.css
+/usr/share/doc/glassfishv3/features.html
+/usr/share/doc/glassfishv3/graphics/logo_sun.gif
+/usr/share/doc/glassfishv3/quickstart.html
+
+/usr/share/glassfishv3/lib/jndi-properties.jar
+/usr/share/glassfishv3/lib/package-appclient.xml
+/usr/share/glassfishv3/lib/processLauncher.properties
+/usr/share/glassfishv3/lib/processLauncher.xml
+/usr/share/glassfishv3/lib/appclient/appclientlogin.conf
+/usr/share/glassfishv3/lib/appclient/client.policy
+/usr/share/glassfishv3/lib/appclient/wss-client-config-1.0.xml
+/usr/share/glassfishv3/lib/appclient/wss-client-config-2.0.xml
+/usr/share/glassfishv3/lib/registration/servicetag-registry.xml
+/usr/share/glassfishv3/lib/templates/cacerts.jks
+/usr/share/glassfishv3/lib/templates/default-web.xml
+/usr/share/glassfishv3/lib/templates/docroot/index.html
+/usr/share/glassfishv3/lib/templates/domain.xml
+/usr/share/glassfishv3/lib/templates/domain.xml.xsl
+/usr/share/glassfishv3/lib/templates/keyfile
+/usr/share/glassfishv3/lib/templates/keystore.jks
+/usr/share/glassfishv3/lib/templates/logging.properties
+/usr/share/glassfishv3/lib/templates/login.conf
+/usr/share/glassfishv3/lib/templates/profile.properties
+/usr/share/glassfishv3/lib/templates/server.policy
+
+/usr/share/glassfishv3/modules/admin-cli.jar
+/usr/share/glassfishv3/modules/api-exporter.jar
+/usr/share/glassfishv3/modules/asm-all-repackaged.jar
+/usr/share/glassfishv3/modules/branding.jar
+/usr/share/glassfishv3/modules/cli-framework.jar
+/usr/share/glassfishv3/modules/common-util.jar
+/usr/share/glassfishv3/modules/config-api.jar
+/usr/share/glassfishv3/modules/deployment-admin.jar
+/usr/share/glassfishv3/modules/deployment-autodeploy.jar
+/usr/share/glassfishv3/modules/deployment-common.jar
+/usr/share/glassfishv3/modules/flashlight-agent.jar
+/usr/share/glassfishv3/modules/flashlight-framework.jar
+/usr/share/glassfishv3/modules/glassfish.jar
+/usr/share/glassfishv3/modules/internal-api.jar
+/usr/share/glassfishv3/modules/kernel.jar
+/usr/share/glassfishv3/modules/launcher.jar
+/usr/share/glassfishv3/modules/monitoring-core.jar
+/usr/share/glassfishv3/modules/osgi-adapter.jar
+/usr/share/glassfishv3/modules/pkg-client.jar
+/usr/share/glassfishv3/modules/stats77.jar</pre> 
+            </div> 
+           </div>
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> glassfish-api </td> 
+         <td class="confluenceTd"> glassfishv3-api </td> 
+         <td class="confluenceTd"> 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">/usr/share/glassfishv3/modules/glassfish-api.jar
+/usr/share/glassfishv3/modules/glassfish-ee-api.jar
+/usr/share/glassfishv3/modules/javax.activation.jar
+/usr/share/glassfishv3/modules/javax.annotation.jar
+/usr/share/glassfishv3/modules/javax.enterprise.deploy.jar
+/usr/share/glassfishv3/modules/javax.mail.jar
+/usr/share/glassfishv3/modules/javax.persistence.jar
+/usr/share/glassfishv3/modules/javax.resource.jar
+/usr/share/glassfishv3/modules/javax.security.auth.message.jar
+/usr/share/glassfishv3/modules/javax.security.jacc.jar
+/usr/share/glassfishv3/modules/javax.servlet.jar
+/usr/share/glassfishv3/modules/javax.servlet.jsp.jar
+/usr/share/glassfishv3/modules/javax.transaction.jar</pre> 
+            </div> 
+           </div>
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> glassfish-common </td> 
+         <td class="confluenceTd"> glassfishv3-common </td> 
+         <td class="confluenceTd">
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">/usr/share/glassfishv3/lib/dtds/application-client_1_2.dtd
+/usr/share/glassfishv3/lib/dtds/application-client_1_3.dtd
+/usr/share/glassfishv3/lib/dtds/application_1_2.dtd
+/usr/share/glassfishv3/lib/dtds/application_1_3.dtd
+/usr/share/glassfishv3/lib/dtds/connector_1_0.dtd
+/usr/share/glassfishv3/lib/dtds/ejb-jar_1_1.dtd
+/usr/share/glassfishv3/lib/dtds/ejb-jar_2_0.dtd
+/usr/share/glassfishv3/lib/dtds/sun-application-client-container_1_0.dtd
+/usr/share/glassfishv3/lib/dtds/sun-application-client-container_1_1.dtd
+/usr/share/glassfishv3/lib/dtds/sun-application-client-container_1_2.dtd
+/usr/share/glassfishv3/lib/dtds/sun-application-client_1_3-0.dtd
+/usr/share/glassfishv3/lib/dtds/sun-application-client_1_4-0.dtd
+/usr/share/glassfishv3/lib/dtds/sun-application-client_1_4-1.dtd
+/usr/share/glassfishv3/lib/dtds/sun-application-client_5_0-0.dtd
+/usr/share/glassfishv3/lib/dtds/sun-application_1_3-0.dtd
+/usr/share/glassfishv3/lib/dtds/sun-application_1_4-0.dtd
+/usr/share/glassfishv3/lib/dtds/sun-application_5_0-0.dtd
+/usr/share/glassfishv3/lib/dtds/sun-cmp-mapping_1_0.dtd
+/usr/share/glassfishv3/lib/dtds/sun-cmp-mapping_1_1.dtd
+/usr/share/glassfishv3/lib/dtds/sun-cmp-mapping_1_2.dtd
+/usr/share/glassfishv3/lib/dtds/sun-connector_1_0-0.dtd
+/usr/share/glassfishv3/lib/dtds/sun-connector_1_5-0.dtd
+/usr/share/glassfishv3/lib/dtds/sun-domain_1_0.dtd
+/usr/share/glassfishv3/lib/dtds/sun-domain_1_1.dtd
+/usr/share/glassfishv3/lib/dtds/sun-domain_1_2.dtd
+/usr/share/glassfishv3/lib/dtds/sun-domain_1_3.dtd
+/usr/share/glassfishv3/lib/dtds/sun-ejb-jar_2_0-0.dtd
+/usr/share/glassfishv3/lib/dtds/sun-ejb-jar_2_0-1.dtd
+/usr/share/glassfishv3/lib/dtds/sun-ejb-jar_2_1-0.dtd
+/usr/share/glassfishv3/lib/dtds/sun-ejb-jar_2_1-1.dtd
+/usr/share/glassfishv3/lib/dtds/sun-ejb-jar_3_0-0.dtd
+/usr/share/glassfishv3/lib/dtds/sun-loadbalancer_1_0.dtd
+/usr/share/glassfishv3/lib/dtds/sun-loadbalancer_1_1.dtd
+/usr/share/glassfishv3/lib/dtds/sun-resources_1_0.dtd
+/usr/share/glassfishv3/lib/dtds/sun-resources_1_1.dtd
+/usr/share/glassfishv3/lib/dtds/sun-resources_1_2.dtd
+/usr/share/glassfishv3/lib/dtds/sun-resources_1_3.dtd
+/usr/share/glassfishv3/lib/dtds/sun-server_1_0.dtd
+/usr/share/glassfishv3/lib/dtds/sun-web-app_2_3-0.dtd
+/usr/share/glassfishv3/lib/dtds/sun-web-app_2_3-1.dtd
+/usr/share/glassfishv3/lib/dtds/sun-web-app_2_4-0.dtd
+/usr/share/glassfishv3/lib/dtds/sun-web-app_2_4-1.dtd
+/usr/share/glassfishv3/lib/dtds/sun-web-app_2_5-0.dtd
+/usr/share/glassfishv3/lib/dtds/web-app_2_2.dtd
+/usr/share/glassfishv3/lib/dtds/web-app_2_3.dtd
+/usr/share/glassfishv3/lib/dtds/web-jsptaglibrary_1_1.dtd
+/usr/share/glassfishv3/lib/dtds/web-jsptaglibrary_1_2.dtd
+/usr/share/glassfishv3/lib/schemas/XMLSchema.dtd
+/usr/share/glassfishv3/lib/schemas/application-client_1_4.xsd
+/usr/share/glassfishv3/lib/schemas/application-client_5.xsd
+/usr/share/glassfishv3/lib/schemas/application_1_4.xsd
+/usr/share/glassfishv3/lib/schemas/application_5.xsd
+/usr/share/glassfishv3/lib/schemas/connector_1_5.xsd
+/usr/share/glassfishv3/lib/schemas/datatypes.dtd
+/usr/share/glassfishv3/lib/schemas/ejb-jar_2_1.xsd
+/usr/share/glassfishv3/lib/schemas/ejb-jar_3_0.xsd
+/usr/share/glassfishv3/lib/schemas/j2ee_1_4.xsd
+/usr/share/glassfishv3/lib/schemas/j2ee_jaxrpc_mapping_1_1.xsd
+/usr/share/glassfishv3/lib/schemas/j2ee_web_services_1_1.xsd
+/usr/share/glassfishv3/lib/schemas/j2ee_web_services_client_1_1.xsd
+/usr/share/glassfishv3/lib/schemas/javaee_5.xsd
+/usr/share/glassfishv3/lib/schemas/javaee_web_services_1_2.xsd
+/usr/share/glassfishv3/lib/schemas/javaee_web_services_client_1_2.xsd
+/usr/share/glassfishv3/lib/schemas/jax-rpc-ri-config.xsd
+/usr/share/glassfishv3/lib/schemas/jsp_2_0.xsd
+/usr/share/glassfishv3/lib/schemas/jsp_2_1.xsd
+/usr/share/glassfishv3/lib/schemas/orm_1_0.xsd
+/usr/share/glassfishv3/lib/schemas/persistence_1_0.xsd
+/usr/share/glassfishv3/lib/schemas/web-app_2_4.xsd
+/usr/share/glassfishv3/lib/schemas/web-app_2_5.xsd
+/usr/share/glassfishv3/lib/schemas/web-jsptaglibrary_2_0.xsd
+/usr/share/glassfishv3/lib/schemas/web-jsptaglibrary_2_1.xsd
+/usr/share/glassfishv3/lib/schemas/xml.xsd
+
+/usr/share/glassfishv3/modules/annotation-framework.jar
+/usr/share/glassfishv3/modules/ant.jar
+/usr/share/glassfishv3/modules/connectors-internal-api.jar
+/usr/share/glassfishv3/modules/container-common.jar
+/usr/share/glassfishv3/modules/deployment-client.jar
+/usr/share/glassfishv3/modules/deployment-javaee-core.jar
+/usr/share/glassfishv3/modules/dol.jar
+/usr/share/glassfishv3/modules/glassfish-naming.jar
+/usr/share/glassfishv3/modules/inmemory.jacc.provider.jar
+/usr/share/glassfishv3/modules/ldapbp-repackaged.jar
+/usr/share/glassfishv3/modules/realms.jar
+/usr/share/glassfishv3/modules/security.jar
+/usr/share/glassfishv3/modules/securitycommon.jar
+/usr/share/glassfishv3/modules/transaction-internal-api.jar</pre> 
+            </div> 
+           </div>
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> glassfish-jca </td> 
+         <td class="confluenceTd"> glassfishv3-jca </td> 
+         <td class="confluenceTd">
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">/usr/share/glassfishv3/modules/connectors-runtime.jar
+/usr/share/glassfishv3/modules/gf-connectors-connector.jar
+/usr/share/glassfishv3/modules/work-management.jar</pre> 
+            </div> 
+           </div>
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> glassfish-jta </td> 
+         <td class="confluenceTd"> glassfishv3-jta </td> 
+         <td class="confluenceTd">
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">/usr/share/glassfishv3/modules/jta.jar</pre> 
+            </div> 
+           </div>
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> glassfish-grizzly </td> 
+         <td class="confluenceTd"> glassfishv3-grizzly </td> 
+         <td class="confluenceTd"> 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">/usr/share/glassfishv3/modules/grizzly-module.jar
+/usr/share/glassfishv3/modules/grizzly-optionals.jar</pre> 
+            </div> 
+           </div>
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> glassfish-scripting </td> 
+         <td class="confluenceTd"> glassfishv3-grizzly </td> 
+         <td class="confluenceTd">
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">/usr/share/glassfishv3/modules/gf-jruby-connector.jar
+/usr/share/glassfishv3/modules/grizzly-jruby-module.jar
+/usr/share/glassfishv3/modules/grizzly-jruby.jar</pre> 
+            </div> 
+           </div>
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> glassfish-management </td> 
+         <td class="confluenceTd"> glassfishv3-management </td> 
+         <td class="confluenceTd"> 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">/usr/share/glassfishv3/modules/admin-util.jar
+/usr/share/glassfishv3/modules/cli-optional.jar
+/usr/share/glassfishv3/modules/server-mgmt.jar</pre> 
+            </div> 
+           </div>
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> glassfish-amx </td> 
+         <td class="confluenceTd"> glassfishv3-amx </td> 
+         <td class="confluenceTd"> 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">/usr/share/glassfishv3/modules/amx-api.jar
+/usr/share/glassfishv3/modules/amx-impl.jar
+/usr/share/glassfishv3/modules/glassfish-mbeanserver.jar
+/usr/share/glassfishv3/modules/jmxremote_optional-repackaged.jar</pre> 
+            </div> 
+           </div>
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> glassfish-gui </td> 
+         <td class="confluenceTd"> glassfishv3-gui </td> 
+         <td class="confluenceTd">
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">/usr/share/glassfishv3/lib/install/applications/admingui.war
+
+/usr/share/glassfishv3/modules/console-branding-plugin.jar
+/usr/share/glassfishv3/modules/console-common.jar
+/usr/share/glassfishv3/modules/console-plugin-service.jar
+/usr/share/glassfishv3/modules/console-security-plugin.jar
+/usr/share/glassfishv3/modules/console-updatecenter-plugin.jar
+/usr/share/glassfishv3/modules/dataprovider.jar
+/usr/share/glassfishv3/modules/jsftemplating.jar</pre> 
+            </div> 
+           </div>
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> glassfish-web </td> 
+         <td class="confluenceTd"> glassfishv3-web </td> 
+         <td class="confluenceTd"> 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">/usr/share/glassfishv3/modules/web/admin-core.jar
+/usr/share/glassfishv3/modules/web/apache-commons.jar
+/usr/share/glassfishv3/modules/web/el-impl.jar
+/usr/share/glassfishv3/modules/web/gf-web-connector.jar
+/usr/share/glassfishv3/modules/web/javax.servlet.jsp.jstl.jar
+/usr/share/glassfishv3/modules/web/jsf-connector.jar
+/usr/share/glassfishv3/modules/web/jsp-impl.jar
+/usr/share/glassfishv3/modules/web/jstl-connector.jar
+/usr/share/glassfishv3/modules/web/jstl-impl.jar
+/usr/share/glassfishv3/modules/web/war-util.jar
+/usr/share/glassfishv3/modules/web/web-ajp.jar
+/usr/share/glassfishv3/modules/web/web-core.jar
+/usr/share/glassfishv3/modules/web/web-glue.jar
+/usr/share/glassfishv3/modules/web/web-gui-plugin-common.jar
+/usr/share/glassfishv3/modules/web/web-naming.jar
+/usr/share/glassfishv3/modules/web/websecurity.jar</pre> 
+            </div> 
+           </div>
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> glassfish-web-management </td> 
+         <td class="confluenceTd"> glassfishv3-web </td> 
+         <td class="confluenceTd">
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">/usr/share/glassfishv3/modules/web/web-cli.jar</pre> 
+            </div> 
+           </div>
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> glassfish-web-gui </td> 
+         <td class="confluenceTd"> glassfishv3-web </td> 
+         <td class="confluenceTd"> 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">/usr/share/glassfishv3/modules/console-web-plugin.jar</pre> 
+            </div> 
+           </div>
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> glassfish-jsf </td> 
+         <td class="confluenceTd"> glassfishv3-jsf </td> 
+         <td class="confluenceTd"> 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">/usr/share/glassfishv3/modules/jsf-api.jar
+/usr/share/glassfishv3/modules/web
+/usr/share/glassfishv3/modules/web/jsf-impl.jar</pre> 
+            </div> 
+           </div>
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> glassfish-jdbc </td> 
+         <td class="confluenceTd"> glassfishv3-jdbc </td> 
+         <td class="confluenceTd">
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">/usr/share/glassfishv3/lib/install/applications/__cp_jdbc_ra
+/usr/share/glassfishv3/lib/install/applications/__cp_jdbc_ra/META-INF
+/usr/share/glassfishv3/lib/install/applications/__cp_jdbc_ra/__cp_jdbc_ra.jar
+/usr/share/glassfishv3/lib/install/applications/__cp_jdbc_ra/META-INF/MANIFEST.MF
+/usr/share/glassfishv3/lib/install/applications/__cp_jdbc_ra/META-INF/ra.xml
+
+/usr/share/glassfishv3/lib/install/applications/__ds_jdbc_ra
+/usr/share/glassfishv3/lib/install/applications/__ds_jdbc_ra/META-INF
+/usr/share/glassfishv3/lib/install/applications/__ds_jdbc_ra/__ds_jdbc_ra.jar
+/usr/share/glassfishv3/lib/install/applications/__ds_jdbc_ra/META-INF/MANIFEST.MF
+/usr/share/glassfishv3/lib/install/applications/__ds_jdbc_ra/META-INF/ra.xml
+
+/usr/share/glassfishv3/lib/install/applications/__xa_jdbc_ra
+/usr/share/glassfishv3/lib/install/applications/__xa_jdbc_ra/META-INF
+/usr/share/glassfishv3/lib/install/applications/__xa_jdbc_ra/__xa_jdbc_ra.jar
+/usr/share/glassfishv3/lib/install/applications/__xa_jdbc_ra/META-INF/MANIFEST.MF
+/usr/share/glassfishv3/lib/install/applications/__xa_jdbc_ra/META-INF/ra.xml</pre> 
+            </div> 
+           </div>
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> glassfish-jdbc-management </td> 
+         <td class="confluenceTd"> glassfishv3-jdbc </td> 
+         <td class="confluenceTd">
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">/usr/share/glassfishv3/modules/jdbc-admin.jar</pre> 
+            </div> 
+           </div>
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> glassfish-jdbc-gui </td> 
+         <td class="confluenceTd"> glassfishv3-jdbc </td> 
+         <td class="confluenceTd"> 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">/usr/share/glassfishv3/modules/console-jdbc-plugin.jar</pre> 
+            </div> 
+           </div>
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> glassfish-jpa </td> 
+         <td class="confluenceTd"> glassfishv3-jpa </td> 
+         <td class="confluenceTd">
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">/usr/share/glassfishv3/modules/jpa-connector.jar
+/usr/share/glassfishv3/modules/org.eclipse.persistence.antlr.jar
+/usr/share/glassfishv3/modules/org.eclipse.persistence.asm.jar
+/usr/share/glassfishv3/modules/org.eclipse.persistence.core.jar
+/usr/share/glassfishv3/modules/org.eclipse.persistence.jpa.jar
+/usr/share/glassfishv3/modules/org.eclipse.persistence.oracle.jar</pre> 
+            </div> 
+           </div>
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> glassfish-registration </td> 
+         <td class="confluenceTd"> glassfishv3-registration </td> 
+         <td class="confluenceTd">
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">/usr/share/glassfishv3/modules/commons-codec-repackaged.jar
+/usr/share/glassfishv3/modules/glassfish-registration.jar
+/usr/share/glassfishv3/modules/registration-api.jar
+/usr/share/glassfishv3/modules/registration-impl.jar
+/usr/share/glassfishv3/modules/sysnet-registration-repackaged.jar</pre> 
+            </div> 
+           </div>
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> glassfish-hk2 </td> 
+         <td class="confluenceTd"> glassfishv3-hk2 </td> 
+         <td class="confluenceTd">
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">/usr/share/glassfishv3/modules/auto-depends.jar
+/usr/share/glassfishv3/modules/config.jar
+/usr/share/glassfishv3/modules/hk2-core.jar
+/usr/share/glassfishv3/modules/hk2.jar
+/usr/share/glassfishv3/modules/javax.xml.stream.jar
+/usr/share/glassfishv3/modules/tiger-types-osgi.jar
+/usr/share/glassfishv3/modules/wstx-asl.jar</pre> 
+            </div> 
+           </div>
+          </div> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 08, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

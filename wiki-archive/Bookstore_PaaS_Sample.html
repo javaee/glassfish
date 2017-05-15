@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : Bookstore_PaaS_Sample</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="Bookstore_PaaS_Sample-BookstorePaaSApplication"></a>Bookstore PaaS Application</h2> 
+     <div> 
+      <ul> 
+       <li><a href="#Bookstore_PaaS_Sample-BookstorePaaSApplication">Bookstore PaaS Application</a></li> 
+       <ul> 
+        <li><a href="#Bookstore_PaaS_Sample-AboutBookStoreapplication"> <b>About BookStore application</b></a></li> 
+        <li><a href="#Bookstore_PaaS_Sample-NativemodeandVirtualizationMode">Native mode and Virtualization Mode</a></li> 
+        <ul> 
+         <li><a href="#Bookstore_PaaS_Sample-Native%28a.k.aLaptopmode%29">Native ( a.k.a Laptop mode)</a></li> 
+         <li><a href="#Bookstore_PaaS_Sample-VirtualizationMode">Virtualization Mode</a></li> 
+        </ul> 
+        <li><a href="#Bookstore_PaaS_Sample-InstructionsforsettingupPaaSenvironmentandrunningbookstorePaaSsample">Instructions for setting up PaaS environment and running bookstore PaaS sample</a></li> 
+        <ul> 
+         <ul> 
+          <li><a href="#Bookstore_PaaS_Sample-5.1KVMSetup">5.1 KVM Setup</a></li> 
+          <li><a href="#Bookstore_PaaS_Sample-5.2NativeSetup">5.2 Native Setup</a></li> 
+         </ul> 
+        </ul> 
+        <li><a href="#Bookstore_PaaS_Sample-KVMTemplating">KVM Templating</a></li> 
+        <ul> 
+         <li><a href="#Bookstore_PaaS_Sample-GlassFishtemplate">GlassFish template</a></li> 
+         <li><a href="#Bookstore_PaaS_Sample-JavaDBtemplate">JavaDB template</a></li> 
+         <li><a href="#Bookstore_PaaS_Sample-LBtemplate">LB template</a></li> 
+        </ul> 
+        <li><a href="#Bookstore_PaaS_Sample-Troubleshooting">Troubleshooting</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="Bookstore_PaaS_Sample-AboutBookStoreapplication"></a><b>About BookStore application</b></h3> <p>The sample Bookstore application is a simple web application that provides the ability to view the books in the bookstore and register information about new books. This application requires a database for storing the book details. The database has 2 tables DEMO_TABLE and BOOKS_TABLE. The DEMO_TABLE is used to update and get the last accessed time of the database, and the BOOKS_TABLE is used to add more books into the database table. A Servlet is used to display the list of books along with the version of the database being used and when the database was last accessed.</p> <p>If we need to make this application available to end-users in a traditional non-PaaS environment, the administrator would manually create the environment required for running this application. Creation of the environment would include setting up a database server, setting up a GlassFish cluster, and possibly a load balancer that front-ends the GlassFish cluster. Once the environment is manually setup, the deployer would then deploy the application using 'asadmin deploy'.</p> <p>This sample demonstrates one of the use-cases of making a Java EE application available in a PaaS environment, wherein the Application Server , the database and the optionally the loadbalancer are provisioned and made available as a service , and associated with this application, when it is deployed.</p> <p>In a PaaS environment, deployment of applications is done without the cost and complexity of managing the underlying hardware and software. The environment should be more elastic and should automatically scale up/down based on the application's usage. In this sample, the application requests for two Java EE Application Server instances via meta-data specified in the glassfish-services.xml, and the Database service dependency is discovered during deployment.</p> <p>As part of the Single Click Application Deployment on PaaS ( a.k.a. Single Click Service Orchestration) here, we are demonstrating how the required services (namely GF cluster, database server, load balancer) are automatically provisioned and associated behind the scenes, the application is deployed to the provisioned services and made available to the end user. For more details, refer <a href="./Single+Click+Service+Orchestration.html">to this page</a>.</p> <h4><a name="Bookstore_PaaS_Sample-NativemodeandVirtualizationMode"></a>Native mode and Virtualization Mode</h3> <p>You can run this sample in one of two modes:&nbsp; Native or Virtualized.</p> <h4><a name="Bookstore_PaaS_Sample-Native%28a.k.aLaptopmode%29"></a>Native ( a.k.a Laptop mode)</h4> <p>This mode does not require any virtualization software and is targeted at developers who want to run the sample on their laptops or local machines. The services are installed in the local hard disk as local instances of a database or GlassFish cluster.</p> <h4><a name="Bookstore_PaaS_Sample-VirtualizationMode"></a>Virtualization Mode</h4> <p>This mode requires a virtualization solution and templates (VM disks pre-loaded with OS and the Service's software bits) for the Services that the application needs. For the purpose of this sample we will use KVM as the virtualization support. The user would need to create templates of&nbsp; GlassFish, the database ( Derby) on their own. The details are mentioned below in the KVM section.</p> <h4><a name="Bookstore_PaaS_Sample-InstructionsforsettingupPaaSenvironmentandrunningbookstorePaaSsample"></a>Instructions for setting up PaaS environment and running bookstore PaaS sample</h3> <p>The process was tested on Ubuntu 11.04. Please refer to <a href="./BasicConfiguration.html">https://wikis.oracle.com/display/GlassFish/BasicConfiguration</a> to check if your setup can meet all the requirements.</p> <p>In case you are short of time , please try out the sample in the Native mode.</p> <p><b>Please note that the following steps are for running the bookstore application using the Derby database.</b></p> <p>1. Download and unzip latest GlassFish binary specific to your OS to a location which has enough space. The GlassFish 4.0 latest build (on which this test was run) can be found <a href="http://dlc.sun.com.edgesuite.net/glassfish/4.0/promoted/">here</a>. In my case I unzip it under /space that has around 30 GB of free space. You could alternatively opt to build glassfish.zip from your own updated trunk workspace.</p> <p>2. Set an environment variable named S1AS_HOME to point to GlassFish installation.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">$export S1AS_HOME=/space/glassfish3/glassfish</pre> 
+       </div> 
+      </div>
+     </div> <p>3. Check if the /etc/hosts file is properly configured with your IP address corresponding to the "eth0" interface.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">$ sudo cat /etc/hosts
+127.0.0.1    localhost
+xxx.xxx.xxx.xxx mymachine mymachine.domain mymachine.domain.com</pre> 
+       </div> 
+      </div>
+     </div> <p>4. Start the default GlassFish domain, this is your CPAS.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">$S1AS_HOME/bin/asadmin start-domain</pre> 
+       </div> 
+      </div>
+     </div> <p>5. Choose if you want to execute the sample in the Native mode or in the Virtualized (KVM) mode. If you want to execute the sample in Virtualization(KVM) mode, go to Step 5.1, else go to Step 5.2.</p> 
+     <hr> <h5><a name="Bookstore_PaaS_Sample-5.1KVMSetup"></a>5.1 KVM Setup</h5> <p>Setup virtualization environment for your GlassFish installation following instructions below :</p> <p>a) Create the required templates for the bookstore application. More details can be found at the end of the page in section "<a href="./Bookstore_PaaS_Sample#Bookstore_PaaS_Sample-KVMTemplating">KVM templating</a>.html".</p> <p>b) Setup KVM on your machine by referring to <a href="./BasicConfiguration.html">https://wikis.oracle.com/display/GlassFish/BasicConfiguration</a>.</p> <p>c) Ubuntu users can refer to the instructions given at <a href="https://help.ubuntu.com/community/KVM/Installation">https://help.ubuntu.com/community/KVM/Installation</a>.</p> <p>d) Get kvm_setup.sh provided at <a href="https://svn.java.net/svn/glassfish%7Esvn/trunk/main/appserver/tests/paas/kvm_setup.sh">https://svn.java.net/svn/glassfish~svn/trunk/main/appserver/tests/paas/kvm_setup.sh</a>. This script enables the KVM virtualization and prepares the environment for deploying the app.</p> <p>e) Delete all folders from the "virt" directory in your home. Make sure before deploying the application that the "virt" folder is empty and that no virtual machines for the bookstore app are running in the virtual machine manager.</p> <p>f) In the kvm_setup.sh, set the variable TEMPLATES_DIR to point to the location on the local machine where the templates are stored.</p> <p>g) In the kvm_setup.sh, modify the "create-machine-user" command to pass the host user name as the new machine user.</p> <p>h) Execute kvm_setup.sh.</p> 
+     <blockquote>
+      <p><font color="#0000ff"><em>The kvm_setup.sh script configures the CPAS to enable virtualization (using KVM in this case) and then creates a "ServerPool" out of which virtual machines are created. The "create-template" command copies the ".img" and the ".xml" files for the specified template from the $TEMPLATES_DIR to the template repository (~/virt/templates). The template information is also updated in the CPAS. It then creates users that the IMS would use to access the server pool while creating VMs.</em></font></p>
+     </blockquote> <p>i) After executing kvm_setup.sh, ensure that the template images have been completely copied to the $HOME/virt/templates location. Only after the copying is complete, proceed to the next step.</p> 
+     <hr> <h5><a name="Bookstore_PaaS_Sample-5.2NativeSetup"></a>5.2 Native Setup</h5> <p>a) Execute native_setup.sh provided at <a href="https://svn.java.net/svn/glassfish%7Esvn/trunk/main/appserver/tests/paas/native_setup.sh">https://svn.java.net/svn/glassfish~svn/trunk/main/appserver/tests/paas/native_setup.sh</a>.</p> <p>b) If you are using LoadBalancer execute native_lb_setup.sh at <a href="https://svn.java.net/svn/glassfish%7Esvn/trunk/main/appserver/tests/paas/native_lb_setup.sh">https://svn.java.net/svn/glassfish~svn/trunk/main/appserver/tests/paas/native_lb_setup.sh</a> instead. In this case you would not need to.</p> <p>c) Restart CPAS (the GlassFish instance you started in the earlier step).</p> 
+     <hr> <p>6. Compile Bookstore PaaS sample. The application can be found here <a href="https://svn.java.net/svn/glassfish~svn/trunk/main/appserver/tests/paas/bookstore">https://svn.java.net/svn/glassfish~svn/trunk/main/appserver/tests/paas/bookstore</a>.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">cd main/appserver/tests/paas/bookstore
+mvn clean compile war:war
+cp target/bookstore.war /tmp/</pre> 
+       </div> 
+      </div>
+     </div> <p>7. Deploy the Bookstore PaaS sample:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">$S1AS_HOME/bin/asadmin deploy /tmp/bookstore.war</pre> 
+       </div> 
+      </div>
+     </div> <p>8. To see the services as they are provisioned, tail the server.log file ($S1AS_HOME/domains/domain1/logs/server.log).</p> <p>9. In case you are using the Virtualization, using the KVM Virtual Machine Manager, you can log in to the virtual machines and check the progress of the deployment. You can log in to the machines using the user name which was specified in the kvm_setup.sh. The password is the same as the user name. Once this step completes all the provisioning would have been finished and the application is ready to access.</p> <p>10. See the details of the services provisioned for your Bookstore PaaS sample:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">$S1AS_HOME/bin/asadmin list-services</pre> 
+       </div> 
+      </div>
+     </div> <p>11. Access the deployed application, using the IP address of the GlassFish node obtained from output of the list-services command. For example, you can access the application like this:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">http://&lt;ip-address-of-vm-node-1:28080&gt;/bookstore</pre> 
+       </div> 
+      </div>
+     </div> <p>12. Finally, undeploy the Bookstore PaaS application:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">$S1AS_HOME/bin/asadmin undeploy bookstore</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="Bookstore_PaaS_Sample-KVMTemplating"></a>KVM Templating</h3> <p>While running the application in Native mode, no templates are required to be created.</p> <p>While running in KVM mode, templates are required to create the virtual machines on which the application is deployed.</p> <p>In the Bookstore application, two Java EE instances and one database instance are created in the virtualization environment. Hence a GlassFish template needs to be created. The GlassFish template created is utilized for both JavaEE as well as Database instance creation. The LB template is optional.</p> <p>After creating the ".img" and ".xml" files for the templates, copy them to a location on the local machine and set the "TEMPLATES_DIR" variable in the kvm_setup.sh to point to that location.</p> <h4><a name="Bookstore_PaaS_Sample-GlassFishtemplate"></a>GlassFish template</h4> <p>Template used by IMS to create JavaEE instances. To create a GlassFish template, refer <a href="./templating.html">https://wikis.oracle.com/display/GlassFish/templating</a>.</p> <h4><a name="Bookstore_PaaS_Sample-JavaDBtemplate"></a>JavaDB template</h4> <p>Template used by IMS to create JavaDB database instance. As the GlassFish template is bundled with a javadb database, the same template can be used for both GlassFish and Derby database instances.</p> <h4><a name="Bookstore_PaaS_Sample-LBtemplate"></a>LB template</h4> <p>Template to set up a Load Balancer instance for the application. This template is to be created only when one wants to have a load balancer for the application. To create an LB template, refer <a href="./LBTemplating.html">https://wikis.oracle.com/display/GlassFish/LBTemplating</a>. For simplicity sake, we will not use a LoadBalancer in this application.</p> <h4><a name="Bookstore_PaaS_Sample-Troubleshooting"></a>Troubleshooting</h3> <p>For troubleshooting setup refer to <a href="./Troubleshooting.html">https://wikis.oracle.com/display/GlassFish/Troubleshooting</a>.</p> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874166/34963460.jpg">Bookstore_app_details_edited.jpg</a> (image/jpeg) 
+      <br> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Feb 20, 2012 by 
+<font color="#0050B2">16748</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

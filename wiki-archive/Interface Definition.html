@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : Interface Definition</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>The design proposals for the PaaS feature for 3.2+ all include the idea of having a service implemented to perform some function, with the flexibility of having the service either in the same process with the client or in another process somewhere else in the deployment topology. An example of this type of operation is a request to create a VM, which may be handled by a service running in the DAS in the domain or by a service running in some other process outside of the domain.</p> <h4><a name="InterfaceDefinition-InterfaceOptions"></a>Interface Options</h2> <p>Consider this diagram showing two modules communicating with one another: <span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20876066/21365312.png" style="border: 1px solid black"></span></p> <p>Here there are three different ways of defining the interface between Module A which is a client of a service provided by Module B. &nbsp;The expectation is that Module A and Module B may be in the same JVM or maybe in different JVMs; both configurations must be provided.</p> <p>In Option A, Module B defines a class interface, e.g., an HK2 Contract, that is used by Module A. This interface is expressed using the full flexibility of the Java language using a POJO. Depending on the configuration, the implementation of the interface is either the Module B service itself (for a local call), or a Module B stub. &nbsp;The stub translates the service request into some sort of interprocess communication message, using an IPC API (the yellow box), which makes the remote call on the Module B service running in a separate JVM. &nbsp;The choice of the interprocess communication API and protocol is an implementation detail of Module B. &nbsp;Module A isn't supposed to know anything about what IPC method is chosen.</p> <p>Option B is identical in operation to Option A, except that the messages passed across the network are also part of the interface definition. &nbsp;This means that the IPC API is no longer an implementation detail, and to specify the interface to Module B, it is necessary to document the class interface as well as the IPC interface. &nbsp;The reason for using Option B rather than A is for cases where Module B must provide a remote interface that is not based on a Java API.</p> <p>Option C eliminates the Java API for the service and just defines the IPC API. When using the service locally, the Module A client uses the IPC API directly to invoke the service, and the IPC communication mechanism may or may not short circuit the call to avoid translation to something that can be transferred over the network. &nbsp;The only interface that is documented for Module B is the IPC interface. &nbsp;Since there is no Java interface defined for the service, Module A may need its own wrapper for calling the Module B services.</p> <p>Let's look at an example.&nbsp;</p> <p>Consider a Module B that represents a GlassFish instance, with a specific method for finding out of the instance needs to be restarted. With option A, Module B defines a Java class, Server, to represent the instance, with a method getRestartRequired:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Contract
+interface Server {
+	boolean getRestartRequired();
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>To use this interface, Module A uses a some method to get access to a server object and then calls the method:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Server s = Servers.getServer("a");
+s.getRestartRequired();</pre> 
+       </div> 
+      </div>
+     </div> <p>At runtime, if the "a" server is local, this is just a Java call. &nbsp;However, if "a" is remote, then the getRestartRequired call is translated by a stub into an _get-restart-required asadmin command. The stub uses RemoteAdminCommand to invoke the command on the "s" instance, it gets the result and translates that into a boolean return for the method. &nbsp;The use of an asadmin command for the IPC mechanism is an implementation detail. &nbsp;It could make a REST call or a JMX call to the instance instead (assuming that those IPC mechanisms are available).&nbsp;</p> <p>With Option B, the existence of the _get-restart-required asadmin command is documented, with the expectation that if scripts or other programs need to get that information about an instance, they can just call that command using the asadmin client without using the Java interface. The actual over-the-wire interface for asadmin commands isn't documented, so a program would not be able to open an HTTP connection to the server in order to invoke the command.</p> <p>With Option C, the only interface that is documented is _get-restart-required. &nbsp;If a client wants to get that information from an instance, the client must use the RemoteAdminCommand interface to invoke the command on that instance.&nbsp;</p> <h4><a name="InterfaceDefinition-InterfaceRecommendation"></a>Interface Recommendation</h2> <p>For the communication between PaaS support components that need to have the ability to be in separate JVMs, the proposal is to use Option C, with asadmin commands as the IPC mechanism.</p> <p>There are several choices for the IPC mechanism:</p> <p>1. RMI<br> 2. Mbeans/JMX<br> 3. AdminCommands/__asadmin via HTTP + SSH where necessary<br> 4. REST</p> <p>I'd like to propose that we use #3.</p> <p>We abandoned #1 and #2 in going from v2 to 3.1. #4 is used between the console and the DAS, but it is really intended for having a more lightweight client that is always remote (even though the admin console runs in the same process as the DAS now).</p> <p>#3 is currently the foundation for implementing 3.1 clustering. From within the DAS, the command replication framework provides the ability to run an asadmin command using the same API whether the command is local or remote. The framework also has the ability to support secure communication via SSL client certificates.&nbsp; The implementer of the function just has to extend AdminCommand, while the user of the function just has use one of the classes in the RemoteAdminCommand hierarchy to run the command.</p> <p>For 3.2, we could implement a class that provides better support for running a command independently from where it is located (either local or remote). We might also need to enhance the security layer to deal with multiple certificates, for the case where the DAS from multiple domains is communicating with a centralized IaaS management service.</p> <p>With this decision, the unit of development (the module) for the PaaS design is ultimately an AdminCommand. We would have lower level commands (possibly hidden) for creating VMs, provisioning services, etc. and higher level&nbsp; commands such as "deploy" would ultimately be running these lower level commands.&nbsp; Any PaaS feature interface that potentially spans JVM boundaries would be expressed as an AdminCommand.</p> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876066/21365311.png">interface.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876066/21365306.png">interface.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876066/21365312.png">interface.png</a> (image/png) 
+      <br> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Nov 09, 2011 by 
+<font color="#0050B2">trmueller</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

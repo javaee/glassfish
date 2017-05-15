@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFish Bean Validation Error Message Internationalization</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>The GlassFish server uses <a href="http://jcp.org/en/jsr/detail-303">JSR-303 bean validation</a> for ensuring that its configuration information is valid. When validation fails, the system generates an error message for the user that explains what is wrong with the requested configuration change. &nbsp;As with all other output messages from GlassFish, these error messages must support internationalization (i18n) so that they can be translated to other languages. The bean validation standard and its reference implementation (RI) supports i18n through the use of a ValidationProperties resource bundle, as described in section 4.3 of the specification. However, within GlassFish, there are several problems with the use of the ValidationProperties resource bundle.</p> <h4><a name="GlassFishBeanValidationErrorMessageInternationalization-Problem1%3AModularization"></a>Problem 1: Modularization</h4> <p>The GlassFish configuration beans are spread across several modules in different projects, such as Grizzly, and these modules are delivered into the system in different packages that can be updated independently. The JSR-303 RI supports the use of only a single ValidationProperties resource bundle for an entire program. Getting all of the messages into a single resource bundle for all of GlassFish would be quite difficult.&nbsp;</p> <h4><a name="GlassFishBeanValidationErrorMessageInternationalization-Problem2%3AOSGiClassLoading"></a>Problem 2: OSGi Class Loading</h4> <p>The GlassFish server uses OSGi to load classes. The JSR-303 RI expects the ValidationProperties resource bundle to be available via the thread context class loader. However, packages loaded using OSGi generally are not available via that class loader within GlassFish. &nbsp;So if GlassFish were to use a single ValidationProperties resource bundle, it would need to be in the base classpath for the server, not within a module that is loaded via OSGi. &nbsp;The configuration beans that use bean validation are in OSGi modules.&nbsp;</p> <p>Fortunately, the bean validation standard defines a MessageInterpolator interface that allows customization of how bean validation error messages are resolved. To solve these two problems, the GlassFish team has developed a custom MessageInterpolator class, java.org.jvnet.hk2.config.MessageInterpolatorImpl that is part of the HK2 subsystem. This MessageInterpolator provides the ability to define bean validation error messages that are local to the Java package where a bean validation annotation is used. However, because of limitations in the MessageInterpolator interface defined by JSR-303, it is necessary to follow some non-obvious conventions when defining the messages.&nbsp;</p> <h4><a name="GlassFishBeanValidationErrorMessageInternationalization-SpecifyingaMessagewhenusinganAnnotation"></a>Specifying a Message when using an Annotation</h3> <p>When using standard JSR-303 annotations such as @Min, @Max, and @Pattern, or custom annotations defined by the GlassFish project, custom messages within beans for GlassFish are defined as follows:</p> <p>1. Make the bean implement the javax.validation.Payload interface.</p> <p>2. Pass the message key and a payload to the annotation</p> <p>3. Define the message for the key in the LocalStrings.properties file within the Java package containing the bean.&nbsp;</p> <p>Here is an example of following these steps for a sample bean, MyBean.</p> <p>File MyBean.java</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">import javax.validation.Payload;
+import javax.validation.constraints.Pattern;
+
+public interface MyBean implements Payload {
+
+	@Pattern(regexp="x+", message="{xkey}", payload=MyBean.class)
+	public String getX();
+	public void setX(String x);
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>File LocalStrings.properties</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">xkey=The value for x can only contain xs.&nbsp;</pre> 
+       </div> 
+      </div>
+     </div> <p>The reason for passing the bean class in via the payload argument to the annotation is so that the custom MessageInterpolatorImpl class is able to obtain the class loader for the bean that is using the annotation, and using that class loader, it can find the LocalStrings resource bundle.&nbsp;</p> <p>To see real examples of this being used in GlassFish, see the Cluster.java file in the admin/config-api module, com.sun.enterprise.config.serverbeans package.</p> <h4><a name="GlassFishBeanValidationErrorMessageInternationalization-SupportingI18ninaCustomBeanValidationAnnotation"></a>Supporting I18n in a Custom Bean Validation Annotation</h3> <p>When implementing a custom annotation, one of the methods that needs to be defined is the "message" method that defines a default value for the message parameter. Also, a payload method must also be defined. &nbsp;Here is a sample custom annotation:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Retention(RUNTIME)
+@Target({FIELD, METHOD})
+@Documented
+@Constraint(validatedBy = JavaClassNameValidator.class)
+public @interface JavaClassName {
+&nbsp;&nbsp; &nbsp;String message() default "must be a valid Java Class Name";
+&nbsp;&nbsp; &nbsp;Class[] groups() default {};
+&nbsp;&nbsp; &nbsp;Class[] payload() default {};
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>Note that the default value for the message here does not support i18n. This means that for the system to support i18n, any bean that uses this annotation must provide a message with a payload as shown in the previous section. Almost all of the custom bean validators defined within GlassFish are like this.&nbsp;<br> Ideally, it would be possible to define the default message using a key, such as "{javaclasskey}", but to make this work, the default value of the payload would need to include a class that implements Payload, so that the MessageInterpolatorImpl could find the resource bundle containing the message. &nbsp;However, the JSR-303 RI insists that the default value for payload be an empty array, so this isn't currently possible with the RI. (We are in the process of asking the RI implementers about this restriction.)</p> <p>So for now, any usage of a custom bean validation annotation must provide its own error message using the technique in the previous section.</p> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Dec 21, 2010 by 
+<font color="#0050B2">trmueller</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

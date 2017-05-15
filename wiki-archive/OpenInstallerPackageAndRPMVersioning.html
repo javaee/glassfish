@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : OpenInstallerPackageAndRPMVersioning</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p><b>Note: You can reply either by editing the page or by clicking the Comment button at the bottom of the page.</b></p> 
+     <div> 
+      <ul> 
+       <li><a href="#OpenInstallerPackageAndRPMVersioning-Currentproposal">Current proposal</a></li> 
+       <li><a href="#OpenInstallerPackageAndRPMVersioning-Openissues">Open issues</a></li> 
+       <li><a href="#OpenInstallerPackageAndRPMVersioning-JamesFalkner%27sComments">James Falkner's Comments</a></li> 
+      </ul>
+     </div> <p>Please refer to <a href="http://wikihome.sfbay.sun.com/wg-pkging/content/policies/index19.html">Version Specification Guidelines (Sun Internal)</a> for the following discussion.</p> <h4><a name="OpenInstallerPackageAndRPMVersioning-Currentproposal"></a>Current proposal</h2> 
+     <ul> 
+      <li>openInstaller Solaris Package versioning</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">VERSION=&lt;openInstaller_version&gt;,REV=&lt;YYYY.MM.DD.hh.mm&gt;
+SUNW_PRODVERS=&lt;openInstaller_version&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>e.g. </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">VERSION=0.9.2,REV=2007.06.19.17.58
+SUNW_PRODVERS=0.9.2</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>openInstaller RPM versioning</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">VERSION=&lt;openInstaller_version&gt;
+REVISION=&lt;some_revision&gt;</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>openInstaller RPM naming</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">sunw-install-engine-core-&lt;openInstaller_version&gt;-&lt;some_revision&gt;
+sunw-install-resources-&lt;openInstaller_version&gt;-&lt;some_revision&gt;</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>Windows</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">TBD</pre> 
+       </div> 
+      </div>
+     </div> <p>Both openInstaller_version and some_revision are specified in build.properties.template by the developer and from there are propagated to the naming and fields automatically by the build mechanism. The property keys are </p>
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">PLATFORM_VERSION</pre> 
+       </div> 
+      </div>
+     </div> and 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">PLATFORM_RELEASE</pre> 
+       </div> 
+      </div>
+     </div> respectively.<p></p> <p>The following files are affected.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">pkgdefs/engine/rpm/engine.spec.tmpl
+pkgdefs/engine/solaris/pkginfo.tmpl
+resources/dependency/Engine.xml
+test/com/sun/install/provider/dependency/data/Engine.xml
+test/com/sun/install/provider/system/data/Engine.xml
+tools/build.properties.template</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="OpenInstallerPackageAndRPMVersioning-Openissues"></a>Open issues</h2> <p>The issues with the above proposal are</p> 
+     <ol> 
+      <li>We have already shipped existing packages with 1.0 though no customer has gone outside with it.</li> 
+      <li>Our current customers might not like the change.</li> 
+      <li>Question: Is our customer still carrying the Engine.xml?</li> 
+      <li>Though full control is provided by inclusion in 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">build.properties.template</pre> 
+         </div> 
+        </div>
+       </div>, the policy on bumping 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">VERSION</pre> 
+         </div> 
+        </div>
+       </div> and 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">REVISION</pre> 
+         </div> 
+        </div>
+       </div> for RPM is unclear. What is an event that should cause increasing these numbers? How do nightly build versions fit into this?</li> 
+      <li>The above does not address Windows yet.</li> 
+     </ol> 
+     <hr> <h4><a name="OpenInstallerPackageAndRPMVersioning-JamesFalkner%27sComments"></a>James Falkner's Comments</h2> <p>Responses to open issues:</p> <p><b>1.</b> I doubt anyone would care if we change these versions as you say no one has shipped yet.</p> <p><b>2.</b> See #1</p> <p><b>3.</b> Yes. They will need to re-sync.</p> <p><b>4.</b> The policy should be governed by existing guidelines that other projects like Java ES follow. For example, for major.minor.micro:</p> <p>Major change: should introduce significant functionality. Lifetime is long. Upgrade support is not required (though transition plan should be available). Hardware, file formats, interfaces go away or are new.</p> <p>Minor change: signals that a software release contains either new, non-interfering features and architectural changes, or bug fixes. Each minor release must contain all the changes introduced in previous minor releases against the same major release. Interfaces may only be obsoleted by a minor release after a suitable warning and phase-out period. Minor releases should occur at regular, predictable intervals.</p> <p>Micro: Are scheduled as necessary to introduce bug fixes are support new platforms. Each micro release must contain all changes introduced since the last minor release, as well as all patches made available since the last minor release. Interfaces must not be obsoleted by a micro release.</p> <p>Note that this version does not necessarily correspond with the "marketing version".</p> <p><em>It would be much easier to manage if marketing version was the same as version. - ManpreetSingh</em></p> <p>Also, the RPM release field should contain two parts:</p> <p>a.b</p> <p>where</p> <p>a=build identifier, and<br> b="update" level</p> <p>Is this part of this proposal?</p> <p><em>Yes </em></p>
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent">
+       <em> 
+        <div id="root"> 
+         <pre class="theme: Confluence; brush: java; gutter: false">&lt;some_revision&gt;</pre> 
+        </div> </em>
+      </div>
+     </div><em> is meant for these and should follow the guideline you describe. It is proposed to start it with 1.1. - ManpreetSingh</em><p></p> <p><b>5.</b> Windows. There is currently no version inside of the .zip files used to transfer files to disk during windows install. The only place versions are stored are in the dependency descriptors. And this is the version recorded in SIMS. So this proposal should "just work" as we are not attempting to interact with the MSI system.</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 08, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

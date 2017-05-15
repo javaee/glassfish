@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : 3.1Performance</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="3.1Performance-3.1StartupPerformanceAnalysis"></a>3.1 Startup Performance Analysis</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#3.1Performance-3.1StartupPerformanceAnalysis">3.1 Startup Performance Analysis</a></li> 
+       <ul> 
+        <li><a href="#3.1Performance-Issues">Issues</a></li> 
+        <li><a href="#3.1Performance-UsefulLinks">Useful Links</a></li> 
+        <li><a href="#3.1Performance-StartupRegression">Startup Regression</a></li> 
+        <li><a href="#3.1Performance-PerformanceDatafromtheLogs">Performance Data from the Logs</a></li> 
+        <ul> 
+         <li><a href="#3.1Performance-StartupBreakdown">Startup Breakdown</a></li> 
+        </ul> 
+        <li><a href="#3.1Performance-DeploymentTimeRegression">Deployment-Time Regression</a></li> 
+        <li><a href="#3.1Performance-PerformanceImprovementIdeas">Performance Improvement Ideas</a></li> 
+        <ul> 
+         <li><a href="#3.1Performance-JSFLoading">JSF Loading</a></li> 
+         <li><a href="#3.1Performance-TrussOutputAnalysis">Truss Output Analysis</a></li> 
+        </ul> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="3.1Performance-Issues"></a>Issues</h2> <p>Regressions from 3.0:</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Issue </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/12379">12379</a> </td> 
+         <td class="confluenceTd"> 5% regression in startup time because of autostart/ </td> 
+         <td class="confluenceTd"> RESOLVED </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/12381">12381</a> </td> 
+         <td class="confluenceTd"> Bundles in modules/autostart and autodeploy/bundles can cause performance regression </td> 
+         <td class="confluenceTd"> RESOLVED </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/12454">12454</a> </td> 
+         <td class="confluenceTd"> WebContainerStarter is taking much longer to start </td> 
+         <td class="confluenceTd"> RESOLVED - duplicate </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/12477">12477</a> </td> 
+         <td class="confluenceTd"> WebContainerStarter looks at too many configs when determining whether to start </td> 
+         <td class="confluenceTd"> RESOLVED </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/12574">12574</a> </td> 
+         <td class="confluenceTd"> deployment command brings in Cluster Admin module when there is no cluster </td> 
+         <td class="confluenceTd"> RESOLVED </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/13076">13076</a> </td> 
+         <td class="confluenceTd"> Cluster SSH Provisioning is resolved after startup </td> 
+         <td class="confluenceTd"> RESOLVED </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/13277">13277</a> </td> 
+         <td class="confluenceTd"> Monitoring bootstrap start-up performance problem </td> 
+         <td class="confluenceTd"> RESOLVED </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/13278">13278</a> </td> 
+         <td class="confluenceTd"> security module start-up performance problem </td> 
+         <td class="confluenceTd"> RESOLVED </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/13279">13279</a> </td> 
+         <td class="confluenceTd"> javax.xml.rpc.handler resolution at startup taken from metro rather than module that is already loaded </td> 
+         <td class="confluenceTd"> RESOLVED </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/13626">13626</a> <br class="atl-forced-newline"> (<a href="https://grizzly.java.net/issues/show_bug.cgi-893">GRIZZLY-893</a>) </td> 
+         <td class="confluenceTd"> admin-thread-pool size causes startup pipes </td> 
+         <td class="confluenceTd"> RESOLVED in Grizzly, <br class="atl-forced-newline"> integrated into GF on 10/15 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/13782">13782</a> </td> 
+         <td class="confluenceTd"> 3.1 deployment performance - ASURLClassLoader.appendURL, urlSet.contains() call takes more time than v3.0 </td> 
+         <td class="confluenceTd"> RESOLVED </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/13783">13783</a> </td> 
+         <td class="confluenceTd"> 3.1 deployment performance - web container initialization </td> 
+         <td class="confluenceTd"> RESOLVED - 12/16 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/13784">13784</a> </td> 
+         <td class="confluenceTd"> 3.1 deployment performance - loading/starting components in web container </td> 
+         <td class="confluenceTd"> RESOLVED - 1/3 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/13785">13785</a> </td> 
+         <td class="confluenceTd"> 3.1 deployment performance - accessing web application takes longer </td> 
+         <td class="confluenceTd"> RESOLVED - 11/18 - no specific changes, but no big regression here either </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/13786">13786</a> </td> 
+         <td class="confluenceTd"> Cluster Admin module becomes active after deploy without cluster </td> 
+         <td class="confluenceTd"> RESOLVED </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/13789">13789</a> </td> 
+         <td class="confluenceTd"> 3.1 deployment performance - thread/threadpool usage for the annotation scanning </td> 
+         <td class="confluenceTd"> RESOLVED </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/13830">13830</a> </td> 
+         <td class="confluenceTd"> 3.1 deployment performance - accessing web application takes longer </td> 
+         <td class="confluenceTd"> RESOLVED - 11/18 - duplicate of 14010 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/13995">13995</a> </td> 
+         <td class="confluenceTd"> Performance in iterating org.jvnet.hk2.component.Habitat$5 </td> 
+         <td class="confluenceTd"> RESOLVED </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/14010">14010</a> </td> 
+         <td class="confluenceTd"> 3.1 deployment performance - AdminAdapter.service </td> 
+         <td class="confluenceTd"> RESOLVED </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/14011">14011</a> </td> 
+         <td class="confluenceTd"> 3.1 deployment performance - security check in WebPipeline </td> 
+         <td class="confluenceTd"> RESOLVED - 12/12 - no changes </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/14116">14116</a> </td> 
+         <td class="confluenceTd"> performance for startup - WebModuleListener.configureJsp </td> 
+         <td class="confluenceTd"> RESOLVED </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/14161">14161</a> </td> 
+         <td class="confluenceTd"> asadmin perf regression </td> 
+         <td class="confluenceTd"> RESOLVED </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/14351">14351</a> </td> 
+         <td class="confluenceTd"> time to start domain the 2nd time is too large <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> RESOLVED - 11/8 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/14503">14503</a> </td> 
+         <td class="confluenceTd"> set felix.cache.singlebundlefile=true <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> RESOLVED - 11/8 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/14782">14782</a> </td> 
+         <td class="confluenceTd"> 3.1 deployment performance - security container initialization <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> RESOLVED - 12/14 - no changes, due to slower class loading </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/14992">14992</a> </td> 
+         <td class="confluenceTd"> Slower classloading with Felix 3.0.6 </td> 
+         <td class="confluenceTd"> RESOLVED - 12/30 </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>Compensations for regressions elsewhere:</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Issue </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/13612">13612</a> </td> 
+         <td class="confluenceTd"> javadb (derby) accessed during initial startup - shouldn't be </td> 
+         <td class="confluenceTd"> RESOLVED </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="https://issues.apache.org/jira/browse/FELIX-2619">FELIX-2619</a> </td> 
+         <td class="confluenceTd"> Bundle cache is rechecking non-existing files again and again </td> 
+         <td class="confluenceTd"> RESOLVED in Felix, integrated into GF on 10/8 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="https://issues.apache.org/jira/browse/FELIX-2626">FELIX-2626</a> </td> 
+         <td class="confluenceTd"> Bundle cache is rewriting some files when restarting bundles </td> 
+         <td class="confluenceTd"> RESOLVED in Felix, integrated into GF on 10/8 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ??? </td> 
+         <td class="confluenceTd"> Reduce number of Felix cache files by combining data into single file </td> 
+         <td class="confluenceTd"> Implemented in Felix 3.0.5, but need to set felix.cache.singlebundlefile=true in the felix config file. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/13813">13813</a> </td> 
+         <td class="confluenceTd"> Weld brings in JSF implementation </td> 
+         <td class="confluenceTd"> INVESTIGATED, but INVALID </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/14007">14007</a> </td> 
+         <td class="confluenceTd"> move tools.jar from launcher class loader to application class loader </td> 
+         <td class="confluenceTd"> RESOLVED as WONTFIX - EJB needs tools.jar where it is </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/14000">14000</a> </td> 
+         <td class="confluenceTd"> Consider disabling implicit boot delegation feature of Felix </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/15560">15560</a> </td> 
+         <td class="confluenceTd"> JSP compiler javac classpath causes too many JARs to be opened <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> RESOLVED </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>Diagnostic issues:</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Issue </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/13169">13169</a> </td> 
+         <td class="confluenceTd"> Add diagnostic information to explain why a module is being resolved </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/13170">13170</a> </td> 
+         <td class="confluenceTd"> Add log messages for module resolution time </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.1Performance-UsefulLinks"></a>Useful Links</h2> 
+     <ul> 
+      <li><a href="http://javaperf.us.oracle.com/JSPWiki/Wiki.jsp?page=V3.1StartupAndDeploymentPerformance">3.1 Performance Measurements</a> (internal link)</li> 
+      <li><a href="http://javaperf.us.oracle.com/JSPWiki/Wiki.jsp?page=SunStudio11Tips">Profiling instructions</a> (internal link)</li> 
+     </ul> <h4><a name="3.1Performance-StartupRegression"></a>Startup Regression</h2> <p>Here is an analysis of how the DAS module startup has changed from 3.0 to the 3.1 trunk on 9/14. This ignores changes to the versions of modules and looks only at changes in the initial state of modules. The data was obtained by running "asadmin start-domain" for both releases, and comparing the output of the "ps" command after telneting to port 6666.</p> <p>1. Modules that went from Installed in 3.0 to Active or Resolved in 3.1</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&nbsp;&nbsp; Connectors Inbound Support &nbsp;: &nbsp;Resolved
+   Admin Utilities classes  :  Active
+   JMS Module  :  Active                                      OK
+   Appserver Core Bootstraping Classes  :  Resolved           OK
+   GlassFish Web container Embedded APIs  :  Resolved</pre> 
+       </div> 
+      </div>
+     </div> <p>2. Modules that went from Resolved in 3.0 to Active in 3.1</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false"></pre> 
+       </div> 
+      </div>
+     </div> <p>3. New modules in 3.1 that are Active or Resolved</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">libpam4j repackaged as a module  :  Resolved
+   javax.resource API v.1.6  :  Resolved
+   osgi.core  :  Resolved
+   osgi.cmpn  :  Resolved
+   GlassFish High Availability APIs and SPI  :  Resolved
+   shoal-gms-api  :  Resolved                                  (EXPECTED - brought in by GMS Bootstrap)
+   GMS Bootstrap Module  :  Active                             (EXPECTED - lazy loading of GMS)
+   grizzly-websockets  :  Resolved
+   Mojarra JSF Implementation 2.1.0-SNAPSHOT  :  Resolved      (NO CHANGE - new version of package)
+   Mojarra JSF API Implementation 2.1.0-SNAPSHOT  :  Resolved  (NO CHANGE - new version of package)
+   grizzly-lzma  :  Resolved
+   Cluster SSH Provisioning  :  Resolved                       (UNEXPECTED!! - issue 13076)
+   jersey-core  :  Resolved
+   GlassFish SSL Implementation Module  :  Active
+   trilead-ssh2 repackaged as a module  :  Resolved            (UNEXPECTED!! - issue 13076)
+   Validation API  :  Resolved
+   Base module for providing support for OSGi in Java EE applications  :  Resolved
+   jersey-client  :  Resolved
+   GlassFish ha-shoal-cache-bootstrap  :  Active
+   OSGi resource locator bundle - used by various API providers that rely on META-INF/services mechanism to locate providers.  :  Active
+   Appserver Logging Classes  :  Active
+   Apache Felix EventAdmin  :  Active</pre> 
+       </div> 
+      </div>
+     </div> <p>4. New modules in 3.1 that are Installed</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">GlassFish ORB interface layer implementation
+   Backup Restore classes
+   Cluster Admin CLI
+   Cluster Admin
+   Web Container HA code
+   GlassFish ha-shoal-store
+   Load-Balancer admin
+   GMS Module
+   Data mapper for Jackson JSON processor
+   shoal-cache
+   AMX Combining
+   Jackson JSON processor
+   Admin Console Clustering Support Plugin
+   shoal-gms-impl
+   Cluster Common
+   XML Compatibility extensions for Jackson data binding
+   GlassFish Metro Glue Code
+   Jersey server library repackaged as OSGi bundle for GlassFish
+   jersey-json
+   GlassFish ha-file-store
+   JAX-RS provider for Json content type, using Jackson data binding</pre> 
+       </div> 
+      </div>
+     </div> <p>5. Modules from 3.0 that no longer exist in 3.1</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">org.jvnet.tiger-types repackaged as module  :  Resolved
+   Admin Console Jruby Plugin  :  Installed
+   Hibernate validator library and Validation API  :  Active
+   Upgrade Tool  :  Installed
+   javax.resource API v.1.6-alpha  :  Resolved
+   AMX V3 Core implementation  :  Installed
+   modules/grizzly-jruby.jar  :   Installed
+   AMX V3 Config implementation  :  Installed
+   Mojarra JSF Implementation 2.0.2-FCS  :  Resolved
+   Mojarra JSF API Implementation 2.0.2-FCS  :  Resolved
+   AMX V3 Core  :  Installed
+   grizzly-cometd  :  Installed
+   JRuby container and deployer  :  Installed
+   AMX V3 extensions implementation  :  Installed
+   AMX V3 Config  :  Installed
+   Jackson library repackaged as OSGi bundle for GlassFish  :  Resolved
+   Jersey bundle repackaged as OSGi module for GlassFish  :  Resolved
+   CLI Framework  :  Installed
+   AMX V3 Java EE Management  :  Installed
+   jsr311-api  :  Resolved
+   GlassFish ORB conector implementation  :  Active
+   Administration Console JRuby Help Content  :  Installed
+   JRuby sniffer for Glassfish v3  :  Active</pre> 
+       </div> 
+      </div>
+     </div> <p>6. Modules that were Resolved or Active in 3.0 but are Installed in 3.1</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">JSF implementation connector module  :  Installed
+   Web Container glue code  :  Resolved
+   GlassFish Core EJB container implementation  :  Installed
+   GlassFish ORB connector implementation  :  Resolved
+   WebServices Security and JSR 196 SOAP Profile Implementation  :  Installed
+   Web module command line interface  :  Resolved
+   Deployment Related Admin Classes  :  Installed
+   WebTier Security Integration  :  Resolved
+   Admin Console JTS Plugin  :  Installed
+   JSR-109 implementation to deploy Metro  :  Resolved
+   Deployment Related JavaEE Core Classes  :  Resolved
+   JSP caching taglib connector module  :  Installed
+   Core Servlet Container  :  Resolved
+   Administration Console Java Transaction Service Help Content  :  Installed
+   Web Container Common Utilities  :  Resolved
+   Apache Felix Declarative Services  :  Installed
+   JSTL implementation connector module  :  Installed
+   JavaServer Pages  :  Installed
+   Deployment Object Library  :  Resolved</pre> 
+       </div> 
+      </div>
+     </div> <p>With groups (1) and (3), we have 23 modules that are being Resolved in 3.1 during startup that were not being resolved in 3.0. I don't have a measure of the time that this takes, but this is likely leading to at least some of the startup performance regression.</p> <h4><a name="3.1Performance-PerformanceDatafromtheLogs"></a>Performance Data from the Logs</h2> <p>To enable gathering of information about what bundles are loaded at startup time, and other performance information, the following setting in the <tt>logging.properties</tt> file is useful:</p> <p><tt>javax.enterprise.system.core.level=FINE</tt></p> <p>After starting and stopping the benchmark domain, the server.log file has the following key message that indicates the different in startup time:</p> <p>From 3.0:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">[#|2010-06-24T08:06:58.475-0700|INFO|glassfishv3.0|javax.enterprise.system.core.com.sun.enterprise.v3.server|_ThreadID=11;_ThreadName=Thread-1;|GlassFish v3 (74.2) startup time : Felix(8513ms) startup services(2089ms) total(10602ms)|#]</pre> 
+       </div> 
+      </div>
+     </div> <p>From 3.1b05:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">[#|2010-06-24T08:41:42.694-0700|INFO|glassfish3.1|javax.enterprise.system.core.com.sun.enterprise.v3.server|_ThreadID=14;_ThreadName=Thread-1;|GlassFish3.1-b05 (5) startup time : Felix(9980ms) startup services(10939ms) total(20919ms)|#]</pre> 
+       </div> 
+      </div>
+     </div> <p>This is the message that comes out right before the table of services.</p> <h4><a name="3.1Performance-StartupBreakdown"></a>Startup Breakdown</h3> <p>The startup time can be divided based on the following events:</p> 
+     <ul> 
+      <li>asadmin start</li> 
+      <li>GFLauncherLogger message, "Successfully launched in n msec"</li> 
+      <li>first log message from DAS, "Running GlassFish Version..."</li> 
+      <li>completion of services startup</li> 
+     </ul> <p>The timing for these intervals between these events are:</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> version </th> 
+         <th class="confluenceTh"> launch </th> 
+         <th class="confluenceTh"> load </th> 
+         <th class="confluenceTh"> service startup </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3.0 </td> 
+         <td class="confluenceTd"> ? </td> 
+         <td class="confluenceTd"> 11 sec </td> 
+         <td class="confluenceTd"> 1.3 sec </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3.1b05 </td> 
+         <td class="confluenceTd"> ? </td> 
+         <td class="confluenceTd"> 12 sec </td> 
+         <td class="confluenceTd"> 8.8 sec </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>The time between the asadmin start and the first log message cannot be determined because there is no reference for when asadmin actually starts.</p> <p>There isn't any information in the server.log file that provides more details about the load time.</p> <p>The service start time can be broken down by looking at the start times for each service which are printed in the logs. 3.1 has one more service, GmsAdapterService, that is started.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> service </th> 
+         <th class="confluenceTh"> 3.0 start time (msec) </th> 
+         <th class="confluenceTh"> 3.1 start time (msec) </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GrizzlyService </td> 
+         <td class="confluenceTd"> 1143 </td> 
+         <td class="confluenceTd"> 2210 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> RestService </td> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> 442 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GlassFishNamingBuilder </td> 
+         <td class="confluenceTd"> 3 </td> 
+         <td class="confluenceTd"> 5 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ORBConnectorStartup </td> 
+         <td class="confluenceTd"> 3 </td> 
+         <td class="confluenceTd"> 3 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> LifecycleModuleService </td> 
+         <td class="confluenceTd"> 8 </td> 
+         <td class="confluenceTd"> 9 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> WebContainerStarter </td> 
+         <td class="confluenceTd"> 25 </td> 
+         <td class="confluenceTd"> 142 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ApplicationLoaderService </td> 
+         <td class="confluenceTd"> 90 </td> 
+         <td class="confluenceTd"> 126 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GmsAdapterService </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> 17 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> LogManagerService </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> 265 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> InstanceStateService </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> 20 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> LocalPasswordImpl </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> 12 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> IdmService </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> 8 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Globals </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> 1 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ShoalBackingStoreProxy </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> 14 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ReplicationStoreProxy2 </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> 3 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>The WebContainerStarter takes significantly longer in 3.1 and deserves closer inspection. This was resolved with issue 12454.</p> <p>There are several differences in the startup between 3.0 and 3.1.</p> 
+     <ol> 
+      <li>In 3.0, GrizzlyService is initialized before WebContainerStartup. In 3.1, WebContainerStartup is first.</li> 
+      <li>In 3.0, the WebContainerStartup service doesn't generate any log messages. However, in 3.1, it generates messages for the Grizzly framework startup (the same messages that are generated for the GrizzlyService in 3.0), and the HTTP listeners and the virtual servers are created. These latter operations take significant time and account for most of the 8+ seconds.</li> 
+      <li>In 3.1, there are 5 Grizzly Framework threads created, while in 3.0 there are 2. The message for these is "Starting Grizzly Framework...".</li> 
+     </ol> <h4><a name="3.1Performance-DeploymentTimeRegression"></a>Deployment-Time Regression</h2> <p>Here is a comparison of the modules state after a start-domain, a deploy, and an access to the web application for the trunk on 7/22:</p> <p>1. Modules that went from Installed to Active/Resolved:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Connectors Inbound Support  :  Active
+   Admin Utilities classes  :  Resolved
+   JMS Module  :  Active
+   Appserver Core Bootstraping Classes  :  Active
+   GlassFish Web container Embedded APIs  :  Resolved</pre> 
+       </div> 
+      </div>
+     </div> <p>2. New modules that are Active or Resolved:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">libpam4j repackaged as a module &nbsp;: &nbsp;Resolvedlibpam4j repackaged as a module  :  Resolved
+   Versioning Classes  :  Active
+   GlassFish High Availability APIs and SPI  :  Resolved
+   GMS Bootstrap Module  :  Active
+   Apache Felix Bundle Repository  :  Active
+   grizzly-websockets  :  Resolved
+   grizzly-lzma  :  Resolved
+   jersey-core  :  Resolved
+   shoal-gms-impl  :  Resolved
+   Base module for providing support for OSGi in Java EE applications  :  Active
+&nbsp;&nbsp; Jersey server library repackaged as OSGi bundle for GlassFish &nbsp;</pre> 
+       </div> 
+      </div>
+     </div> <p>3. New modules that are Installed:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">shoal-backing-store
+   Backup Restore classes
+   Cluster Admin CLI
+   Cluster Admin
+   Web Container HA code
+   shoal-gms-api
+   Load-Balancer admin
+   GMS Module
+   Cluster SSH Provisioning
+   shoal-cache
+   Jackson JSON processor
+   trilead-ssh2 repackaged as a module
+   Admin Console Clustering Support Plugin
+   Cluster Common
+   jersey-client
+   jersey-json
+   GlassFish ha-file-store</pre> 
+       </div> 
+      </div>
+     </div> <p>4. Old modules that are no longer there:<br> </p>
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">org.jvnet.tiger-types repackaged as module
+   Upgrade Tool
+   Jackson library repackaged as OSGi bundle for GlassFish
+   CLI Framework
+   jsr311-api</pre> 
+       </div> 
+      </div>
+     </div>Here's what we know about why these modules have a different state than from 3.0. &nbsp;We focus first on those that are Active.<p></p> 
+     <ul> 
+      <li>"Cluster Admin" - This module is becoming active because the PostDeployCommand injects a ClusterExecutor even if the application is not being deploy to a cluster. Issue <a href="https://github.com/javaee/glassfish/issues/12574">12574</a> has been filed for this.</li> 
+      <li>"JMS Module" - The JmsProviderLifecycle class was modified to implement the PostStartup interface so that it is automatically activated by a start-domain. This happened in revision 35125 as part of issue <a href="http://https://github.com/javaee/glassfish/issues/11311">11311</a> . Since this is a PostStartup activity, it is not clear that activation of the module has any impact on the startup benchmark (because of&nbsp;parallelism). It is also not clear how much time this module takes to load.&nbsp;</li> 
+      <li>"Connectors Inbound Support" - TBD</li> 
+      <li>"Appserver Core Bootstrapping Classes" - In 3.1, the bootstrapping classes were made into a service that is started by hk2; see revision 35609. So this code was loaded and activated before in 3.0, it's just that hk2 now reports it as activated.&nbsp;</li> 
+      <li>"Versioning Classes" - These are the deployment versioning classes in deployment-versioning.jar. This is part of the new application versioning feature in 3.1. &nbsp;This is active because the deploy command injects the VersionService that is defined by this module. I don't know how much time this takes to load.</li> 
+      <li>"GlassFish GMS Bootstrap Module" - This is a new module that was added in 3.1 for clustering support. &nbsp;It looks at whether any clusters are configured, and if not, does nothing else. Based on the timing above, it appears that this module adds about 50ms to the startup time.&nbsp;</li> 
+      <li>"Apache Felix Bundle Repository" - This is new module that is made active because it is in the "modules/autostart" directory. &nbsp;It adds the OSGi Bundle Repository functionality to GlassFish.&nbsp;</li> 
+      <li>"Base module for providing support for OSGi in Java EE application" - this is made active because it is in the "modules/autostart" directory. &nbsp;This is a new experimental feature in 3.1 that provide the ability to have hybrid applications (OSGi modules and Java EE features). See <a href="http://wikis.sun.com/download/attachments/209654762/GFv3.1-OSGi-onepager-v0.3.txt">OSGi one-pager.</a> &nbsp;This and the previous item add about 8% to the server startup time. &nbsp;Waiting for the Felix 3.1.0 FileInstall release to fix this (issue <a href="https://github.com/javaee/glassfish/issues/12381">12381</a> ).</li> 
+     </ul> <h4><a name="3.1Performance-PerformanceImprovementIdeas"></a>Performance Improvement Ideas</h2> <p>Since the features that have been added for 3.1 will result in at least some startup regression, the only way to achieve the goal of no regression overall for the release is to find ways to improve the performance of the existing system. &nbsp;This section lists ideas and observations that might lead to some performance improvement to make up for the additional code brought in for new 3.1 features.&nbsp;</p> <h4><a name="3.1Performance-JSFLoading"></a>JSF Loading</h3> <p>The JSF modules are resolved during startup as a result of a dependency from the Weld module. The startup benchmark does not involve the use of JSF at all. So if we could prevent JSF from being resolved, then this might save some startup time. A simple test of removing the JSF and Weld modules and the osgi-web-container.jar module that brings in Weld resulted in the domain not starting up at all. NOTE: JSF was resolved as part of 3.0 too, so this idea is not trying to correct a regression. &nbsp;Rather it is looking for an opportunity to make up for other regressions.</p> <h4><a name="3.1Performance-TrussOutputAnalysis"></a>Truss Output Analysis</h3> <p>The truss command on Solaris provides a list of all the system calls that are called during the run of a program. &nbsp;By starting and stopping the DAS under truss, we can look for patterns in the system call output that indicate inefficiencies. Here is a list of observations for the truss output.</p> 
+     <ol> 
+      <li><b>redundant stat64 calls</b>: &nbsp;&nbsp;On a single run, there are 7806 stat64 calls. 4122 of them do not find the file they are looking for. And there are only 3249 unique files that are checked. So this means that more than half of the stat64 calls are redundant. For example, there are 5 stat64 calls on the "refresh.counter" file for every OSGi bundle. That's 1195 calls, all of which do not find the file.&nbsp;There are 1099 calls looking for bundle.state files, 1059 of which do not find the file. Since we have only 239 bundles, we must be calling stat64 for the bundle.state file at least 4 times for each bundle. A problem was found in the Felix code such that these redundant calls can be eliminated. See <a href="https://issues.apache.org/jira/browse/FELIX-2619">FELIX-2619</a> (Richard)</li> 
+      <li><b>revision.location write</b>: The revision.location file is being written for almost every bundle (238 times). The content being written to the revision.location file is the same as what is read in just prior to this, so the write is redundant. The Felix code is being modified to eliminate this. See <a href="https://issues.apache.org/jira/browse/FELIX-2626">FELIX-2626</a> (Richard)</li> 
+      <li><b>derby JAR file access</b>: Many JAR files from the derby installation are being accessed (mainly via stat64) during initial startup, before the OSGi bundles are read in. &nbsp;See issue <a href="https://github.com/javaee/glassfish/issues/13612">13612</a>. (Tom investigating)</li> 
+      <li><b>double stat64 calls on JARs</b>: On almost every JAR file that is read in, there are double stat64 calls, like this:<br> /2:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.0007&nbsp; 0.0001 stat64("/home/trm/test/glassfishv3/glassfish/modules/hk2-core.jar", 0xD025CB90) = 0<br> /2:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.0005&nbsp; 0.0001 stat64("/home/trm/test/glassfishv3/glassfish/modules/hk2-core.jar", 0xD025CB50) = 0<br> /2:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.0005&nbsp; 0.0000 brk(0x08256FF0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = 0<br> This appears to be something in the JDK class loader.</li> 
+      <li><b>double stat64 calls on JARs (2nd case)</b>: On some JARs, stat64 is called 2 times in a row, like this. &nbsp;Since this is a derby JAR, it might be related to item 3.<br> /2:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.0005&nbsp; 0.0001 lwp_cond_signal(0x08192248)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = 0<br> /2:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.0013&nbsp; 0.0001 stat64("<em>/</em><em>home/trm/test/glassfishv3/glassfish/config</em><em>/</em>../../javadb/lib/derbyLocale_ko_KR.jar", 0xD025C590) = 0<br> /2:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.0006&nbsp; 0.0001 stat64("<em>/</em><em>home/trm/test/glassfishv3/glassfish/config</em><em>/</em>../../javadb/lib/derbyLocale_ko_KR.jar", 0xD025C550) = 0<br> /2:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.0007&nbsp; 0.0002 open64("<em>/</em><em>home/trm/test/glassfishv3/glassfish/config</em><em>/</em>../../javadb/lib/derbyLocale_ko_KR.jar", O_RDONLY) = 22<br> /2:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.0005&nbsp; 0.0000 fstat64(22, 0xD025C590)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = 0<br> /2:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.0003&nbsp; 0.0000 fcntl(22, F_GETFD, 0x082CA938)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = 0<br> /2:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.0004&nbsp; 0.0001 fcntl(22, F_SETFD, 0x00000001)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = 0<br> This appears to be something in the JDK class loader.</li> 
+      <li><b>pipe calls</b>: The admin-thread-pool is somehow related to the number of pipe calls that are made by the process. With the default value of 50, there are 55 pipe calls, consuming 110 file descriptors. &nbsp;This seems to be excessive. &nbsp;See issue <a href="https://github.com/javaee/glassfish/issues/13626">13626</a> . Alexey has provided a fix to try that will limit the number of pipes created to the number of threads. Testing in progress.</li> 
+      <li><b>OSGi bundle information file reads</b>: There are 4 small files for each bundle in the OSGi module cache and all for of these are read for every bundle during a start-domain. &nbsp;If these could be reduced, either by having one file per bundle or one file for the entire cache, then maybe there could be some improvement in startup time. &nbsp;Richard provided a quick hack to the felix.jar file that creates one file for each bundle. &nbsp;This saved 9.5% on the start-domain time and 13% on the Felix start time that is shown in the log. Looks promising.&nbsp;</li> 
+     </ol> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Feb 14, 2011 by 
+<font color="#0050B2">trmueller</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

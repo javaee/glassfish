@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GrailsGettingStarted</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GrailsGettingStarted-GettingstartedwithGrails"></a>Getting started with Grails</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#GrailsGettingStarted-GettingstartedwithGrails">Getting started with Grails</a></li> 
+       <ul> 
+        <li><a href="#GrailsGettingStarted-Overview">Overview</a></li> 
+        <li><a href="#GrailsGettingStarted-Install%26Setup">Install &amp; Setup</a></li> 
+        <li><a href="#GrailsGettingStarted-CreateGrailsapplication">Create Grails application</a></li> 
+        <li><a href="#GrailsGettingStarted-DeploymentOnGlassFish">Deployment On GlassFish</a></li> 
+        <ul> 
+         <li><a href="#GrailsGettingStarted-DevelopingyourGrailsapplicationswithGlassFish">Developing your Grails applications with GlassFish</a></li> 
+         <li><a href="#GrailsGettingStarted-DeployonstandaloneGlassFishv3">Deploy on standalone GlassFish v3</a></li> 
+        </ul> 
+        <li><a href="#GrailsGettingStarted-References">References</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="GrailsGettingStarted-Overview"></a>Overview</h2> <p>Grails aims to bring the "coding by convention" paradigm to Groovy. It's an open-source web application framework that leverage the Groovy language and complements Java Web development. You can use Grails as a standalone development environment that hides all configuration details or integrate your Java business logic. Grails aims to make development as simple as possible and hence should appeal to a wide range of developers not just those from the Java community.</p> <p>GlassFish Support For Grails adds Grails framework to GlassFish application server and allows development and easy deployment of Grails applications. Applications can be deployed in shared or standalone mode. Shared mode allows library reuse and results in much smaller war files. It also provides run-app command to develop the grails applications using GlassFish. </p> <h4><a name="GrailsGettingStarted-Install%26Setup"></a>Install &amp; Setup</h2> 
+     <ul> 
+      <li>Install Grails package using the updatetool from your <b><em>GLASSFISH_INSTALL</em>/bin/updatetool</b>. See the image below that shows Grails package. After install is finished, Grails package will be instaled at <b><em>GLASSFISH_INSTALL</em>/glassfish/grails</b></li> 
+     </ul> <p><span class="error">Cannot resolve external resource into attachment.</span></p> 
+     <ul> 
+      <li>Set GRAILS_HOME environment variable and set PATH to include GRAILS_HOME/bin</li> 
+     </ul> 
+     <ul> 
+      <li>create a GRAILS_HOME environment variable that points to the path of the Grails distribution (the folder contain this file).</li> 
+      <li>add the bin folder in the Grails distribution to the PATH environment variable</li> 
+     </ul> <p>On a Windows computer these step are done as follows:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&gt; set GRAILS_HOME=C:\GlassFish\grails
+       &gt; set PATH=%GRAILS_HOME%\bin;%PATH%</pre> 
+       </div> 
+      </div>
+     </div> <p>On a Unix-like computer these steps are done as follows:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&gt; set GRAILS_HOME=~/glassfish/grails
+       &gt; export GRAILS_HOME
+       &gt; cd $GRAILS_HOME
+       &gt; set PATH=$GRAILS_HOME/bin:$PATH
+       &gt; export PATH
+       &gt; chmod a+x $GRAILS_HOME/bin/*</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="GrailsGettingStarted-CreateGrailsapplication"></a>Create Grails application</h2> <p>You can now run the grails command:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&gt; grails create-app BookLibrary</pre> 
+       </div> 
+      </div>
+     </div> <p>For more details on developing Grails application refer to <a href="http://grails.codehaus.org/QuickStart">Grails QuickStart</a><br> and <a href="http://grails.codehaus.org/UserGuide">Grails UserGuide</a>.</p> <h4><a name="GrailsGettingStarted-DeploymentOnGlassFish"></a>Deployment On GlassFish</h2> <h4><a name="GrailsGettingStarted-DevelopingyourGrailsapplicationswithGlassFish"></a>Developing your Grails applications with GlassFish</h3> <p>To run your grails application all you need to do is</p> 
+     <ul> 
+      <li>Go to the application directory, such as</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&gt; cd BookLibrary</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>grails run-app</li> 
+     </ul> <p>This will start GlassFish v3 in embedded mode and deploy the application. You can keep editing your grails applications and refresh the application page in the browser to see the changes without restarting the application.</p> <p><span class="error">Cannot resolve external resource into attachment.</span></p> <p>...</p> <p><span class="error">Cannot resolve external resource into attachment.</span></p> <h4><a name="GrailsGettingStarted-DeployonstandaloneGlassFishv3"></a>Deploy on standalone GlassFish v3</h3> <p>Grails recommends creating a war file using grails war command to package your application for production uses and testing. The all-in one WAR file packages around 49 jars and creates a large WAR file.</p> <p>The GlassFish Grails IPS package that you installed using updatetool, provides grails <b>shared-war</b> command in addition to <b>grails war</b>. <b>shared-war</b> command won't package all the grails dependency in a single war file and saves system resources arising from all-in-one war file. The WAR file created using shared-war is quite small couple hudred KBs compared to about 20 MB.</p> <p>Here is how you would deploy a shared WAR and all in one WAR.</p> 
+     <ul> 
+      <li>Start glassfish domain (if not already started)</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">~/GlassFish/bin/asadmin start-domain</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>Go to the application directory, such as</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">cd BookLibrary</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>Package and deploy the application 
+       <ul> 
+        <li>Lighter, efficient WAR 
+         <ul> 
+          <li>Package a smaller, ligther WAR</li> 
+         </ul> </li> 
+       </ul> </li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">grails shared-war</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li> 
+         <ul> 
+          <li>Deploy on GlassFish</li> 
+         </ul> </li> 
+       </ul> </li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">~/GlassFish/bin/asadmin deploy --libraries $GRAILS_HOME/lib/glassfish-grails.jar BookLibrary-0.1.war</pre> 
+       </div> 
+      </div>
+     </div> <p>Above, you tell GlassFish where the <b>glassfish-grails.jar</b> is. This jar file provides all the grails jars dependencies in it's MANIFEST files. This allows GlassFish to resolve classes required during grails application deployment.</p> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li>All in One WAR 
+         <ul> 
+          <li>Package all in one (results in to a large) WAR</li> 
+         </ul> </li> 
+       </ul> </li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">grails war</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li> 
+         <ul> 
+          <li>Deploy on GlassFish</li> 
+         </ul> </li> 
+       </ul> </li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">~/GlassFish/bin/asadmin deploy BookLibrary-0.1.war</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>Access the application at</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">http://localhost:8080/BookLibrary-1.0/</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="GrailsGettingStarted-References"></a>References</h2> 
+     <ul> 
+      <li><a href="http://groovy.codehaus.org/GettingStartedGuide">Groovy Getting Started Guide</a></li> 
+      <li><a href="http://grails.codehaus.org/QuickStart">Grails QuickStart</a></li> 
+      <li><a href="http://grails.codehaus.org/UserGuide">Grails UserGuide</a></li> 
+     </ul> 
+     <hr> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20873726/21365419.png">grailuc.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20873726/21365420.png">grails-emgf.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20873726/21365421.png">grails-emgf1.png</a> (image/png) 
+      <br> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:49.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

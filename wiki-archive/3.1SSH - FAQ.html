@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : 3.1SSH - FAQ</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>Work in progress.</p> 
+     <div> 
+      <ul> 
+       <li><span class="TOCOutline">1</span> <a href="#3.1SSH-FAQ-HowisSSHusedbyGlassFish3.1%3F">How is SSH used by GlassFish 3.1?</a></li> 
+       <li><span class="TOCOutline">2</span> <a href="#3.1SSH-FAQ-WhatcommandsuseSSHinGlassFish3.1%3F">What commands use SSH in GlassFish 3.1?</a></li> 
+       <li><span class="TOCOutline">3</span> <a href="#3.1SSH-FAQ-What%27saNode%3F">What's a Node?</a></li> 
+       <li><span class="TOCOutline">4</span> <a href="#3.1SSH-FAQ-HowareNodescreated%3F">How are Nodes created?</a></li> 
+       <li><span class="TOCOutline">5</span> <a href="#3.1SSH-FAQ-Whathappenedtothenodeagent%3F">What happened to the node agent?</a></li> 
+       <li><span class="TOCOutline">6</span> <a href="#3.1SSH-FAQ-I%27monWindows%2ChowcanIgetanSSHprovider%3F">I'm on Windows, how can I get an SSH provider?</a></li> 
+       <li><span class="TOCOutline">7</span> <a href="#3.1SSH-FAQ-IjustwanttocreateasmallclusterofinstancesonthesamemachineastheDAS.DoIneedSSH%3FWhat%27stheeasiestwaytodothat%3F">I just want to create a small cluster of instances on the same machine as the DAS. Do I need SSH? What's the easiest way to do that?</a></li> 
+       <li><span class="TOCOutline">8</span> <a href="#3.1SSH-FAQ-Idon%27twhattouseSSH.HowcanIcreateaclusterofremoteinstances%3F">I don't what to use SSH. How can I create a cluster of remote instances?</a></li> 
+       <li><span class="TOCOutline">9</span> <a href="#3.1SSH-FAQ-Ican%27tgetSSHpublickeyauthenticationworking.ssh%281%29keepsaskingformypassword.WhatamIdoingwrong%3F">I can't get SSH public key authentication working. ssh(1) keeps asking for my password. What am I doing wrong?</a></li> 
+       <li><span class="TOCOutline">10</span> <a href="#3.1SSH-FAQ-createnodesshisfailingwith%22Illegalsftppacketlen%3A1651074913%22.Whatisgoingon%3F">create-node-ssh is failing with "Illegal sftp packet len: 1651074913". What is going on?</a></li> 
+       <li><span class="TOCOutline">11</span> <a href="#3.1SSH-FAQ-I%27musingpasswordauthentication.HowdoIpasstheSSHpasswordtocreatenodessh%3F">I'm using password authentication. How do I pass the SSH password to create-node-ssh?</a></li> 
+       <li><span class="TOCOutline">12</span> <a href="#3.1SSH-FAQ-I%27musingpublickeyauthenticationwithanencryptedkey.HowdoIpasstheSSHkeypassphrasetocreatenodessh%3F">I'm using public key authentication with an encrypted key. How do I pass the SSH key passphrase to create-node-ssh?</a></li> 
+       <li><span class="TOCOutline">13</span> <a href="#3.1SSH-FAQ-Howmanyinstancesdoesstartclusterstartinparallel%3F">How many instances does start-cluster start in parallel?</a></li> 
+      </ul>
+     </div> <h5><a name="3.1SSH-FAQ-HowisSSHusedbyGlassFish3.1%3F"></a>How is SSH used by GlassFish 3.1?</h5> <p>For most administrative operations the GlassFish Domain Admin Server (DAS) communicates directly with a running server instance, but for some operations, like creating or starting an instance, this is not possible. In those cases the DAS can use SSH to perform the needed operation on the remote systme.</p> <h5><a name="3.1SSH-FAQ-WhatcommandsuseSSHinGlassFish3.1%3F"></a>What commands use SSH in GlassFish 3.1?</h5> <p>create-instance, start-instance, delete-instance, start-cluster</p> <p>SSH is only needed if the instances being operated on are remote from the DAS.</p> <h5><a name="3.1SSH-FAQ-What%27saNode%3F"></a>What's a Node?</h5> <p>A Node represents a GlassFish installation on a host. It is a GlassFish configuration construct. Any system that will be hosting GlassFish instances must have a Node created for it. The system comes with one built-in node "localhost" that can be used for instances local to the DAS.</p> <p>GlassFish 3.1 supports two types of nodes:</p> 
+     <ul> 
+      <li>SSH nodes that are used for nodes that can be reached via SSH</li> 
+      <li>CONFIG nodes that are used for nodes that are not reached via SSH (The "localhost" node is a CONFIG node)</li> 
+     </ul> <h5><a name="3.1SSH-FAQ-HowareNodescreated%3F"></a>How are Nodes created?</h5> <p>For SSH nodes you need to create them explicitly using create-noode-ssh.</p> <p>CONFIG nodes can be created explicitly using create-node-config, or in some cases they can be auto-created when an instance is created using create-local-instance.</p> <h5><a name="3.1SSH-FAQ-Whathappenedtothenodeagent%3F"></a>What happened to the node agent?</h5> <p>The node agent did not make the feature list for 3.1. A number of GlassFish customers had requested the ability to run GlassFish clusters without the node agent. So our emphasis was on providing the ability to do that, and then using the SSH support to provided some (but not all) of the capabilities that the v2 node agent provided.</p> <h5><a name="3.1SSH-FAQ-I%27monWindows%2ChowcanIgetanSSHprovider%3F"></a>I'm on Windows, how can I get an SSH provider?</h5> <p>We recommend Cygwin or MKS Toolkit. See section three at <a href="http://blogs.oracle.com/dipol/entry/glassfish_3_1_using_ssh">Using SSH to Manage Instance Lifecycles</a>.</p> <h5><a name="3.1SSH-FAQ-IjustwanttocreateasmallclusterofinstancesonthesamemachineastheDAS.DoIneedSSH%3FWhat%27stheeasiestwaytodothat%3F"></a>I just want to create a small cluster of instances on the same machine as the DAS. Do I need SSH? What's the easiest way to do that?</h5> <p>No SSH needed. Here is an example of a two instance cluster with both instances co-located with the DAS:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">asadmin create-cluster c1
+asadmin create-local-instance --cluster c1 instance1
+asadmin create-local-instance --cluster c1 instance2
+asadmin start-cluster c1</pre> 
+       </div> 
+      </div>
+     </div> <h5><a name="3.1SSH-FAQ-Idon%27twhattouseSSH.HowcanIcreateaclusterofremoteinstances%3F"></a>I don't what to use SSH. How can I create a cluster of remote instances?</h5> <p>If you do not want to use SSH for managing remote instances you can still create and manage them using the local version of asadmin commands. Also, due to an "auto-node creation" feature you don't have to explicitly create any nodes before hand. For example if you have this setup:</p> 
+     <ul> 
+      <li>GlassFish installation on three systems: systemA, systemB, systemC</li> 
+      <li>DAS running on systemA</li> 
+     </ul> <p>Then you can create a cluster by doing this:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false"># On systemA
+asadmin create-cluster c1
+# Log into systemB
+asadmin --host systemA create-local-instance --cluster c1 instanceB
+asadmin start-local-instance instanceB
+# Log into systemC
+asadmin --host systemA create-local-instance --cluster c1 instanceC
+asadmin start-local-instance instanceC</pre> 
+       </div> 
+      </div>
+     </div> <p>In this case you can't use start-cluster to start the cluster. You must use start-local-instance to start each instance (or use the asadmin create-service command to install the instance as a native service).</p> <h5><a name="3.1SSH-FAQ-Ican%27tgetSSHpublickeyauthenticationworking.ssh%281%29keepsaskingformypassword.WhatamIdoingwrong%3F"></a>I can't get SSH public key authentication working. ssh(1) keeps asking for my password. What am I doing wrong?</h5> <p>It can be any number of issues, such as not having permissions to the private key file, an incorrect entry in the remote user's $HOME/.ssh/authorized_keys file, incorrect host name resolution, etc. &nbsp;One option is to run the ssh client using the -v option for verbose debugging output (up to 3 -v's for increasing levels of detail) to help with locating the issue. &nbsp;Another option is to run the sshd server with the -d option to get debugging output (up to 3 -d's for increasing level of detail). &nbsp;</p> <h5><a name="3.1SSH-FAQ-createnodesshisfailingwith%22Illegalsftppacketlen%3A1651074913%22.Whatisgoingon%3F"></a>create-node-ssh is failing with "Illegal sftp packet len: 1651074913". What is going on?</h5> <p>Turns out this is a fairly common problem that can be encountered by sftp. It's caused by a startup file on the remote system (.bashrc, .profile, /etc/csh.chrc, .login, etc) that has a statement that outputs text messages on login (typically to be read by humans). This output corrupts the SFTP/SSH session since it is interpreted as a file-transfer protocol packet. Some details here: <a href="http://www.snailbook.com/faq/sftp-corruption.auto.html">http://www.snailbook.com/faq/sftp-corruption.auto.html</a></p> <p>Resolution is to make sure that none of your startup files display text for non-interactive shells. One way to test for an interactive shell is:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">case $- in
+*i*) # do things for interactive shell
+;;
+*) # do things for non-interactive shell
+;;
+esac</pre> 
+       </div> 
+      </div>
+     </div> <h5><a name="3.1SSH-FAQ-I%27musingpasswordauthentication.HowdoIpasstheSSHpasswordtocreatenodessh%3F"></a>I'm using password authentication. How do I pass the SSH password to create-node-ssh?</h5> <p>You use the asadmin password file. To do this securely you should create a GlassFish password alias for the password first. See section 3.2 here: <a href="./3.1SSHAuthentication.html">http://wikis.sun.com/display/GlassFish/3.1SSHAuthentication</a></p> <h5><a name="3.1SSH-FAQ-I%27musingpublickeyauthenticationwithanencryptedkey.HowdoIpasstheSSHkeypassphrasetocreatenodessh%3F"></a>I'm using public key authentication with an encrypted key. How do I pass the SSH key passphrase to create-node-ssh?</h5> <p>You use the asadmin password file. To do this securely you should create a GlassFish password alias for the key passphrase first. See section 2.2 here: <a href="./3.1SSHAuthentication.html">http://wikis.sun.com/display/GlassFish/3.1SSHAuthentication</a></p> <h5><a name="3.1SSH-FAQ-Howmanyinstancesdoesstartclusterstartinparallel%3F"></a>How many instances does start-cluster start in parallel?</h5> <p>start-cluster takes the size of the admin thread pool (50 by default) and divides that number in half to determine the max number of concurent instances it will start. So by default start-cluster will start up to 25 instances concurrently.</p> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Dec 14, 2010 by 
+<font color="#0050B2">dipol</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : PhobosToolPlugins</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="PhobosToolPlugins-PluginSuiteModule"></a>Plugin Suite Module</h2> <p></p>
+     <div class="panel" style="border-width: 1px;">
+      <div class="panelContent"> 
+       <hr> 
+       <p>Jspwiki style: sortable</p> 
+      </div>
+     </div>table-filter<p></p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <td class="confluenceTd"> In order to build all these new NetBeans modules, a module suite (NetBeans definition) will be created and will contain them. This way, the build steps, dependency management and creation of NBM will be done via this module of modules. This module does not add any features in NetBeans. This is out the project manager looks like when the suite is opened. A "build NBMs" popup menu is available on the prject suite node to build all the dependent modules. </td> 
+         <td class="confluenceTd"> <span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20875917/21364850.png" style="border: 0px solid black"></span> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>%%<br> %%</p> <p>Suite location: acvs/phobos/ide-plugins/netbeans-plugins</p> <h4><a name="PhobosToolPlugins-PhobosWebFrameworkprovider"></a>Phobos Web Framework provider</h2> <p>A NetBeans web framework provider module that adds the Phobos runtime as a framework to be added to any Web Applications project. The plugin will also provide wizards to create simple JS or EJS files. We will not deliver a JavaScript editor and will rely on an external Javascript editor (<a href="http://www.liguorien.org/jseditor">http://www.liguorien.org/jseditor</a>) for the NetBeans 5.5 timeframe.</p> <p>Module location: acvs/phobos/ide-plugins/netbeans-plugins/phobos-framework-provider</p> <p>The Phobos web framework can be added to a regular Web Application during project creation (optional task) by selecting it in the list of published frameworks. The jMaki framework is also automatically added whenever the user selects the phobos framework as shown below:</p> <p><span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20875917/21364839.png" style="border: 0px solid black"></span></p> <p>The resulting Web application contains the Phobos application structure in the WEB-INF area:</p> <p><span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20875917/21364838.png" style="border: 0px solid black"></span></p> <p>The jMaki and Phobos Runtime libraries are automatically added to the Web App libraries. The user can decide to include them in the WAR or not via the project properties (standard way for any Web Application in NetBeans):</p> <p><span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20875917/21364849.png" style="border: 0px solid black"></span></p> <p>Also, when the Phobos framework is added to a Web Application, the web.xml is automatically modified with the correct servlet entries. The user can see or edit other parameters via the graphical or text editor for web.xml as sgown below:</p> <p><span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20875917/21364845.png" style="border: 0px solid black"></span></p> <h4><a name="PhobosToolPlugins-Phobossimpleprojecttype%28EmbeddedPhobosruntime%29"></a>Phobos simple project type (Embedded Phobos runtime)</h2> <p>In order to develop faster Phobos application, a simple project type will be available.This is an enabler for the Phobos debugger module. The same new wizards added via the Phobos web framework module will be available.</p> <p>Module location: acvs/phobos/ide-plugins/netbeans-plugins/phobos-project<br> <span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20875917/21364854.png" style="border: 0px solid black"></span></p> <p><span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20875917/21364848.png" style="border: 0px solid black"></span></p> <p>After the wizard finishes, a Phobos application project with correct structure, a default controller, view and script is created. The jMaki framework is also added in the static area. The jMaki palette is available on the *.EJS files (compliment of the jMaki plugin).</p> <p><span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20875917/21364844.png" style="border: 0px solid black"></span></p> <p>On the project popup menu, there are 2 important actions: Run and Debug. Run or Debug will launch in a separate NetBeans thread the Phobos container runtime as embedded. When debug is used, the IDE attaches automatically to the Rhino Engine from Phobos and it can debug javascript files. (So far, Rhino does not have remote debugging API, this is why we need to run in the same process as the NetBeans process).</p> <p>Debugging Javascript files relies on the presence of the external Javascript editor.</p> <p>Other popup menu will allow the user to save this project as a binary WAR file, of as a NetBeans Web Application project. Another action can display some Phobos page for some documentation.</p> <p><span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20875917/21364847.png" style="border: 0px solid black"></span></p> <p>A phobos project will have some properties that can be edited in the Properties page. The content is TBD for now:</p> <p><span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20875917/21364846.png" style="border: 0px solid black"></span></p> <p>The user can add JARs, Libraries or other Java projects to a Phobos application. Doing that automatically add the jars to the internal Phobos classpath so that these new APIs can be accessed in Javascript rhino engine. For example, a user can add a JPA library containing persistent Java Object mapped to a database. These JPA objects can then be used in a Phobos server side environment. One can use the CRUD generator (available as a Phobos System App) to generate CRUD views (EJS) based on a JPA persistence provider.</p> <p><span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20875917/21364842.png" style="border: 0px solid black"></span></p> <p>jMakei components library is available via the Palette DnD for *.EJS files:</p> <p><span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20875917/21364843.png" style="border: 0px solid black"></span></p> <p>Finally, we'll provide wizards to create JavaScript, controller, and Views (stylized EJS based on a predefined set of CSS templates:</p> <p><span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20875917/21364841.png" style="border: 0px solid black"></span></p> <h4><a name="PhobosToolPlugins-PhobosJavaScriptDebuggger%28EmbeddedPhobosruntime%29"></a>Phobos JavaScript Debuggger (Embedded Phobos runtime)</h2> <p>This plugin will rely on the simple Phobos project type and using the in-process capability of Phobos (Phobos Runtime running in the same VM as the NetBeans IDE), will allow a user to set breakpoints, watch javascript variables, inspect javascript variables on scripts running on the server side. Since the Rhino Javascript engine does not expose remote APIs for debugging, running in process of the NetBeans IDE is the only way to enable JavaScript debugging. Later on (JDK 1.7?) remote debugging might be added when the Rhino engine evolves.</p> <p>Module location: acvs/phobos/ide-plugins/netbeans-plugins/local-debugger</p> <p>Debug Call Stack:</p> <p><span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20875917/21364851.png" style="border: 0px solid black"></span></p> <p>Debu Local Variable inspection:</p> <p><span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20875917/21364840.png" style="border: 0px solid black"></span></p> <h4><a name="PhobosToolPlugins-PhobosDebugggerAPIlibrarywrapper"></a>Phobos Debuggger API library wrapper</h2> <p>Module location: acvs/phobos/ide-plugins/netbeans-plugins/phobos-debugger-api</p> <h4><a name="PhobosToolPlugins-PhobosSamplesModule"></a>Phobos Samples Module</h2> <p>A NetBeans module that add all the Phobos samples as projects in the new project wizard. It is similar to the J2EE Blueprints module and the user can pick and choose a sample project and install it in the IDE to run it, debug it and possibly modify it.</p> <p>Module location: acvs/phobos/ide-plugins/netbeans-plugins/PhobosSamples</p> <p>List of existing Sample Phobos Apps, as NetBeans Phobos projects:</p> <p><span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20875917/21364852.png" style="border: 0px solid black"></span></p> <h4><a name="PhobosToolPlugins-PhobosServerModule"></a>Phobos Server Module</h2> <p>Module location: acvs/phobos/ide-plugins/netbeans-plugins/phobos-server</p> <h4><a name="PhobosToolPlugins-JSFextensionwebframeworkprovided"></a>JSF-extension web framework provided</h2> <p>A simple NetBeans web framework provider module that exposes the jsf-extensions APIS with their Javadoc as a framework to be added to any Web Applications project.</p> <h4><a name="PhobosToolPlugins-Romelibraryprovider"></a>Rome library provider</h2> <p>A simple NetBeans library wrapper module that exposes the ROME APIS with their Javadoc for Code completion.</p> <h4><a name="PhobosToolPlugins-JSONlibraryprovider"></a>JSON library provider</h2> <p>A simple NetBeans library wrapper module that exposes the JSON APIS with their Javadoc for Code completion.</p> 
+     <hr> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875917/21364851.png">debugcallstack.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875917/21364846.png">projectproperties.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875917/21364847.png">projectmenu.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875917/21364848.png">projectwizard.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875917/21364840.png">debuglocalvars.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875917/21364841.png">phobosfilewizards.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875917/21364852.png">phobossamples.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875917/21364850.png">suite.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875917/21364849.png">webapplibraries.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875917/21364845.png">webxml.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875917/21364844.png">projectstructure.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875917/21364838.png">webappwithphobos.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875917/21364839.png">webframeworkprovider.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875917/21364842.png">librariespopup.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875917/21364854.png">projecttype.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875917/21364843.png">dndjMaki.png</a> (image/png) 
+      <br> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 08, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

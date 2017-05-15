@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : AppClientContainer3.1</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="AppClientContainer3.1-GlassFishServerOpenSourceEdition3.1AppClientContainerImprovements"></a>GlassFish Server Open Source Edition 3.1 - App Client Container Improvements</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#AppClientContainer3.1-GlassFishServerOpenSourceEdition3.1AppClientContainerImprovements">GlassFish Server Open Source Edition 3.1 - App Client Container Improvements</a></li> 
+       <ul> 
+        <li><a href="#AppClientContainer3.1-Scope">Scope</a></li> 
+        <li><a href="#AppClientContainer3.1-MilestoneSchedule">Milestone Schedule</a></li> 
+        <li><a href="#AppClientContainer3.1-TaskList">Task List</a></li> 
+        <li><a href="#AppClientContainer3.1-OnePager">One Pager</a></li> 
+        <li><a href="#AppClientContainer3.1-SubProjects">Sub Projects</a></li> 
+        <li><a href="#AppClientContainer3.1-DevTests">Dev Tests</a></li> 
+        <li><a href="#AppClientContainer3.1-EmailAlias">Email Alias</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="AppClientContainer3.1-Scope"></a>Scope</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Priority </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> Eng Response </th> 
+         <th class="confluenceTh"> Owner(s) </th> 
+         <th class="confluenceTh"> Estimate (Man Days) </th> 
+         <th class="confluenceTh"> Source of Requirement </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> RC-2 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Reduce footprint required by Application Client container </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Tim </td> 
+         <td class="confluenceTd"> 15+ </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/4109">PCD 4109 </a> </td> 
+         <td class="confluenceTd"> Java Web Start now supports indexing, but perhaps not across extension components which we must use. Could use older part/package approach but labor-intensive. Very unlikely that other module owners will be able to partition their modules into server-only and client-side modules for 3.1. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> RC-6 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> WebStart needs a way for user to influence JNLP generation (add native dll/so) </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Tim </td> 
+         <td class="confluenceTd"> 15 </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/4113">PCD 4113 </a> </td> 
+         <td class="confluenceTd"> Latent support for this is in GlassFish 3.0. Needs asarch review for new exposed interfaces; needs testing, doc. Some of this time for auto-testing of Java Web Start-launched clients (which does not yet exist). </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> RC-7 </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> Enhance JWS app client to create Windows Shortcut </td> 
+         <td class="confluenceTd"> yes </td> 
+         <td class="confluenceTd"> Tim </td> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/4114">PCD 4114 </a> </td> 
+         <td class="confluenceTd"> This will be a freebie as part of RC-6. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> Cluster support </td> 
+         <td class="confluenceTd"> yes </td> 
+         <td class="confluenceTd"> Tim </td> 
+         <td class="confluenceTd"> 3 </td> 
+         <td class="confluenceTd"> GlassFish 2 feature parity </td> 
+         <td class="confluenceTd"> Client-side changes should already be in-place. Server-side changes to retrieve currently-active ORB endpoints depends on ORB. This ORB feature was in 2.x. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> WLS DD support </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Tim </td> 
+         <td class="confluenceTd"> 4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Support WLS-specific deployment descriptor </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> GF-ize sun-* DDs. Change sun-<b>.xml to gf- (or glassfish-)</b>.xml </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Tim </td> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> We will need to find out where the new DDs should reside: java.sun.com or xxx.oracle.com? Who will decide and if anything needs to be set up, who will do that? </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="AppClientContainer3.1-MilestoneSchedule"></a>Milestone Schedule</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1. </td> 
+         <td class="confluenceTd"> Milestone 3 (07/19) </td> 
+         <td class="confluenceTd"> RC-6 </td> 
+         <td class="confluenceTd"> User-provided JNLP merged with generated JNLP </td> 
+         <td class="confluenceTd"> yes </td> 
+         <td class="confluenceTd"> Aiming for this, earlier, milestone so users can begin to work with this and provide feedback in time to affect the released product. <b>Updated on 6/15:</b> Feedback from asarch review triggered additional discussions and work on this. Deferring to MS 3 although I expect to complete this shortly after MS 2. No downstream tasks in other modules depend on this. <b>Update 7/19</b>: Implementation complete; handoff tbd. <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2. </td> 
+         <td class="confluenceTd"> Milestone 3 (07/19) </td> 
+         <td class="confluenceTd"> RC-6 </td> 
+         <td class="confluenceTd"> Auto-testing for Java Web Start launches </td> 
+         <td class="confluenceTd"> QA only </td> 
+         <td class="confluenceTd"> Handoff will be to explain how the autotesting works so QA can decide if and how to adapt it to their needs. <b>Updated on 6/15:</b> Awaiting answer from Alex P. on who on the quality team I should be working with on this. Practically, not likely to happen by MS 2 deadline so deferring to MS 3.<b>Update 7/19:</b> Alex to schedule meeting during week of 7/26 with Lidia and me to discuss my proposed changes. <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3. </td> 
+         <td class="confluenceTd"> Milestone 3 (07/19) </td> 
+         <td class="confluenceTd"> RC-7 </td> 
+         <td class="confluenceTd"> Windows shortcut for Java Web Start clients </td> 
+         <td class="confluenceTd"> yes </td> 
+         <td class="confluenceTd"> Should be available as part of RC-6. <b>Updated 6/15:</b> Will occur as part of item 1 so this is also deferred to MS 3. <b>Update 7/19:</b> Done.&nbsp; (actually, part of #1) <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4. </td> 
+         <td class="confluenceTd"> Milestone 3 (07/19) </td> 
+         <td class="confluenceTd"> RC-2 </td> 
+         <td class="confluenceTd"> Exploration of indexing of JARs to optimize Java Web Start launches </td> 
+         <td class="confluenceTd"> no </td> 
+         <td class="confluenceTd"> The feature might not work in Java Web Start itself as we need it to. If it does it would help optimize Java Web Start launches. <b>Update 7/19</b>: Does not seem to have the desired effect.&nbsp; Hope to continue work on this for MS 4, time permitting. <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5. </td> 
+         <td class="confluenceTd"> Milestone 3 (07/19) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Convert sun-<b>.xml DDs to glassfish-</b>.xml </td> 
+         <td class="confluenceTd"> no </td> 
+         <td class="confluenceTd"> <b>Update 7/19</b>: complete <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6. </td> 
+         <td class="confluenceTd"> Milestone 4 (08/16) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Support WLS DDs </td> 
+         <td class="confluenceTd"> <del>yes</del> no </td> 
+         <td class="confluenceTd"> Won't do this, per Adam L's advice. <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 7. </td> 
+         <td class="confluenceTd"> Milestone 5 (09/13) </td> 
+         <td class="confluenceTd"> n/a </td> 
+         <td class="confluenceTd"> Support for -targetserver option on appclient using multiple endpoint addresses </td> 
+         <td class="confluenceTd"> yes </td> 
+         <td class="confluenceTd"> Coding on the client side should already be in-place. Will need testing to show that all values are used as appropriate, which needs to wait for other clustering and ORB functionality to be in place (scheduled for MS 5). </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 8. </td> 
+         <td class="confluenceTd"> Milestone 5 (09/13) </td> 
+         <td class="confluenceTd"> RC-2 </td> 
+         <td class="confluenceTd"> Any possible refactoring of other modules to trim their client-side footprint. </td> 
+         <td class="confluenceTd"> no </td> 
+         <td class="confluenceTd"> Dependent on other modules. For any such refactoring, only minor changes in the app client container build will be required. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="AppClientContainer3.1-TaskList"></a>Task List</h2> 
+     <div class="panel" style="border-width: 1px;"></div> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task </th> 
+         <th class="confluenceTh"> Target Milestone </th> 
+         <th class="confluenceTh"> Start Date </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Owner(s) </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Clarify indexing support in JWS. </td> 
+         <td class="confluenceTd"> MS 1 (05/24) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 05/24 </td> 
+         <td class="confluenceTd"> Tim </td> 
+         <td class="confluenceTd"> RC-2 </td> 
+         <td class="confluenceTd"> No response from JWS team. We could build an index of all the client and GF JARs into the generated facade JAR which is the main JAR. Definitely a nice-to-have at this point; it never was a release driver. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Study effect of simply ordering JAR list in the JNLP and marking all as "lazy" download. </td> 
+         <td class="confluenceTd"> MS 2 (06/21) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 06/21 </td> 
+         <td class="confluenceTd"> Tim </td> 
+         <td class="confluenceTd"> RC-2 </td> 
+         <td class="confluenceTd"> If this fairly simple approach helps then the part/package work might not be needed or worth it. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Search for and remove any unneeded module dependencies from ACC. </td> 
+         <td class="confluenceTd"> MS 3 (07/19) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 07/09 </td> 
+         <td class="confluenceTd"> Tim </td> 
+         <td class="confluenceTd"> RC-2 </td> 
+         <td class="confluenceTd"> Might not yield any improvement but I need to make sure ACC depends on as few other modules as possible. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Prepare for and undergo asarch review for custom JNLP support. </td> 
+         <td class="confluenceTd"> MS 2 (06/21) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 06/15 </td> 
+         <td class="confluenceTd"> Tim </td> 
+         <td class="confluenceTd"> RC-6 </td> 
+         <td class="confluenceTd"> Currently scheduled for 6/9. <b>Updated 6/15:</b> Review was conducted 6/9. Some additional one-pager updates required. <b>Update:</b> one-pager updated.&nbsp; <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Refactor (if needed) current JNLP generation code so it can be called from tests to simplify testing. </td> 
+         <td class="confluenceTd"> MS 2 (06/21) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 06/15 </td> 
+         <td class="confluenceTd"> Tim </td> 
+         <td class="confluenceTd"> RC-6 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Perform custom JNLP hand-off to QA, doc </td> 
+         <td class="confluenceTd"> MS 3 (07/19) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 07/19 </td> 
+         <td class="confluenceTd"> Tim </td> 
+         <td class="confluenceTd"> RC-6 </td> 
+         <td class="confluenceTd"> Implementation done.&nbsp; Handoff meeting done with SQE; they are reviewing. Handoff with doc Tues. 8/16. <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Find out details of WLS app client DD </td> 
+         <td class="confluenceTd"> MS 4 (08/16) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 08/01 </td> 
+         <td class="confluenceTd"> Tim </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Done.&nbsp; See next item. <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Implement support for WLS app client DD </td> 
+         <td class="confluenceTd"> MS 4 (08/16) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 08/16 </td> 
+         <td class="confluenceTd"> Tim </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Won't do this, per Adam's L's advice.<br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Create initial version of Java Web Start auto-testing infrastructure </td> 
+         <td class="confluenceTd"> MS 4 (08/16) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 08/16 </td> 
+         <td class="confluenceTd"> Tim </td> 
+         <td class="confluenceTd"> RC-6 (and gen'l) </td> 
+         <td class="confluenceTd"> Done.&nbsp; Handed off to SQE for them to assess and, ideally, incorporate into their testing framework. <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Add tests for using multiple values with -targetserver option on appclient command </td> 
+         <td class="confluenceTd"> MS 5 (09/13) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 09/13 </td> 
+         <td class="confluenceTd"> Tim </td> 
+         <td class="confluenceTd"> cluster support </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Finalize JWS auto-testing </td> 
+         <td class="confluenceTd"> MS 5 (09/13) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 09/13 </td> 
+         <td class="confluenceTd"> Tim </td> 
+         <td class="confluenceTd"> RC-6 (and gen'l) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Bug fixes </td> 
+         <td class="confluenceTd"> MS 6 (11/22) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Tim </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="AppClientContainer3.1-OnePager"></a>One Pager</h2> <p><a href="Gfv31JNLPCustomization.html" title="Gfv31JNLPCustomization">JNLP Customization </a></p> <h4><a name="AppClientContainer3.1-SubProjects"></a>Sub Projects</h2> <p>None so far</p> <h4><a name="AppClientContainer3.1-DevTests"></a>Dev Tests</h2> <p>Most dev tests for the ACC are actually part of the deployment and EJB tests, both of which rely heavily on the ACC. My hope and goal for 3.1 is to allow the deployment and EJB devtests to launch app clients using Java Web Start by simply setting a property; how close we can get to that remains to be seen, partly because Java Web Start itself is geared to GUIs.</p> <h4><a name="AppClientContainer3.1-EmailAlias"></a>Email Alias</h2> 
+     <ul> 
+      <li>Please use <a href="mailto:dev@glassfish.java.net">dev@glassfish.java.net</a></li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Aug 10, 2010 by 
+<font color="#0050B2">timq</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

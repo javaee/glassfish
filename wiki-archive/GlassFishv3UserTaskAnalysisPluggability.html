@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFishv3UserTaskAnalysisPluggability</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>&lt;h1&gt;GlassFish v3 User Task Analysis for Pluggability&lt;/h1&gt;</p> <p>Back to <a href="GlassFishV3UserTaskAnalyses.html" title="GlassFishV3UserTaskAnalyses">GlassFish v3 User Task Analyses</a></p> 
+     <div> 
+      <ul> 
+       <li><a href="#GlassFishv3UserTaskAnalysisPluggability-Scope">Scope</a></li> 
+       <li><a href="#GlassFishv3UserTaskAnalysisPluggability-RelatedInformation">Related Information</a></li> 
+       <li><a href="#GlassFishv3UserTaskAnalysisPluggability-ListofTasks">List of Tasks</a></li> 
+       <ul> 
+        <li><a href="#GlassFishv3UserTaskAnalysisPluggability-DeveloperTasks">Developer Tasks</a></li> 
+        <li><a href="#GlassFishv3UserTaskAnalysisPluggability-AdministratorTasks">Administrator Tasks</a></li> 
+       </ul> 
+       <li><a href="#GlassFishv3UserTaskAnalysisPluggability-AssociatedConcepts">Associated Concepts</a></li> 
+       <ul> 
+        <li><a href="#GlassFishv3UserTaskAnalysisPluggability-MonitoringInterfacesSummary">Monitoring Interfaces Summary</a></li> 
+       </ul> 
+       <li><a href="#GlassFishv3UserTaskAnalysisPluggability-Availability">Availability</a></li> 
+      </ul>
+     </div> <h4><a name="GlassFishv3UserTaskAnalysisPluggability-Scope"></a>Scope</h1> <p>To determine:</p> 
+     <ul> 
+      <li>The tasks that developers must perform by using GlassFish v3 interfaces for pluggability to develop plugins for GlassFish. This scope is limited only to those tasks that ensure that the plugin is a suitable GlassFish plugin.</li> 
+      <li>The tasks that an administrator must perform to add or remove plugins for GlassFish.</li> 
+     </ul> <h4><a name="GlassFishv3UserTaskAnalysisPluggability-RelatedInformation"></a>Related Information</h1> <p><a href="GlassFishV3DocPlanPlugInDev.html" title="GlassFishV3DocPlanPlugInDev">Document Plan</a></p> <h4><a name="GlassFishv3UserTaskAnalysisPluggability-ListofTasks"></a>List of Tasks</h1> <h4><a name="GlassFishv3UserTaskAnalysisPluggability-DeveloperTasks"></a>Developer Tasks</h2> <p>All developer tasks will be explained in a new document: <a href="GlassFishV3DocPlanPlugInDev.html" title="GlassFishV3DocPlanPlugInDev">Sun GlassFish Enterprise Server v3 Prelude Add-On Component Development Guide</a>.</p> 
+     <ul> 
+      <li>Identify a class as a plugin</li> 
+      <li>Extend the Administration Console GUI 
+       <ul> 
+        <li>Specify the ID of a plugin</li> 
+        <li>Add functionality to existing pages: 
+         <ul> 
+          <li>Add a tab to a page</li> 
+          <li>Add a page to the console</li> 
+          <li>Add a node to the tree</li> 
+          <li>Add a task to the Common Tasks page</li> 
+          <li>Add elements to a page<font color="green"> ADDED Aug 28</font></li> 
+         </ul> </li> 
+        <li>Add online help</li> 
+        <li>Add internationalization support</li> 
+        <li>Replace the content of an existing application with new content</li> 
+        <li>Remove or change existing content</li> 
+        <li>Add an integration point<font color="green"> ADDED Aug 28</font></li> 
+       </ul> </li> 
+      <li>Add an <tt>asadmin</tt> command</li> 
+      <li>Change the theme or brand of the user interface: 
+       <ul> 
+        <li>Change the theme or brand of the Administration Console GUI</li> 
+        <li>Change the theme or brand of the of <tt>asadmin</tt> CLI</li> 
+       </ul> </li> 
+      <li>Add container capabilities 
+       <ul> 
+        <li>Implement a container</li> 
+        <li>Implement connector interfaces</li> 
+        <li>(Optional)Implement pluggable configuration</li> 
+        <li>(Optional)Add AMX configuration</li> 
+        <li>(Optional)Define new commands for configuration</li> 
+       </ul> </li> 
+      <li>Add deployment capabilities<font color="green"> ADDED Aug 28</font> 
+       <ul> 
+        <li>Add an archive type<font color="green"> ADDED Aug 28</font></li> 
+        <li>Add an annotation processor<font color="green"> ADDED Aug 28</font></li> 
+        <li>Add a class loader implementation<font color="green"> ADDED Aug 28</font></li> 
+       </ul> </li> 
+      <li>Plug an OSGi bundle in GlassFish v3 runtime</li> 
+      <li>Specify the package name of plugin</li> 
+      <li>Package and deliver a plugin</li> 
+     </ul> <h4><a name="GlassFishv3UserTaskAnalysisPluggability-AdministratorTasks"></a>Administrator Tasks</h2> <p>Administrator tasks will be explained in the <a href="GlassFishV3DocPlanAdminGuide.html" title="GlassFishV3DocPlanAdminGuide">Administration Guide</a> and the <a href="GlassFishV3DocPlanAdminGUIOLH.html" title="GlassFishV3DocPlanAdminGUIOLH">Administration Console GUI Online Help</a>.</p> 
+     <ul> 
+      <li>Manage plugins 
+       <ul> 
+        <li>Manage plugins by using Update Tool</li> 
+        <li>Manage plugins by other means</li> 
+       </ul> </li> 
+     </ul> <h4><a name="GlassFishv3UserTaskAnalysisPluggability-AssociatedConcepts"></a>Associated Concepts</h1> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Concept</th> 
+         <th class="confluenceTh">Task </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> OSGi </td> 
+         <td class="confluenceTd">All </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Integration points </td> 
+         <td class="confluenceTd">Extend the Administration Console GUI and subtasks Add an integration point </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Administration Console architecture (a web application that is composed of OSGi bundles) </td> 
+         <td class="confluenceTd">Extend the Administration Console GUI and subtasks </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Templates </td> 
+         <td class="confluenceTd">Extend the Administration Console GUI and subtasks </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>asadmin</tt> client-server protocol}} </td> 
+         <td class="confluenceTd">Add <tt>asadmin</tt> command </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishv3UserTaskAnalysisPluggability-MonitoringInterfacesSummary"></a>Monitoring Interfaces Summary</h2> <p>Key to documents in Citation column:</p> 
+     <ul> 
+      <li>P - <a href="GFV3PluggabilityOnePager.html" title="GFV3PluggabilityOnePager">GF v3 Pluggability One Pager</a> for the v3 Prelude release</li> 
+      <li>M - <a href="GFV3MonitoringOnePager.html" title="GFV3MonitoringOnePager">GF v3 Monitoring One Pager</a> for the v3 Prelude release</li> 
+     </ul> <p>%%sortable</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Interface</th> 
+         <th class="confluenceTh">Citation</th> 
+         <th class="confluenceTh">Type </th> 
+         <th class="confluenceTh">Package </th> 
+         <th class="confluenceTh">Description </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>Monitor</tt> </td> 
+         <td class="confluenceTd"> P:4.1.3 </td> 
+         <td class="confluenceTd"> Interface </td> 
+         <td class="confluenceTd"> Not found </td> 
+         <td class="confluenceTd">Contract to enable a component to expose monitoring data therough an HK2 service. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>MonitorData</tt> </td> 
+         <td class="confluenceTd"> P:4.1.3 </td> 
+         <td class="confluenceTd"> Annotation </td> 
+         <td class="confluenceTd"> Not found </td> 
+         <td class="confluenceTd">Annotation to mark parameters as monitoring data. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>ProbeProviderFactory</tt> </td> 
+         <td class="confluenceTd"> M:4.1.1.1 M:4.5.1.2 </td> 
+         <td class="confluenceTd"> Interface </td> 
+         <td class="confluenceTd"> <tt>org.glassfish.flashlight.provider</tt> </td> 
+         <td class="confluenceTd">Factory class to generate implementation classes of event providers. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>ProbeProvider</tt> </td> 
+         <td class="confluenceTd"> M:4.1.1.2 </td> 
+         <td class="confluenceTd"> Annotation </td> 
+         <td class="confluenceTd"> Not found <sup><a href="#GlassFishv3UserTaskAnalysisPluggability-1">1</a></sup> </td> 
+         <td class="confluenceTd">Annotation to designate an interface as an event provider. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>ProbeName</tt> </td> 
+         <td class="confluenceTd"> M:4.1.1.3 </td> 
+         <td class="confluenceTd"> Annotation </td> 
+         <td class="confluenceTd"> <tt>org.glassfish.flashlight.provider.annotations</tt> </td> 
+         <td class="confluenceTd">Annotation to identify the event type associated with an event provider method. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>ProbeParam</tt> </td> 
+         <td class="confluenceTd"> M:4.1.1.4 </td> 
+         <td class="confluenceTd"> Annotation </td> 
+         <td class="confluenceTd"> <tt>org.glassfish.flashlight.provider.annotations</tt> </td> 
+         <td class="confluenceTd">Annotation to identify a method parameter as a value that a listener can monitor. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>ProbeProviderInfo</tt> </td> 
+         <td class="confluenceTd"> M:4.1.1.7 </td> 
+         <td class="confluenceTd"> Interface </td> 
+         <td class="confluenceTd"> Not found <sup><a href="#GlassFishv3UserTaskAnalysisPluggability-2">2</a></sup> </td> 
+         <td class="confluenceTd">Interface to define methods for getting information about an event type in an event provider class. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>ProbeListener</tt> </td> 
+         <td class="confluenceTd"> M:4.1.1.8 M:4.5.1.2 </td> 
+         <td class="confluenceTd"> Annotation </td> 
+         <td class="confluenceTd"> <tt>org.glassfish.flashlight.client</tt> </td> 
+         <td class="confluenceTd">Annotation to enable a listener to receive callbacks. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>MethodEntry</tt> </td> 
+         <td class="confluenceTd"> M:4.1.1.10.1 </td> 
+         <td class="confluenceTd"> Annotation </td> 
+         <td class="confluenceTd"> Not found </td> 
+         <td class="confluenceTd">Annotation to enable a listener to receive callbacks when the target method is entered. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>MethodExit</tt> </td> 
+         <td class="confluenceTd"> M:4.1.1.10.1 </td> 
+         <td class="confluenceTd"> Annotation </td> 
+         <td class="confluenceTd"> Not found </td> 
+         <td class="confluenceTd">Annotation to enable a listener to receive callbacks when the target method is exited </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>OnException</tt> </td> 
+         <td class="confluenceTd"> M:4.1.1.10.3 </td> 
+         <td class="confluenceTd"> Annotation </td> 
+         <td class="confluenceTd"> Not found </td> 
+         <td class="confluenceTd">Annotation to enable a listener to receive callbacks when the target method throws an exception. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>ProbeClientMediator</tt> </td> 
+         <td class="confluenceTd"> M:4.1.1.12 M:4.5.1.2 </td> 
+         <td class="confluenceTd"> Interface </td> 
+         <td class="confluenceTd"> <tt>org.glassfish.flashlight.client</tt> </td> 
+         <td class="confluenceTd">Class to enable listeners to receive callbacks. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>Monitorable</tt> <sup><a href="#GlassFishv3UserTaskAnalysisPluggability-3">3</a></sup> </td> 
+         <td class="confluenceTd"> M:4.1.2.6 M:4.5.1.2 </td> 
+         <td class="confluenceTd"> Interface </td> 
+         <td class="confluenceTd"> <tt>org.glassfish.flashlight.annotations</tt> </td> 
+         <td class="confluenceTd">Annotation to mark a class for addition to the Monitor Regsitry. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>Counter</tt> <sup><a href="#GlassFishv3UserTaskAnalysisPluggability-3">3</a></sup> </td> 
+         <td class="confluenceTd"> M:4.1.2.6 </td> 
+         <td class="confluenceTd"> Interface </td> 
+         <td class="confluenceTd"> <tt>org.glassfish.flashlight.statistics</tt> </td> 
+         <td class="confluenceTd">Interface to define a counter that a class can use. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>TimeStats</tt> <sup><a href="#GlassFishv3UserTaskAnalysisPluggability-3">3</a></sup> </td> 
+         <td class="confluenceTd"> M:4.1.2.6 </td> 
+         <td class="confluenceTd"> Interface </td> 
+         <td class="confluenceTd"> <tt>org.glassfish.flashlight.statistics</tt> </td> 
+         <td class="confluenceTd">Interface to define a timer. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>Average</tt> <sup><a href="#GlassFishv3UserTaskAnalysisPluggability-3">3</a></sup> </td> 
+         <td class="confluenceTd"> M:4.1.2.6 </td> 
+         <td class="confluenceTd"> Interface </td> 
+         <td class="confluenceTd"> <tt>org.glassfish.flashlight.statistics</tt> </td> 
+         <td class="confluenceTd">Interface to define averages. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>ProbeMethodExit</tt> </td> 
+         <td class="confluenceTd"> M:4.5.1.2 </td> 
+         <td class="confluenceTd"> Interface </td> 
+         <td class="confluenceTd"> Not found </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>ProbeMethodException</tt> </td> 
+         <td class="confluenceTd"> M:4.5.1.2 </td> 
+         <td class="confluenceTd"> Interface </td> 
+         <td class="confluenceTd"> Not found </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>MonitoringRunTimeDataRegistry</tt> </td> 
+         <td class="confluenceTd"> M:4.5.2 </td> 
+         <td class="confluenceTd"> Interface </td> 
+         <td class="confluenceTd"> <tt>org.glassfish.flashlight</tt> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>TreeNode</tt> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> <tt>org.glassfish.flashlight.datatree</tt> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <ol> 
+      <li>A class is available in <tt>org.glassfish.flashlight.impl.core</tt>.</li> 
+      <li>The <tt>ProbeProvider</tt> class seems to implement at least part of this interface.</li> 
+      <li>This interface is not exposed in v3 Prelude.</li> 
+     </ol> <h4><a name="GlassFishv3UserTaskAnalysisPluggability-Availability"></a>Availability</h1> <p>Back to <a href="GlassFishV3UserTaskAnalyses.html" title="GlassFishV3UserTaskAnalyses">GlassFish v3 User Task Analyses</a></p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 02, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:44.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

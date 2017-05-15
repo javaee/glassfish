@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : Monitoring Dependencies Analysis</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>The monitoring feature in GlassFish makes use of several external dependencies to implement the monitoring framework. &nbsp;These include:</p> 
+     <ul> 
+      <li><a href="http://kenai.com/projects/btrace">BTrace</a>&nbsp;- a dynamic tracing tool for Java</li> 
+      <li>JSDT - <a href="http://blogs.oracle.com/kamg/entry/announcing_statically_defined_dtrace_probes">Java Statically-Defined Tracing</a> , a feature in JDK7 accessed via com.sun.tracing and sun.tracing that enables monitoring probes to be exposed through dtrace.</li> 
+      <li><a href="http://asm.ow2.org/">ASM</a> - a&nbsp;Java bytecode manipulation and analysis framework</li> 
+     </ul> <p>This page explains in detail how the GlassFish monitoring framework makes use of these APIs.&nbsp;</p> <h4><a name="MonitoringDependenciesAnalysis-BtraceUsage"></a>Btrace Usage</h2> <p><font color="inherit">The following diagram shows how BTrace is used within the monitoring framework.&nbsp;</font>&nbsp; <span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20875500/21365324.png" style="border: 1px solid black"></span></p> <p>We use BTrace for byte code modification. It goes in through the agent interface (same as a debugger), and modifies existing code so that it calls the instrumented class rather than the original code. We generate a new BTrace client class with the same methods as the probe. &nbsp;The new class is submitted to BTrace.&nbsp;</p> <p>The BTrace library is referenced by the following classes in GlassFish: BtraceClientGenerator and&nbsp;FlashlightProbeClientMediator, which are both part of the flashlight/framwork module. The references are a run-time only, not compile time. &nbsp;GlassFish uses the btrace-agent.jar and btrace-boot.jar files at runtime.</p> <p>The BtraceClientGenerator uses the ASM library to generate code that references the BTrace classes, and the FlashlightProbeClientMediator loads the BTrace classes using dynamic class loading. &nbsp;The following BTrace classes and methods are referenced:</p> 
+     <ul> 
+      <li>com.sun.btrace.annotations.BTrace&nbsp;annotation</li> 
+      <li>com.sun.btrace.annotations.OnMethod annotation</li> 
+      <li>com.sun.btrace.agent.Main class,&nbsp;handleFlashLightClient method (this is a private interface into BTrace for use only by GlassFish)</li> 
+     </ul> <p>The two annotations are used in dynamically generated code. &nbsp;The Main.handleFlashLightClient method is called to submit the dynamically generated code to BTrace.&nbsp;</p> <p>Here's how monitoring works using BTrace.&nbsp;</p> 
+     <ol> 
+      <li>A monitoring probe is defined within the GlassFish code using @Probe and @ProbeProvider annotations.</li> 
+      <li>The probe is registered with GlassFish by calling ProbeProviderFactory.getProbeProvider which through injection is actually a reference to the FlashlightProbeProviderFactory class. This class sets up a data structure based on FlashlightProbe, however, the instrumented code is not actually modified until there is a listener for the probes.&nbsp;</li> 
+      <li>Sometime later, a listener for a probe is registered (such as the asadmin monitor or run-script program). This eventually calls the FlashlightProbeClientMediator.registerListener method.</li> 
+      <li>The FlashlightProbeClientMediator calls BTraceClientGenerator to transform the probes.</li> 
+      <li>The BTraceClientGenerator looks at the @Probe annotations in the instrumented code.</li> 
+      <li>This information is used with ASM to generate a method for each problem that calls invokeProbe. These methods are annotated with @BTrace and @OnMethod.</li> 
+      <li>The generated code is submitted to the BTrace agent.&nbsp;</li> 
+      <li>The BTrace agent modifies the targeted classes and methods so that the generated code is called.</li> 
+      <li>The generated code calls ProbeRegistry.invokeProbe which then triggers the listeners on the probe to get called.&nbsp;</li> 
+     </ol> <p>The BTrace functionality that is critical to GlassFish is the ability to submit a specification of a probe point to BTrace, with some code to execute when that probe point is executed, and BTrace modifies the Java bytecode so that the specified code is called.</p> <p>There are many other features of BTrace that are not used by GlassFish, such as the ability to gather statistics on method calls and make it available via JMX. BTrace has many more annotations; GlassFish only only uses @OnMethod. BTrace has a regular expression mechanism for selecting the methods that are to be instrumented.</p> <h4><a name="MonitoringDependenciesAnalysis-JSDTUsage"></a>JSDT Usage</h2> <p><font color="inherit">The following diagram shows how JSDT is used within the monitoring framework.&nbsp;</font>&nbsp; <span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20875500/21365317.png" style="border: 1px solid black"></span></p> <p>The JSDT interface consists of the com.sun.tracing and sun.tracing packages that are part of JDK 7. &nbsp;The GlassFish source code makes no direct compile-time references to these packages. &nbsp;Rather, at run-time, Java bytecode that references these packages is generated using ASM.</p> <p>The two GlassFish classes involved with this are DTraceContractImpl and DTraceInterfaceBuilder.</p> <p>The DTraceInterfaceBuilder class is responsible for building interfaces that implement com.sun.tracing.Provider that correspond to the monitoring probe provider classes. &nbsp;For each Provider, DTraceInterfaceBuilder creates an interface called <em>ProviderName</em>_<em>GLASSFISH_DTRACE where _ProviderName</em> is the name of the provider class. This class has an empty method for each probe that is defined by the provider. &nbsp;The class and each of the methods is annotated with the annotations that are defined by JSDT, specifically, @ProviderName, @ModuleName, @FunctionName, and @ProbeName.&nbsp;</p> <p>The DTraceContractImpl class uses reflection to access the com.sun.tracing.ProviderFactory and com.sun.tracing.Provider classes. It calls (using reflection) ProviderFactory.getDefaultFactory and then it calls ProviderFactory.createProvider on that object, passing in the class that is returned by DTraceInterfaceBuilder. &nbsp;Doing this causes the DTrace probes that are defined by the annotations used by DTraceInterfaceBuilder to show up as probes to the dtrace program.</p> <p>The next step is to arrange that the methods in the class produced by DTraceInterfaceBuilder actually get called. &nbsp;This is done by the FlashlightProbeProviderFactory. When DTrace is enabled, it calls DTraceContractImpl.getProvider to get an instance of the class that is generated by DTraceInterfaceBuilder. &nbsp;This object and the appropriate method is then registered with the corresponding FlashlightProbe, such that the method can be obtained via the FlashlightProbe.getDTraceMethod method. Each FlashlightProbe has a list of ProbeClientInvokers that it calls each time the probe is fired. &nbsp;One of these invokers is the DTraceClientInvoker which uses the getDTraceMethod to get the method to call when the probe is fired. The DTraceClientInvoker is created by the ProbeClientInvokerFactory.createDTraceInvoker method which is called by FlashlightProbeClientMediator.registerDTraceListener. This latter method also adds the DTraceClientInvoker as a invoker for the FlashlightProbe.</p> <p>In summary, the GlassFish monitoring framework depends on being able to create an interface with methods, such that when those methods are called, a DTrace probe is triggered. &nbsp;</p> <h4><a name="MonitoringDependenciesAnalysis-ASMUsage"></a>ASM Usage</h2> <h4><a name="MonitoringDependenciesAnalysis-JavaMonitoring"></a>Java Monitoring</h3> <p>There are three different things that can be setup for monitoring namely</p> 
+     <ol> 
+      <li>instances of a Java Class</li> 
+      <li>a Java interface</li> 
+      <li>an XML description</li> 
+     </ol> <p>Btrace instruments byte-code for an existing class. In the case of (1) above – we already have a class with methods that are ready for instrumenting. No need for ASM.<br> In case 3 we have an XML description of an interface. We use ASM to generate a class corresponding to this description. Then we create an instance of this class and submit it to BTrace for instrumenting as in case 1.<br> In case 2 we use ASM in order to create an implementing class for the given interface. Then we create an instance of it and Btrace instruments it.</p> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875500/21365323.png">apiusage.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875500/21365322.png">apiusage.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875500/21365324.png">apiusage.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875500/21365316.png">jsdtusage.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875500/21365319.png">jsdtusage.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875500/21365317.png">jsdtusage.png</a> (image/png) 
+      <br> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Mar 30, 2012 by 
+<font color="#0050B2">10103</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

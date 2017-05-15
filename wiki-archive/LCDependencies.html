@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : LCDependencies</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Owner </th> 
+         <th class="confluenceTh"> Module </th> 
+         <th class="confluenceTh"> Dependencies </th> 
+         <th class="confluenceTh"> Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> *Kedar* </td> 
+         <td class="confluenceTd"> *AdminService* </td> 
+         <td class="confluenceTd"> Configuration, Admin Channel, MBeanServer </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> *Nandini* </td> 
+         <td class="confluenceTd"> *JMXConnector* </td> 
+         <td class="confluenceTd"> Security (for key/trust stores) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> *Shingwai* </td> 
+         <td class="confluenceTd"> *Security* </td> 
+         <td class="confluenceTd"> ? </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> *Sankara Rao* </td> 
+         <td class="confluenceTd"> *Self Management* </td> 
+         <td class="confluenceTd"> Admin Service </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> *Marina* </td> 
+         <td class="confluenceTd"> *PersistenceManager* </td> 
+         <td class="confluenceTd"> Needs the Logger to be already set up. </td> 
+         <td class="confluenceTd"> Depends on these operations: ApplicationLoaderEventNotifier. getInstance().addListener ConnectorRuntime.getRuntime(). getResourceRebindEventNotifier(). addListener. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> *Siva* </td> 
+         <td class="confluenceTd"> *JMS Provider* </td> 
+         <td class="confluenceTd"> JMXConnector/RMIRegistry </td> 
+         <td class="confluenceTd"> *Kedar:* Are you sure? Didn't this depend on the JMXConnector/RMIRegistry so that you could register the JMS provider's remote stub? <b>Siva:</b> I thought this parallel LC module startup was for PE alone and then assumed JMXConnector/RMIRegistry would be available when the broker starts up on demand. Now that I understand that this is for EE as well, yes JMS depends on JMXConnector/RMIRegistry to be available. Thanks for the catch. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> *Satish* </td> 
+         <td class="confluenceTd"> *AppservWSMgmt* </td> 
+         <td class="confluenceTd"> No dependencies (except registry of listeners WebServiceEndpointEvent, TransformationRuleEvent and RegistryLocationEvent and on interfaces like DeploymentEventManager and AdminEventListener) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> *Tim Quinn* </td> 
+         <td class="confluenceTd"> *SystemApp* </td> 
+         <td class="confluenceTd"> JBI DeploymentService MBean, plus all dependencies listed for App LC, plus whatever is required by deployment and downstream (due to auto-deploy of system apps during initial start-up) </td> 
+         <td class="confluenceTd">*Tim:* This and the ApplicationLC have not been main focus areas for me. But I have surveyed them and have made my best assessment. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> *Binod* </td> 
+         <td class="confluenceTd"> *LifeCycleModule* </td> 
+         <td class="confluenceTd"> no dependencies </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> *Tim Quinn* </td> 
+         <td class="confluenceTd"> *Application Lifecycle* </td> 
+         <td class="confluenceTd"> MBean server, AppsConfigMBean, OnDemandServer, JSR-77 root? </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> *Jan Luehe* </td> 
+         <td class="confluenceTd"> *PE WebContainer* </td> 
+         <td class="confluenceTd"> ServerContext </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> *Sankara Rao* </td> 
+         <td class="confluenceTd"> *DeclarativeLifeCycleEventService* </td> 
+         <td class="confluenceTd"> Admin Service </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> *Shreedhar* </td> 
+         <td class="confluenceTd"> *GroupManagement Service* </td> 
+         <td class="confluenceTd"> no dependencies </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> *Mahesh* </td> 
+         <td class="confluenceTd"> *EJBLifeCycleImpl* </td> 
+         <td class="confluenceTd"> depends on GMS </td> 
+         <td class="confluenceTd">*Kedar:*That's all right, but does it mean that EJB containers won't be available till the GMS is ready? I am not sure if we want to do that. Also, in the developer profile, when there are no clusters, GMS won't be available. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> *Sreenivas* </td> 
+         <td class="confluenceTd"> *Cascading* </td> 
+         <td class="confluenceTd"> depends JMXConnector Lifecycle </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> *Satish* </td> 
+         <td class="confluenceTd"> *LoadBalancerAdmin* </td> 
+         <td class="confluenceTd"> depends on AdminService </td> 
+         <td class="confluenceTd">*Kedar:*I have sent you an e-mail with a question in it. Do we really need this LC? Why do you want to listen directly to the ConfigContext changes? </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> *Siraj* </td> 
+         <td class="confluenceTd"> *JESMFLifeCycle* </td> 
+         <td class="confluenceTd"> JMXConnector </td> 
+         <td class="confluenceTd"> com.sun.enterprise.ee.admin.jesmf. lifecycle.JESMFLifeCycle onReady() method implements startup code. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> *Keith* </td> 
+         <td class="confluenceTd"> *JBI (Lifecycle defined in domain.xml)* </td> 
+         <td class="confluenceTd"> AdminService/AdminContext, ServerContext, AMX, JMXConnector </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> *Alexey* </td> 
+         <td class="confluenceTd"> *WSTCP(Lifecycle defined in domain.xml)* </td> 
+         <td class="confluenceTd"> no dependencies </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:48.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

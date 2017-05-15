@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFishV3DocPlanDevGuide</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>&lt;h1&gt;GlassFish v3 <em>Application Development Guide</em> Document Plan&lt;/h1&gt;</p> 
+     <div> 
+      <ul> 
+       <li><a href="#GlassFishV3DocPlanDevGuide-PeopleandRoles">People and Roles</a></li> 
+       <li><a href="#GlassFishV3DocPlanDevGuide-Audience">Audience</a></li> 
+       <li><a href="#GlassFishV3DocPlanDevGuide-PurposeandDescription">Purpose and Description</a></li> 
+       <li><a href="#GlassFishV3DocPlanDevGuide-StatementofWork">Statement of Work</a></li> 
+       <ul> 
+        <li><a href="#GlassFishV3DocPlanDevGuide-TP2StatementofWork">TP2 Statement of Work</a></li> 
+        <li><a href="#GlassFishV3DocPlanDevGuide-PreludeStatementofWork">Prelude Statement of Work</a></li> 
+        <li><a href="#GlassFishV3DocPlanDevGuide-FCSStatementofWork">FCS Statement of Work</a></li> 
+       </ul> 
+       <li><a href="#GlassFishV3DocPlanDevGuide-OverallContentOutline">Overall Content Outline</a></li> 
+       <li><a href="#GlassFishV3DocPlanDevGuide-Reviewers">Reviewers</a></li> 
+       <li><a href="#GlassFishV3DocPlanDevGuide-DeliveryMethods">Delivery Methods</a></li> 
+       <li><a href="#GlassFishV3DocPlanDevGuide-RelatedInformation">Related Information</a></li> 
+      </ul>
+     </div> <h4><a name="GlassFishV3DocPlanDevGuide-PeopleandRoles"></a>People and Roles</h1> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Name </th> 
+         <th class="confluenceTh">Role </th> 
+         <th class="confluenceTh">Location</th> 
+         <th class="confluenceTh">Time Zone</th> 
+         <th class="confluenceTh">Email </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> June Parks </td> 
+         <td class="confluenceTd"> Document Owner </td> 
+         <td class="confluenceTd"> SCA16 1724 </td> 
+         <td class="confluenceTd"> US Pacific </td> 
+         <td class="confluenceTd"><em>junesm</em><tt>@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Additional Writers </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"><em>java.netID</em><tt>@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Julie Bettis </td> 
+         <td class="confluenceTd"> Editor </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"><em>java.netID</em><tt>@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> See <a href="#GlassFishV3DocPlanDevGuide-sectionGlassFishV3DocPlanDevGuideReviewers">Reviewers </a> </td> 
+         <td class="confluenceTd"> Software Engineers </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"><em>java.netID</em><tt>@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> See <a href="#GlassFishV3DocPlanDevGuide-sectionGlassFishV3DocPlanDevGuideReviewers">Reviewers </a> </td> 
+         <td class="confluenceTd"> QA Engineers </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"><em>java.netID</em><tt>@dev.java.net</tt> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3DocPlanDevGuide-Audience"></a>Audience</h1> <p>The <em>Application Development Guide</em> (formerly <em>Developer's Guide</em>) is for application developers.</p> <h4><a name="GlassFishV3DocPlanDevGuide-PurposeandDescription"></a>Purpose and Description</h1> <p>The <em>Application Development Guide</em> describes how to create and run Java^TM^ Platform, Enterprise Edition (Java EE platform) applications that follow the open Java standards model for Java EE components and APIs in the Sun Java System Application Server environment. Topics include developer tools, security, and debugging. This book is intended for use by software developers who create, assemble, and deploy Java EE applications using GlassFish servers and software. </p> <p>For Technology Preview 2 (TP2) and Prelude, this book only discussed topics related to web modules and JDBC.</p> <h4><a name="GlassFishV3DocPlanDevGuide-StatementofWork"></a>Statement of Work</h1> <p>This section describes in detail for each milestone the work that is needed on the document, such as changes, addition of new material, relocation of existing material, and removal of existing material. Work might result from new features, changes to existing features, bug fixes, RFEs, and editorial enhancements.</p> <p>Documentation Impact:</p> 
+     <ul> 
+      <li>None</li> 
+      <li>Minor</li> 
+      <li>Moderate</li> 
+      <li>Major</li> 
+      <li>New</li> 
+     </ul> <h4><a name="GlassFishV3DocPlanDevGuide-TP2StatementofWork"></a>TP2 Statement of Work</h2> <p>For TP2, 10 of the 20 chapters were suppressed because they were not relevant to the small scope of TP2.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Section </th> 
+         <th class="confluenceTh">Documentation Impact</th> 
+         <th class="confluenceTh">Description of Change </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 1 Setting Up a Development Environment </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd">Suppress info not relevant to TP2 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 2 Class Loaders </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd">Change class loading for OSGi </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 3 Debugging Applications </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd">Suppress info not relevant to TP2 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 4 Securing Applications </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd">Suppress info not relevant to TP2 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 5 Using the Java Persistence API </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd">Change the provider to EclipseLink </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 6 Developing Web Applications </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd">Add information on Comet </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 7 Using Enterprise JavaBeans Technology </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd">Add EJB 3.1 info </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 8 Using the JDBC API for Database Access </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd">Suppress info not relevant to TP2 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 9 Using the Transaction Service </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd">Suppress info not relevant to TP2 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 10 Using the Java Naming and Directory Interface </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd">Suppress info not relevant to TP2 </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3DocPlanDevGuide-PreludeStatementofWork"></a>Prelude Statement of Work</h2> <p>For Prelude, 9 of the 20 chapters were suppressed because they were not relevant to the small scope of Prelude.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Section </th> 
+         <th class="confluenceTh">Documentation Impact</th> 
+         <th class="confluenceTh">Description of Change </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 1 Setting Up a Development Environment </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd">Suppress info not relevant to Prelude </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 2 Class Loaders </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd">Change class loading for OSGi </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 3 Debugging Applications </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd">Suppress info not relevant to Prelude </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 4 Securing Applications </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd">Suppress info not relevant to Prelude </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 5 Developing Web Services </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd">Suppress info not relevant to Prelude </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 6 Using the Java Persistence API </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd">Change the provider to EclipseLink </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 7 Developing Web Applications </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd">Add Bayeux, Groovy/Grails, SSI, CGI, PHP, Scala/Lift </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 8 Using Enterprise JavaBeans Technology </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd">Add EJB 3.1 info </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 9 Using the JDBC API for Database Access </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd">Add statement timeout &amp; connection unwrap </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 10 Using the Transaction Service </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd">Suppress info not relevant to Prelude </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 11 Using the Java Naming and Directory Interface </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd">Suppress info not relevant to Prelude </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3DocPlanDevGuide-FCSStatementofWork"></a>FCS Statement of Work</h2> <p>For FCS, all of the GFv2 chapters will be restored except the MBean and AMX chapters. Scripting info will be moved from the Web Applications chapter into its own book, which Devika owns.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Chapter </th> 
+         <th class="confluenceTh">Documentation Impact</th> 
+         <th class="confluenceTh">Description of Change </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 1 Setting Up a Development Environment </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd">Version and bundling updates </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 2 Class Loaders </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd">Updates for components not in Prelude </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 3 Using Ant with Enterprise Server </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd">GFv2 functionality minus asant </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 4 Debugging Applications </td> 
+         <td class="confluenceTd"> None </td> 
+         <td class="confluenceTd">Prelude functionality </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 5 Securing Applications </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd">Add Ron's blog "Adding Authentication Mechanisms to the Servlet Container" </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 6 Developing Web Services </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd">Java EE 6 &amp; Metro 2.0 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 7 Using the Java Persistence API </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd">Possible updates from Prelude </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 8 Developing Web Applications </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd">Possible updates from Prelude, some content moved to the <em>Administration Guide</em> and the <em>Scripting Framework Guide</em>. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 9 Using Enterprise JavaBeans Technology </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd">EJB 3.1 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 10 Using Container-Managed Persistence </td> 
+         <td class="confluenceTd"> None </td> 
+         <td class="confluenceTd">GFv2 functionality </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 11 Developing Java Clients </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd">New GFv3 features in spec </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 12 Developing Connectors </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd">New GFv3 features in spec </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 13 Developing Lifecycle Listeners </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd">A few small changes from GFv2 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 14 Using the JDBC API for Database Access </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd">New GFv3 features in spec </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 15 Using the Transaction Service </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd">Possible updates from Prelude </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 16 Using the Java Naming and Directory Interface </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd">Custom Resource Factories </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 17 Using the Java Message Service </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd">GFv2 functionality, possible updates </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 18 Using the JavaMail API </td> 
+         <td class="confluenceTd"> None </td> 
+         <td class="confluenceTd">GFv2 functionality </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3DocPlanDevGuide-OverallContentOutline"></a>Overall Content Outline</h1> 
+     <ol> 
+      <li>Setting Up a Development Environment 
+       <ul> 
+        <li>Installing and Preparing the Server for Development</li> 
+        <li>Using the Update Center</li> 
+        <li>Development Tools 
+         <ul> 
+          <li>The asadmin Command</li> 
+          <li>The Admin Console</li> 
+          <li>Ant Tasks</li> 
+          <li>The NetBeans IDE</li> 
+          <li>The Eclipse IDE</li> 
+          <li>The Migration Tool</li> 
+          <li>Debugging Tools</li> 
+          <li>Profiling Tools</li> 
+         </ul> </li> 
+        <li>Sample Applications</li> 
+       </ul> </li> 
+      <li>Class Loaders 
+       <ul> 
+        <li>The Class Loader Hierarchy</li> 
+        <li>Delegation</li> 
+        <li>Using the Java Optional Package Mechanism</li> 
+        <li>Using the Endorsed Standards Override Mechanism</li> 
+        <li>Class Loader Universes</li> 
+        <li>Application-Specific Class Loading</li> 
+        <li>Circumventing Class Loader Isolation 
+         <ul> 
+          <li>Using the Application Server Parent Class Loader</li> 
+          <li>Sharing Libraries Across a Cluster</li> 
+          <li>Packaging the Client JAR for One Application in Another Application</li> 
+         </ul> </li> 
+       </ul> </li> 
+      <li>Using Ant with Enterprise Server 
+       <ul> 
+        <li>Enterprise Server Ant Tasks 
+         <ul> 
+          <li>The sun-appserv-deploy Task</li> 
+          <li>The sun-appserv-undeploy Task</li> 
+          <li>The sun-appserv-instance Task</li> 
+          <li>The sun-appserv-component Task</li> 
+          <li>The sun-appserv-admin Task</li> 
+          <li>The sun-appserv-jspc Task</li> 
+          <li>The sun-appserv-update Task</li> 
+          <li>The wsgen Task</li> 
+          <li>The wsimport Task</li> 
+         </ul> </li> 
+        <li>Reusable Subelements 
+         <ul> 
+          <li>The server Subelement</li> 
+          <li>The component Subelement</li> 
+          <li>The fileset Subelement</li> 
+         </ul> </li> 
+       </ul> </li> 
+      <li>Debugging Applications 
+       <ul> 
+        <li>Enabling Debugging</li> 
+        <li>JPDA Options</li> 
+        <li>Generating a Stack Trace for Debugging</li> 
+        <li>Application Client Debugging</li> 
+        <li>Sun GlassFish Message Queue Debugging</li> 
+        <li>Enabling Verbose Mode</li> 
+        <li>Application Server Logging</li> 
+        <li>Profiling Tools 
+         <ul> 
+          <li>The NetBeans Profiler</li> 
+          <li>The HPROF Profiler</li> 
+          <li>The JProbe Profiler</li> 
+         </ul> </li> 
+       </ul> </li> 
+      <li>Securing Applications 
+       <ul> 
+        <li>Security Goals</li> 
+        <li>Application Server Specific Security Features</li> 
+        <li>Container Security 
+         <ul> 
+          <li>Declarative Security</li> 
+          <li>Programmatic Security</li> 
+         </ul> </li> 
+        <li>Roles, Principals, and Principal to Role Mapping</li> 
+        <li>Realm Configuration 
+         <ul> 
+          <li>Supported Realms</li> 
+          <li>How to Configure a Realm</li> 
+          <li>How to Set a Realm for an Application or Module</li> 
+          <li>Creating a Custom Realm</li> 
+         </ul> </li> 
+        <li>JACC Support</li> 
+        <li>Pluggable Audit Module Support 
+         <ul> 
+          <li>Configuring an Audit Module</li> 
+          <li>The AuditModule Class</li> 
+         </ul> </li> 
+        <li>The server.policy File 
+         <ul> 
+          <li>Default Permissions</li> 
+          <li>Changing Permissions for an Application</li> 
+          <li>Enabling and Disabling the Security Manager</li> 
+         </ul> </li> 
+        <li>Configuring Message Security for Web Services 
+         <ul> 
+          <li>Message Security Providers</li> 
+          <li>Message Security Responsibilities</li> 
+          <li>Application-Specific Message Protection</li> 
+          <li>Understanding and Running the Sample Application</li> 
+         </ul> </li> 
+        <li>Programmatic Login 
+         <ul> 
+          <li>Programmatic Login Precautions</li> 
+          <li>Granting Programmatic Login Permission</li> 
+          <li>The ProgrammaticLogin Class</li> 
+         </ul> </li> 
+        <li>User Authentication for Single Sign-on</li> 
+        <li>Adding Authentication Mechanisms to the Servlet Container 
+         <ul> 
+          <li>The Enterprise Server and JSR 196</li> 
+          <li>Writing a Server Authentication Module</li> 
+          <li>Sample Server Authentication Module</li> 
+          <li>Compiling and Installing a Server Authentication Module</li> 
+          <li>Configuring a Server Authentication Module</li> 
+          <li>Binding a Server Authentication Module to Your Application</li> 
+         </ul> </li> 
+       </ul> </li> 
+      <li>Developing Web Services 
+       <ul> 
+        <li>Creating Portable Web Service Artifacts</li> 
+        <li>Deploying a Web Service</li> 
+        <li>The Web Service URI, WSDL File, and Test Page</li> 
+       </ul> </li> 
+      <li>Using the Java Persistence API 
+       <ul> 
+        <li>Specifying the Database</li> 
+        <li>Additional Database Properties</li> 
+        <li>Configuring the Cache</li> 
+        <li>Setting the Logging Level</li> 
+        <li>Using Lazy Loading</li> 
+        <li>Primary Key Generation Defaults</li> 
+        <li>Automatic Schema Generation 
+         <ul> 
+          <li>Annotations</li> 
+          <li>Supported Data Types</li> 
+          <li>Generation Options</li> 
+         </ul> </li> 
+        <li>Query Hints</li> 
+        <li>Changing the Persistence Provider</li> 
+        <li>Database Restrictions and Optimizations 
+         <ul> 
+          <li>Extended Persistence Context Failover</li> 
+          <li>Using @OrderBy with a Shared Session Cache</li> 
+          <li>Using BLOB or CLOB Types with the Inet Oraxo JDBC Driver</li> 
+          <li>Database Case Sensitivity</li> 
+          <li>Sybase Finder Limitation</li> 
+          <li>MySQL Database Restrictions</li> 
+         </ul> </li> 
+       </ul> </li> 
+      <li>Developing Web Applications 
+       <ul> 
+        <li>Using Servlets 
+         <ul> 
+          <li>Caching Servlet Results</li> 
+          <li>About the Servlet Engine</li> 
+         </ul> </li> 
+        <li>Using JavaServer Pages 
+         <ul> 
+          <li>JSP Tag Libraries and Standard Portable Tags</li> 
+          <li>JSP Caching</li> 
+          <li>Options for Compiling JSP Files</li> 
+         </ul> </li> 
+        <li>Creating and Managing Sessions 
+         <ul> 
+          <li>Configuring Sessions</li> 
+          <li>Session Managers</li> 
+         </ul> </li> 
+        <li>Advanced Web Application Features 
+         <ul> 
+          <li>Internationalization Issues</li> 
+          <li>Virtual Server Properties</li> 
+          <li>Class Loader Delegation</li> 
+          <li>Using the default-web.xml File</li> 
+          <li>Configuring Logging and Monitoring in the Web Container</li> 
+          <li>Header Management</li> 
+          <li>Configuring Valves and Catalina Listeners</li> 
+          <li>Alternate Document Roots</li> 
+          <li>Using a context.xml File</li> 
+          <li>Enabling WebDav</li> 
+          <li>Using SSI</li> 
+          <li>Using CGI</li> 
+         </ul> </li> 
+       </ul> </li> 
+      <li>Using Enterprise JavaBeans Technology 
+       <ul> 
+        <li>Summary of EJB 3.1 Changes</li> 
+        <li>Value Added Features 
+         <ul> 
+          <li>Read-Only Beans</li> 
+          <li>The pass-by-reference Element</li> 
+          <li>Pooling and Caching</li> 
+          <li>Bean-Level Container-Managed Transaction Timeouts</li> 
+          <li>Priority Based Scheduling of Remote Bean Invocations</li> 
+          <li>Immediate Flushing</li> 
+         </ul> </li> 
+        <li>EJB Timer Service</li> 
+        <li>Using Session Beans 
+         <ul> 
+          <li>About the Session Bean Containers</li> 
+          <li>Session Bean Restrictions and Optimizations</li> 
+         </ul> </li> 
+        <li>Using Read-Only Beans 
+         <ul> 
+          <li>Read-Only Bean Characteristics and Life Cycle</li> 
+          <li>Read-Only Bean Good Practices</li> 
+          <li>Refreshing Read-Only Beans</li> 
+          <li>Deploying Read-Only Beans</li> 
+         </ul> </li> 
+        <li>Using Message-Driven Beans 
+         <ul> 
+          <li>Message-Driven Bean Configuration</li> 
+          <li>Message-Driven Bean Restrictions and Optimizations</li> 
+         </ul> </li> 
+        <li>Handling Transactions With Enterprise Beans 
+         <ul> 
+          <li>Flat Transactions</li> 
+          <li>Global and Local Transactions</li> 
+          <li>Commit Options</li> 
+          <li>Administration and Monitoring</li> 
+         </ul> </li> 
+       </ul> </li> 
+      <li>Using Container-Managed Persistence 
+       <ul> 
+        <li>Communications Server Support for CMP</li> 
+        <li>CMP Mapping 
+         <ul> 
+          <li>Mapping Capabilities</li> 
+          <li>The Mapping Deployment Descriptor File</li> 
+          <li>Mapping Considerations</li> 
+         </ul> </li> 
+        <li>Automatic Schema Generation for CMP 
+         <ul> 
+          <li>Supported Data Types for CMP</li> 
+          <li>Generation Options for CMP</li> 
+         </ul> </li> 
+        <li>Schema Capture 
+         <ul> 
+          <li>Automatic Database Schema Capture</li> 
+          <li>Using the capture-schema Utility</li> 
+         </ul> </li> 
+        <li>Configuring the CMP Resource</li> 
+        <li>Performance-Related Features 
+         <ul> 
+          <li>Version Column Consistency Checking</li> 
+          <li>Relationship Prefetching</li> 
+          <li>Read-Only Beans</li> 
+         </ul> </li> 
+        <li>Default Fetch Group Flags</li> 
+        <li>Configuring Queries for 1.1 Finders 
+         <ul> 
+          <li>About JDOQL Queries</li> 
+          <li>Query Filter Expression</li> 
+          <li>Query Parameters</li> 
+          <li>Query Variables</li> 
+          <li>JDOQL Examples</li> 
+         </ul> </li> 
+        <li>CMP Restrictions and Optimizations 
+         <ul> 
+          <li>Disabling ORDER BY Validation</li> 
+          <li>Setting the Heap Size onDB2</li> 
+          <li>Eager Loading of Field State</li> 
+          <li>Restrictions on Remote Interfaces</li> 
+          <li>PostgreSQL Case Insensitivity</li> 
+          <li>No Support for lock-when-loaded on Sybase</li> 
+          <li>Sybase Finder Limitation</li> 
+          <li>Date and Time Fields</li> 
+          <li>Set RECURSIVE_TRIGGERS to false on MSSQL</li> 
+          <li>MySQL Database Restrictions</li> 
+         </ul> </li> 
+       </ul> </li> 
+      <li>Developing Java Clients 
+       <ul> 
+        <li>Introducing the Application Client Container 
+         <ul> 
+          <li>ACC Security</li> 
+          <li>ACC Naming</li> 
+          <li>ACC Annotation</li> 
+          <li>Java Web Start</li> 
+          <li>Application Client JAR File</li> 
+         </ul> </li> 
+        <li>Developing Clients Using the ACC 
+         <ul> 
+          <li>To Access an EJB Component From an Application Client</li> 
+          <li>To Access a JMS Resource From an Application Client</li> 
+          <li>Using Java Web Start 
+           <ul> 
+            <li>Enabling and Disabling Java Web Start</li> 
+            <li>Downloading and Launching an Application Client</li> 
+            <li>The Application Client URL</li> 
+            <li>Signing JAR Files Used in Java Web Start</li> 
+            <li>Error Handling</li> 
+            <li>Vendor Icon, Splash Screen, and Text</li> 
+           </ul> </li> 
+          <li>Using the Embeddable ACC</li> 
+          <li>Running an Application Client Using the appclient Script</li> 
+          <li>Using the package-appclient Script</li> 
+          <li>The client.policy File</li> 
+          <li>Using RMI/IIOP Over SSL</li> 
+          <li>Connecting to a Remote EJB Module Through a Firewall</li> 
+          <li>Using JavaFX Code</li> 
+          <li>Specifying a Splash Screen</li> 
+         </ul> </li> 
+       </ul> </li> 
+      <li>Developing Connectors 
+       <ul> 
+        <li>Connector Support in the Communications Server 
+         <ul> 
+          <li>Connector Architecture for JMS and JDBC</li> 
+          <li>Connector Configuration</li> 
+         </ul> </li> 
+        <li>Advanced Connector Configuration Options 
+         <ul> 
+          <li>Thread Associations</li> 
+          <li>Security Maps</li> 
+          <li>Work Security Maps</li> 
+          <li>Overriding Configuration Properties</li> 
+          <li>Testing a Connector Connection Pool</li> 
+          <li>Flushing a Connector Connection Pool</li> 
+          <li>Handling Invalid Connections</li> 
+          <li>Setting the Shutdown Timeout</li> 
+          <li>Using Last Agent Optimization of Transactions</li> 
+          <li>Disabling Pooling for a Connection</li> 
+          <li>Application-Scoped Connectors</li> 
+         </ul> </li> 
+        <li>Inbound Communication Support</li> 
+        <li>Outbound Communication Support</li> 
+        <li>Configuring a Message Driven Bean to Use a Resource Adapter</li> 
+       </ul> </li> 
+      <li>Developing Lifecycle Listeners 
+       <ul> 
+        <li>Server Life Cycle Events</li> 
+        <li>The LifecycleListener Interface</li> 
+        <li>The LifecycleEvent Class</li> 
+        <li>The Server Lifecycle Event Context</li> 
+        <li>Deploying a Lifecycle Module</li> 
+        <li>Considerations for LifecycleModules</li> 
+       </ul> </li> 
+      <li>Using the JDBC API for Database Access 
+       <ul> 
+        <li>General Steps for Creating a JDBC Resource 
+         <ul> 
+          <li>Integrating the JDBC Driver 
+           <ul> 
+            <li>Supported Database Drivers</li> 
+            <li>Making the JDBC Driver JAR Files Accessible</li> 
+            <li>Detecting Installed Drivers</li> 
+           </ul> </li> 
+          <li>Creating a JDBC Connection Pool</li> 
+          <li>Testing a JDBC Connection Pool</li> 
+          <li>Flushing a JDBC Connection Pool</li> 
+          <li>Creating a JDBC Resource</li> 
+         </ul> </li> 
+        <li>Creating Applications That Use the JDBC API 
+         <ul> 
+          <li>Statements 
+           <ul> 
+            <li>Using an Initialization Statement</li> 
+            <li>Setting a Statement Timeout</li> 
+            <li>Statement Caching</li> 
+            <li>Statement Tracing</li> 
+           </ul> </li> 
+          <li>Connections 
+           <ul> 
+            <li>Disabling Pooling for a Connection</li> 
+            <li>Associating Connections with Threads</li> 
+            <li>Custom Connection Validation</li> 
+            <li>Sharing Connections</li> 
+            <li>Marking Bad Connections</li> 
+            <li>Handling Invalid Connections</li> 
+           </ul> </li> 
+          <li>Connection Wrapping 
+           <ul> 
+            <li>Wrapping Connections</li> 
+            <li>Obtaining a Physical Connection From a Wrapped Connection</li> 
+            <li>Using the Connection.unwrap() Method</li> 
+           </ul> </li> 
+          <li>Transactions 
+           <ul> 
+            <li>Using Non-Transactional Connections</li> 
+            <li>Using JDBC Transaction Isolation Levels</li> 
+           </ul> </li> 
+          <li>Other Features 
+           <ul> 
+            <li>Allowing Non-Component Callers</li> 
+            <li>Using Application-Scoped Databases</li> 
+           </ul> </li> 
+         </ul> </li> 
+        <li>Restrictions and Optimizations 
+         <ul> 
+          <li>Disabling Stored Procedure Creation on Sybase</li> 
+         </ul> </li> 
+       </ul> </li> 
+      <li>Using the Transaction Service 
+       <ul> 
+        <li>Transaction Resource Managers</li> 
+        <li>Transaction Scope</li> 
+        <li>Distributed Transaction Recovery</li> 
+        <li>Configuring the Transaction Service</li> 
+        <li>The Transaction Manager, the Transaction Synchronization Registry, and UserTransaction</li> 
+        <li>Transaction Logging</li> 
+        <li>Storing Transaction Logs in a Database</li> 
+        <li>Recovery Workarounds</li> 
+       </ul> </li> 
+      <li>Using the Java Naming and Directory Interface 
+       <ul> 
+        <li>Accessing the Naming Context 
+         <ul> 
+          <li>Global JNDI Names</li> 
+          <li>Accessing EJB Components Using the CosNaming Naming Context</li> 
+          <li>Accessing EJB Components in a Remote Application Server</li> 
+          <li>Naming Environment for Lifecycle Modules</li> 
+         </ul> </li> 
+        <li>Configuring Resources 
+         <ul> 
+          <li>External JNDI Resources</li> 
+          <li>Custom Resources</li> 
+          <li>Built-In Custom Resource Factories</li> 
+         </ul> </li> 
+        <li>Using a Custom jndi.properties File</li> 
+        <li>Mapping References</li> 
+       </ul> </li> 
+      <li>Using the Java Message Service 
+       <ul> 
+        <li>The JMS Provider</li> 
+        <li>Message Queue Resource Adapter</li> 
+        <li>Generic Resource Adapter</li> 
+        <li>Administration of the JMS Service 
+         <ul> 
+          <li>Configuring the JMS Service</li> 
+          <li>The Default JMS Host</li> 
+          <li>Creating JMS Hosts</li> 
+          <li>Checking Whether the JMS Provider Is Running</li> 
+          <li>Creating Physical Destinations</li> 
+          <li>Creating JMS Resources: Destinations and Connection Factories</li> 
+         </ul> </li> 
+        <li>Restarting the JMS Client After JMS Configuration</li> 
+        <li>JMS Connection Features 
+         <ul> 
+          <li>Connection Pooling</li> 
+          <li>Connection Failover</li> 
+         </ul> </li> 
+        <li>Transactions and Non-Persistent Messages</li> 
+        <li>Authentication With ConnectionFactory</li> 
+        <li>Message Queue varhome Directory</li> 
+        <li>Delivering SOAP Messages Using the JMS API 
+         <ul> 
+          <li>To Send SOAP Messages Using the JMS API</li> 
+          <li>To Receive SOAP Messages Using the JMS API</li> 
+         </ul> </li> 
+       </ul> </li> 
+      <li>Using the JavaMail API 
+       <ul> 
+        <li>Introducing JavaMail</li> 
+        <li>Creating a JavaMail Session</li> 
+        <li>JavaMail Session Properties</li> 
+        <li>Looking Up a JavaMail Session</li> 
+        <li>Sending and Reading Messages Using JavaMail 
+         <ul> 
+          <li>To Send a Message Using JavaMail</li> 
+          <li>To Read a Message Using JavaMail</li> 
+         </ul> </li> 
+       </ul> </li> 
+     </ol> <h4><a name="GlassFishV3DocPlanDevGuide-Reviewers"></a>Reviewers</h1> <p>The review schedule for this document is provided in the following table.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Review Milestone</th> 
+         <th class="confluenceTh">Start Date</th> 
+         <th class="confluenceTh">End Date </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> TP2 Draft </td> 
+         <td class="confluenceTd"> 4/23/08 </td> 
+         <td class="confluenceTd"> 4/30/08 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> TP2 Draft 2 </td> 
+         <td class="confluenceTd"> 5/16/08 </td> 
+         <td class="confluenceTd"> 5/28/08 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Prelude Draft </td> 
+         <td class="confluenceTd"> 10/03/08 </td> 
+         <td class="confluenceTd"> 10/10/08 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Preview Draft </td> 
+         <td class="confluenceTd"> 5/18/09 </td> 
+         <td class="confluenceTd"> 5/20/09 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> FishCAT Draft </td> 
+         <td class="confluenceTd"> 9/08/09 </td> 
+         <td class="confluenceTd"> 9/22/09 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Final Version </td> 
+         <td class="confluenceTd"> 11/09/09 </td> 
+         <td class="confluenceTd"> 11/13/09 </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>The reviewers of this document are listed in the following table.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Chapter </th> 
+         <th class="confluenceTh">Writers</th> 
+         <th class="confluenceTh">Reviewers</th> 
+         <th class="confluenceTh">Preview Done</th> 
+         <th class="confluenceTh">FishCAT Done</th> 
+         <th class="confluenceTh">Final Done </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 1 Setting Up a Development Environment </td> 
+         <td class="confluenceTd"> June Parks </td> 
+         <td class="confluenceTd"> Snjezana Sevo-Zenzerovic Ludovic Champenois </td> 
+         <td class="confluenceTd"> 5/20/09 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 2 Class Loaders </td> 
+         <td class="confluenceTd"> June Parks </td> 
+         <td class="confluenceTd"> Sanjeeb Sahoo </td> 
+         <td class="confluenceTd"> 5/20/09 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 3 Using Ant with Enterprise Server </td> 
+         <td class="confluenceTd"> June Parks </td> 
+         <td class="confluenceTd"> Lloyd Chambers Kedar Mhaswade Sankar Neelakandan </td> 
+         <td class="confluenceTd"> 5/20/09 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 4 Debugging Applications </td> 
+         <td class="confluenceTd"> June Parks </td> 
+         <td class="confluenceTd"> Ludovic Champenois </td> 
+         <td class="confluenceTd"> 5/20/09 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 5 Securing Applications </td> 
+         <td class="confluenceTd"> June Parks </td> 
+         <td class="confluenceTd"> VB Kumar Jayanti K Venugopal Ron Monzillo Jagadesh Munta QA </td> 
+         <td class="confluenceTd"> 5/20/09 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 6 Developing Web Services </td> 
+         <td class="confluenceTd"> June Parks </td> 
+         <td class="confluenceTd"> Bhakti Mehta Harold Carr Anand Mishra QA Eric Jendrock </td> 
+         <td class="confluenceTd"> 5/20/09 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 7 Using the Java Persistence API </td> 
+         <td class="confluenceTd"> June Parks </td> 
+         <td class="confluenceTd"> Mitesh Meswani Ming Zhang QA Sherry Shen QA Ian Evans </td> 
+         <td class="confluenceTd"> 5/20/09 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 8 Developing Web Applications </td> 
+         <td class="confluenceTd"> June Parks </td> 
+         <td class="confluenceTd"> Rajiv Mordani Jean-Francois Arcand Jan Luehe Oleksiy Stashok Dhiru Pandey Shaline Sudipa Bhattacharya QA Devika Gollapudi </td> 
+         <td class="confluenceTd"> 5/20/09 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 9 Using Enterprise JavaBeans Technology </td> 
+         <td class="confluenceTd"> June Parks </td> 
+         <td class="confluenceTd"> Mahesh Kannan Marina Vatkina Ian Evans </td> 
+         <td class="confluenceTd"> 5/20/09 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 10 Using Container-Managed Persistence </td> 
+         <td class="confluenceTd"> June Parks </td> 
+         <td class="confluenceTd"> Mitesh Meswani Ming Zhang QA Sherry Shen QA </td> 
+         <td class="confluenceTd"> 5/20/09 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 11 Developing Java Clients </td> 
+         <td class="confluenceTd"> June Parks </td> 
+         <td class="confluenceTd"> Tim Quinn Hong Zhang Ken Saks </td> 
+         <td class="confluenceTd"> 5/20/09 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 12 Developing Connectors </td> 
+         <td class="confluenceTd"> June Parks </td> 
+         <td class="confluenceTd"> Jagadish Prasad Ramu Shalini Muthukrishnan Smitha Prabhu QA Chinmayee Srivathsa </td> 
+         <td class="confluenceTd"> 5/20/09 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 13 Developing Lifecycle Listeners </td> 
+         <td class="confluenceTd"> June Parks </td> 
+         <td class="confluenceTd"> Hong Zhang </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 14 Using the JDBC API for Database Access </td> 
+         <td class="confluenceTd"> June Parks </td> 
+         <td class="confluenceTd"> Jagadish Prasad Ramu Shalini Muthukrishnan Smitha Prabhu QA Chinmayee Srivathsa </td> 
+         <td class="confluenceTd"> 5/20/09 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 15 Using the Transaction Service </td> 
+         <td class="confluenceTd"> June Parks </td> 
+         <td class="confluenceTd"> Marina Vatkina Smitha Prabhu QA </td> 
+         <td class="confluenceTd"> 5/20/09 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 16 Using the Java Naming and Directory Interface </td> 
+         <td class="confluenceTd"> June Parks </td> 
+         <td class="confluenceTd"> Jagadish Ramu Shalini Muthukrishnan Mahesh Kannan Sanjeeb Sahoo Smitha Prabhu QA Chinmayee Srivathsa </td> 
+         <td class="confluenceTd"> 5/20/09 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 17 Using the Java Message Service </td> 
+         <td class="confluenceTd"> June Parks </td> 
+         <td class="confluenceTd"> Satish Kumar </td> 
+         <td class="confluenceTd"> 5/20/09 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 18 Using the JavaMail API </td> 
+         <td class="confluenceTd"> June Parks </td> 
+         <td class="confluenceTd"> Sanjeeb Sahoo Mahesh Kannan </td> 
+         <td class="confluenceTd"> 5/20/09 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3DocPlanDevGuide-DeliveryMethods"></a>Delivery Methods</h1> <p>The <em>Application Development Guide</em> will be published on the docs.sun.com^SM^ site in PDF and HTML formats.</p> <h4><a name="GlassFishV3DocPlanDevGuide-RelatedInformation"></a>Related Information</h1> <p>Latest draft (PDF): <a href="DeveloperSGuide.html" title="DeveloperSGuide">Application Development Guide Comments Page</a><br> Previous Preview version (HTML): <a href="http://docs.sun.com/doc/820-7695">Developer's Guide</a></p> <p>Email aliases:</p> 
+     <ul> 
+      <li><span class="error">[admin@glassfish.java.net]</span></li> 
+      <li><span class="error">[users@glassfish.java.net]</span></li> 
+      <li><span class="error">[docs@glassfish.java.net]</span></li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Aug 15, 2011 by 
+<font color="#0050B2">sb_2011</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

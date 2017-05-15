@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GFv3FinalMS1</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GFv3FinalMS1-GlassFishv3Milestone1%28Enddate03%2F16%2F09%29"></a>GlassFish v3 Milestone 1 (End date 03/16/09)</h2> 
+     <div> 
+      <ul> 
+       <li><a href="#GFv3FinalMS1-GlassFishv3Milestone1%28Enddate03%2F16%2F09%29">GlassFish v3 Milestone 1 (End date 03/16/09)</a></li> 
+       <ul> 
+        <li><a href="#GFv3FinalMS1-AdministrationGUI">Administration GUI</a></li> 
+        <li><a href="#GFv3FinalMS1-ApplicationClientContainer">Application Client Container</a></li> 
+        <li><a href="#GFv3FinalMS1-Build%2FDistribution%2FPackaging">Build/Distribution/Packaging</a></li> 
+        <li><a href="#GFv3FinalMS1-BusinessTierInfrastructure%28Transactions%2CNaming%2CCORBA%29">Business Tier Infrastructure (Transactions, Naming, CORBA)</a></li> 
+        <li><a href="#GFv3FinalMS1-CommandLineInterface">Command Line Interface</a></li> 
+        <li><a href="#GFv3FinalMS1-Connector%2CResources%2CJDBC">Connector, Resources, JDBC</a></li> 
+        <li><a href="#GFv3FinalMS1-Deployment">Deployment</a></li> 
+        <li><a href="#GFv3FinalMS1-EJBContainer">EJB Container</a></li> 
+        <li><a href="#GFv3FinalMS1-Installer">Installer</a></li> 
+        <li><a href="#GFv3FinalMS1-JavaPersistence">Java Persistence</a></li> 
+        <li><a href="#GFv3FinalMS1-Logging">Logging</a></li> 
+        <li><a href="#GFv3FinalMS1-Monitoring">Monitoring</a></li> 
+        <li><a href="#GFv3FinalMS1-Scripting">Scripting</a></li> 
+        <li><a href="#GFv3FinalMS1-Security">Security</a></li> 
+        <li><a href="#GFv3FinalMS1-ServerInfrastructure%28OSGi%2CHK2%2CConfiguration%2CLauncher%2CAMX%29">Server Infrastructure (OSGi, HK2, Configuration, Launcher, AMX)</a></li> 
+        <li><a href="#GFv3FinalMS1-Transaction">Transaction</a></li> 
+        <li><a href="#GFv3FinalMS1-UpdateCenter">Update Center</a></li> 
+        <li><a href="#GFv3FinalMS1-Upgrade">Upgrade</a></li> 
+        <li><a href="#GFv3FinalMS1-WebServices%28Metro%2CJAXRS%29">Web Services (Metro, JAX-RS)</a></li> 
+        <li><a href="#GFv3FinalMS1-WebTier%28Grizzly%2CWebContainer%29">Web Tier (Grizzly, Web Container)</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="GFv3FinalMS1-AdministrationGUI"></a>Administration GUI</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task/Feature </th> 
+         <th class="confluenceTh"> Owner </th> 
+         <th class="confluenceTh"> Start Date </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GFv3FinalMS1-ApplicationClientContainer"></a>Application Client Container</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task/Feature </th> 
+         <th class="confluenceTh"> Owner </th> 
+         <th class="confluenceTh"> Start Date </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Deploy stand-alone app client </td> 
+         <td class="confluenceTd"> Cheng </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 3/16/09 </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Deploy EAR containing app client(s) </td> 
+         <td class="confluenceTd"> Tim </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 3/16/09 </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Run stand-alone app client </td> 
+         <td class="confluenceTd"> Tim </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 3/16/09 </td> 
+         <td class="confluenceTd"> Done. <b>See note below.</b> Use
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">deploy --retreive local-dir myClient.jar
+appclient -client local-dir/myClient.jar app-args</pre> 
+            </div> 
+           </div>
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Run app client from an EAR </td> 
+         <td class="confluenceTd"> Tim </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 3/16/09 </td> 
+         <td class="confluenceTd"> Done. <b>See note below.</b> Use
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">asadmin deploy --retrieve local-dir myEAR.ear</pre> 
+            </div> 
+           </div>
+          </div> (containing clientA.jar and foo/clientB.jar)
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">appclient -client local-dir/clientA.jar app-args
+appclient -client local-dir/foo/clientB.jar app-args
+appclient -client local-dir/myEarClient.jar -mainclass x.y.Main app-args
+appclient -client local-dir/otherEar.jar app-args</pre> 
+            </div> 
+           </div>
+          </div> (if the EAR contains only one client) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> appclient script syntax parity with v2 </td> 
+         <td class="confluenceTd"> Tim </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 3/16/09 </td> 
+         <td class="confluenceTd">Done. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> appclient script functional parity </td> 
+         <td class="confluenceTd"> Tim </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">Partial: waiting for security, ORB (no comm. to back-end EJBs, etc.), hk2 set-up (no injection) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Display splash screen specified in app client JAR </td> 
+         <td class="confluenceTd"> Tim </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 3/16/09 </td> 
+         <td class="confluenceTd"> Done. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> java-command-like syntax for appclient </td> 
+         <td class="confluenceTd"> Tim </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 3/16/09 </td> 
+         <td class="confluenceTd">Done. Use~UWC_TOKEN_START~1278691906973~UWC_TOKEN_END where <em>client-selection</em> is one of <tt>-client myClient.jar</tt>, <tt>-jar myClient.jar</tt>, or <tt>a.b.c.Main</tt>. Also supported: <tt>a/b/c/Main.class</tt> for backward compatibility with v2 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Direct java -jar invocation of client </td> 
+         <td class="confluenceTd"> Tim </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Post M1. Use <tt>appclient</tt> script instead. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Embedded API </td> 
+         <td class="confluenceTd"> Tim </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 3/16/09 </td> 
+         <td class="confluenceTd"> Done. Write-up available soon </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> get-client-stubs support </td> 
+         <td class="confluenceTd"> Tim </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Post M1. Use <tt>deploy --retrieve local-dir</tt> instead. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p><b>Note:</b> Users and tests should <b>not</b> refer to generated files in the server's directories. GlassFish v3 generates JARs differently from v2. Use <tt>deploy --retrieve local-dir</tt> to download <b>all</b> the required files. To copy a downloaded app client zip up the contents of the local download directory and then unzip it in the new location. Avoid specifying the same local download directory during deployments of different applications.</p> <h4><a name="GFv3FinalMS1-Build%2FDistribution%2FPackaging"></a>Build/Distribution/Packaging</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task/Feature </th> 
+         <th class="confluenceTh"> Owner </th> 
+         <th class="confluenceTh"> Start Date </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GFv3FinalMS1-BusinessTierInfrastructure%28Transactions%2CNaming%2CCORBA%29"></a>Business Tier Infrastructure (Transactions, Naming, CORBA)</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task/Feature </th> 
+         <th class="confluenceTh"> Owner </th> 
+         <th class="confluenceTh"> Start Date </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GFv3FinalMS1-CommandLineInterface"></a>Command Line Interface</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task/Feature </th> 
+         <th class="confluenceTh"> Owner </th> 
+         <th class="confluenceTh"> Start Date </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Status </th> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GFv3FinalMS1-Connector%2CResources%2CJDBC"></a>Connector, Resources, JDBC</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task/Feature </th> 
+         <th class="confluenceTh"> Owner </th> 
+         <th class="confluenceTh"> Start Date </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GFv3FinalMS1-Deployment"></a>Deployment</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task/Feature </th> 
+         <th class="confluenceTh"> Owner </th> 
+         <th class="confluenceTh"> Start Date </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Deployment of various JavaEE module types (war, ejb jar, rar, appclient jar) as standalone module. </td> 
+         <td class="confluenceTd"> Hong/Various container teams </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 3/16/09 </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Deployment of various JavaEE module types (war, ejb jar, rar, appclient jar) one or more modules packaged inside ear. Optional application.xml is supported. </td> 
+         <td class="confluenceTd"> Hong/Various container teams </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 3/16/09 </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Various deployment mechanisms (archive deployment, directory deployment, autodeployment, dynamic reload, deployment plan) </td> 
+         <td class="confluenceTd"> Hong/Tim </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 3/16/09 </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Deployment lifecycle (deploy, redeploy, undeploy, disable, enable) </td> 
+         <td class="confluenceTd"> Hong </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 3/16/09 </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Library support (specify libraries through --libraries deploy option, specify libraries through application library directory, specify libraries through manifest class-path, include libraries packaged inside archive for annotation processing </td> 
+         <td class="confluenceTd"> Hong </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 3/16/09 </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p><b>Note:</b> 1. Remote EJB is still being worked on. 2. The war mentioned above contains both traditional war and ejb in war case.</p> <h4><a name="GFv3FinalMS1-EJBContainer"></a>EJB Container</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task/Feature </th> 
+         <th class="confluenceTh"> Owner </th> 
+         <th class="confluenceTh"> Start Date </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Singleton / Stateless / Stateful session beans – no-interface view, EJB 3.x local interfaces, EJB 2.x local interfaces – container-managed and bean-managed singleton concurrency modes oo Remote interfaces and method authorization not yet supported EJB 3.1 Timer Service Portable global JNDI names Local asynchronous session bean invocations Stateless session bean Web Service endpoints EJB 3.1 ejb-jar.xml BMP/CMP Entity Beans (Local view only) ejb-in-war packaging – supports optinal WEB-INF/ejb-jar.xml – annotated beans in WEB-INF/classes and WEB-INF/lib .jars EJB 3.1 Lite support in Web Profile </td> 
+         <td class="confluenceTd"> Ken Saks </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GFv3FinalMS1-Installer"></a>Installer</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task/Feature </th> 
+         <th class="confluenceTh"> Owner </th> 
+         <th class="confluenceTh"> Start Date </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GFv3FinalMS1-JavaPersistence"></a>Java Persistence</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task/Feature </th> 
+         <th class="confluenceTh"> Owner </th> 
+         <th class="confluenceTh"> Start Date </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Integrate javax.persitence.jar built by RI </td> 
+         <td class="confluenceTd"> Mitesh </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Initial drop of JPA 2.0 features into V3. Integrated Uni-directional OneToMany without join table, Access Type, Pessimistic Locking Support, Nested embedding, Cache APIs </td> 
+         <td class="confluenceTd"> Mitesh </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GFv3FinalMS1-Logging"></a>Logging</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task/Feature </th> 
+         <th class="confluenceTh"> Owner </th> 
+         <th class="confluenceTh"> Start Date </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GFv3FinalMS1-Monitoring"></a>Monitoring</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task/Feature </th> 
+         <th class="confluenceTh"> Owner </th> 
+         <th class="confluenceTh"> Start Date </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GFv3FinalMS1-Scripting"></a>Scripting </h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task/Feature </th> 
+         <th class="confluenceTh"> Owner </th> 
+         <th class="confluenceTh"> Start Date </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GFv3FinalMS1-Security"></a>Security</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task/Feature </th> 
+         <th class="confluenceTh"> Owner </th> 
+         <th class="confluenceTh"> Start Date </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> EJB-Lite Security Support </td> 
+         <td class="confluenceTd"> Nithya/Kumar </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 3/9/09 </td> 
+         <td class="confluenceTd"> 95% complete </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Appclient Security Integration </td> 
+         <td class="confluenceTd"> Kumar </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 3/15/09 </td> 
+         <td class="confluenceTd"> In Progress, Dependency on ORB </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Support for Remote EJB Security </td> 
+         <td class="confluenceTd"> Nithya </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 3/15/09 </td> 
+         <td class="confluenceTd"> Dependency on ORB </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Module restructuring (merge API modules to impl, ...) </td> 
+         <td class="confluenceTd"> Nithya/Kumar </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 3/15/09 </td> 
+         <td class="confluenceTd"> No QE impact </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> WebServices Security Integration </td> 
+         <td class="confluenceTd"> Kumar/Nithya </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 3/15/09 </td> 
+         <td class="confluenceTd"> 90% complete </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GFv3FinalMS1-ServerInfrastructure%28OSGi%2CHK2%2CConfiguration%2CLauncher%2CAMX%29"></a>Server Infrastructure (OSGi, HK2, Configuration, Launcher, AMX)</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task/Feature </th> 
+         <th class="confluenceTh"> Owner </th> 
+         <th class="confluenceTh"> Start Date </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Status </th> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GFv3FinalMS1-Transaction"></a>Transaction</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task/Feature </th> 
+         <th class="confluenceTh"> Owner </th> 
+         <th class="confluenceTh"> Start Date </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GFv3FinalMS1-UpdateCenter"></a>Update Center</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task/Feature </th> 
+         <th class="confluenceTh"> Owner </th> 
+         <th class="confluenceTh"> Start Date </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GFv3FinalMS1-Upgrade"></a>Upgrade</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task/Feature </th> 
+         <th class="confluenceTh"> Owner </th> 
+         <th class="confluenceTh"> Start Date </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GFv3FinalMS1-WebServices%28Metro%2CJAXRS%29"></a>Web Services (Metro, JAX-RS)</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task/Feature </th> 
+         <th class="confluenceTh"> Owner </th> 
+         <th class="confluenceTh"> Start Date </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GFv3FinalMS1-WebTier%28Grizzly%2CWebContainer%29"></a>Web Tier (Grizzly, Web Container)</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task/Feature </th> 
+         <th class="confluenceTh"> Owner </th> 
+         <th class="confluenceTh"> Start Date </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 09, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

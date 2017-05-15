@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : NetBeanPluginTestSpec6.1.html</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="NetBeanPluginTestSpec6.1.html-BacktoMainTestSpecificationPageNBPluginTestSpecs"></a><a href="NBPluginTestSpecs.html" title="NBPluginTestSpecs">Back to Main Test Specification Page</a></h2> <h4><a name="NetBeanPluginTestSpec6.1.html-Introduction"></a>Introduction</h2> <p> This document provides a list of test cases that will be manually executed to test the Netbeans plugin with GlassFish V2 server. </p> 
+     <div> 
+      <ul> 
+       <li><a href="#NetBeanPluginTestSpec6.1.html-BacktoMainTestSpecificationPageNBPluginTestSpecs"> Back to Main Test Specification Page</a></li> 
+       <li><a href="#NetBeanPluginTestSpec6.1.html-Introduction">Introduction</a></li> 
+       <li><a href="#NetBeanPluginTestSpec6.1.html-ServerRegistrationandConfiguration">Server Registration and Configuration</a></li> 
+       <li><a href="#NetBeanPluginTestSpec6.1.html-Addingserverthroughtheservermanager">Adding server through the server manager</a></li> 
+       <li><a href="#NetBeanPluginTestSpec6.1.html-Applicationserverinstance">Application server instance</a></li> 
+       <li><a href="#NetBeanPluginTestSpec6.1.html-RegisterRemoteDomain">Register Remote Domain</a></li> 
+       <li><a href="#NetBeanPluginTestSpec6.1.html-WebProjectrunproperties">Web Project run properties</a></li> 
+       <li><a href="#NetBeanPluginTestSpec6.1.html-NewPerInstanceOptions">New Per-Instance Options</a></li> 
+       <li><a href="#NetBeanPluginTestSpec6.1.html-ResourcesConfiguration">Resources Configuration</a></li> 
+       <ul> 
+        <li><a href="#NetBeanPluginTestSpec6.1.html-1.JMSResourceConfiguration%3A">1.JMS Resource Configuration:</a></li> 
+        <li><a href="#NetBeanPluginTestSpec6.1.html-2.JavaMailResourceConfiguration%3A">2.Java Mail Resource Configuration:</a></li> 
+        <li><a href="#NetBeanPluginTestSpec6.1.html-3.JDBCResourceConfiguration%3A">3.JDBC Resource Configuration:</a></li> 
+       </ul> 
+      </ul>
+     </div> <p>%%collapsebox</p> <h4><a name="NetBeanPluginTestSpec6.1.html-ServerRegistrationandConfiguration"></a>Server Registration and Configuration</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Test Case ID </th> 
+         <th class="confluenceTh"> Test Case Purpose </th> 
+         <th class="confluenceTh"> Test Case Description </th> 
+         <th class="confluenceTh"> Expected Result </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> Check the default Application server instance and its default properties </td> 
+         <td class="confluenceTd"> 1.Start NB IDE,Go to the Runtime window and expand the Server Registry instances nodes 2. Click on the Services node representing the default server installation(GlassFish V2) </td> 
+         <td class="confluenceTd"> The default instance should present and has a set of default properties </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd"> Remove default instance </td> 
+         <td class="confluenceTd"> 1. Perform 'Remove' action on the default GlassFish V2 appserver installation node </td> 
+         <td class="confluenceTd">The node should disappear. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3 </td> 
+         <td class="confluenceTd"> Add the default Application server installation back </td> 
+         <td class="confluenceTd"> 1.Perform 'Add Server...' action on Server registry node. 2. In the "Choose server" dialog window select server "GlassFish V2 and click "Next" 3. In the next dialog window fill the App server's Location,user name and password,Click on "Finish". </td> 
+         <td class="confluenceTd">A new sub node "GlassFish V2" should appear under the Server registry node. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4 </td> 
+         <td class="confluenceTd"> Verify platform location of GlassFish V2 </td> 
+         <td class="confluenceTd"> 1.Start IDE and right click on the server node select GlassFish V2 and give platform location for GlassFish V2 server. 2.Remove platform location of GlassFish V2 server in the dialog window "Platform location folder". 3.Give the same platform location of GlassFish V2. </td> 
+         <td class="confluenceTd"> There should not be any error message . </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5 </td> 
+         <td class="confluenceTd"> Verify Register default local domain </td> 
+         <td class="confluenceTd"> 1.Start IDE and right click on the server node select GlassFish V2 and give platform location for GlassFish V2 server. 2.Remove platform location of GlassFish V2 server in the dialog window "Platform location folder". 3.Select Register local domain option. 4.Give the same platform location for GlassFish V2 </td> 
+         <td class="confluenceTd"> The "Register default local domain" option should not be disabled. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6 </td> 
+         <td class="confluenceTd"> Add a new Application server instance </td> 
+         <td class="confluenceTd"> 1. Perform 'Add Server...' action on Server registry node. 2. In the opened dialog choose server "GlassFish V2. and click "Next". 3. In the next dialog window give the Appserver's Location,user name and password. 4. Click "Finish". </td> 
+         <td class="confluenceTd"> A new sub node representing newly added Application server (GlassFish V2 <sup><a href="#NetBeanPluginTestSpec6.1.html-1">1</a></sup> ) should appear under the Server registry node. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="NetBeanPluginTestSpec6.1.html-Addingserverthroughtheservermanager"></a>Adding server through the server manager</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Test Case ID </th> 
+         <th class="confluenceTh"> Test Case Purpose </th> 
+         <th class="confluenceTh"> Test Case Description </th> 
+         <th class="confluenceTh"> Expected Result </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> Add Application server </td> 
+         <td class="confluenceTd"> 1.Select IDE menu Tools/Server Manager. 2. Click on Add Server. 3. In the dialog window "choose server" GlassFish V2 and click "Next". 4. In the next dialog window fill the Application server's Location,user name and password. 5. Click on "Finish". </td> 
+         <td class="confluenceTd"> A new sub node representing the GlassFish V2 Application server should appear under the Server manager list. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd"> Remove Application server </td> 
+         <td class="confluenceTd"> 1. Open Tools/Server Manager. 2. Select GlassFish V2 application Server and click on Remove. </td> 
+         <td class="confluenceTd"> The server name should disappear from list. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="NetBeanPluginTestSpec6.1.html-Applicationserverinstance"></a>Application server instance</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Test Case ID</th> 
+         <th class="confluenceTh">Test Case Purpose</th> 
+         <th class="confluenceTh">Test Case Description</th> 
+         <th class="confluenceTh">Expected Result </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> Verify Start </td> 
+         <td class="confluenceTd"> 1.Perform 'Start' action on the GlassFish V2 server instance node. 2.Clean up:Stop and remove the server. </td> 
+         <td class="confluenceTd"> 1. GlassFish V2 server should be successfully started. 2. Check the IDE server messages in a output window. 3.Verify instance node can be expanded and contains a list of web modules. 4. Check it should contain Application,JDBC,JMS Resource,JAVA Mail Resource,JNDI,Connectors,JVMs. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd"> Verify Restart </td> 
+         <td class="confluenceTd"> 1.Start NB IDE and register GlassFish V2 server. 2.Start the server. 1.Perform 'Restart' action on the GlassFish V2 server instance node. 3.Clean up:Stop and remove the server. </td> 
+         <td class="confluenceTd"> 1.GlassFish v2 server should be restarted successfully. 2.Check the IDE server out put. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3 </td> 
+         <td class="confluenceTd"> Verify Start in Debug Mode </td> 
+         <td class="confluenceTd"> 1.Start NB IDE and register GlassFish V2 server. 2.Perform "Start in Debug Mode" action on the GlassFish V2 server instance node. 3.Clean up:Stop and remove the server. </td> 
+         <td class="confluenceTd"> 1.GlassFish V2 server should be started successfully in debug mode 2.Check the IDE server out put. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4 </td> 
+         <td class="confluenceTd"> Verify Start in Profile Mode </td> 
+         <td class="confluenceTd"> 1.Start NB IDE and register GlassFish V2 server. 2.Perform "Start in Profile Mode" action on the GlassFish V2 server instance node. 3.Clean up:Stop and remove the server. </td> 
+         <td class="confluenceTd"> 1.GlassFish V2 server should be started successfully in Profile mode 2.Check the IDE server out put. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5 </td> 
+         <td class="confluenceTd"> Verify Stop </td> 
+         <td class="confluenceTd"> 1.Start NB IDE and register GlassFish V2 server. 2.Perform "Start" action on the GlassFish V2 server instance node. 3.Perform "Stop" action on the GlassFish V2 server instance node. 4.Clean up:Remove the server. </td> 
+         <td class="confluenceTd"> Server should be stopped. 2.Check the IDE server out put. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6 </td> 
+         <td class="confluenceTd"> Verify View Admin Console </td> 
+         <td class="confluenceTd"> 1.Start NB IDE and register GlassFish V2 server. 2.Perform 'Start' action on the GlassFish V2 server instance node. 3.Select View admin console on the GlassFish V2 server instance node. 4.Clean up:Stop and remove the server. </td> 
+         <td class="confluenceTd"> The Admin console window should be opened in the browser. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 7 </td> 
+         <td class="confluenceTd"> Verify View Update Center </td> 
+         <td class="confluenceTd"> 1.Start NB IDE and register GlassFish V2 server. 2.Perform 'View Update center' action on the GlassFish V2 server instance node. 3.Clean up:Remove the server. </td> 
+         <td class="confluenceTd"> GlassFish Update center window should open. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="NetBeanPluginTestSpec6.1.html-RegisterRemoteDomain"></a>Register Remote Domain</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Test Case ID</th> 
+         <th class="confluenceTh">Test Case Purpose</th> 
+         <th class="confluenceTh">Test Case Description</th> 
+         <th class="confluenceTh">Expected Result </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> Verify Register remote domain </td> 
+         <td class="confluenceTd"> 1.Host machine 1:Install GlassFish V2 and start the server. 2.Host machine 2:Install NetBeans IDE,start IDE. 3.Select Tools/Server/GlassFish V2. 4.Select remote domain in the "Platform Folder location" dialog window. 5. Select Next. 6.Give Host name for the installed GlassFish V2 in the "Domain admin Info" dialog window,select Next. 4.Enter user name and password in the "Domain Admin Login Info" dialog window. Select Finish. </td> 
+         <td class="confluenceTd"> 1.Green symbol should appear over GlassFish V2 node 2.Right Click on the GlassFish V2 server node check these option should be disabled. 1.Start Server 2.Start In Debug Mode. 3.Restart. 4.Stop. 5.View Server log. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd"> Verify View Admin Console </td> 
+         <td class="confluenceTd"> 1.Perform 'View Admin Console' action on the Application server instance node. </td> 
+         <td class="confluenceTd"> 1.The Admin console window should be opened in the browser with the following URL <a href="http://host">http://host</a> <p> name:port/login.jsf. </p></td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3 </td> 
+         <td class="confluenceTd"> Verify deploy A small web application </td> 
+         <td class="confluenceTd"> 1.Create a small web application(Hello World). 2.Right click on the on the project select Build/Undeploy&amp;Deploy/Run. </td> 
+         <td class="confluenceTd"> Check the out put in the browser with the url <a href="http://host">http://host</a> <p> name:port/Web Application/ </p></td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4 </td> 
+         <td class="confluenceTd"> Verify disable the deployed application </td> 
+         <td class="confluenceTd"> 1.Create a small web application(Hello World). 2.Right click on the on the project select Build/Undeploy&amp;Deploy. 3.Right click on the deployed application and select Disable. </td> 
+         <td class="confluenceTd"> The application should not run.Browser should show information " requested service () is not currently available. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="NetBeanPluginTestSpec6.1.html-WebProjectrunproperties"></a>Web Project run properties</h2> 
+     <ul> 
+      <li>Create a web application - Web Application with 2 JSP pages located in WEB-INF directory, e.g. index.jsp and index2.jsp (Simple Hello world web application)</li> 
+      <li>Minimal two Application server instances have to be installed.</li> 
+     </ul> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Test Case ID</th> 
+         <th class="confluenceTh">Test Case Purpose</th> 
+         <th class="confluenceTh">Test Case Description</th> 
+         <th class="confluenceTh">Expected Result </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> Verify change target server per project. </td> 
+         <td class="confluenceTd"> 1.Right-click on the web project and Click on Properties. 2.Go to Run - Running Project node. 3.From Server select box, select one server instance and click OK button. 4.Right-Click on the application and select Run. </td> 
+         <td class="confluenceTd"> Your application should be deployed on selected server. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd"> Verify Change relative URL. </td> 
+         <td class="confluenceTd"> 1.Go to the Projects tab. 2.Right click on the web application choose Properties item. 3.Go to Run and change Relative URL text box type to second page's relative URL, e.g. index2.jsp. 4.Click OK. 5.Right click on the application select RUN. </td> 
+         <td class="confluenceTd"> In the browser out put it must display correct URL: <a href="http://localhost:port/$CONTEXT/Relative">http://localhost:port/$CONTEXT/Relative</a> <p> URL. </p></td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="NetBeanPluginTestSpec6.1.html-NewPerInstanceOptions"></a>New Per-Instance Options</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Test Case ID</th> 
+         <th class="confluenceTh">Test Case Purpose</th> 
+         <th class="confluenceTh">Test Case Description</th> 
+         <th class="confluenceTh">Expected Result </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> Verify Options tab </td> 
+         <td class="confluenceTd"> 1.Start NB IDE and register GlassFish V2 server. 2.Select "Properties" on the GlassFish V2 server instance node. 3.Choose "Options" tab. 4.Clean up:Remove GlassFish V2 server. </td> 
+         <td class="confluenceTd"> 1.Option tab should contain Startup Time-outs,Deployment Time-out s. 2.Check box "Directory Deployment Enabled","JDBC Driver(s) Deployment Enabled" and "Java DB start enabled" is checked. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd"> Verify Options tab on registering remote domain </td> 
+         <td class="confluenceTd"> 1.Start NB IDE 2.Register remote domain. 3.Select "Properties" on the GlassFish V2 server instance node. 3.Choose "Options" tab. 4.Clean up:Remove GlassFish V2 server. </td> 
+         <td class="confluenceTd"> 1.Startup Timeout s option is disabled and deployment Timeout s can be changed 2.Check box "Directory Deployment Enabled" is disabled 3.Check box "JDBC driver(s) deployment Enabled" is checked and disabled. 4.Check box "Java DB start enabled is checked" is checked and disabled. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3 </td> 
+         <td class="confluenceTd"> Verify change in value Startup Time-outs by pressing enter </td> 
+         <td class="confluenceTd"> 1.Start NB IDE and register GlassFish V2 server. 2.Select "Properties" on the GlassFish V2 server instance node. 3.Choose "Options" tab. 4.Change default value in Startup Timeout and press enter key. 4.Clean up:Remove GlassFish V2 server. </td> 
+         <td class="confluenceTd"> Verify new value is set correctly with out any exception. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4 </td> 
+         <td class="confluenceTd"> Verify change in value Deployment Time-out by pressing enter </td> 
+         <td class="confluenceTd"> 1.Start NB IDE and register GlassFish V2 server. 2.Select "Properties" on the GlassFish V2 server instance node. 3.Choose "Options" tab. 4.Change default value in Deployment Timeout and press enter key. 4.Clean up:Remove GlassFish V2 server. </td> 
+         <td class="confluenceTd"> Verify new value is set correctly with out any exception. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5 </td> 
+         <td class="confluenceTd"> Verify Startup Time-outs on pressing Space key. </td> 
+         <td class="confluenceTd"> 1.Start NB IDE and register GlassFish V2 application server. 2.Right click on the GlassFish V2 server and select option tab. 3.Set startup time or deployment time to ZERO. 4.set some value to startup time or deployment time.(70,67,89,80,786 or some value). 5.Remove those value and press space key. 6.Clean up:Remove GlassFish V2 server. </td> 
+         <td class="confluenceTd"> No change in value. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6 </td> 
+         <td class="confluenceTd"> Verify coherence between IDE out put and Server Out put. </td> 
+         <td class="confluenceTd"> 1.Start NB IDE and register GlassFish V2 server with local default domain and start. 2.Change default value in Startup Time-out to a very small value (2 sec). 3.Start server. 4.Clean up:Stop and remove the server. </td> 
+         <td class="confluenceTd"> Verify coherence between server status (CLI, Output-server) and IDE server node status should be same. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 7 </td> 
+         <td class="confluenceTd"> Test coherence between application deployment status (Output-project, Output-server) and IDE server node Web Applications tree. </td> 
+         <td class="confluenceTd"> 1.Start NB IDE and register local default domain and start. 2.Start server. 3.Change default value in Deployment Time-out to a very small value (1 sec.) 4.Deploy a small web app (1 jsp hello). 5.Clean up:Undeploy the application, stop and remove the server. </td> 
+         <td class="confluenceTd"> Verify coherence between application deployment status (Output-project, Output-server) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 8 </td> 
+         <td class="confluenceTd"> Verify Connection Tab on registering local default domain. </td> 
+         <td class="confluenceTd"> 1.Start NB IDE and register GlassFish V2 server with local default domain. 2.Select Servers Panel Connection tab. 3.Clean up:Remove server. </td> 
+         <td class="confluenceTd"> Verify Combo box "Enable HTTP Monitor" and "Use IDE proxy setting" is checked. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 9 </td> 
+         <td class="confluenceTd"> Verify Connection Tab on registering remote domain. </td> 
+         <td class="confluenceTd"> 1.Start NB IDE and register GlassFish V2 server with local default domain. 2.Select Servers Panel Connection tab. 3.Clean up:Remove server. </td> 
+         <td class="confluenceTd"> 1.Combo box "Enable HTTP Monitor" has to be disabled and unchecked. 2.Combo box "Use IDE Proxy Settings" has to be disabled and unchecked. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 10 </td> 
+         <td class="confluenceTd"> Verify Uncheck Enable HTTP Monitor on selecting close. </td> 
+         <td class="confluenceTd"> 1.Start NB IDE and register GlassFish V2 server with local default domain. 2.Right click on GlassFish V2 server select "properties" and select Connection tab,uncheck Enable HTTP Monitor and select close. 3.Clean up:Remove server </td> 
+         <td class="confluenceTd"> Verify no exception. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 11 </td> 
+         <td class="confluenceTd"> Verify Uncheck Enable HTTP Monitor on pressing enter. </td> 
+         <td class="confluenceTd"> 1.Start NB IDE and register GlassFish V2 server with local default domain. 2.Right click on GlassFish V2 server select "properties" and select Connection tab,uncheck Enable HTTP Monitor and press enter key. 3.Clean up:Remove server </td> 
+         <td class="confluenceTd"> Verify no exception. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 12 </td> 
+         <td class="confluenceTd"> Directory Deployment 1 </td> 
+         <td class="confluenceTd"> 1.Start NB IDE and register GlassFish V2 server with local default domain and start. 2.Right click in GlassFish V2 server select properties/Options tab and keep the Directory Deployment box checked. 3.Create a web application. 4.Right click on the application select build/Deploy/Run. 5.Cleanup: Undeploy, Stop/Remove </td> 
+         <td class="confluenceTd"> Verify project Out-put /application deployment from build/web directory. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 13 </td> 
+         <td class="confluenceTd"> Directory Deployment 2 </td> 
+         <td class="confluenceTd"> 1.Start NB IDE and register GlassFish V2 server with local default domain and start. 2.Right click in GlassFish V2 server select properties/Options tab and uncheck the Directory Deployment box. 3.Create a web application. 4.Right click on the application select build/Deploy/Run. 5.Cleanup: Undeploy, Stop/Remove </td> 
+         <td class="confluenceTd"> Verify project Out-put /application deployment from build/web directory. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 14 </td> 
+         <td class="confluenceTd"> Directory Deployment 3 </td> 
+         <td class="confluenceTd"> 1.Start NB IDE and register GlassFish V2 server with local default domain and start. 2.Right click on GlassFish V2 server select properties/Options tab and keep the Directory Deployment box checked. 3.Create an EJB application 4.Right click on the EJB application select Build/Deploy/Run. 5.Clean up:Undeploy, Stop/Remove. </td> 
+         <td class="confluenceTd"> 1.Verify project Out-put /application deployment from build/web directory. 2.Verify on deployed ejb node (Properties) the Location. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 15 </td> 
+         <td class="confluenceTd"> Directory Deployment 4 </td> 
+         <td class="confluenceTd"> 1.Start NB IDE and register GlassFish V2 server with local default domain and start. 2.Right click in GlassFish V2 server select properties/Options tab and uncheck the Directory Deployment box. 3.Create an EJB application 4.Right click on the EJB application select Build/Deploy/Run. 5.Clean up:Undeploy, Stop/Remove. </td> 
+         <td class="confluenceTd"> Verify project Out-put /application deployment from build/ directory. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 16 </td> 
+         <td class="confluenceTd"> Directory Deployment 5 </td> 
+         <td class="confluenceTd"> 1.Start NB IDE and register GlassFish V2 server with local default domain and start. 2.Right click on GlassFish V2 server select properties/Options tab and uncheck the Directory Deployment box. 3.Create an Enterprise application (EJB + web) 4.Right click on the EAR project select /Build/Deploy/Run. </td> 
+         <td class="confluenceTd"> Verify project Out-put /application deployment of the ear file. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 17 </td> 
+         <td class="confluenceTd"> Directory Deployment 6 </td> 
+         <td class="confluenceTd"> 1.Start NB IDE and register GlassFish V2 server with local default domain and start. 2.Right click on GlassFish V2 server select properties/Options tab and keep the Directory Deployment box checked. 3.Create an Enterprise application (EJB + web) 4.Right click on the EAR project select /Build/Deploy/Run. </td> 
+         <td class="confluenceTd"> Verify project Out-put /application deployment of the ear file. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 18 </td> 
+         <td class="confluenceTd"> Directory Deployment 7 </td> 
+         <td class="confluenceTd"> 1.Start NB IDE and register GlassFish V2 server with local default domain and start. 2.Right click on GlassFish V2 server select properties/Options tab and keep the Directory Deployment box checked. 3.Create an Enterprise application (EJB + web + App-Client ) 4.Right click on the EAR project select /Build/Deploy/Run. </td> 
+         <td class="confluenceTd"> Verify project Out-put /application deployment of the ear file. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 19 </td> 
+         <td class="confluenceTd"> Directory Deployment 8 </td> 
+         <td class="confluenceTd"> 1.Start NB IDE and register GlassFish V2 server with local default domain and start. 2.Right click on GlassFish V2 server select properties/Options tab and uncheck the Directory Deployment box. 3.Create an Enterprise application (EJB + web + App-Client ) 4.Right click on the EAR project select /Build/Deploy/Run. </td> 
+         <td class="confluenceTd"> Verify project Out-put /application deployment of the ear file. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 20 </td> 
+         <td class="confluenceTd"> Directory Deployment 9 </td> 
+         <td class="confluenceTd"> 1.Start NB IDE and register GlassFish V2 server with local default domain and start. 2.Right click on GlassFish V2 server select properties/Options tab and uncheck the Directory Deployment box. 3.Create an App-Client project. 4.Right click on the App-Client project select /Build/Deploy/Run. </td> 
+         <td class="confluenceTd"> Verify project Out-put /application deployment of the ear file. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 21 </td> 
+         <td class="confluenceTd"> Directory Deployment 10 </td> 
+         <td class="confluenceTd"> 1.Start NB IDE and register GlassFish V2 server with local default domain and start. 2.Right click on GlassFish V2 server select properties/Options tab and keep the Directory Deployment box checked. 3.Create an App-Client project. 4.Right click on the App-Client project select /Build/Deploy/Run. </td> 
+         <td class="confluenceTd"> Verify project Out-put /application deployment of the ear file. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 22 </td> 
+         <td class="confluenceTd"> Directory Deployment 11 </td> 
+         <td class="confluenceTd"> 1.Start NB IDE and register GlassFish V2 server with local default domain and start. 2.Right click on GlassFish V2 server select properties/Options tab and keep the Directory Deployment box checked. 3.Create an EAR project with (EJB and App-client only). 4.Right click on the EAR project select /Build/Deploy/Run. </td> 
+         <td class="confluenceTd"> Verify project Out-put /application deployment of the ear file. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 23 </td> 
+         <td class="confluenceTd"> Directory Deployment 12 </td> 
+         <td class="confluenceTd"> 1.Start NB IDE and register GlassFish V2 server with local default domain and start. 2.Right click on GlassFish V2 server select properties/Options tab and uncheck the Directory Deployment box. 3.Create an EAR project with (EJB and App-client only). 4.Right click on the EAR project select /Build/Deploy/Run. </td> 
+         <td class="confluenceTd"> Verify project Out-put /application deployment of the ear file. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="NetBeanPluginTestSpec6.1.html-ResourcesConfiguration"></a>Resources Configuration</h2> <h4><a name="NetBeanPluginTestSpec6.1.html-1.JMSResourceConfiguration%3A"></a>1.JMS Resource Configuration: </h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Test Case ID</th> 
+         <th class="confluenceTh">Test Case Purpose</th> 
+         <th class="confluenceTh">Test Case Description</th> 
+         <th class="confluenceTh">Expected Result </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> Create a JMS Resource </td> 
+         <td class="confluenceTd"> 1.Start NetBeans IDE ,register GlassFishV2 server and start server. 2.Create a Web application. 3.Right-click on the web project and select New/Other/GlassFish/JMS Resource. 4.<b>General Attributes:</b> Give JNDI name: jms/myQueue_1 in the dialog window General Attributes Enable:true Description :.................. Choose Admin object Resource type(Queue/Topic) and click Next&gt;Back. 5.<b>Additional Properties:</b> Add two properties in the dialog window "additional properties". By clicking on add button. Set Name : Name1 and value : Give value. Set Name : Name1 and value : different value and press enter. 6.<b>Add or Remove additional properties:</b> Add two properties in the dialog window Additional properties with different name by clicking on Add button. Remove property by clicking on Remove button. 7.Clean up:Stop and remove server. </td> 
+         <td class="confluenceTd"> 1.Given JNDI Name should be saved on selecting BACK. 2.Information dialog window should pop up with following information "Duplicate Property:Property name should not be unique". 3.Added property should be able to remove with no exception. 4.Check selected resource should be created in sun-resource.xml. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd"> Add JMS resource with different Resource type. </td> 
+         <td class="confluenceTd"> 1.Start NetBeans IDE ,register GlassFishV2 server and start server. 2.Create a web application. 3. Right click on the web application select New/GlassFish/JMS Resource and create different Resources type(Queue,Topic,QueueConnectionFactory,TopicConnectionFactory and ConnectionFactory). 4.Right click on the application select Build/Undeploy&amp;Deploy. 5.<b>Properties of deployed JMS Resource:</b> Right click on the deployed JMS Resources and update some of the properties(server/GlassFish V2/Resource/JMS Resource). 6.Clean up:Undeploy application, stop/Remove server. </td> 
+         <td class="confluenceTd"> 1.Verify selected Resource should be created in sun-resource.xml file. Verify selected Resources should be created in Server/GlassFish V2/Resources/JMS Resource. 3.Verify updated properties should appear in the JMS Resource properties with out any exception. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3 </td> 
+         <td class="confluenceTd"> Delete created resource. </td> 
+         <td class="confluenceTd"> 1.Same step1-4 as above. 2.Select Server/GlassFish V2/Resources/JMS Resource. 3.Delete created JMS Resources. 4.Undeploy application, Stop/Remove server. </td> 
+         <td class="confluenceTd"> 1.No exception. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4 </td> 
+         <td class="confluenceTd"> Verify send JMS Message dialog box. </td> 
+         <td class="confluenceTd"> 1.Start NetBeans IDE and Register Glass Fish V2 server and start server. 2.Create a new EAR project (Web + EJB). 3.Right click on EJB application and select Message Driven Bean and set project destination Queue1 type and select "OK". Update code onMessage() to dump the Received message. 4.Right click on Web application select servlet. 5.Right click in the Servlet code: select Enterprise Resource/ Send JMS Message. 6.Select Message Driven Bean: Queue1 and click OK. 7. Right click on the EAR project and select Build/Undeploy&amp;Deploy/Run. 8.Clean up: Undeploy application.Stop/Remove server. </td> 
+         <td class="confluenceTd"> 1.Verify created resource in sun-resource.xml file content in Server Resources node. 2. Verify @ Resource injection lines in the Servlet code. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="NetBeanPluginTestSpec6.1.html-2.JavaMailResourceConfiguration%3A"></a>2.Java Mail Resource Configuration:</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Test Case ID</th> 
+         <th class="confluenceTh">Test Case Purpose</th> 
+         <th class="confluenceTh">Test Case Description</th> 
+         <th class="confluenceTh">Expected Result </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> Create a JAVA Mail Resource. </td> 
+         <td class="confluenceTd"> 1.Start the IDE and Register GlassFishV2 server and start the server. 2.Create a Web application. 3.Right click on the Web applications and select New/Other/GlassFish V2/Java mail Session. 4.<b>General Attributes:</b> JNDI Name :mail/Mysession_123 Mail Host : mail-apac.sun.com Default User: Name Default return address: give mail ID Enable :true Descriptions: ....... select Next&gt;Back. 5.<b>Mail Session Properties:</b> Add two properties in the dialog window Mail Session Properties. By clicking on add button. Set Name : Name1 and value : Give value Set Name : Name1 and value : different value and press enter. 6.<b>Add or Remove properties:</b> Add two properties in the dialog window Additional properties with different name by clicking on Add button. Remove property by clicking on Remove button. 7.Select Finish. 8.Clean up:Stop/Remove server. </td> 
+         <td class="confluenceTd"> 1.Given JNDI Name should be saved on selecting BACK. 2.Information dialog window should pop up with following information "Duplicate Property:Property name should not be unique". 3.Added property should be able to remove with no exception. 4.Check selected resource should be created in sun-resource.xml. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd"> Delete created mail resource </td> 
+         <td class="confluenceTd"> 1.Steps 1-7 same as above. 2.Right click on the web application select Build/Undeploy&amp;Deploy/Run. 3.Delete created resource from server/GlassFish/Resources/Java Mail Session. 4.Clean up:Undeploy application, Stop/Remove server. </td> 
+         <td class="confluenceTd">1.No exception. 2.Resource should be deleted. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3 </td> 
+         <td class="confluenceTd"> Test Send E-Mail </td> 
+         <td class="confluenceTd"> 1.Start the IDE and Register GlassFishV2 server and start the server. 2.Create a Web application. 3.Right-click on the web project and select Servlet. 4.Right Click in the Servlet code select Enterprise Resources/Send E-Mail. 5.In the dialog window Specify Mail Resource give JNDI Name: newMail and select generate Inline Look up code and select OK. 6.Clean up:Stop/remove server. </td> 
+         <td class="confluenceTd"> Verify in the Servlet code that the "@Resource and session name " should be created. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="NetBeanPluginTestSpec6.1.html-3.JDBCResourceConfiguration%3A"></a>3.JDBC Resource Configuration:</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Test Case ID</th> 
+         <th class="confluenceTh">Test Case Purpose</th> 
+         <th class="confluenceTh">Test Case Description</th> 
+         <th class="confluenceTh">Expected Result </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> Create JDBC Resource with New connection pool. </td> 
+         <td class="confluenceTd"> 1.Start NetBeans IDE and Register GlassFishV2 server and start the server. 2.Create a simple Web application(Hello world). 3.Right click on the web application and select JDBC resource. Select Choose New JDBC Connection Pool from the dialog window "General Attributes". <b>General Attributes:</b> Set the values for JNDI Name: jdbc/myDatasource_New. Object type: user Enabled :true Description: Give description 4.Select Next/Back <b>Additional Properties:</b> Add two properties with same name and different values in the dialog window Additional Properties. By clicking on add button. Set Name : Name1 and value : Give value Set Name : Name1 and click on value text field. <b>Add or Remove properties:</b> 5.Add two properties in the dialog window Additional properties with different name by clicking on Add button. 6.Remove any property by clicking on Remove button. <b>Choose DataBase Connection:</b> 7.JDBC Connection Pool name:connectionpool_1 8.Select Extract from Existing Connection pool(derby/sample,derby/travel, derby/vir) and select Next. <b>Add Connection Pool Properties:</b> 9.Leave the default value,and select Next. <b>Specify Optional Properties For Connection Pool:</b> 10.Leave the default values and select Finish. 11.Clean up:Stop/Remove server. </td> 
+         <td class="confluenceTd"> 1.Given JNDI Name should be saved. 2.Verify information dialog window "Duplicate Property: Property Name should be Unique". When you type same Name. 3.Added property should be able to remove with no exception. 4.Verify created resource in the sun-resource.xml file. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd"> Add JDBC resource with different Connection pool(Travel ,vir) </td> 
+         <td class="confluenceTd"> 1.Steps 1-10 same as above. 2.Follow the above step to create JDBC Resource with different connection pool(Sample,Travel, VIR). 3.Right click on the project and select Build/Undeploy &amp; Deploy/Run. 4.Right click on the deployed resource select properties(Server/GlassFish V2/Resources/JDBC/JDBC Resource). 5.Update some properties. 6.Clean up:Undeploy the application,Stop/Remove server. </td> 
+         <td class="confluenceTd"> 1.Verify created resource in sun-resource.xml file. 2.Verify deployed resource in the Server/GlassFish/Resource/JDBC Resource. 3.Updated properties should appear. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3 </td> 
+         <td class="confluenceTd"> Delete deployed JDBC Resources </td> 
+         <td class="confluenceTd"> 1. Steps 1-3 same as above. 2.Right click on the deployed resource select <b>delete properties</b>(Server/GlassFish V2/Resources/JDBC/JDBC Resource). 3.Clean up: Undeploy the application,Stop/Remove server. </td> 
+         <td class="confluenceTd"> 1.No exception. 2.Resource should be able to delete. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4 </td> 
+         <td class="confluenceTd"> Create JDBC Resource with Existing Connection pool </td> 
+         <td class="confluenceTd"> 1.Start NetBeans IDE and Register GlassFishV2 server and start the server. 2.Create a simple Web application(Hello world). 3.Right click on the web application and select JDBC resource. Select Use existing connection pool(Sample pool). <b>General Attributes:</b> JNDI Name: jdbc/myDatasource_New Object type: user Enabled :true Descriptions:...... 4.Select Next/Back. <b>Additional Properties:</b> 5.Add two properties with same name and different values in the dialog window Additional Properties. By clicking on add button. give Name : Name1 and value : Give value. give Name : Name1 and click on value text field. <b>Add or Remove additional properties:</b> 6.Add two properties with different name and values in the Additional Properties dialog window. give Name : Name1 and value : Give value. give Name : Name2 and Value :Different value and remove any properties by clicking on remove button .Select Finish. 7.Right click on the application select Build/Undeploy and Deploy/Run. 8.Clean up:Undeploy the application,Stop/Remove server. </td> 
+         <td class="confluenceTd"> 1.Verify created resource in sun-resource.xml file. 2.Verify deployed resource in the Server/GlassFish/Resource/JDBC Resource. 3.Given JNDI Name should be saved. 4.Verify information dialog window "Duplicate Property: Property Name should be Unique". When you type same Name. 5.Added property should be able to remove with no exception. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5 </td> 
+         <td class="confluenceTd"> Delete deployed JDBC Resources </td> 
+         <td class="confluenceTd"> 1.Steps 1-7 same as above. 2.Right click on the deployed resource select delete resource(Server/GlassFish V2/Resources/JDBC/JDBC Resource). 3.Clean up: Undeploy the application,Stop/Remove server. </td> 
+         <td class="confluenceTd"> No exception and deployed resource should be able to delete. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6 </td> 
+         <td class="confluenceTd"> Verify Use Database </td> 
+         <td class="confluenceTd"> 1.Start NetBeans IDE,register GlassFishV2 server and start. 2.Create a simple web application 3.Right click on the project and select Servlet. 4.Right click in the Servlet code and select Enterprise resource/Use Database. 5.Set Reference by clicking Add button. 6. Select Server Data Sources(jdbc/_Default or jdbs/sample). 7.check the copy selected data resource to project and click OK. 8.Select General Inline Look up code and select OK. 9.Right click on the web application select Build/Undeploy and deploy/Run. 10. Clean up: Undeploy the application,Stop/Remove server. </td> 
+         <td class="confluenceTd"> 1.@ Resource and Data resource name should be generated in the Servlet code. 2.Resource should be deployed under node Server/GlassFish v2/Resource/ JDBC. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 7 </td> 
+         <td class="confluenceTd"> Verify Update properties of deployed JBDC Resource </td> 
+         <td class="confluenceTd"> 1.Start NetBeans IDE. Register GlassFishV2 server and start. 2.Create a simple web application (webapplication1). 3.Right click on the web application select New/Other/GF/JDBC Resource. 4.Select create new JDBC Connection Pool select Next&gt;Next&gt;Next&gt;Next. 5.Remove default values of "Max Wait Time" and "Idle Timeout" in the dialog window "Specify optional Properties for Connection Pool" and select Finish. 6.Right click on the web application select Build/Undeploy &amp; Deploy/Run. 9.Right click on the deployed resource select Properties and check MaxWaitTimeInMillis and IdleTimeoutInSeconds(server/GF2.1/Resources/JDBC/Connection pool). 10.Clean up:Undeploy the application. Delete deployed resource.Stop/Remove server. </td> 
+         <td class="confluenceTd"> Given Value should be saved in the properties of deployed resource. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:49.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

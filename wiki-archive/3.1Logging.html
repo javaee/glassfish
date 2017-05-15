@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : 3.1Logging</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="3.1Logging-GlassFishServerOpenSourceEdition3.1Logging%26Diagnostics"></a>GlassFish Server Open Source Edition 3.1 - Logging &amp; Diagnostics</h1> <p>This wiki page / document details how Logging will work on GlassFish 3.1.</p> 
+     <div> 
+      <ul> 
+       <li><a href="#3.1Logging-GlassFishServerOpenSourceEdition3.1Logging%26Diagnostics">GlassFish Server Open Source Edition 3.1 - Logging &amp; Diagnostics</a></li> 
+       <ul> 
+        <li><a href="#3.1Logging-Introduction">Introduction</a></li> 
+        <li><a href="#3.1Logging-Scope">Scope</a></li> 
+        <li><a href="#3.1Logging-FeatureOverview">Feature Overview</a></li> 
+        <li><a href="#3.1Logging-DesignDocument">Design Document</a></li> 
+        <li><a href="#3.1Logging-MilestoneSchedule">Milestone Schedule</a></li> 
+        <li><a href="#3.1Logging-TaskList">Task List</a></li> 
+        <li><a href="#3.1Logging-DevTests">Dev Tests</a></li> 
+        <li><a href="#3.1Logging-References">References</a></li> 
+        <li><a href="#3.1Logging-EmailAlias">Email Alias</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="3.1Logging-Introduction"></a>Introduction</h2> <p>The logging facility for GlassFish V3.1 will simplify the logging code to leaverage the JDK logging utility as much as possible. Carry forward existing v3 functionality for logging.</p> <h4><a name="3.1Logging-Scope"></a>Scope</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Feature ID </th> 
+         <th class="confluenceTh"> Priority </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> Eng Response </th> 
+         <th class="confluenceTh"> Owner(s) </th> 
+         <th class="confluenceTh"> Estimate (Man Days) </th> 
+         <th class="confluenceTh"> Source of Requirement </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> LOG-001 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Error message reference </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Naman, Dies Koper </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Feature parity </td> 
+         <td class="confluenceTd"> Message ids for all SEVERE, WARNING and INFO messages </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> LOG-002 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Diagnostic messages for SEVERE and WARNING messages </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Naman </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Feature parity </td> 
+         <td class="confluenceTd"> Move messageIds and messages to LogString.properties file. Going to create P2 bug for all modules. Integrate maven plugin with build. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> LOG-003 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Integration of remote instances for Logging </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Naman </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Feature parity </td> 
+         <td class="confluenceTd"> Update back end code to integrate with remote instances for logging. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> LOG-004 </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> Support for <a href="GlassFishv3.1.html#GlassFishv3.1-sectionGlassFishv3.1Serviceability">CLIs </a> </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Naman </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Feature parity </td> 
+         <td class="confluenceTd"> Planning to add most used logging CLIs of GlassFish 2.x for backward compatibility. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> LOG-005 </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> Sync-up wiki <a href="GlassFishV3ErrorMessageReference.html" title="GlassFishV3ErrorMessageReference">error message reference from wiki </a> to LogStrings.properties file </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Naman </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Feature parity </td> 
+         <td class="confluenceTd"> Migration of error messages from above wiki to LogStrings.properties files in v3 workspace. Go to wiki page check error message reference if missing add to appropriate LogStrings.properties file. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> LOG-006 </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> Sync-up log message from LogStrings.properties file <a href="GlassFishV3ErrorMessageReference.html" title="GlassFishV3ErrorMessageReference">error message reference from wiki </a> </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Naman </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Feature parity </td> 
+         <td class="confluenceTd"> Publish the information in the GlassFish documentation set in a form similar to the Sun GlassFish Enterprise Server v3 Error Message Reference. The content will be generated from the LogStrings.properties </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> LOG-007 </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> Leverage SSH to show log messages when server instance is not running </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Naman </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Feature parity </td> 
+         <td class="confluenceTd"> Update the log viewer code to pass instance info. If file is not local used SSH to get the same. It relates to LOG-003. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> LOG-008 </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> Provide CLI that collects all the logs files for a cluster and returns as a zip file </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Naman </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Feature parity </td> 
+         <td class="confluenceTd"> Include all logs - DAS, remote instance, node-agent (when available); organize the files under labeled dirs - example: node123/DAS/server.log, nodeXYZ/instance1/server.log, nodeABC/instance2/server.log </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> LOG-009 </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> Expand search criteria when viewing log files </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Naman </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Feature parity </td> 
+         <td class="confluenceTd"> Update GUI code to filter log messages. Need more search options in LogViewer. Need to get inputs from community about more search options. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> LOG-010 </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> Log Viewer integration for rotated server log files </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Naman </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Feature parity </td> 
+         <td class="confluenceTd"> Update GUI to display available log files for given instance </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.1Logging-FeatureOverview"></a>Feature Overview</h2> <p>All (INFO/WARN/SEVERE) messages logged to the server.log to have unique message Ids. All hard-coded messages need to move in respective LogStrings.properties file with proper message Ids. Add support to retrieve Diagnostic info based on message id found in message body. Once developers adds the diagnostic information (message IDs to all messages) then we need to work with the admin team to get the reports added to the console. Support for GlassFish 2.x CLIs for backward compatibility, this need to be decided by the inputs given by community and module owners.</p> <h4><a name="3.1Logging-DesignDocument"></a>Design Document</h2> <p><a href="http://wiki.glassfish.java.net/attach/V3FunctionalSpecs/GFv3.1Logging-onepager.html">One Pager</a></p> <h4><a name="3.1Logging-MilestoneSchedule"></a>Milestone Schedule</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments / Dependencies </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 01. </td> 
+         <td class="confluenceTd"> MS1 </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> Detailed investigation and impl spec </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 02. </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd"> LOG-001 </td> 
+         <td class="confluenceTd"> Message ids for all SEVERE, WARNING and INFO messages </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 03. </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> LOG-002 </td> 
+         <td class="confluenceTd"> Diagnostic info updated by module owners to LogStrings.properties file </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Create P2 bug for all module owners to update the same; to catch new regressions integrate maven plugin with build so that GlassFish developers get warning messages during build. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 04. </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> LOG-003 </td> 
+         <td class="confluenceTd"> Remote instance integration for Logging </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 05. </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd"> LOG-007 </td> 
+         <td class="confluenceTd"> Log viewer integration for remote instance </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 06. </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd"> LOG-009 </td> 
+         <td class="confluenceTd"> More search options for Log Viewer </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 07. </td> 
+         <td class="confluenceTd"> MS5 </td> 
+         <td class="confluenceTd"> LOG-010 </td> 
+         <td class="confluenceTd"> Log Viewer integration for Rotated log files </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 08. </td> 
+         <td class="confluenceTd"> MS5 </td> 
+         <td class="confluenceTd"> LOG-008 </td> 
+         <td class="confluenceTd"> CLI that collects all log files and creates zip </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 09. </td> 
+         <td class="confluenceTd"> MS5 </td> 
+         <td class="confluenceTd"> LOG-005 </td> 
+         <td class="confluenceTd"> Migration work from v2 wiki for missing error message reference in v3 workspace. </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> It's needed if we found missing error key reference in v3 workspace. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 10. </td> 
+         <td class="confluenceTd"> MS5 </td> 
+         <td class="confluenceTd"> LOG-006 </td> 
+         <td class="confluenceTd"> wiki page for diagnostic info </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Doc teams need to update the same.</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.1Logging-TaskList"></a>Task List</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task </th> 
+         <th class="confluenceTh"> Target Milestone </th> 
+         <th class="confluenceTh"> Start </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Owner(s) </th> 
+         <th class="confluenceTh"> Feature ID </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Detailed investigation and impl spec. Taking ownership from Carla Mott. Understanding existing code and features. </td> 
+         <td class="confluenceTd"> MS1 </td> 
+         <td class="confluenceTd"> 4/25/10 </td> 
+         <td class="confluenceTd"> 5/21/10 </td> 
+         <td class="confluenceTd"> Naman </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Message ids for all SEVERE, WARNING and INFO messages </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd"> 5/24/10 </td> 
+         <td class="confluenceTd"> 6/21/10 </td> 
+         <td class="confluenceTd"> Naman, Dies Koper </td> 
+         <td class="confluenceTd"> LOG-001 </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Creating P2 bug for all module owners to update diagnostic info in LogString.properties file </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd"> 5/24/10 </td> 
+         <td class="confluenceTd"> 5/28/10 </td> 
+         <td class="confluenceTd"> Naman </td> 
+         <td class="confluenceTd"> LOG-002 </td> 
+         <td class="confluenceTd"> Done. Raised multiple bugs for different modules. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Remote instance integration for Logging </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> 5/24/10 </td> 
+         <td class="confluenceTd"> 7/19/10 </td> 
+         <td class="confluenceTd"> Naman </td> 
+         <td class="confluenceTd"> LOG-003 </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Update existing Logging command to add --target option </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> 5/24/10 </td> 
+         <td class="confluenceTd"> 7/19/10 </td> 
+         <td class="confluenceTd"> Naman </td> 
+         <td class="confluenceTd"> LOG-003 </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Log viewer integration for remote instance </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd"> 6/23/10 </td> 
+         <td class="confluenceTd"> 8/16/10 </td> 
+         <td class="confluenceTd"> Naman </td> 
+         <td class="confluenceTd"> LOG-007 </td> 
+         <td class="confluenceTd"> Back-End code changes are done. GUI changes are pending. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> More search options for Log Viewer </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd"> 6/23/10 </td> 
+         <td class="confluenceTd"> 8/18/10 </td> 
+         <td class="confluenceTd"> Naman </td> 
+         <td class="confluenceTd"> LOG-009 </td> 
+         <td class="confluenceTd"> New Search option like "Any Search" is added. Back-End code changes are done. GUI changes are pending. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Log Viewer integration for rotated log files </td> 
+         <td class="confluenceTd"> MS5 </td> 
+         <td class="confluenceTd"> 7/20/10 </td> 
+         <td class="confluenceTd"> 8/23/10 </td> 
+         <td class="confluenceTd"> Naman </td> 
+         <td class="confluenceTd"> LOG-010 </td> 
+         <td class="confluenceTd"> Back-End code changes are done. GUI changes are pending. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> CLI that collects all log files and creates zip </td> 
+         <td class="confluenceTd"> MS5 </td> 
+         <td class="confluenceTd"> 8/17/10 </td> 
+         <td class="confluenceTd"> 9/23/10 </td> 
+         <td class="confluenceTd"> Naman </td> 
+         <td class="confluenceTd"> LOG-008 </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Sync-up wiki <a href="GlassFishV3ErrorMessageReference.html" title="GlassFishV3ErrorMessageReference">error message reference from wiki </a> to LogStrings.properties file </td> 
+         <td class="confluenceTd"> MS5 </td> 
+         <td class="confluenceTd"> 8/17/10 </td> 
+         <td class="confluenceTd"> 9/23/10 </td> 
+         <td class="confluenceTd"> Naman </td> 
+         <td class="confluenceTd"> LOG-005 </td> 
+         <td class="confluenceTd"> No changes needed for development side. It's from v2 to v3. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Sync-up log message from LogStrings.properties file <a href="GlassFishV3ErrorMessageReference.html" title="GlassFishV3ErrorMessageReference">error message reference from wiki </a> </td> 
+         <td class="confluenceTd"> MS5 </td> 
+         <td class="confluenceTd"> 8/17/10 </td> 
+         <td class="confluenceTd"> 9/23/10 </td> 
+         <td class="confluenceTd"> Doc Team </td> 
+         <td class="confluenceTd"> LOG-006 </td> 
+         <td class="confluenceTd"> Depends on doc team schedule. No changes needed for development side. It's about populating data from LogStrings.properties file to wiki. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.1Logging-DevTests"></a>Dev Tests</h2> <p>Nothing specific to Logging. But need to verify against available GlassFish QL.</p> <h4><a name="3.1Logging-References"></a>References</h2> 
+     <ul> 
+      <li><a href="http://wiki.glassfish.java.net/attach/V3FunctionalSpecs/GFv3Logging-onepager.html">GlassFish v3 Functional Specs</a></li> 
+      <li><a href="GlassFishV3LoggingMessageFormat.html" title="GlassFishV3LoggingMessageFormat">GlassFish v3 Logging Message Format </a></li> 
+     </ul> <h4><a name="3.1Logging-EmailAlias"></a>Email Alias</h2> 
+     <ul> 
+      <li>Please contact us at <a href="mailto:dev@glassfish.java.net">dev@glassfish.java.net</a></li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Sep 06, 2010 by 
+<font color="#0050B2">namanmehta</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

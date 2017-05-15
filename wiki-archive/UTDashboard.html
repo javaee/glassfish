@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : UTDashboard</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>trocdombasc4<br> acelro</p> <h4><a name="UTDashboard-UpgradeToolDashboard"></a>Upgrade Tool Dashboard</h1> 
+     <hr> <p>This page would be used to capture open issues in the Upgrade Tool especially in the context of interaction with Admin Infrastructure</p> 
+     <hr> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Issue </th> 
+         <th class="confluenceTh"> Comment </th> 
+         <th class="confluenceTh"> Resolution </th> 
+         <th class="confluenceTh"> Owner </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1. <a href="http:--www.glassfishwiki.org-gfwiki-Wiki.jsp?page=Domainxmlchange"><b>Domain.xml incompatibility</b> </a> : The introduction of mandatory attributes in the cluster elements has made the domain with sun-domain-1_1.dtd incompatible with a runtime that referes to sun-domain-1_3.dtd.Please refer to [ HERE </td> 
+         <td class="confluenceTd"> domainxmlchange] to get details of the problem elements </td> 
+         <td class="confluenceTd"> Working with Kedar to see if the element/attributes can be IMPLIED. <b>Kedar's Comments:</b> Just talked to Shreedhar. Get in touch with him for getting the exact values for heartbeat-enabled and heartbeat-port for existing clusters. </td> 
+         <td class="confluenceTd"> *RESOLVED*. Upgrade tool would add the necessary values using transform/new domain </td> 
+         <td class="confluenceTd">Shreedhar/Shalini </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2. <a href="NodeAgentSynchronization.html" title="NodeAgentSynchronization"><b>Node Agent synchronization</b> </a> : After upgrading the DAS to 9.1 , when we try and start the node-agent with the upgraded domain, the node-agent startup fails. Note that the node-agent has a domain.xml that corresponds to the sun-domain-1_1.dtd </td> 
+         <td class="confluenceTd"> Working with Nandini to resolve the issue. Most likely linked to 1 </td> 
+         <td class="confluenceTd"> *NOT RESOLVED* </td> 
+         <td class="confluenceTd">Nandini </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3. <a href="http:--www.glassfishwiki.org-gfwiki-Wiki.jsp?page=Domainxmlchange#section-Domainxmlchange-IssuesWithApplicationDeployment"><b>Redeployment of Applications</b> </a>: It is not clear if the runtime code generated for deployed applicationbythe 8.x runtime would work out of the box in 9.1 . It is stated that there is no mandate for the runtime code generation to be backward compatible. This necessiates the redeployment of application deployed in a 8.x domain when the domain is being upgraded. <b>Kedar's Comment:</b> Can you tell me which applications you are worried about? Also, have you tried this and found it to be a problem? <b>PS</b> : This applied to all applications that generate artifacts. It's Tony's and Jerome's contention that there is no mandate that code generated by the 8.x runtime should work as it is in the 9.1 installation. We need to get an answer from the deployment team on this </td> 
+         <td class="confluenceTd"> Need to resolve the impact of using the generated code from 8.x runtime. <b>Kedar</b>: We need to write down all the cases where specific code is generated. See <a href="UpgradeToolAndCodeGenerationForDeployedApplications.html" title="UpgradeToolAndCodeGenerationForDeployedApplications">UpgradeToolAndCodeGenerationForDeployedApplications</a>. </td> 
+         <td class="confluenceTd"> *NOT RESOLVED* </td> 
+         <td class="confluenceTd">All </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4. <a href="http:--www.glassfishwiki.org-gfwiki-Wiki.jsp?page=Domainxmlchange#section-Domainxmlchange-IssuesWithCom_sun_web_ui"><b>Removal of com_sun_web_ui module</b> </a> : In 9.1 the com_sun_web_ui module has been removed, hence when we copy the 8.x domain, to work with 9.x domain it does not find it in $ 
+          <div class="error">
+           <span class="error">Unknown macro: {com.sun.aas.installRoot}</span> 
+          </div> <p>/lib/install/applications and hence the domain cannot startup. <b>Kedar's Comment:</b> I am worried about this. Actually, we should make this work, IMO. It is not very clear to me – what admin GUI application upgrading user should see – the good old one or the new JSF based one? Let's discuss this. </p></td> 
+         <td class="confluenceTd"> We need to remove the element corresponding to this web module using transformation </td> 
+         <td class="confluenceTd"> *RESOLVED* </td> 
+         <td class="confluenceTd"> Prasad </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5. <a href="http:--www.glassfishwiki.org-gfwiki-Wiki.jsp?page=InlineUpgradePage">Enhancements to Inline Upgrade </a> : Inline upgrade currently supports only the basic upgrade scenarios. It does not handle certificate migration. We can either go with the stand that we would only support the basic upgrade scenarios through the start domain command and the user would need to invoke asupgrade directly for certificate migration. Alternately, we can make the inline upgrade process full featured by adding support for certificate migration. <b>Kedar:</b> I think I am missing something. But didn't we decide that this won't be a problem for 8.x PE to 9.1PE/EE because for the former, the master password can safely be assumed to be <b>changeit</b>. For 8.x EE to 9.1 upgrade, I thought we should just copy the database. </td> 
+         <td class="confluenceTd"> Need Kedar's consent for adding certificate migation option for inline upgrade. This would entail prompting the user to check if he would want to migrate certificates and if yes, he would need to be prompted for the the jks password. <b>Prasad:</b> The bigger question that we need to answer here is : Do we need to give the user an option to migrate certificates or not , while using in-line upgrade ? We do provide the option to do so while using asupgrade. </td> 
+         <td class="confluenceTd"> *RESOLVED* </td> 
+         <td class="confluenceTd"> Satish/Prasad/Kedar </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6. <a href="http:--www.glassfishwiki.org-gfwiki-Wiki.jsp?page=InlineUpgradePage">Option to turn off inline upgrade for better performance </a>: Since StartDomainCommand.java currently checks if the specified domain needs to be upgraded each time the start-domain command is invoked, this could have an impact on the performance. We have introduced a new system property in StartDomainCommand to turn off the inline upgrade feature (and hence this check). The feature can be disabled by setting the 'com.sun.aas.EnableAutoUpgrade' property to 'n'. This check has, however, existed for a while (from 9.0?) and we do not have any statistical data on the exact performance impact as a consequence of this check. </td> 
+         <td class="confluenceTd"> Discussed this with Kedar on 12/12/06. </td> 
+         <td class="confluenceTd"> BUG ID 6509158 </td> 
+         <td class="confluenceTd">Kedar/Jane </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 7. <a href="UpgradeToolApproach.html" title="UpgradeToolApproach"><b>Upgrade tool Approach</b> </a> : Discussion regarding the approach that Upgrade tool must take. </td> 
+         <td class="confluenceTd"> Working with Kedar to resolve the issue. Most likely linked to 1 and 3 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">Kedar/Prasad/Shalini </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

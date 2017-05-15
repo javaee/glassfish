@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : TextFormattingRules</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>When you've figured out how the editor works, then you should read <a href="WikiEtiquette.html" title="WikiEtiquette">WikiEtiquette</a> so that you would know how to use your newly acquired skills...</p> 
+     <div> 
+      <ul> 
+       <li><a href="#TextFormattingRules-Quickreference">Quick reference</a></li> 
+       <li><a href="#TextFormattingRules-Writingtext">Writing text</a></li> 
+       <ul> 
+        <li><a href="#TextFormattingRules-Addingpictures">Adding pictures</a></li> 
+        <li><a href="#TextFormattingRules-Headings">Headings</a></li> 
+        <li><a href="#TextFormattingRules-Bulletedlists">Bulleted lists</a></li> 
+        <li><a href="#TextFormattingRules-Numberedlists">Numbered lists</a></li> 
+        <li><a href="#TextFormattingRules-Definitionlistsandcomments">Definition lists and comments</a></li> 
+        <li><a href="#TextFormattingRules-Texteffects">Text effects</a></li> 
+        <li><a href="#TextFormattingRules-Preformattedtext">Preformatted text</a></li> 
+       </ul> 
+       <li><a href="#TextFormattingRules-Linkingaround">Linking around</a></li> 
+       <ul> 
+        <li><a href="#TextFormattingRules-LinkingtoaWikiPage">Linking to a WikiPage</a></li> 
+        <li><a href="#TextFormattingRules-Linkingtoexternalsites">Linking to external sites</a></li> 
+        <li><a href="#TextFormattingRules-Footnotes">Footnotes</a></li> 
+        <li><a href="#TextFormattingRules-InterWikilinks">InterWiki links</a></li> 
+       </ul> 
+       <li><a href="#TextFormattingRules-Tables">Tables</a></li> 
+       <li><a href="#TextFormattingRules-Styles">Styles</a></li> 
+       <li><a href="#TextFormattingRules-ManagingyourWiki">Managing your Wiki</a></li> 
+       <ul> 
+        <li><a href="#TextFormattingRules-Conflicts">Conflicts</a></li> 
+        <li><a href="#TextFormattingRules-Deletingpages">Deleting pages</a></li> 
+        <li><a href="#TextFormattingRules-Addingnewpages">Adding new pages</a></li> 
+        <li><a href="#TextFormattingRules-Attachingfiles">Attaching files</a></li> 
+       </ul> 
+       <li><a href="#TextFormattingRules-Variables%2Cplugins%2Cformsandotherspecialfunctions">Variables, plugins, forms and other special functions</a></li> 
+       <ul> 
+        <li><a href="#TextFormattingRules-Insertingvariables">Inserting variables</a></li> 
+        <li><a href="#TextFormattingRules-Insertingplugins">Inserting plugins</a></li> 
+        <li><a href="#TextFormattingRules-Insertingforms">Inserting forms</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="TextFormattingRules-Quickreference"></a>Quick reference</h2> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">----       = Make a horizontal ruler. Extra '-' is ignored.
+\\         = force a line break, \\\=force line break and clear.
+
+[link]     = creates a hyperlink to an internal WikiPage called 'Link'.
+[this is also a link] = creates a hyperlink to an internal WikiPage called
+'ThisIsAlsoALink'.
+[click here|link] = creates a hyperlink to an internal WikiPage called
+'Link', but displays the text 'click here' to the
+user instead of 'Link'.
+[1]        = Makes a reference to a footnote numbered 1.
+[#1]       = Marks the footnote number 1.
+[[link]    = creates text '[link]'.
+
+!heading   = small heading with text 'heading'
+!!heading  = medium heading with text 'heading'
+!!!heading = large heading with text 'heading'
+
+''text''   = prints 'text' in italic.
+__text__   = prints 'text' in bold.
+{{text}}   = prints 'text' in monospaced font.
+
+* text     = makes a bulleted list item with 'text'
+# text     = makes a numbered list item with 'text'
+;term:ex   = makes a definition for 'term' with the explanation 'ex'</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="TextFormattingRules-Writingtext"></a>Writing text</h2> <p>You don't need to know anything about the Wiki text formatting rules to use Wiki. Just write normal text, and then use an empty line to mark a paragraph.<br> It's just like writing an email.</p> <p>You can always Edit this page (look at the left sidebar) to see how the different<br> effects on this page are used.</p> <h4><a name="TextFormattingRules-Addingpictures"></a>Adding pictures</h3> <p>You can embed any image in the wiki code by putting the image available somewhere on the web in one of the allowed formats, and then just linking to it.<br> For example, this is an inlined <span class="error">Cannot resolve external resource into attachment.</span>.</p> <p>If you specify a link text (<span class="error">Cannot resolve external resource into attachment.</span>) it becomes<br> the ALT text for those who either can't or don't want to view images.</p> <p>You can also attach an image, and refer to it as if it were any other page. See <a href="WikiAttachments.html" title="WikiAttachments">WikiAttachments</a> for more information.</p> <p>If you need more layout control (or things like captions), check out the <a href="Image.html" title="Image">Image</a> -plugin. It can do oodles more than just simple embedding.</p> <p>The list of accepted image types depends on the Wiki. See the <a href="SystemInfo.html" title="SystemInfo">SystemInfo</a><br> page for a list of the different image types.</p> <h4><a name="TextFormattingRules-Headings"></a>Headings</h3> <p>JSPWiki gives you three kinds of headings: A small one (denoted by starting a line with a single exclamation mark '!'), a medium-sized one (two exclamation marks), or a large one (three marks).</p> <p>All headings also generate a "named anchor", so that you can refer from other wikipages to this wikipage. See Named Headings for more information.</p> <h4><a name="TextFormattingRules-Bulletedlists"></a>Bulleted lists</h3> <p>Use an asterisk <img class="emoticon" src="images/icons/emoticons/star_yellow.gif" height="16" width="16" align="absmiddle" alt="" border="0"> in the first column to make bulleted lists. Use more asterisks for deeper indentation. For example:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">* One
+* Two
+* Three
+** Three.One</pre> 
+       </div> 
+      </div>
+     </div> <p>creates</p> 
+     <ul> 
+      <li>One</li> 
+      <li>Two</li> 
+      <li>Three 
+       <ul> 
+        <li>Three.One</li> 
+       </ul> </li> 
+     </ul> <h4><a name="TextFormattingRules-Numberedlists"></a>Numbered lists</h3> <p>Just like with bulleted lists, but use a hash (#) instead of the asterisk. Like this:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false"># One
+# Two
+# Three
+## Three.One</pre> 
+       </div> 
+      </div>
+     </div> <p>creates</p> 
+     <ol> 
+      <li>One</li> 
+      <li>Two</li> 
+      <li>Three 
+       <ol> 
+        <li>Three.One</li> 
+       </ol> </li> 
+     </ol> <p>If you want to write the list item on multiple lines, just add one or more spaces on the next line and the line will be automatically added to the<br> previous item. If this sounds complicated, edit this page for an example, below.</p> 
+     <ul> 
+      <li>This is a single-line item.</li> 
+      <li>This is actually a multi-line item.</li> 
+     </ul> <p> We continue the second sentence on a line on a line of its own.<br> We might as well do a third line while we're at it...<br> Notice, however, as all these sentences get put inside a single item!</p> 
+     <ul> 
+      <li>The third line is again a single-line item for your convinience.</li> 
+     </ul> <h4><a name="TextFormattingRules-Definitionlistsandcomments"></a>Definition lists and comments</h3> <p>A simple way to make definition lists is to use the ';:' -construct:</p> 
+     <ul> 
+      <li><em><b>Construct</b></em><br> <em>Something you use to do something with</em></li> 
+     </ul> <p>Another nice use for the ';:' is that you can use it to comment shortly on other people's text, by having an empty 'term' in the definition, like this:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">;:''Comment here.''</pre> 
+       </div> 
+      </div>
+     </div> <p>Which would be seen as<br> ;:<em>Comment here.</em></p> <h4><a name="TextFormattingRules-Texteffects"></a>Text effects</h3> <p>You may use <b>bold</b> text or <em>italic</em> text, by using two underscores (_) and two single quotes ('), respectively. If you're on a Windows computer, make sure that you are using the correct quote sign, as there is one that looks the same, but really isn't.</p> <h4><a name="TextFormattingRules-Preformattedtext"></a>Preformatted text</h3> <p>If you want to add preformatted text (like code) just use three consecutive braces (</p> 
+     <div class="error">
+      <span class="error">Unknown macro: {) to open a block, and three consecutive braces (}</span> 
+     </div> <p>) to close a block. Edit this page for an example.</p> <h4><a name="TextFormattingRules-Linkingaround"></a>Linking around</h2> <p>Links are an integral part of Wikis.</p> <h4><a name="TextFormattingRules-LinkingtoaWikiPage"></a>Linking to a WikiPage</h3> <p>Just type the name of the page within brackets: [Like this|[Likethis]. This will create automatically a link to a page.</p> <p>Note also that this Wiki can be configured to support standard CamelCase linking (if it's supported, the word CamelCase should be a link). It's off by default, but if your friendly administrator has turned it on, then well, CamelCase all you want =).</p> <h4><a name="TextFormattingRules-Linkingtoexternalsites"></a>Linking to external sites</h3> <p>The link can also be a direct URL starting with http:, ftp:, <a href="mailto:"></a>, https:, or news:, in which case the link points to an external entity. For example, to point at the java.sun.com home page, use [http://java.sun.com], which becomes <a href="http://java.sun.com/">http://java.sun.com/</a> or [Java home page|http://java.sun.com], which becomes <a href="http://java.sun.com">Java home page</a>.</p> <h4><a name="TextFormattingRules-Footnotes"></a>Footnotes</h3> <p>These are a special kind of hyperlink. By using nothing but a number inside<br> a hyperlink you create a reference to a footnote, like this [1], which <br> creates a footnote <sup><a href="#TextFormattingRules-1">1</a></sup> . To make the actual footnote, you just put a [#1]<br> where you want that footnote to point at. Look below to find the footnote.</p> <p>You can also make a named footnote, just as if you were doing a normal hyperlink. For example, this refers to the same footnote <sup><a href="#TextFormattingRules-1">Footnote number 1</a></sup> as the footnote above, but this refers to another footnote <sup><a href="#TextFormattingRules-2">2</a></sup> .</p> <h4><a name="TextFormattingRules-InterWikilinks"></a>InterWiki links</h3> <p>You can also do links between different Wikis without knowing the URL. Just use a link in the form [Wiki:WikiPage] and JSPWiki will create a link for you. For example, this link points to the <a href="http://www.jspwiki.org/Wiki.jsp?page=TextFormattingRules">JSPWiki TextFormatting rules</a>. Check the <a href="SystemInfo.html" title="SystemInfo">SystemInfo</a> page for more information on which Wiki links are available.</p> <p>If an InterWiki link is not supported, you'll get a notification of it on the page when<br> you save your page.</p> <h4><a name="TextFormattingRules-Tables"></a>Tables</h2> <p>You can do simple tables by using using pipe signs ('|'). Use double pipe<br> signs to start the heading of a table, and single pipe signs to then<br> write the rows of the table. End with a line that is not a table.</p> <p>For example:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">|| Heading 1 || Heading 2
+| ''Gobble'' | Bar
+| [Main]     | [SandBox]</pre> 
+       </div> 
+      </div>
+     </div> <p>gives you the following table. Note how you can use links also inside tables.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Heading 1 </th> 
+         <th class="confluenceTh"> Heading 2 </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <em>Gobble</em> </td> 
+         <td class="confluenceTd"> Bar </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Main </td> 
+         <td class="confluenceTd"> SandBox </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="TextFormattingRules-Styles"></a>Styles</h2> 
+     <div class="panel" style="border-width: 1px;">
+      <div class="panelContent"> 
+       <p><b>Hi there!</b><br> It's actually quite possible to do things like put comment boxes like this directly on your WikiPage. This sample comment box uses the "commentbox" style, as defined in the included "jspwiki.css" style sheet. To make a box like this, just use </p>
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">%%commentbox &lt;text&gt; %%</pre> 
+         </div> 
+        </div>
+       </div>.
+       <p></p> 
+      </div>
+     </div> <p>In addition to the simple styles represented by the WikiMarkup, we also allow you to put in your own styles. For example:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">%%small
+This is small text
+%%</pre> 
+       </div> 
+      </div>
+     </div> <p>uses the defined CSS style called "small", as defined in the jspwiki.css file. These may vary from site to site, and it is up to the site administrator to define a style.</p> <p>You can also define almost any CSS style command:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">%%( font-size: 150%; color: red; )
+Hello, world!
+%%</pre> 
+       </div> 
+      </div>
+     </div> <p>would render as:<br> <font color="red">Hello, world!</font></p> <p><b>NOTE</b> You have to mark the end of the text you want to finish being styled using </p>
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">%%</pre> 
+       </div> 
+      </div>
+     </div>! <p></p> <h4><a name="TextFormattingRules-ManagingyourWiki"></a>Managing your Wiki</h2> <h4><a name="TextFormattingRules-Conflicts"></a>Conflicts</h3> <p>If someone happens to edit the same page as you at the same time, JSPWiki will prevent you from doing changes and show a conflict page instead. Sorry to say, but the first one to make changes wins...</p> <p><b>A word of warning:</b> If you use the Back button of your browser to go into the Edit page, you will almost certainly get a conflict. This is because the browser thinks its still editing an earlier copy of the page.</p> <h4><a name="TextFormattingRules-Deletingpages"></a>Deleting pages</h3> <p>Every page has a "More Info..." link on the bottom. If you click on it, you arrive on a page which allows you to, among other things, restore old versions and delete pages. Note that your administrator may have prevented deleting pages arbitrarily.</p> <h4><a name="TextFormattingRules-Addingnewpages"></a>Adding new pages</h3> <p>Create a link that points to a new (not existing) page using its <a href="WikiName.html" title="WikiName">WikiName</a>.<br> Click that new link, which should now have a question mark <img class="emoticon" src="images/icons/emoticons/help_16.gif" height="16" width="16" align="absmiddle" alt="" border="0"> suffix and<br> you will get an editor for the new page.</p> <h4><a name="TextFormattingRules-Attachingfiles"></a>Attaching files</h3> <p>If the administrator of the wiki has configured it, there is a "Attach file..." link at the bottom of every page. Clicking it allows you to attach files into pages. For more information, please see <a href="WikiAttachments.html" title="WikiAttachments">WikiAttachments</a>.</p> <h4><a name="TextFormattingRules-Variables%2Cplugins%2Cformsandotherspecialfunctions"></a>Variables, plugins, forms and other special functions</h2> <h4><a name="TextFormattingRules-Insertingvariables"></a>Inserting variables</h3> <p>There are many possible variables you can insert on a page. The basic form is:</p> <p><tt>[{$variablename}],</tt></p> <p>where <em>variablename</em> is the name of the variable you want to insert. Note that variable names are case-insensitive - that is, "pagename" is the same as "paGeNamE" and "PageName".</p> <p>You can see the list of available of variables at <a href="WikiVariables.html" title="WikiVariables">WikiVariables</a>.</p> <h4><a name="TextFormattingRules-Insertingplugins"></a>Inserting plugins</h3> <p>The basic incantation to insert a plugin looks like this:</p> <p>[</p> 
+     <div class="error">
+      <span class="error">Unknown macro: {INSERT &lt;plugin class&gt; WHERE param1=value, param2=value, ...}</span> 
+     </div> <p>|[</p> 
+     <div class="error">
+      <span class="error">Unknown macro: {INSERT&lt;pluginclass&gt;WHEREparam1=value,param2=value,...}</span> 
+     </div> <p>]</p> <p>There is more information in <a href="JSPWikiPlugins.html" title="JSPWikiPlugins">JSPWikiPlugins</a>.</p> <h4><a name="TextFormattingRules-Insertingforms"></a>Inserting forms</h3> <p>Please see <a href="WikiForms.html" title="WikiForms">WikiForms</a>.</p> 
+     <hr> <p><a name="TextFormattingRules-1"></a> Here's the footnote I mentioned.</p> <p><a name="TextFormattingRules-2"></a> <b>The other footnote</b> - The other footnote. Note how it's name is different?</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:49.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

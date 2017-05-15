@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : 23mar2010</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>Attendees: Tim Quinn, Dies, Siraj, Byron, Hong, Jerome, Anissa, Vijay, Bill, Nazrul, Jennifer</p> 
+     <ul> 
+      <li>Deployment discussion (Hong) on synchronize (same as v2) or regenerate generated artifacts on remote instance - 
+       <ul> 
+        <li>Some of the things talked in the meeting 
+         <ul> 
+          <li>Generated EJB artifacts</li> 
+          <li>Generated JSP artifacts 
+           <ul> 
+            <li>Peformance impact for regeneration of JSP compilation</li> 
+           </ul> </li> 
+          <li>Generated security policy artifacts</li> 
+          <li>Generated JAX-RPC web service artifacts</li> 
+          <li>Nazrul - synchronization working well in v2, cleaner - if deploy fails on remote instance have to debug instance individually instead of in 1 place.</li> 
+          <li>Byron - remote instance would now be doing administration where before in v2 it did not.</li> 
+          <li>Jerome propose use of hidden deploy command</li> 
+          <li>motivation to regenerate on remote instance - simpler, easier to maintain code base.</li> 
+          <li>When to add application-ref - after app loaded?</li> 
+         </ul> </li> 
+        <li>The conclusion is that we agreed to use the approach of generating all the artifacts on the DAS, collecting them together with the original archive, and sending them to the instance using a special internal "_deploy" command, which would save the app and the generated data, load the app, and update the domain.xml. So, no regeneration on the instances.</li> 
+        <li>Jerome and Hong will discuss further and write this up</li> 
+       </ul> </li> 
+      <li>schema2beans not used in v3, there's thread-locking when updating config in domain.xml</li> 
+      <li>v3 will continue to support shared cluster-config, same as in v2 unless there's a major bug that's hard to fix</li> 
+      <li>Discussion to add default-config.xml to domain.xml by default 
+       <ul> 
+        <li>default-config loaded in habitat and parsed - not much overhead</li> 
+        <li>User may get confused what is default-config</li> 
+        <li>Instead of adding to domain.xml, can have mock DefaultConfig element that's used</li> 
+        <li>Not supporting create-domain --profile option in v3</li> 
+        <li>Not much difference between developer and cluster profile</li> 
+       </ul> </li> 
+     </ul> <h4><a name="23mar2010-ActionItems"></a>Action Items</h3> 
+     <ul> 
+      <li>Jerome/Hong provide what happens on DAS vs remote instance</li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:42.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

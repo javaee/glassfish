@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : TSG_CommonProblemsJa06</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="TSG_CommonProblemsJa06-%E7%AE%A1%E7%90%86%E3%82%B3%E3%83%B3%E3%82%BD%E3%83%BC%E3%83%AB%E3%81%AB%E3%82%A2%E3%82%AF%E3%82%BB%E3%82%B9%E3%81%A7%E3%81%8D%E3%81%AA%E3%81%84"></a>管理コンソールにアクセスできない </h2> <p>管理コンソールは、管理に必要な機能のインターフェースを提供します。<br> 管理コンソールにアクセスできない場合、次のようないくつかの原因が考えられます。</p> 
+     <ul> 
+      <li>アプリケーションサーバーが起動している?</li> 
+      <li>管理コンソールが、期待したポートで動作している?</li> 
+      <li>セキュリティマネージャが利用不可になっている?</li> 
+     </ul> <h4><a name="TSG_CommonProblemsJa06-%E3%82%A2%E3%83%97%E3%83%AA%E3%82%B1%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%82%B5%E3%83%BC%E3%83%90%E3%83%BC%E3%81%8C%E8%B5%B7%E5%8B%95%E3%81%97%E3%81%A6%E3%81%84%E3%82%8B%3F"></a>アプリケーションサーバーが起動している?</h3> 
+     <ul> 
+      <li><b>説明</b><br> \管理コンソールにアクセス可能になる前にサーバーが起動している必要があります。</li> 
+     </ul> 
+     <ul> 
+      <li><b>解決法</b><br> \サーバーが起動しているかどうか <a href="./TSG_CommonProblemsJa05.html">Did the Server Start?</a> に書かれている情報を確認してください。</li> 
+     </ul> <h4><a name="TSG_CommonProblemsJa06-%E7%AE%A1%E7%90%86%E3%82%B3%E3%83%B3%E3%82%BD%E3%83%BC%E3%83%AB%E3%81%8C%E3%80%81%E6%9C%9F%E5%BE%85%E3%81%97%E3%81%9F%E3%83%9D%E3%83%BC%E3%83%88%E3%81%A7%E5%8B%95%E4%BD%9C%E3%81%97%E3%81%A6%E3%81%84%E3%82%8B%3F"></a>管理コンソールが、期待したポートで動作している?</h3> 
+     <ul> 
+      <li><b>説明</b><br> \Sun Java System Application Server EE/SE の管理コンソールのデフォルトポートは、 <tt>4849</tt> で、Sun Java System Application Server PE の管理コンソールは <tt>4848</tt> です。EE/SE のコンソールにアクセスする URL は、Secure HTTP (<a href="https://servername:4849">https://servername:4849</a>) であり、PE は、通所の HTTP (<a href="http://servername:4848">http://servername:4848</a>) である点も注意してください。しかし、意図的に変更した場合や、サーバーが起動したときにそのポートが既に使われている場合など、デフォルトのポート番号とは異なるポートで起動している場合もあります。</li> 
+     </ul> 
+     <ul> 
+      <li><b>解決法</b><br> \管理コンソールが起動しているポートを確認する方法は、<a href="./TSG_CommonProblemsJa05.html">Was the Server Started at the Expected Port?</a> を参考にしてください。また、管理コンソールへのアクセス時に、正しいポート番号と HTTP プロトコルを入力しているか確認してください。</li> 
+     </ul> <h4><a name="TSG_CommonProblemsJa06-%E3%82%BB%E3%82%AD%E3%83%A5%E3%83%AA%E3%83%86%E3%82%A3%E3%83%9E%E3%83%8D%E3%83%BC%E3%82%B8%E3%83%A3%E3%81%8C%E5%88%A9%E7%94%A8%E4%B8%8D%E5%8F%AF%E3%81%AB%E3%81%AA%E3%81%A3%E3%81%A6%E3%81%84%E3%82%8B%3F"></a>セキュリティマネージャが利用不可になっている?</h3> 
+     <ul> 
+      <li><b>説明</b><br> \J2EE 1.4 仕様によれば、セキュリティマネージャはオプションではありません; すなわち、アプリケーションサーバーでは有効になっていなければいけません。セキュリティマネージャを利用不可に設定するインターフェースは、アプリケーションサーバーには用意されていないので、<tt>domain.xml</tt> 設定ファイルにある次の行を削除するなど、直接変更したことが考えられます。<br> {code}&lt;jvm-option\&gt;-Djava.security.policy=yourPolicy&lt;/jvm-option\&gt;
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false"></pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ul> 
+     <ul> 
+      <li><b>解決法</b><br> \管理コンソールにアクセスするために、<tt>-Djava.security.policy=yourPolicy</tt> オプションが <tt>domain.xml</tt> ファイルにあることを確認してください。</li> 
+     </ul> <p><sup><a href="./TSG_CommonProblemsJa.html">戻る</a></sup></p> 
+     <hr> <p>日本語翻訳: <a href="http://blogs.oracle.com/shioda">shioda</a></p> <p><a href="TSG_CommonProblems.html" title="TSG_CommonProblems">英文 </a> (翻訳したバージョン: 104)</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 09, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

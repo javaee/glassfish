@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : 3.1DeploymentOnePagerReviewVBK</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="3.1DeploymentOnePagerReviewVBK-3.1DeploymentReview"></a>3.1 Deployment Review</h1> <h4><a name="3.1DeploymentOnePagerReviewVBK-Document%3A3.1DeploymentOnePager%26version%3D11"></a>Document: 3.1DeploymentOnePager&amp;version=11</h3> <h4><a name="3.1DeploymentOnePagerReviewVBK-Reviewer%3AVinceKraemer"></a>Reviewer: VinceKraemer</h3> <h4><a name="3.1DeploymentOnePagerReviewVBK-Reviewdate%3AMay24%2C2010"></a>Review date: May 24, 2010</h3> <h4><a name="3.1DeploymentOnePagerReviewVBK-Responsedate%3AMay24%2C2010"></a>Response date: May 24, 2010</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item </th> 
+         <th class="confluenceTh"> Type </th> 
+         <th class="confluenceTh"> Comment </th> 
+         <th class="confluenceTh"> Response </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Reference number </td> 
+         <td class="confluenceTd"> Clarification/Enhancement/Correction/.... </td> 
+         <td class="confluenceTd"> Detailed review comments </td> 
+         <td class="confluenceTd">Response from functional spec/one pager author </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> enhancement </td> 
+         <td class="confluenceTd"> include references to all the projects that you are dependent upon... not just Dynamic reconfig. </td> 
+         <td class="confluenceTd"> yes, updated the one pager to include references to all the sub projects which deployment are dependent on </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd"> enhancement </td> 
+         <td class="confluenceTd"> can you make the dependencies clearer? If I was the owner of the 'admin project', I am not sure I could tell what you are waiting for. Or how to make sure that I meet your requirements </td> 
+         <td class="confluenceTd"> yes, updated the one pager to list all sub projects in the dependencies section. It's harder to go down lower level than this for these particular sub projects, we are working closely with the owners of the sub-projects to make sure people are on the same page </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3 </td> 
+         <td class="confluenceTd"> clarification </td> 
+         <td class="confluenceTd"> directory deployment to a cluster requires that the bits live on a shared file system or on a shared file system that is mounted in exactly the same place on all nodes that participate in the cluster </td> 
+         <td class="confluenceTd"> the latter, have made the clarification in the one pager </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4 </td> 
+         <td class="confluenceTd"> enhancement </td> 
+         <td class="confluenceTd"> the behavior of a deployment with multiple dd files seems hard to use... could we add an option to the deploy command that would let the user choose which dd file has the highest precedence? </td> 
+         <td class="confluenceTd"> as this is glassfish server, the current precedence addresses the most common use cases. Not sure if there are use cases where user wants to have weblogic DD have the highest precedence. We could consider this option if there is any user request on this. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5 </td> 
+         <td class="confluenceTd"> enhancement </td> 
+         <td class="confluenceTd"> make the links to the bugs and rfes actual live links to the bugs and rfes... not just dead text... </td> 
+         <td class="confluenceTd"> yes, updated the one pager to have live links </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6 </td> 
+         <td class="confluenceTd"> clarification </td> 
+         <td class="confluenceTd"> Say I had a DAS, that manages two clusters and three stand-alone instances. User A deploys foo.war and activates it on one of the clusters and two of the sa instances. If user B wanted to find out where foo.war is deployed/activated, <b>what command would I use... or would I need to issue multiple commands</b>? </td> 
+         <td class="confluenceTd"> To figure out where the application was deployed, you would need to use list-applications/components with a given target (when you specify the target as domain), it will show the deployed applications to all the targets. To figure out the activated/enabled state, you would need to use show-component-status command. We plan to enhance the list-applications/list-components command in v3.1 to show the enabled state with the --verbose option. So you would not need to use show-component-status command separately. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 09, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

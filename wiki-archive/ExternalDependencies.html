@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : ExternalDependencies</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="ExternalDependencies-ListofGFv3ExternalDependencies"></a>List of GFv3 External Dependencies</h2> <p>Format: <em>GAV (submodule)</em> where GAV is Group, Artifact and Version.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Module Name </th> 
+         <th class="confluenceTh"> Check-out </th> 
+         <th class="confluenceTh"> Build </th> 
+         <th class="confluenceTh"> Publish to Local Maven Repo </th> 
+         <th class="confluenceTh"> JDK version </th> 
+         <th class="confluenceTh"> Dependencies </th> 
+         <th class="confluenceTh"> Note</th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> hk2 </td> 
+         <td class="confluenceTd"> svn checkout <a href="https://hk2.java.net/svn/hk2/tags/hk2-parent-0.3.49">https://hk2.java.net/svn/hk2/tags/hk2-parent-0.3.49</a> <p> </p></td> 
+         <td class="confluenceTd"> 1. mvn -Dmaven.repo.local=<tt>maven.repo</tt> -Prelease-phase1 install <br class="atl-forced-newline"> 2. mvn -Dmaven.repo.local=<tt>maven.repo</tt> install </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 1.5 </td> 
+         <td class="confluenceTd"> bean-validator </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jsp </td> 
+         <td class="confluenceTd"> svn checkout <a href="https://jsp.java.net/svn/jsp/tags/jsp-2.1.3-b08">https://jsp.java.net/svn/jsp/tags/jsp-2.1.3-b08</a> <p> </p></td> 
+         <td class="confluenceTd"> mvn -Dmaven.repo.local=<tt>maven.repo</tt> install </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 1.6 </td> 
+         <td class="confluenceTd"> uel <br class="atl-forced-newline"> javax.servlet:servlet-api:2.5 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> uel </td> 
+         <td class="confluenceTd"> svn checkout <a href="https://uel.java.net/svn/uel/tags/2.1.2-b03">https://uel.java.net/svn/uel/tags/2.1.2-b03</a> <p> </p></td> 
+         <td class="confluenceTd"> mvn -Dmaven.repo.local=<tt>maven.repo</tt> install </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 1.6 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> grizzly </td> 
+         <td class="confluenceTd"> svn checkout <a href="https://grizzly.java.net/svn/grizzly/tags/1_9_10">https://grizzly.java.net/svn/grizzly/tags/1_9_10</a> <p> </p></td> 
+         <td class="confluenceTd"> mvn -Dmaven.repo.local=<tt>maven.repo</tt> install </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> corba </td> 
+         <td class="confluenceTd"> hg clone <a href="http://kenai.com/hg/gf-corba-v3-mirror~staging">http://kenai.com/hg/gf-corba-v3-mirror~staging</a> <p> corba</p></td> 
+         <td class="confluenceTd"> 1. cd corba/make <br class="atl-forced-newline"> 2. ant orb-library rename <br class="atl-forced-newline"> 3. cd corba/build/rename/ee/make <br class="atl-forced-newline"> 3. ant build </td> 
+         <td class="confluenceTd"> 1. cd corba/build/rename/make <br class="atl-forced-newline"> 2. ant make-bundles (or ant update-build make-bundles to increment version) <br class="atl-forced-newline"> 3. ant release-local </td> 
+         <td class="confluenceTd"> JDK 6 supported </td> 
+         <td class="confluenceTd"> Depends on Jscheme at build time ONLY (jar is in lib directory in CORBA workspace) <br class="atl-forced-newline"> 1. download jscheme-7.2.tgz from jscheme.sourceforge.net <br class="atl-forced-newline"> 2. gzip -d jscheme-7.2.tgz <br class="atl-forced-newline"> 3. tar xvf jscheme-7.2.tar <br class="atl-forced-newline"> 4. cd jscheme-7.2 <br class="atl-forced-newline"> 5. sh bin/make (note: JDK 5 must be in path) <br class="atl-forced-newline"> 6. copy lib/jscheme.jar to CORBA lib directory </td> 
+         <td class="confluenceTd"> Jscheme did not build correctly with JDK 5 for my latest test. <br class="atl-forced-newline"> The ORB still supports JDK 5, but JDK 6 should be used for GFv3.</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> scripting </td> 
+         <td class="confluenceTd"> svn checkout <a href="https://glassfish-scripting.java.net/svn/glassfish-scripting/tags/rails-0.7.10">https://glassfish-scripting.java.net/svn/glassfish-scripting/tags/rails-0.7.10</a> <p> </p></td> 
+         <td class="confluenceTd"> mvn -Dmaven.repo.local=<tt>maven.repo</tt> install </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> eclipse.persistence </td> 
+         <td class="confluenceTd"> svn checkout <a href="http://dev.eclipse.org/svnroot/rt/org.eclipse.persistence/tags/1.1.0M8/">http://dev.eclipse.org/svnroot/rt/org.eclipse.persistence/tags/1.1.0M8/</a> <p> </p></td> 
+         <td class="confluenceTd"> 1. modify build.xml; <br class="atl-forced-newline"> comment out lines 185-187 since we don't need moxy, sdo and dbws <br class="atl-forced-newline"> 2. ant -Dbuild.type=M8 build-core <br class="atl-forced-newline"> 3. create a directory called mavenant <br class="atl-forced-newline"> 4. download maven-ant-tasks-2.0.8.jar from <a href="http://repo1.maven.org/maven2/org/apache/maven/maven-ant-tasks/2.0.8/">http://repo1.maven.org/maven2/org/apache/maven/maven-ant-tasks/2.0.8/</a> <p> and save it in the "mavenant" directory. </p></td> 
+         <td class="confluenceTd"> Modify updateToMaven.xml:<br class="atl-forced-newline"> a. update line 40 with local maven repo<br class="atl-forced-newline"> b. modify line 41<br class="atl-forced-newline"> c. comment out lines 107 to 123 since moxy and sdo modules are not needed to build v3 <br class="atl-forced-newline"> d. lines 130-131:<br class="atl-forced-newline"> i. change $<tt>eclipselink.plugins</tt> to target<br class="atl-forced-newline"> ii. change _ to <del><br class="atl-forced-newline"> iii. change $<tt>version.string</tt> to $<tt>release.version</tt></del>$<tt>build.type</tt> <br class="atl-forced-newline"> iv. modify line 131 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Need to simplify the steps for GFv3 build. Commit the source to internal glassfish svn</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> felix </td> 
+         <td class="confluenceTd"> svn co <a href="https://glassfish-svn.java.net/svn/glassfish-svn/trunk/external/source-build/">https://glassfish-svn.java.net/svn/glassfish-svn/trunk/external/source-build/</a> <p> </p></td> 
+         <td class="confluenceTd"> 1. cd source-build <br class="atl-forced-newline"> 2. ant -Dmaven.repo.local=<tt>maven.repo</tt> -f felix-build.xml </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Since some of the Felix modules we are building are depended on by code in our tool chain (e.g., maven-bundle-plugin), it is not possible to have the local repo completely devoid of all Felix modules. If you delete all Felix modules from the local repo, some will get downloaded again by Maven for the tools. If you are offline, the build won't work. If we include maven-bundle-plugin and maven-obr-plugin by default in our tool chain, we still need org.osgi.service.obr from Felix at a minimum. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> webbeans </td> 
+         <td class="confluenceTd"> svn checkout <a href="http://mercurial.sfbay.sun.com/svn/glassfish/external/webbeans">http://mercurial.sfbay.sun.com/svn/glassfish/external/webbeans</a> <p> </p></td> 
+         <td class="confluenceTd"> mvn install <br class="atl-forced-newline"> Jar file location: 1.0.0.PREVIEW1/osgi-bundle/target/webbeans-osgi-bundle-1.0.0.PREVIEW1.jar </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 1.6 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> dom4j </td> 
+         <td class="confluenceTd"> svn checkout <a href="http://mercurial.sfbay.sun.com/svn/glassfish/external/dom4j">http://mercurial.sfbay.sun.com/svn/glassfish/external/dom4j</a> <p> </p></td> 
+         <td class="confluenceTd"> 1. cd 1.6.1 <br class="atl-forced-newline"> 2. ant package <br class="atl-forced-newline"> Jar file location: build/dom4j.jar </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 1.4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> xml-apis </td> 
+         <td class="confluenceTd"> svn checkout <a href="http://mercurial.sfbay.sun.com/svn/glassfish/external/xml-apis">http://mercurial.sfbay.sun.com/svn/glassfish/external/xml-apis</a> <p> </p></td> 
+         <td class="confluenceTd"> 1. cd 1.0.b2 <br class="atl-forced-newline"> 2. ant external<br class="atl-forced-newline"> Jar file location: build/xml-commons-1.0.b2/java/external/build/xml-apis.jar </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 1.4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> log4j </td> 
+         <td class="confluenceTd"> svn checkout <a href="http://mercurial.sfbay.sun.com/svn/glassfish/external/log4j">http://mercurial.sfbay.sun.com/svn/glassfish/external/log4j</a> <p> </p></td> 
+         <td class="confluenceTd"> 1. cd 1.2.14/v1_2_14_maven <br class="atl-forced-newline"> 2. ant jar <br class="atl-forced-newline"> Jar file location: dist/lib/log4j-1.2.14.jar </td> 
+         <td class="confluenceTd"> no </td> 
+         <td class="confluenceTd"> 1.6 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> javassist </td> 
+         <td class="confluenceTd"> svn checkout <a href="http://mercurial.sfbay.sun.com/svn/glassfish/external/javassist">http://mercurial.sfbay.sun.com/svn/glassfish/external/javassist</a> <p> </p></td> 
+         <td class="confluenceTd"> 1. cd 3.8.1.GA <br class="atl-forced-newline"> 2. ant <br class="atl-forced-newline"> Jar file location: javassist.jar </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 1.6 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> bean-validator </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> asm </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> mq </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jettison </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> webui-jsf &amp; webui-jsf-suntheme </td> 
+         <td class="confluenceTd"> cvs -d :pserver:username@cvs.java.net:/cvs checkout -r Woodstock_44_Branch woodstock </td> 
+         <td class="confluenceTd"> 1. cd woodstock/master <br class="atl-forced-newline"> 2. ant </td> 
+         <td class="confluenceTd"> cd woodstock/maven &amp;&amp; ant maven.upload </td> 
+         <td class="confluenceTd"> 1.5 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Jars will be in woodstock/webui/dist and woodstock/themes/dist <br class="atl-forced-newline"> A non-branch module name will be provided once pending changes are finished <br class="atl-forced-newline"> Jane or Terena should be verifying Maven publication steps, as they performed the last release</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> json-2 </td> 
+         <td class="confluenceTd"> 1. svn co <a href="http://mercurial.sfbay.sun.com/svn/glassfish/external/json-2">http://mercurial.sfbay.sun.com/svn/glassfish/external/json-2</a> <p> </p></td> 
+         <td class="confluenceTd"> 1. cd json-2 <br class="atl-forced-newline"> 2. javac -d build org/json/*java <br class="atl-forced-newline"> 3. jar cf json-2.jar -C build org </td> 
+         <td class="confluenceTd"> mvn install:install-file -Dfile=json-2.jar -DgroupId=org.json -D artifactId=json -Dpackaging=jar -Dversion=2 </td> 
+         <td class="confluenceTd"> 1.5 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ldapbp </td> 
+         <td class="confluenceTd"> 1. ftp <a href="http://download.java.net/javaee5/external/shared/ldapbp-src/jars/ldapbp-src-1_1_01.jar">http://download.java.net/javaee5/external/shared/ldapbp-src/jars/ldapbp-src-1_1_01.jar</a> <p> <br class="atl-forced-newline"> 2. jar -xvf ldapbp-src-1_1_01.jar </p></td> 
+         <td class="confluenceTd"> 1. ant </td> 
+         <td class="confluenceTd"> mvn install:install-file -Dfile=ldapbp.jar -DgroupId=org.glassfish.external -DartifactId=ldapbp-repackaged -Dpackaging=jar -Dversion=$<tt>project.version</tt> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jhall </td> 
+         <td class="confluenceTd"> svn checkout <a href="https://javahelp.java.net/svn/javahelp/tags/2.0_05">https://javahelp.java.net/svn/javahelp/tags/2.0_05</a> <p> javahelp </p></td> 
+         <td class="confluenceTd"> 1. cd javahelp/javahelp_nbproject/ <br class="atl-forced-newline"> 2. ant </td> 
+         <td class="confluenceTd"> mvn install:install-file -Dfile=jhall.jar -DgroupId=com.sun.java.help -D artifactId=jhall -Dpackaging=jar -Dversion=2.0_05 </td> 
+         <td class="confluenceTd"> 1.5 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Jar will be in dist/lib</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ajax-wrapper-comp </td> 
+         <td class="confluenceTd"> cvs -d :pserver:username@cvs.java.net:/cvs checkout -D "2008/11/05 16:00:00" ajax </td> 
+         <td class="confluenceTd"> 1. cd ajax/ws/jmaki <br class="atl-forced-newline"> 2. ant </td> 
+         <td class="confluenceTd"> mvn install:install-file -Dfile=shared/dist/ajax-wrapper-comp-1.8.1.jar -DgroupId=com.sun.jmaki -D artifactId=ajax-wrapper-comp -Dpackaging=jar -Dversion=1.8.1 </td> 
+         <td class="confluenceTd"> 1.5 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Jars will be shared/dist</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> solaris-realm </td> 
+         <td class="confluenceTd"> 1. export CVSROOT=:pserver:username@cvs.java.net:/cvs <br class="atl-forced-newline">2.cvs login <br class="atl-forced-newline">3.cvs checkout -r SJSAS91_FCS_BRANCH glassfish/appserv-native/buildsolrealm.sh <br class="atl-forced-newline">4. sh glassfish/appserv-native/buildsolrealm.sh </td> 
+         <td class="confluenceTd"> 1. cd glassfish/appserv-native <br class="atl-forced-newline"> 2. ant -Dgfv3.image.home=<tt>GLASSFISH-v3-IMAGE-DIR</tt> build-solrealm </td> 
+         <td class="confluenceTd"> cp libsolarisauth.so to <tt>GF-V3-WORKSPACE</tt>/security/core/src/main/resources/lib/libsol{{ARCH}}auth.so</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> gmake must be installed and must be available in the PATH.<br class="atl-forced-newline"> GLASSFISH-v3-IMAGE-DIR should point to an existing GF v3 image until the glassfishv3/glassfish directory<br class="atl-forced-newline">{{ARCH}} can be x86 or sparc depending on the architecure..</td> 
+         <td class="confluenceTd">Build required only for solaris sparc and x86 OS.</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jsfcompounds </td> 
+         <td class="confluenceTd"> svn checkout -r 70 <a href="https://jsfcompounds.java.net/svn/jsfcompounds/trunk/jsfcompounds">https://jsfcompounds.java.net/svn/jsfcompounds/trunk/jsfcompounds</a> <p> jsfcompounds </p></td> 
+         <td class="confluenceTd"> 1. cd jsfcompounds/core <br class="atl-forced-newline"> 2. mvn install </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 1.5 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jMakiResources.jar </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">mvn install:install-file -Dfile=jMakiResources.jar -DgroupId=org.glassfish.admingui -DartifactId=jMakiResources -Dpackaging=jar -Dversion=1.0.0 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> This is a static resource file. No files are generated or derived, so this archive is the source.</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jsf-extensions-dynamic-faces </td> 
+         <td class="confluenceTd"> svn co <a href="https://jsf-extensions.java.net/svn/jsf-extensions/branches/JSFTEMPLATING_BRANCH">https://jsf-extensions.java.net/svn/jsf-extensions/branches/JSFTEMPLATING_BRANCH</a> <p> dynafaces </p></td> 
+         <td class="confluenceTd"> 1. cd dynafaces <br class="atl-forced-newline"> 2. mvn install </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 1.5 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> The build must use maven 2.0.9 and Java 5.</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> mojarra-scales </td> 
+         <td class="confluenceTd"> hg clone -r MOJARRA_SCALES_1_3_1 <a href="http://kenai.com/hg/scales~mercurial">http://kenai.com/hg/scales~mercurial</a> <p> scales_1_3_1 </p></td> 
+         <td class="confluenceTd"> 1. cd scales_1_3_1 <br class="atl-forced-newline"> 2. mvn -Dmaven.test.skip=true install</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 1.5 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JSF 2.0 </td> 
+         <td class="confluenceTd"> Subversion / Current Tag -&gt; <a href="https://mojarra.java.net/svn/mojarra/tags/2.0.0-b13">https://mojarra.java.net/svn/mojarra/tags/2.0.0-b13</a> <p> </p></td> 
+         <td class="confluenceTd"> <a href="./JavaServerFacesRI#section-JavaServerFacesRI-HowDoIBuildTheMojarraSources.html">http://wiki.glassfish.java.net/Wiki.jsp?page=JavaServerFacesRI#section-JavaServerFacesRI-HowDoIBuildTheMojarraSources</a> <p> - Before building add properties build.type=Beta1 build.number=b13 to the build.properties </p></td> 
+         <td class="confluenceTd"> From jsf-api and jsf-impl directories run the ant target 'ant mvn.install.promoted.local' </td> 
+         <td class="confluenceTd"> 1.5 </td> 
+         <td class="confluenceTd"> com.sun.commons.digester (compilation only), com.sun.commons.logging (compilation only), com.sun.commons.beanutils (compilation only), com.sun.commons.collections (compilation only), Tomcat 6.0.13 (necessary for ResourceInjection of Managed Beans in Tomcat), Jetty 6.1.4 (necessary for ResourceInjection of Managed Beans in Tomcat), GFv2.1 (necessary for ResourceInjection of Managed Beans in GlassFish), Groovy 1.6 (necessary for Groovy features) </td> 
+         <td class="confluenceTd"> Source build of sun-apache-commons code happens in the Mojarra workspace (target "ant build.from.source"). We do not build the source of Jetty, Tomcat, Glassfish or Groovy.</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Shoal </td> 
+         <td class="confluenceTd"> svn checkout <a href="https://svn.java.net/svn/shoal~svn">https://svn.java.net/svn/shoal~svn</a> <p> </p></td> 
+         <td class="confluenceTd"> 1. cd shoal<br class="atl-forced-newline"> 2. mvn install </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 1,6 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JAXR-RA </td> 
+         <td class="confluenceTd"> svn checkout <a href="https://svn.kenai.com/svn/jaxr-ra~source-code-repository">https://svn.kenai.com/svn/jaxr-ra~source-code-repository</a> <p> </p></td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on May 17, 2011 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:44.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFishV3.1LoadBalancerDocReview</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>This wiki provides links PDF review drafts of various sections related to the <a href="GlassFishV3.1LoadBalancerDocPlan.html" title="GlassFishV3.1LoadBalancerDocPlan">Load Balancing</a> feature for GlassFish Server Open Source Edition 3.1.</p> <p>Mandatory reviewers are listed below. <b>The deadline for review comments is Monday, February 7th.</b> Please provide your feedback by adding comments to this page. Please review existing comments before posting to avoid duplicates.</p> 
+     <ul> 
+      <li>Kshitiz Saxena</li> 
+      <li>Mahesh Kannan</li> 
+      <li>Joe Di Pol</li> 
+      <li>Yamini K B</li> 
+      <li>Homer Yau</li> 
+     </ul> <h4><a name="GlassFishV3.1LoadBalancerDocReview-AdministrationGuideChanges"></a><em>Administration Guide</em> Changes</h4> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Section </th> 
+         <th class="confluenceTh"> Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://wikis.sun.com/download/attachments/237610032/EEAG-mod_jk.pdf">6, Administering Web Applications, Administering mod_jk</a> </td> 
+         <td class="confluenceTd"> In review. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3.1LoadBalancerDocReview-QuickStartGuideChanges"></a><em>Quick Start Guide</em> Changes</h4> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Section </th> 
+         <th class="confluenceTh"> Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://wikis.sun.com/download/attachments/237610032/QSG-lb_overview.pdf">Working With Load Balancers</a> </td> 
+         <td class="confluenceTd"> In review. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3.1LoadBalancerDocReview-HighAvailabilityAdministrationGuideChanges"></a><em>High Availability Administration Guide</em> Changes</h4> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Section </th> 
+         <th class="confluenceTh"> Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://wikis.sun.com/download/attachments/237610032/HAAG-ha_overview.pdf">1, High Availability in Enterprise Server</a> </td> 
+         <td class="confluenceTd"> In review. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://wikis.sun.com/download/attachments/237610032/HAAG-failover_configs.pdf">High Availability and Failover</a>; <em>several sections</em> </td> 
+         <td class="confluenceTd"> In review. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://wikis.sun.com/download/attachments/237610032/HAAG-config_lb.pdf">5, Configuring HTTP Load Balancing</a> </td> 
+         <td class="confluenceTd"> In review. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://wikis.sun.com/download/attachments/237610032/SJSASEEHAAG.pdf">_HADB references</a>; throughout_ </td> 
+         <td class="confluenceTd"> Entire book file is attached here; too many references to segregate sections. Please scan for errant HADB references. GF3.1 does not include or support HADB. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874123/21365658.pdf">EEAG-mod_jk.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874123/21365647.pdf">HAAG-config_lb.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874123/21365648.pdf">HAAG-failover_configs.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874123/21365649.pdf">HAAG-ha_overview.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874123/21365650.pdf">QSG-lb_overview.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874123/21365657.pdf">SJSASEEHAAG.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874123/21365554.pdf">SJSASEEHAAG.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874123/21365565.pdf">HAAG-config_lb.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874123/21365566.pdf">EEAG-mod_jk.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874123/21365556.pdf">HAAG-ha_overview.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874123/21365555.pdf">QSG-lb_overview.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874123/21365564.pdf">HAAG-failover_configs.pdf</a> (application/octet-stream) 
+      <br> 
+     </div> 
+     <div class="tabletitle"> 
+      <a name="comments"> <h4>Comments:</h2> </a> 
+     </div> 
+     <table border="0" width="100%"> 
+      <tbody>
+       <tr> 
+        <td> <a name="comment-20879873"></a> <font class="smallfont">
+          <div class="table-wrap"> 
+           <table class="confluenceTable">
+            <tbody> 
+             <tr> 
+              <th class="confluenceTh">Comment ID</th> 
+              <td class="confluenceTd">Location</td> 
+              <td class="confluenceTd">Comment</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">YKB-001</td> 
+              <td class="confluenceTd">Configuring HTTP LB, page 83</td> 
+              <td class="confluenceTd">--autoapplyenabled is deprecated in 3.1, the note should be removed</td> 
+             </tr> 
+            </tbody>
+           </table> 
+          </div> </font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by xyamini at Feb 06, 2011 21:59 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20879793"></a> <font class="smallfont">
+          <div class="table-wrap"> 
+           <table class="confluenceTable">
+            <tbody> 
+             <tr> 
+              <th class="confluenceTh">Comment ID</th> 
+              <th class="confluenceTh">Location</th> 
+              <th class="confluenceTh">Comment</th> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">Kshitiz-1</td> 
+              <td class="confluenceTd">Configuring HTTP LB</td> 
+              <td class="confluenceTd">This section is not needed here at all. With Apache+mod_jk, there is no need to create http load-balancer configuration in domain xml</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">Kshitiz-2</td> 
+              <td class="confluenceTd">Working With Load Balancers</td> 
+              <td class="confluenceTd">This guide need to reviewed by Amy Roh</td> 
+             </tr> 
+            </tbody>
+           </table> 
+          </div> </font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by kshitiz_s at Feb 07, 2011 01:19 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20879822"></a> <font class="smallfont">
+          <div class="table-wrap"> 
+           <table class="confluenceTable">
+            <tbody> 
+             <tr> 
+              <th class="confluenceTh"> Comment ID <br class="atl-forced-newline"> </th> 
+              <th class="confluenceTh"> Location </th> 
+              <th class="confluenceTh"> Comment <br class="atl-forced-newline"> </th> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> Amy-1 <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> Page 80 <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> "Configuring GlassFish Server with <b>Apache HTTPD Server</b> and mod_jk" should be "Configuring GlassFish Server with <b>Apache HTTP Server</b> and mod_jk" </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> Amy-2 <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> Page 81 <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> Step 4 should be updated with <br class="atl-forced-newline"> <br class="atl-forced-newline"> 4&nbsp; Enable mod_jk using the following command: <br class="atl-forced-newline"> <br class="atl-forced-newline"> asadmin create-network-listener --protocol http-listener-1 --listenerport 8009 --jkenabled true jk-connector <br class="atl-forced-newline"> <br class="atl-forced-newline"> asadmin set server-config.network-config.network-listeners.network-listener.jk-connector.jk-configuration-file=domain-dir/config/glassfish-jk.properties </td> 
+             </tr> 
+            </tbody>
+           </table> 
+          </div> </font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by amyroh at Feb 07, 2011 14:14 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20882586"></a> <font class="smallfont"><p>Comments on EEAG-mod_jk.pdf</p> 
+          <div class="table-wrap"> 
+           <table class="confluenceTable">
+            <tbody> 
+             <tr> 
+              <th class="confluenceTh"> Comment ID <br class="atl-forced-newline"> </th> 
+              <th class="confluenceTh"> Location </th> 
+              <th class="confluenceTh"> Comment <br class="atl-forced-newline"> </th> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> sre-001 <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> General Comment <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> There is a lot of overlap between the Admin Guide mod_jk instructions and the HA Admin Guide.&nbsp; Are they both needed?&nbsp; Could the Admin Guide simply refer (or defer) to the HA Admin Guide, especially as the Admin Guide also discusses load balancing with mod_jk, which is really a HA feature??? <br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> sre-002 <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> General Comment <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> I see nothing that explains what the benefits/differences are in using either the Apache workers.properties file or the glassfish-jk.properties file, and under which circumstances which is the best choice.&nbsp; For example, if the Apache tier is separate from the GlassFish instance tier, do you just need the Apache side with a workers.properties file and nothing on the GlassFish tier, or does the GlassFish tier need a glassfish-jk.properties file that matches up with the Apache workers.properties file??? <br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> sre-003 <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> p108, point 1, first bullet point <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> URL should be updated to point to the Apache 2.2 docs.&nbsp; Just change the 2.0 in the URL to 2.2 <br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> sre-004 <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> p109, point 2 <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> Perhaps update the paths so they start apache22 and not apache2 <br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> sre-005 <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> p109, point 2 <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> Why is the Apache configuration directory "conf" in the first bullet point, and "config" in the second.&nbsp; Shouldn't both be "conf"? <br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> sre-006 <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> p109, point 5 <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> Probably should match the changes suggested in Amy-2 as the original text of both is the same.&nbsp; Again, is the glassfish-jk.properties needed?&nbsp; The Amy-2 comment appear to suggest its always needed, but the text here makes it optional - I've setup 3.0 in the past with all the configuration on the Apache side. <br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> sre-007 <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> p109, Example 6-4 <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> Could add that this example is just using mod_jk as a simple passthrough. <br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> sre-008 <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> p110, Example 6-5 <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> Should it be made clearer that this is the workers.properties file referenced by the httpd.conf file in Example 6-4? <br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> sre-009 <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> General Comment <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> The HA Admin Guide has the config files from Examples 6-4 and 6-5, but doesn't have the example files that actually show a LB configuration with mod_jk, i.e. from Examples 6-6 and 6-7. <br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> sre-010 <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> p110-111, points 1 and 2 <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> There's no mention of the jvmRoute property in the HA Guide.&nbsp; If this is still needed then it should be mentioned there as well (unless docs are combined). <br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> sre-011 <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> p111, Example 6-6 <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> A slightly better example would move the JkMount /glassfish-test/* into a separate file, i.e. have the following directive: <br class="atl-forced-newline"> 
+               <div class="code panel" style="border-width: 1px;">
+                <div class="codeContent panelContent"> 
+                 <div id="root"> 
+                  <pre class="theme: Confluence; brush: java; gutter: false">JkMountFile /etc/httpd/conf/urlmap.properties</pre> 
+                 </div> 
+                </div>
+               </div><br> where that file would have: <br class="atl-forced-newline"> <br class="atl-forced-newline"> 
+               <div class="code panel" style="border-width: 1px;">
+                <div class="codeContent panelContent"> 
+                 <div id="root"> 
+                  <pre class="theme: Confluence; brush: java; gutter: false">/glassfish-test=loadbalancer
+/glassfish-test/*=loadbalancer</pre> 
+                 </div> 
+                </div>
+               </div><br> This actually allows you to take URIs in and out of load balancing dynamically as the mod_jk plugin polls the file on a regular basis.&nbsp; The example as it stands is fine, but this more convoluted is better suited to the real world where you might want to change things without restarting the apache front end <br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> sre-012 <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> Example 6-7 <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> A slightly more compact example file would be to use worker references, e.g.<br class="atl-forced-newline"> <br class="atl-forced-newline"> 
+               <div class="code panel" style="border-width: 1px;">
+                <div class="codeContent panelContent"> 
+                 <div id="root"> 
+                  <pre class="theme: Confluence; brush: java; gutter: false">worker.list=worker1,worker2,loadbalancer
+worker.worker1.type=ajp13
+worker.worker1.host=localhost
+worker.worker1.port=8009
+worker.worker1.lbfactor=1
+worker.worker1.socket_keepalive=1
+worker.worker1.socket_timeout=300
+worker.worker2.reference=worker.worker1
+worker.worker2.port=8010
+worker.loadbalancer.type=lb
+worker.loadbalancer.balance_workers=worker1,worker2</pre> 
+                 </div> 
+                </div>
+               </div> <p>Since that lets worker2 inherit/copy its configuration from worker1 and then just has the port overridden. <br class="atl-forced-newline"> </p></td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> sre-013 <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> p112, point 1 <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> On systems that have a /dev/*random device the -rand &lt;filelist&gt; is unnecessary.&nbsp; That's certainly Solaris 10 and recent Linux editions, e.g. RH5 <br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> sre-014 <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> p113, point 5 <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> With Apache 2.2 the ssl.conf is now httpd-ssl.conf.&nbsp; The /etc/apache2 seems to be using the Solaris pre-bundled apache 2.0 install.&nbsp; Given 2.0 isn't supported, should this be referring to a Apache 2.2 installation somewhere.&nbsp; If the Apache 2.2 isn't using the Solaris semantics for splitting the installation over /usr, /etc and /var then the file would be &lt;apache-2.2-dir&gt;/conf/extra/httpd-ssl.conf<br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> sre-015 </td> 
+              <td class="confluenceTd"> p112, point 6 </td> 
+              <td class="confluenceTd"> Given this is based on a previous example, should it say that any JkMount mappings that are going to be protected using SSL should be moved from the httpd.conf to the httpd-ssl.conf file.&nbsp; See sre-014 about ssl.conf file name.<br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd">&nbsp;</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> sre-016 <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> Example 6-8 <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> httpd-ssl.conf instead of ssl.conf. <br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> sre-017 <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> p113, point 3 <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> Does this need changing checking given the previous changes to the create-listener commands? <br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> sre-018 <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> p113, point 4 <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> Again, ssl.conf name/directory path probably need correcting/bringing up to date. <br class="atl-forced-newline"> </td> 
+             </tr> 
+            </tbody>
+           </table> 
+          </div> </font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by tecknobabble at Feb 08, 2011 05:12 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20882590"></a> <font class="smallfont"><p>Comments on SJSASEEHAAG.pdf</p> 
+          <div class="table-wrap"> 
+           <table class="confluenceTable">
+            <tbody> 
+             <tr> 
+              <th class="confluenceTh"> Comment ID <br class="atl-forced-newline"> </th> 
+              <th class="confluenceTh"> Location </th> 
+              <th class="confluenceTh"> Comment <br class="atl-forced-newline"> </th> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> sre-019 <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> p13, 1st para <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> Probably can remove the reference to converged load balancing.&nbsp; The converged load balancer was functionality added into 2.x in the SailFin product, which was built upon GlassFish.&nbsp; Given the future of SailFin is unknown, and this appears to be the only reference to converged load balancing, just remove this. <br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> sre-020 <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> p17, Overview of High Availability, first sentence. <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> Do we really provide five-9's availability with just in-memory replication?&nbsp; The 5 9's claim I believe was predicated on the fact that HADB provided this level of availability, and this was a proven statement.&nbsp;&nbsp; Given that the product no longer makes use of HADB, can the same claim be made?&nbsp; For HADB to claim 5 9's you had to use hardware with redundant power, networks etc.&nbsp; Given that it appears the intra-cluster GMS is bound to a specific network/interface, its hard to see how that could failover to a separate redundant network if there was a failure. <br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> sre-021 <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> p18, first para <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> Tying in to Amy-1, this should be Apache HTTP and not HTTPD. <br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> sre-022 <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> p18, High Availability Java Message Service <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> The Sun Java System Message Queue should be the GlassFish Message Queue.&nbsp; I'd also wonder whether "is tightly integrated" is the best wording given that GF MQ is now only available as part of the GlassFish Server.&nbsp; Maybe be simplest to have "is provided with the GlassFish Server". <br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> sre-023 <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> p19, MQ Clustering <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> MQ Enterprise Edition should just be GlassFish Message Queue. <br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> sre-024 <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> p19, More Information, first bullet point. <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> No node agents in GF 3.1.&nbsp; As a general comment will the "Open Source" be removed from the document title and any references to differentiate between the branded/fully supported version of the product and the open source edition? <br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> sre-025 <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> p20, penultimate para <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> The first sentence is:<br class="atl-forced-newline"> "In-memory replication on other servers provides lightweight storage of session state data without the need to obtain a separate database, such as HADB."<br class="atl-forced-newline"> Two things wrong with this, the obvious one is that it mentions HADB.&nbsp; The second is that even if you remove the HADB reference, the sentence implies that a database can be used in place of in-memory replication.&nbsp; As a result I suspect the complete sentence can be truncated to just:<br class="atl-forced-newline"> "In-memory replication on other servers provides lightweight storage of session state data across a GlassFish cluster." </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> sre-026 </td> 
+              <td class="confluenceTd"> p21-22, Sun Cluster references. <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> Is there even going to be a Sun Cluster Data Service for GlassFish 3.1?&nbsp; If there is will it be tested?&nbsp; The Sun Cluster docs assumed certainly capabilities in the SJS AS 9.x/2.x with network interface binding that simply weren't capable of working in a Sun Cluster environment (Admin Service JMX/RMI port couldn't be bound to a failover network interface).&nbsp; May want to check with product management about support for Sun Cluster.<br class="atl-forced-newline"> <br class="atl-forced-newline"> SJS Application Server would need changing, and the reference to node agents removing.&nbsp; The docs.sun.com address needs to be changed to the oracle documentation url.&nbsp; Is the "Java ES" bundle still the valid way to install Sun Cluster software?<br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> sre-27 </td> 
+              <td class="confluenceTd"> p22, Recovering the DAS<br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> GF 3.1 has the ability to schedule its own backups if the DAS is running, that should be referenced here.&nbsp; Should we really have a reference to the AS 8.1 patch 4 install instructions for restoring the DAS from backup????<br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> sre-28<br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> p22, Recoving Node Agents <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> There are no node agents.&nbsp; Could just refer to nodes and not node agents if there is still no commands that would back up a node and its instances on a machine.&nbsp; If there are commands that deal with that, those would need documenting. <br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> sre-29 <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> p23, Recovering the HTTP Load Balancer <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> Just backing up the loadbalancer.xml may not be enough.&nbsp; If the DAS certificate has been exported and imported into the Web Server certificate store then either its NSS files should also be backed up, or the administrator will have to re-export and re-import the DAS certificate.s <br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> sre-030<br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> p23, Recovering Message Queue <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> Given Message Queue will not be available standalone, and will be installed as part of the GF 3.1 installation, its unlikely that the MQ config will be under /var/imq, that's really only valid for the older package-based standalone MQ installations, that were part of the JES stack.&nbsp; If a GF Cluster is not using a highly available MQ cluster, then the MQ data will be under each instance in the node directory, e.g. &lt;gf-install-dir&gt;/glassfish/nodes/&lt;node-name&gt;/&lt;instance-name&gt;/imq.&nbsp; Hence a proper backup of the nodes/instances should also provide a backup of the MQ data.<br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> sre-031 <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> p23, Using Netbackup <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> Veritas were bought by Symantec in 2005, therefore I have to infer this section of the document is at least 5-6 years old, if not older.&nbsp; The product is now Symantec Netbackup.&nbsp; Do we know if the information in this section is still accurate at all?&nbsp; <br class="atl-forced-newline"> <br class="atl-forced-newline"> May be worth checking with Product Management and consider removing this information - not sure we should be advising on the best way to use a 3rd party backup solution, especially if it is one flagged with "This procedure has not been tested by Sun QA"<br class="atl-forced-newline"> <br class="atl-forced-newline"> The section that continues over to p24 also refers to HADB, which shouldn't be mentioned.<br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> sre-032 </td> 
+              <td class="confluenceTd"> p25, Recreating the DAS, point 1a<br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> There is no -console mode for the installer in GF 3.1 <br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> sre-033<br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> p25, point 3<br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> Don't believe restore-domain has a --clienthostname option in GF 3.1.&nbsp; Procedure may need to use the asadmin update-admin-server-local-coordinates command. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> sre-034<br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> p25, point 4 <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> Don't believe there is a generated/tmp directory with GF 3.1 <br class="atl-forced-newline"> </td> 
+             </tr> 
+            </tbody>
+           </table> 
+          </div> <p>Suspect I'm starting to tread over ground that has been made available as separate self-contained reviews (I may have done so with the above comments, but its not something I recall seeing before).</p></font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by tecknobabble at Feb 08, 2011 07:10 
+         </div> </td> 
+       </tr> 
+      </tbody>
+     </table> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jan 29, 2011 by 
+<font color="#0050B2">sfordin</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

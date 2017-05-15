@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : ReinstateLauncherasAPIV3</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="ReinstateLauncherasAPIV3-LauncherReworkforV3"></a>Launcher Rework for V3</h2> <p><a href="./AdminOverallTaskList.html">Admin Overall Task List</a></p> 
+     <ul> 
+      <li>Ability to embed AppServer in any arbitrary JVM, with the proviso that the JVM has a list of required options already set – e.g. -Xmx</li> 
+      <li>Ability to easily start AppServer in its own JVM from any java code with no restrictions.</li> 
+      <li>Stretch Goal: Start AppServer remotely – probably via NodeAgent.</li> 
+      <li>Stretch Goal: ability to run a cluster in one JVM. This will require radical changes all over the place – e.g. 
+       <ul> 
+        <li>System.getProperty('com.sun.aas.instanceRoot") – this will be trouble if there are multiple instances in one JVM</li> 
+       </ul> </li> 
+     </ul> <h4><a name="ReinstateLauncherasAPIV3-Mechanics"></a>Mechanics</h2> 
+     <ul> 
+      <li>Rewrite of startup code. v2 was purposefully a hack of the old code. The code was so convoluted and ultra-complex that this was deemed the safest way to proceed. The rewrite was successful and safe, now we can jettison native startup and make the code much simpler and easier to maintain.</li> 
+     </ul> <h4><a name="ReinstateLauncherasAPIV3-WhatisLaunching%3F"></a>What is Launching?</h2> <p>The meaning has changed. In v2 and earlier, launching is getting from a commandline to the first line of code in the actual appserver. I.e. the launcher creates a JVM process with the appserver main method as the class to run. In the context of v3, it is that <b>plus</b> starting the appserver embedded - i.e. running in the same JVM as the launcher itself.</p> <p>In any case launching and startup are different parts of getting a server up and running.</p> 
+     <ul> 
+      <li>launching is everything before the first server code runs</li> 
+      <li>startup is after the first server code starts</li> 
+     </ul> <h4><a name="ReinstateLauncherasAPIV3-WhatDoesLauncherDointhenonembeddedcase%3F"></a>What Does Launcher Do in the non-embedded case?</h2> 
+     <ul> 
+      <li>Looks at the arguments and options it was given and handles them appropriately</li> 
+      <li>Figures out what kind of server to start: DAS, NA, instance</li> 
+      <li>Figures out where the server lives on disk</li> 
+      <li>Gets the JVM options from the correct config file (domain.xml)</li> 
+      <li>If the server is secure, it hands off username-password information</li> 
+      <li>Creates a JVM process with a commandline dependent on the above</li> 
+      <li>Attaches 2 daemon threads to make sure stdout/stderr is drained from the spawned process properly 
+       <ul> 
+        <li>it might display the drained output, depending on settings, and run the entire time the server runs</li> 
+        <li>it might exit/return immediately after the JVM starts</li> 
+       </ul> </li> 
+     </ul> <h4><a name="ReinstateLauncherasAPIV3-WhatDoesLauncherDointheembeddedcase%3F"></a>What Does Launcher Do in the embedded case?</h2> <p>It does everything in the list above with these differences</p> 
+     <ul> 
+      <li>it does NOT look into domain.xml thus ignoring all jvm-options therein</li> 
+      <li>It does not create a JVM process. Instead it instantiates and calls the appropriate server startup class</li> 
+      <li>daemon threads are not needed</li> 
+      <li>the launcher remains in the same VM as the server</li> 
+     </ul> <h4><a name="ReinstateLauncherasAPIV3-API"></a>API</h1> <p><a href="LauncherAPI.html" title="LauncherAPI">LauncherAPI</a></p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

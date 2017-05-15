@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : CRUD Asadmin Commands</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="CRUDAsadminCommands-CRUDasadmincommandsimplementationinGlassFish"></a>CRUD asadmin commands implementation in GlassFish</h1> <h4><a name="CRUDAsadminCommands-Introduction"></a>Introduction</h2> <p>Many administrative commands in GlassFish are basically simply creating, modifying (rarely) or deleting configuration XML snippets. Such code is quite repetitive to write and error prone. Therefore GlassFish has a feature to support CRUD commands that can create, delete and list XML elements from a CLI invocation without requiring to write code.</p> <h4><a name="CRUDAsadminCommands-Generalsolution"></a>General solution</h2> <h4><a name="CRUDAsadminCommands-Notionofparent."></a>Notion of parent.</h3> <p>Every configuration element has a parent in the XML configuration tree. The parent can reference its children through accessor methods of two basic types :</p> 
+     <ol> 
+      <li>List&lt;ChildType&gt; getChildren() : used when there can be 0..n children of a single type associated with one instance of the parent.</li> 
+      <li>void setChild(ChildType child) : used when there can be 0 or 1 child associated with one instance of the parent.</li> 
+     </ol> <p>As a reminder. there cannot be a set of children of the same types associated to their parents through two distinctive accessor methods.</p> <h4><a name="CRUDAsadminCommands-Createmethodskeletoncode"></a>Create method skeleton code</h3> <p>For the most basic commands, all the administrative commands to create elements are implemented in the following pattern :</p> 
+     <ol> 
+      <li>Retrieve the parent instance the child will be added to</li> 
+      <li>Start a transaction of the parent instance</li> 
+      <li>Create a child instance</li> 
+      <li>Set the newly created child instance with the CLI command parameters (initial value of the child attributes).</li> 
+      <li>Add the child the parent instance through one of the accessor method described above</li> 
+      <li>Commit the transaction.</li> 
+     </ol> <p>As you can see the generic Create command implementation can do most of these tasks provided it's given a few vital pieces of information:</p> 
+     <ol> 
+      <li>A way to retrieve the parent type and instance to add the child to give the CLI command parameters</li> 
+      <li>The child type</li> 
+      <li>The mapping between a CLI command parameters and the XML attribute of the child</li> 
+      <li>The accessor method to add the child to the parent.</li> 
+     </ol> <h4><a name="CRUDAsadminCommands-Deletemethodskeletoncode"></a>Delete method skeleton code</h3> <p>Even more simple in its implementation than create commands, the delete methods usually follow the pattern :</p> 
+     <ol> 
+      <li>Retrieve the instance to be deleted</li> 
+      <li>Start a transaction on its parent</li> 
+      <li>Delete the child by removing it from the list or calling setXXX(null)</li> 
+      <li>Commit the transaction</li> 
+     </ol> <p>Therefore the generic Delete command implementation can do most of its tasks provided the following :</p> 
+     <ol> 
+      <li>A way to retrieve the child instance give its type and CLI command parameters</li> 
+      <li>The accessor method to remove the child.</li> 
+     </ol> <h4><a name="CRUDAsadminCommands-Resolver"></a>Resolver</h3> <p>As described above, there is a need to retrieve instances of a particular type to be able to perform the command. Such responsibility is handled by the CrudResolver implementation, this is its interface :</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">package org.glassfish.config.support;
+
+/**
+ * A config resolver is responsible for finding the target object of a specified
+ * type on which a creation command invocation will be processed.
+ *
+ * Implementation of these interfaces can be injected with the command invocation
+ * parameters in order to determine which object should be returned
+ *
+ * @author Jerome Dochez
+ */
+@Contract
+public interface CrudResolver {
+
+    /**
+     * Retrieves the existing configuration object a command invocation is intented to mutate.
+     *
+     * @param context the command invocation context
+     * @param type the type of the expected instance
+     * @return the instance or null if not found
+     */
+    &lt;T extends ConfigBeanProxy&gt; T resolve(AdminCommandContext context, Class&lt;T&gt; type);
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>Given a admin command execution context, plus the ability to get injected with the CLI command line parameters (or any other HK2 services if necessary), the resolver should be able to determine the particular instance to mutate.</p> <p>Take an example of create-application-ref command, the resolver will be responsible for returning an instance of Cluster or Server using the --target CLI parameter. Most of the Resolver have already been written and although it is possible we need more, you should look first below it one of the stock resolver fits your needs :</p> 
+     <ol> 
+      <li>org.glassfish.config.support.TargetBasedResolver : Use the --target CLI parameter and the expected return type to look up the instance</li> 
+      <li>org.glassfish.config.support.TargetAndNameBasedResolver : On top of using --target to identify a &lt;config&gt; element, it also uses a name to look for a &lt;config&gt; subelement of the requested type and name.</li> 
+      <li>org.glassfish.config.support.TypeAndNameResolver : Use the requested type and CLI parameter name to find the instance. This is useful for configuration that have the @Index annotation which is used to register such instances under a name in the habitat.</li> 
+     </ol> <h4><a name="CRUDAsadminCommands-Annotations"></a>Annotations</h2> <h4><a name="CRUDAsadminCommands-@Create"></a>@Create</h3> <p>By placing the @Create annotation on a method, you give the system the following information :</p> 
+     <ol> 
+      <li>the method's class is the TYPE of the parent</li> 
+      <li>the return type of the method indicates the TYPE of the child</li> 
+      <li>the annotated method is the accessor method to add children of that type to the parent.</li> 
+     </ol> <p>All you know need is a resolver.</p> <p>Let's take an example :</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">/**
+ * Clusters configuration. Maintain a list of {@link Cluster}
+ * active configurations.
+ */
+@Configured
+public interface Clusters extends ConfigBeanProxy, Injectable {
+
+     /**
+      * Return the list of clusters currently configured
+      *
+      * @return list of {@link Cluster }
+      */
+    @Element
+    @Create(value="create-cluster")
+    public List&lt;Cluster&gt; getCluster();
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>In this example the default resolver which just use the parent type (here Clusters) will be used to fetch the unique instance from the habitat. The name is called "create-cluser" and that's what the use will need to type on the CLI invocation.</p> <h4><a name="CRUDAsadminCommands-@Delete"></a>@Delete</h3> <p>The delete annotation follows the same design principle as create, by placing an @Delete on a method, you specify :</p> 
+     <ol> 
+      <li>the method's class is the TYPE of the parent the child will be removed from</li> 
+      <li>the return type (or method parameter depending on accessor type) indicates the TYPE of the child</li> 
+      <li>the annotated method is the accessor to mutate the parent.</li> 
+     </ol> <p>Again, all you need on top of this is the resolver. let's build on the previous example :</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">/**
+ * Clusters configuration. Maintain a list of {@link Cluster}
+ * active configurations.
+ */
+@Configured
+public interface Clusters extends ConfigBeanProxy, Injectable {
+
+     /**
+      * Return the list of clusters currently configured
+      *
+      * @return list of {@link Cluster }
+      */
+    @Element
+    @Create(value="create-cluster")
+    @Delete(value="delete-cluster", resolver= TypeAndNameResolver.class)
+    @Listing(value="list-clusters")
+    public List&lt;Cluster&gt; getCluster();
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>The resolver is now the type and name since it will use the expected child type and passed name parameter to fetch the cluster instance from the habitat. The resolver will end up doing habitat.getComponent(Cluster.class, name) where name is the CLI --name parameter value.</p> <h4><a name="CRUDAsadminCommands-@Listing"></a>@Listing</h3> <p>Annotate with @Listing to get a listing command. The annotated method should always return a List&lt;ChildType&gt; type and resolver is responsible for finding the instance on which the accessor method will be invoked.</p> <p>The list command supports the following features:</p> 
+     <ul> 
+      <li>The default (short) output consists of just the value of the key field for the type.</li> 
+      <li>The long output (indicated with the --long or -l option) consists of each of the attributes of the type plus any additional duck typed methods that are annoated with @ListingColumn.</li> 
+      <li>A --header (or -h) option can be used to suppress the header that is part of the long output. This option is ignored if --long is not specified.</li> 
+      <li>The --output (or -o) option can be used to specify which columns to include in the output.&nbsp; If --output is used, the --long output is automatically selected.</li> 
+      <li>The @ListingColumn annotation can be used to 
+       <ul> 
+        <li>exclude attributes from the output</li> 
+        <li>specify an alternate heading for that attribute (the default is the uppercase form of the XML name for the attribute)</li> 
+        <li>specify an ordering of the columns</li> 
+        <li>specify whether the column should be included in the default output for the --long option.&nbsp;</li> 
+       </ul> </li> 
+     </ul> <p>When used with a DuckTyped method, the ListingColumn annotation must be used with method that returns a String or something that can be converted to a String. The method name must start with "get" and take no arguments, as in:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@DuckTyped
+    @ListingColumn
+    String getCalculatedVersion();</pre> 
+       </div> 
+      </div>
+     </div> <p>Taking back the previous example, we can now have :</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Configured
+public interface Clusters extends ConfigBeanProxy, Injectable {
+
+     /**
+      * Return the list of clusters currently configured
+      *
+      * @return list of {@link Cluster }
+      */
+    @Element
+    @Create(value="create-cluster", decorator=Cluster.Decorator.class)
+    @Delete(value="delete-cluster", resolver= TypeAndNameResolver.class, decorator=Cluster.DeleteDecorator.class)
+    @Listing(value="list-clusters")
+    public List&lt;Cluster&gt; getCluster();
+}</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="CRUDAsadminCommands-Decorators"></a>Decorators</h2> <p>Sometimes, CRUD commands are not enough, more xml editing needs to happen during the command invocation.</p> <h4><a name="CRUDAsadminCommands-Examplesofdecorators"></a>Examples of decorators</h3> <p>The following examples depicts typical cases of a decorator need.</p> 
+     <ul> 
+      <li>create-cluster command need to not only create the &lt;cluster&gt; XML snippet under &lt;clusters&gt; but it should also add a &lt;config&gt; element under &lt;configs&gt; when there are no config-ref parameter passed on the command line. The CRUD command implementation will take care of creating the &lt;cluster&gt; element, the decorator will have to create the &lt;config&gt; element if necessary.</li> 
+     </ul> 
+     <ul> 
+      <li>create-cluster command also needs to add sub-element to the &lt;cluster&gt; XML snippet. These sub elements like application-ref, resource-ref and similar are immediate children of &lt;cluster&gt; and do not necessary need any parameters values from the CLI invocation.</li> 
+     </ul> 
+     <ul> 
+      <li>delete-cluster command need to delete the referenced &lt;config&gt; element if the deleted cluster element was the last one referencing it. The generic delete command will take care of deleting the &lt;cluster&gt; element, the decorator will optionally delete the &lt;config&gt; element.</li> 
+     </ul> <h4><a name="CRUDAsadminCommands-CreationDecorator"></a>CreationDecorator</h3> <p>A creation decorator is called during the @Create generic create command implementation. The interface is :</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Scoped(PerLookup.class)
+public interface CreationDecorator&lt;T extends ConfigBeanProxy&gt; {
+
+    /**
+     * The element instance has been created and added to the parent, it can be
+     * customized. This method is called within a {@link org.jvnet.hk2.config.Transaction}
+     * and instance is therefore a writeable view on the configuration component.
+     *
+     * @param context administration command context
+     * @param instance newly created configuration element
+     * @throws TransactionFailure if the transaction should be rollbacked
+     * @throws PropertyVetoException if one of the listener of &lt;T&gt; is throwing a veto exception
+     */
+    public void decorate(AdminCommandContext context, T instance) throws TransactionFailure, PropertyVetoException;
+
+    /**
+     * Default implementation of a decorator that does nothing.
+     */
+    @Service
+    public class NoDecoration implements CreationDecorator&lt;ConfigBeanProxy&gt; {
+        @Override
+        public void decorate(AdminCommandContext context, ConfigBeanProxy instance) throws TransactionFailure, PropertyVetoException {
+            // do nothing
+        }
+    }
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>It is VERY important to realize the instance passed is the writable copy of the newly added element, which mean you do not need to start a new transaction to change this instance, calling setXXX on it will succeed as the decorator method is called as part of the element creation transaction. Another side effect is that there is only one transaction for all possible changes of a CRUD command making it easy to rollback in case of conflicting changes.</p> <p>Continuing on our cluster example, the @Create declare its decorator :</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Configured
+public interface Clusters extends ConfigBeanProxy, Injectable {
+
+     /**
+      * Return the list of clusters currently configured
+      *
+      * @return list of {@link Cluster }
+      */
+    @Element
+    @Create(value="create-cluster", decorator=Cluster.Decorator.class)
+    public List&lt;Cluster&gt; getCluster();
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>and the decorator implementation is in the Cluster definition :</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Configured
+public interface Cluster extends ConfigBeanProxy, ... {
+
+    ....
+
+    @Service
+    @Scoped(PerLookup.class)
+    class Decorator implements CreationDecorator&lt;Cluster&gt; {
+
+        @Param(name="config", optional=true)
+        String configRef=null;
+
+        @Inject
+        Domain domain;
+
+        @Override
+        public void decorate(AdminCommandContext context, final Cluster instance) throws TransactionFailure, PropertyVetoException {
+            ...
+        }
+    }
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>Things to notice :</p> 
+     <ol> 
+      <li>we use an inner class, you don't have to.</li> 
+      <li>the decorator can be injected with the CLI command parameters</li> 
+      <li>the decorator can be injected with any HK2 services or configuration instances.</li> 
+     </ol> <h4><a name="CRUDAsadminCommands-DeletionDecorator"></a>DeletionDecorator</h3> <p>Similar ruling applies for the deletion decorator, except the interface is slightly different :</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">/**
+ * A decorator for acting upon a configuration element deletion.
+ *
+ * @param &lt;T&gt; the deleted element parent type
+ * @param &lt;U&gt; the deleted element
+ *
+ * @author Jerome Dochez
+ */
+@Scoped(PerLookup.class)
+public interface DeletionDecorator&lt;T extends ConfigBeanProxy, U extends ConfigBeanProxy&gt; {
+
+    /**
+     * notification of a configuration element of type U deletion.
+     *
+     * Note that this notification is called within the boundaries of the
+     * configuration transaction, therefore the parent instance is a
+     * writable copy and further changes to the parent can be made without
+     * enrolling it inside a transaction.
+     *
+     * @param context the command context to lead to the element deletion
+     * @param parent the parent instance the element was removed from
+     * @param child the deleted instance
+     */
+    public void decorate(AdminCommandContext context, T parent, U child);
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>In this case, the parent is a writable copy which can be modified without further configuration transaction enrollment. The child reference is however read only, since it's being deleted, there is no need to modify it.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Configured
+public interface Cluster extends ConfigBeanProxy, ... {
+
+    ..
+    @Service
+    @Scoped(PerLookup.class)
+    class DeleteDecorator implements DeletionDecorator&lt;Clusters, Cluster&gt; {
+        ....
+    }
+}</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="CRUDAsadminCommands-Clusteringinformation"></a>Clustering information</h2> <p>Just like normal command that can be implemented with real code and annotated with @ExecuteOn, CRUD commands execution can have clustering information added to their configuration.</p> <p>A @ExecuteOn annotation can be added to the @Create or @Delete annotations to specify the cluster specific meta-data. For instance, the following declaration will make the create-instance command only run on the DAS and not on server instances.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Create(value="create-instance", resolver= TypeResolver.class, decorator= Server.CreateDecorator.class,
+        cluster=@org.glassfish.api.admin.ExecuteOn(value = RuntimeType.DAS))</pre> 
+       </div> 
+      </div>
+     </div> <p>By default, there is an implicit @ExecuteOn() annotation to CRUD commands, which mean that will CRUD command will use the default @ExecuteOn annotation values to specify their clustered behaviours.</p> <h4><a name="CRUDAsadminCommands-Reference"></a>Reference</h2> <h4><a name="CRUDAsadminCommands-@Create"></a>@Create</h3> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">public @interface Create {
+
+    /**
+     * Name of the command that will be used to register this generic command implementation under.
+     *
+     * @return the command name as the user types it.
+     */
+    @Index
+    String value();
+
+    /**
+     * Returns the instance of the parent that should be used to add the newly created
+     * instance under. The implementation of that interface can use the command parameters
+     * to make a determination about which instance should be used.
+     *
+     * @return the parent instance.
+     */
+    Class&lt;? extends CrudResolver&gt; resolver() default CrudResolver.DefaultResolver.class;
+
+    /**
+     * Returns a decorator type that should be looked up and called when a new
+     * configuration element of the annotated type is created.
+     *
+     * @return a decorator for the annotated type
+     */
+    Class&lt;? extends CreationDecorator&gt; decorator() default CreationDecorator.NoDecoration.class;
+
+    /**
+     * Returns the desired behaviors in a clustered environment. By default, using all the
+     * {@link Cluster} default values
+     *
+     * @return the cluster information
+     */
+    Cluster cluster() default @Cluster();
+
+}</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="CRUDAsadminCommands-@Delete"></a>@Delete</h3> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">public @interface Delete {
+
+    /**
+     * Name of the command that will be used to register this generic command implementation under.
+     *
+     * @return the command name as the user types it.
+     */
+    @Index
+    String value();
+
+   /**
+     * Returns the instance of the configured object that should be deleted.
+     * The implementation of that interface can use the command parameters
+     * to make a determination about which instance should be used.
+     *
+     * @return the instance targeted for deletion.
+     */
+    Class&lt;? extends CrudResolver&gt; resolver() default CrudResolver.DefaultResolver.class;
+
+    /**
+     * Returns a decorator type that should be looked up and called when a
+     * configuration element of the annotated type is deleted.
+     *
+     * @return a deletion decorator for the annotated type
+     */
+    Class&lt;? extends DeletionDecorator&gt; decorator() default DeletionDecorator.NoDecoration.class;
+
+    /**
+     * Returns the desired behaviors in a clustered environment. By default, using all the
+     * {@link org.glassfish.api.admin.Cluster} default values
+     *
+     * @return the cluster information
+     */
+    Cluster cluster() default @Cluster();
+
+}</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="CRUDAsadminCommands-@Listing"></a>@Listing</h3> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">public @interface Listing {
+
+    /**
+     * Name of the command that will be used to register this generic command implementation under.
+     *
+     * @return the command name as the user types it.
+     */
+    @Index
+    String value();
+
+    /**
+     * Returns the instance of the parent that should be used get the list of children.
+     *
+     * @return the parent instance.
+     */
+    Class&lt;? extends CrudResolver&gt; resolver() default CrudResolver.DefaultResolver.class;
+}</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="CRUDAsadminCommands-MultipleCRUDcommands"></a>Multiple CRUD commands</h2> <p>It is possible to have several CRUD commands defined on a single method declaration, this will allow to specify a different resolver or more importantly a different decorator or cluster annotation to be used between the 2 commands.</p> <p>To declare multiple create or delete commands on a single method, use the @Creates or @Deletes annotation.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Creates(
+   @Create(value="create-something", decorator=CreateSomething.Decorator)
+   @Create(value="create-something-else", decorator=CreateSomethingElse.Decorator)
+   List&lt;Something&gt; getSomethings();
+)</pre> 
+       </div> 
+      </div>
+     </div> <p>Since the resulting element of these 2 CRUD commands will be the same type, only the decorator and resolvers can vary the list of parameters each command take. All the @Param annotated attributes of the targeted type (Something in the example above) will be parameters of both commands.</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Oct 01, 2012 by 
+<font color="#0050B2">10103</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

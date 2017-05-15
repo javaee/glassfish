@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFishV3.1SSHProvisioningDocPlan</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GlassFishV3.1SSHProvisioningDocPlan-SSHProvisioningDocumentationPlanforGlassFishServerOpenSourceEdition3.1"></a><em>SSH Provisioning</em> Documentation Plan for GlassFish Server Open Source Edition 3.1</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#GlassFishV3.1SSHProvisioningDocPlan-SSHProvisioningDocumentationPlanforGlassFishServerOpenSourceEdition3.1"> <em>SSH Provisioning</em> Documentation Plan for GlassFish Server Open Source Edition 3.1</a></li> 
+       <ul> 
+        <li><a href="#GlassFishV3.1SSHProvisioningDocPlan-PeopleandRoles">People and Roles</a></li> 
+        <li><a href="#GlassFishV3.1SSHProvisioningDocPlan-Audience">Audience</a></li> 
+        <li><a href="#GlassFishV3.1SSHProvisioningDocPlan-SummaryoftheFeatureFromaUser%27sPerspective">Summary of the Feature From a User's Perspective</a></li> 
+        <li><a href="#GlassFishV3.1SSHProvisioningDocPlan-Availability">Availability</a></li> 
+        <li><a href="#GlassFishV3.1SSHProvisioningDocPlan-StatementofWork">Statement of Work</a></li> 
+        <ul> 
+         <li><a href="#GlassFishV3.1SSHProvisioningDocPlan-ChangestoBooks">Changes to Books</a></li> 
+         <ul> 
+          <li><a href="#GlassFishV3.1SSHProvisioningDocPlan-HighAvailabilityAdministrationGuideChanges"> <em>High Availability Administration Guide</em> Changes</a></li> 
+          <li><a href="#GlassFishV3.1SSHProvisioningDocPlan-UpgradeGuideChanges"> <em>Upgrade Guide</em> Changes</a></li> 
+          <li><a href="#GlassFishV3.1SSHProvisioningDocPlan-DomainFileFormatReferenceChanges"> <em>Domain File Format Reference</em> Changes</a></li> 
+         </ul> 
+         <li><a href="#GlassFishV3.1SSHProvisioningDocPlan-ChangestoOnlineHelp">Changes to Online Help</a></li> 
+         <li><a href="#GlassFishV3.1SSHProvisioningDocPlan-ChangestoManPages">Changes to Man Pages</a></li> 
+        </ul> 
+        <li><a href="#GlassFishV3.1SSHProvisioningDocPlan-ReviewSchedule">Review Schedule</a></li> 
+        <li><a href="#GlassFishV3.1SSHProvisioningDocPlan-RelatedInformation">Related Information</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="GlassFishV3.1SSHProvisioningDocPlan-PeopleandRoles"></a>People and Roles</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Name </th> 
+         <th class="confluenceTh"> Role </th> 
+         <th class="confluenceTh"> Location </th> 
+         <th class="confluenceTh"> Time Zone </th> 
+         <th class="confluenceTh"> Email </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Paul Davies </td> 
+         <td class="confluenceTd"> Documentation Feature Owner </td> 
+         <td class="confluenceTd"> Santa Clara, USA </td> 
+         <td class="confluenceTd"> US/Pacific </td> 
+         <td class="confluenceTd"> <tt>pauldavies@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Peer Reviewer </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> <em>java.netID</em><tt>@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Joe Dipol </td> 
+         <td class="confluenceTd"> Software Engineer </td> 
+         <td class="confluenceTd"> Santa Clara, USA </td> 
+         <td class="confluenceTd"> US/Pacific </td> 
+         <td class="confluenceTd"><tt>jfdipol@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Rajiv Mordani <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Software Engineer </td> 
+         <td class="confluenceTd"> Santa Clara, USA </td> 
+         <td class="confluenceTd"> US/Pacific </td> 
+         <td class="confluenceTd"><tt>mode@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Carla Mott <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Software Engineer </td> 
+         <td class="confluenceTd"> Santa Clara, USA </td> 
+         <td class="confluenceTd"> US/Pacific </td> 
+         <td class="confluenceTd"> <tt>carlavmott@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Yamini KB</td> 
+         <td class="confluenceTd"> Software Engineer </td> 
+         <td class="confluenceTd"> Bangalore, India </td> 
+         <td class="confluenceTd"> IST </td> 
+         <td class="confluenceTd"> <tt>xyamini@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Elena Asarina</td> 
+         <td class="confluenceTd"> QA Engineer </td> 
+         <td class="confluenceTd"> Santa Clara, USA </td> 
+         <td class="confluenceTd"> US/Pacific </td> 
+         <td class="confluenceTd"> <tt>easarina@dev.java.net</tt> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3.1SSHProvisioningDocPlan-Audience"></a>Audience</h2> <p>The SSH Provisioning feature is aimed at system administrators.</p> <h4><a name="GlassFishV3.1SSHProvisioningDocPlan-SummaryoftheFeatureFromaUser%27sPerspective"></a>Summary of the Feature From a User's Perspective</h2> <p>The SSH provisioning feature enables system administrators to perform the following tasks:</p> 
+     <ul> 
+      <li>Provision a remote system (node) to enable the administrator to use that system to host server instances for a cluster.</li> 
+      <li>Run asadmin subcommands for managing clusters and instances remotely on provisioned nodes.</li> 
+     </ul> <h4><a name="GlassFishV3.1SSHProvisioningDocPlan-Availability"></a>Availability</h2> <p>This section contains a statement of the distributions or components in which the feature is supplied.</p> <h4><a name="GlassFishV3.1SSHProvisioningDocPlan-StatementofWork"></a>Statement of Work</h2> <p>This section describes in detail for each document the work that is required by the introduction of the feature, such as changes, addition of new material, relocation of existing material, and removal of existing material.</p> <p>Documentation Impact:</p> 
+     <ul> 
+      <li>None</li> 
+      <li>Minor</li> 
+      <li>Moderate</li> 
+      <li>Major</li> 
+      <li>New</li> 
+     </ul> 
+     <hr> <p><b>Note -</b> If a document is task based (as opposed to reference), the changes should be determined from the user task analysis for the feature.</p> 
+     <hr> <h4><a name="GlassFishV3.1SSHProvisioningDocPlan-ChangestoBooks"></a>Changes to Books</h3> <h4><a name="GlassFishV3.1SSHProvisioningDocPlan-HighAvailabilityAdministrationGuideChanges"></a><em>High Availability Administration Guide</em> Changes</h4> <p>Scenario numbers refer to <a href="3.1SSHScenarios.html" title="3.1SSHScenarios">Instance Lifecycle Scenarios</a>.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Section </th> 
+         <th class="confluenceTh"> Documentation Impact </th> 
+         <th class="confluenceTh"> Writer </th> 
+         <th class="confluenceTh"> Reviewers </th> 
+         <th class="confluenceTh"> Description of Change </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 6, Setting Up Clusters in GlassFish Server </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Paul </td> 
+         <td class="confluenceTd"> Joe Dipol <br class="atl-forced-newline"> Carla Mott <br class="atl-forced-newline"> Rajiv Mordani </td> 
+         <td class="confluenceTd"> Explain how to use the asadmin utility to perform the following tasks: 
+          <ul> 
+           <li>Add an instance that is controlled through SSH (Scenarios 1,4) 
+            <ul> 
+             <li>If performing on DAS machine, use create-instance</li> 
+             <li>If performing on machine where instance will run, use create-local instance</li> 
+            </ul> </li> 
+           <li>Add an instance on the DAS machine (Scenario 2)</li> 
+           <li>Add an instance without creating a node (Scenario 3)</li> 
+           <li>Add an instance with node configuration data only (Scenario 5)</li> 
+          </ul> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 8, Configuring GlassFish Server Nodes </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Paul </td> 
+         <td class="confluenceTd"> Joe Dipol <br class="atl-forced-newline"> Carla Mott <br class="atl-forced-newline"> Rajiv Mordani </td> 
+         <td class="confluenceTd"> Explain how to configure SSH for use with GlassFish Server nodes<br class="atl-forced-newline"> <br class="atl-forced-newline"> Explain how to use the asadmin utility to perform the following tasks:<br class="atl-forced-newline"> 
+          <ul> 
+           <li>Create a node</li> 
+           <li>Ceate a node's configuration data only</li> 
+           <li>List nodes</li> 
+           <li>Delete a node</li> 
+           <li>Delete a node's configuration data only</li> 
+           <li>Upgrade a non-SSH node to an SSH node (Scenario 6)</li> 
+          </ul> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3.1SSHProvisioningDocPlan-UpgradeGuideChanges"></a><em>Upgrade Guide</em> Changes</h4> <p>Scenario numbers refer to <a href="3.1SSHScenarios.html" title="3.1SSHScenarios">Instance Lifecycle Scenarios</a>.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Section </th> 
+         <th class="confluenceTh"> Documentation Impact </th> 
+         <th class="confluenceTh"> Writer </th> 
+         <th class="confluenceTh"> Reviewers </th> 
+         <th class="confluenceTh"> Description of Change </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 1. GlassFish Server Compatibility Issues</td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Paul<br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Joe Dipol <br class="atl-forced-newline"> Carla Mott <br class="atl-forced-newline"> Rajiv Mordani </td> 
+         <td class="confluenceTd"> Add a description of the transformations of node-agent and related elements in domain.xml after an upgrade from GlassFish v2.<br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 2. Upgrading an Installation of Application Server or GlassFish Server </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Paul </td> 
+         <td class="confluenceTd"> Joe Dipol <br class="atl-forced-newline"> Carla Mott <br class="atl-forced-newline"> Rajiv Mordani </td> 
+         <td class="confluenceTd"> Explain how to correct the configuration of an SSH node after an upgrade (Scenario 7) </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3.1SSHProvisioningDocPlan-DomainFileFormatReferenceChanges"></a><em>Domain File Format Reference</em> Changes</h4> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Section </th> 
+         <th class="confluenceTh"> Documentation Impact </th> 
+         <th class="confluenceTh"> Writer </th> 
+         <th class="confluenceTh"> Reviewers </th> 
+         <th class="confluenceTh"> Description of Change </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Element hierarchy<br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Minor<br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Paul<br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Joe Dipol <br class="atl-forced-newline"> Carla Mott <br class="atl-forced-newline"> Rajiv Mordani </td> 
+         <td class="confluenceTd"> Add node and all its subelements<br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> node </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Paul </td> 
+         <td class="confluenceTd"> Joe Dipol <br class="atl-forced-newline"> Carla Mott <br class="atl-forced-newline"> Rajiv Mordani </td> 
+         <td class="confluenceTd"> Add a description of the node element </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> nodes </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Paul </td> 
+         <td class="confluenceTd"> Joe Dipol <br class="atl-forced-newline"> Carla Mott <br class="atl-forced-newline"> Rajiv Mordani </td> 
+         <td class="confluenceTd"> Add a description of the nodes element </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ssh-connector </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Paul </td> 
+         <td class="confluenceTd"> Joe Dipol <br class="atl-forced-newline"> Carla Mott <br class="atl-forced-newline"> Rajiv Mordani </td> 
+         <td class="confluenceTd"> ssh-connector </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> ssh-auth </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Paul </td> 
+         <td class="confluenceTd"> Joe Dipol <br class="atl-forced-newline"> Carla Mott <br class="atl-forced-newline"> Rajiv Mordani </td> 
+         <td class="confluenceTd"> Add a description of the ssh-auth element </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3.1SSHProvisioningDocPlan-ChangestoOnlineHelp"></a>Changes to Online Help</h3> <p>All changes to online help, including those arising from the SSH Provisioning feature, are detailed in <em><a href="GlassFishV3.1AdminConsoleDocPlan.html" title="GlassFishV3.1AdminConsoleDocPlan">Administration Console Documentation Plan</a></em>.</p> <h4><a name="GlassFishV3.1SSHProvisioningDocPlan-ChangestoManPages"></a>Changes to Man Pages</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Man Page Name and Section </th> 
+         <th class="confluenceTh"> Documentation Impact </th> 
+         <th class="confluenceTh"> Writer </th> 
+         <th class="confluenceTh"> Reviewers </th> 
+         <th class="confluenceTh"> Description of Change </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>create-node-ssh</tt>(1) </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Paul </td> 
+         <td class="confluenceTd"> Carla Mott </td> 
+         <td class="confluenceTd"> Write this man page. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>create-node-config</tt>(1) </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Paul </td> 
+         <td class="confluenceTd"> Carla Mott </td> 
+         <td class="confluenceTd"> Write this man page. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>delete-node-ssh</tt>(1) </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Paul </td> 
+         <td class="confluenceTd"> Carla Mott </td> 
+         <td class="confluenceTd"> Write this man page. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>delete-node-config</tt>(1) </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Paul </td> 
+         <td class="confluenceTd"> Carla Mott </td> 
+         <td class="confluenceTd"> Write this man page. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>install-node</tt>(1) </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Paul </td> 
+         <td class="confluenceTd"> Rajiv Mordani </td> 
+         <td class="confluenceTd"> Write this man page. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>list-nodes</tt>(1) </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Paul </td> 
+         <td class="confluenceTd"> Carla Mott </td> 
+         <td class="confluenceTd"> Write this man page. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>ping-node-ssh</tt>(1) </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Paul </td> 
+         <td class="confluenceTd"> Joe Dipol</td> 
+         <td class="confluenceTd"> Write this man page. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>setup-ssh</tt>(1) </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Paul </td> 
+         <td class="confluenceTd"> Yamini KB </td> 
+         <td class="confluenceTd"> Write this man page. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>uninstall-node</tt>(1) </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Paul </td> 
+         <td class="confluenceTd"> Rajiv Mordani </td> 
+         <td class="confluenceTd"> Write this man page. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>update-node-config</tt>(1) </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Paul </td> 
+         <td class="confluenceTd"> Joe Dipol</td> 
+         <td class="confluenceTd"> Write this man page. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>update-node-ssh</tt>(1) </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Paul </td> 
+         <td class="confluenceTd"> Joe Dipol</td> 
+         <td class="confluenceTd"> Write this man page. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>asadmin</tt>(1M)</td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Paul </td> 
+         <td class="confluenceTd"> Joe Dipol</td> 
+         <td class="confluenceTd"> Add information about SSH-related entries in the password file. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3.1SSHProvisioningDocPlan-ReviewSchedule"></a>Review Schedule</h2> <p>The review schedule for the documentation items that are affected by this feature is provided in the following table.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item </th> 
+         <th class="confluenceTh"> Review Start Date </th> 
+         <th class="confluenceTh"> Review End Date </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <em>High Availability Administration Guide</em> changes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <em>Upgrade Guide</em> changes</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"><em>Domain File Format Reference</em> changes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">Online help changes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">Man page Changes </td> 
+         <td class="confluenceTd">October 25th, 2010 </td> 
+         <td class="confluenceTd"> November 1st, 2010</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>Reviewers are listed in the <em>Statement of Work</em>.</p> <h4><a name="GlassFishV3.1SSHProvisioningDocPlan-RelatedInformation"></a>Related Information</h2> 
+     <ul> 
+      <li><a href="3.1SSHProvisioningOnePager.html" title="3.1SSHProvisioningOnePager">1-pager</a></li> 
+      <li><a href="3.1SSHScenarios.html" title="3.1SSHScenarios">Usage scenarios</a></li> 
+      <li><a href="3.1SSHProvisioningDesign.html" title="3.1SSHProvisioningDesign">Design document</a></li> 
+      <li><a href="3.1SSHProvisioning.html" title="3.1SSHProvisioning">Project page</a></li> 
+     </ul> <p>Email aliases:</p> 
+     <ul> 
+      <li><a href="mailto:admin@glassfish.java.net">admin@glassfish.java.net</a></li> 
+      <li><a href="mailto:users@glassfish.java.net">users@glassfish.java.net</a></li> 
+      <li><a href="mailto:docs@glassfish.java.net">docs@glassfish.java.net</a></li> 
+     </ul> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Oct 25, 2010 by 
+<font color="#0050B2">pauldavies</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

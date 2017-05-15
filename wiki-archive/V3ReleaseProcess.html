@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : V3ReleaseProcess</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   
+     <div> 
+      <ul> 
+       <li><a href="#V3ReleaseProcess-V3ReleaseProcedure">V3 Release Procedure</a></li> 
+       <li><a href="#V3ReleaseProcess-V3FinalReleaseProcess">V3 Final Release Process</a></li> 
+       <li><a href="#V3ReleaseProcess-V3PreviewReleaseProcess">V3 Preview Release Process</a></li> 
+       <li><a href="#V3ReleaseProcess-V3PreludeReleaseProcess">V3 Prelude Release Process</a></li> 
+      </ul>
+     </div> <h4><a name="V3ReleaseProcess-V3ReleaseProcedure"></a>V3 Release Procedure</h1> <p><b>Steps to promoting a V3 Build</b><br> 1. Create a branch from V3 trunk workspace</p> 
+     <ul> 
+      <li>The branch is named: 3.0-b## where ## is the build number.</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">svn copy https://svn.java.net/svn/glassfish-svn/trunk/v3 https://svn.java.net/svn/glassfish-svn/branches/3.0-b##</pre> 
+       </div> 
+      </div>
+     </div> <p>2. Checkout the branch workspace</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">svn checkout https://svn.java.net/svn/glassfish-svn/branches/3.0-b##</pre> 
+       </div> 
+      </div>
+     </div> <p>3. cd to the branch workspace</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">cd 3.0-b##</pre> 
+       </div> 
+      </div>
+     </div> <p>4. Checkout Sun-GlassFish workspace <tt>(Note the Sun-GlassFish workspace is in an internal cvs repository)</tt></p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">svn checkout http://mercurial.sfbay.sun.com/svn/glassfish/trunk/v3-internal sun-glassfish</pre> 
+       </div> 
+      </div>
+     </div> <p>5. Execute mvn release plugin to resolve any SNAPSHOT dependencies and update all the pom.xml files with the release version.</p> 
+     <ul> 
+      <li>Command to execute mvn release plugin</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">mvn -Dmaven.repo.local=$PWD/repository -B -Dtag=3.0-b## -Prelease-phase-all  release:prepare -DlocalRepoDirectory=$PWD/repository -DreleaseVersion=3.0-b$BUILD_NUMBER -DdevelopmentVersion=3.1-DONT_CARE -DpreparationGoals="A_NON_EXISTENT_GOAL"</pre> 
+       </div> 
+      </div>
+     </div> <p>The pom.xml files will get updated with the release version. However, we do not want to check-in the changes and tag the workspace. We want to build and test the workspace before doing that. So to make sure that maven release plugin do not check-in the changes and tag the workspace, we will force maven execution to fail by providing a non-existing goal for the parameter, "preparationGoal". The output of maven execution is saved to a file and egrep command is used to search for the string, "Invalid task 'A_NON_EXISTENT_GOAL'".<br> e.g.:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">mvn ... release:prepare ... 2&gt;&amp;1 | tee /tmp/mvn_rel.output 
+egrep "Invalid task 'A_NON_EXISTENT_GOAL'" /tmp/mvn_rel.output 
+if [ $? -ne 0 ]; then 
+   echo "Unable to perform release using maven release plugin.  Please see /tmp/mvn_rel.output." 
+   exit 1; 
+fi</pre> 
+       </div> 
+      </div>
+     </div> <p><tt>Note that profile, "release-phase-all" contains all the modules in the v3 workspace including the Sun-GlassFish modules.</tt><br> 6. Build maven glassfish extension and plugin. </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">mvn -Dmaven.repo.local=$PWD/repository -U -Prelease-phase1 install</pre> 
+       </div> 
+      </div>
+     </div> <p><tt>It's imperative that this step comes before compiling GFv3 workspace since maven glassfish extension and plugin are used in building GFv3.</tt><br> See: <a href="FullBuildInstructions.html" title="FullBuildInstructions">build instructions </a><br> 7. Build GFv3 workspace, packager, distribution-ips, installer. In addition, build Sun-GlassFish branded modules (glassfish, packager, distributions and installer). One maven invocation will build everything!</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">mvn -Dmaven.repo.local=$PWD/repository -Drepo.url=&lt;ips-repo-url&gt; -Dpython=$PYTHON_HOME/bin/python -Dbuild.id=&lt;build_number&gt; -P release-phase2,ips clean install -X -e</pre> 
+       </div> 
+      </div>
+     </div> <p><tt>This step requires an IPS repo server up and running. This step also requires that you have either python or Update Center toolkit on the system. Download Update Center toolkit <a href="http://wiki.updatecenter.java.net/Wiki.jsp?page=Download">here</a>. Update Center toolkit is packaged with python. GFv3 packages are deployed to the IPS repo in this step.</tt><br> <tt>Note that the profile, "release-phase2" contains all the modules except for the build module.</tt><br> <tt>After successful completion of this step, you'll find the installers in installer/target and glassfish/installer/target</tt><br> 8. Execute QL and SmokeTests</p> 
+     <ul> 
+      <li><a href="V3BuildTests.html#V3BuildTests-ql">QL Instructions</a></li> 
+      <li>SmokeTests Instructions (internal repository):</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1. cvs -d:pserver:cvsguest@jescvs.sfbay.sun.com:/m/jws co appserver-sqe/bootstrap.xml \\   
+2. cd appserver-sqeUWC_TOKEN_DBBS
+3. ant -f bootstrap.xml co-smoke-testUWC_TOKEN_DBBS
+4. ant start-domainUWC_TOKEN_DBBS
+5. ant pe-v3smoke-testUWC_TOKEN_DBBS
+6. ant stop-domain \\</pre> 
+       </div> 
+      </div>
+     </div> <p>9. Commit the changes to the branch.<br> 10. Promote the binaries so QE can start their testing.<br> 11. If all goes well, then tag the build and publish the artifacts to the remote maven repository.</p> 
+     <ul> 
+      <li>Command to create a tag from a branch:</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">svn move https://svn.java.net/svn/glassfish-svn/branches/3.0-b##
+ https://svn.java.net/svn/glassfish-svn/tags/3.0-b##</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>The Sun-GlassFish workspace will also be tagged.</li> 
+      <li>Commands to publish artifacts to maven repository:<br> <b>v3 artifacts</b></li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">mvn -Dmaven.repo.local=local_maven_repo -Prelease-phase1 -s settings.xml deploy
+mvn -Dmaven.repo.local=local_maven_repo -s settings.xml deploy</pre> 
+       </div> 
+      </div>
+     </div> <p><b>embedded artifacts</b> (build and publish)</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">1. cd embedded/packager/all
+2. mvn -Dmaven.repo.local=local_maven_repo -s settings.xml deploy</pre> 
+       </div> 
+      </div>
+     </div> <p>Note: For weekly promoted build, the branch can be removed. For release candidate builds, we want to keep the branch and follow similar steps for V3Prelude release (see below).</p> <h4><a name="V3ReleaseProcess-V3FinalReleaseProcess"></a>V3 Final Release Process</h1> 
+     <ol> 
+      <li>Decide which weekly promoted build from trunk to create the final v3 branch. Name the branch 3.0-FCS.</li> 
+      <li>Create the branch from v3 trunk:<br> <tt>mvn --batch-mode release:branch -branchName=<em>branch-name</em></tt><br> Note that the branch will contain 3.0-SNAPSHOT and the trunk will now have 3.1-SNAPSHOT in the pom.xml files</li> 
+      <li>Create a branch of Sun-GlassFish workspace. Name the branch: v3_fcs_release</li> 
+      <li>Continue weekly 3.0-b##a-z promotion from the branch</li> 
+      <li>Update Hudson jobs to build from 3.0-FCS branch: dev, continuous, promoted (weekly), nightly</li> 
+      <li>Create Hudson jobs for 3.1-SNAPSHOT (trunk): dev, continuous</li> 
+      <li>Continue weekly 3.0-b##a-z promotion from the branch.</li> 
+      <li>Final promotion from 3.0-SNAPSHOT branch will have the version 3.0.</li> 
+     </ol> <h4><a name="V3ReleaseProcess-V3PreviewReleaseProcess"></a>V3 Preview Release Process</h1> 
+     <ol> 
+      <li>Promote build 3.0-b47 from trunk</li> 
+      <li>Branch 3.0-Preview from 3.0-b47 with the version: 3.0-Preview-SNAPSHOT</li> 
+      <li>3.0-PREVIEW branch will have pom.xml files updated with 3.0-Preview-SNAPSHOT</li> 
+      <li>Create following Hudson jobs: dev, continuous, promoted, nightly for 3.0-Preview branch</li> 
+      <li>Create UC repos for 3.0-Preview</li> 
+      <li>Weekly promoted build will be from 3.0-Preview-SNAPSHOT, starting with the version, 3.0-Preview-b47a. Following the same convention as the past, future promotion will be 3.0-Preview-b47b, ...b47c, b47d and so on.</li> 
+      <li>Hold-off on trunk promotion but Hudson jobs for dev, continuous and nightly will still be available.</li> 
+      <li>Final promotion from 3.0-Preview-SNAPSHOT branch will have the version 3.0-Preview.</li> 
+     </ol> <h4><a name="V3ReleaseProcess-V3PreludeReleaseProcess"></a>V3 Prelude Release Process</h1> <p><span class="error">Cannot resolve external resource into attachment.</span><br> The above pictorial view represents proposed RE promotion process. (Proposed by Sahoo)</p> <p><b>Here are the steps involved in promotion (of every build).</b></p> 
+     <ul> 
+      <li>RE have existing v3-prelude-branch where the version is a 3.0-Prelude-SNAPSHOT</li> 
+      <li>RE creates another branch from v3-prelude-branch (call this as child branch) 
+       <ul> 
+        <li>RE makes changes to versions of pom headers to 3.0-PRELUDE-b28a-f? where a-f? stands for b28a, b28b,...b28f for each promotion</li> 
+        <li>RE builds the child branch, after versions changes to the right version b28a-f?</li> 
+        <li>RE runs all the tests as per the earlier promotion process.</li> 
+        <li>RE publishes this branches artifacts at the java.net maven repo.</li> 
+        <li>RE commits the changes (made to the child branch) to child branch.</li> 
+        <li>RE does an svn move of child branch to the tags.</li> 
+        <li>RE promotes the tagged build as above, following the today's normal promotion steps.</li> 
+       </ul> </li> 
+     </ul> <p>Notes:</p> 
+     <ol> 
+      <li><tt>Any fixes that are targeted for the prelude (in the branch) will be checked into the prelude branch whose version is @ 3.0-Prelude-SNAPSHOT</tt><br> <tt># The 3.0-Prelude-SNAPSHOT branch is always open for checkins (of course with proper approval) and does not interfere with RE promotion</tt><br> <tt># RE repeats step (2) as above for each promotion.</tt><br> <tt># RE version changes are frozen into tag. So, No check-ins into that workspace. It is tagged only to reproduce the problem in a promoted build.</tt><br> <tt># The main 3.0-Prelude-SNAPSHOT branch will be turned into 3.0-Prelude-URXX-SNAPSHOT., when we finally decided to cut a prelude release. (XX=the update release number in those times)</tt></li> 
+      <li>When we do the final release of v3 Prelude, the version should be changed to 3.0-Prelude. External components should not depend on 3.0-Prelude-b28c while specifying dependency in their pom.xml. They should depend on 3.0-Prelude."</li> 
+     </ol> <p><span class="error">Cannot resolve external resource into attachment.</span></p> 
+     <hr> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875309/21365039.gif">rel2.gif</a> (image/gif) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875309/21365038.gif">rel.gif</a> (image/gif) 
+      <br> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 22, 2011 by 
+<font color="#0050B2">jane.young</font>. Exported from wikis.oracle.com on May 27, 2015 20:48.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

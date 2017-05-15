@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GFV3SecurityOnePager</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GFV3SecurityOnePager-GlassFishV3SecurityOnePager"></a>GlassFish V3 Security One Pager</h1> <p>[</p> 
+     <div class="error">
+      <span class="error">Unknown macro: {TableOfContents title=' '}</span> 
+     </div> <p>|(TableOfContentstitle='')]</p> <h4><a name="GFV3SecurityOnePager-1.Introduction"></a>1. Introduction</h1> <h4><a name="GFV3SecurityOnePager-1.1.Project%2FComponentWorkingName%3A"></a>1.1. Project/Component Working Name: </h2> <p>Name of the Project or Component</p> <h4><a name="GFV3SecurityOnePager-1.2.Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier%3A"></a>1.2. Name(s) and e-mail address of Document Author(s)/Supplier:</h2> <p>Name: Kumar Jayanti (vbkumar.jayanti@sun.com)</p> <h4><a name="GFV3SecurityOnePager-1.3.DateofThisDocument%3A"></a>1.3. Date of This Document:</h2> <p>12/15/08</p> <h4><a name="GFV3SecurityOnePager-2.ProjectSummary"></a>2. Project Summary</h1> <h4><a name="GFV3SecurityOnePager-2.1.ProjectDescription%3A"></a>2.1. Project Description:</h2> <p>This document describes the proposed enhancements to security service in V3.</p> <p>See below for a longer, more detailed technical description.</p> <h4><a name="GFV3SecurityOnePager-2.2.RisksandAssumptions%3A"></a>2.2. Risks and Assumptions:</h2> 
+     <ol> 
+      <li>Assumption: Same level of Security support as in V2 (Feature Compatibility with Glassfish V2). All security features that worked in V2 will work in V3 in a backward compatible manner, including binary backward compatibility for proprietary : Realm and Audit Module SPI's.</li> 
+     </ol> <h4><a name="GFV3SecurityOnePager-3.ProblemSummary"></a>3. Problem Summary</h1> <p>This document describes the set of enhancements to security service in Glassfish v3. The set of enhancements fall under two categories :</p> 
+     <ol> 
+      <li>Enhancements and/or compliance requirements as defined in JavaEE 6 specification.</li> 
+      <li>Product specific enhancements.</li> 
+     </ol> <h4><a name="GFV3SecurityOnePager-3.1.ProblemArea%3A"></a>3.1. Problem Area:</h2> 
+     <ol> 
+      <li>Ensure full support for entire JSR 196 SPI (Java EE6 may mandate only the servlet profile of the SPI)</li> 
+      <li>Support for all Security related proposals in Servlet 3.0/JavaEE 6</li> 
+      <li>Update JACC Provider and Container security service implementation to be JSR 115 MR 1.3 compatible</li> 
+      <li>Support For HTTP Digest Authentication (<a href="http://www.ietf.org/rfc/rfc2617.txt">http://www.ietf.org/rfc/rfc2617.txt</a>) with Enhanced JDBC Realm</li> 
+      <li>Support alternative InMemory Implementation of JACC Provider which does not depend on Policy Files</li> 
+      <li>Support Custom Realms implemented as OSGI/HK2 Modules</li> 
+      <li>Enhance Realm interface to allow Admin to perform User Management of any Realm (not just Realms that extend the FileRealm as in V2)</li> 
+      <li>Convert GlassFish Security Pipes into Tubes</li> 
+     </ol> <h4><a name="GFV3SecurityOnePager-3.2.Justification%3A"></a>3.2. Justification:</h2> <p>Security is an integral part of Java EE platform and the problems described herein are primarily driven by platform compliance requirements for JavaEE 6 and Product differentiation. </p> <h4><a name="GFV3SecurityOnePager-4.TechnicalDescription%3A"></a>4. Technical Description:</h1> <h4><a name="GFV3SecurityOnePager-4.1.Details%3A"></a>4.1. Details:</h2> <p>This section has the details of the stated Problem Area's.</p> <h4><a name="GFV3SecurityOnePager-4.1.1EnsurefullsupportforentireJSR196SPI."></a>4.1.1 Ensure full support for entire JSR 196 SPI. </h2> <p>The version of JSR 196 to be included in JavaEE 6 is likely MR 1.1. GlassFish V2 has support for Version 1.0 of the specfication. The Java EE 6 specification may only mandate the Servlet Profile of the specification but GlassFish V3 would have full support for all the profiles (Servlet, SOAP and optionally Login Bridge Profile) of the SPI.</p> <h4><a name="GFV3SecurityOnePager-4.1.2SupportforSecurityrelatedproposalsinJavaEE6%28Servlet3.0%29"></a>4.1.2 Support for Security related proposals in JavaEE6(Servlet 3.0)</h2> <p>A few Security related proposals which may end up in the JavaEE6/Servlet 3.0 specification would be supported to ensure compliance.</p> <h4><a name="GFV3SecurityOnePager-4.1.3UpdateJACCProviderandContainersecurityserviceimplementationtobeJSR115MR1.3compatible."></a>4.1.3 Update JACC Provider and Container security service implementation to be JSR 115 MR 1.3 compatible.</h2> <p>Glassfish V2 supported version 1.1 of the JSR 115 specification. There has since been an MR 1.2 and it is now supported in V3 prelude and has been ported to V2.1. </p> <p>There will likely be another MR 1.3 in connection with one of the proposals in Servlet 3.0 which would require changes to the containers constraint translation handling.</p> <h4><a name="GFV3SecurityOnePager-4.1.4SupportForHTTPDigestAuthentication%28"></a>4.1.4 Support For HTTP Digest Authentication (<a href="http://www.ietf.org/rfc/rfc2617.txt">http://www.ietf.org/rfc/rfc2617.txt</a>) with Enhanced JDBC Realm </h2> <p>GlassFish V3 would support HTTP Digest Authentication with Enhanced JDBC Realm. This feature is already in V3-Prelude and has also been backported to V2.1</p> <h4><a name="GFV3SecurityOnePager-4.1.5SupportanalternativeInMemoryimplementationofJACCProviderwhichdoesnotdependonPolicyFiles.ProvideaneasywayofconfiguringitinV3."></a>4.1.5 Support an alternative InMemory implementation of JACC Provider which does not depend on Policy Files. Provide an easy way of configuring it in V3. </h2> <p>Glassfish V3 would support an alternative InMemory implementation of the JSR 115 Provider. This would be available to glassfish users as an alternate provider that can be easily configured as the default via the Admin GUI. When configured this provider would be used for all deployed applications. </p> <p>The advantage of this provider is that it would not generate static policy files like the current (default) provider in GlassFish V2. Instead it would process the security constraint information of an application at load time and create in memory policy. This would provide simplifications in a clustered scenario where synchronization of static policy files is used currently in GlassFish V2. The downside ofcourse is the need to digest the web.xml security constraints everytime the application is loaded.</p> <p>This JACC Provider would also provide a way to plugin an application sepcific RoleMapper which has been a requirement from some of the users.</p> <p>V3-Prelude already includes this provider as a configurable provider in domain.xml. However the Admin GUI support is incomplete, this provider has also not been used to test CTS and TCK compliance of GlassFish V3, these are planned for the V3 Final Release.</p> <h4><a name="GFV3SecurityOnePager-4.1.6SupportCustomRealmsimplementedasOSGI%2FHK2Modules"></a>4.1.6 Support Custom Realms implemented as OSGI/HK2 Modules</h2> <p>Support Custom Realms implemented as OSGI/HK2 Modules. Also included with this is the added ability to load such Realms without requiring a server restart. The Metadata for such realms would still need to be in domain.xml for now.</p> <p>Currently with Glassfish V2 a restart of the server is required after placing the custom realm jars (non-OSGI enabled) inside glassfish. There was also a need to update classpath-prefix in V2 for loading custom realms, but this will not be required in V3 (for non-OSGI enabled realms). The custom realm jars can be dropped into domains/domainx/lib. The </p> <h4><a name="GFV3SecurityOnePager-4.1.7EnhanceRealminterfacetoallowAdmintoperformUserManagementofanyRealm%28notjustRealmsthatextendtheFileRealmasinV2%29"></a>4.1.7 Enhance Realm interface to allow Admin to perform User Management of any Realm (not just Realms that extend the FileRealm as in V2)</h2> <p>The Realm Interface should allow user management of any realm (add, remove user) and not just Realms that are an instanceof FileRealm. The Adming GUI needs to be updated to allow Realms to be managed Via the Admin GUI. A Realm would also indicate whether it supports User Management thereby allowing the Admin GUI to manage only those Realms which support user management.</p> <p>Part of the work has been done for V3-Prelude, but it needs to be take to completion (which includes documentation updates and testing).</p> <h4><a name="GFV3SecurityOnePager-4.1.8ConvertGlassFishSecurityPipesintoTubes"></a>4.1.8 Convert GlassFish Security Pipes into Tubes</h2> <p>The Tube abstraction in JAXWS supports Asnychrony whereas the use of Pipe abstraction leads to threads being held for the rest of the Pipeline to complete before it relinquishes the thread. This can cause scalability problems. Currently GlassFish V2 has two security pipes (ClientSecurityPipe and CommonServerSecurityPipe) which would need to converted to Tubes.</p> <h4><a name="GFV3SecurityOnePager-4.2.Bug%2FRFENumber%28s%29%3A"></a>4.2. Bug/RFE Number(s):</h2> <h4><a name="GFV3SecurityOnePager-4.3.InScope%3A"></a>4.3. In Scope:</h2> <p>When we mention Feature Compatibility with Glassfish V2, it refers to Glassfish V2 and its Update releases.</p> <h4><a name="GFV3SecurityOnePager-4.4.OutofScope%3A"></a>4.4. Out of Scope:</h2> <p>The security features specific to SGCS (Glassfish V2.1), those that pertain to the communication server aspect are out of scope of this release.</p> <h4><a name="GFV3SecurityOnePager-4.5.Interfaces%3A"></a>4.5. Interfaces:</h2> <h4><a name="GFV3SecurityOnePager-4.5.1ExportedInterfaces"></a>4.5.1 Exported Interfaces</h3> 
+     <ul> 
+      <li>Interface: com.sun.appserv.security</li> 
+      <li>Stability: Stable</li> 
+      <li>Former Stability (if changing):</li> 
+      <li>Comments: These interfaces need to be supported in the same package for backward compatibility. 
+       <ul> 
+        <li>''com.sun.appserv.security (<a href="http://javadoc.glassfish.org/v3/apidoc/com/sun/appserv/security/package-frame.html">http://javadoc.glassfish.org/v3/apidoc/com/sun/appserv/security/package-frame.html</a>) package contains interfaces and abstract classes to be <b>used</b> by developers.</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li>Interface: sun-domain_x_x.dtd, sun-web-app_2_x.dtd, sun-ejb-jar_x_x.dtd, sun-application_x_x.dtd, sun-application-client_x_x.dtd</li> 
+      <li>Stability: Evolving</li> 
+      <li>Former Stability (if changing):</li> 
+      <li>Comments: Various piecies of information required by the Security Service can be specified under elements defined in these descriptors. The Glassfish security-service itself is configured using information in domain.xml (instance of sun-domain_*.dtd)</li> 
+     </ul> <h4><a name="GFV3SecurityOnePager-4.5.2Importedinterfaces"></a>4.5.2 Imported interfaces</h3> 
+     <ul> 
+      <li>Interface: javax.annotation.security</li> 
+      <li>Stability: Standard</li> 
+      <li>Exporting Project: JSR 250 (<a href="http://javadoc.glassfish.org/javaee6/apidoc/javax/annotation/security/package-frame.html">http://javadoc.glassfish.org/javaee6/apidoc/javax/annotation/security/package-frame.html</a>)</li> 
+      <li>Comments:</li> 
+     </ul> 
+     <ul> 
+      <li>Interface: javax.resource.spi.security</li> 
+      <li>Stability: Standard</li> 
+      <li>Exporting Project: Java EE 6 (<a href="http://javadoc.glassfish.org/javaee6/apidoc/javax/resource/spi/security/package-frame.html">http://javadoc.glassfish.org/javaee6/apidoc/javax/resource/spi/security/package-frame.html</a>)</li> 
+      <li>Comments:</li> 
+     </ul> 
+     <ul> 
+      <li>Interface: javax.security.jacc</li> 
+      <li>Stability: Standard</li> 
+      <li>Exporting Project: JSR 115</li> 
+     </ul> <p>(<a href="http://javadoc.glassfish.org/javaee6/apidoc/javax/security/jacc/package-frame.html">http://javadoc.glassfish.org/javaee6/apidoc/javax/security/jacc/package-frame.html</a>)</p> 
+     <ul> 
+      <li>Comments: The JACC API implemented by the JACC Provider(s) in Security Module</li> 
+     </ul> 
+     <ul> 
+      <li>Interface: javax.security.auth.message</li> 
+      <li>Stability: Standard</li> 
+      <li>Exporting Project: JSR 196</li> 
+     </ul> <p>(<a href="http://javadoc.glassfish.org/javaee6/apidoc/javax/security/auth/message/package-frame.html">http://javadoc.glassfish.org/javaee6/apidoc/javax/security/auth/message/package-frame.html</a>)</p> 
+     <ul> 
+      <li>Comments: The JSR 196 API implemented by the 196 Provider in Security Module</li> 
+     </ul> 
+     <ul> 
+      <li>Interface: javax.security.*</li> 
+      <li>Stability: Standard</li> 
+      <li>Exporting Project: J2SE</li> 
+      <li>Comments:</li> 
+     </ul> 
+     <ul> 
+      <li>Interface: com.sun.xml.ws.api.*</li> 
+      <li>Stability: Evolving</li> 
+      <li>Exporting Project: JAXWS</li> 
+     </ul> <p>(<a href="https://jax-ws-architecture-document.java.net/nonav/doc21">https://jax-ws-architecture-document.java.net/nonav/doc21</a>)</p> 
+     <ul> 
+      <li>Comments: Security Module implements the Pipe and Tube interfaces to perform security processing in the JAXWS Tubeline.</li> 
+     </ul> 
+     <ul> 
+      <li>Interface: web_app_2_x.xsd, ejb_jar_x_x.xsd, application.xsd, application-client_x_x.xsd</li> 
+      <li>Stability: Standard</li> 
+      <li>Exporting Project: Java EE 6</li> 
+      <li>Comments: Application Specific Security configuration information is obtained from instances of these schemas as applicable.</li> 
+     </ul> <h4><a name="GFV3SecurityOnePager-4.5.3Otherinterfaces%28Optional%29"></a>4.5.3 Other interfaces (Optional)</h3> <p>Any private interfaces that may be of interest?</p> 
+     <ul> 
+      <li>Interface: com.sun.enterprise.security.auth.realm.Realm</li> 
+      <li>Stability: Evolving</li> 
+      <li>Former Stability (if changing):</li> 
+      <li>Exporting Project : Security Service</li> 
+      <li>Comments: Used by Admin and contains methods that Realm Implementations can Override 
+       <ul> 
+        <li>''com.sun.enterprise.security.auth.realm.Realm : exposes user management functions that are used by the Admin and supplied by concrete Realm implementations.</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li>Interface: com.sun.enterprise.security.auth.realm.RealmsManager, RealmConfig</li> 
+      <li>Stability: Evolving</li> 
+      <li>Former Stability (if changing):</li> 
+      <li>Exporting Project : Security Service</li> 
+      <li>Comments: Used by Admin/AMX and contains methods to manage creation, deletion and update of Realms. The Admin (CLI/GUI/AMX) currently seem to use multiple entry points into the Realm Infrastructure. There is a need to unify this and make RealmsManager the sole entry point which manages everything that Admin (CLI/GUI/AMX) would ever require (This is planned for a later release)</li> 
+     </ul> 
+     <ul> 
+      <li>Interface: com.sun.enterprise.security.SecurityContext</li> 
+      <li>Stability: Evolving</li> 
+      <li>Former Stability (if changing):</li> 
+      <li>Exporting Project : Security Service</li> 
+      <li>Comments: Used in other modules such as connector-rutime 
+       <ul> 
+        <li>''com.sun.enterprise.security.SecurityContext : Provides a way to set the current SecurityContext.</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li>Interface: com.sun.enterprise.security.audit.AuditManager</li> 
+      <li>Stability: Stable</li> 
+      <li>Former Stability (if changing):</li> 
+      <li>Comments: Internal API 
+       <ul> 
+        <li>''com.sun.enterprise.security.audit (<a href="http://javadoc.glassfish.org/v3/apidoc/com/sun/enterprise/security/audit/package-frame.html">http://javadoc.glassfish.org/v3/apidoc/com/sun/enterprise/security/audit/package-frame.html</a>) package contains a final class AuditManager used internally by Admin Modules.</li> 
+       </ul> </li> 
+     </ul> <h4><a name="GFV3SecurityOnePager-4.6.DocImpact%3A"></a>4.6. Doc Impact:</h2> <p>All the Proposed new features would need to be documented in the Glassfish Documentation Security Chapter. Since no new Non-Standard API's are being Exported there should be no impact to JavaDocs (other than upgrading to Java EE 6 JavaDocs).</p> <h4><a name="GFV3SecurityOnePager-4.7.Admin%2FConfigImpact%3A"></a>4.7. Admin/Config Impact:</h2> <h4><a name="GFV3SecurityOnePager-4.7.1NetBeansImpact"></a>4.7.1 NetBeans Impact </h2> <p> At least one of the Security related proposals would require support from NetBeans</p> <h4><a name="GFV3SecurityOnePager-4.7.2AdmingGUIImpact"></a>4.7.2 Adming GUI Impact</h2> <p> Items 4.1.5 and 4.1.7 will have admin impact, but part some work has already been done for V3 Prelude.</p> <h4><a name="GFV3SecurityOnePager-4.7.3ConfigImpact"></a>4.7.3 Config Impact</h2> <p> At least one of the Security related proposals would require addition to the web.xml schema.</p> <h4><a name="GFV3SecurityOnePager-4.8.HAImpact%3A"></a>4.8. HA Impact:</h2> <h4><a name="GFV3SecurityOnePager-4.9.I18N%2FL10NImpact%3A"></a>4.9. I18N/L10N Impact:</h2> <h4><a name="GFV3SecurityOnePager-4.10.Packaging%26Delivery%3A"></a>4.10. Packaging &amp; Delivery:</h2> <p>Support for Solaris Realm and NSS Stores for Enterprise Profile would have some impact on Packaging. Methods of integrating Native Libraries in an OSGI world are currently being explored by the security team. The investigations would result in some changes/new addition to Packagaing and Delivery modules.</p> <h4><a name="GFV3SecurityOnePager-4.11.SecurityImpact%3A"></a>4.11. Security Impact:</h2> <p>This proposal does rely on the Java Policy framework, but does not add any additional requirements than what is already part of Glassfish V2.</p> <h4><a name="GFV3SecurityOnePager-4.12.CompatibilityImpact"></a>4.12. Compatibility Impact</h2> <p>Glassfish V3 is a Modular system based on OSGI Principles. At the implementation level some of the exported interfaces in GlassFish V2 security service were Abstract classes that had dependencies on a lot of the rest of security infrastructure classes. We have encountered a situation where unrelated exported interfaces (which included abstract classes) were packaged in com.sun.appserv.security pacakge in Glassfish V2. Since Modularization is a major goal of V3, this packaging of unrelated exported interfaces in a single package has placed some restrictions on the Modularization goal. This problem was compounded by the fact the Modules in Glassfish V3 cannot have split packages.</p> <p>So while favoring modularization the older version of the interface was retained by using a delagation mechanism. An interface was created to be used as a delegate in the original package. A service implementing the interface (potentially located in another module) was located using the service lookup mechanisms defined by HK2.</p> <p>Since backward compatibility with V2 will be restored at any cost there will be no requirements on upgrade tool or migration tool.</p> <h4><a name="GFV3SecurityOnePager-4.13.Dependencies%3A"></a>4.13. Dependencies:</h2> <h4><a name="GFV3SecurityOnePager-5.ReferenceDocuments%3A"></a>5. Reference Documents:</h1> 
+     <ol> 
+      <li>JSR 196 : <a href="http://jcp.org/en/jsr/detail-196">http://jcp.org/en/jsr/detail-196</a></li> 
+      <li>JSR 115 : <a href="http://jcp.org/aboutJava/communityprocess/maintenance/jsr115/index5.html">http://jcp.org/aboutJava/communityprocess/maintenance/jsr115/index5.html</a></li> 
+      <li>JSR 250 : <a href="http://jcp.org/en/jsr/detail-250">http://jcp.org/en/jsr/detail-250</a></li> 
+      <li>JSR 315 : <a href="http://jcp.org/en/jsr/detail-315">http://jcp.org/en/jsr/detail-315</a></li> 
+      <li>JSR 316 : <a href="http://jcp.org/en/jsr/detail-316">http://jcp.org/en/jsr/detail-316</a></li> 
+     </ol> <h4><a name="GFV3SecurityOnePager-6.Schedule%3A"></a>6. Schedule:</h1> <h4><a name="GFV3SecurityOnePager-6.1.ProjectedAvailability%3A"></a>6.1. Projected Availability:</h2> <p>Aligned to overall GlassFish V3 Final release schedules.</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 02, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:44.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

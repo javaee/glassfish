@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GF3.2MetroOnePager</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GF3.2MetroOnePager-Metro2.2OnePager"></a>Metro 2.2 One Pager</h1> <p>(template version 1.92)</p> 
+     <div> 
+      <ul> 
+       <li><a href="#GF3.2MetroOnePager-Metro2.2OnePager">Metro 2.2 One Pager</a></li> 
+       <li><a href="#GF3.2MetroOnePager-1.Introduction">1. Introduction</a></li> 
+       <ul> 
+        <li><a href="#GF3.2MetroOnePager-1.1.Project%2FComponentWorkingName%3A">1.1. Project/Component Working Name:</a></li> 
+        <li><a href="#GF3.2MetroOnePager-1.2.Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier%3A">1.2. Name(s) and e-mail address of Document Author(s)/Supplier:</a></li> 
+        <li><a href="#GF3.2MetroOnePager-1.3.DateofThisDocument%3A">1.3. Date of This Document:</a></li> 
+       </ul> 
+       <li><a href="#GF3.2MetroOnePager-2.ProjectSummary">2. Project Summary</a></li> 
+       <ul> 
+        <li><a href="#GF3.2MetroOnePager-2.1.ProjectDescription%3A">2.1. Project Description:</a></li> 
+        <li><a href="#GF3.2MetroOnePager-2.2.RisksandAssumptions%3A">2.2. Risks and Assumptions:</a></li> 
+       </ul> 
+       <li><a href="#GF3.2MetroOnePager-3.ProblemSummary">3. Problem Summary</a></li> 
+       <ul> 
+        <li><a href="#GF3.2MetroOnePager-3.1.ProblemArea%3A">3.1. Problem Area:</a></li> 
+        <ul> 
+         <li><a href="#GF3.2MetroOnePager-3.1.1.ModularDatabinding">3.1.1. Modular Databinding</a></li> 
+         <li><a href="#GF3.2MetroOnePager-3.1.2.Unifiedconfiguration">3.1.2. Unified configuration</a></li> 
+         <li><a href="#GF3.2MetroOnePager-3.1.3.Tubes.next%2FTubesplicing">3.1.3. Tubes.next / Tube splicing</a></li> 
+         <li><a href="#GF3.2MetroOnePager-3.1.4.AsyncClientTransportFeature%2CAsyncClientHandlerFeature%2CClientIdentityFeature">3.1.4. AsyncClientTransportFeature, AsyncClientHandlerFeature, ClientIdentityFeature</a></li> 
+         <li><a href="#GF3.2MetroOnePager-3.1.5.Commonlogging">3.1.5. Common logging</a></li> 
+         <li><a href="#GF3.2MetroOnePager-3.1.6.Commonmonitoringandmanagement">3.1.6. Common monitoring and management</a></li> 
+         <li><a href="#GF3.2MetroOnePager-3.1.7.ExposingWSDLmodel%2Ftoolingimprovements">3.1.7. Exposing WSDL model / tooling improvements</a></li> 
+         <li><a href="#GF3.2MetroOnePager-3.1.8.FixoutstandingissuesinWSAT%28collocatedcase%29">3.1.8. Fix outstanding issues in WS-AT (collocated case)</a></li> 
+         <li><a href="#GF3.2MetroOnePager-3.1.9.Provideapluginmechanisminwsimport">3.1.9. Provide a plug-in mechanism in wsimport</a></li> 
+         <li><a href="#GF3.2MetroOnePager-3.1.10.Unifiedannotationprogrammingmodel">3.1.10. Unified annotation programming model</a></li> 
+         <li><a href="#GF3.2MetroOnePager-3.1.11.JAXWS2.2Rev.aMR">3.1.11. JAX-WS 2.2 Rev. a MR</a></li> 
+         <li><a href="#GF3.2MetroOnePager-3.1.12.Clean%2FsplitupMetroOSGibundles">3.1.12. Clean/split up Metro OSGi bundles</a></li> 
+         <li><a href="#GF3.2MetroOnePager-3.1.13.ImprovetestcoverageofStreamingAttachmentFeature">3.1.13. Improve test coverage of StreamingAttachmentFeature</a></li> 
+         <li><a href="#GF3.2MetroOnePager-3.1.14.Securityimprovements">3.1.14. Security improvements</a></li> 
+         <li><a href="#GF3.2MetroOnePager-3.1.15.UpdateMavenpushingusingPOMs">3.1.15. Update Maven pushing using POMs</a></li> 
+         <li><a href="#GF3.2MetroOnePager-3.1.16.UpdateJAXWSMavenplugins">3.1.16. Update JAX-WS Maven plugins</a></li> 
+        </ul> 
+        <li><a href="#GF3.2MetroOnePager-3.2.Justification%3A">3.2. Justification:</a></li> 
+        <ul> 
+         <li><a href="#GF3.2MetroOnePager-3.2.1.ModularDatabinding">3.2.1. Modular Databinding</a></li> 
+         <li><a href="#GF3.2MetroOnePager-3.2.2.Unifiedconfiguration">3.2.2. Unified configuration</a></li> 
+         <li><a href="#GF3.2MetroOnePager-3.2.3.Tubes.next%2FTubesplicing">3.2.3. Tubes.next / Tube splicing</a></li> 
+         <li><a href="#GF3.2MetroOnePager-3.2.4.AsyncClientTransportFeature%2CAsyncClientHandlerFeature%2CClientIdentityFeature">3.2.4. AsyncClientTransportFeature, AsyncClientHandlerFeature, ClientIdentityFeature</a></li> 
+         <li><a href="#GF3.2MetroOnePager-3.2.5.Commonlogging">3.2.5. Common logging</a></li> 
+         <li><a href="#GF3.2MetroOnePager-3.2.6.Commonmonitoringandmanagement">3.2.6. Common monitoring and management</a></li> 
+         <li><a href="#GF3.2MetroOnePager-3.2.7.ExposingWSDLmodel%2Ftoolingimprovements">3.2.7. Exposing WSDL model / tooling improvements</a></li> 
+         <li><a href="#GF3.2MetroOnePager-3.2.8.FixoutstandingissuesinWSAT%28collocatedcase%2Crecovery%29">3.2.8. Fix outstanding issues in WS-AT (collocated case, recovery)</a></li> 
+         <li><a href="#GF3.2MetroOnePager-3.2.9.Provideapluginmechanisminwsimport">3.2.9. Provide a plug-in mechanism in wsimport</a></li> 
+         <li><a href="#GF3.2MetroOnePager-3.2.10.Unifiedannotationprogrammingmodel">3.2.10. Unified annotation programming model</a></li> 
+         <li><a href="#GF3.2MetroOnePager-3.2.11.JAXWS2.2Rev.aMR">3.2.11. JAX-WS 2.2 Rev. a MR</a></li> 
+         <li><a href="#GF3.2MetroOnePager-3.2.12.Clean%2FsplitupMetroOSGibundles">3.2.12. Clean/split up Metro OSGi bundles</a></li> 
+         <li><a href="#GF3.2MetroOnePager-3.2.13.ImprovetestcoverageofStreamingAttachmentFeature">3.2.13. Improve test coverage of StreamingAttachmentFeature</a></li> 
+         <li><a href="#GF3.2MetroOnePager-3.2.14.Securityimprovements">3.2.14. Security improvements</a></li> 
+         <li><a href="#GF3.2MetroOnePager-3.2.15.UpdateMavenpushingusingPOMs">3.2.15. Update Maven pushing using POMs</a></li> 
+         <li><a href="#GF3.2MetroOnePager-3.2.16.UpdateJAXWSMavenplugins">3.2.16. Update JAX-WS Maven plugins</a></li> 
+        </ul> 
+       </ul> 
+       <li><a href="#GF3.2MetroOnePager-4.TechnicalDescription%3A">4. Technical Description:</a></li> 
+       <ul> 
+        <li><a href="#GF3.2MetroOnePager-4.1.Details%3A">4.1. Details:</a></li> 
+        <ul> 
+         <li><a href="#GF3.2MetroOnePager-4.1.1.ModularDatabinding">4.1.1. Modular Databinding</a></li> 
+         <li><a href="#GF3.2MetroOnePager-4.1.2.Unifiedconfiguration">4.1.2. Unified configuration</a></li> 
+         <li><a href="#GF3.2MetroOnePager-4.1.3.Tubes.next%2FTubesplicing">4.1.3. Tubes.next / Tube splicing</a></li> 
+         <li><a href="#GF3.2MetroOnePager-4.1.4.AsyncClientTransportFeature%2CAsyncClientHandlerFeature%2CClientIdentityFeature">4.1.4. AsyncClientTransportFeature, AsyncClientHandlerFeature, ClientIdentityFeature</a></li> 
+         <li><a href="#GF3.2MetroOnePager-4.1.5.Commonlogging">4.1.5. Common logging</a></li> 
+         <li><a href="#GF3.2MetroOnePager-4.1.6.Commonmonitoringandmanagement">4.1.6. Common monitoring and management</a></li> 
+         <li><a href="#GF3.2MetroOnePager-4.1.7.ExposingWSDLmodel%2Ftoolingimprovements">4.1.7. Exposing WSDL model / tooling improvements</a></li> 
+         <li><a href="#GF3.2MetroOnePager-4.1.8.FixoutstandingissuesinWSAT%28collocatedcase%2Crecovery%29">4.1.8. Fix outstanding issues in WS-AT (collocated case, recovery)</a></li> 
+         <li><a href="#GF3.2MetroOnePager-4.1.9.Provideapluginmechanisminwsimport">4.1.9. Provide a plug-in mechanism in wsimport</a></li> 
+         <li><a href="#GF3.2MetroOnePager-4.1.10.Unifiedannotationprogrammingmodel">4.1.10. Unified annotation programming model</a></li> 
+         <li><a href="#GF3.2MetroOnePager-4.1.11.JAXWS2.2rev.AMR">4.1.11. JAX-WS 2.2 rev. A MR</a></li> 
+         <li><a href="#GF3.2MetroOnePager-4.1.12.Clean%2FsplitupMetroOSGibundles">4.1.12. Clean/split up Metro OSGi bundles</a></li> 
+         <li><a href="#GF3.2MetroOnePager-4.1.13.ImprovetestcoverageofStreamingAttachmentFeature">4.1.13. Improve test coverage of StreamingAttachmentFeature</a></li> 
+         <li><a href="#GF3.2MetroOnePager-4.1.14.Securityimprovements">4.1.14. Security improvements</a></li> 
+         <li><a href="#GF3.2MetroOnePager-4.1.15.UpdateMavenpushingusingPOMs">4.1.15. Update Maven pushing using POMs</a></li> 
+         <li><a href="#GF3.2MetroOnePager-4.1.16.UpdateJAXWSMavenplugins">4.1.16. Update JAX-WS Maven plugins</a></li> 
+        </ul> 
+        <li><a href="#GF3.2MetroOnePager-4.2.Bug%2FRFENumber%28s%29%3A">4.2. Bug/RFE Number(s):</a></li> 
+        <li><a href="#GF3.2MetroOnePager-4.3.InScope%3A">4.3. In Scope:</a></li> 
+        <li><a href="#GF3.2MetroOnePager-4.4.OutofScope%3A">4.4. Out of Scope:</a></li> 
+        <li><a href="#GF3.2MetroOnePager-4.5.Interfaces%3A">4.5. Interfaces:</a></li> 
+        <ul> 
+         <li><a href="#GF3.2MetroOnePager-4.5.1PublicInterfaces">4.5.1 Public Interfaces</a></li> 
+         <li><a href="#GF3.2MetroOnePager-4.5.2PrivateInterfaces">4.5.2 Private Interfaces</a></li> 
+         <li><a href="#GF3.2MetroOnePager-4.5.3Deprecated%2FRemovedInterfaces%3A">4.5.3 Deprecated/Removed Interfaces:</a></li> 
+        </ul> 
+        <li><a href="#GF3.2MetroOnePager-4.6.DocImpact%3A">4.6. Doc Impact:</a></li> 
+        <li><a href="#GF3.2MetroOnePager-4.7.Admin%2FConfigImpact%3A">4.7. Admin/Config Impact:</a></li> 
+        <li><a href="#GF3.2MetroOnePager-4.8.HAImpact%3A">4.8. HA Impact:</a></li> 
+        <li><a href="#GF3.2MetroOnePager-4.9.I18N%2FL10NImpact%3A">4.9. I18N/L10N Impact:</a></li> 
+        <li><a href="#GF3.2MetroOnePager-4.10.Packaging%2CDelivery%26Upgrade%3A">4.10. Packaging, Delivery &amp; Upgrade:</a></li> 
+        <ul> 
+         <li><a href="#GF3.2MetroOnePager-4.10.1.Packaging">4.10.1. Packaging</a></li> 
+         <li><a href="#GF3.2MetroOnePager-4.10.2.Delivery">4.10.2. Delivery</a></li> 
+         <li><a href="#GF3.2MetroOnePager-4.10.3.UpgradeandMigration%3A">4.10.3. Upgrade and Migration:</a></li> 
+        </ul> 
+        <li><a href="#GF3.2MetroOnePager-4.11.SecurityImpact%3A">4.11. Security Impact:</a></li> 
+        <li><a href="#GF3.2MetroOnePager-4.12.CompatibilityImpact">4.12. Compatibility Impact</a></li> 
+        <li><a href="#GF3.2MetroOnePager-4.13.Dependencies%3A">4.13. Dependencies:</a></li> 
+        <ul> 
+         <li><a href="#GF3.2MetroOnePager-4.13.1InternalDependencies">4.13.1 Internal Dependencies</a></li> 
+         <li><a href="#GF3.2MetroOnePager-4.13.2ExternalDependencies">4.13.2 External Dependencies</a></li> 
+        </ul> 
+        <li><a href="#GF3.2MetroOnePager-4.14.TestingImpact%3A">4.14. Testing Impact:</a></li> 
+       </ul> 
+       <li><a href="#GF3.2MetroOnePager-5.ReferenceDocuments%3A">5. Reference Documents:</a></li> 
+       <li><a href="#GF3.2MetroOnePager-6.Schedule%3A">6. Schedule:</a></li> 
+       <ul> 
+        <li><a href="#GF3.2MetroOnePager-6.1.ProjectedAvailability%3A">6.1. Projected Availability:</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="GF3.2MetroOnePager-1.Introduction"></a>1. Introduction</h1> <h4><a name="GF3.2MetroOnePager-1.1.Project%2FComponentWorkingName%3A"></a>1.1. Project/Component Working Name:</h2> <p>Metro 2.2</p> <h4><a name="GF3.2MetroOnePager-1.2.Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier%3A"></a>1.2. Name(s) and e-mail address of Document Author(s)/Supplier:</h2> <p>Martin Grebac: snajper at java dot net<br> Kumar Jayanti: kumarjayanti at java dot net<br> Jitendra Kotamraju: jitu at java dot net<br> Rama Pulavarthi: ramapulavarthi at java dot net<br> Fabian Ritzmann: ritzmann at java dot net</p> <h4><a name="GF3.2MetroOnePager-1.3.DateofThisDocument%3A"></a>1.3. Date of This Document:</h2> <p>04/26/11</p> <h4><a name="GF3.2MetroOnePager-2.ProjectSummary"></a>2. Project Summary</h1> <h4><a name="GF3.2MetroOnePager-2.1.ProjectDescription%3A"></a>2.1. Project Description:</h2> <p>Metro Web Services stack evolution</p> <h4><a name="GF3.2MetroOnePager-2.2.RisksandAssumptions%3A"></a>2.2. Risks and Assumptions:</h2> <p>WLS common logging, monitoring and management requirements have not been received to date.</p> <h4><a name="GF3.2MetroOnePager-3.ProblemSummary"></a>3. Problem Summary</h1> <h4><a name="GF3.2MetroOnePager-3.1.ProblemArea%3A"></a>3.1. Problem Area:</h2> <h4><a name="GF3.2MetroOnePager-3.1.1.ModularDatabinding"></a>3.1.1. Modular Databinding</h3> <p>Enable other databinding providers other than JAXB RI. WLS requirement.</p> <h4><a name="GF3.2MetroOnePager-3.1.2.Unifiedconfiguration"></a>3.1.2. Unified configuration</h3> <p>Introduce one single configuration file to improve usability and allow for integration with WLS.</p> <h4><a name="GF3.2MetroOnePager-3.1.3.Tubes.next%2FTubesplicing"></a>3.1.3. Tubes.next / Tube splicing</h3> <p>Support NonAnonymous responses.</p> <h4><a name="GF3.2MetroOnePager-3.1.4.AsyncClientTransportFeature%2CAsyncClientHandlerFeature%2CClientIdentityFeature"></a>3.1.4. AsyncClientTransportFeature, AsyncClientHandlerFeature, ClientIdentityFeature</h3> <p>Introduce WLS interfaces.</p> <h4><a name="GF3.2MetroOnePager-3.1.5.Commonlogging"></a>3.1.5. Common logging</h3> <p>Plug into WLS logging.</p> <h4><a name="GF3.2MetroOnePager-3.1.6.Commonmonitoringandmanagement"></a>3.1.6. Common monitoring and management</h3> <p>Plug into WLS monitoring and management.</p> <h4><a name="GF3.2MetroOnePager-3.1.7.ExposingWSDLmodel%2Ftoolingimprovements"></a>3.1.7. Exposing WSDL model / tooling improvements</h3> <p>Improve integration with IDEs and improve WSDL processing performance.</p> <h4><a name="GF3.2MetroOnePager-3.1.8.FixoutstandingissuesinWSAT%28collocatedcase%29"></a>3.1.8. Fix outstanding issues in WS-AT (collocated case)</h3> <p>WS-AT fixes that didn't make it into GlassFish 3.1.</p> <h4><a name="GF3.2MetroOnePager-3.1.9.Provideapluginmechanisminwsimport"></a>3.1.9. Provide a plug-in mechanism in wsimport</h3> <p>Enable WLS integration.</p> <h4><a name="GF3.2MetroOnePager-3.1.10.Unifiedannotationprogrammingmodel"></a>3.1.10. Unified annotation programming model</h3> <p>Use the same package names as WLS annotations.</p> <h4><a name="GF3.2MetroOnePager-3.1.11.JAXWS2.2Rev.aMR"></a>3.1.11. JAX-WS 2.2 Rev. a MR</h3> <p>JAX-WS spec updates.</p> <h4><a name="GF3.2MetroOnePager-3.1.12.Clean%2FsplitupMetroOSGibundles"></a>3.1.12. Clean/split up Metro OSGi bundles</h3> <p>Make Metro OSGi bundles work in other OSGi environments than GlassFish. Split webservices-osgi.jar into smaller bundles to improve performance.</p> <h4><a name="GF3.2MetroOnePager-3.1.13.ImprovetestcoverageofStreamingAttachmentFeature"></a>3.1.13. Improve test coverage of StreamingAttachmentFeature</h3> <p>Implement and clear test cases.</p> <h4><a name="GF3.2MetroOnePager-3.1.14.Securityimprovements"></a>3.1.14. Security improvements</h3> <p>Multiple minor improvements: <a href="https://stbeehive.oracle.com/teamcollab/wiki/GlassFish-Security:GlassFish+3.2+Metro+Security+Tasks">https://stbeehive.oracle.com/teamcollab/wiki/GlassFish-Security:GlassFish+3.2+Metro+Security+Tasks</a></p> <h4><a name="GF3.2MetroOnePager-3.1.15.UpdateMavenpushingusingPOMs"></a>3.1.15. Update Maven pushing using POMs</h3> <p>The current push relies on scripts massaging POMs before a push. That is error-prone when new POM are added or POMs are modified.</p> <h4><a name="GF3.2MetroOnePager-3.1.16.UpdateJAXWSMavenplugins"></a>3.1.16. Update JAX-WS Maven plugins</h3> <p>Make sure the existing plugins work with the current JAX-WS release.</p> <h4><a name="GF3.2MetroOnePager-3.2.Justification%3A"></a>3.2. Justification:</h2> <h4><a name="GF3.2MetroOnePager-3.2.1.ModularDatabinding"></a>3.2.1. Modular Databinding</h3> <p>JAX-WS RI works only with JAXB RI. However, there is a need to work with other databinding frameworks like EclipseLink JAXB/SDO impl. That means features from other databinding frameworks can be used with the core RI abstractions and protocols like WS-RM etc can be used with JAX-WS RI+any databinding framework. Required for WLS integration.</p> <h4><a name="GF3.2MetroOnePager-3.2.2.Unifiedconfiguration"></a>3.2.2. Unified configuration</h3> <p>Enable tighter integration with WLS. This feature was originally planned for GlassFish 3.1 and had to be postponed to 3.2.</p> <h4><a name="GF3.2MetroOnePager-3.2.3.Tubes.next%2FTubesplicing"></a>3.2.3. Tubes.next / Tube splicing</h3> <p>Enable proper asynchronous message handling by JAX-WS.</p> <h4><a name="GF3.2MetroOnePager-3.2.4.AsyncClientTransportFeature%2CAsyncClientHandlerFeature%2CClientIdentityFeature"></a>3.2.4. AsyncClientTransportFeature, AsyncClientHandlerFeature, ClientIdentityFeature</h3> <p>Required for WLS integration.</p> <h4><a name="GF3.2MetroOnePager-3.2.5.Commonlogging"></a>3.2.5. Common logging</h3> <p>Required for WLS integration.</p> <h4><a name="GF3.2MetroOnePager-3.2.6.Commonmonitoringandmanagement"></a>3.2.6. Common monitoring and management</h3> <p>Required for WLS integration.</p> <h4><a name="GF3.2MetroOnePager-3.2.7.ExposingWSDLmodel%2Ftoolingimprovements"></a>3.2.7. Exposing WSDL model / tooling improvements</h3> <p>Improve uptake and support of JAX-WS by IDEs and avoid duplication of work and bugs by providing a reference implementation that processes WSDL.</p> <h4><a name="GF3.2MetroOnePager-3.2.8.FixoutstandingissuesinWSAT%28collocatedcase%2Crecovery%29"></a>3.2.8. Fix outstanding issues in WS-AT (collocated case, recovery)</h3> <p>WS-AT fixes that are already done but did not make it into GlassFish 3.1.</p> <h4><a name="GF3.2MetroOnePager-3.2.9.Provideapluginmechanisminwsimport"></a>3.2.9. Provide a plug-in mechanism in wsimport</h3> <p>Required for WLS integration.</p> <h4><a name="GF3.2MetroOnePager-3.2.10.Unifiedannotationprogrammingmodel"></a>3.2.10. Unified annotation programming model</h3> <p>Required for WLS integration.</p> <h4><a name="GF3.2MetroOnePager-3.2.11.JAXWS2.2Rev.aMR"></a>3.2.11. JAX-WS 2.2 Rev. a MR</h3> <p>The JAX-WS and Java EE reference implementation needs to support the latest spec revision.</p> <h4><a name="GF3.2MetroOnePager-3.2.12.Clean%2FsplitupMetroOSGibundles"></a>3.2.12. Clean/split up Metro OSGi bundles</h3> <p>Enable integration of Metro into other OSGI based products. Avoid loading of the big Metro bundles when an application depends on a simple XML library (which all Java EE applications do).</p> <h4><a name="GF3.2MetroOnePager-3.2.13.ImprovetestcoverageofStreamingAttachmentFeature"></a>3.2.13. Improve test coverage of StreamingAttachmentFeature</h3> <p>Ensure this feature works.</p> <h4><a name="GF3.2MetroOnePager-3.2.14.Securityimprovements"></a>3.2.14. Security improvements</h3> <p>Bug fixes and minor features required by various sources.</p> <h4><a name="GF3.2MetroOnePager-3.2.15.UpdateMavenpushingusingPOMs"></a>3.2.15. Update Maven pushing using POMs</h3> <p>Keep Metro build maintainable.</p> <h4><a name="GF3.2MetroOnePager-3.2.16.UpdateJAXWSMavenplugins"></a>3.2.16. Update JAX-WS Maven plugins</h3> <p>Make sure JAX-WS use in Maven based projects remains feasible.</p> <h4><a name="GF3.2MetroOnePager-4.TechnicalDescription%3A"></a>4. Technical Description:</h1> <h4><a name="GF3.2MetroOnePager-4.1.Details%3A"></a>4.1. Details:</h2> <h4><a name="GF3.2MetroOnePager-4.1.1.ModularDatabinding"></a>4.1.1. Modular Databinding</h3> <p><a href="http://java.net/jira/browse/JAX_WS-882">http://java.net/jira/browse/JAX_WS-882</a></p> <h4><a name="GF3.2MetroOnePager-4.1.2.Unifiedconfiguration"></a>4.1.2. Unified configuration</h3> <p><a href="http://aseng-wiki.us.oracle.com/asengwiki/display/GlassFish/Unified+configuration">http://aseng-wiki.us.oracle.com/asengwiki/display/GlassFish/Unified+configuration</a></p> <h4><a name="GF3.2MetroOnePager-4.1.3.Tubes.next%2FTubesplicing"></a>4.1.3. Tubes.next / Tube splicing</h3> <p><a href="http://aseng-wiki.us.oracle.com/asengwiki/display/GlassFish/Tubes.next">http://aseng-wiki.us.oracle.com/asengwiki/display/GlassFish/Tubes.next</a></p> <h4><a name="GF3.2MetroOnePager-4.1.4.AsyncClientTransportFeature%2CAsyncClientHandlerFeature%2CClientIdentityFeature"></a>4.1.4. AsyncClientTransportFeature, AsyncClientHandlerFeature, ClientIdentityFeature</h3> <p><a href="http://aseng-wiki.us.oracle.com/asengwiki/display/GlassFish/AsyncClientTransportFeature%2C+AsyncClientHandlerFeature%2C+ClientIdentityFeature">http://aseng-wiki.us.oracle.com/asengwiki/display/GlassFish/AsyncClientTransportFeature%2C+AsyncClientHandlerFeature%2C+ClientIdentityFeature</a></p> <h4><a name="GF3.2MetroOnePager-4.1.5.Commonlogging"></a>4.1.5. Common logging</h3> <p><a href="http://aseng-wiki.us.oracle.com/asengwiki/display/GlassFish/Common+logging">http://aseng-wiki.us.oracle.com/asengwiki/display/GlassFish/Common+logging</a></p> <h4><a name="GF3.2MetroOnePager-4.1.6.Commonmonitoringandmanagement"></a>4.1.6. Common monitoring and management</h3> <p><a href="http://aseng-wiki.us.oracle.com/asengwiki/display/GlassFish/Common+monitoring+and+management">http://aseng-wiki.us.oracle.com/asengwiki/display/GlassFish/Common+monitoring+and+management</a></p> <h4><a name="GF3.2MetroOnePager-4.1.7.ExposingWSDLmodel%2Ftoolingimprovements"></a>4.1.7. Exposing WSDL model / tooling improvements</h3> <p><a href="http://aseng-wiki.us.oracle.com/asengwiki/display/ASDevJDeveloper/JAX-WS+RI+Tooling+Enhancements">http://aseng-wiki.us.oracle.com/asengwiki/display/ASDevJDeveloper/JAX-WS+RI+Tooling+Enhancements</a></p> <h4><a name="GF3.2MetroOnePager-4.1.8.FixoutstandingissuesinWSAT%28collocatedcase%2Crecovery%29"></a>4.1.8. Fix outstanding issues in WS-AT (collocated case, recovery)</h3> <p><a href="http://java.net/jira/browse/WSIT-1524">http://java.net/jira/browse/WSIT-1524</a><a href="http://java.net/jira/browse/WSIT-1525">http://java.net/jira/browse/WSIT-1525</a></p> <h4><a name="GF3.2MetroOnePager-4.1.9.Provideapluginmechanisminwsimport"></a>4.1.9. Provide a plug-in mechanism in wsimport</h3> <p><a href="http://java.net/jira/browse/JAX_WS-927">http://java.net/jira/browse/JAX_WS-927</a></p> <h4><a name="GF3.2MetroOnePager-4.1.10.Unifiedannotationprogrammingmodel"></a>4.1.10. Unified annotation programming model</h3> <h4><a name="GF3.2MetroOnePager-4.1.11.JAXWS2.2rev.AMR"></a>4.1.11. JAX-WS 2.2 rev. A MR</h3> <p><a href="http://jcp.org/aboutJava/communityprocess/maintenance/jsr224/224changelog-2_2_rev_a.html">http://jcp.org/aboutJava/communityprocess/maintenance/jsr224/224changelog-2_2_rev_a.html</a></p> <h4><a name="GF3.2MetroOnePager-4.1.12.Clean%2FsplitupMetroOSGibundles"></a>4.1.12. Clean/split up Metro OSGi bundles</h3> <h4><a name="GF3.2MetroOnePager-4.1.13.ImprovetestcoverageofStreamingAttachmentFeature"></a>4.1.13. Improve test coverage of StreamingAttachmentFeature</h3> <p><a href="http://aseng-wiki.us.oracle.com/asengwiki/display/GlassFish/Improve+test+coverage+of+StreamingAttachmentFeature">http://aseng-wiki.us.oracle.com/asengwiki/display/GlassFish/Improve+test+coverage+of+StreamingAttachmentFeature</a></p> <h4><a name="GF3.2MetroOnePager-4.1.14.Securityimprovements"></a>4.1.14. Security improvements</h3> <p><a href="https://stbeehive.oracle.com/teamcollab/wiki/GlassFish-Security:GlassFish+3.2+Metro+Security+Tasks">https://stbeehive.oracle.com/teamcollab/wiki/GlassFish-Security:GlassFish+3.2+Metro+Security+Tasks</a></p> <h4><a name="GF3.2MetroOnePager-4.1.15.UpdateMavenpushingusingPOMs"></a>4.1.15. Update Maven pushing using POMs</h3> <p>Currently, JAX-WS RI uses ant based build system. It is increasingly getting difficult to use ant task to push maven artifacts.<br> Hence, maven can be used to push maven artifacts and rest of the build system would still use ant.</p> <h4><a name="GF3.2MetroOnePager-4.1.16.UpdateJAXWSMavenplugins"></a>4.1.16. Update JAX-WS Maven plugins</h3> <p>Many developers use JAX-WS RI/metro maven artifacts. But maven plugins for tools (for e.g. wsimport) are using the older versions of the RI and do not use any features introduced in the recent releases. Hence, there is a need to update these plugins with the latest JAX-WS RI release</p> <h4><a name="GF3.2MetroOnePager-4.2.Bug%2FRFENumber%28s%29%3A"></a>4.2. Bug/RFE Number(s):</h2> <p><a href="https://github.com/javaee/glassfish/issues/16454">https://github.com/javaee/glassfish/issues/16454</a><a href="http://java.net/jira/browse/WSIT-1525">http://java.net/jira/browse/WSIT-1525</a><a href="http://java.net/jira/browse/WSIT-1524">http://java.net/jira/browse/WSIT-1524</a><a href="http://java.net/jira/browse/JAX_WS-927">http://java.net/jira/browse/JAX_WS-927</a><a href="http://java.net/jira/browse/JAX_WS-882">http://java.net/jira/browse/JAX_WS-882</a></p> <h4><a name="GF3.2MetroOnePager-4.3.InScope%3A"></a>4.3. In Scope:</h2> <h4><a name="GF3.2MetroOnePager-4.4.OutofScope%3A"></a>4.4. Out of Scope:</h2> <h4><a name="GF3.2MetroOnePager-4.5.Interfaces%3A"></a>4.5. Interfaces:</h2> <h4><a name="GF3.2MetroOnePager-4.5.1PublicInterfaces"></a>4.5.1 Public Interfaces</h3> <p>List new, public interfaces this project exports.</p> 
+     <ul> 
+      <li>Interface: <tt>metro-webservices.xml</tt></li> 
+      <li>Comment: New single Metro configuration file for unified configuration</li> 
+     </ul> 
+     <ul> 
+      <li>Interface: Annotation namespace <tt>com.oracle</tt></li> 
+      <li>Comment: New proprietary annotations are added under this namespace.</li> 
+     </ul> <h4><a name="GF3.2MetroOnePager-4.5.2PrivateInterfaces"></a>4.5.2 Private Interfaces</h3> <h4><a name="GF3.2MetroOnePager-4.5.3Deprecated%2FRemovedInterfaces%3A"></a>4.5.3 Deprecated/Removed Interfaces:</h3> <h4><a name="GF3.2MetroOnePager-4.6.DocImpact%3A"></a>4.6. Doc Impact:</h2> <p><a href="https://metro.java.net/guide">Metro User Guide</a></p> <h4><a name="GF3.2MetroOnePager-4.7.Admin%2FConfigImpact%3A"></a>4.7. Admin/Config Impact:</h2> <p>An additional proprietary deployment descriptor/configuration file will be supported for web service configuration. No changes to GlassFish GUIs, CLI, agents, plugins are expected however.</p> <h4><a name="GF3.2MetroOnePager-4.8.HAImpact%3A"></a>4.8. HA Impact:</h2> <p>Not anticipated.</p> <h4><a name="GF3.2MetroOnePager-4.9.I18N%2FL10NImpact%3A"></a>4.9. I18N/L10N Impact:</h2> <p>Not anticipated.</p> <h4><a name="GF3.2MetroOnePager-4.10.Packaging%2CDelivery%26Upgrade%3A"></a>4.10. Packaging, Delivery &amp; Upgrade:</h2> <h4><a name="GF3.2MetroOnePager-4.10.1.Packaging"></a>4.10.1. Packaging</h3> <p>Proposal will affect only the existing set of Metro OSGi bundles already shipped with the GlassFish server.</p> <h4><a name="GF3.2MetroOnePager-4.10.2.Delivery"></a>4.10.2. Delivery</h3> <p>No impact on delivery. The module is already included in the distribution.</p> <h4><a name="GF3.2MetroOnePager-4.10.3.UpgradeandMigration%3A"></a>4.10.3. Upgrade and Migration:</h3> <p>All changes either introduce a new functionality or are intended to remain backward-compatible. There is no known impact on existing instances or clients at this time.</p> <h4><a name="GF3.2MetroOnePager-4.11.SecurityImpact%3A"></a>4.11. Security Impact:</h2> <p>Metro security is fully aligned with GlassFish security concepts, mechanisms and APIs.</p> <h4><a name="GF3.2MetroOnePager-4.12.CompatibilityImpact"></a>4.12. Compatibility Impact</h2> <p>Not anticipated.</p> <h4><a name="GF3.2MetroOnePager-4.13.Dependencies%3A"></a>4.13. Dependencies:</h2> <h4><a name="GF3.2MetroOnePager-4.13.1InternalDependencies"></a>4.13.1 Internal Dependencies</h3> <h4><a name="GF3.2MetroOnePager-4.13.2ExternalDependencies"></a>4.13.2 External Dependencies</h3> <h4><a name="GF3.2MetroOnePager-4.14.TestingImpact%3A"></a>4.14. Testing Impact:</h2> <p>Existing Metro test suite will be extended with additional SQE, E2E and unit tests as appropriate for each feature of the project.</p> <h4><a name="GF3.2MetroOnePager-5.ReferenceDocuments%3A"></a>5. Reference Documents:</h1> <p><a href="http://aseng-wiki.us.oracle.com/asengwiki/display/GlassFish/Metro+2.2+features+and+tasks">http://aseng-wiki.us.oracle.com/asengwiki/display/GlassFish/Metro+2.2+features+and+tasks</a></p> <h4><a name="GF3.2MetroOnePager-6.Schedule%3A"></a>6. Schedule:</h1> <h4><a name="GF3.2MetroOnePager-6.1.ProjectedAvailability%3A"></a>6.1. Projected Availability:</h2> <p><a href="http://aseng-wiki.us.oracle.com/asengwiki/display/GlassFish/Metro+2.2+features+and+tasks">http://aseng-wiki.us.oracle.com/asengwiki/display/GlassFish/Metro+2.2+features+and+tasks</a></p> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Aug 28, 2012 by 
+<font color="#0050B2">10193</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : DomainManagerDiffs</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="DomainManagerDiffs-DomainManagerDomainManager"></a><a href="DomainManager.html" title="DomainManager">Domain Manager</a> </h1> <h4><a name="DomainManagerDiffs-DifferencesBetweenPEandEEonV1"></a>Differences Between PE and EE on V1</h2> <p></p>
+     <div class="panel" style="border-width: 1px;">
+      <div class="panelContent"> 
+       <hr> 
+       <p>Jspwiki style: tabbedSection</p> 
+      </div>
+     </div>tab-install<p></p> <h4><a name="DomainManagerDiffs-InstallRootDirectoryDifferencesrootdiffs.html"></a><span class="error">[Install Root Directory Differences|^rootdiffs.html]</span></h1> <p>%%</p> 
+     <div class="panel" style="border-width: 1px;">
+      <div class="panelContent"> 
+       <p>-install/bin</p> 
+       <p>Here are directory listings from install/bin from the 2 flavors of SJSAS:</p> 
+       <h4><a name="DomainManagerDiffs-EE"></a>EE</h2> 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">appclient.bat          ctestfwd.dll           genprops.exe           icuin2d.ilk            icuuc2d.dll            uconv.exe
+asadmin.bat            ctestfwd.ilk           genrb.exe              icuio2.dll             icuuc2d.ilk            verifier.bat
+asant.bat              decmn.exe              gentest.exe            icuio2d.dll            jspc.bat               wscompile.bat
+asapt.bat              genccode.exe           gentz.exe              icuio2d.ilk            makeconv.exe           wsdeploy.bat
+asupgrade.bat          gencmn.exe             genuca.exe             icule2.dll             msvcrtd.dll            wsgen.bat
+capture-schema.bat     gencnval.exe           icudt2.dll             icule2d.dll            package-appclient.bat  wsimport.bat
+cliutil.dll            gennames.exe           icuin2.dll             icule2d.ilk            pkgdata.exe            xjc.bat
+ctestfw.dll            gennorm.exe            icuin2d.dll            icuuc2.dll             schemagen.bat</pre> 
+         </div> 
+        </div>
+       </div> 
+       <h4><a name="DomainManagerDiffs-PE"></a>PE</h2> 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">appclient.bat          asapt.bat              cliutil.dll            schemagen.bat          wsdeploy.bat           xjc.bat
+asadmin.bat            asupgrade.bat          jspc.bat               verifier.bat           wsgen.bat
+asant.bat              capture-schema.bat     package-appclient.bat  wscompile.bat          wsimport.bat</pre> 
+         </div> 
+        </div>
+       </div> 
+       <ul> 
+        <li>PE and EE have the same core of 16 files</li> 
+        <li>EE adds 31 additional files. These additional files are executables, dlls, and junk (ilk).</li> 
+        <li>Of the 16 same files, 13 are effectively identical: The only difference is the absolute path of asenv.bat</li> 
+        <li>Three of the scripts are significantly different: 
+         <ul> 
+          <li><a href="http://wiki.glassfish.java.net/attach/DomainManagerDiffs/asadmin.bat.html">asadmin Differences</a></li> 
+          <li><a href="http://wiki.glassfish.java.net/attach/DomainManagerDiffs/asant.bat.html">asant Differences</a></li> 
+          <li><a href="http://wiki.glassfish.java.net/attach/DomainManagerDiffs/asupgrade.bat.html">asupgrade Differences</a> 
+           <hr> <p>Jspwiki style: tab</p></li> 
+         </ul> </li> 
+       </ul> 
+      </div>
+     </div> <p>%%tab-install/config</p> <p><a href="http://wiki.glassfish.java.net/attach/DomainManagerDiffs/asenv.bat.html">asenv differences</a><br> There is only 1 file in the directory: <b>asenv[.bat]</b>. Interestingly, this file is virtually identical on PE/EE. This is interesting because the install/bin scripts differ significantly in explicitly adding AS_NSS into the path for EE but not PE. But PE has the exact same AS_NSS location as EE. I believe that AS_NSS should be dispensed with because it is just pointing at the usual lib directory anywayss, and it adds unneccessary complexity.</p> <p>One other slight difference is that PE defines AS_HADB to point at yet another environmental variable, %HADB_HOME%. This is wildly strange because PE does not contain any HADB functionality at all.</p> <h4><a name="DomainManagerDiffs-VestigalDirectory"></a>Vestigal Directory</h3> <p>EE installer creates an unneccessary empty unused directory named install/config/hadb. Installer should stop doing this.</p> <p>%%</p> 
+     <div class="panel" style="border-width: 1px;">
+      <div class="panelContent"> 
+       <p>-install/lib<br> <a href="http://wiki.glassfish.java.net/attach/DomainManagerDiffs/libdiffs.html">install/lib differences</a><br> There are zero files that are present in both EE and PE that are different. I.e. install/lib files in EE are a pure superset of PE files. Once again there are a <b>lot</b> more files in EE than PE. EE has 4 subdirectories under lib which don't exist in PE:</p> 
+       <ol> 
+        <li>installer-builder</li> 
+        <li>jdbcdrivers</li> 
+        <li>lbplugin</li> 
+        <li>SUNWjdmk</li> 
+       </ol> 
+       <p>There are 55 files in the EE lib directory that are not present in PE. These files are all binaries, and many of them are junk temporary files (pdb, exp, chk) from the C++ build. See the <span class="error">[diffs|^libdiffs.html]</span> for details.</p> 
+       <hr> 
+       <p>Jspwiki style: tab</p> 
+      </div>
+     </div> <p></p>
+     <div class="panel" style="border-width: 1px;">
+      <div class="panelContent"> 
+       <p>-domain-config<br> <a href="http://wiki.glassfish.java.net/attach/DomainManagerDiffs/domain-config.html">domain1/config differences</a></p> 
+       <h4><a name="DomainManagerDiffs-Preparation"></a>Preparation</h2> 
+       <p>The default domain(domain1) was started for both PE and EE to allow system directory deployments to complete. This also forced the config files to be rewritten. The rewriting ensures that the order of attributes are identical which makes the diffs better.</p> 
+       <h4><a name="DomainManagerDiffs-Results"></a>Results</h2> 
+       <ul> 
+        <li>EE has 4 files that PE does not have: 
+         <ul> 
+          <li>.synchronize</li> 
+          <li>cert8.db</li> 
+          <li>key3.db</li> 
+          <li>secmod.db</li> 
+         </ul> </li> 
+        <li>PE has 2 files that EE does not have: 
+         <ul> 
+          <li>cacerts.jks</li> 
+          <li>keystore.jks</li> 
+         </ul> </li> 
+        <li>7 files are different: 
+         <ul> 
+          <li>admin-keyfile</li> 
+          <li>admsn</li> 
+          <li>domain-registry</li> 
+          <li>domain.xml</li> 
+          <li>secure.seed</li> 
+          <li>server.policy</li> 
+          <li>sun-acc.xml</li> 
+         </ul> </li> 
+       </ul> 
+       <h4><a name="DomainManagerDiffs-Highlights"></a>Highlights</h2> 
+       <p><a href="http://wiki.glassfish.java.net/attach/DomainManagerDiffs/domain.xml.after.start.txt">domain.xml differences (UNIX style diff)</a><br> <a href="http://wiki.glassfish.java.net/attach/DomainManagerDiffs/domain.xml.after.start.html">domain.xml differences (HTML style diff)</a><br> <b>server.policy</b>: the <a href="http://wiki.glassfish.java.net/attach/DomainManagerDiffs/server.policy.html">changes</a> add policies for:</p> 
+       <ul> 
+        <li><em>HADB</em><br> High Availability Database</li> 
+        <li><em>MFWK</em><br> monitoring framework</li> 
+        <li><em>JDMK</em><br> Java Development Management Kit</li> 
+        <li><em>iMQ</em><br> iPlanet Message Queue</li> 
+       </ul> 
+       <h4><a name="DomainManagerDiffs-ExtraDirectories"></a>Extra Directories</h2> 
+       <p>EE adds this directory structure under domain1/config:</p> 
+       <ul> 
+        <li>default-config/docroot (empty)</li> 
+        <li>default-config/lib (no regular files)<font color="white"><br> * default-config/lib/ext (empty)<br> </font> 
+         <hr> <p>Jspwiki style: tab</p></li> 
+       </ul> 
+      </div>
+     </div>tab-startserv<p></p> <h4><a name="DomainManagerDiffs-DiffsbetweenEEandPPVersionsofstartservscript"></a>Diffs between EE and PP Versions of startserv script</h1> <h4><a name="DomainManagerDiffs-EE%3A%26lt%3B"></a>EE: &lt;</h2> <h4><a name="DomainManagerDiffs-PE%3A%26gt%3B"></a>PE: &gt;</h2> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&amp;lt; set PATH=%AS_NSS%;%AS_INSTALL%\lib;%AS_INSTALL%\bin;%PATH%
+---
+&gt; set PATH=%AS_INSTALL%\lib;%AS_INSTALL%\bin;%PATH%
+52c56
+&amp;lt; cd %INSTANCE_ROOT%\config
+---
+&gt; cd "%INSTANCE_ROOT%\config"
+58c62
+&amp;lt; 	"%AS_INSTALL%/lib/appservLauncher.exe" "%AS_INSTALL%/lib/appservDAS.exe %DOMAIN_NAME%" "\"%INSTANCE_ROOT%/bin/startserv.bat\" display %*"
+---
+&gt; 	"%AS_INSTALL%/lib/appservLauncher.exe" "%AS_INSTALL%/lib/appserv.exe %DOMAIN_NAME%"  "\"%INSTANCE_ROOT%/bin/startserv.bat\" display %*"</pre> 
+       </div> 
+      </div>
+     </div> <p>&lt;p&gt;<br> &lt;ul&gt;<br> &lt;li&gt;The missing quotes around INSTANCE_ROOT are definite trouble if there is a space in the directory name<br> &lt;li&gt;AS_NSS is useless – it just points at install-dir/lib<br> &lt;li&gt;There appears to be zero difference between appservDAS.exe and appserv.exe – both files are the same length.<br> &lt;/ul&gt;</p> <h4><a name="DomainManagerDiffs-Conclusions%3A"></a>Conclusions: </h2> <p>There need be <b>no</b> differences between these files.<br> %%</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Dec 01, 2011 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : KohsukeTest</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="KohsukeTest-V3WebTierFeatureList"></a>V3 Web Tier Feature List</h1> <h4><a name="KohsukeTest-R1requiredwork"></a>R1 required work</h2> 
+     <ul> 
+      <li>Web Profile changes - possibly a separate deliverable/community - on hold 
+       <ul> 
+        <li>Will create separate projects for JSP, Servlet, EL and JSTL.</li> 
+        <li>(Pending the setup of the mercurial workspace.) - Sept 10th drop dead for Mercurial inclusion</li> 
+        <li>Community infrastucture stuck pending hosting decision</li> 
+        <li>Community structure setup (Committers, etc) - Rajiv (end of Sept)</li> 
+        <li>JSP Build script changes - Kin-Man (ready to roll out Sept 17th)</li> 
+        <li>Servlet split from Glassfish - owner TBD (ready to roll out Sept 28)</li> 
+        <li>EL and JSTL will be split from Glassfish codebase later (date TBD)</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li>hk2 architectural changes - Jan &amp; Jeanfrancois &amp; Amy 
+       <ul> 
+        <li>Initial support for sunweb.xml - couple days work</li> 
+        <li>Align with webcontainer code from GlassFish v2 - 4 weeks (start after servlet split from Glassfish) 
+         <ul> 
+          <li>Leverage DOL support as soon as DOL has been made available as a service (Dependancy Jerome's DOL work)</li> 
+         </ul> </li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li>Cometd support - Jeanfrancois 
+       <ul> 
+        <li>Complete Bayeux implementation to 1.0 - Jeanfrancois - 2 weeks</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li>SSL support needs to be added for R1 - Oleski - done soon</li> 
+     </ul> <h4><a name="KohsukeTest-R1scripting"></a>R1 scripting</h3> 
+     <ul> 
+      <li>FastCGI support (requires C work, support/reviews from web server team) - Jeanfrancois - 4 weeks</li> 
+      <li>java-based PHP - Kin-man - licensing issues, may not include - maybe via update</li> 
+      <li>jRuby - Pramod (date TBD)</li> 
+     </ul> <h4><a name="KohsukeTest-Generalwebcontainerwork%28forv3%29"></a>General web container work (for v3)</h3> 
+     <ul> 
+      <li>Web Container pluggability - Amy</li> 
+      <li>additional performance work (SpecWeb certified) - mostly in Coyote - Jeanfrancois 
+       <ul> 
+        <li>Byte buffer changes - Jeanfrancois</li> 
+       </ul> </li> 
+      <li>add new domain.xml elements (improved tuning EOU) - Jan &amp; Jeanfrancois</li> 
+      <li>improved mapping of roles to groups - Shing-Wai (Rajiv will coordinate)</li> 
+      <li>v3 micro-kernel support/development (openESB ext, Jersey ext., jruby ext, pluggable tcp extension (for Jetty/Tomcat 6 integration), etc.) Jeanfrancois</li> 
+      <li>JSTL changes?</li> 
+     </ul> <h4><a name="KohsukeTest-Scriptingsupport"></a>Scripting support</h3> 
+     <ul> 
+      <li>java-based PHP support? - Kin-Man</li> 
+      <li>native PHP - Kin-Man</li> 
+      <li>jRuby integration - Kin-Man</li> 
+      <li>jMaki - Ruby support - Greg &amp; Carla</li> 
+     </ul> <h4><a name="KohsukeTest-JSP"></a>JSP</h3> 
+     <ul> 
+      <li>Improved EL error handling in JSP pages - Kin-Man</li> 
+      <li>first class support for UI components in JSP - Kin-Man</li> 
+     </ul> <h4><a name="KohsukeTest-JSF"></a>JSF</h3> <p><a href="JsrBasedFeatureTracking.html" title="JsrBasedFeatureTracking">JsrBasedFeatureTracking</a></p> <p>Here are the goals of JSF in Glassfish V3</p> 
+     <ol> 
+      <li>Make custom components easier to develop</li> 
+      <li>First class Ajax support for JSF</li> 
+      <li>Define a JSF specific page description language (based on Facelets)</li> 
+      <li>Reduce the configuration burden</li> 
+      <li>Provide for the ability of third parties to write advanced JSF component libraries that have a high level of guarantee of interoperability.</li> 
+     </ol> <p>In support of these goals, the following concrete issue-tracker issues are defined, most of which are or will be in the <a href="https://javaserverfaces-spec-public.java.net/servlets/ProjectIssues">issue tracker at java.net</a></p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">[273-EZComp] total: 100 business days (ending roughly mid January 2008)
+  Requirements analysis 10 days
+  [115-ComponentResources] 10 days
+  [287-ConfigAnnotations] 10 days
+  [289-ComponentAuthoringAnnotations ] 5 days
+  [280-DeclarativePDLRenderers] 10 days
+  [274-PageDescriptionLanguage] 20 days
+  leaf tasks 40 days
+[293-Ajax] total: 100 business days (ending roughly mid January 2008)
+  Requirements analysis 10 days
+  JSF JavaScript client API 30 days
+  JSF Lifecycle for Ajax 30 days
+  Ajax message format 20 Days
+  Partial rendering 10 days</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="KohsukeTest-Specrequiredfeatures"></a>Spec required features</h2> <h4><a name="KohsukeTest-Servlets"></a>Servlets</h3> 
+     <ul> 
+      <li>Rest support - Rajiv 
+       <ul> 
+        <li>Looking into seeing how to improve ServletFilters for better integration of JAX-RS.</li> 
+        <li>Alignment on some of the annotations - Servlet annotations could be a degenerate case of the JAX-RS annotations.</li> 
+       </ul> </li> 
+      <li>Ease of Development - use of annotations, generics, etc - Rajiv 
+       <ul> 
+        <li>Support for implicit servlet mappings (like for JSF) - Jan</li> 
+       </ul> </li> 
+      <li>Web framework pluggability (Need Rajiv to flesh this out) - Rajiv 
+       <ul> 
+        <li>Looking into different approaches for this. Could do it in one of the following ways. Needs discussion in the expert group.</li> 
+        <li>Approach 1 - Use the JAR services API that can look up an implementation of either a servlet / filter.</li> 
+        <li>Approach 2 - Limited programmatic access to web.xml</li> 
+        <li>Approach 3 - Could provide a generic framework to define Scopes.</li> 
+        <li>The framework pluggability could be a combination of all of the above.</li> 
+       </ul> </li> 
+      <li>File upload - Amy</li> 
+      <li>Logout ability - Jan</li> 
+      <li>Comet Spec support 
+       <ul> 
+        <li>Spec API for non-blocking I/O for Cometd - Rajiv</li> 
+       </ul> </li> 
+     </ul> <h4><a name="KohsukeTest-JSF"></a>JSF</h3> <p>(Ed needs to give us this feedback)</p> 
+     <ul> 
+      <li>Performance improvements</li> 
+     </ul> <h4><a name="KohsukeTest-JSP"></a>JSP</h3> <h4><a name="KohsukeTest-UEL"></a>UEL</h3> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:49.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

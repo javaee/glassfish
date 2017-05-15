@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : InstallGFv2Demo</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="InstallGFv2Demo-SimpleDemoScriptforInstallingGlassFish."></a>Simple Demo Script for Installing GlassFish.</h1> <h4><a name="InstallGFv2Demo-Messaging"></a>Messaging</h2> 
+     <ul> 
+      <li>Simple 3-step install process to get started: install, configure, admin.</li> 
+      <li>Small download</li> 
+      <li>Great out of the box admin tools (CLI + Web)</li> 
+      <li>Do it on the person's laptop, it only take a few minutes</li> 
+     </ul> <h4><a name="InstallGFv2Demo-Setup"></a>Setup</h2> 
+     <ul> 
+      <li>glassfish-installer-v2-b&lt;XX&gt;-&lt;platform&gt;.jar archive (beta 2 or whatever is the most up-to-date)</li> 
+      <li>Java 5 of Java 6 available in the path.</li> 
+     </ul> <h4><a name="InstallGFv2Demo-DemoSteps"></a>Demo Steps</h2> 
+     <ul> 
+      <li><b>Install</b> using 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">java -jar glassfish-installer-v2-b&lt;XX&gt;-&lt;platform&gt;.jar</pre> 
+         </div> 
+        </div>
+       </div> <p>This creates a 'glassfish' directory. Show the archive size and mention the reasonable size given it contains a fully-featured application server (including clustering, WSIT and OpenESB)</p></li> 
+      <li><b>Configure</b> using 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">$GLASSFISH_HOME/lib/ant/bin/ant -f setup.xml</pre> 
+         </div> 
+        </div>
+       </div> <p>This creates a domain using the "developer" profile (alternatively you can also use the setup-cluster.xml to show the added cluster nodes in the Web UI)</p></li> 
+      <li><b>Administer</b> GlassFish by starting it (show the ports in use and other useful information) 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">$GLASSFISH_HOME/bin/asadmin start-domain domain1</pre> 
+         </div> 
+        </div>
+       </div> <p>... and logging into <a href="http://localhost:4848">http://localhost:4848</a> with admin/adminadmin credentials.</p></li> 
+      <li>Show Web UI Admin Common Tasks and more if possible.</li> 
+     </ul> <h4><a name="InstallGFv2Demo-CleanUp"></a>CleanUp</h2> 
+     <ul> 
+      <li>delete the "glassfish" directory</li> 
+     </ul> <h4><a name="InstallGFv2Demo-SeeAlso"></a>See Also</h2> 
+     <ul> 
+      <li>First chapter of <a href="https://glassfish.java.net/nonav/javaee5/docs/SJSASEEQSG.pdf">Getting Started guide</a></li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:48.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

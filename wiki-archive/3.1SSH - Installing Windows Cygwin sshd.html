@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : 3.1SSH - Installing Windows Cygwin sshd</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p><em>v0.7</em></p> <p>This page describes a quick-and-dirty SSHD setup on Windows XP using Cygwin. This is not official installation instructions for Cygwin, nor does it necessarily result in an enterprise quality setup. Just the minimum needed to get going.</p> <h5><a name="3.1SSH-InstallingWindowsCygwinsshd-Prepare"></a>Prepare</h5> 
+     <ol> 
+      <li>You must be logged in as a user with Administrator privileges</li> 
+      <li>Create folder C:\cygwin</li> 
+     </ol> <h5><a name="3.1SSH-InstallingWindowsCygwinsshd-DownloadandInstallCygwin%281.7.6%29OpenSSH"></a>Download and Install Cygwin (1.7.6) OpenSSH</h5> 
+     <ol> 
+      <li>Go To <a href="http://www.cygwin.com/">http://www.cygwin.com/</a> and click "Install or update Cygwin now!"</li> 
+      <li>Save setup.exe to your desktop</li> 
+      <li>Run <b>setup.exe</b> 
+       <ol> 
+        <li>Install from Internet (default)</li> 
+        <li>Install Root Directory: C:\cygwin (default)</li> 
+        <li>Install for All Users (default)</li> 
+        <li>Local package directory: C:\cygwin\packages</li> 
+        <li>Set proxy if needed</li> 
+        <li>Select a download site</li> 
+        <li>Select Packages 
+         <ol> 
+          <li>Search for openssh. It is under the Net category.</li> 
+          <li>Locate openssh and click "Skip" to select it.</li> 
+          <li>Click Next. It will list unmet dependencies. Leave "Select required packages" checked and click Next</li> 
+          <li>The packages will install</li> 
+          <li>Click Finish</li> 
+         </ol> </li> 
+       </ol> </li> 
+      <li>You now have a basic cygwin installation that includes ssh/sshd</li> 
+     </ol> <h5><a name="3.1SSH-InstallingWindowsCygwinsshd-Configureandstartsshd"></a>Configure and start sshd</h5> 
+     <ol> 
+      <li>Make sure that your Windows system has user accounts created for all user that you want to be able to access the system via SSH. It seems to work best if those users have passwords set.</li> 
+      <li>Double Click on Cygwin icon. This starts a cygwin terminal</li> 
+      <li>In my case I did not have a password associated with my account and sshd was not allowing me to authenticate until I set a password. So I did this: 
+       <ol> 
+        <li>$ <b>passwd</b> yourusername</li> 
+        <li>enter new password</li> 
+        <li>This also sets the password on your Windows account</li> 
+       </ol> </li> 
+      <li>Run: <b>ssh-host-config</b>, answer "yes" to all questions (take the defaults)</li> 
+      <li>Start sshd: '<b>net start sshd</b>'</li> 
+     </ol> <h5><a name="3.1SSH-InstallingWindowsCygwinsshd-SetWindow%27sPath"></a>Set Window's Path</h5> <p>Make sure your Window's Path has the Cygwin bin directory in it (C:\cygwin\bin). You can do this via the System Information control panel. Click Advanced, then Environment Variables and modify the value of the Path environment variable.</p> <h5><a name="3.1SSH-InstallingWindowsCygwinsshd-Test"></a>Test</h5> 
+     <ol> 
+      <li>From another system ssh into your Window's box using the username and password for your Windows account: 
+       <ol> 
+        <li>ssh -l username windowsbox.com</li> 
+        <li>If this works your basic Windows SSHD setup is complete</li> 
+       </ol> </li> 
+     </ol> <h5><a name="3.1SSH-InstallingWindowsCygwinsshd-UsingwithGlassFish3.1"></a>Using with GlassFish 3.1</h5> 
+     <ol> 
+      <li>To use immediately use the system with GF with SSH password authentication see option 3 in:&nbsp; <a href="./3.1SSHAuthentication.html">3.1SSHAuthentication</a></li> 
+      <li>If you want to use key authentication then see the information here: <a href="./3.1SSHSetup.html">3.1SSH Setup</a></li> 
+     </ol> <p>References<br> ----------<br> How to install OpenSSH sshd server on Windows<br> <a href="http://chinese-watercolor.com/LRP/printsrv/cygwin-sshd.html">http://chinese-watercolor.com/LRP/printsrv/cygwin-sshd.html</a></p> 
+     <div class="tabletitle"> 
+      <a name="comments"> <h4>Comments:</h2> </a> 
+     </div> 
+     <table border="0" width="100%"> 
+      <tbody>
+       <tr> 
+        <td> <a name="comment-20882350"></a> <font class="smallfont"><p>In combination with <a href="./GlassFishProvisioning.html">http://wikis.sun.com/display/GlassFish/GlassFishProvisioning</a> I succeeded to deploy my app on GF 3.1 (build 35) using SSH on Windows. However, our hosts are part of an active directory environment (Windows domain). I did not manage to install Cygwin properly using my domain account. I was forced to create a local account on each host machine. I used the local account to install Cygwin and used the <em>--sshuser</em> argument to provide the local user account. Then it worked just fine.</p></font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by rrockx at Jan 10, 2011 04:21 
+         </div> </td> 
+       </tr> 
+      </tbody>
+     </table> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Mar 11, 2011 by 
+<font color="#0050B2">dipol</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

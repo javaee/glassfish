@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : 3.1DASRecoveryOnePager</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="3.1DASRecoveryOnePager-DASBackupandRecoveryOpenSourceEditionOnePager"></a>DAS Backup and Recovery Open Source Edition One Pager</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#3.1DASRecoveryOnePager-DASBackupandRecoveryOpenSourceEditionOnePager">DAS Backup and Recovery Open Source Edition One Pager</a></li> 
+       <li><a href="#3.1DASRecoveryOnePager-1.Introduction">1. Introduction</a></li> 
+       <ul> 
+        <li><a href="#3.1DASRecoveryOnePager-1.1.Project%2FComponentWorkingName%3A">1.1. Project/Component Working Name:</a></li> 
+        <li><a href="#3.1DASRecoveryOnePager-1.2.Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier">1.2. Name(s) and e-mail address of Document Author(s)/Supplier</a></li> 
+        <li><a href="#3.1DASRecoveryOnePager-1.3.DateofThisDocument%3A">1.3. Date of This Document:</a></li> 
+       </ul> 
+       <li><a href="#3.1DASRecoveryOnePager-2.ProjectSummary">2. Project Summary</a></li> 
+       <ul> 
+        <li><a href="#3.1DASRecoveryOnePager-2.1.ProjectDescription%3A">2.1. Project Description:</a></li> 
+        <li><a href="#3.1DASRecoveryOnePager-2.2.RisksandAssumptions%3A">2.2. Risks and Assumptions:</a></li> 
+       </ul> 
+       <li><a href="#3.1DASRecoveryOnePager-3.ProblemSummary">3. Problem Summary</a></li> 
+       <ul> 
+        <li><a href="#3.1DASRecoveryOnePager-3.1.ProblemArea%3A">3.1. Problem Area:</a></li> 
+        <li><a href="#3.1DASRecoveryOnePager-3.2.Justification%3A">3.2. Justification:</a></li> 
+       </ul> 
+       <li><a href="#3.1DASRecoveryOnePager-4.TechnicalDescription%3A">4. Technical Description:</a></li> 
+       <ul> 
+        <li><a href="#3.1DASRecoveryOnePager-4.1.Details%3A">4.1. Details:</a></li> 
+        <ul> 
+         <li><a href="#3.1DASRecoveryOnePager-Notesaboutexistingv2behavior%3A">Notes about existing v2 behavior:</a></li> 
+         <li><a href="#3.1DASRecoveryOnePager-Enhancementsfor3.1%28OpenSourceEdition%29">Enhancements for 3.1 (Open Source Edition)</a></li> 
+        </ul> 
+        <li><a href="#3.1DASRecoveryOnePager-4.2.Bug%2FRFENumber%28s%29%3A">4.2. Bug/RFE Number(s):</a></li> 
+        <li><a href="#3.1DASRecoveryOnePager-4.3.InScope%3A">4.3. In Scope:</a></li> 
+        <li><a href="#3.1DASRecoveryOnePager-4.4.OutofScope%3A">4.4. Out of Scope:</a></li> 
+        <li><a href="#3.1DASRecoveryOnePager-4.5.Interfaces%3A">4.5. Interfaces:</a></li> 
+        <ul> 
+         <li><a href="#3.1DASRecoveryOnePager-4.5.1PublicInterfaces">4.5.1 Public Interfaces</a></li> 
+         <li><a href="#3.1DASRecoveryOnePager-4.5.2PrivateInterfaces">4.5.2 Private Interfaces</a></li> 
+         <li><a href="#3.1DASRecoveryOnePager-4.5.3Deprecated%2FRemovedInterfaces%3A">4.5.3 Deprecated/Removed Interfaces:</a></li> 
+        </ul> 
+        <li><a href="#3.1DASRecoveryOnePager-4.6.DocImpact%3A">4.6. Doc Impact:</a></li> 
+        <li><a href="#3.1DASRecoveryOnePager-4.7.Admin%2FConfigImpact%3A">4.7. Admin/Config Impact:</a></li> 
+        <li><a href="#3.1DASRecoveryOnePager-4.8.HAImpact%3A">4.8. HA Impact:</a></li> 
+        <li><a href="#3.1DASRecoveryOnePager-4.9.I18N%2FL10NImpact%3A">4.9. I18N/L10N Impact:</a></li> 
+        <li><a href="#3.1DASRecoveryOnePager-4.10.Packaging%2CDelivery%26Upgrade%3A">4.10. Packaging, Delivery &amp; Upgrade:</a></li> 
+        <ul> 
+         <li><a href="#3.1DASRecoveryOnePager-4.10.1.Packaging">4.10.1. Packaging</a></li> 
+         <li><a href="#3.1DASRecoveryOnePager-4.10.2.Delivery">4.10.2. Delivery</a></li> 
+         <li><a href="#3.1DASRecoveryOnePager-4.10.3.UpgradeandMigration%3A">4.10.3. Upgrade and Migration:</a></li> 
+        </ul> 
+        <li><a href="#3.1DASRecoveryOnePager-4.11.SecurityImpact%3A">4.11. Security Impact:</a></li> 
+        <li><a href="#3.1DASRecoveryOnePager-4.12.CompatibilityImpact">4.12. Compatibility Impact</a></li> 
+        <li><a href="#3.1DASRecoveryOnePager-4.13.Dependencies%3A">4.13. Dependencies:</a></li> 
+        <ul> 
+         <li><a href="#3.1DASRecoveryOnePager-4.13.1InternalDependencies">4.13.1 Internal Dependencies</a></li> 
+         <li><a href="#3.1DASRecoveryOnePager-4.13.2ExternalDependencies">4.13.2 External Dependencies</a></li> 
+        </ul> 
+        <li><a href="#3.1DASRecoveryOnePager-4.14.TestingImpact%3A">4.14. Testing Impact:</a></li> 
+       </ul> 
+       <li><a href="#3.1DASRecoveryOnePager-5.ReferenceDocuments%3A">5. Reference Documents:</a></li> 
+       <li><a href="#3.1DASRecoveryOnePager-6.Schedule%3A">6. Schedule:</a></li> 
+       <ul> 
+        <li><a href="#3.1DASRecoveryOnePager-6.1.ProjectedAvailability%3A">6.1. Projected Availability:</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="3.1DASRecoveryOnePager-1.Introduction"></a>1. Introduction</h1> <h4><a name="3.1DASRecoveryOnePager-1.1.Project%2FComponentWorkingName%3A"></a>1.1. Project/Component Working Name: </h2> <p>DAS Backup and Recovery - GF v2 level features</p> <h4><a name="3.1DASRecoveryOnePager-1.2.Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier"></a>1.2. Name(s) and e-mail address of Document Author(s)/Supplier</h2> <p>Name: chris.kasso@oracle.com</p> <h4><a name="3.1DASRecoveryOnePager-1.3.DateofThisDocument%3A"></a>1.3. Date of This Document:</h2> <p>05/21/2010 (updated 05/27/2010)</p> <h4><a name="3.1DASRecoveryOnePager-2.ProjectSummary"></a>2. Project Summary</h1> <h4><a name="3.1DASRecoveryOnePager-2.1.ProjectDescription%3A"></a>2.1. Project Description:</h2> <p>Provide (reintroduce) the basic v2 level DAS backup and recovery support.</p> <h4><a name="3.1DASRecoveryOnePager-2.2.RisksandAssumptions%3A"></a>2.2. Risks and Assumptions:</h2> <p>The primary contributor to this feature is new to the project and maintains multiple responsibilities. Estimating the time required to implement this set of features is difficult. </p> <h4><a name="3.1DASRecoveryOnePager-3.ProblemSummary"></a>3. Problem Summary</h1> <h4><a name="3.1DASRecoveryOnePager-3.1.ProblemArea%3A"></a>3.1. Problem Area:</h2> <p>Provide a means for users to backup a DAS instance and recover that instance should it be required.</p> <h4><a name="3.1DASRecoveryOnePager-3.2.Justification%3A"></a>3.2. Justification:</h2> <p>Feature parity with GlassFish Vv2.</p> <h4><a name="3.1DASRecoveryOnePager-4.TechnicalDescription%3A"></a>4. Technical Description:</h1> <h4><a name="3.1DASRecoveryOnePager-4.1.Details%3A"></a>4.1. Details:</h2> <p>A description of the features can be found in the <a href="3.1DASRecovery.html#3.1DASRecovery-section3.1DASRecoveryFeatureOverview">DAS Backup and Recovery wiki - feature overview</a>. </p> <p>The basic backup and recovery work offered in GFv2 must be offered in GF 3.1 as part of the core product.</p> <h4><a name="3.1DASRecoveryOnePager-Notesaboutexistingv2behavior%3A"></a>Notes about existing v2 behavior:</h3> 
+     <ul> 
+      <li>4.1.1. A backup or restore can only be executed when the DAS is not running:</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">aha: ./asadmin backup-domain domain1
+Usage: backup-domain [--domaindir domain_directory] [--description description] [--echo=false] [--terse=false] [--verbose=false] [domain_name]
+The domain must be stopped before a backup-domain can be performed.</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>4.1.2. By default the backup is stored in the domain directory:</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">aha: ./asadmin backup-domain domain1
+Successfully backed up the domain
+
+Description: 1274993402068
+Backup Filename: /work2/gfv2/domains/domain1/backups/sjsas_backup_v00001.zip
+Date and time backup was performed: Thu May 27 13:50:02 PDT 2010
+Domains Directory: /work2/gfv2/domains
+Domain Directory: /work2/gfv2/domains/domain1
+Domain Name: domain1
+Name of the user that performed the backup: kasso</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>4.1.3. The user can not control the name or location of the backup file. The backup files uses sjsas as part of the backup name.</li> 
+     </ul> 
+     <ul> 
+      <li>4.1.4. Subsequent backups of the same domain do not overwrite the prior backup.</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">aha: ./asadmin backup-domain 
+Successfully backed up the domain
+
+Description: 1274993439377
+Backup Filename: /work2/gfv2/domains/domain1/backups/sjsas_backup_v00002.zip
+Date and time backup was performed: Thu May 27 13:50:39 PDT 2010
+Domains Directory: /work2/gfv2/domains
+Domain Directory: /work2/gfv2/domains/domain1
+Domain Name: domain1
+Name of the user that performed the backup: kasso</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>4.1.5. The output of list-backups displays information about the known backups for an existing domain. This fails if more than one domain exists and a domain name was not provided.</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">aha: ./asadmin list-backups      
+Description: 1274993439377
+Backup Filename: /work2/gfv2/domains/domain1/backups/sjsas_backup_v00002.zip
+Date and time backup was performed: Thu May 27 13:50:39 PDT 2010
+Domains Directory: /work2/gfv2/domains
+Domain Directory: /work2/gfv2/domains/domain1
+Domain Name: domain1
+Name of the user that performed the backup: kasso
+
+Description: 1274993402068
+Backup Filename: /work2/gfv2/domains/domain1/backups/sjsas_backup_v00001.zip
+Date and time backup was performed: Thu May 27 13:50:02 PDT 2010
+Domains Directory: /work2/gfv2/domains
+Domain Directory: /work2/gfv2/domains/domain1
+Domain Name: domain1
+Name of the user that performed the backup: kasso</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>4.1.6. If the user does not provide a description (--description) a timestamp in milliseconds is recorded in the Description field.</li> 
+     </ul> 
+     <ul> 
+      <li>4.1.7. The created zip file will copy all files in the domain directory (including log files but not existing backup files).</li> 
+     </ul> 
+     <ul> 
+      <li>4.1.8. The backup command will add a backup.properties files to the top of the zip directory hierarchy:</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">aha: cat backup.properties
+#Backup Status
+#Thu May 27 13:50:02 PDT 2010
+timestamp.human=Thu May 27 13\:50\:02 PDT 2010
+domain.name=domain1
+user.name=kasso
+domain.dir=/work2/gfv2/domains/domain1
+domains.dir=/work2/gfv2/domains
+timestamp.msec=1274993402068
+description=1274993402068
+backup.file=/work2/gfv2/domains/domain1/backups/sjsas_backup_v00001.zip</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>4.1.9. The top of the zip file hierarchy looks like this:</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">aha: ls
+addons                   docroot                  logs
+applications             generated                master-password
+autodeploy               imq                      session-store
+backup.properties        java-web-start           
+bin                      jbi
+config                   lib</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>4.1.10. If only one domain exists a restore-domain request where no domain name is provided as a param will restore the latest backup file (zip) from that domain. If more than one domain exists this command will fail unless the domain name is provided as a command line parameter.</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">aha: ./asadmin restore-domain          
+Successfully restored the domain, domain1, to /work2/gfv2/domains/domain1
+Description: 1274993439377
+Backup Filename: /work2/gfv2/domains/domain1/backups/sjsas_backup_v00002.zip
+Date and time backup was performed: Thu May 27 13:50:39 PDT 2010
+Domains Directory: /work2/gfv2/domains
+Domain Directory: /work2/gfv2/domains/domain1
+Domain Name: domain1
+Name of the user that performed the backup: kasso</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>4.1.11. If a single domain exists and I use the --filename option to point to a specific backup the backup will be restored to that domain regardless of whether the backed up domain name matches the target domain (A warning is generated). Note if no domain name is supplied and only one domain exists it will restore to that domain by default.</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">./asadmin restore-domain --filename /work2/gfv2/domains/domain1/backups/sjsas_backup_v00002.zip domain3
+WARNING: The original backed-up domain name is [domain1], and you are restoring it to [domain3].
+
+Successfully restored the domain, domain3, to /work2/gfv2/domains/domain3
+Description: 1275071906538
+Backup Filename: /work2/gfv2/domains/domain1/backups/sjsas_backup_v00001.zip
+Date and time backup was performed: Fri May 28 11:38:26 PDT 2010
+Domains Directory: /work2/gfv2/domains
+Domain Directory: /work2/gfv2/domains/domain1
+Domain Name: domain1
+Name of the user that performed the backup: kasso</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>4.1.12. If I specify a pointer to the zip file but don't supply a domain name it fails if no domains exist in the domains directory. (Since we know the domain name from the zip why not restore the domain to its original name? <a href="https://github.com/javaee/glassfish/issues/5684">Issue 5684</a>)</li> 
+     </ul> 
+     <ul> 
+      <li>4.1.13. If more than one domain exists in the domain directory and a domain name was not supplied to the restore-domain command the restore fails:</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">./asadmin restore-domain --filename /work2/gfv2/foobar/backups/sjsas_backup_v00002.zip
+Usage: restore-domain [--domaindir domain_directory] [--filename backup_filename]  [--description description] [--terse=false] [--echo=false] [--verbose=false] [domain_name]
+com.sun.enterprise.cli.framework.CommandException: There is more than one domain in /work2/gfv2/domains. Please use operand to specify the domain.</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>4.1.14. If the domain name is supplied the domain is restored using that name (ignoring other domains which may already exist).</li> 
+     </ul> <h4><a name="3.1DASRecoveryOnePager-Enhancementsfor3.1%28OpenSourceEdition%29"></a>Enhancements for 3.1 (Open Source Edition)</h3> 
+     <ul> 
+      <li>4.1.15. restore-domain</li> 
+     </ul> <p>Restoring to a domain which does not match the domain name in the backup is an error. Allow the user to override the error with a new --force option. (This is incompatible with v2 behavior but arguably the v2 behavior was a bug)</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">./asadmin restore-domain --filename /work2/gfv2/foobar/backups/sjsas_backup_v00002.zip mydomain
+ERROR: The target domain name does not match the domain name in the backup.  Use --force to restore to a different domain name.</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>4.1.16. restore-domain</li> 
+     </ul> <p>If the domain name specified in the archive does not match any existing domains then the archive should be restored to the name stored in the archive. (<a href="https://github.com/javaee/glassfish/issues/5684">Issue 5684</a>)</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">aha: ./asadmin restore-domain --filename /work2/gfv2/foobar/backups/sjsas_backup_v00002.zip domain1         
+Successfully restored the domain, domain1, to /work2/gfv2/domains/domain1
+Description: 1274993439377
+Backup Filename: /work2/gfv2/foobar/backups/sjsas_backup_v00002.zip
+Date and time backup was performed: Thu May 27 13:50:39 PDT 2010
+Domains Directory: /work2/gfv2/domains
+Domain Directory: /work2/gfv2/domains/domain1
+Domain Name: domain1
+Name of the user that performed the backup: kasso</pre> 
+       </div> 
+      </div>
+     </div> <p>4.1.17. restore-domain</p> <p>If domain_name is not supplied as a parameter to restore-domain the domain should be restored only if a single domain exists and the domain name matches the archived domain name. Otherwise it is an error. Use --force to override.</p> <p>The v2 behavior is that it will restore to <b>any</b> single domain found in the domains directory (regardless of name) or it will fail to restore any domains. </p> <p>4.1.18. backup-domain</p> <p>Provide a mechanism to backup to a directory outside of the domain directory. Introduce --backupdir to backup-domain and list-backups.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">aha: ./asadmin --backupdir /home/kasso/backups backup-domain 
+Successfully backed up the domain
+
+Description: 1274993439377
+Backup Filename: /home/kasso/backups/domain1_2010_05_28_000001.zip
+...</pre> 
+       </div> 
+      </div>
+     </div> <p>4.1.19. Archive Name</p> <p>Change the archive file name to <em>domain_name</em>_YYYY_MM_DD_NNNNN.zip (from sjsas_backup_vNNNNN.zip). For example: domain1_2010_05_28_000001.zip</p> <p>4.1.20. Version Property</p> <p>Add a new version property to the backup.properties file. This records the version of GF the backup was created from.</p> <p>4.1.21. Default Description</p> <p>If a description is not provided provide the following default description: "<em>domain_name</em> backup created on <em>date</em> by <em>user</em>.</p> <p>4.1.22. list-backups</p> <p>Add --backupdir to list-backups. List backups for the specified domain from the supplied backup directory. List all backups if domain_name is not supplied.</p> <p>4.2.23. Remove --description from list-backups and restore-backups</p> <p>TBD: pending review by the compatibility team.</p> <p>4.1.24. delete-backups </p> <p>The details for this command have not be determined yet. This feature will not be implemented in 3.1.</p> <p>4.1.25. Remove the --description option from command help for list-backups and restore-domain</p> <p>In 2.1 --description was listed as a supported option for list-backups and restore-domain yet when you used that option it produced an error (list-backups) or was a no-op (restore-domain):</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">aha: ./asadmin list-backups --description alsjflasjdfklajsdlfjaslkfjasd 
+Usage: list-backups [--domaindir domain_directory] [--terse=false] [--echo=false] [--verbose=false] [domain_name]                       
+CLI013 Option description does not apply to list-backups.</pre> 
+       </div> 
+      </div>
+     </div> <p>The help for the list-backups and restore-domain should not list --description as a supported parameter. An error should continue to be generated if this parameter is supplied with the list-backups command. If the parameter is supplied as part of the restore-domain it should continue to be a no-op.</p> <p>4.1.26. Add support for --long/-l options</p> <p>In order to conform with the new asadmin CLI guidelines the --long/-l options will now be supported. They provide the same output as the --verbose option. The --verbose option is still supported but hidden from the --help output.</p> <h4><a name="3.1DASRecoveryOnePager-4.2.Bug%2FRFENumber%28s%29%3A"></a>4.2. Bug/RFE Number(s):</h2> <p><a href="https://github.com/javaee/glassfish/issues/5776">5776</a>: V3 issue which requested DAS recovery to be disabled.</p> <p><a href="https://github.com/javaee/glassfish/issues/12070">12070</a>: 3.1 feature tracking issue</p> <h4><a name="3.1DASRecoveryOnePager-4.3.InScope%3A"></a>4.3. In Scope:</h2> <p>Basic DAS backup and recover support (similar to GF v2 functionality).</p> <h4><a name="3.1DASRecoveryOnePager-4.4.OutofScope%3A"></a>4.4. Out of Scope:</h2> <p>More sophisticated backup and recovery support.</p> <h4><a name="3.1DASRecoveryOnePager-4.5.Interfaces%3A"></a>4.5. Interfaces:</h2> <h4><a name="3.1DASRecoveryOnePager-4.5.1PublicInterfaces"></a>4.5.1 Public Interfaces</h3> <p>List new, public interfaces this project exports.</p> 
+     <ul> 
+      <li>Interface: CLI: backup-domain, restore-domain, list-backups</li> 
+      <li>Comment: See v2 docs: <a href="http://docs.sun.com/app/docs/doc/821-0179/backup-domain-1?l=en&amp;q=v2.1.1backup-domain&amp;a=view">backup-domain(1)</a>, <a href="http://docs.sun.com/app/docs/doc/821-0179/restore-domain-1?l=en&amp;a=view">restore-domain(1)</a> and <a href="http://docs.sun.com/app/docs/doc/821-0179/list-backups-1?l=en&amp;a=view">list-backups(1)</a> for details.</li> 
+     </ul> 
+     <ul> 
+      <li>Interface: TBD: location and format of the backup zip file.</li> 
+      <li>Comment:</li> 
+     </ul> <h4><a name="3.1DASRecoveryOnePager-4.5.2PrivateInterfaces"></a>4.5.2 Private Interfaces</h3> <p>List private interfaces which are externally observable. </p> 
+     <ul> 
+      <li>Interface:</li> 
+      <li>Comment:</li> 
+     </ul> <h4><a name="3.1DASRecoveryOnePager-4.5.3Deprecated%2FRemovedInterfaces%3A"></a>4.5.3 Deprecated/Removed Interfaces:</h3> <p>None.</p> <h4><a name="3.1DASRecoveryOnePager-4.6.DocImpact%3A"></a>4.6. Doc Impact:</h2> <p>The GF v2 documentation regarding the cli options should be restored to the 3.1 doc set.</p> <h4><a name="3.1DASRecoveryOnePager-4.7.Admin%2FConfigImpact%3A"></a>4.7. Admin/Config Impact:</h2> <p>No config/admin impact.<br> No out of the box configuration will be required.</p> <h4><a name="3.1DASRecoveryOnePager-4.8.HAImpact%3A"></a>4.8. HA Impact:</h2> <p>This functionality should have no impact on HA or clustering.</p> <h4><a name="3.1DASRecoveryOnePager-4.9.I18N%2FL10NImpact%3A"></a>4.9. I18N/L10N Impact:</h2> <p>This project may impact L10N. The reintroduced CLI may have strings which need to be re-localized. The restored v2 docs may need localization.</p> <h4><a name="3.1DASRecoveryOnePager-4.10.Packaging%2CDelivery%26Upgrade%3A"></a>4.10. Packaging, Delivery &amp; Upgrade:</h2> <h4><a name="3.1DASRecoveryOnePager-4.10.1.Packaging"></a>4.10.1. Packaging</h3> <p>The functionality should be delivered with the core GF product. No special packaging is required. It should be possible to use an existing package.</p> <h4><a name="3.1DASRecoveryOnePager-4.10.2.Delivery"></a>4.10.2. Delivery</h3> <p>No impact.</p> <h4><a name="3.1DASRecoveryOnePager-4.10.3.UpgradeandMigration%3A"></a>4.10.3. Upgrade and Migration:</h3> <p>This project does not add any new requirements for update or upgrade.</p> <h4><a name="3.1DASRecoveryOnePager-4.11.SecurityImpact%3A"></a>4.11. Security Impact:</h2> <p>No security impact.</p> <h4><a name="3.1DASRecoveryOnePager-4.12.CompatibilityImpact"></a>4.12. Compatibility Impact</h2> <p>No compatibility impact. </p> <h4><a name="3.1DASRecoveryOnePager-4.13.Dependencies%3A"></a>4.13. Dependencies:</h2> <h4><a name="3.1DASRecoveryOnePager-4.13.1InternalDependencies"></a>4.13.1 Internal Dependencies </h3> <p>None</p> <h4><a name="3.1DASRecoveryOnePager-4.13.2ExternalDependencies"></a>4.13.2 External Dependencies </h3> <p>None</p> <h4><a name="3.1DASRecoveryOnePager-4.14.TestingImpact%3A"></a>4.14. Testing Impact:</h2> <p>The existing unit tests will be ported to 3.1. </p> <h4><a name="3.1DASRecoveryOnePager-5.ReferenceDocuments%3A"></a>5. Reference Documents:</h1> 
+     <ul> 
+      <li><a href="3.1DASRecovery.html" title="3.1DASRecovery">DAS Backup and Recovery Wiki</a></li> 
+      <li><a href="http://docs.sun.com/app/docs/doc/820-4335/ablbl?l=en&amp;n=1&amp;a=view">Migrating a domain using backup-domain and restore-domain</a></li> 
+     </ul> <h4><a name="3.1DASRecoveryOnePager-6.Schedule%3A"></a>6. Schedule:</h1> <h4><a name="3.1DASRecoveryOnePager-6.1.ProjectedAvailability%3A"></a>6.1. Projected Availability:</h2> <p>See <a href="3.1DASRecovery.html#3.1DASRecovery-section3.1DASRecoveryMilestoneSchedule">DAS Backup and Recover Milestone Schedule</a></p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Oct 04, 2010 by 
+<font color="#0050B2">kasso</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : CheckinGuidelinesForSailFin</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   
+     <div> 
+      <ul> 
+       <li><a href="#CheckinGuidelinesForSailFin-Why%3F">Why ?</a></li> 
+       <li><a href="#CheckinGuidelinesForSailFin-RestrictedandOpenSpaces">Restricted and Open Spaces</a></li> 
+       <li><a href="#CheckinGuidelinesForSailFin-1.0ChangesinSailfin%28OpenSpace%29">1.0 Changes in Sailfin (Open Space)</a></li> 
+       <ul> 
+        <li><a href="#CheckinGuidelinesForSailFin-1.1EntryCriteria">1.1 Entry Criteria</a></li> 
+        <li><a href="#CheckinGuidelinesForSailFin-1.2Process">1.2 Process</a></li> 
+       </ul> 
+       <li><a href="#CheckinGuidelinesForSailFin-2.0ChangesinGlassFishrelatedtoSailfin%28OpenSpace%29">2.0 Changes in GlassFish related to Sailfin (Open Space )</a></li> 
+       <ul> 
+        <li><a href="#CheckinGuidelinesForSailFin-2.1EntryCriteria">2.1 Entry Criteria</a></li> 
+        <li><a href="#CheckinGuidelinesForSailFin-2.2Process">2.2 Process</a></li> 
+       </ul> 
+       <li><a href="#CheckinGuidelinesForSailFin-3.0ChangesinSailfinandChangesinGlassFisharisingfromSailfin%28RestrictedSpace%29">3.0 Changes in Sailfin and Changes in GlassFish arising from Sailfin( Restricted Space )</a></li> 
+       <ul> 
+        <li><a href="#CheckinGuidelinesForSailFin-3.1EntryCriteria">3.1 Entry Criteria</a></li> 
+        <li><a href="#CheckinGuidelinesForSailFin-3.1.1Beta">3.1.1 Beta</a></li> 
+        <li><a href="#CheckinGuidelinesForSailFin-3.1.2FCS">3.1.2 FCS</a></li> 
+        <li><a href="#CheckinGuidelinesForSailFin-3.2Process">3.2 Process</a></li> 
+       </ul> 
+       <li><a href="#CheckinGuidelinesForSailFin-4.0GlassFishchanges%28OpenSpace%29">4.0 GlassFish changes (Open Space)</a></li> 
+       <ul> 
+        <li><a href="#CheckinGuidelinesForSailFin-4.1EntryCriteria">4.1 Entry Criteria</a></li> 
+        <li><a href="#CheckinGuidelinesForSailFin-4.2Process">4.2 Process</a></li> 
+       </ul> 
+       <li><a href="#CheckinGuidelinesForSailFin-5.0GlassFishRelatedChanges%28RestrictedSpace%29">5.0 GlassFish Related Changes (Restricted Space)</a></li> 
+       <ul> 
+        <li><a href="#CheckinGuidelinesForSailFin-5.1EntryCriteria">5.1 Entry Criteria</a></li> 
+        <li><a href="#CheckinGuidelinesForSailFin-5.2Process">5.2 Process</a></li> 
+       </ul> 
+       <li><a href="#CheckinGuidelinesForSailFin-6.0ContentsoftheCheckinmessages">6.0 Contents of the Checkin messages</a></li> 
+       <li><a href="#CheckinGuidelinesForSailFin-7.0UpdatingIssueTrackerforbugfixes">7.0 Updating Issue Tracker for bug fixes</a></li> 
+       <li><a href="#CheckinGuidelinesForSailFin-8.0GlassFishv2.1NewIssuesSubmissionCriteria">8.0 GlassFish v2.1 New Issues Submission Criteria</a></li> 
+      </ul>
+     </div> <h4><a name="CheckinGuidelinesForSailFin-Why%3F"></a>Why ?</h2> <p>There a developers working across 4 time zones, working almost 24 hours to add code / fix bugs in Sailfin and GlassFish. This can easily lead to instability of the build i.e. there maybe compile time errors, or functionality maybe broken. Hence a set of guidelines are recomended, which MUST be followed by each developer, before checking in any code. These guidelines are different for different stages of the project. There are guidelines for the Beta Phase and for normal phase.</p> <h4><a name="CheckinGuidelinesForSailFin-RestrictedandOpenSpaces"></a>Restricted and Open Spaces</h2> <p>Restricted Space means - when we are working towards a Beta OR FCS release on a branch created for that purpose. This is a stabilization phase and occurs after the Hard Code Freeze.<br> Open Space - means the we open the CVS for all checkins and we are either fixing all bugs, enhancing features.</p> <h4><a name="CheckinGuidelinesForSailFin-1.0ChangesinSailfin%28OpenSpace%29"></a>1.0 Changes in Sailfin (Open Space)</h2> <p>If you are making changes into the SailFin codebase.</p> <h4><a name="CheckinGuidelinesForSailFin-1.1EntryCriteria"></a>1.1 Entry Criteria </h3> <p>We are now past the Feature Freeze period ( since 1/21) and hence you need to have a bug ID (issue ID) corresponding to a checkin. The checkin would happen</p> <h4><a name="CheckinGuidelinesForSailFin-1.2Process"></a>1.2 Process</h3> <p>Please refer to the page <a href="SailfinCheckinProcess.html" title="SailfinCheckinProcess">here </a> for the checkin process</p> <h4><a name="CheckinGuidelinesForSailFin-2.0ChangesinGlassFishrelatedtoSailfin%28OpenSpace%29"></a>2.0 Changes in GlassFish related to Sailfin (Open Space )</h2> <p>If you are changing code in GlassFish SJSAS91_FCS_BRANCH and these changes arise from a requirement from Sailfin</p> <h4><a name="CheckinGuidelinesForSailFin-2.1EntryCriteria"></a>2.1 Entry Criteria</h3> <p>We are now past the Feature Freeze period ( since 1/21) and hence you need to have a bug ID (issue ID) corresponding to a checkin. The issue id needs to be from Sailfin Issue Tracker</p> <h4><a name="CheckinGuidelinesForSailFin-2.2Process"></a>2.2 Process</h3> <p>Please refer to the page <a href="SailfinCheckinProcess.html" title="SailfinCheckinProcess">here </a> for checkin process</p> <h4><a name="CheckinGuidelinesForSailFin-3.0ChangesinSailfinandChangesinGlassFisharisingfromSailfin%28RestrictedSpace%29"></a>3.0 Changes in Sailfin and Changes in GlassFish arising from Sailfin( Restricted Space )</h2> <h4><a name="CheckinGuidelinesForSailFin-3.1EntryCriteria"></a>3.1 Entry Criteria</h3> <h4><a name="CheckinGuidelinesForSailFin-3.1.1Beta"></a>3.1.1 Beta </h3> 
+     <ol> 
+      <li>There MUST be an issue id for each checkin whether its a bug or an feature enhancement.</li> 
+      <li>Only high priority (P1, P2, S1) bug fixes will be allowed in the beta branch.</li> 
+      <li>For FCS , all bugs P1,P2,P3 must be fixed.</li> 
+      <li>For Sailfin,the bugs would be discussed as a part of BugSWAT / BugScrub. Please attend this meeting to provide information on the fix and the justification for the fix.</li> 
+      <li>For GlassFish all checkins would need to go through approval process. Please send a mail to Prasad.subramanian@sun.com and cc Harpreet Singh@sun.com and srikanth.anandal@sun.com for approval</li> 
+      <li>A branch will be created in both the Sailfin and GlassFish CVS repositories after HCF. See the Milestone page for details</li> 
+      <li>Fixes that gets checked into beta branch will also need to be fixed in the main branch (SJSAS91_FCS_BRANCH and MAIN) until beta.</li> 
+      <li>Other issues not approved by BugScrub can be checked into main branch</li> 
+     </ol> <h4><a name="CheckinGuidelinesForSailFin-3.1.2FCS"></a>3.1.2 FCS</h3> 
+     <ol> 
+      <li>There MUST be an issue id for each checkin whether its a bug or an feature enhancement.</li> 
+      <li>For FCS , all bugs P1,P2,P3 must be fixed.</li> 
+      <li>For Sailfin,the bugs would be discussed as a part of BugSWAT / BugScrub. Please attend this meeting to provide information on the fix and the justification for the fix.</li> 
+      <li>For GlassFish all checkins would need to go through approval process. Please send a mail to Prasad.subramanian@sun.com and cc Harpreet Singh@sun.com and srikanth.anandal@sun.com for approval</li> 
+      <li><b>The following steps list the process post HCF</b></li> 
+      <li>A branch will be created in both the Sailfin and GlassFish CVS repositories after HCF.</li> 
+      <li>All checkins must have a corresponding issue , and needs to be approved by BugScrub before checkin. The approval will be reflected in the Issue Tracker by adding a keyword sf10-fcs-approved to the issue.</li> 
+      <li>If there is a new issue filed, it needs to be discussed at BugScrub. Once approved , it would have to be checked into the FCS branch and also need to be checkedin into the main branch (SJSAS91_FCS_BRANCH and MAIN) until FCS .</li> 
+      <li>Other issues not approved by BugScrub can be checked into main branch alone</li> 
+      <li>If there are issues which are deemed for next release, they will have to be evaluated and marked as P4.</li> 
+     </ol> <h4><a name="CheckinGuidelinesForSailFin-3.2Process"></a>3.2 Process </h3> 
+     <ol> 
+      <li>Please refer to the page <a href="SailfinCheckinProcess.html" title="SailfinCheckinProcess">here </a> for checkin process.</li> 
+      <li>Once an issue has been fixed, please update the Issue Tracker with the details of the fix mentioned in <a href="./CheckinGuidelinesForSailfin#section-CheckinGuidelinesForSailfin-7.0UpdatingIssueTrackerForBugFixes.html">Section 7</a> below</li> 
+     </ol> <h4><a name="CheckinGuidelinesForSailFin-4.0GlassFishchanges%28OpenSpace%29"></a>4.0 GlassFish changes (Open Space)</h2> <p>If you are changing code in GlassFish SJSAS91_FCS_BRANCH</p> <h4><a name="CheckinGuidelinesForSailFin-4.1EntryCriteria"></a>4.1 Entry Criteria</h3> <p>Please see section 8.0 below.</p> <h4><a name="CheckinGuidelinesForSailFin-4.2Process"></a>4.2 Process</h3> 
+     <ol> 
+      <li>Please get the code reviewed by the GlassFish module owner to review code.</li> 
+      <li>At a minimum the following tests should be run :</li> 
+     </ol> 
+     <ul> 
+      <li>GlassFish QL (both PE and EE)</li> 
+     </ul> <h4><a name="CheckinGuidelinesForSailFin-5.0GlassFishRelatedChanges%28RestrictedSpace%29"></a>5.0 GlassFish Related Changes (Restricted Space)</h2> <h4><a name="CheckinGuidelinesForSailFin-5.1EntryCriteria"></a>5.1 Entry Criteria</h3> 
+     <ol> 
+      <li>If a bug has already been pre-approved for this release, checkin your code into main branch (SJSAS91_FCS_BRANCH)</li> 
+      <li>For any new issues that are not in GFv2ur1 and have to make it into the SailFin branch, please fill out the following questionnaire <a href="./911BugSubmission.html">New Bug Submission Criteria for GF v2.1.1</a></li> 
+     </ol> <h4><a name="CheckinGuidelinesForSailFin-5.2Process"></a>5.2 Process</h3> 
+     <ol> 
+      <li>Please get the code reviewed by the GlassFish module owner to review code.</li> 
+      <li>At a minimum the following tests should be run</li> 
+     </ol> 
+     <ul> 
+      <li>GlassFish QL (both PE and EE)</li> 
+     </ul> <h4><a name="CheckinGuidelinesForSailFin-6.0ContentsoftheCheckinmessages"></a>6.0 Contents of the Checkin messages</h2> 
+     <ul> 
+      <li>Bug id ( if any)</li> 
+      <li>Reviewer names</li> 
+      <li>Tests run</li> 
+      <li>Comment on the code changes</li> 
+     </ul> <h4><a name="CheckinGuidelinesForSailFin-7.0UpdatingIssueTrackerforbugfixes"></a>7.0 Updating Issue Tracker for bug fixes</h2> 
+     <ul> 
+      <li>Please mark the bug as FIXED.</li> 
+      <li>Update the Issue with the evaluation of the problem and the details of how the issue has been fixed.</li> 
+      <li>Also add details of the files changed by the fix in the bug report. e.g. Add the cvs commit logs from the console that shows which files got updated ( alongwith the new version and old version). The other option is to point a link to FishEye changelog corresponding to this commit.</li> 
+      <li>Ensure that you update the 'Target Milestone' field with the build in which this issue has been fixed.</li> 
+     </ul> 
+     <hr> <h4><a name="CheckinGuidelinesForSailFin-8.0GlassFishv2.1NewIssuesSubmissionCriteria"></a>8.0 GlassFish v2.1 New Issues Submission Criteria</h2> <p>For any new issues that are not in GFv2ur1 and have to make it into the SailFin branch. Please fill out the following questionnaire.<br> <a href="./911BugSubmission.html">New Bug Submission Criteria for GF v2.1.1</a></p> 
+     <hr> <p>These guidelines are not meant to add additional burden , rather they are intended to make life predictable for all of us.</p> <p>Please send feedback to dev@sailfin.java.net</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:43.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

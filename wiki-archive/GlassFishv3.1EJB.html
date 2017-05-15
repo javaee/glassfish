@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFishv3.1EJB</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GlassFishv3.1EJB-GlassFishServerOpenSourceEdition3.1EJBImprovements"></a>GlassFish Server Open Source Edition 3.1 - EJB Improvements</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#GlassFishv3.1EJB-GlassFishServerOpenSourceEdition3.1EJBImprovements">GlassFish Server Open Source Edition 3.1 - EJB Improvements</a></li> 
+       <ul> 
+        <li><a href="#GlassFishv3.1EJB-ScopeoftheProject">Scope of the Project</a></li> 
+        <li><a href="#GlassFishv3.1EJB-MilestoneMappings">Milestone Mappings</a></li> 
+        <li><a href="#GlassFishv3.1EJB-TaskList">Task List</a></li> 
+        <li><a href="#GlassFishv3.1EJB-DroppedFeatures">Dropped Features</a></li> 
+        <li><a href="#GlassFishv3.1EJB-FeatureOverview">Feature Overview</a></li> 
+        <li><a href="#GlassFishv3.1EJB-Onepager%2FFunctionalSpecification">One-pager / Functional Specification</a></li> 
+        <li><a href="#GlassFishv3.1EJB-DevTests">Dev Tests</a></li> 
+        <li><a href="#GlassFishv3.1EJB-Quality">Quality</a></li> 
+        <li><a href="#GlassFishv3.1EJB-Documentation">Documentation</a></li> 
+        <li><a href="#GlassFishv3.1EJB-References%2FLinks">References / Links</a></li> 
+        <li><a href="#GlassFishv3.1EJB-EmailAlias">Email Alias</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="GlassFishv3.1EJB-ScopeoftheProject"></a>Scope of the Project</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Desired Improvement </th> 
+         <th class="confluenceTh"> Priority </th> 
+         <th class="confluenceTh"> Comments </th> 
+         <th class="confluenceTh"> Issue Link </th> 
+         <th class="confluenceTh"> Eng Response </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> EJB-1 </td> 
+         <td class="confluenceTd"> SFSB Checkpointing </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Support for high availability of SFSB state </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/12200">12200 </a> </td> 
+         <td class="confluenceTd"> YES </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> EJB-2 </td> 
+         <td class="confluenceTd"> EJB Timer Cluster/Failover Support </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Port V2 Timer functionality, including migrate-timers command and --target option of list-timers command. Only new behavior is support for automatic timer creation. Might not be able to fully support automatic timer migration due to automatic tx recovery work being assigned P2 </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/12201">12201 </a> </td> 
+         <td class="confluenceTd"> YES </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> EJB-3 </td> 
+         <td class="confluenceTd"> Additional DTrace Probes </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Cover <a href="http://java.sun.com/javaee/6/docs/api/index.html?overview-summary.html">Java EE </a> API - javax.ejb.* </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> No (next release) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> EJB-4 </td> 
+         <td class="confluenceTd"> Support Weblogic EJB descriptor </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> It's only feasible to support a subset of the elements that map to existing behavior. Specifically, those marked as "low impact" in <a href="http://appserver.sfbay.sun.com/Wiki.jsp?page=SupportWLDDEJB_">DD analysis </a> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> No (next release) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> EJB-5 </td> 
+         <td class="confluenceTd"> Full EJB 3.1 API support and libraries in classpath in Embeddable EJB API </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> Add support for missing EJB 3.1 functionality ( Web Service endpoints, MDBs, Timer Service ) and support for packaging subset of non-EJB classes into libraries in Embeddable EJB API </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/12202">12202 </a>, <a href="https://github.com/javaee/glassfish/issues/12151">12151 </a> </td> 
+         <td class="confluenceTd"> YES (lower priority than EJB-1, EJB2) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> EJB-6 </td> 
+         <td class="confluenceTd"> Retain SFSB / EJB Timer state during redeployment </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> Similar to web container Http Session retaining feature but for application-state associated with EJB components in an application </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/12203">12203 </a> </td> 
+         <td class="confluenceTd"> May be (lower priority than EJB1, EJB2, EJB-5) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> EJB-7 </td> 
+         <td class="confluenceTd"> User-specified thread-pools for EJB timers / async </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> Provide an option to select which thread pool should be used for async and timer callbacks. </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/7138">7138 </a> </td> 
+         <td class="confluenceTd"> Next release </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> EJB-8 </td> 
+         <td class="confluenceTd"> Option to disable V2 Vendor-specific JNDI names </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> Now that EJB 3.1 has portable EJB JNDI names, there is less need for the old vendor-specific names. By default, vendor-specific default JNDI names are applied automatically for backward compatibility, but that can lead to some ease-of-use issues. </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/11729">11729 </a> </td> 
+         <td class="confluenceTd"> Yes (lower priority than EJB-5, EJB-6) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> EJB-9 </td> 
+         <td class="confluenceTd"> EJB 3.1 Singleton support </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> No new work is needed to support the EJB 3.1 spec behavior of per-JVM singleton instance creation. We evaluated using the EJB Singleton component as the basis of a new per-cluster Singleton, but the programming model is not a good fit. </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/12205">12205 </a> </td> 
+         <td class="confluenceTd"> Partial (per-JVM only) </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>Note : There will be some ejb/naming work to support the IIOP Loadbalancing/failover feature. See <a href="http://kenai.com/projects/gf-corba-v3-mirror/pages/TableVersion">http://kenai.com/projects/gf-corba-v3-mirror/pages/TableVersion</a> for details.</p> <h4><a name="GlassFishv3.1EJB-MilestoneMappings"></a>Milestone Mappings</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status/Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> Milestone 4 </td> 
+         <td class="confluenceTd"> EJB-1 </td> 
+         <td class="confluenceTd"> SFSB Checkpointing </td> 
+         <td class="confluenceTd"> YES </td> 
+         <td class="confluenceTd"> Depends on HA store implementation and admin/deployment cluster support </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd"> Milestone 4 </td> 
+         <td class="confluenceTd"> EJB-2 </td> 
+         <td class="confluenceTd"> EJB Timer Cluster/Failover support </td> 
+         <td class="confluenceTd"> YES </td> 
+         <td class="confluenceTd"> Depends on admin/deployment cluster support and GMS </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3 </td> 
+         <td class="confluenceTd"> Full support dropped </td> 
+         <td class="confluenceTd"> EJB-5 </td> 
+         <td class="confluenceTd"> Full EJB 3.1 support and libraries in classpath in Embeddable EJB API </td> 
+         <td class="confluenceTd"> YES </td> 
+         <td class="confluenceTd"> Depends on Embedded GlassFish , JMS, Web Service modules </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4 </td> 
+         <td class="confluenceTd"> Milestone 6 </td> 
+         <td class="confluenceTd"> EJB-6 </td> 
+         <td class="confluenceTd"> Retain SFSB / EJB Timer state during redeployment </td> 
+         <td class="confluenceTd"> YES </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5 </td> 
+         <td class="confluenceTd"> Dropped </td> 
+         <td class="confluenceTd"> EJB-7 </td> 
+         <td class="confluenceTd"> User-specified thread-pools for EJB timers / async </td> 
+         <td class="confluenceTd"> YES </td> 
+         <td class="confluenceTd"> Depends on ORB pool API. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6 </td> 
+         <td class="confluenceTd"> Milestone 3 </td> 
+         <td class="confluenceTd"> EJB-8 </td> 
+         <td class="confluenceTd"> Option to disable GlassFish-specific JNDI names </td> 
+         <td class="confluenceTd"> YES </td> 
+         <td class="confluenceTd"> No dependencies outside module. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishv3.1EJB-TaskList"></a>Task List</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task </th> 
+         <th class="confluenceTh"> Target Milestone </th> 
+         <th class="confluenceTh"> Start Date </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Owner(s) </th> 
+         <th class="confluenceTh"> Feature ID </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Implement SFSB Tx checkpointing </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Mahesh </td> 
+         <td class="confluenceTd"> EJB-1-1 </td> 
+         <td class="confluenceTd"> This is done by MS3 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Implement SFSB method checkpointing </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Mahesh </td> 
+         <td class="confluenceTd"> EJB-1-2 </td> 
+         <td class="confluenceTd"> Done. Have a manual test. Converting it into a script based test </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> glassfish-ejb-jar.xml checkpointing elements in DOL </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Cheng </td> 
+         <td class="confluenceTd"> EJB-1-3 </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Serialization/Deserialization of all EJB reference types stored in SFSBs and HTTP Sessions </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Mahesh </td> 
+         <td class="confluenceTd"> EJB-1-4 </td> 
+         <td class="confluenceTd"> Done by MS3. A new class JavaEEIOUtils provides the contract that can be used by containers to serialize / deserialize states. This internally uses Sahoo's OSGiIOFactory class. Tested (during MS3) by keeping ejb references in web sessions. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Implement client side of HA store SPI </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Mahesh </td> 
+         <td class="confluenceTd"> EJB-1-5 </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Write new SFSB checkpointing/failover tests </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Mahesh </td> 
+         <td class="confluenceTd"> EJB-1-6 </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> migrate-timers command </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Cheng </td> 
+         <td class="confluenceTd"> EJB-2-1 </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> --target option of list-timers command </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Cheng </td> 
+         <td class="confluenceTd"> EJB-2-2 </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Enable GMS failure notifications for auto timer migration </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Marina </td> 
+         <td class="confluenceTd"> EJB-2-3 </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Coordination with tx module for correct behavior during auto tx recovery </td> 
+         <td class="confluenceTd"> MS5 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Marina </td> 
+         <td class="confluenceTd"> EJB-2-4 </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Automatic timer creation during deployment </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Marina </td> 
+         <td class="confluenceTd"> EJB-2-5 </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Write new clustered timer tests </td> 
+         <td class="confluenceTd"> MS5 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Marina/Cheng </td> 
+         <td class="confluenceTd"> EJB-2-6 </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Support for libraries in classpath in EJB Embeddable API </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Marina </td> 
+         <td class="confluenceTd"> EJB-5-1 </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> MDB support in EJB Embeddable API </td> 
+         <td class="confluenceTd"> MS6 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Marina </td> 
+         <td class="confluenceTd"> EJB-5-2 </td> 
+         <td class="confluenceTd"> Depends on JMS support in Embedded GlassFish </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> WS Endpoint support in EJB Embeddable API </td> 
+         <td class="confluenceTd"> MS6 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Marina </td> 
+         <td class="confluenceTd"> EJB-5-3 </td> 
+         <td class="confluenceTd"> Partial support is available </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Timer Service support in EJB Embeddable API </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Marina </td> 
+         <td class="confluenceTd"> EJB-5-4 </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Use non-default ports for Remote EJBs, JMS, etc. </td> 
+         <td class="confluenceTd"> MS6 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Marina </td> 
+         <td class="confluenceTd"> EJB-5-5 </td> 
+         <td class="confluenceTd"> Dropped </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Retain unique app. id / ejb ids across redeployment </td> 
+         <td class="confluenceTd"> MS5 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Mahesh </td> 
+         <td class="confluenceTd"> EJB-6-1 </td> 
+         <td class="confluenceTd"> Done by MS3 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> New command-line arg for asadmin --keepstate </td> 
+         <td class="confluenceTd"> MS5 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Hong </td> 
+         <td class="confluenceTd"> EJB-6-2 </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Skip deletion of SFSB persistent state if --keepstate=true </td> 
+         <td class="confluenceTd"> MS6 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Mahesh / Cheng </td> 
+         <td class="confluenceTd"> EJB-6-3 </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Preserve EJB Timers accross redeployments if --keepstate=true </td> 
+         <td class="confluenceTd"> MS6 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Cheng / Marina </td> 
+         <td class="confluenceTd"> EJB-6-4 </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Container changes to use configured thread pool </td> 
+         <td class="confluenceTd"> MS5 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Mahesh / Cheng </td> 
+         <td class="confluenceTd"> EJB-7 </td> 
+         <td class="confluenceTd"> Dropped </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> New ejb-container property for disabling GlassFish-specific JNDI names </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Cheng </td> 
+         <td class="confluenceTd"> EJB-8-1 </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Container changes to skip GlassFish-specific JNDI names </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Cheng </td> 
+         <td class="confluenceTd"> EJB-8-2 </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishv3.1EJB-DroppedFeatures"></a>Dropped Features</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <td class="confluenceTd"> EJB-4 </td> 
+         <td class="confluenceTd"> Support Weblogic EJB descriptor </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> EJB-3 </td> 
+         <td class="confluenceTd"> Additional DTrace probes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> EJB-5 </td> 
+         <td class="confluenceTd"> Full EJB 3.1 API support in Embeddable EJB API </td> 
+         <td class="confluenceTd"> <b>Note:</b> partial support is available</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> EJB-7 </td> 
+         <td class="confluenceTd"> User-specified thread-pools for EJB timers / async </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishv3.1EJB-FeatureOverview"></a>Feature Overview</h2> <h4><a name="GlassFishv3.1EJB-Onepager%2FFunctionalSpecification"></a>One-pager / Functional Specification</h2> 
+     <ul> 
+      <li><a href="GlassFishv3.1EJBOnePager.html" title="GlassFishv3.1EJBOnePager">One Pager</a></li> 
+     </ul> <h4><a name="GlassFishv3.1EJB-DevTests"></a>Dev Tests</h2> 
+     <ul> 
+      <li>Refer to information on EJB <a href="DeveloperTestDashboard.html" title="DeveloperTestDashboard">Dev Tests</a></li> 
+     </ul> <h4><a name="GlassFishv3.1EJB-Quality"></a>Quality</h2> 
+     <ul> 
+      <li>Link to Test Plans</li> 
+     </ul> <h4><a name="GlassFishv3.1EJB-Documentation"></a>Documentation</h2> 
+     <ul> 
+      <li>Link to Documentation</li> 
+     </ul> <h4><a name="GlassFishv3.1EJB-References%2FLinks"></a>References / Links</h2> 
+     <ul> 
+      <li><a href="http://appserver.sfbay.sun.com/Wiki.jsp?page=GlassFish3.1Internal%2FEJB-DHQA-MS3">EJB-1 Transaction Checkpointing docs and qa hand off doc </a></li> 
+      <li><a href="http://wikis.sun.com/pages/viewpage.action?pageId=215064371">EJB-2 Timer CLI features docs and qa hand off doc </a></li> 
+      <li><a href="http://appserver.sfbay.sun.com/Wiki.jsp?page=GlassFish3.1Internal%2FEJB-DHQA-MS3">EJB-6 Tx checkpointing feature docs and qa hand off doc </a></li> 
+      <li><a href="./Developer+Handoff+to+QA+for+EJB-8+(Option+to+disable+GlassFish-specific+JNDI).html">EJB-8 Option to disable GlassFish-specific JNDI names</a></li> 
+     </ul> <h4><a name="GlassFishv3.1EJB-EmailAlias"></a>Email Alias</h2> 
+     <ul> 
+      <li>Please contact us at <a href="mailto:ejb@glassfish.java.net">ejb@glassfish.java.net</a></li> 
+     </ul> 
+     <hr> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874926/21365206.pdf">EJB_v31_onepager4.html.pdf</a> (application/pdf) 
+      <br> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Oct 04, 2010 by 
+<font color="#0050B2">-marina</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

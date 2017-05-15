@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : Glassfish_v3_runs_on_osgiJa</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="Glassfish_v3_runs_on_osgiJa-GlassFishV3runsonOSGi%28byJeromeDochez4%2F11%2F08%29"></a>GlassFish V3 runs on OSGi (by Jerome Dochez 4/11/08)</h1> <p>覚えてる方もいらっしゃると思うのですが、昨年 &lt;a href="http://hk2.java.net/"&gt;HK2&lt;/a&gt; を紹介した際、HK2 は OSGi と相性がよい環境で、いずれは GlassFish v3 を OSGi ランタイム上で動かすことが可能になると説明しました。&lt;a href="http://weblogs.java.net/blog/ss141213/"&gt;Sahoo&lt;/a&gt; のおかげでこのビジョンはついに完成し、オープンソースコミュニティで利用可能な OSGi ランタイムのひとつ、Apache &lt;a href="http://felix.apache.org/site/index.html"&gt;Felix&lt;/a&gt; の上で GlassFish v3 を動かすことが出きるようになったことをご報告できることを嬉しく思います。</p> <p>実は、&lt;a href="http://www.knopflerfish.org/"&gt;KnopflerFish&lt;/a&gt; (もちろんこの名前は魚っぽくて好きです) も試していて、こちらもうまく動いたので、どの OSGi ランタイムも最小の労力でサポートできるだろうと思っています。</p> <p>さて、ここでみなさんが疑問に思うのはおそらく、GlassFish のモジュールシステムとして、OSGi に移行するのか？ということでしょう。今や、はい、そうです、と私は答えることができます。OSGi について私たちが考えを変えた、と言う方もいるかもしれませんが、そうではないです。当初から、OSGi フレンドリーでありたいと常に言ってきましたし、このビジョンを実現しました。OSGi に対して業界のサポートが大きいことは明白ですし、GlassFish がこの盛り上がりの一部となれることは重要です。最終的にどの実装を使うかということについては、まだいくつかを実験している段階のため、コミットできません。次のような条件を満たす必要があります:</p> 
+     <ul> 
+      <li>オープンソースであること</li> 
+      <li>GlassFish の２つのオープンソースライセンスのうちのどちらかと、あと Java EE ライセンスとにフレンドリーであること</li> 
+      <li>よいコミュニティ (フォーラム、メーリングリスト) があり、私たちの質問に答えてもらえること</li> 
+      <li>バグ修正を戻せるよう、コミッタの存在</li> 
+     </ul> <p>どの実装を選ぶにしても、この支持によってその実装は大きく加速するでしょう。なぜなら、私たちにはバグを修正し、機能を追加できるエンジニアはもちろん、OSGi ランタイムの全体的なパフォーマンスを向上させる Sun 最高のパフォーマンス専門エンジニアがいます。</p> <p>Sahoo は数日のうちに私たちが採用したソリューションの技術的な詳細をブログに書いてくれると思いますが、少しここで紹介します。GlassFish はまだ、HK2 と OSGi の両モードで動かすことが可能です。いつまで HK2 モードを保守するか私には分かりませんが、今のところ、起動時間は OSGi (2 秒) に比べて HK2 (1 秒) の方がかなり速いです。HK2 の方が速いのは驚くことではありません。HK2 は OSGi の様に汎用的なモジュールシステムを意図していなく、v3 に向けかなり最適化しているのですから！</p> <p>GlassFish のコードは OSGi ライブラリに全く (もしくは極めて少ない部分しか) 依存していません。私たちはそれら依存性の箇所を HK2 内に隔離し、OSGi ランタイム、もしくはモジュール管理ランタイムを変更することを、コードの変更なしにとても簡単にできるようにしました。HK2 プロジェクトは現在のまま継続し、単なるモジュール管理以上の機能を提供します。特に、次の機能は大きく使い続けます:</p> 
+     <ul> 
+      <li>モジュール管理の隔離レイヤ</li> 
+      <li>リポジトリを通じたモジュール管理 (OSGi R5 に入る機能)</li> 
+      <li>軽量コンポーネントモデル</li> 
+      <li>依存性注入</li> 
+      <li>設定管理</li> 
+     </ul> <p>GlassFish v3 の OSGi バージョンを試したい場合は、&lt;a href="http://download.java.net/javaee5/v3/releases/preview/glassfish-v3-preview2-b09.zip"&gt;こちら&lt;/a&gt;から最新のバイナリをダウンロードするとよいでしょう。</p> <p>これは最新ビルドです。あまり奇跡を期待せず、もしバグを発見された場合には報告して下さい。</p> <p>GlassFish を OSGi モードで動かすには、単純に次をインストールディレクトリでおこなって下さい。</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">java -DGlassFish_Platform=Felix -jar modules/glassfish-10.0-SNAPSHOT.jar</pre> 
+       </div> 
+      </div>
+     </div> <p>HK2 モードで動かす場合には下記です。</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">java -jar modules/glassfish-10.0-SNAPSHOT.jar</pre> 
+       </div> 
+      </div>
+     </div> 
+     <hr> <p>日本語翻訳: <a href="http://blogs.oracle.com/ogino">ogino</a></p> <p><a href="http://blogs.oracle.com/dochez/entry/glassfish_v3_runs_on_osgi">英文</a></p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 08, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:44.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

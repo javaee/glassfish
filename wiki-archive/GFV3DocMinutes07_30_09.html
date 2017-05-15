@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GFV3DocMinutes07_30_09</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GFV3DocMinutes07_30_09-GlassFishv3CommunityDocsMeetingJuly30%2C2009"></a>GlassFish v3 Community Docs Meeting July 30, 2009</h1> <h4><a name="GFV3DocMinutes07_30_09-Attendees"></a>Attendees</h2> <p>Chris Donaldson, Devika, Ian, June, Kim, Mike, Paul</p> <h4><a name="GFV3DocMinutes07_30_09-Agenda"></a>Agenda</h2> 
+     <ol> 
+      <li>Confusion Over Differences Between Various GlassFish Releases</li> 
+      <li>Review of AIs</li> 
+      <li>Progress on writing assignments by <a href="GlassFishV3DocStatus.html" title="GlassFishV3DocStatus">feature</a></li> 
+      <li>Bug status</li> 
+      <li>Open mic</li> 
+      <li>Next meeting</li> 
+     </ol> <h4><a name="GFV3DocMinutes07_30_09-Minutes"></a>Minutes</h2> 
+     <ol> 
+      <li>Confusion Over Differences Between Various GlassFish Releases 
+       <ul> 
+        <li>Chris Donaldson, of Sun's Premium Support team raised an issue that some community members have raised in the GlassFish discussion forums: poor visibility of information about the differencess between GlassFish 2.1, GlassFish v3 Prelude, and GlassFish v3 Preview.</li> 
+        <li>Some users have downloaded GlassFish v3 Prelude, only to be disappointed to discover that many features of a Java-EE-compliant application server are missing. While information that could have prevented this disappointment is available, users missed this information and selected to download and install a version that was unsuitable for their needs.</li> 
+        <li>There was some acknowledgement that this issue is in part a result of the strategy for developing and marketing these different releases of GlassFish Application Server simultaneously.</li> 
+        <li>The following suggestions for making these differences more apparent were made: 
+         <ul> 
+          <li>On the <a href="https://glassfish.java.net/public/downloadsindex.html">GlassFish downloads page</a>, make these chages: 
+           <ul> 
+            <li>State the features and limitations of GlassFish v3 Prelude (provides early adopters the chance to try out modularity and extensibility, supports only Java EE 5, supports only the web tier, offers time-limited commercial support) and GlassFish v3 Preview (previews Java EE 6, offers no commercial support).</li> 
+            <li>Move the <b>Final Release</b> section above the <b>Work in Progress Section</b>.</li> 
+            <li>Add a table that compares features of the various GlassFish Application Server.</li> 
+            <li>Near the download button for v3 Prelude, add a visually prominent statement of the limitations of the release.</li> 
+           </ul> </li> 
+          <li>In the <a href="http://docs.sun.com/doc/820-4494">Sun GlassFish Enterprise Server v3 Prelude Release Notes</a>, add a level-1 section whose title states: <b>This Release Supports Java EE 5</b>.</li> 
+         </ul> </li> 
+        <li>If any changes are made, Chris agreed to use the discussion forums to discuss the changes with the community and report back. 
+         <ul> 
+          <li>New AI on Paul:* Contact Gail about updates to the GlassFish project webset to alleviate user confusion about the differences between the various releases of GlassFish Application Server.</li> 
+         </ul> </li> 
+       </ul> </li> 
+      <li>Review of AIs: 
+       <ul> 
+        <li> 
+         <ul> 
+          <li>Paul:* Cross-check the <a href="V3FunctionalSpecs.html" title="V3FunctionalSpecs">v3 list of functional specifications</a> against the list of features in the v2 documentation.<br> <b><font color="orange">In progress</font>.</b> Paul is awaiting response from Abhijit.</li> 
+          <li>Paul:* Verify EOL process for features that are marked as "Never".<br> <b><font color="orange">In progress.</font></b> Paul is awaiting response from Abhijit.</li> 
+          <li>Paul:* Look at the man pages to see what properties are already doc'd there.<br> <b><font color="orange">In progress.</font></b> Most of the man pages for commands with <tt>-properties</tt> have no detailed information about properties. Paul to investigate further.</li> 
+          <li>Paul:* Determine the URL to API docs for the GlassFish packages and update Prefaces accordingly.<br> <b><font color="orange">In progress.</font></b> Paul is awaiting response from Jane Young.</li> 
+          <li>Paul:* Read the <a href="http://wiki.glassfish.java.net/attach/V3FunctionalSpecs/HTTPInterfaceForAdministartion.html">HTTP Interface for Administration spec</a>, speak with Rajeshwar, and report back.<br> <b><font color="orange">In progress.</font></b> Paul has started reading the spec and has asked Rajeshwar about the using the HTTP interfaces for monitoring <a href="http://blogs.oracle.com/aquatic/entry/glassfish_rest_interface">as described in Rajeshwar's blog</a>. Paul has also met Rajeshwar and discussed the usage of this feature and what the documentation for this feature should explain. To do: write up results of discussion and report back.</li> 
+          <li>All by August 13, 2009:* Read the functional specification for each of your features and send to Paul any new man pages introduced by the feature that are <b>not</b> listed in the <a href="GlassFishV3AdminCLIDocPlan.html" title="GlassFishV3AdminCLIDocPlan">Administration CLI Documentation Plan</a>.<br> __<font color="red">Not Started.</font></li> 
+         </ul> </li> 
+       </ul> </li> 
+      <li>Progress on writing assignments by <a href="GlassFishV3DocStatus.html" title="GlassFishV3DocStatus">feature</a><br> No detailed discussion.</li> 
+      <li>Bug status 
+       <ul> 
+        <li>Too early in the cycle to be tracking these individually.</li> 
+        <li>Check the list and try to fix your bugs as you work on your docs.</li> 
+       </ul> </li> 
+      <li>Next meeting<br> Thursday August 6th, 2009, 2-3 PM PDT</li> 
+     </ol> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 02, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:44.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

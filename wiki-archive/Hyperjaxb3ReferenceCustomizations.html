@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : Hyperjaxb3ReferenceCustomizations</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="Hyperjaxb3ReferenceCustomizations-Hyperjaxb3ReferenceCustomizations"></a>Hyperjaxb3 Reference - Customizations</h1> <p>There are many ways to express object constructs, properties and associations relationally. Hyperjaxb3 is built with flexibility in mind - it provides well developed means for customization.</p> <p>Hyperjaxb3 customizations are defined in XML form. There is an XML Schema for customizations<br> which describes all the cusomization elements. This schema relies on <tt>orm_1_0.xsd</tt> and <tt>persistence_1_0.xsd</tt> schemas defined in the JPA specifications. Below are links to these schemas:</p> 
+     <ul> 
+      <li><a href="https://hj3.java.net/svn/hj3/trunk/ejb/schemas/customizations/src/main/resources/customizations.xsd">customizations.xsd</a></li> 
+      <li><a href="https://hj3.java.net/svn/hj3/trunk/ejb/schemas/customizations/src/main/resources/orm/orm_1_0.xsd">orm_1_0.xsd</a></li> 
+      <li><a href="https://hj3.java.net/svn/hj3/trunk/ejb/schemas/customizations/src/main/resources/persistence_1_0.xsd">persistence_1_0.xsd</a></li> 
+     </ul> <p>In order to customize the mapping of certain XML Schema type, element or attribute you need to attach the appropriate customization element (or elements) to the target construct. You can do this directly in schema or in an external bindings file (<tt>*.xjb</tt>). Here's how.</p> <h4><a name="Hyperjaxb3ReferenceCustomizations-DeclareHyperjaxb3customizationnamespace"></a>Declare Hyperjaxb3 customization namespace</h2> <p>First of all, you need to declare Hyperjaxb3 customization namespace (<b><tt><a href="http://hyperjaxb3.jvnet.org/ejb/schemas/customizations">http://hyperjaxb3.jvnet.org/ejb/schemas/customizations</a></tt></b>).</p> <p>If you make your declarations directly in schema, declare the namespace and list the declared prefix in <tt>jaxb:extensionBindingPrefixes</tt> attribute:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+
+	xmlns:hj="http://hyperjaxb3.jvnet.org/ejb/schemas/customizations"
+	xmlns:orm="http://java.sun.com/xml/ns/persistence/orm"
+
+	xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"
+ 
+	jaxb:extensionBindingPrefixes="xjc hj"
+	jaxb:version="2.0"&gt;
+
+	&lt;!-- ... --&gt;
+
+&lt;/xs:schema&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>In the example above Hyperjaxb3 customization namespace declared next to the XJC. Basically, Hyperjaxb3's customizations are just further vendor extensions.</p> <p>Note that you will probably also need to define the <tt>orm</tt> namespace since Hyperjaxb3 customization elements often contain sub-elements from this namespace. You do not need to include <tt>orm</tt> into <tt>jaxb:extensionBindingPrefixes</tt>.</p> <p>If you're using an external bindings file, you have to do exactly the same declarations on the root <tt>jaxb:bindings</tt> element:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;jaxb:bindings
+	version="2.1"
+	xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns:hj="http://hyperjaxb3.jvnet.org/ejb/schemas/customizations"
+	xmlns:orm="http://java.sun.com/xml/ns/persistence/orm"
+
+	jaxb:extensionBindingPrefixes="hj"&gt;
+	&lt;!-- ... --&gt;
+&lt;/jaxb:bindings&gt;</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="Hyperjaxb3ReferenceCustomizations-Declarecustomizationelements"></a>Declare customization elements</h2> <p>Now when the customization namespace is declared, you can attach customization elements where they belong.</p> <p>If you are declaring your customizations the the XML Schema itself, use <tt>xs:annotation/xs:appinfo</tt> elements. For instance, the following declaration wil mark the <tt>ignoredType</tt> as <em>ignored</em> - Hyperjaxb3 will not generate any annotations in the corresponding derived class. It won't be included in the persistence unit as well.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;xs:complexType name="ignoredType"&gt;
+	&lt;xs:annotation&gt;
+		&lt;xs:appinfo&gt;
+			&lt;hj:ignored/&gt;
+		&lt;/xs:appinfo&gt;
+	&lt;/xs:annotation&gt;
+	&lt;!-- ... --&gt;
+&lt;/xs:complexType&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>You may also declare your customization in an external bindings file, linking customization elements to target constructs via XPath or SCD (schema component descriptors) <b>TODO</b>. </p> <p>XPath locations are provided in the <tt>jaxb:bindings/@node</tt> attribute. In the example below we customize table and column names and mark the <tt>partNum</tt> attribute of the <tt>Items</tt> type as an identifier (primary key of the entity).</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;jaxb:bindings schemaLocation="schema.xsd" node="/xs:schema"&gt;
+	&lt;jaxb:bindings node="xs:complexType[@name='PurchaseOrderType']"&gt;
+		&lt;hj:entity&gt;
+			&lt;orm:table name="po"/&gt;
+		&lt;/hj:entity&gt;
+	&lt;/jaxb:bindings&gt;
+	&lt;jaxb:bindings node="xs:complexType[@name='USAddress']"&gt;
+		&lt;hj:entity&gt;
+			&lt;orm:table name="address"/&gt;
+		&lt;/hj:entity&gt;
+	&lt;/jaxb:bindings&gt;
+	&lt;jaxb:bindings node="xs:complexType[@name='Items']//xs:complexType"&gt;
+		&lt;hj:entity&gt;
+			&lt;orm:table name="item"/&gt;
+		&lt;/hj:entity&gt;
+	&lt;/jaxb:bindings&gt;
+	&lt;jaxb:bindings node="xs:complexType[@name='Items']//xs:attribute[@name='partNum']"&gt;
+		&lt;hj:id/&gt;
+	&lt;/jaxb:bindings&gt;
+	&lt;jaxb:bindings node="xs:complexType[@name='Items']//xs:element[@name='USPrice']"&gt;
+		&lt;hj:basic&gt;
+			&lt;orm:column name="Price"/&gt;
+		&lt;/hj:basic&gt;
+	&lt;/jaxb:bindings&gt;
+&lt;/jaxb:bindings&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>See the full <a href="https://hj3.java.net/svn/hj3/trunk/ejb/tests/po-customized/src/main/resources/bindings.xjb">bindings.xjb</a> from the <a href="https://hj3.java.net/svn/hj3/trunk/ejb/tests/po-customized">ejb/tests/po-customized</a> test.</p> <h4><a name="Hyperjaxb3ReferenceCustomizations-Globalcustomizations"></a>Global customizations</h2> <p>If you want to apply a customization globally - for instance customize all the <tt>one-to-many</tt> mappings at once, include a <tt>hj:persistence</tt> element into the schema customizations. This element contains sub-elements like <tt>hj:default-one-to-many</tt> or <tt>hj:default-many-to-one</tt> etc. which define default mappings for the corresponding cases.</p> <p>For instance, if you want <tt>one-to-many</tt> to be mapped with a join table (instead of a join column by default), include the following definition:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;xs:schema
+	xmlns:xs="http://www.w3.org/2001/XMLSchema" ...&gt;
+
+	&lt;xs:annotation&gt;
+		&lt;xs:appinfo&gt;
+			&lt;hj:persistence&gt;
+				&lt;hj:default-one-to-many&gt;
+					&lt;orm:join-table/&gt;
+				&lt;/hj:default-one-to-many&gt;
+			&lt;/hj:persistence&gt;
+		&lt;/xs:appinfo&gt;
+	&lt;/xs:annotation&gt;
+	&lt;!-- ... --&gt;
+&lt;/xs:schema&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>Actually, Hyperaxb3 stores such default mapings in a <a href="https://hj3.java.net/svn/hj3/trunk/ejb/plugin/src/main/resources/org/jvnet/hyperjaxb3/ejb/strategy/customizing/impl/DefaultCustomizations.xml">similar resource</a> internally, so what you in fact do with the schema-wide customization described above is override internal definitions.</p> <p>Here's another example. By default complex single properties are mapped as <tt>many-to-one</tt>, complex collection properties as <tt>one-to-many</tt> (as defined in <a href="https://hj3.java.net/svn/hj3/trunk/ejb/plugin/src/main/resources/org/jvnet/hyperjaxb3/ejb/strategy/customizing/impl/DefaultCustomizations.xml">DefaultCustomizations.xml</a>). You can easily change these defaults to <tt>one-to-one</tt> and <tt>many-to-many</tt>:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;hj:persistence&gt;
+	&lt;hj:default-to-one&gt;
+		&lt;hj:one-to-one/&gt;
+	&lt;/hj:default-to-one&gt;
+	&lt;hj:default-to-many&gt;
+		&lt;hj:many-to-many/&gt;
+	&lt;/hj:default-to-many&gt;
+&lt;/hj:persistence&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>For more examples of customizations check the <a href="https://hj3.java.net/svn/hj3/trunk/ejb/tests/cu-one/src/main/resources/schema.xsd">schema</a> from the <a href="https://hj3.java.net/svn/hj3/trunk/ejb/tests/cu-one">ejb/tests/cu-one</a> test and other <a href="https://hj3.java.net/svn/hj3/trunk/ejb/tests">ejb/tests</a>.</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:48.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

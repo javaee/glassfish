@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : Timers</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="Timers-Currentsituation"></a>Current situation</h1> <p>(Note: Look in the attachments for an image illustrating the working of Timers)</p> <p>There only is one mechanism to fire timer on a replica. That is the reaper thread.<br> As SAS and a ST both have a real expiration time which is used for triggering the timer on the active copy and a wiggledExpiration time which is used for triggering the timer on the replica copy.<br> The wiggledExpiration time will be higher then the actual expiration time. </p> <p>In normal situation the replica should never trigger since the delay between wiggled and actual timer does give the active side a chance to expire and update the replica with a new wiggled expiration time, hence to prevent it from triggering.</p> <p><span class="error">Cannot resolve external resource into attachment.</span></p> <p>The wiggledExpiration time is also inherited by any children of the SAS.</p> <p>SInce the expiration times on the replica are checked using periodic reaper thread, the timings on the replica are not as acurate. So the granularity of the reaper (1 minute) should be added to the room the replica timers have in their expiration.</p> <p>When the expiration time is infinite (which can happen for the SAS timer), another mechanism is used. In this case the reactivation is done based on the last accessed time. The object will be re-activated when it has not been accessed for more then 5 hours.</p> <p>A additional delay is added to the expiration of the the children.</p> <p>So in effect the following will happens:</p> <p>SAS - not infinite<br> replica fires at wiggledExpiration time (see figure)<br> THis will result in a load advisory and eventually in the load of the entire tree.</p> <p>SAS - infinite<br> replica fires 5 hours after last accessed<br> This will result in a load advisory and eventually in a save that will update the last accessed time and a load of the entire tree.<br> <b>There might be a problem still that the childrens last accessed time is not updated at this point</b></p> <p>ST - not infinite<br> Replica fires at wiggledExpirtation time (see figure)<br> This will result in the load advisory and in the load of the ST and the SAS parent.</p> <p>DF/SS - child of not-infinite parent<br> Replica will be removed at wiggledExpiration + 1 minute.<br> The extra 1 minute gives the parent the chance to fire first and update its expiration time and that of its children</p> <p>DF/SS - child of infitite SAS<br> Replica will be removed at 5 hours since last access.<br> <b>There is a problem that in this case there is no additional delay introduced compared to the SAS parent</b></p> <p>TODO add the figure.</p> 
+     <hr> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20873287/21365332.png">timers-working-drawing.png</a> (image/png) 
+      <br> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:49.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

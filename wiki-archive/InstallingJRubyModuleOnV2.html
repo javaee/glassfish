@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : InstallingJRubyModuleOnV2</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="InstallingJRubyModuleOnV2-HowtoinstallJRubymoduleonGlassfishv2"></a>How to install JRuby module on Glassfish v2</h2> <h4><a name="InstallingJRubyModuleOnV2-InstallGlassfishv2fromherehttps%3A%2F%2Fglassfish.java.net%2Fdownloads%2Fv2ur1b09d.html.Let%27srefertotheGlassFishinstallationdirectoryas%24GLASSGISHROOT"></a>Install Glassfish v2 from <a href="https://glassfish.java.net/downloads/v2ur1-b09d.html">here</a>. Let's refer to the GlassFish installation directory as $GLASSGISH_ROOT</h3> <p>Getting started guide for Glassfish v2 can be found <a href="https://glassfish.java.net/downloads/quickstart/index.html">here</a></p> <h4><a name="InstallingJRubyModuleOnV2-InstallJRubymodulefromGlassfishhttps%3A%2F%2Fglassfish.java.net%2Fdownloads%2Fv2ur1b09d.htmlupdatecenter"></a>Install JRuby module from <a href="https://glassfish.java.net/downloads/v2ur1-b09d.html">Glassfish </a> update center</h3> <p>Run the updatetool to install <b>JRuby on Glassfish</b> module</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">$GLASSFISH-ROOT/updatecenter/bin/updatetool</pre> 
+       </div> 
+      </div>
+     </div> <p><span class="error">Cannot resolve external resource into attachment.</span></p> <p>As you can see above, the current version of Glassfish v2 JRuby module is <b>2.1</b>. Accept the license agreement to install this module. After the successful installation of this module, you would see a new directory <b>jruby</b> created under your GlassFish root directory. A screenshot of the directory structure after having installed the JRuby on GlassFish 2.1 module.</p> <p><span class="error">Cannot resolve external resource into attachment.</span></p> <p><b>Note</b> If you had already installed the previous 2.0 module, updatetool would inform that there is an update available. In this case go to the "Available Updates" section and select JRuby on GlassFish 2.1 module and install it. In this case the directory structure would be</p> <p><span class="error">Cannot resolve external resource into attachment.</span></p> <p><b>Contents of the JRuby on GlassFish 2.1 module</b></p> <p>This JRuby update center module primarily consists of <a href="http://docs.codehaus.org/display/JRUBY/2007/12/15/JRuby1.0.3Released">JRuby 1.0.3</a> and <a href="http://wiki.jruby.org/wiki/Goldspike">Goldspike</a> revision 858. The JRuby 1.0.3 source bits that are part of this module, have been updated with the following gems :</p> 
+     <ul> 
+      <li><a href="http://weblog.rubyonrails.org/2007/11/24/ruby-on-rails-1-2-6-security-and-maintenance-release">rails-1.2.6</a></li> 
+      <li><a href="http://rake.rubyforge.org/">rake-0.7.3</a></li> 
+      <li><a href="http://as.rubyonrails.com/">activesupport-1.4.4</a></li> 
+      <li><a href="http://ar.rubyonrails.com/">activerecord-1.15.6</a></li> 
+      <li><a href="http://ap.rubyonrails.com/">actionpack-1.13.6</a></li> 
+      <li><a href="http://wiki.rubyonrails.org/rails/pages/ActionMailerr">actionmailer-1.3.6</a></li> 
+      <li><a href="http://wiki.rubyonrails.org/rails/pages/ActionWebService">actionwebservice-1.2.6</a></li> 
+      <li><a href="http://blog.nicksieger.com/articles/2007/09/02/activerecord-jdbc-0-5">ActiveRecord-JDBC-0.5</a></li> 
+     </ul> <h4><a name="InstallingJRubyModuleOnV2-Webapplicationmodes"></a>Web application modes</h3> <p>JRuby on GlassFish update center module bundles Goldspike and it supports the 2 modes - "Standalone" and "Shared", of deploying a RubyOnRails (ROR) application to a GlassFish application server instance. For this blog we would be using the directory deployment feature of GlassFish.</p> 
+     <ol> 
+      <li>"Standalone" mode implies that the resulting Web application archive (WAR) would be self contained, i.e. it would contain not only the application, but also the JRuby, Rails, Goldspike libraries.</li> 
+      <li>"Shared" mode implies that the WAR would just contain the WEB-INF/web.xml file along with the application. The libraries required for the application to run successfully would be picked up from the classpath of the GlassFish application server instance.</li> 
+     </ol> <h4><a name="InstallingJRubyModuleOnV2-PostInstallationsteps"></a>Post Installation steps</h3> <p>If you plan to use the "Shared" mode you would have to perform one additional step. After the successful installation of the JRuby update center module copy the required libraries to the GlassFish library directory and restart the GlassFish application server instance (for these libraries to be picked up by the running instance). Run the following command to achieve this :</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">ant -f $GLASSFISH_ROOT/jruby/install.xml setup-shared-env</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="InstallingJRubyModuleOnV2-SampleApplications"></a>Sample Applications</h3> <p>This module comes with 3 sample applications -</p> 
+     <ol> 
+      <li>HelloWorldRailsApp - a simple hello world application</li> 
+      <li>cookbook - sample created using instructions from O'Reilly OnLamp</li> 
+      <li>mephisto - version 0.7.3 of Mephisto blogging</li> 
+     </ol> <p>In each of these sample application directory there is a file GLASSFISH_README, which provides information on how to deploy and run the application.</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:48.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

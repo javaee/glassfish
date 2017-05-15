@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : TopLinkEssentialsRoadmap</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="TopLinkEssentialsRoadmap-IdeasforaRoadMapofTopLinkEssentials"></a>Ideas for a RoadMap of TopLinkEssentials</h1> <p>This is totally uncommitted, just conversation fodder at this point.</p> 
+     <hr> <p><em><b>From</b> Doug Clarke @ Oracle</em></p> <p>We are working on a roadmap that lays out our plans for TopLink Essentials. We are hopefully going to review this with Sun and get it published in the near future. The goals we plan to address in the roadmap include:</p> 
+     <ul> 
+      <li>Improved visibility and brand recognition of TopLink Essentials. We need to be growing the community and user base.</li> 
+      <li>High priority ER's filed and voted on in the GF issue tracker</li> 
+      <li>Several Advanced/Extended ORM initiatives that will expose functionality beyond JPA</li> 
+     </ul> <p>The success of TopLink Essentials is also dependent upon addressing the bugs and enhancement requests of containers other then GlassFish who are leveraging us. We need to try and address what we can and also try our best to ensure our schedule produces functionality that can be included in these container's releases. Addressing these issues and schedules will be challenging.</p> <p>Currently I am aware of the following containers including or certifying TopLink Essentials as their JPA implementation:</p> 
+     <ul> 
+      <li>GlassFish</li> 
+      <li>SunAS</li> 
+      <li>OracleAS 10.1.3.1</li> 
+      <li>Spring 2.0</li> 
+      <li>JEUS (Tmax Soft)</li> 
+      <li>EasyBeans - JOnAS EJB 3.0 Container</li> 
+     </ul> <p>As far as release/milestone dates we are currently working to the GlassFish schedule since TopLink Essentials is a module of this project.</p> 
+     <hr> <p><em><b>From</b> Eliot Morrison @ Sun</em></p> <p>Here is a list based on Sun's engineers and what we have seen in the mailing list.</p> 
+     <ul> 
+      <li>Performance 
+       <ul> 
+        <li>Batch Writing for Performance</li> 
+        <li>Query Compilation caching</li> 
+        <li>Query result Cache</li> 
+        <li>Change Tracking using Weaving for performance</li> 
+       </ul> </li> 
+      <li>Misc Features 
+       <ul> 
+        <li>Field level Optimistic Locking</li> 
+        <li>Pessimistic Locking</li> 
+        <li>Timeouts for Queries</li> 
+        <li>Maps mapped to Join tables with extra columns</li> 
+        <li>Support for FlushMode.MANUAL (aka NEVER)</li> 
+       </ul> </li> 
+      <li>Query Compiler 
+       <ul> 
+        <li>Better validation and error messages</li> 
+        <li>Decouple from TopLink model</li> 
+       </ul> </li> 
+      <li>Usability 
+       <ul> 
+        <li>Monitoring</li> 
+        <li>Model Validation</li> 
+        <li>Improve Error Messages</li> 
+        <li>Support for Table Per Class inheritance strategy</li> 
+        <li>Support for mixed access type for inheritance and embedded fields</li> 
+        <li>Add extra annotations for runtime validation (Hibernate validation style)</li> 
+       </ul> </li> 
+      <li>EE Features 
+       <ul> 
+        <li>Pluggable caching</li> 
+        <li>Remote Cache Synchronization</li> 
+        <li>EM Passivation</li> 
+       </ul> </li> 
+      <li>Bugs 
+       <ul> 
+        <li>Need to prioritize open bugs</li> 
+        <li>Fix re-prioritized P2-P3 Bugs</li> 
+       </ul> </li> 
+      <li>Non TopLink value adds 
+       <ul> 
+        <li>JAXB bridge (HiberJAXB3 perhaps?)</li> 
+       </ul> </li> 
+     </ul> 
+     <hr> <p><em><b>From</b> Wonseok @ TmaxSoft</em></p> 
+     <ul> 
+      <li>clustered 2nd-level cache</li> 
+      <li>configurable cache invalidation policies</li> 
+      <li>query cache</li> 
+     </ul> 
+     <hr> <p><em><b>From</b> Eduardo Pelegri @ Sun</em></p> 
+     <ul> 
+      <li>Figure out how to deliver JavaPersistence.next EAs to ensure a high quality specification.</li> 
+     </ul> 
+     <hr> <p>Access Count: (org.goodjava.plugin.hitcounter.HitCounter) </p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 08, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

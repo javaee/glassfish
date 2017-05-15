@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : StaxNextDiscussion</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="StaxNextDiscussion-StAX.nextDiscussion"></a>StAX.next Discussion</h1> <p>This page has been created as a place to share ideas about the next version of StAX, i.e. StAX.next. If you are interested in discussing any of the other JAXP components see <a href="JaxpNextDiscussion.html" title="JaxpNextDiscussion">JaxpNextDiscussion</a>.</p> <h4><a name="StaxNextDiscussion-Nullvs.EmptyStringInconsistencies"></a>Null vs. Empty String Inconsistencies</h2> <h4><a name="StaxNextDiscussion-IssueswithDTDs"></a>Issues with DTDs</h2> <p>The specification states that when an XMLStreamReader is positioned on a DTD event, calling XMLStreamReader.getText() returns the internal subset. Currently many StAX implementations actually return the full DOCTYPE declaration. Clarification is needed here as to what should be the correct behavior. If the correct behavior is to only return the internal subset, then there must be APIs available to extract the other details (such as the element name, system and public identifiers) so that XML object models that are built from StAX can be built correctly.</p> <h4><a name="StaxNextDiscussion-TypedAPI"></a>Typed API</h2> <h4><a name="StaxNextDiscussion-CurrentproposaltoextendStAXwithtypedaccessors%3A"></a>Current proposal to extend StAX with typed accessors:</h3> 
+     <ul> 
+      <li><a href="http://fisheye.codehaus.org/browse/woodstox/wstx/trunk/src/java/org/codehaus/stax2/typed/TypedXMLStreamReader.java?r=root:">TypedXMLStreamReader</a></li> 
+      <li><a href="http://fisheye.codehaus.org/browse/woodstox/wstx/trunk/src/java/org/codehaus/stax2/typed/TypedXMLStreamWriter.java?r=root:">TypedXMLStreamWriter</a></li> 
+      <li><a href="http://fisheye.codehaus.org/browse/woodstox/wstx/trunk/src/java/org/codehaus/stax2/typed/TypedXMLStreamException.java?r=root:">TypedXMLStreamException</a></li> 
+     </ul> <h4><a name="StaxNextDiscussion-AdditionalproposalsubmittedbyJeffSinclair%3A"></a>Additional proposal submitted by Jeff Sinclair:</h3> <p>The attached [MSXMLStreamReader|<a href="http://wiki.glassfish.java.net/attach/StaxNextDiscussion/MSXMLStreamReader.java">http://wiki.glassfish.java.net/attach/StaxNextDiscussion/MSXMLStreamReader.java</a> and [MSXMLStreamWriter|<a href="http://wiki.glassfish.java.net/attach/StaxNextDiscussion/MSXMLStreamWriter.java">http://wiki.glassfish.java.net/attach/StaxNextDiscussion/MSXMLStreamWriter.java</a> interfaces are extensions to the StAX APIs (which includes Typed extensions) that we have had at the firm for quite some time. Before going into the details of the extensions, I'd like to take this opportunity to thank Jason Petrone who should also take credit for these APIs but has since left the firm.</p> <p>The key additional APIs for the XMLStreamReader are:</p> 
+     <ul> 
+      <li>getValueAsXXX, for example getValueAsInt().</li> 
+      <li>getAttributeValueAsXXX, for example getAttributeValueAsInt().</li> 
+      <li>getValueListReader().</li> 
+      <li>next(int event, String nsURI, String localName).</li> 
+      <li>skipElement(), skipParentElement().</li> 
+      <li>getDepth().</li> 
+      <li>bookmark().</li> 
+     </ul> <p>In our API, primitive types are considered synonymous to a CHARACTERS event. Hence the getValueAsXXX methods are valid on states where getText() would be used. Underneath the covers the appropriate conversion is made with dates assumed to be in ISO 8601.</p> <p>There are additional typed extensions for attributes which perform a similar conversion to getValueAsXXX. For APIs that are returning a primitive type (for example getAttributeValueAsInt()), a NoSuchAttributeException is thrown because null cannot be returned.</p> <p>To conclude the Typed extensions there is something known as a ValueListReader. This caters for the case where the content of an element is actually a list of values delimited by some character. This is particularly useful for matrix type content.</p> <p>An overloaded next(int, String, String) method has been added which is similar in nature to requireCheck() but actually advances the reader to that event. The namespace uri and local name are optional, if not set the respective comparison is ignored.</p> <p>The skipElement() and skipParentElement() APIs allow the current element to be skipped or the parent element to be skipped. This subtree skipping functionality is very useful when performing XPath over a stream.</p> <p>For convenience there is an API that exposes the current element depth to avoid the need for users to manage this state themselves.</p> <p>Finally we have just added the ability to bookmark() the reader. Essentially this provides multiple mark/reset functionality of an XML stream. This effectively adds random access functionality which is especially useful in anything that requires some form of speculative processing.</p> <p>The key additional APIs for the XMLStreamWriter are:</p> 
+     <ul> 
+      <li>writeXXX, for example writeLong().</li> 
+      <li>writeAttribute(..., XXX)</li> 
+      <li>writeListSeparator()</li> 
+     </ul> <p>Similar in vain to the reader extensions there are APIs for writing out primitive element content as well as primitive attribute content.</p> <p>There is also an extension to deal with delimiting a list of values. </p> <h4><a name="StaxNextDiscussion-WritetheXMLDeclarationusingStreamWriter"></a>Write the XML Declaration using StreamWriter</h2> <p>Currently, there are two processes that may determine the encoding:</p> <p>1) Creating a stream writer using the XMLOutputFactory. In this process, the encoding may be set but is not required. There's no default specified.</p> <p>2) Using the XMLStreamWriter's writeStartDocument methods. Defaults were specified as the XML version to 1.0, and the encoding to utf-8. The 3rd writeStartDocument method, e.g. writeStartDocument(String encoding, String version), states that XMLStreamException should be thrown if given encoding does not match encoding of the underlying stream.</p> <p>These specifications lead to the following issues:</p> <p>a. There's no explicit preference description that would give a clear understanding as to which encoding should be used. A logical deduction may be: encoding of the underlying stream, encoding set by using the 3rd writeStartDocument method e.g. writeStartDocument(String encoding, String version), and default encoding specified in writeStartDocument definition;</p> <p>b. Due to the above reason, assuming default encoding for the 1st and 2nd writeStartDocument methods could be in conflict with that of the underlying stream.</p> <p>c. Assuming encoding could be set using writeStartDocument(String encoding, String version) may also cause conflict since the encoding of the underlying stream may be different.</p> <h4><a name="StaxNextDiscussion-Proposedsolutions%3A"></a>Proposed solutions:</h3> <h4><a name="StaxNextDiscussion-Proposal1%3Athisproposalfocusesonmaintainingbackwardcompatibilitytoavoidthelongprocessitwouldtaketomakeanybehaviorchangeinthejdk.Thissolutionrequiresnochangetoapplicationsthatusesanyofthemethodstowritexmldocuments."></a>Proposal 1: this proposal focuses on maintaining backward compatibility to avoid the long process it would take to make any behavior change in the jdk. This solution requires no change to applications that uses any of the methods to write xml documents.</h3> <p>1) XMLOutputFactory: add three setters and getters, setXMLVersion/getXMLVersion, setXMLEncoding/getXMLEncoding and setStandAlone; Defaults: version 1.0, encoding "UTF-8", standalone "not set". The encoding set by setXMLEncoding is used to create the XMLStreamWriter, however, it may be overridden by the one specified in the create writer method.</p> <p>2) XMLStreamWriter: add writeXMLDeclaration() – write the xml declaration using the version, encoding and standalone information set on the XMLOutputFactory.</p> <p>3) XMLStreamWriter: deprecate the writeStartDocument methods.</p> <h4><a name="StaxNextDiscussion-WritetheXMLDeclarationusingXMLEventWriter"></a>Write the XML Declaration using XMLEventWriter</h2> <p>The XMLEventWriter has similar problems that may be a little more complicated given that the XMLEventFactory has no knowledge of the XMLEventWriter. The XMLEventFactory contains 4 createStartDocument. Notable differences are follows:</p> <p>1) createStartDocument(String encoding) vs. XMLStreamWriter.writeStartDocument(String version)</p> <p>2) additional createStartDocument(String encoding, String version, boolean standalone). </p> <p>3) no defaults specified</p> <p>4) no conflict specified, nor in the XMLEventWriter.add(XMLEvent event) method.</p> <h4><a name="StaxNextDiscussion-Proposedsolutions%3A"></a>Proposed solutions:</h3> <h4><a name="StaxNextDiscussion-Proposal1%3Athisproposalfocusesonmaintainingbackwardcompatibility%2CaswellasalignthesolutionwiththatfortheXMLStreamWriter"></a>Proposal 1: this proposal focuses on maintaining backward compatibility, as well as align the solution with that for the XMLStreamWriter</h3> <p>1) XMLEventWriter: add createXMLDeclaration(XMLOutputFactory) – using the properties set on the XMLOutputFactory to create an StartDocument event.</p> <p>2) XMLEventWriter: deprecate the createStartDocument methods.</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Dec 01, 2011 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

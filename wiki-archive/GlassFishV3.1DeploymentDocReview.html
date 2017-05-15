@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFishV3.1DeploymentDocReview</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>This page provides links to review drafts of new and changed documentation for the Deployment project as listed in the <a href="GlassFishV3.1DeploymentDocPlan.html" title="GlassFishV3.1DeploymentDocPlan">Deployment Documentation Plan</a>.</p> <p>Mandatory reviewers for each item are listed in each section.</p> <p>Changes to existing documentation since the last release are marked with change bars. No changes are marked in new documentation.</p> <p>Please provide your feedback by adding a comment to this page. To simplify the processing of your comments, please add your comments in the format in the sample comment. Review existing comments to see known issues and avoid duplicates.</p> 
+     <div> 
+      <ul> 
+       <li><a href="#GlassFishV3.1DeploymentDocReview-ChangestoBooks">Changes to Books</a></li> 
+       <ul> 
+        <li><a href="#GlassFishV3.1DeploymentDocReview-ApplicationDeploymentGuideChanges"> <em>Application Deployment Guide</em> Changes</a></li> 
+       </ul> 
+       <li><a href="#GlassFishV3.1DeploymentDocReview-ChangestoOnlineHelp">Changes to Online Help</a></li> 
+       <li><a href="#GlassFishV3.1DeploymentDocReview-ChangestoManPages">Changes to Man Pages</a></li> 
+      </ul>
+     </div> <h4><a name="GlassFishV3.1DeploymentDocReview-ChangestoBooks"></a>Changes to Books</h1> <h4><a name="GlassFishV3.1DeploymentDocReview-ApplicationDeploymentGuideChanges"></a><em>Application Deployment Guide</em> Changes</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Section </th> 
+         <th class="confluenceTh"> Documentation Impact </th> 
+         <th class="confluenceTh"> Reviewers </th> 
+         <th class="confluenceTh"> Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1 Overview of Deployment </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Hong Zhang, Tim Quinn </td> 
+         <td class="confluenceTd"> Reviewed by Hong and Tim </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &nbsp;&nbsp;&nbsp;Module and Application Versions </td> 
+         <td class="confluenceTd"> NEW </td> 
+         <td class="confluenceTd"> Hong Zhang, Tim Quinn </td> 
+         <td class="confluenceTd"> Reviewed by Hong and Tim </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2 Deploying Applications </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Hong Zhang, Tim Quinn </td> 
+         <td class="confluenceTd"> Reviewed by Hong and Tim </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &nbsp;&nbsp;&nbsp;Transparent JDBC Connection Pool<br class="atl-forced-newline">&nbsp;&nbsp;&nbsp;Reconfiguration </td> 
+         <td class="confluenceTd"> NEW </td> 
+         <td class="confluenceTd"> Jagadish Ramu, Shalini Muthukrishnan </td> 
+         <td class="confluenceTd"> Reviewed by Jagadish </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &nbsp;&nbsp;&nbsp;Application-Scoped Resources </td> 
+         <td class="confluenceTd"> NEW </td> 
+         <td class="confluenceTd"> Jagadish Ramu, Shalini Muthukrishnan </td> 
+         <td class="confluenceTd"> Reviewed by Jagadish </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> A <tt>asadmin</tt> Deployment Subcommands </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Hong Zhang, Tim Quinn </td> 
+         <td class="confluenceTd"> Reviewed by Hong and Tim </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> B Deployment Descriptor Files </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Hong Zhang, Tim Quinn </td> 
+         <td class="confluenceTd"> Reviewed by Hong and Tim </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &nbsp;&nbsp;&nbsp;WebLogic Server Deployment Descriptor<br class="atl-forced-newline">&nbsp;&nbsp;&nbsp;Support in GlassFish Server </td> 
+         <td class="confluenceTd"> NEW </td> 
+         <td class="confluenceTd"> Shing-Wai Chan, Bhakti Mehta, Rama Pulavarthi </td> 
+         <td class="confluenceTd"> Reviewed by Shing-Wai and Rama </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> C Elements of Deployment Descriptors </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Hong Zhang, Tim Quinn </td> 
+         <td class="confluenceTd"> Reviewed by Hong and Tim </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> &nbsp;&nbsp;&nbsp;<tt>jdbc-connection-pool</tt> element description </td> 
+         <td class="confluenceTd"> Moderate</td> 
+         <td class="confluenceTd"> Jagadish Ramu, Shalini Muthukrishnan </td> 
+         <td class="confluenceTd"> Reviewed by Jagadish </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>A PDF file of the latest <em>Application Deployment Guide</em>, with change bars, is <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876149/21365453.pdf">here</a>.</p> <h4><a name="GlassFishV3.1DeploymentDocReview-ChangestoOnlineHelp"></a>Changes to Online Help</h1> <h4><a name="GlassFishV3.1DeploymentDocReview-ChangestoManPages"></a>Changes to Man Pages</h1> <p>Mandatory reviewers in addition to the reviewers that are listed in the table are as follows:</p> 
+     <ul> 
+      <li>Elena Asarina</li> 
+      <li>Tom Mueller</li> 
+     </ul> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Man Page Name and Section </th> 
+         <th class="confluenceTh"> Documentation Impact </th> 
+         <th class="confluenceTh"> Reviewers </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876149/21365730.pdf">create-application-ref(1)</a> </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Hong Zhang, Tim Quinn </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876149/21365739.pdf">delete-application-ref(1)</a> </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Hong Zhang, Tim Quinn </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876149/21365733.pdf">list-application-refs(1)</a> </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Hong Zhang, Tim Quinn </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876149/21365731.pdf">create-lifecycle-module(1)</a> </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Hong Zhang, Tim Quinn </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876149/21365738.pdf">delete-lifecycle-module(1)</a> </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Hong Zhang, Tim Quinn </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876149/21365740.pdf">list-lifecycle-modules(1)</a> </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Hong Zhang, Tim Quinn </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876149/21365737.pdf">deploy(1)</a> </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Hong Zhang, Tim Quinn </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876149/21365736.pdf">deploydir(1)</a> </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Hong Zhang, Tim Quinn </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876149/21365735.pdf">disable(1)</a> </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Hong Zhang, Tim Quinn </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876149/21365734.pdf">enable(1)</a> </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Hong Zhang, Tim Quinn </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876149/21365732.pdf">list-applications(1)</a> </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Hong Zhang, Tim Quinn </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876149/21365745.pdf">list-components(1)</a> </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Hong Zhang, Tim Quinn </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876149/21365744.pdf">list-sub-components(1)</a> </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Hong Zhang, Tim Quinn </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876149/21365742.pdf">show-component-status(1)</a> </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Hong Zhang, Tim Quinn </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876149/21365743.pdf">redeploy(1)</a> </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Hong Zhang, Tim Quinn </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876149/21365741.pdf">undeploy(1)</a> </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Hong Zhang, Tim Quinn </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876149/21365768.pdf">create-application-ref.1.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876149/21365731.pdf">create-lifecycle-module.1.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876149/21365769.pdf">delete-application-ref.1.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876149/21365738.pdf">delete-lifecycle-module.1.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876149/21365756.pdf">deploy.1.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876149/21365755.pdf">deploydir.1.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876149/21365764.pdf">disable.1.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876149/21365765.pdf">enable.1.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876149/21365762.pdf">list-application-refs.1.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876149/21365763.pdf">list-applications.1.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876149/21365760.pdf">list-components.1.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876149/21365761.pdf">list-sub-components.1.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876149/21365757.pdf">redeploy.1.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876149/21365759.pdf">show-component-status.1.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876149/21365779.pdf">undeploy.1.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876149/21365740.pdf">list-lifecycle-modules.1.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876149/21365766.pdf">deploy.1.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876149/21365767.pdf">deploydir.1.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876149/21365758.pdf">redeploy.1.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876149/21365730.pdf">create-application-ref.1.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876149/21365739.pdf">delete-application-ref.1.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876149/21365737.pdf">deploy.1.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876149/21365736.pdf">deploydir.1.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876149/21365735.pdf">disable.1.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876149/21365734.pdf">enable.1.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876149/21365733.pdf">list-application-refs.1.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876149/21365732.pdf">list-applications.1.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876149/21365745.pdf">list-components.1.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876149/21365744.pdf">list-sub-components.1.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876149/21365743.pdf">redeploy.1.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876149/21365742.pdf">show-component-status.1.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876149/21365741.pdf">undeploy.1.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876149/21365595.pdf">SJSASEEADG.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876149/21365470.pdf">SJSASEEADG.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876149/21365469.pdf">SJSASEEADG.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876149/21365609.pdf">SJSASEEADG.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876149/21365453.pdf">SJSASEEADG.pdf</a> (application/pdf) 
+      <br> 
+     </div> 
+     <div class="tabletitle"> 
+      <a name="comments"> <h4>Comments:</h2> </a> 
+     </div> 
+     <table border="0" width="100%"> 
+      <tbody>
+       <tr> 
+        <td> <a name="comment-20876417"></a> <font class="smallfont">
+          <div class="table-wrap"> 
+           <table class="confluenceTable">
+            <tbody> 
+             <tr> 
+              <th class="confluenceTh"> Comment ID </th> 
+              <th class="confluenceTh"> Location </th> 
+              <th class="confluenceTh"> Comment </th> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> RJP-001 </td> 
+              <td class="confluenceTd"> deploy(1) man page </td> 
+              <td class="confluenceTd"> Sample comment. Should provide a proposed fix and correct content if applicable.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> RJP-002 </td> 
+              <td class="confluenceTd"> undeploy(1) man page </td> 
+              <td class="confluenceTd"> Another sample comment.</td> 
+             </tr> 
+            </tbody>
+           </table> 
+          </div> </font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by rebeccaparks at Nov 03, 2010 14:00 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20876440"></a> <font class="smallfont">
+          <div class="table-wrap"> 
+           <table class="confluenceTable">
+            <tbody> 
+             <tr> 
+              <th class="confluenceTh"> <font color="#000000">Comment ID</font> </th> 
+              <th class="confluenceTh"> <font color="#000000">Location</font> </th> 
+              <th class="confluenceTh"> <font color="#000000">Comment</font> </th> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> <font color="inherit">trm-1</font> </td> 
+              <td class="confluenceTd"> <font color="inherit">create-application-ref, delete-application-ref, create-lifecycle-module, deploy, deploydir, list-applications, list-components, redeploy, undeploy</font> </td> 
+              <td class="confluenceTd"> <font color="inherit">The --target instance_name should state that this must be a stand-alone instance, as you cannot run this on a single instance in a cluster.&nbsp;</font> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> <font color="inherit">trm-2</font> </td> 
+              <td class="confluenceTd"> <font color="inherit">create-application-ref, delete-application-ref, list-application-refs, deploy, deploydir, disable, enable, list-applications, list-components, list-sub-components, show-component-status, redeploy, undeploy</font> </td> 
+              <td class="confluenceTd"> <font color="inherit">Update the "v3 Preview" documentation reference</font> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> <font color="inherit">trm-3</font> </td> 
+              <td class="confluenceTd"> <font color="inherit">create-lifecycle-module</font> </td> 
+              <td class="confluenceTd"> <font color="inherit">Is there a default value for --loadorder?</font><br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> <font color="inherit">trm-4</font> </td> 
+              <td class="confluenceTd"> <font color="inherit">create-lifecycle-module</font> </td> 
+              <td class="confluenceTd"> <font color="inherit">Under --failurefatal, typo "This options"</font> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> <font color="inherit">trm-5</font> </td> 
+              <td class="confluenceTd"> <font color="inherit">create-lifecycle-module</font> </td> 
+              <td class="confluenceTd"> <font color="inherit">The last three options talk about a "resource" being enabled, having a description, etc. , but this manual page is about lifecycle modules. I don't think the word resource should be used here.</font> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> <font color="inherit">trm-6</font> </td> 
+              <td class="confluenceTd"> <font color="inherit">create-lifecycle-module</font> </td> 
+              <td class="confluenceTd"> <font color="inherit">What is the format of the --classpath option? Is this really a classpath with either colon-separated (Unix) or semicolon-separated (Windows) JAR files and directories, or is this just a single JAR file?</font> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> <font color="inherit">trm-7</font> </td> 
+              <td class="confluenceTd"> <font color="inherit">create-lifecycle-module</font> </td> 
+              <td class="confluenceTd"> <font color="inherit">Where is the applications root directory mentioned in the --classpath option.&nbsp;</font> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> <font color="inherit">trm-8</font> </td> 
+              <td class="confluenceTd"> <font color="inherit">create-lifecycle-module</font> </td> 
+              <td class="confluenceTd"> <font color="inherit">The description talks about running a program at a certain "stage in the server lifecycle". &nbsp;Where does the reader find out about what these stages are and how to actually write one of these modules? I expect that a reference to the writing server extensions module is needed here.&nbsp;</font><br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> <font color="inherit">trm-9</font> </td> 
+              <td class="confluenceTd"> <font color="inherit">create-lifecycle-module</font> </td> 
+              <td class="confluenceTd"> <font color="inherit">The manual page should explain what happens to a JAR file that is referenced by the classpath option? &nbsp;Is it copied to the server? Can it be deleted after the command is done running? &nbsp;(I expect yes).&nbsp;</font> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> <font color="inherit">trm-10</font> </td> 
+              <td class="confluenceTd"> <font color="inherit">list-lifecycle-modules</font> </td> 
+              <td class="confluenceTd"> <font color="inherit">Example 1: there is a missing newline between the command and the output.</font> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> <font color="inherit">trm-11</font> </td> 
+              <td class="confluenceTd"> <font color="inherit">deploy, deploydir, redeploy</font> </td> 
+              <td class="confluenceTd"> <font color="inherit">The note under --properties about the set command being unable to change properties that have an embedded dot may no longer be true. &nbsp;There was a bug fixed in this area in 3.1.</font> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> <font color="inherit">trm-12</font> </td> 
+              <td class="confluenceTd"> <font color="inherit">disable, enable</font> </td> 
+              <td class="confluenceTd"> <font color="inherit">The --target option should state that this command does permit a single instance within a cluster to be specified.&nbsp;</font> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> <font color="inherit">trm-13</font> </td> 
+              <td class="confluenceTd"> <font color="inherit">list-applications, list-components</font> </td> 
+              <td class="confluenceTd"> <font color="inherit">The description says that the --long option provides information about which versions are deployed, but the section on the --long option itself doesn't mention this.&nbsp;</font> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> <font color="inherit">trm-14&nbsp;</font> </td> 
+              <td class="confluenceTd"> <font color="inherit">show-component-status</font> </td> 
+              <td class="confluenceTd"> <font color="inherit">This command does not allow an instance within a cluster to be specified as the target, but given that disable and enable do, there seems to be a bug here. &nbsp;I sent some email to Hong and Tim about this, but once that is resolved, an update to the manual page will be required.&nbsp;</font> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> <font color="inherit">trm-15</font> </td> 
+              <td class="confluenceTd"> <font color="inherit">undeploy</font> </td> 
+              <td class="confluenceTd"> <font color="inherit">typo: "sever" in --target option</font> </td> 
+             </tr> 
+            </tbody>
+           </table> 
+          </div> </font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by trmueller at Nov 17, 2010 14:56 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20883742"></a> <font class="smallfont">
+          <div class="table-wrap"> 
+           <table class="confluenceTable">
+            <tbody> 
+             <tr> 
+              <th class="confluenceTh"> Comment ID </th> 
+              <th class="confluenceTh"> Location </th> 
+              <th class="confluenceTh"> Comment </th> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> tjq-1 </td> 
+              <td class="confluenceTd"> p. 42, Version Identifiers and Expressions section </td> 
+              <td class="confluenceTd"> The text says a version identifier is the : plus the suffix. Then the examples of "version identifiers" show the entire name+version-ID. The latest <a href="./VersioningDesignDocument">design document</a> uses the term "version identifier" (and version expression) to refer to the part after the colon. I think this makes sense, but do we also need a term for the combined "app-name:version-ID" and "app-name:version-spec" for elsewhere in the doc? Maybe "application identifier" and "application expression.html"?? </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> tjq-2 </td> 
+              <td class="confluenceTd"> To Reload Changes to Applications or Modules Dynamically </td> 
+              <td class="confluenceTd"> The text lists two steps. Only the touch command is needed. If the .reload file does not yet exist, touch will create it. If the file does exist, touch will update its revision time which triggers the redeployment. We can remove step 1. If we want to add an example for Windows, <tt>echo &gt; domain-dir/applications/app-or-module-name/.reload</tt> will work. (The content of the file is not important. GlassFish server just looks at the file's revision time.) </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> tjq-3 </td> 
+              <td class="confluenceTd"> p. 33, paragraph beginning "Deployment is the" </td> 
+              <td class="confluenceTd"> I suggest using "<em>Deployment</em> is the process of using a deployment tool to install an applicatinor module on GlassFish server, optionally specifying location-specific information such as a list of local users that can access the application or the name of the local database." </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> tjq-4 </td> 
+              <td class="confluenceTd"> p. 35, 2nd paragraph under Deployment Descriptors and Annos", sentence beginning "At run time..." </td> 
+              <td class="confluenceTd"> I suggest replacing "At runtime" with "During deployment" </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> tjq-5 </td> 
+              <td class="confluenceTd"> p. 37, Application Client Module bullet, last sentence </td> 
+              <td class="confluenceTd"> What is "supports direct access to GlassFish Server" intended to mean? </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> tjq-6 </td> 
+              <td class="confluenceTd"> p. 38, first paragraph under Application-Based Deployment </td> 
+              <td class="confluenceTd"> Can we move that paragraph to p. 36 so it becomes the second paragraph under Modules and Applications? It would be nice to define both terms briefly first, plus on p. 37 the first sentence of Module-Based Deployment refers to deploying modules "outside of any application" yet we have not defined "application" yet. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> tjq-7 </td> 
+              <td class="confluenceTd"> p. 37, last sentence of 1st paragraph under Module-Based Deployment </td> 
+              <td class="confluenceTd"> What do we mean by "By using package definitions in the source code of all modules...?" It sounds as if developers must add something specific to Java EE or GlassFish Server called "package definitions" to their source code. If what we mean here is the normal Java import statements (or fully-qualified class names) that any Java app would contain then let's remove this sentence. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> tjq-8 </td> 
+              <td class="confluenceTd"> p. 38, 2nd sentence under Application-Based Deployment </td> 
+              <td class="confluenceTd"> Change "combine these files" to "combine these files and, optionally, deployment descriptors" </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> more to come </td> 
+              <td class="confluenceTd">&nbsp;</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> tjq-9 </td> 
+              <td class="confluenceTd"> p. 40, the Note under Naming Standards </td> 
+              <td class="confluenceTd"> By "package names" do we mean the names of Java packages in which the developer's classes reside? Or something else? (Maybe this is related to tjq-7?) The Java compiler will not accept Java package names with weird characters in them, so if that's what we mean here by "package" we don't really need to warn the developer about this. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> tjq-10 </td> 
+              <td class="confluenceTd"> p. 40, the paragraph after the Note in tjq-9 </td> 
+              <td class="confluenceTd"> What exactly do we mean by a "Java package-like naming scheme?" The developer should use "/" in both the file names and the module and EJB names to make sure that files do not conflict with other files and names do not conflict with other names. If by "Java package-like" we mean "hierarchical" then let's say "hierarchical." To me, using the term "Java package-like" suggests using "." as the separator in the names, which will definitely not work. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> tjq-11 </td> 
+              <td class="confluenceTd"> p. 41, first paragraph </td> 
+              <td class="confluenceTd"> "...before the archive name..." should read "...instead of the archive name..." because "before" could e interpreted as "positionally in front of." </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> tjq-12 </td> 
+              <td class="confluenceTd"> same as tjq-11, 2nd and 3rd sentences </td> 
+              <td class="confluenceTd"> By "a user-specified name" do we mean the name, if any, given by the <tt>-</tt><tt>-name appName</tt> option on the asadmin deploy command (or in the GUI)? This is confusing because the name given in <tt>&lt;application-name&gt;</tt> is also user-specified. Can we just use a bullet or numbered list giving the order in which GlassFish Server chooses the application registration name: <br class="atl-forced-newline"> 
+               <ul> 
+                <li><tt>--name</tt> value on the deploy command (or in the GUI) * <tt>&lt;application-name&gt;</tt> value from the descriptors * archive name excluding the suffix.</li> 
+               </ul> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> tjq-13 </td> 
+              <td class="confluenceTd"> p. 42, 1st paragraph under Module and Application Vesioning </td> 
+              <td class="confluenceTd"> Insert new 2nd sentence: "At most one version of an application or module can be enabled on a server any given time." I know we say this later on also, but this is a key aspect of versioning and we should mention it here when we introduce the topic. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> tjq-14 </td> 
+              <td class="confluenceTd"> p. 43, 2nd paragraph of Choosing the Enabled Version </td> 
+              <td class="confluenceTd"> Remove the reference to the <tt>deploydir</tt> command. That command is deprecated and <tt>deploy</tt> does its job now. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> tjq-15 </td> 
+              <td class="confluenceTd"> p. 44, 1st sentence under About Assembly and Deployment Events </td> 
+              <td class="confluenceTd"> Change "anyone" to "any user authorized as an administrator." Now, in typically development environments people might not set up different admin users, so everyone is "authorized." But saying "anyone" without qualifying what we really mean sounds too wide open. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> tjq-16 </td> 
+              <td class="confluenceTd"> p. 44, item 1 </td> 
+              <td class="confluenceTd"> Because descriptors are optional - and in fact we tend to encourage developers to use annotations rather than descriptors where possible - we should mention again that step 1 is optional and that using annotations is a good alternative. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> tjq-17 </td> 
+              <td class="confluenceTd"> p. 50, last 2-3 paragraphs </td> 
+              <td class="confluenceTd"> This text duplicates what's been said earlier about how GlassFish Server chooses the application's registration name. Can we say this once, earlier, and then just refer from here to there? If we decide to replicate the text and you've changed the earlier section to use bullets or numbers, do the same here. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> tjq-18 </td> 
+              <td class="confluenceTd"> p. 59, 2nd sentence </td> 
+              <td class="confluenceTd"> Replace the 2nd sentence with "The contents of the directory must be the same as the contents of a corresponding archive file, with one exception. An application archive file contains <em>archive files</em> for its modules, for example myUI.war and myEJB.jar. The expanded application directory contains <em>expanded directories</em> for the modules, for example myUI_war and myEJB_jar, instead." </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> tjq-19 </td> 
+              <td class="confluenceTd"> p. 60, just before the "Before You Begin" section </td> 
+              <td class="confluenceTd"> Mention that IDEs typically use directory deployment, in which case the developer does not need to deal directly with the expanded format. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">tjq-20 </td> 
+              <td class="confluenceTd"> p. 60, Example 2-20 </td> 
+              <td class="confluenceTd"> The example command needs to specify the directory being deployed. either <tt>deploy hello</tt> (if the current directory contains the expanded subdirectory <tt>hello</tt>) or <tt>deploy --name hello myApp</tt> (if myApp is the expanded directory). </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> tjq-21 </td> 
+              <td class="confluenceTd"> p. 71, item 5, first 3 sentences </td> 
+              <td class="confluenceTd"> Change to "The client artifacts contain the ties and necessary classes for the application client. In this release of GlassFish Server the client artifacts include multiple files. You can use either <tt>deploy --retrieve</tt> or <tt>get-client-stubs</tt> but you do not need to use both. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> tjq-22 </td> 
+              <td class="confluenceTd"> p. 72, the Before You Begin sentence </td> 
+              <td class="confluenceTd"> Change to "This task applies if you want to use the appclient script to run the application client on a system other than where the server runs." </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> tjq-23 </td> 
+              <td class="confluenceTd"> p. 72, item 3 </td> 
+              <td class="confluenceTd"> That command works fine on UNIX or Windows. No need to cite UNIX in particular. </td> 
+             </tr> 
+            </tbody>
+           </table> 
+          </div> </font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by timq at Dec 15, 2010 20:07 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20883697"></a> <font class="smallfont">
+          <div class="table-wrap"> 
+           <table class="confluenceTable">
+            <tbody> 
+             <tr> 
+              <th class="confluenceTh"> Comment ID<br class="atl-forced-newline"> </th> 
+              <th class="confluenceTh"> Location<br class="atl-forced-newline"> </th> 
+              <th class="confluenceTh"> Comment<br class="atl-forced-newline"> </th> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> jagadish-1<br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> Deployment Guide, p75 <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> "However, in-progress connection requests must be retried unless the dynamic-reconfiguration-wait-timeout-in-seconds property is set." can be re-written as, <br class="atl-forced-newline"> "In order to enable transaprent pool reconfiguration, the property 'dynamic-reconfiguration-wait-timeout-in-seconds' need to be set"<br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> jagadish-2<br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> Deployment Guide, p76 </td> 
+              <td class="confluenceTd"> "You can define an application-scoped database"<br class="atl-forced-newline"> can be re-written as :<br class="atl-forced-newline"> "You can define an application-scoped jdbc resource </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> jagadish-3<br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> Deployment Guide, p76 </td> 
+              <td class="confluenceTd"> "It is free from unexpected resource starvation or delay in acquiring connections."<br class="atl-forced-newline"> can be re-written as :<br class="atl-forced-newline"> "These resources are available only to the defining application thereby the defining application is free from unexpected resource starvation or delay in acquiring connections due to other applications" </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> jagadish-4<br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> Deployment Guide, p76, Section "Naming"<br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> "For example, application-scoped databases have JNDI names in the following format:<br class="atl-forced-newline"> java:app/jdbc/DataSourceName or java:module/jdbc/ModuleLevel/DataSourceName"<br class="atl-forced-newline"> can be re-written as :<br class="atl-forced-newline"> "For example, application-scoped resources have JNDI names in the following format:<br class="atl-forced-newline"> java:app/jdbc/DataSourceName or java:module/jdbc/DataSourceName" </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> jagadish-5<br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> Deployment Guide, p77, Section "Redeployment"<br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> [Property name has changed, need to update it accordingly.]<br class="atl-forced-newline"> <br class="atl-forced-newline"> To preserve old resource definitions during redeployment, use<br class="atl-forced-newline"> the preserve-app-scoped-resources property of the redeploy (or deploy --force=true)<br class="atl-forced-newline"> subcommand. For example:<br class="atl-forced-newline"> asadmin&gt; redeploy --property preserve-app-scoped-resources=true MyApp.ear<br class="atl-forced-newline"> asadmin&gt; deploy --force=true --property preserve-app-scoped-resources=true MyApp.ear<br class="atl-forced-newline"> <br class="atl-forced-newline"> can be re-written as :<br class="atl-forced-newline"> <br class="atl-forced-newline"> To preserve old resource definitions during redeployment, use<br class="atl-forced-newline"> the preserveAppScopedResources property of the redeploy (or deploy --force=true)<br class="atl-forced-newline"> subcommand. For example:<br class="atl-forced-newline"> asadmin&gt; redeploy --property preserveAppScopedResources=true MyApp.ear<br class="atl-forced-newline"> asadmin&gt; deploy --force=true --property preserveAppScopedResources=true MyApp.ear<br class="atl-forced-newline"> <br class="atl-forced-newline"> NOTE : Please update the deploy/undeploy man pages also if the property 'preserveAppScopedResources' is specified there. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> jagadish-6<br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> Deployment Guide, p172, Section "Attributes" of jdbc-connection-pool<br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> "Changing the following attributes requires a server restart"<br class="atl-forced-newline"> can be re-written as :<br class="atl-forced-newline"> "Changing the following attributes requires re-deployment (or disable and enable) of applications that refer the resources or server restart" </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> jagadish-7<br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> Deployment Guide, p130, Section "Attributes" of connector-connection-pool<br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> "Changing the following attributes requires a server restart"<br class="atl-forced-newline"> can be re-written as :<br class="atl-forced-newline"> "Changing the following attributes requires re-deployment (or disable and enable) of applications that refer the resources or server restart" </td> 
+             </tr> 
+            </tbody>
+           </table> 
+          </div> </font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by jagadish at Jan 02, 2011 20:52 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20879489"></a> <font class="smallfont">
+          <div class="table-wrap"> 
+           <table class="confluenceTable">
+            <tbody> 
+             <tr> 
+              <th class="confluenceTh">Comment ID</th> 
+              <th class="confluenceTh">Location</th> 
+              <th class="confluenceTh">Comment</th> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">shingwai-1</td> 
+              <td class="confluenceTd">Deployment Guide, p.99</td> 
+              <td class="confluenceTd">virtual-directory-mapping is not supported</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">shingwai-2</td> 
+              <td class="confluenceTd">Deployment Guide, p.100</td> 
+              <td class="confluenceTd">page-check-seconds under jsp-descriptor is not supported</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">shingwai-3</td> 
+              <td class="confluenceTd">Deployment Guide, p.100</td> 
+              <td class="confluenceTd">compress-html-template under jsp-descriptor <br class="atl-forced-newline">GlassFish Support: trimSpaces init parameter of JspServlet</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">shingwai-4</td> 
+              <td class="confluenceTd">Deployment Guide, p.100</td> 
+              <td class="confluenceTd">save-sessions-enabled under container-descriptor <br class="atl-forced-newline">GlassFish Support: keep-state glassfish-web.xml equivalent</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">shingwai-5</td> 
+              <td class="confluenceTd">Deployment Guide, p.100</td> 
+              <td class="confluenceTd">run-as-principal-name under servlet-descriptor <br class="atl-forced-newline">GlassFish Support: principal-name of servlet in glassfish-web.xml equivalent</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">shingwai-6</td> 
+              <td class="confluenceTd">Deployment Guide, p.101</td> 
+              <td class="confluenceTd">It should be glassfish-web.xml instead of glassfish-web-app.xml</td> 
+             </tr> 
+            </tbody>
+           </table> 
+          </div> </font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by shing-wai.chan at Jan 11, 2011 15:14 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20882040"></a> <font class="smallfont">
+          <div class="table-wrap"> 
+           <table class="confluenceTable">
+            <tbody> 
+             <tr> 
+              <th class="confluenceTh">Comment ID</th> 
+              <th class="confluenceTh">Location</th> 
+              <th class="confluenceTh">Comment</th> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">tjq-24</td> 
+              <td class="confluenceTd">p. 56, To Reload Changes</td> 
+              <td class="confluenceTd"> If we are going to show two steps (changing to the directory and then using touch or echo) then the first step should <b>not</b> include the .reload file name. You cannot cd to a file, just the containing directory.<br class="atl-forced-newline">Also, the example for Windows needs to be <tt>echo &gt; .reload</tt> as in my earlier comment - note the greater-than side has to be there. The revised text omitted it.</td> 
+             </tr> 
+            </tbody>
+           </table> 
+          </div> </font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by timq at Feb 16, 2011 11:50 
+         </div> </td> 
+       </tr> 
+      </tbody>
+     </table> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jan 20, 2011 by 
+<font color="#0050B2">rebeccaparks</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

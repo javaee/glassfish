@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFishRepoBuild</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GlassFishRepoBuild-GlassFishRepoIPSPackageBuildInstructions"></a>GlassFish Repo IPS Package Build Instructions</h1> <p>Note: at this point, it is highly recommended that you use Solaris or Linux system for your package development and build. Windows and MacOS builds should work but have not been verified...</p> <h4><a name="GlassFishRepoBuild-Prerequisites"></a>Prerequisites</h2> <p>Following tools/utilities should be installed and configured on your system before build:</p> 
+     <ul> 
+      <li>Subversion client (svn)</li> 
+      <li>Maven 2.0.9 (mvn)</li> 
+      <li>JDK 6 - it's <tt>bin</tt> directory should be in the PATH, and JAVA_HOME should be set to point to JDK 6 installation directory.</li> 
+     </ul> <p>You will also need to install Image Packaging System (IPS) toolkit image for your build platform. Downloads are available here:</p> <p><a href="http://download.java.net/updatecenter2/promoted/2.1.0RR/pkg-toolkit-2.1.0-linux-i386.zip">UC 2.1 Linux x86 toolkit image</a></p> <p><a href="http://download.java.net/updatecenter2/promoted/2.1.0RR/pkg-toolkit-2.1.0-sunos-i386.zip">UC 2.1 Solaris x86 toolkit image</a></p> <p><a href="http://download.java.net/updatecenter2/promoted/2.1.0RR/pkg-toolkit-2.1.0-sunos-sparc.zip">UC 2.1 Solaris Sparc toolkit image</a></p> <p><a href="http://download.java.net/updatecenter2/promoted/2.1.0RR/pkg-toolkit-2.1.0-darwin-universal.zip">UC 2.1 Mac OS toolkit image</a></p> <p><a href="http://download.java.net/updatecenter2/promoted/2.1.0RR/pkg-toolkit-2.1.0-windows-i386.zip">UC 2.1 Windows toolkit image</a></p> <p>See also the <a href="http://wikis.sun.com/display/IpsBestPractices/Downloads">toolkit download page</a> which has all the downloads listed, including 2.2 development builds</p> <p>Location where you unzipped your toolkit image will be referred to as <em>ips-toolkit-dir</em>. You should update your PATH and LD_LIBRARY_PATH environment variables in following way:</p> <p><tt>export PATH=<em>ips-toolkit-dir</em>/pkg/bin:<em>ips-toolkit-dir</em>/pkg/python2.4-minimal/bin:$PATH</tt><br> <tt>export LD_LIBRARY_PATH=<em>ips-toolkit-dir</em>/pkg/python2.4-minimal/lib:<em>ips-toolkit-dir</em>/pkg/vendor-packages:$LD_LIBRARY_PATH</tt></p> 
+     <hr> <h4><a name="GlassFishRepoBuild-Checkingoutglassfishreposourcecode"></a>Checking out glassfish-repo source code</h2> <p>Run following command to check out glassfish-repo source:</p> <p><tt>svn checkout <a href="https://glassfish-repo.java.net/svn/glassfish-repo/trunk/packager">https://glassfish-repo.java.net/svn/glassfish-repo/trunk/packager</a></tt></p> 
+     <hr> <h4><a name="GlassFishRepoBuild-Createyourownpackagemodule%28s%29"></a>Create your own package module(s)</h2> <p>First you will need to decide on the number of packages you want to produce, their names and content, versioning, content file layout. Use these resources at this stage:</p> 
+     <ul> 
+      <li><a href="http://wikis.sun.com/display/IpsBestPractices/ProducingandMaintainingPackages">Packaging Best Practices</a></li> 
+      <li><a href="http://wiki.glassfish.java.net/attach/AddOnComponentDevelopmentGuide/SGFESADDONDEV.pdf">GlassFish v3 Addon Developement Guide</a></li> 
+     </ul> <p>Once you know the number of packages and their names you can create package modules using these steps:</p> 
+     <ul> 
+      <li>For each package create new directory under <tt>packager</tt> directory. The name of the directory should be the same as the name of IPS package.</li> 
+      <li>Using <tt>packager/sample-package</tt> content as template, add <tt>pom.xml, build.xml</tt> and license file to each package directory. Adjust <tt>pom.xml</tt> and <tt>build.xml</tt> content to fit your package content: define maven dependencies which will bring in package content, add required file processing to build.xml, etc. The expected end result is to have your IPS package content staged under <tt>packager/<em>package-name</em>/target/stage</tt> directory using the same file layout (including file permissions) as the one you want to see in your installed image. License file should contain license text for your content and will be used as click-through license during your package installation. You can refer to existing <tt>packager/hibernate</tt> package module for rather trivial example of content staging implementation where hibernate package content is available in maven repository as prepackaged zip archive, it is bootstrapped as maven dependency and then extracted by ant maven plugin into the staging area.</li> 
+      <li>Using <tt>packager/sample-package/src/main/resources/pkg_proto.py</tt> file as template, create <tt>packager/<em>package-name</em>/src/main/resources/pkg_proto.py</tt> file and modify it to include your package metadata. Use <a href="http://wikis.sun.com/display/IpsBestPractices/makepkgs">makepgs reference</a> to get more information and some more samples of prototype files. When defining license reference please use the license file from your package module directory.</li> 
+     </ul> 
+     <hr> <h4><a name="GlassFishRepoBuild-Startyourlocalrepositoryserver"></a>Start your local repository server</h2> <p>Run following command from your {{<em>ips-toolkit-dir</em>/bin}}directory:</p> <p><tt>pkg.depotd -d <em>ips-toolkit-dir</em>/pkg --rebuild</tt></p> <p>Note: this will start repository server using default port 10000 and the repository url will therefore be <a href="http://localhost:10000">http://localhost:10000</a>. If you want, you can specify different port number. Refer to </p> <p> <a href="http://opensolaris.org/sc/src/pkg/gate/src/man/pkg.depotd.1m.txt">pkg.depotd man page</a></p> 
+     <hr> <h4><a name="GlassFishRepoBuild-Buildyoupackage"></a>Build you package</h2> <p>Run following command from <tt>packager/<em>package-name</em></tt> directory:</p> <p><tt>mvn -Drepo.url=<a href="http://localhost:10000">http://localhost:10000</a> -Dpython=<em>ips-toolkit-dir</em>/pkg/python2.4-minimal/bin/python -P ips</tt></p> <p>Note: if you used alternative port number for your repository server, make sure that you adjust repo.url value accordingly!</p> <p>If everything goes well, this command will bootstrap and stage your package content and publish IPS package based on staged content and prototype file metadata specified in your package module. If not, read error messages carefully and use them to correct your package module files.</p> 
+     <hr> <h4><a name="GlassFishRepoBuild-Verifyyourpackage"></a>Verify your package</h2> <p>To check whether your package got published to your local repository server, you can simply access repository URL in your browser and see the list of packages available on the server. If you see your package, you can proceed to the package testing using GlassFish v3 installation and its update client. Use these steps (if you already have GlassFish v3 Prelude installed and updatetool bootstrapped you can skip first two items):</p> 
+     <ul> 
+      <li>Download and install [ GlassFish v3Prelude distribution|https://glassfish.java.net/downloads/v3-prelude.html]</li> 
+      <li>If using zip based distribution, run <tt><em>installdir</em>/bin/updatetool</tt> - this should bootstrap UC client packages. Run <tt>updatetool</tt> again once the bootstrap is done.</li> 
+      <li>Add your development repository to your installation image: 
+       <ul> 
+        <li>In the left pane make sure that you select image corresponding to your installation directory (if you have multiple GF installation on the system, you will have more than one image listed).</li> 
+        <li>In the menu select File-&gt;Image Properties, select "Add" button</li> 
+        <li>Enter "mydevrepo" or something similar for repository name and <a href="http://localhost:10000/">http://localhost:10000/</a> as repository URL. Confirm, exit Image Properties dialog.</li> 
+        <li>Select "Available Components", look for your new package, select and install.</li> 
+       </ul> </li> 
+     </ul> <p>At this point you can verify that your files are installed in appropriate locations and perform any relevant functional testing.</p> 
+     <hr> <h4><a name="GlassFishRepoBuild-Commityourpackagemodule"></a>Commit your package module</h2> <p>Once you are satisfied that your package works as expected, you can contact glassfish-repo project owners to get permission to commit your package module to glassfish-repo SVN repository. </p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 09, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:44.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

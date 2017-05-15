@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : FaqMigrateTimersZh</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="FaqMigrateTimersZh-%E5%A6%82%E4%BD%95%E5%A4%87%E4%BB%BD%E6%8C%81%E4%B9%85%E6%80%A7%E8%AE%A1%E6%97%B6%E5%99%A8%E5%92%8CJMS%E9%98%9F%E5%88%97%E5%8F%8A%E4%B8%BB%E9%A2%98%EF%BC%9F"></a>如何备份持久性计时器和 JMS 队列及主题？</h1> <p>（大部分摘自此<a href="http://forums.java.net/jive/thread.jspa?threadID=34634&amp;tstart=0">线索</a>）</p> <p>如 <a href="http://docs.sun.com/app/docs/doc/819-7759/aerbz?a=view">http://docs.sun.com/app/docs/doc/819-7759/aerbz?a=view</a> 中所述，通过使用确认、事务和持久性消息传送，可以实现可靠的消息传送。</p> <p>OpenMQ 中提供的持久性服务在 <a href="http://docs.sun.com/app/docs/doc/819-7759/aercs?a=view">http://docs.sun.com/app/docs/doc/819-7759/aercs?a=view</a> 中进行了说明。</p> <p>使用 Sun Java System Application Server 9.1 及更高版本，通过高可用性数据存储 HADB，我们现在在 JMS 路径方面也获得了高可用性，如 <a href="http://docs.sun.com/app/docs/doc/819-3679/abdbx?a=view">http://docs.sun.com/app/docs/doc/819-3679/abdbx?a=view</a> 中所述。</p> <p>可以将 JMS 持久性消息配置为位于任何数据库（例如，Oracle 或内置 HADB（如果在"企业"配置文件中使用的是 Sun Java System Application Server））中。如果在 GlassFish 中使用 JMS 提供者，并将文件系统作为消息存储，则必须确保该文件系统具备高可用性。</p> <p>计时器元数据可以保留在任何支持 XA 的数据源中。因此，任何可靠的数据库都可行。请遵循供应商的复制/可靠性准则。</p> 
+     <hr> <p><a href="FaqMigrateTimers.html" title="FaqMigrateTimers">英文 </a></p> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 02, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:44.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

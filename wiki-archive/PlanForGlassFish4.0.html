@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : PlanForGlassFish4.0</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="PlanForGlassFish4.0-GlassFishServerOpenSourceEdition4.0"></a>GlassFish Server Open Source Edition 4.0</h1> <p><b>NOTE : This document is under construction. Nothing stated herein is committed to be part of a release as yet.</b></p> 
+     <div> 
+      <ul> 
+       <li><a href="#PlanForGlassFish4.0-ReleaseScope%2FGoals">Release Scope / Goals</a></li> 
+       <ul> 
+        <li><a href="#PlanForGlassFish4.0-Roadmap">Roadmap</a></li> 
+       </ul> 
+       <li><a href="#PlanForGlassFish4.0-SpecificationStatus">Specification Status</a></li> 
+       <li><a href="#PlanForGlassFish4.0-Engineering">Engineering</a></li> 
+       <ul> 
+        <li><a href="#PlanForGlassFish4.0-DesignDocuments">Design Documents</a></li> 
+        <li><a href="#PlanForGlassFish4.0-Copyright">Copyright</a></li> 
+       </ul> 
+       <li><a href="#PlanForGlassFish4.0-Builds%2FDownloads">Builds / Downloads</a></li> 
+       <li><a href="#PlanForGlassFish4.0-QualityEngineering">Quality Engineering</a></li> 
+       <ul> 
+        <li><a href="#PlanForGlassFish4.0-Bugs%2FIssues">Bugs / Issues</a></li> 
+        <li><a href="#PlanForGlassFish4.0-DevTests">Dev Tests</a></li> 
+       </ul> 
+       <li><a href="#PlanForGlassFish4.0-Documentation">Documentation</a></li> 
+       <ul> 
+        <li><a href="#PlanForGlassFish4.0-References">References</a></li> 
+       </ul> 
+       <li><a href="#PlanForGlassFish4.0-Planning">Planning</a></li> 
+       <li><a href="#PlanForGlassFish4.0-Schedule">Schedule</a></li> 
+       <li><a href="#PlanForGlassFish4.0-Feedback">Feedback</a></li> 
+       <li><a href="#PlanForGlassFish4.0-SubProjects">Sub Projects</a></li> 
+       <ul> 
+        <li><a href="#PlanForGlassFish4.0-DeveloperandTooling">Developer and Tooling</a></li> 
+        <li><a href="#PlanForGlassFish4.0-TechnologyRefreshandIntegration">Technology Refresh and Integration</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="PlanForGlassFish4.0-ReleaseScope%2FGoals"></a>Release Scope / Goals</h2> <p>GlassFish 4.0 is intended to be the next major release in Project GlassFish. This release will implement the Java EE 7 specifications, contribute to the Java EE 7 Reference Implementation and Development Kit. The release is being designed with primary focus on the following features :</p> 
+     <ul> 
+      <li>Higher Productivity</li> 
+      <li>HTML5 Support</li> 
+     </ul> <h4><a name="PlanForGlassFish4.0-Roadmap"></a>Roadmap</h3> <p>Refer to <a href="https://wikis.oracle.com/download/attachments/20875480/JavaEE7+roadmap.pdf">roadmap</a> slides for more details on GlassFish Server Open Source Edition roadmap.</p> <h4><a name="PlanForGlassFish4.0-SpecificationStatus"></a>Specification Status</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Spec </th> 
+         <th class="confluenceTh"> Status </th> 
+         <th class="confluenceTh"> Links </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Java EE 7 Platform <a href="http://jcp.org/en/jsr/detail-342">JSR 342</a> </td> 
+         <td class="confluenceTd"> <a href="http://jcp.org/aboutJava/communityprocess/pr/jsr342/index.html">Public Review </a> </td> 
+         <td class="confluenceTd"> <a href="http://java.net/projects/javaee-spec/lists/users/archive">list</a>, <a href="http://java.net/projects/javaee-spec/pages/Home">project</a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Concurrency Utilities for Java EE (<a href="http://jcp.org/en/jsr/detail-236">JSR 236</a>) </td> 
+         <td class="confluenceTd"> <a href="http://jcp.org/aboutJava/communityprocess/pfd/jsr236/index.html">Proposed Final Draft </a> </td> 
+         <td class="confluenceTd"> <a href="http://java.net/projects/concurrency-ee-spec/lists/users/archive">list</a>, <a href="http://java.net/projects/concurrency-ee-spec">project</a>, <a href="http://concurrency-ee-spec.java.net/javadoc/">javadocs</a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Java Persistence API 2.1 (<a href="http://jcp.org/en/jsr/detail-338">JSR 338</a>) </td> 
+         <td class="confluenceTd"> <a href="http://jcp.org/aboutJava/communityprocess/pr/jsr338/index.html">Proposed Final Draft </a> </td> 
+         <td class="confluenceTd"> <a href="http://java.net/projects/jpa-spec/lists/users/archive">list</a>, <a href="http://java.net/projects/jpa-spec/">project</a>, <a href="http://java.net/projects/jpa-spec/downloads/download/JavaPersistencePFD-javadoc.zip">javadocs</a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Java API for RESTful Web Services 2.0 (<a href="http://jcp.org/en/jsr/detail-339">JSR 339</a>) </td> 
+         <td class="confluenceTd"> <a href="http://jcp.org/en/jsr/detail-339">Proposed Final Draft</a><br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> <a href="http://java.net/projects/jax-rs-spec/lists/users/archive">list</a>, <a href="http://jax-rs-spec.java.net/">project</a>, <a href="http://jax-rs-spec.java.net/nonav/2.0-SNAPSHOT/apidocs/index.html">javadocs</a><br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Servlets 3.1 (<a href="http://jcp.org/en/jsr/detail-340">JSR 340</a>) </td> 
+         <td class="confluenceTd"> <a href="http://jcp.org/aboutJava/communityprocess/pr/jsr340/index.html">Public Review </a><br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> <a href="http://java.net/projects/servlet-spec/lists/users/archive">list</a>, <a href="http://java.net/projects/servlet-spec/">project</a>, <a href="http://java.net/projects/servlet-spec/downloads/download/Public%20Review/javax.servlet-api-3.1-pdr-javadoc.jar">javadocs</a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Expression Language 3.0 (<a href="http://jcp.org/en/jsr/detail-341">JSR 341</a>) </td> 
+         <td class="confluenceTd"> <a href="http://jcp.org/aboutJava/communityprocess/pfd/jsr341/index.html">Proposed Final Draft</a><br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> <a href="http://java.net/projects/el-spec/lists/users/archive">list</a>, <a href="http://java.net/projects/el-spec/">project</a>, <a href="http://java.net/projects/el-spec/downloads/download/javax.el-api-3.0-b04-SNAPSHOT-javadoc.jar">javadocs</a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Java Message Service 2.0 (<a href="http://jcp.org/en/jsr/detail-343">JSR 343</a>) </td> 
+         <td class="confluenceTd"> <a href="http://java.net/projects/jms-spec/pages/JMS20ProposedFinalDraft">Proposed Final Draft</a><br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> <a href="http://java.net/projects/jms-spec/lists/users/archive">list</a>, <a href="http://jms-spec.java.net/">project</a>, <a href="http://jms-spec.java.net/2.0-SNAPSHOT/apidocs/index.html">javadocs</a><br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JavaServer Faces 2.2 (<a href="http://jcp.org/en/jsr/detail-344">JSR 344</a>) </td> 
+         <td class="confluenceTd"> <a href="http://jcp.org/aboutJava/communityprocess/pfd/jsr344/index.html">Proposed Final Draft</a><br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> <a href="http://java.net/projects/javaserverfaces-spec-public/lists/users/archive">list</a>, <a href="http://javaserverfaces-spec-public.java.net/">project</a>, <a href="http://jsf-spec.java.net/SNAPSHOT/javadoc/">javadocs</a>&nbsp; </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Enterprise JavaBeans 3.2 (<a href="http://www.jcp.org/en/jsr/detail-345">JSR 345</a>) </td> 
+         <td class="confluenceTd"> <a href="http://jcp.org/aboutJava/communityprocess/pr/jsr345/index.html">Public Review</a><br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> <a href="http://java.net/projects/ejb-spec/lists/users/archive">list</a>, <a href="http://java.net/projects/ejb-spec/">project</a>, <a href="http://java.net/projects/ejb-spec/downloads/download/EJB-3-2-javadocs-01092013.zip">javadocs</a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Context &amp; Dependency Injection 1.1 (<a href="http://jcp.org/en/jsr/detail-346">JSR 346</a>) </td> 
+         <td class="confluenceTd"> <a href="http://jcp.org/aboutJava/communityprocess/pr/jsr346/index.html">Public Review</a><br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> <a href="http://lists.jboss.org/pipermail/cdi-dev/">list</a>, <a href="https://github.com/jboss/cdi/wiki">project</a>, <a href="http://hudson.jboss.org/hudson/job/CDI%20Spec/lastSuccessfulBuild/artifact/api/target/site/apidocs/index.html">javadocs</a><br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Bean Validation 1.1 (<a href="http://jcp.org/en/jsr/detail-349">JSR 349</a>) </td> 
+         <td class="confluenceTd"> <a href="http://jcp.org/aboutJava/communityprocess/pr/jsr349/index.html">Public Review</a><br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> <a href="http://lists.jboss.org/pipermail/beanvalidation-dev/">list</a>, <a href="http://beanvalidation.org/">project</a>, <a href="http://docs.jboss.org/hibernate/beanvalidation/spec/1.1/api/">javadocs</a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Batch Applications for the Java Platform (<a href="http://jcp.org/en/jsr/detail-352">JSR 352</a>) </td> 
+         <td class="confluenceTd"> <a href="http://jcp.org/aboutJava/communityprocess/pfd/jsr352/index.html">Proposed Final Draft</a><br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> <a href="http://java.net/projects/jbatch/lists/public/archive">list</a>, <a href="http://java.net/projects/jbatch/">project</a>, <a href="http://java.net/projects/jbatch/downloads/download/JSR352.RI.20120803.a.zip">javadocs</a><br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Java API for JSON Processing (<a href="http://jcp.org/en/jsr/detail-353">JSR 353</a>) </td> 
+         <td class="confluenceTd"> <a href="http://jcp.org/aboutJava/communityprocess/pfd/jsr353/index.html">Proposed Final Draft</a><br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> <a href="http://java.net/projects/json-processing-spec/lists/users/archive">list</a>, <a href="http://java.net/projects/json-processing-spec">project</a>, <a href="http://json-processing-spec.java.net/nonav/releases/1.0/edr/javadocs/index.html">javadocs</a><br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Java API for WebSocket (<a href="http://jcp.org/en/jsr/detail-356">JSR 356</a>) </td> 
+         <td class="confluenceTd"> <a href="http://jcp.org/aboutJava/communityprocess/pr/jsr356/index.html">Public Review</a><br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> <a href="http://java.net/projects/websocket-spec/lists/users/archive">list</a>, <a href="http://websocket-spec.java.net/">project</a>, <a href="http://java.net/projects/websocket-spec/downloads/download/Spec%20javadoc%20Drafts/v006-EDR/JavaWebSocket_JSR356_006EDR_javadocs.zip">javadocs</a><br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Java EE Connector Architecture 1.7 (A MR of <a href="http://jcp.org/en/jsr/detail-322">JSR 322</a>) </td> 
+         <td class="confluenceTd"> <a href="http://jcp.org/aboutJava/communityprocess/maintenance/jsr322/index.html">Maintenance Review</a> </td> 
+         <td class="confluenceTd"> <a href="http://java.net/projects/connector-spec/lists/users/archive">list</a>, <a href="http://connector-spec.java.net/">project</a>, <a href="http://java.net/projects/connector-spec/downloads/download/connector-1_7-javadoc-final.zip">javadocs</a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Interceptors 1.2 (A MR of <a href="http://jcp.org/en/jsr/detail-318">JSR 318</a>) </td> 
+         <td class="confluenceTd"> <a href="http://jcp.org/aboutJava/communityprocess/maintenance/jsr318/index2.html">Maintenance Review</a> </td> 
+         <td class="confluenceTd"> <a href="http://java.net/projects/interceptors-spec/lists/users/archive">list</a>, <a href="http://java.net/projects/interceptors-spec">project</a>, <a href="http://java.net/projects/interceptors-spec/downloads/download/javadoc-02222013.zip">javadocs</a> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="PlanForGlassFish4.0-Engineering"></a>Engineering</h2> <h4><a name="PlanForGlassFish4.0-DesignDocuments"></a>Design Documents</h3> 
+     <ul> 
+      <li>Functional Specifications are linked to from the <a href="GlassFish4.0FeatureList.html" title="GlassFish4.0FeatureList">GlassFish 4.0 Feature List</a>.</li> 
+      <li>List of <a href="GlassFish Server 4.0 asadmin Subcommands.html" title="GlassFish Server 4.0 asadmin Subcommands">GlassFish Server 4.0 asadmin Subcommands</a></li> 
+      <li><a href="AsadminCommands.html" title="AsadminCommands">General information about asasmin subcommands</a></li> 
+     </ul> <h4><a name="PlanForGlassFish4.0-Copyright"></a>Copyright</h3> 
+     <ul> 
+      <li><a href="Copyrights.html" title="Copyrights">Copyright and License HOWTO</a></li> 
+     </ul> <h4><a name="PlanForGlassFish4.0-Builds%2FDownloads"></a>Builds / Downloads</h2> 
+     <ul> 
+      <li><a href="4.0BuildSchedule.html" title="4.0BuildSchedule">4.0 Build Schedule</a> (nightly builds are <a href="http://download.java.net/glassfish/4.0/">here</a>)</li> 
+      <li><a href="CheckInBestPractice.html" title="CheckInBestPractice">Check in Best Practices</a></li> 
+      <li>GlassFish community <a href="https://glassfish.java.net/public/downloadsindex.html">download</a> page</li> 
+      <li><a href="FullBuildInstructions.html" title="FullBuildInstructions">FullBuildInstructions</a> for instructions how to fully rebuild everything in v4 from scratch.</li> 
+      <li><a href="V3BuildTests.html" title="V3BuildTests">v3 Build/Tests Guidelines</a></li> 
+      <li>How to <a href="DevelopmentInstructions.html" title="DevelopmentInstructions">build from source</a>.</li> 
+      <li>Notification - Build promotions are announced via e-mail at dev@<a href="https://glassfish.java.net/">glassfish.java.net</a>. Please subscribe to the community alias if you would like to be notified</li> 
+      <li>GlassFish Server Open Source Edition 3.0 <a href="PlanForGlassFishV3.html#PlanForGlassFishV3-sectionPlanForGlassFishV3BuildRelated">build</a> and <a href="PlanForGlassFishV3.html#PlanForGlassFishV3-sectionPlanForGlassFishV3Packaging">packaging</a> related information</li> 
+      <li>Build <a href="ProposedBuildImprovments.html" title="ProposedBuildImprovments">Improvements </a></li> 
+      <li><a href="Java EE 7 Maven Coordinates.html" title="Java EE 7 Maven Coordinates">Maven coordinates</a></li> 
+     </ul> <h4><a name="PlanForGlassFish4.0-QualityEngineering"></a>Quality Engineering</h2> <h4><a name="PlanForGlassFish4.0-Bugs%2FIssues"></a>Bugs / Issues</h3> <p>TBD</p> <h4><a name="PlanForGlassFish4.0-DevTests"></a>Dev Tests</h3> 
+     <ul> 
+      <li><a href="DeveloperTestDashboard.html" title="DeveloperTestDashboard">GlassFish 4.x Developer Tests </a></li> 
+     </ul> <h4><a name="PlanForGlassFish4.0-Documentation"></a>Documentation</h2> <p>TBD</p> <h4><a name="PlanForGlassFish4.0-References"></a>References</h3> 
+     <ul> 
+      <li>Oracle GlassFish Server 3.1: 
+       <ul> 
+        <li><a href="http://download.oracle.com/docs/cd/E18930_01/index.htm">Library</a></li> 
+       </ul> </li> 
+      <li>Oracle GlassFish Server 3.0.1: 
+       <ul> 
+        <li><a href="http://download.oracle.com/docs/cd/E19798-01/index.html">Library </a></li> 
+        <li><a href="http://download.oracle.com/docs/cd/E19798-01/821-1758/6nmnj7pso/index.html">asadmin subcommands</a></li> 
+       </ul> </li> 
+      <li>Sun GlassFish Enterprise Server v2.1 and v2.1.1: 
+       <ul> 
+        <li><a href="http://download.oracle.com/docs/cd/E19879-01/index.html">Library</a></li> 
+        <li><a href="http://download.oracle.com/docs/cd/E19879-01/821-0179/6nl8hchmr/index.html">v2.1.1 asadmin subcommands</a></li> 
+       </ul> </li> 
+     </ul> <h4><a name="PlanForGlassFish4.0-Planning"></a>Planning</h2> 
+     <ul> 
+      <li><a href="GlassFish4.0FeatureList.html" title="GlassFish4.0FeatureList">GlassFish Server Open Source Edition 4.0 Feature List</a></li> 
+     </ul> <h4><a name="PlanForGlassFish4.0-Schedule"></a>Schedule</h2> 
+     <ul> 
+      <li>Draft Engineering <a href="GlassFishV4Schedule.html" title="GlassFishV4Schedule">Schedule</a></li> 
+     </ul> <h4><a name="PlanForGlassFish4.0-Feedback"></a>Feedback</h2> <p>Please send us your feedback to <a href="mailto:dev@glassfish.java.net">GlassFish developer alias</a>.</p> <h4><a name="PlanForGlassFish4.0-SubProjects"></a>Sub Projects</h2> <p>The following <a href="https://java.net/jira/browse/GLASSFISH#selectedTab=com.atlassian.jira.plugin.system.project%3Acomponents-panel">Jira page</a> list all the GlassFish Server Open Source Edition 4.0&nbsp;components and their respective owners.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Area </th> 
+         <th class="confluenceTh"> Project Name </th> 
+         <th class="confluenceTh"> <b>Project Link</b> </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Clustering </td> 
+         <td class="confluenceTd"> User-Managed Clusters </td> 
+         <td class="confluenceTd"> <a href="User-Managed Clusters.html" title="User-Managed Clusters">User-Managed Clusters Project</a><br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Messaging <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> JMS Integration/MQ <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> <a href="http://mq.java.net/5.0.html">JMS/MQ Project</a><br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Product Delivery <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Installer <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> <a href="Installer3.2Project.html" title="Installer3.2Project">Installer Project</a><br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Product Delivery <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Packaging <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> <a href="Packaging3.2Project.html" title="Packaging3.2Project">Packaging Project</a><br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Clustering </td> 
+         <td class="confluenceTd"> GMS <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> <a href="GMS3.2Project.html" title="GMS3.2Project">GMS Project</a><br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Deployment <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Deployment <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> <a href="GF4.0Deployment.html" title="GF4.0Deployment">Deployment Project</a><br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Admin Infrastructure </td> 
+         <td class="confluenceTd"> Admin </td> 
+         <td class="confluenceTd"> <a href="GF4.0AdminInfrastructure.html" title="GF4.0AdminInfrastructure">Admin Infrastructure Project</a><br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Management API/Tools </td> 
+         <td class="confluenceTd"> Console </td> 
+         <td class="confluenceTd"> <a href="3.2AdminConsoleProject.html" title="3.2AdminConsoleProject">Console Project</a><br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Management API/Tools </td> 
+         <td class="confluenceTd"> RESTful API </td> 
+         <td class="confluenceTd"> <a href="32RestInterfaceProject.html" title="32RestInterfaceProject">RESTful API Project</a><br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Logging Infrastructure </td> 
+         <td class="confluenceTd"> Logging </td> 
+         <td class="confluenceTd"> <a href="LoggingInfrastructureProject.html" title="LoggingInfrastructureProject">Logging Infrastructure</a><br class="atl-forced-newline"> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="PlanForGlassFish4.0-DeveloperandTooling"></a>Developer and Tooling</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Area </th> 
+         <th class="confluenceTh"> Project Name </th> 
+         <th class="confluenceTh"> Team Members </th> 
+         <th class="confluenceTh"> Project Link </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Developer Tooling </td> 
+         <td class="confluenceTd"> NetBeans </td> 
+         <td class="confluenceTd"> Vince Kraemer </td> 
+         <td class="confluenceTd"> <a href="./4.0DevToolingNB.html">NetBeans Dev Tooling Project </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Developer Tooling </td> 
+         <td class="confluenceTd"> Eclipse WTP </td> 
+         <td class="confluenceTd"> Vince Kraemer </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Embedded </td> 
+         <td class="confluenceTd"> Embedded GlassFish </td> 
+         <td class="confluenceTd"> Bhavanishankara Sapaliga </td> 
+         <td class="confluenceTd"> <a href="http://embedded-glassfish.java.net">Embedded GlassFish Project Page</a> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="PlanForGlassFish4.0-TechnologyRefreshandIntegration"></a>Technology Refresh and Integration</h3> <p>We are considering to refresh and integrate updated versions in various technology areas.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Area </th> 
+         <th class="confluenceTh"> Project Name </th> 
+         <th class="confluenceTh"> Team Members </th> 
+         <th class="confluenceTh"> Project Link </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Technology Updates/Integration </td> 
+         <td class="confluenceTd"> JavaServer Faces (JSF) </td> 
+         <td class="confluenceTd"> Edward Burns, Roger Kitain </td> 
+         <td class="confluenceTd"> <a href="./WebTier3.2JSF.html">JSF 2.2 JSR </a> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875480/44531713.pdf">JavaEE7 roadmap.pdf</a> (application/pdf) 
+      <br> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Dec 18, 2013 by 
+<font color="#0050B2">19945</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : Jdo</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p><a href="ErrorMessageReference.html" title="ErrorMessageReference">Contents</a> <a href="Jbise.html" title="Jbise">Previous</a> <a href="Jml.html" title="Jml">Next</a></p> <h4><a name="Jdo-JDOMessages"></a>JDO Messages</h2> <p>----<tt>JDO7000</tt><br> Error loading the default mapping policy which is used by database schema<br> generation.</p> <h4><a name="Jdo-Solution%3A"></a>Solution:</h3> <p>Check that the classpath settings are not corrupted.</p> <p>----<tt>JDO74003</tt><br> Internal error in CMP module.</p> <h4><a name="Jdo-Solution%3A"></a>Solution:</h3> <p>This is an Unexpected Internal Error. Please contact Sun with your application and<br> the complete error log message.</p> <p>----<tt>JDO74005</tt><br> CMR field is accessed in ejbCreate.</p> <h4><a name="Jdo-Solution%3A"></a>Solution:</h3> <p>Change bean code to access CMR fields in ejbPostCreate.</p> <p>----<tt>JDO74006</tt><br> Parameter passed to Collection CMR set method is null.</p> <h4><a name="Jdo-Solution%3A"></a>Solution:</h3> <p>Use Collection.remove() method to remove all related beans from this Collection.</p> <p>----<tt>JDO74019</tt><br> Possible error in EJB Container and CMR runtime life cycle.</p> <h4><a name="Jdo-Solution%3A"></a>Solution:</h3> <p>This is an Unexpected Internal Error. Please turn on JDO and CMP logging<br> and contact Sun with the complete error log message.</p> <p>----<tt>JDO74020</tt><br> Possible error in EJB Container and CMR runtime life cycle.</p> <h4><a name="Jdo-Solution%3A"></a>Solution:</h3> <p>This is an Unexpected Internal Error. Please turn on JDO and CMP logging<br> and contact Sun with the complete error log message.</p> <p>----<tt>JDO74021</tt><br> ejbRemove or ejbStore is called in an active transaction without bean being loaded<br> in the same transaction. Possible error in EJB Container and CMR runtime life<br> cycle.</p> <h4><a name="Jdo-Solution%3A"></a>Solution:</h3> <p>This is an Unexpected Internal Error. Please turn on JDO and CMP logging<br> and contact Sun with the complete error log message.</p> <p>----<tt>JDO74043</tt><br> Create, remove, or update is called on a read-only bean.</p> <h4><a name="Jdo-Solution%3A"></a>Solution:</h3> <p>Do not attempt to update read-only beans. If update is required, the bean<br> must be deployed as two different EJBs: as a read-only bean, and as<br> an updateable bean. All updates must be done on the second bean.</p> <p>----<tt>JDO74045</tt><br> State class is not generated properly for this CMP bean.</p> <h4><a name="Jdo-Solution%3A"></a>Solution:</h3> <p>This is an Unexpected Internal Error. Please contact Sun with your application and<br> the complete error log message.</p> <p>----<tt>JDO75007</tt><br> Internal error in CMP module.</p> <h4><a name="Jdo-Solution%3A"></a>Solution:</h3> <p>This is an Unexpected Internal Error. Please contact Sun with your application and<br> the complete error log message.</p> <p>----<tt>JDO76604</tt><br> JNDI name for the CMP resource is misspelled.</p> <p>CMP resource with this JNDI name is not registered with this instance.</p> <h4><a name="Jdo-Solution%3A"></a>Solution:</h3> <p>Check JNDI name for the resource you plan to use. Check JNDI name<br> of the CMP resource specified in the module.</p> <p>----<tt>JDO7704</tt><br> Cannot identify related field.</p> <p>Cannot identify related class.</p> <h4><a name="Jdo-Solution%3A"></a>Solution:</h3> <p>Verify that relationship definition is correct.</p> <p>----<tt>JDO82000</tt><br> System was not able to create specified logger.</p> <p>Error loading message bundle that corresponds to this logger.</p> <h4><a name="Jdo-Solution%3A"></a>Solution:</h3> <p>Check that the classpath settings are not corrupted. Check error log for the<br> detailed reason.</p> <p><a href="ErrorMessageReference.html" title="ErrorMessageReference">Contents</a> <a href="Jbise.html" title="Jbise">Previous</a> <a href="Jml.html" title="Jml">Next</a></p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 08, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

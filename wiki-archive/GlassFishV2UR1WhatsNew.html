@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFishV2UR1WhatsNew</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GlassFishV2UR1WhatsNew-What%27sNewinGlassFishv2Update1Release"></a>What's New in GlassFish v2 Update 1 Release </h1> <h4><a name="GlassFishV2UR1WhatsNew-ScopeofRelease%28Goals%29"></a>Scope of Release (Goals)</h2> <p>GlassFish v2 Update 1 has been released on December 19, 2007. The final GlassFish v2 build for Update 1 release is <b><a href="https://glassfish.java.net/downloads/v2ur1-b09d.html">b09d</a></b>.</p> <p>This is a tightly constrained release to accommodate high priority bug fixes. The following are the highlights of the release:</p> 
+     <ul> 
+      <li>Added AIX Platform support for Cluster and Developer Profiles - versions supported 5.2 and 5.3</li> 
+      <li>Added 64 bit JVM support for Suse Linux 64 bit OS.</li> 
+      <li>Specifically targeted bugs &amp; enhancements that are a "must have"</li> 
+      <li>OpenESB Requirements</li> 
+      <li>Late Customer Feedback from GFv2 beta release</li> 
+      <li>Netbeans critical bugs</li> 
+      <li>Community requested feature for enabling sticky session support for load balancing using Apache with mod_jk.</li> 
+      <li>Added new user Registration UI to Administration GUI console and to Update Center to enable customers to register the product. In the Sun branded SJSAS version, the installer also contains this registration UI. The registration is a one-time action.</li> 
+     </ul> <h4><a name="GlassFishV2UR1WhatsNew-IssuesFixedinGlassFishv2UpdateRelease"></a>Issues Fixed in GlassFish v2 Update Release </h2> 
+     <ul> 
+      <li><a href="https://glassfish.java.net/issues/buglist.cgi?Submitquery=Submitquery&amp;component=glassfish&amp;subcomponent=admin&amp;subcomponent=admin_gui&amp;subcomponent=amx&amp;subcomponent=build_system&amp;subcomponent=cmp&amp;subcomponent=command_line_interface&amp;subcomponent=configuration&amp;subcomponent=deployment&amp;subcomponent=ejb_container&amp;subcomponent=entity-persistence&amp;subcomponent=failover&amp;subcomponent=group_management_service&amp;subcomponent=hadb_admin&amp;subcomponent=i18n&amp;subcomponent=installation&amp;subcomponent=jbi&amp;subcomponent=jca&amp;subcomponent=jdbc&amp;subcomponent=jms&amp;subcomponent=jts&amp;subcomponent=lifecycle_modules&amp;subcomponent=load_balancer&amp;subcomponent=logging&amp;subcomponent=mail&amp;subcomponent=monitoring&amp;subcomponent=orb&amp;subcomponent=other&amp;subcomponent=packaging&amp;subcomponent=performance&amp;subcomponent=rmi_iiop_failover&amp;subcomponent=rmi_iiop_load_balancer&amp;subcomponent=security&amp;subcomponent=standalone_client&amp;subcomponent=upgrade_tool&amp;subcomponent=verifier&amp;subcomponent=webpages&amp;subcomponent=web_container&amp;subcomponent=web_services&amp;subcomponent=web_services_mgmt&amp;subcomponent=docs&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=substring&amp;long_desc=&amp;long_desc_type=substring&amp;issue_file_loc=&amp;issue_file_loc_type=substring&amp;status_whiteboard=&amp;status_whiteboard_type=substring&amp;field0-0-0=status_whiteboard&amp;type0-0-0=notsubstring&amp;value0-0-0=as91ur1-na&amp;field0-1-0=subcomponent&amp;type0-1-0=notequals&amp;value0-1-0=sqe-test&amp;cmdtype=doit&amp;namedcmd=AllJDBC%2FJMS%2FJCAbugs&amp;newqueryname=&amp;order=Reusesamesortaslasttime&amp;field0-2-0=short_desc&amp;type0-2-0=notsubstring&amp;value0-2-0=%3CBT&amp;priority=P1&amp;priority=P2&amp;priority=P3&amp;priority=P4&amp;field0-3-0=status_whiteboard&amp;type0-3-0=substring&amp;value0-3-0=91ur1Approved&amp;issue_status=UNCONFIRMED&amp;issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED&amp;issue_status=RESOLVED&amp;issue_status=VERIFIED&amp;issue_status=CLOSED">Approved Glassfish Issues from Issue Tracker(for Target Milestone 9.1peur1)</a> 
+       <ul> 
+        <li><span class="error">[GlassFish Issues From bugs.sun.com|^GlassFishIssuesFrombugs.sun.com]</span></li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li><a href="https://open-esb.java.net/issues/buglist.cgi?issue_status=UNCONFIRMED&amp;issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED&amp;issue_status=RESOLVED&amp;issue_status=VERIFIED&amp;issue_status=CLOSED&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=91ur1Approved&amp;status_whiteboard_type=fulltext&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=&amp;cmdtype=doit&amp;newqueryname=&amp;order=Reusesamesortaslasttime&amp;Submitquery=Submitquery">OpenESB approved Issues</a> 
+       <ul> 
+        <li><span class="error">[From bugs.sun.com|^Frombugs.sun.com]</span></li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li><a href="https://wsit.java.net/issues/buglist.cgi?component=wsit&amp;version=current&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=91ur1Approved&amp;status_whiteboard_type=fulltext&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=&amp;cmdtype=doit&amp;newqueryname=&amp;order=IssueNumber&amp;Submitquery=Submitquery">WSIT approved Issues</a></li> 
+      <li><a href="https://updatecenter.java.net/issues/buglist.cgi?component=updatecenter&amp;version=current&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=91ur1Approved&amp;status_whiteboard_type=fulltext&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=&amp;cmdtype=doit&amp;newqueryname=&amp;order=IssueNumber&amp;Submitquery=Submitquery">Update Center approved Issues</a></li> 
+      <li>[ MQ approved Issues |MQapprovedIssues]</li> 
+     </ul> 
+     <ul> 
+      <li>[ JavaMail Approved Issues |JavaMailApprovedIssues]</li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 09, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:44.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

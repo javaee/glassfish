@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : V3EjbHalfPager</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="V3EjbHalfPager-EJBContainerHalfPager"></a>EJB Container Half Pager</h1> <p>[</p> 
+     <div class="error">
+      <span class="error">Unknown macro: {TableOfContents title='EJB Container Half Pager'}</span> 
+     </div> <p>|(TableOfContentstitle='EJBContainerHalfPager')]</p> <h4><a name="V3EjbHalfPager-1.Introduction"></a>1. Introduction</h1> <h4><a name="V3EjbHalfPager-1.1.Project%2FComponentWorkingName%3A"></a>1.1. Project/Component Working Name: </h2> <p>EJB support in GlassFish V3</p> <h4><a name="V3EjbHalfPager-1.2.Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier%3A"></a>1.2. Name(s) and e-mail address of Document Author(s)/Supplier:</h2> <p>Ken Saks: kenneth.saks@Sun.COM</p> <h4><a name="V3EjbHalfPager-1.3.DateofThisDocument%3A"></a>1.3. Date of This Document:</h2> <p>3/25/2008</p> <h4><a name="V3EjbHalfPager-2.ProjectSummary"></a>2. Project Summary</h1> <h4><a name="V3EjbHalfPager-2.1.ProjectDescription%3A"></a>2.1. Project Description:</h2> <p>Enterprise JavaBeans(EJB) is an architecture for the development and deployment of component-based business applications. Applications written using the Enterprise JavaBeans architecture are scalable, transactional, and multi-user secure. </p> <p>The EJB container in GlassFish V3 implements the latest EJB 3.1 specification and provides full backward compatibility with previous GlassFish product releases. The one exception is cluster related features. Clustering support will be added in a follow-on release.</p> <p>The EJB container in GlassFish V3 is targeting only the requirements of the EJB 3.1 Specification. There are no new product-specific features planned for this release. </p> <h4><a name="V3EjbHalfPager-2.2.RisksandAssumptions%3A"></a>2.2. Risks and Assumptions:</h2> 
+     <ul> 
+      <li>Assumptions: Same level of EJB support as in GlassFish V2, except for clustering support.</li> 
+      <li>Risks: We have not yet implemented the EJB 3.1 Embeddable API. It's possible we'll need to define some optional product-specific properties to control ejb container initialization.</li> 
+     </ul> <h4><a name="V3EjbHalfPager-3.Interfaces%3A"></a>3. Interfaces:</h1> <h4><a name="V3EjbHalfPager-3.1ExportedInterfaces"></a>3.1 Exported Interfaces</h2> 
+     <ul> 
+      <li>Interface: <em>javax.ejb</em></li> 
+      <li>Stability: Standard</li> 
+      <li>Exporting Project: <a href="http://java.sun.com/products/ejb/">Enterprise JavaBeans</a></li> 
+      <li>Comments:</li> 
+     </ul> 
+     <ul> 
+      <li>Interface: <em>sun-ejb-jar_3_1.dtd</em></li> 
+      <li>Stability: Evolving</li> 
+      <li>Exporting Project : <a href="https://glassfish.java.net/">GlassFish</a></li> 
+      <li>Comments: The contents of sun-ejb-jar_3_1.dtd are the same as sun-ejb-jar_3_0.dtd.</li> 
+     </ul> <h4><a name="V3EjbHalfPager-3.2Importedinterfaces"></a>3.2 Imported interfaces</h2> 
+     <ul> 
+      <li>Interface: <em>javax.jta</em></li> 
+      <li>Stability: Standard</li> 
+      <li>Exporting Project: <a href="http://java.sun.com/products/jta/">Java Transaction API</a></li> 
+      <li>Comments:</li> 
+     </ul> 
+     <ul> 
+      <li>Interface: <em>javax.xml.rpc.handler</em></li> 
+      <li>Stability: Standard</li> 
+      <li>Exporting Project: <a href="http://java.sun.com/webservices/">Web Services </a></li> 
+      <li>Comments:</li> 
+     </ul> <h4><a name="V3EjbHalfPager-3.3Otherinterfaces%28Optional%29"></a>3.3 Other interfaces (Optional)</h2> <p>N/A</p> <h4><a name="V3EjbHalfPager-4.ReferenceDocuments%3A"></a>4. Reference Documents:</h1> <p><a href="http://www.jcp.org/en/jsr/detail-318">Enterprise JavaBeans 3.1</a></p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 09, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

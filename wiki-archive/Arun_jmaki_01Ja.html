@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : Arun_jmaki_01Ja</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="Arun_jmaki_01Ja-jMaki%E3%81%AEpublish%2Fsubscribe%E3%83%A2%E3%83%87%E3%83%AB%E3%81%A8%E3%83%87%E3%83%90%E3%83%83%E3%82%B0%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6"></a>jMaki の publish/subscribe モデルとデバッグについて</h1> <h4><a name="Arun_jmaki_01Ja-%E2%80%BB%E3%81%93%E3%81%AE%E3%82%A8%E3%83%B3%E3%83%88%E3%83%AA%E3%81%AF%E7%BF%BB%E8%A8%B3%E4%B8%AD%E3%81%A7%E3%81%99"></a>※このエントリは翻訳中です</h2> <p>So far you've been playing with jMaki and created some Web and/or Rails applications.</p> <p> Let's say you've gone a step ahead and some widgets in your application use jMaki's publish/subscribe mechanism to talk with each other. Some jMaki widgets, such as Menu and Dynamic Container are pre-configured to publish and subscribe to the same topic. </p> <p>So if you develop a simple menu-based application then it'll work without adding any glue code. Another example is Yahoo GeoCoder publishing and Yahoo Maps and Google Maps subscribing. This allows you to drop all three widgets together on the same page and if you enter a city and state in GeoCoder, the coordinates will show up in both the maps. So far so good, but what if you are writing custom publish and subscribe code and it's not working. Lets see how we can debug that.</p> <p>The Calendar widget already publishes an event to "/yahoo/calendar/onSelect" topic. All you need to do is modify 'component.js' in Web pages, resources, yahoo, dataTable subtree and listen to that topic. For that, you add the following statement:</p> <p>Let's say there is a Yahoo Calendar and Data Table widget in the page. The Data Table displays stock tickers by pulling the data from quote servers for the current date. You'd like to modify the application such that whenever a date is selected in the Calendar widget, the Data Table refreshes itself by pulling quotes for that date.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">jmaki.subscribe("/yahoo/calendar/onSelect", calendarListener); 
+
+on line 172 of 'component.js'. The 'calendarListener' function is defined as:
+
+function calendarListener(item) {
+    var targetDiv = document.getElementById("newpage");
+    targetDiv.innerHTML = item.value;
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>On " index.jsp" , where both the widgets live together, a new &lt;div＞ is added:&gt;</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;div id="newpage"&gt;&lt;/div&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>Now any date selected in the calendar is printed on the page. The 'calendarListener' function can be easily modified such that the dataTable is refreshed after processing the date.</p> <p>We created a simple, yet powerful example, demonstrating jMaki publish/subscribe mechanism.</p> <p>The mechanism is simple so it should just work even if there are custom widgets and they publish events to their own topic. But this is software so in all likelihood don't be surprised if it does not <img class="emoticon" src="images/icons/emoticons/smile.gif" height="20" width="20" align="absmiddle" alt="" border="0"> But jMaki at least provide a way to debug that situation. Open 'Web pages', 'resources', 'jmaki.js'. Search for 'this.debugGlue=false;this.debug=false;' in this file. Change the 'false' to 'true' and save the file. After you refresh your application in the browser window, the bottom-right portion of your browser window shows all the topics and messages published on it as shown below:</p> <p><span class="error">Cannot resolve external resource into attachment.</span></p> <p>Happy debugging!</p> <p>All jMaki Web applications can be deployed on GlassFish or Rails applications can be WARed and then deployed on GlassFish.</p> 
+     <hr> <p>日本語翻訳: <a href="http://apercu-j.blogspot.com/">Kana</a></p> <p><a href="http://blogs.oracle.com/arungupta/entry/jmaki_publish_subscribe_and_debugging">原文</a> </p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 09, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:43.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

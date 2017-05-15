@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : V3.1UpgradeOnePager</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="V3.1UpgradeOnePager-GlassFishServerOpenSourceEdition3.1UpgradeOnePager"></a>GlassFish Server Open Source Edition 3.1 - Upgrade One Pager</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#V3.1UpgradeOnePager-GlassFishServerOpenSourceEdition3.1UpgradeOnePager">GlassFish Server Open Source Edition 3.1 - Upgrade One Pager</a></li> 
+       <li><a href="#V3.1UpgradeOnePager-1.Introduction">1. Introduction</a></li> 
+       <ul> 
+        <li><a href="#V3.1UpgradeOnePager-1.1.Project%2FComponentWorkingName%3A">1.1. Project/Component Working Name:</a></li> 
+        <li><a href="#V3.1UpgradeOnePager-1.2.Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier%3A">1.2. Name(s) and e-mail address of Document Author(s)/Supplier:</a></li> 
+        <li><a href="#V3.1UpgradeOnePager-1.3.DateofThisDocument%3A">1.3. Date of This Document:</a></li> 
+       </ul> 
+       <li><a href="#V3.1UpgradeOnePager-2.ProjectSummary">2. Project Summary</a></li> 
+       <ul> 
+        <li><a href="#V3.1UpgradeOnePager-2.1.ProjectDescription%3A">2.1. Project Description:</a></li> 
+        <li><a href="#V3.1UpgradeOnePager-2.2.RisksandAssumptions%3A">2.2. Risks and Assumptions:</a></li> 
+       </ul> 
+       <li><a href="#V3.1UpgradeOnePager-3.ProblemSummary">3. Problem Summary</a></li> 
+       <ul> 
+        <li><a href="#V3.1UpgradeOnePager-3.1.ProblemArea%3A">3.1. Problem Area:</a></li> 
+        <li><a href="#V3.1UpgradeOnePager-3.2.Justification%3A">3.2. Justification:</a></li> 
+       </ul> 
+       <li><a href="#V3.1UpgradeOnePager-4.TechnicalDescription%3A">4. Technical Description:</a></li> 
+       <ul> 
+        <li><a href="#V3.1UpgradeOnePager-4.1.Details%3A">4.1. Details:</a></li> 
+        <li><a href="#V3.1UpgradeOnePager-4.2.Bug%2FRFENumber%28s%29%3A">4.2. Bug/RFE Number(s):</a></li> 
+        <li><a href="#V3.1UpgradeOnePager-4.3.InScope%3A">4.3. In Scope:</a></li> 
+        <li><a href="#V3.1UpgradeOnePager-4.4.OutofScope%3A">4.4. Out of Scope:</a></li> 
+        <li><a href="#V3.1UpgradeOnePager-4.5.Interfaces%3A">4.5. Interfaces:</a></li> 
+        <ul> 
+         <li><a href="#V3.1UpgradeOnePager-4.5.1PublicInterfaces">4.5.1 Public Interfaces</a></li> 
+         <li><a href="#V3.1UpgradeOnePager-4.5.2PrivateInterfaces">4.5.2 Private Interfaces</a></li> 
+         <li><a href="#V3.1UpgradeOnePager-4.5.3Deprecated%2FRemovedInterfaces%3A">4.5.3 Deprecated/Removed Interfaces:</a></li> 
+        </ul> 
+        <li><a href="#V3.1UpgradeOnePager-4.6.DocImpact%3A">4.6. Doc Impact:</a></li> 
+        <li><a href="#V3.1UpgradeOnePager-4.7.Admin%2FConfigImpact%3A">4.7. Admin/Config Impact:</a></li> 
+        <li><a href="#V3.1UpgradeOnePager-4.8.HAImpact%3A">4.8. HA Impact:</a></li> 
+        <li><a href="#V3.1UpgradeOnePager-4.9.I18N%2FL10NImpact%3A">4.9. I18N/L10N Impact:</a></li> 
+        <li><a href="#V3.1UpgradeOnePager-4.10.Packaging%2CDelivery%26Upgrade%3A">4.10. Packaging, Delivery &amp; Upgrade:</a></li> 
+        <ul> 
+         <li><a href="#V3.1UpgradeOnePager-4.10.1.Packaging">4.10.1. Packaging</a></li> 
+         <li><a href="#V3.1UpgradeOnePager-4.10.2.Delivery">4.10.2. Delivery</a></li> 
+         <li><a href="#V3.1UpgradeOnePager-4.10.3.UpgradeandMigration%3A">4.10.3. Upgrade and Migration:</a></li> 
+        </ul> 
+        <li><a href="#V3.1UpgradeOnePager-4.11.SecurityImpact%3A">4.11. Security Impact:</a></li> 
+        <li><a href="#V3.1UpgradeOnePager-4.12.CompatibilityImpact">4.12. Compatibility Impact</a></li> 
+        <li><a href="#V3.1UpgradeOnePager-4.13.Dependencies%3A">4.13. Dependencies:</a></li> 
+        <ul> 
+         <li><a href="#V3.1UpgradeOnePager-4.13.1InternalDependencies">4.13.1 Internal Dependencies</a></li> 
+         <li><a href="#V3.1UpgradeOnePager-4.13.2ExternalDependencies">4.13.2 External Dependencies</a></li> 
+        </ul> 
+        <li><a href="#V3.1UpgradeOnePager-4.14.TestingImpact%3A">4.14. Testing Impact:</a></li> 
+       </ul> 
+       <li><a href="#V3.1UpgradeOnePager-5.ReferenceDocuments%3A">5. Reference Documents:</a></li> 
+       <li><a href="#V3.1UpgradeOnePager-6.Schedule%3A">6. Schedule:</a></li> 
+       <ul> 
+        <li><a href="#V3.1UpgradeOnePager-6.1.ProjectedAvailability%3A">6.1. Projected Availability:</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="V3.1UpgradeOnePager-1.Introduction"></a>1. Introduction</h1> <h4><a name="V3.1UpgradeOnePager-1.1.Project%2FComponentWorkingName%3A"></a>1.1. Project/Component Working Name: </h2> <p>Upgrade Tool</p> <h4><a name="V3.1UpgradeOnePager-1.2.Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier%3A"></a>1.2. Name(s) and e-mail address of Document Author(s)/Supplier:</h2> <p>Bobby Bissett: bobby.bissett@oracle.com</p> <h4><a name="V3.1UpgradeOnePager-1.3.DateofThisDocument%3A"></a>1.3. Date of This Document:</h2> <p>05/17/2010</p> <h4><a name="V3.1UpgradeOnePager-2.ProjectSummary"></a>2. Project Summary</h1> <h4><a name="V3.1UpgradeOnePager-2.1.ProjectDescription%3A"></a>2.1. Project Description:</h2> <p>A tool to assist users in upgrading a domain to be used with a GlassFish Server Open Source Edition 3.1. Upgrades can be performed without the tool as well. See technical description below for more details.</p> <h4><a name="V3.1UpgradeOnePager-2.2.RisksandAssumptions%3A"></a>2.2. Risks and Assumptions:</h2> <p>2.2.1. Tightly coupled to asadmin script through Runtime#exec call. Upgrade tool needs to parse asadmin output. If the format of the output changes, the upgrade tool needs to adjust.</p> <p>2.2.2. Actual upgrade process depends on all modules to implement their part of changing the domain configuration.</p> <p>2.2.3. Not all desired tasks fall under an existing module (e.g., features present in v2.1 that are not in 3.1).</p> <p>2.2.4. It is assumed that something in the upgrade process will inform users of information that cannot be upgraded and/or manual steps that the users should take. This includes information that cannot be handled by a relevant module as well as configuration info that isn't covered by a specific module (2.2.3).</p> <p>2.2.5. While the upgrade tool attempts to copy 3rd party jars from glassfish_home/lib to the newer version, this cannot always be done automatically. Users should always do this manually when upgrading through the asadmin command.</p> <p>2.2.6 Upgrades are supported from GF versions 2.1.X through 3.0.X to 3.1. An upgrade from v2 should also work, but support is focused on 2.1.X. When upgrading from a version earlier than GFv2, a domain must first be upgraded to 2.1.X before being upgraded to 3.1.</p> <h4><a name="V3.1UpgradeOnePager-3.ProblemSummary"></a>3. Problem Summary</h1> <h4><a name="V3.1UpgradeOnePager-3.1.ProblemArea%3A"></a>3.1. Problem Area:</h2> <p>Upgrade in general allows users to move their existing domains, including settings, applications, realms, pools, etc., to a newer version of GlassFish without having to recreate manually all of the work.</p> <h4><a name="V3.1UpgradeOnePager-3.2.Justification%3A"></a>3.2. Justification:</h2> <p>To allow users to move to newer versions of GlassFish easily.</p> <h4><a name="V3.1UpgradeOnePager-4.TechnicalDescription%3A"></a>4. Technical Description:</h1> <h4><a name="V3.1UpgradeOnePager-4.1.Details%3A"></a>4.1. Details:</h2> <p>This one pager covers specifically the upgrade tool, which simply copies a domain and wraps asadmin to perform the upgrades. This section, however, covers the general upgrade information as well as the tool. (Some of this information will be repeated in the upgrade dashboard page for the convenience of module owners.)</p> <p>GlassFish 3.1 is being implemented as a set of OSGi bundles. Having component bundles that can run standalone or be mixed and matched with other components to create new products and profiles means each component must be aware of its domain configuration requirments. When an upgrade is occurring, each component must be able to evaluate the relevant configuration information, transform the data to its current needs if possible and report issues that require manual intervention. Modules should also log any changes made in the configuration when making them.</p> <p>There is no specific logging configuration for upgrade. Modules should use the same logger they normally do. Use INFO level for logging the changes made, and continue to use WARNING and SEVERE for warnings and errors if they happen.</p> <p>For a module to implement its part of upgrade, implement the <tt>org.glassfish.api.admin.config.ConfigurationUpgrade</tt> interface and include a <tt>@PostConstruct</tt> annotated method and injected <tt>Config</tt> object. Since this was implemented in 3.0 by most modules, there are plenty of examples in the source code. The <a href="V3.1UpgradeDashboard.html" title="V3.1UpgradeDashboard">dashboard page</a> will include more details for module owners, though the interface itself is defined in the core module.</p> <p>For the user an upgrade can be performed in two ways (this applies more to asadmin but is captured here for completeness):</p> 
+     <ol> 
+      <li><tt>asadmin start-domain --upgrade</tt>: This will enter upgrade mode in the server, send all logging information to std out/err, and stop the server after the upgrade.</li> 
+      <li><tt>asadmin start-domain</tt> (without --upgrade): The server will detect if a domain needs to be upgraded before continuing to start the domain.</li> 
+     </ol> <p>The upgrade tool can be launched in GUI or command line mode with the <tt>asupgrade</tt> or <tt>asupgrade.bat</tt> files. It does the following:</p> 
+     <ol> 
+      <li>Collect location of source domain and target domains directories.</li> 
+      <li>Collect the master password of the domain if needed (i.e., it is not the default and the --savemasterpassword option was not used when setting it).</li> 
+      <li>Check to see if the source domain is from a supported version.</li> 
+      <li>Attempt to copy 3rd party jars from source server to target server (source_domain/../../lib to target_domains/../lib).</li> 
+      <li>Copy source domain to the target domains directory. If there is already a domain there with the same name, the tool will ask the user if it's ok to move it and then rename it.</li> 
+      <li>Call <tt>asadmin start-domain --upgrade</tt> to perform the upgrade.</li> 
+      <li>Parse the process output and report possible problems during the upgrade.</li> 
+      <li>The tool will create an upgrade.log file for reporting.</li> 
+     </ol> <p>Open issues and questions from other leads have been moved to the <a href="V3.1UpgradeDashboard.html" title="V3.1UpgradeDashboard">3.1 upgrade dashboard page</a>.</p> <h4><a name="V3.1UpgradeOnePager-4.2.Bug%2FRFENumber%28s%29%3A"></a>4.2. Bug/RFE Number(s):</h2> <p><b>"List any Bug(s)/RFE(s) which will be addressed by this proposed change."</b></p> <p>It's not really a change, but here are the <a href="https://glassfish.java.net/issues/buglist.cgi?component=glassfish&amp;subcomponent=upgrade_tool&amp;issue_status=UNCONFIRMED&amp;issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED&amp;version=V3&amp;version=v3.0.1&amp;version=V3.1&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=fulltext&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=&amp;cmdtype=doit&amp;order=Reusesamesortaslasttime&amp;Submitquery=Submitquery">open upgrade tool issues</a>.</p> <p>There is a security issue to be solved when the server's master password must be collected from the tool and passed to asadmin. Currently the simple workaround is to set the domain's master password with the --savemasterpassword option. Internal issue 6944744 – needs java.net issue to track as well.</p> <p><a href="https://github.com/javaee/glassfish/issues/11753">This issue 11753</a> tracks open issues from going to v2 to v3.1.</p> <h4><a name="V3.1UpgradeOnePager-4.3.InScope%3A"></a>4.3. In Scope:</h2> <p>Side-by-side upgrades are supported from GlassFish v2.1.X (all profiles), v3 Prelude, and 3.0.X.</p> <p>Other tools such as the installer can call asupgrade as part of their operation. See below for more details.</p> <p>Because modules only handle the upgrade of features related to that module, there is no current mechanism for detecting things that cannot be upgraded (e.g., the addons directory in v2). While the upgrade tool can't be expected to handle this, there should be some code in GlassFish that can. While the method is still TBD, one suggestion is to implement a small service involved during upgrades just for catching these situations. This will have to be handled somehow – adding it here as part of upgrade's purview.</p> <h4><a name="V3.1UpgradeOnePager-4.4.OutofScope%3A"></a>4.4. Out of Scope:</h2> <p>In 3.0, it was declared in the one pager that the upgrade tool could be called from within other scripts and the installer. This is not necessary for some cases because the scripts/installer can simply call asadmin to start the server. The upgrade will happen automatically. For in-place upgrades, for instance, the upgrade tool will not be needed. For installers that look for previous installations, they could call the upgrade tool or simply copy the older domain from one location to another. It is not expected that output from the upgrade tool is useful to a script (human readable only).</p> <p>In-place upgrades are not supported without some other tool (e.g. the update center), as the code that performs the upgrade must first be present in order to run. One of the goals of a side-by-side upgrade is that the original server should be left untouched. For this reason, and because an upgrade can happen with a simple "asadmin start-domain --upgrade --domaindir somedir" it is recommended that users not give their v2 domains/domainX directory as the value of the --domaindir option. Rather, the upgrade should be performed on a copy of the domain (this is what the asupgrade tool does).</p> <p>Rolling upgrade of applications in a cluster. Though it shares a name, this is covered under the deployment module and is not part of domain configuration upgrade.</p> <h4><a name="V3.1UpgradeOnePager-4.5.Interfaces%3A"></a>4.5. Interfaces:</h2> <h4><a name="V3.1UpgradeOnePager-4.5.1PublicInterfaces"></a>4.5.1 Public Interfaces</h3> <p>Not new, but upgrade tool exposes a GUI and command line interface through the asupgrade script.</p> <h4><a name="V3.1UpgradeOnePager-4.5.2PrivateInterfaces"></a>4.5.2 Private Interfaces</h3> <p>N/A</p> <h4><a name="V3.1UpgradeOnePager-4.5.3Deprecated%2FRemovedInterfaces%3A"></a>4.5.3 Deprecated/Removed Interfaces:</h3> <p>N/A</p> <h4><a name="V3.1UpgradeOnePager-4.6.DocImpact%3A"></a>4.6. Doc Impact:</h2> <p>Will require incremental changes from 3.0.</p> <h4><a name="V3.1UpgradeOnePager-4.7.Admin%2FConfigImpact%3A"></a>4.7. Admin/Config Impact:</h2> <p>N/A</p> <h4><a name="V3.1UpgradeOnePager-4.8.HAImpact%3A"></a>4.8. HA Impact:</h2> <p>High Availability or Clustering aspects will be most impacted as they need to implement their portion of the upgrade contract.</p> <h4><a name="V3.1UpgradeOnePager-4.9.I18N%2FL10NImpact%3A"></a>4.9. I18N/L10N Impact:</h2> <p>Modules must implement their own code properly for l10n support.</p> <h4><a name="V3.1UpgradeOnePager-4.10.Packaging%2CDelivery%26Upgrade%3A"></a>4.10. Packaging, Delivery &amp; Upgrade:</h2> <h4><a name="V3.1UpgradeOnePager-4.10.1.Packaging"></a>4.10.1. Packaging</h3> <p>Upgrade tool already packaged along with <tt>asupgrade</tt> script.</p> <h4><a name="V3.1UpgradeOnePager-4.10.2.Delivery"></a>4.10.2. Delivery</h3> <p><b>"What impact will this proposal have on product installation?"</b></p> <p>None specifically, but an installer could start the upgrade tool to upgrade an existing domain to the new app server installation.</p> <h4><a name="V3.1UpgradeOnePager-4.10.3.UpgradeandMigration%3A"></a>4.10.3. Upgrade and Migration:</h3> <p>See rest of doc.</p> <h4><a name="V3.1UpgradeOnePager-4.11.SecurityImpact%3A"></a>4.11. Security Impact:</h2> <p>No specific security impact beyond collecting master password to pass to asadmin.</p> <h4><a name="V3.1UpgradeOnePager-4.12.CompatibilityImpact"></a>4.12. Compatibility Impact</h2> <p>N/A</p> <p>List any requirements on upgrade tool and migration tool.</p> <h4><a name="V3.1UpgradeOnePager-4.13.Dependencies%3A"></a>4.13. Dependencies:</h2> <p>An internal dependency is a dependency on a project, module, <br> component or product that is within the GlassFish project.<br> An external dependency is a dependency on a project, component<br> or product that resides outside of the GlassFish project. </p> <h4><a name="V3.1UpgradeOnePager-4.13.1InternalDependencies"></a>4.13.1 Internal Dependencies </h3> <p>Strongly tiled to <tt>asadmin</tt> command line options, output, and mechanism to read password on std in stream.</p> <h4><a name="V3.1UpgradeOnePager-4.13.2ExternalDependencies"></a>4.13.2 External Dependencies </h3> 
+     <ul> 
+      <li><a href="https://javahelp.java.net/">JavaHelp</a> for built-in help documentation. There has not been a release of JavaHelp since 2007.</li> 
+      <li>Depends on almost every module in GlassFish to perform upgrades.</li> 
+     </ul> <h4><a name="V3.1UpgradeOnePager-4.14.TestingImpact%3A"></a>4.14. Testing Impact:</h2> <p>No automated testing so far. We want to use the new testing harness being worked on for clustering to test upgrades. The harness must be able to stop and start an instance to perform an upgrade.</p> <h4><a name="V3.1UpgradeOnePager-5.ReferenceDocuments%3A"></a>5. Reference Documents:</h1> <p><a href="GlassFishv3.1Upgrade.html" title="GlassFishv3.1Upgrade">Upgrade schedule page</a></p> <p><a href="V3.1UpgradeDashboard.html" title="V3.1UpgradeDashboard">Upgrade dashboard</a></p> <h4><a name="V3.1UpgradeOnePager-6.Schedule%3A"></a>6. Schedule:</h1> <h4><a name="V3.1UpgradeOnePager-6.1.ProjectedAvailability%3A"></a>6.1. Projected Availability:</h2> <p>The upgrade tool is already present, and all 3.0 features should already have implemented upgrade.</p> <p>New features (Clustering) should implement upgrade by M4.</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Oct 29, 2010 by 
+<font color="#0050B2">bbissett</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : 3.1PackagingOnePagerReview</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="3.1PackagingOnePagerReview-3.1PackagingReview"></a>3.1 Packaging Review</h1> <h4><a name="3.1PackagingOnePagerReview-Document%3A3.1PackagingOnePager"></a>Document: <a href="3.1PackagingOnePager.html" title="3.1PackagingOnePager">3.1PackagingOnePager</a></h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item </th> 
+         <th class="confluenceTh"> Section </th> 
+         <th class="confluenceTh"> Comment </th> 
+         <th class="confluenceTh"> Response </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> XXX-# </td> 
+         <td class="confluenceTd"> #.# </td> 
+         <td class="confluenceTd"> Comment </td> 
+         <td class="confluenceTd"> Response </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> jfdipol-001 </td> 
+         <td class="confluenceTd"> 4.13 </td> 
+         <td class="confluenceTd"> I think there should be a section on IPS package dependencies. Due to a limitation in dependency resolution in the version of IPS in UC2.3 all package dependencies in the GlassFish set of packages should use the same level of version information. Today the incorporation is fairly specific in its dependencies, but the other packages are loose (often leaving off version information). This can result in either mixing of packages across builds/releases or constraint violations with the incorporation since the unversioned dependencies will try and pull in the latest version of a package instead of the version capped by the incorporation. The safest approach is if we pick how specific we want the version info to be (say to the build #) and then make sure that all package dependencies of all types in all packages use that same level of version specification. If we do that then we will never have packages mixed across builds – let alone releases – and will avoid constraint violations. Note that I <b>think</b> in later versions of IPS the dependency resolution logic is smarter and it will find the set of packages that avoid constraint violations – but that's not the case in the version of IPS in UC2.3. </td> 
+         <td class="confluenceTd"> Agreed - we'll need to enforce dependencies more stringently although if I understand correctly, I can still only enforce lower bound in "require" type dependency whereas "incorporate" dependency acts as optional in a sense that it will not automatically enforce installation of dependency packages but that should be fine if we specify version up to the build number. In any case, I'll add section on this and describe limitations. For most packages we'll want to go up to the build number level with some potential exceptions for packages such as jersey which do get independently updated from time to time. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> alexismp-001 </td> 
+         <td class="confluenceTd"> 4.1 </td> 
+         <td class="confluenceTd"> <em>Clarification</em> Will the existing 3.0.x packages also preserve the same dependencies as they have today? </td> 
+         <td class="confluenceTd"> No, some of existing package dependencies will also change - for instance, <tt>glassfish-gui</tt> will depend on <tt>glassfish-management</tt> instead of <tt>glassfish-amx</tt>. This information should be captured and I'll add such changes to the table. <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> alexismp-002 </td> 
+         <td class="confluenceTd"> 4.5.1.1 </td> 
+         <td class="confluenceTd"> <em>Question</em> Any updates to the "classification" meta-data? What about other meta-data such as maintainer, upstream code, etc, which seem to be available in the latest UC2 and associated maven plugin? This is maybe more of a question for non-core GlassFish packages. </td> 
+         <td class="confluenceTd"> I do plan to add some more metadata to packages although I am not sure we'll cover everything described in <a href="http://wikis.sun.com/display/IpsBestPractices/Packaging+Best+Practices+-+Additional+Package+Info">Additional Package Info</a> section of Best Practices. I'll file an enhancement for this and refer to it in Issue/RFE section of one-pager. <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> alexismp-003 </td> 
+         <td class="confluenceTd"> 4.5.1.1 </td> 
+         <td class="confluenceTd"> <em>Question</em> Should <tt>shoal</tt> and <tt>glassfish-ant-tasks</tt> packages which currently are listed as not having any dependency depend on at least, say <tt>glassfish-nucleus</tt>? </td> 
+         <td class="confluenceTd"> <tt>shoal</tt> will have dependency on <tt>glassfish-nucleus</tt>, given that it is installed in <tt>glassfish/modules</tt> directory and intended for use within GlassFish installation. <tt>glassfish-ant-tasks</tt>, however, contains ant task jar library and truly does not require any other GlassFish package to run. <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> alexismp-004 </td> 
+         <td class="confluenceTd"> 4.5.1.1 </td> 
+         <td class="confluenceTd"> <em>Clarification</em> What is the expected size of <tt>glassfish-cluster-gui</tt>? Would it make sense to have this be part of <tt>glassfish-gui</tt> instead? I would imagine a user wanting all or nothing when it comes to GUI, not everything expect the cluster-related part </td> 
+         <td class="confluenceTd"> At this point <tt>glassfish-cluster-gui</tt> is officially dead :-) We'll follow the existing rule that admin CLI and GUI modules are collocated with their base container/feature so this content will be part of <tt>glassfish-cluster</tt> package. <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> alexismp-005 </td> 
+         <td class="confluenceTd"> 4.5.1.1 </td> 
+         <td class="confluenceTd"> <em>Clarification</em> Those packages available only from the update center, it should probably be stated that this is from the "stable" repository </td> 
+         <td class="confluenceTd"> Yes, the intent is to make them available in "stable". Will add note. <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> alexismp-006 </td> 
+         <td class="confluenceTd"> 4.5.1.1 </td> 
+         <td class="confluenceTd"> <em>Question</em> With IPS, how can one package <tt>glassfish-jms-ra</tt> replace another <tt>glassfish-generic-ra</tt>? </td> 
+         <td class="confluenceTd"> I believe that the exposure to <tt>glassfish-generic-ra</tt> was rather limited but we can publish one-off update of <tt>glassfish-generic-ra</tt> package which will have no payload and defined dependency on new <tt>glassfish-jms-ra</tt> package - this should take care of seamless update for users which had <tt>glassfish-generic-ra</tt> already installed. <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> alexismp-007 </td> 
+         <td class="confluenceTd"> 4.9 </td> 
+         <td class="confluenceTd"> <em>Question</em> Will the I18N and L10N packages double the number of packages available from the update center? If I installed the non-ML version, can I just not see them? </td> 
+         <td class="confluenceTd"> Not all of packages have their localized counterparts, but yes, their presence potentially doubles the number of available packages. One way to cut down would be to deliver localized content in the base package and filter it on pkg level using variant or facet definitions but I don't think we'll have bandwidth to do something like this in 3.1 release. <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> alexismp-008 </td> 
+         <td class="confluenceTd"> 4.10.3 </td> 
+         <td class="confluenceTd"> <em>Clarification</em> Can you explain the role of <tt>incorporation</tt> packages? </td> 
+         <td class="confluenceTd"> Will further clarify the need for metapackages and incorporation packages.<br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> alexismp-009 </td> 
+         <td class="confluenceTd"> 4.13.2 </td> 
+         <td class="confluenceTd"> <em>Question</em> Is UpdateCenter 3.2 the version that presents the user with the license when installing a package from the CLI (pkg)? </td> 
+         <td class="confluenceTd"> You meant Update Center 2.3, right? Current update version of updatecenter 2.3 does not contain pkg drop with interactive license prompt functionality. I am not sure if it is possible to get selective fix for this since integration of new pkg version would probably warrant going to updatecenter 2.4. I will add a note on this.<br class="atl-forced-newline"> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 14, 2010 by 
+<font color="#0050B2">snjezana_o</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

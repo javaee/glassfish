@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : WikiAttachments</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>A WikiPage can have any number of attachments. An attachment can be any file, even a file that contains WikiMarkup. These files are handled very similarly to any email program, i.e. you "Attach a file" (see bottom of this page), etc.</p> <p>The name of an attachment is of form <tt>~PageName/attachment name</tt>, where the ~PageName signifies the "owning" page. In the future, the access rights of an attachment will be the same as the access rights of the page, and thus we need a sort of a "parent" page for each attachment. Besides, calling them "attachments" without something to attach them to would be kinda odd, yes? The "attachment name" is the original file name.</p> <p>You can refer to an attachment simply by putting its name in full form in brackets, just like when referring to any WikiPage. For example, [TestPage/testpicture.png] would refer to the "testpicture.png" that has been attached to page "~TestPage". However, if you're on the same page, then you don't need to name the page, i.e. on this page, [JSPWikiFileAttachments/test.txt] is the same as referring to [test.txt]. In case you happen to have a WikiPage and an attachment of the same name, the attachment takes precedence <sup><a href="#WikiAttachments-1">1</a></sup> .</p> <p>If the attachment is an image, and that particular image type has been defined for automatic inlining, then the image gets inlined. This means that you can treat a link to an attachment just like you would treat any link that goes outside this Wiki.</p> <p>Each attachment (except for inlined images) has a small paperclip icon next to it. Clicking this icon takes you to the ~PageInfo display, which is very similar to viewing the page info of any normal WikiPage. In fact, it is actually the same JSP file... From there, you can download older versions, or upload new versions of that attachment. If you upload a new version of the attachment, the file name does not need to be the same at all.</p> <p>If you click on "Attach file..." -link and nothing happens, make sure you have Javascript and popups enabled. I am experimenting with this simple popup window for uploading, and if it is a problem, then I'll replace it with something else. However, if we want to do stuff like a upload progress indicator, we really do want them in a separate window. Besides, if you have a popup disabler software that disables windows that open on explicit clicks, then you probably have a very faulty popup disabler <img class="emoticon" src="images/icons/emoticons/smile.gif" height="20" width="20" align="absmiddle" alt="" border="0">.</p> <p>--JanneJalkanen, 08-Dec-2002.</p> <p><a name="WikiAttachments-1"></a> This may still change.</p> 
+     <hr> <p>Q: Is anything in brackets with a dot in the name considered an attachment name?</p> <p>A: Nope. We make as little assumptions as possible about the attachment name. We use a slash as a separator, but we always search through the attachment name space first, then the wikipage space. If the link cannot be found from either, it's assumed to be a standard WikiName. For example: <span class="error">[^sampledocument.rtf]</span> is assumed to be a WikiPage, since it does not exist as an attachment of this page.</p> 
+     <hr> <p>Q: I am using Apache with some JSP container, but for some strange reason, the attachments do not work.</p> <p>A: Please check carefully that you have the /attach/ -URL added in your mod_jk.conf file as one of those URLs that get forwarded to the JSP container.</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:49.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

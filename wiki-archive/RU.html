@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : RU</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>Feedback on Rolling Upgrade Design</p> <p>Erik vd V: The document has a focus on Rolling Upgrade with SSR. A mechanism is presented that ensures session retention for Sip sessions. But somewhere it should also be described what mechanisms are in place for retention of other data during rolling upgrade. E.g., how is EJB stateful session bean retention ensured. Is this mechanism also based on the backup-restore-reconciliate principle or on eager replication and eager re-activation? Also the HTTP sessions are not really described in the document.</p> 
+     <hr> <p>Stoffe's comments for review 1/9 2008</p> <p>Title<br> SSR should be spelled out, people no following the discussion have no clue what it is.</p> <p>EVDV: done</p> <p>If the backup is optional then when it is not used how much more is it to a normal shutdown?<br> I do not see any differance there.</p> <p>EVDV: PA5 already states when it could be wise not use backup:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">In case an application does have a small replica cache with a high session modification rate, the approach willl not work optimally, since almost all the restored data will have become obsolete by the time the instance is restored. By making the backup optional, and the reconciliation resistant against partial backups, there is an option to cater for installations with these kinds of applications as well.</pre> 
+       </div> 
+      </div>
+     </div> <p>When the sequence is integrated in the shutdown, there would be no difference at all between a normal shutdown and a non-backup shutdown.<br> If the backup is introduced as a separate command, the only difference could be the presence of the 'drain' phase, which is currently not present for a normal shutdown.<br> I made no modifications to the document.</p> <p>There is in general too little distingtion between UDP &amp; TCP since both react differently to the scenarios.<br> It might be better to answer with proper response codes even internally to kill all retransmissions.</p> <p>EVDV: I suppose this mainly applies to section 2.2.2. It is stated that for outgoing requests, due to the fact that the outgoing connection can not be established a 5xx error is returned. This is regardless of TCP or UDP. Is this not what you mean? This will stop retransmissions, I hope.</p> <p>One thing I can not understand is why it is bad to have a transition state where all connections are still up but only the listeners are closed? It should be that existing responses would still arrive completenig transaction while if the current instance generated a response then there is also an already established TCP connection to the other node. That one could be reused!<br> This is somewhat described on page 21 where it says 32se but it should have been 64*T1</p> <p>EVDV: The CLB team did not want to introduce a asymetric implementation where there would be response stickiness, but no associated request stickiness and no FE stickiness. This is actually what was my preferred alternative, but since the (limited) BE quiescing was not needed to meet the requirements, I let it go.</p> <p>A new request that arrives on a existing connection should be droped or rejected with a retry after but most of the cases this is an error case or a connection reuse scenario.</p> <p>2.1.2.1<br> Transaction loss is a little bit strange since it is hard to follow where the loss of what occurs.<br> 1) Here a internal 408 would be generated internaly by the transaction layer. Not sure of the problem.</p> <p>EVDV: the problem is that the 408 is <em>internally</em> generated. There will be a different view by the client and by the server. The client can think the transaction succeeded.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">so the client and the BE will have a different view on the same transaction, and on the same dialog/session. The client will expect any changes resulting from this response to have been applied.</pre> 
+       </div> 
+      </div>
+     </div> <p>2) It says not yet persisted transaction (But the transactions are never persisted anyhow!?)</p> <p>EVDV: Whoops. I modified the text. It now talks about not yet completed transaction and mentions that replication only happens on completed transactions.</p> <p>Also where is the problem? In the node that is shutting down it will not receive the request but that is expected.<br> In the case that a unknown dialog message ends up on the "new" rehashed BE it will simply return 481 so is there any problem with the current design that needs to be fixed?</p> <p>EVDV: Let's take the ACK. The ACK will be routed according to the rehashed BE, where it is dropped (no 481 is returned on an ACK). The client will not notice this. It will consider the ACK transmitted. However, since the server orginally handling the INVITE did not see the ACK, it will retransmit the INVITE (if it is still capable of doing so...).<br> Take the CANCEL. If the client sends a CANCEL to cancel an early dialog, and he receives a 481, what is he expected to do? Assume that the dialog is already canceled? But it is not...</p> <p>3) What happes to the response is very dependent of what is put in the Via header...</p> <p>EVDV: but the Via header now always includes the FE that was used to route the request, unless it was a co-located BE that handled it. This is because we decide to always route the response via the FE that handled the request to enable conneciton reuse in the TCP case (and for SSL).<br> I did have a suggestion earlier that the BE could pop the topmost VIA if it sees that this is a disabled FE and then sent the response directly. However, this would give some problems with SSL and there where other problems with this solution. You apparently already discussed this with the CLB team a time ago and this solution was rejected.</p> <p>2.1.3 Why is there interaction with VIP (This should be done under the hood by the vip impl when closing the listener)</p> <p>EVDV: What you want to do is close existing external connection, but keep internal connections open and optionally, allow new internal connections to be established. This requires actively closing of the external connections (difficult). It also requires some mechanism to avoid new external connections while allowing internal connection establishment. This could be done in several ways; different listeners for internal and external connections. This was too difficult to implement according to the CLB. Or not closing the port, but ensure that the IP-sprayer does not route any more external traffic to the instance. This is where the VIP communication comes in. The baracuda has some SOAP API to achieve this. We could achieve something similar with VIP.</p> <p>2.2.2 Is the session leakage not fixed with the timer on every SAS?<br> Yes. If the application handles the SAS timer correctly. Some applications might decide to have infinite SAS timers.</p> <p>2.6 The connection closing is not so good for TLS. The idle closing is already in the GrizzlyNetworkManager.<br> Could this not be hooked to the upgrade commands so that if the cluster knows one is in progress it then acts on GMS!?</p> <p>EVDV: I do not really understand this. Sure we will loose transactions when closing the TLS. But this is an acceptable loss.</p> 
+     <hr> <p>Sreeram's comments </p> 
+     <ul class="alternate" type="square"> 
+      <li>many acronyms are used (e.g: TU in 2.1.2.1) with no definitions. would be nice to have a glossary of the more obscure acronyms.</li> 
+     </ul> <p>EVDV: will add an abbreviations and concepts section</p> 
+     <ul class="alternate" type="square"> 
+      <li>We expect to build an agent that automates the whole process. The RU should scriptable and is quite often the case that the Admin has scheduled it for a window and gone home. This means all steps must be synchronous and the begin end end of each instance's upgrade must be well defined. Please add this to the requirements</li> 
+     </ul> <p>EVDV: Well, the question is who automates this. According to MMAS, it is acceptable if the building blocks are available and the automation is done in the SAF context.</p> 
+     <ul class="alternate" type="square"> 
+      <li>another requirement is that the upgrade be "transactional". By this we mean that the whole cluster upgrade or there is a mechanism by which we fall back to the original state.</li> 
+     </ul> <p>EVDV: Good point. I left out the roll-back capability completely. The idea was that there are several ways to roll-back. Either we do a smooth roll-back, sort of a rolling upgrade, but with the old version. Another way would be to do a complete reboot (with loss of all sessions). Note that such a backup and roll-back solution is larger then only the SSR, it would also involve things like DB backup etc.</p> 
+     <ul class="alternate" type="square"> 
+      <li>In an earlier version I see 0.05% transaction loss as a goal. Is that gone now? Why?</li> 
+     </ul> <p>EVDV: THere is a requirement on session loss (2.3.7.1). There is a mention of transaction loss as well (2.3.7.2). Furthermore, it is stated that from upgrade will be modeled as shutdown/restart from a requirement perspective. There is mentioned that for each instance failure there is an acceptable transaction loss of 1/n-th of all ongoing transactions. For a complete rolling upgrade, this will be equal to all ongoing n times 1/nth of the transactions. Should this be made more clear?</p> 
+     <ul class="alternate" type="square"> 
+      <li>In an earlier pass of feedback I had suggested that we do not depend on lazy semantics i.e start and complete an instance's upgrade (hence moving the instance to an upgrade-complete state) before moving on to the "next roll". Has this been accepted?</li> 
+     </ul> <p>EVDV: We do not rely on lazy replication mechanisms to establish the invariant that there are two copies of every data item. However, we stop there. We do not actively start migrating sessions back to establish a situation where everything is on its home instance. One of the reasons for this is that eager migration has a chance of failing due to locks that are obtained. The lazy variant of migration uses the retry-after to place the retry problem at the client. An eager migration variant would have to take responsibility for these retries. And, again, it is not needed to due eager migration for robustnes, the only thing that is important is that every data item has two copies.</p> <p>In Section 2.2, Step 10: Reconciliation, your statement seems to suggest that my expectations are met. Pls. clarify.</p> <p>EVDV: Except for eager migration, they are. I'll clarify the text.</p> 
+     <ul class="alternate" type="square"> 
+      <li>many many empty spaces and sections in spec. See section 2.2.2-4</li> 
+     </ul> <p>EVDV: ??</p> 
+     <ul class="alternate" type="square"> 
+      <li>Page 9(22) You suggest that application must remove sessions. May be we can suggest how they can do so.</li> 
+     </ul> <p>EVDV: Yes, I will add some suggestions. The main one is to use the SAS timer. Also if there are problems with the established RTP sessions, this might be a hint to the app.</p> 
+     <ul class="alternate" type="square"> 
+      <li>2.2.7: How do we know Drain is complete?</li> 
+     </ul> <p>EVDV: We do not. Drain is for things on the wire, in the TCP buffers etc. There is no way of monitoring that all. I think it will be a time based drain.</p> 
+     <ul class="alternate" type="square"> 
+      <li>This design is optimized for slow changing sessions. What do we say for B2B applications in call processing?</li> 
+     </ul> <p>EVDV: we made the backup phase optional. If the app expects that the majority of the data will have been outdated when the instance is restored it can rely on the reconcilliation. It is like a diff between an a full and an empty file, in that case. The design is not really optimised for this, since the eager replication and reactivation done during reconcilliation are not bulk, but on a per item basis. The eager re-activation is even a broadcast, a number of acks, another broadcast and a save, so not in-expensive.</p> 
+     <ul class="alternate" type="square"> 
+      <li>2.4-11, why is it empty. May be if you put titles for what you eventually will have there, it would be useful.</li> 
+     </ul> <p>EVDV: THe numbering of your doc must be different. 2.4 is not empty in my copy. </p> 
+     <ul class="alternate" type="square"> 
+      <li>2.14: Are you suggesting all FEs close connections periodically and simultaneously?what happens to transactions in flight?</li> 
+     </ul> <p>EVDV: Yes. But only when configured to do so. This should only be for some time after restart or at any time the operator sees or expects to have unbalanced connections. This is not what I would consider the final solution to this problem, but a sufficient solution...<br> The expectation is that the inflight TCP messages will be retries, since they are not ack-ed on TCP level and will end-up on a different instance.<br> Or will there be any data that is already acked on the transport level, but which will be lost anyway by the closing of the connections?</p> <p>—</p> <p>Binod's comments</p> 
+     <ul class="alternate" type="square"> 
+      <li>It is mentioned that when a BE is disabled, there will be some in-flight activity will continue even though practically<br> all traffic to the BE will stop. Can you please help me understand what these inflight activity might be? Will it end up in<br> any request or response going out to the client, even if the BE is disabled?</li> 
+     </ul> <p>EVDV: this would be, e.g., something that is already in the TCP buffer on the BE or still on the wire.<br> My proposal is to still handle these requests. If this results in a response, then this can, of course, not be delivered.<br> Then it would be similar to a request that was received just before the BE is disabled...</p> 
+     <ul class="alternate" type="square"> 
+      <li>Section 2.2.6 talks about backing up the sessions to the disk. I am not sure if this is the right thing to do. For<br> example,if the server is depending on NFS mounted file system, it might take longer. I remember having some discussion <br> where MMAS might be using NFS mounted file systems. Even otherwise, what would it take to retrieve the sessions over the<br> network from its replica partner?</li> 
+     </ul> <p>EVDV: It say the back up is to a file. The file can be on a ram-disk. In a normal application upgrade or AS upgrade scenario, this should be very fast.<br> Even in case of a OS upgrade we could (theoratically) use the disk that is present on each payload server to store the file.<br> Since we do not have a bulk replication/reactivation, it will not be cheap as well to retrieve the sessions from the replica partner. See response to Sreeram's question on eager replication/re-activation.</p> 
+     <ul class="alternate" type="square"> 
+      <li>Section 2.2.7. Assuming that BE JVM will be up for some time and the load is below 50% of normal load, draining should<br> happen normally, right?</li> 
+     </ul> <p>EVDV: I do not understand the quesstion.<br> 2.2.7 is restart. The external load will be 50%, but due to the reconcilation traffic etc, there will be extra CPU load anyway.</p> 
+     <ul class="alternate" type="square"> 
+      <li>Regardless of this discussion, it might be good to provide configuration option for the delay on which expat list handling<br> is triggered.</li> 
+     </ul> <p>EVDV: I agree.</p> 
+     <ul class="alternate" type="square"> 
+      <li>Section 2.13. For rebalancing the lost connections, it seems we are planning to close/open the connections on specific<br> intervals. While it might be okay for the short term, this could cause unexpected transaction loss etc. So, shouldnt we<br> think of a more permanent solution. Basically, we need to let CSCF know of cluster view changes and let it balance <br> connections properly when the instance come back up.</li> 
+     </ul> <p>EVDV: I agree that this is a short term solution. I do not think there will be much extra transaction loss (see reply to Sreeram).<br> In the FFS section there is mention about using the keep-alive option. Another alternative that was disussed was to use the cluster view to allow each instance to close only those connections that are more then its fair share and modify the VIP so that these re-established connections would be distributed fairly over the instances. I do not know of any way to trigger the SCSF according to a standard inter-operable mechanism...</p> 
+     <ul class="alternate" type="square"> 
+      <li>Was there any discussion on whether this mechanism will help achieve 2hr requirement for upgrade? For how many instances<br> we are planning to do upgrade in 2hrs? Given there are multiple timeout periods that need to be configured, will we be <br> able to meet that requirement? Can we add an approximate time split with possible delay configurations?</li> 
+     </ul> <p>EVDV: 10 instances in 2 hours is what the requirements say. We really have to get some feedback on this from some early tests we can do here. Adrian did do something, which suggests that the bottleneck may be in the serialisation/deserialation effort and not so much in the file access. Also we have to investigate using the full potential of multi-core to speed up the process.</p> 
+     <hr> <p>Bhavani's initial comments:</p> <p>1. In section 2.1.2.1, another possible case is</p> <p>Outgoing associated request: ACK in case of INVITE, for example. When the BE sends out the ACK, the dialog structure is replicated. But, by that time if FE is not available, the ACk does not get sent to the client. </p> <p>EVDV: I think this is not true. The ACK is a new transaction and does not have to follow the via header. Instead it is sent directly to the contact or via the routes. The FE is not included in that, meaning that the ACK will be sent directly from the BE to the client. At least that is my understanding.</p> <p>Since the ACK does not reach the client, the client will resend 200OK response. If that response ends up in a different instance, then there are 2 possibilites:</p> <p>(a) If the dialog structure was already replicated, then the replicated DS is used.<br> (b) if the dialog structure is not yet replicated, and error is returned to the client ("Transaction does not exist" error I guess).</p> <p>But eventually the replication will happen leading to a session leakage. The replicated session(s) will remain in replica cache until the load-advisory is issued and re-activated in another instance.</p> <p>2. In section 2.5, since the expat list is disabled during the rolling upgrade, we should probably add a note saying that the "broadcast" is always used during session creation or session lookup.</p> <p>EVDV: true. I will add such a note.</p> <p>3. In general, do we support the neighbouring instance going down when the instance is being rolled? If not, what is the advantage of storing the sessions to the disk?</p> <p>EVDV: We do not have any requirements on session retention in case of failures during a rolling upgrade. Having said that, it is interesting how this would be handled.<br> From the reconciliation table you can see that when the replica cache copy is lost this normally means that the replica has been reactivated. In this case it would be lost because the replica partner went down. We would not distinguish between these cases, hence this would mean that we would remove all the sessions whose replicas have been lost when the buddy went down. Similarly, any restored replicas where the active copy was lost due to the neighbour crashing will be removed.<br> Simply said, a crash of a partner will lead to additional session loss, but this is not expected to be more or less then if we would get the data from the partners. In fact, we still do get the data from the partners in a sense, but it is an optimised version, since it is just the diff.</p> <p>4. When the instance is being rolled, if the session(s) gets re-activated in another instance, then does the session(s) get removed from the replica cache from where it got re-activated?</p> <p>EVDV: yes.</p> <p>For example, let us have i1, i2, i3, i4 instances with i1 being rolled. Let us say a traffic requests s1 (which belonged to i1 before the roll), and lets assume s1 gets activated in i3. When the s1 gets reactivated in i3, will it get removed from replica cache of i2?</p> <p>EVDV: yes. This is part of the normal reactivation, also applies when there is no rolling upgrade.</p> <p>If it does not get removed, then s1's replica will be there in both i2 and i4, which might lead to problems during active cache reconciliation.</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 08, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

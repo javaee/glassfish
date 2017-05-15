@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFishV3.1LoggingDocumentationReview</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GlassFishV3.1LoggingDocumentationReview-LoggingDocumentationReviewsforGlassFishServerOpenSourceEdition3.1"></a><em>Logging</em> Documentation Reviews for GlassFish Server Open Source Edition 3.1</h1> <p>Use this page to provide review comments on the <em>Logging</em> documentation deliverables for GlassFish Server Open Source Edition 3.1. These deliverables are based on the <a href="GlassFishV3.1LoggingDocPlan.html" title="GlassFishV3.1LoggingDocPlan">Logging Documentation Plan</a>.</p> <p>Each of the documentation deliverables is attached to this page in PDF format. A list of links to the PDFs for a specific deliverable set is provided in the review section for that deliverable. For example, the PDFs for the logging <tt>asadmin</tt> man pages are provided in the <em>New and Revised Man Pages</em> review section. PDFs are added or updated as review drafts become available and comments are incorporated.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <td class="confluenceTd"> <img class="emoticon" src="images/icons/emoticons/check.gif" height="16" width="16" align="absmiddle" alt="" border="0"> </td> 
+         <td class="confluenceTd"> Please provide your feedback by adding a comment to this page. To simplify the processing of your comments, please add your comments in the format in the sample comment. Review existing comments to see known issues and avoid duplicates. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <div> 
+      <ul> 
+       <li><a href="#GlassFishV3.1LoggingDocumentationReview-LoggingDocumentationReviewsforGlassFishServerOpenSourceEdition3.1"> <em>Logging</em> Documentation Reviews for GlassFish Server Open Source Edition 3.1</a></li> 
+       <ul> 
+        <li><a href="#GlassFishV3.1LoggingDocumentationReview-ChangestoBooks">Changes to Books</a></li> 
+        <ul> 
+         <li><a href="#GlassFishV3.1LoggingDocumentationReview-AdministrationGuideChanges"> <em>Administration Guide</em> Changes</a></li> 
+         <li><a href="#GlassFishV3.1LoggingDocumentationReview-TroubleshootingGuideChanges"> <em>Troubleshooting Guide</em> Changes</a></li> 
+         <li><a href="#GlassFishV3.1LoggingDocumentationReview-ErrorMessageReference"> <em>Error Message Reference</em></a></li> 
+        </ul> 
+        <li><a href="#GlassFishV3.1LoggingDocumentationReview-NewandRevisedManPages">New and Revised Man Pages</a></li> 
+        <li><a href="#GlassFishV3.1LoggingDocumentationReview-RelatedInformation">Related Information</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="GlassFishV3.1LoggingDocumentationReview-ChangestoBooks"></a>Changes to Books</h2> <h4><a name="GlassFishV3.1LoggingDocumentationReview-AdministrationGuideChanges"></a><em>Administration Guide</em> Changes</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Section </th> 
+         <th class="confluenceTh"> Documentation Impact </th> 
+         <th class="confluenceTh"> Reviewers <br class="atl-forced-newline"> </th> 
+         <th class="confluenceTh"> Status <br class="atl-forced-newline"> </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chapter 7, <a href="http://wikis.sun.com/download/attachments/216505201/SJSASEEAG-Chap7Logging-OSE.pdf">Administering the Logging Service</a> </td> 
+         <td class="confluenceTd"> Revised <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Naman Mehta, <br class="atl-forced-newline"> Anissa Lam, <br class="atl-forced-newline"> Vince Kraemer, <br class="atl-forced-newline"> Jerome Dochez <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Review comments incorporated </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Appendix A, Section <a href="http://wikis.sun.com/download/attachments/216505201/SJSASEEAG-asadmin-logging-OSE.pdf">Logging and Monitoring Subcommands</a> </td> 
+         <td class="confluenceTd"> Minor revisions to identify new and renamed asadmin subcommands for logging <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Complete <br class="atl-forced-newline"> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3.1LoggingDocumentationReview-TroubleshootingGuideChanges"></a><em>Troubleshooting Guide</em> Changes</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Section </th> 
+         <th class="confluenceTh"> Documentation Impact <br class="atl-forced-newline"> </th> 
+         <th class="confluenceTh"> Reviewer </th> 
+         <th class="confluenceTh"> Status <br class="atl-forced-newline"> </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://wikis.sun.com/download/attachments/216505201/SJSASEETSG-ExaminingLogFiles-OSE.pdf">Examining Log Files</a> in Chapter 1 </td> 
+         <td class="confluenceTd"> Minor revisions to call out targeting capability <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Anissa Lam <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> 95% complete <br class="atl-forced-newline"> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3.1LoggingDocumentationReview-ErrorMessageReference"></a><em>Error Message Reference</em></h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Section </th> 
+         <th class="confluenceTh"> Documentation Impact <br class="atl-forced-newline"> </th> 
+         <th class="confluenceTh"> Reviewer </th> 
+         <th class="confluenceTh"> Status <br class="atl-forced-newline"> </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://wikis.sun.com/download/attachments/216505201/GF31_ErrMsgRef.pdf">Error Message Reference</a> </td> 
+         <td class="confluenceTd"> Revised for GlassFish 3.1<br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> All reviewers <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Entire book is generated from properties files. <br class="atl-forced-newline"> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3.1LoggingDocumentationReview-NewandRevisedManPages"></a>New and Revised Man Pages</h2> <p>Comments are now closed for man pages. </p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Man Page Name and Section </th> 
+         <th class="confluenceTh"> Documentation Impact <br class="atl-forced-newline"> </th> 
+         <th class="confluenceTh"> Reviewers <br class="atl-forced-newline"> </th> 
+         <th class="confluenceTh"> Status <br class="atl-forced-newline"> </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://wikis.sun.com/download/attachments/216505201/collect-log-files.1.pdf"><tt>collect-log-files</tt></a> </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Naman, Anissa <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Review comments incorporated <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://wikis.sun.com/download/attachments/216505201/list-log-attributes.1.pdf"><tt>list-log-attributes</tt></a> </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Naman, Anissa </td> 
+         <td class="confluenceTd"> Review comments incorporated </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://wikis.sun.com/download/attachments/216505201/list-log-levels.1.pdf"><tt>list-log-levels</tt></a> </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Naman, Anissa </td> 
+         <td class="confluenceTd"> Review comments incorporated </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://wikis.sun.com/download/attachments/216505201/rotate-log.1.pdf"><tt>rotate-log</tt></a> </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Naman, Anissa </td> 
+         <td class="confluenceTd"> Review comments incorporated </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://wikis.sun.com/download/attachments/216505201/set-log-attributes.1.pdf"><tt>set-log-attributes</tt></a> </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Naman, Anissa </td> 
+         <td class="confluenceTd"> Review comments incorporated </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://wikis.sun.com/download/attachments/216505201/set-log-levels.1.pdf"><tt>set-log-levels</tt></a> </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Naman, Anissa </td> 
+         <td class="confluenceTd"> Review comments incorporated </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3.1LoggingDocumentationReview-RelatedInformation"></a>Related Information</h2> 
+     <ul> 
+      <li><a href="GlassFishV3.1LoggingDocPlan.html" title="GlassFishV3.1LoggingDocPlan">Logging Documentation Plan</a></li> 
+      <li><a href="http://wiki.glassfish.java.net/attach/V3FunctionalSpecs/GFv3.1Logging-onepager.html">Logging &amp; Diagnostic One-Pager</a></li> 
+      <li><a href="3.1Logging.html" title="3.1Logging">Project page</a></li> 
+      <li><a href="./V3FunctionalSpecs.html">Product Functional Specifications</a></li> 
+      <li><a href="GlassFishV3.1AdminConsoleDocPlan.html" title="GlassFishV3.1AdminConsoleDocPlan">GlassFish 3.1 Admin Console Doc Plan</a></li> 
+     </ul> <p>Email aliases:</p> 
+     <ul> 
+      <li><a href="mailto:admin@glassfish.java.net">admin@glassfish.java.net</a></li> 
+      <li><a href="mailto:users@glassfish.java.net">users@glassfish.java.net</a></li> 
+      <li><a href="mailto:docs@glassfish.java.net">docs@glassfish.java.net</a></li> 
+     </ul> 
+     <hr> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876175/21365567.pdf">SJSASEEAG-asadmin-logging-OSE.pdf</a> (application/x-download) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876175/21365568.pdf">SJSASEETSG-ExaminingLogFiles-OSE.pdf</a> (application/x-download) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876175/21365880.pdf">list-log-attributes.1.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876175/21365881.pdf">collect-log-files.1.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876175/21365879.pdf">list-log-levels.1.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876175/21365878.pdf">rotate-log.1.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876175/21365877.pdf">set-log-attributes.1.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876175/21365876.pdf">set-log-levels.1.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876175/21365603.pdf">SJSASEEAG-Chap7Logging-OSE.pdf</a> (application/x-download) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876175/21365604.pdf">GF31_ErrMsgRef.pdf</a> (application/x-download) 
+      <br> 
+     </div> 
+     <div class="tabletitle"> 
+      <a name="comments"> <h4>Comments:</h2> </a> 
+     </div> 
+     <table border="0" width="100%"> 
+      <tbody>
+       <tr> 
+        <td> <a name="comment-20879185"></a> <font class="smallfont">
+          <div class="table-wrap"> 
+           <table class="confluenceTable">
+            <tbody> 
+             <tr> 
+              <th class="confluenceTh"> Comment ID </th> 
+              <th class="confluenceTh"> Location </th> 
+              <th class="confluenceTh"> Comment </th> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> JEP-001 </td> 
+              <td class="confluenceTd"> Chapter 7 of Administration Guide, Section "Log File Names and Locations" </td> 
+              <td class="confluenceTd"> Sample comment. Please provide suggested fix. </td> 
+             </tr> 
+            </tbody>
+           </table> 
+          </div> </font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by jonpatt at Jan 23, 2011 09:44 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20882644"></a> <font class="smallfont"><p>I looked at all commands and my comments are as below:</p> <p>1. collect-log-files - this command man page needs major change. Please use my blog for the same (<a href="http://blogs.oracle.com/naman/entry/analyze_server_logs_in_glassfish">http://blogs.oracle.com/naman/entry/analyze_server_logs_in_glassfish</a>)</p> <p>2. list-log-attributes - pdf is not opening so not yet reviewed.</p> <p>3. list-log-levels -</p> <p>Usage: asadmin asadmin-utility-options list-log-levels<br> [<del>?|</del>-help[]] target</p> <p>Also, command output format is changed.<br> E.g.<br> java.util.logging.ConsoleHandler &lt;FINEST&gt;<br> javax.enterprise.resource.corba &lt;INFO&gt;<br> javax.enterprise.resource.javamail &lt;INFO&gt;<br> javax.enterprise.resource.jdo &lt;INFO&gt;<br> javax.enterprise.resource.jms &lt;INFO&gt;<br> javax.enterprise.resource.jta &lt;INFO&gt;<br> javax.enterprise.resource.resourceadapter &lt;INFO&gt;<br> javax.enterprise.resource.sqltrace &lt;FINE&gt;<br> javax.enterprise.resource.webcontainer.jsf.application &lt;INFO&gt;<br> javax.enterprise.resource.webcontainer.jsf.config &lt;INFO&gt;<br> javax.enterprise.resource.webcontainer.jsf.context &lt;INFO&gt;<br> javax.enterprise.resource.webcontainer.jsf.facelets &lt;INFO&gt;</p> <p>4. rotate-log -</p> <p>Usage: asadmin asadmin-utility-options rotate-log <span class="error">[\--target &lt;target&gt;|]</span><br> [<del>?|</del>-help[]]</p> <p>5. set-log-attributes - pdf is not opening so not yet reviewed.</p> <p>6. set-log-levels - looks fine to me. But in target section need following details.</p> <p>server_name- Default target is server. If no target is specified then it updates log levels for server<br> cluster_name- The name of a target cluster.<br> instance_name- The name of a target server instance.</p> <p>------------------------------------------------------------------------------------------------------------------------------------------</p> <p>For, list-log-attributes and set-log-attributes are similar to list-log-levels and set-log-levels. Only difference is server restart is required if any change in attributes.</p> <p>In genral, for all man pages remove display-error-distribution(1), display-error-statistics(1),display-log-records(1) from See Also section and add other commands which were missing there.</p></font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by namanmehta at Feb 09, 2011 22:16 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20882646"></a> <font class="smallfont"><p>One more change needed during review of Chapter - 7. I found the same in this week only when I tried myself.</p> <p>Page 16.<br> To implement a new handler that is not developed as an HK2 component, add the new handler<br> to the logging.properties file after the developer has put the new handler JAR file into the<br> GF_HOME/glassfish/domains/domain1/lib/ext directory.</p> <p>My blog: <a href="http://blogs.oracle.com/naman/entry/configure_my_custom_log_handler">http://blogs.oracle.com/naman/entry/configure_my_custom_log_handler</a></p></font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by namanmehta at Feb 09, 2011 22:17 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20882351"></a> <font class="smallfont"><p>Updated all man pages per Naman's comments.</p></font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by sfordin at Feb 12, 2011 11:04 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20881969"></a> <font class="smallfont"><p>man pages looks fine to me now. but still chapter 7 review changes need to incorporated.</p></font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by namanmehta at Feb 13, 2011 21:21 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20881997"></a> <font class="smallfont"><p>The latest version of Chapter 7, which includes Naman's comments, is attached.</p></font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by jonpatt at Feb 14, 2011 05:40 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20881908"></a> <font class="smallfont"><p>I verified the same and looks fine to me. No more comment from my side.</p></font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by namanmehta at Feb 16, 2011 21:37 
+         </div> </td> 
+       </tr> 
+      </tbody>
+     </table> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Feb 14, 2011 by 
+<font color="#0050B2">jonpatt</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

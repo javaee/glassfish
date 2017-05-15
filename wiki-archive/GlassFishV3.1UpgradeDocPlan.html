@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFishV3.1UpgradeDocPlan</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GlassFishV3.1UpgradeDocPlan-UpgradeDocumentationPlanforGlassFishServerOpenSourceEdition3.1"></a><em>Upgrade</em> Documentation Plan for GlassFish Server Open Source Edition 3.1</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#GlassFishV3.1UpgradeDocPlan-UpgradeDocumentationPlanforGlassFishServerOpenSourceEdition3.1"> <em>Upgrade</em> Documentation Plan for GlassFish Server Open Source Edition 3.1</a></li> 
+       <ul> 
+        <li><a href="#GlassFishV3.1UpgradeDocPlan-PeopleandRoles">People and Roles</a></li> 
+        <li><a href="#GlassFishV3.1UpgradeDocPlan-Audience">Audience</a></li> 
+        <li><a href="#GlassFishV3.1UpgradeDocPlan-SummaryoftheFeatureFromaUser%27sPerspective">Summary of the Feature From a User's Perspective</a></li> 
+        <li><a href="#GlassFishV3.1UpgradeDocPlan-Availability">Availability</a></li> 
+        <li><a href="#GlassFishV3.1UpgradeDocPlan-StatementofWork">Statement of Work</a></li> 
+        <ul> 
+         <li><a href="#GlassFishV3.1UpgradeDocPlan-ChangestoBooks">Changes to Books</a></li> 
+         <ul> 
+          <li><a href="#GlassFishV3.1UpgradeDocPlan-ReleaseNotesChanges"> <em>Release Notes</em> Changes</a></li> 
+          <li><a href="#GlassFishV3.1UpgradeDocPlan-UpgradeGuideChanges"> <em>Upgrade Guide</em> Changes</a></li> 
+         </ul> 
+        </ul> 
+        <li><a href="#GlassFishV3.1UpgradeDocPlan-ReviewSchedule">Review Schedule</a></li> 
+        <li><a href="#GlassFishV3.1UpgradeDocPlan-RelatedInformation">Related Information</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="GlassFishV3.1UpgradeDocPlan-PeopleandRoles"></a>People and Roles</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Name </th> 
+         <th class="confluenceTh"> Role </th> 
+         <th class="confluenceTh"> Location </th> 
+         <th class="confluenceTh"> Time Zone </th> 
+         <th class="confluenceTh"> Email </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Scott Fordin </td> 
+         <td class="confluenceTd"> Documentation Feature Owner </td> 
+         <td class="confluenceTd"> Burlington, MA, USA </td> 
+         <td class="confluenceTd"> US/Eastern </td> 
+         <td class="confluenceTd"> <tt>sfordin@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Bobby Bissett </td> 
+         <td class="confluenceTd"> Project Lead </td> 
+         <td class="confluenceTd"> Burlington, MA, USA </td> 
+         <td class="confluenceTd"> US/Eastern </td> 
+         <td class="confluenceTd"> <tt>bissett@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Chris Kasso </td> 
+         <td class="confluenceTd"> Software Engineer </td> 
+         <td class="confluenceTd"> Menlo Park, CA, US </td> 
+         <td class="confluenceTd"> US/Pacific </td> 
+         <td class="confluenceTd"> <tt>kasso@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Alex Pineda </td> 
+         <td class="confluenceTd"> Quality Engineer </td> 
+         <td class="confluenceTd"> Santa Clara, CA, US </td> 
+         <td class="confluenceTd"> US/Pacific </td> 
+         <td class="confluenceTd"> <tt>pineda@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Paul Davies </td> 
+         <td class="confluenceTd"> Peer Reviewer </td> 
+         <td class="confluenceTd"> Santa Clara, CA, USA </td> 
+         <td class="confluenceTd"> US/Pacific </td> 
+         <td class="confluenceTd"> <tt>pauldavies@dev.java.net</tt> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3.1UpgradeDocPlan-Audience"></a>Audience</h2> <p>This feature is aimed at system administrators and application developers.</p> <h4><a name="GlassFishV3.1UpgradeDocPlan-SummaryoftheFeatureFromaUser%27sPerspective"></a>Summary of the Feature From a User's Perspective</h2> <p>A tool to assist users in upgrading a domain to be used with a GlassFish Server Open Source Edition 3.1. Upgrades can be performed without the tool as well. Upgrade in general allows users to move their existing domains, including settings, applications, realms, pools, etc., to a newer version of GlassFish without having to manually recreate all of the work.</p> <h4><a name="GlassFishV3.1UpgradeDocPlan-Availability"></a>Availability</h2> <p>This feature is available in all GlassFish Server distributions.</p> <h4><a name="GlassFishV3.1UpgradeDocPlan-StatementofWork"></a>Statement of Work</h2> <p>This section describes in detail for each document the work that is required by the introduction of the feature, such as changes, addition of new material, relocation of existing material, and removal of existing material.</p> <p>Documentation Impact:</p> 
+     <ul> 
+      <li>None</li> 
+      <li>Minor</li> 
+      <li>Moderate</li> 
+      <li>Major</li> 
+      <li>New</li> 
+     </ul> 
+     <hr> <p><b>Note -</b> If a document is task based (as opposed to reference), the changes should be determined from the user task analysis for the feature.</p> 
+     <hr> <h4><a name="GlassFishV3.1UpgradeDocPlan-ChangestoBooks"></a>Changes to Books</h3> <h4><a name="GlassFishV3.1UpgradeDocPlan-ReleaseNotesChanges"></a><em>Release Notes</em> Changes</h4> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Section </th> 
+         <th class="confluenceTh"> Documentation Impact </th> 
+         <th class="confluenceTh"> Writer </th> 
+         <th class="confluenceTh"> Reviewers </th> 
+         <th class="confluenceTh"> Description of Change </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> What's New in the Oracle GlassFish Server 3.0.1 Release?, Support for Upgrading Cluster Configurations </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Bobby, Chris, Alex </td> 
+         <td class="confluenceTd"> Add cluster upgrades to feature list </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3.1UpgradeDocPlan-UpgradeGuideChanges"></a><em>Upgrade Guide</em> Changes</h4> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Section </th> 
+         <th class="confluenceTh"> Documentation Impact </th> 
+         <th class="confluenceTh"> Writer </th> 
+         <th class="confluenceTh"> Reviewers </th> 
+         <th class="confluenceTh"> Description of Change </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1, GlassFish Server Compatibility Issues </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Bobby, Chris, Alex </td> 
+         <td class="confluenceTd"> Update compatibility issues </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Binary Compatible Releases For GlassFish Server 3.0.1 </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Bobby, Chris, Alex </td> 
+         <td class="confluenceTd"> Update compatibility list </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Deprecated and Unsupported Options</td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Bobby, Chris, Alex </td> 
+         <td class="confluenceTd"> Update list; remove <tt>--target</tt> option </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Compatibility Issues, Cluster Scripts </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Bobby, Chris, Alex </td> 
+         <td class="confluenceTd"> Adapt from 2.1.1 UG </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Compatibility Issues, Command Line Interface: <tt>hadbm</tt> </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Bobby, Chris, Alex </td> 
+         <td class="confluenceTd"> Adapt from 2.1.1 UG </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2, Upgrading an Installation of Application Server or GlassFish Server </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Supported Releases For Upgrade to GlassFish Server 3.0.1 </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Bobby, Chris, Alex </td> 
+         <td class="confluenceTd"> Update migration path list, remove note about clustering support </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Upgrade Tool Functionality, Upgrade of Clusters </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Bobby, Chris, Alex </td> 
+         <td class="confluenceTd"> Adapt from 2.1.1 UG </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Upgrading Node Agents </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Bobby, Chris, Alex </td> 
+         <td class="confluenceTd"> Adapt from 2.1.1 UG; exclude To Upgrade Remote Node Agents (In-place) task </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Correcting Potential Upgrade Problems </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Bobby, Chris, Alex </td> 
+         <td class="confluenceTd"> Adapt from 2.1.1 UG </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Cluster Profile Security Setting </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Bobby, Chris, Alex </td> 
+         <td class="confluenceTd"> Adapt from 2.1.1 UG </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Cluster Profile Upgrade on Windows </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Bobby, Chris, Alex </td> 
+         <td class="confluenceTd"> Adapt from 2.1.1 UG </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Port Conflicts </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Bobby, Chris, Alex </td> 
+         <td class="confluenceTd"> Adapt from 2.1.1 UG </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Load balancer Plug-in Problems During Side-by-Side Upgrade </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Scott </td> 
+         <td class="confluenceTd"> Bobby, Chris, Alex </td> 
+         <td class="confluenceTd"> Adapt from 2.1.1 UG </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3.1UpgradeDocPlan-ReviewSchedule"></a>Review Schedule</h2> <p>The review schedule for the documentation items that are affected by this feature is provided in the following table.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item </th> 
+         <th class="confluenceTh"> Review Start Date </th> 
+         <th class="confluenceTh"> Review End Date </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Upgrade Guide </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Release Notes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>Reviewers are listed in the <em>Statement of Work</em>.</p> <h4><a name="GlassFishV3.1UpgradeDocPlan-RelatedInformation"></a>Related Information</h2> 
+     <ul> 
+      <li><a href="./V3FunctionalSpecs.html">Product Functional Specifications</a></li> 
+      <li><a href="./V3.1UpgradeOnePager.html">Upgrade One-Pager</a></li> 
+      <li><a href="GlassFishV3.1UpgradeDocReview.html" title="GlassFishV3.1UpgradeDocReview">Upgrade Guide Documentation Review</a></li> 
+     </ul> <p>Email aliases:</p> 
+     <ul> 
+      <li><a href="mailto:admin@glassfish.java.net">admin@glassfish.java.net</a></li> 
+      <li><a href="mailto:users@glassfish.java.net">users@glassfish.java.net</a></li> 
+      <li><a href="mailto:docs@glassfish.java.net">docs@glassfish.java.net</a></li> 
+     </ul> 
+     <hr> 
+     <div class="tabletitle"> 
+      <a name="comments"> <h4>Comments:</h2> </a> 
+     </div> 
+     <table border="0" width="100%"> 
+      <tbody>
+       <tr> 
+        <td> <a name="comment-20881554"></a> <font class="smallfont">
+          <div class="table-wrap"> 
+           <table class="confluenceTable">
+            <tbody> 
+             <tr> 
+              <th class="confluenceTh"> Comment ID<br class="atl-forced-newline"> </th> 
+              <th class="confluenceTh"> Section<br class="atl-forced-newline"> </th> 
+              <th class="confluenceTh"> Comment<br class="atl-forced-newline"> </th> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> PMD-001<br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> People and Roles<br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> Change Chris Kasso's location to Santa Clara.<br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> PMD-002 </td> 
+              <td class="confluenceTd"> <em>Upgrade Guide</em> Changes,1, GlassFish Server Compatibility Issues </td> 
+              <td class="confluenceTd"> Delete the content of the remaining cells in this row (to match what you did in the row for Chapter 2).<br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> PMD-003 </td> 
+              <td class="confluenceTd"> <em>Upgrade Guide</em> Changes, Compatibility Issues, Command Line Interface: <tt>hadbm</tt> </td> 
+              <td class="confluenceTd"> As HADB is not supported in this release, either delete this row or change the description the change to reflect that HADB is not supported.<br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> PMD-004 </td> 
+              <td class="confluenceTd"> <em>Upgrade Guide</em> Changes, Upgrading Node Agents </td> 
+              <td class="confluenceTd"> As node agents are not supported in this release, delete this row. I will follow up with the SSH provisioning team to see if a corresponding section about nodes is required.<br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> PMD-005 </td> 
+              <td class="confluenceTd"> <em>Upgrade Guide</em> Changes:<br class="atl-forced-newline"> 
+               <ul> 
+                <li>Cluster Profile Security Setting</li> 
+                <li>Cluster Profile Upgrade on Windows</li> 
+               </ul> </td> 
+              <td class="confluenceTd"> As domain usage profiles are not supported for this release, provide more detail about the adaptations to these sections that are required.<br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> PMD-006 </td> 
+              <td class="confluenceTd"> Online Help Changes<br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> Add information about the changes that are required to the Upgrade Tool online help.<br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> PMD-007 </td> 
+              <td class="confluenceTd"> Related Information<br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> Add links to the following documents:<br class="atl-forced-newline"> 
+               <ul> 
+                <li><a href="GlassFishv3.1Upgrade.html" title="GlassFishv3.1Upgrade">Project plan</a></li> 
+                <li><a href="V3.1UpgradeDashboard.html" title="V3.1UpgradeDashboard">3.1 Upgrade Dashboard</a></li> 
+               </ul> </td> 
+             </tr> 
+            </tbody>
+           </table> 
+          </div> </font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by pauldavies at Jul 29, 2010 10:30 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20879119"></a> <font class="smallfont">
+          <div class="table-wrap"> 
+           <table class="confluenceTable">
+            <tbody> 
+             <tr> 
+              <th class="confluenceTh">Comment ID</th> 
+              <th class="confluenceTh">Section</th> 
+              <th class="confluenceTh">Comment</th> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">CSK-001</td> 
+              <td class="confluenceTd">Preface</td> 
+              <td class="confluenceTd">glassfish.java.net should be glassfish.java.net</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">CSK-002</td> 
+              <td class="confluenceTd">Preface:Related Docs</td> 
+              <td class="confluenceTd">Need to determine if API spec for 3.1 will still be at <a href="http://glassfish.java.net/nonav/docs/v3/api/">http://glassfish.java.net/nonav/docs/v3/api/</a></td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">CSK-003</td> 
+              <td class="confluenceTd">Preface page 10</td> 
+              <td class="confluenceTd">Doc links reference sun.com sites.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">CSK-004</td> 
+              <td class="confluenceTd">Page 12</td> 
+              <td class="confluenceTd">GlassFish Server Open Source Edition 3.1 v3.0.1 (remove the 3.1 reference)</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">CSK-005</td> 
+              <td class="confluenceTd">App Client Interop</td> 
+              <td class="confluenceTd">Should we indicate where the package-appclient utility is located?</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">CSK-006</td> 
+              <td class="confluenceTd">Ch 2</td> 
+              <td class="confluenceTd">Should this chapter also cover a simple upgrade (from v3 or 3.0.1) where the user upgrades the bits using Update Tool and then restarts the DAS. My understanding is that the DAS will upgrade the config automatically without the need for the user to run the Upgrade Tool. Seems like a simple scenario that is not covered here.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">CSK-007</td> 
+              <td class="confluenceTd">Supported Releases</td> 
+              <td class="confluenceTd">More of an issue for the Upgrade Tool but there is a mismatch between the releases listed in this chapter and the releases listed in the Upgrade Tool. The Upgrade Tool is wrong (I believe).</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">CSK-008</td> 
+              <td class="confluenceTd">Pg 29-Migration of Deployed Apps</td> 
+              <td class="confluenceTd">Second paragraph, last sentence - "Setting this property to v2 removes...". What property does "this property" refer to?</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">CSK-009</td> 
+              <td class="confluenceTd">Pg 29-Migration of Deployed Apps</td> 
+              <td class="confluenceTd">Last paragraph. Not clear what this means. Does the migrated config overwrite all the config for the existing apps?</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">CSK-010</td> 
+              <td class="confluenceTd">Pg 29-Upgrade Tool Func</td> 
+              <td class="confluenceTd">GlassFishEnterprise should be GlassFish Enterprise</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">CSK-011</td> 
+              <td class="confluenceTd">Pg 30-Performing an Upgrade</td> 
+              <td class="confluenceTd">The Note on this page (stop source server) differs from a similar note on the prior page which advises to stop source and target servers.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">CSK-012</td> 
+              <td class="confluenceTd">Pg 31</td> 
+              <td class="confluenceTd">If domain1 already exists on the target when you run asupgrade and if you respond with "n" when asked if you want to rename it what happens? The doc only covers the case where you respond with a "y".</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">CSK-013</td> 
+              <td class="confluenceTd">Pg 32</td> 
+              <td class="confluenceTd">Refers to the "Registration node" but I don't think Registration is a node any more. It appears under Common Tasks.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">CSK-014</td> 
+              <td class="confluenceTd">Pg 32-Node Agents</td> 
+              <td class="confluenceTd">This has all changed now that SSH is used.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">CSK-015</td> 
+              <td class="confluenceTd">Pg 33-Cluster Profile Security Setting</td> 
+              <td class="confluenceTd">"das-and server" should be "das-and-server".</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">CSK-016</td> 
+              <td class="confluenceTd">JMS </td> 
+              <td class="confluenceTd"> Has this been addressed in the Upgrade Guide: <a href="https://github.com/javaee/glassfish/issues/15158">https://github.com/javaee/glassfish/issues/15158</a></td> 
+             </tr> 
+            </tbody>
+           </table> 
+          </div> </font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by ckasso at Jan 25, 2011 10:59 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20879118"></a> <font class="smallfont">
+          <div class="table-wrap"> 
+           <table class="confluenceTable">
+            <tbody> 
+             <tr> 
+              <td class="confluenceTd">RKB-001</td> 
+              <td class="confluenceTd">General</td> 
+              <td class="confluenceTd">Added my comments in the Oracle review tool, including doc-level comments about including info for <a href="https://github.com/javaee/glassfish/issues/15158">https://github.com/javaee/glassfish/issues/15158</a> <p> and </p> <a href="https://github.com/javaee/glassfish/issues/15157">https://github.com/javaee/glassfish/issues/15157</a></td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">RKB-002</td> 
+              <td class="confluenceTd">Response to CSK-006</td> 
+              <td class="confluenceTd">When starting from a 3.0.X domain, an upgrade isn't required. The upgrade guide should mention that no special step is necessary: just start the domain and the rest should work. (Added in review tool.)</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">RKB-003</td> 
+              <td class="confluenceTd">Response to CSK-007</td> 
+              <td class="confluenceTd">Chris, can you file an issue on this? It's a simple text change in a props file. I have no clue what the official list is, but will find out.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">RKB-004</td> 
+              <td class="confluenceTd">Response to CSK-012</td> 
+              <td class="confluenceTd">So Scott doesn't need to go look it up, the tool returns back to the page it was on so the user can either specify a different target dir, quit, or go manually clobber the offending domain before continuing.</td> 
+             </tr> 
+            </tbody>
+           </table> 
+          </div> </font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by bbissett at Jan 25, 2011 12:09 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20879871"></a> <font class="smallfont"><p>Note, I haven't done a full review of the upgrade guide, but in reviewing the other documentation I see references to upgrade functionality.&nbsp; A quick search of the upgrade guide doesn't seem to refer to these upgrade features.</p> 
+          <div class="table-wrap"> 
+           <table class="confluenceTable">
+            <tbody> 
+             <tr> 
+              <th class="confluenceTh"> Comment ID <br class="atl-forced-newline"> </th> 
+              <th class="confluenceTh"> Location <br class="atl-forced-newline"> </th> 
+              <th class="confluenceTh"> Comment <br class="atl-forced-newline"> </th> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> JC-001 <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> General <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> The Re-synchronization section of the High Availability guide covers the export-sync-bundle and import-sync-bundle options, and one of the listed use cases is "to re-establish the instance after upgrade" (page 74).&nbsp; I do not see any reference to this in the upgrade guide. <br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> <del>JC-002</del> <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> <del>General</del> <br class="atl-forced-newline"> </td> 
+              <td class="confluenceTd"> <del>There is a "</del><del>upgrade" option to the start-local-instance command. I do not see this referenced in the upgrade guide.</del>&nbsp; Resolved in a different thread.<br class="atl-forced-newline"> </td> 
+             </tr> 
+            </tbody>
+           </table> 
+          </div> </font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by johnclingan at Feb 04, 2011 11:05 
+         </div> </td> 
+       </tr> 
+      </tbody>
+     </table> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jan 25, 2011 by 
+<font color="#0050B2">bbissett</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

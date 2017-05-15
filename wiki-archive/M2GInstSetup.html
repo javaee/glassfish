@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : M2GInstSetup</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="M2GInstSetup-InstallationandSetup"></a>Installation and Setup</h1> <p>Migration Tool for Project GlassFish is distributed as a zip file.</p> <p>Note - After installation, do not change the directory structure of the migration tool in anyway, since doing so might result in erratic or unexpected behavior.</p> <h4><a name="M2GInstSetup-SystemRequirements"></a>System Requirements</h2> <p>Before installing the migration tool, make sure your system meets the following software and hardware requirements.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Software/Hardware </th> 
+         <th class="confluenceTh">Requirement </th> 
+         <th class="confluenceTh">&nbsp;</th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Operating System </td> 
+         <td class="confluenceTd"> The migration tool runs on Solaris 9 on x86, Solaris 9 and 8 on Sparc with latest recommended <a href="http://sunsolve.sun.com/pub-cgi/show.pl?target=home">patches </a>, RedHat Linux 2.1, 3.0, Windows 2000 and XP. and Windows 2003 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Java Virtual Machine </td> 
+         <td class="confluenceTd"> <a href="http:--java.sun.com-j2se-1.5.0-download.jsp">Download Java </a>; JRE alone will not suffice. Make sure &lt;javase-install-dir&gt;/bin directory is in the PATH environment variable. Set the JAVA_HOME enviroment variable to the installation directory. Note that currently Java SE 5 is required because of <a href="https:--migrate2glassfish.java.net-issues-show_bug.cgi-20">Issue 20 </a> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Free disk space </td> 
+         <td class="confluenceTd"> Minimum 40 MB </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> RAM </td> 
+         <td class="confluenceTd"> Minimum 128 MB, Recommended 256 MB </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>It is assumed that your system's CLASSPATH is already set up to include the directories and JAR files required by your application for compilation. This is inherited during compilation/build steps carried out after running the tool. Also note that the JARs contained in your JDK's lib/ext directory may conflict with those of the migration tool. In this case, delete the JARs contained in your JDK's lib/ext/.</p> <h4><a name="M2GInstSetup-InstallingonSolaris"></a>Installing on Solaris</h2> <p>The following steps assume the migration tool has been downloaded to the /tmp directory. To install the migration tool on Solaris:<br> Unzip the zip file as follows:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">% cd /tmp 
+ % unzip __ASMT.ZIP__</pre> 
+       </div> 
+      </div>
+     </div> <p> The directory structure appears as follows. </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&amp;lt;INSTALL_DIR&gt;/migrate2glassfish/
+        |
+        |-- bin
+        |                
+        |-- doc                
+        |               
+        |-- lib                
+        |                
+        |-- tools</pre> 
+       </div> 
+      </div>
+     </div> <p> Before <a href="M2GRun.html" title="M2GRun">Invoking the Migration Tool</a>, set the following environment variables appropriately:</p> 
+     <ul> 
+      <li><b>JAVA_HOME</b> – Set to the directory where the JDK is installed (for example, /opt/j2sdk1.4.0).</li> 
+      <li><b>ASMT_HOME</b> – Set to the directory where the migration tool is installed (for example, /opt/migrate2glassfish).</li> 
+      <li><b>J2EE_HOME</b> – Set to the directory where the J2EE application server is installed (for example, /opt/j2sdkee1.3.1). For more information please refer to the System Requirements section.<br> You can permanently set these variables in the asmigrate.sh script. To do so, open the file in any text editor. At the beginning of the file are the following lines: 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false"># JAVA_HOME=
+# ASMT_HOME= 
+# J2EE_HOME=</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ul> <p> Set the variables accordingly and remove the '#' in front of the lines.</p> <h4><a name="M2GInstSetup-InstallingonLinux"></a>Installing on Linux</h2> <p>The following steps assume the migration tool has been downloaded to the /tmp directory. To install the migration tool on Linux:<br> Unzip the zip file as follows:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">% cd /tmp 
+% unzip __ASMT.ZIP__</pre> 
+       </div> 
+      </div>
+     </div> <p> The directory structure appears as follows. </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&amp;lt;INSTALL_DIR&gt;/
+        |
+        |-- bin
+        |                
+        |-- doc                
+        |                             
+        |-- lib                                
+        |                
+        |-- tools</pre> 
+       </div> 
+      </div>
+     </div> <p> Before <a href="M2GRun.html" title="M2GRun">Invoking the Migration Tool</a>, set the following environment variables appropriately:</p> 
+     <ul> 
+      <li><b>JAVA_HOME</b> – Set to the directory where the JDK is installed (for example, /opt/j2sdk1.4.0).</li> 
+      <li><b>ASMT_HOME</b> – Set to the directory where the migration tool is installed (for example, /opt/migrate2glassfish).</li> 
+      <li><b>J2EE_HOME</b> – Set to the directory where the J2EE application server is installed (for example, /opt/j2sdkee1.3.1). For more information please refer to the System Requirements section.<br> You can permanently set these variables in the asmigrate.sh script. To do so, open the file asmigrate.sh in any text editor. At the beginning of the file are the following lines: 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false"># JAVA_HOME=
+# ASMT_HOME= 
+# J2EE_HOME=</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ul> <p> Set the variables accordingly and remove the '#' in front of the lines.</p> <h4><a name="M2GInstSetup-InstallingonWindows"></a>Installing on Windows</h2> <p>The following steps assume the migration tool was downloaded to the C:\temp directory. To install the tool on the Windows:<br> Using WinZip or another uncompress utility, unzip the zip file.<br> The directory structure appears as follows. </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">C:\migrate2glassfish\
+        |
+        |-- bin
+        |                
+        |-- doc                
+        |               
+        |-- lib                                
+        |                
+        |-- tools</pre> 
+       </div> 
+      </div>
+     </div> <p> Before <a href="M2GRun.html" title="M2GRun">Invoking the Migration Tool</a>, set the following environment variables appropriately:</p> 
+     <ul> 
+      <li><b>JAVA_HOME</b> – Set to the directory where the JDK is installed (for example, C:\j2sdk1.4.0).</li> 
+      <li><b>ASMT_HOME</b> – Set to the directory where the migration tool is installed (for example, C:\migrate2glassfish).</li> 
+      <li><b>J2EE_HOME</b> – Set to the directory where J2EE application server is installed.(for example, C:\j2sdkee1.3.1). For more information please refer to the System Requirements section.<br> You can permanently set these variables in the asmt.cmd script. To do so, open the file asmt.cmd in any text editor. At the beginning of the file are the following lines: 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">rem set JAVA_HOME= 
+rem set ASMT_HOME=
+rem set J2EE_HOME=</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ul> <p> Set the variables accordingly and remove the 'rem' in front of the lines.</p> <h4><a name="M2GInstSetup-PreparingtheApplicationServertoRunMigratedApplications"></a>Preparing the Application Server to Run Migrated Applications</h2> <p>You must make some changes to the configuration of the Application Server to enable it to run the migrated applications. These changes enable the Application Server to recognize the runtime compatibility libraries that are distributed with the Migration Tool. The following section discusses this modification.<br> Complete the following steps for Windows, Solaris, and Linux:<br> In the Application Server Admin Console, navigate to Admin GUI -&gt; Application Server -&gt; JVM settings -&gt; Path Settings -&gt; Classpath Suffix. <br> Add <tt>&lt;INSTALL_DIR&gt;/migrate2glassfish/lib/asmt-rt.jar</tt> and save.</p> <p><a href="" title="M2GInstSetup">Previous</a> <a href="M2GPreRun.html" title="M2GPreRun">Next</a></p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 08, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

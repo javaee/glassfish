@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : OpenInstallerProductSelectionPage</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   
+     <div> 
+      <ul> 
+       <ul> 
+        <li><a href="#OpenInstallerProductSelectionPage-UseCases">Use Cases</a></li> 
+       </ul> 
+       <li><a href="#OpenInstallerProductSelectionPage-Case1">Case 1</a></li> 
+       <ul> 
+        <ul> 
+         <li><a href="#OpenInstallerProductSelectionPage-ProductswithnodependenciesoneachotherinAvailableProductsList">Products with no dependencies on each other in Available Products List</a></li> 
+        </ul> 
+       </ul> 
+       <li><a href="#OpenInstallerProductSelectionPage-Case2">Case 2</a></li> 
+       <ul> 
+        <ul> 
+         <li><a href="#OpenInstallerProductSelectionPage-ProductswithdependenciesoneachotherintheAvailableProductsList">Products with dependencies on each other in the Available Products List</a></li> 
+        </ul> 
+       </ul> 
+       <li><a href="#OpenInstallerProductSelectionPage-Case3">Case 3</a></li> 
+       <ul> 
+        <ul> 
+         <li><a href="#OpenInstallerProductSelectionPage-AProductwithdependenciesononeorotherofsomecomponentisintheAvailableProductsList">A Product with dependencies on one or other of some component is in the Available Products List</a></li> 
+        </ul> 
+        <li><a href="#OpenInstallerProductSelectionPage-Assumptions">Assumptions</a></li> 
+        <li><a href="#OpenInstallerProductSelectionPage-PrototypebyXDesign">Prototype by XDesign</a></li> 
+        <li><a href="#OpenInstallerProductSelectionPage-PageFlowMechanismandProductSelectionPage">Page Flow Mechanism and Product Selection Page</a></li> 
+        <li><a href="#OpenInstallerProductSelectionPage-API">API</a></li> 
+        <li><a href="#OpenInstallerProductSelectionPage-CurrentStatusandTODOsandopenitems">Current Status and TODOs and open items</a></li> 
+        <li><a href="#OpenInstallerProductSelectionPage-Screenshots%28Older%29">Screenshots (Older)</a></li> 
+        <ul> 
+         <li><a href="#OpenInstallerProductSelectionPage-GUIwithnouserselection">GUI with no user selection</a></li> 
+         <li><a href="#OpenInstallerProductSelectionPage-GUIwithoneproductselectionshowingdescription">GUI with one product selection showing description</a></li> 
+         <li><a href="#OpenInstallerProductSelectionPage-GUIwithmultipleselection">GUI with multiple selection</a></li> 
+         <li><a href="#OpenInstallerProductSelectionPage-CUImode%28olderscreenshot%29">CUI mode (older screenshot)</a></li> 
+        </ul> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="OpenInstallerProductSelectionPage-UseCases"></a>Use Cases</h2> <h4><a name="OpenInstallerProductSelectionPage-Case1"></a>Case 1</h1> <h4><a name="OpenInstallerProductSelectionPage-ProductswithnodependenciesoneachotherinAvailableProductsList"></a>Products with no dependencies on each other in Available Products List</h3> <p>This is the simplest use case. The user is offered choices to select one of more components and click Add. On Clicking 'Add' the component name is transferred to the right 'Selected' side and removed from the left 'Available' side. If one product is selected on either side then a description for that is displayed in the Description area.</p> <h4><a name="OpenInstallerProductSelectionPage-Case2"></a>Case 2</h1> <h4><a name="OpenInstallerProductSelectionPage-ProductswithdependenciesoneachotherintheAvailableProductsList"></a>Products with dependencies on each other in the Available Products List</h3> <p>Assuming product B and C are hard pre-requisites for A - If product A is added, B and C are automatically added from Available side to Selected side. If A is removed from Selected side, B and C are not removed.</p> <h4><a name="OpenInstallerProductSelectionPage-Case3"></a>Case 3</h1> <h4><a name="OpenInstallerProductSelectionPage-AProductwithdependenciesononeorotherofsomecomponentisintheAvailableProductsList"></a>A Product with dependencies on one or other of some component is in the Available Products List</h3> <p>Assuming one of product B or product C is a hard pre-requisite for A - If product A is added, only product A is moved to the Selected list. When the user finished selection by clicking the Next button on the page, he/she is asked to choose one of B or C before proceeding.</p> <p>Q: What happens if both B and C are selected by user in this case?</p> <h4><a name="OpenInstallerProductSelectionPage-Assumptions"></a>Assumptions</h2> 
+     <ol> 
+      <li>CUI PSP determines the limitations on features which are implemented.</li> 
+      <li>Sub components are presented in the available list with higher level components without any distinction. The selection process automatically selects and moves the requisite subproducts.</li> 
+      <li>There is no indication if a subproduct is being selected due to an upgrade requirement.</li> 
+     </ol> <h4><a name="OpenInstallerProductSelectionPage-PrototypebyXDesign"></a>Prototype by XDesign</h2> <p><a href="http://wiki.glassfish.java.net/attach/OpenInstallerProductSelectionPage/oI_PSP_MidFidelityPrototype.ppt">PSP Prototype</a> by Xdesign (Requires Powerpoint for interaction to work correctly)</p> <h4><a name="OpenInstallerProductSelectionPage-PageFlowMechanismandProductSelectionPage"></a>Page Flow Mechanism and Product Selection Page</h2> <p>Based on the product selections in the PSP, the product configuration pages may need to be shown or hidden.<br> For PSP to influence the display of these pages, it sets a special tag with the convention</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">[&lt;product ID&gt;_is_selected]</pre> 
+       </div> 
+      </div>
+     </div> <p>for each product that gets selected. The pagesquence allows the install developer to specify arbitrarily complex boolen conditions based on these PageFlow tags in combination<br> with other tags they can set. For example.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">...
+    &lt;page name="ProductSelection"/&gt;
+    ...
+    &lt;page name="TestProductA"&gt;
+      ..
+      ..
+      &lt;!-- Show TestProductA page only when it was selected in PSP --&gt;
+      &lt;when&gt; [TestProductA_is_selected] &lt;/when&gt;
+      ..
+    &lt;/page&gt;
+    &lt;page name="TestProductB"&gt;
+      ...
+      &lt;!-- Show TestProductB page only when it was selected in PSP or if it is HAPPY_HOUR. where HAPPY_HOUR is
+      assumed to be set by code in a pre-existing XCS page. --&gt;
+      ..
+      &lt;when&gt; [TestProductB_is_selected] || HAPPY_HOUR &lt;/when&gt;
+      ..
+    &lt;/page&gt;
+    &lt;page name="TestProductC" defaultViewMode="skip"&gt;
+      ...
+      &lt;!--
+         Show TestProductC page if it was selected in PSP or if TestProductB was selected but only if it not HAPPY_HOUR .
+       --&gt;
+      ..
+      &lt;when&gt;&lt;![CDATA[
+
+             ( [TestProductC_is_selected] || [TestProductB_is_selected] )
+
+             &amp;&amp; ! HAPPY_HOUR
+
+      ]]&gt;&lt;/when&gt;
+      ...
+    &lt;/page&gt;
+    ...</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="OpenInstallerProductSelectionPage-API"></a>API</h2> <h4><a name="OpenInstallerProductSelectionPage-CurrentStatusandTODOsandopenitems"></a>Current Status and TODOs and open items</h2> <p>First cut of the implementation is avaiable. The following TODOs / open issues remain.</p> 
+     <ol> 
+      <li>Update sample product completely to be aware of the partial selection now. This is only an xcs change. 
+       <ol> 
+        <li>Make only config pages for selected pages appear.</li> 
+        <li>Make sure to have all the sample products be available on all platforms.</li> 
+        <li>Sync zip and regular sample products</li> 
+       </ol> </li> 
+      <li>Have a way for the user to choose to install localizations (maybe by a single checkbox). The localizations are not individually selectable.</li> 
+      <li>Make sure the uninstall sequence works with PSP.</li> 
+      <li>Make the product descriptions be localizable. Currently the descriptions are embedded in dependency XMLs. 
+       <ol> 
+        <li>This is some addition work on both dependency manager and SIMS first. The work proposal is at <a href="OpenInstallerProductDescriptionLocalization.html" title="OpenInstallerProductDescriptionLocalization">openInstaller Product Description Localization</a> .</li> 
+       </ol> </li> 
+      <li><del>Add attributes for PSP behaviour. Some cases are</del> - Done. 
+       <ol> 
+        <li><del>We currently auto select and move sub-features to the selected page when a higher level feature is selected. This should be toggleable in apt:psp tag maybe.</del></li> 
+        <li><del>We currently allow de-selection of a sub-feature without affecting the higher level feature. This should be toggleable in apt:psp tag maybe.</del></li> 
+        <li><del>We currently do not show dependencies (requirements), only feature (provides). This should be externally toggleable in apt:psp tag maybe</del></li> 
+       </ol> </li> 
+      <li>Persist settings on back button</li> 
+      <li>Code cleanup, comments for new code and removal of commented out or non-functional code.</li> 
+     </ol> <p><b>Dump of email to Jen @ XDesign</b></p> <p>oI's (or JES^WSWI or Portal) product hierarchy has</p> 
+     <ul> 
+      <li>A product can optionally provide other sub products (Features)</li> 
+      <li>A product can optionally require other sub products (Dependencies)</li> 
+     </ul> <p>Now, to facilitate display of suites, the current oI PSP implementation is assuming that a top level fake product is created which only provides features. Which means that there is a top level container product say<br> "SampleProductPack" like so</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">SampleProductPack
+  Test Product A
+    (require Shared Component Foo)
+  Test Product P1
+    (Provides Component P1S1)
+    (Provides Compoent P1S2)
+  Test Product X</pre> 
+       </div> 
+      </div>
+     </div> <p>etc.</p> 
+     <ol> 
+      <li>The PSP is ignoring the SampleProductPack and displaying the Features contained within, and the sub features. Though this works for suites, it might not be suitable for any products which have only a single product to install. What are your thoughts on this? We can switch to either of the behaviors in our code (thought an install developer or end user currently can not).</li> 
+      <li>We only display 'Features' currently and not 'Dependencies'. Again this is a somewhat stylistically uninformed decision on our part. We can show both Features and Dependencies or none as needed. What would you suggest we do by default though, we plan to provide this control to install developers to pick the behaviour.</li> 
+      <li>When somebody deselects (or rather unchooses for install, since select is a loaded word in this UI) a component from the right side, it's parent component or sub components are not unselected. The rational being that there may be subfeatures which need not be installed or maybe there are alternate features which can be picked (like alternate web containers). Currently, if the user's selection is</li> 
+     </ol> <p>2000<br> not valid, <br> 2000<br> we silently complete it and install the required dependencies etc. anyway. But this is something that could be though out more from a design point of view.</p> <h4><a name="OpenInstallerProductSelectionPage-Screenshots%28Older%29"></a>Screenshots (Older)</h2> <p><b>Note: These screenshots show only the content area mockup of the PSP and not a typical full installer page.</b></p> <h4><a name="OpenInstallerProductSelectionPage-GUIwithnouserselection"></a>GUI with no user selection</h3> <p><span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20873872/21365398.png" style="border: 0px solid black"></span></p> <h4><a name="OpenInstallerProductSelectionPage-GUIwithoneproductselectionshowingdescription"></a>GUI with one product selection showing description</h3> <p><span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20873872/21365360.png" style="border: 0px solid black"></span></p> <h4><a name="OpenInstallerProductSelectionPage-GUIwithmultipleselection"></a>GUI with multiple selection</h3> <p><span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20873872/21365397.png" style="border: 0px solid black"></span></p> <h4><a name="OpenInstallerProductSelectionPage-CUImode%28olderscreenshot%29"></a>CUI mode (older screenshot)</h3> <p><span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20873872/21365399.jpg" style="border: 0px solid black"></span> </p> 
+     <hr> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20873872/21365397.png">multiple-selection.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20873872/21365399.jpg">cui-mode.jpg</a> (image/pjpeg) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20873872/21365398.png">no-selection.png</a> (image/png) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20873872/21365360.png">gui-description.png</a> (image/png) 
+      <br> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Dec 01, 2011 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:49.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

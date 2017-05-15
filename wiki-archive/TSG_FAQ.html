@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : TSG_FAQ</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p><a href="TroubleshootingGuide.html" title="TroubleshootingGuide">Main</a> <a href="TSG_SecurityProblems.html" title="TSG_SecurityProblems">Previous</a></p> <h4><a name="TSG_FAQ-FrequentlyAskedQuestions"></a>Frequently Asked Questions</h1> <p>This chapter covers some common questions asked about the Application Server.</p> <style type="text/css">/*<![CDATA[*/
+div.rbtoc1278813049929 {margin-left: 1.5em;padding: 0px;}
+div.rbtoc1278813049929 ul {list-style: disc;margin-left: 0px;}
+div.rbtoc1278813049929 li {margin-left: 0px;padding-left: 0px;}
+
+/*]] >*/</style>
+     <div class="rbtoc1278813049929"> 
+      <ul> 
+       <li><a href="#TSG_FAQ-FrequentlyAskedQuestions">Frequently Asked Questions</a></li> 
+       <ul> 
+        <li><a href="#TSG_FAQ-WhatHappensWhenNoServerSideRealmisConfigured%3F">What Happens When No Server Side Realm is Configured?</a></li> 
+        <li><a href="#TSG_FAQ-CanIUseaPKCS12CertificateforMyClientCertificate%3F">Can I Use a PKCS12 Certificate for My Client Certificate?</a></li> 
+        <li><a href="#TSG_FAQ-CanISeetheTLS%2FSSLHandshakeInformationforanSSLClient%3F">Can I See the TLS/SSL Handshake Information for an SSL Client?</a></li> 
+        <li><a href="#TSG_FAQ-CanIChangetheKeystorePassword%3F">Can I Change the Keystore Password?</a></li> 
+        <li><a href="#TSG_FAQ-HowDoIMaintainaSessioninJAXRPC%3F">How Do I Maintain a Session in JAX-RPC?</a></li> 
+        <li><a href="#TSG_FAQ-HowDoIAccesstheNamingServiceFromaStandaloneJavaClient%3F">How Do I Access the Naming Service From a Standalone Java Client?</a></li> 
+        <li><a href="#TSG_FAQ-AreRMIIIOPStubsNeededtoAccessRemoteEJBs%3F">Are RMI-IIOP Stubs Needed to Access Remote EJBs?</a></li> 
+        <li><a href="#TSG_FAQ-HowDoIChangetheLogLevelforanApplicationLogger%3F">How Do I Change the Log Level for an Application Logger?</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="TSG_FAQ-WhatHappensWhenNoServerSideRealmisConfigured%3F"></a>What Happens When No Server Side Realm is Configured?</h2> <p>When the application is configured (within XML files), but no server side realm is configured, the application is authenticated in the default realm. No error is thrown that indicates "No such realm."</p> 
+     <hr> <p><sup><a href="./TSG_FAQ.html">Top of Page</a></sup></p> <h4><a name="TSG_FAQ-CanIUseaPKCS12CertificateforMyClientCertificate%3F"></a>Can I Use a PKCS12 Certificate for My Client Certificate?</h2> <p>Is there a way to use my PKCS12 certificate for an SSL the application client or standalone client during mutual authentication?</p> <p>No. You cannot use a PKCS12 certificate directly, but you can write your own client using the JSSE, which supports <tt>storetype=PKCS12</tt> (read only, no write to keystore).</p> 
+     <hr> <p><sup><a href="./TSG_FAQ.html">Top of Page</a></sup></p> <h4><a name="TSG_FAQ-CanISeetheTLS%2FSSLHandshakeInformationforanSSLClient%3F"></a>Can I See the TLS/SSL Handshake Information for an SSL Client?</h2> <p>Yes. Set the Java debugging property on the JVM. To see the handshake information from the application client, append the following:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">-Djavax.net.debug=ssl,handshake to the VMARGS variable.</pre> 
+       </div> 
+      </div>
+     </div> 
+     <hr> <p><sup><a href="./TSG_FAQ.html">Top of Page</a></sup></p> <h4><a name="TSG_FAQ-CanIChangetheKeystorePassword%3F"></a>Can I Change the Keystore Password?</h2> <p>Yes. Use the following J2SE properties to change the keystore password:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">-Djavax.net.ssl.keyStorePassword=password
+-Djavax.net.ssl.trustStorePassword=password</pre> 
+       </div> 
+      </div>
+     </div> <p>Note that the keystore password must match the individual key passwords to perform operations on the keys, so you will need to change the keystore password with the property mentioned above and then change the password to each key to match that password.</p> 
+     <hr> <p><sup><a href="./TSG_FAQ.html">Top of Page</a></sup></p> <h4><a name="TSG_FAQ-HowDoIMaintainaSessioninJAXRPC%3F"></a>How Do I Maintain a Session in JAX-RPC?</h2> <p>Clients cannot maintain sessions with JAX-RPC endpoints. There is a client and server aspect to sessions, and it is not obvious how to set this up.</p> <p>The situation is that a client makes a call to the service, and the server responds and sets a cookie on the connection. From then on, the client sends back that same cookie with each call and the server can check it.</p> <p>A JAX-RPC stub normally ignores the cookie that comes back. When the <tt>SESSION_MAINTAIN_PROPERTY</tt> is set to true, it sends back whatever cookie the server set on it.</p> <p>On the server side, you need to add one field to your class and a method that sets it. The endpoint must implement <tt>javax.xml.rpc.server.ServiceLifecycle.</tt>, and two methods must be added: <tt>destroy()</tt> (which can be empty) and <tt>init(Object context)</tt>.</p> <p>Add a <tt>ServletEndpointContext</tt> object to the endpoint; for example, <tt>myServletEndpointContext</tt>. The <tt>init(Object context)</tt> method can be set as follows:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">myServletEndpointContext = (ServletEndpointContext) context;</pre> 
+       </div> 
+      </div>
+     </div> <p>From then on, the business methods can access to the <tt>HttpSession</tt> with <tt>myServletEndpointContext.getHttpSession()</tt>. The first call to <tt>getHttpSession</tt> creates the session, if one does not already exist.</p> <p>With this model, any method the client calls can get the session, set session attributes, get values from it, and so on. From then on, the client will send back the same cookie information.</p> 
+     <hr> <p><sup><a href="./TSG_FAQ.html">Top of Page</a></sup></p> <h4><a name="TSG_FAQ-HowDoIAccesstheNamingServiceFromaStandaloneJavaClient%3F"></a>How Do I Access the Naming Service From a Standalone Java Client?</h2> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li>To access the naming service from an application client*<br> \</li> 
+       </ul> </li> 
+     </ul> 
+     <ol> 
+      <li>Include <tt>appserv-rt.jar</tt> in the <tt>CLASSPATH</tt> when starting the client Java VM.<br> \The JNDI bootstrapping machinery looks for a file called <tt>jndi.properties</tt>, which is located in <tt>appserv-rt.jar</tt>. This file contains all the bootstrapping properties for the Application Server's naming service. It is better to have these properties read from <tt>appserv-rt.jar</tt> than to hard-code them in either the client startup script or in the application code.<br> \</li> 
+      <li>When accessing remote EJBs from a standalone client, it is not necessary to retrieve the client JAR from the deployment or to put it in the client JVM's <tt>CLASSPATH</tt>, because static RMI-IIOP stubs are not needed when using the Application Server naming service. This removes a step that was required in previous releases. (See <a href="./TSG_FAQ#section-TSG_FAQ-AreRMIIIOPStubsNeededToAccessRemoteEJBs.html">Are RMI-IIOP Stubs Needed to Access Remote EJBs?</a> for more details).<br> \</li> 
+      <li>Code the client to use the default constructor <tt>InitialContext</tt> that does not require an argument. For example:\\\\\~UWC_TOKEN_START~1278150637773~UWC_TOKEN_END<br> \It is a common misconception that the client should be coded to explicitly reference the <tt>CosNaming</tt> service. <tt>CosNaming</tt> is only used for some kinds of Application Server objects, so doing this will not provide access to many of the kinds of resources you might need in the client such as JMS queues, connection factories, and so on. Furthermore, explicit use of <tt>CosNaming</tt> bypasses the Application Server's naming service code. This often means that the client cannot take advantage of desirable value-added behavior built in to the Application Server's naming service.<br> \</li> 
+      <li>Use the global JNDI name of the target resource when doing the lookup. <tt>java:comp/env</tt> cannot be used from standalone Java clients, because by definition such clients run outside of a J2EE container. The only client component in which java:comp/env can be used is in a J2EE Application Client.<br> \</li> 
+      <li>If the client is running on a different host machine than the server instance, set the following system property when starting the Java VM:\\\\\~UWC_TOKEN_START~1278150637774~UWC_TOKEN_END<br> \This value defaults to localhost so it is only needed if the client and server instance are not colocated. For example:\\\\\~UWC_TOKEN_START~1278150637775~UWC_TOKEN_END<br> \</li> 
+      <li>By default, the client attempts to contact port <tt>3700</tt> to access the naming service in the server. Since <tt>3700</tt> is the default naming service port used by the Application Server, there is no additional port configuration needed in the client. In some cases, due to port conflicts, the server instance uses a different naming service port. The naming service port used by the server instance is listed in the 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">&lt;iiop-listener id="orb-listener-1" port="3700"\&gt;</pre> 
+         </div> 
+        </div>
+       </div> element in <tt>domain.xml</tt>.<br> \To change the naming service port used by the client, set the following system property when starting the client Java VM:\ 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">-Dorg.omg.CORBA.ORBInitialPort=naming_port_of_target_server</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ol> 
+     <hr> <p><sup><a href="./TSG_FAQ.html">Top of Page</a></sup></p> <h4><a name="TSG_FAQ-AreRMIIIOPStubsNeededtoAccessRemoteEJBs%3F"></a>Are RMI-IIOP Stubs Needed to Access Remote EJBs?</h2> <p>No. Unlike previous releases of the Application Server, the current version does not require static RMI-IIOP stubs at runtime.</p> <p>Removing this requirement provides the following benefits:</p> 
+     <ul> 
+      <li>Faster deployment and redeployment time for applications containing remote EJBs or clients of remote EJBs</li> 
+     </ul> 
+     <ul> 
+      <li>Fewer runtime errors caused by stub CLASSPATH configuration problems</li> 
+     </ul> <p>In addition, the Application Server achieves these benefits without significant impact on runtime performance, while maintaining full RMI-IIOP interoperability.</p> <p>The only scenario where RMI-IIOP stubs are still required is for standalone clients that explicitly instantiate an <tt>InitialContext</tt> for the <tt>CosNaming</tt> naming service. This is not the recommended approach for using the naming service in the Application Server. However, to maintain compatibility for these kinds of standalone clients, there is a deployment-time option that forces the generation of RMI-IIOP stubs in a way that matches previous releases. To use it, set <tt>--generatermistubs=true</tt> when deploying with <tt>asadmin</tt> or the Administration Console. The RMI-IIOP stubs are placed in the client.jar file, just as they were in previous releases.</p> 
+     <hr> <p><sup><a href="./TSG_FAQ.html">Top of Page</a></sup></p> <h4><a name="TSG_FAQ-HowDoIChangetheLogLevelforanApplicationLogger%3F"></a>How Do I Change the Log Level for an Application Logger?</h2> <p>Each application uses its own application logger to log messages. To configure the log level for a particular application, use one of two options:</p> 
+     <ul> 
+      <li>In the Admin GUI Log Level configuration page add a property with a property name representing the logger name, and the value representing one of seven log levels (<tt>FINEST</tt>, <tt>FINER</tt>, <tt>FINE</tt>, <tt>CONFIG</tt>, <tt>INFO</tt>, <tt>WARNING</tt>, <tt>SEVERE</tt>) or <tt>OFF</tt>.</li> 
+     </ul> <p>For example, to change the log level of application logger named <tt>com.X.Y</tt> to <tt>FINEST</tt>, the property name would be <tt>com.X.Y</tt> and the property value would be <tt>FINEST</tt>. The change is reflected in the <tt>domain.xml</tt> file, and takes effect immediately. No Server restart is required.</p> 
+     <ul> 
+      <li>Directly add the property to the 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">&lt;module-log-levels\&gt;</pre> 
+         </div> 
+        </div>
+       </div> element in <tt>domain.xml</tt>, as shown below.</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;module-log-levels admin="INFO" classloader="INFO" cmp="INFO"
+cmp-container="INFO" configuration="INFO" connector="INFO" 
+corba="INFO" deployment="INFO" ejb-container="INFO" javamail="INFO" 
+jaxr="INFO" jaxrpc="INFO" jdo="INFO" jms="INFO" jta="INFO" 
+jts="INFO" mdb-container="INFO" naming="INFO" node-agent="INFO"
+resource-adapter="INFO" root="INFO" saaj="INFO" security="INFO" 
+server="INFO" synchronization="INFO" util="INFO" verifier="INFO" 
+web-container="INFO"\&gt;
+    &lt;property name="com.X.Y" value="FINEST" /\&gt;
+&lt;/module-log-levels\&gt;</pre> 
+       </div> 
+      </div>
+     </div> 
+     <hr> <p><a href="TroubleshootingGuide.html" title="TroubleshootingGuide">Main</a> <a href="TSG_SecurityProblems.html" title="TSG_SecurityProblems">Previous</a></p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 10, 2010 by 
+<font color="#0050B2">wombat</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFishV2AdminMeetings</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>Note V3 Admin Meetings has a new wiki page <a href="AdminIteam.html" title="AdminIteam">AdminIteam</a></p> <h4><a name="GlassFishV2AdminMeetings-GlassFishAdminMeetings"></a>GlassFish Admin Meetings</h2> <h4><a name="GlassFishV2AdminMeetings-MeetingDetails%3A"></a>Meeting Details:</h3> <p>Mondays 10-11 AM Pacific<br> (866)545-5227 (US Toll-Free)<br> (215)446-3648 (International-Caller Paid)<br> Access Code: 3535518#<br> Email aliases: admin@glassfish.java.net</p> <h4><a name="GlassFishV2AdminMeetings-MeetingHostSchedule"></a>Meeting Host Schedule</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <td class="confluenceTd"> Dec 2009 </td> 
+         <td class="confluenceTd"> Nachi 07dec09, Sankar 14dec09, Byron 21dec09, Lloyd 28dec09 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Jan 2010 </td> 
+         <td class="confluenceTd"> Jennifer 11jan10 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Feb 2010 </td> 
+         <td class="confluenceTd"> Siraj 01feb10, Paul 08feb10, Sankar 22feb10 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Mar 2010 </td> 
+         <td class="confluenceTd"> Byron 01mar10, Prashanth 08mar10, Rajeshwar 15mar10 </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>Pl. follow the <a href="Meeting_procedure.html" title="Meeting_procedure">Meeting Procedure</a></p> <h4><a name="GlassFishV2AdminMeetings-UsefulLinks"></a>Useful Links</h3> 
+     <ul> 
+      <li><a href="GlassFishV3DocPlan.html" title="GlassFishV3DocPlan">GlassFish v3 Documentation Plan</a></li> 
+      <li><a href="V3FunctionalSpecs.html" title="V3FunctionalSpecs">GlassFish v3 Functional Specs</a></li> 
+      <li><a href="GlassFishV3DocPlanManPages.html" title="GlassFishV3DocPlanManPages">GlassFish v3 Doc. Plan ManPages</a></li> 
+      <li><a href="https://glassfish.java.net/nonav/v3/admin/planning/j109/list-of-commands.html">List of CLI commands for v3</a></li> 
+      <li><a href="GFv3FinalMS2.html" title="GFv3FinalMS2">GlassFish v3 Milestone 2</a></li> 
+      <li><a href="GlassFishV3Schedule.html" title="GlassFishV3Schedule">GlassFish v3 Schedule</a></li> 
+     </ul> <h4><a name="GlassFishV2AdminMeetings-Agendafor01feb10"></a>Agenda for 01feb10</h3> 
+     <ol> 
+      <li>Review of previous action items</li> 
+      <li>v3 UR1 tasks review</li> 
+      <li>Update on monitoring tasks 
+       <ol> 
+        <li>bugs</li> 
+        <li>probes for missing areas (At a minimum, we should instrument the javax APIs from Java EE 6)</li> 
+        <li>tracer</li> 
+       </ol> </li> 
+      <li>Update by QA, Documentation and Development Teams</li> 
+      <li>Open Mic/Issues</li> 
+      <li>Customer Interaction, Arch. update if any</li> 
+     </ol> <h4><a name="GlassFishV2AdminMeetings-Minutes"></a>Minutes</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <td class="confluenceTd"> *2006:* </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Aug </td> 
+         <td class="confluenceTd"> <a href="09aug2006.html" title="09aug2006">09 </a>, <a href="16aug2006.html" title="16aug2006">16 </a>, <a href="23aug2006.html" title="23aug2006">23 </a>, <a href="30aug2006.html" title="30aug2006">30 </a> </td> 
+         <td class="confluenceTd"> Sep </td> 
+         <td class="confluenceTd"> <a href="06sep2006.html" title="06sep2006">06 </a>, <a href="13sep2006.html" title="13sep2006">13 </a>, <a href="20sep2006.html" title="20sep2006">20 </a>, <a href="27sep2006.html" title="27sep2006">27 </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Oct </td> 
+         <td class="confluenceTd"> <a href="04oct2006.html" title="04oct2006">04 </a>, <a href="11oct2006.html" title="11oct2006">11 </a>, <a href="18oct2006.html" title="18oct2006">18 </a>, <a href="25oct2006.html" title="25oct2006">25 </a> </td> 
+         <td class="confluenceTd"> Nov </td> 
+         <td class="confluenceTd"> <a href="01nov2006.html" title="01nov2006">01 </a>, <a href="08nov2006.html" title="08nov2006">08 </a>, <a href="15nov2006.html" title="15nov2006">15 </a>, <a href="22nov2006.html" title="22nov2006">22 </a>, <a href="29nov2006.html" title="29nov2006">29 </a> </td> 
+         <td class="confluenceTd"> Dec </td> 
+         <td class="confluenceTd"> <a href="06dec2006.html" title="06dec2006">06 </a>, <a href="13dec2006.html" title="13dec2006">13 </a>, 20 , 27 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> *2007:* </td> 
+         <td class="confluenceTd"> Jan </td> 
+         <td class="confluenceTd"> <a href="03jan2007.html" title="03jan2007">03 </a>, <a href="10jan2007.html" title="10jan2007">10 </a>, <a href="17jan2007.html" title="17jan2007">17 </a>, <a href="24jan2007.html" title="24jan2007">24 </a>, <a href="31jan2007.html" title="31jan2007">31 </a> </td> 
+         <td class="confluenceTd"> Feb </td> 
+         <td class="confluenceTd"> <a href="07feb07.html" title="07feb07">07 </a>, <a href="14feb07.html" title="14feb07">14 </a>, <a href="21feb07.html" title="21feb07">21 </a>, <a href="28feb07.html" title="28feb07">28 </a> </td> 
+         <td class="confluenceTd"> Mar </td> 
+         <td class="confluenceTd"> 07 , 14 , <a href="21mar07.html" title="21mar07">21 </a>, <a href="28mar07.html" title="28mar07">28 </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Apr </td> 
+         <td class="confluenceTd"> <a href="02apr07.html" title="02apr07">02 </a>, <a href="02apr09.html" title="02apr09">09 </a>, <a href="16apr07.html" title="16apr07">16 </a>, <a href="23apr07.html" title="23apr07">23 </a> </td> 
+         <td class="confluenceTd"> May </td> 
+         <td class="confluenceTd"> <a href="14may07.html" title="14may07">14 </a> , <a href="21may07.html" title="21may07">21 </a> </td> 
+         <td class="confluenceTd"> Jun </td> 
+         <td class="confluenceTd"> <a href="04jun04.html" title="04jun04">04 </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Jul </td> 
+         <td class="confluenceTd"> <a href="02jul07.html" title="02jul07">02 </a> , <a href="09jul07.html" title="09jul07">09 </a> , <a href="16jul07.html" title="16jul07">16 </a> , <a href="23jul07.html" title="23jul07">23 </a> </td> 
+         <td class="confluenceTd"> Aug </td> 
+         <td class="confluenceTd"> <a href="06aug07.html" title="06aug07">06 </a> </td> 
+         <td class="confluenceTd"> Sep </td> 
+         <td class="confluenceTd"> <a href="10sep07.html" title="10sep07">10 </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Oct </td> 
+         <td class="confluenceTd"> <a href="01Oct07.html" title="01Oct07">01 </a>, <a href="08oct07.html" title="08oct07">08 </a>, <a href="15oct07.html" title="15oct07">15 </a>, <a href="22oct07.html" title="22oct07">22 </a>, <a href="29oct07.html" title="29oct07">29 </a> </td> 
+         <td class="confluenceTd"> Nov </td> 
+         <td class="confluenceTd"> <a href="19Nov07.html" title="19Nov07">19 </a> </td> 
+         <td class="confluenceTd"> Dec </td> 
+         <td class="confluenceTd"> <a href="03Dec07.html" title="03Dec07">03 </a>, <a href="10Dec07.html" title="10Dec07">10 </a>, <a href="17Dec07.html" title="17Dec07">17 </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> *2008:* </td> 
+         <td class="confluenceTd"> Jan </td> 
+         <td class="confluenceTd"> <a href="07jan08.html" title="07jan08">07 </a>, <a href="14jan08.html" title="14jan08">14 </a>, <a href="28jan08.html" title="28jan08">28 </a> </td> 
+         <td class="confluenceTd"> Feb </td> 
+         <td class="confluenceTd"> <a href="11feb08.html" title="11feb08">11 </a> </td> 
+         <td class="confluenceTd"> Mar </td> 
+         <td class="confluenceTd"> <a href="03mar08.html" title="03mar08">03 </a>, 10 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Apr </td> 
+         <td class="confluenceTd"> <a href="21apr08.html" title="21apr08">21 </a>, <a href="28apr08.html" title="28apr08">28 </a> </td> 
+         <td class="confluenceTd"> May </td> 
+         <td class="confluenceTd"> <a href="12may08.html" title="12may08">12 </a>, <a href="19May08.html" title="19May08">19 </a> </td> 
+         <td class="confluenceTd"> June </td> 
+         <td class="confluenceTd"> <a href="09jun2008.html" title="09jun2008">09 </a>,<a href="23jun2008.html" title="23jun2008">23 </a>,<a href="30jun2008.html" title="30jun2008">30 </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Jul </td> 
+         <td class="confluenceTd"> <a href="07jul2008.html" title="07jul2008">07 </a>, <a href="28jul2008.html" title="28jul2008">28 </a> </td> 
+         <td class="confluenceTd"> Aug </td> 
+         <td class="confluenceTd"> <a href="18aug08.html" title="18aug08">18 </a> </td> 
+         <td class="confluenceTd"> Sep </td> 
+         <td class="confluenceTd"> <a href="22Sep2008.html" title="22Sep2008">22 </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Oct </td> 
+         <td class="confluenceTd"> 06 , <a href="13oct2008.html" title="13oct2008">13 </a> </td> 
+         <td class="confluenceTd"> Nov </td> 
+         <td class="confluenceTd"> <a href="17Nov08.html" title="17Nov08">17 </a> </td> 
+         <td class="confluenceTd"> Dec </td> 
+         <td class="confluenceTd"> <a href="08Dec08.html" title="08Dec08">08 </a>, <a href="15Dec08.html" title="15Dec08">15 </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> *2009:* </td> 
+         <td class="confluenceTd"> Jan </td> 
+         <td class="confluenceTd"> <a href="05jan09.html" title="05jan09">05 </a>, <a href="12Jan09.html" title="12Jan09">12 </a> </td> 
+         <td class="confluenceTd"> Feb </td> 
+         <td class="confluenceTd"> <a href="09Feb09.html" title="09Feb09">9 </a>, <a href="23Feb09.html" title="23Feb09">23 </a> </td> 
+         <td class="confluenceTd"> Mar </td> 
+         <td class="confluenceTd"> <a href="02mar09.html" title="02mar09">02 </a>, <a href="16mar09.html" title="16mar09">16 </a>, <a href="23mar09.html" title="23mar09">23 </a>, <a href="30mar09.html" title="30mar09">30 </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Apr </td> 
+         <td class="confluenceTd"> <a href="06apr09.html" title="06apr09">06 </a>, <a href="13apr09.html" title="13apr09">13 </a> , 20 , <a href="27apr09.html" title="27apr09">27 </a> </td> 
+         <td class="confluenceTd"> May </td> 
+         <td class="confluenceTd"> <a href="04may09.html" title="04may09">04 </a> <a href="18may09.html" title="18may09">18 </a> </td> 
+         <td class="confluenceTd"> June </td> 
+         <td class="confluenceTd"> 15 <a href="22jun09.html" title="22jun09">22 </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Jul </td> 
+         <td class="confluenceTd"> <a href="06jul09.html" title="06jul09">06 </a> , <a href="20jul09.html" title="20jul09">20 </a> , <a href="27jul09.html" title="27jul09">27 </a> </td> 
+         <td class="confluenceTd"> Aug </td> 
+         <td class="confluenceTd"> <a href="17aug09.html" title="17aug09">17 </a> <a href="31aug09.html" title="31aug09">31 </a> </td> 
+         <td class="confluenceTd"> Sep </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Oct </td> 
+         <td class="confluenceTd"> <a href="12Oct09.html" title="12Oct09">12 </a> </td> 
+         <td class="confluenceTd"> Nov </td> 
+         <td class="confluenceTd"> <a href="02nov09.html" title="02nov09">02 </a> </td> 
+         <td class="confluenceTd"> Dec </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <hr> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875195/21364888.pdf">adminCLI_GFV3_01_14_08.pdf</a> (application/pdf) 
+      <br> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 02, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:44.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

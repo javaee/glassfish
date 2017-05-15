@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : 3.1SecureAdminTraffic</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="3.1SecureAdminTraffic-SecureAdministrationOnePager"></a>Secure Administration One Pager</h1> <p>(template version 1.91)</p> 
+     <div> 
+      <ul> 
+       <li><span class="TOCOutline">1</span> <a href="#3.1SecureAdminTraffic-Introduction">Introduction</a></li> 
+       <ul> 
+        <li><span class="TOCOutline">1.1</span> <a href="#3.1SecureAdminTraffic-Project%2FComponentWorkingName%3A">Project/Component Working Name:</a></li> 
+        <li><span class="TOCOutline">1.2</span> <a href="#3.1SecureAdminTraffic-Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier%3A">Name(s) and e-mail address of Document Author(s)/Supplier:</a></li> 
+        <li><span class="TOCOutline">1.3</span> <a href="#3.1SecureAdminTraffic-DateofThisDocument%3A">Date of This Document:</a></li> 
+       </ul> 
+       <li><span class="TOCOutline">2</span> <a href="#3.1SecureAdminTraffic-ProjectSummary">Project Summary</a></li> 
+       <ul> 
+        <li><span class="TOCOutline">2.1</span> <a href="#3.1SecureAdminTraffic-ProjectDescription%3A">Project Description:</a></li> 
+        <li><span class="TOCOutline">2.2</span> <a href="#3.1SecureAdminTraffic-RisksandAssumptions%3A">Risks and Assumptions:</a></li> 
+       </ul> 
+       <li><span class="TOCOutline">3</span> <a href="#3.1SecureAdminTraffic-ProblemSummary">Problem Summary</a></li> 
+       <ul> 
+        <li><span class="TOCOutline">3.1</span> <a href="#3.1SecureAdminTraffic-ProblemArea%3A">Problem Area:</a></li> 
+        <li><span class="TOCOutline">3.2</span> <a href="#3.1SecureAdminTraffic-Justification%3A">Justification:</a></li> 
+       </ul> 
+       <li><span class="TOCOutline">4</span> <a href="#3.1SecureAdminTraffic-TechnicalDescription%3A">Technical Description:</a></li> 
+       <ul> 
+        <li><span class="TOCOutline">4.1</span> <a href="#3.1SecureAdminTraffic-UserExperience%3A">User Experience:</a></li> 
+        <ul> 
+         <li><span class="TOCOutline">4.1.1</span> <a href="#3.1SecureAdminTraffic-NewCLICommands">New CLI Commands</a></li> 
+         <li><span class="TOCOutline">4.1.2</span> <a href="#3.1SecureAdminTraffic-DefaultAdminAccount"> <b>Default Admin Account</b></a></li> 
+         <li><span class="TOCOutline">4.1.3</span> <a href="#3.1SecureAdminTraffic-OutoftheBox">Out-of-the-Box</a></li> 
+         <li><span class="TOCOutline">4.1.4</span> <a href="#3.1SecureAdminTraffic-PromptingaboutandRememberingCertificates">Prompting about and Remembering Certificates</a></li> 
+        </ul> 
+        <li><span class="TOCOutline">4.2</span> <a href="#3.1SecureAdminTraffic-TechnicalDetails%3A">Technical Details:</a></li> 
+        <ul> 
+         <li><span class="TOCOutline">4.2.1</span> <a href="#3.1SecureAdminTraffic-TwostepprocesstoAuthenticateAdminRequests">Two-step process to Authenticate Admin Requests</a></li> 
+         <li><span class="TOCOutline">4.2.2</span> <a href="#3.1SecureAdminTraffic-AuthenticatorLogic">Authenticator Logic</a></li> 
+         <li><span class="TOCOutline">4.2.3</span> <a href="#3.1SecureAdminTraffic-IdentifyingRequeststhatOriginatefromtheDAS">Identifying Requests that Originate from the DAS</a></li> 
+         <li><span class="TOCOutline">4.2.4</span> <a href="#3.1SecureAdminTraffic-RunningGlassFishoutofthebox">Running GlassFish out-of-the-box</a></li> 
+         <li><span class="TOCOutline">4.2.5</span> <a href="#3.1SecureAdminTraffic-RunningGlassFishwithsecureadmin">Running GlassFish with secure admin</a></li> 
+         <li><span class="TOCOutline">4.2.6</span> <a href="#3.1SecureAdminTraffic-ControllingandRecordingSecureAdminSettings">Controlling and Recording Secure Admin Settings</a></li> 
+         <ul> 
+          <li><span class="TOCOutline">4.2.6.1</span> <a href="#3.1SecureAdminTraffic-enablesecureadmin">enable-secure-admin</a></li> 
+          <li><span class="TOCOutline">4.2.6.2</span> <a href="#3.1SecureAdminTraffic-disablesecureadmin">disable-secure-admin</a></li> 
+         </ul> 
+         <li><span class="TOCOutline">4.2.7</span> <a href="#3.1SecureAdminTraffic-DetailedUseCases">Detailed Use Cases</a></li> 
+         <ul> 
+          <li><span class="TOCOutline">4.2.7.1</span> <a href="#3.1SecureAdminTraffic-RemoteClienttoDAS">Remote Client to DAS</a></li> 
+          <ul> 
+           <li><span class="TOCOutline">4.2.7.1.1</span> <a href="#3.1SecureAdminTraffic-%7B%7Basadmin%5Csecure%3Dfalse%5Cuserme%5CpasswordfilemyFile.txt%7D%7D%7B%7Bcmd...%7D%7D"> <tt>asadmin --secure=false --user me --passwordfile myFile.txt</tt> <tt>cmd ...</tt></a></li> 
+           <li><span class="TOCOutline">4.2.7.1.2</span> <a href="#3.1SecureAdminTraffic-%7B%7Basadmin%5Csecure%3Dtrue%5Cuserme%5CpasswordfilemyFile.txt%7D%7D%7B%7Bcmd...%7D%7D"> <tt>asadmin --secure=true --user me --passwordfile myFile.txt</tt> <tt>cmd...</tt></a></li> 
+           <li><span class="TOCOutline">4.2.7.1.3</span> <a href="#3.1SecureAdminTraffic-%7B%7Basadmin%5Csecure%3Dtrue%7D%7D%7B%7Bcmd...%7D%7D"> <tt>asadmin --secure=true</tt> <tt>cmd...</tt></a></li> 
+           <li><span class="TOCOutline">4.2.7.1.4</span> <a href="#3.1SecureAdminTraffic-%7B%7Basadmin%5Csecure%3Dfalsecmd...%7D%7D"> <tt>asadmin --secure=false cmd...</tt></a></li> 
+           <li><span class="TOCOutline">4.2.7.1.5</span> <a href="#3.1SecureAdminTraffic-BrowseraccesstotheDASuserenters">Browser access to the DAS - user enters <span class="nobr">http://das:4848/ <sup><img border="0" alt="" align="absmiddle" width="7" height="7" src="images/icons/linkext7.gif" class="rendericon"></sup></span> ...</a></li> 
+           <li><span class="TOCOutline">4.2.7.1.6</span> <a href="#3.1SecureAdminTraffic-SSL%2FTLSnegotiation"> SSL/TLS negotiation</a></li> 
+           <li><span class="TOCOutline">4.2.7.1.7</span> <a href="#3.1SecureAdminTraffic-Unsecured%2Canonymousadministratorlogin">Unsecured, anonymous administrator login</a></li> 
+          </ul> 
+          <li><span class="TOCOutline">4.2.7.2</span> <a href="#3.1SecureAdminTraffic-Localasadminclienttoinstance"> Local asadmin client to instance</a></li> 
+          <li><span class="TOCOutline">4.2.7.3</span> <a href="#3.1SecureAdminTraffic-DAStoInstance%2CInstancetoDAS">DAS to Instance, Instance to DAS</a></li> 
+          <li><span class="TOCOutline">4.2.7.4</span> <a href="#3.1SecureAdminTraffic-GuardingagainstUnwantedConnections">Guarding against Unwanted Connections</a></li> 
+          <ul> 
+           <li><span class="TOCOutline">4.2.7.4.1</span> <a href="#3.1SecureAdminTraffic-DAStoDAS%2Cinstancetoinstance">DAS-to-DAS, instance-to-instance</a></li> 
+           <li><span class="TOCOutline">4.2.7.4.2</span> <a href="#3.1SecureAdminTraffic-Remoteclienttoinstance">Remote client-to-instance</a></li> 
+          </ul> 
+         </ul> 
+         <li><span class="TOCOutline">4.2.8</span> <a href="#3.1SecureAdminTraffic-BootstrappingandSetup"> Bootstrapping and Set-up</a></li> 
+         <ul> 
+          <li><span class="TOCOutline">4.2.8.1</span> <a href="#3.1SecureAdminTraffic-ConfiguringGrizzly">Configuring Grizzly</a></li> 
+          <li><span class="TOCOutline">4.2.8.2</span> <a href="#3.1SecureAdminTraffic-BuildingGlassFishandCreatingaDomain">Building GlassFish and Creating a Domain</a></li> 
+          <li><span class="TOCOutline">4.2.8.3</span> <a href="#3.1SecureAdminTraffic-CreatingaNewInstance">Creating a New Instance</a></li> 
+          <ul> 
+           <li><span class="TOCOutline">4.2.8.3.1</span> <a href="#3.1SecureAdminTraffic-Remotelyusing%7B%7Basadmincreateinstance%7D%7Dandssh">Remotely using <tt>asadmin create-instance</tt> and ssh</a></li> 
+           <li><span class="TOCOutline">4.2.8.3.2</span> <a href="#3.1SecureAdminTraffic-Locallyusing%7B%7Basadmincreatelocalinstance%7D%7D">Locally using <tt>asadmin create-local-instance</tt></a></li> 
+          </ul> 
+          <li><span class="TOCOutline">4.2.8.4</span> <a href="#3.1SecureAdminTraffic-Startingthenewinstance">Starting the new instance</a></li> 
+         </ul> 
+         <li><span class="TOCOutline">4.2.9</span> <a href="#3.1SecureAdminTraffic-Upgrade"> Upgrade</a></li> 
+         <ul> 
+          <li><span class="TOCOutline">4.2.9.1</span> <a href="#3.1SecureAdminTraffic-UpgradingtheDAS">Upgrading the DAS</a></li> 
+          <li><span class="TOCOutline">4.2.9.2</span> <a href="#3.1SecureAdminTraffic-Upgradingtheinstances">Upgrading the instances</a></li> 
+         </ul> 
+        </ul> 
+        <li><span class="TOCOutline">4.3</span> <a href="#3.1SecureAdminTraffic-Bug%2FRFENumber%28s%29%3A">Bug/RFE Number(s):</a></li> 
+        <li><span class="TOCOutline">4.4</span> <a href="#3.1SecureAdminTraffic-InScope%3A">In Scope:</a></li> 
+        <li><span class="TOCOutline">4.5</span> <a href="#3.1SecureAdminTraffic-OutofScope%3A">Out of Scope:</a></li> 
+        <li><span class="TOCOutline">4.6</span> <a href="#3.1SecureAdminTraffic-Interfaces%3A">Interfaces:</a></li> 
+        <ul> 
+         <li><span class="TOCOutline">4.6.1</span> <a href="#3.1SecureAdminTraffic-PublicInterfaces">Public Interfaces</a></li> 
+         <li><span class="TOCOutline">4.6.2</span> <a href="#3.1SecureAdminTraffic-PrivateInterfaces">Private Interfaces</a></li> 
+         <li><span class="TOCOutline">4.6.3</span> <a href="#3.1SecureAdminTraffic-Deprecated%2FRemovedInterfaces%3A">Deprecated/Removed Interfaces:</a></li> 
+        </ul> 
+        <li><span class="TOCOutline">4.7</span> <a href="#3.1SecureAdminTraffic-DocImpact%3A">Doc Impact:</a></li> 
+        <li><span class="TOCOutline">4.8</span> <a href="#3.1SecureAdminTraffic-Admin%2FConfigImpact%3A">Admin/Config Impact:</a></li> 
+        <li><span class="TOCOutline">4.9</span> <a href="#3.1SecureAdminTraffic-HAImpact%3A">HA Impact:</a></li> 
+        <li><span class="TOCOutline">4.10</span> <a href="#3.1SecureAdminTraffic-I18N%2FL10NImpact%3A">I18N/L10N Impact:</a></li> 
+        <li><span class="TOCOutline">4.11</span> <a href="#3.1SecureAdminTraffic-Packaging%2CDelivery%26Upgrade%3A">Packaging, Delivery &amp; Upgrade:</a></li> 
+        <ul> 
+         <li><span class="TOCOutline">4.11.1</span> <a href="#3.1SecureAdminTraffic-Packaging">Packaging</a></li> 
+         <li><span class="TOCOutline">4.11.2</span> <a href="#3.1SecureAdminTraffic-Delivery">Delivery</a></li> 
+         <li><span class="TOCOutline">4.11.3</span> <a href="#3.1SecureAdminTraffic-UpgradeandMigration%3A">Upgrade and Migration:</a></li> 
+        </ul> 
+        <li><span class="TOCOutline">4.12</span> <a href="#3.1SecureAdminTraffic-SecurityImpact%3A">Security Impact:</a></li> 
+        <li><span class="TOCOutline">4.13</span> <a href="#3.1SecureAdminTraffic-CompatibilityImpact">Compatibility Impact</a></li> 
+        <li><span class="TOCOutline">4.14</span> <a href="#3.1SecureAdminTraffic-Dependencies%3A">Dependencies:</a></li> 
+        <ul> 
+         <li><span class="TOCOutline">4.14.1</span> <a href="#3.1SecureAdminTraffic-InternalDependencies">Internal Dependencies</a></li> 
+         <li><span class="TOCOutline">4.14.2</span> <a href="#3.1SecureAdminTraffic-ExternalDependencies">External Dependencies</a></li> 
+        </ul> 
+        <li><span class="TOCOutline">4.15</span> <a href="#3.1SecureAdminTraffic-TestingImpact%3A">Testing Impact:</a></li> 
+       </ul> 
+       <li><span class="TOCOutline">5</span> <a href="#3.1SecureAdminTraffic-ReferenceDocuments%3A">Reference Documents:</a></li> 
+       <li><span class="TOCOutline">6</span> <a href="#3.1SecureAdminTraffic-Schedule%3A">Schedule:</a></li> 
+       <ul> 
+        <li><span class="TOCOutline">6.1</span> <a href="#3.1SecureAdminTraffic-ProjectedAvailability%3A">Projected Availability:</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="3.1SecureAdminTraffic-Introduction"></a>Introduction</h1> <h4><a name="3.1SecureAdminTraffic-Project%2FComponentWorkingName%3A"></a>Project/Component Working Name:</h2> <p>Secure Administration</p> <h4><a name="3.1SecureAdminTraffic-Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier%3A"></a>Name(s) and e-mail address of Document Author(s)/Supplier:</h2> <p>Tim Quinn: tim dot quinn at oracle dot com</p> <h4><a name="3.1SecureAdminTraffic-DateofThisDocument%3A"></a>Date of This Document:</h2> <p>07/21/2010</p> <h4><a name="3.1SecureAdminTraffic-ProjectSummary"></a>Project Summary</h1> <h4><a name="3.1SecureAdminTraffic-ProjectDescription%3A"></a>Project Description:</h2> <p>Administrators should be able to use secure administration, which means:</p> 
+     <ul> 
+      <li>Admin messages between admin clients and the DAS, between the DAS and remote instances, and between local admin clients and instances are encrypted using SSL/TLS.</li> 
+      <li>The sender and receiver of admin messages authenticate to each other.</li> 
+      <li>Credentials or other sensitive information sent over the network are always encrypted.</li> 
+     </ul> <p>Admin clients can be the asadmin command line tool, the admin console, IDEs, browsers, and any client using the REST interface.</p> <p>This one-pager describes our plans for securing that traffic.</p> <p>See below for a longer, more detailed technical description.</p> <h4><a name="3.1SecureAdminTraffic-RisksandAssumptions%3A"></a>Risks and Assumptions:</h2> 
+     <ul> 
+      <li>Grizzly support for 
+       <ul> 
+        <li>port unification</li> 
+        <li>redirection (http -&gt; https)</li> 
+        <li>SSL/TLS</li> 
+        <li>returning Principal associated with request</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li>Performance of SSL/TLS between DAS and instances</li> 
+     </ul> <h4><a name="3.1SecureAdminTraffic-ProblemSummary"></a>Problem Summary</h1> <h4><a name="3.1SecureAdminTraffic-ProblemArea%3A"></a>Problem Area:</h2> <p>Administrators need to be able to secure the admin traffic among the runtime components: admin clients, the DAS, and remote instances. Specific requirements:</p> 
+     <ul> 
+      <li>Imposing a heightened level of security is optional.</li> 
+     </ul> <p>When the administrator enables elevated admin security:</p> 
+     <ul> 
+      <li>Both communicating parties authenticate to each other.</li> 
+      <li>No credentials are ever sent in the clear.</li> 
+      <li>GlassFish helps prevent DAS-to-DAS and instance-to-instance traffic and carefully restricts admin client-to-instance traffic.</li> 
+     </ul> <h4><a name="3.1SecureAdminTraffic-Justification%3A"></a>Justification:</h2> <p>Some users will want or need to operate in a secure environment, in which they are confident that rogue users or processes cannot intercept or corrupt admin traffic or impersonate legitimate GlassFish components.</p> <h4><a name="3.1SecureAdminTraffic-TechnicalDescription%3A"></a>Technical Description:</h1> <h4><a name="3.1SecureAdminTraffic-UserExperience%3A"></a>User Experience:</h2> <p>The secure admin feature allows an administrator to secure all communication among the domain admin server, any remote instances, and admin clients such as the asadmin utility, the admin console, and REST clients.</p> <p>Enabling and disabling secure admin has these main effects:</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">&nbsp;</th> 
+         <th class="confluenceTh"> Disabled </th> 
+         <th class="confluenceTh"> Enabled </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Remote admin access to the <br class="atl-forced-newline"> DAS <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Rejected </td> 
+         <td class="confluenceTd"> Accepted (subject to <br class="atl-forced-newline"> username/password authentication) <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Communication between <br class="atl-forced-newline"> DAS and instances </td> 
+         <td class="confluenceTd"> Cleartext messages; <br class="atl-forced-newline"> no mutual authentication </td> 
+         <td class="confluenceTd"> SSL-encrypted messages; <br class="atl-forced-newline"> SSL mutual authentication using certs </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Communication between <br class="atl-forced-newline"> admin clients and DAS </td> 
+         <td class="confluenceTd"> Cleartext messages; <br class="atl-forced-newline"> no DAS authentication <br class="atl-forced-newline"> <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> SSL-encrypted messages; <br class="atl-forced-newline"> DAS uses SSL certificate server authentication <br class="atl-forced-newline"> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>Secure admin is a domain-wide setting. It affects the DAS and all instances and all admin clients.</p> <p>If you use <tt>xxx-local-instance</tt> commands to set up remote instances, plan to either leave admin security disabled or enable it before you create or start instances and leave it that way. Although GlassFish will let you switch back and forth, doing so creates a cumbersome situation. (details below) If, on the other hand, you use <tt>xxx-instance-ssh</tt> commands to manage remote instances, you can enable and disable secure admin at will without problem although this is not recommended for security reasons.</p> <h4><a name="3.1SecureAdminTraffic-NewCLICommands"></a>New CLI Commands</h3> <p>Note: Make sure only the domain admin server, and no instances, are running when you run these commands.</p> <h4><a name="3.1SecureAdminTraffic-enablesecureadmin%5C%5C"></a>enable-secure-admin<br class="atl-forced-newline"></h4> <p><tt>enable-secure-admin</tt><br> <tt>[--adminalias=alias (default s1as)]</tt><br> <tt>[ --instancealias=alias (default glassfish-instance)]</tt></p> <p>Most developers will use enable-secure-admin without options.</p> <p>Restart the domain admin server immediately after enabling secure admin.</p> <p>Out-of-the-box, GlassFish uses self-signed certificates to identify the DAS and the instances to each other and to clients.&nbsp; You can have GlassFish use your own certificates for this purpose by first adding your certificates to the GlassFish keystore and truststore, then running <tt>enable-secure-admin</tt> and specifying the aliases for your certificates.</p> <h4><a name="3.1SecureAdminTraffic-disablesecureadmin%5C%5C"></a>disable-secure-admin<br class="atl-forced-newline"></h4> <p><tt>disable-secure-admin</tt></p> <p>If you have previously enabled secure admin, this disables secure admin, restoring the out-of-the-box configuration.</p> <h4><a name="3.1SecureAdminTraffic-DefaultAdminAccount"></a><b>Default Admin Account</b></h3> <p>If only one admin account exists in the admin realm, GlassFish treats that account as the <b>current default</b> admin account. In this case, when you run an asadmin command you do not need to specify the username. If the password for that username is not empty you <b>do</b> need to specify it, typically using the --passwordfile option or letting asadmin prompt you for it.</p> <p>If multiple admin accounts exist then GlassFish does not recognize any admin username as the default. You must specify a valid username and its associated password (if the associated password is not empty) when you use asadmin.</p> <h4><a name="3.1SecureAdminTraffic-OutoftheBox"></a>Out-of-the-Box</h3> <p>Secure admin is disabled. The default admin account is username "admin" with an empty password.</p> <p><b>Accepted and Rejected Operations if Secure Admin is Disabled</b></p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">&nbsp;</th> 
+         <th class="confluenceTh"> From same system <br class="atl-forced-newline"> as DAS <br class="atl-forced-newline"> </th> 
+         <th class="confluenceTh"> From a remote system <br class="atl-forced-newline"> </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> start-local-instance [1] <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> OK <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Cannot sync with DAS; instance starts but cannot <br class="atl-forced-newline"> communicate with the DAS. DAS will not see the <br class="atl-forced-newline"> instance. <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Any other asadmin command <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> OK <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Rejected - user sees username/password prompt <br class="atl-forced-newline"> but even correct ones are rejected. <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> *-ssh commands <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> OK (requires prior ssh set-up) </td> 
+         <td class="confluenceTd"> OK (requires prior ssh set-up) <br class="atl-forced-newline"> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>[1] This can happen only if you created the local instance while secure admin was enabled and then disabled secure admin.&nbsp; Don't do that.</p> <h4><a name="3.1SecureAdminTraffic-PromptingaboutandRememberingCertificates"></a>Prompting about and Remembering Certificates</h3> <p>The self-signed certificates that GlassFish uses are not trustworthy, because no certificate authority vouches for the authenticity of the certificate.&nbsp; If you enable secure admin and then contact the DAS using an admin client, that client will detect that the cert is not inherently trustworthy.&nbsp; Browsers will warn you, let you view the certificate, and then ask you to reject the cert, accept it once, or accept it indefinitely.&nbsp; The first time the asadmin program sees a given untrusted cert it will display the cert and let you accept it or reject it.&nbsp; If you accept it, asadmin will also accept that cert in the future. (same as in GlassFish 2.x).</p> <p>Some asadmin commands - such as <tt>run-script</tt> - can contact an instance directly to retrieve information (but not to make configuration changes).&nbsp; The instances do not use the same cert as the DAS, so in such cases you will be prompted again for the instance cert this time.</p> <p>The asadmin program saves certs you accept in the file .asadmintruststore in your log-in default directory.&nbsp; You do not normally need to work with the file directly, but if you delete it or move it asadmin will prompt you again when it sees untrusted certs.</p> <h4><a name="3.1SecureAdminTraffic-TechnicalDetails%3A"></a>Technical Details:</h2> <h4><a name="3.1SecureAdminTraffic-TwostepprocesstoAuthenticateAdminRequests"></a>Two-step process to Authenticate Admin Requests</h3> <p>Every admin request arrives to the DAS as an HTTP or HTTPS request. Grizzly routes each request to the proper Grizzly adapter. Examples are </p> 
+     <ul> 
+      <li>the AdminAdapter, which handles requests of the form http(s)://das:port/__asadmin, which includes requests from the asadmin utility</li> 
+      <li>the REST adapter, which handles http(s)://das:port/monitoring requests.</li> 
+     </ul> <p>These adapters delegate the authentication task to an implementation of AdminAuthenticator. This class considers several factors in deciding what access should be granted:</p> 
+     <ul> 
+      <li>whether the request is local or remote</li> 
+      <li>whether the request used DAS or instance certificate authentication</li> 
+      <li>whether the current server is the DAS or an instance</li> 
+      <li>whether secure admin is enabled</li> 
+      <li>whether the username and password are valid in the admin realm</li> 
+     </ul> <p>The AdminAuthenticator lets the invoking adapter know what kind of access to allow using a fairly coarse approach:</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Return</th> 
+         <th class="confluenceTh">Access To Be Permitted</th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">NONE</td> 
+         <td class="confluenceTd">no access (due to failed username/password checking)</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">MONITORING</td> 
+         <td class="confluenceTd">only monitoring (read) access</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">FULL</td> 
+         <td class="confluenceTd">full access (read and write)</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>It is up to the invoking adapter to enforce any access restriction. For example, in GlassFish 3.1 the AdminAdapter has no way to enforce monitoring-only access, so it rejects requests that are eligible only for monitoring access. This would happen, for example, if a user accidentally sent a request directly to an instance. </p> <p>The REST adapter, on the other hand, can tell easily whether a given request is for monitoring or management and so can accept or reject each request depending on the level of access returned from the AdminAdapter.</p> <p>With this division of labor, the AdminAuthenticator, to which all adapters delegate, does the bulk of the decision-making so the logic resides in one place, not duplicated among the adapters.</p> <h4><a name="3.1SecureAdminTraffic-AuthenticatorLogic"></a>Authenticator Logic</h3> <p>Currently, the class GenericAdminAuthenticator is the implementation for AdminAuthenticator. This class basically does the following to authenticate an incoming request or connection and decide what level of access to grant:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeHeader panelHeader" style="border-bottom-width: 1px;">
+       <b>GenericAdminAuthenticator Flow</b>
+      </div>
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">if (request uses locally-provisioned password) {
+    return FULL access;
+}
+
+if (    (request came to an instance from the DAS using the DAS cert )
+     || (request came to the DAS from an instance using the instance cert [1])
+     || (request came from the DAS or an instance using a special marker [2]) 
+     || (request triggered by the DAS but submitted from another process [3]) ) {
+    return FULL access;
+}
+
+if (request has a valid admin user/password) {
+    if (current server is the DAS) {
+        if (   secure admin is enabled
+            || request came from current host ) {
+            return FULL access;
+        }
+    } 
+    // This is an instance OR secure admin is off OR the request is remote
+    return MONITORING access;
+}
+
+// username/password absent from the admin realm
+return NO access;</pre> 
+       </div> 
+      </div>
+     </div> <p>1 In GlassFish 3.1 instances do not send requests to the DAS but the architecture and the code is in place to support that.</p> <p>2 If secure admin is disabled, the DAS uses a special marking technique so an instance can identify the DAS as the origin of the request.</p> <p>3 Either on the same system as the DAS in another process or on a non-DAS system using ssh.</p> <h4><a name="3.1SecureAdminTraffic-IdentifyingRequeststhatOriginatefromtheDAS"></a>Identifying Requests that Originate from the DAS</h3> <p>If secure admin is enabled, this is easy: The SSL certificate-based authentication presents the DAS certificate to the instance. The instance compares the Principal associated with the certificate against the Principal in its truststore stored with the DAS alias. </p> <p>If secure admin is disabled, the DAS adds a header to the HTTP request that indicates the DAS is the origin. This is not secure but it is convenient. </p> <p>We do not turn on SSL for the instance admin port if secure admin is disabled. Some components (such as REST and monitoring scripting) connect to the instance admin port for read-only access. If we used SSL all the time on that port then users of those components would be prompted with the instance's cert upon the first connection. We decided to avoid that extra step in the initial user experience.</p> <h4><a name="3.1SecureAdminTraffic-RunningGlassFishoutofthebox"></a>Running GlassFish out-of-the-box</h3> <p>The DAS admin realm contains a single user, the default admin user with "admin" as the username and an empty password. Admin clients provide empty credentials or none at all, so all are authenticated and authorized as that default admin user.</p> <p>None of the participants (clients, DAS, or instances) encrypts network messages.</p> <h4><a name="3.1SecureAdminTraffic-RunningGlassFishwithsecureadmin"></a>Running GlassFish with secure admin</h3> <p>In the steady state the DAS and one or more remote instances are installed, initialized, and running, and admin clients are installed. The administrator has specified two aliases corresponding to certificates in the keystore and truststore: one which the DAS will use for authenticating itself in admin traffic, and one which the instances will use for authenticating.</p> <p>The DAS and instances always identify themselves using SSL/TLS certificate authentication, whether as senders or receivers of admin requests.</p> <p>Valid admin clients always identify themselves using an HTTP Authorization header (with one exception, noted below).</p> <p>For the DAS or an instance to accept an admin request, it</p> 
+     <ul> 
+      <li>establishes the identity of the requester (authentication), and</li> 
+      <li>makes sure that requester is allowed to perform admin tasks (authorization).</li> 
+     </ul> <p>Remote admin clients (asadmin, admin console, browsers, and IDEs) send a username and password in the HTTP Authorization header (as in GlassFish 2). The receiving DAS makes sure those credentials appear in its admin realm, authenticating and authorizing at once.</p> <p>A locally-running asadmin (that is, connecting to an instance on the same host) authenticates and authorizes to the co-located instance using the locally-provisioned password as described <a href="GlassFishV3AdminSecurity.html" title="GlassFishV3AdminSecurity">here</a>.</p> <p>A server (DAS or instance) sending a request will authenticate itself at the SSL/TLS level using a certificate.</p> <p>The AdminAdapter tries to identify the sender of the request in this order:</p> 
+     <ul> 
+      <li>Check for the locally-provisioned password in the HTTP Authorization header. If it matches, accept and execute the request.</li> 
+      <li>Check for the SSL/TLS cert Principal from the Grizzly request. If the DAS receives a request authenticated with the instance certificate, or if an instance receives a request authenticated with the DAS certificate, then the receiver accepts and executes the request.</li> 
+      <li>DAS only 
+       <ul> 
+        <li>If the credentials from the HTTP Authorization header appear in the admin realm, accept and execute the request.</li> 
+        <li>If the HTTP request contains no Authorization header but one is required, or if the request contains such a header but there is no corresponding entry in the admin realm, the AdminAdapter rejects the request with 401 - NotAuthorized and returns a WWW-Authenticate challenge header with the response.</li> 
+       </ul> </li> 
+     </ul> <p>For this to work, the receiving processes need to have certain data available:</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">&nbsp;</th> 
+         <th class="confluenceTh"> Contents of </th> 
+         <th class="confluenceTh">&nbsp;</th> 
+         <th class="confluenceTh">&nbsp;</th> 
+         <th class="confluenceTh">&nbsp;</th> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> Receiver </th> 
+         <th class="confluenceTh"> Keystore </th> 
+         <th class="confluenceTh"> Truststore </th> 
+         <th class="confluenceTh"> Admin realm </th> 
+         <th class="confluenceTh"> Config <br class="atl-forced-newline"> </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> DAS </td> 
+         <td class="confluenceTd"> DAS private key </td> 
+         <td class="confluenceTd"> Instance public cert </td> 
+         <td class="confluenceTd"> username/password pairs of legit admin users </td> 
+         <td class="confluenceTd"> the alias instances will use for SSL/TLS cert authentication <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Instance </td> 
+         <td class="confluenceTd"> Instance private key </td> 
+         <td class="confluenceTd"> DAS public cert </td> 
+         <td class="confluenceTd"> n/a <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> the alias the DAS will use for SSL/TLS cert authentication <br class="atl-forced-newline"> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>We accomplish this by storing both private keys in the DAS keystore, both certs in the DAS truststore, and the alias for each in the domain.xml config. Then normal instance creation operations (create-instance over ssh, create-local-instance) will bring the up-to-date keystore, truststore, and configuration to each instance. (See also the <a href="#3.1SecureAdminTraffic-bootstrapping">bootstrapping</a> discussion below.)</p> <p>Note that secure admin affects the entire domain: the DAS and all instances.</p> <h4><a name="3.1SecureAdminTraffic-ControllingandRecordingSecureAdminSettings"></a>Controlling and Recording Secure Admin Settings</h3> <p>This feature adds new subelements to <tt>&lt;domain&gt;</tt> in domain.xml.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: xml; gutter: false">&lt;domain&gt;
+  &lt;secure-admin enabled="true/false"&gt;
+    &lt;secure-admin-principal type="admin/instance" alias="xxx"/&gt;
+  &lt;/secure-admin&gt;
+...</pre> 
+       </div> 
+      </div>
+     </div> <p>Normally, with secure admin enabled, we'll have one <tt>&lt;secure-admin-principal&gt;</tt> for type "admin" (DAS) and one for type "instance." This configuration exists on both the DAS and the instances. The DAS will use the alias associated with the <tt>&lt;secure-admin-principal type="instance"&gt;</tt> element to check incoming requests that use SSL/TLS cert authentication. The instances will use the alias associated with the <tt>&lt;secure-admin-principal type="admin"&gt;</tt> element to check incoming requests with cert authentication. (Over time we might want to support multiple aliases of each type. The proposed changes to the config would permit this although the current proposal does not include commands or command options to do so.)</p> <p>This feature also adds two new commands for controlling secure admin settings.</p> <h4><a name="3.1SecureAdminTraffic-enablesecureadmin"></a>enable-secure-admin</h4> <p><tt>enable-secure-admin</tt> <br class="atl-forced-newline"> <tt>[--adminalias=alias (default s1as)]</tt> <br class="atl-forced-newline"> <tt>[ --instancealias=alias (default glassfish-instance)]</tt></p> <p>The <tt>enable-secure-admin</tt> command will:</p> 
+     <ul> 
+      <li>Add new or modify existing <tt>&lt;secure-admin&gt;</tt> and <tt>&lt;secure-admin-principal&gt;</tt> elements under <tt>&lt;domain&gt;</tt>. It will set the <tt>&lt;secure-admin enabled&gt;</tt> attribute to "true."</li> 
+      <li>Create the truststore if it is missing.</li> 
+      <li>If the keystore and truststore do not contain a cert for the instance alias, then generate the instance self-signed key pair and add the private key to the keystore and the public cert to the truststore.</li> 
+      <li>If the truststore does not contain a cert for the DAS alias, add the DAS cert from the keystore to the truststore.</li> 
+      <li>Adjust all configurations in the domain, including default-config, creating or updating <tt>&lt;secure-admin&gt;</tt> and changing the Grizzly settings: 
+       <ul> 
+        <li>Enable SSL/TLS, using the specified <tt>--adminalias</tt> value in the DAS's admin listener and the <tt>--instancealias</tt> value in the instances' admin listeners.</li> 
+        <li>Set up Grizzly port unification, redirection, and client-auth=want.</li> 
+       </ul> </li> 
+     </ul> <p>If the <tt>&lt;secure-admin&gt;</tt> fragment already exists in domain.xml when the user runs <tt>enable-secure-admin</tt> then the alias values in the <tt>&lt;secure-admin-principal&gt;</tt> elements are changed only if the user specifies <tt>--adminalias</tt> or <tt>--instancealias</tt> on the command.</p> <p>The <tt>enable-secure-admin</tt> command implementation will send the hidden <tt>_instance-enable-secure-admin</tt> command to all non-DAS targets in the domain. This command performs the same configuration changes as <tt>enable-secure-admin</tt> does on the DAS.</p> <p>A server restart is required to change the Grizzly adapter behavior, which will also sync the restarted instances which will deliver updated keystore and truststore files (if they have in fact changed).</p> <h4><a name="3.1SecureAdminTraffic-disablesecureadmin"></a>disable-secure-admin</h4> <p><tt>disable-secure-admin</tt></p> <p>This command:</p> 
+     <ul> 
+      <li>Sets the <tt>enabled</tt> attribute of <tt>&lt;secure-admin&gt;</tt> to false.</li> 
+      <li>Turns off Grizzly's use of SSL/TLS in the Grizzly configuration.</li> 
+      <li>Turns off Grizzly redirection from http to https.</li> 
+      <li>Turns off Grizzly port unification for the admin listener port.</li> 
+     </ul> <h4><a name="3.1SecureAdminTraffic-DetailedUseCases"></a>Detailed Use Cases</h3> <p>Next are detailed use cases, showing the moving parts at work. Note that in any use case that ends up sending an https request SSL/TLS negotiation occurs within the SSL infrastructure between the sender and the listener. The negotiation is not shown explicitly in each use case; it is summarized in a <a href="#3.1SecureAdminTraffic-SSLTLSnegotiation">separate section</a>. Also, except where noted the credentials which the user supplies are assumed to be valid administrator credentials for the DAS.</p> <h4><a name="3.1SecureAdminTraffic-RemoteClienttoDAS"></a>Remote Client to DAS</h4> <h5><a name="3.1SecureAdminTraffic-%7B%7Basadmin%5Csecure%3Dfalse%5Cuserme%5CpasswordfilemyFile.txt%7D%7D%7B%7Bcmd...%7D%7D"></a><tt>asadmin --secure=false --user me --passwordfile myFile.txt</tt> <tt>cmd ...</tt></h5> <p>The user submits a command, not asking to secure the messages using SSL/TLS encryption, and specifying credentials (--user and --passwordfile).</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> asadmin </th> 
+         <th class="confluenceTh"> Grizzly </th> 
+         <th class="confluenceTh"> AdminAdapter </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Sends http request, no authorization header (because the transport is not secure) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Returns 3xx - redirects http -&gt; https </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Follows redirection, this time adding the Authorization header (because transport is now https) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Authenticates admin user &amp; password from HTTP Authorization header vs. admin realm <br class="atl-forced-newline"> Executes command <br class="atl-forced-newline"> Responds with 200 </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>Note that asadmin upgrades to use https - because of the DAS redirection - despite the user's <tt>--secure=false</tt>. As it does so, it sees that the new protocol is https so it proactively sends the HTTP Authorization header along with the redirected request.</p> <h5><a name="3.1SecureAdminTraffic-%7B%7Basadmin%5Csecure%3Dtrue%5Cuserme%5CpasswordfilemyFile.txt%7D%7D%7B%7Bcmd...%7D%7D"></a><tt>asadmin --secure=true --user me --passwordfile myFile.txt</tt> <tt>cmd...</tt></h5> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> asadmin </th> 
+         <th class="confluenceTh"> Grizzly </th> 
+         <th class="confluenceTh"> AdminAdapter </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Sends https request with Authorization header </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Authenticates <br class="atl-forced-newline"> Executes command <br class="atl-forced-newline"> Responds with 200 </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>In this case asadmin connects using https (the user specified <tt>--secure=true</tt>) and so sends the HTTP header immediately.</p> <h5><a name="3.1SecureAdminTraffic-%7B%7Basadmin%5Csecure%3Dtrue%7D%7D%7B%7Bcmd...%7D%7D"></a><tt>asadmin --secure=true</tt> <tt>cmd...</tt></h5> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> asadmin </th> 
+         <th class="confluenceTh"> Grizzly </th> 
+         <th class="confluenceTh"> AdminAdapter </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Sends https request with no HTTP Authorization header </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Because admin realm contains at least one entry, does not allow anonymous log-in. <br class="atl-forced-newline"> Responds with 401 - NotAuthorized "realm=admin" </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Detects 401 <br class="atl-forced-newline"> Prompts user for username and password <br class="atl-forced-newline"> Sends https request with HTTP Authorization header this time </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Authenticates <br class="atl-forced-newline"> Executes <br class="atl-forced-newline"> Responds with 200 </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h5><a name="3.1SecureAdminTraffic-%7B%7Basadmin%5Csecure%3Dfalsecmd...%7D%7D"></a><tt>asadmin --secure=false cmd...</tt></h5> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> asadmin </th> 
+         <th class="confluenceTh"> Grizzly </th> 
+         <th class="confluenceTh"> AdminAdapter </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Sends http request (no Authorization header) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Returns 3xx - redirects http -&gt; https </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Sends https request (no Authorization header) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Because admin realm contains at least one entry, does not allow anonymous log-in. <br class="atl-forced-newline"> Responds with 401 - NotAuthorized "realm=admin" </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Prompts user for username and password <br class="atl-forced-newline"> User enters <br class="atl-forced-newline"> Sends https request, this time with HTTP Authorization header </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Authenticates <br class="atl-forced-newline"> Executes <br class="atl-forced-newline"> Responds with 200 </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h5><a name="3.1SecureAdminTraffic-BrowseraccesstotheDASuserenters"></a>Browser access to the DAS - user enters <a href="http://das:4848/">http://das:4848/</a>...</h5> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Browser </th> 
+         <th class="confluenceTh"> Grizzly </th> 
+         <th class="confluenceTh"> AdminAdapter </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Sends http request (no Authorization header) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Returns 3xx - redirects http -&gt; https </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Sends https request (no Authorization header) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Because admin realm contains at least one entry, does not allow anonymous log-in. <br class="atl-forced-newline"> Responds with 401 - NotAuthorized "realm=admin" </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Prompts user for username and password using a browser dialog box <br class="atl-forced-newline"> Sends https request with HTTP Authorization header this time </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Authenticates <br class="atl-forced-newline"> Executes <br class="atl-forced-newline"> Responds with 200 </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h5><a name="3.1SecureAdminTraffic-SSL%2FTLSnegotiation"></a><a name="3.1SecureAdminTraffic-SSLTLSnegotiation"></a>SSL/TLS negotiation</h5> <p>This happens any time a client contacts the DAS using https as part of establishing the secure connection.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Client </th> 
+         <th class="confluenceTh"> Grizzly/SSL support </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Tries to connect to DAS using https (no client cert sent) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Responds with the DAS's public cert </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Displays cert to user <br class="atl-forced-newline"> User accepts <br class="atl-forced-newline"> Completes connection </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Sends https request over the now-secure connection </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>By default, the DAS uses a self-signed cert for authentication. Because a self-signed cert lacks a cert chain to a trusted cert authority, neither browsers nor asadmin will automatically accept them as trusted. Rather, the user is warned, shown information about the cert, and asked if he/she wants to trust the other party.</p> 
+     <div class="sunwikis-expand-header">
+      Sample v2 asadmin cert prompt output
+     </div> 
+     <div class="sunwikis-expand-body">
+      <div class="code panel" style="border-width: 1px;">
+       <div class="codeHeader panelHeader" style="border-bottom-width: 1px;">
+        <b>v2 asadmin Cert Prompt Output</b>
+       </div>
+       <div class="codeContent panelContent"> 
+        <div id="root"> 
+         <pre class="theme: Confluence; brush: plain; gutter: false">[
+[
+  Version: V3
+  Subject: CN=timothy-quinns-macbook-pro-2.local, OU=Sun GlassFish Enterprise Server, O=Sun Microsystems, L=Santa Clara, ST=California, C=US
+  Signature Algorithm: SHA1withRSA, OID = 1.2.840.113549.1.1.5
+
+  Key:  Sun RSA public key, 1024 bits
+  modulus: 145793420626688566088394158159638779041277831140455913481435972977559795017671574823864315131750418659965821779796460080673147008571695264778429964788011972328001078278671878387307747704372091832930835291346891002043684898471960200484166079708458546502354191033994197133166962960373293979307533373507167827001
+  public exponent: 65537
+  Validity: [From: Tue May 04 12:32:11 CDT 2010,
+               To: Fri May 01 12:32:11 CDT 2020]
+  Issuer: CN=timothy-quinns-macbook-pro-2.local, OU=Sun GlassFish Enterprise Server, O=Sun Microsystems, L=Santa Clara, ST=California, C=US
+  SerialNumber: [    4be05a1b]
+
+Certificate Extensions: 1
+[1]: ObjectId: 2.5.29.14 Criticality=false
+SubjectKeyIdentifier [
+KeyIdentifier [
+0000: 6F 61 EA F4 1A F0 21 DB   B6 B0 70 0B 10 08 32 15  oa....!...p...2.
+0010: 40 BA D2 BC                                        @...
+]
+]
+
+]
+  Algorithm: [SHA1withRSA]
+  Signature:
+0000: 03 3A 70 C2 26 20 78 B5   DF 60 C2 5B C1 20 EA 5D  .:p.&amp; x..`.[. .]
+0010: D6 29 0A 65 4F 08 41 6A   10 BC 5A 5C A7 2B CA A0  .).eO.Aj..Z\.+..
+0020: 9D 75 3C 02 D8 41 D5 10   95 CC FB 0B FB 17 88 2E  .u&lt;..A..........
+0030: 54 05 97 08 22 96 D9 A7   BB EB 70 6F 87 8B 52 88  T...".....po..R.
+0040: EB E2 E0 3B F2 F4 84 07   E1 50 87 5E 51 F3 A1 BF  ...;.....P.^Q...
+0050: 85 A2 DE 60 93 26 75 1F   FD B1 18 3E 4F DB 48 E1  ...`.&amp;u....&gt;O.H.
+0060: DA 10 CC 8C 8D 7A 01 B5   62 4E EA 8D 0C 8E A3 7C  .....z..bN......
+0070: E5 26 60 E0 BF 3F 14 BF   02 E3 4F FC AF 76 B6 8D  .&amp;`..?....O..v..
+
+]
+Do you trust the above certificate [y|n] --&gt;</pre> 
+        </div> 
+       </div>
+      </div>
+     </div> <p>Note that if the user agrees to trust the cert, then asadmin stores the cert into the user's private asadmin truststore (~/.asadminstruststore) and will accept that cert going forward. Browsers tend to ask the user to reject the cert, accept it for the current access, or accept it indefinitely.</p> <h5><a name="3.1SecureAdminTraffic-Unsecured%2Canonymousadministratorlogin"></a>Unsecured, anonymous administrator login</h5> <p>If the administrator does not enable elevated security, then Grizzly on the DAS and on the instances is not configured for SSL/TLS and the admin security realm contains no entries for administrator users.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Client </th> 
+         <th class="confluenceTh"> Grizzly </th> 
+         <th class="confluenceTh"> AsadminAdapter </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Sends http request </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> (no redirection of http -&gt; https) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Detects empty admin realm; proceeds without challenging for authentication <br class="atl-forced-newline"> Executes command <br class="atl-forced-newline"> Responds with 200 </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.1SecureAdminTraffic-Localasadminclienttoinstance"></a><a name="3.1SecureAdminTraffic-localAsadminToInstanceUseCase"></a>Local asadmin client to instance</h4> <p>Parts of clustering require a user to use asadmin with the instance on the same node. This uses the <a href="./GlassFishV3AdminSecurity.html">locally-provisioned password mechanism </a>. Briefly, during instance start-up the instance generates a local password, storing it in memory and also writing it to a protected file on disk. The asadmin program reads the password from the protected file and sends it with an empty username for HTTP authorization. The instance compares the password sent from asadmin with its in-memory copy of the password and, if they agree, treats the client as a fully-privileged administrative user.</p> <h4><a name="3.1SecureAdminTraffic-DAStoInstance%2CInstancetoDAS"></a>DAS to Instance, Instance to DAS</h4> <p>The DAS and instances uses SSL mutual authentication. That is, the DAS trusts a cert offered by the instance and the instance trusts a cert offered by the DAS. The configuration's <tt>&lt;secure-admin&gt;</tt> fragment gives the DAS and instance aliases, so the receiving AdminAdapter can check to see if the requester used cert-based authentication and, if so, if the corresponding Principal matches the one fetched from the truststore using the correct alias.</p> <h4><a name="3.1SecureAdminTraffic-GuardingagainstUnwantedConnections"></a>Guarding against Unwanted Connections</h4> <h5><a name="3.1SecureAdminTraffic-DAStoDAS%2Cinstancetoinstance"></a>DAS-to-DAS, instance-to-instance</h5> <p>As discussed in the <a href="#3.1SecureAdminTraffic-boostrapping">bootstrapping section</a> below, the DAS and the instances will have copies of the same truststores which contains the public cert of the DAS and the separate public cert that is used by all instances.</p> <p>DAS-to-other-DAS communication will not be authenticated because each different DAS will have its own self-signed cert that will not be in the truststore of the other DAS.</p> <p>DAS-to-self communication is unlikely but could conceivably happen if the user incorrectly configures the admin listener port for an instance on the same host so it is the same as for the DAS. Similarly, instance-to-instance traffic is unlikely but possible if the user incorrectly configures listener ports for instances on the same host. To prevent both of these problems, AdminAdapter will check to make sure that if the client has authenticated using SSL/TLS client authentication that the Principal associated with the remote client is <b>not</b> the same as the current process. That is, the DAS will make sure that the Principal is not itself. Similarly, each instance will make sure that the client is not an instance. (This is done easily because the instances share the same self-signed cert and therefore are mapped to the same Principal.) Both cases are handled by making sure that the connecting Principal is not the running Principal.</p> <h5><a name="3.1SecureAdminTraffic-Remoteclienttoinstance"></a>Remote client-to-instance</h5> <p>An <a href="#3.1SecureAdminTraffic-localAsadminToInstanceUseCase">earlier use case</a> described how asadmin can connect to a local instance. <b>Remote</b> clients will be unable to connect directly to instances. If the user on host "foo" runs a local command but specifies a remote instance on host "bar", asadmin on foo will read and send that locally-provisioned password. The instance on "bar" will have a different locally-provisioned password and so the authentication attempt will fail. Further, AdminAdapter on instances will have no admin realm to use in verifying HTTP Authorization-based authentication. So a user on "foo" will not be able to run a remote command targeting an instance on "bar."</p> <h4><a name="3.1SecureAdminTraffic-BootstrappingandSetup"></a><a name="3.1SecureAdminTraffic-bootstrapping"></a>Bootstrapping and Set-up</h3> <p>Three main areas need to be handled as part of "bootstrapping" a remote instance:</p> 
+     <ul> 
+      <li>configuring Grizzly,</li> 
+      <li>placing the keystore and truststore in the remote instance's file system, and</li> 
+      <li>storing the DAS cert Principal in the instance's admin realm.</li> 
+     </ul> <h4><a name="3.1SecureAdminTraffic-ConfiguringGrizzly"></a>Configuring Grizzly</h4> <p>The Grizzly config on the DAS and each instance are identical with one difference: the alias to be used for SSL/TLS authentication, shown below as <tt>${aliasName</tt>}:</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">&nbsp;</th> 
+         <td class="confluenceTd"> <tt>${aliasName</tt>} </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> DAS </td> 
+         <td class="confluenceTd"> s1as </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Instance </td> 
+         <td class="confluenceTd"> gf-instance </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <ul> 
+      <li>Enable port unification (so http, https handled by the same port) on DAS</li> 
+      <li>Redirect <tt>"http://xxx:${adminPort}"</tt> -&gt; <tt>"https://xxx:${adminPort}"</tt></li> 
+      <li>Configure SSL client-auth=want</li> 
+      <li>Configure SSL to use the admin keystore and the alias <tt>"${aliasName}"</tt> (for the self-signed cert) for authenticating itself. The administrator can load his or her own cert into the keystore under a different alias and configure Grizzly to use that alias instead.</li> 
+      <li>Configure SSL to use the admin truststore</li> 
+     </ul> <h4><a name="3.1SecureAdminTraffic-BuildingGlassFishandCreatingaDomain"></a>Building GlassFish and Creating a Domain</h4> 
+     <ul> 
+      <li>(as in GF 2 and 3.0) DAS self-signed key pair - Private key already present in the keystore under the alias "s1as" when the user installs GlassFish or creates a new domain.</li> 
+      <li>Instance self-signed cert - Add to the GlassFish build and create-domain logic to create a second self-signed key pair and place its private key also into the keystore under the alias "gf-instance."</li> 
+      <li>Insert the public keys for the DAS self-signed cert and the instance self-signed cert into a new truststore file.</li> 
+     </ul> <h4><a name="3.1SecureAdminTraffic-CreatingaNewInstance"></a>Creating a New Instance</h4> <h5><a name="3.1SecureAdminTraffic-Remotelyusing%7B%7Basadmincreateinstance%7D%7Dandssh"></a>Remotely using <tt>asadmin create-instance</tt> and ssh</h5> 
+     <ol> 
+      <li><tt>create-instance</tt> command is remote, so the user authenticates to the DAS.</li> 
+      <li><tt>create-instance</tt> runs the hidden _register-instance command. (no contact yet between the new instance and the DAS)</li> 
+      <li><tt>create-instance</tt> uses ssh to the remote system to run the _create-local-filesystem command, a local command that therefore does not itself require authentication to the DAS. As part of this, <tt>create-instance</tt> sends data through the ssh connection, readable from System.in by <tt>_create-local-filesystem</tt>:</li> 
+     </ol> 
+     <ul> 
+      <li>the DAS keystore and truststore contents,</li> 
+      <li>the configuration (the portion of domain.xml) that this new instance will use as its configuration (primarily to carry the Grizzly config for security),</li> 
+      <li>DAS Principal name.</li> 
+     </ul> <p><tt>_create-local-filesystem</tt> then stores the keystore and truststore contents it reads into the keystore and truststore files in the instance's file system, the configuration into the instance's copy of domain.xml, and the DAS Principal name into the file-based admin realm.</p> <h5><a name="3.1SecureAdminTraffic-Locallyusing%7B%7Basadmincreatelocalinstance%7D%7D"></a>Locally using <tt>asadmin create-local-instance</tt></h5> 
+     <ol> 
+      <li>Because <tt>create-local-instance</tt> is a remote command, the user authenticates to the DAS.</li> 
+      <li>{[create-local-instance}} sends, in its response, the keystore and truststore files, the domain.xml - or at least the portion of it relevant to the instance, and the DAS Principal name.&nbsp; <tt>asadmin</tt> stores these files in the correct places in the instance's file system courtesy of the payload handling framework.</li> 
+     </ol> <h4><a name="3.1SecureAdminTraffic-Startingthenewinstance"></a>Starting the new instance</h4> <p>Whether created by <tt>create-instance</tt> or <tt>create-local-instance</tt>, by the time the new instance starts and contacts the DAS to sync, the keystore and truststore files, the admin realm, and the relevant part of domain.xml are correct. The instance can mutually authenticate with the DAS using certs so that the initial message and all subsequent ones are secure.</p> <h4><a name="3.1SecureAdminTraffic-Upgrade"></a><a name="3.1SecureAdminTraffic-upgrade"></a>Upgrade</h3> <p>Upgrading a multi-instance GlassFish 2 installation to GlassFish 3.1 is similar to the bootstrapping problem.</p> <h4><a name="3.1SecureAdminTraffic-UpgradingtheDAS"></a>Upgrading the DAS</h4> <p>Upgrade must:</p> 
+     <ol> 
+      <li>Infer if the GlassFish 2 installation being upgraded is already configured for v2 secure communication.&nbsp; If so, continue. Testing for the presence of 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: xml; gutter: false">&lt;configs&gt;
+  &lt;config name="server-config...&gt;
+    &lt;http-service&gt;
+      &lt;http-listener id="admin-listener"...&gt;
+        &lt;ssl ...&gt;</pre> 
+         </div> 
+        </div>
+       </div> <p>should be sufficient to detect a secure GlassFish 2 set-up. The <tt>&lt;ssl cert-nickname&gt;</tt> value should be used as the DAS alias for secure-admin.</p></li> 
+      <li>Run the enable-secure-admin command (which will update the Grizzly config for the DAS configuration (name = "server-config") and all other configs.) Here is where the ssl cert-nickname is used to set the adminalias value.</li> 
+     </ol> <h4><a name="3.1SecureAdminTraffic-Upgradingtheinstances"></a>Upgrading the instances</h4> <p>Upgrade must:</p> 
+     <ol> 
+      <li>Deliver the updated config (in domain.xml) to the instances.</li> 
+      <li>Deliver the updated keystore, truststore, and admin realm to the instances.</li> 
+     </ol> <p>This will happen as a result of starting the remote instances, part of which is to sync with the DAS thereby retrieving the updated domain.xml.</p> <h4><a name="3.1SecureAdminTraffic-Bug%2FRFENumber%28s%29%3A"></a>Bug/RFE Number(s):</h2> <p>Security for DAS/instance command protocol: <a href="https://github.com/javaee/glassfish/issues/12405">12405</a><br> Enable secure communication during upgrade: <a href="https://github.com/javaee/glassfish/issues/12739">12739</a></p> <h4><a name="3.1SecureAdminTraffic-InScope%3A"></a>In Scope:</h2> <h4><a name="3.1SecureAdminTraffic-OutofScope%3A"></a>Out of Scope:</h2> <h4><a name="3.1SecureAdminTraffic-Interfaces%3A"></a>Interfaces:</h2> <p>Interfaces may be commands, files, directory structure, ports,<br> DTD/Schema, tools, APIs, CLIs, etc.<br> Note: In lieu of listing the interfaces in the one pager, providing<br> a link to another specification which defines the interfaces<br> is acceptable.</p> <h4><a name="3.1SecureAdminTraffic-PublicInterfaces"></a>Public Interfaces</h3> <p>New command to enable/disable secure admin traffic.</p> <h4><a name="3.1SecureAdminTraffic-PrivateInterfaces"></a>Private Interfaces</h3> <p>This work introduces no new private interfaces that are externally observable.</p> <h4><a name="3.1SecureAdminTraffic-Deprecated%2FRemovedInterfaces%3A"></a>Deprecated/Removed Interfaces:</h3> <p>None.</p> <h4><a name="3.1SecureAdminTraffic-DocImpact%3A"></a>Doc Impact:</h2> 
+     <ul> 
+      <li>Administration Guide</li> 
+      <li>possibly Quick-start Guide?</li> 
+     </ul> <p>We will need to include instructions an administrator can follow for "tightening up" the admin security.</p> <h4><a name="3.1SecureAdminTraffic-Admin%2FConfigImpact%3A"></a>Admin/Config Impact:</h2> <p>Config to support secure admin traffic uses existing configurable items: Grizzly settings, adding admin users, etc.</p> <h4><a name="3.1SecureAdminTraffic-HAImpact%3A"></a>HA Impact:</h2> <p>Affects some of the implementation of some cluster commands:</p> 
+     <ul> 
+      <li>create-instance</li> 
+      <li>create-remote-instance</li> 
+      <li>_create-local-filesystem</li> 
+     </ul> <h4><a name="3.1SecureAdminTraffic-I18N%2FL10NImpact%3A"></a>I18N/L10N Impact:</h2> <p>No impact.</p> <h4><a name="3.1SecureAdminTraffic-Packaging%2CDelivery%26Upgrade%3A"></a>Packaging, Delivery &amp; Upgrade:</h2> <h4><a name="3.1SecureAdminTraffic-Packaging"></a>Packaging</h3> <p>No new IPS packages.</p> <h4><a name="3.1SecureAdminTraffic-Delivery"></a>Delivery</h3> <p>No impact on product installation.</p> <h4><a name="3.1SecureAdminTraffic-UpgradeandMigration%3A"></a>Upgrade and Migration:</h3> <p>See the <a href="#3.1SecureAdminTraffic-upgrade">earlier technical discussion</a> about upgrade.</p> <h4><a name="3.1SecureAdminTraffic-SecurityImpact%3A"></a>Security Impact:</h2> <p>No explicit impact on security, except for the configuration settings already described.</p> <h4><a name="3.1SecureAdminTraffic-CompatibilityImpact"></a>Compatibility Impact</h2> <p>No earlier public interfaces changed.</p> <h4><a name="3.1SecureAdminTraffic-Dependencies%3A"></a>Dependencies:</h2> <h4><a name="3.1SecureAdminTraffic-InternalDependencies"></a>Internal Dependencies</h3> 
+     <ul> 
+      <li>Grizzly - support for port unification, redirection, SSL/TLS</li> 
+     </ul> <h4><a name="3.1SecureAdminTraffic-ExternalDependencies"></a>External Dependencies</h3> <p>None</p> <h4><a name="3.1SecureAdminTraffic-TestingImpact%3A"></a>Testing Impact:</h2> <p>Existing tests that exercise remote instance and cluster operations can be used to exercise this feature. We can enable secure admin traffic and then run those same tests. The results should not vary.</p> <p>Additional tests would be valuable to make sure forbidden connections (e.g., remote admin client -&gt; instance) are prevented.</p> <h4><a name="3.1SecureAdminTraffic-ReferenceDocuments%3A"></a>Reference Documents:</h1> <h4><a name="3.1SecureAdminTraffic-Schedule%3A"></a>Schedule:</h1> <h4><a name="3.1SecureAdminTraffic-ProjectedAvailability%3A"></a>Projected Availability:</h2> 
+     <ul> 
+      <li>Initially integrated (may not be feature complete): 3.1 M 4</li> 
+      <li>Feature complete (ready for handoff to QA) Ideally 3.1 M 4</li> 
+      <li>At production quality level 3.1 M 5</li> 
+     </ul> 
+     <hr> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874228/21365452.pdf">AdminTrafficSecurity-asarch-2010-aug-11.pdf</a> (application/pdf) 
+      <br> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Dec 15, 2010 by 
+<font color="#0050B2">timq</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

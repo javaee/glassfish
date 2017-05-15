@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : 3.1SSHWindows</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="3.1SSHWindows-Introduction"></a>Introduction</h3> <p>GlassFish 3.1 requires SSH to support some instance lifecycle operations such as:</p> 
+     <ul> 
+      <li>Creating/deleting an instance on a remote system (create-instance/delete-instance)</li> 
+      <li>Starting an instance on a remote system (start-instance)</li> 
+      <li>Starting a cluster that contains instances on remote systems (start-cluster)</li> 
+     </ul> <p>This works fine for Unix systems where SSH services are common and familiar. But on Windows you need to install a third party SSH provider.</p> <p>If you choose not to set your Windows boxes up with SSH you can still use GlassFish clustering. But in this case you will need to create/delete instances by running create-local-instance/delete-local-instance directly on the instance system and start them by running start-local-instance directly on the instance system (or via GlassFish's native service support).</p> <p>If you choose to set your Windows boxes up with SSH, then continue reading!</p> <h4><a name="3.1SSHWindows-ChoosinganSSHprovider"></a>Choosing an SSH provider</h3> <p>GlassFish 3.1 has been tested with two SSH providers. One is commercial, and the other is freely available. The choices:</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">SSH Provider</th> 
+         <th class="confluenceTh">Version Tested</th> 
+         <th class="confluenceTh"> Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://www.mkssoftware.com/">MKS Toolkit </a></td> 
+         <td class="confluenceTd"> 9.2 </td> 
+         <td class="confluenceTd"> Commercial </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://www.cygwin.com/">Cygwin</a> </td> 
+         <td class="confluenceTd"> 1.7.6 </td> 
+         <td class="confluenceTd"> Freely available. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="3.1SSHWindows-InstallingtheSSHprovider"></a>Installing the SSH provider</h3> <p>You need to install the SSH provider on all systems that will be hosting GlassFish instances, including the system that will be running the GlassFish Domain Admin Server (DAS). The DAS system will be acting as an SSH client, and therefore does not need sshd running, but the instance systems must have sshd running (strictly speaking the DAS system does not need the SSH provider installed on it – but practically speaking it makes things much easier to manage if it does).</p> <h5><a name="3.1SSHWindows-MKSToolkit"></a>MKS Toolkit</h5> <p>Go to <a href="http://www.mkssoftware.com/">MKS Toolkit </a>, acquire the software and follow their instructions.</p> <h5><a name="3.1SSHWindows-Cygwin"></a>Cygwin</h5> <p>TBD. <a href="3.1SSH - Installing Windows Cygwin sshd.html" title="3.1SSH - Installing Windows Cygwin sshd">Some information here</a>. <a href="./GlassFishProvisioning.html">See example use-case</a></p> <h4><a name="3.1SSHWindows-UserAccountsandHomeDirectories"></a>User Accounts and Home Directories</h3> <h4><a name="3.1SSHWindows-ConfiguringtheSSHprovider"></a>Configuring the SSH provider</h3> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Oct 21, 2010 by 
+<font color="#0050B2">nazrul_islam</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

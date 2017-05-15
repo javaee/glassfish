@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : Connectors_AMX_to_HiddenCli_Conversion_table</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>This page lists the AMX APIs exposed by connector-runtime to GUI and its equivalent hidden CLI command.<br> AMX : <a href="https://svn.java.net/svn/glassfish-svn/trunk/v3/common/amx-core/src/main/java/org/glassfish/admin/amx/base/ConnectorRuntimeAPIProvider.java">org.glassfish.admin.amx.base.ConnectorRuntimeAPIProvider</a></p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item #</th> 
+         <th class="confluenceTh"> AMX API </th> 
+         <th class="confluenceTh"> CLI equivalent</th> 
+         <th class="confluenceTh"> Sample </th> 
+         <th class="confluenceTh"> Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> java.util.Map getConnectionDefinitionPropertiesAndDefaults(java.lang.String, java.lang.String); </td> 
+         <td class="confluenceTd"> ~UWC_TOKEN_START~1278095716635~UWC_TOKEN_END| 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">asadmin _get-connection-definition-properties-and-defaults 
+--restype javax.sql.DataSource --connectionDefinitionClass org.apache.derby.jdbc.ClientDataSource
+
+ConnectionAttributes=null
+CreateDatabase=null
+DataSourceName=null
+DatabaseName=null
+Description=null
+LoginTimeout=0
+Password=null
+PortNumber=1527
+RetrieveMessageText=true
+SecurityMechanism=4
+ServerName=localhost
+ShutdownDatabase=null
+Ssl=off
+TraceDirectory=null
+TraceFile=null
+TraceFileAppend=false
+TraceLevel=-1
+User=APP
+
+Command _get-connection-definition-properties-and-defaults executed successfully.</pre> 
+            </div> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd"> *Note :* property and its default value is provided as a name value pair separated by 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">"="</pre> 
+            </div> 
+           </div>
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd"> java.util.Map getBuiltInCustomResources(); </td> 
+         <td class="confluenceTd"> 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">_get-built-in-custom-resources</pre> 
+            </div> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd"> ~UWC_TOKEN_START~1278095716639~UWC_TOKEN_END|*Note :* Output provided as a name value pair separated by 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">"="</pre> 
+            </div> 
+           </div>
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3 </td> 
+         <td class="confluenceTd"> java.util.Map getSystemConnectorsAllowingPoolCreation(); </td> 
+         <td class="confluenceTd"> 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">_get-system-rars-allowing-pool-creation</pre> 
+            </div> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd"> 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">asadmin _get-system-rars-allowing-pool-creation
+jmsra
+jaxr-ra
+
+Command _get-system-rars-allowing-pool-creation executed successfully.</pre> 
+            </div> 
+           </div>
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4 </td> 
+         <td class="confluenceTd"> java.util.Map getConnectionDefinitionNames(java.lang.String); </td> 
+         <td class="confluenceTd">~UWC_TOKEN_START~1278095716643~UWC_TOKEN_END|
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">asadmin _get-connection-definition-names --rarName jmsra
+javax.jms.ConnectionFactory
+javax.jms.QueueConnectionFactory
+javax.jms.TopicConnectionFactory
+
+Command _get-connection-definition-names executed successfully.</pre> 
+            </div> 
+           </div>
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5 </td> 
+         <td class="confluenceTd"> java.util.Map getMCFConfigProps(java.lang.String, java.lang.String); </td> 
+         <td class="confluenceTd">~UWC_TOKEN_START~1278095716645~UWC_TOKEN_END| ~UWC_TOKEN_START~1278095716646~UWC_TOKEN_END|*Note :* Output provided as a name value pair separated by 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">"="</pre> 
+            </div> 
+           </div>
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6 </td> 
+         <td class="confluenceTd"> java.util.Map getAdminObjectInterfaceNames(java.lang.String); </td> 
+         <td class="confluenceTd">~UWC_TOKEN_START~1278095716648~UWC_TOKEN_END|
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">asadmin _get-admin-object-interface-names --rarName jmsra
+javax.jms.Queue
+javax.jms.Topic
+
+Command _get-admin-object-interface-names executed successfully.</pre> 
+            </div> 
+           </div>
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 7 </td> 
+         <td class="confluenceTd"> java.util.Map getAdminObjectClassNames(java.lang.String, java.lang.String); </td> 
+         <td class="confluenceTd">~UWC_TOKEN_START~1278095716650~UWC_TOKEN_END|
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">asadmin _get-admin-object-class-names
+ --rarname jmsra --adminObjectInterface javax.jms.Topic
+
+com.sun.messaging.Topic
+
+Command _get-admin-object-class-names executed successfully.</pre> 
+            </div> 
+           </div>
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 8 </td> 
+         <td class="confluenceTd"> java.util.Map getResourceAdapterConfigProps(java.lang.String); </td> 
+         <td class="confluenceTd">~UWC_TOKEN_START~1278095716652~UWC_TOKEN_END|~UWC_TOKEN_START~1278095716653~UWC_TOKEN_END|*Note :* Output provided as a name value pair separated by 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">"="</pre> 
+            </div> 
+           </div>
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 9 </td> 
+         <td class="confluenceTd"> java.util.Map getAdminObjectConfigProps(java.lang.String, java.lang.String); </td> 
+         <td class="confluenceTd">~UWC_TOKEN_START~1278095716655~UWC_TOKEN_END|~UWC_TOKEN_START~1278095716656~UWC_TOKEN_END|*Note :* Output provided as a name value pair separated by 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">"="</pre> 
+            </div> 
+           </div>
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 10 </td> 
+         <td class="confluenceTd"> java.util.Map getAdminObjectConfigProps(java.lang.String, java.lang.String, java.lang.String); </td> 
+         <td class="confluenceTd">~UWC_TOKEN_START~1278095716658~UWC_TOKEN_END|~UWC_TOKEN_START~1278095716659~UWC_TOKEN_END|*Note :* Output provided as a name value pair separated by 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">"="</pre> 
+            </div> 
+           </div>
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 11 </td> 
+         <td class="confluenceTd"> java.util.Map getConnectorConfigJavaBeans(java.lang.String, java.lang.String, java.lang.String); </td> 
+         <td class="confluenceTd">~UWC_TOKEN_START~1278095716661~UWC_TOKEN_END| ~UWC_TOKEN_START~1278095716662~UWC_TOKEN_END|*Note :* Output provided as a name value pair separated by 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">"="</pre> 
+            </div> 
+           </div>
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 12 </td> 
+         <td class="confluenceTd"> java.util.Map getActivationSpecClass(java.lang.String, java.lang.String); </td> 
+         <td class="confluenceTd">~UWC_TOKEN_START~1278095716664~UWC_TOKEN_END|
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">asadmin _get-activation-spec-class --rarname jmsra --messageListenerType javax.jms.MessageListener
+com.sun.messaging.jms.ra.ActivationSpec
+
+Command _get-activation-spec-class executed successfully.</pre> 
+            </div> 
+           </div>
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 13 </td> 
+         <td class="confluenceTd"> java.util.Map getMessageListenerTypes(java.lang.String); </td> 
+         <td class="confluenceTd">~UWC_TOKEN_START~1278095716666~UWC_TOKEN_END|
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">asadmin _get-message-listener-types  --rarName jmsra
+javax.jms.MessageListener
+
+Command _get-message-listener-types executed successfully.</pre> 
+            </div> 
+           </div>
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 14 </td> 
+         <td class="confluenceTd"> java.util.Map getMessageListenerConfigProps(java.lang.String, java.lang.String); </td> 
+         <td class="confluenceTd">~UWC_TOKEN_START~1278095716668~UWC_TOKEN_END|~UWC_TOKEN_START~1278095716669~UWC_TOKEN_END|*Note :* Output provided as a name value pair separated by 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">"="</pre> 
+            </div> 
+           </div>
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 15 </td> 
+         <td class="confluenceTd"> java.util.Map getMessageListenerConfigPropTypes(java.lang.String, java.lang.String); </td> 
+         <td class="confluenceTd">~UWC_TOKEN_START~1278095716671~UWC_TOKEN_END|~UWC_TOKEN_START~1278095716672~UWC_TOKEN_END|*Note :* Output provided as a name value pair separated by 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">"="</pre> 
+            </div> 
+           </div>
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 16 </td> 
+         <td class="confluenceTd"> java.util.Map getValidationTableNames(java.lang.String); </td> 
+         <td class="confluenceTd">~UWC_TOKEN_START~1278095716674~UWC_TOKEN_END|
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">asadmin _get-validation-table-names --poolName DerbyPool
+SYSALIASES
+SYSCHECKS
+SYSCOLPERMS
+SYSCOLUMNS
+SYSCONGLOMERATES
+SYSCONSTRAINTS
+SYSDEPENDS
+SYSDUMMY1
+SYSFILES
+SYSFOREIGNKEYS
+SYSKEYS
+SYSROLES
+SYSROUTINEPERMS
+SYSSCHEMAS
+SYSSTATEMENTS
+SYSSTATISTICS
+SYSTABLEPERMS
+SYSTABLES
+SYSTRIGGERS
+SYSVIEWS
+
+Command _get-validation-table-names executed successfully.</pre> 
+            </div> 
+           </div>
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 17 </td> 
+         <td class="confluenceTd"> java.util.Map getJdbcDriverClassNames(java.lang.String, java.lang.String); </td> 
+         <td class="confluenceTd">~UWC_TOKEN_START~1278095716676~UWC_TOKEN_END|
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">asadmin _get-jdbc-driver-class-names  --introspect=false 
+--restype javax.sql.DataSource --dbVendor DERBY
+
+org.apache.derby.jdbc.ClientDataSource40
+
+Command _get-jdbc-driver-class-names executed successfully.</pre> 
+            </div> 
+           </div>
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 18 </td> 
+         <td class="confluenceTd"> java.util.Map getJdbcDriverClassNames(java.lang.String, java.lang.String, boolean); </td> 
+         <td class="confluenceTd">~UWC_TOKEN_START~1278095716678~UWC_TOKEN_END| 
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">asadmin _get-jdbc-driver-class-names  --introspect=true 
+--restype javax.sql.DataSource --dbVendor DERBY
+
+org.apache.derby.jdbc.ClientConnectionPoolDataSource
+org.apache.derby.jdbc.ClientConnectionPoolDataSource40
+org.apache.derby.jdbc.ClientDataSource
+org.apache.derby.jdbc.ClientDataSource40
+org.apache.derby.jdbc.ClientXADataSource
+org.apache.derby.jdbc.ClientXADataSource40
+org.apache.derby.jdbc.EmbeddedConnectionPoolDataSource
+org.apache.derby.jdbc.EmbeddedConnectionPoolDataSource40
+org.apache.derby.jdbc.EmbeddedDataSource
+org.apache.derby.jdbc.EmbeddedDataSource40
+org.apache.derby.jdbc.EmbeddedSimpleDataSource
+org.apache.derby.jdbc.EmbeddedXADataSource
+org.apache.derby.jdbc.EmbeddedXADataSource40
+
+Command _get-jdbc-driver-class-names executed successfully.</pre> 
+            </div> 
+           </div>
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 19 </td> 
+         <td class="confluenceTd"> java.util.Map getValidationClassNames(java.lang.String); </td> 
+         <td class="confluenceTd">~UWC_TOKEN_START~1278095716680~UWC_TOKEN_END|
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">asadmin _get-validation-class-names --dbVendor Derby
+org.glassfish.api.jdbc.validation.DerbyConnectionValidation
+
+Command _get-validation-class-names executed successfully.</pre> 
+            </div> 
+           </div>
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 20 </td> 
+         <td class="confluenceTd"> java.util.Map getDatabaseVendorNames(); </td> 
+         <td class="confluenceTd">~UWC_TOKEN_START~1278095716682~UWC_TOKEN_END|
+          <div class="code panel" style="border-width: 1px;">
+           <div class="codeContent panelContent"> 
+            <div id="root"> 
+             <pre class="theme: Confluence; brush: java; gutter: false">asadmin _get-database-vendor-names 
+Cloudscape
+DB2
+Derby
+Derby-30
+Embedded-Derby
+Embedded-Derby-30
+Informix
+JavaDB
+JavaDB-30
+MicrosoftSqlServer
+MySql
+Oracle
+Pointbase
+Postgresql
+Sun-DB2
+Sun-Oracle
+Sun-SqlServer
+Sun-Sybase
+Sybase
+
+Command _get-database-vendor-names executed successfully.</pre> 
+            </div> 
+           </div>
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 21 </td> 
+         <td class="confluenceTd"> java.util.Map flushConnectionPool(java.lang.String); </td> 
+         <td class="confluenceTd">~UWC_TOKEN_START~1278095716684~UWC_TOKEN_END|~UWC_TOKEN_START~1278095716685~UWC_TOKEN_END|*Note :* Existing public command is used </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 22 </td> 
+         <td class="confluenceTd"> java.util.Map pingJDBCConnectionPool(java.lang.String); </td> 
+         <td class="confluenceTd">~UWC_TOKEN_START~1278095716686~UWC_TOKEN_END|~UWC_TOKEN_START~1278095716687~UWC_TOKEN_END|*Note :* Existing public command is used </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 02, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:43.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

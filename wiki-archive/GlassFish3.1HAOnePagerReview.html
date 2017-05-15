@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFish3.1HAOnePagerReview</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GlassFish3.1HAOnePagerReview-Document%3AGlassFis1HAOnePager"></a>Document: <a href="GlassFish3.1HAOnePager.html" title="GlassFish3.1HAOnePager">GlassFish3.1HAOnePager</a></h3> <h4><a name="GlassFish3.1HAOnePagerReview-Reviewer%3ARobertoChinnici"></a>Reviewer: Roberto Chinnici</h3> <h4><a name="GlassFish3.1HAOnePagerReview-Reviewdate%3AJune02%2C2010"></a>Review date: June 02, 2010</h3> <h4><a name="GlassFish3.1HAOnePagerReview-Responsedate%3A"></a>Response date: </h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item </th> 
+         <th class="confluenceTh"> Section </th> 
+         <th class="confluenceTh"> Comment </th> 
+         <th class="confluenceTh"> Response </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> RC-1 </td> 
+         <td class="confluenceTd"> 4.1.2 </td> 
+         <td class="confluenceTd"> Please describe the algorithm used by the ReplicaSelector and explain how it achieves consistency. What happens if an instance goes down after the ReplicaSelector in another instance has indicated the first instance as the one to replicate to? And what happens when/if that instance comes back? </td> 
+         <td class="confluenceTd"> Lets say that the replica selector picks inst2 as the replica (because at that time it thinks that inst2 is alive). The save method will attempt to save to inst2 only. If inst2 is down then save will fail. This is how we did it in sailfin days. When inst2 comes back then the next save will pick inst2 as the replica. Note that the replica selector relies on GMS for determining whether an instance is 'alive' or 'dead'. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> RC-2 </td> 
+         <td class="confluenceTd"> 4.1.2 </td> 
+         <td class="confluenceTd"> For completeness, this section should list the supported attribute types (String, long, what else?) </td> 
+         <td class="confluenceTd"> Addressed in the doc </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> RC-3 </td> 
+         <td class="confluenceTd"> 4.1.4 </td> 
+         <td class="confluenceTd"> In a cluster, when a new instance is added, how can it call BackingStoreFactory.createBackingStore before any operations in the other instances happen, given that those instances may have been up and running for some time? </td> 
+         <td class="confluenceTd"> Agreed. Removed this from the doc. Lets say that instances inst1 and inst2 are alive and have replicated some data. Now when instance inst3 comes up, the implementation must ensure that no data is replicated to inst3 until it is in some 'operational' state. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> RC-4 </td> 
+         <td class="confluenceTd"> 4.5 </td> 
+         <td class="confluenceTd"> Looking at the BackingStore API, it's not clear how instances of a value type V will be created. For example, if a container calls save(k, v, true), meaning the key/value pair is new, where does v come from? And how does V_Sub come into the picture in this case? </td> 
+         <td class="confluenceTd"> The third param in save(k, v, true) is actually a hint to the store that the k and V are persisted for the first time. This allows, say,a database based store to perform 'insert' sql operation as opposed to 'update' operation. I will update the javadoc with this. Removing the V_Sub from the javadoc </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> RC-5 </td> 
+         <td class="confluenceTd"> 4.1.2-4.5 </td> 
+         <td class="confluenceTd"> What are the constraints on the key type for a BackingStore? And for a ReplicaSelector? If e.g. the key has to be serializable, this should be indicated in the BackingStore type signature, e.g. class BackingStore&lt;K extends Serializable, V&gt;. More generally, I wonder if we shouldn't clean up the BackingStore interface. </td> 
+         <td class="confluenceTd"> Agreed. modified the signature of the class to say K extends Serializable and V extends Serializable. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> AK-1 </td> 
+         <td class="confluenceTd"> 4.13 </td> 
+         <td class="confluenceTd"> When is GMS broadcast used in 3.1 in-memory replication ? </td> 
+         <td class="confluenceTd"> In V2.x we used broadcast in two cases. (a) when store.remove is called to remove any stale data and (b) when a request is directed to a new instance after a failure and if the data for key K was not found in that instance. In V3, we may do this only for remove calls </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> shannon-01 </td> 
+         <td class="confluenceTd"> 4.10.2 </td> 
+         <td class="confluenceTd"> I don't understand what's in shoal-replication.jar vs. shoal-replication-adapter.jar? Why are both needed? </td> 
+         <td class="confluenceTd"> Agreed. We need only one jar. This jar will live in shoal project but will have dependency on ha-api which is in glassfish repository </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> shannon-02 </td> 
+         <td class="confluenceTd"> 4.12.2 </td> 
+         <td class="confluenceTd"> Note that there is no DTD for domain.xml anymore. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> shannon-03 </td> 
+         <td class="confluenceTd"> 4.12.3 </td> 
+         <td class="confluenceTd"> I'd like to see a more complete spec for how all the HA-related elements from a v2 domain.xml will be handled by 3.1. What will be mapped to what? What will be ignored? Note that items you intend to ignore still have to be accepted. </td> 
+         <td class="confluenceTd"> The current plan is to retain the same V2 availability-service element. the &lt;availability-service&gt; element contains a few HADB related attributes, which will not be used by V3. The plan is to mark those attributes with @Deprecated </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

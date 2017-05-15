@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFishV2IPSPackages</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GlassFishV2IPSPackages-OpenSolarisIPSPackagesforGlassFishV2%3A"></a>OpenSolaris IPS Packages for GlassFish V2:</h2> <h4><a name="GlassFishV2IPSPackages-Introduction%3A"></a>Introduction:</h3> <p>This document briefly describes about OpenSolaris Image Packaging System (IPS), a new generation of packaging system that will be used for the OpenSolaris Binary Distribution (project Indiana) and how to create GlassFish V2 IPS packages.</p> <p>OpenSolaris project: <a href="http://opensolaris.org/os/">http://opensolaris.org/os/</a> is the an open source community around OpenSolaris technology. <br> IPS stands for image packaging system. Also known as pkg(5), the image packaging system, is an attempt to design and implement a software delivery system with interaction with a network repository as its primary design goal. Other key ideas are: safe execution for <a href="http://opensolaris.org/os/community/zones">zones</a> and other installation contexts, use of <a href="http://opensolaris.org/os/community/zfs">ZFS</a> for efficiency and rollback, preventing the introduction of incorrect or incomplete packages, and efficient use of bandwidth.</p> <p>GlassFish V2 product has platform specific native packages to deliver in JES 5 U1 IFR. SVR4 packages are created for Solaris platform. Currently we publish SVR4 packages into IPS network repository, so users can install it using pkg retrieval client.</p> <h4><a name="GlassFishV2IPSPackages-Details%3A"></a>Details:</h3> <p>Here are the detailed steps for trying out the IPS repository and packages for GlassFish V2</p> 
+     <ol> 
+      <li><a href="./GlassFishV2IPSPackages#start.html">Start an IPS repository</a></li> 
+      <li><a href="./GlassFishV2IPSPackages#publish.html">Publish packages to that repository</a></li> 
+      <li><a href="./GlassFishV2IPSPackages#install.html">Install packages from that repository</a></li> 
+      <li><a href="./GlassFishV2IPSPackages#update.html">Publish an update to the repository</a></li> 
+      <li><a href="./GlassFishV2IPSPackages#uninstall.html">Uninstall IPS packages</a></li> 
+     </ol> <h4><a name="GlassFishV2IPSPackages-Prerequisite%3A"></a>Pre-requisite:</h3> <p>You will need the following IPS Tools:</p> <p>pkg.depotd: The IPS package repository server (This utility is located on opensolaris at /usr/lib/pkg.depotd)</p> <p>pkg: The command used by users to install/update/inventory packages</p> <p>pkgsend: The command used by package developers to publish packages to the IPS repository (pkg.depotd)</p> <p>You can install OpenSolaris, Indiana distribution on your solaris platform. If you install opensolaris, you have all the required files to try out IPS steps above. If you want to try out on your existing system, you must have access to an IPS build for your platform. You can get a demo IPS build from: <a href="http://wiki.updatecenter.java.net/Wiki.jsp?page=MultiPlatformIPSPrototype">http://wiki.updatecenter.java.net/Wiki.jsp?page=MultiPlatformIPSPrototype</a></p> <p>These steps should work on any system that has the IPS tools installed. It has been tested on Solaris 10u4 (sparc/x86), Ubuntu 7.04, Windows 2000<br> and Windows XP. Python 2.4 is required to run IPS.</p> <h4><a name="GlassFishV2IPSPackages-Start%3Caname%3D%22start%22%3EIPS%3C%2Fa%3ERepository"></a>Start &lt;a name="start"&gt;IPS&lt;/a&gt; Repository</h3> <p>The IPS repository stores IPS packages and makes them available to clients for installation. Before performing this demo you must start the<br> IPS repository and load it with packages.</p> 
+     <ol> 
+      <li>Decide where you want the repository data to live. In this example: we use /export/IPS/repo.</li> 
+      <li>Start pkg.depotd (you may be any user):</li> 
+     </ol> <p> $ PKG_REPO=/export/IPS/repo</p> <p> $ pkg.depotd</p> <p>By default pkg.depotd listens on port 10000. At this point the repository server is up and running and ready to accept packages.</p> <h4><a name="GlassFishV2IPSPackages-Publish%3Caname%3D%22publish%22%3EPackages%3C%2Fa%3E"></a>Publish &lt;a name="publish"&gt;Packages &lt;/a&gt;</h3> <p>After the repository is up and running you need to publish IPS packages to the repository. This is performed by executing pkgsend commands to<br> upload files to the repository.</p> <p>For publishing GlassFish V2 UR1 packages, following commands are run from the produced SVR4 packages:</p> <p>$ pkgsend -s <a href="http://localhost:10000">http://localhost:10000</a> send SUNWasu</p> <p>$ pkgsend -s <a href="http://localhost:10000">http://localhost:10000</a> send SUNWasac</p> <p>After the packages are published you can point your browser at the repository and browser it's contents by pointing your browser at:</p> <p> <a href="http://hostname:10000">http://hostname:10000</a></p> <p>To test GlassFish V2, we have published following JDK6, JavaDB, MQ and GlassFish V2 SVR 4 packages into IPS repository.</p> <h4><a name="GlassFishV2IPSPackages-Install%3Caname%3D%22install%22%3EPackages%3C%2Fa%3E"></a>Install &lt;a name="install"&gt;Packages&lt;/a&gt;</h3> <p>Once the repository is up and running you can install packages on a client. First you need to create an "image" for the packages to install into:</p> 
+     <ul> 
+      <li>For opensolaris, you may not need to create a image. But for other OSs, create the user image to install the packages into:</li> 
+     </ul> <p> $ pkg image-create -U -a sun.com=<a href="http://localhost:10000">http://localhost:10000</a> $HOME/glassfish</p> <p> Replace "localhost" with the name of the system you are running pkg.depotd on. If you are doing all this on the same system then you can leave it as "localhost". The "-a" option is what ties the image to the repository that should be used for subsequent pkg commands.</p> 
+     <ul> 
+      <li>Go into the user image you just created and do an inventory of what is available in the repository:</li> 
+     </ul> <p> $ cd $HOME/glassfish</p> <p> $ pkg status -a |grep SUNWas</p> <p> FMRI STATE UFIX</p> <p> pkg://glassfishv2/SUNWasac@0-1 known ----</p> <p> pkg://glassfishv2/SUNWasac@0-1 known ----</p> <p> pkg://glassfishv2/SUNWascmn@0-1 known ----</p> <p> . . .</p> <p>Note that you just need to 'cd' into the user image and all subsequent pkg commands will operate on the image you are in.</p> 
+     <ul> 
+      <li>Install GlassFish V2 packages one-by-one</li> 
+     </ul> <p>$ pkg install pkg://glassfishv2/SUNWasac</p> <p>DOWNLOAD PKGS FILES XFER (MB)</p> <p>Completed 1/1 7/7 4.11/4.11</p> <p>PHASE ACTIONS</p> <p>Install Phase 15/15</p> 
+     <ul> 
+      <li>Show status of packages now that they are installed</li> 
+     </ul> <p>$ pkg status -a |grep SUNWas</p> <p>FMRI STATE UFIX</p> <p>pkg://glassfishv2/SUNWasac@0-1 installed ----</p> <p> . . .</p> <p>Note the STATE is now installed.</p> <h4><a name="GlassFishV2IPSPackages-Update%3Caname%3D%22update%22%3EIPS%3C%2Fa%3EPackage"></a>Update &lt;a name="update"&gt;IPS&lt;/a&gt; Package</h3> <p>You have new updated files in the package, so you can create the package, and publish it again in IPS repository using "pkgsend" command.</p> <p>Once you publish it, lets see if update is available.</p> <p> Back in the install image:</p> <p> $ pkg refresh</p> <p> $ pkg status -a</p> <p> FMRI STATE UFIX</p> <p>pkg://glassfishv2/SUNWasac@0-2 known ----</p> <p>pkg://glassfishv2/SUNWasac@0-1 installed u---</p> <p>. . .</p> <p>Note that you have version 0-1 installed in your image, and it is upgradable to 0-2</p> <p>Now let's install updated package.</p> <p>$ pkg install pkg://glassfishv2/SUNWasac</p> <p>Note this returns almost immediately since only the one file is downloaded from the repository (not the entire package).</p> <p>Show update is now installed</p> <p> $ pkg status -a</p> <p> FMRI STATE UFIX</p> <p>pkg://glassfishv2/SUNWasac@0-1 known u---</p> <p>pkg://glassfishv2/SUNWasac@0-2 installed ----</p> <p> . . .</p> <h4><a name="GlassFishV2IPSPackages-Uninstall%3Caname%3D%22uninstall%22%3EIPS%3C%2Fa%3EPackage"></a>Uninstall &lt;a name="uninstall"&gt;IPS &lt;/a&gt; Package</h3> <p>You can uninstall IPS packages using following uninstall command:</p> <p>$ pkg uninstall SUNWasac</p> <p>PHASE ACTIONS</p> <p>Removal Phase 15/15</p> <h4><a name="GlassFishV2IPSPackages-ResettingtheRepository"></a>Re-setting the Repository</h3> <p>To repeat the steps from scratch you may want to reset the repository:</p> 
+     <ol> 
+      <li>Stop pkg.depotd (^C if you ran it in the foreground).</li> 
+      <li>Remove the repository directory:</li> 
+     </ol> <p> $ rm -rf $PKG_REPO</p> <p>You can now restart pkg.depotd and run the whole process again.</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 09, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:44.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

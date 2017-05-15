@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GettingStartedGuideJa</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GettingStartedGuideJa-JRubyonGlassFish%3Csup%3ETM%3C%2Fsup%3E%E3%82%A2%E3%83%97%E3%83%AA%E3%82%B1%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%82%92%E4%BD%BF%E3%81%A3%E3%81%A6%E3%81%BF%E3%82%88%E3%81%86"></a>JRuby on GlassFish&lt;sup&gt;TM&lt;/sup&gt; アプリケーションを使ってみよう</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#GettingStartedGuideJa-JRubyonGlassFish%3Csup%3ETM%3C%2Fsup%3E%E3%82%A2%E3%83%97%E3%83%AA%E3%82%B1%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%82%92%E4%BD%BF%E3%81%A3%E3%81%A6%E3%81%BF%E3%82%88%E3%81%86">JRuby on GlassFish&lt;sup&gt;TM&lt;/sup&gt; アプリケーションを使ってみよう</a></li> 
+       <ul> 
+        <li><a href="#GettingStartedGuideJa-%E3%81%AF%E3%81%98%E3%82%81%E3%81%AB">はじめに</a></li> 
+        <li><a href="#GettingStartedGuideJa-JRuby%E3%81%A8Rails%E3%81%AE%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB">JRuby と Rails のインストール</a></li> 
+        <li><a href="#GettingStartedGuideJa-HelloWorld%E3%82%A2%E3%83%97%E3%83%AA%E3%82%B1%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%81%AE%E4%BD%9C%E6%88%90">Hello World アプリケーションの作成</a></li> 
+        <ul> 
+         <li><a href="#GettingStartedGuideJa-%E3%81%BE%E3%81%9A%E3%80%81%E4%BB%A5%E4%B8%8B%E3%81%AE%E3%82%B3%E3%83%9E%E3%83%B3%E3%83%89%E3%82%92%E5%AE%9F%E8%A1%8C%E3%81%97%E3%81%A6%E3%82%A2%E3%83%97%E3%83%AA%E3%82%B1%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%81%AE%E9%9B%9B%E5%BD%A2%E3%82%92%E4%BD%9C%E6%88%90%E3%81%97%E3%81%BE%E3%81%97%E3%82%87%E3%81%86%EF%BC%9A">まず、 以下のコマンドを実行してアプリケーションの雛形を作成しましょう：</a></li> 
+         <li><a href="#GettingStartedGuideJa-%E6%AC%A1%E3%81%AB%E3%80%81%E4%BB%A5%E4%B8%8B%E3%81%AE%E6%89%8B%E9%A0%86%E3%81%AB%E5%BE%93%E3%81%A3%E3%81%A6%E3%82%B3%E3%83%B3%E3%83%88%E3%83%AD%E3%83%BC%E3%83%A9%E3%81%A8%E3%83%93%E3%83%A5%E3%83%BC%E3%82%92%E4%BD%9C%E6%88%90%E3%81%97%E3%81%BE%E3%81%99%EF%BC%9A">次に、% 以下の手順に従ってコントローラとビューを作成します：</a></li> 
+         <li><a href="#GettingStartedGuideJa-%E4%BB%A5%E4%B8%8B%E3%81%AE%E6%89%8B%E9%A0%86%E3%81%AB%E5%BE%93%E3%81%A3%E3%81%A6%E3%80%81%E3%82%B3%E3%83%B3%E3%83%88%E3%83%AD%E3%83%BC%E3%83%A9%E3%81%AB%E5%A4%89%E6%95%B0%E3%82%92%E8%BF%BD%E5%8A%A0%E3%81%97%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84%EF%BC%9A">以下の手順に従って、B コントローラに変数を追加してください：</a></li> 
+         <li><a href="#GettingStartedGuideJa-%E4%BB%A5%E4%B8%8B%E3%81%AE%E6%89%8B%E9%A0%86%E3%81%AB%E5%BE%93%E3%81%A3%E3%81%A6@hellostring%E3%81%AE%E5%80%A4%E3%82%92%E8%AA%AD%E3%81%BF%E5%87%BA%E3%81%97%E3%81%BE%E3%81%97%E3%82%87%E3%81%86%EF%BC%9A">以下の手順に従って @hello_string の値を読み出しましょう：</a></li> 
+         <li><a href="#GettingStartedGuideJa-Rails2.1.0%E3%81%AE%E5%A0%B4%E5%90%88%E3%81%AF%E3%83%87%E3%83%BC%E3%82%BF%E3%83%99%E3%83%BC%E3%82%B9%E3%82%92%E8%A8%AD%E5%AE%9A">Rails 2.1.0 の場合はデータベースを設定</a></li> 
+        </ul> 
+        <li><a href="#GettingStartedGuideJa-GlassFishgem%E3%82%92%E7%94%A8%E3%81%84%E3%81%9FRails%E3%82%A2%E3%83%97%E3%83%AA%E3%82%B1%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%81%AE%E9%85%8D%E5%82%99%E3%81%A8%E5%AE%9F%E8%A1%8CGlassFishgem%E3%82%92%E7%94%A8%E3%81%84%E3%81%9FRails%E3%82%A2%E3%83%97%E3%83%AA%E3%82%B1%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%81%AE%E9%85%8D%E5%82%99%E3%81%A8%E5%AE%9F%E8%A1%8C"> <span class="error">[GlassFish gem を用いた Rails アプリケーションの配備と実行]</span></a></li> 
+        <li><a href="#GettingStartedGuideJa-GlassFishv3%E4%B8%8A%E3%81%B8%E3%81%AERails%E3%82%A2%E3%83%97%E3%83%AA%E3%82%B1%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%81%AE%E9%85%8D%E5%82%99%E3%81%A8%E5%AE%9F%E8%A1%8CGlassFishv3%E4%B8%8A%E3%81%B8%E3%81%AERails%E3%82%A2%E3%83%97%E3%83%AA%E3%82%B1%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%81%AE%E9%85%8D%E5%82%99%E3%81%A8%E5%AE%9F%E8%A1%8C"> <span class="error">[GlassFish v3 上への Rails アプリケーションの配備と実行]</span></a></li> 
+        <li><a href="#GettingStartedGuideJa-GlassFishv2%E4%B8%8A%E3%81%B8%E3%81%AERails%E3%82%A2%E3%83%97%E3%83%AA%E3%82%B1%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%81%AE%E9%85%8D%E5%82%99%E3%81%A8%E5%AE%9F%E8%A1%8C"> <span class="nobr">GlassFish v2 上への Rails アプリケーションの配備と実行 <sup><img border="0" alt="" align="absmiddle" width="7" height="7" src="images/icons/linkext7.gif" class="rendericon"></sup></span></a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="GettingStartedGuideJa-%E3%81%AF%E3%81%98%E3%82%81%E3%81%AB"></a>はじめに</h2> <p>GlassFish は、 JRuby on Rails アプリケーションの配備に非常に適したアプリケーションサーバです。このガイドでは JRuby を用いた簡単な Rails アプリケーションの作成方法、そしてそれを GlassFish アプリケーションサーバに配備する手順を学びます。</p> <h4><a name="GettingStartedGuideJa-JRuby%E3%81%A8Rails%E3%81%AE%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB"></a>JRuby と Rails のインストール</h2> <p>JRuby on Rails アプリケーションの作成にとりかかるには、以下のステップに従って JRuby および Rails のインストールを行う必要があります。その際、最新バージョンの JRuby と Rails を入手するようにすると、バグフィックスされたモジュールや、新しい機能を利用することができます。</p> 
+     <ol> 
+      <li><a href="http://wiki.jruby.org/wiki/Getting_Started">JRuby Getting Started Guide</a> の説明に従って JRuby をインストールしましょう。</li> 
+      <li>JRuby のインストールが完了したら、<a href="http://wiki.jruby.org/wiki/JRuby_on_Rails">Rails setup on JRuby</a> を参考に、 Rails をインストールしてください。</li> 
+     </ol> <h4><a name="GettingStartedGuideJa-HelloWorld%E3%82%A2%E3%83%97%E3%83%AA%E3%82%B1%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%81%AE%E4%BD%9C%E6%88%90"></a>Hello World アプリケーションの作成</h2> <h4><a name="GettingStartedGuideJa-%E3%81%BE%E3%81%9A%E3%80%81%E4%BB%A5%E4%B8%8B%E3%81%AE%E3%82%B3%E3%83%9E%E3%83%B3%E3%83%89%E3%82%92%E5%AE%9F%E8%A1%8C%E3%81%97%E3%81%A6%E3%82%A2%E3%83%97%E3%83%AA%E3%82%B1%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%81%AE%E9%9B%9B%E5%BD%A2%E3%82%92%E4%BD%9C%E6%88%90%E3%81%97%E3%81%BE%E3%81%97%E3%82%87%E3%81%86%EF%BC%9A"></a>まず、以下のコマンドを実行してアプリケーションの雛形を作成しましょう：</h3> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">jruby -S rails hello</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="GettingStartedGuideJa-%E6%AC%A1%E3%81%AB%E3%80%81%E4%BB%A5%E4%B8%8B%E3%81%AE%E6%89%8B%E9%A0%86%E3%81%AB%E5%BE%93%E3%81%A3%E3%81%A6%E3%82%B3%E3%83%B3%E3%83%88%E3%83%AD%E3%83%BC%E3%83%A9%E3%81%A8%E3%83%93%E3%83%A5%E3%83%BC%E3%82%92%E4%BD%9C%E6%88%90%E3%81%97%E3%81%BE%E3%81%99%EF%BC%9A"></a>次に、以下の手順に従ってコントローラとビューを作成します：</h3> <p>1. hello ディレクトリに移動：</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">cd hello</pre> 
+       </div> 
+      </div>
+     </div> <p>2. 以下のコマンドを入力し、　hello アプリケーション用のコントローラとデフォルトのビューを作成します：</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">jruby script/generate controller say hello</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="GettingStartedGuideJa-%E4%BB%A5%E4%B8%8B%E3%81%AE%E6%89%8B%E9%A0%86%E3%81%AB%E5%BE%93%E3%81%A3%E3%81%A6%E3%80%81%E3%82%B3%E3%83%B3%E3%83%88%E3%83%AD%E3%83%BC%E3%83%A9%E3%81%AB%E5%A4%89%E6%95%B0%E3%82%92%E8%BF%BD%E5%8A%A0%E3%81%97%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84%EF%BC%9A"></a>以下の手順に従って、コントローラに変数を追加してください：</h3> <p>1. vi などのテキストエディタでコントローラ（ say_controller.rb ） を開きます：</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">vi app/controllers/say_controller.rb</pre> 
+       </div> 
+      </div>
+     </div> <p>2. コントローラの hello ヘルパ・メソッドに以下のように追記します：</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@hello_string = "v3 Gem is getting polished!"</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="GettingStartedGuideJa-%E4%BB%A5%E4%B8%8B%E3%81%AE%E6%89%8B%E9%A0%86%E3%81%AB%E5%BE%93%E3%81%A3%E3%81%A6@hellostring%E3%81%AE%E5%80%A4%E3%82%92%E8%AA%AD%E3%81%BF%E5%87%BA%E3%81%97%E3%81%BE%E3%81%97%E3%82%87%E3%81%86%EF%BC%9A"></a>以下の手順に従って @hello_string の値を読み出しましょう：</h3> <p>1. テキストエディタでビューを開きます：</p> 
+     <ul> 
+      <li>Rails 2.1.0 の場合、 vi などのテキストエディタで hello.html.erb を開いてください：</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">vi app/views/say/hello.html.erb</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>Rails 1.2.6 の場合は、 vi などのテキストエディタで app/views/say/hello.rhtml を開きましょう：</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">vi app/views/say/hello.rhtml</pre> 
+       </div> 
+      </div>
+     </div> <p>2. ビューの末尾に以下の文字列を追加してください：</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;%= @hello_string %&gt;</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="GettingStartedGuideJa-Rails2.1.0%E3%81%AE%E5%A0%B4%E5%90%88%E3%81%AF%E3%83%87%E3%83%BC%E3%82%BF%E3%83%99%E3%83%BC%E3%82%B9%E3%82%92%E8%A8%AD%E5%AE%9A"></a>Rails 2.1.0 の場合はデータベースを設定</h3> <p>このセクションの手順は、 Rails 2.1.0 を使用している場合のみ実行します。それより前のバージョンの Rails （ 1.2.6 など）を使っている場合、このセクションはスキップしてください。</p> <p>In the hello sample, you do not need a database, so you should do <b>one</b> of the following two things: </p> <p>hello サンプルではデータベースを使用しませんので、以下の*どちらか*の設定を行ってください。</p> 
+     <ul> 
+      <li>データベースを使用しないよう Rails を設定する</li> 
+     </ul> 
+     <ol> 
+      <li>hello/config/environment.rb ファイルをテキストエディタで開きます。</li> 
+      <li>以下の通り、 21 行目の先頭のシャープマーク (#) を削除してください。</li> 
+     </ol> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">config.frameworks -= [ :active_record, :active_resource, :action_mailer ]</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>データベースを作成する</li> 
+     </ul> <p>hello サンプルでは model を使用しませんが、 Rails 2.1.0 はデータベースが作成されることを前提に動作します。 scaffold の生成後、以下のコマンドを実行してデータベースを作成して下さい。</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">jruby -S rake db:create</pre> 
+       </div> 
+      </div>
+     </div> <p>コマンドを実行すると、 hello_development というデータベースが作成されます。</p> <h4><a name="GettingStartedGuideJa-GlassFishgem%E3%82%92%E7%94%A8%E3%81%84%E3%81%9FRails%E3%82%A2%E3%83%97%E3%83%AA%E3%82%B1%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%81%AE%E9%85%8D%E5%82%99%E3%81%A8%E5%AE%9F%E8%A1%8CGlassFishgem%E3%82%92%E7%94%A8%E3%81%84%E3%81%9FRails%E3%82%A2%E3%83%97%E3%83%AA%E3%82%B1%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%81%AE%E9%85%8D%E5%82%99%E3%81%A8%E5%AE%9F%E8%A1%8C"></a>GlassFish gem を用いた Rails アプリケーションの配備と実行</h2> <p>Rails アプリケーションを配備するための最も手早くかつ簡単な方法は、GlassFish gem を使うことでしょう。 GlassFish gem は GlassFish v3 のカーネル、 Grizzly 、およびいくつかのユーティリティのみで構成されているため非常に軽量で、かつ高速に起動します。GlassFish gem をたった一度インストールするだけで、GlassFish 上にアプリケーションを配備し、実行できるようになります。</p> <h4><a name="GettingStartedGuideJa-GlassFishv3%E4%B8%8A%E3%81%B8%E3%81%AERails%E3%82%A2%E3%83%97%E3%83%AA%E3%82%B1%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%81%AE%E9%85%8D%E5%82%99%E3%81%A8%E5%AE%9F%E8%A1%8CGlassFishv3%E4%B8%8A%E3%81%B8%E3%81%AERails%E3%82%A2%E3%83%97%E3%83%AA%E3%82%B1%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%81%AE%E9%85%8D%E5%82%99%E3%81%A8%E5%AE%9F%E8%A1%8C"></a>GlassFish v3 上への Rails アプリケーションの配備と実行</h2> <p>GlassFish gem は堅牢かつ使いやすい配備環境を提供してくれますが、 Rails アプリケーション内で Java&lt;sup&gt;TM&lt;/sup&gt; EE の機能を利用したいような場面もあるでしょう。このような場合、アプリケーションを GlassFish v3 サーバ上に直接配備する必要があります。</p> <h4><a name="GettingStartedGuideJa-GlassFishv2%E4%B8%8A%E3%81%B8%E3%81%AERails%E3%82%A2%E3%83%97%E3%83%AA%E3%82%B1%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%81%AE%E9%85%8D%E5%82%99%E3%81%A8%E5%AE%9F%E8%A1%8C"></a><a href="http://wiki.glassfish.java.net/?page=DeployAndRunRailsApplicationOnGlassfishV2Ja">GlassFish v2 上への Rails アプリケーションの配備と実行</a></h2> <p>Rails アプリケーションを Web アーカイブ （ WAR ） にまとめて、 GlassFish v2 アプリケーションサーバ上に配備することができます。 Rails アプリケーションの WAR 化には <a href="http://wiki.jruby.org/wiki/Goldspike">Goldspike</a> を使用します。<a href="http://wiki.jruby.org/wiki/Goldspike">Goldspike</a> は、 JRuby on Rails および GlassFish v2 UC モジュールとあわせて使用することが可能です。</p> 
+     <hr> <p>日本語翻訳: <a href="http://apercu-j.blogspot.com/">Kana</a></p> <p><a href="GettingStartedGuide.html" title="GettingStartedGuide">英文 </a> (翻訳したバージョン: 52)</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 08, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:44.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

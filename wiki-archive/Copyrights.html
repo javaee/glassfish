@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : Copyrights</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="Copyrights-CopyrightandLicenseHOWTO"></a>Copyright and License HOWTO</h1> <p>This page describes how to create, update, and maintain the copyright and license notice that should appear in every GlassFish source file.</p> <h4><a name="Copyrights-GeneralRules"></a>General Rules</h2> <h4><a name="Copyrights-Whattocopyright"></a>What to copyright</h4> <p>Wherever possible, text files should contain a comment that includes a copyright notice and a license notice. The comment should use the syntax appropriate for the type of file. For example, .java files will use Java syntax comments, XML files will use XML syntax comments, and so on. See below for examples in different formats.</p> <h4><a name="Copyrights-Copyrightyears"></a>Copyright years</h4> <p>The copyright notice should include the year the file was created. When a file is updated, the copyright notice should be updated to include the current year as well. Only the first year and last year should be included. A range of years is expressed as two years separated by a dash, with no spaces, e.g., "1997-2010".</p> <h4><a name="Copyrights-Commentformat"></a>Comment format</h4> <p>In general, the comment containing the copyright and license notice should be the first text in the file and should be followed by a blank line. The following exceptions are allowed:</p> 
+     <ul> 
+      <li>A shell script may start with a "#!" line.</li> 
+      <li>A Python file may have a "# -*- coding:" line after the "#!" line.</li> 
+      <li>An XML format file may start with a "&lt;?xml&gt;" line, and may have a "&lt;!DOCTYPE&gt;" line before the comment.</li> 
+      <li>An html file may have "&lt;html&gt;" and "&lt;head&gt;" lines before the comment.</li> 
+     </ul> <h4><a name="Copyrights-TheCommonCase"></a>The Common Case</h2> <p>Source files created by Oracle employees will typically use one of two licenses:</p> 
+     <ol> 
+      <li>Most source code will use the CDDL and GPL license with the Classpath Exception.</li> 
+      <li>Demo or sample source code should use the BSD license.</li> 
+     </ol> <p>The copyright/license header should be the first text in the file, with exceptions noted above.</p> 
+     <div class="panelMacro">
+      <table class="infoMacro">
+       <colgroup>
+        <col width="24">
+        <col>
+       </colgroup>
+       <tbody>
+        <tr>
+         <td valign="top"><img src="images/icons/emoticons/information.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td>
+         <td>Some <a href="NetBeans-license-for-copywrite.html" title="NetBeans-license-for-copywrite">info about</a> a sample NetBeans license file.</td>
+        </tr>
+       </tbody>
+      </table>
+     </div> <h4><a name="Copyrights-ThirdPartyFiles"></a>Third Party Files</h2> <p>Files that are imported from a third party, such as Apache licensed files, are handled differently. (Remember that you <b>always</b> need approval before importing any third-party code, no matter what the license is.) If the file is imported with no changes, or with only minor changes, the original copyright and license must be maintained.</p> <p>The following general rules apply to third-party files:</p> 
+     <ul> 
+      <li><b>Always</b> obtain approval before adding any third-party files to the workspace.</li> 
+      <li><b>Never</b> alter or delete a third-party copyright notice, unless explicitly instructed by an Oracle attorney.</li> 
+      <li>Never delete other text that appears to claim ownership, unless explicitly instructed by an Oracle attorney. Examples include phrases such as "Property of ..." or "Created by ...".</li> 
+      <li>If a third-party file does not contain a third-party copyright notice, do not insert such a notice.</li> 
+      <li>If a file contains a third-party copyright notice but no license notice or other statement of permission, and if the license text is in a separate file near the source file, retain the separate file but do not insert that license text into the source file.</li> 
+     </ul> <p>When the amount of change in a third-party file is significant, we add the Oracle copyright and license notice to the file while preserving the original copyright and license notice. See below for an example using the Apache license. Note that this approach only works for third-party code that uses a liberal license that allows us to relicense the code under our license. Examples of such licenses are the Apache license, the BSD license, and the MIT license. GPL and similar licenses do <b>not</b> allow this approach. When in doubt, ask for help.</p> <p>How do you tell when the amount of change is significant? The following guidance from the U.S. Copyright office may be helpful if you need to determine whether modifications to a file have transformed that file into a derivative work. To be copyrightable, a derivative work must be different enough from the original to be regarded as a new work or must contain a substantial amount of new material. Making minor changes or additions of little substance to a preexisting work will not qualify the work as a new version for copyright purposes. The new material must be original and copyrightable in itself. Titles, short phrases, and format, for example, are not copyrightable.</p> <p>As always, if in doubt then ask for help.</p> <h4><a name="Copyrights-OtherCases"></a>Other Cases</h2> <p>For any other cases, please contact your manager, your product manager, or <a href="mailto:bill.shannon@oracle.com">Bill Shannon</a> for assistance.</p> <h4><a name="Copyrights-PortionsCopyright"></a>Portions Copyright</h2> <p>If you read the license notice carefully, you'll see that it has instructions for contributors who want to copyright their modifications to a file. In such a case, a separate comment block should be added after the main copyright/license comment block with this additional information in the following format:</p> 
+     <div class="preformatted panel" style="border-width: 1px;">
+      <div class="preformattedContent panelContent"> 
+       <pre>/*
+ * Portions Copyright [year] [name of copyright owner]
+ */
+</pre> 
+      </div>
+     </div> <h4><a name="Copyrights-UpdatingAFile"></a>Updating A File</h2> <p>When updating a file, verify that the license header meets the above requirements.<br> Also, ensure that the copyright includes the current year as well as the first year that the file was created; it should be either a single year (e.g., "2010"), or a range of years separated by a dash with no spaces (e.g., "1997-2010").</p> <h4><a name="Copyrights-GeneratedSourceFiles"></a>Generated Source Files</h2> <p>Files generated at build time and shipped only in binary form (including minimized .js files) do <b>not</b> need a license or copyright header.</p> <p>Files generated at build time and shipped in source form <b>do</b> need a copyright and license header.</p> <p>Files generated at run time based on some user code do <b>not</b> need a copyright or license header. (For example, .java files generated for JSP pages, deployment descriptors generated for annotations.)</p> <p>Files generated at run time without depending on any user code <b>do</b> need a copyright and license header. (For example, start/stop scripts, asenv.conf file, domain.xml.)</p> <h4><a name="Copyrights-MavenCopyrightPlugin"></a>Maven Copyright Plugin</h2> <p>You can check that your copyright notices are correct using the Maven copyright plugin in projects<br> that have it configured in the pom.xml:</p> 
+     <div class="preformatted panel" style="border-width: 1px;">
+      <div class="preformattedContent panelContent"> 
+       <pre>$ mvn glassfish-copyright:copyright
+</pre> 
+      </div>
+     </div> <p>To repair any errors discovered (use this carefully, and check the results):</p> 
+     <div class="preformatted panel" style="border-width: 1px;">
+      <div class="preformattedContent panelContent"> 
+       <pre>$ mvn glassfish-copyright:repair
+</pre> 
+      </div>
+     </div> <p>The copyright plugin is configured to use a common exclude list in the maven artifact org.glassfish:copyright. If you get complaints about this, you'll need to build this artifact explicitly (it's not built by a normal full build). Use either:</p> 
+     <div class="preformatted panel" style="border-width: 1px;">
+      <div class="preformattedContent panelContent"> 
+       <pre>$ mvn -Prelease-phase1 install
+</pre> 
+      </div>
+     </div> <p>or</p> 
+     <div class="preformatted panel" style="border-width: 1px;">
+      <div class="preformattedContent panelContent"> 
+       <pre>$ cd copyright; mvn install
+</pre> 
+      </div>
+     </div> <p>For more information, see the README file at <a href="http://java.net/projects/glassfish/sources/svn/show/trunk/copyright-plugin">http://java.net/projects/glassfish/sources/svn/show/trunk/copyright-plugin</a>.</p> <p>For projects that don't (yet) have the plugin configured in their pom.xml, you can run it using:</p> 
+     <div class="preformatted panel" style="border-width: 1px;">
+      <div class="preformattedContent panelContent"> 
+       <pre>mvn org.glassfish.copyright:glassfish-copyright-maven-plugin:copyright -Pcopyright
+</pre> 
+      </div>
+     </div> <h4><a name="Copyrights-SampleCopyrightNotices"></a>Sample Copyright Notices</h2> <p>Here's the copyright notice format for .java files (and other files that use the same comment syntax), which <b>must</b> be the first text in the file:</p> 
+     <div class="preformatted panel" style="border-width: 1px;">
+      <div class="preformattedContent panelContent"> 
+       <pre>/*
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+ *
+ * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ *
+ * The contents of this file are subject to the terms of either the GNU
+ * General Public License Version 2 only ("GPL") or the Common Development
+ * and Distribution License("CDDL") (collectively, the "License").  You
+ * may not use this file except in compliance with the License.  You can
+ * obtain a copy of the License at
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
+ * or packager/legal/LICENSE.txt.  See the License for the specific
+ * language governing permissions and limitations under the License.
+ *
+ * When distributing the software, include this License Header Notice in each
+ * file and include the License file at packager/legal/LICENSE.txt.
+ *
+ * GPL Classpath Exception:
+ * Oracle designates this particular file as subject to the "Classpath"
+ * exception as provided by Oracle in the GPL Version 2 section of the License
+ * file that accompanied this code.
+ *
+ * Modifications:
+ * If applicable, add the following below the License Header, with the fields
+ * enclosed by brackets [] replaced by your own identifying information:
+ * "Portions Copyright [year] [name of copyright owner]"
+ *
+ * Contributor(s):
+ * If you wish your version of this file to be governed by only the CDDL or
+ * only the GPL Version 2, indicate your decision by adding "[Contributor]
+ * elects to include this software in this distribution under the [CDDL or GPL
+ * Version 2] license."  If you don't indicate a single choice of license, a
+ * recipient has the option to distribute your version of this file under
+ * either the CDDL, the GPL Version 2 or to extend the choice of license to
+ * its licensees as provided above.  However, if you add GPL Version 2 code
+ * and therefore, elected the GPL Version 2 license, then the option applies
+ * only if the new code is made subject to such option by the copyright
+ * holder.
+ */
+</pre> 
+      </div>
+     </div> <p>(Replace 2010 with the copyright year or years.)</p> <p>Here's the standard BSD copyright/license notice:</p> 
+     <div class="preformatted panel" style="border-width: 1px;">
+      <div class="preformattedContent panelContent"> 
+       <pre>/*
+ * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *
+ *   - Redistributions of source code must retain the above copyright
+ *     notice, this list of conditions and the following disclaimer.
+ *
+ *   - Redistributions in binary form must reproduce the above copyright
+ *     notice, this list of conditions and the following disclaimer in the
+ *     documentation and/or other materials provided with the distribution.
+ *
+ *   - Neither the name of Oracle nor the names of its
+ *     contributors may be used to endorse or promote products derived
+ *     from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+ * IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+ * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+</pre> 
+      </div>
+     </div> <p>In some cases a file will be owned by Oracle and licensed under the Apache 2.0 license. In that case, use this form for the header:</p> 
+     <div class="preformatted panel" style="border-width: 1px;">
+      <div class="preformattedContent panelContent"> 
+       <pre>/*
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+ *
+ * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ *
+ * Oracle licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+</pre> 
+      </div>
+     </div> <p>Files where Apache owns the copyright, but where we've made significant (copyrightable) changes to the file would use one of the following forms.</p> <p>A file derived from an older Apache licensed file would use the following form. Note the general approach of separating the original copyright and license notice from the new copyright and license notice.</p> 
+     <div class="preformatted panel" style="border-width: 1px;">
+      <div class="preformattedContent panelContent"> 
+       <pre>/*
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+ *
+ * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ *
+ * The contents of this file are subject to the terms of either the GNU
+ * General Public License Version 2 only ("GPL") or the Common Development
+ * and Distribution License("CDDL") (collectively, the "License").  You
+ * may not use this file except in compliance with the License.  You can
+ * obtain a copy of the License at
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
+ * or packager/legal/LICENSE.txt.  See the License for the specific
+ * language governing permissions and limitations under the License.
+ *
+ * When distributing the software, include this License Header Notice in each
+ * file and include the License file at packager/legal/LICENSE.txt.
+ *
+ * GPL Classpath Exception:
+ * Oracle designates this particular file as subject to the "Classpath"
+ * exception as provided by Oracle in the GPL Version 2 section of the License
+ * file that accompanied this code.
+ *
+ * Modifications:
+ * If applicable, add the following below the License Header, with the fields
+ * enclosed by brackets [] replaced by your own identifying information:
+ * "Portions Copyright [year] [name of copyright owner]"
+ *
+ * Contributor(s):
+ * If you wish your version of this file to be governed by only the CDDL or
+ * only the GPL Version 2, indicate your decision by adding "[Contributor]
+ * elects to include this software in this distribution under the [CDDL or GPL
+ * Version 2] license."  If you don't indicate a single choice of license, a
+ * recipient has the option to distribute your version of this file under
+ * either the CDDL, the GPL Version 2 or to extend the choice of license to
+ * its licensees as provided above.  However, if you add GPL Version 2 code
+ * and therefore, elected the GPL Version 2 license, then the option applies
+ * only if the new code is made subject to such option by the copyright
+ * holder.
+ *
+ *
+ * This file incorporates work covered by the following copyright and
+ * permission notice:
+ *
+ * Copyright 2010 The Apache Software Foundation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+</pre> 
+      </div>
+     </div> <p>Newer versions of the Apache license notice don't include copyright information, and would use this form:</p> 
+     <div class="preformatted panel" style="border-width: 1px;">
+      <div class="preformattedContent panelContent"> 
+       <pre>/*
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+ *
+ * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ *
+ * The contents of this file are subject to the terms of either the GNU
+ * General Public License Version 2 only ("GPL") or the Common Development
+ * and Distribution License("CDDL") (collectively, the "License").  You
+ * may not use this file except in compliance with the License.  You can
+ * obtain a copy of the License at
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
+ * or packager/legal/LICENSE.txt.  See the License for the specific
+ * language governing permissions and limitations under the License.
+ *
+ * When distributing the software, include this License Header Notice in each
+ * file and include the License file at packager/legal/LICENSE.txt.
+ *
+ * GPL Classpath Exception:
+ * Oracle designates this particular file as subject to the "Classpath"
+ * exception as provided by Oracle in the GPL Version 2 section of the License
+ * file that accompanied this code.
+ *
+ * Modifications:
+ * If applicable, add the following below the License Header, with the fields
+ * enclosed by brackets [] replaced by your own identifying information:
+ * "Portions Copyright [year] [name of copyright owner]"
+ *
+ * Contributor(s):
+ * If you wish your version of this file to be governed by only the CDDL or
+ * only the GPL Version 2, indicate your decision by adding "[Contributor]
+ * elects to include this software in this distribution under the [CDDL or GPL
+ * Version 2] license."  If you don't indicate a single choice of license, a
+ * recipient has the option to distribute your version of this file under
+ * either the CDDL, the GPL Version 2 or to extend the choice of license to
+ * its licensees as provided above.  However, if you add GPL Version 2 code
+ * and therefore, elected the GPL Version 2 license, then the option applies
+ * only if the new code is made subject to such option by the copyright
+ * holder.
+ *
+ *
+ * This file incorporates work covered by the following copyright and
+ * permission notice:
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+</pre> 
+      </div>
+     </div> <p>The standard license formatted for an XML syntax file is as follows. Note the use of an optional "&lt;?xml&gt;" line before the copyright comment.</p> 
+     <div class="preformatted panel" style="border-width: 1px;">
+      <div class="preformattedContent panelContent"> 
+       <pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    https://glassfish.java.net/public/CDDL+GPL_1_1.html
+    or packager/legal/LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at packager/legal/LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+--&gt;
+</pre> 
+      </div>
+     </div> <p>The standard license formatted for a .properties file would look like this:</p> 
+     <div class="preformatted panel" style="border-width: 1px;">
+      <div class="preformattedContent panelContent"> 
+       <pre>#
+# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+#
+# Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+#
+# The contents of this file are subject to the terms of either the GNU
+# General Public License Version 2 only ("GPL") or the Common Development
+# and Distribution License("CDDL") (collectively, the "License").  You
+# may not use this file except in compliance with the License.  You can
+# obtain a copy of the License at
+# https://glassfish.java.net/public/CDDL+GPL_1_1.html
+# or packager/legal/LICENSE.txt.  See the License for the specific
+# language governing permissions and limitations under the License.
+#
+# When distributing the software, include this License Header Notice in each
+# file and include the License file at packager/legal/LICENSE.txt.
+#
+# GPL Classpath Exception:
+# Oracle designates this particular file as subject to the "Classpath"
+# exception as provided by Oracle in the GPL Version 2 section of the License
+# file that accompanied this code.
+#
+# Modifications:
+# If applicable, add the following below the License Header, with the fields
+# enclosed by brackets [] replaced by your own identifying information:
+# "Portions Copyright [year] [name of copyright owner]"
+#
+# Contributor(s):
+# If you wish your version of this file to be governed by only the CDDL or
+# only the GPL Version 2, indicate your decision by adding "[Contributor]
+# elects to include this software in this distribution under the [CDDL or GPL
+# Version 2] license."  If you don't indicate a single choice of license, a
+# recipient has the option to distribute your version of this file under
+# either the CDDL, the GPL Version 2 or to extend the choice of license to
+# its licensees as provided above.  However, if you add GPL Version 2 code
+# and therefore, elected the GPL Version 2 license, then the option applies
+# only if the new code is made subject to such option by the copyright
+# holder.
+#
+</pre> 
+      </div>
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Oct 05, 2012 by 
+<font color="#0050B2">10196</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

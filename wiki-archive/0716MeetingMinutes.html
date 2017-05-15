@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : 0716MeetingMinutes</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="0716MeetingMinutes-Agenda"></a>Agenda</h3> <p> 1. Introduction<br> 2. FSD questions<br> 3. Continuation </p> <h4><a name="0716MeetingMinutes-Introduction"></a>Introduction</h3> <p>Since not all the people in the call where acquainted, we had a short introduction round.</p> <p>It was also decided to ramp up the technical discussions. We probably need more coordination then just one technical conference per week. The idea is to continue with some more detailed technical discussions in a smaller group (Larry, Jan, Binod and Erik) and have more intensive e-mail discussions.<br> FSD questions</p> <p>Erik started on an FSD, during which he came up with some questions. Some of these questions were addressed, but due to lack of time not all of them.<br> unreliable transport</p> <p>The transport is not really unreliable. However, due to performance reasons the implementation does NOT wait for the ack to be received, so it can happen that replications fail. Indeed for the case of CompositeMetaData? this could lead to 'out-of-sync' data.</p> <h4><a name="0716MeetingMinutes-Someobservations%3A"></a>Some observations:</h3> 
+     <ul> 
+      <li>The use of CompositeMetaData? is not recommended by SUN. The data decomposition is something that should show the need for the CompositeMetaData?, so this should be done fairly soon.</li> 
+      <li>If SimpleMetaData? is used, the data will be in sync at the first successful replication</li> 
+      <li>The chances that data is out of sync at the moment of 'restore' of the replica cache is something that should be taken into account for the reliability figures. Taking the total picture into account it might be perfectly acceptable to have some unsuccessful restores.</li> 
+      <li>If we are willing to take the performance impact, it might be an idea to wait for the ack anyway.</li> 
+     </ul> <h4><a name="0716MeetingMinutes-Transactions"></a>Transactions</h3> <p>Transaction IDs is not something that is supported by SUN, at the moment. Larry is even hesitant to recommend using this. Also currently there can already be an issue with transactions between EJB stateful sessions and HTTP sessions that depend on each other. Once in every while, in the tests SUN sees some problems that might be related to incomplete 'transactions'. Again, it is a question of the calculations and the acceptable reliability requirements if this is OK or not.</p> <p>Also, it was stated that we should distinguish the two alternatives;</p> 
+     <ul> 
+      <li>HADB which does offer transactions and real replication (also in case of multiple faillures)</li> 
+      <li>session replication which has a better performance, is easier to setup, but is less reliable.</li> 
+     </ul> <p>Border between temporary failure and cluster reshape</p> <p>Terminology; cluster reshape is not an event, it is an activity (or rather a set of activities). There are GSM events; join and re-join that can be the trigger of the reshape.</p> <p>There are three ways to trigger:</p> 
+     <ul> 
+      <li>Join or re-join events from GMS in combination with a home-grown notification on JXTA (join ready). The latter is needed, but not part of GMS. The Join and ReJoin? come in the beginning, the JoinReady? is sent when the instance is ready with its initialisation and can receive the replication messages.</li> 
+      <li>Planned shutdown. This is typically not received from GMS, but is based on JXTA pipes that are being closed.</li> 
+     </ul> <p>Multiple failures</p> <p>After a reshape where a node is removed, it will happen that some data is only available in the replica cache. It will be activated/restored when a new event is received that needs this data, only then will it be replicated again, and be redundantly available. Between the time of the instance being removed and the first use of the data, the system is susceptible to multiple failures.</p> <p>This issue is related to the SSA timer problem, if there is no active copy of the data no timer functionality will be enabled.</p> <p>The solution to both problems could be to do a sort of 'reverse repair'. This would mean that after the reshape the data that is available only in the replica cache will be moved to the active cache (and hence triggers normal replication mechanism again and activating the timer functionality). Probably the easiest is to do this on the clockwise neighbor of the removed instance...This is still to be discussed.</p> <p>Another alternative to combat the multiple failure problem is to use the HADB, although this probably does not help with the timer functionality.<br> How are events handled during temporary failure</p> <p>Larry told us that in the case of HTTP, the request is moved to another instance in the case that connection can not be made. Retry is very tricky and is an option in the load balancer. Retry should only be used in case of idempotent requests (if 'at-least once' semantics apply).</p> <p>It is actually more of a question for the Load Balancer and Joel will continue this discussion off-line via e-mail.<br> Continuation</p> <p>The time ran out and we did not manage to complete the list of questions.</p> <p>It was decided to continue the discussion on monday in a limited conference call (Binod, Larry, Jan, Erik).</p> <h4><a name="0716MeetingMinutes-ActionItems"></a>Action Items</h3> <p>No action items have been identified yet. </p> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Nov 18, 2011 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : Jsr289</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>There are three documents that we are trying to reconcile.</p> 
+     <ul> 
+      <li>1. The list of open issues that /// and Sun have raised; this is mentioned in the table below.</li> 
+     </ul> 
+     <ul> 
+      <li>2. The list of open issues from the EG <a href="http://wiki.glassfish.java.net/attach/Jsr289/289OpenIssues.pdf">Attached</a></li> 
+      <li>3. The list of issues out of the total open issues that would be discussed at the f2f <a href="http://wiki.glassfish.java.net/attach/Jsr289/f2f-LA-Schedule-01-29-2008-v1.xls">Attached</a></li> 
+     </ul> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">#</th> 
+         <th class="confluenceTh">Problem</th> 
+         <th class="confluenceTh">Action</th> 
+         <th class="confluenceTh">Prio</th> 
+         <th class="confluenceTh">Status</th> 
+         <th class="confluenceTh"> Open Issue No </th> 
+         <th class="confluenceTh"> F2F discussion ? </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1. </td> 
+         <td class="confluenceTd"> Invalidation of application session/session lifetime </td> 
+         <td class="confluenceTd"> New proposal in separate ppt doc. or go back to JSR116 version with exception of adding is valid function. </td> 
+         <td class="confluenceTd"> H </td> 
+         <td class="confluenceTd"> RESOLVED </td> 
+         <td class="confluenceTd"> 1001 </td> 
+         <td class="confluenceTd"> leave invalidate() semantics the same (forced invalidate) as it was in 116 earlier, invalidate(true) also is exactly the same. isReadyToInvalidate() query provides a polling mechanism. set/getInvalidateWhenReady(boolean). how do we register a SessionInvalidation event listener? will be specified. app composition may break if a session for an app in the already formed chain is gone. Send error response if that case arises. route req/resp w/o app involvement (applicable for proxies). stateless proxying of responses to be clarified. if a message arrives for an invalidated session ? reject (only logical choice) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2. </td> 
+         <td class="confluenceTd"> Deployment AR format </td> 
+         <td class="confluenceTd"> Add simple config into JAR. Expose new method in the AR interface configChanged(InputStream) </td> 
+         <td class="confluenceTd"> H </td> 
+         <td class="confluenceTd"> TBD </td> 
+         <td class="confluenceTd"> See 1002, 1005 </td> 
+         <td class="confluenceTd"> To be discussed in F2F </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3. </td> 
+         <td class="confluenceTd"> Many AR's </td> 
+         <td class="confluenceTd"> Remove leads to confusion and is underspecified </td> 
+         <td class="confluenceTd"> H </td> 
+         <td class="confluenceTd"> CLOSED </td> 
+         <td class="confluenceTd"> NA </td> 
+         <td class="confluenceTd"> NA </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4. </td> 
+         <td class="confluenceTd"> Path header not clear </td> 
+         <td class="confluenceTd"> See note from list </td> 
+         <td class="confluenceTd"> M </td> 
+         <td class="confluenceTd"> CLOSED </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5. </td> 
+         <td class="confluenceTd"> Proxy collocated with UAS </td> 
+         <td class="confluenceTd"> Do not deprecate, add that getProxy() must be called before send e.g. 180 as UAS. </td> 
+         <td class="confluenceTd"> M </td> 
+         <td class="confluenceTd"> RESOLVED </td> 
+         <td class="confluenceTd"> 1012 </td> 
+         <td class="confluenceTd"> Needs to be described by us but got accepted. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6. </td> 
+         <td class="confluenceTd"> SipFactory create session with a key. </td> 
+         <td class="confluenceTd"> Add to API </td> 
+         <td class="confluenceTd"> M </td> 
+         <td class="confluenceTd"> CLOSED </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 7. </td> 
+         <td class="confluenceTd"> Security DTD changes </td> 
+         <td class="confluenceTd"> Underspecified </td> 
+         <td class="confluenceTd"> M </td> 
+         <td class="confluenceTd"> TBD </td> 
+         <td class="confluenceTd"> 1016 </td> 
+         <td class="confluenceTd"> Avaya investigates rfc4474 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 8. </td> 
+         <td class="confluenceTd"> Describe the P-Asserted-ID handling </td> 
+         <td class="confluenceTd"> Security framework should check if trusted </td> 
+         <td class="confluenceTd"> M </td> 
+         <td class="confluenceTd"> TBD </td> 
+         <td class="confluenceTd"> 1016 </td> 
+         <td class="confluenceTd"> Proposal 2 voted with remark to not have passerted indication as an attribute but as an element inside. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 9. </td> 
+         <td class="confluenceTd"> ListIterator in SSAPI </td> 
+         <td class="confluenceTd"> (See 5.4.1 AddressHeaders). Can we state that the optional methods add(),remove(),set() are not implemented </td> 
+         <td class="confluenceTd"> M </td> 
+         <td class="confluenceTd"> TBD </td> 
+         <td class="confluenceTd"> 1026 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 10. </td> 
+         <td class="confluenceTd"> Add doBranchResponse call back. </td> 
+         <td class="confluenceTd"> Improves coding style </td> 
+         <td class="confluenceTd"> L </td> 
+         <td class="confluenceTd"> RESOLVED </td> 
+         <td class="confluenceTd"> 1027 </td> 
+         <td class="confluenceTd"> We need to write up a proposal and consider any multi-threading cases </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 11. </td> 
+         <td class="confluenceTd"> Set outbound what should happen and who is responsible for the choice between sip and sips </td> 
+         <td class="confluenceTd"> Clarification needed </td> 
+         <td class="confluenceTd"> L </td> 
+         <td class="confluenceTd"> TBD </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 12. </td> 
+         <td class="confluenceTd"> Proxy acting as a UAS for subsequent request, 10.2.9 last paragraph. </td> 
+         <td class="confluenceTd"> Clarification needed </td> 
+         <td class="confluenceTd"> M </td> 
+         <td class="confluenceTd"> TBD </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 13. </td> 
+         <td class="confluenceTd"> B2BuaHelper.getPendingMessage() </td> 
+         <td class="confluenceTd"> Huge memory penalty, need to keep reference to all messages </td> 
+         <td class="confluenceTd"> L </td> 
+         <td class="confluenceTd"> CLOSED </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 14. </td> 
+         <td class="confluenceTd"> Asynchronous/delayed proxyTo() or send() in a servlet.timout() method </td> 
+         <td class="confluenceTd"> Should this be supported </td> 
+         <td class="confluenceTd"> L </td> 
+         <td class="confluenceTd"> RESOLVED </td> 
+         <td class="confluenceTd"> 1018 </td> 
+         <td class="confluenceTd"> Accepted </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 15. </td> 
+         <td class="confluenceTd"> 11.3 should we support merged request </td> 
+         <td class="confluenceTd"> Clarification needed </td> 
+         <td class="confluenceTd"> L </td> 
+         <td class="confluenceTd"> RESOLVED </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Discourage in the spec </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 16. </td> 
+         <td class="confluenceTd"> Inconsistent 5.4.2 and javadoc: getAddressHeaders throws IllegalStateException and 5.4.2 throws IllegalArgumentException </td> 
+         <td class="confluenceTd"> Adjust </td> 
+         <td class="confluenceTd"> L </td> 
+         <td class="confluenceTd"> TBD </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 17. </td> 
+         <td class="confluenceTd"> Implement same functionality for Parameterable Header Fields as for Address Header Fields (5.4.1) ? </td> 
+         <td class="confluenceTd"> Shall modification of Parameterable objects modify underlying message? Clarification needed </td> 
+         <td class="confluenceTd"> L </td> 
+         <td class="confluenceTd"> RESOLVED </td> 
+         <td class="confluenceTd"> Accepted, text to spec will be added </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 18. </td> 
+         <td class="confluenceTd"> Javadoc for getAddressHeaders and getParameterableHeaders missing info about what to do when request not include the requested header. </td> 
+         <td class="confluenceTd"> Add information to javadoc similar to information in getHeaders. </td> 
+         <td class="confluenceTd"> L </td> 
+         <td class="confluenceTd"> TBD </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 19. </td> 
+         <td class="confluenceTd"> if getRouteModifier returns ROUTE, and getRoutes() returns an array of routes (strings), in what order should these routes be pushed on to the request? </td> 
+         <td class="confluenceTd"> Add order (element 0 pushed first?) </td> 
+         <td class="confluenceTd"> H </td> 
+         <td class="confluenceTd"> TBD </td> 
+         <td class="confluenceTd"> 1010,1011 </td> 
+         <td class="confluenceTd"> Not in the list for F2F discussion </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 20. </td> 
+         <td class="confluenceTd"> ROUTE Back should be added to SipRouteModifier </td> 
+         <td class="confluenceTd"> Follow up </td> 
+         <td class="confluenceTd"> M </td> 
+         <td class="confluenceTd"> TBD </td> 
+         <td class="confluenceTd"> 1007 </td> 
+         <td class="confluenceTd"> Not in the list for F2F discussion; we can ping the SLs to see if they have accepted it. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 21. </td> 
+         <td class="confluenceTd"> B2BuaHelper.createAck()/createCancel() </td> 
+         <td class="confluenceTd"> Missing method </td> 
+         <td class="confluenceTd"> M </td> 
+         <td class="confluenceTd"> CLOSED </td> 
+         <td class="confluenceTd"> 1052 </td> 
+         <td class="confluenceTd"> Use getPendingMessages() examples in the spec to come... </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 22. </td> 
+         <td class="confluenceTd"> SipSessionsUtil.linkSession()/ getLinkedSession() </td> 
+         <td class="confluenceTd"> Missing methods. use SipFactory createApplicationSessionByKey() pattern. </td> 
+         <td class="confluenceTd"> H </td> 
+         <td class="confluenceTd"> CLOSED </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 23. </td> 
+         <td class="confluenceTd"> Should stateInfo be stored as Object or as Serializable? In E/// implementation, SipServletRequestImpl stores stateInfo as Object, whereas JSR states Serializable. </td> 
+         <td class="confluenceTd"> Use Serializable everywhere </td> 
+         <td class="confluenceTd"> M </td> 
+         <td class="confluenceTd"> CLOSED </td> 
+         <td class="confluenceTd"> implementation detail, only useful with HA and recovery on transaction level or in cases of upgrade/hot swap. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 24. </td> 
+         <td class="confluenceTd"> If JSR289 applications need to share state, where should they store it? ApplicationSession is limited to one app only, and possibility to access EJBs from a SipServlet has not been standardized. </td> 
+         <td class="confluenceTd"> Standardize EJB access from SIP servlets, or introduce the notion of a CompositionSession. </td> 
+         <td class="confluenceTd"> H </td> 
+         <td class="confluenceTd"> Not for this release </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 25. </td> 
+         <td class="confluenceTd"> What's the purpose of having a SipApplicationRouter.init() method, when we already have SipApplicationRouter.init(List&lt;String&gt; apps) ? </td> 
+         <td class="confluenceTd"> remove from spec and allow null-list </td> 
+         <td class="confluenceTd"> L </td> 
+         <td class="confluenceTd"> TBD </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 26. </td> 
+         <td class="confluenceTd"> The EDR specifies the SipApplicationRouterInfo.getRegion() method, which should return one of the SipApplicationRoutingRegion enum values. However, there is neither a setRegion method nor a constructor with a region parameter. How should theSipApplicationRouterInfo know what region to return </td> 
+         <td class="confluenceTd"> Add setRegion() method and add SipApplicationRoutingRegion argument to constructor </td> 
+         <td class="confluenceTd"> H </td> 
+         <td class="confluenceTd"> CLOSED </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 27. </td> 
+         <td class="confluenceTd"> 15.2.2: what kind of application is CW? B2BUA? Proxy? Same question for 3WC. </td> 
+         <td class="confluenceTd"> Add more implementation details about the example applications. </td> 
+         <td class="confluenceTd"> ? </td> 
+         <td class="confluenceTd"> TBD </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 28. </td> 
+         <td class="confluenceTd"> 15.9.4: if Alice activates 3WC to call Bob? Explain HOW Alice would typically activate 3WC! Is this a webrequest? It should be clear that the 3WC activation does involve additional SIP signalling that might clutter the chain. </td> 
+         <td class="confluenceTd"> add info </td> 
+         <td class="confluenceTd"> ? </td> 
+         <td class="confluenceTd"> TBD </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 29. </td> 
+         <td class="confluenceTd"> 15.2.2: The text mentions the deprecated method SipFactory.createRequest(SipServletRequest origRequest, boolean sameCallId). </td> 
+         <td class="confluenceTd"> Remove </td> 
+         <td class="confluenceTd"> ? </td> 
+         <td class="confluenceTd"> RESOLVED </td> 
+         <td class="confluenceTd"> New method without flag is added to B2BUAHelper to replace. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 30. </td> 
+         <td class="confluenceTd"> 15.9.4: in the example, when 3WC sets up a new call to Bob, which method should it use? we currently don't have one. the one we have ( sf.createReq(orig) ) is deprecated and we don't want to persist the complete original request. </td> 
+         <td class="confluenceTd"> we may need a SipFactory.createSession(origSession).Discuss </td> 
+         <td class="confluenceTd"> H </td> 
+         <td class="confluenceTd"> TBD </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 31. </td> 
+         <td class="confluenceTd"> SipApplicationRouterInfo.getRoute() needs to be replaced by SipApplicationRouterInfo.getRoutes() </td> 
+         <td class="confluenceTd"> ? </td> 
+         <td class="confluenceTd"> ? </td> 
+         <td class="confluenceTd"> TBD </td> 
+         <td class="confluenceTd"> Same as 19. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 32. </td> 
+         <td class="confluenceTd"> Some of the proposals in the JSR289 open issue list suggest the SipApplicationRouterInfo should return SipURIs, for example the getSubscriberUri method. This will however require that the AR has access to the SipFactory, and that in turn would introduce the need for annotation support in the AR. </td> 
+         <td class="confluenceTd"> Discuss </td> 
+         <td class="confluenceTd"> ? </td> 
+         <td class="confluenceTd"> TBD </td> 
+         <td class="confluenceTd"> 1009 ? </td> 
+         <td class="confluenceTd"> Not in the list for F2F discussion </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 33. </td> 
+         <td class="confluenceTd"> What should happen with ongoing traffic when a application is undeployed? The assumption is that the behaviour is exactly the same as invalidating all the sessions and dialogs where the application is involved in. This is a reason for implementing a better invalidation strategy as described in point 1. </td> 
+         <td class="confluenceTd"> Describe undeployment as invalidation of all sessions </td> 
+         <td class="confluenceTd"> L </td> 
+         <td class="confluenceTd"> TBD </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 34. </td> 
+         <td class="confluenceTd"> We currently use the DataCentricRouting concept in a cluster environment to ensure that the requests are routed to the correct instance. Therefore, we assume that any access to the SipApplicationSessions can be handled by the local instance (barring after failure cases). This means that current sailfin does not support what we call true out-of-band access, where the SAS is accessed from a non-DCR routed request, e.g., EJB or non-DCR routed JCA. Any attempt to access the SAS from such a scenario will fail most of the time. The alternative is to provide remote access to the SAS or to migrate the SAS data to the instance where it is requested. Both alternatives are expensive. </td> 
+         <td class="confluenceTd"> Try to avoid a cluster distribution scenario where the DCR scenario does not fit </td> 
+         <td class="confluenceTd"> L? </td> 
+         <td class="confluenceTd"> TBD </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 35 </td> 
+         <td class="confluenceTd"> Inconsistent Usage of IllegalStateException </td> 
+         <td class="confluenceTd"> The problem is that 116 has not been consistent in throwing an IllegalStateException where al it might happen. Should that be remedied in 289? </td> 
+         <td class="confluenceTd"> L </td> 
+         <td class="confluenceTd"> RESOLVED </td> 
+         <td class="confluenceTd"> 1059 </td> 
+         <td class="confluenceTd"> Since 289 shall not introduce incompatibilities we will make sure only new APIs ill throw ISE. Old inconsistencies shall be left alone. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 36 </td> 
+         <td class="confluenceTd"> Per Pettersson: createApplicationSessionByAppName(AppName), *ByKey(Key), *ByAppNameAndKey(Name,Key) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Dec 01, 2011 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:49.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

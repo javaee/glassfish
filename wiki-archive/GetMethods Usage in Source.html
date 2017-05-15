@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GetMethods Usage in Source</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   
+     <div class="preformatted panel" style="border-width: 1px;">
+      <div class="preformattedContent panelContent"> 
+       <pre>========================== Open Source ===============================
+---------------------------------------------------------------------------------
+Usages of Class.getMethods [132 occurrences]
+AMX V3 Core
+    ConfigBeanJMXSupport.java
+    JMXUtil.java
+    MBeanInfoSupport.java
+Admin Console Common
+    JSONUtil.java
+Common Utilities
+    GenericCommandModel.java
+    ObjectAnalyzer.java
+    Utility.java
+Container Common
+    ManagedBeanManagerImpl.java
+Core JDBC Resource Adapter classes
+    DataSourceObjectBuilder.java
+Core Servlet Container
+    IntrospectionUtils.java
+    MbeansDescriptorsIntrospectionSource.java
+Deployment Object Library
+    EjbCMPEntityDescriptor.java
+    EjbDescriptor.java
+    IASEjbCMPEntityDescriptor.java
+    ManagedBeanHandler.java
+    MessageDescriptor.java
+    PersistenceDescriptor.java
+    TypeUtil.java
+GlassFish Admin REST Service
+    ClientGenerator.java
+    CommandResourceMetaData.java
+    ProviderUtil.java
+    ResourceUtil.java
+    TemplateListOfResource.java
+    TemplateRestResource.java
+GlassFish Core EJB container implementation
+    AbstractEjbHandler.java
+    BaseContainer.java
+    BeanMethodCalculatorImpl.java
+    EJBHandler.java
+    EjbOptionalIntfGenerator.java
+    Generator.java
+    HomeGenerator.java
+    InitHandler.java
+    Remote30WrapperGenerator.java
+    RemoteGenerator.java
+    ServiceInterfaceGenerator.java
+    WrapperGenerator.java
+GlassFish ORB connector implementation
+    GenericStatsImpl.java
+JMS admin
+    JMSDestination.java
+JSR-109 implementation to deploy Metro
+    EjbInvokerImpl.java
+    WebServiceTesterServlet.java
+Java EE Connector Architecture Runtime for GlassFish
+    ConnectionDefinitionUtils.java
+    ConnectorConfigParserUtils.java
+    RARUtils.java
+    SetMethodAction.java
+Java EE Security Core Classes
+    AuthContext.java
+Kernel Classes
+    SetCommand.java
+Orchestrator
+    JSONUtil.java
+PaaS Console Plugin System
+    PluginService.java
+PaaS Console Web App
+    JSONUtil.java
+Verifier implementation module
+    BusinessInterfaceException.java
+    BusinessMethodException.java
+    BusinessMethodExceptionCheck.java
+    BusinessMethodFinal.java
+    BusinessMethodMatchesWithDD.java
+    BusinessMethodName.java
+    BusinessMethodPublic.java
+    BusinessMethodRmiIIOPArgs.java
+    BusinessMethodRmiIIOPReturn.java
+    BusinessMethodStatic.java
+    ConnectionFactoryGetConnection.java
+    ContainerTransactionStyle3.java
+    EJBCreatePostConstruct.java
+    EjbCreateMatchesCreate.java
+    EjbCreateMatchesCreate.java
+    EndPointImplBeanClassChecker.java
+    HomeInterfaceFindMethodMatch.java
+    HomeMethodException.java
+    HomeMethodRmiIIOPArgs.java
+    HomeMethodRmiIIOPReturn.java
+    LocalInterfaceRemoteException.java
+    MDBImplementsListenerMethods.java
+    MessageListenerMethodModifiers.java
+    MethodsExist.java
+    QueryMethodTest.java
+    TaglibFunctionMethodTest.java
+    TransactionDemarcationComponentInterface.java
+    WSTest.java
+Weld integration for glassfish
+    EjbServicesImpl.java
+admin-config-api
+    GenericCrudCommand.java
+    IntrospectionUtils.java
+    ReferenceValidator.java
+admin-monitoring
+    StatsProviderManagerDelegateImpl.java
+flashlight-framework
+    DTraceMethodFinder.java
+    FlashlightProbeClientMediator.java
+stats77
+    GenericStatsImpl.java
+
+---------------------------------------------------------------------------------
+
+Usages of Class.getDeclaredMethods [143 occurrences]
+AMX V3 Core
+    ConfigBeanJMXSupport.java
+Common Utilities
+    CommandModelImpl.java
+    ObjectAnalyzer.java
+Container Common
+    InjectionManagerImpl.java
+Core Servlet Container
+    StandardWrapper.java
+Deployment Object Library
+    ComponentValidator.java
+    EjbBundleValidator.java
+    EjbMessageBeanDescriptor.java
+    LifecycleCallbackDescriptor.java
+    ManagedBeanHandler.java
+    WebComponentDescriptor.java
+GlassFish Admin REST Service
+    ASMClassWriter.java
+GlassFish Core EJB container implementation
+    AbstractEjbHandler.java
+    AccessTimeoutHandler.java
+    AsynchronousHandler.java
+    BaseContainer.java
+    EjbOptionalIntfGenerator.java
+    LockHandler.java
+    SystemInterceptorProxy.java
+GlassFish Elasticity API
+    TabularMetricHolder.java
+GlassFish Java EE Annotation Framework
+    ComponentDefinition.java
+JSF implementation connector module
+    GlassFishInjectionProvider.java
+JSR-109 implementation to deploy Metro
+    WsUtil.java
+Java EE Connector Architecture Runtime for GlassFish
+    ConfigPropertyHandler.java
+    DataSourceDefinitionHandler.java
+Kernel Classes
+    SetCommand.java
+Verifier implementation module
+    ASEjbIsReadOnlyBean.java
+    ApplicationExceptionComponentInterfaceMethods.java
+    ApplicationExceptionHomeInterfaceMethods.java
+    CmpEjbCreateMethod.java
+    CmpEjbNoInvalidCreateMethod.java
+    EjbClassExposed.java
+    EjbCreateMatchesCreate.java
+    EjbCreateMatchesCreate.java
+    EjbCreateMethodArgs.java
+    EjbCreateMethodArgs.java
+    EjbCreateMethodException.java
+    EjbCreateMethodExceptions.java
+    EjbCreateMethodFinal.java
+    EjbCreateMethodFinal.java
+    EjbCreateMethodName.java
+    EjbCreateMethodName.java
+    EjbCreateMethodPublic.java
+    EjbCreateMethodPublic.java
+    EjbCreateMethodReturn.java
+    EjbCreateMethodReturn.java
+    EjbCreateMethodStatic.java
+    EjbCreateMethodStatic.java
+    EjbFindByPrimaryKeyArgs.java
+    EjbFindByPrimaryKeyException.java
+    EjbFindByPrimaryKeyFinal.java
+    EjbFindByPrimaryKeyName.java
+    EjbFindByPrimaryKeyPublic.java
+    EjbFindByPrimaryKeyReturn.java
+    EjbFindByPrimaryKeyStatic.java
+    EjbFinderMethodArgs.java
+    EjbFinderMethodException.java
+    EjbFinderMethodFinal.java
+    EjbFinderMethodName.java
+    EjbFinderMethodNameCmp.java
+    EjbFinderMethodObjectNotFoundException.java
+    EjbFinderMethodPublic.java
+    EjbFinderMethodReturn.java
+    EjbFinderMethodStatic.java
+    EjbPostCreateMethodArgs.java
+    EjbPostCreateMethodException.java
+    EjbPostCreateMethodFinal.java
+    EjbPostCreateMethodName.java
+    EjbPostCreateMethodPublic.java
+    EjbPostCreateMethodReturn.java
+    EjbPostCreateMethodStatic.java
+    EjbRemoveMethodNameExistInSLSB.java
+    HomeInterfaceCreateMethodExceptionCreate.java
+    HomeInterfaceCreateMethodExceptionCreate.java
+    HomeInterfaceCreateMethodExceptionMatch.java
+    HomeInterfaceCreateMethodExceptionMatch.java
+    HomeInterfaceCreateMethodExceptionRemote.java
+    HomeInterfaceCreateMethodExceptionRemote.java
+    HomeInterfaceCreateMethodMatchArgs.java
+    HomeInterfaceCreateMethodMatchArgs.java
+    HomeInterfaceCreateMethodReturn.java
+    HomeInterfaceCreateMethodReturn.java
+    HomeInterfaceFindByPrimaryKeyArg.java
+    HomeInterfaceFindByPrimaryKeyName.java
+    HomeInterfaceFindByPrimaryKeyReturn.java
+    HomeInterfaceFindMethodExceptionFinder.java
+    HomeInterfaceFindMethodExceptionMatch.java
+    HomeInterfaceFindMethodExceptionRemote.java
+    HomeInterfaceFindMethodHasQuery.java
+    HomeInterfaceFindMethodReturn.java
+    HomeInterfaceNoFinderMethodNames.java
+    HomeInterfacePostCreateMethodExceptionMatch.java
+    HomeMethodRmiIIOPArgs.java
+    HomeMethodRmiIIOPReturn.java
+    HomeMethodTest.java
+    InjectionTargetTest.java
+    InterfaceMatchMethodArgs.java
+    InterfaceMatchMethodException.java
+    InterfaceMatchMethodReturn.java
+    InterfaceMethodTest.java
+    LocalInterfaceExposed.java
+    PrimaryKeyClassMethodEqual.java
+    PrimaryKeyClassMethodHashCode.java
+    PrimaryKeyClassOpt.java
+    PrimaryKeyClassOptReturn.java
+    RmiIIOPUtils.java
+    SelectMethodTest.java
+    StatelessCreateNoArgs.java
+    StatelessCreateOnlyOne.java
+    StatelessCreateReturn.java
+    StatelessEjbCreateHome.java
+    TransactionDemarcationComponentInterface.java
+    TransactionDemarcationHomeInterface.java
+    TransactionDemarcationHomeInterface.java
+Weld integration for glassfish
+    EjbDescriptorImpl.java
+    EjbServicesImpl.java
+admin-config-api
+    MonitoringService.java
+flashlight-framework
+    FlashlightProbeProviderFactory.java
+    FlashlightUtils.java
+    ProviderImplGenerator.java
+
+========================== Closed Source ===============================
+---------------------------------------------------------------------------------
+No Usages of Class.getMethods
+---------------------------------------------------------------------------------
+Usages of Class.getDeclaredMethods [2 occurrences]
+ClassFinderSuite
+    BenchmarkSuite.java
+    Fixture.java
+
+These two files look OK
+
+
+
+</pre> 
+      </div>
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Feb 27, 2012 by 
+<font color="#0050B2">10131</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

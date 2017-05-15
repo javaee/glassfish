@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : LoadBalanceMod_jkDemo</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="LoadBalanceMod_jkDemo-Demo"></a>Demo</h1> <p>In order to load-balance a GlassFish cluster via Apache, follow these steps:</p> <p>1.&nbsp; Create cluster and local instances</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">asadmin create-cluster cluster1
+asadmin create-local-instance --cluster cluster1 in1
+asadmin create-local-instance --cluster cluster1 in2asadmin create-local-instance --cluster cluster1 in3
+asadmin start-local-instance instance1
+asadmin start-local-instance instance2asadmin start-local-instance instance3</pre> 
+       </div> 
+      </div>
+     </div> <p>2.&nbsp; Create mod_jk enabled network-listener</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">asadmin create-network-listener --jkenabled true --target cluster1 --protocol http-listener-1 --listenerport ${AJP_PORT} jk-listener</pre> 
+       </div> 
+      </div>
+     </div> <p>3.&nbsp; Define the jvmRoute system property at the GlassFish cluster level. For example, in the case of a cluster named "cluster1", run these commands:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">asadmin create-jvm-options --target cluster1 "-DjvmRoute=\${AJP_INSTANCE_NAME}"</pre> 
+       </div> 
+      </div>
+     </div> <p>4.&nbsp; Configure the above system properties for each instance in the cluster. For example, for a cluster instance named "in1", run these commands:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">asadmin create-system-properties --target instance1 AJP_INSTANCE_NAME=instance1
+asadmin create-system-properties --target instance1 AJP_PORT=8009
+
+asadmin create-system-properties --target instance2 AJP_INSTANCE_NAME=instance2
+asadmin create-system-properties --target instance2 AJP_PORT=8010
+asadmin create-system-properties --target instance3 AJP_INSTANCE_NAME=instance3
+asadmin create-system-properties --target instance3 AJP_PORT=8011</pre> 
+       </div> 
+      </div>
+     </div> <p>Notice how the port number (8009) specified for the mod_jk connector on "instance1" matches the value of the corresponding worker.instance1.port in the sample workers.properties below.</p> <p>5.&nbsp; List each GlassFish instance, including the port number of its mod_jk connector, in Apache's workers.properties configuration file. <b>Make sure that the name of each</b> worker <b>equals the value of the</b> jvmRoute <b>system property of the GlassFish instance to which the</b> worker <b>connects.</b> This convention makes it possible for an HTTP session to remain sticky to the GlassFish instance on which the session was created, or on which the session was last resumed.</p> <p>6.&nbsp; The following sample workers.properties configuration file is used to load-balance a 2-instance GlassFish cluster, in which the instances are spread over three physical server machines: my.domain1.com, my.domain2.com, and my.domain3.com:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false"># Define 1 real worker using ajp13
+worker.list=loadbalancer
+#Set properties for instance1
+worker.instance1.type=ajp13
+worker.instance1.host=my.domain1.com
+worker.instance1.port=8009
+worker.instance1.lbfactor=50
+worker.instance1.cachesize=10
+worker.instance1.cache_timeout=600
+worker.instance1.socket_keepalive=1
+worker.instance1.socket_timeout=300
+#Set properties for instance2
+worker.instance2.type=ajp13
+worker.instance2.host=my.domain2.com
+worker.instance2.port=8010
+worker.instance2.lbfactor=50
+worker.instance2.cachesize=10
+worker.instance2.cache_timeout=600
+worker.instance2.socket_keepalive=1
+worker.instance2.socket_timeout=300
+Set properties for instance3
+worker.instance3.type=ajp13
+worker.instance3.host=my.domain3.com
+worker.instance3.port=8011
+worker.instance3.lbfactor=50
+worker.instance3.cachesize=10
+worker.instance3.cache_timeout=600
+worker.instance3.socket_keepalive=1
+worker.instance3.socket_timeout=300
+
+worker.loadbalancer.type=lb
+worker.loadbalancer.balance_workers=instance1,instance2,instance3</pre> 
+       </div> 
+      </div>
+     </div> <p>7.&nbsp; Reference the loadbalancer worker specified in your workers.properties file from your httpd.conf. The following snippet from httpd.conf causes any JSP requests to be load-balanced over the GlassFish cluster configured in the above workers.properties file:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">JkWorkersFile workers.properties
+#Loadbalance all JSP requests over GlassFish cluster
+JkMount /*.jsp loadbalancer</pre> 
+       </div> 
+      </div>
+     </div> <p>As soon as the cluster instance to which an HTTP session has been sticky has failed, the loadbalancer will route any subsequent requests for the same HTTP session to a different instance. This instance will be able to load and resume the requested session using the in-memory session replication feature that has been available since GlassFish V2. <b>The in-memory session replication feature is enabled only for those web applications that have been marked as</b> distributable <b>in their</b> web.xml <b>deployment descriptor, and that have been deployed to the cluster with the</b> --availabilityenabled <b>option of the</b> asadmin deploy <b>command set to</b> true <b>(default is</b> false*).*</p> <h4><a name="LoadBalanceMod_jkDemo-Documentation"></a>Documentation</h1> <p>To Enable mod_jk <a href="http://download.oracle.com/docs/cd/E19798-01/821-1751/gixqw/index.html">http://download.oracle.com/docs/cd/E19798-01/821-1751/gixqw/index.html</a></p> <p>To Load Balance Using mod_jk and GlassFish Server <a href="http://download.oracle.com/docs/cd/E19798-01/821-1751/gixpx/index.html">http://download.oracle.com/docs/cd/E19798-01/821-1751/gixpx/index.html</a></p> <p>How to Loadbalance GlassFish Cluster with Apache Loadbalancer<a href="http://blogs.oracle.com/jluehe/entry/supporting_apache_loadbalancer_with_glassfish">http://blogs.oracle.com/jluehe/entry/supporting_apache_loadbalancer_with_glassfish</a></p> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Feb 28, 2011 by 
+<font color="#0050B2">amyroh</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : FaqShoalGMSPropertiesInDomainXML</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="FaqShoalGMSPropertiesInDomainXML-Ifamachinehasmultiplenetworkinterfaces%2ChowdoesoneconfigureShoalGMStoonlyuseonenetworkinterface%3F"></a>If a machine has multiple network interfaces, how does one configure Shoal GMS to only use one network interface?</h1> <p>By default, Shoal GMS uses all available working network interfaces on a machine. Thus, to limit Shoal GMS<br> to use only one network interface, one must follow the instructions below to configure a cluster to only use<br> one of the available working network interfaces on a multihomed machine.</p> <p>Here is a shell script that demonstrates setting the cluster element gms-bind-interface-address property using asadmin command line.<br> Note that the shell script is not parameterized, but one can change the environment variables to configure<br> for their purposes. This script works on "devtest-cluster" that is created by glassfish/appserv-tests/devtest/replication<br> by running "ant setup".</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">#!/bin/sh -x
+
+ASADMIN=${AS_HOME}/bin/asadmin
+DAS=devtest-cluster-domain
+DAS_GMS_BIND_ADDRESS=129.148.71.176
+CLUSTER=devtest-cluster
+DASCONFIG=server-config
+INSTANCE1=instance1
+INSTANCE1_ADDRESS=129.148.71.176
+INSTANCE2=instance2
+INSTANCE3=instance3
+PORT="--port 4845"
+USER="--user admin"
+
+${ASADMIN} start-domain ${DAS}
+${ASADMIN} set ${PORT} ${USER} ${CLUSTER}.property.gms-bind-interface-address=\${GMS_${CLUSTER}_BIND_ADDRESS}
+${ASADMIN} set ${PORT} ${USER} ${DASCONFIG}.system-property.GMS_${CLUSTER}_BIND_ADDRESS=\${DAS_GMS_BIND_ADDRESS}
+${ASADMIN} set ${PORT} ${USER} ${INSTANCE1}.system-property.GMS_${CLUSTER}_BIND_ADDRESS=\${INSTANCE1_ADDRESS}
+${ASADMIN} set ${PORT} ${USER} ${INSTANCE2}.system-property.GMS_${CLUSTER}_BIND_ADDRESS=\${INSTANCE1_ADDRESS}
+${ASADMIN} set ${PORT} ${USER} ${INSTANCE3}.system-property.GMS_${CLUSTER}_BIND_ADDRESS=\${INSTANCE1_ADDRESS}
+# following is needed for sailfin communication application server if "default-cluster" is not deleted.
+# ${ASADMIN} set ${PORT} ${USER} default-cluster.property.gms-bind-interface-address=\${GMS_${CLUSTER}_BIND_ADDRESS}
+${ASADMIN} stop-domain ${DAS}</pre> 
+       </div> 
+      </div>
+     </div> 
+     <hr> <p>Here is what it will look like in domain.xml.</p> <p>In domain.xml of DAS for a cluster named "devtest-cluster", one sets the following.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;cluster config-ref="devtest-cluster-config" heartbeat-address="228.8.20.94"
+heartbeat-enabled="true" heartbeat-port="17227" name="devtest-cluster"&gt;
+      &lt;!--  ... deleted unrelated info ...--&gt;
+      &lt;property name="gms-bind-interface-address"
+value="${GMS_DEVTEST-CLUSTER_BIND_INTERFACE_ADDR}"/&gt;
+    &lt;/cluster&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>Each server and possibly the DAS can choose to explicitly set the bind interface<br> address so only one is used, or not set it, so the default of all public network<br> interface addresses is used by group management services. One explicitly adds<br> the system-property "GMS_DEVTEST-CLUSTER_BIND_INTERFACE_ADDR" on servers that<br> one wants to specify the only network interface address to use. </p> <p>For example to set it in DAS and instance1 of devtest-cluster, one add the<br> system-property to server configuration element <a href="Server.html" title="Server">Server</a> as follows. </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;server config-ref="server-config" lb-weight="100" name="server"&gt;
+      &lt;!-- deleted non-essential info to this issue --&gt;
+      &lt;system-property name="GMS_DEVTEST-CLUSTER_BIND_INTERFACE_ADDR"
+value="129.148.71.168"/&gt;
+    &lt;/server&gt;
+    &lt;server config-ref="devtest-cluster-config" lb-weight="100" name="instance1"
+node-agent-ref="devtest-agent"&gt;
+      &lt;!-- deleted non-essential info to this issue --&gt;
+      &lt;system-property name="GMS_DEVTEST-CLUSTER_BIND_INTERFACE_ADDR"
+value="129.148.71.169"/&gt;
+&lt;/server&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>If the system property is not set, then group management service will perform<br> default processing of network interface address(es). The default is to use all<br> of them by gms.</p> <p>After the above steps have been taken, all Glassfish processes (domain server(DAS), NodeAgent, clustered instances) should be stopped<br> and restarted to pick up these changes. The NodeAgent recently was modified that it joins the Shoal group as a WATCHDOG so the nodeagent<br> also needs to be restarted to pick up this change. </p> <p>In order to ensure that the DAS never uses default binding, all cluster defined in DAS domain.xml must have gms-bind-interface-address property set.</p> 
+     <hr> <h4><a name="FaqShoalGMSPropertiesInDomainXML-ConfiguringGMSFailureDetectioninApplicationServer"></a>Configuring GMS Failure Detection in Application Server</h1> <p>__To get an intro to GMS Failure Detection and other configuration settings, please see the following Faq entry:<br> <a href="./FaqShoalGMSAttributesInDomainXML.html">http://wiki.glassfish.java.net/Wiki.jsp?page=FaqShoalGMSAttributesInDomainXML</a>__</p> <p>To decrease the time it takes for GMS to detect hardware/network failure of a server instance within a cluster,<br> one needs to decrease the TCP socket timeout used when trying to access that machine.</p> <p>The default value is currently 10 seconds. The total time that GMS takes to detect a server instance has failed due to a<br> hardware failure/network cable plug pulled is approximately 28 seconds using the current defaults (as of January 2009).</p> <p>Below the configuration shows the value being set to 3000 ms or 3 seconds.<br> This value is not recommended but it is necessary to achieve detection of server instance failing due to a hardware or network failure<br> within 15 seconds. For software failures, GMS detects a server instance has failed around 8-9 seconds. The smaller the timeout value is,<br> there is an increase in chance of GMS detecting false failures, namely the instance has not failed but just failed to respond within the<br> short window of time.</p> <h4><a name="FaqShoalGMSPropertiesInDomainXML-Configurationchangesindomain.xml"></a>Configuration changes in domain.xml</h2> <p>In domain.xml, this is achieved by adding property <em>failure-detection-tcp-retransmit-timeout</em> to group-management-service of<br> cluster <em>devtest-cluster</em>.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;config dynamic-reconfiguration-enabled="true" name="devtest-cluster-config"&gt;
+  ...
+  &lt;group-management-service fd-protocol-max-tries="3" fd-protocol-timeout-in-millis="2000" 
+                            merge-protocol-max-interval-in-millis="10000" 
+                            merge-protocol-min-interval-in-millis="5000" 
+                            ping-protocol-timeout-in-millis="5000" vs-protocol-timeout-in-millis="1500"&gt;
+        &lt;!-- property below configures gms so when it attempts to connect to a suspected failed server instance, 
+          -- the tcp socket creation timeout should be set to 3 seconds. This value is probably too small but was necessary
+          -- to achieve goal of detecting hw failure within 15 seconds.  Default value of 10 seconds detects hw failure in 28 seconds.
+          --&gt;
+	&lt;property name="failure-detection-tcp-retransmit-timeout" value="3000"/&gt;
+      &lt;/group-management-service&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>It is also necessary to change this value for domain admin server since it is the GMS Master Node.<br> Typically, changing the "group-management-service" within "default-config" is sufficient to achieve this for the DAS.</p> <h4><a name="FaqShoalGMSPropertiesInDomainXML-GMSFailureDetectionStates"></a>GMS Failure Detection States</h2> <p>GMS failure detection algorithm using group-management-service configuration parameters from domain.xml.</p> 
+     <ul> 
+      <li><b>Normal operation</b> 
+       <ul> 
+        <li>Each server instance in cluster sends out a heartbeat message every <em>fd-protocol-timeout-in-millis</em>. Default is 2000 ms or 2 seconds above.</li> 
+       </ul> </li> 
+      <li><b>Possibly Suspect</b> 
+       <ul> 
+        <li>Master Node suspects a server instance has failed when <em>fd-protocol-max-tries</em> * <em>fd-protocol-timeout-in-millis</em> ms pass and master node<br> has not received a heart beat message from a given server instance. Default is 6 seconds.</li> 
+       </ul> </li> 
+      <li><b>Confirmed Suspect</b> 
+       <ol> 
+        <li>To avoid waiting a long time trying to contact a machine via tcp that might have failed or had its network plug pulled,</li> 
+       </ol> </li> 
+     </ul> <p> GMS attempts a timed TCP operation with the failed machine with a timeout of <em>failure-detection-tcp-retransmit-timeout</em> ms. If this step times out, proceed to <b>Failure Validation</b>.</p> 
+     <ul> 
+      <li> 
+       <ol> 
+        <li>If previous test concludes the machine is up, then GMS uses a jxta method that pings the TCP connection of the server instance to verify the server instance is still procssing messages. If the ping succeeds, the server instance is no longer suspect, goto <b>Normal Operation</b>. If the ping fails, proceed to <b>Failure Validation</b>.</li> 
+       </ol> </li> 
+      <li><b>Failure Validation</b> 
+       <ul> 
+        <li>Wait <em>vs-protocol-timeout-in-millis</em> seconds, check if a heartbeat has arrived from the suspected failed server instance. If heartbeat arrived, proceed to <b>Normal operation</b>, else goto next step.</li> 
+        <li>Repeat <b>Confirmd Suspect</b> step 1 and 2. If no proof that server instance is working, then GMS Master node sends FAILURE notification to cluster for failed server instance.</li> 
+       </ul> </li> 
+     </ul> 
+     <hr> 
+     <hr> 
+     <div class="tabletitle"> 
+      <a name="comments"> <h4>Comments:</h2> </a> 
+     </div> 
+     <table border="0" width="100%"> 
+      <tbody>
+       <tr> 
+        <td> <a name="comment-20878134"></a> <font class="smallfont"><p>This was not working for me though, but I think I've to change the PhP file to get them free.</p> <p><a href="http://www.blackglass.com.au/what-we-do/online-strategy/">Online Strategy</a></p></font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by james1122 at Jul 17, 2011 03:24 
+         </div> </td> 
+       </tr> 
+      </tbody>
+     </table> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 02, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:44.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

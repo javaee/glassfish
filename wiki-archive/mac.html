@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : mac</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="mac-1.Nativevirtualization"></a>1. Native virtualization</h2> <p>tbd once we figure out how to use VirtualBox on the mac.</p> <h4><a name="mac-2.Virtualizationthroughlibvirt."></a>2. Virtualization through libvirt.</h2> <p>This will allow a Mac OS client machine to control machines running on linux with KVM or Xen hypervisor.<br> Note that it is doubtful that we will ever support such a solution but I provide the steps as a convenience<br> for users who which to continue using their Macs for development.</p> <h4><a name="mac-2.1Buildityourself."></a>2.1 Build it yourself.</h3> <h4><a name="mac-2.1.1Dependencies"></a>2.1.1 Dependencies</h4> <p>*libgpgerror, 1.7: <a href="ftp://ftp.gnupg.org/gcrypt/libgpg-error/libgpg-error-1.7.tar.gz">ftp://ftp.gnupg.org/gcrypt/libgpg-error/libgpg-error-1.7.tar.gz</a><br> *libgcrypt, 1.4.5: <a href="ftp://ftp.gnupg.org/gcrypt/libgcrypt/libgcrypt-1.4.5.tar.gz">ftp://ftp.gnupg.org/gcrypt/libgcrypt/libgcrypt-1.4.5.tar.gz</a><br> *gnutls, 2.8.5: <a href="ftp://ftp.gnu.org/pub/gnu/gnutls/gnutls-2.8.5.tar.bz2">ftp://ftp.gnu.org/pub/gnu/gnutls/gnutls-2.8.5.tar.bz2</a><br> *libvirt, 0.7.5: <a href="ftp://libvirt.org/libvirt/libvirt-0.7.5.tar.gz">ftp://libvirt.org/libvirt/libvirt-0.7.5.tar.gz</a></p> <h5><a name="mac-Compilelibgpgerror%3A"></a>Compile libgpgerror:</h5> 
+     <div class="code panel" style="border-style: solid;border-width: 1px;">
+      <div class="codeHeader panelHeader" style="border-bottom-width: 1px;border-bottom-style: solid;">
+       <b>libgperror</b>
+      </div>
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">tar -xzvf libgpg-error-1.7.tar.gz
+cd libgpg-error-1.7
+make
+sudo make install</pre> 
+       </div> 
+      </div>
+     </div> <h5><a name="mac-Compilelibgcrypt%3A"></a>Compile libgcrypt:</h5> 
+     <div class="code panel" style="border-style: solid;border-width: 1px;">
+      <div class="codeHeader panelHeader" style="border-bottom-width: 1px;border-bottom-style: solid;">
+       <b>libgcrypt</b>
+      </div>
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">tar -xzvf libgcrypt-1.4.5.tar.gz
+cd libgcrypt-1.4.5
+./configure --disable-asm
+make
+sudo make install</pre> 
+       </div> 
+      </div>
+     </div> <h5><a name="mac-Compilegnutls%3A"></a>Compile gnutls:</h5> 
+     <div class="code panel" style="border-style: solid;border-width: 1px;">
+      <div class="codeHeader panelHeader" style="border-bottom-width: 1px;border-bottom-style: solid;">
+       <b>gnutls</b>
+      </div>
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">tar -xzvf gnutls-2.8.5.tar.bz2
+cd gnutls-2.8.5
+./configure
+make
+sudo make install</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="mac-2.1.2Compilinglibvirt"></a>2.1.2 Compiling libvirt</h4> <p>Download the sources from <a href="http://libvirt.org/sources">http://libvirt.org/sources</a><br> I used 0.8.8</p> 
+     <div class="code panel" style="border-style: solid;border-width: 1px;">
+      <div class="codeHeader panelHeader" style="border-bottom-width: 1px;border-bottom-style: solid;">
+       <b>libvirt</b>
+      </div>
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">configure --prefix=/
+make 
+sudo make install</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="mac-2.2InstallitfromHomebrew%2Fmacports"></a>2.2 Install it from Homebrew/macports</h3> <h4><a name="mac-2.2.1Homebrew"></a>2.2.1 Homebrew </h4> <p>I have not tried these procedures, if it works, please update wiki.</p> <p>It is already officially in OSX Homebrew.</p> <p> <a href="http://mxcl.github.com/homebrew/">http://mxcl.github.com/homebrew/</a></p> <p>So, you can install it and "things work" just by doing:</p> <p> $ brew install</p> <p>Though, you need Homebrew set up on your system. </p> <h4><a name="mac-2.2.2MacPorts"></a>2.2.2 MacPorts</h4> <p>Still under review :</p> <p> <a href="https://trac.macports.org/ticket/28161">https://trac.macports.org/ticket/28161</a></p> <h4><a name="mac-2.3InstallMac%2Ffuse"></a>2.3 Install Mac/fuse</h3> <p>You need to install Mac Fuse to be able to create/mount ext2 disks (which are linux disks). </p> <p>*Download mac fuse from <a href="http://code.google.com/p/macfuse/">there</a><br> *Download the mac fuse ext2 module from <a href="http://sourceforge.net/projects/fuse-ext2/">here</a></p> <h4><a name="mac-2.4Addyourusernametothesudoers."></a>2.4 Add your user name to the sudoers. </h3> <p>Change /etc/sudoers and uncomment the tow lines below : </p> 
+     <div class="code panel" style="border-style: solid;border-width: 1px;">
+      <div class="codeHeader panelHeader" style="border-bottom-width: 1px;border-bottom-style: solid;">
+       <b>/etc/sudoers</b>
+      </div>
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false"># Uncomment to allow people in group wheel to run all commands
+%wheel	ALL=(ALL) ALL
+
+# Same thing without a password
+%wheel	ALL=(ALL) NOPASSWD: ALL}}</pre> 
+       </div> 
+      </div>
+     </div> <p>Add yourself to the wheel group</p> <p><tt>sudo dscl . -append /Groups/wheel GroupMembership yourusername</tt></p> <p>Verify, it should not ask for your password. </p> <p><tt>sudo ls</tt></p> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Mar 02, 2011 by 
+<font color="#0050B2">jeromedochez</font>. Exported from wikis.oracle.com on May 27, 2015 20:49.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

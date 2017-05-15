@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFishV3.1SecurityDocReview</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>This page provides links to review drafts of new and changed documentation for the Security Guide as listed in the <a href="GlassFishV3.1SecurityDocPlan.html" title="GlassFishV3.1SecurityDocPlan">GlassFishV3.1SecurityDocPlan</a>.</p> <p>Mandatory reviewers for each item are listed in each section.</p> <p>Changes to existing documentation since the last release are indicated. No changes are marked in new documentation.</p> <p>Please provide your feedback by adding a comment to this page. To simplify the processing of your comments, please add your comments in the format in the sample comment. Review existing comments to see known issues and avoid duplicates.</p> 
+     <div> 
+      <ul> 
+       <li><a href="#GlassFishV3.1SecurityDocReview-ChangestoBooks">Changes to Books</a></li> 
+       <ul> 
+        <li><a href="#GlassFishV3.1SecurityDocReview-SecurityGuideChanges"> <em>Security Guide</em> Changes</a></li> 
+       </ul> 
+       <li><a href="#GlassFishV3.1SecurityDocReview-ChangestoOnlineHelp">Changes to Online Help</a></li> 
+       <li><a href="#GlassFishV3.1SecurityDocReview-ChangestoManPages">Changes to Man Pages</a></li> 
+      </ul>
+     </div> <h4><a name="GlassFishV3.1SecurityDocReview-ChangestoBooks"></a>Changes to Books</h1> <h4><a name="GlassFishV3.1SecurityDocReview-SecurityGuideChanges"></a><em>Security Guide</em> Changes</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Section </th> 
+         <th class="confluenceTh">Documentation Impact</th> 
+         <th class="confluenceTh">Reviewers</th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"><a href="http://download.java.net/glassfish/wiki-archive/attachments/20876173/21365575.pdf">Administering System Security</a><br> Changed Sections:<br> JSR 196 Server Authentication Modules (New)<br> Working With the server.policy Policy File (New)<br> Custom Authentication of Client Certificate in SSL Mutual<br> Authentication (New)<br> Changes in Master Password (TBD) </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Kumar Jayanti<br> Tom Mueller<br> Bill Shannon<br> Martin Matula<br> Tim Quinn<br> Sonia Liu </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876173/21365576.pdf">Administering User Security</a><br> Changed Sections:<br> Added PAM Realm to Overview of Authentication Realms </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Kumar Jayanti<br> Tom Mueller<br> Bill Shannon<br> Martin Matula<br> Tim Quinn<br> Sonia Liu </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876173/21365577.pdf">Administering Message Security</a> <br> Changed Sections:<br> Administering JACC Providers (New) </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Kumar Jayanti<br> Bill Shannon<br> Martin Matula<br> Tim Quinn<br> Sonia Liu </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876173/21365552.pdf">Administering Security in Cluster Mode</a> </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Kumar Jayanti<br> Tom Mueller <br> Bill Shannon<br> Martin Matula<br> Tim Quinn<br> Sonia Liu </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876173/21365875.pdf">Managing Administrative Security</a><br> Added only comments from previous review </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Kumar Jayanti<br> Tom Mueller <br> Bill Shannon<br> Martin Matula<br> Tim Quinn<br> Sonia Liu </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876173/21365578.pdf">Running in a Secure Environment</a> </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Kumar Jayanti<br> Tom Mueller <br> Bill Shannon<br> Martin Matula<br> Tim Quinn<br> Sonia Liu </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishV3.1SecurityDocReview-ChangestoOnlineHelp"></a>Changes to Online Help</h1> <p>TBD</p> <h4><a name="GlassFishV3.1SecurityDocReview-ChangestoManPages"></a>Changes to Man Pages</h1> <p>TBD</p> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876173/21365851.pdf">GFSECURITY.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876173/21365853.pdf">cluster-security.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876173/21365584.pdf">administering-security.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876173/21365849.pdf">user-security.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876173/21365854.pdf">message-security.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876173/21365852.pdf">secure-environment.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876173/21365850.pdf">administering-security.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876173/21365882.pdf">GFSECURITY.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876173/21365883.pdf">administering-security.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876173/21365884.pdf">user-security.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876173/21365885.pdf">message-security.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876173/21365886.pdf">cluster-security.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876173/21365874.pdf">secure-environment.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876173/21365666.pdf">runtime-security.pdf</a> (application/x-download) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876173/21365665.pdf">secure-environment.pdf</a> (application/x-download) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876173/21365662.pdf">cluster-security.pdf</a> (application/x-download) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876173/21365661.pdf">message-security.pdf</a> (application/x-download) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876173/21365664.pdf">user-security.pdf</a> (application/x-download) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876173/21365663.pdf">administering-security.pdf</a> (application/x-download) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876173/21365660.pdf">GFSECURITY.pdf</a> (application/x-download) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876173/21365471.pdf">GFSECURITY.pdf</a> (application/x-download) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876173/21365575.pdf">administering-security.pdf</a> (application/x-download) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876173/21365576.pdf">user-security.pdf</a> (application/x-download) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876173/21365577.pdf">message-security.pdf</a> (application/x-download) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876173/21365552.pdf">cluster-security.pdf</a> (application/x-download) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876173/21365578.pdf">secure-environment.pdf</a> (application/x-download) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20876173/21365875.pdf">runtime-security.pdf</a> (application/x-download) 
+      <br> 
+     </div> 
+     <div class="tabletitle"> 
+      <a name="comments"> <h4>Comments:</h2> </a> 
+     </div> 
+     <table border="0" width="100%"> 
+      <tbody>
+       <tr> 
+        <td> <a name="comment-20879483"></a> <font class="smallfont">
+          <div class="table-wrap"> 
+           <table class="confluenceTable">
+            <tbody> 
+             <tr> 
+              <th class="confluenceTh">Comment ID</th> 
+              <th class="confluenceTh">Location</th> 
+              <th class="confluenceTh">Comment</th> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">KM-001</td> 
+              <td class="confluenceTd">Runtime Security Chapter</td> 
+              <td class="confluenceTd">Sample comment. Should provide a proposed fix and correct content if applicable.</td> 
+             </tr> 
+            </tbody>
+           </table> 
+          </div> </font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by kevinmcd at Jan 11, 2011 09:55 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20879462"></a> <font class="smallfont">
+          <div class="table-wrap"> 
+           <table class="confluenceTable">
+            <tbody> 
+             <tr> 
+              <th class="confluenceTh"> Comment ID </th> 
+              <th class="confluenceTh"> Location </th> 
+              <th class="confluenceTh"> Comment </th> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> TJQ-001 </td> 
+              <td class="confluenceTd"> p 11, just before the last line </td> 
+              <td class="confluenceTd"> Insert something like: "When you install GlassFish Server or create a new domain, secure admin is disabled by default. GlassFish Server will not encrypt administrative communication among the GlassFish Server system components and will not accept administrative connections from remote hosts." </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> TJQ-002 </td> 
+              <td class="confluenceTd"> p 12, 1st bullet </td> 
+              <td class="confluenceTd"> Currently reads "The enable-secure-admin subcommand creates or modifies the <br class="atl-forced-newline"> secure-admin element under the domain element in the domain.xml for the domain." Users won't care as much about the domain.xml change as they will the outward behavior of the system. I suggest: "The enable-secure-admin subcommand turns on secure admin. GlassFish Server will use SSL encryption to protect subsequent administrative traffic and will accept remote administrative connections." </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> TJQ-003 </td> 
+              <td class="confluenceTd"> p 12, 2nd bullet </td> 
+              <td class="confluenceTd"> For similar reasons, it should read "The disable-secure-admin subcommand turns off secure admin. GlassFish Server will no longer encrypt administrative messages and will no longer accept remote admin connections." </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> TJQ-004 </td> 
+              <td class="confluenceTd"> p 12, 2nd bullet </td> 
+              <td class="confluenceTd"> Change the last line to read "If secure admin is not enabled, this command has no effect." </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> TJQ-005 </td> 
+              <td class="confluenceTd"> p 12, remove last outer bullet and its two inner bullets </td> 
+              <td class="confluenceTd"> The keystore and truststore are loaded with the required keys and certs during the build and during domain creation. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> TJQ-006 </td> 
+              <td class="confluenceTd"> p 13, 4th sub-bullet under "Adjusts..." bullet </td> 
+              <td class="confluenceTd"> Change "alias \$aliasName" to "the correct alias" I might have used that property-style notation in the one-pager but it's not appropriate for the doc. Also change the 2nd paragraph in that subbullet to be "The Grizzly configuration on the DAS and each instance is identical, with the exception that the DAS uses the s1as alias for SSL/TLS <br class="atl-forced-newline"> authentication and the instances use the glassfish-instance alias." </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> TJQ-007 </td> 
+              <td class="confluenceTd"> p 13, paragraph just before the "Which Admin Account..." section header </td> 
+              <td class="confluenceTd"> Replace the paragraph (including numbered list) with "The restart also synchronizes the restarted instances. When you start the instances, the DAS delivers the updated config (in domain.xml) to the instances." The DAS will in fact deliver the keystore and truststore if needed but they will not change as a result of enable/disable-secure-admin. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> TJQ-008 </td> 
+              <td class="confluenceTd"> p 13, mid-page heading </td> 
+              <td class="confluenceTd"> change heading to "Default Admin Account" The default admin account is related to but not dependent on secure admin. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> TJQ-009 </td> 
+              <td class="confluenceTd"> p 15, first sentence </td> 
+              <td class="confluenceTd"> Add ", and a separate private key and self-signed certificate for remote instances." </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> TJQ-010 </td> 
+              <td class="confluenceTd"> p 15, 1st bullet </td> 
+              <td class="confluenceTd"> Remove this point. The keys and certs will always be in the keystore and truststore. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> TJQ-011 </td> 
+              <td class="confluenceTd"> p 15, last bullet </td> 
+              <td class="confluenceTd"> Remove the second sentence starting "If the...". </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> TJQ-012 </td> 
+              <td class="confluenceTd"> p 15, numbered list </td> 
+              <td class="confluenceTd"> Replace numbered list and its introducing sentence with: "Here is what happens when the DAS sends an admin message to an instance: <br class="atl-forced-newline"> 1. When the DAS connects to the instance, SSL on the instance asks the DAS to provide an SSL/TLS certificate. <br class="atl-forced-newline"> 2. The DAS sends the certificate with the alias you specified using the <tt>--adminalias</tt> option when you ran the enable-secure-admin command. <br class="atl-forced-newline"> 3. SSL on the instance makes sure the certificate is valid and GlassFish Server makes sure that the security Principal associated with the incoming request (provided automatically by Grizzly and the SSL/TLS Java implementation) matches the Principal associated with the adminalias from the instance's truststore. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> TJQ-013 </td> 
+              <td class="confluenceTd"> p 15, 2nd paragraph under "What Certs are Used" section </td> 
+              <td class="confluenceTd"> Change "instance-alias" to <tt>--instancealias</tt> and "admin-alias" to <tt>--adminalias</tt> because we're talking about the option name, not the domain.xml attribute. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> TJQ-014 </td> 
+              <td class="confluenceTd"> p 15, last sentence </td> 
+              <td class="confluenceTd"> Remove this sentence ("Whether you use..."). The original design had the principals in the admin realm but we are not doing that now. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> TJQ-015 </td> 
+              <td class="confluenceTd"> p 19, last bullet ("Remote client-to-instance") </td> 
+              <td class="confluenceTd"> Change first sentence from "Remote clients..." to "Remote asadmin clients..." because other types of clients - browsers using the REST interface retrieve monitoring data, for example - are allowed to connect directly to instances. The locally-provisioned password is used only by asadmin clients. <br class="atl-forced-newline"> <br class="atl-forced-newline"> Also, remove the sentence starting "In addition" because there is in fact an admin realm on the instances. It is not used directly by secure admin but is by other parts of security. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> TJQ-016 </td> 
+              <td class="confluenceTd"> p 20, item #6 </td> 
+              <td class="confluenceTd"> change "...when you create the domain." to "...when you create the domain or install GlassFish Server." </td> 
+             </tr> 
+            </tbody>
+           </table> 
+          </div> </font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by timq at Jan 13, 2011 15:49 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20879376"></a> <font class="smallfont"><p>Thanks for the detailed comments, I really appreciate them! </p> <p>I've made all the changes except TJQ-008. I'm not sure what you want for this one. </p></font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by kevinmcd at Jan 14, 2011 13:22 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20879381"></a> <font class="smallfont"><p>About TJQ-008...</p> <p>GlassFish uses the same approach to the default admin account whether secure admin is enabled or not. I thought that renaming the heading would remove some possible confusion, given that the original heading is "Which Admin Account is Used for Secure Admin?" </p> <p>Enabling secure admin allows the default admin account – and all other admin accounts – to access the DAS remotely. But it does not affect how the default admin account is handled or whether there is one.</p></font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by timq at Jan 14, 2011 14:40 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20879383"></a> <font class="smallfont"><p>What if I change the head to "Which Admin Account is Used"? That describes the content of the section, and removes any notion that the admin account is somehow different for secure admin.</p></font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by kevinmcd at Jan 14, 2011 14:59 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20879384"></a> <font class="smallfont"><p>That sounds good.</p></font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by timq at Jan 14, 2011 15:14 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20879385"></a> <font class="smallfont"><p>OK, I'll make that change. </p></font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by kevinmcd at Jan 14, 2011 15:16 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20879407"></a> <font class="smallfont"><p>Comments on "Administering Administrative Security"</p> 
+          <div class="table-wrap"> 
+           <table class="confluenceTable">
+            <tbody> 
+             <tr> 
+              <th class="confluenceTh"> <font color="#000000">Comment ID</font> </th> 
+              <th class="confluenceTh"> <font color="#000000">Location</font> </th> 
+              <th class="confluenceTh"> <font color="#000000">Comment</font> </th> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> <font color="inherit">trm-001</font> </td> 
+              <td class="confluenceTd"> <font color="inherit">p11</font> </td> 
+              <td class="confluenceTd"> <font color="inherit">add "administrative" to "secure all communication" in the first pp under Secure Administration Overview. Other communication such as for GMS is not secured by this feature.</font> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> <font color="inherit">trm-002</font> </td> 
+              <td class="confluenceTd"> <font color="inherit">p12, last bullet</font> </td> 
+              <td class="confluenceTd"> <font color="inherit">extra "," at the end of the phrase</font> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> <font color="inherit">trm-003</font> </td> 
+              <td class="confluenceTd"> <font color="inherit">general</font> </td> 
+              <td class="confluenceTd"> <font color="inherit">there are many uses of words such as "admin" and "config" that should probably be spelled out. &nbsp;For example, "config" in "delivers the updated config" on p13 and "admin" in the 2nd bullet on p13.&nbsp;</font> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> <font color="inherit">trm-004</font> </td> 
+              <td class="confluenceTd"> <font color="inherit">p15</font> </td> 
+              <td class="confluenceTd"> <font color="inherit">"When the DAS sends an admin message to an instance:"&nbsp;and "When the DAS connects to the instance" seem to be redundant.&nbsp;</font> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> trm-005 </td> 
+              <td class="confluenceTd"> p15 </td> 
+              <td class="confluenceTd"> When describing the use of keytool to look at the keystore contents, it would be good to mention how one knows what the password for the keystore is. &nbsp;This is the "master password" that has a default value of "changeit" unless it has been changed by the change-master-password subcommand. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> trm-006 </td> 
+              <td class="confluenceTd"> p18 </td> 
+              <td class="confluenceTd"> Section "Using your own certificates" - is it really necessary to use different alias names? &nbsp;Or is it possible to just install your own certificates using the s1as and glassfish-instance aliases? </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> trm-007 </td> 
+              <td class="confluenceTd"> p18, 2nd bullet </td> 
+              <td class="confluenceTd"> "truststores" should be "truststore" </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> trm-008 </td> 
+              <td class="confluenceTd"> p19, 1st bullet </td> 
+              <td class="confluenceTd"> Given what "foobar" stands for, I would recommend not using these as example host names in formal documentation. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> trm-009 </td> 
+              <td class="confluenceTd"> p19, table 5-2 </td> 
+              <td class="confluenceTd"> The last entry does not seem to get across the point that it is possible to setup a DAS with instances on remote servers as long as SSH is being used (with the create-instance, start-instance, start-cluster, etc. commands working), even though create-local-instance, start-local-instance on the remote host will not work. &nbsp;In that case, the start-instance, start-cluster, etc. commands are run on the same host as the DAS, but through the use of SSH, a hidden start-local-instance is actually run on a remote host and it works, even though running start-local-instance manually on the remote host will not work. &nbsp;Maybe the problem is the term "*-ssh command" since it is more than that that actually works in this situation. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> trm-010 </td> 
+              <td class="confluenceTd"> p20 </td> 
+              <td class="confluenceTd"> typo "GlassFish Serverwith" <br class="atl-forced-newline"> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> trm-011 </td> 
+              <td class="confluenceTd"> p20, #2 </td> 
+              <td class="confluenceTd"> AFAIK, it is possible to run enable-secure-admin even if there are no instances created. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> trm-012 </td> 
+              <td class="confluenceTd"> p21 </td> 
+              <td class="confluenceTd"> Under "Additional Considerations...", it is not clear what "xxx-instance-ssh" refers to.&nbsp; <br class="atl-forced-newline"> </td> 
+             </tr> 
+            </tbody>
+           </table> 
+          </div> </font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by trmueller at Jan 18, 2011 08:35 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20879349"></a> <font class="smallfont"><p>Great comments, thanks! For trm-009 would it be clearer if I were to change "*-ssh commands" to "Commands that require SSH. For example, create-instance."?</p> </font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by kevinmcd at Jan 18, 2011 11:40 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20879187"></a> <font class="smallfont"><p>Yes, but I would suggest phrasing it "Command that use SSH" rather than "require SSH", since it is possible to use commands such as create-instance even with SSH is not being used.&nbsp;</p></font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by trmueller at Jan 22, 2011 12:59 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20879058"></a> <font class="smallfont"><p>I'll make this change. (Which I meant to do before now!)</p></font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by kevinmcd at Jan 30, 2011 18:59 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20880124"></a> <font class="smallfont">
+          <div class="table-wrap"> 
+           <table class="confluenceTable">
+            <tbody> 
+             <tr> 
+              <th class="confluenceTh"> Comment ID </th> 
+              <th class="confluenceTh"> Location </th> 
+              <th class="confluenceTh"> Comment </th> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> TJQ-017 </td> 
+              <td class="confluenceTd"> Administering System Security, p. 13, Administration Password section </td> 
+              <td class="confluenceTd"> This implies there is a single administration password. In fact, the user can authenticate as an administrator using any username/password pair that is defined in the admin realm and also marked as a member of the admin group. As a result of installation (or domain creation) there is a single default admin account, so maybe this section could be clarified to refer to that? </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> TJQ-018 </td> 
+              <td class="confluenceTd"> same chapter, p. 31-32, Changing the Administration Password </td> 
+              <td class="confluenceTd"> Again, the header implies there is a single admin password. Also, the example confuses the <tt>--user</tt> option which authenticates the person running asadmin to the DAS with the <tt>--username</tt> option which identifies for which admin account you want to change the password. Given that the example shows multi-mode, normally the user would specify <tt>--user</tt> on the asadmin invocation and not on the subcommand. Changing the example to <tt>change-admin-password --username anonymous</tt> would be better. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> TJQ-019 </td> 
+              <td class="confluenceTd"> Cluster Security chapter, p. 11, Dynamic Reconfig section, first paragraph </td> 
+              <td class="confluenceTd"> Change last sentence in the paragraph from "... the DAS and the instances make the same changes to the domain's configuration" to "... the DAS and the instances make the same changes to their respective copies of the domain's configuration." </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> TJQ-020 </td> 
+              <td class="confluenceTd"> same chapter, p. 12, first bullet list </td> 
+              <td class="confluenceTd"> There should be some typographical difference between "server" in the first bullet item - which is the actual text the user would enter - and the values in the other bullet items - which are placeholders for actual values. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> TJQ-021 </td> 
+              <td class="confluenceTd"> same chapter, Enabling Dynamic Reconfig section, 2nd paragraph </td> 
+              <td class="confluenceTd"> Remove this paragraph. The user no longer needs to disable dynamic reconfig to perform rolling application upgrades. In fact dyn. reconfig should be left on. The new application versioning support simplifies rolling upgrade, and removing the need for disabling and then re-enabling dyn. reconfig. is one such simplification. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> TJQ-022 </td> 
+              <td class="confluenceTd"> Administering Runtime Security chapter </td> 
+              <td class="confluenceTd"> Should we rename this chapter to Managing Administrative Security (or something similar) instead of referring to runtime security? As Tom and I have pointed out, <tt>enable-/disable-secure-admin</tt> affects admin security only - not other communication such as IIOP, normal web traffic, MQ, etc. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> TJQ-023 </td> 
+              <td class="confluenceTd"> same ch., p. 12, 2nd sentence </td> 
+              <td class="confluenceTd"> Prefix the sentence with "In this state," or "With secure admin disabled." I know the context should imply that we're talking about the case with secure admin disabled, but this would help emphasize it. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> TJQ-024 </td> 
+              <td class="confluenceTd"> same ch., p. 14, 4th bullet </td> 
+              <td class="confluenceTd"> 4th sentence (starting "messages") should be capitalized. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> TJQ-025 </td> 
+              <td class="confluenceTd"> same ch., p. 20, item #2 </td> 
+              <td class="confluenceTd"> It's not required to have remote instances installed to use secure admin. If any remote instances exists, they should not be running. So maybe change this item to "No remote instances are running." </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> TJQ-026 </td> 
+              <td class="confluenceTd"> same ch., p. 21, in the "Example" section </td> 
+              <td class="confluenceTd"> Please add the following: You can use the following command to see the current state of secure admin in a domain: <br class="atl-forced-newline"> <tt>asadmin get secure-admin.enabled</tt> <br class="atl-forced-newline"> <tt>secure-admin.enabled=false</tt> <br class="atl-forced-newline"> <tt>Command get executed successfully.</tt> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">TJQ-027</td> 
+              <td class="confluenceTd"> various places </td> 
+              <td class="confluenceTd"> With secure admin disabled, GlassFish server rejects remote access using <tt>asadmin</tt> or IDEs. But GlassFish Server does allow remote monitoring (read-only) access via the REST interface with secure admin disabled. We should mention this in the places where we talk about what GlassFish Server allows or prohibits with secure admin disabled. This applies to each of the chapters.</td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd">TJQ-028</td> 
+              <td class="confluenceTd">Cluster-mode chapter</td> 
+              <td class="confluenceTd">Possible additional topic to discuss (actually, this applies to any installation with remote instances, whether those instances are cluster members or not): <br class="atl-forced-newline">Realize that the remote instances will synchronize with the DAS. This means files will be copied over the network from the DAS to the instances. Enable secure admin so GlassFish server will transfer these files securely.</td> 
+             </tr> 
+            </tbody>
+           </table> 
+          </div> </font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by timq at Jan 31, 2011 08:48 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20880089"></a> <font class="smallfont"><p>I updated the PDF files to fix a bad-link problem.</p></font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by kevinmcd at Feb 01, 2011 19:34 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20879906"></a> <font class="smallfont"><p>I don't know why I don't see your latest comments here, Kevin. But anyway...</p> <p>I don't see a way to get to the previous version of the .pdf, so I can't compare the recent edits to the earlier version. But re: TJQ-017 (on p. 15, Administration Password section...) I realize this overall section talks about passwords and their importance. I still think it's useful to reinforce that an admin password is always paired with an admin username. So how about changing the second sentence in the Administration Password section:</p> <p>"As with the default admin username, the default admin password is usually set during installation but it can be changed."</p> <p>Re: TJQ-018 (p. 34). Changes look good. Is it obvious that the new password and the confirmation will not be echoed on the user's display, or should we indicate that in the doc somehow?</p></font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by timq at Feb 03, 2011 15:30 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20879909"></a> <font class="smallfont"><p>Tim, I had posted my comments for TJQ-017 and TJQ-018, but then looked again at the changes and thought I might not have done enough. So, I backed out my comment. But I forgot about email notification! </p> <p>I had removed the prior version because of a link problem I needed to fix. I'll keep the next versions in place.</p></font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by kevinmcd at Feb 03, 2011 15:41 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20879910"></a> <font class="smallfont"><p>Changes made as indicated, marked with change bars. Previous version of PDF file retained and is available from attachments page.</p></font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by kevinmcd at Feb 03, 2011 19:48 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20879796"></a> <font class="smallfont"><p>Comments on "Administering System Security"</p> 
+          <div class="table-wrap"> 
+           <table class="confluenceTable">
+            <tbody> 
+             <tr> 
+              <th class="confluenceTh"> <font color="#000000">Comment ID</font> </th> 
+              <th class="confluenceTh"> <font color="#000000">Location</font> </th> 
+              <th class="confluenceTh"> <font color="#000000">Comment</font> </th> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> <font color="inherit">trm-001</font> </td> 
+              <td class="confluenceTd"> <font color="inherit">p17, 2nd pp and p29, p38</font> </td> 
+              <td class="confluenceTd"> <font color="inherit">Replace J2SE with Java SE</font> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> <font color="inherit">trm-002</font> </td> 
+              <td class="confluenceTd"> <font color="inherit">p28</font> </td> 
+              <td class="confluenceTd"> <font color="inherit">The example runs off the right hand side of the page.</font> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> <font color="inherit">trm-003</font> </td> 
+              <td class="confluenceTd"> <font color="inherit">p13 and p30</font> </td> 
+              <td class="confluenceTd"> <font color="inherit">The statement about the master password being the most sensitive piece of data in the system is most likely not true.&nbsp;</font> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> <font color="inherit">trm-004</font> </td> 
+              <td class="confluenceTd"> <font color="inherit">p30</font> </td> 
+              <td class="confluenceTd"> <font color="inherit">When changing the master password, it has to be changed on all nodes as well as on the DAS. The master password on nodes is only stored once in the node, for all instances that are on that node.&nbsp;</font> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> <font color="inherit">trm-005</font> </td> 
+              <td class="confluenceTd"> <font color="inherit">p31</font> </td> 
+              <td class="confluenceTd"> <font color="inherit">remove the " again" from the first prompt at the top of the page. &nbsp;The old master password is only requested once, so there is no "again" in that prompt.</font> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> <font color="inherit">trm-006</font> </td> 
+              <td class="confluenceTd"> <font color="inherit">p31</font> </td> 
+              <td class="confluenceTd"> <font color="inherit">The set command in the middle of the page doesn't seem to make sense, i.e., I don't see why that example is there. &nbsp;The jms-service admin passwords is unrelated to GlassFish's admin password.&nbsp;</font> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> <font color="inherit">trm-007</font> </td> 
+              <td class="confluenceTd"> <font color="inherit">p32</font> </td> 
+              <td class="confluenceTd"> <font color="inherit">typo: "In This example"</font> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> <font color="inherit">trm-008</font> </td> 
+              <td class="confluenceTd"> <font color="inherit">p36</font> </td> 
+              <td class="confluenceTd"> <font color="inherit">typo: "update-password-allias" - also, I don't know why that "password.txt" argument is there. &nbsp;The update-password-alias command only takes one operand, the name of the alias.&nbsp;</font> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> <font color="inherit">trm-009</font> </td> 
+              <td class="confluenceTd"> <font color="inherit">p36</font> </td> 
+              <td class="confluenceTd"> <font color="inherit">In the create audit module intro, there isn't much information here on why one would want to create an Audit module, what interface the specified class has to implement, or where the JAR file containing that class has to go. &nbsp;Maybe there should be a reference here to some development guide for this.&nbsp;</font> </td> 
+             </tr> 
+            </tbody>
+           </table> 
+          </div> <p>Comments on "Running in a Secure Environment"</p> 
+          <div class="table-wrap"> 
+           <table class="confluenceTable">
+            <tbody> 
+             <tr> 
+              <th class="confluenceTh"> <font color="#000000">Comment ID</font> </th> 
+              <th class="confluenceTh"> <font color="#000000">Location</font> </th> 
+              <th class="confluenceTh"> <font color="#000000">Comment</font> </th> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> <font color="inherit">trm-010</font> </td> 
+              <td class="confluenceTd"> <font color="inherit">p97</font> </td> 
+              <td class="confluenceTd"> <font color="inherit">typo: "preventDAS-to-DAS"</font> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> <font color="inherit">trm-011</font> </td> 
+              <td class="confluenceTd"> <font color="inherit">p100</font> </td> 
+              <td class="confluenceTd"> <font color="inherit">there is a reference to "3.0.1" on this page that should be 3.1</font> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> <font color="inherit">trm-012</font> </td> 
+              <td class="confluenceTd"> <font color="inherit">p103</font> </td> 
+              <td class="confluenceTd"> <font color="inherit">first table item refers to "-<del>password" which should be "</del>-passwordfile"</font> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> <font color="inherit">trm-013</font> </td> 
+              <td class="confluenceTd"> <font color="inherit">p104</font> </td> 
+              <td class="confluenceTd"> <font color="inherit">typo: "Serverprovides"</font> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> <font color="inherit">trm-014</font> </td> 
+              <td class="confluenceTd"> <font color="inherit">p106</font> </td> 
+              <td class="confluenceTd"> <font color="inherit">typo: "Serverenvironment"</font> </td> 
+             </tr> 
+            </tbody>
+           </table> 
+          </div> <p>Comments on "Administering Security in Cluster Mode"</p> 
+          <div class="table-wrap"> 
+           <table class="confluenceTable">
+            <tbody> 
+             <tr> 
+              <th class="confluenceTh"> <font color="#000000">Comment ID</font> </th> 
+              <th class="confluenceTh"> <font color="#000000">Location</font> </th> 
+              <th class="confluenceTh"> <font color="#000000">Comment</font> </th> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> <font color="inherit">trm-015</font> </td> 
+              <td class="confluenceTd"> <font color="inherit">p12</font> </td> 
+              <td class="confluenceTd"> <font color="inherit">in the list of command in the middle of the page, add "create-file-user"</font> </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> <font color="inherit">trm-016</font> </td> 
+              <td class="confluenceTd"> <font color="inherit">p12</font> </td> 
+              <td class="confluenceTd"> <font color="inherit">the list-jacc-providers command doesn't actually take the --target option, it takes a target operand.</font> </td> 
+             </tr> 
+            </tbody>
+           </table> 
+          </div> </font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by trmueller at Feb 07, 2011 15:31 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20882692"></a> <font class="smallfont"><p>Does the following text adequately/correctly address trm-006?</p> <p>(I updated the PDF with this text, but I suspect the ASCII will be easier to work with.) </p> <p>"It is also possible to use s1as and glassfish-instance as the alias names for your own certificates. A benefit of doing so is that you would not have to specify alias names with the enable-secure-admin subcommand.</p> <p>In addition, your own certificate identified by the s1as alias would be used in all other cases within the domain where the s1as alias is used (by default), such as in the SSL configuration of the IIOP and http-listener-2 listeners, and as the encryption.key.alias and<br> signature.key.alias used for provider configuration in the SOAP authentication layer for Message Security configuration.</p> <p>You may find the wide-reaching effect of using the s1as alias with your own certificate to be either a useful feature or an unintended consequence. Therefore, you should understand the implications of using the s1as alias before doing so.</p> <p>If you decide to use the s1as and glassfish-instance aliases with your own certificates, you will first need to disable secure admin (if enabled) and then change or delete the exiting s1as alias from both the keystore.jks keystore and cacerts.jks truststore for the DAS. You can use the --changealias or --delete option of keytool to accomplish this. Then, import your own certificates.</p> <p>When you enable secure admin, the DAS and the instances then have copies of the same keystore and truststore."</p> </font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by kevinmcd at Feb 08, 2011 14:35 
+         </div> </td> 
+       </tr> 
+       <tr> 
+        <td style="border-top: 1px dashed #666666"> <a name="comment-20882635"></a> <font class="smallfont"><p>Yes.</p></font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by trmueller at Feb 09, 2011 08:32 
+         </div> </td> 
+       </tr> 
+      </tbody>
+     </table> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Feb 07, 2011 by 
+<font color="#0050B2">kevinmcd</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

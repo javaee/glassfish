@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : 3.1SSHScenarios</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="3.1SSHScenarios-3.1InstanceLifecycleScenarios"></a>3.1 Instance Lifecycle Scenarios</h2> <p><em>1.2</em></p> <p>For clarity these scenarios are only showing one instance clusters.</p> <p>Reference: <a href="3.1SSHProvisioningDesign.html#3.1SSHProvisioningDesign-section3.1SSHProvisioningDesign9.0Configuration">domain.xml snippet in design spec</a>.</p> <h4><a name="3.1SSHScenarios-Scenario1%3ADASmanaged%3ARemoteinstance%3ASSHnode%3A%28createnodessh%2Fcreateinstance%2Fstartinstance%29"></a>Scenario 1: DAS managed: Remote instance: SSH node: (create-node-ssh/create-instance/start-instance)</h4> <p>MS3</p> <p>1) Prerequisite: SSH configured such that the user that the DAS is running as can connect to remote nodes via SSH using key authentication and key file is in default location ($user.home/.ssh/id_[rd]sa). Run the following commands:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">asadmin create-cluster c1
+asadmin create-node-ssh --nodehost glassfish1.sfbay.sun.com --installdir /export/glassfish3 n1
+asadmin create-instance --node n1 --cluster c1 i1
+asadmin start-cluster c1
+asadmin list-instances
+asadmin stop-cluster c1</pre> 
+       </div> 
+      </div>
+     </div> <p>domain.xml snippet:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;server . . . name="i1" node-ref="n1"&gt;
+. . .
+&lt;/server&gt;
+
+&lt;node name="n1" type="SSH" node-host="glassfish1.sfbay.sun.com" install-dir="/export/glassfish3"&gt;
+    &lt;ssh-connector port=22&gt;
+        &lt;ssh-auth type="key" username="${user.name}" keyfile="${user.home}/.ssh/id_dsa" /&gt;
+    &lt;/ssh-connector&gt;
+&lt;/node&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>Notes:</p> 
+     <ol> 
+      <li>create-instance runs: "_create-instance-filesystem i1" over SSH.</li> 
+     </ol> <h4><a name="3.1SSHScenarios-Scenario2%3ADAS%26nbsp%3Bmanaged%3ALocalinstance%3Alocalhostnode%3A%28createinstance%2Fstartinstance%29"></a>Scenario 2: DAS&nbsp; managed: Local instance: localhost node: (create-instance/start-instance)</h4> <p>MS3</p> <p>1) No SSH required</p> <p>2) Run the following commands:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">asadmin create-cluster c1
+asadmin create-instance --node localhost --cluster c1 i1
+asadmin start-cluster c1
+asadmin list-instances
+asadmin stop-cluster c1</pre> 
+       </div> 
+      </div>
+     </div> <p>domain.xml snippet:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;server . . . name="i1" node-ref="localhost"&gt;
+. . .
+&lt;/server&gt;
+
+&lt;node name="localhost" type="CONFIG" node-host="localhost-domain1" install-dir=${com.sun.aas.productRoot}"&gt;
+&lt;/node&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>Notes</p> 
+     <ol> 
+      <li>Supported in MS3</li> 
+      <li>"localhost" is a node that ships pre-defined in domain.xml</li> 
+      <li>In earlier builds create-instance defaulted --node to "localhost", but the correct behavior is for it to be required.</li> 
+     </ol> <h4><a name="3.1SSHScenarios-Scenario3%3ALocallymanaged%3ARemoteinstance%3Aautonodecreation%3A%28createlocalinstance%2Fstartlocalinstance%29"></a>Scenario 3: Locally managed: Remote instance: autonode creation: (create-local-instance/start-local-instance)</h4> <p>MS3</p> <p>1) No SSH</p> <p>2) Create cluster on DAS</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">asadmin create-cluster c1</pre> 
+       </div> 
+      </div>
+     </div> <p>3) On glassfish1.sfbay create instance</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">asadmin --host dashost create-local-instance --cluster c1 i1
+asadmin start-local-instance i1</pre> 
+       </div> 
+      </div>
+     </div> <p>This implicitly create nodes as shown in domain.xml snippet</p> <p>4) Can't start/stop cluster/instance via DAS since not SSH.</p> <p>domain.xml snippet:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;server . . . name="i1" node-ref="glassfish1.sfbay.sun.com"&gt;
+. . .
+&lt;/server&gt;
+
+&lt;node name="glassfish1.sfbay.sun.com" type="CONFIG" node-host="glassfish1.sfbay.sun.com"
+ install-dir="/export/glassfish3"&gt;
+&lt;/node&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>Notes:</p> 
+     <ol> 
+      <li>Supported in MS3 except that create-local-instance does not validate an existing node has matching parameters (issue <a href="https://github.com/javaee/glassfish/issues/12550">12550</a>).</li> 
+      <li>create-local-instance implicitly creates the node by calling: "_create-node-implicit --name glassfish1.sfbay.sun.com --nodehost glassfish1.sfbay.sun.com --nodehome /export/glassfishv3".&nbsp; Issue <a href="https://github.com/javaee/glassfish/issues/12422">12422</a> covers this.</li> 
+      <li>_create-node-implicit will succeed if the node does not exist and it creates a new one, or the node already exists and has values that match the values passed by create-local-instance.</li> 
+      <li><b>Note from Byron - your mileage may vary. If you try it with a computer sitting on VPN you will NOT get the same value for name and nodehost</b></li> 
+     </ol> <h4><a name="3.1SSHScenarios-Scenario4%3ADASManaged%3ARemoteinstance%3ASSHnode%3ALocalinstancecreation%3A%28createsshnode%2Fcreatelocalinstance%2Fstartinstance%29"></a>Scenario 4: DAS Managed: Remote instance: SSH node: Local instance creation: (create-ssh-node/create-local-instance/start-instance)</h4> <p>MS4</p> <p>1) Prerequisite: SSH configured such that the user that the DAS is running as can connect to remote nodes via SSH using key authentication and key file is in default location ($user.home/.ssh/id_[rd]sa).</p> <p>2) Run the following commands on the DAS:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">asadmin create-cluster c1
+asadmin create-node-ssh --nodehost glassfish1.sfbay.sun.com --installdir /export/glassfish3 n1</pre> 
+       </div> 
+      </div>
+     </div> <p>3) On glassfish1.sfbay create instance</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">asadmin create-local-instance --node n1 --cluster c1 i1</pre> 
+       </div> 
+      </div>
+     </div> <p>4) On DAS</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">asadmin start-cluster c1
+asadmin list-instances
+asadmin stop-cluster c1</pre> 
+       </div> 
+      </div>
+     </div> <p>domain.xml snippet:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;server . . . name="i1" node-ref="n1"&gt;
+. . .
+&lt;/server&gt;
+
+&lt;node name="n1" type="SSH" node-host="glassfish1.sfbay.sun.com" install-dir="/export/glassfish3"&gt;
+    &lt;ssh-connector port=22&gt;
+        &lt;ssh-auth type="key" username="${user.name}" keyfile="${user.home}/.ssh/id_dsa" /&gt;
+    &lt;/ssh-connector&gt;
+&lt;/node&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>Notes:</p> 
+     <ol> 
+      <li>Supported in MS3 except create-local-instance does not validate node information (issue(<a href="https://github.com/javaee/glassfish/issues/12544">12544</a>).</li> 
+      <li>If the user specifies an invalid node for "--node" (that is a node that does not exist in domain.xml) to create-local-instance then _register-instance should fail and cause the command to fail and the filesystem to not be created.</li> 
+      <li>create-local-instance does not try to implicitly create node.</li> 
+      <li>create-local-instance should validate the node information by calling _validate-node and passing nodehost, nodehome and nodedir (_validate-node does not exist in MS2/MS3). "_validate-node --node name --nodehost host&nbsp; --nodehome homepath --nodedir pathdir" ensures there is a node with values that match those that are passed. If the existing node is a config node then it will update the missing attributes to contain the passed values (see Scenario 5).</li> 
+     </ol> <h4><a name="3.1SSHScenarios-Scenario5%3ALocallymanaged%3ARemoteinstance%3Aconfignode%3ALocalinstancecreation%3A%28createnodeconfig%2Fcreatelocalinstance%2Fstartlocalinstance%29"></a>Scenario 5: Locally managed: Remote instance: config node: Local instance creation: (create-node-config/create-local-instance/start-local-instance)</h4> <p>MS4</p> <p>1) No SSH</p> <p>2) Run the following commands:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">asadmin create-cluster c1
+asadmin create-node-config n1</pre> 
+       </div> 
+      </div>
+     </div> <p>This creates a node that looks like:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;node name="n1"&gt;
+&lt;/node&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>3) On glassfish1.sfbay create instance</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">asadmin create-local-instance --node n1 --cluster c1 i1
+asadmin start-local-instance i1</pre> 
+       </div> 
+      </div>
+     </div> <p>4) Can't start/stop cluster/instance via DAS since not SSH.</p> <p>domain.xml snippet:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;server . . . name="i1" node-ref="n1"&gt;
+. . .
+&lt;/server&gt;
+
+&lt;node name="n1" type="CONFIG" node-host="glassfish1.sfbay.sun.com" node-home="/export/glassfish3"&gt;
+&lt;/node&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>Notes:</p> 
+     <ol> 
+      <li>Supported in MS4 (see issue <a href="https://github.com/javaee/glassfish/issues/12544">12544</a></li> 
+      <li>Like in Scenario 4 create-local-insance calls "_validate-node --node name --nodehost host&nbsp; --nodehome homepath --nodedir pathdir" to ensure the node exists and in this case it will also populate missing attributes.</li> 
+     </ol> <h4><a name="3.1SSHScenarios-Scenario6%3AUpgradenonSSHnodetoSSHnode"></a>Scenario 6: Upgrade non SSH node to SSH node</h4> <p>MS4</p> <p>1) Start with Scenario 3 (you have a non SSH node)</p> <p>2) Upgrade node to SSH node</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">asadmin update-node-ssh glassfish1.sfbay.sun.com</pre> 
+       </div> 
+      </div>
+     </div> <p>domain.xml snippet:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;server . . . name="i1" node-ref="glassfish1.sfbay.sun.com"&gt;
+. . .
+&lt;/server&gt;
+
+&lt;node name="glassfish1.sfbay.sun.com" type="SSH" node-host="glassfish1.sfbay.sun.com" node-home="/export/glassfish3"&gt;
+    &lt;ssh-connector port=22&gt;
+        &lt;ssh-auth type="key" username="${user.name}" keyfile="${user.home}/.ssh/id_dsa" /&gt;
+    &lt;/ssh-connector&gt;
+&lt;/node&gt;</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ol> 
+      <li>Supported in MS4</li> 
+      <li>update-node-ssh does not exist in MS2/MS3</li> 
+      <li>Only the nodename is required. All other attributes are optional. Supports same options as create-node-ssh.</li> 
+     </ol> <h4><a name="3.1SSHScenarios-Scenario7%3AUpgradev2to3.1"></a>Scenario 7: Upgrade v2 to 3.1</h4> <p>MS5</p> <p>In this case all nodeagents are converted to CONFIG nodes using default values for everything and we have this:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;server . . . name="i1" node-ref="n1"&gt;
+. . .
+&lt;/server&gt;
+
+&lt;node name="n1"  node-host="gf2.sfbay.sun.com" node-home="${com.sun.aas.productRoot}"&gt;
+&lt;/node&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>If the user wished to manage the instances from a central location then he must run update-node-ssh to convert the node to type SSH:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">asadmin update-node-ssh --nodehome /export/glassfish3 n1</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ol> 
+      <li>Supported in MS5</li> 
+     </ol> <h4><a name="3.1SSHScenarios-Scenario8%3ACentrallymanaged%3ARemoteinstance%3ASSHnode%3ACentralinstanceconfigurationcreation%3A%28createnodessh%2Fcreateinstance%2Fstartinstance%29withmasterpasswordsettosomethingotherthanchangeit."></a>Scenario 8: Centrally managed: Remote instance: SSH node: Central instance configuration creation: (create-node-ssh/create-instance/start-instance) with master password set to something other than changeit.</h4> <p>1) SSH setup </p> <p>2) Create and start a domain with the master-password set to "welcome1" using the command :</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">asadmin create-domain --savemasterpassword true domain2 
+asadmin start-domain domain2</pre> 
+       </div> 
+      </div>
+     </div> <p>3) Create an SSH node </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">asadmin create-node-ssh --nodehost glassfish1.sfbay.sun.com --installdir /export/glassfish3 node2</pre> 
+       </div> 
+      </div>
+     </div> <p>4) create instance<br> This creates the instance configuration information and the instance file system. </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">asadmin create-instance --node node2 ins2</pre> 
+       </div> 
+      </div>
+     </div> <p>5) At this point the instance is created but it can not be started by the start-instance command because there is no master-password file in the instance node directory. That file must exist and it must have the same password as the master password on the DAS. To create that file run the following command on the instance machine:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">asadmin change-master-password --savemasterpassword true --nodedir /export/glassfish3/glassfish/nodes node2</pre> 
+       </div> 
+      </div>
+     </div> <p>At the prompt I have to enter the master password which is what I had set when I created domain2 on the DAS. It is not the default master password 'changeit' The keystore was copied over when the instance was created and it is encrypted with the master password from the DAS. So the passwords are the same but start-instance is looking for a file called master-password in the agents dir to access the keystores. Once that file is created start-instance can be run centrally (from the DAS). The master-password file is associated with a node and not with an instance. </p> <p>6) Start the instance from the DAS </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">asadmin start-instance ins2</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="3.1SSHScenarios-Scenario9%3AOfflineconfiguration%3A"></a>Scenario 9: Offline configuration: </h4> <p>User can create the configuration information for a node and then when the host information is know, he can create the instance using the create-local-instance on the instance machine. If the node host information is known and the config node has nodehost set to that host then create-instance will create the instance file system under the GlassFish installation dir on the instance host.</p> <p>1) Create the empty config node: </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">asadmin create-node-config node1</pre> 
+       </div> 
+      </div>
+     </div> <p>2) Complete creating the instance using create-local-instance command:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">asadmin --host glassfish1.sfbay.sun.com --port 4848 create-local-instance --node node1 instance1</pre> 
+       </div> 
+      </div>
+     </div> <p>OR </p> <p>2) Complete creating the instance by updating the config node with the node host information and then running create-instance (this assumes the instance should be created in the GlassFish installation dir):</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">asadmin update-node-config --nodehost glassfish1.sfbay.sun.com node1
+asadmin create-instance --node node1 instance1</pre> 
+       </div> 
+      </div>
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on May 13, 2011 by 
+<font color="#0050B2">carlavmott</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

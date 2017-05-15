@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GFinNB70JavaPlatformPropsUI</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>Java Platform Properties UI</p> <p>In the releases that predate v3, the GF and SJSAS servers were started using the java executable that was avaailble in the directory that is the value of the property AS_JAVA.</p> <p>In v3 releases, this is no longer used... or even available.... We presently start the server based on the default JavaPlatform for the IDE. </p> <p>GlassFish v3 also requires JDK6 to start.</p> <p>NB 7.0 can be used with JDK 5.</p> <p>If the user attempts to start the server with JDK5 they current encounter an mess o'exceptions... This needs to be prevented.</p> <p>There are a couple places where this could to get resolved...</p> <p>During the registration of a v3 domain, we may need to allow the user to associate a jdk install with a server. If there isn't a JDK6 installation, the registration could force the user to cancel the registration.</p> <p>We could also trigger a jdk 6 installation association when the user starts the server.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Strategy </th> 
+         <th class="confluenceTh"> Pro </th> 
+         <th class="confluenceTh"> Con </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> User associates jdk during registration </td> 
+         <td class="confluenceTd"> Predictable 'place' for this to happen </td> 
+         <td class="confluenceTd"> We may not need to 'start' a remote domain, so why force the user to d/l and install a JDK6. There is also a problem with the automatic registration... since the user is not actually doing the registration. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> User associates jdk install at Start, if necessary </td> 
+         <td class="confluenceTd"> Delays til 'last moment' </td> 
+         <td class="confluenceTd"> not predictable. could disrupt work-flow. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>If the user is getting exposed to the jdk installation in either or both of these cases, we probably need to create UI that allows the user to pick a jdk6 installation to associate with a domain. This will be similar to the JavaPlatform UI for Tomcat. </p> <p>Since we have finer control of the 'java' command used to start the server, we may want to include the ability to change the debug transport and display UI to allow the server to start with the IDE's proxy settings.</p> <p>The UI will be a new tab/panel in the 'Server' Properties dialog.</p> <p>The panel will be titled Java.</p> <p>There will be a text field that lets the user select the jdk install to associate with the registered domain.</p> <p>there will be a button to open the directory chooser. this allows the user to select the install directory a bit more easily.</p> <p>there will be radio buttons to select the debug transport for the registered domain socket/shared mem</p> <p><del>there will be a text field to allow the user to specify the 'port' (IP port/shared mem name) for debugging</del></p> <p>there will be a check-box that starts the domain's JVM with proxy settings being used by the IDE...</p> <p>Error conditions</p> <p>If the user has not associated a domain with JDK 6 installation and the default platform is not JDK6, we need to flag the server node with some kind of error glyph.</p> <p>If the user creates a JDK6 JavaPlatform via Tools-&gt;Java Platforms, and the domain is not associated with a JDK 6 installation, the association should be made and the error glyph should disappear.</p> <p>If the user attempts to start the server 'directly', we need to open a dialog to tell them that they need to associate the domain with a JDK 6 installation... we should probably open the Server properties dialog or the Java Platform Manager </p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 09, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:44.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : Hyperjaxb3Modules</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   
+     <div> 
+      <ul> 
+       <li><a href="#Hyperjaxb3Modules-HJ3Modules">HJ3 Modules</a></li> 
+       <ul> 
+        <li><a href="#Hyperjaxb3Modules-Genericmodules.">Generic modules.</a></li> 
+        <ul> 
+         <li><a href="#Hyperjaxb3Modules-runtime">runtime</a></li> 
+         <li><a href="#Hyperjaxb3Modules-tools">tools</a></li> 
+         <li><a href="#Hyperjaxb3Modules-testing">testing</a></li> 
+        </ul> 
+        <li><a href="#Hyperjaxb3Modules-Hibernatemodules.">Hibernate modules.</a></li> 
+        <ul> 
+         <li><a href="#Hyperjaxb3Modules-hibernatemappingandhibernateconfiguration">hibernate-mapping and hibernate-configuration</a></li> 
+         <li><a href="#Hyperjaxb3Modules-hibernatecustomizations">hibernate-customizations</a></li> 
+         <li><a href="#Hyperjaxb3Modules-hibernateroundtrip">hibernate-roundtrip</a></li> 
+         <li><a href="#Hyperjaxb3Modules-hibernateruntime">hibernate-runtime</a></li> 
+         <li><a href="#Hyperjaxb3Modules-hibernateplugin">hibernate-plugin</a></li> 
+        </ul> 
+        <li><a href="#Hyperjaxb3Modules-EJBmodules.">EJB modules.</a></li> 
+        <ul> 
+         <li><a href="#Hyperjaxb3Modules-ejbroundtrip">ejb-roundtrip</a></li> 
+         <li><a href="#Hyperjaxb3Modules-ejbschemas">ejb-schemas</a></li> 
+         <li><a href="#Hyperjaxb3Modules-ejbplugin">ejb-plugin</a></li> 
+        </ul> 
+        <li><a href="#Hyperjaxb3Modules-Maven">Maven</a></li> 
+        <ul> 
+         <li><a href="#Hyperjaxb3Modules-maven">maven</a></li> 
+         <li><a href="#Hyperjaxb3Modules-maventesting">maven-testing</a></li> 
+        </ul> 
+        <li><a href="#Hyperjaxb3Modules-Tests">Tests</a></li> 
+        <ul> 
+         <li><a href="#Hyperjaxb3Modules-tests">tests</a></li> 
+         <li><a href="#Hyperjaxb3Modules-testsejb">tests-ejb</a></li> 
+        </ul> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="Hyperjaxb3Modules-HJ3Modules"></a>HJ3 Modules</h1> <p>This page decsribes HJ3 modules and their functionality.<br> Initial description based upon Aleksei's <a href="https://hyperjaxb.java.net/servlets/ReadMsg?list=users&amp;msgNo=606">email</a></p> <p>Modules can be divided into following groups:</p> 
+     <ul> 
+      <li>generic modules (runtime, tools, testing)</li> 
+      <li>hibernate (hibernate-mapping, hibernate-configuration,</li> 
+     </ul> <p>hibernate-customizations, hibernate-roundtrip, hibernate-runtime, hibernate-plugin)</p> 
+     <ul> 
+      <li>ejb (ejb-roundtrip, ejb-schemas, ejb-plugin)</li> 
+      <li>maven (maven, maven-testing)</li> 
+      <li>tests (tests, tests-ejb)</li> 
+     </ul> <h4><a name="Hyperjaxb3Modules-Genericmodules."></a>Generic modules.</h2> <p>Generic modules actually better suit jaxb2-commons project and will be probably <br> moved there some time in the future. This is generic functionality which has <br> nothing specific to the persistence semantics of Hyperjaxb3.</p> <h4><a name="Hyperjaxb3Modules-runtime"></a>runtime</h3> <p>Contains some interfaces and classes which will be used in the runtime. For <br> instance, if you use equals or hashCode plugins from the hyperjaxb3-tools (next <br> module), they will make your JAXB classes implement Equals, HashCode or ToString <br> interfaces which are defined in the runtime module.</p> <h4><a name="Hyperjaxb3Modules-tools"></a>tools</h3> <p>Contains generic JAXB2 tools and plugins like toString, equals, hashCode etc.</p> <h4><a name="Hyperjaxb3Modules-testing"></a>testing</h3> <p>Generic testing framework. Defines, for instance, an AbstractSamplesTest which <br> will execute some checks (implemented bu subclasses ) against the *.xml files <br> from src/test/samples.</p> <h4><a name="Hyperjaxb3Modules-Hibernatemodules."></a>Hibernate modules.</h2> <h4><a name="Hyperjaxb3Modules-hibernatemappingandhibernateconfiguration"></a>hibernate-mapping and hibernate-configuration</h3> <p>These two modules are just JAXB compilation of Hibernate mapping and <br> configuration DTDs. Hyperjaxb3 uses these modules to generate the XML of <br> Hibernate mapping and configuration files. Rather than generate XML directly, <br> Hyperjaxb3 produces object structures which are then serialized.</p> <h4><a name="Hyperjaxb3Modules-hibernatecustomizations"></a>hibernate-customizations</h3> <p>This is a JAXB compilation of the Hyperjaxb3 Hibernate customizations schema. <br> Generated mapping are customized by the XML fragments defined either within the <br> schema (in xsd:annotations) or externally in binding files (xjb). Being XML, <br> customizations respect their own schema which is compiled with JAXB in this <br> module. So internally Hyperjaxb3 works with object representation of <br> customizations rather than with XML directly.</p> <h4><a name="Hyperjaxb3Modules-hibernateroundtrip"></a>hibernate-roundtrip</h3> <p>Roundtrip tests for Hibernate: unmarshall, save, load, compare.</p> <h4><a name="Hyperjaxb3Modules-hibernateruntime"></a>hibernate-runtime</h3> <p>Runtime classes and interfaces. For instance, Hibernate custom types, <br> implementation of accessors etc.</p> <h4><a name="Hyperjaxb3Modules-hibernateplugin"></a>hibernate-plugin</h3> <p>Implementation of the JAXB2 Hyperjaxb3 Hibernate plugin. This is what generates <br> *.hbm.xml and *.cfg.xml.</p> <h4><a name="Hyperjaxb3Modules-EJBmodules."></a>EJB modules.</h2> <p>They are under and active development rioght now.</p> <h4><a name="Hyperjaxb3Modules-ejbroundtrip"></a>ejb-roundtrip</h3> <p>Similar to hibernate-roundtrip but via JPA.</p> <h4><a name="Hyperjaxb3Modules-ejbschemas"></a>ejb-schemas</h3> <p>JAXB compilation of persistence_1_0.xsd and orm_1_0.xsd. I'll need them to <br> generate META-INF/persistence.xml and possible XML mappings.</p> <h4><a name="Hyperjaxb3Modules-ejbplugin"></a>ejb-plugin</h3> <p>Responsible for generating JPA-annotated entities.</p> <h4><a name="Hyperjaxb3Modules-Maven"></a>Maven</h2> <h4><a name="Hyperjaxb3Modules-maven"></a>maven</h3> <p>Hyperjaxb3 plugin for Maven.</p> <p>If you use maven-jaxb2-plugin and want to use Hyperjaxb3 as well, you'll have to <br> add Hyperjaxb3 dependencies and turn on the JAXB2 Hyperjaxb3 plugin using the <br> &lt;args/&gt; in the plugin config. maven-hyperjaxb3-plugin does it for you. It adds <br> all the required dependencies, activates the necessary JAXB2 plugins, and <br> provides convenient means of configuration.</p> <h4><a name="Hyperjaxb3Modules-maventesting"></a>maven-testing</h3> <p>Testing infrastructure for maven-hyperjaxb3-plugin. Allows to configure and <br> execute the maven-hyperjaxb3-plugin in the frame of an automated test (unit <br> test). Very useful when debugging JAXB2 plugins</p> <h4><a name="Hyperjaxb3Modules-Tests"></a>Tests</h2> <p>These modules contains test scenarios. Each test scenario is a just a small <br> project built with Maven/Hyperjaxb3. It typically contains a schema and a number <br> of sample files. Each test scenatio has an own Maven build. During this build, <br> the schema is processed with JAXB2/Hyperjaxb3 and generated code is compiled. <br> Test scenarios also typically generate roundtrip test cases. So at the end, <br> generated code is checked for roundtripping against the sample files.</p> <h4><a name="Hyperjaxb3Modules-tests"></a>tests</h3> <p>These are Hibernate tests. There are plenty of them but only four are currently <br> deployed. Other test are just taken from Hyperjaxb2. They should theoretically <br> work, but must be adapted (like namespaces and so on).</p> <h4><a name="Hyperjaxb3Modules-testsejb"></a>tests-ejb</h3> <p>These will be tests for the upcoming ejb-plugin. There's only one po test there <br> currently.</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:49.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

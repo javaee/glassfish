@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : LBTemplating</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="LBTemplating-"></a></h1> <h4><a name="LBTemplating-LBtemplateforloadbalancerservice"></a>LB template for load-balancer service</h1> <p>Instructions to create load-balancer template to work with GlassFish and provide load-balancer service</p> <p>For <b>Native</b> mode, user need to only create lb.zip file. Please proceed to section <b>Installation details</b> for <b>Native</b> mode.</p> <h4><a name="LBTemplating-PrerequisiteforcreatingloadbalancertemplateforKVM"></a>Prerequisite for creating load-balancer template for KVM</h2> <p>First create a GlassFish template using provided set of <a href="./templating.html">instructions</a>. If you have already created GlassFish template, then lets move on.</p> 
+     <ul> 
+      <li>If you have a Virtual Machine(VM) for GlassFish, then just clone it. After cloning is complete, start the cloned VM.</li> 
+      <li>Else if you have glassfish.img and glassfish.xml, then copy it to say apache.img and apache.xml respectively. You can use any other name as well. Now start virt-manager, and click on <b><em>Create a new virtual machine</em></b>. Select option of <b><em>Import existing disk image</em></b> and point to apache.img. Once VM creation is complete, then start the VM.</li> 
+     </ul> <h4><a name="LBTemplating-Creatingloadbalancertemplate"></a>Creating load-balancer template</h2> <p>The following instructions provide details on how to install Openssl, Apache httpd and mod_jk to create a load-balancer template</p> <h4><a name="LBTemplating-Requiredpackages"></a>Required packages</h3> <p>We need to compile different components for load-balancer service. Therefore we need to install make, gcc and g++ packages.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">sudo apt-get install make gcc g++</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="LBTemplating-Installationdetails"></a>Installation details</h3> <p>The following directories are used as default for installation of Openssl and Apache. You can customize these directories as per your requirement.</p> 
+     <ul> 
+      <li><b>APACHE HTTPD INSTALL DIR</b> : /u01/glassfish/lb/install</li> 
+      <li><b>OPENSSL INSTALL DIR</b> : /u01/glassfish/lb/install</li> 
+     </ul> <p>First create /u01/glassfish directory</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">sudo mkdir /u01/glassfish
+sudo chown -R cloud:cloud /u01/glassfish</pre> 
+       </div> 
+      </div>
+     </div> <p><b>Note</b> : In case you are using other username than <em>cloud</em>, then please transfer ownership of directory /u01/glassfish to that user.</p> <h4><a name="LBTemplating-InstallingOpenssl"></a>Installing Openssl</h3> 
+     <ul> 
+      <li>Get openssl source from <a href="http://openssl.org/source/">Openssl site</a>. The current latest version is <a href="http://openssl.org/source/openssl-1.0.0e.tar.gz">openssl-1.0.0e</a>.</li> 
+      <li>Compile and install it using following commands 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">cd openssl-1.0.0e
+./config --prefix=/u01/glassfish/lb/install --openssldir=/u01/glassfish/lb/install/conf shared
+make
+make test
+make install</pre> 
+         </div> 
+        </div>
+       </div> <p><b>Note</b> : Above example uses <b><em>/u01/glassfish/lb/install</em></b> as openssl installation directory. You can customize it to your preferred directory. Please provide your preferred directory using <b><em>--prefix</em></b> option.</p></li> 
+     </ul> <h4><a name="LBTemplating-InstallingApachehttpd"></a>Installing Apache httpd</h3> 
+     <ul> 
+      <li>Get Apache httpd source from <a href="http://httpd.apache.org/download.cgi#apache22">Apache site</a>. The current latest version is <a href="http://mirror.nyi.net/apache//httpd/httpd-2.2.21.tar.gz">httpd 2.2.21</a>.</li> 
+      <li>Compile and install it using following commands : 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">cd httpd-2.2.21
+./configure --prefix=/u01/glassfish/lb/install --with-ssl=/u01/glassfish/lb/install --enable-ssl --enable-so --with-mpm=worker --with-included-apr --enable-rewrite
+make
+make install</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ul> <p><b>Note</b> : Above example uses <b><em>/u01/glassfish/lb/install</em></b> as apache httpd installation directory. You can customize it to your preferred directory. Please provide your preferred directory using <b><em>--prefix</em></b> option. Also if you have installed openssl in non-default directory, please provide that directory for <b>-</b><b><em>-with-ssl</em></b> option.</p> <h4><a name="LBTemplating-Installingmodjkmodule"></a>Installing mod_jk module</h3> 
+     <ul> 
+      <li>Get the source for tomcat connectors from <a href="http://tomcat.apache.org/download-connectors.cgi">Apache site</a>. The current latest version is <a href="http://mirrors.axint.net/apache//tomcat/tomcat-connectors/jk/tomcat-connectors-1.2.32-src.tar.gz">jk 1.2.32</a>.</li> 
+      <li>Compile and install it using following commands : 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">cd tomcat-connectors-1.2.32-src/native
+./configure --with-apxs=/u01/glassfish/lb/install/bin/apxs
+make
+make install</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ul> <p><b>Note</b> : If you have installed apache httpd in non-default directory, please provide location of apxs under apache install directory for <b><em>--with-apxs</em></b> option.</p> <h4><a name="LBTemplating-ParametrizeApachehttpdandconfiguremodjk"></a>Parametrize Apache httpd and configure mod_jk</h3> 
+     <ul> 
+      <li>Parametrize http port in APACHE-INSTALL-DIR/conf/httpd.conf and also add worker configuration for mod_jk module. The difference between the original and modified httpd.conf is captured below : 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">--- /u01/glassfish/lb/install/conf/httpd.conf.orig	2011-10-03 02:34:46.000000000 -0700
++++ /u01/glassfish/lb/install/conf/httpd.conf	2011-10-03 02:39:05.000000000 -0700
+@@ -37,7 +37,7 @@
+ # prevent Apache from glomming onto all bound IP addresses.
+ #
+ #Listen 12.34.56.78:80
+-Listen 80
++Listen &lt;HTTP_PORT&gt;
+
+ #
+ # Dynamic Shared Object (DSO) Support
+@@ -413,3 +413,20 @@
+ SSLRandomSeed startup builtin
+ SSLRandomSeed connect builtin
+ &lt;/IfModule&gt;
++
++LoadModule jk_module modules/mod_jk.so
++&lt;IfModule jk_module&gt;
++JkWorkersFile conf/worker.properties
++# Where to put jk logs
++JkLogFile logs/mod_jk.log
++# Set the jk log level [debug/error/info]
++JkLogLevel info
++# Select the log format
++JkLogStampFormat "[%a %b %d %H:%M:%S %Y] "
++# JkOptions indicate to send SSL KEY SIZE,
++JkOptions +ForwardKeySize +ForwardURICompat -ForwardDirectories
++# JkRequestLogFormat set the request format
++JkRequestLogFormat "%w %V %T"
++&lt;/IfModule&gt;
++&lt;VirtualHost _default_:&lt;HTTP_PORT&gt; &gt;
++Include conf/glassfish-jkmount.conf
++&lt;/VirtualHost&gt;
++Include conf/glassfish-vhosts.conf</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ul> 
+     <ul> 
+      <li>Add a placeholder worker.properties to APACHE-INSTALL-DIR/conf. This will be updated during association phase. 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">bash#touch /u01/glassfish/lb/install/conf/worker.properties</pre> 
+         </div> 
+        </div>
+       </div></li> 
+      <li>Add a placeholder glassfish-vhosts.conf and glassfish-jkmount.conf to APACHE-INSTALL-DIR/conf. This will be updated during association phase.</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">bash#touch /u01/glassfish/lb/install/conf/glassfish-vhosts.conf
+bash#touch /u01/glassfish/lb/install/conf/glassfish-jkmount.conf</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>Parametrize https port in APACHE-INSTALL-DIR/conf/extra/httpd-ssl.conf and also add worker configuration for mod_jk module. The difference between the original and modified httpd-ssl.conf is captured below : 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">--- /u01/glassfish/lb/install/conf/extra/httpd-ssl.conf.orig	2011-10-03 02:35:02.000000000 -0700
++++ /u01/glassfish/lb/install/conf/extra/httpd-ssl.conf	2011-10-03 02:36:17.000000000 -0700
+@@ -34,7 +34,7 @@
+ # Note: Configurations that use IPv6 but not IPv4-mapped addresses need two
+ #       Listen directives: "Listen [::]:443" and "Listen 0.0.0.0:443"
+ #
+-Listen 443
++Listen &lt;HTTPS_PORT&gt;
+
+ ##
+ ##  SSL Global Context
+@@ -71,7 +71,7 @@
+ ## SSL Virtual Host Context
+ ##
+
+-&lt;VirtualHost _default_:443&gt;
++&lt;VirtualHost _default_:&lt;HTTPS_PORT&gt;&gt;
+
+ #   General setup for the virtual host
+ DocumentRoot "/u01/glassfish/lb/install/htdocs"
+@@ -228,4 +228,5 @@
+ CustomLog "/u01/glassfish/lb/install/logs/ssl_request_log" \
+           "%t %h %{SSL_PROTOCOL}x %{SSL_CIPHER}x \"%r\" %b"
+
++Include conf/glassfish-jkmount.conf
+ &lt;/VirtualHost&gt;</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ul> <h4><a name="LBTemplating-CleanupforKVM"></a>Cleanup for KVM</h2> <p>Once apache, openssl and mod_jk modules are installed, you can remove their source and compiled files. They are not needed any further.</p> <p>Now shutdown the virtual machine, and you can use this image for adding load-balancer template in DAS.</p> <h4><a name="LBTemplating-AddingloadbalancertemplateinDASforKVMmode"></a>Adding load-balancer template in DAS for KVM mode</h2> 
+     <ul> 
+      <li>Use below command to add load-balancer template in DAS if you have installed apache httpd in default directories. 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">$GLASSFISH_HOME/bin/asadmin create-template --virtualization kvm --files $TEMPLATE_DIR/apache.img,$TEMPLATE_DIR/apache.xml --indexes ServiceType=LB,VirtualizationType=libvirt apachemodjk
+$GLASSFISH_HOME/bin/asadmin create-template-user --virtualization kvm --userid 1000 --groupid 1000 --template apachemodjk cloud</pre> 
+         </div> 
+        </div>
+       </div> <p><b>Note</b> : Here GLASSFISH_HOME refers to your glassfish install directory, and TEMPLATE_DIR refers to directory where you have kept load-balancer image and xml file. In case you have created load-balancer image and xml files with names other name apache.img and apache.xml, then please use that.</p></li> 
+     </ul> 
+     <ul> 
+      <li>Use below command to add load-balancer temmplate in DAS if you have installed apache httpd in non-default directories. 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">$GLASSFISH_HOME/bin/asadmin create-template --virtualization kvm --files $TEMPLATE_DIR/apache.img,$TEMPLATE_DIR/apache.xml --properties install-dir=${APACHE_INSTALL_DIR} --indexes ServiceType=LB,VirtualizationType=libvirt apachemodjk
+$GLASSFISH_HOME/bin/asadmin create-template-user --virtualization kvm --userid 1000 --groupid 1000 --template apachemodjk cloud</pre> 
+         </div> 
+        </div>
+       </div> <p><b>Note</b> : APACHE_INSTALL_DIR refers to directory where you have installed Apache httpd. GLASSFISH_HOME refers to your glassfish install directory, and TEMPLATE_DIR refers to directory where you have kept load-balancer image and xml file. In case you have created load-balancer image and xml files with names other name apache.img and apache.xml, then please use that.</p></li> 
+     </ul> <h4><a name="LBTemplating-AddingloadbalancertemplateinDASforNativemode"></a>Adding load-balancer template in DAS for Native mode</h2> 
+     <ul> 
+      <li>Create lb.zip file 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">bash# cd /u01/glassfish/
+bash# zip -r lb.zip lb
+bash# rm -rf lb/</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ul> 
+     <ul> 
+      <li>Use below command to add load-balancer template in DAS if you have installed apache httpd in default directories. 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">cp /u01/glassfish/lb.zip $GLASSFISH_HOME/config
+$GLASSFISH_HOME/bin/asadmin create-template --indexes ServiceType=LB,VirtualizationType=Native LBNative</pre> 
+         </div> 
+        </div>
+       </div> <p><b>Note</b> : Here GLASSFISH_HOME refers to your glassfish install directory</p></li> 
+     </ul> 
+     <ul> 
+      <li>Use below command to add load-balancer temmplate in DAS if you have installed apache httpd in non-default directories. 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">cp $APACHE_INSTALL_DIR/lb.zip $GLASSFISH_HOME/config
+$GLASSFISH_HOME/bin/asadmin create-template --properties install-dir=${APACHE_INSTALL_DIR} --indexes ServiceType=LB,VirtualizationType=Native LBNative</pre> 
+         </div> 
+        </div>
+       </div> <p><b>Note</b> : APACHE_INSTALL_DIR refers to directory where you have installed Apache httpd. GLASSFISH_HOME refers to your glassfish install directory.</p></li> 
+     </ul> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Apr 24, 2012 by 
+<font color="#0050B2">16762</font>. Exported from wikis.oracle.com on May 27, 2015 20:49.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

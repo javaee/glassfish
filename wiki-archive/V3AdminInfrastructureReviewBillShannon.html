@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : V3AdminInfrastructureReviewBillShannon</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="V3AdminInfrastructureReviewBillShannon-GlassFishv3PreludeAdministrationInfrastructureReview"></a>GlassFish v3 Prelude Administration Infrastructure Review</h1> <h4><a name="V3AdminInfrastructureReviewBillShannon-Document%3AGlassFishv3PreludeAdministrationInfrastructure"></a>Document: GlassFish v3 Prelude Administration Infrastructure</h3> <h4><a name="V3AdminInfrastructureReviewBillShannon-Reviewer%3ABillShannon"></a>Reviewer: Bill Shannon</h3> <h4><a name="V3AdminInfrastructureReviewBillShannon-Reviewdate%3A7%2F16%2F2008"></a>Review date: 7/16/2008</h3> <h4><a name="V3AdminInfrastructureReviewBillShannon-Responsedate%3A"></a>Response date: </h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item </th> 
+         <th class="confluenceTh"> Type </th> 
+         <th class="confluenceTh"> Comment </th> 
+         <th class="confluenceTh"> Response </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> Clarification </td> 
+         <td class="confluenceTd"> 2.2, #1 - what does it mean that "domain.xml is no more a dependable interface"? </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd"> Clarification </td> 
+         <td class="confluenceTd"> 2.2, #4 - why no multi-mode? is it hard? </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3 </td> 
+         <td class="confluenceTd"> Clarification </td> 
+         <td class="confluenceTd"> 2.2, #5 - why no JMX connector? </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4 </td> 
+         <td class="confluenceTd"> Editorial </td> 
+         <td class="confluenceTd"> There's two section 2.2's </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5 </td> 
+         <td class="confluenceTd"> Clarification </td> 
+         <td class="confluenceTd"> 2.2 (second one) - I don't understand the last sentence </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6 </td> 
+         <td class="confluenceTd"> Clarification </td> 
+         <td class="confluenceTd"> 4.1.1, 411-1 - can we defer most or all of this work until we have a JSR-303 implementation? I don't think we should be building a whole other validation infrastructure. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 7 </td> 
+         <td class="confluenceTd"> Clarification </td> 
+         <td class="confluenceTd"> 4.1.1, 411-2 - why would you need to turn validation off? performance concerns? </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 8 </td> 
+         <td class="confluenceTd"> Clarification </td> 
+         <td class="confluenceTd"> 4.1.1, 411-3 - this is good, but can we defer this until after Prelude? </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 9 </td> 
+         <td class="confluenceTd"> Comment </td> 
+         <td class="confluenceTd"> 4.1.1, 411-4 - as we've discussed before, the ability to replace pieces of a modular app server means the utility of an overall version number is less and most things should not be using it to make decisions. in particular, we shouldn't depend on this for upgrade. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 10 </td> 
+         <td class="confluenceTd"> Clarification </td> 
+         <td class="confluenceTd"> 4.1.1, 411-6 - I'm torn on this one. On the one hand, I like the idea of being able to have a very minimal domain.xml with no unneeded fluff. On the other hand, we've used the default elements in domain.xml as a sort of documentation of template for people who want to customize domain.xml. Rather than learning about what elements and attributes exist, and figuring out where to put them in domain.xml, they can see them already in the proper place with the current values set. Perhaps an appropriate "complete" domain.xml could be used as documentation, even though the server normally runs with a minimal domain.xml. What's the strategy here? Are you concerned about losing the documentation attributes of domain.xml? </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 11 </td> 
+         <td class="confluenceTd"> Clarification </td> 
+         <td class="confluenceTd"> 4.1.1, 411-7 - Do you have more details on how you plan to address the sub-tasks? </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 12 </td> 
+         <td class="confluenceTd"> Clarification </td> 
+         <td class="confluenceTd"> 4.1.1, 411-8 - We've gone back and forth on whether it's an advantage or a bug to have admin traffic on the same port as user requests. I'd like to understand the strategy here and why we chose which default. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 13 </td> 
+         <td class="confluenceTd"> Clarification </td> 
+         <td class="confluenceTd"> 4.1.1, 411-9 - we discussed some of this in email. I'd like to understand in which cases users are expected to modify domain.xml by hand. Hopefully there's an obvious way for a module to cause elements to be added to domain.xml when needed. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 14 </td> 
+         <td class="confluenceTd"> Clarification </td> 
+         <td class="confluenceTd"> 4.1.2, 412-1 - when you start with -verbose, what happens when you type CTRL-C? </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 15 </td> 
+         <td class="confluenceTd"> Clarification </td> 
+         <td class="confluenceTd"> 4.1.2, 412-1 - it's unfortunate that restart isn't supported if you don't use -verbose. what do other app servers do to handle this? </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 16 </td> 
+         <td class="confluenceTd"> Clarification </td> 
+         <td class="confluenceTd"> 4.1.2, 412-3 - this seems fine, but I'm curious... what are the use cases for setting environment variables? </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 17 </td> 
+         <td class="confluenceTd"> Clarification </td> 
+         <td class="confluenceTd"> 4.1.3, 413-2 - I don't understand the second comment </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 18 </td> 
+         <td class="confluenceTd"> Comment </td> 
+         <td class="confluenceTd"> 4.1.3, 413-3 - I think we need to keep the ant tasks for compatibility, if not for Prelude then certainly for the final release </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 09, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

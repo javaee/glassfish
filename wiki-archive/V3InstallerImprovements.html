@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : V3InstallerImprovements</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="V3InstallerImprovements-GlassFishV3InstallerImprovements"></a>GlassFish V3 Installer Improvements</h1> <p>%%sortable</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Desired Improvement </th> 
+         <th class="confluenceTh"> Priority </th> 
+         <th class="confluenceTh"> Comments </th> 
+         <th class="confluenceTh"> Issue Link </th> 
+         <th class="confluenceTh"> Eng Response </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> INST-1 </td> 
+         <td class="confluenceTd"> Common installer experience between GlassFish and Sun-branded product </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Use an open source installer </td> 
+         <td class="confluenceTd"> <a href="https:--glassfish.java.net-issues-show_bug.cgi-4326">4326 </a> </td> 
+         <td class="confluenceTd"> Yes. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> INST-2 </td> 
+         <td class="confluenceTd"> Support in place upgrade from SJSAS 8.1, SJSAS 8.2,GlassFish V1,GlassFish V2 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> No. Major product architecture change and installer framework change, will focus on side-by-side upgrade. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> INST-3 </td> 
+         <td class="confluenceTd"> Support side-by-side upgrade from SJSAS 8.1, SJSAS 8.2, GlassFish V1, GlassFish V2 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> <a href="https:--glassfish.java.net-issues-show_bug.cgi-4328">4328 </a> </td> 
+         <td class="confluenceTd"> Yes. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> INST-4 </td> 
+         <td class="confluenceTd"> One step installer (zip/sh) </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Facilitate adoption of GlassFish by developers and other open source projects. Have received multiple requests from users. (<a href="http:--www.nabble.com-V3-Features-to14947276.html#a14947276">Community request </a>) </td> 
+         <td class="confluenceTd"> <a href="https:--glassfish.java.net-issues-show_bug.cgi-4335">4335 </a> </td> 
+         <td class="confluenceTd"> Yes. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> INST-5 </td> 
+         <td class="confluenceTd"> Copy a GlassFish installation from one directory (or host) to another should be possible </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Multiple requests. Developers want to be able to copy a installation and pass it around to other developers. Can also facilitate provisioning. Multiple requests. (<a href="http:--www.nabble.com-V3-Features-to14947276.html#a14947276">Community Request </a>) </td> 
+         <td class="confluenceTd"> <a href="https:--glassfish.java.net-issues-show_bug.cgi-4337">4337 </a> </td> 
+         <td class="confluenceTd"> Yes. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> INST-6 </td> 
+         <td class="confluenceTd"> Multi-OS installer </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Ease of use, facilitate adoption by 3rd party projects. Given that GlassFish is 100% Java, a multi-OS installer should be available. (<a href="http:--www.nabble.com-V3-Features-to14947276.html#a14947276">Community Request </a>). </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> No. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 08, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

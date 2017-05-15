@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : V3.1JerseyOnePager</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">One pager template version: 1.9
+
+1. Introduction
+    1.1. Project/Component Working Name:
+         Jersey
+
+    1.2. Name(s) and e-mail address of Document Author(s)/Supplier:
+         Paul.Sandoz@Sun.Com
+
+    1.3. Date of This Document:	 
+         05/21/10
+
+2. Project Summary
+    2.1. Project Description:
+
+         Modularization of Jersey distribution to GlassFish.
+
+         Deployment of OSGi-war bundles to GlassFish.
+
+         Update tests and the test framework to use the latest embedded GlassFish API.
+
+         Improved CDI and JAX-RS integration.
+
+         Improved JSON support using Jackson.
+
+         Integrate Jersey with JRebel for RAD.
+
+         Improved hypermedia support on the client and server.
+
+         Add further DTrace probes.
+
+    2.2. Risks and Assumptions:
+         
+         CDI needs to function correctly for advanced use the Extension SPI.
+
+3. Problem Summary
+    3.1. Problem Area:
+
+        Unification of OSGi support in and outside of GlassFish.
+
+        Deployment of multiple versions of Jersey-based applications to GlassFish.
+
+        Better integration with Java EE 6.
+
+        Better and more intuitive JSON support.
+
+        Increase rapid application development.
+
+        Improved ease of use when building hypermedia-based applications.
+
+        Diagnose issues with in-production running JAX-RS applications.
+
+    3.2. Justification:
+
+        Improves the teams efficiency to distribute Jersey to GlassFish.
+
+        Enables developers to use the latest stable version of Jersey when a lesser version
+        is installed in GlassFish.
+
+        Smooth integration of Java EE 6 components gives developers a better experience.
+
+        JSON is an important representation format for RESTful applications.
+
+        Hypermedia is a key aspect of RESTful applications.
+
+        Analysis of in-production running JAX-RS applications can help diagnose system performance 
+        issues.
+
+4. Technical Description:
+     4.1. Details:
+
+Jersey currently ships a jersey bundle to GF (in addition to other 
+jars) containing a number of jersey modules. This will be changed so 
+that each jersey module is shipped directly and aligns with OSGi support
+of Jersey in and outside of GlassFish.
+
+Deployment of Jersey applications to GlassFish as an OSGI-bundle will
+enable multiple versions of Jersey to be installed in isolation. 
+Currently many developers are having issues with running later versions 
+of Jersey to that which is installed in GlassFish. This feature is not 
+really Jersey specific but Jersey will provide input to requirements and
+will test deployments.
+The class loader delegation feature of GlassFish is not sufficient for isolation
+because javax.* classes are always delegated to GlassFish. 
+The Jersey team will attempt to resolve this issue which may a) require changes 
+to the 311 implementation that will affect performance; or b) changes to the 
+GlassFish Web app class loader to support non-delegation of javax.ws.rs.* classes.
+
+Jersey currently uses a very old version of the GlassFish embedded 
+API. This needs to be updated to use the latest API for embedded tests 
+and for use with the jersey test framework.
+
+Jersey needs to improve it's integration with CDI such that the 
+optional aspects of the JAX-RS spec in this regard are investigated and 
+implemented. Specifically this means providing bindings such @Inject 
+works for JAX-RS/Jersey related injection points. 
+
+The JAXB JSON support in Jersey can work for simple cases but 
+developers are struggling to understand the how the JSON relates to the 
+classes and there are many edge cases that are hard to support because 
+of the mismatch between the JSON data model and the XML infoset model 
+that JAXB uses. Jackson is an excellent library that provides a clearer 
+mapping from POJOs to JSON. Jersey is already depending on it for 
+low-level support.
+
+Jersey caches runtime information generated from Java reflection for 
+performance reasons. This does not work so well when Jersey developers 
+utilize JRebel for rapid development. A Jersey/JRebel plugin will solve 
+this. Such a plugin was prototyped over a year ago. This is technically 
+feasible and requires that JRebel cause Jersey to reload (a feature 
+which Jersey already supports).
+
+Hypermedia support for RESTful application is an important area that 
+JAX-RS 1.x left for a future JAX-RS specification.  Jersey can provide 
+useful APIs on the client and server that can be input to a future 
+JAX-RS specification. These APIs will be public thus it is important to 
+get these APIs right before being shipped with a stable release of 
+Jersey, hence why these features are closer to the end of the GlassFish 
+3.1 release schedule. These APIs will be shipped in the experimental 
+area of Jersey and distributed with SNAPSHOTs before becoming part of 
+the stable API.
+
+Jersey already has DTrace probe support for resource matching. Such that 
+DTrace can be utilized to aggregate information on URIs associated with 
+resource classes. Probing can be extended to include interactions with
+other JAX-RS components such as MessageBodyReader/Writer selection, 
+ExceptionMapper selection and ContextResolver selection, where appropriate.
+
+     4.2. Bug/RFE Number(s):
+
+     4.3. In Scope:
+          N/A
+
+     4.4. Out of Scope:
+          N/A
+
+     4.5. Interfaces:
+
+        4.5.1.  Public Interfaces:
+
+            Client and server hypermedia APIs.
+
+            A maven-based jar artifact for Jersey JRebel support.
+            Maven-based jar artifacts for client and server hypermedia support.
+        4.5.2.  Private Interfaces:
+
+            The separate Jersey OSGi modules distributed to GlassFish.
+
+        4.5.3.  Deprecated/Removed Interfaces:
+            None.
+
+     4.6. Doc Impact:
+        None.
+
+     4.7. Admin/Config Impact:
+        None
+        
+     4.8. HA Impact:
+        None
+
+     4.9. I18N/L10N Impact:
+        None
+
+     4.10. Packaging, Delivery &amp; Upgrade:
+
+	4.10.1. Packaging
+            None
+
+	4.10.2. Delivery
+
+            Jersey will be delivered to GlassFish as a set of separate OSGi modules
+            rather than one "uber" module.
+
+        4.10.3. Upgrade and Migration:
+            None
+
+     4.11. Security Impact:
+            None
+
+     4.12. Compatibility Impact
+            None
+
+     4.13. Dependencies:
+
+        4.13.1 Internal Dependencies
+            
+            META-INF/services compatibility with OSGI library.
+
+            Embedded GlassFish API and maven plugin.
+
+            Weld the CDI reference implementation.
+
+        4.13.2 External Dependencies
+            Jackson which is an open source project duel licensed under LGPL amd ASL.
+            http://jackson.codehaus.org/
+            Jersey is currently using Jackson 1.1 in GlassFish 3.0. The version will be
+            upgraded in 3.1 to the latest stable version (currently 1.5.2).
+     4.14. Testing Impact
+        Automated tests using the Jersey test framework leveraging JUnit.
+        Hudson will be be used to continually build and test.
+
+
+5. Reference Documents:
+        Experimental hypermedia support on the server:
+        https://jersey.java.net/nonav/documentation/latest/user-guide.html#d4e1019
+        https://jersey.java.net/nonav/documentation/latest/user-guide.html#d4e1173
+
+        Experimental hypermedia support on the client:
+        http://www.nordsc.com/blog/?p=439
+        http://www.nordsc.com/blog/?p=484
+
+6. Schedule:
+    6.1. Projected Availability:
+        See: 3.1Jersey</pre> 
+       </div> 
+      </div>
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

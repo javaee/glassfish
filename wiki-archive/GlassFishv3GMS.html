@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFishv3GMS</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GlassFishv3GMS-GlassFish3.1ShoalGroupManagementService%28GMS%29forruntimeclusteringservices"></a>GlassFish 3.1 Shoal Group Management Service (GMS) for runtime clustering services</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#GlassFishv3GMS-GlassFish3.1ShoalGroupManagementService%28GMS%29forruntimeclusteringservices">GlassFish 3.1 Shoal Group Management Service (GMS) for runtime clustering services</a></li> 
+       <ul> 
+        <li><a href="#GlassFishv3GMS-ScopeoftheProject">Scope of the Project</a></li> 
+        <li><a href="#GlassFishv3GMS-FeatureOverview">Feature Overview</a></li> 
+        <ul> 
+         <li><a href="#GlassFishv3GMS-GMS1ShoalGMSoverGrizzlyimplementation">GMS-1 Shoal GMS over Grizzly implementation</a></li> 
+         <li><a href="#GlassFishv3GMS-GMS2TestGMSoverGrizzlybasedonevaluationcriteria">GMS-2 Test GMS over Grizzly based on evaluation criteria</a></li> 
+         <li><a href="#GlassFishv3GMS-GMS3MakeGMSOSGicompliant">GMS-3 Make GMS OSGi compliant</a></li> 
+         <li><a href="#GlassFishv3GMS-GMS4MonitoringStatProviders">GMS-4 Monitoring Stat Providers</a></li> 
+         <li><a href="#GlassFishv3GMS-GMS5CreateaGMSServiceinGlassFishthatwillactasadelegatetostartandstopGMSmoduleineachGF3.1instance">GMS-5 Create a GMS Service in GlassFish that will act as a delegate to start and stop GMS module in each GF 3.1 instance</a></li> 
+         <li><a href="#GlassFishv3GMS-GMS6Addressanyrequirementsspecifictoinmemoryreplicationcomponent%2CEJBcomponentssuchastimer%2Ctransactionservice%2Cetc.">GMS-6 Address any requirements specific to in-memory replication component, EJB components such as timer, transaction service, etc.</a></li> 
+         <li><a href="#GlassFishv3GMS-GMS7IdentifyDependenciesonotherGlassfishcomponentsneededforGMSwithinv3">GMS-7 Identify Dependencies on other Glassfish components needed for GMS within v3</a></li> 
+        </ul> 
+        <li><a href="#GlassFishv3GMS-Onepager%2FFunctionalSpecification">One-pager / Functional Specification</a></li> 
+        <li><a href="#GlassFishv3GMS-DevTests">Dev Tests</a></li> 
+        <li><a href="#GlassFishv3GMS-Quality">Quality</a></li> 
+        <li><a href="#GlassFishv3GMS-Documentation">Documentation</a></li> 
+        <li><a href="#GlassFishv3GMS-Schedule">Schedule</a></li> 
+        <li><a href="#GlassFishv3GMS-References%2FLinks">References / Links</a></li> 
+        <li><a href="#GlassFishv3GMS-EmailAlias">Email Alias</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="GlassFishv3GMS-ScopeoftheProject"></a>Scope of the Project</h2> <p>Shoal GMS is a clustering framework that provides infrastructure to build fault tolerance, reliability and availability<br> The clustering framework provides the following functionalities to Glassfish services and user applications.</p> 
+     <ul> 
+      <li>GMS event notification 
+       <ul> 
+        <li>register callback for GMS event notification</li> 
+        <li>GMS runtime notifies when changes in group membership occur.</li> 
+       </ul> </li> 
+      <li>Cluster-wide Messaging 
+       <ul> 
+        <li>send a message to one, sublist or broadcast to all members of cluster</li> 
+        <li>register message callback to process messages sent by other group members.</li> 
+       </ul> </li> 
+      <li>GMS status methods 
+       <ul> 
+        <li>list of all members or just list of CORE members</li> 
+        <li>request a member status on any member in cluster</li> 
+       </ul> </li> 
+     </ul> <p>Recent enhancement to GMS is to have a pluggable transport and a Grizzly implementation of that transport.<br> GF HA subsystem is building on top of GMS clustering framework and its messaging.</p> <p>TBD: Show minimal that a GF module or a app to be deployed in GF needs to do to access GMS API.</p> <p>%%sortable</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Desired Improvement </th> 
+         <th class="confluenceTh"> Priority </th> 
+         <th class="confluenceTh"> Comments </th> 
+         <th class="confluenceTh"> Issue Link </th> 
+         <th class="confluenceTh"> Eng Response </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-1 </td> 
+         <td class="confluenceTd"> Shoal GMS over Grizzly implementation </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Support GMS to work with Grizzly as the transport provider </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> YES </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-2 </td> 
+         <td class="confluenceTd"> Test GMS over Grizzly based on evaluation criteria </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Run 6-8 critical scenarios of all scenarios over several iterations to establish feasibility of Grizzly transport based implementation and stability levels equivalent to the JXTA based implementation </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> YES </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-3 </td> 
+         <td class="confluenceTd"> Make OSGi compliant GMS Libraries </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> GMS needs to become an OSGi module to be integrated into GlassFish 3.1 workspace </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> YES </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-4 </td> 
+         <td class="confluenceTd"> Monitoring Stat Providers </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> TBD </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-5 </td> 
+         <td class="confluenceTd"> Create a GMS Service in GlassFish that will act as a delegate to start and stop GMS module in each GF 3.1 instance </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> TBD </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-6 </td> 
+         <td class="confluenceTd"> Address any requirements specific to in-memory replication component, EJB components such as timer, transaction service, etc. </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> YES </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS-7 </td> 
+         <td class="confluenceTd"> Identify Requirements for other Glassfish components needed for GMS within v3 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> YES </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishv3GMS-FeatureOverview"></a>Feature Overview</h2> <h4><a name="GlassFishv3GMS-GMS1ShoalGMSoverGrizzlyimplementation"></a>GMS-1 Shoal GMS over Grizzly implementation</h3> 
+     <ul> 
+      <li>Description</li> 
+     </ul> <p>Replace JXTA as the transport provider for GMS and provide an implementation over Grizzly using Grizzly as the transport provider for TCP and UDP messages. The basic implementation is being provided by Bongjae Chang, Shoal community member, but needs further enhancements to make it production quality. </p> 
+     <ul> 
+      <li>Sub-tasks 
+       <ul> 
+        <li>Tune default Grizzly NetworkManager parameters. These are settable via following GMS Property parameters. &lt;b&gt;MAX_POOLSIZE, CORE_POOLSIZE, KEEP_ALIVE_TIME, POOL_QUEUE_SIZE, HIGH_WATER_MARK, MAX_PARALLEL, WRITE_TIMEOUT, MAX_WRITE_SELECTOR_POOL_SIZE&lt;/b&gt;. These parameters manage resources available to process incoming Grizzly processing.</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li>Owners</li> 
+     </ul> <p>Joe Fialli</p> 
+     <ul> 
+      <li>Dependencies 
+       <ul> 
+        <li>Grizzly framework and util jars version 1.9.19</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li>Estimate</li> 
+     </ul> <h4><a name="GlassFishv3GMS-GMS2TestGMSoverGrizzlybasedonevaluationcriteria"></a>GMS-2 Test GMS over Grizzly based on evaluation criteria</h3> 
+     <ul> 
+      <li>Description</li> 
+     </ul> <p>The GMS over Grizzly implementation will be tested over several of the critical test scenarios to establish its viability and stability for usage in a production quality GlassFish deployment. Initial stability tests will be based on module level distributed tests. </p> 
+     <ul> 
+      <li>Sub-tasks 
+       <ul> 
+        <li>Requires QE to port over earlier GMS tests that were based on Appserver and depended on Appserver asadmin commands et al and revert to a module level test as we did with initial GlassFish v2 testing.</li> 
+        <li>Fix P1 and P2 type bugs to establish basic stability.</li> 
+        <li>Add GMS messaging load testing since HA relying directly on GMS over Grizzly messaging. (in v2.1, HA used jxta messaging directly)</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li>Owners</li> 
+     </ul> <p>Joe Fialli</p> 
+     <ul> 
+      <li>Dependencies</li> 
+     </ul> <p>QE tests being ported over <br> Ported tests setup on a hudonsized automated distributed dev testing setup.</p> 
+     <ul> 
+      <li>Estimate TBD</li> 
+     </ul> <h4><a name="GlassFishv3GMS-GMS3MakeGMSOSGicompliant"></a>GMS-3 Make GMS OSGi compliant </h3> 
+     <ul> 
+      <li>Description</li> 
+     </ul> <p>GMS was not an OSGi compliant module. Changes being incorporated to mavenize GMS to publish to maven repository, and use GF v3 maven commands to build an OSGi compliant module </p> 
+     <ul> 
+      <li>Sub-tasks</li> 
+     </ul> <p>Sheetal to fill in </p> 
+     <ul> 
+      <li>Owner</li> 
+     </ul> <p>Sheetal</p> 
+     <ul> 
+      <li>Dependencies</li> 
+     </ul> <p>GMS for JoinedAndReady (instance start and restart), failure detection notifications and all Messaging pertaining to session replication.<br> DOL (possibly for deployment framework support to correctly handle automatic timer creation) &lt;br&gt;</p> 
+     <ul> 
+      <li>Estimate TBD</li> 
+     </ul> <h4><a name="GlassFishv3GMS-GMS4MonitoringStatProviders"></a>GMS-4 Monitoring Stat Providers </h3> 
+     <ul> 
+      <li>Description</li> 
+     </ul> <p>Provide monitoring stats that will help with diagnosing GMS membership related issues. </p> 
+     <ul> 
+      <li>Sub-tasks</li> 
+     </ul> <p>TBD</p> 
+     <ul> 
+      <li>Dependencies</li> 
+     </ul> 
+     <ul> 
+      <li>Owner</li> 
+     </ul> <p>Sheetal, Joe</p> 
+     <ul> 
+      <li>Estimate TBD</li> 
+     </ul> <h4><a name="GlassFishv3GMS-GMS5CreateaGMSServiceinGlassFishthatwillactasadelegatetostartandstopGMSmoduleineachGF3.1instance"></a>GMS-5 Create a GMS Service in GlassFish that will act as a delegate to start and stop GMS module in each GF 3.1 instance</h3> 
+     <ul> 
+      <li>Description</li> 
+     </ul> <p>Create a GMS Service in GlassFish that will delegate start and stop operations on GMS module in each GF 3.1 instance. This is an @Startup class that will be part of the startup services in a clustered GF instance. Need to close on requirements with respect to when GMS module will be started - need architects to consider impact of introducing instability and unpredictability in group memberships with lazy startup guidelines. </p> <h4><a name="GlassFishv3GMS-GMS6Addressanyrequirementsspecifictoinmemoryreplicationcomponent%2CEJBcomponentssuchastimer%2Ctransactionservice%2Cetc."></a>GMS-6 Address any requirements specific to in-memory replication component, EJB components such as timer, transaction service, etc.</h3> 
+     <ul> 
+      <li>Description</li> 
+     </ul> <p>...</p> <h4><a name="GlassFishv3GMS-GMS7IdentifyDependenciesonotherGlassfishcomponentsneededforGMSwithinv3"></a>GMS-7 Identify Dependencies on other Glassfish components needed for GMS within v3</h3> 
+     <ul> 
+      <li>Description</li> 
+     </ul> <p>Identify functionalities that GMS depends on from other Glassfish component in v2.1 that are needed in v3 also.</p> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li>GMS group property configuration parameters from domain.xml. (gmsconfig document being written)</li> 
+        <li>Ability to register a "createCluster" handler on DAS (when "asadmin create-cluster" is executed on a DAS) to enable DAS to dynamically join the newly created cluster.</li> 
+        <li>DAS should be started 5 seconds before any of its clusters are started. asadmin start-cluster only worked when DAS was running in v2.1.</li> 
+        <li>&lt;others to be identified&gt;</li> 
+       </ul> </li> 
+     </ul> <h4><a name="GlassFishv3GMS-Onepager%2FFunctionalSpecification"></a>One-pager / Functional Specification</h2> 
+     <ul> 
+      <li>Coming soon</li> 
+     </ul> <h4><a name="GlassFishv3GMS-DevTests"></a>Dev Tests </h2> 
+     <ul> 
+      <li>Coming Soon - Information on GMS dev tests will be posted on <a href="DeveloperTestDashboard.html" title="DeveloperTestDashboard">Dev Tests</a> page</li> 
+     </ul> 
+     <ul> 
+      <li>Introducing junit tests.</li> 
+      <li>2 to 3 developer level tests that run multiple instances of a gms group on one machine. (not completely automated testing)</li> 
+      <li>Developer level test are basis of shoal test scenarios run on 10 node cluster.</li> 
+     </ul> <h4><a name="GlassFishv3GMS-Quality"></a>Quality</h2> 
+     <ul> 
+      <li>Link to Test Plans</li> 
+     </ul> <h4><a name="GlassFishv3GMS-Documentation"></a>Documentation</h2> 
+     <ul> 
+      <li>Link to Documentation</li> 
+     </ul> <h4><a name="GlassFishv3GMS-Schedule"></a>Schedule</h2> 
+     <ul> 
+      <li>Project Schedule / Task List / Current Status</li> 
+     </ul> <h4><a name="GlassFishv3GMS-References%2FLinks"></a>References / Links</h2> 
+     <ul> 
+      <li><a href="http://wiki.glassfish.java.net/attach/GlassFishv3GMS/gmsconfig.rtf">GMS configuration in domain.xml</a></li> 
+     </ul> <h4><a name="GlassFishv3GMS-EmailAlias"></a>Email Alias</h2> 
+     <ul> 
+      <li>Please contact us at <span class="error">[^mailto:dev@shoal.java.net]</span></li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 02, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:44.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

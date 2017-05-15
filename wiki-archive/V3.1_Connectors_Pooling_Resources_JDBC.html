@@ -1,0 +1,1266 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : V3.1_Connectors_Pooling_Resources_JDBC</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="V3.1_Connectors_Pooling_Resources_JDBC-GlassFishServerOpenSourceEdition3.1Connectors%2CPooling%2CResources%2CJDBC"></a>GlassFish Server Open Source Edition 3.1 - Connectors, Pooling, Resources, JDBC</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#V3.1_Connectors_Pooling_Resources_JDBC-GlassFishServerOpenSourceEdition3.1Connectors%2CPooling%2CResources%2CJDBC">GlassFish Server Open Source Edition 3.1 - Connectors, Pooling, Resources, JDBC</a></li> 
+       <ul> 
+        <li><a href="#V3.1_Connectors_Pooling_Resources_JDBC-ScopeoftheProject">Scope of the Project</a></li> 
+        <li><a href="#V3.1_Connectors_Pooling_Resources_JDBC-FeatureOverview">Feature Overview</a></li> 
+        <li><a href="#V3.1_Connectors_Pooling_Resources_JDBC-Onepager%2FFunctionalSpecification">One-pager / Functional Specification</a></li> 
+        <li><a href="#V3.1_Connectors_Pooling_Resources_JDBC-DevTests">Dev Tests</a></li> 
+        <li><a href="#V3.1_Connectors_Pooling_Resources_JDBC-Quality">Quality</a></li> 
+        <li><a href="#V3.1_Connectors_Pooling_Resources_JDBC-Documentation">Documentation</a></li> 
+        <li><a href="#V3.1_Connectors_Pooling_Resources_JDBC-MilestoneSchedule">Milestone Schedule</a></li> 
+        <li><a href="#V3.1_Connectors_Pooling_Resources_JDBC-TaskList">Task List</a></li> 
+        <li><a href="#V3.1_Connectors_Pooling_Resources_JDBC-References%2FLinks">References / Links</a></li> 
+        <li><a href="#V3.1_Connectors_Pooling_Resources_JDBC-EmailAlias">Email Alias</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="V3.1_Connectors_Pooling_Resources_JDBC-ScopeoftheProject"></a>Scope of the Project</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Desired Improvement </th> 
+         <th class="confluenceTh"> Priority </th> 
+         <th class="confluenceTh"> Comments/Status </th> 
+         <th class="confluenceTh"> Issue Link </th> 
+         <th class="confluenceTh"> Eng Response </th> 
+         <th class="confluenceTh"> Estimate (man days) </th> 
+         <th class="confluenceTh"> Source of Requirement </th> 
+         <th class="confluenceTh"> Dependencies </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-1 </td> 
+         <td class="confluenceTd"> Weblogic DD Support for connectors (ra.xml) </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> Partial support for weblogic-ra.xml <a href="SupportWLDDInContainers.html#SupportWLDDInContainers-sectionSupportWLDDInContainersResourceAdapterW...">Details </a> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> No, as sun-ra.xml is deprecated since S1AS 8.1 and there are no mapping available. </td> 
+         <td class="confluenceTd"> 3 weeks </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> deployment </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-2 </td> 
+         <td class="confluenceTd"> Weblogic DD Support for *-jdbc.xml </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> Partial support for *-jdbc.xml. <a href="SupportWLDDInContainers.html#SupportWLDDInContainers-sectionSupportWLDDInContainersJDBCModuleXXXJdb...">Details </a> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> 2 weeks </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> deployment </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-3 </td> 
+         <td class="confluenceTd"> Application scoped resources </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> This feature is also needed for supporting *-jdbc.xml and *-jms.xml </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> YES </td> 
+         <td class="confluenceTd"> 4 weeks </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> deployment, naming, CLI, GUI </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-4 </td> 
+         <td class="confluenceTd"> Clustering support for all type of resources </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> List include jdbc, connector, admin-object, external-jndi, mail, custom resources. For complete CLI list, refer to <a href="GlassFishv3.1.html" title="GlassFishv3.1">GlassFish 3.1 features wiki </a>. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> YES </td> 
+         <td class="confluenceTd"> 3 weeks </td> 
+         <td class="confluenceTd"> Feature parity </td> 
+         <td class="confluenceTd"> Clustering infrastructure, CLI, GUI </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-5 </td> 
+         <td class="confluenceTd"> Embedded GlassFish related support from connector container </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> YES </td> 
+         <td class="confluenceTd"> 3 weeks </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-6 </td> 
+         <td class="confluenceTd"> Reconfiguration and monitoring support for @DataSourceDefinition based resources </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> YES </td> 
+         <td class="confluenceTd"> 3 weeks </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> CLI, GUI </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-7 </td> 
+         <td class="confluenceTd"> Statement leak detection and reclaim </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> 2 weeks </td> 
+         <td class="confluenceTd"> Forums </td> 
+         <td class="confluenceTd"> CLI, GUI </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-8 </td> 
+         <td class="confluenceTd"> Resizer for associate-with-thread </td> 
+         <td class="confluenceTd"> P4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/11297">Issue 11297 </a> </td> 
+         <td class="confluenceTd"> YES </td> 
+         <td class="confluenceTd"> 1 week </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-9 </td> 
+         <td class="confluenceTd"> Support for Hints Context </td> 
+         <td class="confluenceTd"> P4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> YES </td> 
+         <td class="confluenceTd"> 1 week </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-10 </td> 
+         <td class="confluenceTd"> Monitoring probes for connections usage by applications </td> 
+         <td class="confluenceTd"> P4 </td> 
+         <td class="confluenceTd"> To provide monitoring statistics of a connection pool grouped by application </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> YES </td> 
+         <td class="confluenceTd"> 1 week </td> 
+         <td class="confluenceTd"> Forums </td> 
+         <td class="confluenceTd"> CLI, GUI </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-11 </td> 
+         <td class="confluenceTd"> Transparent dynamic reconfiguration of jdbc-resources </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> Avoid redeployment of applications that refer the jdbc-resource </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> YES </td> 
+         <td class="confluenceTd"> 2 weeks </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-12 </td> 
+         <td class="confluenceTd"> Making RW-Lock based data-structure as default pool data-structure </td> 
+         <td class="confluenceTd"> P4 </td> 
+         <td class="confluenceTd"> Better performance over existing Array List based data-structure. Done. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> YES </td> 
+         <td class="confluenceTd"> 1 day </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-13 </td> 
+         <td class="confluenceTd"> Use Connector annotations for JDBC resource-adapters </td> 
+         <td class="confluenceTd"> P4 </td> 
+         <td class="confluenceTd"> Done </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> YES </td> 
+         <td class="confluenceTd"> 1 day </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-14 </td> 
+         <td class="confluenceTd"> Use sql-tracing to diagnose and display most frequently used SQL queries </td> 
+         <td class="confluenceTd"> P4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> YES </td> 
+         <td class="confluenceTd"> 1 week </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> CLI, GUI </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-15 </td> 
+         <td class="confluenceTd"> Statement cache hit/miss monitoring statistics </td> 
+         <td class="confluenceTd"> P4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> YES </td> 
+         <td class="confluenceTd"> 1 week </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> CLI, GUI </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-16 </td> 
+         <td class="confluenceTd"> Custom validation templates for more JDBC driver vendors </td> 
+         <td class="confluenceTd"> P4 </td> 
+         <td class="confluenceTd"> eg: MS SQL </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> YES </td> 
+         <td class="confluenceTd"> 1 day </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> GUI </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-17 </td> 
+         <td class="confluenceTd"> Listing more JDBC driver vendors in admin GUI's connection pool configuration page </td> 
+         <td class="confluenceTd"> P4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> YES </td> 
+         <td class="confluenceTd"> 1 day </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-18 </td> 
+         <td class="confluenceTd"> Ability to introspect jdbc drivers based on request (in GUI) </td> 
+         <td class="confluenceTd"> P4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> YES </td> 
+         <td class="confluenceTd"> 1 day </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> GUI </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-19 </td> 
+         <td class="confluenceTd"> Introspection of jdbc-drivers support in CLI interactive mode </td> 
+         <td class="confluenceTd"> P4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> YES </td> 
+         <td class="confluenceTd"> 1 day </td> 
+         <td class="confluenceTd"> Forums </td> 
+         <td class="confluenceTd"> CLI </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-20 </td> 
+         <td class="confluenceTd"> OSGi RFC for JDBC related support </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> TBD </td> 
+         <td class="confluenceTd"> 3-4 weeks </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-21 </td> 
+         <td class="confluenceTd"> Hudson jobs for connector-dev-tests, connector-standalone-cts, jdbc-dev-tests </td> 
+         <td class="confluenceTd"> P4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-22 </td> 
+         <td class="confluenceTd"> OSGi import/export definition for packages in connector, JDBC modules </td> 
+         <td class="confluenceTd"> P4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 2 weeks </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-23 </td> 
+         <td class="confluenceTd"> GlassFish-ize sun-resources.dtd to glassfish-resources.dtd </td> 
+         <td class="confluenceTd"> P4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> YES </td> 
+         <td class="confluenceTd"> 1 week </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-24 </td> 
+         <td class="confluenceTd"> Provide Connector Runtime AMX APIs as CLI commands </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> YES </td> 
+         <td class="confluenceTd"> 1 week </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-25 </td> 
+         <td class="confluenceTd"> Exporting JDBC, JMS Resources as OSGi Services </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> YES </td> 
+         <td class="confluenceTd"> 1 week </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="V3.1_Connectors_Pooling_Resources_JDBC-FeatureOverview"></a>Feature Overview</h2> <h4><a name="V3.1_Connectors_Pooling_Resources_JDBC-Onepager%2FFunctionalSpecification"></a>One-pager / Functional Specification</h2> 
+     <ul> 
+      <li><a href="Gfv31ConnectorsJDBC.html" title="Gfv31ConnectorsJDBC">One Pager for Connectors, Pooling, Resources and JDBC modules </a></li> 
+     </ul> <h4><a name="V3.1_Connectors_Pooling_Resources_JDBC-DevTests"></a>Dev Tests</h2> 
+     <ul> 
+      <li>Refer to information on Connectors, JDBC, Resources CLI <a href="DeveloperTestDashboard.html" title="DeveloperTestDashboard">Dev Tests</a></li> 
+     </ul> <h4><a name="V3.1_Connectors_Pooling_Resources_JDBC-Quality"></a>Quality</h2> 
+     <ul> 
+      <li>Link to Test Plans</li> 
+     </ul> <h4><a name="V3.1_Connectors_Pooling_Resources_JDBC-Documentation"></a>Documentation</h2> 
+     <ul> 
+      <li>Link to Documentation</li> 
+     </ul> <h4><a name="V3.1_Connectors_Pooling_Resources_JDBC-MilestoneSchedule"></a>Milestone Schedule</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+         <th class="confluenceTh"> Dependencies </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-1 </td> 
+         <td class="confluenceTd"> TBD </td> 
+         <td class="confluenceTd"> Weblogic DD Support for connectors (ra.xml) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> <a href="SupportWLDDInContainers.html#SupportWLDDInContainers-sectionSupportWLDDInContainersResourceAdapterW...">Details </a> sun-ra.xml is deprecated since 8.x release and hence there is no vendor specific feature from weblogic-ra.xml can be mapped to sun-ra.xml. </td> 
+         <td class="confluenceTd"> deployment </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-2 </td> 
+         <td class="confluenceTd"> TBD </td> 
+         <td class="confluenceTd"> Weblogic DD Support for *-jdbc.xml </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> <a href="SupportWLDDInContainers.html#SupportWLDDInContainers-sectionSupportWLDDInContainersJDBCModuleXXXJdb...">Details </a> In order for applications to use *-jdbc.xml configuration, they need to be referred via &lt; resource-description &gt; in weblogic's component descriptors (eg: weblogic-ejb-jar.xml or weblogic-web.xml). Hence deferring the support. </td> 
+         <td class="confluenceTd"> deployment </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-3 </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd"> Application scoped resources </td> 
+         <td class="confluenceTd"> YES </td> 
+         <td class="confluenceTd"> Completed </td> 
+         <td class="confluenceTd"> deployment, naming, CLI, GUI </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-4 </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> Clustering support for all type of resources </td> 
+         <td class="confluenceTd"> YES </td> 
+         <td class="confluenceTd"> Completed <br class="atl-forced-newline"> List include jdbc, connector, admin-object, external-jndi, mail, custom resources. For complete CLI list, refer to <a href="GlassFishv3.1.html" title="GlassFishv3.1">GlassFish 3.1 features wiki </a> </td> 
+         <td class="confluenceTd"> Clustering infrastructure, CLI, GUI </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-5 </td> 
+         <td class="confluenceTd"> MS5 </td> 
+         <td class="confluenceTd"> Embedded GlassFish related support from connector container </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Completed </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-6 </td> 
+         <td class="confluenceTd"> MS5 </td> 
+         <td class="confluenceTd"> Reconfiguration and monitoring support for @DataSourceDefinition based resources </td> 
+         <td class="confluenceTd"> YES </td> 
+         <td class="confluenceTd"> Dropped</td> 
+         <td class="confluenceTd"> CLI, GUI; should be delivered in MS4 for GUI coverage. Response : Configuration is the only dependency for GUI which will be made available by MS4 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-7 </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd"> Statement leak detection and reclaim </td> 
+         <td class="confluenceTd"> YES </td> 
+         <td class="confluenceTd"> Completed </td> 
+         <td class="confluenceTd"> CLI, GUI </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-8 </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> Resizer for associate-with-thread </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/11297">Issue 11297 </a> <br class="atl-forced-newline"> Completed (svn log -v -r 38371) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-9 </td> 
+         <td class="confluenceTd"> MS5 </td> 
+         <td class="confluenceTd"> Support for Hints Context </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Completed</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-10 </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd"> Monitoring probes for connections usage by applications </td> 
+         <td class="confluenceTd"> YES </td> 
+         <td class="confluenceTd"> Completed<br class="atl-forced-newline">To provide monitoring statistics of a connection pool grouped by application </td> 
+         <td class="confluenceTd"> CLI, GUI </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-11 </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd"> Transparent dynamic reconfiguration of jdbc-resources </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Completed <br class="atl-forced-newline">(svn log -v -r 39067) <br class="atl-forced-newline">Avoid redeployment of applications that refer the jdbc-resource </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-12 </td> 
+         <td class="confluenceTd"> MS1 </td> 
+         <td class="confluenceTd"> Making RW-Lock based data-structure as default pool data-structure </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Completed<br class="atl-forced-newline">Better performance over existing Array List based data-structure. <br class="atl-forced-newline"> (svn log -v -r 37109) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-13 </td> 
+         <td class="confluenceTd"> MS1 </td> 
+         <td class="confluenceTd"> Use Connector annotations for JDBC resource-adapters </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Completed (svn log -v -r 37110) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-14 </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd"> Use sql-tracing to diagnose and display most frequently used SQL queries </td> 
+         <td class="confluenceTd"> YES </td> 
+         <td class="confluenceTd"> Completed </td> 
+         <td class="confluenceTd"> CLI, GUI </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-15 </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> Statement cache hit/miss monitoring statistics </td> 
+         <td class="confluenceTd"> YES </td> 
+         <td class="confluenceTd"> Completed </td> 
+         <td class="confluenceTd"> CLI, GUI </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-16 </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> Custom validation templates for more JDBC driver vendors </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Completed (svn log -v -r 37962, svn log -v -r 38024) </td> 
+         <td class="confluenceTd"> GUI </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-17 </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> Listing more JDBC driver vendors in admin GUI's connection pool configuration page </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Completed (svn log -v -r 37693) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-18 </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd"> Ability to introspect jdbc drivers based on request (in GUI) </td> 
+         <td class="confluenceTd"> YES </td> 
+         <td class="confluenceTd"> Tentative (GUI team) </td> 
+         <td class="confluenceTd"> GUI </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-19 </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd"> Introspection of JDBC drivers support in CLI interactive mode </td> 
+         <td class="confluenceTd"> YES </td> 
+         <td class="confluenceTd"> Dropped </td> 
+         <td class="confluenceTd"> CLI </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-20 </td> 
+         <td class="confluenceTd"> MS5 </td> 
+         <td class="confluenceTd"> OSGi RFC for JDBC related support </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Completed</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-21 </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd"> Hudson for QL(Web,Classic) connector-dev-tests, connector-standalone-cts(Web,Classic), jdbc-dev-tests </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Completed </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-22 </td> 
+         <td class="confluenceTd"> MS5 </td> 
+         <td class="confluenceTd"> OSGi import/export definition for packages in connector, jdbc modules </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">Completed </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-23 </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd"> GlassFish-ize sun-resources.dtd to glassfish-resources.dtd </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Completed (svn log -v -r 37195, svn log -v -r 37465) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-24 </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> Provide Connector Runtime AMX APIs as CLI commands </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Completed (svn log -v -r 38155, svn log -v -r 38220) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-25 </td> 
+         <td class="confluenceTd"> MS5 </td> 
+         <td class="confluenceTd"> Exporting JDBC, JMS Resources as OSGi Services </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Completed </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="V3.1_Connectors_Pooling_Resources_JDBC-TaskList"></a>Task List</h2> <p>%%sortable</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task ID </th> 
+         <th class="confluenceTh"> Task </th> 
+         <th class="confluenceTh"> Target Milestone </th> 
+         <th class="confluenceTh"> Start </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Owner(s) </th> 
+         <th class="confluenceTh"> Feature ID </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-TASK-100 </td> 
+         <td class="confluenceTd"> Introduce DOL objects for weblogic-ra.xml </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Jagadish </td> 
+         <td class="confluenceTd"> JCA-1 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-TASK-101 </td> 
+         <td class="confluenceTd"> Introduce Sniffer mechanism to detect weblogic-ra.xml and process them </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Jagadish </td> 
+         <td class="confluenceTd"> JCA-1 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-TASK-102 </td> 
+         <td class="confluenceTd"> Implement grouping of resource-adapter artifacts and applying configuration information hierarchically </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Jagadish </td> 
+         <td class="confluenceTd"> JCA-1 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-TASK-103 </td> 
+         <td class="confluenceTd"> dev-tests </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Jagadish </td> 
+         <td class="confluenceTd"> JCA-1 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-TASK-200 </td> 
+         <td class="confluenceTd"> Introduce DOL objects for *-jdbc.xml </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Shalini </td> 
+         <td class="confluenceTd"> JCA-2 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-TASK-201 </td> 
+         <td class="confluenceTd"> Introduce Sniffer mechanism to detect *-jdbc.xml and process them </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Shalini </td> 
+         <td class="confluenceTd"> JCA-2 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-TASK-202 </td> 
+         <td class="confluenceTd"> Introduce mapping mechanism between weblogic connection pool attributes and GlassFish's jdbc connection pool attributes </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Shalini </td> 
+         <td class="confluenceTd"> JCA-2 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-TASK-203 </td> 
+         <td class="confluenceTd"> Persist the resource as application-scoped-resource </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Shalini </td> 
+         <td class="confluenceTd"> JCA-2 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-TASK-204 </td> 
+         <td class="confluenceTd"> dev-tests </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Shalini </td> 
+         <td class="confluenceTd"> JCA-2 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-TASK-300 </td> 
+         <td class="confluenceTd"> Introduce sniffer mechanism to detect sun-resources.xml and process them </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Jagadish </td> 
+         <td class="confluenceTd"> JCA-3 </td> 
+         <td class="confluenceTd"> Completed</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-TASK-301 </td> 
+         <td class="confluenceTd"> Process all sun-resources.xml(s) within the archive (and sub-archive) and generate resource configuration </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Jagadish </td> 
+         <td class="confluenceTd"> JCA-3 </td> 
+         <td class="confluenceTd"> Completed</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-TASK-302 </td> 
+         <td class="confluenceTd"> Process all sun-resources.xml(s) within the archive (and sub-archive) for duplicates and conflicts </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Jagadish </td> 
+         <td class="confluenceTd"> JCA-3 </td> 
+         <td class="confluenceTd"> Completed</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-TASK-303 </td> 
+         <td class="confluenceTd"> Introduce "config" elements for application-scoped-resources, config changes to store resources within &lt;application&gt; and &lt;module&gt;</td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Jagadish </td> 
+         <td class="confluenceTd"> JCA-3 </td> 
+         <td class="confluenceTd"> Completed</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-TASK-304 </td> 
+         <td class="confluenceTd"> Persist resource configuration as application-scoped-resource or module-scoped-resource</td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Jagadish </td> 
+         <td class="confluenceTd"> JCA-3 </td> 
+         <td class="confluenceTd"> Completed</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-TASK-305 </td> 
+         <td class="confluenceTd"> Make the resources available for applications </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Jagadish </td> 
+         <td class="confluenceTd"> JCA-3 </td> 
+         <td class="confluenceTd"> Completed</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-TASK-306 </td> 
+         <td class="confluenceTd"> Support for reconfiguration of application-scoped-resources </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Jagadish </td> 
+         <td class="confluenceTd"> JCA-3 </td> 
+         <td class="confluenceTd"> Completed</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-TASK-307 </td> 
+         <td class="confluenceTd"> Support for resources during re-deployment of applications </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Jagadish </td> 
+         <td class="confluenceTd"> JCA-3 </td> 
+         <td class="confluenceTd"> Completed</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-TASK-308 </td> 
+         <td class="confluenceTd"> Monitoring support for application-scoped-resources </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Jagadish </td> 
+         <td class="confluenceTd"> JCA-3 </td> 
+         <td class="confluenceTd"> Completed</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-TASK-309 </td> 
+         <td class="confluenceTd"> CLI Support for ping-connection-pool, flush-connection-pool w.r.t app-name, module-name </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Jagadish </td> 
+         <td class="confluenceTd"> JCA-3 </td> 
+         <td class="confluenceTd"> Completed</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-TASK-310 </td> 
+         <td class="confluenceTd"> CLI Support for list-applications --resource </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Jagadish </td> 
+         <td class="confluenceTd"> JCA-3 </td> 
+         <td class="confluenceTd"> Completed</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-TASK-311 </td> 
+         <td class="confluenceTd"> Naming manager related support to bind/lookup/unbind from "app" namespace and "module" namespace </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Jagadish </td> 
+         <td class="confluenceTd"> JCA-3 </td> 
+         <td class="confluenceTd"> Completed</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-TASK-312 </td> 
+         <td class="confluenceTd"> dev-tests </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Jagadish </td> 
+         <td class="confluenceTd"> JCA-3 </td> 
+         <td class="confluenceTd"> Completed</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-TASK-400 </td> 
+         <td class="confluenceTd"> Introduce CLI's --target support (create*, delete*, list*) for all resources (jdbc-resource, connector-resource, jndi-resource, mail-resource, custom-resource, admin-object-resource) and resource-ref </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Jagadish </td> 
+         <td class="confluenceTd"> JCA-4 </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-TASK-401 </td> 
+         <td class="confluenceTd"> Introduce backend support for non-DAS (non-default) targets across all resources </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Shalini </td> 
+         <td class="confluenceTd"> JCA-4 </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-TASK-402 </td> 
+         <td class="confluenceTd"> Introduce backend support for &lt;resource-ref&gt; for all appropriate resources </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Jagadish </td> 
+         <td class="confluenceTd"> JCA-4 </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-TASK-403 </td> 
+         <td class="confluenceTd"> Provide v2's ResourcesUtil equivalent in v3 </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Shalini </td> 
+         <td class="confluenceTd"> JCA-4 </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-TASK-404 </td> 
+         <td class="confluenceTd"> Plug-in ResourcesUtil usages in v3 as per v2's usage. </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Shalini </td> 
+         <td class="confluenceTd"> JCA-4 </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-TASK-405 </td> 
+         <td class="confluenceTd"> Introduce utility methods that were invoked during admin GUI calls for clustered deployments </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Jagadish, Shalini </td> 
+         <td class="confluenceTd"> JCA-4 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-TASK-406 </td> 
+         <td class="confluenceTd"> Ping connection pool support for clustered instances </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Jagadish </td> 
+         <td class="confluenceTd"> JCA-4 </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-TASK-407 </td> 
+         <td class="confluenceTd"> --createtables realted support for clustered instances </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Jagadish </td> 
+         <td class="confluenceTd"> JCA-4 </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-TASK-408 </td> 
+         <td class="confluenceTd"> CLI dev-tests to test --target (create*, delete*, list*) option for various commands (jdbc-resource, jdbc-connection-pool, connector-resource, connector-connection-pool, jndi-resource, mail-resource, custom-resource, admin-object-resource) and resource-ref </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Jagadish </td> 
+         <td class="confluenceTd"> JCA-4 </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-TASK-500 </td> 
+         <td class="confluenceTd"> Analyze resource-adapter related support (deploy/undeploy) in embedded GlassFish </td> 
+         <td class="confluenceTd"> MS5 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Jagadish </td> 
+         <td class="confluenceTd"> JCA-5 </td> 
+         <td class="confluenceTd"> No special change is needed in new Uber jar</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-TASK-501 </td> 
+         <td class="confluenceTd"> Verify support for all type of connector resources (ability to create connector resources using CommandRunner API) </td> 
+         <td class="confluenceTd"> MS5 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Jagadish </td> 
+         <td class="confluenceTd"> JCA-5 </td> 
+         <td class="confluenceTd"> No special change is required in new Uber jar</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-TASK-502 </td> 
+         <td class="confluenceTd"> dev-tests </td> 
+         <td class="confluenceTd"> MS5 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Jagadish </td> 
+         <td class="confluenceTd"> JCA-5 </td> 
+         <td class="confluenceTd"> Existing dev-test can be executed against embedded Uber jar's GF installation.</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-TASK-600 </td> 
+         <td class="confluenceTd"> Persistence of @DSD configuration in domain.xml (Introducing a new resource type) </td> 
+         <td class="confluenceTd"> MS5 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Jagadish </td> 
+         <td class="confluenceTd"> JCA-6 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-TASK-601 </td> 
+         <td class="confluenceTd"> Config beans for @DSD </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Jagadish </td> 
+         <td class="confluenceTd"> JCA-6 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-TASK-602 </td> 
+         <td class="confluenceTd"> reconfiguration support (listen to config changes and take appropriate action) </td> 
+         <td class="confluenceTd"> MS5 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Jagadish </td> 
+         <td class="confluenceTd"> JCA-6 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-TASK-603 </td> 
+         <td class="confluenceTd"> monitoring support </td> 
+         <td class="confluenceTd"> MS5 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Jagadish </td> 
+         <td class="confluenceTd"> JCA-6 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-TASK-604 </td> 
+         <td class="confluenceTd"> Support for various naming-scopes (comp/module/app/global) </td> 
+         <td class="confluenceTd"> MS5 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Jagadish </td> 
+         <td class="confluenceTd"> JCA-6 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-TASK-605 </td> 
+         <td class="confluenceTd"> Shutdown or deletion of datasource-definitions </td> 
+         <td class="confluenceTd"> MS5 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Jagadish </td> 
+         <td class="confluenceTd"> JCA-6 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-TASK-606 </td> 
+         <td class="confluenceTd"> Possible support for transparent reconfiguration </td> 
+         <td class="confluenceTd"> MS5 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Jagadish </td> 
+         <td class="confluenceTd"> JCA-6 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-TASK-607 </td> 
+         <td class="confluenceTd"> more validation routines </td> 
+         <td class="confluenceTd"> MS5 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Jagadish </td> 
+         <td class="confluenceTd"> JCA-6 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-TASK-608 </td> 
+         <td class="confluenceTd"> dev-tests </td> 
+         <td class="confluenceTd"> MS5 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Jagadish </td> 
+         <td class="confluenceTd"> JCA-6 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-TASK-700 </td> 
+         <td class="confluenceTd"> Config support for statement leak detection and reclaim </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Shalini </td> 
+         <td class="confluenceTd"> JCA-7 </td> 
+         <td class="confluenceTd"> Completed</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-TASK-701 </td> 
+         <td class="confluenceTd"> leak detection support </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Shalini </td> 
+         <td class="confluenceTd"> JCA-7 </td> 
+         <td class="confluenceTd"> Completed</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-TASK-702 </td> 
+         <td class="confluenceTd"> reclaim support </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Shalini </td> 
+         <td class="confluenceTd"> JCA-7 </td> 
+         <td class="confluenceTd">Completed</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-TASK-703 </td> 
+         <td class="confluenceTd"> possible monitoring support </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Shalini </td> 
+         <td class="confluenceTd"> JCA-7 </td> 
+         <td class="confluenceTd">Completed</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-TASK-704 </td> 
+         <td class="confluenceTd"> dev-tests </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Shalini </td> 
+         <td class="confluenceTd"> JCA-7 </td> 
+         <td class="confluenceTd">Completed</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-TASK-1100 </td> 
+         <td class="confluenceTd"> transparent pool reconfiguration support - ability to queue requests for a busy pool, wait for completion of requests </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Jagadish </td> 
+         <td class="confluenceTd"> JCA-11 </td> 
+         <td class="confluenceTd">Completed</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-TASK-1101 </td> 
+         <td class="confluenceTd"> re-configure resource and mark connection-factories for refresh </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Jagadish </td> 
+         <td class="confluenceTd"> JCA-11 </td> 
+         <td class="confluenceTd">Completed</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-TASK-1102 </td> 
+         <td class="confluenceTd"> Make old connection-factories use new pool configuration </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Jagadish </td> 
+         <td class="confluenceTd"> JCA-11 </td> 
+         <td class="confluenceTd">Completed</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-TASK-1103 </td> 
+         <td class="confluenceTd"> dev-test for various reconfiguration scenarios (eg: in-flight transaction) </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Jagadish </td> 
+         <td class="confluenceTd"> JCA-11 </td> 
+         <td class="confluenceTd">Completed</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-TASK-2100 </td> 
+         <td class="confluenceTd"> setup hudson job for jdbc dev tests </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Shalini </td> 
+         <td class="confluenceTd"> JCA-21 </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-TASK-2101 </td> 
+         <td class="confluenceTd"> setup hudson job for connector dev tests, standalone connector cts tests </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Jagadish </td> 
+         <td class="confluenceTd"> JCA-21 </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JCA-TASK-2400 </td> 
+         <td class="confluenceTd"> Provide connector-runtime AMX APIs as CLI (for GUI's usage) </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Jagadish </td> 
+         <td class="confluenceTd"> JCA-24 </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="V3.1_Connectors_Pooling_Resources_JDBC-References%2FLinks"></a>References / Links</h2> 
+     <ul> 
+      <li>Coming soon</li> 
+     </ul> <h4><a name="V3.1_Connectors_Pooling_Resources_JDBC-EmailAlias"></a>Email Alias</h2> 
+     <ul> 
+      <li>Please contact us at <a href="mailto:dev@glassfish.java.net">dev@glassfish.java.net</a></li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Sep 16, 2010 by 
+<font color="#0050B2">jagadish</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

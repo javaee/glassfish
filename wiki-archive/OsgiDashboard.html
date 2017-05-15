@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : OsgiDashboard</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p><a href="OSGi.html" title="OSGi">Take me back to GlassFish/OSGi Wiki Home </a></p> 
+     <div class="panel" style="border-width: 1px;"></div> <p><b>GlassFish/OSGi Dashboard</b></p> <p>Created and maintained by: Sahoo</p> <p>THIS IS OUT OF DATE. IT NEEDS TO BE UPDATED.</p> <p><a href="3.1OSGi.html" title="3.1OSGi">OSGi Subproject page for GlassFish 3.1</a></p> <p>The table below provides a high level introduction to various OSGi related features being worked on in GlassFish. Over a period of time, we shall provide links to samples, documentation, one-pagers, etc.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Sl No </th> 
+         <th class="confluenceTh"> Category </th> 
+         <th class="confluenceTh"> Feature Name </th> 
+         <th class="confluenceTh"> Feature Desc </th> 
+         <th class="confluenceTh"> Implementation Status </th> 
+         <th class="confluenceTh"> Pending Tasks </th> 
+         <th class="confluenceTh"> Dependencies </th> 
+         <th class="confluenceTh"> Samples/\Blogs/\Community Discussions/ <br class="atl-forced-newline"> RFEs </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> OSGi </td> 
+         <td class="confluenceTd"> Embeddable GlassFish </td> 
+         <td class="confluenceTd"> Embed GlassFish in an existing OSGi runtime like Eclipse IDE </td> 
+         <td class="confluenceTd"> Basic use case working </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/11782">Issue 11782 </a> </td> 
+         <td class="confluenceTd"> Module metadata clean up by module owners </td> 
+         <td class="confluenceTd"> <a href="http://www.java.net/blog/ss141213/archive/2010/02/14/how-embed-glassfish-existing-osgi-runtime">Sample1 </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd"> OSGi </td> 
+         <td class="confluenceTd"> OSGi Admin Console </td> 
+         <td class="confluenceTd"> Web based OSGi administration console for GlassFish </td> 
+         <td class="confluenceTd"> Customized Felix Web console available in trunk. It can also be plugged into GlassFish web console and used in a cluster. This plugin for admin console is available in update centre and maven. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> 1.<a href="http://wikis.sun.com/display/GFOSGIConsole/Using+GlassFish+OSGi+Console+in+V3">Plugging in Felix Web Console in GlassFish Admin Console </a>, 2. <a href="http://weblogs.java.net/blog/ss141213/archive/2009/05/using_felix_web.html">Using Felix OSGi console in GlassFish </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3 </td> 
+         <td class="confluenceTd"> OSGi </td> 
+         <td class="confluenceTd"> GlassFish provisioning </td> 
+         <td class="confluenceTd"> Allow users to select GlassFish features from a bundle repository </td> 
+         <td class="confluenceTd"> None </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Product Mgmt (Adam L.) to provide more input </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4 </td> 
+         <td class="confluenceTd"> OSGi + Java EE </td> 
+         <td class="confluenceTd"> <a href="http://weblogs.java.net/blog/ss141213/archive/2010/03/23/modularizing-enterprise-java-applications">Hybrid Web App </a> </td> 
+         <td class="confluenceTd"> Allow Web apps to run within OSGi context </td> 
+         <td class="confluenceTd"> Implemented since v3 </td> 
+         <td class="confluenceTd"> 1. Check compliance. 2. Support for shared JSP tag libraries. 3. Demonstrate use of bundle fragments as web fragments </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> <a href="http://weblogs.java.net/blog/2009/06/04/osgi-enabled-web-applications-inglassfish">Blog1 </a>, <a href="http://weblogs.java.net/blog/2009/06/14/developing-hybrid-osgi-java-ee-applications-glassfish">Blog2 </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5 </td> 
+         <td class="confluenceTd"> OSGi + Java EE </td> 
+         <td class="confluenceTd"> OSGi/JDBC (rfc #122) </td> 
+         <td class="confluenceTd"> Allow JDBC drivers to be used from OSGi bundles </td> 
+         <td class="confluenceTd"> Basic functionality available in trunk </td> 
+         <td class="confluenceTd"> 1. Check compliance. 2. asadmin commands to install drivers as bundles. 3. Use OSGi/JDBC APIs in appserver JDBC layer. </td> 
+         <td class="confluenceTd"> JDBC Team </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6 </td> 
+         <td class="confluenceTd"> OSGi + Java EE </td> 
+         <td class="confluenceTd"> OSGi/EE resources as services </td> 
+         <td class="confluenceTd"> Allow Java EE resources like JDBC datasources, JMS resources (topics/queues), JavaMail resources to be consumed as OSGi services </td> 
+         <td class="confluenceTd"> Basic functionality available in trunk - thanks to Jagadish </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> JCA Team </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 7 </td> 
+         <td class="confluenceTd"> OSGi + Java EE </td> 
+         <td class="confluenceTd"> OSGi/JTA (rfc #98) </td> 
+         <td class="confluenceTd"> Allow OSGi bundles to use JTA by exposing JTA objects as services. </td> 
+         <td class="confluenceTd"> Available in trunk </td> 
+         <td class="confluenceTd"> Checking compliance </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 8 </td> 
+         <td class="confluenceTd"> OSGi + Java EE </td> 
+         <td class="confluenceTd"> OSGi/JPA </td> 
+         <td class="confluenceTd"> Allows hybrid app to use JPA </td> 
+         <td class="confluenceTd"> Basic functionality with lazy loading working in trunk for EclipseLink </td> 
+         <td class="confluenceTd"> 1. Support other providers like Hibernate, OpenJPA. 2. Standalone shared PU </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> <a href="http://weblogs.java.net/blog/ss141213/archive/2010/03/30/ejb-osgi-service-demo-eclipsecon">Sample </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 9 </td> 
+         <td class="confluenceTd"> OSGi + Java EE </td> 
+         <td class="confluenceTd"> OSGi/JNDI (rfc #142) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> JNDI look up works from OSGi bundle </td> 
+         <td class="confluenceTd"> Implement the rfc or integrate RI </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 10 </td> 
+         <td class="confluenceTd"> OSGi + Java EE </td> 
+         <td class="confluenceTd"> OSGi/EJB </td> 
+         <td class="confluenceTd"> Allow EJBs to run within OSGi context </td> 
+         <td class="confluenceTd"> Available in trunk supporting automatic registration of EJB as service </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/11374">RFE 11374 </a>, <a href="http://weblogs.java.net/blog/ss141213/archive/2010/03/30/ejb-osgi-service-demo-eclipsecon">Sample1 </a>, <a href="http://www.java.net/blog/ss141213/archive/2010/04/21/osgijmsmdb-example">Sample2 </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 11 </td> 
+         <td class="confluenceTd"> OSGi + Java EE </td> 
+         <td class="confluenceTd"> OSGi/CDI </td> 
+         <td class="confluenceTd"> Explore use of CDI in hybrid applications </td> 
+         <td class="confluenceTd"> Implemented in 3.1. Use @OSGiService @Inject to inject OSGi service into your hybrid app </td> 
+         <td class="confluenceTd"> <a href="http://blogs.oracle.com/sivakumart/entry/typesafe_injection_of_dynamic_osgi">Sample </a><br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 12 </td> 
+         <td class="confluenceTd"> OSGi + Java EE </td> 
+         <td class="confluenceTd"> <a href="JdkSpiOsgi.html" title="JdkSpiOsgi">Make javax APIs OSGi ready </a> </td> 
+         <td class="confluenceTd"> Address META-INF/service and Thread.contextClassLoader issue in various SE/EE APIs. </td> 
+         <td class="confluenceTd"> Prototype solution in place. Needs acceptance from various stake holders. </td> 
+         <td class="confluenceTd"> Take the proposal to affected API owners </td> 
+         <td class="confluenceTd"> Metro, Jersey </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 13 </td> 
+         <td class="confluenceTd"> OSGi + Java EE </td> 
+         <td class="confluenceTd"> OSGi/JCA (rfc #146) </td> 
+         <td class="confluenceTd"> Make RARs to run within OSGi context </td> 
+         <td class="confluenceTd"> The RFC is being finalized. No implementation available in GlassFish yet. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> connector team </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 14 </td> 
+         <td class="confluenceTd"> OSGi + Java EE </td> 
+         <td class="confluenceTd"> OSGi/JAX-RS </td> 
+         <td class="confluenceTd"> Explore use of JAX-RS in OSGi environment </td> 
+         <td class="confluenceTd"> Jersey seems to be already usable in OSGi platform. It can also leverage OSGi/HTTP Service </td> 
+         <td class="confluenceTd"> Align Jersey effort with GlassFish </td> 
+         <td class="confluenceTd"> Jersey </td> 
+         <td class="confluenceTd"> <a href="http://blogs.oracle.com/mohitg/entry/rest_based_hybrid_osgi_javaee">Blog1 </a>, <a href="http://blogs.oracle.com/sandoz/entry/jersey_1_2_is_released">Blog2 </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 15 </td> 
+         <td class="confluenceTd"> OSGi + Java EE </td> 
+         <td class="confluenceTd"> OSGi/HTTP Service </td> 
+         <td class="confluenceTd"> Expose underlying Web container as OSGi/HTTP Service </td> 
+         <td class="confluenceTd"> Available since v3 </td> 
+         <td class="confluenceTd"> Passes compliance tests </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 16 </td> 
+         <td class="confluenceTd"> OSGi + Java EE </td> 
+         <td class="confluenceTd"> Hybrid apps in a cluster </td> 
+         <td class="confluenceTd"> Enable cluster support for hybrid apps </td> 
+         <td class="confluenceTd"> Not yet implemented </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/14620">Issue 14620 </a> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jan 08, 2013 by 
+<font color="#0050B2">16764</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

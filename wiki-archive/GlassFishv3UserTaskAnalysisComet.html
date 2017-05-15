@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFishv3UserTaskAnalysisComet</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>&lt;h1&gt;GlassFish v3 User Task Analysis for Comet&lt;/h1&gt;<br> Attendees: Rajeev, Jean-Francois Facilitator: Jennifer Recorder: Dixie</p> <p>Back to <a href="GlassFishV3UserTaskAnalyses.html" title="GlassFishV3UserTaskAnalyses">GlassFish v3 User Task Analyses</a></p> 
+     <div> 
+      <ul> 
+       <li><a href="#GlassFishv3UserTaskAnalysisComet-Scope">Scope</a></li> 
+       <li><a href="#GlassFishv3UserTaskAnalysisComet-RelatedInformation">Related Information</a></li> 
+       <ul> 
+        <li><a href="#GlassFishv3UserTaskAnalysisComet-DeveloperTasks">Developer Tasks</a></li> 
+        <li><a href="#GlassFishv3UserTaskAnalysisComet-AdministratorTasks">Administrator Tasks</a></li> 
+       </ul> 
+       <li><a href="#GlassFishv3UserTaskAnalysisComet-AssociatedConcepts">Associated Concepts</a></li> 
+      </ul>
+     </div> <h4><a name="GlassFishv3UserTaskAnalysisComet-Scope"></a>Scope</h1> <p>To identify the tasks that a devloper and an administrator must perform to write a component that supports Comet.</p> <h4><a name="GlassFishv3UserTaskAnalysisComet-RelatedInformation"></a>Related Information</h1> <h4><a name="GlassFishv3UserTaskAnalysisComet-DeveloperTasks"></a>Developer Tasks</h2> 
+     <ol> 
+      <li><a href="http://docs.sun.com/app/docs/doc/820-4496/ggrlo?l=en&amp;q=JRuby&amp;a=view">Setting load-on-startup to 0 in the DD</a></li> 
+      <li><a href="http://docs.sun.com/app/docs/doc/820-4496/ggrgp?l=en&amp;q=JRuby&amp;a=view">Creating the component that supports Comet requests (can be a servlet or JSP)</a></li> 
+      <li><a href="http://docs.sun.com/app/docs/doc/820-4496/ggqla?l=en&amp;q=JRuby&amp;a=view">Registering the component with the Comet Engine</a> 
+       <ol> 
+        <li><a href="http://docs.sun.com/app/docs/doc/820-4496/ggqla?l=en&amp;q=JRuby&amp;a=view">Defining the context path that will be considered for Comet processing</a></li> 
+        <li><a href="http://docs.sun.com/app/docs/doc/820-4496/ggqla?l=en&amp;q=JRuby&amp;a=view">Getting an instance of the Comet engine</a></li> 
+        <li><a href="http://docs.sun.com/app/docs/doc/820-4496/ggqla?l=en&amp;q=JRuby&amp;a=view">Registering the context path to the Comet engine, which will return a CometContext</a> 
+         <ol> 
+          <li>Specifying when polling happens</li> 
+         </ol> </li> 
+       </ol> </li> 
+      <li>Managing Server Push With Notification Handler 
+       <ol> 
+        <li>Using the Default Handler 
+         <ol> 
+          <li>Configuring the Number of Threads</li> 
+         </ol> </li> 
+        <li>Creating Your Own Notification Handler 
+         <ol> 
+          <li>Configuring the Thread Pool</li> 
+          <li>Filtering the Server Push</li> 
+         </ol> </li> 
+       </ol> </li> 
+      <li><a href="http://docs.sun.com/app/docs/doc/820-4496/ggqlt?l=en&amp;q=JRuby&amp;a=view">Defining a Comet handler that sends a response back to the client when the appropriate action occurs on the server</a> 
+       <ol> 
+        <li><a href="http://docs.sun.com/app/docs/doc/820-4496/ggqlt?l=en&amp;q=JRuby&amp;a=view">Creating a CometHandler implementation in the doGet Method</a></li> 
+        <li><a href="http://docs.sun.com/app/docs/doc/820-4496/ggqlt?l=en&amp;q=JRuby&amp;a=view">Attaching an HttpServletResponse to represent the response to the client</a></li> 
+        <li><a href="http://docs.sun.com/app/docs/doc/820-4496/ggqla?l=en&amp;q=JRuby&amp;a=view">Getting the CometContext object for the given contextPath</a></li> 
+        <li><a href="http://docs.sun.com/app/docs/doc/820-4496/ggqkx?l=en&amp;q=JRuby&amp;a=view">Using onEvent to define what happens when an event is received</a></li> 
+       </ol> </li> 
+      <li><a href="http://docs.sun.com/app/docs/doc/820-4496/ggqjn?l=en&amp;q=JRuby&amp;a=view">Adding a CometHandler to the CometContext object</a> 
+       <ul> 
+        <li>for a servlet JSP</li> 
+        <li>for a server-side resource, such as a DB</li> 
+       </ul> </li> 
+      <li>Setting how long a request is polled.</li> 
+      <li><a href="http://docs.sun.com/app/docs/doc/820-4496/ggqkx?l=en&amp;q=JRuby&amp;a=view">Notifying the CometHandler of an event using the Comet context</a> 
+       <ol> 
+        <li><a href="http://docs.sun.com/app/docs/doc/820-4496/ggqkx?l=en&amp;q=JRuby&amp;a=view">Using doPost</a> 
+         <ul> 
+          <li>Call comet.context.notify</li> 
+         </ul> </li> 
+        <li>Using doGet 
+         <ol> 
+          <li>Suspending the request</li> 
+          <li>Resuming the request 
+           <ul> 
+            <li>For long polling</li> 
+            <li>For HTTP Streaming</li> 
+           </ul> </li> 
+         </ol> </li> 
+        <li><a href="http://docs.sun.com/app/docs/doc/820-4496/ggqkx?l=en&amp;q=JRuby&amp;a=view">Specifying the type of CometEvent you want to push</a> 
+         <ul> 
+          <li>doPost</li> 
+          <li>doGet</li> 
+         </ul> </li> 
+       </ol> </li> 
+     </ol> <h4><a name="GlassFishv3UserTaskAnalysisComet-AdministratorTasks"></a>Administrator Tasks</h2> 
+     <ul> 
+      <li><a href="http://docs.sun.com/app/docs/doc/820-4496/ggrla?l=en&amp;q=JRuby&amp;a=view">Setting the cometSupport HTTP listener property to true to enable Comet in Glassfish by editing the http-listener property in domain.xml</a></li> 
+     </ul> <h4><a name="GlassFishv3UserTaskAnalysisComet-AssociatedConcepts"></a>Associated Concepts</h1> 
+     <ul> 
+      <li><a href="http://docs.sun.com/app/docs/doc/820-4496/ggrgy?l=en&amp;q=JRuby&amp;a=view">About Comet</a></li> 
+      <li><a href="http://docs.sun.com/app/docs/doc/820-4496/ggrgy?l=en&amp;q=JRuby&amp;a=view">About the Grizzly Asynchronous Request Mechanism</a></li> 
+      <li><a href="http://docs.sun.com/app/docs/doc/820-4496/ggrgy?l=en&amp;q=JRuby&amp;a=view">Comet Objects</a> 
+       <ul> 
+        <li>CometContext: A shareable context for apps to subscribe to in order to get updates.</li> 
+        <li>CometEvent: Contains the state of CometContext</li> 
+        <li>CometHandler: The interface an app must implement to be part of one or more Comet contexts.</li> 
+       </ul> </li> 
+     </ul> <p>Back to <a href="GlassFishV3UserTaskAnalyses.html" title="GlassFishV3UserTaskAnalyses">GlassFish v3 User Task Analyses</a></p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 09, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:44.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

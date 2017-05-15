@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GFV3DocMinutes05_07_09</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GFV3DocMinutes05_07_09-GlassFishv3CommunityDocsMeetingMay7%2C2009"></a>GlassFish v3 Community Docs Meeting May 7, 2009</h1> <h4><a name="GFV3DocMinutes05_07_09-Attendees"></a>Attendees</h2> <p>Devika, Dixie, Eric, Kim, Mike, Paul</p> <h4><a name="GFV3DocMinutes05_07_09-Agenda"></a>Agenda</h2> 
+     <ol> 
+      <li>Review of AIs</li> 
+      <li>Progress on writing assignments by feature</li> 
+      <li>Bug status</li> 
+      <li>Community doc reviews</li> 
+      <li>Open mic</li> 
+      <li>Next Meeting</li> 
+     </ol> <h4><a name="GFV3DocMinutes05_07_09-Minutes"></a>Minutes</h2> 
+     <ol> 
+      <li>Review of AIs: 
+       <ul> 
+        <li> 
+         <ul> 
+          <li>Paul:* Cross-check the <a href="V3FunctionalSpecs.html" title="V3FunctionalSpecs">v3 list of functional specifications</a> against the list of features in the v2 documentation.<br> <b><font color="orange">In progress</font>, expected to be done by May 11.</b> Paul is compiling a list of <a href="GlassFishV3DocV2Features.html" title="GlassFishV3DocV2Features">v2 features whose status with respect to v3 is uncertain</a>.</li> 
+          <li>All by April 9* Send Paul the list of features you have questions about for EA (in or out?) and also v3 Final (in or out?).<b>Complete.</b></li> 
+          <li>Paul:* Verify EOL process for features that are marked as "Never".<br> <b><font color="orange">In progress.</font></b> Paul will follow up with Abhijit at the same time he asks about the previous AI.<br> <b>In progress, expected to be done by May 11.</b></li> 
+          <li>June, Devika, and others:*Determine whether to inlcude jMaki in the single document about scripting into a single document and send the details to Paul.<br> <b>Complete:</b> Documentation for jMaki will <em>not</em> be included.</li> 
+          <li>Paul:* Update pubstool registration for <em>Domain File Format Reference</em>.<br> <b>Complete.</b></li> 
+          <li>Paul:* Look at the man pages to see what properties are already doc'd there.<br> <b><font color="red">Not started.</font></b></li> 
+          <li>Paul:* Look into whether there will be an <em>Upgrade Guide</em> for v3 Preview.<br> <b>Complete:</b> Chinmayee has confirmed that the will be <b>no</b> <em>Upgrade Guide</em> for v3 Preview.</li> 
+          <li>Paul:* Update doc plan to reflect which documents are in EA.<br> <b>Complete.</b></li> 
+         </ul> </li> 
+       </ul> </li> 
+      <li>Progress on writing assignments 
+       <ul> 
+        <li> 
+         <ul> 
+          <li>Man Pages, bundled Quick Start Guide, othe HTML pages:*Complete for v3 Preview</li> 
+          <li>Administration Guide:*</li> 
+          <li>Focused reviews on 3 chapters sent to relevant SMEs</li> 
+          <li>Complete draft for review expected May 18</li> 
+          <li>Online Help and Inline Help:*</li> 
+          <li>All changes for v3 Preview are checked in.</li> 
+          <li>Reviews are to be conduted between now and FCS.</li> 
+          <li>Help from the Grizzly team is required for the Administration Console and the online help.</li> 
+          <li>The doc plan has been updated to reflect the changes made.</li> 
+          <li>Java EE 6 Tutorial:*</li> 
+          <li>Progress is slow and steady.</li> 
+          <li>Some issues related to NetBeans remain outstanding.</li> 
+          <li>Web engineering requests are pending.</li> 
+          <li>First Cup Tutorial:*</li> 
+          <li>Every time something is fixed,something else breaks.</li> 
+          <li>Eric will fix errors with Facelets and JSF.</li> 
+          <li>The build 47 version of the tutorial does not work with NetBeans.</li> 
+          <li>Message Queue:* Versions of the documentation for Message Queue 4.4 will be available fior v3 Preview.</li> 
+         </ul> </li> 
+       </ul> </li> 
+      <li>Bug status<br> No updates this week.</li> 
+      <li>Community doc reviews<br> To enable the FishCat community to review the documentations: 
+       <ul> 
+        <li>Use the documentation comments wiki.</li> 
+        <li>Include the quality community in the distribution request.</li> 
+        <li>Be willing to accept feedback in the form of Issue Tracker issues.</li> 
+       </ul> </li> 
+      <li>Open mic<br> The generic JMS resource adapter will <b>not</b> be merged with the resource adapter from Open MQ by v3. The merge is planned for v3.1.</li> 
+      <li>Next meeting<br> Thiursday May 14, 2009, 2-3 PM PDT</li> 
+     </ol> <h4><a name="GFV3DocMinutes05_07_09-SuspendedAIs"></a>Suspended AIs</h2> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li>Paul:* Change the description of the process so it highlights that you also need to identify where the tasks will be documented.</li> 
+        <li>June and others:* Contribute to the SolBook rules page.</li> 
+        <li>All:* Add items to the GlassFish v3 documentation <a href="GlassFishV3DocQuality.html" title="GlassFishV3DocQuality">quality assurance</a> page.</li> 
+        <li>All:* If you discover other issues with existing docs, send mail to Paul (with a URL if possible), so he can start keeping a running list of issues and areas for improvement.<br> \</li> 
+       </ul> </li> 
+     </ul> <p><a href="GlassFishV3DocMeetings.html" title="GlassFishV3DocMeetings">Main meetings page</a></p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 09, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:44.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

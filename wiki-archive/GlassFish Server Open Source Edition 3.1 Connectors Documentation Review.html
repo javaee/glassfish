@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFish Server Open Source Edition 3.1 Connectors Documentation Review</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>This page provides links to review drafts of new and changed documentation for the Connectors (JavaEE Connector Architecture, Connection Pooling, JDBC-RA) project.</p> <p>Mandatory reviewers for each item are listed in each section.</p> <p>Changes to existing documentation since the last release are marked with change bars. No changes are marked in new documentation.</p> <p>Please provide your feedback by adding a comment to this page. To simplify the processing of your comments, please add your comments in the format in the sample comment. Review existing comments to see known issues and avoid duplicates.</p> 
+     <div> 
+      <ul> 
+       <li><a href="#GlassFishServerOpenSourceEdition3.1ConnectorsDocumentationReview-ChangestoBooks">Changes to Books</a></li> 
+       <ul> 
+        <li><a href="#GlassFishServerOpenSourceEdition3.1ConnectorsDocumentationReview-AdministrationGuideChanges"> <em>Administration Guide</em> Changes</a></li> 
+        <li><a href="#GlassFishServerOpenSourceEdition3.1ConnectorsDocumentationReview-ApplicationDevelopmentGuideChanges"> <em>Application Development Guide</em> Changes</a></li> 
+        <li><a href="#GlassFishServerOpenSourceEdition3.1ConnectorsDocumentationReview-DomainFileFormatReferenceChanges"> <em>Domain File Format Reference</em> Changes</a></li> 
+        <li><a href="#GlassFishServerOpenSourceEdition3.1ConnectorsDocumentationReview-ChangestoManPages">Changes to Man Pages</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="GlassFishServerOpenSourceEdition3.1ConnectorsDocumentationReview-ChangestoBooks"></a>Changes to Books</h1> <h4><a name="GlassFishServerOpenSourceEdition3.1ConnectorsDocumentationReview-AdministrationGuideChanges"></a><em>Administration Guide</em> Changes</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Section </th> 
+         <th class="confluenceTh"> Documentation Impact </th> 
+         <th class="confluenceTh"> Reviewers </th> 
+         <th class="confluenceTh"> Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> "<a href="http://download.java.net/glassfish/wiki-archive/attachments/20874339/21365905.pdf">Resource Statistics (Connection Pool)</a>" in Chapter 8, "Administering the Monitoring Service" </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Roberto, Sivakumar </td> 
+         <td class="confluenceTd"> In review. Comments due by February 16th, 2011. <br class="atl-forced-newline"> <a href="./review-monitoring-guide-connector-jdbc-resources.html">Jagadish-Review-Comments</a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="./review-admin-guide-connectors-jdbc-resources">Various sections</a> in Chapter 11, "Administering Database Connectivity.html" </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Roberto, Sivakumar </td> 
+         <td class="confluenceTd"> In review. Comments due by February 16th, 2011. <br class="atl-forced-newline"> <a href="./review-admin-guide-connectors-jdbc-resources.html">Jagadish-Review-Comments</a> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishServerOpenSourceEdition3.1ConnectorsDocumentationReview-ApplicationDevelopmentGuideChanges"></a><em>Application Development Guide</em> Changes</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Section </th> 
+         <th class="confluenceTh"> Documentation Impact </th> 
+         <th class="confluenceTh"> Reviewers </th> 
+         <th class="confluenceTh"> Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874339/21365904.pdf">Various sections</a> in Chapter 14, "Using the JDBC API for Database Access" </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Roberto, Sivakumar </td> 
+         <td class="confluenceTd"> In review. Comments due by February 16th, 2011. <br class="atl-forced-newline"> <a href="./review-dev-guide-connector-jdbc-resources.html">Jagadish-Review-Comments</a> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishServerOpenSourceEdition3.1ConnectorsDocumentationReview-DomainFileFormatReferenceChanges"></a><em>Domain File Format Reference</em> Changes</h2> <p>The <em>Domain File Format Reference</em> is canceled and therefore not being delivered in this release.</p> <h4><a name="GlassFishServerOpenSourceEdition3.1ConnectorsDocumentationReview-ChangestoManPages"></a>Changes to Man Pages</h2> 
+     <hr> <p>Note - Comments are now closed for man pages. To suggest an improvement to a man page or report an error in a man page, file a <a href="http://java.net/jira/browse/GLASSFISH">GlassFish issue</a>, subcomponent docs, against the man page.</p> <p><b>Update</b> : Raised an umbrella GlassFish docs issue <a href="https://github.com/javaee/glassfish/issues/15929">GLASSFISH-15829</a> for review comments.</p> 
+     <hr> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Man Page Name and Section </th> 
+         <th class="confluenceTh"> Documentation Impact </th> 
+         <th class="confluenceTh"> Reviewers </th> 
+         <th class="confluenceTh"> Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874339/21365540.pdf">add-resources(1)</a> </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Roberto, Sivakumar </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874339/21365539.pdf">create-admin-object(1)</a> </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Roberto, Sivakumar </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874339/21365546.pdf">create-connector-resource(1)</a> </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Roberto, Sivakumar </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874339/21365545.pdf">create-connector-work-security-map(1)</a> </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Alex </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874339/21365548.pdf">create-custom-resource(1)</a> </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Roberto, Sivakumar </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874339/21365547.pdf">create-javamail-resource(1)</a> </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Roberto, Sivakumar </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874339/21365542.pdf">create-jdbc-connection-pool(1)</a> </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Alex </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874339/21365541.pdf">create-jdbc-resource(1)</a> </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Roberto, Sivakumar </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874339/21365544.pdf">create-jndi-resource(1)</a> </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Roberto, Sivakumar </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874339/21365543.pdf">create-resource-adapter-config(1)</a> </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Alex </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874339/21365527.pdf">create-resource-ref(1)</a> </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Roberto, Sivakumar </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874339/21365529.pdf">delete-admin-object(1)</a> </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Roberto, Sivakumar </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874339/21365528.pdf">delete-connector-resource(1)</a> </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Roberto, Sivakumar </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874339/21365530.pdf">delete-connector-work-security-map(1)</a> </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Alex </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874339/21365523.pdf">delete-custom-resource(1)</a> </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Roberto, Sivakumar </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874339/21365524.pdf">delete-javamail-resource(1)</a> </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Roberto, Sivakumar </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874339/21365525.pdf">delete-jdbc-resource(1)</a> </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Roberto, Sivakumar </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874339/21365526.pdf">delete-jndi-resource(1)</a> </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Roberto, Sivakumar </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874339/21365535.pdf">delete-resource-adapter-config(1)</a> </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Alex </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874339/21365536.pdf">delete-resource-ref(1)</a> </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Roberto, Sivakumar </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874339/21365537.pdf">deploy(1)</a> </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Alex </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874339/21365538.pdf">flush-connection-pool(1)</a> </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Roberto, Sivakumar </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874339/21365531.pdf">list-admin-objects(1)</a> </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Roberto, Sivakumar </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874339/21365532.pdf">list-connector-resources(1)</a> </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Roberto, Sivakumar </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874339/21365533.pdf">list-connector-work-security-maps(1)</a> </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Alex </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874339/21365534.pdf">list-custom-resources(1)</a> </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Roberto, Sivakumar </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874339/21365510.pdf">list-javamail-resources(1)</a> </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Roberto, Sivakumar </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874339/21365509.pdf">list-jdbc-resources(1)</a> </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Roberto, Sivakumar </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874339/21365508.pdf">list-jndi-resources(1)</a> </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Roberto, Sivakumar </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874339/21365507.pdf">list-resource-adapter-configs(1)</a> </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Alex </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874339/21365514.pdf">list-resource-refs(1)</a> </td> 
+         <td class="confluenceTd"> Moderate </td> 
+         <td class="confluenceTd"> Roberto, Sivakumar </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874339/21365513.pdf">ping-connection-pool(1)</a> </td> 
+         <td class="confluenceTd"> Minor </td> 
+         <td class="confluenceTd"> Roberto, Sivakumar </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874339/21365512.pdf">update-connector-work-security-map(1)</a> </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> Jagadish, Shalini, Alex </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874339/21365540.pdf">add-resources.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874339/21365539.pdf">create-admin-object.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874339/21365546.pdf">create-connector-resource.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874339/21365545.pdf">create-connector-work-security-map.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874339/21365548.pdf">create-custom-resource.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874339/21365547.pdf">create-javamail-resource.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874339/21365542.pdf">create-jdbc-connection-pool.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874339/21365541.pdf">create-jdbc-resource.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874339/21365544.pdf">create-jndi-resource.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874339/21365543.pdf">create-resource-adapter-config.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874339/21365527.pdf">create-resource-ref.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874339/21365528.pdf">delete-connector-resource.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874339/21365529.pdf">delete-admin-object.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874339/21365530.pdf">delete-connector-work-security-map.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874339/21365523.pdf">delete-custom-resource.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874339/21365524.pdf">delete-javamail-resource.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874339/21365525.pdf">delete-jdbc-resource.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874339/21365526.pdf">delete-jndi-resource.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874339/21365535.pdf">delete-resource-adapter-config.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874339/21365536.pdf">delete-resource-ref.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874339/21365537.pdf">deploy.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874339/21365538.pdf">flush-connection-pool.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874339/21365531.pdf">list-admin-objects.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874339/21365532.pdf">list-connector-resources.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874339/21365533.pdf">list-connector-work-security-maps.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874339/21365534.pdf">list-custom-resources.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874339/21365510.pdf">list-javamail-resources.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874339/21365509.pdf">list-jdbc-resources.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874339/21365508.pdf">list-jndi-resources.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874339/21365507.pdf">list-resource-adapter-configs.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874339/21365514.pdf">list-resource-refs.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874339/21365513.pdf">ping-connection-pool.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874339/21365512.pdf">update-connector-work-security-map.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874339/21365904.pdf">AppDevGde-Ch14-JDBCAPI.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874339/21365906.pdf">AdminGde-Ch11-JDBC.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874339/21365905.pdf">AdminGde-Ch8-Monitoring.pdf</a> (application/octet-stream) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874339/21365188.pdf">dev-guide-review.txt.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874339/21365189.pdf">monitoring-guide.txt.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20874339/21365186.pdf">admin-guide-review.txt.pdf</a> (application/pdf) 
+      <br> 
+     </div> 
+     <div class="tabletitle"> 
+      <a name="comments"> <h4>Comments:</h2> </a> 
+     </div> 
+     <table border="0" width="100%"> 
+      <tbody>
+       <tr> 
+        <td> <a name="comment-20882633"></a> <font class="smallfont">
+          <div class="table-wrap"> 
+           <table class="confluenceTable">
+            <tbody> 
+             <tr> 
+              <th class="confluenceTh"> Comment ID </th> 
+              <th class="confluenceTh"> Location </th> 
+              <th class="confluenceTh"> Comment </th> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> MAF-001 </td> 
+              <td class="confluenceTd"> Admin Gde, Ch11 </td> 
+              <td class="confluenceTd"> Sample comment. </td> 
+             </tr> 
+             <tr> 
+              <td class="confluenceTd"> MAF-002 </td> 
+              <td class="confluenceTd"> AppDevGde, Ch14 </td> 
+              <td class="confluenceTd"> Another Sample comment. </td> 
+             </tr> 
+            </tbody>
+           </table> 
+          </div> </font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by oldestred at Feb 09, 2011 10:55 
+         </div> </td> 
+       </tr> 
+      </tbody>
+     </table> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Nov 11, 2011 by 
+<font color="#0050B2">jagadish</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

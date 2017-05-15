@@ -1,0 +1,1683 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GF3.1MS3</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GF3.1MS3-GlassFishServerOpenSourceEdition3.1Milestone3%28Enddate07%2F19%2F10%29"></a>GlassFish Server Open Source Edition 3.1 Milestone 3 (End date 07/19/10)</h2> 
+     <div> 
+      <ul> 
+       <li><a href="#GF3.1MS3-GlassFishServerOpenSourceEdition3.1Milestone3%28Enddate07%2F19%2F10%29">GlassFish Server Open Source Edition 3.1 Milestone 3 (End date 07/19/10)</a></li> 
+       <li><a href="#GF3.1MS3-DemoTopics">Demo Topics</a></li> 
+       <ul> 
+        <li><a href="#GF3.1MS3-BasicClustering">Basic Clustering</a></li> 
+        <li><a href="#GF3.1MS3-Configuration">Configuration</a></li> 
+        <li><a href="#GF3.1MS3-Synchronization">Synchronization</a></li> 
+        <li><a href="#GF3.1MS3-DynamicReconfiguration">Dynamic Reconfiguration</a></li> 
+        <li><a href="#GF3.1MS3-Deployment">Deployment</a></li> 
+        <li><a href="#GF3.1MS3-AppClientContainer">App Client Container</a></li> 
+        <li><a href="#GF3.1MS3-Connectors%2CPooling%2CResources%2CJDBC">Connectors, Pooling, Resources, JDBC</a></li> 
+        <li><a href="#GF3.1MS3-Security">Security</a></li> 
+        <li><a href="#GF3.1MS3-SSHProvisioning">SSH Provisioning</a></li> 
+        <li><a href="#GF3.1MS3-TransactionRecovery">Transaction Recovery</a></li> 
+        <li><a href="#GF3.1MS3-RESTfulAdministrationAPI">RESTful Administration API</a></li> 
+        <li><a href="#GF3.1MS3-JMX">JMX</a></li> 
+        <li><a href="#GF3.1MS3-AdministrationConsole">Administration Console</a></li> 
+        <li><a href="#GF3.1MS3-Logging%26Diagnostics">Logging &amp; Diagnostics</a></li> 
+        <li><a href="#GF3.1MS3-DASRecovery">DAS Recovery</a></li> 
+        <li><a href="#GF3.1MS3-Installer">Installer</a></li> 
+        <li><a href="#GF3.1MS3-Packaging">Packaging</a></li> 
+        <li><a href="#GF3.1MS3-Upgrade">Upgrade</a></li> 
+        <li><a href="#GF3.1MS3-Build">Build</a></li> 
+        <li><a href="#GF3.1MS3-InmemorySessionReplication%3AHighAvailability">In-memory Session Replication: High Availability</a></li> 
+        <li><a href="#GF3.1MS3-ShoalGroupManagementService%28GMS%29forRuntimeClusteringServices">Shoal Group Management Service (GMS) for Runtime Clustering Services</a></li> 
+        <li><a href="#GF3.1MS3-Webtier">Webtier</a></li> 
+        <li><a href="#GF3.1MS3-EJB">EJB</a></li> 
+        <li><a href="#GF3.1MS3-IIOPClustering">IIOP Clustering</a></li> 
+        <li><a href="#GF3.1MS3-JMSandMessageQueue">JMS and Message Queue</a></li> 
+        <li><a href="#GF3.1MS3-Metro">Metro</a></li> 
+        <li><a href="#GF3.1MS3-Loadbalancer">Loadbalancer</a></li> 
+        <li><a href="#GF3.1MS3-DeveloperToolingwithNetBeans">Developer Tooling with NetBeans</a></li> 
+        <li><a href="#GF3.1MS3-EclipseWTP">Eclipse WTP</a></li> 
+        <li><a href="#GF3.1MS3-Embedded">Embedded</a></li> 
+        <li><a href="#GF3.1MS3-DevTestFramework">Dev Test Framework</a></li> 
+        <li><a href="#GF3.1MS3-JSF">JSF</a></li> 
+        <li><a href="#GF3.1MS3-Grizzly">Grizzly</a></li> 
+        <li><a href="#GF3.1MS3-OSGi">OSGi</a></li> 
+        <li><a href="#GF3.1MS3-Persistence">Persistence</a></li> 
+        <li><a href="#GF3.1MS3-Jersey">Jersey</a></li> 
+        <li><a href="#GF3.1MS3-CDI">CDI</a></li> 
+        <li><a href="#GF3.1MS3-BeanValidation">Bean Validation</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="GF3.1MS3-DemoTopics"></a>Demo Topics</h2> 
+     <ul> 
+      <li><a href="High availability demo for 3.1 MS3.html" title="High availability demo for 3.1 MS3">High availability of Web and EJB tier</a> - HA team</li> 
+      <li>JMS clustering - JMS team</li> 
+      <li>JMS - GlassFish/Websphere MQ interoperability - JMS team</li> 
+      <li><a href="3.1LoadbalancerDemoScript.html" title="3.1LoadbalancerDemoScript">Loadbalancer administration CLIs</a> - LB team</li> 
+      <li>Transaction recovery - Tx team</li> 
+      <li><a href="DevTest FrameWork Demo for 3.1 MS3.html" title="DevTest FrameWork Demo for 3.1 MS3">GlassFish Hudson plugin</a> - Dev Test Framework team</li> 
+      <li><a href="Admin Console Demo for 3.1 MS3.html" title="Admin Console Demo for 3.1 MS3">Console demo</a> - Console team</li> 
+      <li><a href="GlassFish MS3 Port Unification Demo.html" title="GlassFish MS3 Port Unification Demo">GlassFish MS3 Port Unification Demo</a> - Grizzly team</li> 
+     </ul> <h4><a name="GF3.1MS3-BasicClustering"></a>Basic Clustering</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 07. </td> 
+         <td class="confluenceTd"> MS3 (7/19) </td> 
+         <td class="confluenceTd"> INFRA-009 </td> 
+         <td class="confluenceTd"> manual sync </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Issue <a href="https://github.com/javaee/glassfish/issues/12120">12120 </a> Partially completed (generate-sync-bundle),<br class="atl-forced-newline"> completion deferred to MS4 <a href="https://github.com/javaee/glassfish/issues/12731">issue 12731</a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 08. </td> 
+         <td class="confluenceTd"> MS3 (7/19) </td> 
+         <td class="confluenceTd"> INFRA-010 </td> 
+         <td class="confluenceTd"> offline-config </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Issue <a href="https://github.com/javaee/glassfish/issues/12121">12121 </a> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 09. </td> 
+         <td class="confluenceTd"> MS3 (7/19) </td> 
+         <td class="confluenceTd"> INFRA-012 </td> 
+         <td class="confluenceTd"> Rename infrastructure related DTDs </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Issue <a href="https://github.com/javaee/glassfish/issues/12122">12122 </a> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 10. </td> 
+         <td class="confluenceTd"> MS3 (7/19) </td> 
+         <td class="confluenceTd"> INFRA-014 </td> 
+         <td class="confluenceTd"> restart instance </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Issue <a href="https://github.com/javaee/glassfish/issues/12123">12123 </a> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 11. </td> 
+         <td class="confluenceTd"> MS3 (7/19) </td> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: orange;border-width: 1px;">
+           <div class="panelContent" style="background-color: orange;"> 
+            <p>INFRA-006</p> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd"> start/stop-cluster </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Issue <a href="https://github.com/javaee/glassfish/issues/12124">12124 </a> Completed </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS3-Configuration"></a>Configuration</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 05. </td> 
+         <td class="confluenceTd"> MS3 (7/19) </td> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: orange;border-width: 1px;">
+           <div class="panelContent" style="background-color: orange;"> 
+            <p>CONFIG-006</p> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd"> Config validation </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Issue <a href="https://github.com/javaee/glassfish/issues/12020">12020 </a> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 05a. </td> 
+         <td class="confluenceTd"> MS3 (7/19) </td> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: orange;border-width: 1px;">
+           <div class="panelContent" style="background-color: orange;"> 
+            <p>CONFIG-001a</p> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd"> Password dealiasing </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Issue <a href="https://github.com/javaee/glassfish/issues/11868">11868 </a> Deferred to MS4 </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS3-Synchronization"></a>Synchronization</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 07. </td> 
+         <td class="confluenceTd"> MS3 (7/19) </td> 
+         <td class="confluenceTd"> SYNC-007 </td> 
+         <td class="confluenceTd"> Exclude user created files from cleanup </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Issue <a href="https://github.com/javaee/glassfish/issues/12026">12026 </a> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 08. </td> 
+         <td class="confluenceTd"> MS3 (7/19) </td> 
+         <td class="confluenceTd"> SYNC-008 </td> 
+         <td class="confluenceTd"> Improved diagnostics </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Issue <a href="https://github.com/javaee/glassfish/issues/12027">12027</a> Completed </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS3-DynamicReconfiguration"></a>Dynamic Reconfiguration</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover </th> 
+         <th class="confluenceTh"> Status/ Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 08. </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: orange;border-width: 1px;">
+           <div class="panelContent" style="background-color: orange;"> 
+            <p>DYREC-002</p> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd"> Show 'restart required' status for each server instance. If a server instance needs to be re-started, this status will reflect that </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Issue <a href="https://github.com/javaee/glassfish/issues/12034">12034 </a><br class="atl-forced-newline"> Deferred to MS4 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 09. </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: orange;border-width: 1px;">
+           <div class="panelContent" style="background-color: orange;"> 
+            <p>DYREC-003</p> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd"> Support for dynamic-reconfiguration-enabled=false flag. This is needed for <a href="http://docs.sun.com/app/docs/doc-821-0182-abdik?l=en&amp;a=view">rolling upgrade </a> </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Issue <a href="https://github.com/javaee/glassfish/issues/12035">12035 </a> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 10. </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> DYREC-008 </td> 
+         <td class="confluenceTd"> Provide detailed diagnostics to debug dynamic reconfiguration related failures in customer environment </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Issue <a href="https://github.com/javaee/glassfish/issues/12036">12036 </a> Completed </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS3-Deployment"></a>Deployment</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 7. </td> 
+         <td class="confluenceTd"> Milestone 3 (07/19) </td> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: orange;border-width: 1px;">
+           <div class="panelContent" style="background-color: orange;"> 
+            <p>DPLY-001</p> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd"> Clustering deployment support (advanced features and corner cases will be handled in later milestones) </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 8. </td> 
+         <td class="confluenceTd"> Milestone 3 (07/19) </td> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: orange;border-width: 1px;">
+           <div class="panelContent" style="background-color: orange;"> 
+            <p>DPLY-002</p> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd"> Support new application commands in clustering environment </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 9. </td> 
+         <td class="confluenceTd"> Milestone 3 (07/19) </td> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: orange;border-width: 1px;">
+           <div class="panelContent" style="background-color: orange;"> 
+            <p>DPLY-002</p> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd"> Support existing application commands in clustering environment </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 10. </td> 
+         <td class="confluenceTd"> Milestone 3 (07/19) </td> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: orange;border-width: 1px;">
+           <div class="panelContent" style="background-color: orange;"> 
+            <p>DPLY-006</p> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd"> Deployment infrastructure support for other modules </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> On going </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 11. </td> 
+         <td class="confluenceTd"> Milestone 3 (07/19) </td> 
+         <td class="confluenceTd"> DPLY-007 </td> 
+         <td class="confluenceTd"> Other non-clustering related work. Support versioning for autodeploy/JSR88. And other changes related to directory deployment, JWS and OSGi. </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS3-AppClientContainer"></a>App Client Container</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1. </td> 
+         <td class="confluenceTd"> Milestone 3 (07/19) </td> 
+         <td class="confluenceTd"> RC-6 </td> 
+         <td class="confluenceTd"> User-provided JNLP merged with generated JNLP </td> 
+         <td class="confluenceTd"> yes </td> 
+         <td class="confluenceTd"><b>Update 7/19:</b> Implementation complete; handoff tbd. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2. </td> 
+         <td class="confluenceTd"> Milestone 3 (07/19) </td> 
+         <td class="confluenceTd"> RC-6 </td> 
+         <td class="confluenceTd"> Auto-testing for Java Web Start launches </td> 
+         <td class="confluenceTd"> QA only </td> 
+         <td class="confluenceTd"> Handoff will be to explain how the autotesting works so QA can decide if and how to adapt it to their needs. <b>Update 7/19:</b> Alex to schedule meeting during week of 7/26 with Lidia and me to discuss my proposed changes. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3. </td> 
+         <td class="confluenceTd"> Milestone 3 (07/19) </td> 
+         <td class="confluenceTd"> RC-7 </td> 
+         <td class="confluenceTd"> Windows shortcut for Java Web Start clients </td> 
+         <td class="confluenceTd"> yes </td> 
+         <td class="confluenceTd"> Should be available as part of RC-6. <b>Update 7/19:</b> Done. (actually, part of #1) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4. </td> 
+         <td class="confluenceTd"> Milestone 3 (07/19) </td> 
+         <td class="confluenceTd"> RC-2 </td> 
+         <td class="confluenceTd"> Exploration of indexing of JARs to optimize Java Web Start launches </td> 
+         <td class="confluenceTd"> no </td> 
+         <td class="confluenceTd"> The feature might not work in Java Web Start itself as we need it to. If it does it would help optimize Java Web Start launches. <b>Update 7/19:</b> Does not seem to have the desired effect. Hope to continue work on this for MS 4, time permitting. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5. </td> 
+         <td class="confluenceTd"> Milestone 3 (07/19) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Convert sun-<b>.xml DDs to glassfish-</b>.xml </td> 
+         <td class="confluenceTd"> no </td> 
+         <td class="confluenceTd"><b>Update 7/19:</b> complete </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS3-Connectors%2CPooling%2CResources%2CJDBC"></a>Connectors, Pooling, Resources, JDBC</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">
+          <ul class="alternate" type="square"> 
+           <li></li> 
+          </ul> </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> JCA-4 </td> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: orange;border-width: 1px;">
+           <div class="panelContent" style="background-color: orange;"> 
+            <p>Clustering support for all type of resources</p> 
+           </div>
+          </div> <br class="atl-forced-newline"> List include jdbc, connector, admin-object, external-jndi, mail, custom resources. For complete CLI list, refer to <a href="GlassFishv3.1.html" title="GlassFishv3.1">GlassFish 3.1 features wiki</a> </td> 
+         <td class="confluenceTd"> YES </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> "target" support for list-***-resources (jdbc-resource, connector-resource, admin-object-resource, mail-resource, external-jndi-resource, custom-resource) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> "target" support for list-resource-refs </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> "target" support for create-***-resource (jdbc-resource, connector-resource, admin-object-resource, mail-resource, external-jndi-resource, custom-resource) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> "target" support for create-resource-ref </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> "target" support for add-resources </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> "target" support for delete-***-resource (jdbc-resource, connector-resource, admin-object-resource, mail-resource, external-jndi-resource, custom-resource) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> "target" support for delete-resource-ref </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">
+          <ul class="alternate" type="square"> 
+           <li></li> 
+          </ul> </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> JCA-8 </td> 
+         <td class="confluenceTd"> Resizer for associate-with-thread <br class="atl-forced-newline"> <a href="https://github.com/javaee/glassfish/issues/11297">Issue 11297 </a> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">
+          <ul class="alternate" type="square"> 
+           <li></li> 
+          </ul> </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> JCA-15 </td> 
+         <td class="confluenceTd"> Statement cache hit/miss monitoring statistics </td> 
+         <td class="confluenceTd"> YES </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">
+          <ul class="alternate" type="square"> 
+           <li></li> 
+          </ul> </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> JCA-16 </td> 
+         <td class="confluenceTd"> Custom validation templates for more JDBC driver vendors </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">
+          <ul class="alternate" type="square"> 
+           <li></li> 
+          </ul> </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> JCA-17 </td> 
+         <td class="confluenceTd"> Listing more JDBC driver vendors in admin GUI's connection pool configuration page </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">
+          <ul class="alternate" type="square"> 
+           <li></li> 
+          </ul> </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> JCA-24 </td> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: orange;border-width: 1px;">
+           <div class="panelContent" style="background-color: orange;"> 
+            <p>Provide Connector Runtime AMX APIs as CLI commands</p> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS3-Security"></a>Security</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 02. </td> 
+         <td class="confluenceTd"> MS3 (7/19) </td> 
+         <td class="confluenceTd"> SEC-006 </td> 
+         <td class="confluenceTd"> Extend Certificate realm to allow custom validation and group assignment based on the recieved client certificate in an SSL Mutual Authentcation. </td> 
+         <td class="confluenceTd"> Yes will do QA/Docs handover with proper Dev Tests </td> 
+         <td class="confluenceTd"> DONE </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 03. </td> 
+         <td class="confluenceTd"> MS3 (7/19) </td> 
+         <td class="confluenceTd"> SEC-007 </td> 
+         <td class="confluenceTd"> Finalize the support for PAM Realm in V3.1. This will allow secure apps deployed on V3.1 to authenticate its users against the native Solaris/Linux users list. </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> DONE </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 04. </td> 
+         <td class="confluenceTd"> MS3 (7/19) </td> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: orange;border-width: 1px;">
+           <div class="panelContent" style="background-color: orange;"> 
+            <p>SEC-018</p> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd"> Policy-Translation for EJB's is happening during EJBDeployer.generateArtifacts() and needs to be changed to happen during Deployment.MODULE_LOADED event (on the lines of what happens for Web Modules). </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> DONE. A minor refinement in terms of removing some extra code from EjbDeployer.generateArtificats() is still pending </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 05. </td> 
+         <td class="confluenceTd"> MS3 (7/19) </td> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: orange;border-width: 1px;">
+           <div class="panelContent" style="background-color: orange;"> 
+            <p>SEC-001</p> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd"> Enhanced Security for Master password </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> NOT 100% COMPLETE. Grizzly dependency resolved last week, code for grizzly integration not checked in, investigating a few dev-test failures.Need Programmatic API support for JarSigner, this dependency may result in task not getting 100% complete </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 06. </td> 
+         <td class="confluenceTd"> MS3 (7/19) </td> 
+         <td class="confluenceTd"> SEC-002 </td> 
+         <td class="confluenceTd"> Cleanup universal grants in server.policy </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Downgraded to P3 post AS-Arch review, Move this to MS4 with scope of work reduced </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 07. </td> 
+         <td class="confluenceTd"> MS3 (7/19) </td> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: orange;border-width: 1px;">
+           <div class="panelContent" style="background-color: orange;"> 
+            <p>SEC-016</p> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd"> Security related CLI support for 3.1 </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">90% Done. Code refinement needed for commands that update non-domain.xml configuration such as keyfiles. Use of UndoableCommand for change-master-password and change-admin-password under investigation (currently these commands work for the cluster but they implement AdminCommand), need some clarifications on it, will send mail to jerome today. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS3-SSHProvisioning"></a>SSH Provisioning</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6 </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: orange;border-width: 1px;">
+           <div class="panelContent" style="background-color: orange;"> 
+            <p>SSHPRO-001, 6-8</p> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd"> dev tests for: ssh client library and API </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 7 </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: orange;border-width: 1px;">
+           <div class="panelContent" style="background-color: orange;"> 
+            <p>SSHPRO-002</p> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd"> dev tests for: remote create/delete node </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 8 </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: orange;border-width: 1px;">
+           <div class="panelContent" style="background-color: orange;"> 
+            <p>SSHPRO-003</p> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd"> dev tests for: remote create/delete instance </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">Partial. Dev tests incomplete. Will continue work for MS4. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 9 </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: orange;border-width: 1px;">
+           <div class="panelContent" style="background-color: orange;"> 
+            <p>SSHPRO-004</p> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd"> dev tests for: remote start/stop instance </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">Partial. Dev tests incomplete. Will continue work for MS4. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 10 </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: orange;border-width: 1px;">
+           <div class="panelContent" style="background-color: orange;"> 
+            <p>SSHPRO-005</p> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd"> dev tests for: remote start/stop cluster </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">Partial. Dev tests incomplete. Will continue work for MS4. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS3-TransactionRecovery"></a>Transaction Recovery</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> M3 </td> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: orange;border-width: 1px;">
+           <div class="panelContent" style="background-color: orange;"> 
+            <p>TX-001</p> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd"> Manual delegated transaction recovery with shared file system </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Finished implementation. Blocked by 12034 for testing of recover-transactions CLI </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd"> M3 </td> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: orange;border-width: 1px;">
+           <div class="panelContent" style="background-color: orange;"> 
+            <p>TX-002</p> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd"> Support for --target option for existing CLIs </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Moved to MS 4 - blocked by 12034 </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS3-RESTfulAdministrationAPI"></a>RESTful Administration API</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 04. </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> REST-004 </td> 
+         <td class="confluenceTd"> Create session token mechanism </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/11932">Issue 11932</a> Completed </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS3-JMX"></a>JMX</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JMX002-1 : SSL Support <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Milestone 3 </td> 
+         <td class="confluenceTd"> JMX002 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">Did not complete; waiting for Grizzly integration <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JMX003-1 : Reduction on no. of jars </td> 
+         <td class="confluenceTd"> Milestone 3 </td> 
+         <td class="confluenceTd"> JMX003 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS3-AdministrationConsole"></a>Administration Console</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> #4 </td> 
+         <td class="confluenceTd"> MS3 (7/19) </td> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: orange;border-width: 1px;">
+           <div class="panelContent" style="background-color: orange;"> 
+            <p>GUI-002</p> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd"> Deployment feature complete </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> #5 </td> 
+         <td class="confluenceTd"> MS3 (7/19) </td> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: orange;border-width: 1px;">
+           <div class="panelContent" style="background-color: orange;"> 
+            <p>GUI-002</p> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd"> create nodes, clusters and instances </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Completed</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> #6 </td> 
+         <td class="confluenceTd"> MS3 (7/19) </td> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: orange;border-width: 1px;">
+           <div class="panelContent" style="background-color: orange;"> 
+            <p>GUI-001</p> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd"> REST conversion 80% complete </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Moved to MS 4 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> #13 </td> 
+         <td class="confluenceTd"> MS3 (7/19) </td> 
+         <td class="confluenceTd"> GUI-009 </td> 
+         <td class="confluenceTd"> Log Viewer integration with remote instance </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Moved to MS 4 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> #22 </td> 
+         <td class="confluenceTd"> MS3 (7/19) </td> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: orange;border-width: 1px;">
+           <div class="panelContent" style="background-color: orange;"> 
+            <p>GUI-017</p> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd"> convert Monitoring statistic page from AMX to REST </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">Completed </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS3-Logging%26Diagnostics"></a>Logging &amp; Diagnostics</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments / Dependencies </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 03. </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> LOG-002 </td> 
+         <td class="confluenceTd"> Diagnostic info updated by module owners to LogStrings.properties file </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Create P2 bug for all module owners to update the same; to catch new regressions integrate maven plugin with build so that GlassFish developers get warning messages during build.<br class="atl-forced-newline">Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 04. </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: orange;border-width: 1px;">
+           <div class="panelContent" style="background-color: orange;"> 
+            <p>LOG-003</p> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd"> Remote instance integration for Logging </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">Completed. Pending task is to avoid synchronization of logging.properties file from glassfish/domains/domain1/config folder to cluster because of dependency on <a href="https://github.com/javaee/glassfish/issues/12570">copy-config</a> command. Once copy-config command is ready need to make this change. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS3-DASRecovery"></a>DAS Recovery</h3> <p>Add remaining Dev tests <a href="https://github.com/javaee/glassfish/issues/12070">12070</a></p> <h4><a name="GF3.1MS3-Installer"></a>Installer</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> #2 </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> INST-002 </td> 
+         <td class="confluenceTd"> Setup required permissions to directories/files and protect exposed passwords. </td> 
+         <td class="confluenceTd"> YES </td> 
+         <td class="confluenceTd"> Open with multiple dependencies and is getting tracked at asarch level. Following up with security team and hopefully will get a better implementation technique soon. Will carry over to MS 3<br class="atl-forced-newline">Completed</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> #4 </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> INST-004 </td> 
+         <td class="confluenceTd"> Make domain creation optional to support remote nodes </td> 
+         <td class="confluenceTd"> YES </td> 
+         <td class="confluenceTd">Completed </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS3-Packaging"></a>Packaging</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5 </td> 
+         <td class="confluenceTd"> Milestone 3 </td> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: orange;border-width: 1px;">
+           <div class="panelContent" style="background-color: orange;"> 
+            <p>PKG-004</p> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd"> Clustering and in-memory replication packages should be optional </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Depends on clustering project support<br class="atl-forced-newline">Partially done in MS3 - HA/clustering content is separated on package level and those packages are optional, but installation without those packages is not particularly usable due to open <a href="https://github.com/javaee/glassfish/issues/12574">deployment issue</a></td> 
+        </tr> 
+        <tr> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6 </td> 
+         <td class="confluenceTd"> Milestone 3 </td> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: orange;border-width: 1px;">
+           <div class="panelContent" style="background-color: orange;"> 
+            <p>PKG-005</p> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd"> Clustering and in-memory replication packages can be removed from the install image at any time </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Depends on clustering project support.<br class="atl-forced-newline">Not done since clustering support for the feature is not in place. Defer it to MS4 </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS3-Upgrade"></a>Upgrade</h3> <p>No deliverables planned for MS 3</p> <h4><a name="GF3.1MS3-Build"></a>Build</h3> <p>No deliverables planned for MS 3</p> <h4><a name="GF3.1MS3-InmemorySessionReplication%3AHighAvailability"></a>In-memory Session Replication: High Availability</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Desired Improvement </th> 
+         <th class="confluenceTh"> Priority </th> 
+         <th class="confluenceTh"> Comments </th> 
+         <th class="confluenceTh"> Issue # </th> 
+         <th class="confluenceTh"> Milestone </th> 
+         <th class="confluenceTh">Status</th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> HA-3 </td> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: orange;border-width: 1px;">
+           <div class="panelContent" style="background-color: orange;"> 
+            <p>Implement load() operation to retrieve state from shoal replication store</p> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Allows session data to be retrieved from ReplicationStore </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/12228">12228 </a> </td> 
+         <td class="confluenceTd"> Milestone 3 </td> 
+         <td class="confluenceTd">Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> HA-8 </td> 
+         <td class="confluenceTd"> Improved logging for tracking replication messages </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Provide better logging to track replication commands </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/12229">12229 </a> </td> 
+         <td class="confluenceTd"> Milestone 3 </td> 
+         <td class="confluenceTd"> moved to MS 4 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> HA-11 </td> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: orange;border-width: 1px;">
+           <div class="panelContent" style="background-color: orange;"> 
+            <p>Implement BatchBackingStore for EJB Container</p> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Feature parity </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/12230">12230 </a> </td> 
+         <td class="confluenceTd"> Milestone 3 </td> 
+         <td class="confluenceTd">Completed</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> HA-12 </td> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: orange;border-width: 1px;">
+           <div class="panelContent" style="background-color: orange;"> 
+            <p>Implement Local caching of state for passivated EJB</p> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Feature parity. Also, ensures that passivated EJB's state is available when a replica instance crashes </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/12231">12231 </a> </td> 
+         <td class="confluenceTd"> Milestone 3 </td> 
+         <td class="confluenceTd"> Completed</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS3-ShoalGroupManagementService%28GMS%29forRuntimeClusteringServices"></a>Shoal Group Management Service (GMS) for Runtime Clustering Services</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 04 </td> 
+         <td class="confluenceTd"> M3 </td> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: orange;border-width: 1px;">
+           <div class="panelContent" style="background-color: orange;"> 
+            <p>GMS-04</p> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd"> Introduce GMS GroupHandle.getPreviousAliveOrReadyMembers() </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Dev test is sufficient. Only useful for consistent hash calculation in HA. <a href="https://github.com/javaee/glassfish/issues/12191">issue 12191 </a> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 05 </td> 
+         <td class="confluenceTd"> M3 </td> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: orange;border-width: 1px;">
+           <div class="panelContent" style="background-color: orange;"> 
+            <p>GMS-05</p> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd"> Introduce GMS rejoin subevent in JOIN and JOINED_AND_READY notification </td> 
+         <td class="confluenceTd"> QA Handover YES, DOC: javadoc, Project shoal web pages </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/12192">issue 12192 </a> Completed </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS3-Webtier"></a>Webtier</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3 </td> 
+         <td class="confluenceTd"> Milestone 3 - ongoing see task list for details </td> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: orange;border-width: 1px;">
+           <div class="panelContent" style="background-color: orange;"> 
+            <p>WEB-3</p> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd"> Integration of HA container SPI </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">partial - Support for modified attribute is not completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4 </td> 
+         <td class="confluenceTd"> Milestone 3 - ongoing see task list </td> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: orange;border-width: 1px;">
+           <div class="panelContent" style="background-color: orange;"> 
+            <p>WEB-4</p> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd"> Implement --target option for existing 3.0 commands </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Feature parity - co-ordinate with clustering team; would like to have this in MS3 - Completed </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS3-EJB"></a>EJB</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Item #</th> 
+         <th class="confluenceTh">Date/Milestone</th> 
+         <th class="confluenceTh">Feature-ID</th> 
+         <th class="confluenceTh">Description</th> 
+         <th class="confluenceTh">QA/Docs Handover?</th> 
+         <th class="confluenceTh">Status/Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6 </td> 
+         <td class="confluenceTd"> Milestone 3 </td> 
+         <td class="confluenceTd"> EJB-8 </td> 
+         <td class="confluenceTd"> Option to disable GlassFish-specific JNDI names </td> 
+         <td class="confluenceTd"> YES </td> 
+         <td class="confluenceTd"> No dependencies outside module.<br class="atl-forced-newline">Completed </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS3-IIOPClustering"></a>IIOP Clustering</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status/Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> IIOP-12 </td> 
+         <td class="confluenceTd"> MS 3 </td> 
+         <td class="confluenceTd"> IIOP-12 </td> 
+         <td class="confluenceTd"> Timing and tracing improvements </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Moved to MS 4 </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS3-JMSandMessageQueue"></a>JMS and Message Queue</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 06 </td> 
+         <td class="confluenceTd"> M3 </td> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: orange;border-width: 1px;">
+           <div class="panelContent" style="background-color: orange;"> 
+            <p>JMS-13</p> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd"> Integration with IBM Websphere MQ through GenericJMSRA </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Will spillover to MS 4 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 07 </td> 
+         <td class="confluenceTd"> M3 </td> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: orange;border-width: 1px;">
+           <div class="panelContent" style="background-color: orange;"> 
+            <p>JMS-16</p> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd"> Enhancements to JMS related admin commands for cluster support </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">Completed </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS3-Metro"></a>Metro</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status /Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> MS3 (7/19) </td> 
+         <td class="confluenceTd"> Metro-005 </td> 
+         <td class="confluenceTd"> Unified configuration </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">Moved to MS 4 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> MS3 (7/19) </td> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: orange;border-width: 1px;">
+           <div class="panelContent" style="background-color: orange;"> 
+            <p>METRO-008</p> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd"> Servlet 3.0 Async support </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> MS3 (7/19) </td> 
+         <td class="confluenceTd"> METRO-009 </td> 
+         <td class="confluenceTd"> Test harness support for GlassFish v3.x </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> MS3(7/19) </td> 
+         <td class="confluenceTd"> 109-02 </td> 
+         <td class="confluenceTd"> complete modifying the tests to run in embedded </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">Completed</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS3-Loadbalancer"></a>Loadbalancer</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> LBREC-001 </td> 
+         <td class="confluenceTd"> Admin command to create load-balancer elements in domain xml </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> COMPLETED </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3 </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> LBREC-002 </td> 
+         <td class="confluenceTd"> Admin command to generate load-balancer xml </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> COMPLETED </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4 </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> LBREC-005 </td> 
+         <td class="confluenceTd"> Pushing load-balancer xml over the wire to web-server </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> COMPLETED </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS3-DeveloperToolingwithNetBeans"></a>Developer Tooling with NetBeans</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task </th> 
+         <th class="confluenceTh"> Target Milestone </th> 
+         <th class="confluenceTh"> Start </th> 
+         <th class="confluenceTh"> End </th> 
+         <th class="confluenceTh"> Owner </th> 
+         <th class="confluenceTh"> Supports Feature ID </th> 
+         <th class="confluenceTh"> Status/Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Create a new WizardIterator to support File-&gt;New File-&gt;Other... (category: WebLogic; type: WebLogic Deployment Descriptor) likely based on org.netbeans.modules.j2ee.sun.share.configbean.templates.SunDDWizardIterator </td> 
+         <td class="confluenceTd"> m3 </td> 
+         <td class="confluenceTd"> July </td> 
+         <td class="confluenceTd"> July </td> 
+         <td class="confluenceTd"> vbk </td> 
+         <td class="confluenceTd"> nbinteg-009 </td> 
+         <td class="confluenceTd"> allow user to create a WebLogic DD file in a project that targets GlassFish - Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Create a new Panel to support File-&gt;New File-&gt;Other... (category: WebLogic; type: WebLogic Deployment Descriptor) likely based on org.netbeans.modules.j2ee.sun.share.configbean.templates.SunDDWizardIterator </td> 
+         <td class="confluenceTd"> m3 </td> 
+         <td class="confluenceTd"> July </td> 
+         <td class="confluenceTd"> July </td> 
+         <td class="confluenceTd"> vbk </td> 
+         <td class="confluenceTd"> nbinteg-009 </td> 
+         <td class="confluenceTd"> allow user to create a WebLogic DD file in a project that targets GlassFish - Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Create a new VisualPanel to support File-&gt;New File-&gt;Other... (category: WebLogic; type: WebLogic Deployment Descriptor) likely based on org.netbeans.modules.j2ee.sun.share.configbean.templates.SunDDWizardIterator </td> 
+         <td class="confluenceTd"> m3 </td> 
+         <td class="confluenceTd"> July </td> 
+         <td class="confluenceTd"> July </td> 
+         <td class="confluenceTd"> vbk </td> 
+         <td class="confluenceTd"> nbinteg-009 </td> 
+         <td class="confluenceTd"> allow user to create a WebLogic DD file in a project that targets GlassFish - Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> extend Restart action to work with remote servers </td> 
+         <td class="confluenceTd"> m3 </td> 
+         <td class="confluenceTd"> july </td> 
+         <td class="confluenceTd"> july </td> 
+         <td class="confluenceTd"> vbk </td> 
+         <td class="confluenceTd"> nbinteg-004 </td> 
+         <td class="confluenceTd"> this will also probably get supported on 3.0.x domains, too - Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> new badge for app nodes to signify enabled or disabled </td> 
+         <td class="confluenceTd"> m3 </td> 
+         <td class="confluenceTd"> july </td> 
+         <td class="confluenceTd"> july </td> 
+         <td class="confluenceTd"> vbk </td> 
+         <td class="confluenceTd"> nbinteg-011 </td> 
+         <td class="confluenceTd">Completed </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS3-EclipseWTP"></a>Eclipse WTP</h3> <p>No deliverables planned for MS 3</p> <h4><a name="GF3.1MS3-Embedded"></a>Embedded</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> EMB-3 </td> 
+         <td class="confluenceTd"> ScatteredArchive </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Implement feature<br class="atl-forced-newline">Completed</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS3-DevTestFramework"></a>Dev Test Framework</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1.1 </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> DEVTEST-001-Plugin Phase-1 </td> 
+         <td class="confluenceTd"> Multiple GlassFish instances on a Single Hudson node </td> 
+         <td class="confluenceTd"> Brown Bag Session <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> Completed. Deployed on test Hudson setup. Reviewed by couple of beta users. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1.2 </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> DEVTEST-001-Plugin Phase-2 </td> 
+         <td class="confluenceTd"> Multiple GlassFish instances on multiple pre-configured Hudson nodes </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd">Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3 </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> DEVTEST-002 </td> 
+         <td class="confluenceTd"> Portable and configurable for individual testing clusters </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd">Completed</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4 </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> DEVTEST-003 </td> 
+         <td class="confluenceTd"> Hudson integration to automate the dev test execution on a hudson cluster </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd">Completed</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5 </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> DEVTEST-004 </td> 
+         <td class="confluenceTd"> Simple installation from a single Jar file or zip </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd">Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6 </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> DEVTEST-005 </td> 
+         <td class="confluenceTd"> Simple configuration </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd">Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 7 </td> 
+         <td class="confluenceTd"> MS3</td> 
+         <td class="confluenceTd"> DEVTEST-006 </td> 
+         <td class="confluenceTd"> Generates reports of test results in a standard format </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Copy over and save the server logs for all the instances when the test execution is completed.<br class="atl-forced-newline"> Completed</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS3-JSF"></a>JSF</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> 7/19 M3 </td> 
+         <td class="confluenceTd"> JSF-005 </td> 
+         <td class="confluenceTd"> Security issues </td> 
+         <td class="confluenceTd"> no </td> 
+         <td class="confluenceTd"> Some issues completed. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd"> 7/19 M3 </td> 
+         <td class="confluenceTd"> JSF-001 </td> 
+         <td class="confluenceTd"> Performance porting </td> 
+         <td class="confluenceTd"> yes </td> 
+         <td class="confluenceTd"> Completed. Providing a hand off to ADF team to verify </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS3-Grizzly"></a>Grizzly</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4 </td> 
+         <td class="confluenceTd"> Milestone 3 </td> 
+         <td class="confluenceTd"> Grizzly-3 </td> 
+         <td class="confluenceTd"> Port unification </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Completed</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5 </td> 
+         <td class="confluenceTd"> Milestone 3 </td> 
+         <td class="confluenceTd"> Grizzly-4 </td> 
+         <td class="confluenceTd"> CLI changes for new commands </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 6 </td> 
+         <td class="confluenceTd"> Milestone 3 </td> 
+         <td class="confluenceTd"> Grizzly-5 </td> 
+         <td class="confluenceTd"> Logging error codes and diagnositc support </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd">Completed </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS3-OSGi"></a>OSGi</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 01 </td> 
+         <td class="confluenceTd"> M3 </td> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: orange;border-width: 1px;">
+           <div class="panelContent" style="background-color: orange;"> 
+            <p>OSGi-01</p> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd"> Upgrading core OSGi runtime </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Completed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 02 </td> 
+         <td class="confluenceTd"> M3 </td> 
+         <td class="confluenceTd"> OSGi-02 </td> 
+         <td class="confluenceTd"> Embeddable GlassFish </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Not completed - waiting for code review </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS3-Persistence"></a>Persistence</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3 </td> 
+         <td class="confluenceTd"> M3 (07/19) </td> 
+         <td class="confluenceTd"> 
+          <div class="panel" style="background-color: orange;border-width: 1px;">
+           <div class="panelContent" style="background-color: orange;"> 
+            <p>PER-001</p> 
+           </div>
+          </div> </td> 
+         <td class="confluenceTd"> Upgrade EclipseLink to version 2.1 </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> EclipseLink 2.1 expected to be available 06/24 <a href="https://github.com/javaee/glassfish/issues/12244">Issue 12244 </a> Completed </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS3-Jersey"></a>Jersey</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1. </td> 
+         <td class="confluenceTd"> MS 3 </td> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> Modularization of Jersey distribution </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> integrated to the GF main trunk with the Jersey promoted version 1.4-ea01 on 07/07 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2. </td> 
+         <td class="confluenceTd"> MS 3 </td> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd"> Deployment of Jersey OSGi-war bundles </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> integrated to the GF main trunk with the Jersey promoted version 1.4-ea01 on 07/07 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3. </td> 
+         <td class="confluenceTd"> MS 3 </td> 
+         <td class="confluenceTd"> 3 </td> 
+         <td class="confluenceTd"> Use the GlassFish 3 embedded API </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> NOT DELIVERED – blocked by <a href="https://github.com/javaee/glassfish/issues/11727">https://github.com/javaee/glassfish/issues/11727</a> (can't use embedded glassfish maven plugin for testing); integrating embedded glassfish into jersey test framework failed - problem with rebundled Jersey ServiceFinder implementation </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS3-CDI"></a>CDI</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> IT01 </th> 
+         <th class="confluenceTh"> 07/19/10 (M3) </th> 
+         <th class="confluenceTh"> CDI-1 </th> 
+         <th class="confluenceTh"> First integration of Weld 1.1 </th> 
+         <th class="confluenceTh"> No </th> 
+         <th class="confluenceTh"> Dev tests passing, first run of TCK to assess failure. First integration of weld in GlassFish - Completed </th> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF3.1MS3-BeanValidation"></a>Bean Validation</h3> <p>No deliverables planned for MS 3</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 29, 2010 by 
+<font color="#0050B2">carlab</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

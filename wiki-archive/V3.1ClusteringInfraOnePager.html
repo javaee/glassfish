@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : V3.1ClusteringInfraOnePager</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="V3.1ClusteringInfraOnePager-GlassFishServerOpenSourceEdition3.1ClusteringInfrastructureOnePager"></a>GlassFish Server Open Source Edition 3.1 - Clustering Infrastructure One Pager</h1> <style type="text/css">/*<![CDATA[*/
+div.rbtoc1346194986935 {margin-left: 1.5em;padding: 0px;}
+div.rbtoc1346194986935 ul {list-style: disc;margin-left: 0px;}
+div.rbtoc1346194986935 li {margin-left: 0px;padding-left: 0px;}
+
+/*]]>*/</style>
+     <div class="rbtoc1346194986935"> 
+      <ul> 
+       <li><a href="#V3.1ClusteringInfraOnePager-GlassFishServerOpenSourceEdition3.1ClusteringInfrastructureOnePager">GlassFish Server Open Source Edition 3.1 - Clustering Infrastructure One Pager</a></li> 
+       <li><a href="#V3.1ClusteringInfraOnePager-1.Introduction">1. Introduction</a></li> 
+       <ul> 
+        <li><a href="#V3.1ClusteringInfraOnePager-1.1.Project%2FComponentWorkingName%3A">1.1. Project/Component Working Name:</a></li> 
+        <li><a href="#V3.1ClusteringInfraOnePager-1.2.Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier%3A">1.2. Name(s) and e-mail address of Document Author(s)/Supplier:</a></li> 
+        <li><a href="#V3.1ClusteringInfraOnePager-1.3.DateofThisDocument%3A">1.3. Date of This Document:</a></li> 
+       </ul> 
+       <li><a href="#V3.1ClusteringInfraOnePager-2.ProjectSummary">2. Project Summary</a></li> 
+       <ul> 
+        <li><a href="#V3.1ClusteringInfraOnePager-2.1.ProjectDescription%3A">2.1. Project Description:</a></li> 
+        <li><a href="#V3.1ClusteringInfraOnePager-2.2.RisksandAssumptions%3A">2.2. Risks and Assumptions:</a></li> 
+       </ul> 
+       <li><a href="#V3.1ClusteringInfraOnePager-3.ProblemSummary">3. Problem Summary</a></li> 
+       <ul> 
+        <li><a href="#V3.1ClusteringInfraOnePager-3.1.ProblemArea%3A">3.1. Problem Area:</a></li> 
+        <li><a href="#V3.1ClusteringInfraOnePager-3.2.Justification%3A">3.2. Justification:</a></li> 
+       </ul> 
+       <li><a href="#V3.1ClusteringInfraOnePager-4.TechnicalDescription%3A">4. Technical Description:</a></li> 
+       <ul> 
+        <li><a href="#V3.1ClusteringInfraOnePager-4.1.Details%3A">4.1. Details:</a></li> 
+        <li><a href="#V3.1ClusteringInfraOnePager-4.2.Bug%2FRFENumber%28s%29%3A">4.2. Bug/RFE Number(s):</a></li> 
+        <li><a href="#V3.1ClusteringInfraOnePager-4.3.InScope%3A">4.3. In Scope:</a></li> 
+        <li><a href="#V3.1ClusteringInfraOnePager-4.4.OutofScope%3A">4.4. Out of Scope:</a></li> 
+        <li><a href="#V3.1ClusteringInfraOnePager-4.5.Interfaces%3A">4.5. Interfaces:</a></li> 
+        <ul> 
+         <li><a href="#V3.1ClusteringInfraOnePager-4.5.1PublicInterfaces">4.5.1 Public Interfaces</a></li> 
+         <li><a href="#V3.1ClusteringInfraOnePager-4.5.2PrivateInterfaces">4.5.2 Private Interfaces</a></li> 
+         <li><a href="#V3.1ClusteringInfraOnePager-4.5.3Deprecated%2FRemovedInterfaces%3A">4.5.3 Deprecated/Removed Interfaces:</a></li> 
+        </ul> 
+        <li><a href="#V3.1ClusteringInfraOnePager-4.6.DocImpact%3A">4.6. Doc Impact:</a></li> 
+        <li><a href="#V3.1ClusteringInfraOnePager-4.7.Admin%2FConfigImpact%3A">4.7. Admin/Config Impact:</a></li> 
+        <li><a href="#V3.1ClusteringInfraOnePager-4.8.HAImpact%3A">4.8. HA Impact:</a></li> 
+        <li><a href="#V3.1ClusteringInfraOnePager-4.9.I18N%2FL10NImpact%3A">4.9. I18N/L10N Impact:</a></li> 
+        <li><a href="#V3.1ClusteringInfraOnePager-4.10.Packaging%2CDelivery%26Upgrade%3A">4.10. Packaging, Delivery &amp; Upgrade:</a></li> 
+        <ul> 
+         <li><a href="#V3.1ClusteringInfraOnePager-4.10.1.Packaging">4.10.1. Packaging</a></li> 
+         <li><a href="#V3.1ClusteringInfraOnePager-4.10.2.Delivery">4.10.2. Delivery</a></li> 
+         <li><a href="#V3.1ClusteringInfraOnePager-4.10.3.UpgradeandMigration%3A">4.10.3. Upgrade and Migration:</a></li> 
+        </ul> 
+        <li><a href="#V3.1ClusteringInfraOnePager-4.11.SecurityImpact%3A">4.11. Security Impact:</a></li> 
+        <li><a href="#V3.1ClusteringInfraOnePager-4.12.CompatibilityImpact">4.12. Compatibility Impact</a></li> 
+        <li><a href="#V3.1ClusteringInfraOnePager-4.13.Dependencies%3A">4.13. Dependencies:</a></li> 
+        <li><a href="#V3.1ClusteringInfraOnePager-4.14.TestingImpact%3A">4.14. Testing Impact:</a></li> 
+       </ul> 
+       <li><a href="#V3.1ClusteringInfraOnePager-5.ReferenceDocuments%3A">5. Reference Documents:</a></li> 
+       <li><a href="#V3.1ClusteringInfraOnePager-6.Schedule%3A">6. Schedule:</a></li> 
+       <ul> 
+        <li><a href="#V3.1ClusteringInfraOnePager-6.1.ProjectedAvailability%3A">6.1. Projected Availability:</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="V3.1ClusteringInfraOnePager-1.Introduction"></a>1. Introduction</h1> <h4><a name="V3.1ClusteringInfraOnePager-1.1.Project%2FComponentWorkingName%3A"></a>1.1. Project/Component Working Name:</h2> <p>GlassFish Server Open Source Edition 3.1 Clustering Infrastructure</p> <h4><a name="V3.1ClusteringInfraOnePager-1.2.Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier%3A"></a>1.2. Name(s) and e-mail address of Document Author(s)/Supplier:</h2> <p>Tom Mueller: TMueller@java.net</p> <h4><a name="V3.1ClusteringInfraOnePager-1.3.DateofThisDocument%3A"></a>1.3. Date of This Document:</h2> <p>May 14, 2010</p> <h4><a name="V3.1ClusteringInfraOnePager-2.ProjectSummary"></a>2. Project Summary</h1> <h4><a name="V3.1ClusteringInfraOnePager-2.1.ProjectDescription%3A"></a>2.1. Project Description:</h2> <p>The Clustering Infrastructure project for GlassFish Server Open Source Edition 3.1 consists of basic administrative functionality that is needed to support clusters including support for cluster and instance creation, read, update, and delete (CRUD), startup with synchronization with the domain administration server (DAS), and dynamic reconfiguration as the system is running.</p> <p>See below for a longer, more detailed technical description.</p> <h4><a name="V3.1ClusteringInfraOnePager-2.2.RisksandAssumptions%3A"></a>2.2. Risks and Assumptions:</h2> <p>Risks:</p> 
+     <ol> 
+      <li>Hardcoded "server" and "server-config": In GlassFish 3.0, the configuration elements for "server" and "server-config" were hardcoded into the software in many places. To run instances that are not the DAS, it is necessary to find all of these and change the code to use an instance name and configuration that is determined at run-time. The risk is that some may not be found.</li> 
+     </ol> 
+     <ol> 
+      <li>Performance: In GlassFish v2, there were some scalability problems with clustering. The intent is to remove some of those bottlenecks in this release to make clustering scale better. The risk is that the system still may not perform as desired. This risk is being addressed by using performance testing earlier in the design and development of the feature.</li> 
+     </ol> 
+     <ol> 
+      <li>Compatibility issues related to lack of a node-agent: One of the big differences between cluster support in 3.1 and GlassFish v2 is that 3.1 will lack support for a node-agent. For GlassFish v2 installations that are using a node agent, this will mean that an upgrade to 3.1 will require modifying scripts that make use of the node agent, especially in the area of instance startup and monitoring.</li> 
+     </ol> <p>Assumptions:</p> 
+     <ol> 
+      <li>V2-based Design: A basic assumption for this feature is that the design for clustering that was used for V2 will work for this release, except for a few specific changes that are being made to address performance issues.</li> 
+     </ol> <h4><a name="V3.1ClusteringInfraOnePager-3.ProblemSummary"></a>3. Problem Summary</h1> <h4><a name="V3.1ClusteringInfraOnePager-3.1.ProblemArea%3A"></a>3.1. Problem Area:</h2> <p>This project provides the basic infrastructure for clustering that is needed to allow the rest of the GlassFish team to complete the overall clustering feature for GlassFish Server Open Source Edition 3.1. Once this project is completed, developers will be able to:</p> 
+     <ul> 
+      <li>Create and manage (start/stop) clusters using asadmin</li> 
+      <li>Create and manage instances (start/stop) which may be within clusters</li> 
+      <li>Enhance management interfaces (CLI and console) to support clustering related features</li> 
+     </ul> <h4><a name="V3.1ClusteringInfraOnePager-3.2.Justification%3A"></a>3.2. Justification:</h2> <p>Clustering is one of the drivers of the 3.1 release and the clustering infrastructure is necessary to complete the clustering feature.</p> <h4><a name="V3.1ClusteringInfraOnePager-4.TechnicalDescription%3A"></a>4. Technical Description:</h1> <h4><a name="V3.1ClusteringInfraOnePager-4.1.Details%3A"></a>4.1. Details:</h2> <p>Design details are provided in the <a href="V3.1Clustering.html" title="V3.1Clustering">design specification</a>.</p> <p>The basic idea is to implement the same clustering design that was used for GlassFish 2, except for modifications in a few areas to improve scalability. These modifications include:</p> 
+     <ul> 
+      <li>Operation without a node agent. The 3.1 release will not include a node agent. However, it will have and SSH capability (provided by another project) that will allow centralized management of a cluster.</li> 
+      <li>A new algorithm for synchronization with the DAS during server start-up.</li> 
+      <li>A new algorithm for dynamic configuration (reexecute commands rather than replicating results)</li> 
+     </ul> <h4><a name="V3.1ClusteringInfraOnePager-4.2.Bug%2FRFENumber%28s%29%3A"></a>4.2. Bug/RFE Number(s):</h2> <p>The following bugs and RFEs will be addressed by the project. These issues are all marked with the <tt>clusteradmin</tt> status whiteboard value (<a href="https://glassfish.java.net/issues/buglist.cgi?component=glassfish&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=substring&amp;long_desc=&amp;long_desc_type=substring&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=clusteradmin&amp;status_whiteboard_type=fulltext&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=&amp;cmdtype=doit&amp;newqueryname=&amp;order=Reusesamesortaslasttime&amp;Submitquery=Submitquery">query</a>).</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Issue </th> 
+         <th class="confluenceTh"> Description </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/2960">2960 </a> </td> 
+         <td class="confluenceTd"> Consider improving DAS-NA communication and vice-versa ... </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/3582">3582 </a> </td> 
+         <td class="confluenceTd"> JNDI Resource do not deploy on instance start when clustered </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/3693">3693 </a> </td> 
+         <td class="confluenceTd"> dm.start() can flip the restart required bit </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/3942">3942 </a> </td> 
+         <td class="confluenceTd"> Provide a cluster-aware Database "Ping" feature </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/4134">4134 </a> </td> 
+         <td class="confluenceTd"> Rolling upgrade support </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/4191">4191 </a> </td> 
+         <td class="confluenceTd"> gfv3:Plugin/Module Manager:CoreInfra-018: Ability to to add a container at the cluster level </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/4357">4357 </a> </td> 
+         <td class="confluenceTd"> Scale the cluster size to a large number of instances ... </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/4367">4367 </a> </td> 
+         <td class="confluenceTd"> Make clustering infrastructure firewall friendly </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/4682">4682 </a> </td> 
+         <td class="confluenceTd"> synchronization taking too much time </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/6951">6951 </a> </td> 
+         <td class="confluenceTd"> Start-cluster hangs - intermittent issue </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/8318">8318 </a> </td> 
+         <td class="confluenceTd"> missing --objecttype from resource commands </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/11753">11753 </a> </td> 
+         <td class="confluenceTd"> v2 to 3.1 Upgrade Issues </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/11794">11794 </a> </td> 
+         <td class="confluenceTd"> Default port numbers in cluster profile meke conflict with internal services or other applications. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="V3.1ClusteringInfraOnePager-4.3.InScope%3A"></a>4.3. In Scope:</h2> <p>This project includes the following new asadmin subcommands:</p> 
+     <ul> 
+      <li>create-instance, delete-instance, list-instances, start-instance, stop-instance</li> 
+      <li>create-local-instance, start-local-instance, stop-local-instance, delete-local-instance</li> 
+      <li>create-cluster, delete-cluster, list-clusters, start-cluster, stop-cluster</li> 
+      <li>copy-config, delete-config, list-configs</li> 
+     </ul> <p>This project includes modifications to the following asadmin subcommands:</p> 
+     <ul> 
+      <li>create-domain</li> 
+     </ul> <p>This project includes modifications to annotations and new annotations that allow other commands to apply to clusters. In some cases, no additional modification will be needed for a CLI. But for other commands, cluster-specific functionality will have to be implemented by the team providing the command.</p> <h4><a name="V3.1ClusteringInfraOnePager-4.4.OutofScope%3A"></a>4.4. Out of Scope:</h2> <p>The following clustering administration functionality is being provided by other projects:</p> 
+     <ol> 
+      <li>Implementation of cluster-specific functionality for asadmin commands not listed above</li> 
+      <li>Clustered application deployment</li> 
+      <li>The use of SSH to replicate functionality provided by a node agent</li> 
+      <li>Support for clustered connectors, pooling, resources and JDBC</li> 
+      <li>Security with a cluster</li> 
+      <li>Transaction recovery</li> 
+      <li>Modifications to the administration console that are needed to support clustering.</li> 
+     </ol> <p>The following clustering-related administration commands from v2 will not be supported:</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Command </th> 
+         <th class="confluenceTh"> Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-node-agent </td> 
+         <td class="confluenceTd"> Not needed since there is no node agent support in 3.1. See the <a href="3.1SSHProvisioningOnePager.html" title="3.1SSHProvisioningOnePager">SSH/SSHD project </a> for information about the replacement for the node agent functionality. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> create-node-agent-config </td> 
+         <td class="confluenceTd"> See comments for create-node-agent. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> delete-node-agent </td> 
+         <td class="confluenceTd"> See comments for create-node-agent. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> delete-node-agent-config </td> 
+         <td class="confluenceTd"> See comments for create-node-agent. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> start-node-agent </td> 
+         <td class="confluenceTd"> See comments for create-node-agent. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> stop-node-agent </td> 
+         <td class="confluenceTd"> See comments for create-node-agent. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> --profile option </td> 
+         <td class="confluenceTd"> This is not a command, but an option on the create-domain command. All domains are cluster-capable in 3.1, so there is no need to distinguish between developer and cluster domains. A developer domain in 3.1 is just a domain that has no clusters or instances other than the DAS. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="V3.1ClusteringInfraOnePager-4.5.Interfaces%3A"></a>4.5. Interfaces:</h2> <h4><a name="V3.1ClusteringInfraOnePager-4.5.1PublicInterfaces"></a>4.5.1 Public Interfaces</h3> 
+     <ul> 
+      <li>Interface: <b>asadmin subcommands for clustering</b></li> 
+      <li>Comment: See the "in scope" section. The details of these commands are in the <a href="V3.1Clustering.html" title="V3.1Clustering">design specification</a></li> 
+     </ul> <h4><a name="V3.1ClusteringInfraOnePager-4.5.2PrivateInterfaces"></a>4.5.2 Private Interfaces</h3> <p>List private interfaces which are externally observable.</p> 
+     <ul> 
+      <li>Interface: <b>Inter-node Protocols</b></li> 
+      <li>Comment: The protocols that are used to synchronize information between the DAS and instances, either at instance startup time (synchronization) or while the server is running (dynamic reconfiguration) are private and are subject to change as needed to improve the implementation.</li> 
+     </ul> 
+     <ul> 
+      <li>Interface: <b>Node-agent file system</b></li> 
+      <li>Comment: The data for an instance that is part of a cluster is stored in a file system within the GlassFish installation directory that is parallel to the "domains" file system that already exists. The "create-node-agent" and other command create and modified files under this file system. The arrangement of files within this file system is a private interface and may be changed at any time.</li> 
+     </ul> 
+     <ul> 
+      <li>Interface: <b>das.properties file</b></li> 
+      <li>Comment: The das.properties file contains information that is needed by an instance to contact the DAS that it should synchronize with. Here is an example of what the file looks like:</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">#Domain Administration Server Connection Properties
+#Wed Jun 02 09:50:26 CDT 2010
+agent.das.protocol=http
+agent.das.port=4848
+agent.das.host=das.example.com
+agent.das.isSecure=false</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="V3.1ClusteringInfraOnePager-4.5.3Deprecated%2FRemovedInterfaces%3A"></a>4.5.3 Deprecated/Removed Interfaces:</h3> <p>None.</p> <h4><a name="V3.1ClusteringInfraOnePager-4.6.DocImpact%3A"></a>4.6. Doc Impact:</h2> <p>The documentation impact includes manual pages for all of new subcommands and modifications to the manual pages for the changed commands. See the "in scope" section.</p> <h4><a name="V3.1ClusteringInfraOnePager-4.7.Admin%2FConfigImpact%3A"></a>4.7. Admin/Config Impact:</h2> <p>This project has a significant impact on the administration of GlassFish, as it introduces the clustering concept to the project.</p> <h4><a name="V3.1ClusteringInfraOnePager-4.8.HAImpact%3A"></a>4.8. HA Impact:</h2> <p>This project has a significant impact on the high availability and clustering aspects of GlassFish as a whole (that is the point of the project).</p> <h4><a name="V3.1ClusteringInfraOnePager-4.9.I18N%2FL10NImpact%3A"></a>4.9. I18N/L10N Impact:</h2> <p>The i18n/l10n impact consists of making sure that the output from the new subcommands follows the patterns that are already established for administrative commands.</p> <h4><a name="V3.1ClusteringInfraOnePager-4.10.Packaging%2CDelivery%26Upgrade%3A"></a>4.10. Packaging, Delivery &amp; Upgrade:</h2> <h4><a name="V3.1ClusteringInfraOnePager-4.10.1.Packaging"></a>4.10.1. Packaging</h3> <p>There is a separate <a href="GlassFishv3.1Packaging.html" title="GlassFishv3.1Packaging">project for packaging in GlassFish 3.1</a> which defines how the software for this project is delivered in packages.</p> <h4><a name="V3.1ClusteringInfraOnePager-4.10.2.Delivery"></a>4.10.2. Delivery</h3> <p>All initial distributions will include the clustering administration infrastructure software.</p> <h4><a name="V3.1ClusteringInfraOnePager-4.10.3.UpgradeandMigration%3A"></a>4.10.3. Upgrade and Migration:</h3> <p>Since GlassFish 3.0 and 3.0.1 did not support clustering, there are no upgrades or migrations of clusters to this release. However, it is expected that a GlassFish 2.1.1-based system with clusters can be upgraded to GlassFish 3.1. There is a separate <a href="GlassFishv3.1Upgrade.html" title="GlassFishv3.1Upgrade">project for upgrading to GlassFish 3.1</a> which handles the details of upgrade and migration with a <a href="V3.1UpgradeDashboard.html" title="V3.1UpgradeDashboard">dashboard</a> that tracks progress on this.</p> <p>The general philosophy for upgrade in GlassFish 3 is that there is no special upgrade program. If software encounters a configuration file that is in an older format, it automatically updates that file to the new format. However, there are some upgrade issues that are specific to this project:</p> 
+     <ul> 
+      <li>Transition to the new protocol that is used for synchronization of instances. Some information is needed for the das.properties file on hosts that run instances that isn't available in 2.1 configuration files.</li> 
+      <li>GlassFish 2.x hosts that run a node agent will need to do something else to get the instances running on the host.</li> 
+     </ul> <h4><a name="V3.1ClusteringInfraOnePager-4.11.SecurityImpact%3A"></a>4.11. Security Impact:</h2> <p>The security issues for GlassFish 3.1 administration, including those related to clustering, are being handled by a separate <a href="V3.1Security.html" title="V3.1Security">security project for GlassFish 3.1</a>. See that project for details about security issues.</p> <h4><a name="V3.1ClusteringInfraOnePager-4.12.CompatibilityImpact"></a>4.12. Compatibility Impact</h2> <p>Generally, the intent is to maintain compatibility with the clustering commands from GlassFish 2. However, there are several areas where there will be incompatibilities:</p> 
+     <ul> 
+      <li>Anything dealing with node agent will not be compatible because the implementation of clustering for 3.1 will not support a node agent.</li> 
+      <li>Instructions for making DAS/instance protocol secure will be different because protocol is different.</li> 
+      <li>The das.properties file will contain different information about the protocol between the DAS and an instance.</li> 
+      <li>2.x had an exclude list for synchronization. This will not be supported for 3.1. Rather, any directories that are not explicitly synchronized can be used for storing application-specific files which will not be synchronized.&nbsp;</li> 
+      <li>When synchronizing instances, 2.x looked at every file. This means that if an arbitrary file within an application is modified on the DAS, the change would be synchronized to the instances. However, in 3.1, synchronization is based on the timestamps of higher level directories. So this will result in an operational difference between the two.</li> 
+     </ul> <h4><a name="V3.1ClusteringInfraOnePager-4.13.Dependencies%3A"></a>4.13. Dependencies:</h2> <p>&lt;!-<del>An internal dependency is a dependency on a project, module, component or product that is within the GlassFish project. An external dependency is a dependency on a project, component or product that resides outside of the GlassFish project.</del>-&gt;<br> 4.13.1 Internal Dependencies<br> This project does not introduce any new internal dependencies on other software.</p> <p>4.13.2 External Dependencies<br> This project does not introduce any new external dependencies on other software.</p> <h4><a name="V3.1ClusteringInfraOnePager-4.14.TestingImpact%3A"></a>4.14. Testing Impact:</h2> <p>The features provided by this project can be tested through the use of the asadmin command tool, either on a single system or using multiple systems. It is expected that many of the tests from the GlassFish 2.1.1 release that are related to clustering can be reused for this release. Tests that involve the node agent will have to be modified to be reused.</p> <p>There is nothing in this feature what would prevent tests from being automated.</p> <h4><a name="V3.1ClusteringInfraOnePager-5.ReferenceDocuments%3A"></a>5. Reference Documents:</h1> <p>Design specification document:</p> 
+     <ul> 
+      <li><a href="V3.1Clustering.html" title="V3.1Clustering">GlassFish Server Open Source Edition 3.1 - Clustering Design Spec</a></li> 
+     </ul> <p>Sub-project planning documents:</p> 
+     <ul> 
+      <li><a href="3.1BasicClustering.html" title="3.1BasicClustering">GlassFish Server Open Source Edition 3.1 - Basic Clustering</a></li> 
+      <li><a href="3.1Config.html" title="3.1Config">GlassFish Server Open Source Edition 3.1 - Configuration</a></li> 
+      <li><a href="3.1Synchronization.html" title="3.1Synchronization">GlassFish Server Open Source Edition 3.1 - Synchronization</a></li> 
+      <li><a href="ClusterDynamicReconfig.html" title="ClusterDynamicReconfig">GlassFish Server Open Source Edition 3.1 - Dynamic Reconfiguration</a></li> 
+     </ul> <p>Other related projects:</p> 
+     <ul> 
+      <li><a href="GlassFishv3.1Packaging.html" title="GlassFishv3.1Packaging">GlassFish 3.1 Packaging</a></li> 
+      <li><a href="GlassFishv3.1Upgrade.html" title="GlassFishv3.1Upgrade">GlassFish 3.1 Upgrade</a></li> 
+      <li><a href="V3.1Security.html" title="V3.1Security">GlassFish 3.1 Security</a></li> 
+     </ul> <h4><a name="V3.1ClusteringInfraOnePager-6.Schedule%3A"></a>6. Schedule:</h1> <h4><a name="V3.1ClusteringInfraOnePager-6.1.ProjectedAvailability%3A"></a>6.1. Projected Availability:</h2> <p>Integration of this feature will begin with Milestone 1 and continue through Milestone 4. The features will be complete at Milestone 4 and production quality level by the hard code freeze milestone.</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Aug 28, 2012 by 
+<font color="#0050B2">10193</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

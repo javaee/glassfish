@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GF 3.2 GMS Configuration in domain.xml</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   
+     <div class="code panel" style="border-style: solid;border-width: 1px;">
+      <div class="codeHeader panelHeader" style="border-bottom-width: 1px;border-bottom-style: solid;">
+       <b>GlassFish 3.1 Next Cluster and Group Management Service elements</b>
+      </div>
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: xml; gutter: false">&lt;cluster name="dev-cluster"
+         config-ref="dev-cluster-config"
+         gms-enabled="true"
+         gms-multicast-address="229.9.1.1"
+         gms-multicast-port="2299"
+         gms-bind-interface-address="${GMS-BIND-INTERFACE-ADDRESS-dev-cluster}"&gt;
+
+    
+    &lt;!-- GlassFish 3.1 mechanism for configuring GMS_LISTENER_PORT. Since need more config info for tcp protocol than just port,
+         this generated property will no longer be generated in GlassFish 3.2.  Upgrade should take this value and map
+         to gms-transport child attribute listener-port.
+      --&gt;
+    &lt;property name="GMS_LISTENER_PORT" value="${GMS_LISTENER_PORT-dev-cluster}"/&gt;
+  
+    &lt;!-- a subset of GlassFish clustered instances with Well Known Addresses and port to assist other clustered instances to join this cluster. --&gt;
+    &lt;!-- list can either be a list of IP addresses (where the scheme defaults to tcp and the port defaults to TCPSTARTPORT.  Or the list can be
+         an absolute uri qualified with a scheme and absolute "//" path.  Port is still optional or can be provided to be same value as specified as
+         system property GMS_LISTENER_PORT-dev-cluster.
+      --&gt;
+    &lt;property name="GMS_DISCOVERY_URI_LIST" value="tcp://ipAddr1:port,tcp://ipAddr2:port,..."/&gt;
+
+    &lt;!-- LEFT FROM an earlier demo.  Keeping to remember this implementation path just in case there is a reason to resurrect in future. --&gt;
+    &lt;!-- 
+      -- &lt;property name="GMS_GROUP_REGISTRY_URI_LIST"   value="tcp://ipAddr1/discosvc:port,tcp://ipAddr2/discosvc:port,,.."/&gt;
+      --&gt;
+&lt;/cluster&gt;
+
+&lt;config  name="dev-cluster-config"
+         dynamic-reconfiguration-enabled="true"/&gt;
+         ...
+    &lt;group-management-service  group-discovery-timeout-in-millis="5000"&gt;
+        &lt;failure-detection max-missed-heartbeats="3"
+                           heartbeat-frequency-in-millis="2000"
+                           verify-failure-waittime-in-millis="1500"
+                           verify-failure-connect-timeout-in-millis="10000"/&gt;
+    &lt;!-- optional tcp security --&gt;
+    &lt;gms-transport id="secured-tcp" protocol="tcp" listener-port=${GMS_LISTENER_PORT-dev-cluster" security-enabled="true"&gt;
+        &lt;ssl classname="com.sun.enterprise.security.ssl.GlassfishSSLImpl" cert-nickname="s1as"&gt;&lt;/ssl&gt; 
+    &lt;/gms-transport&gt; 
+    
+    &lt;!-- optional UDP unicast protocol configuration.  --&gt;
+    &lt;gms-transport id="unicast-udp" protocol="udp" listener-port=${GMS_UDP_LISTENER_PORT-dev-cluster"/&gt;
+
+    &lt;/group-management-service&gt;
+&lt;/config&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>New to GlassFish 3.2</p> <p>New cluster properties <br> 1. GMS_DISCOVERY_URI_LIST // Name will probably be changed. </p> <p>Format for GMS_DISCOVERY_URI_LIST is a comma separated list of URI.<br> URI format is protocol://hostnameOrIPAddress:portNumber. Initially, TCP protocol will be supported.<br> Also, support comma separated list of ip addresses or fully qualified host names.</p> <p>New cluster child<br> 1. gms-transport // similar to existing iiop-listener. reuses existing ssl child.</p> <p>Changes to GlassFish 3.1 cluster attributes gms-multicast-address and gms-multicast-port</p> <p>These attributes were required to be non-null in 3.1 and is now optional.</p> <p>TODO: <br> Identify how an administrator configures to generate multicast address and port or<br> to generate VIRTUAL_MULTICAST_URI_LIST</p> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 27, 2011 by 
+<font color="#0050B2">jfialli</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

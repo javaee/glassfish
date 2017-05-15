@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : V3CLILandscape</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p></p>
+     <div> 
+      <ul> 
+       <li><a href="#V3CLILandscape-GlassFishCLILandscape">GlassFish CLI Landscape</a></li> 
+       <ul> 
+        <li><a href="#V3CLILandscape-1%29CRUDCommand">1) CRUD Command</a></li> 
+        <li><a href="#V3CLILandscape-2%29LocalOnlyCommand">2) Local Only Command</a></li> 
+        <li><a href="#V3CLILandscape-3%29RemoteOnlyCommand">3) Remote Only Command</a></li> 
+        <li><a href="#V3CLILandscape-4%29HybridCommands">4) Hybrid Commands</a></li> 
+        <li><a href="#V3CLILandscape-OtherCommandFrameworkFeatures">Other Command Framework Features</a></li> 
+        <ul> 
+         <li><a href="#V3CLILandscape-ClusterAwareCommands">Cluster-Aware Commands</a></li> 
+         <li><a href="#V3CLILandscape-BeanValidation">Bean Validation</a></li> 
+         <li><a href="#V3CLILandscape-DynamicDefaultValueCalculation">Dynamic Default Value Calculation</a></li> 
+        </ul> 
+        <li><a href="#V3CLILandscape-References">References</a></li> 
+        <ul> 
+         <li><a href="#V3CLILandscape-Notes">Notes</a></li> 
+        </ul> 
+       </ul> 
+      </ul>
+     </div>﻿﻿<p></p> <h4><a name="V3CLILandscape-GlassFishCLILandscape"></a>GlassFish CLI Landscape</h1> <p>In GlassFish it is very easy to add new admin CLI commands once you know where to start. This document attempts to give a brief overview of the CLI landscape to help get you started.</p> <h4><a name="V3CLILandscape-1%29CRUDCommand"></a>1) CRUD Command</h2> <p>If your command will primarily update the DAS's configuration (domain.xml), then you want to implement a CRUD command. A CRUD command is a remote <sup><a href="#V3CLILandscape-1">1</a></sup> command that supports modifying the DAS configuration.</p> <p>CRUD commands can create, delete and list XML elements from a CLI invocation without requiring the writing of any code. The general approach is to create an interface for a server config bean that extends <tt>org.jvnet.hk2.config.ConfigBeanProxy</tt> and then annotate the interface. For details see <a href="CRUD Asadmin Commands.html" title="CRUD Asadmin Commands">CRUD asadmin commands implementation in GlassFish V3</a>. If the command needs to do some work in addition to updating the configuration then you can add a decorator or supplemental command annotation.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Example command </th> 
+         <td class="confluenceTd"> create-cluster/delete-cluster </td> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> Source </th> 
+         <td class="confluenceTd"> <a href="https://glassfish-svn.java.net/source/browse/glassfish-svn/trunk/v3/admin/config-api/src/main/java/com/sun/enterprise/config/serverbeans/Clusters.java?view=markup">admin/config-api/src/main/java/com/sun/enterprise/config/serverbeans/Clusters.java </a> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="V3CLILandscape-2%29LocalOnlyCommand"></a>2) Local Only Command</h2> <p>If you want to implement a command that does not run in the DAS – i.e. it executes in the asadmin client directly – then you want a local only command. To do this you extend <tt>com.sun.enterprise.admin.cli.CLICommand</tt> and annotate the class.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Example command </th> 
+         <td class="confluenceTd"> _create-instance-filesystem </td> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> Source </th> 
+         <td class="confluenceTd"> <a href="https://glassfish-svn.java.net/source/browse/glassfish-svn/trunk/v3/cluster/cli/src/main/java/com/sun/enterprise/admin/cli/cluster/CreateLocalInstanceFilesystemCommand.java?view=markup">cluster/cli/src/main/java/com/sun/enterprise/admin/cli/cluster/CreateLocalInstanceFilesystemCommand.java </a> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p><b>Note:</b> For your local command to be picked up by asadmin, the module should be in the Class-Path element of admin/cli/pom.xml.</p> <h4><a name="V3CLILandscape-3%29RemoteOnlyCommand"></a>3) Remote Only Command</h2> <p>Your first choice for a remote only command is to make it a CRUD command – see #1. But if your command does not modify the DAS's configuration then a remote only command may be more appropriate. To do this you implement the <tt>org.glassfish.api.admin.AdminCommand</tt> interface – basically implementing an execute method – and annotate the class.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Example command </th> 
+         <td class="confluenceTd"> list-system-properties </td> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> Source </th> 
+         <td class="confluenceTd"> <a href="https://glassfish-svn.java.net/source/browse/glassfish-svn/trunk/v3/core/kernel/src/main/java/com/sun/enterprise/v3/admin/ListSystemProperties.java?view=markup">core/kernel/src/main/java/com/sun/enterprise/v3/admin/ListSystemProperties.java </a> </td> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> Example command </th> 
+         <td class="confluenceTd"> list-instances </td> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> Source </th> 
+         <td class="confluenceTd"> <a href="https://glassfish-svn.java.net/source/browse/glassfish-svn/trunk/v3/cluster/admin/src/main/java/com/sun/enterprise/v3/admin/cluster/ListInstancesCommand.java?view=markup">cluster/admin/src/main/java/com/sun/enterprise/v3/admin/cluster/ListInstancesCommand.java </a> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>A couple additional examples are given in this blog: <a href="http://blogs.oracle.com/nachi/entry/how_to_add_a_new">How to add a new cli command (asadmin utlilty)</a></p> <h4><a name="V3CLILandscape-4%29HybridCommands"></a>4) Hybrid Commands</h2> <p>If you have a command that needs to perform some local operations while running in the asadmin client plus perform one or more remote operations then you want a hybrid command. To implement a hybrid command you first implement a remote command for the remote part of the operation using #1 or #3. Then implement a local only command that performs the local portion of the command and then uses the <tt>com.sun.enterprise.admin.cli.remote.RemoteCommand</tt> class to execute the remote command.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Example command </th> 
+         <td class="confluenceTd"> version </td> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> Source </th> 
+         <td class="confluenceTd"> Remote: <a href="https:--glassfish-svn.java.net-source-browse-glassfish-svn-trunk-v3-core-kernel-src-main-java-com-sun-enterprise-v3-admin-VersionCommand.java?view=markup">core/kernel/src/main/java/com/sun/enterprise/v3/admin/VersionCommand.java </a> <br class="atl-forced-newline"> Local: <a href="https://glassfish-svn.java.net/source/browse/glassfish-svn/trunk/v3/admin/cli/src/main/java/com/sun/enterprise/admin/cli/VersionCommand.java?view=markup">admin/cli/src/main/java/com/sun/enterprise/admin/cli/VersionCommand.java </a> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="V3CLILandscape-OtherCommandFrameworkFeatures"></a>Other Command Framework Features</h2> <h4><a name="V3CLILandscape-ClusterAwareCommands"></a>Cluster-Aware Commands</h3> <p>In 3.1 the ability to propagate commands across a cluster was introduced. For details on how to make your commands cluster aware see: <a href="CLIDeveloperGuide.html" title="CLIDeveloperGuide">How to make CLIs cluster aware</a>.</p> <h4><a name="V3CLILandscape-BeanValidation"></a>Bean Validation</h3> <p>The 4.0 release introduced the ability to validate AdminCommand parameters using bean validation.</p> <p>The <a href="http://download.oracle.com/otn-pub/jcp/bean_validation-1.0-fr-oth-JSpec/bean_validation-1_0-final-spec.pdf">bean validation API</a> (BV) allows fields within a class or the class itself to be annotated with constraints that are used validate whether the properties of the object are valid. This feature allows BV to be used with AdminCommand objects.&nbsp; After the @Param annotations are resolved to inject the parameter values into the AdminCommand object, the BV validate method is called to ensure that any constraints are satisfied. Here is an example from the GetHabitatInfo command. Note that parts of the command implementation not relevant to this example have been omitted.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Service(name = "_get-habitat-info")
+public class GetHabitatInfo implements AdminCommand {
+
+    @JavaClassName
+    @Param(primary = true, optional = true)
+    String contract = null;
+
+    @Pattern(regexp="true|false")
+    @Param(optional = true)
+    String started = "false";
+
+...
+
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>Here, @JavaClassName is a constraint that is defined by the GlassFish config-api module which ensures that the value conforms to the syntax of a Java class.&nbsp; The @Pattern constraint is defined by the BV framework and it ensures that the value of the option is either true or false.&nbsp; The use of @Pattern here produces the same result as if the "acceptableValues" parameter was used with the @Param annotation.</p> <p>BV constraints can also be used at the class level. For example, consider a case where a command accepts two integer options, and the sum of the two options has to be less than 10. This can be implemented as follows:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Service(name = "some-command")
+@SomeCommand.Constraint
+public class SomeCommand implements AdminCommand {
+    @Param(optional=true)
+    int a = 0;
+    @Param(optiona=true)
+    int b = 0;
+
+   &nbsp;@Retention(RUNTIME)
+    @javax.validation.Constraint(validatedBy = SomeCommand.Validator.class)
+    public static @interface Constraint {
+        String message() default "The a and b options must sum to less than 10.";
+        Class&lt;?&gt;[] groups() default {};
+        Class&lt;? extends Payload&gt;[] payload() default {};
+    }
+
+    public static class Validator
+        implements ConstraintValidator&lt;SomeCommand.Constraint, SomeCommand&gt;, Payload {
+
+        @Override
+        public void initialize(final SomeCommand.Constraint constraint) { }
+
+        @Override
+        public boolean isValid(final SomeCommand bean,
+            final ConstraintValidatorContext constraintValidatorContext) {
+            return bean.a + bean.b &lt; 10
+        }
+    }
+}</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="V3CLILandscape-DynamicDefaultValueCalculation"></a>Dynamic Default Value Calculation</h3> <p>The 4.0 release introduced the ability to calculate a default value for an option dynamically using a class.</p> <p>Previously, there were two ways to set a default value for a command parameter:</p> <p>1) Use the defaultValue argument of the @Param annotation</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Param(optional=true, defaultValue="true")
+boolean flag;</pre> 
+       </div> 
+      </div>
+     </div> <p>2) Assign the field with a value, which may be a calculated value by calling a method.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Param(optional=true)
+boolean flag = true;</pre> 
+       </div> 
+      </div>
+     </div> <p>The dynamic default value calculation feature provides a third way of defining a default value for an @Param:</p> <p>3) Use the defaultCalculator argument of the @Param annotation (new in 4.0)</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">@Param(optional=true, defaultCalculator=DefaultCalc.class)
+boolean flag;</pre> 
+       </div> 
+      </div>
+     </div> <p>The DefaultCalc class must extend the org.glassfish.api.ParamDefaultCalculator class.&nbsp; This class has a single method, defaultValue which accepts an ExecutionContext as an argument. The AdminCommandContext extends ExecuteContext, so the defaultValue method can check to see if it actually received an AdminCommandContext and use the information from that object to calculate the default value. Here is an example DefaultCalc class:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">class DefaultCalc extends ParamDefaultCalculator {
+    public DefaultCalc() {}
+    public String defaultValue(ExecutionContext context) {
+       &nbsp;return "some calculated value";
+   &nbsp;}
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>A public constructor is needed for this class so that the command framework is able to create an instance.</p> <h4><a name="V3CLILandscape-References"></a>References</h2> 
+     <ul> 
+      <li><a href="http://docs.sun.com/doc/820-7692/giobi">Using the asadmin Utility</a></li> 
+      <li><a href="http://docs.sun.com/doc/820-7701/asadmin-1m">asadmin(1M) man page</a></li> 
+      <li><a href="http://docs.sun.com/doc/820-7727/ghmrd">Extending the asadmin Utility</a></li> 
+      <li><a href="CLIDeveloperGuide.html" title="CLIDeveloperGuide">Making CLI Cluster aware</a></li> 
+      <li>Guidelines for <a href="Asadmin Command Output Guidelines.html" title="Asadmin Command Output Guidelines">command output</a></li> 
+     </ul> <h4><a name="V3CLILandscape-Notes"></a>Notes</h3> <p><a name="V3CLILandscape-1"></a> In GlassFish a remote command is a command that runs in the DAS. It is called remote because you can run asadmin on any machine and connect to a remote DAS by specifying the --host and --port options. A local command is a command that runs in the asadmin client and therefore can only manipulate the GlassFish install that asadmin is running directly out of.</p> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Oct 01, 2012 by 
+<font color="#0050B2">10103</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

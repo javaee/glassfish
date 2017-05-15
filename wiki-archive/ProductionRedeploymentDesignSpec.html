@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : ProductionRedeploymentDesignSpec</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="ProductionRedeploymentDesignSpec-ProductionredeploymentDesignSpec"></a>Production redeployment Design Spec</h1> <h4><a name="ProductionRedeploymentDesignSpec-1.Introduction"></a>1. Introduction</h1> <h4><a name="ProductionRedeploymentDesignSpec-1.1Project%2FComponentWorkingName"></a>1.1 Project/Component Working Name</h2> <p>Production redeployment</p> <h4><a name="ProductionRedeploymentDesignSpec-1.2Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier"></a>1.2 Name(s) and e-mail address of Document Author(s)/Supplier</h2> <p>Marian Muller : <a href="mailto:marian.muller@serli.com">marian.muller@serli.com</a><br> Serge Petit : <a href="mailto:serge.petit@serli.com">serge.petit@serli.com</a><br> Pierre-Henry Soulaneix : <a href="mailto:pierre-henry.soulaneix@serli.com">pierre-henry.soulaneix@serli.com</a></p> <h4><a name="ProductionRedeploymentDesignSpec-1.3DateofThisDocument"></a>1.3 Date of This Document</h2> <p>12/19/2012</p> <h4><a name="ProductionRedeploymentDesignSpec-1.4Highlevelfeaturesoverview"></a>1.4 Highlevel features overview</h2> <p>See the <a href="ProductionRedeploymentOnePager.html" title="ProductionRedeploymentOnePager">one pager</a> for a higher-level specification.</p> <h4><a name="ProductionRedeploymentDesignSpec-2.Implementation"></a>2. Implementation</h1> <h4><a name="ProductionRedeploymentDesignSpec-2.1Principle"></a>2.1 Principle</h2> <p>To support the deployment of two concurrent enabled versions, a private context-root is used to deploy each version of an application. This is called the tagged context-root, as it is prefixed by the version identifier.</p> <p>Requests targeting the public context-root (a.k.a. untagged context-root) are simply routed to the right version by switching to the tagged context-root. The right version to be used is chosen using the rules exposed in the one pager.</p> <h4><a name="ProductionRedeploymentDesignSpec-2.2Domain.xml"></a>2.2 Domain.xml</h2> <p>An attribute will be added to the application-ref element : retirement-time. This attribute will hold the date and time when the retirement period of a version ends.</p> <p>An example of application version stored with its retirement period end time in domain.xml:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;application-ref ref="foo:1.0" virtual-servers="server" retirement-time="2012-12-19 03:40:29"&gt;&lt;/application-ref&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>The date and time of the retirement period end are computed using the retirement timeout and the current date/time when enabling a version.</p> <h4><a name="ProductionRedeploymentDesignSpec-2.3DeploymentRelatedAdminClasses"></a>2.3 Deployment Related Admin Classes</h2> <p>The production redeployment must be triggered when enabling a version. The impacted commands are deploy, undeploy , disable and enable. All the impacted classes will evolve so they can trigger the production redepoyment and accept the associated configuration options.</p> <p>To manage the active and retired versions of all the deployed applications, a production redeployment service will be added, or the versioning service will be extended.</p> <h4><a name="ProductionRedeploymentDesignSpec-2.3.1Productionredeploymentclasses"></a>2.3.1 Production redeployment classes</h3> <p>The production redeployment service will store the state of the active and retired versions for each enabled application. It will provide an API to access and maintain this state. The API will consist of 7 operations :</p> 
+     <ul> 
+      <li>Enable an application version without using production redeployment. This marks the given version as active. No version is kept as retired.</li> 
+      <li>Enable an application version using production redeployment. This marks the given version as active, and keeps the previous active version as retired.</li> 
+      <li>Disable an application version, whether it was active or retired.</li> 
+      <li>Get the tagged context-root of the active version of an application.</li> 
+      <li>Get the tagged context-root of the retired version of an application.</li> 
+      <li>Get the tagged context-root of the version attached to a given session id. If no version is attached to the session id, get the tagged context-root of the active version.</li> 
+      <li>Set the session manager for an application version. This is mandatory for the service to be able to find the version attached to a given session id.</li> 
+     </ul> <p>On top of this service API, utility classes will provide two operations :</p> 
+     <ul> 
+      <li>Get the tagged context-root from the given untagged context-root and version identifier.</li> 
+      <li>Get the untagged context-root from a given tagged context-root.</li> 
+     </ul> <h4><a name="ProductionRedeploymentDesignSpec-2.3.2Deploycommand"></a>2.3.2 Deploy command</h3> <p>The deploy command will be adapted to maintain the application versions state, each time an <em>enabled</em> version is deployed. This means the command will have to set the deployed version as active in the production redeployment service whenever deploying an <em>enabled</em> version. This is true even when the production redeployment is not used.</p> <p>The deploy command will also have to modify the application context-root so it is actually deployed using the tagged context-root.</p> <p>Finally, the deploy command will be adapted to trigger production redeployment when used with the&nbsp;--retiretimeout option. This means the previous version is <em>not</em> disabled before deploying. The previous active version is simply marked as retired in the production redeployment service, and therefore planned to be disabled later.</p> <p>If there is already a retired version, the production redeployment cannot be used as per limitations stated in the one pager. In this case, the command simply displays an error telling the user to explicitely disable the retired version before deploying a new one.</p> <h4><a name="ProductionRedeploymentDesignSpec-2.3.3Enablecommand"></a>2.3.3 Enable command</h3> <p>The enable command will be adapted similarly to the deploy command. It will maintain the application versions state, each time a version is enabled. The command will have to set the deployed version as active in the production redeployment service whenever enabling a version. This is true even when the production redeployment is not used.</p> <p>The enable command will be adapted to trigger production redeployment when used with the&nbsp;--retiretimeout option. This means the previous version is <em>not</em> disabled before enabling. The previous active version is simply marked as retired in the production redeployment service, and therefore planned to be disabled later.</p> <p>If there is already a retired version, the production redeployment cannot be used as per limitations stated in the one pager. In this case, the command simply displays an error telling the user to explicitely disable the retired version before enabling a new one.</p> <p>However, if the version being enabled is the retired version, the version will simply be marked as active, while the previous active version is marked as retired. The retirement period of the version being enabled is cancelled, while the newly retired version will have a retirement period of the time specified using&nbsp;--retirementtimeout. This allows to roll the retired version back without losing any client session.</p> <h4><a name="ProductionRedeploymentDesignSpec-2.3.4Disablecommand"></a>2.3.4 Disable command</h3> <p>The disable command is less impacted by production redeployment. It simply needs to maintain the application versions state, each time a version is disabled. The command will have to remove the disabled version from the production redeployment service, whether it was active or retired.</p> <p>As the command may target several versions using a wildcard, both active and retired versions may be disabled using a single command call.</p> <h4><a name="ProductionRedeploymentDesignSpec-2.3.5Undeploycommand"></a>2.3.5 Undeploy command</h3> <p>The undeploy command is less impacted by production redeployment. It simply needs to maintain the application versions state, each time a version is undeployed. The command will have to remove the undeployed version from the production redeployment service whenever an <em>enabled</em> version is undeployed, whether it was active or retired.</p> <p>As the command may target several versions using a wildcard, both active and retired versions may be undeployed using a single command call.</p> <h4><a name="ProductionRedeploymentDesignSpec-2.3.6Listapplicationscommand"></a>2.3.6 List-applications command</h3> <p>The list-applications command must be enhanced to display production redeployment related informations when used with the&nbsp;--long option. Following the best practices, this information is read from the domain.xml file. The command will display two additional columns in its output:</p> 
+     <ul> 
+      <li>EXTENDED_STATUS specifies if an enabled version is either active or retired.</li> 
+      <li>RETIRES_ON specifies the retirement period end date and time of a retired version.</li> 
+     </ul> <h4><a name="ProductionRedeploymentDesignSpec-2.3.7Disablingtheretiredversion"></a>2.3.7 Disabling the retired version</h3> <p>A version that is kept as retired (because of production redeployment) is automatically disabled after a certain time, depending on the&nbsp;--retiretimeout value :</p> 
+     <ul> 
+      <li>If&nbsp;--retiretimeout is negative, the retired version is disabled only when all its sessions have expired. This requires to keep track of the number of valid or expired sessions for a given version.</li> 
+      <li>Otherwise, the retired version is disabled after the given timeout, in seconds. A timer is set right after the version is retired, and is triggered when the given timeout is reached.</li> 
+     </ul> <p>A retired version is simply disabled by running the disable command with the application name, the version identifier and the target used when it was enabled.</p> <h4><a name="ProductionRedeploymentDesignSpec-2.4WebContainerClasses"></a>2.4 Web Container Classes</h2> <p>Production redeployment requires to be able to deploy two versions of the same application concurrently. Web container will have to provide a way to support this, and a mechanism to route incoming HTTP requests depending on their session information.</p> <h4><a name="ProductionRedeploymentDesignSpec-2.4.1ContainerMapperclass"></a>2.4.1 ContainerMapper class</h3> <p>Web application versions are deployed using their tagged context-root. The ContainerMaper class will be adapted to route the requests targeting the untagged context-root (that is, the public context-root) to the right tagged context-root (that is, the private context-root).</p> <p>One main purpose of the ContainerMapper is to determine which application should serve an incoming request. But once the application is known, it will have to determine which version should serve the request.<br> To get the tagged context-root of the right version to use, the ContainerMapper will start by extracting the requested session id from the request cookies and/or path parameters. The production redeployment service can be called to get the tagged context-root of the right application version from a given session id.</p> <p>If a tagged context-root is found, the mapping data of the incoming request are overwritten so that the right application is called to serve the request.</p> <h4><a name="ProductionRedeploymentDesignSpec-2.4.2Catalinacontainerclasses"></a>2.4.2 Catalina container classes</h3> <h4><a name="ProductionRedeploymentDesignSpec-2.4.2.1Sessionmanager"></a>2.4.2.1 Session manager</h4> <p>When the catalina container of a web application version is initialized, its session manager must immediately be sent to the production redeployment service, so it is able to link a session id to its application version.</p> <h4><a name="ProductionRedeploymentDesignSpec-2.4.2.2Contextrootcorrection"></a>2.4.2.2 Context-root correction</h4> <p>As all application versions are deployed using a tagged context-root, there are some places where the untagged context-root must be restored :</p> 
+     <ul> 
+      <li>When setting a cookie, it must be set using the untagged context-root in its path.</li> 
+      <li>When redirecting a request to an application default resource (e.g. redirecting 'contextroot/' to 'contextroot/index.jsp'), the redirection must use the untagged context-root.</li> 
+     </ul> <h4><a name="ProductionRedeploymentDesignSpec-2.5GUI"></a>2.5 GUI</h2> <p>GUI will be affected, to allow users to trigger production redeployment when deploying or enabling a version.</p> <h4><a name="ProductionRedeploymentDesignSpec-3.EmailAlias"></a>3. Email Alias</h1> 
+     <ul> 
+      <li>Please contact us at <a href="mailto:dev@glassfish.java.net">dev@glassfish.java.net</a></li> 
+     </ul> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Dec 19, 2012 by 
+<font color="#0050B2">16653</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

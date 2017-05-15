@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : Admin Console Demo for 3.1 MS3</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="AdminConsoleDemofor3.1MS3-AdminConsoleDemoforMS3"></a>Admin Console Demo for MS3</h2> <p>Clustering management support including &nbsp;Listing/Create/Delete of Nodes, &nbsp;Clusters and Standalone instances. &nbsp; Start and Stop of &nbsp;instances and clusters. &nbsp; &nbsp;Full Application Deployment support targeting any clusters and instances.&nbsp;</p> <h4><a name="AdminConsoleDemofor3.1MS3-Team"></a>Team</h3> <p>This demo is brought to you by the Admin Console team:</p> 
+     <ul> 
+      <li>Anissa Lam</li> 
+      <li>Ken Paulsen</li> 
+      <li>Jason Lee</li> 
+      <li>Srinivas Krishnan</li> 
+      <li>Sumasri Uppala</li> 
+     </ul> <h4><a name="AdminConsoleDemofor3.1MS3-Demo"></a>Demo</h3> <p>Note: &nbsp;This demo is shown using just 1 machine, &nbsp;so the additional Nodes, &nbsp;standalone instances and clusters are all running &nbsp;on localhost. &nbsp; If you have another machine that has configured SSH to use key (certificate) authentication, &nbsp;you can create the additional Node by supplying all the information on the screen. &nbsp; The rest of the demo will be the same.</p> <p>Setup: &nbsp;</p> 
+     <ol> 
+      <li>Install GlassFish 3.1 &nbsp;Open Source Edition &nbsp;MS3 
+       <ol> 
+        <li>Download <a href="http://dlc.sun.com.edgesuite.net/glassfish/3.1/promoted/glassfish-3.1-b12.zip&amp;nbsp">http://dlc.sun.com.edgesuite.net/glassfish/3.1/promoted/glassfish-3.1-b12.zip&amp;nbsp</a>;</li> 
+        <li>unzip</li> 
+       </ol> </li> 
+      <li>Start up Domain&nbsp; 
+       <ol> 
+        <li>&nbsp;glassfishv3/glassfish/bin/start-domain domain1</li> 
+       </ol> </li> 
+      <li>Start up Admin Console 
+       <ol> 
+        <li>go to &nbsp;<a href="http://localhost:4848">http://localhost:4848</a></li> 
+       </ol> </li> 
+     </ol> <h4><a name="AdminConsoleDemofor3.1MS3-1.%26nbsp%3BApplicationDeploymentwhenthereisonlyDAS"></a><b>1. &nbsp;Application Deployment when there is only DAS</b></h3> <p>The demo shows the deployment and applications related screens when there is only DAS. &nbsp; This is to have the same developer experience as in v3.</p> 
+     <ol> 
+      <li>From the tree, &nbsp;go to Applications tree node, &nbsp;click Deploy button</li> 
+      <li>Notice that there is no need to select any Target, &nbsp;now select hello.war and press Ok</li> 
+      <li>Notice that hello.war is deployed and the Enabled column showed the 'check mark' indicating the app is enabled</li> 
+      <li>click on 'hello', &nbsp;notice that there is only 2 tabs: &nbsp;General and Descriptor</li> 
+     </ol> <h4><a name="AdminConsoleDemofor3.1MS3-2.%26nbsp%3BListingandCreatingNodes"></a>2. &nbsp;Listing and Creating Nodes</h3> <p>This shows how you can create a Node and listing out what is &nbsp;available in the domain.</p> 
+     <ol> 
+      <li>From the tree, go to 'Nodes' &nbsp;which lists out the Nodes that is available. &nbsp;&nbsp;</li> 
+      <li>click New to create a new Node. &nbsp; Fill in the following info and click OK. &nbsp;(Note: if you have other machine with SSH setup, enter the information appropriately. 
+       <ol> 
+        <li>Name: &nbsp; &nbsp;Another</li> 
+        <li>Node Host: &nbsp; &nbsp;localhost</li> 
+        <li>Installation Directory: &nbsp; /export/glassfishv3</li> 
+       </ol> </li> 
+      <li>The new Node, &nbsp;Another, &nbsp;is successfully &nbsp;created and listed.&nbsp;</li> 
+     </ol> <h4><a name="AdminConsoleDemofor3.1MS3-3.Clustersmanagement"></a>3. Clusters management</h3> <p>Using the Node created from previous step, &nbsp;you can create cluster, and its instances. &nbsp; Start the instance, &nbsp;delete a cluster etc.</p> 
+     <ol> 
+      <li>Click on the &nbsp;'Clusters' &nbsp;Tree node. &nbsp; &nbsp;click on New... &nbsp;to create the cluster</li> 
+      <li>Enter the following information: &nbsp; 
+       <ol> 
+        <li>Cluster Name: &nbsp; &nbsp;clusterABC</li> 
+        <li>Configuration: &nbsp; &nbsp;default-config</li> 
+        <li>Click on New... button to create the instances. &nbsp; Create 2 instances: 
+         <ol> 
+          <li>Instance &nbsp;Name: &nbsp; ABC-1 , &nbsp; Node: &nbsp; &nbsp;localhost</li> 
+          <li>instance Name: &nbsp;ABC-2, &nbsp; &nbsp; &nbsp;Node: &nbsp;Another</li> 
+         </ol> </li> 
+       </ol> </li> 
+      <li>click Ok and the clusters table will show the newly created cluster</li> 
+      <li>Examine the cluster by clicking on the 'clusterABC' &nbsp;link.&nbsp;</li> 
+      <li>Click on Instances Tab, &nbsp; &nbsp;this shows the instances, &nbsp;configuration and status etc.</li> 
+      <li>Select &nbsp;ABC-2 , &nbsp; click Start button. &nbsp; &nbsp;</li> 
+      <li>Note that the status for ABC-2 &nbsp;has changed to Started</li> 
+      <li>Click the Clusters tree node again. &nbsp;Notice the status has changed also.</li> 
+      <li>Create additional cluster, &nbsp;XYZ, &nbsp; with 1 or 2 instances</li> 
+      <li>Select this new cluster and press Delete button</li> 
+      <li>Note that the instances, &nbsp;and the cluster is deleted together. &nbsp; (In CLI, &nbsp;you need to create the instance first, then the cluster)&nbsp;</li> 
+     </ol> <h4><a name="AdminConsoleDemofor3.1MS3-4.StandAloneInstancesmanagement"></a>4. Stand-Alone Instances management</h3> <p>Using the Node created previous, &nbsp;this shows you how to create/delete/start standalone instance.</p> 
+     <ol> 
+      <li>Select 'Stand-Alone Instances' &nbsp;tree node</li> 
+      <li>Click the New... button to create a new instance</li> 
+      <li>Enter the following information and click OK button 
+       <ol> 
+        <li>Instance Name: &nbsp; &nbsp;StandAlone1</li> 
+        <li>Node: &nbsp; localhost</li> 
+        <li>default-config</li> 
+        <li>Make a copy of the selected Configuration</li> 
+       </ol> </li> 
+      <li>The table listed out this newly created instance.</li> 
+      <li>Select 'StandAlone1' &nbsp;and click Start&nbsp;</li> 
+      <li>The status refreshed once this instance is up and running</li> 
+     </ol> <h4><a name="AdminConsoleDemofor3.1MS3-5.ApplicationDeployment"></a>5. Application Deployment</h3> <p>User experience will be different than when there is only DAS. &nbsp;&nbsp;</p> 
+     <ol> 
+      <li>Click the Applcations Tree node</li> 
+      <li>Notice that the Status column has changed. &nbsp; It now says &nbsp;"Enabled on All Targets". &nbsp;</li> 
+      <li>Click Deploy... button. &nbsp;Notice that you now can select any of the clusters and standalone instance as target.</li> 
+      <li>Select StandAlone1 &nbsp;and add that to the selected Target</li> 
+      <li>Click ok to deploy</li> 
+      <li>Click on 'Enabled on All Targets' &nbsp;hyperlink</li> 
+      <li>Select 'StandAlone' and then &nbsp;'Disabled' from the &nbsp;'<del>- More Actions</del>- ' dropdown. &nbsp;Notice that the status changed.</li> 
+      <li>Click on Manage Target... button to add or remove targets</li> 
+      <li>Add the ClusterABC &nbsp;target</li> 
+      <li>Click on General tab, &nbsp;examine the Modules and Components</li> 
+      <li>Click the Cancel button to get back to Applications listing</li> 
+      <li>Notice that the Status now says Enabled on 2 Target(s)</li> 
+     </ol> <h4><a name="AdminConsoleDemofor3.1MS3-6.MonitoringthroughRESTAPI"></a>6. Monitoring through REST API</h3> <p>Like many of the pages, the monitoring statistics page has been converted to use REST API instead of through AMX. &nbsp; However, due to <a href="https://github.com/javaee/glassfish/issues/12762">issue# 12762</a>, &nbsp;you will need to add &lt;monitoring-service&gt; element in domain.xml to see the statistics showing up correctly.</p> 
+     <ol> 
+      <li>Click on Monitoring Tree Node to configure monitoring level</li> 
+      <li>Change Web Container level to HIGH, &nbsp;click SAVE</li> 
+      <li>Deploy an application to "server", &nbsp; I use stateless-simple.ear</li> 
+      <li>Go to Applications -&gt; stateless-simple &nbsp;tree node. &nbsp;</li> 
+      <li>Click the launch link, &nbsp;this will launch the application</li> 
+      <li>Go to Admin Server -&gt; Monitoring tab</li> 
+      <li>Select this application and also TheGreeter component</li> 
+      <li>Note the statistic given.</li> 
+     </ol> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 22, 2010 by 
+<font color="#0050B2">3070</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

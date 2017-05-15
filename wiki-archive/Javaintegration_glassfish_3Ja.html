@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : Javaintegration_glassfish_3Ja</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="Javaintegration_glassfish_3Ja-Rails%E3%81%A8JavaEE%E3%81%AE%E9%80%A3%E6%90%BA%E7%94%9F%E3%81%AERails%E3%82%92GlassFishv3%E3%81%AB%E9%85%8D%E5%82%99"></a>Rails と Java EE の連携- 生の Rails を GlassFish v3 に配備</h1> <p>Posted by arungupta on April 14, 2008 at 08:18 AM | Comments (0) </p> <p>本ブログ3回連続シリーズ（<a href="Javaintegration_glassfish_1Ja.html" title="Javaintegration_glassfish_1Ja">Part 1</a> 、 <a href="Javaintegration_glassfish_2Ja.html" title="Javaintegration_glassfish_2Ja">Part 2</a>）・最終回の今回は、 <a href="http://wiki.jruby.org/wiki/Goldspike">Goldspike</a> や <a href="http://wiki.jruby.org/wiki/Warbler">Warbler</a> 、あるいはその他特別な gem やプラグインなどを一切使わず、Rails アプリケーションを GlassFish v3 上に配備する方法をご紹介します。</p> <p><a href="./" http:="" download.java.net="" avaee5="" 3="" eleases="" review="" lassfish-v3-preview2-b09.zip.html"="">b09はここからダウンロードしてください</a></p> <p><a href="http://developers.sun.com/appserver/reference/techart/rails_gf/">Rails powered by GlassFish</a>では、商用グレードのアプリケーションサーバ・ GlassFish に備わるリッチな機能が余すところなく紹介されています。 </p> <p>では、詳しい手順を紹介していきましょう：</p> <p>1. JRuby 1.1 ( Rails もセットアップされていること) を使って次のように Rails アプリケーション "railsee3" を作成します：</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">~/testbed/jruby-1.1/samples/rails &gt;../../bin/jruby -S rails railsee3
+      create  
+      create  app/controllers
+      create  app/helpers
+      create  app/models
+      . . .
+      create  log/production.log
+      create  log/development.log
+      create  log/test.log</pre> 
+       </div> 
+      </div>
+     </div> <p>2. Serblet ディスクリプタを追加</p> <p>　　1. Railsアプリケーションのルートディレクトリ内に "WEB-INF" ディレクトリを作成し、 以下の内容で "web.xml" を作成します：</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;!DOCTYPE web-app PUBLIC
+  "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+  "http://java.sun.com/dtd/web-app_2_3.dtd"&gt;
+&lt;web-app&gt;
+        &lt;servlet&gt;
+                &lt;servlet-name&gt;HelloServlet&lt;/servlet-name&gt;
+                &lt;servlet-class&gt;server.HelloServlet&lt;/servlet-class&gt;
+        &lt;/servlet&gt;
+        &lt;servlet-mapping&gt;
+                &lt;servlet-name&gt;HelloServlet&lt;/servlet-name&gt;
+                &lt;url-pattern&gt;/hello&lt;/url-pattern&gt;
+        &lt;/servlet-mapping&gt;
+&lt;/web-app&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>　　2. 続いて、 "WEB-INF" の中に以下の内容で "sun-web.xml" を作成してください： </p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE sun-web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Application Server 9.0 Servlet 2.5//EN" "http://www.sun.com/software
+/appserver/dtds/sun-web-app_2_5-0.dtd"&gt;
+&lt;sun-web-app error-url=""&gt;
+  &lt;context-root&gt;/servlet&lt;/context-root&gt;
+  &lt;class-loader delegate="true"/&gt;
+&lt;/sun-web-app&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>　　3. さらに "WEB-INF/lib" ディレクトリを新規に作成します。</p> <p>3. サーブレットの作成とコピー</p> <p>　　1. <a href="http://blogs.oracle.com/arungupta/entry/rails_and_java_ee_integration">この記事の #5</a> を参考に Java サーブレットを含むライブラリを作成してください。</p> <p>　　2. NetBeans プロジェクトの "dist" ディレクトリにある "HelloServlet.jar" を "WEB-INF/lib" ディレクトリにコピーしましょう。</p> <p>4. GlassFish 上の JRuby-on-Rails を設定 - GlassFish ディレクトリ配下の "config/asenv.conf" を開き、ファイルの末尾に以下のように JRUBY_HOME の設定を追加してください。</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">JRUBY_HOME="/Users/arungupta/testbed/jruby-1.1"</pre> 
+       </div> 
+      </div>
+     </div> <p>5. 次のようにして Rails アプリケーションを配備します：</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">~/testbed/jruby-1.1/samples/rails &gt;~/testbed/glassfish/v3/p2b9/glassfish/bin/asadmin deploy --force=true railsee3
+railsee3 deployed successfully
+Command deploy executed successfully.</pre> 
+       </div> 
+      </div>
+     </div> <p>6. これで"http://localhost:8080/servlet/hello"というURLから、Railsに含めたサーブレットにアクセスできます。デフォルトでは、ブラウザに以下のように表示されます：<br> <span class="error">Cannot resolve external resource into attachment.</span></p> <p>URLに "http://localhost:8080/railsee3/hello?name=Arun"のようにパラメータを渡すと、次のように表示が変わりますね：</p> <p><span class="error">Cannot resolve external resource into attachment.</span></p> <p>このように、GlassFish v3 上に配備したRailsアプリケーションを Java EE のサーブレットと連携させることができました。</p> <p>では続いて Rails アプリケーションにコントローラとビューを追加し、そこからこのサーブレットを呼び出して Rails との完全な連携を試してみましょう。</p> <p>7. コントローラとビューは次のように作成します：</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">~/testbed/jruby-1.1/samples/rails/railsee3 &gt;../../../bin/jruby script/generate controller home index
+JRuby limited openssl loaded. gem install jruby-openssl for full support.
+http://wiki.jruby.org/wiki/JRuby_Builtin_OpenSSL
+      exists  app/controllers/
+      exists  app/helpers/
+      create  app/views/home
+      exists  test/functional/
+      create  app/controllers/home_controller.rb
+      create  test/functional/home_controller_test.rb
+      create  app/helpers/home_helper.rb
+      create  app/views/home/index.html.erb</pre> 
+       </div> 
+      </div>
+     </div> <p>8. "app/controllers/home_controller.rb"に作成されたコントローラを次のように変更しましょう：</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">class HomeController &lt; ApplicationController
+
+include Java
+
+  def index
+        url = java.net.URL.new("http://localhost:8080/servlet/hello");
+        conn = url.open_connection;
+        reader = java.io.BufferedReader.new(java.io.InputStreamReader.new(conn.get_input_stream));
+        @servlet_output = "";
+        input_line = reader.read_line;
+        while input_line != nil
+                @servlet_output &lt;&lt; input_line;
+                input_line = reader.read_line;
+        end
+        reader.close;
+  end
+end</pre> 
+       </div> 
+      </div>
+     </div> <p>9. そして、"app/views/home/index.rhtml.erb"に作成されたビューを次のように変更します：</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;h1&gt;Home#index&lt;/h1&gt;
+&lt;p&gt;Find me in app/views/home/index.html.erb&lt;/p&gt;
+
+&lt;%= @servlet_output %&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>では、上記 # 5 に示す手順で Rails アプリケーションを再配備し、"http://localhost:8080/railsee3/home/index"にアクセスしてみましょう。次のような画面が表示されましたか？：</p> <p><span class="error">Cannot resolve external resource into attachment.</span></p> <p>このブログエントリでは、Warbler のような gem や Goldspike のようなプラグインを使うことなく、 GlassFish v3 上に Rails アプリケーションを配備する方法を解説しました。</p> <p>Warblerを使ってJavaEE5のサーブレットとRailsアプリケーションをパッケージングし、GlassFish上に配備する手順について解説しました。完全にネイティブな配備です！</p> <p>以上、この3回連続シリーズでは GlassFish 上への Rails アプリケーションの配備モデルについてお話してきました。いずれのモデルでも Java EE のサーブレットを Rails アプリケーションに同梱し、Rails のビューから呼び出す方法をご紹介しています。</p> <p>Part 1 - <a href="Javaintegration_glassfish_1Ja.html" title="Javaintegration_glassfish_1Ja">Goldspikeを用いた GlassFish v2 UR1 上への配備（WARベース）</a></p> <p>Part 2 - <a href="Javaintegration_glassfish_2Ja.html" title="Javaintegration_glassfish_2Ja">Warblerを用いた GlassFish v2 UR1 上への配備（WARベース）</a></p> <p>Part 3 - <a href="" title="Javaintegration_glassfish_3Ja">gem やプラグインを使用しない、GlassFish v3 上へのネイティブな配備 </a></p> 
+     <hr> <p>日本語翻訳: <a href="http://apercu-j.blogspot.com/">Kana</a></p> <p><a href="http://weblogs.java.net/blog/arungupta/archive/2008/04/rails_and_java_2.html">原文</a> </p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 09, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

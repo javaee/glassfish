@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : Howto_WriteAHowto</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="Howto_WriteAHowto-HowtoWriteaHowTo"></a>How to Write a How-To</h1> <p>A How-To is a short wiki article that provides detailed, step-by-step instructions about how to accomplish a specific task. This page describes how to write a GlassFish How-To. Your contributions are governed by the <a href="TermsOfUse.html" title="TermsOfUse">Terms of Use</a>. </p> <p>Questions or comments about any of this? Don't hesitate to contact the <a href="mailto:docs@glassfish.java.net">doc team</a>.</p> <p><a href="#Howto_WriteAHowto-BeforeYouBegin">Before You Begin</a></p> <p><a href="#Howto_WriteAHowto-WritingTheHowTo">Writing the How-To</a></p> <p><a href="#Howto_WriteAHowto-SeeAlso">See Also</a></p> <p><a href="#Howto_WriteAHowto-BasicHowToTemplate">Basic How-To Template</a></p> <h4><a name="Howto_WriteAHowto-BeforeYouBegin"></a>Before You Begin</h2> <p>A few general guidelines before you begin:</p> 
+     <ul> 
+      <li>Know your audience and the specific objective of your How-To.</li> 
+     </ul> 
+     <ul> 
+      <li>Search the GlassFish wiki to make sure a How-To for your topic doesn't already exist.</li> 
+     </ul> 
+     <ul> 
+      <li>Choose your title carefully – the best titles are short and include key words likely to be used in a search (for example, "How to Configure a Basic Cluster").</li> 
+     </ul> 
+     <ul> 
+      <li>Always include examples if possible and the complete steps to accomplish the task.</li> 
+     </ul> 
+     <ul> 
+      <li>Always provide attribution for outside sources and content.</li> 
+     </ul> 
+     <ul> 
+      <li>Test your work to make sure the procedure can be performed as described.</li> 
+     </ul> 
+     <ul> 
+      <li>Clean up your work and revise, revise, revise as necessary.</li> 
+     </ul> 
+     <ul> 
+      <li>Jump in and give it a try! Your first attempt doesn't need to be perfect. This is a wiki, after all, so if something's not quite right it can be easily fixed.</li> 
+     </ul> <h4><a name="Howto_WriteAHowto-WritingtheHowTo"></a>Writing the How-To</h2> 
+     <ol> 
+      <li>Check the <a href="CommunityDocs.html#CommunityDocs-CommunityDocsWishList">Community Docs Wish List</a> on the Community Docs page to see topics that need to be documented, or identify a topic of your own.</li> 
+     </ol> 
+     <ol> 
+      <li>Send an e-mail to the <a href="mailto:docs@glassfish.java.net">documentation mailing list</a>, describing what you intend to contribute.</li> 
+     </ol> 
+     <ol> 
+      <li>Log in to the GlassFish wiki (see the <a href="FaqWikiLogIn.html" title="FaqWikiLogIn">login FAQ</a> if you don't yet have a login) and record the document you're working on in the <a href="CommunityDocs.html#CommunityDocs-CommunityDocsInProgress">Community Docs in Progress</a> table on the Community Docs page.</li> 
+     </ol> 
+     <ol> 
+      <li>Create a new wiki page for your How-To, using the <b>Howto</b>_ prefix in the page name (important!). One way to create the new page: 
+       <ul> 
+        <li>Enter the new page name in your browser's Location Bar. For example, in the URL <tt><a href="./CommunityDocs.html">http://wiki.glassfish.java.net/Wiki.jsp?page=CommunityDocs</a></tt>, change <tt>CommunityDocs</tt> to <tt>Howto_DoSomething</tt>, where <tt>Howto_DoSomething</tt> is the actual name of your page. For example, <tt>Howto_ConfigureABasicCluster</tt>.</li> 
+        <li>Press Return/Enter, and then opt to create the new page when prompted.</li> 
+       </ul> </li> 
+     </ol> 
+     <ol> 
+      <li>Copy and paste the <a href="./Howto_WriteAHowto#section-Howto_WriteAHowto-BasicHowToTemplate.html">basic How-To template</a> into your new wiki page.</li> 
+     </ol> 
+     <ol> 
+      <li>Follow the instructions in the template and create your article, revising, previewing, and saving as necessary.</li> 
+     </ol> 
+     <ol> 
+      <li>When your How-To page is finished: 
+       <ul> 
+        <li>Record your contribution on the Community Docs page in the <a href="./CommunityDocs#section-CommunityDocs-CommunityDocsContributions.html">Community Docs Contributions</a> table.</li> 
+        <li>Add a link to your How-To on the <a href="GlassFishHowTos.html" title="GlassFishHowTos">GlassFish How-To's</a> page.</li> 
+        <li>Send an e-mail to the <a href="mailto:docs@glassfish.java.net">doc team</a>, indicating the doc is done.</li> 
+        <li>Start another How-To! <img class="emoticon" src="images/icons/emoticons/smile.gif" height="20" width="20" align="absmiddle" alt="" border="0"></li> 
+       </ul> </li> 
+     </ol> <h4><a name="Howto_WriteAHowto-SeeAlso"></a>See Also</h2> 
+     <ul> 
+      <li><a href="GlassFishV3DocStyleSheet.html" title="GlassFishV3DocStyleSheet">GlassFish style sheet</a></li> 
+      <li><a href="http://www.jspwiki.org/wiki/TextFormattingRules">Wiki Text Formatting Rules</a></li> 
+     </ul> <h4><a name="Howto_WriteAHowto-BasicHowToTemplate"></a>Basic How-To Template</h2> <p>Use this basic WikiText template for your How-To. The template was used for this How-To page.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">!!!How to Do Something
+
+Summarize your article so readers can decide quickly whether 
+to read it.
+
+
+!!Before You Begin
+List anything readers must do to prepare for the task. Also
+provide any background knowledge readers must possess to make
+sense of your example or carry out your instructions.
+
+
+!!Doing Something
+Provide steps that tell readers how to accomplish the task.
+Include examples whenever possible. Good examples with explanatory
+text are critical to writing effective HowTo's. Break one large
+procedure into several smaller ones to avoid having more than
+about 7-9 steps per procedure. 
+
+
+!!See Also
+Provide links to related information that would be helpful to your
+readers but which doesn't fit in your HowTo.</pre> 
+       </div> 
+      </div>
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 08, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

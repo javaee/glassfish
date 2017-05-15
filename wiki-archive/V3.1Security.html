@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : V3.1Security</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="V3.1Security-GlassFishServerOpenSourceEdition3.1Security"></a>GlassFish Server Open Source Edition 3.1 - Security</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#V3.1Security-GlassFishServerOpenSourceEdition3.1Security">GlassFish Server Open Source Edition 3.1 - Security</a></li> 
+       <ul> 
+        <li><a href="#V3.1Security-Introduction">Introduction</a></li> 
+        <li><a href="#V3.1Security-Scope">Scope</a></li> 
+        <li><a href="#V3.1Security-DesignDocument">Design Document</a></li> 
+        <li><a href="#V3.1Security-MilestoneSchedule">Milestone Schedule</a></li> 
+        <li><a href="#V3.1Security-TaskList">Task List</a></li> 
+        <li><a href="#V3.1Security-Estimates">Estimates</a></li> 
+        <li><a href="#V3.1Security-Quality">Quality</a></li> 
+        <li><a href="#V3.1Security-Documentation">Documentation</a></li> 
+        <li><a href="#V3.1Security-Workspace">Workspace</a></li> 
+        <li><a href="#V3.1Security-DevTests">Dev Tests</a></li> 
+        <li><a href="#V3.1Security-EmailAlias">Email Alias</a></li> 
+        <li><a href="#V3.1Security-References">References</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="V3.1Security-Introduction"></a>Introduction</h2> <p>The Security Features for V3.1 can be classified under the following high level tasks:</p> 
+     <ul> 
+      <li><a href="3.1ClusteringSecurity.html" title="3.1ClusteringSecurity">Security in Cluster</a></li> 
+      <li><a href="SupportWLDD.html" title="SupportWLDD">Support WebLogic Deployment Descriptors in Glassfish </a></li> 
+      <li><a href="3.1NewSecurityFeatures.html" title="3.1NewSecurityFeatures">New Security Features in GlassFish Open Source Edition 3.1</a></li> 
+     </ul> <h4><a name="V3.1Security-Scope"></a>Scope</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Feature ID </th> 
+         <th class="confluenceTh"> Priority </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> Eng Response </th> 
+         <th class="confluenceTh"> Owner(s) </th> 
+         <th class="confluenceTh"> Estimate (Man Days) </th> 
+         <th class="confluenceTh"> Source of Requirement </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> SEC-001 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Enhanced Security for Master password </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Kumar </td> 
+         <td class="confluenceTd"> 5 </td> 
+         <td class="confluenceTd"> Vulnerability </td> 
+         <td class="confluenceTd">80% complete, cleaned up code in Admin and Security Modules that deal with this. Working to fix how Grizzly gets this information securely. There is also a JarSigner usage in AppClient that seems to expect a password from the SecuritySupport SPI which needs to be cleaned up similarly. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> SEC-002 </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> Cleanup universal grants in server.policy </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Kumar </td> 
+         <td class="confluenceTd"> 5 </td> 
+         <td class="confluenceTd"> Some of the universal grants in server.policy are too accomodating and we need to clean it up to make the appserver more secure by default and more suitable for a cloud environment. Actual task is small but requires testing different areas of glassfish with SecurityManager ON after the cleanup </td> 
+         <td class="confluenceTd"> Started. Small dependency on ClassLoader team, we expect them to give right permissions to loaded application classes. Requirement communicated to Jerome. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> SEC-004 </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> FailOver and Loadbalancing of Secure IIOP requests </td> 
+         <td class="confluenceTd"> No </td> 
+         <td class="confluenceTd"> Kumar + Nithya </td> 
+         <td class="confluenceTd"> 20 </td> 
+         <td class="confluenceTd"> CSIv2 never worked correctly in GF V2 with FOLB enabled </td> 
+         <td class="confluenceTd"> Dependency on CORBA Team. Initial discussion indicates the need for security team to do a major restructuring the code so that core CSIv2 Interfaces are moved into the ORB. While the CORBA team would do the moving of code into ORB, the security team needs to fix some things which are considered problematic. More details <a href="3.1ClusteringSecurity.html#3.1ClusteringSecurity-section3.1ClusteringSecurityLoadBalancingAndFa...">here </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> SEC-005 </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> WebLogic Deployment Descriptor Support </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Kumar + Nithya </td> 
+         <td class="confluenceTd"> 10 </td> 
+         <td class="confluenceTd"> Adoption Strategy? </td> 
+         <td class="confluenceTd"> <a href="SupportWLDD.html" title="SupportWLDD">More details here </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> SEC-006 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Extend Certificate realm to allow custom validation and group assignment based on the recieved client certificate in an SSL Mutual Authentcation. </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd"> 0 </td> 
+         <td class="confluenceTd"> VOC </td> 
+         <td class="confluenceTd"> <a href="http://blogs.oracle.com/nasradu8/entry/extend_certificaterealm_with_loginmodule_glassfish">Completed </a>, need to create a dev test </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> SEC-007 </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> Finalize the support for PAM Realm in V3.1. This will allow secure apps deployed on V3.1 to authenticate its users against the native Solaris/Linux users list. </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Nithya </td> 
+         <td class="confluenceTd"> 3 </td> 
+         <td class="confluenceTd"> New Feature, subsumes and extends what we had in terms of SolarisRealm </td> 
+         <td class="confluenceTd"> Done, need to create a dev-test + blog and QA hand-off. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> SEC-008 </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> Use of Tubes in GlassFish instead of Pipes for supporting Asychrony. </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Nithya </td> 
+         <td class="confluenceTd"> 10 </td> 
+         <td class="confluenceTd"> Performance </td> 
+         <td class="confluenceTd"> Tubes have been implemented but not enabled. Risk : Special handling is required for ThreadLocals and GF-Security uses ThreadLocal(s) for a few set of things and we need make sure we are not breaking functionality here. There is an effort do define a new Tubes.next API that would be suitable for a full-featured support of asynchronous server side processing, addressable clients, as well as other requirements from WLS team. This is however not targeted for the GFv3.1 timeframe. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> SEC-015 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> OAM + OWSM support for 3.1. </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Kumar + Nithya </td> 
+         <td class="confluenceTd"> 20 </td> 
+         <td class="confluenceTd"> Oracle Product Management </td> 
+         <td class="confluenceTd"> we will need to provide a backport for 2.x release. More details on the current proposal for <a href="http://wikihome.sfbay.sun.com/security/Wiki.jsp?page=Proposal">OAM support are here </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> SEC-016 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Security related CLI support for 3.1 </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Nithya </td> 
+         <td class="confluenceTd"> 20 </td> 
+         <td class="confluenceTd"> Feature Parity </td> 
+         <td class="confluenceTd"> Need to verify existing security related CLIs and provide --target support to enable cluster security infrastructure support. Refer to <span class="error">[GlassFish 3.1 features wiki |^GlassFishv3.1]</span> (Security section) for complete CLI list. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> SEC-017 </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> Making DevTests or a subset of it work in Embedded Mode </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Nithya </td> 
+         <td class="confluenceTd"> 5 </td> 
+         <td class="confluenceTd"> recent reports on Security related failures in Embedded mode </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> SEC-018 </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Policy-Translation for EJB's is happening during EJBDeployer.generateArtifacts() and needs to be changed to happen during Deployment.MODULE_LOADED event (on the lines of what happens for Web Modules). </td> 
+         <td class="confluenceTd"> NA </td> 
+         <td class="confluenceTd"> Kumar </td> 
+         <td class="confluenceTd"> 5 </td> 
+         <td class="confluenceTd"> Correctness </td> 
+         <td class="confluenceTd"> This will allow us to do complete policy translation on the Instances in clustered mode <a href="3.1ClusteringSecurity.html#3.1ClusteringSecurity-section3.1ClusteringSecurityPolicyProviders">more details on policy-generation for cluster are here </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> SEC-019 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Localization and Message ID's of INFO Logs </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Nithya + Kumar </td> 
+         <td class="confluenceTd"> 7 </td> 
+         <td class="confluenceTd"> V3.1 requirement </td> 
+         <td class="confluenceTd"> <a href="GlassFishV3LoggingMessageFormat.html" title="GlassFishV3LoggingMessageFormat">Logging Req Doc </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> SEC-020 </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Module imported/exported packages cleanup </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> Kumar + Nithya </td> 
+         <td class="confluenceTd"> 5 </td> 
+         <td class="confluenceTd"> Performance </td> 
+         <td class="confluenceTd"> <a href="OsgiPkgDepAnalyser.html" title="OsgiPkgDepAnalyser">More details here </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> SEC-021 </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd"> ORB restructuring, fixing a long-standing concurrency issue </td> 
+         <td class="confluenceTd"> NA </td> 
+         <td class="confluenceTd"> Kumar </td> 
+         <td class="confluenceTd"> 10 </td> 
+         <td class="confluenceTd"><a href="http://monaco.sfbay.sun.com/detail.jsf?cr=6913736">CR:6913736 </a> </td> 
+         <td class="confluenceTd"> Since the original plan of moving CSIv2 code around between ORB and GF-Security is not being planned for V3.1, the scope of the work has been reduced to issue CR:6913736. This CR only affects Standalone Clients. Reducing the Priority of this task to be the same as the priority of the Bug. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p> The features <a href="3.1NewSecurityFeatures.html" title="3.1NewSecurityFeatures">SEC-003, SEC-009 to SEC-012, SEC-014</a> which are P3/P4 in nature will be taken up if the team gets time to work on them (before the SCF). Otherwise these features would be deferred to a later release. SEC-013 is about updating some document errors in Servlet3.0 Security Chapter and Ron.Monzillo is aware of it and will be fixing them.</p> <h4><a name="V3.1Security-DesignDocument"></a>Design Document</h2> <p>The design documents are currently in draft phase, will be refined in coming days.</p> 
+     <ul> 
+      <li><a href="3.1ClusteringSecurity.html" title="3.1ClusteringSecurity">Security in Cluster</a></li> 
+      <li><a href="SupportWLDD.html" title="SupportWLDD">Support WebLogic Deployment Descriptors in Glassfish </a></li> 
+      <li><a href="3.1NewSecurityFeatures.html" title="3.1NewSecurityFeatures">New Security Features in GlassFish Open Source Edition 3.1</a></li> 
+     </ul> <h4><a name="V3.1Security-MilestoneSchedule"></a>Milestone Schedule</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item #</th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> – </td> 
+         <td class="confluenceTd"> MS2 (6/21) </td> 
+         <td class="confluenceTd"> Porting OWSM Interop related Fixes to Metro 1.6 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">DONE </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 01. </td> 
+         <td class="confluenceTd"> MS2 (6/21) </td> 
+         <td class="confluenceTd"> SEC-015 </td> 
+         <td class="confluenceTd"> GlassFish OAM Integration </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd"> CODE COMPLETE, tested the Authenticator Mode with BASIC, FORM and CERTIFICATE authentication, Need to test Identity-Asserter Mode, which requires installing a Proxy-Server Front-Ending GlassFish and need to install Oracle AccessManager WebGate Plugin at the Proxy-Server and a ModJK connector to GlassFish </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 02. </td> 
+         <td class="confluenceTd"> MS3 (7/19) </td> 
+         <td class="confluenceTd"> SEC-006 </td> 
+         <td class="confluenceTd"> see Scope table above </td> 
+         <td class="confluenceTd"> Yes will do QA/Docs handover with proper Dev Tests </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 03. </td> 
+         <td class="confluenceTd"> MS3 (7/19) </td> 
+         <td class="confluenceTd"> SEC-007 </td> 
+         <td class="confluenceTd"> ditto </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 04. </td> 
+         <td class="confluenceTd"> MS3 (7/19) </td> 
+         <td class="confluenceTd"> SEC-018 </td> 
+         <td class="confluenceTd"> ditto </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 05. </td> 
+         <td class="confluenceTd"> MS3 (7/19) </td> 
+         <td class="confluenceTd"> SEC-001 </td> 
+         <td class="confluenceTd"> ditto </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 06. </td> 
+         <td class="confluenceTd"> MS3 (7/19) </td> 
+         <td class="confluenceTd"> SEC-002 </td> 
+         <td class="confluenceTd"> ditto </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 07. </td> 
+         <td class="confluenceTd"> MS3 (7/19) </td> 
+         <td class="confluenceTd"> SEC-016 </td> 
+         <td class="confluenceTd"> ditto </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> – </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd"> Policy alternatives in Metro </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 08. </td> 
+         <td class="confluenceTd"> MS4 (8/16) </td> 
+         <td class="confluenceTd"> SEC-017 </td> 
+         <td class="confluenceTd"> ditto </td> 
+         <td class="confluenceTd"> NA </td> 
+         <td class="confluenceTd"> No visible effect for QA </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 09. </td> 
+         <td class="confluenceTd"> MS4 (8/16) </td> 
+         <td class="confluenceTd"> SEC-021 </td> 
+         <td class="confluenceTd"> ditto </td> 
+         <td class="confluenceTd"> NA </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> – </td> 
+         <td class="confluenceTd"> MS5 </td> 
+         <td class="confluenceTd"> Unified config in Metro </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 10. </td> 
+         <td class="confluenceTd"> MS5 (9/13) </td> 
+         <td class="confluenceTd"> SEC-005 </td> 
+         <td class="confluenceTd"> ditto </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 11. </td> 
+         <td class="confluenceTd"> MS5 (9/13) </td> 
+         <td class="confluenceTd"> SEC-020 </td> 
+         <td class="confluenceTd"> ditto </td> 
+         <td class="confluenceTd"> NA </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 12. </td> 
+         <td class="confluenceTd"> MS6 </td> 
+         <td class="confluenceTd"> SEC-019 </td> 
+         <td class="confluenceTd"> ditto </td> 
+         <td class="confluenceTd"> NA </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>Not do:</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <td class="confluenceTd"> 13. </td> 
+         <td class="confluenceTd"> – </td> 
+         <td class="confluenceTd"> SEC-003 </td> 
+         <td class="confluenceTd"> ditto </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 14. </td> 
+         <td class="confluenceTd"> – </td> 
+         <td class="confluenceTd"> SEC-008 </td> 
+         <td class="confluenceTd"> ditto </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 15. </td> 
+         <td class="confluenceTd"> – </td> 
+         <td class="confluenceTd"> SEC-004 </td> 
+         <td class="confluenceTd"> ditto </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 16. </td> 
+         <td class="confluenceTd"> – </td> 
+         <td class="confluenceTd"> SEC-009 </td> 
+         <td class="confluenceTd"> ditto </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 17. </td> 
+         <td class="confluenceTd"> – </td> 
+         <td class="confluenceTd"> SEC-012 </td> 
+         <td class="confluenceTd"> ditto </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 18. </td> 
+         <td class="confluenceTd"> – </td> 
+         <td class="confluenceTd"> SEC-014 </td> 
+         <td class="confluenceTd"> ditto </td> 
+         <td class="confluenceTd"> Yes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="V3.1Security-TaskList"></a>Task List</h2> 
+     <hr> <p>Jspwiki style: sortable<br> </p>
+     <div class="panel" style="border-width: 1px;"></div>sortable<p></p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task </th> 
+         <th class="confluenceTh"> Target Milestone </th> 
+         <th class="confluenceTh"> Start </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Owner(s) </th> 
+         <th class="confluenceTh"> Feature ID </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Dev-Test for SEC-006 </td> 
+         <td class="confluenceTd"> MS1 </td> 
+         <td class="confluenceTd"> 5/20 </td> 
+         <td class="confluenceTd"> 5/24 </td> 
+         <td class="confluenceTd"> Kumar </td> 
+         <td class="confluenceTd"> SEC-006 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Checkin PAM Realm and write Dev-Test </td> 
+         <td class="confluenceTd"> MS1 </td> 
+         <td class="confluenceTd"> 5/10 </td> 
+         <td class="confluenceTd"> 5/15 </td> 
+         <td class="confluenceTd"> Nithya </td> 
+         <td class="confluenceTd"> SEC-007 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Fix Policy Translation for EJB's </td> 
+         <td class="confluenceTd"> MS1 </td> 
+         <td class="confluenceTd"> 5/20 </td> 
+         <td class="confluenceTd"> 5/24 </td> 
+         <td class="confluenceTd"> Kumar </td> 
+         <td class="confluenceTd"> SEC-018 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Work on Functional Specs and Design </td> 
+         <td class="confluenceTd"> MS1 </td> 
+         <td class="confluenceTd"> 5/10 </td> 
+         <td class="confluenceTd"> 5/24 </td> 
+         <td class="confluenceTd"> Kumar </td> 
+         <td class="confluenceTd"> NA </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Get upto speed on Oracle OAM and OWSM </td> 
+         <td class="confluenceTd"> MS1 </td> 
+         <td class="confluenceTd"> 5/10 </td> 
+         <td class="confluenceTd"> 5/24 </td> 
+         <td class="confluenceTd"> Kumar + Nithya </td> 
+         <td class="confluenceTd"> SEC-015 </td> 
+         <td class="confluenceTd"> Need to install and experiment with samples from Oracle. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Dev-Tests in Embedded Mode </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd"> 5/25 </td> 
+         <td class="confluenceTd"> 6/1 </td> 
+         <td class="confluenceTd"> Nithya </td> 
+         <td class="confluenceTd"> SEC-017 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Work on V3.0.1 fixes </td> 
+         <td class="confluenceTd"> NA </td> 
+         <td class="confluenceTd"> 5/7 </td> 
+         <td class="confluenceTd"> 5/20 </td> 
+         <td class="confluenceTd"> Kumar + Nithya </td> 
+         <td class="confluenceTd"> some more issues remain to be fixed in 3.0.1 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Work on remaning issues with cleaning up of system props for master-password </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd"> 5/25 </td> 
+         <td class="confluenceTd"> 6/1 </td> 
+         <td class="confluenceTd"> Kumar </td> 
+         <td class="confluenceTd"> SEC-001 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Cleaning up universal-grants in server.policy </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd"> 6/2 </td> 
+         <td class="confluenceTd"> 6/7 </td> 
+         <td class="confluenceTd"> Kumar </td> 
+         <td class="confluenceTd"> SEC-002 </td> 
+         <td class="confluenceTd"> Depedency on ClassLoader Team making some suggested changes. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Securing Namespace access </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd"> 6/2 </td> 
+         <td class="confluenceTd"> 6/12 </td> 
+         <td class="confluenceTd"> Nithya </td> 
+         <td class="confluenceTd"> SEC-003 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Re-design and Re-structure code in ejb.security module for enabling ORB to pull in CSIv2 interfaces </td> 
+         <td class="confluenceTd"> MS2 </td> 
+         <td class="confluenceTd"> 6/8 </td> 
+         <td class="confluenceTd"> 6/20 </td> 
+         <td class="confluenceTd"> Kumar + Nithya </td> 
+         <td class="confluenceTd"> SEC-004 </td> 
+         <td class="confluenceTd"> Nithya to join after completing SEC-003 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Work on OAM Integration Feature </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> 6/21 </td> 
+         <td class="confluenceTd"> 7/19 </td> 
+         <td class="confluenceTd"> Kumar + Nithya </td> 
+         <td class="confluenceTd"> SEC-015 </td> 
+         <td class="confluenceTd">interleave 80%-20% with work for SEC-004 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Work on IIOP FOLB with CSIv2 </td> 
+         <td class="confluenceTd"> MS3 </td> 
+         <td class="confluenceTd"> 6/21 </td> 
+         <td class="confluenceTd"> 7/19 </td> 
+         <td class="confluenceTd"> Kumar + Nithya </td> 
+         <td class="confluenceTd"> SEC-004 </td> 
+         <td class="confluenceTd">interleave 20%-80% with work for SEC-015 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Work on IIOP FOLB with CSIv2 </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd"> 7/20 </td> 
+         <td class="confluenceTd"> 8/16 </td> 
+         <td class="confluenceTd"> Kumar + Nithya </td> 
+         <td class="confluenceTd"> SEC-004 </td> 
+         <td class="confluenceTd">Also need to develop clustered dev-tests during this time. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Verify security related CLI support for V3.1 </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd"> 8/2 </td> 
+         <td class="confluenceTd"> 8/7 </td> 
+         <td class="confluenceTd"> Nithya + Kumar </td> 
+         <td class="confluenceTd"> SEC-016 </td> 
+         <td class="confluenceTd">interleave with work for SEC-004 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Use of Tubes instead of existing Pipes for WebServices Security in GF V3.1 </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd"> 7/20 </td> 
+         <td class="confluenceTd"> 8/1 </td> 
+         <td class="confluenceTd"> Nithya </td> 
+         <td class="confluenceTd"> SEC-008 </td> 
+         <td class="confluenceTd">interleave with work for SEC-004 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Clustered CSIv2 DevTests </td> 
+         <td class="confluenceTd"> MS3 + MS4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Nithya + Kumar </td> 
+         <td class="confluenceTd"> SEC-004 </td> 
+         <td class="confluenceTd"> Need to create clustered tests for IIOP FOLB with CSIv2 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Fix P1 bugs </td> 
+         <td class="confluenceTd"> MS4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Nithya + Kumar </td> 
+         <td class="confluenceTd"> N/A </td> 
+         <td class="confluenceTd"> MS4 is the SCF for infrastructure. All P1 bugs need to be addressed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Logging Guidelines compliance </td> 
+         <td class="confluenceTd"> MS5 </td> 
+         <td class="confluenceTd"> 8/17 </td> 
+         <td class="confluenceTd"> 8/24 </td> 
+         <td class="confluenceTd"> Kumar + Nithya </td> 
+         <td class="confluenceTd"> SEC-019 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Module export/import cleanup </td> 
+         <td class="confluenceTd"> MS5 </td> 
+         <td class="confluenceTd"> 8/25 </td> 
+         <td class="confluenceTd"> 9/1 </td> 
+         <td class="confluenceTd"> Kumar + Nithya </td> 
+         <td class="confluenceTd"> SEC-020 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Weblogic DD Support </td> 
+         <td class="confluenceTd"> MS5 </td> 
+         <td class="confluenceTd"> 8/17 </td> 
+         <td class="confluenceTd"> 8/27 </td> 
+         <td class="confluenceTd"> Kumar + Nithya </td> 
+         <td class="confluenceTd"> SEC-005 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="V3.1Security-Estimates"></a>Estimates</h2> <p>??</p> <h4><a name="V3.1Security-Quality"></a>Quality </h2> 
+     <ul> 
+      <li>Link to Test Plan</li> 
+     </ul> <h4><a name="V3.1Security-Documentation"></a>Documentation </h2> 
+     <ul> 
+      <li>Link to Documentation</li> 
+     </ul> <h4><a name="V3.1Security-Workspace"></a>Workspace</h2> 
+     <ul> 
+      <li>module name(s): security/*</li> 
+     </ul> <h4><a name="V3.1Security-DevTests"></a>Dev Tests</h2> 
+     <ul> 
+      <li><a href="http://hudson.sfbay/job/v3-security-devtests">Dev tests</a></li> 
+     </ul> <h4><a name="V3.1Security-EmailAlias"></a>Email Alias</h2> 
+     <ul> 
+      <li>Please contact us at <a href="mailto:dev@glassfish.java.net">dev@glassfish.java.net</a></li> 
+      <li>vbkumar.jayanti@sun.com</li> 
+      <li>Nithya.Subramanian@Sun.COM</li> 
+     </ul> <h4><a name="V3.1Security-References"></a>References</h2> 
+     <ul> 
+      <li><a href="PlanForGlassFish3.1.html" title="PlanForGlassFish3.1">GlassFish v3.1 Plans including Sub Projects</a></li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Aug 16, 2010 by 
+<font color="#0050B2">kumarjayanti@sun</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

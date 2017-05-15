@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GFV3DocMinutes09_04_08</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GFV3DocMinutes09_04_08-GlassFishv3DocumentationPlanningMinutes9%2F04%2F08"></a>GlassFish v3 Documentation Planning Minutes - 9/04/08</h1> <p><a href="GlassFishV3DocMeetings.html" title="GlassFishV3DocMeetings">Main meetings page</a></p> <h4><a name="GFV3DocMinutes09_04_08-Attendees"></a>Attendees</h2> <p>Paul, Dixie, June, Ian, Gail, SueAnn, Debbie, Jennifer<br> \</p> <h4><a name="GFV3DocMinutes09_04_08-Agenda"></a>Agenda</h2> 
+     <ol> 
+      <li>Review of AIs</li> 
+      <li>Status of <a href="GlassFishV3UserTaskAnalyses.html" title="GlassFishV3UserTaskAnalyses">Glass Fish v3 User Task Analyses</a></li> 
+      <li>Status of deliverables</li> 
+      <li>Doc bugs</li> 
+      <li>Open mic</li> 
+      <li>Next meeting<br> \</li> 
+     </ol> <h4><a name="GFV3DocMinutes09_04_08-MeetingNotes"></a>Meeting Notes</h2> <p><b>1. Review of AIs</b></p> 
+     <ul> 
+      <li>No open AIs.<br> \</li> 
+     </ul> <p><b>2. Status of <a href="GlassFishV3UserTaskAnalyses.html" title="GlassFishV3UserTaskAnalyses">Glass Fish v3 User Task Analyses</a></b></p> 
+     <ul> 
+      <li>Nothing new to report.<br> \</li> 
+     </ul> <p><b>3. Status of deliverables</b></p> 
+     <ul> 
+      <li>Release Notes - SueAnn: Not started; just got these from Paul.</li> 
+      <li>Quick Start Guide book and HTML - SueAnn: Out for review; Dixie to provide peer review.</li> 
+      <li>Quick Start Guide screencast - SueAnn: Not started; focused on bundled docs.</li> 
+      <li>Administration Guide - Dixie: Now with Marina; trying to figure out whether we do/don't have transactions in Prelude; nothing in the placeholder chapter yet for pluggability. <b>Side discussion about update tool</b> and where information about it should go (Admin Guide, Install Guide, ?). Resolution: Info about starting update tool belongs in the Install Guide; the open question is whether the guide needs to explain how to install update tool separately or if update tool is part of the GF install.</li> 
+      <li>Developer's Guide - June: Doing some work on this; uncommenting things that are in Prelude but weren't in TP2.</li> 
+      <li>Application Deployment Guide - June: Cleaning this up; had pared it down for TP2, now completing it for web services, classloading, etc.</li> 
+      <li>Administration Reference - June: Getting some input, doing some work.</li> 
+      <li>Man Pages - Paul: Still trying to find out which man pages go in which package; some of them have been moved around a bit since TP2; also some last minute changes to content coming from FishCAT reviewers, etc.; still more work to do on these.</li> 
+      <li>RESTful Web Services Developer's Guide - Debbie: Adding things; going through and editing; will update this on the comments wiki.</li> 
+      <li>jMaki Application Developer's Guide - Jennifer: Investigating what needs to happen for Prelude.</li> 
+      <li>jRuby Application Developer's Guide - Jennifer: Investigating what needs to happen for Prelude.</li> 
+      <li>Admin GUI Console Online Help - Paul: Work ongoing on content; trying to verify some bugs.</li> 
+      <li>Bundled HTML Pages - Paul: Nothing done since TP2; a couple of bugs have been filed against them; assessing fixes.</li> 
+      <li>Installation Guide - SueAnn: Just starting work on this.</li> 
+      <li>GlassFish User FAQ - Gail: Nothing new yet; too busy with other things to think much about this; will most likely tackle this at the end of the month.</li> 
+      <li>GlassFish Developer FAQ - Gail: Nothing new yet; too busy with other things to think much about this; will most likely tackle this at the end of the month.<br> \</li> 
+     </ul> <p><b>4. Doc Bugs</b></p> 
+     <ul> 
+      <li>Went through the doc bugs (accessed from the links on the main meeting page).</li> 
+      <li>Most of the bugs in the bundled docs are against Paul; he's working on these.</li> 
+      <li>Discussion about other bugs/issues.<br> \</li> 
+     </ul> <p><b>5. Open mic - All</b></p> 
+     <ul> 
+      <li>Discussion about updating <a href="GlassFishDocs.html" title="GlassFishDocs">doc comments wiki</a> pages for <a href="Docreviewrule.html" title="Docreviewrule">FishCAT doc reviews</a>; if Prelude versions are available, point to those on the individual comment pages and remove pointers to older versions (TP2, v2, etc.)<br> \</li> 
+     </ul> <p><b>6. Next meeting - All</b><br> Thursday 9/11 2-3 PM PDT<br> \</p> <p><a href="GlassFishV3DocMeetings.html" title="GlassFishV3DocMeetings">Main meetings page</a></p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 09, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:44.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

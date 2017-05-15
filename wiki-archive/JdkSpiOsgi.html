@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : JdkSpiOsgi</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p><b>JDK's Service Provider Mechanism &amp; OSGi</b></p> <h4><a name="JdkSpiOsgi-Introduction"></a>Introduction</h2> <p>A number of Java SE and EE APIs like JAXP, JAXB, JPA rely on <a href="http://java.sun.com/javase/6/docs/technotes/guides/jar/jar.html#Service%20Provider">Java Platform Service Provider mechanism</a> to support pluggability of alternative implementations at runtime. Typically such APIs provide an abstract factory class having a static method which users can invoke to obtain a concrete factory instance. The static method uses a spec defined ordered lookup procedure to determine which concrete instance to return. The procedure involves look up of META-INF/services file as well. If no class loader is supplied by user, Thread's context class loader is used to search service configuration files. Let's illustrate this by an example. </p> <p><a href="http://java.sun.com/javase/6/docs/api/javax/xml/stream/package-summary.html">StAX</a> has a factory class called <a href="http://java.sun.com/javase/6/docs/api/javax/xml/stream/XMLInputFactory.html">XMLInputFactory</a> which has a static factory method called <a href="http://java.sun.com/javase/6/docs/api/javax/xml/stream/XMLInputFactory.html#newFactory">newFactory()</a> defined like this:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">public abstract class XMLInputFactory {
+   ...
+  /**
+   * Create a new instance of the factory.
+   * This static method creates a new factory instance. 
+   * This method uses the following ordered lookup procedure to determine 
+   * the XMLInputFactory implementation class to load: 
+   * Use the javax.xml.stream.XMLInputFactory system property. 
+   * Use the properties file "lib/stax.properties" in the JRE directory. 
+   * This configuration file is in standard java.util.Properties format and contains 
+   * the fully qualified name of the implementation class with the key being the system property defined above. 
+   * Use the Services API (as detailed in the JAR specification), if available, to determine the classname. 
+   * The Services API will look for a classname in the file META-INF/services/javax.xml.stream.XMLInputFactory 
+   * in jars available to the runtime. 
+   * Platform default XMLInputFactory instance. 
+   * Once an application has obtained a reference to a XMLInputFactory 
+   * it can use the factory to configure and obtain stream instances. 
+   *
+   * @throws FactoryConfigurationError if an instance of this factory cannot be loaded
+   */
+  public static XMLInputFactory newFactory() throws FactoryConfigurationError {
+    ...
+  }
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>As you can see from the above javadocs, at runtime, newFactory() looks for META-INF/services/javax.xml.stream.XMLInputFactory files in jars available in runtime to see if there is an alternate implementation available. </p> <p>Let's see a simple client using the API:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">import javax.xml.stream.XMLInputFactory;
+class Client {
+  public static void main(String[] args) {
+    XMLInputFactory xif = XMLInputFactory.newFactory();
+    System.out.println(xif);
+  }
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>When users runs this just in a Java SE 6 environment, XMLInputFactory that's part of JRE is returned. But, when user adds a StAX provider (say) Woodstox to classpath and runs as shown below, XMLInputFactory from their provider (Woodstox) is returned.</p> <p><tt>java -classpath woodstox.jar Client</tt></p> <h4><a name="JdkSpiOsgi-IssuesinOSGiEnvironment"></a>Issues in OSGi Environment</h2> <p>As we have seen so far, this simple technique works quite well in Java SE and EE environment. The key to its success is Thread's context class loader which is used to demarcate an application boundary. It assumes two things about Thread's context class loader:</p> 
+     <ol> 
+      <li>Thread's context class loader can discover META-INF/services files</li> 
+     </ol> 
+     <ol> 
+      <li>Thread's context class loader can load the provider class specified in the service configuration file.</li> 
+     </ol> <p>Unfortunately, neither of them holds good in an OSGi environment. Let's turn our example into an OSGi bundle to illustrate this point:</p> <h4><a name="JdkSpiOsgi-Bundle1%3Astaxosgitest.jar"></a>Bundle 1: staxosgitest.jar</h3> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Bundle-Activator: staxosgitest.Activator
+Import-Package: javax.xml.stream, org.osgi.framework
+Manifest-Version: 1
+Bundle-ManifestVersion: 2</pre> 
+       </div> 
+      </div>
+     </div> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">package staxosgitest;
+
+import javax.xml.stream.XMLInputFactory;
+import org.osgi.framework.BundleActivator;
+import org.osgi.framework.BundleContext;
+
+public class Activator implements BundleActivator {
+  public void start(BundleContext ctx) {
+    XMLInputFactory xif = XMLInputFactory.newFactory();
+    System.out.println(xif);
+  }
+  public void stop(BundleContext ctx) {}
+  
+}</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="JdkSpiOsgi-Bundle2%3Awoodstoxosgi.jar"></a>Bundle 2: woodstox-osgi.jar</h3> <p>This is the Woodstox StAX implementation packaged as an OSGi bundle. It also has a META-INF/services/javax.xml.stream.XMLInputFactory.</p> <p>If we install these two bundles and activate staxosgitest bundle, then you can see that it would not be able to see woodstox implementation. The staxosgitest bundle only sees StAX implementation from JRE. Why does META-INF/service lookup didn't see woodstox services file? That's because Thread's context class loader is really not defined when activator of staxosgitest bundle is executed. Even if it did, it could not have loaded the provider class from woodstox bundle.</p> <p>To get an idea of real life bugs, refer to <a href="https://github.com/javaee/glassfish/issues/16970">https://github.com/javaee/glassfish/issues/16970</a><br> and <a href="https://github.com/javaee/glassfish/issues/11748">https://github.com/javaee/glassfish/issues/11748</a></p> <h4><a name="JdkSpiOsgi-Proposal"></a>Proposal</h2> <p>(Package and bundle names are subject to change)</p> <p>We propose to provide a simple API which can be used to look up service providers in OSGi environment instead of relying on Thread's context class loader. The API would look something like this:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">package org.glassfish.hk2.osgiresourcelocator;
+
+/**
+ * This is a gateway to OSGi bundles as far as META-INF/services files are concerned.
+ * Since META-INF/services files are not exportable, clients relying on Java SPI mechanism
+ * can't discover all providers. This utility helps in such a situation. It provides a utility method
+ * {@link #lookupProviderInstances} which can find META-INF/services being part of OSGi bundles.
+ *
+ * @see {@link #lookupProviderInstances}
+ * @see {@link #lookupProviderClasses}
+ *
+ * @author Sanjeeb.Sahoo@Sun.COM
+ */
+public abstract class ServiceLoader {
+    /**
+     * Singleton
+     */
+    private static volatile ServiceLoader delegate;
+
+    /*package*/ ServiceLoader() {}
+
+    // TODO: Create a special Permission for this method
+    public static synchronized void initialize(ServiceLoader delegate) {
+        if (delegate == null) throw new NullPointerException("Did you intend to call reset()?");
+        if (this.delegate != null) throw new IllegalStateException("Already initialzed with [" + delegate + "]");
+        this.delegate = delegate;
+    }
+
+    // TODO: Create a special Permission for this method
+    public static synchronized void reset() {
+        if (delegate == null) {
+            throw new IllegalStateException("Not yet initialized");
+        }
+        delegate = null;
+    }
+
+    /**
+     * @param serviceType Type of service requested
+     * @param &lt;T&gt;
+     * @return providers matching this service type. Returns null if not initialized.
+     */
+    public static &lt;T&gt; Iterable&lt;? extends T&gt; lookupProviderInstances(Class&lt;T&gt; serviceType) {
+       if (delegate == null) {
+          return null;
+       } else {
+          return delegate.lookupProviderinstances1(serviceType);
+       }
+
+    }
+
+    /**
+     * @param serviceType Type of service requested
+     * @param &lt;T&gt;
+     * @return provider classes matching this service type. Returns null if not initialized.
+     */
+    public static &lt;T&gt; Iterable&lt;Class&lt;? extends T&gt;&gt; lookupProviderClasses(Class&lt;T&gt; serviceType) {
+       if (delegate == null) {
+          return null;
+       } else {
+          return delegate.lookupProviderClasses1(serviceType);
+       }
+    }
+
+    // Implementation provided by an OSGi aware subclass.
+    /*package*/ abstract &lt;T&gt; Iterable&lt;? extends T&gt; lookupProviderInstances1(Class&lt;T&gt; serviceType);
+    /*package*/ abstract &lt;T&gt; Iterable&lt;Class&lt;? extends T&gt;&gt; lookupProviderClasses1(Class&lt;T&gt; serviceType);
+
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>This class is packaged in an independent OSGi bundle called osgi-resource-locator.jar with its own activator. The activator is responsible for initializing this class with proper context. The activator is given special permission to call the secured methods.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">public class Activator implements BundleActivator {
+
+    public void start(BundleContext context) throws Exception {
+        ServiceLoaderImpl serviceLoader = new ServiceLoaderImpl();
+        AccessController.doPrivileged(new PrivilegedAction() {
+           public Object run() {
+              ServiceLoader.initialize(serviceLoader);
+              return null;
+           }
+        });
+    }
+
+    public void stop(BundleContext context) throws Exception {
+        AccessController.doPrivileged(new PrivilegedAction() {
+           public Object run() {
+              ServiceLoader.reset();
+              return null;
+           }
+        });
+    }
+
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>The bundle manifest for osgi-util.jar looks like this:</p> <h4><a name="JdkSpiOsgi-osgiresourcelocator.jar"></a>osgi-resource-locator.jar</h3> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">Bundle-Activator                        org.glassfish.hk2.osgiresourcelocator.Activator        
+Bundle-ManifestVersion                  2                                       
+Bundle-Name                             OSGi resource locator bundle
+Bundle-SymbolicName                     org.glassfish.hk2.osgi-resource-locator                 
+Bundle-Vendor                           GlassFish Community                     
+Export-Package                          org.glassfish.hk2.osgiresourcelocator;uses:="org.osgi.framework";version="1.0.1"
+Import-Package                          org.osgi.framework;version="1.5"
+Bundle-ActivationPolicy                 lazy</pre> 
+       </div> 
+      </div>
+     </div> <p>Point worth noting here is that this bundle uses LAZY activation policy.</p> <p>Existing code that rely on Thread's context class loader have two options while using this API:</p> <p><tt>a) Use reflection to avoid compile time dependency:</tt></p> <p>This is described below.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">package javax.xml.stream;
+class FactoryFinder {
+  private static Object findJarServiceProvider(String factoryId) {
+    if (isOsgi()) {
+      return lookupUsingOSGiServiceLoader(factoryId);
+    } else {
+      // existing code
+    }
+  }
+
+  private static boolean isOsgi() {
+    try {
+      Class.forName("org.glassfish.hk2.osgiresourcelocator.ServiceLoader");
+      return true;
+    } catch(ClassNotFoundException cnfe) {
+    }
+    return false;
+  }
+
+  private static Object lookupUsingOSGiServiceLoader(String factoryId) {
+    try {
+      // Use reflection to avoid having any dependendcy on ServiceLoader class
+      Class serviceClass = Class.forName(factoryId);
+      Class[] args = new Class[]{serviceClass};
+      Class target = Class.forName("org.glassfish.hk2.osgiresourcelocator.ServiceLoader");
+      java.lang.reflect.Method m = target.getMethod("lookupProviderInstances");
+      java.util.Iterator iter = ((Iterable)m.invoke(null, args)).iterator();
+      return iter.hasNext()? iter.next() : null;
+    } catch(Exception e) {
+      // log and continue
+      return null;
+    }
+  }
+}</pre> 
+       </div> 
+      </div>
+     </div> <p>woodstox-osgi.jar will be changed to have an additional Import-Package like this:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">DynamicImport-Package: org.glassfish.hk2.osgiresourcelocator</pre> 
+       </div> 
+      </div>
+     </div> <p>Since woodstox-osgi.jar uses DynamicImport, as soon as osgi-util.jar is activated, FactoryFinder will be able to use it.</p> <p><tt>b) Package the API class and optionally import it as well</tt></p> <p>In this method, woodstox-osgi.jar contains a private copy of org.glassfish.hk2.osgiresourcelocator.ServiceLoader.class so that it can use the API directly in the absence of osgi-util.jar bundle. It also optionally imports org.glassfish.hk2.osgiresourcelocator package. When osgi-util.jar is installed in the system before woodstox-osgi.jar, then woodstox.jar will be wired to osgi-util.jar for org.glassfish.hk2.osgiresourcelocator package even though it has a private copy. If the osgi-util.jar has been started before StAX API is used, then the custom service finder logic would kick in as well. The downside of this approach is that every client bundle now has a copy of ServiceLoader.class. Although the class is particularly simple, it is not an elegant solution, but them some may find it better than reflection.</p> <h4><a name="JdkSpiOsgi-NextStep"></a>Next Step</h2> <p>A stable version of osgi-resource-locator.jar is made available in <a href="http://maven.glassfish.org/content/groups/glassfish/org/glassfish/hk2/osgi-resource-locator/1.0.1/osgi-resource-locator-1.0.1.jar">maven repo </a> along with <a href="http://maven.glassfish.org/content/groups/glassfish/org/glassfish/hk2/osgi-resource-locator/1.0.1/osgi-resource-locator-1.0.1-sources.jar">sources </a>.</p> <p>Download and give a try. </p> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Oct 14, 2011 by 
+<font color="#0050B2">sahoo.s.k</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

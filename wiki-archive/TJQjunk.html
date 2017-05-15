@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : TJQjunk</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="TJQjunk-GlassFishv3Upgrade"></a>GlassFish v3 Upgrade</h2> <h4><a name="TJQjunk-Goal"></a>Goal</h3> <p>Seamless side-by-side upgrade from</p> 
+     <ul> 
+      <li>GlassFish v2 Developer Profile</li> 
+      <li>GlassFish v3 Prelude</li> 
+     </ul> <h4><a name="TJQjunk-Dashboard"></a>Dashboard</h3> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Module </th> 
+         <th class="confluenceTh"> Owner </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> Start Date </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Deployment </td> 
+         <td class="confluenceTd"> Hong Zhang </td> 
+         <td class="confluenceTd"> Handle generated code and directory structure differences, applications and its sub-elements </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Infrastructure </td> 
+         <td class="confluenceTd"> Kedar Mhaswade </td> 
+         <td class="confluenceTd"> Handle changes to default values in java-config element, Keystore and Truststore files </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Infrastructure </td> 
+         <td class="confluenceTd"> Sahoo </td> 
+         <td class="confluenceTd"> Handle changes to OSGI cache (Prelude to v3 only) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Web Container </td> 
+         <td class="confluenceTd"> Jan Luehe </td> 
+         <td class="confluenceTd"> Changes to default-web.xml </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Logging </td> 
+         <td class="confluenceTd"> Carla Mott </td> 
+         <td class="confluenceTd"> Changes to log-service and its sub-elements, domain level logging attributes </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Monitoring </td> 
+         <td class="confluenceTd"> Sreenivas Munnangi </td> 
+         <td class="confluenceTd"> Changes to monitoring related configuration </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Security </td> 
+         <td class="confluenceTd"> Kumar Jayanti </td> 
+         <td class="confluenceTd"> Changes to security-service and its sub-elements, File realm files, Web Service Security configuration </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Grizzly </td> 
+         <td class="confluenceTd"> Justin Lee </td> 
+         <td class="confluenceTd"> Changes to http-service and its sub-elements </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JBI </td> 
+         <td class="confluenceTd"> ? </td> 
+         <td class="confluenceTd"> Warn users about JBI no longer being available, offer to do upgrade of non-JBI content </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="TJQjunk-RelatedDocuments"></a>Related Documents</h3> 
+     <ul> 
+      <li><a href="./UpgradeCompatibilityRequirements.html">Upgrade Compatibility Requirements document</a></li> 
+      <li><a href="V3FunctionalSpecs.html" title="V3FunctionalSpecs">V3 Upgrade Tool spec</a></li> 
+      <li><a href="http://tinyurl.com/n3e7nr">Service declaration</a></li> 
+      <li><a href="http://tinyurl.com/kr2naf">Service impl example</a></li> 
+      <li>Upgrade Teams project page: <a href="https://securewiki.sun.com/display/gfupgrade/Home">https://securewiki.sun.com/display/gfupgrade/Home</a></li> 
+      <li>Upgrade Tool alias: gfv3upgrade-team@sun.com</li> 
+      <li>discussion alias: dev@glassfish.java.net</li> 
+     </ul> 
+     <hr> <h4><a name="TJQjunk-DomainsforV3engTesting"></a>Domains for V3 eng Testing</h3> <h4><a name="TJQjunk-SGESv2.1bldversionandinstallationparams"></a>SGES v2.1 bld version and installation params</h3> 
+     <ul> 
+      <li>sges-2_1_1-fcs-bin-b13 
+       <ul> 
+        <li>jdk 1.6.0_12</li> 
+        <li>user: admin</li> 
+        <li>passwd: adminadmin</li> 
+        <li>selected don't prompt for password</li> 
+        <li>default port settings</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li>Simplest domain (domain1)<br> domain1 as created at install time</li> 
+     </ul> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> SPARC \ </th> 
+         <th class="confluenceTh"> WinXP</th> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> MAC \ </th> 
+         <th class="confluenceTh"> x86 \ </th> 
+         <th class="confluenceTh"> Linux</th> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh">&nbsp;</th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http:--appserver.sfbay.sun.com-attach-V3UpgradeDashboard-domain1_default_sparc.zip">domain1_default_sparc.zip </a> </td> 
+         <td class="confluenceTd"> <a href="http:--appserver.sfbay.sun.com-attach-V3UpgradeDashboard-domain1_default_winxp.zip">domain1_default_winxp.zip </a> </td> 
+         <td class="confluenceTd"> <a href="http:--appserver.sfbay.sun.com-attach-V3UpgradeDashboard-domain1_default_mac.zip">domain1_default_mac.zip </a> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <ul> 
+      <li>War file (Seam domain)<br> Seam as described in <a href="http://weblogs.java.net/blog/arungupta/archive/2009/04/totd_77_running.html">Arun's blog </a>a more complex case. 
+       <ul> 
+        <li>Source code +jboss-seam-2.1.1.GA.tar +</li> 
+        <li>Deployable archive +jboss-seam-jpa.war +</li> 
+       </ul> </li> 
+     </ul> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> SPARC \ </th> 
+         <th class="confluenceTh"> WinXP</th> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> MAC \ </th> 
+         <th class="confluenceTh"> x86 \ </th> 
+         <th class="confluenceTh"> Linux</th> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh">&nbsp;</th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> +seamjpa_sparc.zip + </td> 
+         <td class="confluenceTd"> +seamjpa_winxp.zip + </td> 
+         <td class="confluenceTd"> +seamjpa_mac.zip + </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 02, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

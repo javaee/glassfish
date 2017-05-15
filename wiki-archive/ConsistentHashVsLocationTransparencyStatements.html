@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : ConsistentHashVsLocationTransparencyStatements</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="ConsistentHashVsLocationTransparencyStatements-CompilationofMailDiscussion%3AConsistenthashvs.locationtransparencyStetements"></a>Compilation of Mail Discussion: Consistent hash vs. location transparency - Stetements</h2> <p><em>This is a mail discussion that spawned from <a href="ConsistentHashVsLocationTransparency.html" title="ConsistentHashVsLocationTransparency">Discussion - Consistent hash vs. location transparency</a> and was initiated by Erik van der Velden 072607 17:22 CET and replied to by Joel Binnquist and Jan Leuhe .</em></p> <p>I'm still a bit uncertain about the implications of the things we are/have been discussing.</p> <p>This is what I came up with (right or wrong?)</p> 
+     <ul> 
+      <li>The @SipApplicationKey mechanism should be used by the application to associate incoming SIP sessions with a specific SIP application session id (encodeURI is deprecated) 
+       <ul> 
+        <li>Reply by Jan 072707 02:04 CET: I think this should be more general, as in: "incoming SIP requests", since the annotated method must take an argument of type "SipServletRequest" 
+         <ul> 
+          <li>Reply by Joel 072707 11.08 CET: Agree (I assumed that is what Erik meant)</li> 
+         </ul> </li> 
+        <li>Reply by Joel 072707 09.47 CET: Correct.</li> 
+       </ul> </li> 
+      <li>This @SipApplicationKey mechanism should use certain fields from the initial request (if this is based on other criteria, like a database lookup, information in the body, or a random number then the correlation with the LB routing, see below, will be a problem). 
+       <ul> 
+        <li>Reply by Jan 072707 02:04 CET: Where in the spec does it mention that encodeURI is deprecated? 
+         <ul> 
+          <li>Reply by Joel 072707 11.08 CET: Section 15.11: last sentence of the introduction text.</li> 
+         </ul> </li> 
+        <li>Reply by Joel 072707 09.47 CET: Correct.</li> 
+       </ul> </li> 
+      <li>The LB plugin should use the <b>same data</b> as the @SipApplicationKey method to generate the hashkey, this will mean that all SIP sessions belonging to the SAS are routed the same. 
+       <ul> 
+        <li>Reply by Joel 072707 09.47 CET: Yes, that is our current proposal how to solve this. If we can find another better way that would be great.</li> 
+       </ul> </li> 
+      <li><b>All</b> the applications should use the same @SipApplicationKey mechanism (since the LB is not aware of applications and the applicaiton is only selected after the AR has run) 
+       <ul> 
+        <li>Reply by Joel 072707 09.47 CET: Unfortunately, as it looks right now we got this undesired limitation, unless we find a better solution. However, if possible, one might let the applications have different rules and let the load balancer merges the rules.</li> 
+       </ul> </li> 
+      <li>the sipapplicationsession.encodeURL generation should <em>also</em> include the jroute in the header ? This ensures that the encoded URL is routed to the same server as were the SASid is? I'm a bit unsure here. 
+       <ul> 
+        <li>Reply by Jan 072707 02:04 CET: Hmm, you mention URL encoding and header in the same sentence. <img class="emoticon" src="images/icons/emoticons/wink.gif" height="20" width="20" align="absmiddle" alt="" border="0"> Normally, URL encoding is used orthogonally to headers, so it's either URL encoding or headers.<br> The proxy-id mechanism is used by Sun's HTTP LB and identifies the target instance. I believe the Converged LB team is thinking of a similar header (and corresponding param name) called "bekey", which is supposed to hold the consistent hashkey and which would replace the proxy-id mechanism.<br> (I assume "bekey" stands for "backend key"?) 
+         <ul> 
+          <li>Reply by Joel 072707 11.08 CET: Correct, and yes, <em>bekey</em> stands for backend key.</li> 
+         </ul> </li> 
+        <li>Reply by Joel 072707 09.47 CET: Not really, I have proposed in my FSD for SIP Load Balancer to use a different parameter (cookie), bekey, which is the hash key that was used when routing the initial request. As I see it, that parameter replaces the jroute.</li> 
+       </ul> </li> 
+      <li>When the access to the SAS in any other way (JCA, JMS, RMI/remote EJB) then we have no way of guaranteeing that the requests are routed to the server that has the data!<br> Therefore we have to take remote access or migration of active sessions into account. Very tricky.<br> For the application it should still look like all requests execute in the same JVM, but I do not see how it can. This is an issue for more discussion. 
+       <ul> 
+        <li>Reply by Joel 072707 09.47 CET: Agree, it might be that we have to put a limitation what application developers should expect from Sailfin in this area (at least in the first version).</li> 
+       </ul> </li> 
+      <li>the convergedHttpSession.encodeURL should include both the jsessionid and the jroute? (is this method really useful in practice?) 
+       <ul> 
+        <li>Reply by Jan 072707 02:04 CET: Replace "jroute" with "bekey".<br> Currently, HttpServletResponse.encodeURL() includes the jroute-id, but I believe the jroute-id mechanism will be replaced by "bekey" when using the converged LB.<br> I believe both SipApplicationSession.encodeURI() and ConvergedHttpSession.encodeURL() will need to include the "bekey" param.</li> 
+        <li>Reply by Joel 072707 09.47 CET: I beleive so. However, it should add bekey too.</li> 
+       </ul> </li> 
+      <li>If we start migrating active sessions, we have to remember that we have to invoke the appropriate SipApplicationListener and SipSessionListener callbacks. 
+       <ul> 
+        <li>Reply by Joel 072707 09.47 CET: Hmm, I think you really found an important problem here. What would be the proper event to signal? Session Passivated or Dession Destroyed? When to think of that it hits me: how shall we handle ongoing transactions? JSR-289 does not allow a session to be invalidated when a transaction is ongoing! Actually, this is something that really makes it almost impossible to migrate active sessions (also after the recovery from a fail-over)! 
+         <ul> 
+          <li>Reply by Joel on 072707 17:39 CET: After thinking of it a bit more (see <a href="0726MettingMinutes.html" title="0726MettingMinutes">Meeting Minutes - July 26th</a>), I have come to the conclusion that it should be acceptable to lose your transactions at recovery. I mean, we do not give any guarantees that transactions are kept when a node fails, consequently it should be OK to not guarantee that transactions are kept at recovery after fail-over.</li> 
+         </ul> </li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li>if the hash key is used as the jroute cookie in HTTP or as the bekey in SIP then sessions, whether ongoing or new are routed according to the current consistent hash setup, which implies that after a restore active sessions must be migrated, but also that ongoing and new sessions that belong to the same SAS (e.g., based on @SipApplicationKey mapping) will still end up together in the same server instance. 
+       <ul> 
+        <li>Reply by Jan 072707 02:04 CET: ... unless we added an additional mapping level. So, instead of mapping hashkey to instance id, we would map hashkey to sasid to instance id. 
+         <ul> 
+          <li>Reply by Joel 072707 11.08 CET: Yes, but that won't work if an application uses the "Session Key Based targeting Mechanism", because then SIP-URI:s will not have cookies encoded in them.</li> 
+         </ul> </li> 
+        <li>Reply by Joel 072707 09.47 CET: Yes, that is the idea.</li> 
+       </ul> </li> 
+     </ul> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Nov 18, 2011 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : SDK Booth Demo Messaging</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>The <a href="./JavaEE6Samples.html">samples bundled with GlassFish v3 Preview</a> will be shown at the GlassFish EE SDK Booth. Each sample writer need to provide messaging for their sample in the following table.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Technology<br class="atl-forced-newline"> </th> 
+         <th class="confluenceTh"> Sample Name<br class="atl-forced-newline"> </th> 
+         <th class="confluenceTh"> Owner<br class="atl-forced-newline"> </th> 
+         <th class="confluenceTh"> Messaging<br class="atl-forced-newline"> </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JPA 2.0<br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> locking </td> 
+         <td class="confluenceTd"> Mitesh </td> 
+         <td class="confluenceTd"> This sample demonstrates Pessimistic Locking, a new feature introduce in JPA 2.0. It contrasts use of Pessimistic Locking versus Optimistick Locking. It demonstrates how using Pessimistic locking avoids transaction failures in concurrent environment. Please refer to the provided document of the sample for more details.<br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Servlet 3.0 Security<br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> web-security-annotation </td> 
+         <td class="confluenceTd"> Nithya/Kumar Jayanti </td> 
+         <td class="confluenceTd"> This sample demonstrates how web-security annotations like PermitAll, DenyAll, RolesAllowed could be used in servlets 3.0. Please refer to the provided document of the sample for more details.<br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Servlet 3.0 Security<br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> http-method-omission </td> 
+         <td class="confluenceTd"> Nithya/Kumar Jayanti </td> 
+         <td class="confluenceTd"> This sample destmonstrates the use of the &lt;http-method-omissions&gt; in web.xml which is the set of methods denied access as opposed to the &lt;http-methods&gt; which are allowed access. Please refer to the provided document of the sample for more details.<br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Servlet 3.0 Security<br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> programmatic-login </td> 
+         <td class="confluenceTd"> Nithya/Kumar Jayanti </td> 
+         <td class="confluenceTd"> This sample demonstrates the usage of programmatically logging in using login() and logout() methods. Please refer to the provided document of the sample for more details.<br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Connector Architecture 1.6 - EOD features - annotations<br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> mail resource adapter using annotations </td> 
+         <td class="confluenceTd"> Jagadish </td> 
+         <td class="confluenceTd"> Demonstrates the usage of various annotations defined in connector 1.6 specification for developing a resource-adapter without using deployment descriptor . Refer the documentation of the mail-connector sample for more details.<br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> EJB 3.1 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> ejb31-war </td> 
+         <td class="confluenceTd"> Ken Saks </td> 
+         <td class="confluenceTd"> This sample shows some of the ease-of-use enhancements and new features introduced in EJB 3.1. It consists of a Singleton session bean component packaged in a .war file along with a servlet. The Singleton exposes a "no-interface" local view, which is a simple way of allowing the bean to be called without having to write a separate business interface. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> EJB 3.1 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> automatic-timer </td> 
+         <td class="confluenceTd"> Marina Vatkina </td> 
+         <td class="confluenceTd"> This sample demonstrates how to use new EJB 3.1 @Schedule annotation to create an automatic timer. Such timer is created by the EJB container during deployment processing. No user interaction or special method invocation is required. The timer expiration is specified with cron-like syntax. The application consists of a stand-alone EJB module and a stand-alone Java SE client i.e. it does not require an application client container to run. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Servlet 3.0 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> annotation-war </td> 
+         <td class="confluenceTd"> Shing Wai Chan </td> 
+         <td class="confluenceTd"> This samples demonstrates how to use @WebServlet, @WebFilter, @WebListener to write an web application without web.xml. Please refer to the provided document of the sample for more details. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Servlet 3.0 <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd"> async-request-war </td> 
+         <td class="confluenceTd"> Shing Wai Chan </td> 
+         <td class="confluenceTd"> This samples demonstrates how to use asynchronous API to write a chat room application. Please refer to the provided document of the sample for more details.</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on May 27, 2009 by 
+<font color="#0050B2">-marina</font>. Exported from wikis.oracle.com on May 27, 2015 20:43.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

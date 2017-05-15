@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : OpenMQHermesJMSQuestions</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="OpenMQHermesJMSQuestions-FAQforOpenMessageQueueandHermesJMSintegrationrelatedissues%21https%3A%2F%2Fmq.java.net%2Fimages%2Fdukemqicon.gif%21"></a>FAQ for Open Message Queue and HermesJMS integration related issues <span class="error">Cannot resolve external resource into attachment.</span></h1> <p>If you are interested in contributing to this FAQ, please read the <a href="MQWikiContributionGuidelines.html" title="MQWikiContributionGuidelines">Contribution Guidelines</a>.</p> 
+     <div class="panel" style="border-width: 1px;">
+      <div class="panelContent"> 
+       <p><a href="OpenMQFAQ.html" title="OpenMQFAQ">Back to main Open MQ FAQ page</a></p> 
+       <hr> 
+       <p>Jspwiki style: center</p> 
+      </div>
+     </div> 
+     <div class="panel" style="border-width: 1px;">
+      <div class="panelContent"> 
+       <p><a href="https://mq.java.net">Back to Open MQ</a></p> 
+       <hr> 
+       <p>Jspwiki style: center</p> 
+      </div>
+     </div> <p><b>Q: What is HermesJMS ?</b><br> <b>A:</b> HermesJMS is a tool that you can use to inspect a JMS Provider (for example, the Open Message Queue broker). It provides a graphical tool that allows you to browse topics and queues, view contents of messages, copy and/or delete messages. Here is the link to the <a href="http://www.hermesjms.com/confluence/display/HJMS/Home">HermesJMS project website</a>.</p> 
+     <hr> <p><b>Q: What can I do with HermesJMS with respect to Open Message Queue ?</b><br> <b>A:</b> We haven't explored all the features of HermesJMS, but we have done the basic operations such as:</p> 
+     <ol> 
+      <li>Connect to a broker (or several brokers simultaneously)</li> 
+      <li>View messages in specific destinations in a broker. All the headers and properties in a destination can be examined.</li> 
+      <li>Delete messages in a destination.</li> 
+      <li>Copy messages from a destination in a broker to a local store (an XML file defined by HermesJMS)</li> 
+      <li>Copy messages from a destination (or local HermesJMS store) to another destination on the same or another broker.</li> 
+     </ol> <p>HermesJMS performs the above operations by accessing the broker using the standard JMS API. This means that the above basic operations can be done out of the box without any special plugin.</p> 
+     <hr> <p><b>Q: Can HermesJMS be used to connect to a broker running remotely (not on localhost) ?</b><br> <b>A:</b> Yes. See the FAQ item: 'What are the setup or configuration steps for HermesJMS so that it can be used with Open Message Queue?' There are a couple of ways to configure HermesJMS to connect to a broker running remote.</p> 
+     <ol> 
+      <li>Configuring via JNDI.</li> 
+      <li>Using a <a href="http://sourceforge.net/tracker/?func=detail&amp;aid=2876944&amp;group_id=61713&amp;atid=498137">HermesJMS/MQ plugin</a></li> 
+     </ol> <p>At this time, these are the only methods of connecting to a broker remotely with HermesJMS. If you know of another way to get this to work, please let us know at <span class="error">[users@mq.java.net]</span>.</p> 
+     <hr> <p><b>Q: What are the setup or configuration steps for HermesJMS so that it can be used with Open Message Queue ?</b><br> <b>A:</b> There are 2 ways to configure HermesJMS to connect to the Open Message Queue broker:</p> 
+     <ol> 
+      <li>Configuring 'manually', which involves choosing which connection factory object class to use</li> 
+      <li>Configuring via JNDI, which involves referring to an existing Open Message Queue JNDI object store containing connection factory and destination objects.</li> 
+     </ol> <p>Regardless of the method chosen above, a HermesJMS 'Classpath Group' needs to be created - this is a class loader which loads the jar files containing Open Message Queue client runtime classes needed by HermesJMS (or any normal JMS client for that matter) to access the broker.<br> The following instructions were done using HermesJMS 1.1.3 and Open Message Queue 4.3. If there are any issues with these instructions, please let us know via email at <span class="error">[users@mq.java.net]</span><br> <b>Creating Open Message Queue Classpath Group</b><br> The following instructions are for configuring HermesJMS using the 'manual' approach and it allows HermesJMS to connect to a broker running on the local host on the default port, 7676.<br> Launch HermesJMS<br> The following window will appear:<br> <span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20875289/21365060.gif" style="border: 0px solid black"></span><br> Select the menu item Options-&gt;Configuration. A dialog titled 'Preferences' will appear. It has various tabs at the bottom labeled 'Sessions', 'Providers', and so on. Select the tab labeled 'Providers'.<br> Right click on the Classpath Groups pane to popup a menu and select 'Add Group'.<br> <span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20875289/21365046.gif" style="border: 0px solid black"></span><br> Enter a name e.g. 'OpenMQ'. An entry named 'OpenMQ' will appear. It has one item named 'Library'. Right click on 'Library' and select 'Add JAR(s)'.<br> <span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20875289/21365050.gif" style="border: 0px solid black"></span><br> Navigate to where you installed Open Message Queue and select imq.jar and fscontext.jar. For Open Message Queue 4.3 on Windows, this is located by default at:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">C:\Program Files\Sun\MessageQueue\mq\lib\imq.jar
+C:\Program Files\Sun\MessageQueue\mq\lib\fscontext.jar</pre> 
+       </div> 
+      </div>
+     </div> <p><span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20875289/21365020.gif" style="border: 0px solid black"></span><br> A dialog appears asking if it is OK for HermesJMS to scan the selected jars for connection factories - select 'Scan'.<br> The 'Preferences' dialog should now look something like the following:<br> <span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20875289/21365061.gif" style="border: 0px solid black"></span><br> Hit the OK button to save out the new classpath group.<br> <b>Configuring HermesJMS Manually</b><br> On the main HermesJMS window, select the 'sessions' node and right click to bring up the popup menu. Select the submenu 'New' and proceed to select 'New Session...'. Note: On some platforms, this popup menu is not enabled for some reason. You can perform the same task by selecting from the main toolbar: Actions-&gt;New-&gt;New Session...<br> <span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20875289/21365051.gif" style="border: 0px solid black"></span><br> The same preferences dialog as before is displayed, showing the 'Sessions' tab with 'new' as the new session name. Replace this default name with 'OpenMQ'. A connection factory has to be chosen for this new session.<br> First, choose the class loader we created earlier (the one that knows about imq.jar and fscontext.jar) - on the 'Connection Factory' pane, select 'OpenMQ' for the Loader.<br> <span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20875289/21365047.gif" style="border: 0px solid black"></span><br> On the same pane, the 'Class' option menu lists the connection factory classes that are available for the class loader selected. Select 'com.sun.messaging.ConnectionFactory'.<br> <span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20875289/21365054.gif" style="border: 0px solid black"></span><br> Select the OK button to complete the creation of the 'OpenMQ' session.<br> On the main window, there should be a new 'OpenMQ' item under the 'session' node. Right click on it and select the 'New' submenu and from there, select 'Add queue'.<br> <span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20875289/21365062.gif" style="border: 0px solid black"></span><br> The destination properties dialog should appear. Enter 'SimpleQueue' for the queue Name and hit return. Hit the OK button.<br> <span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20875289/21365056.gif" style="border: 0px solid black"></span><br> On the main window, the 'OpenMQ' session should show 'SimpleQueue' as one of it's children (along with examples.xml and fix.xml which you can delete). At this point, if a broker is running on the same host as HermesJMS and it has a queue destination named 'SimpleQueue', you can browse it's content by double clicking on the 'SimpleQueue' node:<br> <span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20875289/21365063.gif" style="border: 0px solid black"></span><br> <b>Configuring HermesJMS Using JNDI</b><br> The following instructions are for configuring HermesJMS using the 'JNDI' approach. It allows HermesJMS to connect to any broker as specified by the connection factories in the Open Message Queue JNDI object repository used. These steps assume an object repository exists at the location</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">C:\openmqobjstore</pre> 
+       </div> 
+      </div>
+     </div> <p>The high level steps involved in creating this Open Message Queue object store are:</p> 
+     <ol> 
+      <li>Create directory C:\openmqobjstore</li> 
+      <li>Use imqadmin or imqobjmgr to create the following objects in the object store at C:\openmqobjstore</li> 
+     </ol> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Lookup name</th> 
+         <th class="confluenceTh">Object type</th> 
+         <th class="confluenceTh">Attributes </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> someotherhost:7676 </td> 
+         <td class="confluenceTd"> Connection Factory </td> 
+         <td class="confluenceTd">Message Server Address List = someotherhost:7676 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> SomeOtherQueue </td> 
+         <td class="confluenceTd"> Queue destination </td> 
+         <td class="confluenceTd">Destination Name = SomeOtherQueue </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>Documentation on how to create an Open Message Queue object store using the GUI tool imqadmin can be found at: <a href="http://docs.sun.com/app/docs/doc/819-7755/aeobl?a=view">Open Message Queue Administration Guide: Working With Object Stores</a><br> Alternatively, you can run the command line tool imqobjmgr using the following command files. The command files can be edited (if needed) to specify the actual hosts and destination names desired. </p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">imqobjmgr command file</th> 
+         <th class="confluenceTh">Notes </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://wiki.glassfish.java.net/attach/OpenMQHermesJMSQuestions/add_cf.props">add_cf.props </a> </td> 
+         <td class="confluenceTd"> Used to create connection factory object. Host/port of broker specified via the line 'obj.attrs.imqAddressList=someotherhost:7676'. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://wiki.glassfish.java.net/PageInfo.jsp?page=OpenMQHermesJMSQuestions/add_q.props">add_q.props </a> </td> 
+         <td class="confluenceTd"> Used to create queue destination object. Destination type specified via the line 'obj.type=q'. Destination name specified via the line 'obj.attrs.imqDestinationName=SomeOtherQueue'. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>Example usage:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">imqobjmgr -i add_cf.props
+ imqobjmgr -i add_q.props</pre> 
+       </div> 
+      </div>
+     </div> <p>On the main HermesJMS window, right click on the 'contexts' node and select 'New-&gt;New Context...'. Name the context OpenMQObjStore.<br> <span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20875289/21365058.gif" style="border: 0px solid black"></span><br> A 'JNDI InitialContext' dialog appears and you can enter the new context's properties. Enter the following properties:</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Property</th> 
+         <th class="confluenceTh">Value </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> loader </td> 
+         <td class="confluenceTd">OpenMQ </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> initialContextFactory </td> 
+         <td class="confluenceTd">com.sun.jndi.fscontext.RefFSContextFactory </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> providerURL </td> 
+         <td class="confluenceTd">file:///C:/openmqobjstore </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p><span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20875289/21365055.gif" style="border: 0px solid black"></span><br> Hit OK to complete the creation of this new context. The 'contexts' node on the HermesJMS main window should have a new child element labeled 'OpenMQObjStore'. Double click on 'OpenMQObjStore' - this should show the contents of the Open Message Queue object repository at C:/openmqobjstore (this assumes of course that it was set up in advance). The one used in this example shows 2 objects: a queue destination object with lookup name 'SomeOtherQueue' and a connection factory object with lookup name 'someotherhost:7676'.<br> Right click on 'someotherhost:7676' (or whatever connection factory you wish to use in your object store) and select 'Create new session...'.<br> <span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20875289/21365048.gif" style="border: 0px solid black"></span><br> A dialog will appear, prompting for the name of this new session. Enter 'OpenMQ-JNDI'.<br> A new item should appear under the 'sessions' node in the HermesJMS main window.<br> Using the same pane showing the contents of the JNDI object store, right click on 'SimpleQueue' (or whatever destination object in your object store) and select 'Addto-&gt;OpenMQ-JNDI'.<br> <span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20875289/21365057.gif" style="border: 0px solid black"></span><br> A new destination labeled 'SomeOtherQueue' should appear under the 'OpenMQ-JNDI' session. If the broker as defined by the 'someotherhost:7676' connection factory is running and it has a queue destination named 'SomeOtherQueue', you can examine it's contents by double clicking on 'SomeOtherQueue' (under the 'OpenMQ-JNDI' session) in the main HermesJMSWindow.<br> <span class="image-wrap" style=""><img src="http://download.java.net/glassfish/wiki-archive/attachments/20875289/21365053.gif" style="border: 0px solid black"></span></p> <p><b>Using the HermesJMS/MQ Plugin</b></p> <p>You may use a <a href="http://sourceforge.net/tracker/?func=detail&amp;aid=2876944&amp;group_id=61713&amp;atid=498137">HermesJMS/MQ Plugin</a> to connect to any broker. To get this to work you will need to:</p> 
+     <ol> 
+      <li>Download the <a href="http://sourceforge.net/tracker/?func=detail&amp;aid=2876944&amp;group_id=61713&amp;atid=498137">HermesJMS/MQ Plugin</a>.</li> 
+      <li>Compile the source with lib.weaved/hermes.jar and imq.jar in your classpath.</li> 
+      <li>Build a hermes-imq.jar containing ch/post/it/common/ids/hermes/imq/*.class and hermes/impl/confighelp.properties</li> 
+      <li>Place the hermes-imq.jar into the HermesJMS lib.weaved directory.</li> 
+      <li>Modify the hermes.sh or hermes.bat scripts to insert hermes-imq.jar before hermes.jar. I modified the actual JAVACMD line to change "-classpath $LOCALCLASSPATH" to "-classpath &lt;HermesJMS&gt;/lib.weaved/hermes-imq.jar:$LOCALCLASSPATH". Setting LOCALCLASSPATH to include hermes-imq.jar does not insert it before hermes.jar.</li> 
+      <li>Detailed nstructions to configure HermesJMS to pick up the MQ Plugin are under the doc/ directory of the plugin.</li> 
+     </ol> 
+     <hr> <p><b>Q: Is there a HermesJMS plugin for Open Message Queue ?</b><br> <b>A:</b> Yes, there is a <a href="http://sourceforge.net/tracker/?func=detail&amp;aid=2876944&amp;group_id=61713&amp;atid=498137">HermesJMS plugin for Open Message Queue</a>. If you know of others, please let us know at <span class="error">[users@mq.java.net]</span>.<br> There are some operations/features in HermesJMS that cannot be done via the standard JMS API. For example, obtaining the list of destinations on the broker and various statistics on them. To enable this functionality in HermesJMS, a plugin needs to be developed (that uses Open Message Queue specific APIs). Until then, to inspect the destinations on a broker, one has to know the exact names and types of the destinations.<br> An Open Message Queue plugin for HermesJMS is one of the things that our team has on the list of things to do for the future. Any update on that work will be mentioned in this FAQ/web page.</p> <p><b>Q: I followed the manual setup instructions, but I can't see my destinations after I try to add them. What's up?</b><br> <b>A:</b> There are some eccentricities of the HermesJMS UI. Be sure to use the "Return" or "Enter" key after you enter each item in the UI (i.e. the Queue Name or the Topic Name). If you just click the "OK" button, your entry might not register correctly.</p> 
+     <hr> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875289/21365047.gif">new_session_choose_loader.gif</a> (image/gif) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875289/21365049.gif">providers_tab.gif</a> (image/gif) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875289/21365046.gif">add_group_menu.gif</a> (image/gif) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875289/21365056.gif">dest_props.gif</a> (image/gif) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875289/21365057.gif">jndi_add_queue.gif</a> (image/gif) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875289/21365048.gif">jndi_new_session_menu.gif</a> (image/gif) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875289/21365058.gif">jndi_new_context_menu.gif</a> (image/gif) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875289/21365051.gif">new_session_menu.gif</a> (image/gif) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875289/21365050.gif">add_jars_menu.gif</a> (image/gif) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875289/21365062.gif">add_queue_menu.gif</a> (image/gif) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875289/21365063.gif">browse_SimpleQueue.gif</a> (image/gif) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875289/21365061.gif">jars_added.gif</a> (image/gif) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875289/21365060.gif">hermesjms_startup.gif</a> (image/gif) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875289/21365059.gif">providers_tab_addjars2.gif</a> (image/gif) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875289/21365020.gif">add_jars_menu2.gif</a> (image/gif) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875289/21365052.gif">providers_tab_addjars.gif</a> (image/gif) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875289/21365053.gif">jndi_browse_SomeOtherQueue.gif</a> (image/gif) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875289/21365055.gif">jndi_new_context_props.gif</a> (image/gif) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875289/21365054.gif">new_session_choose_cf.gif</a> (image/gif) 
+      <br> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Dec 01, 2011 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : V3GuiBuildInfo</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p><a href="GlassFishV3AdminConsole.html" title="GlassFishV3AdminConsole">Back to AdminConsole V3 </a></p> <h4><a name="V3GuiBuildInfo-GlassFishV3AdminConsoleBuildInstructions"></a>GlassFish V3 Admin Console Build Instructions</h1> <p>This document contains instructions on how to build and test V3 admin console. Please refer to <a href="V3GuiDirectories.html" title="V3GuiDirectories">Admin Console Directory Structure</a> document for more information on the admingui module layout.<br> As of now, the admingui module is not part of the V3 build yet, the instructions below reflects this fact. When we change this, so that V3 build will also include building the admin console, and the console is part of the distribution, this document will be updated.</p> 
+     <ul> 
+      <li><b>checking out the workspace</b><br> Checking out the entire V3 workspace will also checkout the amdingui module 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">svn checkout https://svn.java.net/svn/glassfish-svn/trunk/v3</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ul> <p>You can also just checkout the admingui module</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">svn checkout https://svn.java.net/svn/glassfish-svn/trunk/v3/admingui</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li><b>Building admingui module</b><br> To build the entire Admin Console including all the sub modules, 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">cd v3
+mvn -U install
+cd admingui
+mvn -U install</pre> 
+         </div> 
+        </div>
+       </div> <p>This will build all the jars for each sub module, install them in your local repository, and package the admingui.war application for you.<br> The resulting war file can be found as <tt>v3/admingui/war/target/admingui.war</tt></p></li> 
+     </ul> <p>Copy the following jars:<br> \v3\admingui\web\target\console-web-plugin-10.0-SNAPSHOT.jar<br> to<br> glassfish-10.0-SNAPSHOT\glassfish\modules\web\<br> v3\admingui\plugin-service\target\console-plugin-service-10.0-SNAPSHOT.jar<br> to<br> glassfish-10.0-SNAPSHOT\glassfish\modules\<br> After you start up the V3 server, you can use the asadmin client to deploy this war file.<br> <tt>asadmin deploy v3/admingui/war/target/admingui.war</tt></p> <p>You are just deploying this as a regular web app, so use this URL to get to the first page.<br> <tt><a href="http://localhost:8080/admingui">http://localhost:8080/admingui</a></tt></p> <h4><a name="V3GuiBuildInfo-TipsforshortingtheEdit%2FBuild%2FTest%2Fcycle"></a>Tips for shorting the Edit/Build/Test/ cycle</h1> 
+     <ul> 
+      <li>If you have only changed codes in the <tt>core</tt> module, you can just install the the core jar and repackage the war file by doing the following:</li> 
+     </ul> <p><tt>cd v3/core; mvn install; cd ../war; mvn package</tt><br> This way, you don't need to rebuild the entire admin console. You will still need to redeploy the war.</p> 
+     <ul> 
+      <li>Doing a <tt>developer</tt> build</li> 
+     </ul> <p>As admingui is a JSF application, very often we only make modification to the .jsf file. In order to avoid assemblying the jar, repackage the war file and redeployment, you should do directory deployment of the war and then after editing the .jsf file, just copy the the .jsf file over to the exploded war file and refresh the browser.<br> Here is how you can do this:</p> <p>1. Builds the entire admingui modules.<br> <tt>cd v3/admingui; mvn install.</tt></p> <p>2. Creates the exploded war file, the .jsf will not be packaged in a jar.<br> <tt>cd v3/admingui/war; mvn -P dev</tt></p> <p>3. Do the directory deployment of the exploded war.<br> <tt>asadmin deploy v3/admingui/war/target/admingui</tt> </p> <p>4. Edit your .jsf file</p> <p>5. Copy over the .jsf files to the exploded war<br> <tt>cd v3/admingui/war; mvn -o -P dev</tt></p> <p>6. Refresh your browser and see your change</p> <p>Repeat 4-6 as many times as you want.</p> <p>The ideal situation is to be able to omit step #5 as well. Still working on this and will update this doc. when it is possible.</p> <p>If you have edited both java file and jsf file, you will have to rebuild the core jar file and redeploy the exploded war again. You will need to change step 5 to</p> <p><tt>cd v3/admingui/core; mvn install; cd v3/admingui/war; mvn -o -P dev ; asadmin redeploy v3/admingui/war/target/admingui;</tt></p> <h4><a name="V3GuiBuildInfo-MovingfilesfromV2"></a>Moving files from V2 </h2> <p>There is an svn source repository which is copied over from the V2 workspace. We should move the files over to the V3 workspace using <tt>svn move</tt> command so that the cvs history can be preserved.<br> The group decided to move the file one by one as we need them, instead of moving all the files at the same time. However, the files under svn v2 is 'created' before the UR1 release, so all the bug fixes that go into SJSAS91_UR1_BRANCH and SJSAS91_FCS_BRANCH will have to be ported manually after you move the file over to v3.<br> Here is the steps of move the svn v2 files over.</p> <p>1. Checkout the svn v2 files. You only need to do this once.</p> <p><tt>cd WS ; svn checkout <a href="https://svn.java.net/svn/glassfish-svn/trunk/v2">https://svn.java.net/svn/glassfish-svn/trunk/v2</a></tt></p> <p>2. Move one file at a time or move an entire directory.</p> <p><tt>svn move v2/admin-gui/src/java/com/sun/enterprise/tools/admingui/util/AMXUtil.java</tt><br> <tt>v3/admingui/core/src/main/java/org/glassfish/admingui/util/AMXUtil.java</tt></p> <p>3. Commit the file in V3</p> <p><tt>svn commit v3/admingui/core/src/main/java</tt></p> <p>4. Be sure to look at the history of the same file in SJSAS91_FCS_BRANCH to ensure that any bug fix be ported over. Or to make it simpler, do a diff between the files, and then do a copy if there is any difference, We should port all the bugs anyway.</p> <p><font color="#ff6666">Bug and Workaround:</font></p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 09, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

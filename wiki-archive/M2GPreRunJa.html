@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : M2GPreRunJa</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="M2GPreRunJa-%E7%A7%BB%E8%A1%8C%E3%81%99%E3%82%8B%E3%82%A2%E3%83%97%E3%83%AA%E3%82%B1%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%81%AE%E6%BA%96%E5%82%99"></a>移行するアプリケーションの準備</h1> <p>アプリケーション全体を移行する場合には、以下の手順を実行して下さい。</p> <p>マイグレーション・ツールは、以下のいずれかを入力元として受け付けます：</p> 
+     <ul> 
+      <li>アプリケーション・アーカイブ (EAR/WAR/JAR/RAR file)</li> 
+      <li>ソースファイルを含むディレクトリ</li> 
+     </ul> <h4><a name="M2GPreRunJa-%E5%BF%85%E8%A6%81%E3%81%AA%E8%A8%AD%E5%AE%9A"></a>必要な設定</h2> <p>入力元としてアーカイブを指定した場合、マイグレーション・ツールは配備記述子および存在する場合はソースファイルの移行を行ないます。一般にアーカイブ内にソースファイルが格納されることはあまりないため、ほとんどの場合は DD ファイルのみの移行が行なわれ、もとのままのクラスファイルが出力先のディレクトリにそのままコピーされます。この方法で作業する場合、アプリケーション・アーカイブに対して特別な準備を行なう必要はありません。</p> <p>ソースディレクトリを入力元に指定する場合、アプリケーションは Java EE 仕様に規定されている Java EE アプリケーションのディレクトリ構造に従って構築されている必要があります。正しい構造になっていない場合は、以下の手順に従ってアプリケーションの準備を行なってください：</p> <p>手順1）新しいディレクトリを作成し、 <tt>jar -xvf</tt> コマンドで EAR ファイル、およびアプリケーションに含まれる全ての JAR ファイルや WAR ファイルを展開します。これにより、マイグレーション・ツールがサーバ固有の DD ファイルにアクセスできるようになります。</p> <p>手順2）手順 1 で作成したディレクトリ内に、クラスファイルに対応するソースファイルを手動でコピーしてください。 この際、関連するクラスファイルに対応する全ての Java ファイルが、同じディレクトリ内に配置されるようにします。</p> <p>クラスファイルとソースファイルの双方が存在する場合、マイグレーション・ツールはソースファイルのみの移行を行ないます。アプリケーションを含むディレクトリを、マイグレーション・ツールの入力元として指定してください。アプリケーションを含むディレクトリとは、手順 1 で作成したディレクトリの事です。</p> <h4><a name="M2GPreRunJa-%E3%81%9D%E3%81%AE%E4%BB%96%E3%81%AE%E8%A8%AD%E5%AE%9A%EF%BC%88%E4%BB%BB%E6%84%8F%EF%BC%89"></a>その他の設定（任意）</h2> <h4><a name="M2GPreRunJa-%E3%82%B5%E3%83%BC%E3%83%90%E6%A7%8B%E6%88%90%E3%83%91%E3%83%A9%E3%83%A1%E3%83%BC%E3%82%BF%E3%81%AE%E7%A7%BB%E8%A1%8C"></a>サーバ構成パラメータの移行</h3> <p>サーバ構成ファイルから必要なパラメータのみを移行したい場合は、移行元のアプリケーションサーバから関連するファイルをコピーし、マイグレーション・ツールの入力元として指定するディレクトリ内に配置してください。これには次のようなファイルが含まれます：</p> 
+     <ul> 
+      <li>JBoss 3.0 の <tt>*-service.xml</tt> ファイル</li> 
+      <li>IBM WebSphere 4.0 の <tt>server-cfg.xml</tt> ファイル</li> 
+      <li>Weblogic 5.1 の <tt>weblogic.properties</tt> ファイルと、使用されている場合はスタートアップ・クラス</li> 
+      <li>Weblogic 6.0 および 6.1 の <tt>config.xml</tt> ファイルとスタートアップ・クラス（使用されている場合）</li> 
+      <li>Reference Implementation 参照実装 の <tt>resource.properties</tt> ファイル</li> 
+     </ul> <p><a href="M2GInstSetupJa.html" title="M2GInstSetupJa">前へ</a> <a href="M2GRunJa.html" title="M2GRunJa">次へ</a></p> <p>----日本語翻訳:</p> <p><a href="http://apercu-j.blogspot.com/">Kana</a></p> <p><a href="M2GPreRun.html" title="M2GPreRun">英文 </a> (翻訳したバージョン: 1)</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 08, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

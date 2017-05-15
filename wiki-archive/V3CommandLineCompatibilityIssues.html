@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : V3CommandLineCompatibilityIssues</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="V3CommandLineCompatibilityIssues-CompatibilityIssuesforV3asadminCommandLineInterface"></a>Compatibility Issues for V3 asadmin Command Line Interface</h1> <h4><a name="V3CommandLineCompatibilityIssues-Introduction"></a>Introduction</h2> <p>This page lists all the incompatibilities as far as asadmin commands are concerned. Note the following in this regard:</p> 
+     <ul> 
+      <li>It is well-known and acceptable that not all asadmin commands that were available in GlassFish V2 are available on v3.</li> 
+      <li>Any command (identified by <b>name</b>) that was available in GlassFish V2 should (must) remain compatible.</li> 
+      <li>as-ccc (compatibility committee) makes the call on whether a particular incompatibility is acceptable.</li> 
+      <li>Every issue is classified into either <b>Accepted</b> or <b>Rejected</b>. If an issue is rejected, the v3 implementation must be changed to remove the incompatibility. All incompatibilities marked as rejected should be ensured by QA. Thus, ultimately, the v3 release notes should only mention those incompatibilities that are <b>Accepted</b>.</li> 
+     </ul> <h4><a name="V3CommandLineCompatibilityIssues-Listofincompatibilities"></a>List of incompatibilities</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">ID</th> 
+         <th class="confluenceTh"> Issue Details (command name etc.)</th> 
+         <th class="confluenceTh"> Impact, work-arounds etc. </th> 
+         <th class="confluenceTh"> Decision (Accepted/Rejected) </th> 
+         <th class="confluenceTh"> Date Discussed </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 0 </td> 
+         <td class="confluenceTd"> stop-domain command requires admin password </td> 
+         <td class="confluenceTd"> No work-around. Since stop-domain is a <em>remote</em> command, for domains that have admin authentication turned on, stop-domain would require admin credentials. This was not required for V2. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Not yet discussed </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> all asadmin remote commands requiring authentication for command help </td> 
+         <td class="confluenceTd"> No work-around, have to authenticate first even to get command usage This was not required for V2. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 2 </td> 
+         <td class="confluenceTd"> dotted name changes like server.http-service.http-listener.http-listener-1 to configs.config.server-config.network-config.protocols.protocol.http-listener-1 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 3 </td> 
+         <td class="confluenceTd"> monitoring attributes like below are removed in v3. server.http-service.server.request.count200-description = Number of responses with a status code equal to 200 server.http-service.server.request.count200-lastsampletime = 1242941265939 server.http-service.server.request.count200-name = Count200 server.http-service.server.request.count200-starttime = 1242940908952 server.http-service.server.request.count200-unit = count </td> 
+         <td class="confluenceTd"> No work-around </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 4 </td> 
+         <td class="confluenceTd"> special characters are not decoded and printed . This property is returned like this --property "DatabaseName=sun-appserv-samples:PortNumber=1527:serverName=localhost:connectionAttributes=\;create\=true:Password=APP:User=APP" resources.jdbc-connection-pool.pool1.property.connectionAttributes=%3Bcreate%3Dtrue</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 5 </td> 
+         <td class="confluenceTd"> list,get command returns success even if the dotted name path doesn't exist. Like asadmin get "server.notexistent.*" returns success But in V2 it used to return error </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 09, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

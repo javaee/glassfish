@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : Arun_hudson_01Ja</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="Arun_hudson_01Ja-Hudson%E3%83%BB10%E3%81%AE%E7%89%B9%E5%BE%B4"></a>Hudson ・ 10 の特徴</h2> <p><span class="error">Cannot resolve external resource into attachment.</span></p> <p> <a href="http://weblogs.java.net/blog/kohsuke/">Kohsuke</a> (またの名を Mr. Hudson) と私とで、 <a href="http://javasymposium.techtarget.com/lasvegas/index.html">The Server Side Java シンポジウム, Las Vegas Mar. 2008</a> に出席してきました。 Kohsuke とは毎日語り明かしたのですが、ある晩、彼の助けを借りて <a href="http://hudson.java.net/">Hudson</a> の 10 の特徴をまとめてみようと思いつきました。</p> <p>（※訳者注： <a href="http://weblogs.java.net/blog/kohsuke/">Kohsuke</a> とは 川口耕介さんのことで、彼が公開している日本語のブログは<a href="http://d.hatena.ne.jp/kkawa/">こちら</a> でお読みいただけます）<br> 実は私、その時に書いたメモを一度失くしてしまったのですが、ラッキーなことにそれがまた出てきました。というわけで、ここで改めて紹介します。若干ネタは古くなってしまいましたが、内容の大半はまだまだ十分に役立つはずです。ただ、その後いくつかの新機能は追加されています。<br> では、始まり始まり ...</p> 
+     <ul> 
+      <li><b>1. インストール方法も使い方も簡単</b></li> 
+     </ul> 
+     <ul class="alternate" type="square"> 
+      <li>Hudson は <a href="https://hudson.java.net/servlets/ProjectDocumentList?folderID=2761">一個の WAR ファイル</a> としてダウンロードすることができ、 "java -jar hudson.war" というコマンドを実行するだけで起動することができます。特別な設定もコンテナも不要です。あるいは、 <a href="https://hudson.java.net/hudson.jnlp">このリンク</a>をクリックして起動することも可能です（訳者注：Java Web Start経由でアプリケーションがダウンロードされます）。継続的インテグレーション (CI) サーバやクライアントの起動を必要としない単一の Web アプリは、これまでも重視されてきました。"java -jar hudson.war" で起動した場合、デフォルトのページは以下のようになります。<br> <span class="error">Cannot resolve external resource into attachment.</span></li> 
+     </ul> <p>インストールと使用方法の簡便性については、 <a href="http://hudson.gotdns.com/wiki/display/HUDSON/InstallationandExecution">Hudson のドキュメント</a> にて詳しく解説されています。</p> 
+     <ul> 
+      <li><b>2. 非常に拡張性の高い <a href="http://hudson.gotdns.com/wiki/display/HUDSON/Plugins">プラグイン</a> の仕組み</b> - チーム内で使用するツールやプロセスをサポートするためのプラグインを、とても簡単に作成できます。そしてあなたの作ったプラグインを、別のメンバーがこれまた手軽に利用することが可能です。 
+       <ol> 
+        <li><a href="http://weblogs.java.net/blog/kohsuke/archive/2008/06/hudson_1222_upd.html">アップデート・センター</a> - プラグインの検索とインストールについてはこちら</li> 
+        <li>ソースコードコントロール・プラグイン： <a href="http://hudson.gotdns.com/wiki/display/HUDSON/VisualSourceSafePlugin">Visual Source Safe</a> , <a href="http://hudson.gotdns.com/wiki/display/HUDSON/VisualSourceSafePlugin">Git</a>, <a href="http://hudson.gotdns.com/wiki/display/HUDSON/PerforcePlugin">Perforce</a> および<a href="http://hudson.gotdns.com/wiki/display/HUDSON/PerforcePlugin">その他もろもろ</a></li> 
+        <li>ほとんどのプラグインは小規模で、ちょっとした空き時間に作成できます。</li> 
+        <li>プラグインテンプレートを生成するための <a href="https://hudson.java.net/nonav/maven-hpi-plugin/">Maven サポート</a>。プラグインの開発について、詳しくは <a href="https://hudson.java.net/nonav/maven-hpi-plugin/">Extend Hudson</a> をご覧ください。</li> 
+       </ol> </li> 
+      <li><b>3. 分散ビルドサポート</b> - Hudson の分散ビルドサポート機能を使えば、マスター／スレーブ構成のうちの使われていないマシンを利用して、大量のビルドを行えるようになります。Hudson はクロック同期やディスクスペースの監視、あるいはスレーブの接続が切断された場合の再起動といった手間のかかる仕事を請け負い、スレーブの " 子守 " をしてくれます。</li> 
+      <li><b>4. チーム開発のサポート</b> - 複数のチームで協業しつつ開発を進めていくためには、下流プロジェクトの自動ビルドを行える体制を整える必要があります。上流 / 下流に枝分かれしたプロジェクトは容易に混乱を招きます。このようなプロジェクトを管理するためには、どのバージョンのどれがどのバージョンの何に使われていたのか、といったことを正しく追跡する必要があるでしょう。<br> Hudson では <a href="http://hudson.gotdns.com/wiki/display/HUDSON/Fingerprint">Finger print</a> という仕組みを使ってこうした管理を簡潔に行えるようになっています。</li> 
+      <li><b>5. オープンソース</b> - Hudson は <a href="http://www.opensource.org/licenses/mit-license.php">MIT ライセンス</a>のもと、完全にオープンソース化されています。</li> 
+      <li><b>6. 高い完成度</b> - 6/17に 226 回目のリリースが公開されましたが、これまでにデータ互換性が損なわれたことは一度もありません。旧バージョンから新バージョンへの移行はシームレスに行えます。基本的には WAR を再配備するだけで OK 。追加の設定ファイルなどは不要です。</li> 
+      <li><b>7. 豊富な Hudson 拡張ツール</b> - Hudson はプログラマブルなインタフェースを備えているため、外部拡張ツールの作成が可能です。以下、いくつかの例を示します： 
+       <ol> 
+        <li><a href="http://hudson.gotdns.com/wiki/display/HUDSON/hudsonTracker">Hudson Tracker</a> &amp; <a href="http://hudson.gotdns.com/wiki/display/HUDSON/hudsonTracker">Tray Application</a> - タスクトレイに常駐し、 Hudson のビルド状況などをモニタできる簡易アプリ</li> 
+        <li><a href="http://hudson.gotdns.com/wiki/display/HUDSON/TracPlugin">Trac プラグイン</a> - Hudson から <a href="http://trac.edgewall.com/">Trac</a> のインスタンスへのリンクを生成</li> 
+        <li><a href="http://hudson.gotdns.com/wiki/display/HUDSON/FirefoxAdd-onBuildMonitor">Firefox ビルドモニタ・プラグイン</a> - Firefox のステータスバーのパネル上に、ビルドステータスを示す Hudson のアイコンを表示。</li> 
+       </ol> </li> 
+      <li><b>8. パーマリンクをサポート</b> - Hudson は可読性に優れた URL を提供します。 "last successful build" や "promoted build" などのページに表示されている URL は、 Hudson 以外のどこからでも簡単に参照できます。</li> 
+      <li><b>9. ローカライゼーション</b> - Hudson は英語、日本語、ドイツ語、フランス語、トルコ語、ブラジル語、ポルトガル語、ロシア語にローカライズされています。また、<a href="http://hudson.gotdns.com/wiki/display/HUDSON/Internationalization">この説明</a>に従えば、独自のローカライズバージョンを簡単に作成できます。既存のコードを国際化するための <a href="http://hudson.gotdns.com/wiki/display/HUDSON/Internationalization#Internationalization-StaplerpluginforIntelliJIDEA">IntelliJ プラグイン</a>もあります。</li> 
+      <li><b>10. 構成要素</b> - Hudson は、別のプロジェクトでも使用できる、汎用性の高い構成要素からできています。 
+       <ol> 
+        <li><a href="https://stapler.java.net/">Stapler</a> - 
+         <ol> 
+          <li>ドメインオブジェクトの URL バインディング</li> 
+          <li>JSON &amp; XML の生成</li> 
+          <li>リモート機能のほとんどは Stapler に実装されています。 Stapler は POJO を XML に変換します。</li> 
+          <li>Stapler 用の IntelliJ プラグイン</li> 
+          <li>View 層は着脱可能 - Hudson では Jelly が使われています。</li> 
+         </ol> </li> 
+        <li><a href="http://hudson.gotdns.com/wiki/display/HUDSON/RemoteaccessAPI">リモートアクセス API</a></li> 
+        <li><a href="https://localizer.java.net/">ローカライザ</a> - IDE 用の i18n プラグインのロケール選択を手助けする、軽量なランタイムライブラリ</li> 
+       </ol> </li> 
+     </ul> <p><span class="error">Cannot resolve external resource into attachment.</span></p> <p>さぁ、これでもまだ他の CI ツールを使いたいと思いますか？</p> <p><a href="https://hudson.java.net/servlets/ProjectDocumentList?folderID=2761">今すぐ Hudson をダウンロード！</a></p> 
+     <hr> <p>日本語翻訳: <a href="http://apercu-j.blogspot.com/">Kana. Kotake</a></p> <p><a href="http://blogs.oracle.com/arungupta/entry/top_10_features_of_hudson">原文</a> </p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 09, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:43.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

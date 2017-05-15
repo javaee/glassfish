@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : Developer Handoff to QA (DHQA) for EJB Timer CLI (EJB-2-1 & EJB-2-2)</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>The following features are expected</p> 
+     <ul> 
+      <li>Support for list-timers command in a cluster</li> 
+      <li>Support for migrate-timers command in a cluster</li> 
+     </ul> <h4><a name="DeveloperHandofftoQA%28DHQA%29forEJBTimerCLI%28EJB-2-1%26EJB-2-2%29-Featuredecription"></a>Feature decription</h3> <p>This feature adds support for listing and manually migrating EJB Timers in a clustered environment.&nbsp; The tests use derby network database server and jdbc/_<em>default as timer service datasource.&nbsp; Before running the test, need to make sure table</em> EJB_<em>TIMER</em>_TBL is either empty or does not exist.</p> <p>To check it in ij:&nbsp; select OWNERID from EJB_<em>TIMER</em>_TBL;</p> <p>To delete all rows: delete from EJB_<em>TIMER</em>_TBL;</p> <h4><a name="DeveloperHandofftoQA%28DHQA%29forEJBTimerCLI%28EJB-2-1%26EJB-2-2%29-DocImpact%3A"></a>Doc Impact:</h3> <p>For migrate-timers command, --destination option in v2 is now changed to --target in 3.1.</p> <p>Other aspects of documents for list-timers and migrate-timers remain the same as in v2.</p> <h4><a name="DeveloperHandofftoQA%28DHQA%29forEJBTimerCLI%28EJB-2-1%26EJB-2-2%29-TestDescription"></a>Test Description</h3> <h4><a name="DeveloperHandofftoQA%28DHQA%29forEJBTimerCLI%28EJB-2-1%26EJB-2-2%29-Testexecution"></a>Test execution</h4> 
+     <ul> 
+      <li>cd v2/appserv-tests/</li> 
+      <li>svn update</li> 
+      <li>cd devtests/ejb/ee/timer/cli</li> 
+      <li>ant all</li> 
+     </ul> <h4><a name="DeveloperHandofftoQA%28DHQA%29forEJBTimerCLI%28EJB-2-1%26EJB-2-2%29-Whatdoesthetestdo"></a>What does the test do</h4> 
+     <ul> 
+      <li>build 
+       <ul> 
+        <li>compiles and build a test ejb-jar located in appserv-tests/build/module/archive/ee-timer-create.jar.&nbsp; It contains 2 singleton beans: StartupSingletonBean and CreateTimersBean.&nbsp; Deploying this ejb-jar is done in test class as part of runTest() method, not in build.xml.&nbsp; After deployment, StartupSingletonBean's post-construct method invokes CreateTimersBean to create a programatic timer.&nbsp; After running test, this ejb-jar is also undeployed as part of runTest() method, and all associated timers will be deleted by the container.</li> 
+       </ul> </li> 
+      <li>setup 
+       <ul> 
+        <li>start derby database</li> 
+        <li>start domain</li> 
+        <li>set timer-datasource=jdbc/__default in default-config</li> 
+        <li>set up a cluster (named cluster) with 2 instances (in1 and in2), and a standalone instance (in3).&nbsp; These names are configured in ./build.properties</li> 
+        <li>create-resource-ref in cluster1 and in3, to be used by timer service</li> 
+       </ul> </li> 
+      <li>run 
+       <ul> 
+        <li>list-timers: execute tests contained in timer/cli/src/eetimer/ListTimerTests.java 
+         <ul> 
+          <li>deploy test ejb-jar to cluster1</li> 
+          <li>listTimersCluster: run list-timer --target cluster1, expecting in1 has 1 timer and in2 has 1 timer.</li> 
+          <li>listTimers: run list-timer without no target, so default target DAS is used, expecting 0 timer is returned since the test ejb-jar is not loaded in DAS.</li> 
+          <li>listTimersInstance3Empty: run list-timer --target in3, expecting 0 timers in in3.</li> 
+          <li>undeploy test ejb-jar from cluster1</li> 
+          <li>deploy test ejb-jar to in3</li> 
+          <li>listTimersInstance3: run list-timer --target in3, expecting 1 timer in in3</li> 
+          <li>undeploy test ejb-jar from in3</li> 
+         </ul> </li> 
+        <li>migrate-timers: 
+         <ul> 
+          <li>calls -disable-gms target to disable gms.&nbsp; When gms is disabled in a cluster, automatic timer migration does not kick in when stopping a clustered instance, so we can test the (manual) migrate-timers command.</li> 
+          <li>execute tests contained in timer/cli/src/eetimer/MigrateTimerTests.java 
+           <ul> 
+            <li>deploy test ejb-jar to cluster1</li> 
+            <li>migrateTimers: stop in1 and migrate in1's timer.&nbsp; No target is specified, defaults to DAS, the container will pick a running instance from the same cluster, and it should be in2.&nbsp; Expected result is 0 timers in in1 and 2 timers in in2</li> 
+            <li>migrateTimersWithTarget: stop in2 and start in1, migrate timers from in2 to in1.&nbsp; Expected result is 0 timers in in2 and 3 timers in in1.&nbsp; When in1 starts, another timer is also created, and that's why there are now 3 timers.</li> 
+            <li>migrateTimersOutsideCluster: a negative test to make sure timers cannot be migrated across cluster.</li> 
+            <li>undeploy the test ejb-jar</li> 
+           </ul> </li> 
+         </ul> </li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li>unsetup 
+       <ul> 
+        <li>unsetup-cluster (stop and delete the cluster)</li> 
+        <li>stop-database</li> 
+        <li>stopDomain</li> 
+       </ul> </li> 
+     </ul> <h4><a name="DeveloperHandofftoQA%28DHQA%29forEJBTimerCLI%28EJB-2-1%26EJB-2-2%29-Executingtestisseparatesteps"></a>Executing test is separate steps</h4> 
+     <ul> 
+      <li>ant build</li> 
+      <li>ant setup</li> 
+      <li>ant run</li> 
+      <li>ant unsetup</li> 
+     </ul> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Unit Testing </th> 
+         <th class="confluenceTh"> Completed? <br class="atl-forced-newline"> (Y/N) </th> 
+         <th class="confluenceTh"> Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Unit tests automated and 100% complete (for this milestone) </td> 
+         <td class="confluenceTd"> Y </td> 
+         <td class="confluenceTd"> The test is not executed on a regular basis </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Have unit tests been run against a promoted build? </td> 
+         <td class="confluenceTd"> Y <br class="atl-forced-newline"> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Are the total Unit Tests (UT's) 90% passing? </td> 
+         <td class="confluenceTd"> Y </td> 
+         <td class="confluenceTd"> All junit test pass (as part of the build). <br class="atl-forced-newline"> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Were known open defects listed and discussed at the meeting? </td> 
+         <td class="confluenceTd"> N </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> Design Specifications </th> 
+         <th class="confluenceTh"> Completed </th> 
+         <th class="confluenceTh"> <br class="atl-forced-newline"> </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Do Functional one pagers accurately reflect functionality to be released? </td> 
+         <td class="confluenceTd"> Y </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Have they been shared with QA and Doc PoCs 3 days prior to Demo? </td> 
+         <td class="confluenceTd"> Y </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Are there requirements documented outside Design Spec in BugDB or another system of record? </td> 
+         <td class="confluenceTd"> N </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> Demonstration Environment </th> 
+         <th class="confluenceTh"> Completed </th> 
+         <th class="confluenceTh"> Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Was demonstration conducted on an unpatched build? </td> 
+         <td class="confluenceTd"> N </td> 
+         <td class="confluenceTd"> Not yet </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> If No, please list justification and mitigation strategy </td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <th class="confluenceTh"> DHQA Discussion/Topics </th> 
+         <th class="confluenceTh"> Completed? <br class="atl-forced-newline"> (Y/N) </th> 
+         <th class="confluenceTh"> Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Meeting topics were: </td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> List attendees: </td> 
+         <td class="confluenceTd"> - </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> QA Acceptance </td> 
+         <td class="confluenceTd"> Y/N </td> 
+         <td class="confluenceTd"> (QA Rep) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Doc. Acceptance </td> 
+         <td class="confluenceTd"> Y/N </td> 
+         <td class="confluenceTd"> (Doc Rep) </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Aug 27, 2010 by 
+<font color="#0050B2">cheng.fang</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

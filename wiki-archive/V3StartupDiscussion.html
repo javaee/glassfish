@@ -1,0 +1,105 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <title>GlassFish Wiki : V3StartupDiscussion</title>
+	    <link rel="stylesheet" href="styles/site.css" type="text/css" />
+        <META http-equiv="Content-Type" content="text/html; charset=UTF-8">	    
+        <style type="text/css">
+            body { background: white !important; }
+
+            a:link { color: #3E6B8A !important; text-decoration: none !important; }
+            a:visited { color: #917E9C !important; text-decoration: none !important; }
+            a:hover { color: #3E6B8A !important; text-decoration: underline !important; }
+            a:active { color: #3E6B8A !important; text-decoration: none !important; }
+
+            body, p, td, table, tr, .bodytext, .stepfield { font-size: 12px !important; line-height: 140% !important; }
+
+            .pageheader, .pagesubheading { margin-bottom: 12px !important; }
+        </style>
+    </head>
+
+    <body>
+	    <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff">
+		    <tr>
+			    <td valign="top" class="pagebody">
+				    <div class="pageheader">
+					    <span class="pagetitle">
+                            GlassFish Wiki : V3StartupDiscussion
+                                                    </span>
+				    </div>
+				    <div class="pagesubheading">
+					    This page last changed on Jul 09, 2010 by <font color="#0050B2">am74686</font>.
+				    </div>
+
+				    <p>There are 18 JVM options that are used in a stock V2 installation for startup.  Initially we will assume all 18 have been specified when the calling JVM started.  Some of these options <b>must</b> be specified when the JVM starts (e.g. -cp, -XX:+UnlockDiagnosticVMOptions) while with others it is unclear (jmx.invoke.getters=true).</p>
+
+<p>I.e. V3 will check and make sure whatever options are required to be already set are indeed already set.  If not, V3 will refuse to start and describe the exact problem.</p>
+
+
+<div class="panel" style="border-width: 1px;"><div class="panelContent">
+<div class='table-wrap'>
+<table class='confluenceTable'><tbody>
+<tr>
+<th class='confluenceTh'> V2 Option Name</th>
+<th class='confluenceTh'> V2 Value </th>
+<th class='confluenceTh'> Required </th>
+<th class='confluenceTh'> Must be pre-set </th>
+<td class='confluenceTd'> Comments </td>
+</tr>
+<tr>
+<td class='confluenceTd'> javax.management.builder.initial </td>
+<td class='confluenceTd'> com.sun.enterprise.ee.admin.AppServerMBeanServerBuilder </td>
+<td class='confluenceTd'> ? </td>
+<td class='confluenceTd'> ? </td>
+<td class='confluenceTd'> This sys prop consulted every time a new MBeanServer needs to be created, and the class pointed to by that property is loaded. If that class is different from that of the current MBeanServerBuilder, then a new MBeanServerBuilder is created. Otherwise, the MBeanServerFactory may create a new MBeanServerBuilder or reuse the current one. </td>
+</tr>
+<tr>
+<td class='confluenceTd'> javax.net.ssl.keyStore </td>
+<td class='confluenceTd'> D:/as/domains/domain1/config/keystore.jks </td>
+<td class='confluenceTd'> YES </td>
+<td class='confluenceTd'> ? </td>
+<td class='confluenceTd'> Can it be set later? </td>
+</tr>
+<tr>
+<td class='confluenceTd'> javax.net.ssl.trustStore </td>
+<td class='confluenceTd'> D:/as/domains/domain1/config/cacerts.jks </td>
+<td class='confluenceTd'> YES </td>
+<td class='confluenceTd'> ? </td>
+<td class='confluenceTd'> Can it be set later? </td>
+</tr>
+<tr>
+<td class='confluenceTd'> jdbc.drivers </td>
+<td class='confluenceTd'> org.apache.derby.jdbc.ClientDriver </td>
+<td class='confluenceTd'> ? </td>
+<td class='confluenceTd'> ? </td>
+<td class='confluenceTd'> is this old and can be dropped? </td>
+</tr>
+<tr>
+<td class='confluenceTd'> jmx.invoke.getters </td>
+<td class='confluenceTd'> true </td>
+<td class='confluenceTd'> ? </td>
+<td class='confluenceTd'> ? </td>
+<td class='confluenceTd'> Need to check and see if invoke is called the special way that this enables. </td>
+</tr>
+</tbody></table>
+</div>
+
+<hr />
+<p>Jspwiki style: table</p>
+</div></div>
+<hr />
+
+				    
+                    			    </td>
+		    </tr>
+	    </table>
+	    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+			<tr>
+				<td height="12" background="images/border/border_bottom.gif"><img src="images/border/spacer.gif" width="1" height="1" border="0"/></td>
+			</tr>
+		    <tr>
+			    <td align="center"><font color="grey">Document exported from wikis.oracle.com on May 27, 2015 20:48<br/>Copyright &copy; 2005-2015 Oracle and/or its affiliates. All rights reserved.</font></td>
+		    </tr>
+	    </table>
+    </body>
+</html>

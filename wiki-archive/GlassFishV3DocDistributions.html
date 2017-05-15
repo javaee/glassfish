@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFishV3DocDistributions</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>&lt;h1&gt;v3 Distributions Documentation&lt;/h1&gt;</p> <p>The delivery of GlassFish v3 in multiple distributions raises the question of whether the unbundled documentation, namely manuals that are published on the docs.sun.com(SM) site, should also be delivered in multiple documentation sets. The chosen solution will apply only to unbundled documentation. The question of whether bundled documentation, such as online help and man pages, will be delivered as modules with their respective distributions, will be determined by whether the documentation can be merged at installation time or runtime. </p> 
+     <hr> <p><b>Note -</b> Irrespective of the solution chosen, each topic that does not apply to all installations must be labeled as such. Many users are likely to reach such topics through search, so we cannot rely exclusively on separation to indicate that some topics do not apply to the distribution for the web profile.</p> 
+     <div> 
+      <ul> 
+       <li><a href="#GlassFishV3DocDistributions-Decision%3AAlldistributionsinonedocumentsetwithalltopicsonasubjectinonedocument">Decision: All distributions in one document set with all topics on a subject in one document</a></li> 
+       <ul> 
+        <li><a href="#GlassFishV3DocDistributions-Advantages%3A">Advantages:</a></li> 
+        <li><a href="#GlassFishV3DocDistributions-Disadvantages%3A">Disadvantages:</a></li> 
+       </ul> 
+       <li><a href="#GlassFishV3DocDistributions-OtherOptionsConsidered">Other Options Considered</a></li> 
+       <ul> 
+        <li><a href="#GlassFishV3DocDistributions-Onedocumentationsetperdistribution">One documentation set per distribution</a></li> 
+        <ul> 
+         <li><a href="#GlassFishV3DocDistributions-Advantages%3A">Advantages:</a></li> 
+         <li><a href="#GlassFishV3DocDistributions-Disadvantages%3A">Disadvantages:</a></li> 
+        </ul> 
+        <li><a href="#GlassFishV3DocDistributions-Incrementaldocumentsinthesamedocumentationset">Incremental documents in the same documentation set</a></li> 
+        <ul> 
+         <li><a href="#GlassFishV3DocDistributions-Advantages%3A">Advantages:</a></li> 
+         <li><a href="#GlassFishV3DocDistributions-Disadvantages%3A">Disadvantages:</a></li> 
+        </ul> 
+       </ul> 
+      </ul>
+     </div> 
+     <hr> <h4><a name="GlassFishV3DocDistributions-Decision%3AAlldistributionsinonedocumentsetwithalltopicsonasubjectinonedocument"></a>Decision: All distributions in one document set with all topics on a subject in one document</h1> <h4><a name="GlassFishV3DocDistributions-Advantages%3A"></a>Advantages:</h2> 
+     <ul> 
+      <li>Information for all users is available in one place.</li> 
+      <li>Users who have an installation that is part way between distributions know where to look for documentation.</li> 
+      <li>Users upgrading from GFv2 will find that their new doc set is similar to their old one.</li> 
+      <li>Features available with an upgrade or from the update center are advertised.</li> 
+      <li>Providing a Documentation Center for each distribution can help with navigation.</li> 
+     </ul> <h4><a name="GlassFishV3DocDistributions-Disadvantages%3A"></a>Disadvantages:</h2> 
+     <ul> 
+      <li>Delivery of IPS packages tailored for a distribution is <b>not</b> possible.</li> 
+      <li>Users whose installations do not include all components might erroneously assume that the entire documentation set applies to their installations.</li> 
+     </ul> <h4><a name="GlassFishV3DocDistributions-OtherOptionsConsidered"></a>Other Options Considered</h1> <h4><a name="GlassFishV3DocDistributions-Onedocumentationsetperdistribution"></a>One documentation set per distribution</h2> <p>This solution is similar to the provision of separate documentation sets for the platform and enterprise editions of earlier Application Server releases.</p> <h4><a name="GlassFishV3DocDistributions-Advantages%3A"></a>Advantages:</h3> 
+     <ul> 
+      <li>Users of a particular distribution can be provided only with information that is relevant to them.</li> 
+      <li>Delivery of IPS packages that are tailored for a specific distribution is possible.</li> 
+     </ul> <h4><a name="GlassFishV3DocDistributions-Disadvantages%3A"></a>Disadvantages:</h3> 
+     <ul> 
+      <li>Users whose installation is in some kind of intermediate state, halfway between distributions, might not immediately know where to find documentation for their installation.</li> 
+      <li>Users who have witnessed in earlier release the replacement of multiple documentation sets for multiple editions with a single documentation set might be confused by the reappearance of multiple documentation sets.</li> 
+      <li>No advertising of features available with an upgrade or from the update center.</li> 
+     </ul> <h4><a name="GlassFishV3DocDistributions-Incrementaldocumentsinthesamedocumentationset"></a>Incremental documents in the same documentation set</h2> <p>All distributions in one document set with incremental documents for topics that apply to the more fully featured distributions, for example, one Administration Guide for the Web distribution and one for the Classic distribution</p> <h4><a name="GlassFishV3DocDistributions-Advantages%3A"></a>Advantages:</h3> 
+     <ul> 
+      <li>Risk of misleading users whose installations do not include all components is reduced.</li> 
+      <li>Information for all users is available in one place.</li> 
+      <li>Features available with an upgrade or from the update center are advertised.</li> 
+      <li>Providing a Documentation Center for each distribution can help with navigation.</li> 
+      <li>Delivery of IPS packages tailored for a distribution is possible.</li> 
+     </ul> <h4><a name="GlassFishV3DocDistributions-Disadvantages%3A"></a>Disadvantages:</h3> 
+     <ul> 
+      <li>Does not scale.</li> 
+      <li>The larger size of the documentation set, with two or more "levels" of many of the books, might overwhelm or confuse users.</li> 
+      <li>Users whose installation is in some kind of intermediate state, halfway between distributions, might not immediately know whether a given feature is in the docs for the Web or Classic distribution, even if the docs are in the same set.</li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 09, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:44.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

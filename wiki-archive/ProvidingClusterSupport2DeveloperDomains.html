@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : ProvidingClusterSupport2DeveloperDomains</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="ProvidingClusterSupport2DeveloperDomains-HowUpgradeofDeveloperDomainisDone"></a>How Upgrade of Developer Domain is Done</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#ProvidingClusterSupport2DeveloperDomains-HowUpgradeofDeveloperDomainisDone">How Upgrade of Developer Domain is Done</a></li> 
+       <ul> 
+        <li><a href="#ProvidingClusterSupport2DeveloperDomains-RequirementsofSorts">Requirements of Sorts</a></li> 
+        <li><a href="#ProvidingClusterSupport2DeveloperDomains-BackendImplementation">Backend Implementation</a></li> 
+        <ul> 
+         <li><a href="#ProvidingClusterSupport2DeveloperDomains-Transformthedomain.xmlusingtemplates%3A">Transform the domain.xml using templates:</a></li> 
+         <li><a href="#ProvidingClusterSupport2DeveloperDomains-Transformtheconfigcontextinmemoryusingdomain.xmltemplate%3A">Transform the config context in memory using domain.xml template:</a></li> 
+        </ul> 
+        <li><a href="#ProvidingClusterSupport2DeveloperDomains-APItoCall%28foradminconsole%29">API to Call (for admin console)</a></li> 
+        <li><a href="#ProvidingClusterSupport2DeveloperDomains-InformationAdminConsoleShouldDisplay">Information Admin Console Should Display</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="ProvidingClusterSupport2DeveloperDomains-RequirementsofSorts"></a>Requirements of Sorts</h2> <p>See <a href="./ProfileSupportDetails.html#section-ProfileSupportDetails-ImplementationDetailsToSupportUpgrade">Some write-up</a></p> <p><a href="https://github.com/javaee/glassfish/issues/3003">Issue 3003</a></p> <h4><a name="ProvidingClusterSupport2DeveloperDomains-BackendImplementation"></a>Backend Implementation</h2> 
+     <ul> 
+      <li>MBean ObjectName: com.sun.appserv:type=domain,category=config</li> 
+      <li>MBean Java Class: /glassfish/admin/mbeans/src/java/com/sun/enterprise/admin/mbeans/DomainMBean.java</li> 
+     </ul> <p>There were several approaches:</p> <h4><a name="ProvidingClusterSupport2DeveloperDomains-Transformthedomain.xmlusingtemplates%3A"></a>Transform the domain.xml using templates:</h3> <p>This implies that we register the operation and don't do anything about it. Upon restarting the<br> domain, the startup sequence identifies that this is a case of upgrade and then transforms the<br> domain. This has some side-effects in that the startup logic gets impacted. We currently already support the in-place upgrade and addon configuration. The transformation templates also need to<br> written in such a way that it preserves the current configuration of the admin server and hence <br> this is a cumbersome approach.</p> <h4><a name="ProvidingClusterSupport2DeveloperDomains-Transformtheconfigcontextinmemoryusingdomain.xmltemplate%3A"></a>Transform the config context in memory using domain.xml template: </h3> <p>This leverages the fact that the basic difference between domain.xml of a domain that supports clusters and the one that does not is the "default-config" – a config that acts as a template configuration of the non-admin-server instances. Moreover, if we modify the domain.xml in-place like any other admin<br> operation, it makes the implementation logic easier.</p> <p>This approach has been chosen. Following are the details:</p> 
+     <ol> 
+      <li>The name of the profile is accepted. For GlassFish V2, it has to be "cluster".</li> 
+      <li>The domain.xml template for the given profile is looked for. Note that this is the template that is generated during the build time and is packaged in the product along with all the profiles. For example, for "cluster" profile, the domain.xml is always found at <b>install-dir/lib/install/templates/<em>cluster</em>/domain.xml</b>. It is made sure that this is the right domain.xml template (i.e. it contains the "default-config"). The good thing about this is that this domain.xml is already transformed.</li> 
+      <li>From this domain.xml a temporary config context is formed.</li> 
+      <li>From the temporary config context, the <b>config object corresponding to default-config</b> is extracted and is cloned.</li> 
+      <li>The cloned default-config is modified to support clusters and an additional token replacement is done (e.g. the property named client-hostname should exist and should have a value that denotes the host name of the machine).</li> 
+      <li>The Domain Admin Server's configuration is modified to change the pluggable feature factory and MBeanServer Builder.</li> 
+     </ol> <h4><a name="ProvidingClusterSupport2DeveloperDomains-APItoCall%28foradminconsole%29"></a>API to Call (for admin console)</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">MBean ObjectName </th> 
+         <th class="confluenceTh"> Method Signature </th> 
+         <th class="confluenceTh"> Return Type </th> 
+         <th class="confluenceTh"> Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> com.sun.appserv: type=domain,category=config </td> 
+         <td class="confluenceTd"> name: addClusteringSupportUsingProfile parameters: cluster (java.lang.String) throws com.sun.enterprise.config.ConfigException </td> 
+         <td class="confluenceTd"> void </td> 
+         <td class="confluenceTd">Pass in the name of the profile, must be non-null. For this release, it should be "cluster" </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>Note: Don't hard-code the ObjectName in client code.</p> <h4><a name="ProvidingClusterSupport2DeveloperDomains-InformationAdminConsoleShouldDisplay"></a>Information Admin Console Should Display</h2> <p>Console should make the operation intuitive. Following should be evident:</p> 
+     <ul> 
+      <li>The server configuration is being changed.</li> 
+      <li>The server will now support management of standalone server instances and instance clusters.</li> 
+      <li>The template configuration for server instances is picked from given profile (cluster).</li> 
+      <li>All the applications deployed on the server will continue to work.</li> 
+      <li>The current (single instance) server will assume the role of Domain Administration Server<br> which itself can host user applications.</li> 
+      <li>By default, in-memory replication will be used for applications that are required to be available.</li> 
+      <li>With every server instance, a local JMS broker will be provided.</li> 
+      <li>The name of configuration used as a template by server instances and clusters is named <b>default-config</b>.</li> 
+      <li>The changes will be effective only on server restart.</li> 
+      <li>Since the domain now supports clusters, the start-domain command will take longer to start up.</li> 
+      <li>After the operation is completed successfully, <b>redirect the user to restart domain page</b>. That way, we make it explicit that restart is required.</li> 
+      <li>We should also suggest to users that they enhance the JVM configuration (heap-size etc.) of the admin server now that it supports clusters.</li> 
+      <li>Only domain.xml is modified by this operation. So, administrators can be directed to take a backup of that file in case something goes wrong.</li> 
+     </ul> <p>It is better to make users confirm their decision.</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:49.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

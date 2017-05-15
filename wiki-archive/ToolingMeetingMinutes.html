@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : ToolingMeetingMinutes</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p><b>NOTE</b></p> <p>put new meeting minute entries BELOW the TableOfContents</p> <p>put tentative agenda items into the 'Future Agenda Items' list. remove them once they end up in some minutes.</p> <h4><a name="ToolingMeetingMinutes-NetBeansStatus"></a>NetBeans Status</h3> <p><a href="http://www.netbeans.org/issues/buglist.cgi?issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED&amp;priority=P1&amp;priority=P2&amp;priority=P3&amp;priority=P4&amp;priority=P5&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=substring&amp;long_desc=&amp;long_desc_type=substring&amp;issue_file_loc=&amp;issue_file_loc_type=substring&amp;status_whiteboard=&amp;status_whiteboard_type=substring&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=assigned_to&amp;type0-0-0=equals&amp;value0-0-0=ludo&amp;field0-0-1=assigned_to&amp;type0-0-1=equals&amp;value0-0-1=pcw&amp;field0-0-2=assigned_to&amp;type0-0-2=equals&amp;value0-0-2=nityad&amp;field0-0-3=assigned_to&amp;type0-0-3=equals&amp;value0-0-3=vkraemer&amp;field0-0-4=assigned_to&amp;type0-0-4=equals&amp;value0-0-4=raccah&amp;cmdtype=doit&amp;namedcmd=pluginteamissues&amp;newqueryname=&amp;order=Reusesamesortaslasttime&amp;Submitquery=Submitquery">Open Issues</a> <a href="http://www.netbeans.org/issues/buglist.cgi?issue_type=DEFECT&amp;issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED&amp;priority=P1&amp;priority=P2&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=substring&amp;long_desc=&amp;long_desc_type=substring&amp;issue_file_loc=&amp;issue_file_loc_type=substring&amp;status_whiteboard=&amp;status_whiteboard_type=substring&amp;keywords=incomplete&amp;keywords_type=notokens&amp;field0-0-0=assigned_to&amp;type0-0-0=equals&amp;value0-0-0=ludo&amp;field0-0-1=assigned_to&amp;type0-0-1=equals&amp;value0-0-1=pcw&amp;field0-0-2=assigned_to&amp;type0-0-2=equals&amp;value0-0-2=nityad&amp;field0-0-3=assigned_to&amp;type0-0-3=equals&amp;value0-0-3=vkraemer&amp;field0-0-4=assigned_to&amp;type0-0-4=equals&amp;value0-0-4=raccah&amp;cmdtype=doit&amp;namedcmd=pluginteamissues&amp;newqueryname=&amp;order=Reusesamesortaslasttime&amp;Submitquery=Submitquery">release stoppers (p1 and p2 issues that are not incomplete)</a></p> <h4><a name="ToolingMeetingMinutes-EclipseStatus"></a>Eclipse Status</h3> <p><a href="https://glassfishplugins.java.net/issues/buglist.cgi?issue_status=NEW&amp;issue_status=STARTED&amp;issue_status=REOPENED&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=fulltext&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=&amp;cmdtype=doit&amp;order=Reusesamesortaslasttime&amp;Submitquery=Submitquery">Open Issues</a></p> 
+     <div> 
+      <ul> 
+       <li><a href="#ToolingMeetingMinutes-NetBeansStatus">NetBeans Status</a></li> 
+       <li><a href="#ToolingMeetingMinutes-EclipseStatus">Eclipse Status</a></li> 
+       <li><a href="#ToolingMeetingMinutes-FutureAgendaItems">Future Agenda Items</a></li> 
+       <li><a href="#ToolingMeetingMinutes-20091202">2009-12-02</a></li> 
+       <li><a href="#ToolingMeetingMinutes-20091125">2009-11-25</a></li> 
+       <li><a href="#ToolingMeetingMinutes-2009107">2009-10-7</a></li> 
+       <li><a href="#ToolingMeetingMinutes-20090923">2009-09-23</a></li> 
+       <li><a href="#ToolingMeetingMinutes-2009099">2009-09-9</a></li> 
+       <li><a href="#ToolingMeetingMinutes-2009092">2009-09-2</a></li> 
+       <li><a href="#ToolingMeetingMinutes-20090826">2009-08-26</a></li> 
+       <li><a href="#ToolingMeetingMinutes-20090422">2009-04-22</a></li> 
+       <li><a href="#ToolingMeetingMinutes-20090331">2009-03-31</a></li> 
+       <li><a href="#ToolingMeetingMinutes-20090318">2009-03-18</a></li> 
+       <li><a href="#ToolingMeetingMinutes-20090311">2009-03-11</a></li> 
+       <li><a href="#ToolingMeetingMinutes-20090304">2009-03-04</a></li> 
+       <li><a href="#ToolingMeetingMinutes-20080625">2008-06-25</a></li> 
+       <li><a href="#ToolingMeetingMinutes-20080409">2008-04-09</a></li> 
+       <li><a href="#ToolingMeetingMinutes-20080123">2008-01-23</a></li> 
+       <li><a href="#ToolingMeetingMinutes-20071212">2007-12-12</a></li> 
+      </ul>
+     </div> <h4><a name="ToolingMeetingMinutes-FutureAgendaItems"></a>Future Agenda Items</h3> <p>What Helios means to us, presented by Rochelle and/or Ludo</p> <p>Http adapter versus REST interface, presented by Ludo</p> <h4><a name="ToolingMeetingMinutes-20091202"></a>2009-12-02</h3> <p>What is next?</p> 
+     <ul> 
+      <li><em>NetBeans</em><br> releasing 6.8 soon. <a href="http://wiki.netbeans.org/NetBeansPatchesProcess">patching process for 6.8</a>. critical dates... 2010-01-6, 2010-01-15</li> 
+      <li><em>Eclipse Bundle</em><br> ;Eclipse:</li> 
+      <li><em>JavaMail</em> 
+       <hr> <h4><a name="ToolingMeetingMinutes-20091125"></a>2009-11-25</h3></li> 
+     </ul> <p>Questions for everyone...</p> <p>What is the next thing you want to work on?<br> What is the next thing that you have been told you will be working on?</p> <p>Vince: </p> 
+     <ul> 
+      <li><em>Want to do</em><br> add more tests to NB glassfish.* codebase, improve JRuby/Rails debugging from NB for v3 deployed Rails apps, clean up NB v3 code a bit, find out about v3.1 features and find stuff that will make useful developer oriented features, do more development on Eclipse plugin, migrate to the v3 rest interface instead of the HTTP adapter</li> 
+      <li><em>Told to do</em><br> some bug fixes related to RequestProcessor's in NB and a couple other p2 issues that have been uncovered since the 6.8 p2 cut-off date.</li> 
+     </ul> <p>Nitya:</p> 
+     <ul> 
+      <li><em>Want to do</em><br> ;Told to do:</li> 
+     </ul> <p>Rochelle:</p> 
+     <ul> 
+      <li><em>Want to do</em><br> spend some time making progress on eclipse plugin bugs (24) and RFEs (25), look into samples</li> 
+      <li><em>Told to do</em><br> Bundle 1.2 release</li> 
+     </ul> <p>Davis:</p> 
+     <ul> 
+      <li><em>Want to do</em><br> ;Told to do:</li> 
+     </ul> 
+     <hr> <h4><a name="ToolingMeetingMinutes-2009107"></a>2009-10-7</h3> <p>Davis: <a href="GlassfishPluginSQEWeeklyReport.html" title="GlassfishPluginSQEWeeklyReport">QA status</a></p> <p>Rochelle:</p> 
+     <ul> 
+      <li><em>last week</em><br> vacation, code reviews, published 2 versions of plugin, bundle build, sanity testing of new eclipse and bundle builds</li> 
+      <li><em>next week</em><br> more on java ee 6 wizards 
+       <hr> <h4><a name="ToolingMeetingMinutes-20090923"></a>2009-09-23</h3></li> 
+     </ul> <p>Davis: <a href="GlassfishPluginSQEWeeklyReport.html" title="GlassfishPluginSQEWeeklyReport">QA status</a></p> <p>Nitya:</p> 
+     <ul> 
+      <li><em>last week</em><br> checked in Mail and JMS wizards for eclipse. </li> 
+      <li>_Started investigating refactoring needed for JDBC wizard to leverage code from the other wizards.<br> ;Source build check for JavaMail<br> ;next week_<br> investigate common location for resource folder in Eclipse. Currently the resources are getting created in WEB-INF folder</li> 
+      <li>_Refactor JDBC wizard in Eclipse<br> ;NB IZ 170248 - first pass at fix didn't pan out - working on this<br> ;JavaMail tasks - set up hudson slave dedicated to javamail build<br> ;Get continous javamail build started<br> ;OSGI repackaging - still needed ? investigate</li> 
+     </ul> <p>Rochelle_<br> ;last week: adjust eclipse plugin to v3 anon login changes, work on some user bugs, add no-interface option to EJB 3.1 wizard, code review for Nitya's resource wizards, update Servlet 3.0 wizard to have better OOB generated content, eluminate demo session of EE6 features to Shreedhar</p> 
+     <ul> 
+      <li><em>next week</em><br> followup issues discovered during eluminate session, more bugs 
+       <hr> <h4><a name="ToolingMeetingMinutes-2009099"></a>2009-09-9</h3> <p>Rochelle:</p></li> 
+      <li><em>last week</em><br> checked in new ejb in web project wizard, published 1.0.32 of plugin, started 1.2 tools bundle discussions, sailfin wizards update</li> 
+      <li><em>next week</em><br> fix java ee 6 wizards with eclipse 3.5 
+       <hr> <h4><a name="ToolingMeetingMinutes-2009092"></a>2009-09-2</h3></li> 
+     </ul> <p>Davis: <a href="GlassfishPluginSQEWeeklyReport.html" title="GlassfishPluginSQEWeeklyReport">QA status</a></p> <p>Rochelle: </p> 
+     <ul> 
+      <li><em>last week</em><br> working on new ejb in web project wizard - mostly done. provided info for Oracle AI (Carla, Melissa Mograss Yerke) for UC 1.0 usage of swing layout extensions. </li> 
+      <li><em>next week</em><br> sailfin requirements a bit on the sip wizards as suggested by Vince in a code review (next action)</li> 
+     </ul> <p>nitya: </p> 
+     <ul> 
+      <li><em>last week</em><br> working on a CTS failure P1 CR 6839696 in the JavaMail area</li> 
+      <li>_setup CTS on local machine and verified patch for issue<br> ;tested patch for CTS failure. Waiting on hudson to become non-red for checkin<br> ;next week_<br> ;Have several P2s assigned </li> 
+      <li>_Working on 169837 &amp; 171295<br> ;Testing fix for mail resources deployment not happening in certain cases<br> ;Investigate linking up JavaMail workspace development builds to V3 build process</li> 
+     </ul> <p>Vince_<br> ;last week: fixed a couple NB issues to close or support closing some p2 issues. better messaging for TPTP integration. addressed some code review items. provided info for Oracle's code reuse query to sreeram. provided feedback on qa functional testing and a java ee 6 ui review from the NB UI team. did a code review for other team integrations. started working on a Profile on Server integration improvement for Eclipse. did a bit of data gathering for new resource node issue in NB, appears to be related to a code change in the server. publish blog entry about SIP Servlet development in Eclipse</p> 
+     <ul> 
+      <li><em>next week</em><br> finish TPTP integration improvements. address some NB issues for 6.8.</li> 
+     </ul> 
+     <hr> <h4><a name="ToolingMeetingMinutes-20090826"></a>2009-08-26</h3> <p>Davis: <a href="GlassfishPluginSQEWeeklyReport.html" title="GlassfishPluginSQEWeeklyReport">QA status</a></p> <p>Rochelle: completing ee 6 Servlet wizard. code sharing list for sreeram. fixing issue in SIP Servlet wizard (Next action)</p> <p>Nitya: pending...</p> 
+     <ul> 
+      <li>what is the status on the p2's that are assigned to you?</li> 
+     </ul> <p>vince: working on TPTP integration testing and clean up. code sharing list for sreeram. implementing <a href="http://www.netbeans.org/issues/show_bug.cgi-170448">restlib registration</a> to support the websvc features. start to fix run web app for projects that target a remote server: P2 issue (Next action).</p> 
+     <hr> <h4><a name="ToolingMeetingMinutes-20090422"></a>2009-04-22</h3> <p><b>Agenda</b></p> <p>Review <a href="GlassfishPluginSQEWeeklyReport.html" title="GlassfishPluginSQEWeeklyReport">QA status</a></p> <p>Projects and Status</p> <p> Level.WARNING and NB... make sure it is used correctly</p> 
+     <hr> <h4><a name="ToolingMeetingMinutes-20090331"></a>2009-03-31</h3> <p><b>Agenda</b></p> <p>Review <a href="GlassfishPluginSQEWeeklyReport.html" title="GlassfishPluginSQEWeeklyReport">QA status</a></p> <p>Review AI status</p> <p><a href="GfinNB70TaskList.html" title="GfinNB70TaskList">task list</a> and <a href="GfinNB67Status.html" title="GfinNB67Status">status</a> review</p> 
+     <hr> <h4><a name="ToolingMeetingMinutes-20090318"></a>2009-03-18</h3> <p><b>Agenda</b></p> <p>Review <a href="GlassfishPluginSQEWeeklyReport.html" title="GlassfishPluginSQEWeeklyReport">QA status</a></p> <p>Review AI status</p> <p><a href="GfinNB70TaskList.html" title="GfinNB70TaskList">task list</a> and <a href="GfinNB67Status.html" title="GfinNB67Status">status</a> review</p> <p>NB.next discussion : what do we need for the September release</p> 
+     <hr> <h4><a name="ToolingMeetingMinutes-20090311"></a>2009-03-11</h3> <p><b>Agenda</b></p> <p>Review <a href="GlassfishPluginSQEWeeklyReport.html" title="GlassfishPluginSQEWeeklyReport">QA status</a></p> <p>Review AI status</p> <p><a href="GfinNB70TaskList.html" title="GfinNB70TaskList">task list</a> and <a href="GfinNB67Status.html" title="GfinNB67Status">status</a> review</p> 
+     <hr> <h4><a name="ToolingMeetingMinutes-20090304"></a>2009-03-04</h3> <p>Attendees: Nitya, Rochelle, Peter, Davis, Vince</p> 
+     <ol> 
+      <li>review schedules 
+       <ol> 
+        <li>eclipse<br> good progress. m3 soon (this week). Nearly through OSR. quality team gearing up to do a fishcat. Some talks at EclipseCon: Ludo, Jerome, and Richard Hall: <a href="http://www.eclipsecon.org/2009/sessions-256">http://www.eclipsecon.org/2009/sessions-256</a>, <a href="http://www.eclipsecon.org/2009/sessions-257">http://www.eclipsecon.org/2009/sessions-257</a> <a href="http://www.eclipsecon.org/2009/sessions-360">http://www.eclipsecon.org/2009/sessions-360</a></li> 
+        <li>NetBeans 6.7<br> m3 is about to close for feature integration. couple weeks for stability changes. </li> 
+        <li>GlassFish v3</li> 
+       </ol> </li> 
+     </ol> <p><a href="GfinNB70TaskList.html" title="GfinNB70TaskList">task list</a> and <a href="GfinNB67Status.html" title="GfinNB67Status">status</a> review</p> 
+     <ul> 
+      <li>task 24... discussed what the final plan should be. Peter proposed creating a new module to provide the content and catalog/resolver for the schemas and dtds that are not 'in-flux'. Seems workable for 7.0. Opened <a href="http://www.netbeans.org/issues/show_bug.cgi-159715">http://www.netbeans.org/issues/show_bug.cgi-159715</a> to track it. Opted to copy/paste current code from v2 plugin. Rochelle said would be done next week. Davis needs info from Rochelle to test this change.</li> 
+      <li>task 5... implemented. Davis said he has the info he needs to test this.</li> 
+      <li>task 10... implemented. Davis said he has the info he needs to test this.</li> 
+      <li>task 13... check in within a couple days. refactoring to eecommon. includes domain editor changes. outlined limitations to Davis. he has info necessary to test. discussed the parallel feature in Eclipse.</li> 
+      <li>task 14... will be treating as a bug fix. limited ui impact. I will outline change to Davis.</li> 
+      <li>task 16... Should be in by Mar 9... (big ui change). Nitya to give Davis info so he can test.</li> 
+      <li>tasks 20, 21, 23... in after Mar 9... will treat as bug fixes, since there is minimal UI impact.</li> 
+      <li>task 22... switching to 'not delivering' since it depends on API changes... Nitya to update with info about the RFE (existing or will file)</li> 
+      <li>task 25... really just bug fixes. ongoing.</li> 
+      <li>task 26... really bug fixes. ongoing.</li> 
+      <li>task 31... Davis has enough info to test.</li> 
+     </ul> <p>Also discussed how we can contribute to JavaOne efforts for v3.</p> 
+     <hr> <h4><a name="ToolingMeetingMinutes-20080625"></a>2008-06-25</h3> <p>Attendees:</p> <p>Agenda</p> 
+     <ol> 
+      <li>review <a href="GlassfishPluginSQEWeeklyReport.html" title="GlassfishPluginSQEWeeklyReport">qa status</a></li> 
+      <li>NB 6.5 M1 Status</li> 
+      <li>refactoring v2 plugin for code reuse in v3 plugin</li> 
+     </ol> 
+     <hr> <h4><a name="ToolingMeetingMinutes-20080409"></a>2008-04-09</h3> <p>Attendees:</p> <p>Agenda</p> 
+     <ol> 
+      <li>NB 6.1 status</li> 
+      <li>Eclipse status</li> 
+      <li>GF V3 support</li> 
+      <li>SIP Development<br> Us versus SDS</li> 
+     </ol> 
+     <hr> <h4><a name="ToolingMeetingMinutes-20080123"></a>2008-01-23</h3> <p>Attendees: Vince, Rochelle, Nouar, Kumar</p> <p>Agenda</p> 
+     <ol> 
+      <li>HG migration</li> 
+      <li>test automation TOI</li> 
+     </ol> <p>Eclipse – notes from Rochelle distributed this week as e-mail.</p> <p>Kumar on-boarding – working through the test specs from Davis.</p> <p>Bug verification: 122532 send email to kaa to verify</p> 
+     <hr> <h4><a name="ToolingMeetingMinutes-20071212"></a>2007-12-12</h3> <p>Attendees: <a href="VinceKraemer.html" title="VinceKraemer">Vince</a>, Rochelle, Peter, Nitya, Davis</p> <p>Agenda</p> 
+     <ol> 
+      <li>Planning for NetBeans 6.1<br> we need to <a href="http://wiki.netbeans.org/wiki/view/FeaturePlanningHowto">follow this process</a>. We have two new features planned for the 6.1 release. 
+       <ol> 
+        <li>V3</li> 
+        <li>Sailfin exposure<br> Services tab and registration.</li> 
+        <li>Bug Fixes<br> Need to develop the list of target issue for Davis.</li> 
+       </ol> </li> 
+      <li>Developer Experience 
+       <ol> 
+        <li>Missing Tools<br> we identified a couple areas that require attention. the first is the Eclipse story for GlassFish. we don't have the visibility into the community to know how we are doing. we don't have the knowledge to respond to users, if they came to us. that should be fixed. Rochelle will start to look at getting into that community, developing knowledge about the current plugin and developing a list of additional features for the GF/Eclipse interoperability story.</li> 
+        <li>Missing Features<br> One of the missing features in the NB/GF story is the ability to hot-fix code that is running on the server. this may be missing because nobody has shown that it already exists (though we doubt it). This is would be a huge item for developers.</li> 
+       </ol> </li> 
+     </ol> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 02, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : InteroperabilityTechnologies</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="InteroperabilityTechnologies-GlassFishExtrasInteroperabilityTechnologies"></a>GlassFish Extras - Interoperability Technologies</h3> <p><b>Technologies that enable interoperability between GlassFish and Other Middleware</b></p> <p>We encourage you to contribute any additional interoperable technology to this list. </p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <td class="confluenceTd"> [PostgreSQL</td> 
+         <td class="confluenceTd">http://www.postgresql.org </td> 
+         <td class="confluenceTd"> Pramod Gopinath writes about <a href="http://blogs.oracle.com/roller/page/Glassfish_PostgreSQL#introducing_support_for_postgresql_in">how to configure PostgreSQL</a> for using in &lt;nop&gt;GlassFish </td> 
+         <td class="confluenceTd"> Tested on Build 38. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://www-306.ibm.com/software/integration/wmq">WebSphereMQ</a> </td> 
+         <td class="confluenceTd"> Siva Thyagarajan shows how to <a href="http://blogs.oracle.com-roller-page-sivakumart?entry=websphere_mq_integration_with_sun">integrate WebSphereMQ with SJSAS/GlassFish</a> using the [ GenericJMSRA Adapter</td> 
+         <td class="confluenceTd">https://genericjmsra.java.net]. </td> 
+         <td class="confluenceTd"> Test build : unknown </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://www.tibco.com/services/educational/certification/TB0-104.jsp">TIBCO EMS </a> </td> 
+         <td class="confluenceTd"> Narayanan.V, Sivakumar Thyagarajan, and Binod PG have written an article on <a href="https://genericjmsra.java.net/docs/tibco-genericjmsra-integration-sample-doc-Integrating_Sun_Java_System_Application_Server_with_Tibco_JMS_using_the_Generic_Resource_Adapter_for_JMS.html">Integrating Sun Java System Application Server with Tibco EMS using the Generic Resource Adapter for JMS </a> </td> 
+         <td class="confluenceTd">Test Build : Unknown </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://www.sonicsoftware.com/products/sonicmq/index.ssp">SoniqMQ </a> </td> 
+         <td class="confluenceTd"> In an article, Ramesh Parthasarathy shows steps to <a href="https://genericjmsra.java.net/docs/sonic/mq-integration-guide-sonicmq_integration_guide.html">Integrate Sun Java System Application Server with Sonic MQ 7.0 using Generic Resource Adapter for JMS</a> </td> 
+         <td class="confluenceTd">Test Build: GlassFish FCS/Java EE 5 SDK </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="https://jax-ws.java.net">JAX-WS</a> </td> 
+         <td class="confluenceTd"> Arun Gupta <a href="http://weblogs.java.net/blog/arungupta">blogs</a> about the 100% interoperability achieved with JAX-WS 2.1 (Web Services Addressing) using Sun's <a href="https://jax-ws-sources.java.net">implementation</a> as part of W3C WS-Addressing interoperability testing effort. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://java.sun.com/javase/6">Mustang </a> </td> 
+         <td class="confluenceTd"> Mustang works with GlassFish </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://tomcat.apache.org/connectors/doc/howto-apache.html">Apache httpd as Proxy </a> </td> 
+         <td class="confluenceTd"> Jeanfrancois Arcand has posted <a href="http://weblogs.java.net/blog/jfarcand/archive/2006-03/running_glassfi_1.html">detailed steps </a> to configure Apache HTTP server to proxy requests to GlassFish using <a href="http://tomcat.apache.org/connectors/doc/howto-apache.html">mod_jk</a>. </td> 
+         <td class="confluenceTd"> Fixed in build 43, support mod_jk and mod_proxy_jk. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://tomcat.apache.org/tomcat/3.3/doc/mod_jk-howto.html">Using Apache mod_jk as LoadBalancer </a> </td> 
+         <td class="confluenceTd"> Daniel shows how to <a href="http://blogs.oracle.com/dadelhardt/entry/loadbalancing_with_mod_jk_and_glassfish">load balance GlassFish instances with Apache's mod_jk library</a> </td> 
+         <td class="confluenceTd"> Tested with UR1 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://www.sun.com/products/networking/switches/n1000">Sun Secure Application Switch </a> </td> 
+         <td class="confluenceTd"> <a href="http://developers.sun.com/prodtech/appserver/reference/techart/load-balancing.html">Clustering and Securing Web Applications: A Tutorial</a> explains how multiple GlassFish instances can be used with a loadbalancer to scale horizontally. </td> 
+         <td class="confluenceTd"> Tested on Build 38 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://db.apache.org-derby-papers-DerbyTut-index.html">Derby Database </a> </td> 
+         <td class="confluenceTd"> Derby is bundled with &lt;nop&gt;GlassFish. Lance <a href="http://weblogs.java.net/blog/lancea/archive/2006-02/starting_derby.html">explains </a> how to start/stop the database. </td> 
+         <td class="confluenceTd"> Tested on Build 38 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://juel.sourceforge.net">JUEL</a> </td> 
+         <td class="confluenceTd"> How to use <a href="http://juel.sourceforge.net/guide/service.html">JUEL as an alternative EL implementation with GlassFish V2 </a> </td> 
+         <td class="confluenceTd"> Tested on V2 M2 (build 19) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://www.activemq.org/site/home.html">ActiveMQ</a> </td> 
+         <td class="confluenceTd"> Active MQ has been tested to work with GlassFish as per the ActiveMQ home page. </td> 
+         <td class="confluenceTd"> Tested Build : unknown </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 02, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

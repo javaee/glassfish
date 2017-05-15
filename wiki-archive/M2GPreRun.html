@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : M2GPreRun</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="M2GPreRun-PreparingtheApplicationforMigration"></a>Preparing the Application for Migration</h1> <p>You need to complete these steps only if you intend to migrate an entire application.<br> The Migration Tool accepts one of the following as input:</p> 
+     <ul> 
+      <li>An application archive (EAR/WAR/JAR/RAR file).</li> 
+      <li>A directory that contains source files.</li> 
+     </ul> <h4><a name="M2GPreRun-RequiredSetup"></a>Required Setup</h2> <p>If you specify an archive as input, the Migration Tool will migrate the deployment descriptors (DDs) and source files, if any are present. Source files are not usually packaged in the archive so, in most cases, only DDs are migrated, and the tool just copies unchanged class files to the output directory. In this scenario, you do not have to do any additional preparation for the application archive. <br> If you specify a source directory as input, the Migration Tool requires the application to conform to the Java EE application directory structure as described in the Java EE specification. Follow these steps to prepare your application, if it is not already in the correct structure:<br> In a new directory, issue the <tt>jar -xvf</tt> command to extract the EAR file and all the containing JAR and/or WAR files of the deployed application. This makes the server-specific DDs available to the Migration Tool.<br> Copy the source files that correspond to the class files into the proper directories created in step 1. Do this in such a way that all of the Java files that correspond to the relevant class files reside in the same directory. When both source and class files are present, the Migration Tool will migrate just the source files.<br> Provide the directory that contains the application as input to the Migration Tool. This is the directory that was created in step 1.</p> <h4><a name="M2GPreRun-OptionalSetup"></a>Optional Setup</h2> <h4><a name="M2GPreRun-MigratingServerConfigurationParameters"></a>Migrating Server Configuration Parameters</h3> <p>If you want to migrate selected parameters from the server configuration files, copy the relevant files from the source application server to the directory that will be provided as input to the Migration Tool. These files include:</p> 
+     <ul> 
+      <li><tt>*-service.xml</tt> file for JBoss 3.0</li> 
+      <li><tt>server-cfg.xml</tt> file for IBM WebSphere 4.0</li> 
+      <li><tt>weblogic.properties</tt> file and startup classes, if any are used, for Weblogic 5.1</li> 
+      <li><tt>config.xml</tt> file and start up classes (if used) for Weblogic 6.0 and 6.1</li> 
+      <li><tt>resource.properties</tt> file for Java EE Reference Implementation</li> 
+     </ul> <p><a href="M2GInstSetup.html" title="M2GInstSetup">Previous</a> <a href="M2GRun.html" title="M2GRun">Next</a></p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 08, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

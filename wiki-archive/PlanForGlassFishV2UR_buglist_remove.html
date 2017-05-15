@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : PlanForGlassFishV2UR_buglist_remove</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>As part of our exit review development engineers are required to ensure that all P1, P2, P3 bugs are evaluated and targeted for a particular release, such as 9.1 Update 1 or another release. The current bug list can be seen from the <a href="PlanForGlassFishV2UR.html" title="PlanForGlassFishV2UR">9.1 Update 1 Glassfish page </a>.</p> <p><b>Bugs on the bugscrub list have the following criteria:</b></p> 
+     <ul> 
+      <li>P1, P2 ,P3 bugs</li> 
+      <li>Bugs that are in the "UNCONFIRMED" , "NEW" or "STARTED" states</li> 
+      <li>Bugs that don't have a "Target milestone" of "V3"</li> 
+      <li>Bugs that don't have the value "as91ur1-na" in Status Whiteboard</li> 
+     </ul> <p>All other bugs should already be evaluated. If the responsible owners do not consider these bugs evaluated, please evaluate them and communicate this fact to Mark Basler and Shreedhar Ganapathy. If the bugs deemed as "evaluated" haven't been sent for consideration into 9.1 Update 1, then it is assumed that they aren't "must have" bugs and aren't relevant to this release.<br> <b>To remove bugs from the bugscrub list, perform one the following options:</b></p> 
+     <ul> 
+      <li>A) Evaluate the Bug 
+       <ul> 
+        <li>Add an evaluation</li> 
+        <li>Change the status from the default initial value. If the bug is in the "UNCONFIRMED" state, move it to "NEW"</li> 
+        <li>Add a hook to confirm that the bug doesn't pertain to 9.1 Update 1. Add "as91ur1-na" to "Status whiteboard". If another value exists in the field, use a comma as a delimiter.</li> 
+       </ul> </li> 
+     </ul> 
+     <ul> 
+      <li>B) Change the bug version, change the "Target milestone" to "V3"</li> 
+     </ul> 
+     <ul> 
+      <li>C) Close the bug with appropriate reason</li> 
+     </ul> 
+     <ul> 
+      <li>D) Re-prioritize the bug to P4 or P5 with appropriate justification</li> 
+     </ul> <p>NOTE: In your evaluation, please don't just update the hook field.</p> <p>Thanks for cooperation - Mark &amp; Shreedhar.</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 08, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFishV3PreludeContent</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GlassFishV3PreludeContent-GlassFishv3Prelude"></a>GlassFish v3 Prelude</h1> <h4><a name="GlassFishV3PreludeContent-Schedule"></a>Schedule </h3> 
+     <ul> 
+      <li><a href="./GlassFishV3Schedule.html">GlassFish v3 Schedule</a></li> 
+     </ul> <h4><a name="GlassFishV3PreludeContent-Features"></a>Features</h3> 
+     <ul> 
+      <li>OSGi based light weight and extensible core</li> 
+      <li>Web and Scripting Container</li> 
+      <li>Easy to Use Admin Console for configuration and Management</li> 
+      <li>Update Center</li> 
+     </ul> <h4><a name="GlassFishV3PreludeContent-Contentsoftherelease"></a>Contents of the release</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">Category</th> 
+         <th class="confluenceTh">subcategory</th> 
+         <th class="confluenceTh">Owner</th> 
+         <th class="confluenceTh"> ETA Milestone</th> 
+         <th class="confluenceTh"> Current Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> *GlassFish Nucleus* </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> *OSGi* </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> All server modules to be OSGied </td> 
+         <td class="confluenceTd"> Sahoo </td> 
+         <td class="confluenceTd"> SCF </td> 
+         <td class="confluenceTd"> DONE </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> All OSGi bundles to use Import-Package style dependency </td> 
+         <td class="confluenceTd"> Sahoo </td> 
+         <td class="confluenceTd"> SCF </td> 
+         <td class="confluenceTd"> Checked in </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Application class loader hierarchy to look like v2 </td> 
+         <td class="confluenceTd"> Sahoo </td> 
+         <td class="confluenceTd"> SCF </td> 
+         <td class="confluenceTd"> <a href="http://fisheye4.atlassian.com/changelog/glassfish-svn/trunk/v3?cs=21565">Checked in </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Installed libraries should be able see exported server interfaces </td> 
+         <td class="confluenceTd"> Sahoo </td> 
+         <td class="confluenceTd"> SCF </td> 
+         <td class="confluenceTd"> <a href="http://fisheye4.atlassian.com/changelog/glassfish-svn/trunk/v3?cs=21565">Checked in </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Support for --libraries </td> 
+         <td class="confluenceTd"> Sahoo </td> 
+         <td class="confluenceTd"> SCF </td> 
+         <td class="confluenceTd"> <a href="http://fisheye4.atlassian.com/changelog/glassfish-svn/trunk/v3?cs=21565">Checked in </a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Clean up felix conf file </td> 
+         <td class="confluenceTd"> Sahoo </td> 
+         <td class="confluenceTd"> SCF </td> 
+         <td class="confluenceTd"> Started </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Integrate Felix 1.2.0 </td> 
+         <td class="confluenceTd"> Sahoo </td> 
+         <td class="confluenceTd"> HCF </td> 
+         <td class="confluenceTd"> Scheduled by end of Aug </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Distribute and enable Felix remote shell </td> 
+         <td class="confluenceTd"> Sahoo </td> 
+         <td class="confluenceTd"> HCF </td> 
+         <td class="confluenceTd"> Waiting for Felix to release it </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Add doPrivileged() wherever applicable before calling OSGi API </td> 
+         <td class="confluenceTd"> Sahoo </td> 
+         <td class="confluenceTd"> HCF </td> 
+         <td class="confluenceTd"> Not Started </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Pluggability architecture (installation of bundles, domain.xml modification, etc.) </td> 
+         <td class="confluenceTd"> Kedar, Sahoo </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Started </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Hide server implementation APIs from applications (i.e., isolation) </td> 
+         <td class="confluenceTd"> All </td> 
+         <td class="confluenceTd"> HCF </td> 
+         <td class="confluenceTd"> Sahoo to demonstrate how to achieve this, others have to do it for their modules </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Clean up pom.xml: centralize maven-bundle-plugin configuration in one place and move specific details to osgi.bundle file </td> 
+         <td class="confluenceTd"> Sahoo &amp; others </td> 
+         <td class="confluenceTd"> HCF </td> 
+         <td class="confluenceTd"> Not started, we were waiting for maven-bundle-plugin v1.2 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> APIs for JSPC </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> SCF </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> *HK2* </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> *Grizzly* </td> 
+         <td class="confluenceTd"> Oleksiy Stashok </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> *Logging* </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> *Configuration* </td> 
+         <td class="confluenceTd"> Kedar </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> *Security* </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> *Web Container* </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Servlet 2.5 </td> 
+         <td class="confluenceTd"> Jan Luehe </td> 
+         <td class="confluenceTd"> SCF </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> JSP 2.1 </td> 
+         <td class="confluenceTd"> Kin-man Chung </td> 
+         <td class="confluenceTd"> Milestone 1 </td> 
+         <td class="confluenceTd">done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> JSF 1.2 </td> 
+         <td class="confluenceTd"> Ryan Lubke </td> 
+         <td class="confluenceTd"> Milestone 1 (need to confirm with Ryan) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> SSI support </td> 
+         <td class="confluenceTd"> Shing-wai Chan </td> 
+         <td class="confluenceTd"> Milestone 1 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> CGI support </td> 
+         <td class="confluenceTd"> Shing-wai Chan </td> 
+         <td class="confluenceTd"> Milestone 1 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> WebDAV support </td> 
+         <td class="confluenceTd"> Shing-wai Chan </td> 
+         <td class="confluenceTd"> SCF </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Port tomcat fixes </td> 
+         <td class="confluenceTd"> Shing-wai Chan </td> 
+         <td class="confluenceTd"> Milestone 1 </td> 
+         <td class="confluenceTd"> Conditional - pending stable build for v3 to be able to test </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Web container refactoring </td> 
+         <td class="confluenceTd"> Jan, Jeanfrancois, Shing-wai Chan, Kin-man </td> 
+         <td class="confluenceTd"> SCF (ongoing will include some in Milestone 1) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Dynamic Reconfiguration </td> 
+         <td class="confluenceTd"> Amy Roh </td> 
+         <td class="confluenceTd"> Milestone 1 </td> 
+         <td class="confluenceTd"> Depends on admin support for asadmin set </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> *Web Infrastructure* </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Comet (Atmosphere) </td> 
+         <td class="confluenceTd"> Jean-francois Arcand </td> 
+         <td class="confluenceTd"> Update center release </td> 
+         <td class="confluenceTd"> Pending Formal Approval </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> mod_jk support </td> 
+         <td class="confluenceTd"> Amy Roh </td> 
+         <td class="confluenceTd"> After SCF </td> 
+         <td class="confluenceTd"> Pending clarification on renamed apache classes in Grizzly from Jeanfrancois </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> *Scripting* </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> jRuby and jRuby on Rails </td> 
+         <td class="confluenceTd"> Vivek Pandey </td> 
+         <td class="confluenceTd"> Milestone 1 </td> 
+         <td class="confluenceTd"> Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Groovy on Grails </td> 
+         <td class="confluenceTd"> Vivek Pandey </td> 
+         <td class="confluenceTd"> Milestone 1 </td> 
+         <td class="confluenceTd"> Groovy support works out of the box, needs no separate glue code </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> *Business Tier* </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> *Java Persistence API 1.0 Support* </td> 
+         <td class="confluenceTd"> Mitesh Meswani </td> 
+         <td class="confluenceTd"> Milestone 1 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Java Transaction API </td> 
+         <td class="confluenceTd"> Marina Vatkina </td> 
+         <td class="confluenceTd"> SCF </td> 
+         <td class="confluenceTd"> JTA support is available. XA/JTS support delivery vehicle TBD </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> EclipseLink </td> 
+         <td class="confluenceTd"> Mitesh Meswani </td> 
+         <td class="confluenceTd"> SCF </td> 
+         <td class="confluenceTd"> Target for integrating EclipseLink 1.0 is sometime in week of July 14 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> *JDBC Support* </td> 
+         <td class="confluenceTd"> Jagadish, Shalini </td> 
+         <td class="confluenceTd"> Done for TP-2 </td> 
+         <td class="confluenceTd"> Done for TP-2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> *Java Connector Architecture 1.5* </td> 
+         <td class="confluenceTd"> Jagadish </td> 
+         <td class="confluenceTd"> Partial (w.r.t features needed for JDBC) - Done for TP-2 </td> 
+         <td class="confluenceTd"> Done for TP-2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> *Connection Pooling* </td> 
+         <td class="confluenceTd"> Jagadish </td> 
+         <td class="confluenceTd"> Done for TP-2 </td> 
+         <td class="confluenceTd"> Done for TP-2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Dynamic reconfig for jdbc connection pool </td> 
+         <td class="confluenceTd"> Shalini </td> 
+         <td class="confluenceTd"> SCF </td> 
+         <td class="confluenceTd"> available </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> XA Support for JDBC-RA </td> 
+         <td class="confluenceTd"> Jagadish </td> 
+         <td class="confluenceTd"> SCF </td> 
+         <td class="confluenceTd"> (available, can be tested once xa support from jta is available) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Lazy connection enlistment </td> 
+         <td class="confluenceTd"> Jagadish </td> 
+         <td class="confluenceTd"> SCF </td> 
+         <td class="confluenceTd"> available </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Lazy connection association </td> 
+         <td class="confluenceTd"> Jagadish </td> 
+         <td class="confluenceTd"> SCF </td> 
+         <td class="confluenceTd"> available </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Associate with thread </td> 
+         <td class="confluenceTd"> Jagadish </td> 
+         <td class="confluenceTd"> SCF </td> 
+         <td class="confluenceTd"> available </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> *Security* </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> SSL infrastructure </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Milestone 1 </td> 
+         <td class="confluenceTd">Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> *File and JDBC Realm* </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Milestone 1 </td> 
+         <td class="confluenceTd">Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Container Authentication and Authorization </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Milestone 1 </td> 
+         <td class="confluenceTd">Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> SPIs to support Metro </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> SCF </td> 
+         <td class="confluenceTd">The JSR 196 SOAP Profile will be available Via UpdateCenter but cannot be part of ExpressLite </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> *Management* </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> *Configuration* </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Extensibility framework </td> 
+         <td class="confluenceTd"> Kedar, Jerome </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Web Tier and Scripting Configuration </td> 
+         <td class="confluenceTd"> Kedar, Rajiv, Vivek </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Minimal configuration for Lite distribution </td> 
+         <td class="confluenceTd"> Kedar, Siraj </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Introduce grizzly configuration </td> 
+         <td class="confluenceTd"> Nandini, Dhiru Pandey </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> JDBC Create/Delete/Update </td> 
+         <td class="confluenceTd"> Jennifer </td> 
+         <td class="confluenceTd"> Milestone 1 </td> 
+         <td class="confluenceTd">Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Security (User Mgmt) </td> 
+         <td class="confluenceTd"> Nandini </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> *Deployment* </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Extensibility framework </td> 
+         <td class="confluenceTd"> Jerome/Hong </td> 
+         <td class="confluenceTd"> Milestone 1 </td> 
+         <td class="confluenceTd">Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Deploy web applications with deployment plan </td> 
+         <td class="confluenceTd"> Tim/Hong </td> 
+         <td class="confluenceTd"> Milestone 1 </td> 
+         <td class="confluenceTd">Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Web applications dynamic reload </td> 
+         <td class="confluenceTd"> Tim </td> 
+         <td class="confluenceTd"> Milestone 1 </td> 
+         <td class="confluenceTd">Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Provide library support (lib/*jars, --libraries) to web applications </td> 
+         <td class="confluenceTd"> Sahoo </td> 
+         <td class="confluenceTd"> SCF </td> 
+         <td class="confluenceTd">Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Provide annotation support for sniffer API (sniffer.getAnnotationTypes) </td> 
+         <td class="confluenceTd"> Hong </td> 
+         <td class="confluenceTd"> SCF </td> 
+         <td class="confluenceTd">Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Application management server side work </td> 
+         <td class="confluenceTd"> Tim/Hong </td> 
+         <td class="confluenceTd"> SCF (stretch goal) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> JRuby applications </td> 
+         <td class="confluenceTd"> Vivek </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> *Monitoring* </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Infrastructure </td> 
+         <td class="confluenceTd"> Mahesh, Harpreet, Prashant </td> 
+         <td class="confluenceTd"> Milestone 1 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Extensibility framework </td> 
+         <td class="confluenceTd"> Sreenivas </td> 
+         <td class="confluenceTd"> SCF </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Web container integration </td> 
+         <td class="confluenceTd"> Prashant, Harpreet </td> 
+         <td class="confluenceTd"> SCF </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> *Admin CLI* </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Extensibility framework </td> 
+         <td class="confluenceTd"> Jerome </td> 
+         <td class="confluenceTd"> Milestone 1 </td> 
+         <td class="confluenceTd">Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Lifecycle (Create/Delete/Start/Stop) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Domain Management </td> 
+         <td class="confluenceTd"> Siraj </td> 
+         <td class="confluenceTd"> SCF </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> deployment </td> 
+         <td class="confluenceTd"> Hong </td> 
+         <td class="confluenceTd"> Milestone 1 </td> 
+         <td class="confluenceTd">Done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> configuration </td> 
+         <td class="confluenceTd"> Sreeni </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Internal requirements </td> 
+         <td class="confluenceTd"> Sreeni </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> CTS harness requirement to run TCKs for Servlet, JSP, JSTL, JSF, JPA </td> 
+         <td class="confluenceTd"> Sreeni </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> QA test automation requirements </td> 
+         <td class="confluenceTd"> Sreeni </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> *Admin GUI* </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Extensibility framework - Handler/faces-config.xml support (<a href="GFV3PluggabilityOnePager.html" title="GFV3PluggabilityOnePager">GFV3PluggabilityOnePager</a>) </td> 
+         <td class="confluenceTd"> KenPaulsen </td> 
+         <td class="confluenceTd"> Milestone 1 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Extensibility framework - Rest of plugin features (<a href="GFV3PluggabilityOnePager.html" title="GFV3PluggabilityOnePager">GFV3PluggabilityOnePager</a>) </td> 
+         <td class="confluenceTd"> KenPaulsen </td> 
+         <td class="confluenceTd"> SCF </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> deployment </td> 
+         <td class="confluenceTd"> Anissa </td> 
+         <td class="confluenceTd"> Milestone 1 </td> 
+         <td class="confluenceTd"> web application deployment done. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> configuration </td> 
+         <td class="confluenceTd"> Anissa </td> 
+         <td class="confluenceTd"> Milestone 1 </td> 
+         <td class="confluenceTd"> done </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> update gui plugin module </td> 
+         <td class="confluenceTd"> Anissa </td> 
+         <td class="confluenceTd"> SCF </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> monitoring </td> 
+         <td class="confluenceTd"> Jennifer </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> *Packaging* </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> File layout specification </td> 
+         <td class="confluenceTd"> Snjezana </td> 
+         <td class="confluenceTd"> Milestone 1(draft) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Integrating packager/installer build into Hudson </td> 
+         <td class="confluenceTd"> Snjezana </td> 
+         <td class="confluenceTd"> Milestone 1 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Packages matching Consumables </td> 
+         <td class="confluenceTd"> Snjezana/Sahoo </td> 
+         <td class="confluenceTd"> SCF </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> *Installer* </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> One pager submitted 06/30, Review in progress. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> GUI mode </td> 
+         <td class="confluenceTd"> Sathyan </td> 
+         <td class="confluenceTd"> SCF </td> 
+         <td class="confluenceTd"> Done. Milestone 1? </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Silent mode </td> 
+         <td class="confluenceTd"> Sathyan </td> 
+         <td class="confluenceTd"> SCF </td> 
+         <td class="confluenceTd"> Done.Milestone 1? </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Uninstaller </td> 
+         <td class="confluenceTd"> Sathyan </td> 
+         <td class="confluenceTd"> After SCF </td> 
+         <td class="confluenceTd"> OI issues need follow up after SCF </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Update Center Bootstrap </td> 
+         <td class="confluenceTd"> Snjezana </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Done. Milestone 1? </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Support for product registration </td> 
+         <td class="confluenceTd"> Snjezana, Sathyan </td> 
+         <td class="confluenceTd"> SCF </td> 
+         <td class="confluenceTd"> Done. Milestone 1? </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Desktop integration </td> 
+         <td class="confluenceTd"> Sathyan, Snjezana </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> *Update Center* </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> GUI support for downloading additional content </td> 
+         <td class="confluenceTd"> Anissa, Tom Mueller </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> GUI support for updating installed component </td> 
+         <td class="confluenceTd"> Anissa, Tom Mueller </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Tags on the content - "Supported" vs "Beta" vs. "Early Access" </td> 
+         <td class="confluenceTd"> Tom Mueller, Sreeni </td> 
+         <td class="confluenceTd"> SCF </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> *Embeddable Distribution* </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Embedded and Implanted API </td> 
+         <td class="confluenceTd"> Byron Nevins </td> 
+         <td class="confluenceTd"> SCF </td> 
+         <td class="confluenceTd"> One Pager to be completed by July 14 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> maven distribution for web tier </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> After SCF </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> maven distribution for EJB </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> After SCF </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> *NetBeans Plugin* </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> *Development and Deployment Support for* </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Web Applications </td> 
+         <td class="confluenceTd"> Peter Williams, Vince Kramer </td> 
+         <td class="confluenceTd"> Milestone 1 by Jul 21 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> jRuby Applications </td> 
+         <td class="confluenceTd"> Peter Williams </td> 
+         <td class="confluenceTd"> Milestone 1 by Jul 21 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> *Eclipse Plugin* </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> *Development and Deployment Support for* </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Web Application </td> 
+         <td class="confluenceTd"> Rochelle </td> 
+         <td class="confluenceTd"> SCF </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> *Update Center Content* </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> jMaki 1.1 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Metro </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Jersey </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> EJB 3.1 Early Access </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> JSF 2.0 Early Access </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> JTS (XA Transaction support) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> jRuby runtime </td> 
+         <td class="confluenceTd"> Vivek Pandey </td> 
+         <td class="confluenceTd"> Milestone 1 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Grails support for GlassFish </td> 
+         <td class="confluenceTd"> Vivek Pandey </td> 
+         <td class="confluenceTd"> Milestone 1 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Update Center (Downloaded at first use) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>---------------</p> <h4><a name="GlassFishV3PreludeContent-RelatedLinks"></a>Related Links</h3> 
+     <ul> 
+      <li><a href="./GLassFishV3Distributions.html">Distributions</a></li> 
+      <li><a href="JavaEETutorialGlassFishV3TP2Roadmap.html" title="JavaEETutorialGlassFishV3TP2Roadmap">Java EE Tutorial roadmap for TP2</a></li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 09, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

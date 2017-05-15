@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : Hyperjaxb3Configuration</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p><a href="Hyperjaxb3.html" title="Hyperjaxb3">Documentation</a> | <a href="Hyperjaxb3Reference.html" title="Hyperjaxb3Reference">Reference</a> | <a href="Hyperjaxb3Usage.html" title="Hyperjaxb3Usage">Usage</a></p> <h4><a name="Hyperjaxb3Configuration-Hyperjaxb3configurationguide"></a>Hyperjaxb3 configuration guide</h1> <p>This document describes Hyperjaxb3 configuration options.</p> <h4><a name="Hyperjaxb3Configuration-Hyperjaxb2Maven2pluginversusstandardJAXB2Maven2pluginorAnt"></a>Hyperjaxb2 Maven2 plugin versus standard JAXB2 Maven2 plugin or Ant</h1> <p>In this guide, we will primarily discuss how to configure Hyperjaxb3 via the Hyperjaxb3 Maven2 plugin. Namely, we'll concentrate on the <tt>configuration</tt> section of the plugin definition.</p> <p>If you use a standard JAXB2 Maven2 plugin or Ant, configuring Hyperjaxb3 plugin with these tools is not much different. You just have to use the command line argument notation instead of the configuration element - simply prefix the element name with <tt><del>Xhyperjaxb3-ejb</del></tt>. For instance, if you want to specify the <tt>roundtripTestClassName</tt> configuration element, simply use the <tt>-Xhyperjaxb3-ejb-roundtripTestClassName</tt> command line argument. So, under Ant you'll have:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;xjc destdir="${basedir}/target/generated-sources/xjc" extension="true"&gt;
+	&lt;arg line="
+		-Xequals
+		-XhashCode
+		-XtoString
+		-Xhyperjaxb3-ejb
+		-Xhyperjaxb3-ejb-roundtripTestClassName=RoundtripTest"/&gt;
+		&lt;binding dir="${basedir}/src/main/resources"&gt;
+	 	&lt;include name="**/*.xjb"/&gt;
+	&lt;/binding&gt;
+	&lt;schema dir="${basedir}/src/main/resources"&gt;
+	 	&lt;include name="**/*.xsd"/&gt;
+	&lt;/schema&gt;
+&lt;/xjc&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>And with <tt>maven-jaxb2-plugin</tt>:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;plugin&gt;
+	&lt;groupId&gt;org.jvnet.jaxb2.maven2&lt;/groupId&gt;
+	&lt;artifactId&gt;maven-jaxb2-plugin&lt;/artifactId&gt;
+	&lt;version&gt;0.5&lt;/version&gt;
+	&lt;executions&gt;
+		&lt;execution&gt;
+			&lt;goals&gt;
+				&lt;goal&gt;generate&lt;/goal&gt;
+			&lt;/goals&gt;
+		&lt;/execution&gt;
+	&lt;/executions&gt;
+	&lt;configuration&gt;
+		&lt;extension&gt;true&lt;/extension&gt;
+		&lt;plugins&gt;
+			&lt;plugin&gt;
+				&lt;groupId&gt;org.jvnet.hyperjaxb3&lt;/groupId&gt;
+				&lt;artifactId&gt;hyperjaxb3-ejb-plugin&lt;/artifactId&gt;
+				&lt;version&gt;0.3&lt;/version&gt;
+			&lt;/plugin&gt;
+		&lt;/plugins&gt;
+		&lt;args&gt;
+			&lt;arg&gt;-Xequals&lt;/arg&gt;
+			&lt;arg&gt;-XhashCode&lt;/arg&gt;
+			&lt;arg&gt;-Xhyperjaxb3-ejb&lt;/arg&gt;
+			&lt;arg&gt;-Xhyperjaxb3-ejb-roundtripTestClassName=RoundtripTest&lt;/arg&gt;
+		&lt;/args&gt;
+	&lt;/configuration&gt;
+&lt;/plugin&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>With <tt>maven-hyperjaxb3-plugin</tt> this configuration is somewhat easier:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;plugin&gt;
+	&lt;groupId&gt;org.jvnet.hyperjaxb3&lt;/groupId&gt;
+	&lt;artifactId&gt;maven-hyperjaxb3-plugin&lt;/artifactId&gt;
+	&lt;executions&gt;
+		&lt;execution&gt;
+			&lt;goals&gt;
+				&lt;goal&gt;generate&lt;/goal&gt;
+			&lt;/goals&gt;
+		&lt;/execution&gt;
+	&lt;/executions&gt;
+	&lt;configuration&gt;
+		&lt;extension&gt;true&lt;/extension&gt;
+		&lt;roundtripTestClassName&gt;RoundtripTest&lt;/roundtripTestClassName&gt;
+	&lt;/configuration&gt;
+&lt;/plugin&gt;</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="Hyperjaxb3Configuration-Hyperjaxb3configurationsoptions"></a>Hyperjaxb3 configurations options</h1> <h4><a name="Hyperjaxb3Configuration-%7B%7BroundtripTestClassName%7D%7D"></a><tt>roundtripTestClassName</tt></h2> <p>Defines the fully qualified name of the roundtrip test class.<br> If you specify this, Hyperjaxb3 will generate the roundtrip test class which will perform the roundtrip testing of the generated mapping against the sample data.<br> If you omit this parameter, no roundtrip test will be generated.</p> <h4><a name="Hyperjaxb3Configuration-%7B%7BpersistenceUnitName%7D%7D"></a><tt>persistenceUnitName</tt></h2> <p>Provides the name of the persistent unit which will be generated for the processed schemas.</p> <p>According to the JPA specification, Hyperjaxb3 generates the <tt>META-INF/persistence.xml</tt> file which lists the persistent classes. Below is an example of such a file:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt;
+&lt;persistence version="1.0"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/persistence    http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:orm="http://java.sun.com/xml/ns/persistence/orm"
+    xmlns="http://java.sun.com/xml/ns/persistence"&gt;
+    &lt;persistence-unit name="org.jvnet.hyperjaxb3.ejb.tests.po"&gt;
+        &lt;class&gt;org.jvnet.hyperjaxb3.ejb.tests.po.Items$Item&lt;/class&gt;
+        &lt;class&gt;org.jvnet.hyperjaxb3.ejb.tests.po.Items&lt;/class&gt;
+        &lt;class&gt;org.jvnet.hyperjaxb3.ejb.tests.po.USAddress&lt;/class&gt;
+        &lt;class&gt;org.jvnet.hyperjaxb3.ejb.tests.po.PurchaseOrderType&lt;/class&gt;
+    &lt;/persistence-unit&gt;
+&lt;/persistence&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>Persistent classes compose a persistence unit. By default, this unit is named after the schema package produced by JAXB2. However, you can override this name with the <tt>persistenceUnitName</tt> option.</p> <h4><a name="Hyperjaxb3Configuration-%7B%7BgenerateTransientId%7D%7D"></a><tt>generateTransientId</tt></h2> <p>In some cases Hyperjaxb3 has to generate the primary key (id) fields in entities. Setting this flag to <tt>true</tt> forces Hyperjaxb3 to generate <tt>@XmlTransient</tt> id field. Default value is <tt>false</tt>.</p> <h4><a name="Hyperjaxb3Configuration-%7B%7Bcatalog%7D%7D"></a><tt>catalog</tt></h2> <p>In case your schema imports schema files from other locations and projects you can use a catalog resolver to map the import schemaLocation to a local file URL.</p> <p>You may use the catalog configuration element to specify the location of your catalog file as follows:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;plugins&gt;
+     &lt;plugin&gt;
+       &lt;groupId&gt;org.jvnet.hyperjaxb3&lt;/groupId&gt;
+       &lt;artifactId&gt;maven-hyperjaxb3-plugin&lt;/artifactId&gt;
+       ....
+       &lt;configuration&gt;
+          ...
+         &lt;catalog&gt;${basedir}/catalog.xml&lt;/catalog&gt;
+       &lt;/configuration&gt;
+     &lt;/plugin&gt;
+   &lt;/plugins&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>The catalog.xml file looks something like this:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;?xml version="1.0" encoding="UTF-8" standalone="no"?&gt;
+&lt;catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog" prefer="system"&gt;
+    &lt;system systemId="http://acme.com/foo.xsd" uri="/home/najmi/my-project/src/main/resources/foo.xsd"/&gt;
+&lt;/catalog&gt;</pre> 
+       </div> 
+      </div>
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 08, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

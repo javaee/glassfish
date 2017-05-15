@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : V3.1UpgradeDashboard</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="V3.1UpgradeDashboard-GlassFish3.1Upgrade"></a>GlassFish 3.1 Upgrade</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#V3.1UpgradeDashboard-GlassFish3.1Upgrade">GlassFish 3.1 Upgrade</a></li> 
+       <ul> 
+        <li><a href="#V3.1UpgradeDashboard-Bugstatus">Bug status</a></li> 
+        <li><a href="#V3.1UpgradeDashboard-Clusterupgradeexample">Cluster upgrade example</a></li> 
+        <li><a href="#V3.1UpgradeDashboard-Dashboard">Dashboard</a></li> 
+        <li><a href="#V3.1UpgradeDashboard-Issues%2FQuestions">Issues/Questions</a></li> 
+        <li><a href="#V3.1UpgradeDashboard-Howtoimplementupgrade">How to implement upgrade</a></li> 
+        <li><a href="#V3.1UpgradeDashboard-References">References</a></li> 
+        <li><a href="#V3.1UpgradeDashboard-Detailedmodulestatus%28optional%29">Detailed module status (optional)</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="V3.1UpgradeDashboard-Bugstatus"></a>Bug status</h2> <p><a href="https://glassfish.java.net/issues/buglist.cgi?keywords=3.1-upgrade">All current upgrade-related issues are here</a> (using an issue tracker keyword). </p> <h4><a name="V3.1UpgradeDashboard-Clusterupgradeexample"></a>Cluster upgrade example</h2> <p>This page has been removed. The full steps for upgrading are now in the released GlassFish documentation. See <a href="https://blogs.oracle.com/bobby/entry/moving_on_up_upgrading_to">this blog</a> for an upgrade example, and the <a href="http://download.oracle.com/docs/cd/E18930_01/html/821-2437/index.html">upgrade guide</a> for full information.</p> <h4><a name="V3.1UpgradeDashboard-Dashboard"></a>Dashboard</h2> <p>Deadlines you should know:</p> 
+     <ul> 
+      <li><b>Milestone 2:</b> Get start/end dates to <a href="mailto:bobby.bissett@oracle.com">Bobby</a> about when you will be implementing upgrade.</li> 
+      <li><b>Milestone 4:</b> Deadline for finishing upgrade work (but feel free to implement sooner). This deadline is from the <a href="GlassFishv3.1Upgrade.html" title="GlassFishv3.1Upgrade">Upgrade 3.1 planning page</a>.</li> 
+     </ul> <p>Here is <a href="V3UpgradeDashboard.html" title="V3UpgradeDashboard">the v3 upgrade dashboard page</a> as a reference. For developers who worked on v3, you may want to see what you've already done.</p> <p><b>Status Codes:</b> Please use one of the following (feel free to suggest alternatives) in the dashboard table. If you have details about your status that you'd like to add, use the table at the bottom of the page. Don't worry about pretty colors (for the "Done" status). I'll add them for you.</p> 
+     <ul> 
+      <li><b>0</b> – Aware that upgrade exists</li> 
+      <li><b>1</b> – Have at least stubbed out upgrade service</li> 
+      <li><b>2</b> – Implementation started</li> 
+      <li><b>3</b> – Done (including logging the changes your module made to config)</li> 
+      <li><b>4</b> – Done and tested</li> 
+      <li><b>N/A</b> – Please enter details at the bottom of the page</li> 
+     </ul> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Module </th> 
+         <th class="confluenceTh"> Owner(s) </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> Start Date </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Status Code </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Clustering Infrastructure </td> 
+         <td class="confluenceTd"> Tom Mueller </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> M5 </td> 
+         <td class="confluenceTd"> 2 (overall feature deferred to MS5) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> In-memory Session Replication </td> 
+         <td class="confluenceTd"> Mahesh Kannan, Joe Fialli </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> M4 </td> 
+         <td class="confluenceTd"> NA </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Runtime Clustering(GMS) </td> 
+         <td class="confluenceTd"> Joe Fialli </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> M4 </td> 
+         <td class="confluenceTd"> 3 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> GMS Configuration </td> 
+         <td class="confluenceTd"> Joe </td> 
+         <td class="confluenceTd"> Full writeup of config changes in <a href="http://wiki.glassfish.java.net/attach/V3FunctionalSpecs/gmsconfig_gfv3_1.rtf">gms config one pager </a> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> M4 </td> 
+         <td class="confluenceTd"> 3 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Deployment </td> 
+         <td class="confluenceTd"> Hong Zhang, Tim Quinn </td> 
+         <td class="confluenceTd"> No incompatible changes from v3, so there should be no additional work in the upgrade area </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> M4 </td> 
+         <td class="confluenceTd"> N/A </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> App Client Container </td> 
+         <td class="confluenceTd"> Tim Quinn </td> 
+         <td class="confluenceTd"> All req'd changes occur as part of redeployment of apps (see Deployment) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> M4 </td> 
+         <td class="confluenceTd"> N/A </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Management Console </td> 
+         <td class="confluenceTd"> Anissa Lam, Ken Paulsen </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> M4 </td> 
+         <td class="confluenceTd"> N/A </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> SSH/SSHD </td> 
+         <td class="confluenceTd"> Carla Mott, Joe Di Pol </td> 
+         <td class="confluenceTd"> <a href="3.1SSHProvisioningDesign.html#3.1SSHProvisioningDesign-section3.1SSHProvisioningDesign10.0Domain.xmlU...">Convert node-agent in domain.xml </a>, also rename "nodeagents" directory to "nodes" </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> M4 </td> 
+         <td class="confluenceTd"> 2 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Installer </td> 
+         <td class="confluenceTd"> Sathyan Catari </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> M4 </td> 
+         <td class="confluenceTd"> N/A, Installer will not support in-place/side-by-side upgrades. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Packaging </td> 
+         <td class="confluenceTd"> Snjezana Sevo-Zenzerovic </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> M4 </td> 
+         <td class="confluenceTd"> N/A </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> File Layout </td> 
+         <td class="confluenceTd"> Snjezana Sevo-Zenzerovic </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> M4 </td> 
+         <td class="confluenceTd"> N/A </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Web Tier </td> 
+         <td class="confluenceTd"> Rajiv Mordani, Shing Wai Chan </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> M4 </td> 
+         <td class="confluenceTd"> N/A </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> EJB </td> 
+         <td class="confluenceTd"> Marina Vatkina </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> M6 </td> 
+         <td class="confluenceTd"> 2 - One pending issue <a href="https://github.com/javaee/glassfish/issues/13218">https://github.com/javaee/glassfish/issues/13218</a> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Transaction Service </td> 
+         <td class="confluenceTd"> Marina Vatkina </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> M4 </td> 
+         <td class="confluenceTd"> N/A </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> IIOP </td> 
+         <td class="confluenceTd"> Ken Cavanaugh </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> M4 </td> 
+         <td class="confluenceTd"> N/A </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Connectors, Pooling, Resources, JDBC </td> 
+         <td class="confluenceTd"> Jagadish Ramu, Shalini Muthukrishnan </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> M4 </td> 
+         <td class="confluenceTd"> N/A </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JMS Integration </td> 
+         <td class="confluenceTd"> Satish Kumar, Nigel Deakin, Amy Kang </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> M5 </td> 
+         <td class="confluenceTd"> 0 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Metro </td> 
+         <td class="confluenceTd"> Marek Potociar </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> M4 </td> 
+         <td class="confluenceTd"> N/A </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Loadbalancer </td> 
+         <td class="confluenceTd"> Kshi tiz Saxena </td> 
+         <td class="confluenceTd"> For load-balancer element, device-host and device-port need to be converted to attributes from properties and auto-apply-enabled attribute will be removed with suitable warning. The load-balancer plugin upgrade will be handled by GlassFish LoadBalancer Configurator. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> M5 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> RESTful API </td> 
+         <td class="confluenceTd"> Jason Lee, Ludovic Champenois </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> M4 </td> 
+         <td class="confluenceTd"> N/A </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Logging &amp; Diagnostics </td> 
+         <td class="confluenceTd"> Naman Mehta </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> M4 </td> 
+         <td class="confluenceTd"> N/A </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Embedded </td> 
+         <td class="confluenceTd"> Siraj Ghaffar </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> M4 </td> 
+         <td class="confluenceTd"> N/A </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Globalization </td> 
+         <td class="confluenceTd"> Georges Murr </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> M4 </td> 
+         <td class="confluenceTd"> N/A </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Security </td> 
+         <td class="confluenceTd"> Kumar Jayanti </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> M4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Developer Tooling </td> 
+         <td class="confluenceTd"> Vince Kraemer, Ludovic Champenois </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> M4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Developer Tooling </td> 
+         <td class="confluenceTd"> Ludovic Champenois, Vince Kraemer </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> M4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JMX API (AMX) </td> 
+         <td class="confluenceTd"> Prasad Subramanian </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> M4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> OSGi </td> 
+         <td class="confluenceTd"> Sanjeeb Sahoo, Richard Hall </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> M4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JSF </td> 
+         <td class="confluenceTd"> Ed Burns </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> NA </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Jersey </td> 
+         <td class="confluenceTd"> Paul Sandoz </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> M4 </td> 
+         <td class="confluenceTd"> N/A </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Contexts and Dependency Injection (CDI) </td> 
+         <td class="confluenceTd"> Sivakumar Thyagarajan </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> M4 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Persistence </td> 
+         <td class="confluenceTd"> Mitesh Meswani </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> M4 </td> 
+         <td class="confluenceTd"> N/A </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="V3.1UpgradeDashboard-Issues%2FQuestions"></a>Issues/Questions</h2> <p><a href="https://github.com/javaee/glassfish/issues/11753">This issue tracks some v2 to 3.1 open issues for upgrade</a> – check before adding anything below.</p> <p>Questions from admin team:</p> 
+     <ul> 
+      <li>If there is something in a v2 addons subdirectory, what should v3 do?</li> 
+      <li>A v2 domain has an imq subdirectory in a domain. v3 does not. What should v3 do with the information in the imq subdirectory if it finds one.</li> 
+      <li>The protocol for synchronizing cluster instances is changing for v3 compared to v2. When upgrading and node with instances, something will need to prompt for the port number of the DAS for those instances.</li> 
+      <li>When upgrading a v2 cluster, the user will probably have the node agent hooked into an operating system facility for getting it started. Since there is no node agent in v3, this will stop working, and there needs to be a way (maybe documentation) for the user to get the instances started directly.</li> 
+      <li>JBI isn't supported in v3. Should we make any attempt to warn about JBI usage if we find a jbi directory left over from a v2 domain?</li> 
+     </ul> <p>AI from planning meeting:<br> AI (Bobby, Sathyan): Finalize how to upgrade das.properties in the remote instance</p> <p>For the grizzly element change, in the 3.0 one pager <a href="GrizzlyConfigOnePager.html#GrizzlyConfigOnePager-sectionGrizzlyConfigOnePager4.12.Compatibility...">GrizzlyConfigOnePager#section-GrizzlyConfigOnePager-4.12.CompatibilityImpact</a><br> This upgrade scenario may already have been taken care of.<br> We should confirm this with Alexey and Justin.</p> <p>The jsf jvm options used to be in v2.x; they are no longer used in 3.x and ignored in 3.1 so not an issue. (confirmed with Jan)</p> 
+     <ul> 
+      <li>-Dcom.sun.enterprise.taglibs=appserv-jstl.jar,jsf-impl.jar</li> 
+      <li>-Dcom.sun.enterprise.taglisteners=jsf-impl.jar</li> 
+     </ul> <h4><a name="V3.1UpgradeDashboard-Howtoimplementupgrade"></a>How to implement upgrade</h2> <p>Because many of the v3 modules have already implemented upgrade, the existing examples in the codebase are more useful than a separate slide deck here. To find existing uses, grep for <b>ConfigurationUpgrade</b>.</p> <p>There is a <a href="http://wiki.glassfish.java.net/attach/V3UpgradeDashboard/UpgradeTool_V3_TOI.pdf">v3 Upgrade TOI</a> document that you can see for the full story. Because some of the doc is outdated, I've put the necessary info here:</p> 
+     <ul> 
+      <li>Add a <tt>@Service</tt> class that implements <tt>ConfigurationUpgrade</tt> and <tt>PostConstruct</tt>. You can see the <a href="https://glassfish-svn.java.net/source/browse/glassfish-svn/trunk/v3/common/glassfish-api/src/main/java/org/glassfish/api/admin/config/ConfigurationUpgrade.java?view=markup">ConfigurationUpgrade interface</a> in the GlassFish repository.</li> 
+      <li>Make your changes in a <tt>public void postConstruct()</tt> method.</li> 
+      <li>Inject the <tt>Config</tt> object if needed. You can also use helper class <tt>ConfigSupport</tt>. See API reference in the references section below.</li> 
+      <li>Log the changes that you make during an upgrade. 
+       <div class="panelMacro">
+        <table class="tipMacro">
+         <colgroup>
+          <col width="24">
+          <col>
+         </colgroup>
+         <tbody>
+          <tr>
+           <td valign="top"><img src="images/icons/emoticons/check.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td>
+           <td><b>Does one upgrade depend on another?</b><br>Courtesy of Jerome: To make sure upgrade class A runs before upgrade class B, have B <tt>@Inject</tt> A.</td>
+          </tr>
+         </tbody>
+        </table>
+       </div></li> 
+     </ul> <h4><a name="V3.1UpgradeDashboard-References"></a>References</h2> 
+     <ul> 
+      <li><a href="http://javadoc.glassfish.org/v3/apidoc/index.html?org/jvnet/hk2/config/package-summary.html">Config API</a> From v3 api docs.</li> 
+      <li><a href="UpgradeCompatibilityRequirements.html" title="UpgradeCompatibilityRequirements">v3 upgrade compatibility requirements</a></li> 
+      <li><a href="http://wiki.glassfish.java.net/attach/V3UpgradeDashboard/UpgradeTool_V3_TOI.pdf">v3 Upgrade TOI</a> Some of this document is outdated. For instance, there is no upgrade-specific logger that you need to use for logging changes, warnings, etc. There is also no upgrade-specific email list. Just use the general developer list instead.</li> 
+     </ul> <h4><a name="V3.1UpgradeDashboard-Detailedmodulestatus%28optional%29"></a>Detailed module status (optional)</h2> <p>If you have details regarding your status, please enter here.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Module </th> 
+         <th class="confluenceTh"> Owner </th> 
+         <th class="confluenceTh"> Status </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> General upgrade </td> 
+         <td class="confluenceTd"> Bobby </td> 
+         <td class="confluenceTd"> Still need to determine how to handle issues that are not part of existing modules. Upgrade tool in bug fix mode. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> REST APU </td> 
+         <td class="confluenceTd"> Jason Lee </td> 
+         <td class="confluenceTd"> The REST API has no configuration so no upgrade is necessary </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> IIOP </td> 
+         <td class="confluenceTd"> Ken Cavanaugh </td> 
+         <td class="confluenceTd"> There are no changes in the IIOP configuration from GF 2 or 3 to GF 3.1 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> File Layout &amp; Packaging </td> 
+         <td class="confluenceTd"> Snjezana Sevo-Zenzerovic </td> 
+         <td class="confluenceTd"> Product files under IPS package control are going to be updated using pkg(5) implementation. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Admin Console </td> 
+         <td class="confluenceTd"> Anissa Lam </td> 
+         <td class="confluenceTd"> GUI doesn't modify any configuration, no change is needed. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Connectors, Pooling, Resources, JDBC </td> 
+         <td class="confluenceTd"> Jagadish Ramu </td> 
+         <td class="confluenceTd"> No configuration change required for connectors, connection-pool, resources from GF 2 or GF 3 to GF 3.1 </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Logging </td> 
+         <td class="confluenceTd"> Naman Mehta </td> 
+         <td class="confluenceTd"> No configuration changes required for Logging. </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Nov 08, 2011 by 
+<font color="#0050B2">bbissett</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

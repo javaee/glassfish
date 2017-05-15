@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GFV3DocMinutes04_16_09</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GFV3DocMinutes04_16_09-GlassFishv3DocumentationPlanningMinutes04%2F16%2F09"></a>GlassFish v3 Documentation Planning Minutes - 04/16/09</h1> <p><a href="GlassFishV3DocMeetings.html" title="GlassFishV3DocMeetings">Main meetings page</a></p> <h4><a name="GFV3DocMinutes04_16_09-Attendees"></a>Attendees</h2> <p>Devika, Mike, Paul, Ian, Kim, Eric, June, Gail</p> <h4><a name="GFV3DocMinutes04_16_09-Agenda"></a>Agenda</h2> 
+     <ol> 
+      <li>Review of AIs</li> 
+      <li>Progress on writing assignments by feature</li> 
+      <li>Bug status</li> 
+      <li>Open mic</li> 
+      <li>Next meeting</li> 
+     </ol> <h4><a name="GFV3DocMinutes04_16_09-MeetingNotes"></a>Meeting Notes</h2> <p>1. Review of AIs</p> 
+     <ul> 
+      <li> 
+       <ul> 
+        <li>Paul:* Cross-check the <a href="V3FunctionalSpecs.html" title="V3FunctionalSpecs">v3 list of functional specifications</a> against the list of features in the v2 documentation.<br> <b>In progress.</b> Paul is compiling a list of <a href="GlassFishV3DocV2Features.html" title="GlassFishV3DocV2Features">v2 features whose status with respect to v3 is uncertain</a>.</li> 
+        <li>All by April 9:* Send Paul the list of features you have questions about for EA (in or out?) and also v3 Final (in or out?) and he will follow up with Abhijit. Or update the list of <a href="GlassFishV3DocV2Features.html" title="GlassFishV3DocV2Features">v2 features whose status with respect to v3 is uncertain</a>.<br> <b>In progress.</b> Paul will follow up with Abhijit after SCF 4/20.</li> 
+        <li>Paul:* Verify EOL process for features that are marked as "Never".<br> <b>In progress.</b> Paul will follow up with Abhijit after SCF 4/20.</li> 
+        <li>June and Devika:* Discuss the possibility of combining all documentation about scripting into a single document and send details to Paul.<br> <b>In progress.</b> Much discussion about what should happen with the existing jMaki book and content. Has the book outlived its usefulness? Should the content be rolled into the Dev Guide or become part of a new scripting guide? Tabled the discussion. Interested parties will meet offline. </li> 
+        <li>June and Dixie:* Decide on the new book title for the Admin Reference doc (in consultation with Julie), then let Paul know and he'll change the registration in PubsTool.<br> <b>Complete.</b> New title is <em>Domain File Format Reference</em>. Paul will update the registration of the book in PubsTool. </li> 
+        <li>June:* Investigate which properties in the Admin Reference should be doc'd in the man pages/online help and <a href="GlassFishv3PropertiesDocPlan.html" title="GlassFishv3PropertiesDocPlan">create a wiki page</a> to record that info. <b>Complete.</b></li> 
+        <li>Kim:* Look at the online help to see what properties are already doc'd there.<br> <b>Done.</b> Kim updated the properties wiki page.</li> 
+        <li>Paul:* Look at the man pages to see what properties are already doc'd there.<br> <b>In progress.</b></li> 
+       </ul> </li> 
+     </ul> <p><b>Lengthy side discussion:</b></p> <p>What to do about properties that can't easily be set using the CLI? <b>AI - June:</b> Note these on the properties wiki page, so they don't fall through the cracks.<br> \ </p> <p>2. Progress on writing assignments by <a href="GlassFishV3DocStatus.html" title="GlassFishV3DocStatus">feature</a></p> 
+     <ul> 
+      <li>Looked briefly at the status page.</li> 
+      <li>No issues to report.<br> \</li> 
+     </ul> <p>3. Bug status</p> 
+     <ul> 
+      <li>Looked briefly at the bug list.</li> 
+      <li>Paul may need to cull the list.<br> \</li> 
+     </ul> <p>4. Open mic</p> 
+     <ul> 
+      <li>Discussed product names - Sun GlassFish Enterprise Server v3 Preview and Sun GlassFish Enterprise Server v3 Web Profile Preview. Paul will update the collection name and book titles to include 'Preview.'</li> 
+      <li>Briefly discussed community doc reviews. Will discuss this in greater detail at next week's meeting.<br> \ </li> 
+     </ul> <p>5. Next meeting<br> \<br> Thursday 04/23/09 2-3 PM PDT<br> \</p> <p><a href="GlassFishV3DocMeetings.html" title="GlassFishV3DocMeetings">Main meetings page</a></p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 09, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:44.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

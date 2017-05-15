@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : UserCheckTag</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>Includes its body, if the user check validates.</p> 
+     <hr> <h4><a name="UserCheckTag-Usage"></a>Usage</h3> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;wiki:UserCheck status="unknown|known|named|validated|unvalidated"&gt;
+   JSP or HTML content
+&lt;/wiki:UserCheck&gt;</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="UserCheckTag-Parameters"></a>Parameters</h3> 
+     <ul> 
+      <li><em><b>status</b></em><br> Is used to determine if the user has logged in or what. See below.</li> 
+     </ul> <p>The possible values of "status" are:</p> 
+     <ul> 
+      <li>"unknown" - the body of the tag is included</li> 
+     </ul> <p> if the user is completely unknown (no cookie, no password)</p> 
+     <ul> 
+      <li>"known" - the body of the tag is included</li> 
+     </ul> <p> if the user is not unknown (i.e has a cookie, <br> or has been authenticated.</p> 
+     <ul> 
+      <li>"named" - the body of the tag is included</li> 
+     </ul> <p> if the user has either been named by a cookie, but<br> not been authenticated.</p> 
+     <ul> 
+      <li>"validated" - the body of the tag is included</li> 
+     </ul> <p> if the user is validated either through the container,<br> or by our own authentication.</p> 
+     <ul> 
+      <li>"unvalidated" - the body of the tag is included</li> 
+     </ul> <p> if the user is not validated (i.e. he could have a cookie,<br> but has not been authenticated.)</p> <p>In 2.0 there was an attribute called "exists". This is now deprecated, but it is still recognized. See below.</p> <h4><a name="UserCheckTag-Example"></a>Example</h3> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;wiki:UserCheck status="known"&gt;
+        G'day,&lt;wiki:UserName /&gt;
+    &lt;/wiki:UserCheck&gt;
+
+    &lt;wiki:UserCheck status="unknown"&gt;
+        Set your name in &lt;wiki:LinkTo page="UserPreferences"&gt;UserPreferences&lt;/wiki:LinkTo&gt;
+    &lt;/wiki:UserCheck&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>Displays a greeting, if the user has either set a cookie or logged in; else displays a link to the page UserPreferences.</p> <h4><a name="UserCheckTag-Notes"></a>Notes</h3> <p>The behavior of this tag was significantly enhanced in 2.2. The old tag had the parameter "exists", which corresponds to the status parameter as follows:</p> <p><b>OLD</b></p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;wiki:UserCheck exists="true"&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>Replace with</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;wiki:UserCheck status="known"&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p><b>OLD</b></p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;wiki:UserCheck exists="false"&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>Replace with</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;wiki:UserCheck status="unknown"&gt;</pre> 
+       </div> 
+      </div>
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

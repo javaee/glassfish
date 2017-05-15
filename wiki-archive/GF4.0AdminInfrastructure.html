@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GF4.0AdminInfrastructure</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="GF4.0AdminInfrastructure-GlassFishServerOpenSourceEdition4.0AdminInfrastructure"></a>GlassFish Server Open Source Edition 4.0 - Admin Infrastructure</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#GF4.0AdminInfrastructure-GlassFishServerOpenSourceEdition4.0AdminInfrastructure">GlassFish Server Open Source Edition 4.0 - Admin Infrastructure</a></li> 
+       <ul> 
+        <li><a href="#GF4.0AdminInfrastructure-Introduction">Introduction</a></li> 
+        <li><a href="#GF4.0AdminInfrastructure-FeatureOverview">Feature Overview</a></li> 
+        <li><a href="#GF4.0AdminInfrastructure-FeatureListandSchedule">Feature List and Schedule</a></li> 
+        <ul> 
+         <li><a href="#GF4.0AdminInfrastructure-OtherAdminInfrastructureTasks">Other Admin Infrastructure Tasks</a></li> 
+         <ul> 
+          <ul> 
+           <li><a href="#GF4.0AdminInfrastructure-P1%3AMustHave">P1: Must Have</a></li> 
+           <li><a href="#GF4.0AdminInfrastructure-P3%3ANotPlannedfor4.0">P3: Not Planned for 4.0</a></li> 
+          </ul> 
+          <li><a href="#GF4.0AdminInfrastructure-RelatedSubProjects%3A">Related Sub Projects:</a></li> 
+         </ul> 
+        </ul> 
+        <li><a href="#GF4.0AdminInfrastructure-OutofScope">Out of Scope</a></li> 
+        <li><a href="#GF4.0AdminInfrastructure-DesignDocument">Design Document</a></li> 
+        <li><a href="#GF4.0AdminInfrastructure-Quality">Quality</a></li> 
+        <li><a href="#GF4.0AdminInfrastructure-Documentation">Documentation</a></li> 
+        <li><a href="#GF4.0AdminInfrastructure-Demos">Demos</a></li> 
+        <li><a href="#GF4.0AdminInfrastructure-Workspace">Workspace</a></li> 
+        <li><a href="#GF4.0AdminInfrastructure-MilestoneSchedule">Milestone Schedule</a></li> 
+        <li><a href="#GF4.0AdminInfrastructure-TaskList">Task List</a></li> 
+        <li><a href="#GF4.0AdminInfrastructure-Research">Research</a></li> 
+        <li><a href="#GF4.0AdminInfrastructure-References">References</a></li> 
+        <li><a href="#GF4.0AdminInfrastructure-DevTests">Dev Tests</a></li> 
+        <li><a href="#GF4.0AdminInfrastructure-Estimates">Estimates</a></li> 
+        <li><a href="#GF4.0AdminInfrastructure-EmailAlias">Email Alias</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="GF4.0AdminInfrastructure-Introduction"></a>Introduction</h2> <p>This project will focus on the administration infrastructure area of GlassFish which includes the CLI, SSH, configuration, etc. Complete details about this area are available on the <a href="./GlassFishAdministrationPages.html">GlassFish Administration Pages</a>.</p> <h4><a name="GF4.0AdminInfrastructure-FeatureOverview"></a>Feature Overview</h2> <p>The following features are being considered:</p> <h4><a name="GF4.0AdminInfrastructure-FeatureListandSchedule"></a>Feature List and Schedule</h2> <p>These features are available via this <a href="http://java.net/jira/secure/IssueNavigator.jspa?mode=hide&amp;requestId=10541">JIRA query</a> . &nbsp;NOTE: if there are differences in the data between the JIRA query and this table, the information in JIRA counts.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Feature ID </th> 
+         <th class="confluenceTh"> Priority </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> Eng Response </th> 
+         <th class="confluenceTh"> Owner(s) </th> 
+         <th class="confluenceTh"> Estimate (Man Days) </th> 
+         <th class="confluenceTh"> Source of Requirement </th> 
+         <th class="confluenceTh"> JIRA Link </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="./3.2AdminCommandProgress.html">Admin Command Progress Status </a> </td> 
+         <td class="confluenceTd"> P1 </td> 
+         <td class="confluenceTd"> Support status reporting from long running admin commands </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Chris </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Derived from PaaS </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/12032">12032</a> <br class="atl-forced-newline"> <a href="https://github.com/javaee/glassfish/issues/12033">12033</a> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="./3.2PlatformServices.html">Improved OS service integration </a> </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Improve the integration between OS services and the GlassFish server control commands </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Byron </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Eng. </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/16311">16311</a> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="./3.2Dcom.html">DCOM Clustering for Windows </a> </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Support centralized cluster admin on Windows without installing cygwin or MKS. </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Byron, Joe </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Eng. </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/16248">16248</a> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> DONE (in 3.1.2 and 4.0) </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> JVM-specific JVM options </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Better support for JRockit JVM options (JDK-aware JVM options) </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Tom </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Eng </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/16247">16247</a> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Accept multiple certs for admin authentication </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Tim </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Eng </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/16437">16437</a> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Better support for ActionReport </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Tom </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Eng </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/15276">15276</a> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> set/get/list rewrite </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Tom </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Eng </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/15458">15458</a> <br class="atl-forced-newline"> <a href="https://github.com/javaee/glassfish/issues/15418">15418</a> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> install-node: perform installs in parallel </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Yamini </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Eng </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/13460">13460</a> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Config bean validation improvement </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Bhakti </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Eng </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/14984">14984</a> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Provide metrics about feature usage </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Joe </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Eng </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/16258">16258</a> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Ensure that admin traffic from other servers is in fact from the same domain </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Tim </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Eng </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/16438">16438</a> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Create a unique "domain ID" shared by and accessible to all servers in the domain </td> 
+         <td class="confluenceTd"> P3 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Tom </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Eng </td> 
+         <td class="confluenceTd"> <a href="https://github.com/javaee/glassfish/issues/16439">16439</a> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Update Center Improvements </td> 
+         <td class="confluenceTd"> P2-P3 </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Joe, Chris </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Eng </td> 
+         <td class="confluenceTd"> See <a href="http://java.net/jira/secure/IssueNavigator.jspa?mode=hide&amp;requestId=10385">query</a> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="Admin FindBugs Information.html" title="Admin FindBugs Information">FindBugs</a> </td> 
+         <td class="confluenceTd"> P2 </td> 
+         <td class="confluenceTd"> Achieve FindBugs project goal for the admin infrastructure area </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Everyone </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Eng </td> 
+         <td class="confluenceTd"> None </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> DONE </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF4.0AdminInfrastructure-OtherAdminInfrastructureTasks"></a>Other Admin Infrastructure Tasks</h3> <h5><a name="GF4.0AdminInfrastructure-P1%3AMustHave"></a>P1: Must Have</h5> 
+     <ul> 
+      <li>3.1 Fit and Finish (Everyone) 
+       <ul> 
+        <li>Bug fixes (see <a href="http://java.net/jira/secure/Dashboard.jspa?selectPageId=10051">dashboard </a>) (48 admin bugs, 36 P1-P3, 112 issues overall, 56 unscrubbed, 26 of those are bugs, bugster is unknown)</li> 
+        <li>Dev Tests for areas where we have gaps or where bugs were reported (ex. restart required - issue 13213, set/get, monitoring, ssh - offline config, create-xyz, etc.) (2 weeks) 
+         <ul> 
+          <li>Currently have 2075 (need 200-300 set/get, 50-100 tests for restart required, 3000 more for monitoring, 100 for ssh, 20 for backup/restore)</li> 
+         </ul> </li> 
+       </ul> </li> 
+     </ul> <h5><a name="GF4.0AdminInfrastructure-P3%3ANotPlannedfor4.0"></a>P3: Not Planned for 4.0</h5> 
+     <ul> 
+      <li>Misc Improvements 
+       <ul> 
+        <li>Ability to removed unused services - minimal domain (issue 1063)</li> 
+        <li>Restart required warning - issue 14925</li> 
+        <li>Injection of state from main to supplemental commands - issue 13711</li> 
+        <li>create-domain use embedded APIs - issue 14711</li> 
+       </ul> </li> 
+      <li>Monitoring Improvements 
+       <ul> 
+        <li>Support for call flow using Monitoring Scripting Client (related issues: 5979, 4279)</li> 
+        <li>Any other PaaS monitoring</li> 
+        <li>Monitoring graphing on UI</li> 
+        <li>Monitoring performance work</li> 
+        <li>Describe monitoring probes using XML</li> 
+       </ul> </li> 
+     </ul> <h4><a name="GF4.0AdminInfrastructure-RelatedSubProjects%3A"></a>Related Sub Projects:</h4> 
+     <ul> 
+      <li><a href="User-Managed Clusters.html" title="User-Managed Clusters">Ad Hoc Clusters</a></li> 
+      <li><a href="IaasManagementServiceProject.html" title="IaasManagementServiceProject">Virtualization</a></li> 
+      <li><a href="ElasticityProject.html" title="ElasticityProject">Elasticity</a></li> 
+     </ul> <h4><a name="GF4.0AdminInfrastructure-OutofScope"></a>Out of Scope</h2> <h4><a name="GF4.0AdminInfrastructure-DesignDocument"></a>Design Document</h2> <p>There isn't any single design document for these features. &nbsp;The design information for the feature is available via the link in the row for the feature.&nbsp;</p> <h4><a name="GF4.0AdminInfrastructure-Quality"></a>Quality</h2> 
+     <ul> 
+      <li>Link to Test Plan</li> 
+     </ul> <h4><a name="GF4.0AdminInfrastructure-Documentation"></a>Documentation</h2> 
+     <ul> 
+      <li>Link to Documentation Plan</li> 
+     </ul> <h4><a name="GF4.0AdminInfrastructure-Demos"></a>Demos</h2> 
+     <ul> 
+      <li>To be filled in as demos come up each milestone or as appropriate.</li> 
+     </ul> <h4><a name="GF4.0AdminInfrastructure-Workspace"></a>Workspace</h2> <h4><a name="GF4.0AdminInfrastructure-MilestoneSchedule"></a>Milestone Schedule</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Item # </th> 
+         <th class="confluenceTh"> Date/Milestone </th> 
+         <th class="confluenceTh"> Feature-ID </th> 
+         <th class="confluenceTh"> JIRA issue ID &amp; link </th> 
+         <th class="confluenceTh"> Description </th> 
+         <th class="confluenceTh"> QA/Docs Handover? </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF4.0AdminInfrastructure-TaskList"></a>Task List</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Task </th> 
+         <th class="confluenceTh"> Target Milestone </th> 
+         <th class="confluenceTh"> Start </th> 
+         <th class="confluenceTh"> End Date </th> 
+         <th class="confluenceTh"> Owner(s) </th> 
+         <th class="confluenceTh"> Feature ID </th> 
+         <th class="confluenceTh"> Status / Comments </th> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF4.0AdminInfrastructure-Research"></a>Research</h2> <h4><a name="GF4.0AdminInfrastructure-References"></a>References</h2> <h4><a name="GF4.0AdminInfrastructure-DevTests"></a>Dev Tests</h2> <h4><a name="GF4.0AdminInfrastructure-Estimates"></a>Estimates</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Area </th> 
+         <th class="confluenceTh"> When </th> 
+         <th class="confluenceTh"> Notes </th> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GF4.0AdminInfrastructure-EmailAlias"></a>Email Alias</h2> 
+     <ul> 
+      <li>Please contact us at <a href="mailto:admin@glassfish.java.net">admin@glassfish.java.net</a></li> 
+     </ul> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Nov 22, 2011 by 
+<font color="#0050B2">trmueller</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

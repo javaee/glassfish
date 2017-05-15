@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : DeployAndRunRailsApplicationOnGlassfishV2Ja</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="DeployAndRunRailsApplicationOnGlassfishV2Ja-GlassFishv2%E4%B8%8A%E3%81%B8%E3%81%AERails%E3%82%A2%E3%83%97%E3%83%AA%E3%82%B1%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%81%AE%E9%85%8D%E5%82%99%E3%81%A8%E5%AE%9F%E8%A1%8C"></a>GlassFish v2 上への Rails アプリケーションの配備と実行</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#DeployAndRunRailsApplicationOnGlassfishV2Ja-GlassFishv2%E4%B8%8A%E3%81%B8%E3%81%AERails%E3%82%A2%E3%83%97%E3%83%AA%E3%82%B1%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%81%AE%E9%85%8D%E5%82%99%E3%81%A8%E5%AE%9F%E8%A1%8C">GlassFish v2 上への Rails アプリケーションの配備と実行</a></li> 
+       <ul> 
+        <li><a href="#DeployAndRunRailsApplicationOnGlassfishV2Ja-Glassfishv2%E3%81%AF%E3%80%81%E3%81%93%E3%81%A1%E3%82%89https%3A%2F%2Fglassfish.java.net%2Fja%2Fpublic%2Fdownloadsindex.html%28%E5%8E%9F%E6%96%87%29https%3A%2F%2Fglassfish.java.net%2Fpublic%2Fdownloadsindex.html%E3%81%8B%E3%82%89%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB%E3%81%A7%E3%81%8D%E3%81%BE%E3%81%99%E3%80%82">Glassfish v2 は、 <span class="nobr">こちら <sup><img border="0" alt="" align="absmiddle" width="7" height="7" src="images/icons/linkext7.gif" class="rendericon"></sup></span> <span class="nobr">(原文) <sup><img border="0" alt="" align="absmiddle" width="7" height="7" src="images/icons/linkext7.gif" class="rendericon"></sup></span> からインストールできます。</a></li> 
+        <li><a href="#DeployAndRunRailsApplicationOnGlassfishV2Ja-Glassfishhttps%3A%2F%2Fglassfish.java.net%2Fja%2Fpublic%2Fdownloadsindex.html%28%E5%8E%9F%E6%96%87%29https%3A%2F%2Fglassfish.java.net%2Fpublic%2Fdownloadsindex.html%E3%82%A2%E3%83%83%E3%83%97%E3%83%87%E3%83%BC%E3%83%88%E3%82%BB%E3%83%B3%E3%82%BF%E3%83%BC%E3%81%8B%E3%82%89%E3%80%81JRuby%E3%83%A2%E3%82%B8%E3%83%A5%E3%83%BC%E3%83%AB%E3%82%92%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB%E3%81%97%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84%E3%80%82"> <span class="nobr">Glassfish <sup><img border="0" alt="" align="absmiddle" width="7" height="7" src="images/icons/linkext7.gif" class="rendericon"></sup></span> <span class="nobr">(原文) <sup><img border="0" alt="" align="absmiddle" width="7" height="7" src="images/icons/linkext7.gif" class="rendericon"></sup></span> アップデートセンターから、 JRuby モジュールをインストールしてください。</a></li> 
+        <ul> 
+         <li><a href="#DeployAndRunRailsApplicationOnGlassfishV2Ja-Rails%E3%82%A2%E3%83%97%E3%83%AA%E3%82%B1%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%81%AE%E9%85%8D%E5%82%99">Rails アプリケーションの配備</a></li> 
+        </ul> 
+        <li><a href="#DeployAndRunRailsApplicationOnGlassfishV2Ja-%E3%82%B5%E3%83%B3%E3%83%97%E3%83%AB%E3%82%A2%E3%83%97%E3%83%AA%E3%82%B1%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3">サンプルアプリケーション</a></li> 
+        <li><a href="#DeployAndRunRailsApplicationOnGlassfishV2Ja-%E3%82%B5%E3%83%B3%E3%83%97%E3%83%AB%E3%82%A2%E3%83%97%E3%83%AA%E3%82%B1%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%81%AE%E5%AE%9F%E8%A1%8C%E6%96%B9%E6%B3%95">サンプルアプリケーションの実行方法</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="DeployAndRunRailsApplicationOnGlassfishV2Ja-Glassfishv2%E3%81%AF%E3%80%81%E3%81%93%E3%81%A1%E3%82%89https%3A%2F%2Fglassfish.java.net%2Fja%2Fpublic%2Fdownloadsindex.html%28%E5%8E%9F%E6%96%87%29https%3A%2F%2Fglassfish.java.net%2Fpublic%2Fdownloadsindex.html%E3%81%8B%E3%82%89%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB%E3%81%A7%E3%81%8D%E3%81%BE%E3%81%99%E3%80%82"></a>Glassfish v2 は、<a href="https://glassfish.java.net/ja/public/downloadsindex.html">こちら</a><a href="https://glassfish.java.net/public/downloadsindex.html">(原文)</a>からインストールできます。</h2> <p>それでは、 GlassFish がインストールされたディレクトリ $GLASSGISH_ROOT を参照してみましょう。GlassFish クイックスタートガイドは、<a href="https://glassfish.java.net/ja/downloads/quickstart/index.html">こちら</a> <a href="https://glassfish.java.net/downloads/quickstart/index.html">(原文)</a> で見つけられます。</p> <h4><a name="DeployAndRunRailsApplicationOnGlassfishV2Ja-Glassfishhttps%3A%2F%2Fglassfish.java.net%2Fja%2Fpublic%2Fdownloadsindex.html%28%E5%8E%9F%E6%96%87%29https%3A%2F%2Fglassfish.java.net%2Fpublic%2Fdownloadsindex.html%E3%82%A2%E3%83%83%E3%83%97%E3%83%87%E3%83%BC%E3%83%88%E3%82%BB%E3%83%B3%E3%82%BF%E3%83%BC%E3%81%8B%E3%82%89%E3%80%81JRuby%E3%83%A2%E3%82%B8%E3%83%A5%E3%83%BC%E3%83%AB%E3%82%92%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB%E3%81%97%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84%E3%80%82"></a><a href="https://glassfish.java.net/ja/public/downloadsindex.html">Glassfish </a> <a href="https://glassfish.java.net/public/downloadsindex.html">(原文)</a>アップデートセンターから、 JRuby モジュールをインストールしてください。</h2> <p>updatetool を実行し、 <b>JRuby を Glassfish</b> モジュール上にインストールして下さい。</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">$GLASSFISH-ROOT/updatecenter/bin/updatetool</pre> 
+       </div> 
+      </div>
+     </div> <p><span class="error">Cannot resolve external resource into attachment.</span></p> <p>上のスクリーンショットに見られるとおり、 Glassfish v2 JRuby モジュールのバーションは、現在 <b>3.0</b> です。ライセンス契約を受諾し、このモジュールをインストールします。このモジュールのインストール成功後、 GlassFish ルートディレクトリ配下に、新たに作成された <b>jruby</b> と言うディレクトリが、見つけられます。GlassFish 3.0 モジュールへの JRuby インストール完了後のディレクトリ構成は、以下のスクリーンショットのとおりです。</p> <p><a href="http://wiki.glassfish.java.net/attach/DeployAndRunRailsApplicationOnGlassfishV2Ja/jruby2.jpg?version=1">http://wiki.glassfish.java.net/attach/DeployAndRunRailsApplicationOnGlassfishV2Ja/jruby2.jpg?version=1</a></p> <p><b>注</b> 既に以前のバージョンである、 2.0 モジュールをインストール済みの場合、アップデートツールは更新可能であることを知らせてきます。この場合は、 "Available Updates" の章へ行き、そして JRuby on GlassFish 3.0 module を選択してインストールします。</p> <p><b>JRuby on GlassFish 3.0 module の構成</b></p> <p>この JRuby アップデートセンターモジュールは、主として以下の要素から構成されています。</p> 
+     <ul> 
+      <li>JRuby 1.1.1</li> 
+      <li>gems 
+       <ul> 
+        <li>actionmailer (2.0.2)</li> 
+        <li>actionpack (2.0.2)</li> 
+        <li>activerecord (2.0.2)</li> 
+        <li>activerecord-jdbc-adapter (0.8)</li> 
+        <li>activerecord-jdbcmysql-adapter (0.8)</li> 
+        <li>activeresource (2.0.2)</li> 
+        <li>activesupport (2.0.2)</li> 
+        <li>jdbc-mysql (5.0.4)</li> 
+        <li>rails (2.0.2)</li> 
+        <li>rake (0.8.1)</li> 
+        <li>rspec (1.1.3)</li> 
+        <li>sources (0.0.1)</li> 
+        <li>warbler (0.9.5)</li> 
+       </ul> </li> 
+     </ul> <h4><a name="DeployAndRunRailsApplicationOnGlassfishV2Ja-Rails%E3%82%A2%E3%83%97%E3%83%AA%E3%82%B1%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%81%AE%E9%85%8D%E5%82%99"></a>Rails アプリケーションの配備</h3> <p>このモジュールは、 Warbler と Ant スクリプト 'build.xml' も又、付属されています。ここからは、<br> Warbler 又は、 build.xml を利用した、アプリケーションの GlassFish への配備方法について<br> の解説になります。</p> 
+     <ul> 
+      <li>Warbler</li> 
+     </ul> <p> 配備可能な war ファイルを作成するには、 Rails アプリケーションの内部で、 jruby -S warble を<br> 使用してください。この WAR ファイルは、必要とされている、 JRuby と goldspike の jar ファイル、<br> 及び、必要とされている gem ファイルも包含しています。</p> 
+     <ul> 
+      <li>'build.xml' Ant スクリプトの利用 (shared モード)</li> 
+     </ul> <p> JRuby, rails と goldspike のライブラリー類は、実行時に、 Glassfish<br> アプリケーションサーバークラスパスから、正確に認識されて動作する<br> 必要があります。</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">ant -f $GLASSFISH_ROOT/jruby/build.xml setup-shared-env</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="DeployAndRunRailsApplicationOnGlassfishV2Ja-%E3%82%B5%E3%83%B3%E3%83%97%E3%83%AB%E3%82%A2%E3%83%97%E3%83%AA%E3%82%B1%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3"></a>サンプルアプリケーション</h2> <p>このモジュールは、２つのサンプルアプリケーションによって構成されています。 -</p> 
+     <ol> 
+      <li>HelloWorldRailsApp - 簡単な hello world アプリケーション</li> 
+      <li>cookbook - O'Reilly OnLamp から提供された説明書によって作成されたサンプル</li> 
+     </ol> <h4><a name="DeployAndRunRailsApplicationOnGlassfishV2Ja-%E3%82%B5%E3%83%B3%E3%83%97%E3%83%AB%E3%82%A2%E3%83%97%E3%83%AA%E3%82%B1%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%81%AE%E5%AE%9F%E8%A1%8C%E6%96%B9%E6%B3%95"></a>サンプルアプリケーションの実行方法</h2> <p><b>Standalone モード</b></p> 
+     <ul> 
+      <li>HelloWorldRailsApp サンプルディレクトリへ移動し、次のコマンドを発行します。 :</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">jruby -S warble
+asadmin deploy HelloWorldRailsApp.war</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>ブラウザにて次の URL にアクセスします。 :</li> 
+     </ul> <p><a href="http://localhost:8080/HelloWorldRailsApp">http://localhost:8080/HelloWorldRailsApp </a>&lt;br&gt; <br> <a href="http://localhost:8080/HelloWorldRailsApp/say/hello">http://localhost:8080/HelloWorldRailsApp/say/hello </a></p> <p>日本語翻訳: <a href="http://www3.atpages.jp/jacksparrow/">jack_spalaw</a></p> <p><a href="DeployAndRunRailsApplicationOnGlassfishV2.html" title="DeployAndRunRailsApplicationOnGlassfishV2">英文 </a> (翻訳したバージョン: 5)</p> 
+     <hr> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875901/21364833.jpg">jruby1.jpg</a> (image/pjpeg) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875901/21364831.jpg">jruby2.jpg</a> (image/pjpeg) 
+      <br> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 08, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:43.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

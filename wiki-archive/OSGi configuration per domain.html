@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : OSGi configuration per domain</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>Felix and Equinox framework configurations are stored in following files in a GlassFish installation:</p> <p><em>glassfish/osgi/felix/conf/config.properties</em></p> <p>and</p> <p><em>glassfish/osgi/equinox/config/config.ini</em></p> <p>respectively. As you can observe, these files are part of installation itself and hence suffer from following issues:</p> 
+     <ul> 
+      <li>We have two separate configuration files for two frameworks with a lot of duplication. So, it adds to maintenance overhead.</li> 
+      <li>The above files being part of installation are controlled by IPS packaging system, so any change made by user gets overwritten when an update to the file takes place by IPS.</li> 
+      <li>In a very controlled production environment, GlassFish Administrators may not have sufficient privileges to edit files which are part of installation directory. They may only have privileges for the domain they are in charge of.</li> 
+      <li>Last, but not the least, all domains sharing the same installation are forced to use the same configuration. This is not a very common use case, but possible never-the-less.</li> 
+     </ul> <p>None of these issues were unknown when we had decided to keep the configuration in those files respective places. Then why did we do so in the first place?</p> 
+     <ul> 
+      <li>When we embraced OSGi in GlassFish project 3-4 years ago, there was no standard API to launch an OSGi framework. Framework launcher API was introduced in OSGi R4.2 spec. Absence of a standard launching API made us write separate laucher for each OSGi framework. We leveraged each framework's existing launchers in GlassFish code and it was just easier to have the respective launchers configured in a framework specific way.</li> 
+      <li>In the initial days, due to lack of documentation in our end, we anticipated OSGi-aware developers to be able to leverage their familiarity with respective OSGi frameworks to configure the OSGi runtime used by GlassFish. So, our file layout reflected a typical Felix or Equinox zip distribution.</li> 
+      <li>We did not anticipate users having to modify these files.</li> 
+     </ul> <p>So, what changed since then:</p> 
+     <ul> 
+      <li>We have already moved to using the new standard launcher API since GlassFish 3.1.</li> 
+      <li>We now have more documentation available.</li> 
+      <li>We have come across some real use cases for users having to modify OSGi configuration. The most common requirement here is to disable some optional features like felix remote shell.</li> 
+     </ul> <p>To address the aforementioned short-comings, we propose some changes to the location of OSGi configuration information and how we allow users to customize it. Given below is a proposal based on current requirement and relative priority of the issue:</p> <p>Merge Felix and Equinox configuration into a single file called <b>osgi.properties</b> and place it under <b>installRoot/config/</b>, a directory where other installation specific configuration files are stored. Allow it to be replaced by a user supplied file with same name in <b>instanceRoot/config/</b>. This is similar to how <b>config-files</b> from <b>cluster-admin.jar</b> is handled. An advantages of this approach is that when a change to the file is necessary from development, the file can just be changed via an update without having to write special upgrade code. However, users that have provided their own file will not get the update (just like with config-files). Since the format of this file follows standard properties file format, users can use their favorite OS tools like vim/sed to configure the content of this file. Also allow user to override using system properties in domain.xml, so that for most common cases, they don't have to modify this config file at all. See GLASSFISH-17250 for system property override. &nbsp;</p> <p>This proposal has now been implemented in both 3.1.2 and 4.0 branch. See <a href="https://github.com/javaee/glassfish/issues/17355">https://github.com/javaee/glassfish/issues/17355</a> for check-in details.</p> <p>Alternatives:</p> 
+     <ol> 
+      <li>Merge Felix and Equinox configuration into a single file called osgi.conf and place it under instanceRoot/config/. The source for the file would need to be in installRoot/lib/templates and create-domain would need to be modified to copy it to the domain. Also, the file name would need to be added to the config-files file so that it gets sync'd to instances. Whenever this file is changed, the upgrade code would need to take care of propagating the change to all domains. One drawback of this approach is that there is a large amount of configuration data in this file that users typically do not need to modify, but since the data is in the domain, the upgrade code has to take care of updating the file.&nbsp;</li> 
+      <li>Keep the merged OSGi configuration in domain.xml itself. This would allow user to configure using generic asadmin get/set commands as well, but for those generic commands to be really useful, we have to design the schema for these elements carefully, as some of the entries have rather long values. Moreover, this configuration is consulted during bootstrapping only, hence having to read them from domain.xml can unnecessarily complicate the bootstrapping process. So, this alternative is not considered.</li> 
+      <li>Similar to alternative #1, keep the merged osgi.conf in the binary. &nbsp;However, put it in glassfish.jar so it is somewhat hidden from users. Provide a way to override what is in the file using system properties. These properties can be set in the domain.xml jvm-options settings so that they are per-config (and therefore per-cluster or per-instance), and the launcher already sets the properties before bootstrap so the bootstrap problem of alternative #2 is avoided. The specific properties that can be set by the user need to be specified, but here is an initial suggestion: 
+       <ol> 
+        <li>org.glassfish.osgi.conffile - overrides the file entirely. &nbsp;Value is a pathname relative to the config directory. &nbsp;</li> 
+        <li>org.glassfish.osgi.enable-shell - if true, turns on the OSGi shell</li> 
+        <li>org.glassfish.osgi.optional-bundles - list of optional bundles to start</li> 
+        <li>(maybe) org.glassfish.osgi.override.propslist - list of properties to be overridden from the config file,<br> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;org.glassfish.osgi.override.prop.&lt;propname&gt; - overridden property value<br> The idea here is to capture the most frequently needed OSGi modifications that are needed by typical GlassFish users, but at the same time allowing everything to be customized if absolutely needed. This approach will cause upgrade issues as well as issues for embedded glassfish.&nbsp; </li> 
+       </ol> </li> 
+     </ol> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Sep 28, 2011 by 
+<font color="#0050B2">sahoo.s.k</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

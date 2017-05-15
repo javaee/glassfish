@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : OnePagersOrFunctionalSpecs</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="OnePagersOrFunctionalSpecs-OnePagersfornewfunctionalityinGlassFishV2%2FApplicationServer9.1"></a>One Pagers for new functionality in GlassFish V2/Application Server 9.1</h1> <h4><a name="OnePagersOrFunctionalSpecs-NewFunctionalityinGlassFishV2"></a>New Functionality in GlassFish V2</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <td class="confluenceTd"> *Document* </td> 
+         <td class="confluenceTd"> *Authors* </td> 
+         <td class="confluenceTd"> *Status* </td> 
+         <td class="confluenceTd"> *Forum and Slides* </td> 
+         <td class="confluenceTd"> *Testing owner* </td> 
+         <td class="confluenceTd"> *Test Spec* </td> 
+         <td class="confluenceTd"> *Test Spec Status* </td> 
+         <td class="confluenceTd"> *Number of Unit Tests* </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875140/21365237.pdf">Project Overview </a> </td> 
+         <td class="confluenceTd"> Sreeram Duvur, Dhiru Pandey </td> 
+         <td class="confluenceTd"> Under Review </td> 
+         <td class="confluenceTd"> <a href="http://forums.java.net/jive/thread.jspa?threadID=17896&amp;tstart=0">Forum Link </a> </td> 
+         <td class="confluenceTd"> Sudipa Bhattacharya </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875140/21365290.pdf">WSIT </a> </td> 
+         <td class="confluenceTd"> Harold Carr </td> 
+         <td class="confluenceTd"> Under Review </td> 
+         <td class="confluenceTd"> <a href="http://forums.java.net/jive/forum.jspa?forumID=93">Forum Link </a> </td> 
+         <td class="confluenceTd"> Balaji Raghunathan </td> 
+         <td class="confluenceTd"> Ported WSIT tests to use EJB endpoints. </td> 
+         <td class="confluenceTd"> NO Spec: All Planed porting Done </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875140/21365296.pdf">In-memory Replication </a> </td> 
+         <td class="confluenceTd"> Larry White </td> 
+         <td class="confluenceTd"> Draft </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Vivek Sedhumadavan </td> 
+         <td class="confluenceTd"> Ported all relevant HA tests from 8.x </td> 
+         <td class="confluenceTd"> NO Spec: All Planed porting Done </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://wikis.sun.com/download/attachments/209654934/GMSOnePagerGFv2.pdf">GMS </a> </td> 
+         <td class="confluenceTd"> Shreedhar Ganapathy </td> 
+         <td class="confluenceTd"> Under Review </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Elena Asarina </td> 
+         <td class="confluenceTd"> <a href="http://brentwood1.sfbay/GMS/gms_tp.html">Test Plan </a> </td> 
+         <td class="confluenceTd"> Approved:Planned Test Development done </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875140/21365276.pdf">Load Balancer Enhancements </a> </td> 
+         <td class="confluenceTd"> Pankaj Jairath and Satish Viswanatham </td> 
+         <td class="confluenceTd"> Under Review </td> 
+         <td class="confluenceTd"> <a href="http://forums.java.net/jive/thread.jspa?threadID=17995">Forum Link</a> , <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875140/21364959.pdf">Slides </a> </td> 
+         <td class="confluenceTd"> Davis Nguyen </td> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875140/21365292.pdf">CLI:Test Specification </a> </td> 
+         <td class="confluenceTd"> Approved: Planned Test dev done </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875140/21365240.pdf">IIOP Failover </a> </td> 
+         <td class="confluenceTd"> Sheetal Vartak </td> 
+         <td class="confluenceTd"> Under Review </td> 
+         <td class="confluenceTd"> <a href="http://forums.java.net/jive/thread.jspa?threadID=17903">Forum Link </a> </td> 
+         <td class="confluenceTd"> Sudhir Prabhu </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Approved: Planned Test dev done </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875140/21365278.pdf">Self-Management Templates </a> </td> 
+         <td class="confluenceTd"> Sankara Rao </td> 
+         <td class="confluenceTd"> Under Review </td> 
+         <td class="confluenceTd"> <a href="http://forums.java.net/jive/thread.jspa?threadID=17928&amp;tstart=15">Forum Link </a> </td> 
+         <td class="confluenceTd"> Jothir Ganesan </td> 
+         <td class="confluenceTd"> Feature Dropped </td> 
+         <td class="confluenceTd"> Dropped </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://grizzly.java.net/nonav/docs/docbkx2.0/html/quickstart.html">Grizzly v2 </a> </td> 
+         <td class="confluenceTd"> Charlie Hunt and Jean-Francois Arcand </td> 
+         <td class="confluenceTd"> Under Review </td> 
+         <td class="confluenceTd"> <a href="http://forums.java.net/jive/thread.jspa?threadID=18002&amp;tstart=0">Forum Link </a> </td> 
+         <td class="confluenceTd"> Tuong Nguyen </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Approved: Planned Test dev done </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875140/21365128.pdf">Admin GUI </a> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875140/21365125.pdf">UI Changes </a> </td> 
+         <td class="confluenceTd"> Anissa Lam </td> 
+         <td class="confluenceTd"> Under Review </td> 
+         <td class="confluenceTd"> <a href="http://forums.java.net/jive/thread.jspa?threadID=18059">Forum Link </a> </td> 
+         <td class="confluenceTd"> Li Wang and Sujatha Chintalapati </td> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875140/21365291.pdf">Test Specification</a> </td> 
+         <td class="confluenceTd"> Approved: Planned Test dev done </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://wikis.sun.com/download/attachments/211392120/profile-support-fs.html">Usage Profile Support </a> <a href="GlassFishV2AdminRelatedOnePagers.html" title="GlassFishV2AdminRelatedOnePagers">Click to update </a> </td> 
+         <td class="confluenceTd"> Kedar Mhaswade </td> 
+         <td class="confluenceTd"> Ready for Review </td> 
+         <td class="confluenceTd"> <a href="http://forums.java.net/jive/thread.jspa?threadID=18403">Forum Link </a> </td> 
+         <td class="confluenceTd"> Sankar Neelakandan and Nga Nguyen </td> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875140/21365287.pdf">Test Specification </a> </td> 
+         <td class="confluenceTd"> Approved: Planned Test dev done </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://wikis.sun.com/download/attachments/211392120/admin-fs.html">Admin Infrastructure </a> <a href="GlassFishV2AdminRelatedOnePagers.html" title="GlassFishV2AdminRelatedOnePagers">Click to update </a> </td> 
+         <td class="confluenceTd"> Kedar Mhaswade </td> 
+         <td class="confluenceTd"> Under Review </td> 
+         <td class="confluenceTd"> <a href="http://forums.java.net/jive/thread.jspa?threadID=17990">Forum Link </a> </td> 
+         <td class="confluenceTd"> Sankar Neelakandan </td> 
+         <td class="confluenceTd"> <a href="http://wikis.sun.com/download/attachments/209654934/Glassfish+v2+Admin+Infrastructure+Test+specification.html">Test Specification </a> </td> 
+         <td class="confluenceTd"> Approved: Planned Test dev done </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://wikis.sun.com/download/attachments/211392120/cli-one-pager.html">Admin CLI </a> <a href="GlassFishV2AdminRelatedOnePagers.html" title="GlassFishV2AdminRelatedOnePagers">Click to update </a> </td> 
+         <td class="confluenceTd"> Jane Young, Kedar Mhaswade </td> 
+         <td class="confluenceTd"> Under Review </td> 
+         <td class="confluenceTd"> <a href="http://forums.java.net/jive/thread.jspa?threadID=18334">Forum Link </a> </td> 
+         <td class="confluenceTd"> Sankar Neelakandan, Davis Nguyen </td> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875140/21365293.pdf">Test Specification </a> </td> 
+         <td class="confluenceTd"> Approved: Planned Test dev done </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875140/21365275.pdf">JBI Integration </a> </td> 
+         <td class="confluenceTd"> Binod PG </td> 
+         <td class="confluenceTd"> Under Review </td> 
+         <td class="confluenceTd"> <a href="http://forums.java.net/jive/thread.jspa?threadID=17989">Forum Link</a> </td> 
+         <td class="confluenceTd"> Sony Manuel </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Approved: Planned Test dev done </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875140/21365112.pdf">Connection Pool Enhancements </a> Discussions <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875140/21365109.pdf">DTD-Changes </a> </td> 
+         <td class="confluenceTd"> Jagadish Ramu and Kshitiz Saxena </td> 
+         <td class="confluenceTd"> Under Review </td> 
+         <td class="confluenceTd"> <a href="http://forums.java.net/jive/thread.jspa?threadID=17918">Forum Link</a> , <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875140/21364958.pdf">Slides </a> </td> 
+         <td class="confluenceTd"> Sony Manuel </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875140/21365111.pdf">JDBC 4.0 support </a> <a href="JDBC40OnePagerDiscussions.html" title="JDBC40OnePagerDiscussions">Discussions </a> </td> 
+         <td class="confluenceTd"> Lance Andersen and Jagadish Ramu </td> 
+         <td class="confluenceTd"> Under Review </td> 
+         <td class="confluenceTd"> <a href="http://forums.java.net/jive/thread.jspa?threadID=17919">Forum Link </a> </td> 
+         <td class="confluenceTd"> Sony Manuel </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="Sun Java System Message Queue integration - GlassFish v2 One Pager.html" title="Sun Java System Message Queue integration - GlassFish v2 One Pager">MQ Integration </a> </td> 
+         <td class="confluenceTd"> Sivakumar Thyagarajan </td> 
+         <td class="confluenceTd"> Under Review </td> 
+         <td class="confluenceTd"> <a href="http://forums.java.net/jive/thread.jspa?threadID=17922">Forum Link </a> </td> 
+         <td class="confluenceTd"> Judy He </td> 
+         <td class="confluenceTd"> <span class="error">[Test Specification|^9.1JMSonepager.html.pdf]</span> </td> 
+         <td class="confluenceTd"> Approved: Planned Test dev done </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="https://updatecenter.java.net/update_center_onepager.txt">Update Center </a> </td> 
+         <td class="confluenceTd"> Snjezana Sevo-Zenzerovic &amp; Satish Viswanatham </td> 
+         <td class="confluenceTd"> Under Review </td> 
+         <td class="confluenceTd"> <a href="http://forums.java.net/jive/thread.jspa?threadID=18110">Forum Link </a> </td> 
+         <td class="confluenceTd"> Nolan Luu </td> 
+         <td class="confluenceTd"> <a href="https://updatecenter.java.net/testing/UpdateCenterTestSpecification.html">Test Specification </a> </td> 
+         <td class="confluenceTd"> Approved: Planned Test dev done </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875140/21365274.pdf">Generic JMS RA Integration </a> </td> 
+         <td class="confluenceTd"> Ramesh Parthasarathy </td> 
+         <td class="confluenceTd"> Under Review </td> 
+         <td class="confluenceTd"> <a href="http:/forums.java.net/jive/thread.jspa?threadID=17913">Forum Link </a> </td> 
+         <td class="confluenceTd"> Sonia Liu </td> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875140/21365294.pdf">Test Specification</a> </td> 
+         <td class="confluenceTd"> Approved: Planned Test dev done </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Error Reporting Enhancements </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Late binding </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Gopal Jorapur </td> 
+         <td class="confluenceTd"> Ad hoc No Test Plan </td> 
+         <td class="confluenceTd"> Approved: Planned Test dev done </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875140/21365288.pdf">Upgrade</a> </td> 
+         <td class="confluenceTd"> Prasad Subramanian </td> 
+         <td class="confluenceTd"> Late binding </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Approved: Planned Test dev done </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875140/21365273.pdf">Addons for EE</a> </td> 
+         <td class="confluenceTd"> Binod PG </td> 
+         <td class="confluenceTd"> Late binding </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>-------------<br> <b>Guidelines for Authors:</b></p> 
+     <ul> 
+      <li>The one pager is meant for consumption by ARCs, Docs, QE/QA, SEs and other developers who may need to understand the high level workings and interfaces. Please use the standard templates given below 
+       <ul> 
+        <li><a href="http://download.java.net/glassfish/wiki-archive/attachments/20875140/21365295.pdf">HTML</a> or <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875140/21365277.pdf">TXT</a></li> 
+       </ul> </li> 
+      <li>The one pager is not a substitute for design document. Please keep one pagers reasonably brief.</li> 
+      <li>When the initial draft of a document is ready, please link it to the table above and change the state to <em>Draft</em></li> 
+      <li>When the document is ready for review: 
+       <ul> 
+        <li>Please start a new <a href="http://forums.java.net/jive/forum.jspa?forumID=56&amp;start=0">GlassFish forum</a> thread soliciting feedback/comments on the new feature by providing a link to the relevant one pager there.</li> 
+        <li>The subject of the thread should say something about the new feature.</li> 
+        <li>Ask for feedback on the new feature in the body of the thread and include the link to the relevant one pager in it.</li> 
+        <li>Indicate in the initial thread that the review period is 2 weeks. Comments received after that will not be considered for this release.</li> 
+        <li>Please add a link to the relevant GlassFish forum thread to this table for your one pager and change the status to <em>Under Review</em>.</li> 
+       </ul> </li> 
+      <li>Please allow a minimum period of 2 weeks for the community to provide feedback/comments on the GlassFish forum.</li> 
+      <li>At the end of this period: 
+       <ul> 
+        <li>Announce in the appropriate GlassFish forum thread that the review period is over and the one pager will be updated with all relevant feedback/comments received during this period.</li> 
+        <li>Incorporate any feedback that is useful and relevant for this release into the one pager and update it on this page.</li> 
+        <li>Change the status to <em>Review Completed</em></li> 
+       </ul> </li> 
+     </ul> <p><b>Review Process:</b></p> 
+     <ul> 
+      <li>The author of the one pager for the feature will post the one pager on this wiki and start a new <a href="http://forums.java.net/jive/forum.jspa?forumID=56&amp;start=0">GlassFish forum</a> thread soliciting feedback/comments on the new feature.</li> 
+      <li>All documents posted will allow a minimum of 2 weeks for the community to provide feedback.</li> 
+      <li>During this period, author is expected to respond to feedback/comments posted by others on the forum.</li> 
+      <li>At the end of this period the author will update the one pager with all relevant feedback/comments received during this period.</li> 
+      <li>Any feedback/comments received after this period will not be considered for this release.</li> 
+     </ul> 
+     <hr> <br> 
+     <div class="tabletitle"> 
+      <a name="attachments"> <h4>Attachments:</h2> </a> 
+     </div> 
+     <div class="greybox" align="left"> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875140/21364940.jpg">loggers.jpg</a> (image/pjpeg) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875140/21364938.jpg">statistic.jpg</a> (image/pjpeg) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875140/21364959.pdf">lb-admin-next.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875140/21364939.pdf">FODynamicCluster.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875140/21364957.jpg">showall.jpg</a> (image/pjpeg) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875140/21364958.pdf">ConnectionPool-UserExperience-Aug29.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875140/21365127.pdf">GMSOnePagerGFv2.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875140/21365128.pdf">v2AdminGuiOnePager.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875140/21365125.pdf">v2AdminGuiUIChanges.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875140/21365124.pdf">v3-gui-AMXdependencies.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875140/21365109.pdf">DTD-Changes-Connection-Pool.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875140/21365112.pdf">ConnectionPoolOnePager.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875140/21365111.pdf">JDBC-4.0-RA-OnePager.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875140/21365237.pdf">gfv2-one-pager.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875140/21365240.pdf">FOLB-one-pager.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875140/21365273.pdf">addon-onepager.txt.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875140/21365274.pdf">genericra-onepager.txt.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875140/21365275.pdf">jbi.txt.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875140/21365276.pdf">LB-onepager.txt.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875140/21365277.pdf">onepager.txt.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875140/21365278.pdf">smgmtonepager.txt.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875140/21365290.pdf">wsit-onepager.txt.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875140/21365292.pdf">AdminLB_TestSpec.html.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875140/21365291.pdf">GFv2_AS91_Test_Specification_admingui.html.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875140/21365294.pdf">GFv2_AS91_Test_specification_GRA.html.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875140/21365293.pdf">GlassfishV2_AdminCLI_Test_specification_9.1.html.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875140/21365296.pdf">memory-replication-one-pager.html.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875140/21365295.pdf">one-pager.html.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875140/21365288.pdf">upgrade-one-pager.html.pdf</a> (application/pdf) 
+      <br> 
+      <img src="images/icons/bullet_blue.gif" height="8" width="8" alt=""> 
+      <a href="http://download.java.net/glassfish/wiki-archive/attachments/20875140/21365287.pdf">Usage_profile_support_for_application_server.html.pdf</a> (application/pdf) 
+      <br> 
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Nov 10, 2011 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:45.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

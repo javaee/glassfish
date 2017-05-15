@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : FaqApacheLoadbalancerPitfallsZh</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="FaqApacheLoadbalancerPitfallsZh-%E5%AF%B9GlassFish%E7%BE%A4%E9%9B%86%EF%BC%88%E4%BD%BF%E7%94%A8Apache%EF%BC%8C%E9%80%9A%E8%BF%87AJP%2Fmodjk%EF%BC%89%E8%BF%9B%E8%A1%8C%E8%B4%9F%E8%BD%BD%E5%B9%B3%E8%A1%A1%E6%97%B6%EF%BC%8C%E6%9C%89%E5%93%AA%E4%BA%9B%E5%B8%B8%E8%A7%81%E7%9A%84%E7%BC%BA%E9%99%B7%EF%BC%9F"></a>对 GlassFish 群集（使用 Apache，通过 AJP/mod_jk）进行负载平衡时，有哪些常见的缺陷？</h2> 
+     <ul> 
+      <li>请确保每个工作者 (worker) 的名称等于该工作者所连接到的 GlassFish 实例的 &lt;code&gt;jvmRoute&lt;/code&gt; 系统属性的值。只有这样，HTTP 会话才能保持指向在其中创建该会话或上次在其中恢复该会话的 GlassFish 实例。</li> 
+     </ul> 
+     <ul> 
+      <li>在 &lt;code&gt;web.xml&lt;/code&gt; 部署描述符中，将您要部署到 GlassFish 群集的 Web 应用程序标记为可分布应用程序，并通过将 &lt;code&gt;asadmin deploy&lt;/code&gt; 命令的 &lt;code&gt;--availabilityenabled&lt;/code&gt; 选项设置为 &lt;code&gt;true&lt;/code&gt;（默认值为 &lt;code&gt;false&lt;/code&gt;）来将其部署到群集中。这会针对这些 Web 应用程序启用 GlassFish 的内存会话复制功能，并使其 HTTP 会话能够在经历故障转移之后恢复。</li> 
+     </ul> 
+     <ul> 
+      <li>请参见<a href="http://blogs.oracle.com/jluehe/entry/supporting_apache_loadbalancer_with_glassfish">此博客</a>了解更多详细信息。</li> 
+     </ul> 
+     <hr> <p><a href="FaqApacheLoadbalancerPitfalls.html" title="FaqApacheLoadbalancerPitfalls">英文 </a></p> 
+     <hr> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 02, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:44.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : GlassFishv3PropertiesDocPlan</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>&lt;h1&gt;<em>Properties</em> Documentation Plan&lt;/h1&gt;</p> 
+     <div> 
+      <ul> 
+       <li><a href="#GlassFishv3PropertiesDocPlan-PeopleandRoles">People and Roles</a></li> 
+       <li><a href="#GlassFishv3PropertiesDocPlan-Audience">Audience</a></li> 
+       <li><a href="#GlassFishv3PropertiesDocPlan-SummaryoftheFeatureFromaUser%27sPerspective">Summary of the Feature From a User's Perspective</a></li> 
+       <li><a href="#GlassFishv3PropertiesDocPlan-Availability">Availability</a></li> 
+       <li><a href="#GlassFishv3PropertiesDocPlan-StatementofWork">Statement of Work</a></li> 
+       <li><a href="#GlassFishv3PropertiesDocPlan-PropertyDescriptionsNotRequiredforv3">Property Descriptions Not Required for v3</a></li> 
+       <li><a href="#GlassFishv3PropertiesDocPlan-ReviewSchedule">Review Schedule</a></li> 
+       <li><a href="#GlassFishv3PropertiesDocPlan-RelatedInformation">Related Information</a></li> 
+      </ul>
+     </div> <h4><a name="GlassFishv3PropertiesDocPlan-PeopleandRoles"></a>People and Roles</h1> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Name </th> 
+         <th class="confluenceTh"> Role </th> 
+         <th class="confluenceTh"> Location </th> 
+         <th class="confluenceTh"> Time Zone </th> 
+         <th class="confluenceTh"> Email </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> June Parks </td> 
+         <td class="confluenceTd"> Documentation Feature Owner Writer, ''Domain File Format Reference </td> 
+         <td class="confluenceTd"> Santa Clara, CA, USA </td> 
+         <td class="confluenceTd"> US/Pacific </td> 
+         <td class="confluenceTd"> <tt>junesm@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Kim Haase </td> 
+         <td class="confluenceTd"> Writer, Administration Console Online Help </td> 
+         <td class="confluenceTd"> Burlington, MA, USA </td> 
+         <td class="confluenceTd"> US/Eastern </td> 
+         <td class="confluenceTd"> <tt>chaase3@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Paul Davies </td> 
+         <td class="confluenceTd"> Writer, man pages </td> 
+         <td class="confluenceTd"> Santa Clara, CA, USA </td> 
+         <td class="confluenceTd"> US/Pacific </td> 
+         <td class="confluenceTd"> <tt>pauldavies@dev.java.net</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Julie Bettis </td> 
+         <td class="confluenceTd"> Editor </td> 
+         <td class="confluenceTd"> Broomfield, CO, USA </td> 
+         <td class="confluenceTd"> US/Mountain </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishv3PropertiesDocPlan-Audience"></a>Audience</h1> <p>Most users of the GlassFish server use at least some of the properties.</p> <h4><a name="GlassFishv3PropertiesDocPlan-SummaryoftheFeatureFromaUser%27sPerspective"></a>Summary of the Feature From a User's Perspective</h1> <p>Users of GlassFish server can access a particular set of properties through:</p> 
+     <ul> 
+      <li>A page in the Administration Console</li> 
+      <li>A subcommand of the <tt>asadmin</tt> utility</li> 
+      <li>An element in the <tt>domain.xml</tt> file</li> 
+     </ul> <p>Given these different modes of access, information about GlassFish server properties is required in the following documents:</p> 
+     <ul> 
+      <li>Administration Console Online Help</li> 
+      <li>Man pages for the <tt>asadmin</tt> CLI help, which forms the basis of the <em>Reference Manual</em></li> 
+      <li><em>Domain File Format Reference</em></li> 
+     </ul> <p>The aim of this project is to ensure that information about for the GlassFish server properties is correct, complete, and consistent in all documents where it is required.</p> <h4><a name="GlassFishv3PropertiesDocPlan-Availability"></a>Availability</h1> <p>Many properties are available in all GlassFish distributions.</p> <h4><a name="GlassFishv3PropertiesDocPlan-StatementofWork"></a>Statement of Work</h1> <p>The following table lists the man page, help topic, and <tt>domain.xml</tt> element that are associated with each set of GlassFish server properties.</p> <p>The <em>Domain File Format Reference</em> is currently the primary source of information about GlassFish server properties. Therefore, much of the work in this project involves propagating information in the <em>Domain File Format Reference</em> to the Administration Console Online Help and the man pages.</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Man Page </th> 
+         <th class="confluenceTh"> Help Topic </th> 
+         <th class="confluenceTh"> <tt>domain.xml</tt> Element </th> 
+         <th class="confluenceTh"> Predefined Properties </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>create-admin-object.1</tt> </td> 
+         <td class="confluenceTd"> New/Edit Admin Object Resource </td> 
+         <td class="confluenceTd"> <tt>admin-object-resource</tt> </td> 
+         <td class="confluenceTd"> Dependent on the resource adapter. For JMS properties, see <tt>create-jms-resource.1</tt> for JMS Destination Resources. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>create-audit-module.1</tt> </td> 
+         <td class="confluenceTd"> New/Edit Audit Module </td> 
+         <td class="confluenceTd"> <tt>audit-module</tt> </td> 
+         <td class="confluenceTd"> <tt>auditOn</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>create-auth-realm.1</tt> </td> 
+         <td class="confluenceTd"> Properties Specific to the <tt>FileRealm</tt> Class <sup><a href="#GlassFishv3PropertiesDocPlan-1">1</a></sup> </td> 
+         <td class="confluenceTd"> <tt>auth-realm</tt> </td> 
+         <td class="confluenceTd"> <tt>jaas-context</tt> <tt>file</tt> <tt>assign-groups</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>create-auth-realm.1</tt> </td> 
+         <td class="confluenceTd"> Properties Specific to the <tt>CertificateRealm</tt> Class </td> 
+         <td class="confluenceTd"> <tt>auth-realm</tt> </td> 
+         <td class="confluenceTd"> <tt>jaas-context</tt> <tt>assign-groups</tt> <sup><a href="#GlassFishv3PropertiesDocPlan-1">1</a></sup> <tt>clientAuth</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>create-auth-realm.1</tt> </td> 
+         <td class="confluenceTd"> Properties Specific to the <tt>JDBCRealm</tt> Class <sup><a href="#GlassFishv3PropertiesDocPlan-1">1</a></sup> </td> 
+         <td class="confluenceTd"> <tt>auth-realm</tt> </td> 
+         <td class="confluenceTd"> <tt>jaas-context</tt> <tt>assign-groups</tt> <tt>datasource-jndi</tt> <sup><a href="#GlassFishv3PropertiesDocPlan-2">2</a></sup> <tt>user-table</tt> <tt>user-name-column</tt> <tt>password-column</tt> <tt>group-table</tt> <tt>group-name-column</tt> <tt>db-user</tt> <tt>db-password</tt> <tt>digest-algorithm</tt> <tt>encoding</tt> <tt>charset</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>create-auth-realm.1</tt> </td> 
+         <td class="confluenceTd"> Properties Specific to the <tt>LDAPRealm</tt> Class </td> 
+         <td class="confluenceTd"> <tt>auth-realm</tt> </td> 
+         <td class="confluenceTd"> <tt>jaas-context</tt> <sup><a href="#GlassFishv3PropertiesDocPlan-1">1</a></sup> <tt>assign-groups</tt> <sup><a href="#GlassFishv3PropertiesDocPlan-1">1</a></sup> <tt>directory</tt> <sup><a href="#GlassFishv3PropertiesDocPlan-1">1</a></sup> <tt>base-dn</tt> <sup><a href="#GlassFishv3PropertiesDocPlan-1">1</a></sup> <tt>search-filter</tt> <tt>group-base-dn</tt> <tt>group-search-filter</tt> <tt>group-target</tt> <tt>search-bind-dn</tt> <tt>search-bind-password</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>create-auth-realm.1</tt> </td> 
+         <td class="confluenceTd"> Properties Specific to the <tt>SolarisRealm</tt> Class <sup><a href="#GlassFishv3PropertiesDocPlan-1">1</a></sup> </td> 
+         <td class="confluenceTd"> <tt>auth-realm</tt> </td> 
+         <td class="confluenceTd"> <tt>jaas-context</tt> <tt>assign-groups</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>create-connector-connection-pool.1</tt> </td> 
+         <td class="confluenceTd"> New/Edit Connector Connection Pool </td> 
+         <td class="confluenceTd"> <tt>connector-connection-pool</tt> </td> 
+         <td class="confluenceTd"> <tt>ClientId</tt> <tt>AddressList</tt> <tt>UserName</tt> <tt>Password</tt> <tt>ReconnectEnabled</tt> <tt>ReconnectAttempts</tt> <tt>ReconnectInterval</tt> <tt>AddressListBehavior</tt> <tt>AddressListIterations</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>create-connector-resource.1</tt> </td> 
+         <td class="confluenceTd"> New/Edit Connector Resource </td> 
+         <td class="confluenceTd"> <tt>connector-resource</tt> </td> 
+         <td class="confluenceTd"> None </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>create-custom-resource.1</tt> </td> 
+         <td class="confluenceTd"> New/Edit External Resource </td> 
+         <td class="confluenceTd"> <tt>custom-resource</tt> </td> 
+         <td class="confluenceTd"> None </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>create-iiop-listener.1</tt> </td> 
+         <td class="confluenceTd"> New/Edit IIOP Listener </td> 
+         <td class="confluenceTd"> <tt>iiop-listener</tt> </td> 
+         <td class="confluenceTd"> None </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>create-javamail-resource.1</tt> </td> 
+         <td class="confluenceTd"> Create/Edit JavaMail Session </td> 
+         <td class="confluenceTd"> <tt>mail-resource</tt> </td> 
+         <td class="confluenceTd"> GlassFish-specific <tt>mail-</tt> prefix is converted to standard <tt>mail.</tt> prefix. For JavaMail properties, see the <a href="http://java.sun.com/products/javamail/javadocs/index.html">JavaMail API Documentation </a>. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>create-jdbc-connection-pool.1</tt> </td> 
+         <td class="confluenceTd"> Properties Specific to JDBC Connection Pools </td> 
+         <td class="confluenceTd"> <tt>jdbc-connection-pool</tt> </td> 
+         <td class="confluenceTd"> <tt>user</tt> <tt>password</tt> <tt>databaseName</tt> <tt>serverName</tt> <tt>port</tt> <tt>networkProtocol</tt> <tt>roleName</tt> <tt>datasourceName</tt> <tt>description</tt> <tt>url</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>create-jdbc-resource.1</tt> </td> 
+         <td class="confluenceTd"> New/Edit JDBC Resource </td> 
+         <td class="confluenceTd"> <tt>jdbc-resource</tt> </td> 
+         <td class="confluenceTd"> None </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>create-jms-host.1</tt> </td> 
+         <td class="confluenceTd"> New/Edit JMS Host <sup><a href="#GlassFishv3PropertiesDocPlan-3">3</a></sup> </td> 
+         <td class="confluenceTd"> <tt>jms-host</tt> </td> 
+         <td class="confluenceTd"> None </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>create-jms-resource.1</tt> </td> 
+         <td class="confluenceTd"> Properties Specific to JMS Connection Factories </td> 
+         <td class="confluenceTd"> <tt>connector-connection-pool</tt> </td> 
+         <td class="confluenceTd"> <tt>ClientId</tt> <tt>AddressList</tt> <tt>UserName</tt> <tt>Password</tt> <tt>ReconnectEnabled</tt> <tt>ReconnectAttempts</tt> <tt>ReconnectInterval</tt> <tt>AddressListBehavior</tt> <tt>AddressListIterations</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>create-jms-resource.1</tt> </td> 
+         <td class="confluenceTd"> JMS Destination Resources <sup><a href="#GlassFishv3PropertiesDocPlan-1">1</a></sup> </td> 
+         <td class="confluenceTd"> <tt>admin-object-resource</tt> </td> 
+         <td class="confluenceTd"> <tt>Name</tt> <tt>Description</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>create-jmsdest.1</tt> </td> 
+         <td class="confluenceTd"> New/Edit Physical Destination <sup><a href="#GlassFishv3PropertiesDocPlan-3">3</a></sup> </td> 
+         <td class="confluenceTd"> None (MQ broker object) </td> 
+         <td class="confluenceTd"> The following properties are provided as attributes in the Admin Console, so the man page documents the corresponding properties: <tt>maxNumMsgs</tt> <tt>maxBytesPerMsg</tt> <tt>maxTotalMsgBytes</tt> <tt>limitBehavior</tt> <tt>maxNumProducers</tt> <tt>consumerFlowLimit</tt> <tt>useDMQ</tt> <tt>validateXMLSchemaEnabled</tt> <tt>XMLSchemaURIList</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>create-jndi-resource.1</tt> </td> 
+         <td class="confluenceTd"> New/Edit External Resource </td> 
+         <td class="confluenceTd"> <tt>external-jndi-resource</tt> </td> 
+         <td class="confluenceTd"> <tt>The descriptions of http-listener-1-port</tt> <tt>http-listener-2-port</tt> <tt>orb-listener-1-port</tt> <tt>IIOP_SSL_LISTENER_PORT</tt> <tt>IIOP_SSL_MUTUALAUTH_PORT</tt> <tt>JMX_SYSTEM_Connector-port in the</tt> <tt>create-jndi-resource.1 man page appear to have been added in error. See issue</tt> <tt><a href="https://github.com/javaee/glassfish/issues/2473">GLASSFISH-2473</a></tt><tt>.</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>create-lifecycle-module.1</tt> </td> 
+         <td class="confluenceTd"> New/Edit Lifecycle Module </td> 
+         <td class="confluenceTd"> <tt>application</tt> </td> 
+         <td class="confluenceTd"> <tt>class-name</tt> <tt>classpath</tt> <tt>load-order</tt> <tt>is-failure-fatal</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>create-message-security-provider.1</tt> </td> 
+         <td class="confluenceTd"> Properties Specific to Message Security Providers </td> 
+         <td class="confluenceTd"> <tt>provider-config</tt> </td> 
+         <td class="confluenceTd"> <tt>security.config</tt> <tt>debug</tt> <tt>dynamic.username.password</tt> <tt>encryption.key.alias</tt> <tt>signature.key.alias</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>create-profiler.1</tt> </td> 
+         <td class="confluenceTd"> JVM Profiler Settings </td> 
+         <td class="confluenceTd"> <tt>profiler</tt> </td> 
+         <td class="confluenceTd"> None </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>create-resource-adapter-config.1</tt> </td> 
+         <td class="confluenceTd"> None in this release <sup><a href="#GlassFishv3PropertiesDocPlan-4">4</a></sup> . </td> 
+         <td class="confluenceTd"> <tt>resource-adapter-config</tt> </td> 
+         <td class="confluenceTd"> Names of setter methods of the class referenced by the <tt>resourceadapter-class</tt> element in the <tt>ra.xml</tt> file </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>create-system-properties.1</tt> </td> 
+         <td class="confluenceTd"> Properties Specific to System Configuration </td> 
+         <td class="confluenceTd"> <tt>system-property</tt> </td> 
+         <td class="confluenceTd"> <tt>com.sun.aas.installRoot</tt> <tt>com.sun.aas.instanceRoot</tt> <tt>com.sun.aas.hostName</tt> <tt>com.sun.aas.javaRoot</tt> <tt>com.sun.aas.imqLib</tt> <tt>com.sun.aas.configName</tt> <tt>com.sun.aas.instanceName</tt> <tt>com.sun.aas.domainName</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>create-virtual-server.1</tt> </td> 
+         <td class="confluenceTd"> Properties Specific to Virtual Servers </td> 
+         <td class="confluenceTd"> <tt>virtual-server</tt> </td> 
+         <td class="confluenceTd"> <tt>sso-max-inactive-seconds</tt> <tt>sso-reap-interval-seconds</tt> <tt>allowLinking</tt> <tt>accessLogWriteInterval</tt> <tt>accessLogBufferSize</tt> <tt>allowRemoteAddress</tt> <tt>denyRemoteAddress</tt> <tt>allowRemoteHost</tt> <tt>denyRemoteHost</tt> <tt>ssoCookieSecure</tt> <tt>setCacheControl</tt> <tt>authRealm</tt> <tt>securePagesWithPragma</tt> <tt>contextXmlDefault</tt> <tt>alternatedocroot_</tt><em>n</em> <tt>send-error_</tt><em>n</em> <tt>redirect_</tt><em>n</em> <tt>valve_</tt><em>n</em> <tt>listener_</tt><em>n</em> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>deploy.1</tt>, <tt>deploydir.1</tt> </td> 
+         <td class="confluenceTd"> Deploy Applications or Modules </td> 
+         <td class="confluenceTd"> <tt>application</tt> </td> 
+         <td class="confluenceTd"> <tt>default-EE6-app-name</tt> <tt>java-web-start-enabled</tt> <tt>class-name</tt> <tt>classpath</tt> <tt>load-order</tt> <tt>is-failure-fatal</tt> <tt>jruby.home</tt> <tt>jruby.runtime</tt> <tt>jruby.runtime.min</tt> <tt>jruby.runtime.max</tt> <tt>jruby.rackEnv</tt> <tt>jruby.applicationType</tt> <tt>jruby.MTSafe</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>redeploy.1</tt> </td> 
+         <td class="confluenceTd"> Redeploy Applications or Modules <sup><a href="#GlassFishv3PropertiesDocPlan-3">3</a></sup> </td> 
+         <td class="confluenceTd"> <tt>application</tt> </td> 
+         <td class="confluenceTd"> <tt>deploy.1</tt> properties <tt>keepSessions</tt> <sup><a href="#GlassFishv3PropertiesDocPlan-5">5</a></sup> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> None <sup><a href="#GlassFishv3PropertiesDocPlan-6">6</a></sup> </td> 
+         <td class="confluenceTd"> Properties Specific to the JMS Service </td> 
+         <td class="confluenceTd"> <tt>jms-service</tt> </td> 
+         <td class="confluenceTd"> <tt>instance-name</tt> <tt>instance-name-suffix</tt> <tt>append-version</tt> <tt>user-name</tt> <tt>password</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> None <sup><a href="#GlassFishv3PropertiesDocPlan-6">6</a></sup> </td> 
+         <td class="confluenceTd"> Properties Specific to Web Container Sessions </td> 
+         <td class="confluenceTd"> <tt>session-properties</tt> </td> 
+         <td class="confluenceTd"> <tt>enableCookies</tt> <tt>enableURLRewriting</tt> <tt>idLengthBytes</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> None <sup><a href="#GlassFishv3PropertiesDocPlan-6">6</a></sup> </td> 
+         <td class="confluenceTd"> Properties Specific to the Transaction Service </td> 
+         <td class="confluenceTd"> <tt>transaction-service</tt> </td> 
+         <td class="confluenceTd"> <tt>oracle-xa-recovery-workaround</tt> <tt>disable-distributed-transaction-logging</tt> <tt>xaresource-txn-timeout</tt> <tt>pending-txn-cleanup-interval</tt> <tt>use-last-agent-optimization</tt> <tt>delegated-recovery</tt> <tt>wait-time-before-recovery-insec</tt> <tt>db-logging-resource</tt> <tt>xa-servername</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> None <sup><a href="#GlassFishv3PropertiesDocPlan-6">6</a></sup> </td> 
+         <td class="confluenceTd"> Web Container→General Properties </td> 
+         <td class="confluenceTd"> <tt>web-container</tt> </td> 
+         <td class="confluenceTd"> <tt>dispatcher-max-depth</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> None <sup><a href="#GlassFishv3PropertiesDocPlan-6">6</a></sup> </td> 
+         <td class="confluenceTd"> Properties Specific to JACC Providers?? </td> 
+         <td class="confluenceTd"> <tt>jacc-provider</tt> </td> 
+         <td class="confluenceTd"> <tt>repository</tt> </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> None <sup><a href="#GlassFishv3PropertiesDocPlan-6">6</a></sup> </td> 
+         <td class="confluenceTd"> Properties Specific to the HTTP Service </td> 
+         <td class="confluenceTd"> <tt>http-service</tt> </td> 
+         <td class="confluenceTd"> <tt>ssl-cache-entries</tt> <tt>ssl3-session-timeout</tt> <tt>ssl-session-timeout</tt> <tt>proxyHandler</tt> <tt>connectionTimeout</tt> </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <ol> 
+      <li>Represented as options in the GUI</li> 
+      <li>Option name is JNDI</li> 
+      <li>No property table in GUI</li> 
+      <li>The only properties essential for v3 final that have no place to go in the OLH are those for <tt>resource-adapter-config</tt>. However, these properties are to be described in the <tt>create-resource-adapter-config.1</tt> man page. If an Administration Console page for resource adapter configuration is added, a description of these properties will be added to the online help.</li> 
+      <li>Implemented as a check box in the GUI.</li> 
+      <li>There are no special commands for configuration of services, only <tt>set</tt> and <tt>get</tt>. The properties for the service configuration will be documented only in the Administration Console Online Help and <em>Domain File Format Reference</em>.</li> 
+     </ol> <h4><a name="GlassFishv3PropertiesDocPlan-PropertyDescriptionsNotRequiredforv3"></a>Property Descriptions Not Required for v3</h1> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Man Page </th> 
+         <th class="confluenceTh"> Help Topic </th> 
+         <th class="confluenceTh"> <tt>domain.xml</tt> Element </th> 
+         <th class="confluenceTh"> Properties </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>create-jmsdest.1</tt> </td> 
+         <td class="confluenceTd"> New/Edit Physical Destination </td> 
+         <td class="confluenceTd"> None (MQ broker object) </td> 
+         <td class="confluenceTd"> Clustering-related properties to be documented in a release that supports clustering, if they are made accessible in the Admin Console. </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>create-node-agent.1</tt> </td> 
+         <td class="confluenceTd"> New Node Agent Placeholder, (General) </td> 
+         <td class="confluenceTd"> <tt>node-agent</tt> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> None </td> 
+         <td class="confluenceTd"> Properties Specific to the Availability Service </td> 
+         <td class="confluenceTd"> <tt>availability-service</tt> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> None </td> 
+         <td class="confluenceTd"> Availability Service, Web Container Availability </td> 
+         <td class="confluenceTd"> <tt>web-container-availability</tt> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> None </td> 
+         <td class="confluenceTd"> Load Balancer </td> 
+         <td class="confluenceTd"> <tt>load-balancer</tt> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> None </td> 
+         <td class="confluenceTd"> Properties Specific to Events </td> 
+         <td class="confluenceTd"> <tt>event</tt> </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="GlassFishv3PropertiesDocPlan-ReviewSchedule"></a>Review Schedule</h1> <p>The review schedule for the documentation items affected by this feature is provided in the OLH and man page plans.</p> <p>Likewise, reviewers are the engineering owners of the features of which the properties are a part. See the OLH and man page plans.</p> <h4><a name="GlassFishv3PropertiesDocPlan-RelatedInformation"></a>Related Information</h1> 
+     <ul> 
+      <li>Administration Console Online Help</li> 
+      <li>Man pages for the <tt>asadmin</tt> CLI help, which forms the basis of the <em>Reference Manual</em></li> 
+      <li><em>Domain File Format Reference</em></li> 
+     </ul> <p>Email aliases:</p> 
+     <ul> 
+      <li>[]</li> 
+      <li>[]</li> 
+      <li>[]</li> 
+     </ul> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jun 21, 2011 by 
+<font color="#0050B2">pauldavies</font>. Exported from wikis.oracle.com on May 27, 2015 20:44.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

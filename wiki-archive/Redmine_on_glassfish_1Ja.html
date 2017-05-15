@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : Redmine_on_glassfish_1Ja</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="Redmine_on_glassfish_1Ja-Redmine%E3%82%92GlassFish%E4%B8%8A%E3%81%A7%E5%8B%95%E3%81%8B%E3%81%99RubyonRails%E3%81%A7%E6%9B%B8%E3%81%8B%E3%82%8C%E3%81%9F%E3%83%97%E3%83%AD%E3%82%B8%E3%82%A7%E3%82%AF%E3%83%88%E7%AE%A1%E7%90%86%E3%83%84%E3%83%BC%E3%83%AB"></a>Redmine を GlassFish 上で動かす - Ruby on Rails で書かれたプロジェクト管理ツール</h2> <p>Posted by arungupta on May 23, 2008 at 06:08 AM</p> <p><a href="http://www.redmine.org/">Redmine</a> （<a href="http://redmine.jp/developer/">日本語サイト</a>）は <a href="http://rubyonrails.org/">Ruby on Rails</a> フレームワークベースの Web アプリケーションとして実装されている、柔軟なプロジェクト管理用のツールです。Redmine には複数プロジェクトの管理機能、ロールベースの管理機能、プロジェクトごとに管理できる forums/wikis/SCM といった "ユージュアル・サスペクツ （※訳者注：プロジェクト管理ツールに通常期待されるような一般的な機能）" から LDAP 認証、他言語対応といったエンタープライズ向けの機能まで、<a href="http://www.redmine.org/wiki/redmine">とても多彩な機能</a>が備わっています。<br> Redmine はプラットフォームやデータベースを選ばず、<a href="http://glassfish.java.net/downloads/v3">GlassFish v3</a> 上にもとてもいいカンジに配備することができます。</p> <p>GlassFish v3 はモジュラー性・拡張性が高く、Rails アプリケーションを<a href="http://blogs.oracle.com/arungupta/entry/rails_and_java_ee_integration2">特に手を加えることなく</a>配備することが可能となっています（War 化する必要もありません）。このブログでは Redmine をGlassFish 上に配備する手順について説明し、あわせていくつかのスクリーンショットをお見せします。<br> より詳しいドキュメントは <a href="http://glassfish.java.net/downloads/v3">Redmine ガイド（英語）</a>にてご覧ください。</p> <p>1. 次のコマンドを実行し、 Redmine の安定版リリースをチェックアウトします。</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">~/testbed/redmine &gt;svn co http://redmine.rubyforge.org/svn/branches/0.7-stable redmine-0.7</pre> 
+       </div> 
+      </div>
+     </div> <p>※訳者注：開発中の最新バージョンを入手したい場合は、以下のように実行してください。</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">redmine&gt; svn checkout http://redmine.rubyforge.org/svn/trunk/</pre> 
+       </div> 
+      </div>
+     </div> <p>2. データベースの設定</p> 
+     <ul> 
+      <li>まずはMySQL サーバを起動します：</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">~/testbed/redmine &gt;sudo mysqld_safe --user root
+Starting mysqld daemon with databases from /usr/local/mysql/data</pre> 
+       </div> 
+      </div>
+     </div> 
+     <ul> 
+      <li>次のようにデータベースを作成しましょう:</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">~/testbed/redmine/redmine-0.7 &gt;../jruby-1.1.1/bin/jruby -S rake db:create
+(in /Users/arungupta/testbed/redmine/redmine-0.7)</pre> 
+       </div> 
+      </div>
+     </div> <p>※実際には redmine\config\database.yml が database.yml.example という名前になっているため、これを database.yml とRename する必要があります。<br> また、 database.yml を開いて DB ユーザのパスワードも書き換える必要があります。</p> 
+     <ul> 
+      <li>データベースのマイグレート:</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">~/testbed/redmine/redmine-0.7 &gt;../jruby-1.1.1/bin/jruby -S rake db:migrate
+(in /Users/arungupta/testbed/redmine/redmine-0.7)
+== 1 Setup: migrating =========================================================
+-- create_table("attachments", {:force=&gt;true})
+   -&gt; 0.2840s
+-- create_table("auth_sources", {:force=&gt;true})
+   -&gt; 0.0540s
+-- create_table("custom_fields", {:force=&gt;true})
+   -&gt; 0.0430s
+-- create_table("custom_fields_projects", {:id=&gt;false, :force=&gt;true})
+   -&gt; 0.0080s
+-- create_table("custom_fields_trackers", {:id=&gt;false, :force=&gt;true})
+   -&gt; 0.0500s
+
+. . .
+
+== 90 ChangeVersionsNameLimit: migrating ======================================
+-- change_column(:versions, :name, :string, {:limit=&gt;nil})
+   -&gt; 0.0220s
+== 90 ChangeVersionsNameLimit: migrated (0.0220s) =============================
+
+== 91 ChangeChangesetsRevisionToString: migrating =============================
+-- change_column(:changesets, :revision, :string, {:null=&gt;false})
+   -&gt; 0.0210s
+== 91 ChangeChangesetsRevisionToString: migrated (0.0230s) ====================
+
+== 92 ChangeChangesFromRevisionToString: migrating ============================
+-- change_column(:changes, :from_revision, :string)
+   -&gt; 0.0130s
+== 92 ChangeChangesFromRevisionToString: migrated (0.0150s) ===================</pre> 
+       </div> 
+      </div>
+     </div> <p>3. GlassFish v3 のダウンロード / インストールおよび設定</p> 
+     <ul> 
+      <li><a href="https://glassfish.java.net/downloads/v3">ここ</a>から GlassFish v3 をダウンロードします。</li> 
+      <li>ダウンロードしたファイルを解凍してください。</li> 
+      <li>"glassfishv3-tp2/glassfish/config/asenv.conf" ファイルの末尾に以下の記述を追加しましょう:</li> 
+     </ul> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">JRUBY_HOME="/Users/arungupta/testbed/redmine/jruby-1.1.1"</pre> 
+       </div> 
+      </div>
+     </div> <p>4. Redmine の配備：</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">~/testbed/redmine &gt;./glassfishv3-tp2/glassfish/bin/asadmin deploy redmine-0.7
+Command deploy executed successfully.</pre> 
+       </div> 
+      </div>
+     </div> <p>... GlassFish のコンソールには次のように表示されます：</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">May 21, 2008 4:58:30 PM com.sun.enterprise.rails.RailsDeployer registerAdapter
+INFO: Loading application redmine-0.7 at /redmine-0.7
+May 21, 2008 4:58:30 PM  
+INFO: Starting Rails instances
+May 21, 2008 4:58:37 PM  
+SEVERE: JRuby limited openssl loaded. gem install jruby-openssl for full support.
+http://wiki.jruby.org/wiki/JRuby_Builtin_OpenSSL
+May 21, 2008 4:58:42 PM com.sun.grizzly.jruby.RubyObjectPool$1 run
+INFO: Rails instance instantiation took : 11979ms
+May 21, 2008 4:58:42 PM com.sun.enterprise.v3.deployment.DeployCommand execute
+INFO: Deployment of redmine-0.7 done is 12091 ms</pre> 
+       </div> 
+      </div>
+     </div> <p>これでアプリケーションを使う準備は完了です！私が試してみた時のスクリーンショットをいくつかお見せしましょう。</p> <p><span class="error">Cannot resolve external resource into attachment.</span></p> <p><span class="error">Cannot resolve external resource into attachment.</span><br> <span class="error">Cannot resolve external resource into attachment.</span><br> <span class="error">Cannot resolve external resource into attachment.</span><br> <span class="error">Cannot resolve external resource into attachment.</span><br> <span class="error">Cannot resolve external resource into attachment.</span><br> <span class="error">Cannot resolve external resource into attachment.</span><br> <span class="error">Cannot resolve external resource into attachment.</span></p> <p>なお、<a href="http://developers.sun.com/appserver/reference/techart/rails_gf/">Rails powered by the GlassFish Application Server （英文）</a>には、 Ruby-on-Rails の伝統的な配備モデルに変わって GlassFish を採用すべき理由が余すところなく説明されています。<br> また、このアプリケーションについては、 <a href="http://javapassion.com/">Sang "with Passion" Shin（英語）</a> による<a href="http://blogs.oracle.com/arungupta/entry/free_20_week_ruby_on">FREE 20-week Ruby-on-Rails course （英語）</a> の一部である <a href="http://www.javapassion.com/handsonlabs/rails_redmine_app/">LAB 5539</a> でも解説されています。</p> 
+     <hr> <p>日本語翻訳: <a href="http://apercu-j.blogspot.com/">Kana</a></p> <p><a href="http://weblogs.java.net/blog/arungupta/archive/2008/05/redmine_on_glas.html">英文</a></p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 09, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

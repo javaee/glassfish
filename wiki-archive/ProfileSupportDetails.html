@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : ProfileSupportDetails</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   
+     <div> 
+      <ul> 
+       <li><a href="#ProfileSupportDetails-ProfilesProject">Profiles Project</a></li> 
+       <li><a href="#ProfileSupportDetails-Webtierspecificsettings">Web-tier specific settings</a></li> 
+       <ul> 
+        <li><a href="#ProfileSupportDetails-domain.xmlsettings">domain.xml settings</a></li> 
+        <li><a href="#ProfileSupportDetails-defaultweb.xmlsettings">default-web.xml settings</a></li> 
+        <li><a href="#ProfileSupportDetails-Providinganeasywaytoupgradeadomain%27sconfiguration">Providing an easy way to upgrade a domain's configuration</a></li> 
+        <li><a href="#ProfileSupportDetails-ImplementationDetailstoSupportUpgrade">Implementation Details to Support Upgrade</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="ProfileSupportDetails-ProfilesProject"></a>Profiles Project</h1> <p>See <a href="http://www.glassfishwiki.org/gfwiki/attach/GlassFishV2AdminRelatedOnePagers/profile-support-fs.html">one pager on profiles</a> for details.</p> <p>See <a href="ProfilesProjectDesignAndTasks.html" title="ProfilesProjectDesignAndTasks">ProfilesProjectDesignAndTasks</a> for some implementation details.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;a name="webtier"/&gt;</pre> 
+       </div> 
+      </div>
+     </div> <h4><a name="ProfileSupportDetails-Webtierspecificsettings"></a>Web-tier specific settings</h1> <h4><a name="ProfileSupportDetails-domain.xmlsettings"></a>domain.xml settings</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">id</th> 
+         <th class="confluenceTh">element/property/attribute name</th> 
+         <th class="confluenceTh">value for developer profile</th> 
+         <th class="confluenceTh">value for enterprise profile </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 0 </td> 
+         <td class="confluenceTd"> <a href="http://www.glassfishwiki.org/gfwiki/attach/GlassFishAdministrationPages/domain_1_2.html#virtual-server">virtual-server, sso-enabled </a> </td> 
+         <td class="confluenceTd"> false </td> 
+         <td class="confluenceTd">true </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 1 </td> 
+         <td class="confluenceTd"> <a href="http://www.glassfishwiki.org/gfwiki/attach/GlassFishAdministrationPages/domain_1_2.html#http-file-cache">file-caching </a> </td> 
+         <td class="confluenceTd"> false (immediately reflects) </td> 
+         <td class="confluenceTd">true </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h4><a name="ProfileSupportDetails-defaultweb.xmlsettings"></a>default-web.xml settings</h2> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh">id</th> 
+         <th class="confluenceTh">element/property/attribute name</th> 
+         <th class="confluenceTh">value for developer profile</th> 
+         <th class="confluenceTh">value for enterprise profile </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> 0 </td> 
+         <td class="confluenceTd"> JspServlet mode – servlet jsp can have an init-param named "development" </td> 
+         <td class="confluenceTd"> true </td> 
+         <td class="confluenceTd"> false </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <p>See <a href="DistinctionsBetweenDeveloperProfileAndClassPEProfile.html" title="DistinctionsBetweenDeveloperProfileAndClassPEProfile">DistinctionsBetweenDeveloperProfileAndClassPEProfile</a> to determine if we need to distinguish between these profiles.</p> <h4><a name="ProfileSupportDetails-Providinganeasywaytoupgradeadomain%27sconfiguration"></a>Providing an easy way to upgrade a domain's configuration</h2> <p>This is a feature we are doing to sort of complement the profiles functionality. We have domains that do not support clusters and the ones that support the clusters. In order to increase the cluster awareness, we are planning to provide<br> an easy way to upgrade a domain to support clusters. A button should be provided on the admin console such that the domain can be seamlessly upgraded to a domain that supports clusters. Here are the details:</p> 
+     <ol> 
+      <li>It is a one-way operation only (no supprt for clusters -&gt; support for clusters).</li> 
+      <li>DAS's configuration is left intact. Only the necessary system property that affects the cluster behavior will be used. This is the so called Pluggable Feature Factory property. Thus the DAS's configuration is almost the same as before.</li> 
+      <li>Quick startup will be automatically disabled. This will result in a slightly longer startup time.</li> 
+      <li>Domain will require restart to take effect.</li> 
+      <li>The changes to configuration will be immediately available for administration.</li> 
+      <li>The DAS will continue to have applications deployed to it.</li> 
+      <li>DAS's configuration will remain intact.</li> 
+      <li>It is not mandatory to use clusters after this is done. The DAS can continue to be used as a single instance for deployments. It is just that it will be "ready" for cluster management.</li> 
+      <li>Administrators should use this feature carefully. GUI should display the implications of the actions before administrator presses the "OK" button.</li> 
+     </ol> <h4><a name="ProfileSupportDetails-ImplementationDetailstoSupportUpgrade"></a>Implementation Details to Support Upgrade</h2> <p>Please see <a href="ProvidingClusterSupport2DeveloperDomains.html" title="ProvidingClusterSupport2DeveloperDomains">ProvidingClusterSupport2DeveloperDomains</a> for details.</p> 
+     <div> 
+      <ul> 
+       <li><a href="#ProfileSupportDetails-ProfilesProject">Profiles Project</a></li> 
+       <li><a href="#ProfileSupportDetails-Webtierspecificsettings">Web-tier specific settings</a></li> 
+       <ul> 
+        <li><a href="#ProfileSupportDetails-domain.xmlsettings">domain.xml settings</a></li> 
+        <li><a href="#ProfileSupportDetails-defaultweb.xmlsettings">default-web.xml settings</a></li> 
+        <li><a href="#ProfileSupportDetails-Providinganeasywaytoupgradeadomain%27sconfiguration">Providing an easy way to upgrade a domain's configuration</a></li> 
+        <li><a href="#ProfileSupportDetails-ImplementationDetailstoSupportUpgrade">Implementation Details to Support Upgrade</a></li> 
+       </ul> 
+      </ul>
+     </div> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 15, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

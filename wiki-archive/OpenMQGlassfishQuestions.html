@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : OpenMQGlassfishQuestions</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="OpenMQGlassfishQuestions-OpenMessageQueueandGlassfish%21https%3A%2F%2Fmq.java.net%2Fimages%2Fdukemqicon.gif%21%21https%3A%2F%2Fglassfishtheme.java.net%2Flogo.gif%21"></a>Open Message Queue and Glassfish <span class="error">Cannot resolve external resource into attachment.</span> <span class="error">Cannot resolve external resource into attachment.</span></h1> <p>If you are interested in contributing to this FAQ, please read the <a href="MQWikiContributionGuidelines.html" title="MQWikiContributionGuidelines">Contribution Guidelines</a>.</p> <p><a href="OpenMQFAQ.html" title="OpenMQFAQ">Back to main Open MQ FAQ page</a><br> <a href="https://mq.java.net">Back to Open MQ</a></p> <p>This page contains some handy information related to the use of Glassfish Message Queue (Open Message Queue) with Glassfish. This is not formally part of the product documentation and is intended to supplement, not replace it.</p> 
+     <div class="panel" style="border-width: 1px;">
+      <div class="panelContent"> 
+       <style type="text/css">/*<![CDATA[*/
+div.rbtoc1294850324617 {margin-left: 0px;padding: 0px;}
+div.rbtoc1294850324617 ul {list-style: none;margin-left: 0px;}
+div.rbtoc1294850324617 li {margin-left: 0px;padding-left: 0px;}
+
+/*]] >*/</style>
+       <div class="rbtoc1294850324617"> 
+        <ul> 
+         <li><a href="#OpenMQGlassfishQuestions-HowdoIenableJMSRA%28theOpenMQresourceadapter%29logginginGlassfish%3F">How do I enable JMSRA (the OpenMQ resource adapter) logging in Glassfish?</a></li> 
+         <ul> 
+          <li><a href="#OpenMQGlassfishQuestions-HowtoconfiguretheseloggersinGlassfish2.x.">How to configure these loggers in Glassfish 2.x.</a></li> 
+          <li><a href="#OpenMQGlassfishQuestions-HowtoconfiguretheseloggersinGlassfish3.x">How to configure these loggers in Glassfish 3.x</a></li> 
+         </ul> 
+        </ul>
+       </div> 
+      </div>
+     </div> <h4><a name="OpenMQGlassfishQuestions-HowdoIenableJMSRA%28theOpenMQresourceadapter%29logginginGlassfish%3F"></a>How do I enable JMSRA (the OpenMQ resource adapter) logging in Glassfish?</h3> <p>JMSRA uses standard Java logging. The following loggers are used (this is not a complete list):</p> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Logger </th> 
+         <th class="confluenceTh"> Type of logging generated </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>javax.resourceadapter.jmsra.lifecycle</tt> </td> 
+         <td class="confluenceTd"> broker lifecycle management </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>javax.resourceadapter.jmsra.inbound.message</tt> </td> 
+         <td class="confluenceTd"> receiving messages via MDBs </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>javax.resourceadapter.jmsra.outbound.connection</tt> </td> 
+         <td class="confluenceTd"> Sending messages </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> <tt>javax.jms.Connection.mqjmsra</tt> </td> 
+         <td class="confluenceTd"> Sending messages </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> <h5><a name="OpenMQGlassfishQuestions-HowtoconfiguretheseloggersinGlassfish2.x."></a>How to configure these loggers in Glassfish 2.x.</h5> <p>Edit <tt>domain.xml</tt> locate the <tt>&lt;module-log-levels</tt> element and add new <tt>&lt;property&gt;</tt> elements under it as shown in the following example:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">&lt;module-log-levels admin="INFO" ....."&gt;
+   &lt;property name="javax.resourceadapter.jmsra" value="FINE"/&gt;
+   &lt;property name="javax.jms.Connection.mqjmsra" value="FINE"/&gt;
+&lt;/module-log-levels&gt;</pre> 
+       </div> 
+      </div>
+     </div> <p>These properties can also be defined using the administration console.</p> <h5><a name="OpenMQGlassfishQuestions-HowtoconfiguretheseloggersinGlassfish3.x"></a>How to configure these loggers in Glassfish 3.x</h5> <p>Edit <tt>logging.properties</tt> (in the same directory as <tt>domain.xml</tt>) and add/modify entries of the following form. Note the use of .level:</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">javax.resourceadapter.jmsra.level=FINE
+javax.jms.Connection.mqjmsra.level=FINE</pre> 
+       </div> 
+      </div>
+     </div> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jan 12, 2011 by 
+<font color="#0050B2">nigeldeakin</font>. Exported from wikis.oracle.com on May 27, 2015 20:46.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

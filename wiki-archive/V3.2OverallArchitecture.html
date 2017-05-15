@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : V3.2OverallArchitecture</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="V3.2OverallArchitecture-GlassFish3.2OverallArchitectureOnePager"></a>GlassFish 3.2 Overall Architecture One Pager</h1> <h4><a name="V3.2OverallArchitecture-PaaSFeatureArchitecture"></a>PaaS Feature Architecture</h2> <p>The PaaS feature is set of services that will be available within a single process or as a set or processes running on different machines or virtual machines communicating with a well defined set of interfaces. At the core, the PaaS can be seen as an extended DAS where virtualization functions and features are added.</p> <p>The feature set for the PaaS feature includes:</p> 
+     <ul class="alternate" type="square"> 
+      <li><b>Simplify application deployment</b> by 
+       <ul> 
+        <li>allowing services that are required by an application to be inferred from the application,</li> 
+        <li>allowing services to be used by an application to be specified as part of the application deployment plan,</li> 
+        <li>providing the ability to provision the services for an application based on virtual machines allocated from a cloud,</li> 
+        <li>deploying an application to a cluster that is created for the application,</li> 
+        <li>configuring the application to use the provisioned services.</li> 
+       </ul> </li> 
+      <li><b>Simplify application management</b> by 
+       <ul> 
+        <li>providing application auto-scaling by monitoring application performance and adjusting the resources that are available to the application automatically,</li> 
+        <li>providing the ability to customize the decision making process regarding auto-scaling,</li> 
+        <li>providing complete application services such as backup, backing up not just the domain data, but the service data too.</li> 
+        <li>extending cloud-based application management to the complete application lifecycle (list, enable, disable, undeploy).&nbsp;</li> 
+       </ul> </li> 
+      <li><b>Simplify domain creation</b> by 
+       <ul> 
+        <li>allocating a virtual machine and deploying a DAS to it on behalf of a user,</li> 
+        <li>support the ability to run the PaaS feature itself in the cloud.</li> 
+       </ul> </li> 
+     </ul> <p>In each case, the user is obviated of the need to manage the system at the infrastructure (machines, networking, software, storage) level. &nbsp;The <b>Java EE platform</b> is presented as a service, allowing the user to be concerned with running a Java EE application rather than provisioning nodes, clusters, instances, resources, services, etc. The Java EE application is the primary concern of the user, making these other concerns secondary.&nbsp;</p> <p>The feature must support:</p> 
+     <ul class="alternate" type="square"> 
+      <li>the ability to make use of various underlying infrastructure as a service (IaaS) or virtualization providers, 
+       <ul> 
+        <li>OVM</li> 
+        <li>Amazon Web Services</li> 
+        <li>VirtualBox</li> 
+        <li>Xen</li> 
+        <li>KVM</li> 
+        <li>etc.</li> 
+       </ul> </li> 
+      <li>the ability to support various services that are used by Java EE applications: 
+       <ul> 
+        <li>Java EE container (GlassFish only)</li> 
+        <li>JMS (OpenMQ only)</li> 
+        <li>load balancer (various vendors)</li> 
+        <li>database (various vendors)</li> 
+        <li>etc.</li> 
+       </ul> </li> 
+     </ul> <p>This list of which IaaS providers and which services are supported in a particular release will be part of the release plan. The architecture must be independent of which specific ones are selected.</p> <p>Considering that many of the tasks above are already implemented by the DAS, the PaaS architecture is implemented on top of DAS with the following added functionalities.</p> 
+     <ul class="alternate" type="square"> 
+      <li>offer a management API (presence of higher level software like Enterprise Manager might allocate/deallocate virtual machines based on other requirements that neither the DAS or Applications can express).</li> 
+      <li>enhance deployment backend to support deployment of cloud applications&nbsp;</li> 
+      <li>defines APIs and Plugins to talk to the virtualization infrastructure.</li> 
+     </ul> <h4><a name="V3.2OverallArchitecture-Definitions"></a>Definitions</h2> <p><font color="inherit">Node = Operating system instance running on either a virtual image or on bare metal.</font><br> <font color="inherit">Instance = GlassFish instance running on a node.</font></p> <h4><a name="V3.2OverallArchitecture-ArchitecturalComponents%26nbsp%3B"></a>Architectural Components&nbsp;</h2> <p>The PaaS feature consists of the architectural components described in this section. &nbsp;These components are services that reside within an instance of GlassFish server, but depending on the configured topology, they may or may not be within the same server.</p> <p>To provide this flexibility, the architecture needs a way to define a module that can be accessed either locally or remotely without significantly changing the client software. There are several technologies available in GlassFish to do this, including RMI, MBeans/JMX, AdminCommands/__asadmin via HTTP and SSH where necessary, and REST. There are several advantages to using AdminCommands as the mechanism for this feature: they are the foundation for building the GlassFish clustering feature, the command&nbsp;replication framework provides the ability to run an asadmin command using the same API whether the command is local or remote, and the framework has the ability to support secure communication via SSL client certificates.&nbsp; The implementer of the function just has to extend AdminCommand, while the user of the function just has use one of the classes in the RemoteAdminCommand hierarchy to run the command.&nbsp;</p> <p>For this feature, we could implement a class that provides better support for running a command independently from where it is located (either local or remote). We might also need to enhance the security layer to deal with multiple certificates, for the case where the DAS from multiple domains is communicating with a centralized IaaS management service.</p> <p>This design makes the unit of development (the module) for the feature AdminCommand. There will be lower level commands (possibly hidden) for creating VMs, provisioning services, etc. and higher level&nbsp; commands such as "deploy" would ultimately be running these lower level commands.&nbsp; Any PaaS feature interface that potentially spans JVM boundaries would be expressed as an AdminCommand.</p> <p>The diagram at the end of this sections shows how these components fit together.&nbsp;</p> <h4><a name="V3.2OverallArchitecture-Orchestrator"></a>Orchestrator</h3> <p>The <a href="http://aseng-wiki.us.oracle.com/asengwiki/display/GlassFish/Service+Metadata,+Provisioning+and+Association+-+An+approach">orchestrator</a>&nbsp;is the top-level services that provides the ability to deploy an application to the cloud. It is responsible for:</p> 
+     <ul> 
+      <li><font color="#000000"><b>Service Dependency Discovery</b></font> <font color="#000000">- Determining what services an application requires when it is deployed, either through implicit dependencies or through explicit+ dependencies specified through a clould.xml file.&nbsp;</font></li> 
+      <li><font color="#000000"><b>Service Provisioning</b></font> <font color="#000000">- Requesting the necessary VMs or servers from the virtualization management layer and provisioning the needed services on those VMs.</font></li> 
+      <li><font color="#000000"><b>Service Association</b></font> <font color="#000000">- Associating the provisioned service with the application in GlassFish by defining resources.</font></li> 
+      <li><font color="#000000"><b>Deployment -</b></font> <font color="#000000">Deploying the application within GlassFish so that it makes use of the provisioned services.</font></li> 
+     </ul> <p>The orchestrator uses a set of <em>service plugins</em> to allow applications to be deployed with various services such as a database, JMS, etc.&nbsp;</p> <h4><a name="V3.2OverallArchitecture-ElasticityManager"></a>Elasticity Manager</h3> <p>The <a href="http://aseng-wiki.us.oracle.com/asengwiki/display/GlassFish/Glassfish3.2ElasticityAndAutoScaling">elasticity manager</a>&nbsp;&nbsp;is responsible for providing elasticity to the deployed application. &nbsp;It is responsible for:</p> 
+     <ul> 
+      <li>Metric collection - Gathering data about application use and machine resources that is used as input to the decision making process.</li> 
+      <li>Scaling decisions - Make decisions about increasing or decreasing the number of instances used to run the application, or other methods of scaling such as informing users.&nbsp;</li> 
+      <li>Action execution - Once a decision is made, the elasticity manager has to implement that decision.</li> 
+     </ul> <h4><a name="V3.2OverallArchitecture-IaaSManagementService%28IMS%29"></a>IaaS Management Service (IMS)</h3> <p>The Infrastructure as a Service (IaaS) management service provides an abstraction of the IaaS cloud to the GlassFish software. &nbsp;This abstraction encapsulates various APIs that are available for managing cloulds.&nbsp;</p> <p>The IaaS management service is responsible for carrying out the decisions made by the elasticity manager and the orchestrator. If the IaaS provides VM-level monitoring services, then the IaaS management service communicates information about IaaS decisions (such as moving a VM) to the elasticity manager, which then includes that information into its elasticity algorithms. It is capable of allocating and de-allocating virtual machines across all groups defined in its configuration. Virtual machines are allocated across groups (virtualization management decision tbd) but the IaaS management service is responsible for deciding on which bare metal hardware such virtual machines should run.</p> <h4><a name="V3.2OverallArchitecture-Groups"></a>Groups</h4> <p><font color="inherit">Machines are divided into groups. Groups can be geographically determined, or can be based on network boundaries. Such groups are composed of physical machines and share the same virtualization technology (libvirt, jclouds..). It is unclear how well such groups will map to public clouds offerings (at worst I suppose you have a single group).</font></p> <p><font color="inherit">The group will be managed by an IaaS management service which has the following APIs.</font></p> 
+     <ul class="alternate" type="square"> 
+      <li>group management (add, remove machines).</li> 
+      <li>activate/suspend machines.</li> 
+      <li>have pre-defined set of templates that can be used to virtual machines instantiation</li> 
+      <li>allocate/deallocate virtual machines</li> 
+      <li>monitor and expose monitoring data of allocated virtual machines</li> 
+     </ul> <p><font color="inherit">The IaaS management service will not duplicate the DAS responsibilities of maintaining a list of clusters or list of deployed applications. It's main responsibility is to provide bare metal and run VMs on it. I consider the IaaS management service stateless artifacts. The IaaS management service for libvirt should be implemented on top of GlassFish nucleus distribution.</font></p> <h4><a name="V3.2OverallArchitecture-DomainsManager"></a>Domains Manager</h3> <p>The Domains Manager is responsible for automating the process of creating a domain within the cloud. &nbsp;The domains manager may be a simple command line interface that is used by the PaaS admin to create a domain on behalf of a GlassFish user, or it could provide a GUI console that would provide a single landing point for users to create a domain (or domains), and it could even provide a simplified interface for application deployment.</p> <p>The domains manager is an optional part of the architecture, as the PaaS admin could manually allocate a VM from the cloud, create a GlassFish domain on it, and configure that domain to use the IMS.&nbsp;</p> <p>The domains manager could have the following functions:</p> <p>For GlassFish Users:</p> 
+     <ul> 
+      <li>create account and/or login to the a console</li> 
+      <li>choose which cloud to use, collect cloud credentials and store them in the IaaS management service</li> 
+      <li>create a Java EE domain by using the IaaS management service to create a VM, put GlassFish there, create a domain, pass IaaS management service location to the domain. (This includes potentially choosing from different VM options (OS type, web/full distribution, etc.)</li> 
+      <li>direct the user to the console for the domain</li> 
+      <li>show a list of domains that the user has created</li> 
+      <li>delete a domain</li> 
+      <li>provide an integrated console to deploy applications directly to a domain, possibly hiding the existence of domains in the interface</li> 
+      <li>job scheduling for scheduled tasks with respect to the PaaS infrastructure - an example is backing up domains and configurations.</li> 
+      <li>reporting on monitoring of physical resources and providing a listener based notification for exhaustion of physical resources as cloud demand nears exceeding supply.</li> 
+     </ul> <p>For the PaaS Administrator</p> 
+     <ul> 
+      <li>view the GlassFish users (and do everything a user can do)</li> 
+      <li>configure which IaaS management service is used</li> 
+      <li>provide a UI for the IaaS management service (this is TBD - the IaaS management service could have its own UI)</li> 
+     </ul> <p>The domains manager acts as an interface point for users of the PaaS. It has the ability to create a VM for a DAS. But it doesn't analyze applications, create VMs for clustered instances, create VMs for other services. It doesn't have a pluggable interface for service providers.</p> <p>The domains manager runs on a GlassFish DAS.</p> <p>The domains manager lifecycle begins with a manual installation of GlassFish with the PaaS feature. A separate GlassFish domain is needed to run the domains manager itself, i.e., separate from the domains that are being managed by users of the domains manager. If this GlassFish domain is to be run within the cloud itself, a VM for the domain would need to be manually created using tools from the cloud infrastructure.</p> <h4><a name="V3.2OverallArchitecture-DomainsManagerDataStore"></a>Domains Manager Data Store</h4> <p>The domains manager stores the following information</p> 
+     <ul> 
+      <li>user store configuration (how to authenticate and authorize users)</li> 
+      <li>IaaS management service configuration information (where is the IaaS Management Service to be used by this domains manager)</li> 
+      <li>per-user domain configuration information 
+       <ul> 
+        <li>where is the DAS (console URL, VM location)</li> 
+        <li>what IaaS management service it is using</li> 
+       </ul> </li> 
+     </ul> <h4><a name="V3.2OverallArchitecture-PaaSFeatureOperation"></a>PaaS Feature Operation</h2> <p><font color="inherit">The description of PaaS operation will refer to a set of services: Orchestrator, Elasticity Manager, IaaS Management and a Domains Manager.</font></p> <p><font color="inherit">Let's have a look on how these services fit together. In the diagram below, the boxes do not represent process boundaries but service boundaries.</font></p> <h4><a name="V3.2OverallArchitecture-DASCreation"></a>DAS Creation</h3> <p>How the GlassFish cloud environment bootstraps itself depends on the deployment environment.</p> 
+     <ol> 
+      <li>Domains Manager present. The user will register itself to domains manager and request for a domain creation. Domains manager will allocate a virtual machine and setup a DAS on that machine. It should be possible to run the DAS on bare metal. It should also be possible to attach an existing DAS to domains manager (tbd). Domains manager will need to configure the DAS with the right IaaS Management configuration so the DAS can request virtual machines.</li> 
+      <li>Domains Manager not present. The user will need to install manually a DAS on bare metal or in a Virtual Machine and configure it appropriately with the right IaaS definitions so the DAS can use the IMS to allocate/deallocate virtual machines.</li> 
+     </ol> <h4><a name="V3.2OverallArchitecture-Deployment"></a>Deployment</h3> <p>The most important difference with the PaaS Feature versus 3.1 is the deployment use case. In 3.1 the users were most of the time performing the following tasks when deploying an application to a multi-instance environments :</p> 
+     <ul class="alternate" type="square"> 
+      <li>create a cluster</li> 
+      <li>for each physical boxes, create a node</li> 
+      <li>for each node, create one or more instances in that cluster</li> 
+      <li>provision services needed by the application (databases, JMS, etc.)</li> 
+      <li>define resources within the application server to associate those services with application identifiers</li> 
+      <li>deploy applications to the cluster.</li> 
+     </ul> <p>As you can see, the physical layout of the deployment is set before the deployment itself and the elasticity of the cluster can be achieved though manually adding instances to an existing cluster.</p> <p>With the PaaS feature, the dynamics will be reversed where the hardware is mapped to a deployment request and the elasticity is entirely managed by the PaaS architecture (of course manual modification could still be possible, tbd).The following steps is how the system could handle a cloud deployment request.</p> 
+     <ul class="alternate" type="square"> 
+      <li>deploy an application 
+       <ul> 
+        <li>orchestrator pre-deploy (read DDs and annotations) + explicit cloud metadata to determine the required services and deployment environment (number of vms, types of vms).</li> 
+        <li>orchestrator creates a cluster (similar to a 3.1 cluster, maybe invisible to users).</li> 
+        <li>orchestrator requests to IaaS management service for allocation of Virtual Machine (type, number). By default, a round robin within the IaaS management service list might suffice but more elaborated algorithm (probably with metadata input) could be used.</li> 
+        <li>IaaS management service will start hardware machines</li> 
+        <li>IaaS management service will install the requested virtual machines types (in the started machines or underused ones, at his discretion).</li> 
+        <li>IaaS management service will return the VMs information to the orchestrator</li> 
+        <li>Orchestrator will use the new virtual machine information to provision services (via service plugins) and configure the cluster</li> 
+        <li>Orchestrator will associate services with resources</li> 
+        <li>Normal deployment follows.</li> 
+       </ul> </li> 
+     </ul> <p>It is still unclear at this point where the virtual machines templates will reside. It is entirely possible that we choose to associate template management at the IaaS management service level as it is usually a primary function of the same IT department (the IaaS admin responsibilities).</p> <h4><a name="V3.2OverallArchitecture-Elasticity"></a>Elasticity</h3> <p>Elasticity will be mostly managed by the PaaS architecture within the DAS where instances can be provisioned or decommissioned following events, monitoring triggers. Let's have a look at the work the PaaS architecture will have to do to add a new GlassFish instance to a deployment environment.</p> 
+     <ul class="alternate" type="square"> 
+      <li>The Elasticity manager receives notification that application X needs a new instance (maybe through a deamon running, tbd)</li> 
+      <li>The Elasticity manager requests through the IaaS Management Service for a new Virtual Machine.</li> 
+      <li>The Virtual Machine is added to the Application X's domain as a GlassFish node and an clustered instance on that node</li> 
+      <li>Normal 3.1 replication to the new GlassFish instance follows.</li> 
+     </ul> <p>Removing an instance is nothing more than removing a node from the cluster.</p> <h4><a name="V3.2OverallArchitecture-TheRoleofcluster"></a>The Role of cluster</h3> <p>More than one application can be deployed to a set of virtual machines as they have dependencies on each other (or form a complete feature set). The current notion of cluster guarantees that all applications deployed to it will be mapped to the same GlassFish instances (deployment environment) and adding the elasticity characteristics to cluster will provide the ability to grow or shrink set of applications.</p> <p>By default, application deployed without a cluster will be provided one (naming tbd).</p> <p>The life-cycle of the cluster will be entirely managed though the life-cycle of an application space. When the last application of a cluster is undeployed, the DAS through the orchestrator will release all the virtual machines. High level steps of application space destruction :</p> 
+     <ul> 
+      <li>DAS undeploys the application from the domain (domain use tbd).</li> 
+      <li>DAS through the IMS: destroys the virtual machines, reclaim the disk space used by the VM.</li> 
+      <li>DAS deletes the cluster from its configuration.</li> 
+     </ul> <p>There are two cases that require special processing:</p> 
+     <ol> 
+      <li>Redeployment of the application - the data certainly needs to be preserved in this case, and there should be a way to reuse the provisioned services without recreating them, i.e., a redeploy is <b>not</b> an undeploy followed by a deploy.&nbsp;</li> 
+      <li>There must be a way to preserve the data from provisioned services. whether for backup or because one wants to put the application to "sleep" for a while and bring it back later. This would also imply the ability to some how restore data to a provisioned service.</li> 
+     </ol> <h4><a name="V3.2OverallArchitecture-Upgrade"></a>Upgrade</h3> <p>There are several aspects of upgrade and update related to this architecture.&nbsp;</p> <p>For upgrade from a previous release of GlassFish that doesn't support this feature, users would not automatically be able to make use of any of the PaaS support features for applications that are already deployed to a domain. &nbsp;Rather, the various services that are part of this feature would need to be configured in either a new system or an upgraded system, and then an application would need to be deployed again into the new cloud-based infrastructure.&nbsp;</p> <p>For update from one release of GlassFish to another where both support the Paas Support feature, an in-place update would be supported in the same way for a non-cloud-enabled system. &nbsp;However, an improvement in the way that updates to GlassFish instances are accomplished is recommended, i.e., make it possible to update the GlassFish software on an instance from the DAS console.&nbsp;</p> <p>An upgrade of a Java EE application that is deployed to this infrastructure is handled by the Orchestrator component. The upgrade cannot just be an undeploy followed by a deploy, because this would result in the loss of service data in provisioned services. &nbsp;The Orchestrator component will provide special handling for the application redeploy case.&nbsp;</p> <h4><a name="V3.2OverallArchitecture-DividetheResponsibilities%2FWorld"></a>Divide the Responsibilities/World</h3> <p>As we need to offer an Open Source implementation of the PaaS feature, there is a need to define at least one plugin implementation (probably based on libvirt for private, on ? for public clouds). There is also a need to define a segmentation and representation of the physical assets (machines) so that a successful mapping between the (to be determined by Java EE spec) metadata is properly mapped to hardware boxes.</p> <h4><a name="V3.2OverallArchitecture-Roles"></a>Roles</h2> <p>The following roles are important in the cloud space:</p> <h4><a name="V3.2OverallArchitecture-TheIaaSAdmin"></a>The IaaS Admin</h3> <p>The IaaS admin is responsible for configuring bare metal and configure the machines that are managed by the IaaS management service. He will most likely be providing the virtual machines templates used to create GlassFish instances. Finally, he manages the access control on both the IaaS management service as well as the virtual machines. It is assumed that only the IaaS admin will have access to the target machines used to run the virtual machines. None of the other roles members will be able to connect to the bare metal or install software on it.</p> <p>The admin tools used by the IaaS admin must support</p> 
+     <ul> 
+      <li>configuration for pointing the IMS at a particular cloud, either public or private, including setting up the API that is used to access that cloud,</li> 
+      <li>configuring the available VM templates, and</li> 
+      <li>configuring access control for the IMS.&nbsp; If there is a DM, then the DM and the IMS have to trust each other. There also might be a user management layer involved, such the IMS needs to trust that user management layer.&nbsp;</li> 
+     </ul> <h4><a name="V3.2OverallArchitecture-ThePaaSAdmin"></a>The PaaS Admin</h3> <p>The PaaS admin will configure GlassFish and the domains manager following the allocations of the IaaS from the IaaS admin. His main responsibilities are :</p> 
+     <ul> 
+      <li>defines users and mapping from users to departmental DAS machines</li> 
+      <li>configure domains manager and/or DAS to connect to IMS.</li> 
+      <li>defines the elasticity requirements (tbd).</li> 
+     </ul> <h4><a name="V3.2OverallArchitecture-TheGlassFishUser"></a>The GlassFish User</h3> <p>The GlassFish user is the administrator as we know it today in 3.1. He has complete access to domain configuration and can obviously deploy/undeploy applications.</p> <p>In addition, if there is a Domains Manager console, a GlassFish user can create, list, and delete a domain from the Domains Manager, and depending on the capabilities of that console, may be able to deploy an application directly from that console.&nbsp;</p> <p><b>VM Creation</b></p> 
+     <ul> 
+      <li>Based on a template</li> 
+      <li>Templates are built with an external tool (Assembly Builder, etc...)</li> 
+      <li>Template content: 
+       <ul> 
+        <li>GlassFish installation</li> 
+        <li>Users credentials so the DAS can connect to it (optional)</li> 
+       </ul> </li> 
+      <li>Template characteristic: 
+       <ul> 
+        <li>Service provided (Java EE Service, Database Service, etc...)</li> 
+        <li>Memory (can be altered, tbd)</li> 
+        <li>Number of Processors (can be altered, tbd)</li> 
+        <li>Disk space</li> 
+       </ul> </li> 
+     </ul> <p>TBD, do we need more sophisticated settings like number of disks attached to the template, size of disks, etc... ?</p> <h4><a name="V3.2OverallArchitecture-Topologyexamples"></a>Topology examples</h2> <h4><a name="V3.2OverallArchitecture-Simple"></a>Simple</h3> <p>In this deployment, the DAS is compounding several roles :</p> 
+     <ul> 
+      <li>DAS functions (users management, deployment)</li> 
+      <li>Orchestrator (ability to deploy applications with provisioned services)</li> 
+      <li>Elasticity (responsible for managing Virtual Machines, creation, deletion, elasticity)</li> 
+      <li>IaaS management service (ability to create / delete virtual machines through a libvirt plugin</li> 
+      <li>Interface through the libvirt plugin to multiple machines compatible with libvirt (Kvm, Xen, VirtualBox ?, OVM ?)</li> 
+     </ul> <h4><a name="V3.2OverallArchitecture-Allinthecloud"></a>All in the cloud</h3> <p>In this deployment, all the components of our PaaS infrastructure are allocated in virtual machines running on a public or private cloud. This represents significant challenges at implementation since the DAS or instances can be reassigned different IP addresses at each restart (reliance on a smart DNS, static IPs might be a solution). The All in the cloud solution is significantly different from the other that I repeated some of the actions happening on domain creation/deployment.</p> <h4><a name="V3.2OverallArchitecture-Hybrid"></a>Hybrid</h3> <p>In the this hybrid deployment, virtual machines are allocated both on a pool of privately owned machines as well as some public virtual machines purchased from external providers.</p> <h4><a name="V3.2OverallArchitecture-Interdepartmentalcloud"></a>Inter-departmental cloud</h3> <p>In this complicated deployment, there are several DAS instances serving different business units with the Domains Manager fronting them. Again the exact location of the IaaS management service is still not defined.</p> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Nov 29, 2011 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:49.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

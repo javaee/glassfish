@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : M2GOverview</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="M2GOverview-AnOverviewoftheMigrationToolforProjectGlassFish"></a>An Overview of the Migration Tool for Project GlassFish</h1> <p>You use the Migration Tool to migrate applications from competitive application servers to GlassFish. You can use this tool to migrate the applications that do not deploy successfully after upgrading from an older version of Application Server. This tool works on the input archive or source code to translate the runtime deployment descriptors from the source application server format to generate runtime deployment descriptors that are compliant with the latest version. It also parses the JSP and Java source code files (in case of source code input) and provides runtime support for certain custom JSP tags and proprietary APIs. </p> <h4><a name="M2GOverview-SupportedSourceApplicationServers"></a>Supported Source Application Servers</h2> <p>The Migration Tool, which functions as a stand-alone Java application, automates the migration of Java EE applications from the following source platforms to GlassFish:</p> 
+     <ul> 
+      <li>Sun Java System Application Server 7.x, 8.x,</li> 
+      <li>Sun ONE Application Server 6.x</li> 
+      <li>J2EE Reference Implementation 1.3/1.4</li> 
+      <li>BEA WebLogic Application Server 5.1/6.0/6.1/8.1/9.0</li> 
+      <li>WebSphere Application Server 4.0/5.1</li> 
+      <li>JBoss Application Server 3.0</li> 
+      <li>Tomcat Web Server 4.1.12</li> 
+     </ul> <h4><a name="M2GOverview-HowMigrationWorks"></a>How Migration Works</h2> <p>Although Java EE specifications broadly cover application requirements, it is an evolving standard. The specification either does not cover some aspects of applications, or leaves implementation details as the responsibility of product providers.<br> Product implementation-dependent aspects are manifested as differences in application server configurations and differences in the deployment of Java EE modules on application servers. Available configuration and deployment tools for use with particular application server products also contribute to differences in product implementation.<br> The evolutionary nature of the specification itself presents challenges to product providers. Each component APIs may evolve separately, leading to a varying degree of product conformance.<br> Moreover, product providers usually bundle additional features and services with their products. These features are available as custom JSP tags or proprietary Java API libraries. Using such proprietary features renders these applications non-portable.<br> The Migration Tool can migrate both Java EE application source and archive. For application archive, if the source is not available, the tool migrates only the deployment descriptors. If the application source is given as input, the tool attempts to migrate the following source files:</p> 
+     <ul> 
+      <li>Configuration Parameter File(s))</li> 
+      <li>Deployment Descriptor (XML) Files</li> 
+      <li>JSP Source Files</li> 
+      <li>Java Source Files</li> 
+     </ul> <p>Different migration strategies need to be adopted for each category of files, since each addresses different aspects of the application. The Migration Tool observes the following general guidelines for each file category while migrating the files.</p> <h4><a name="M2GOverview-ConfigurationParameterFile%28s%29"></a>Configuration Parameter File(s)</h2> <p>The Migration Tool detects configuration parameter file(s) based on the name of the file (specified as input to the Migration Tool); for example <tt>weblogic.properties</tt>, <tt>server-cfg.xml</tt>, and so on. The configuration of an application server includes settings for parameters such as the location of installation directories, the directory paths to HTML documents, JSPs, servlets, and enterprise beans. Application server configuration also includes parameters related to performance, pooling, clustering, and database connectivity, among others.<br> Although the information in configuration parameter specifications is similar across products, the format used to specify parameters is product-specific.<br> Since the target Application Server installation most likely has been carefully configured, the Migration Tool does not overwrite configuration parameters for the target. The only parameter that can be manipulated without incident in the target is JDBC sources. Therefore, the Migration Tool automatically migrates only the JDBC sources parameter. However, the Migration Tool also generates a file containing information for other relevant types of configuration parameters. The system administrator needs to manually configure these parameters in the target Application Server installation.<br> If message-driven beans are present in any of the JAR files, the Migration Tool generates JMS-related scripts. These JMS scripts are capable of creating the JMS resources at the target server. The tool-generated JMS scripts are <tt>buildjms.sh</tt> (Solaris) and <tt>buildjms.cmd</tt> (Windows). The tool generates similar scripts for creating the JMS connection factory resources at the target server.</p> <h4><a name="M2GOverview-DeploymentDescriptor%28XML%29Files"></a>Deployment Descriptor (XML) Files</h2> <p>Deployment is accomplished by specifying deployment descriptors (DDs) for enterprise beans (EJB JAR files), front-end web components (WAR files), and enterprise applications (EAR files). The Migration Tool detects the DD files by their doctype and/or file name (specified as input to the Migration Tool). A few examples are <tt>ejb-jar.xml</tt>, <tt>weblogic-ejb-jar.xml</tt>, <tt>ibm-bnd.xmi</tt>, and so on. Deployment descriptors are used to resolve all external dependencies of the Java EE components or applications.<br> The Java EE specification for deployment descriptors is common across all application server products. However, the specification leaves several deployment aspects of components pertaining to an application dependent on product implementation. These aspects appear as additional product-specific DD files.<br> The Migration Tool automatically migrates information from the source product-specific DD files to the application server-specific DD files.</p> <h4><a name="M2GOverview-JSPSourceFiles"></a>JSP Source Files</h2> <p>The Migration Tool detects JSP files based on the .jsp extension of the file names (specified as input to the Migration Tool). JSP files are used to write the presentation layer (front-end) for the applications. <br> Java EE specifies how to extend JSP through adding custom tags. Product vendors may include custom JSP extensions in their products, simplifying some tasks for developers. However, using proprietary custom tags results in non-portable JSP files. Additionally, since JSP can invoke methods defined in other Java source files as well, it raises the same non-portability issues as for Java source files.<br> The Migration Tool comes bundled with a run-time Java library, which provides the functionality of custom JSP tags found in source products on the application server. Additionally, invoking non-portable Java methods is handled in the same manner as for Java source files, described in the following section.</p> <h4><a name="M2GOverview-JavaSourceFiles"></a>Java Source Files</h2> <p>The Java source files can be servlets, enterprise beans, or other helper classes. The servlets and enterprise beans can directly invoke standard Java EE services. They can also invoke methods defined in helper classes. The Migration Tool detects the Java source files based on the <tt>.java</tt> extension of the file names (specified as input to the tool). Java source files may be enterprise beans that are used to encode the business layer of applications.<br> Servlets are typically used as presentation layer (front-end) for the applications. However, servlets can contain business logic as well.<br> Vendors may bundle several services and proprietary Java APIs with their products. Using proprietary Java APIs is the major source of non-portable applications. Since Java EE is an evolving standard, different products may support different versions of Java EE component APIs. This is another aspect that migration must address.<br> The Migration Tool comes bundled with a run-time Java library that provides the functionality for (within a select subset of) proprietary Java APIs. The run-time Java library has been written to preserve the actual interface. To cater to different products and product versions, the package name of proprietary APIs is prefixed with the product name and version. The Migration Tool includes a Java parser, which detects the presence of proprietary Java APIs and prepends the appropriate prefix to their package names. Therefore, while running on the application server, the calls are made to the runtime Java library. The JSP files in the application are also processed with this same Java parser. The parser is targeted to detect and bridge Java EE component version mismatches.</p> <p> Note - The current Migration Tool implementation has only limited support for bridging such differences.</p> <p><a href="M2GOnlineHelp.html" title="M2GOnlineHelp">Previous</a> <a href="M2GInstSetup.html" title="M2GInstSetup">Next</a></p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 12, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:49.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

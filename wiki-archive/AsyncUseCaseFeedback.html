@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : AsyncUseCaseFeedback</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="AsyncUseCaseFeedback-AsyncUseCaseFeedback"></a>Async Use-Case Feedback</h2> <p>The following feedback was received in response to an enquiry about <br> use cases for asynchronous servlets:</p> <p><b>Sanjin Lee</b> <em>Ebay</em></p> <p>eBay has several critical use cases for the asynchronous servlet.</p> <p>First, the AJAX push is one of the most important examples, and the list<br> of eBay applications that employ push is growing rapidly. In any<br> situation where a client needs to maintain long-lived requests to get<br> status updates (long polls simulating server-side push), the<br> conventional blocking container simply doesn't scale. The behavior<br> where one can suspend requests and resume later on is a must in handling<br> such applications.</p> <p>Second, one of the most critical use cases is service<br> coordination/orchestration (e.g. SOA and/or RESTful services) where one<br> server forwards or routes requests to another server or functionality to<br> complete request handling. Such a service orchestration is always I/O<br> heavy, and having an asynchronous servlet is extremely critical in<br> scalability. Other similar examples include server-side content<br> aggregation (e.g. portal).</p> <p>In all these use cases, we need access to all servlet features including<br> servlet requests/responses, dispatchers, authentication, JSPs, etc. in<br> order to prepare the responses.<br> ...</p> <p>Today, all the vendors have their own solutions that<br> trigger vendor lock-in. We strongly believe that a standard<br> asynchronous servlet specification will benefit all that are involved.</p> <p><b>JJ Zhuang</b> <em>Software Architect Yahoo Zimbra</em></p> <p>Now regarding actual realization of async servlets, I can tell you that from my own experience the suspend/resume semantics is by far the simplest. That's because the application developer doesn't need to know how to write actual asynchronous code when adopting suspend/resume. Everything is still as linear as regular servlets. Again using Zimbra as an example, we originally developed our server code to run with tomcat. After switching to Jetty, it look only a few lines of change to make everything asynchronous. All we needed to do was to check a boolean in the request object to know whether this is an initial request or a resumed request. Every line of application code is still synchronous, but with the container's help all of a sudden there's no more blocked threads in the process.</p> <p>In short, I fully support your view of the importance of async servlets and hope it can be adopted by JSR to become part of 3.0 standard.</p> <p><b>Arnold Goldberg</b> <em>VP Software Engineering Linked In</em></p> <p>One use case that is most obvious is simple.</p> <p>Advertising systems have taken over the web and everyone is using them<br> to monetize. Companies are trying to integrate them either from the<br> client side which then leaves you up to the QoS of the ad provider<br> (usually quite bad) or a server side integration which is what most<br> larger enterprises are doing as there is more control on the user<br> experience.</p> <p>With the standard servlet spec there is no way to scale this<br> architecture . We are forced to leave the container almost immediately<br> to deal with the highly latent requests that require almost no<br> processing on the appserver side and should scale to 1000+ connections.<br> There has to be a spec level detachment between threads of execution and<br> connections, or the spec will become increasing meaningless for these<br> common web2.0 integrations.</p> <p><b>Tatu Saloranta</b> <em>Senior. software engineer at Amazon.com</em></p> <p>Number one requirement is to be able to use non-blocking (non-one-thread-per-request) handling; and next wish is obviously to do that using well-defined standard interfaces. And as to service requests, well, Servlet API is The Standard on Java platform. There is very little else, so coming up with Yet Another New (proposed) standard does not sound very tempting.</p> <p><b>Tim Kimmet</b> <em>Paypal</em></p> <p>I see a lot of talk out there regarding the blocking of read/write on the connector side... Unfortunately, a lot of people are missing the point- typically companies deploy hardware to solve that problem (we use a LB, which employs TCP buffering to handle this and other companies typically deploy a web server farm to handle this and more)... What I tried to point out is "what happens during the biz call..." and how to resolve calls blocking from I/O during the biz processing of the request. This is where we discussed the requirement of the Continuation and the HTTP Client, which are really key components to async...</p> 
+     <hr> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 08, 2010 by 
+<font color="#0050B2">am74686</font>. Exported from wikis.oracle.com on May 27, 2015 20:43.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : Ejb based Web Services with Glassfish Server part I JAX-WS</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/glassfish/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <p>With the advent of Java EE 5, Enterprise Beans can act as Web-Service components and since Java EE 6 they may be packaged within a WAR module as Java programming language class files. Java EE based web services come in two flavours: JAX-WS and JAX-RS. This tutorial examines JAX-WS and EJB 3.1.</p> 
+     <hr> <p>The Java EE 6 specifications include JAX-WS as one of its technologies. JAX-WS is the standard way to develop SOAP (Simple Object Access Protocol) web services in the Java platform. The JAX-WS Reference Implementation, included in GlassFish distributions, is <a href="http://metro.java.net/">Metro</a>, a Web Services framework that provides tools and infrastructure to develop Web Services solutions. This tutorial&nbsp; demonstrates how to create a JAX-WS application based on&nbsp; stateless session EJBs with GlassFish Server and Eclipse for Java EE developers. A sample application is provided too.</p> 
+     <div> 
+      <ul> 
+       <li><a href="#EjbbasedWebServiceswithGlassfishServerpartIJAX-WS-Downloading%2CInstalling%2CandConfiguringRequiredSoftware">Downloading, Installing, and Configuring Required Software</a></li> 
+       <li><a href="#EjbbasedWebServiceswithGlassfishServerpartIJAX-WS-SettingUptheDatabaseandDataSource">Setting Up the Database and Data Source</a></li> 
+       <li><a href="#EjbbasedWebServiceswithGlassfishServerpartIJAX-WS-ModifyingtheDerbyPoolConnectionPool">Modifying the DerbyPool Connection Pool</a></li> 
+       <li><a href="#EjbbasedWebServiceswithGlassfishServerpartIJAX-WS-SampleApplicationoverview">Sample Application overview</a></li> 
+       <li><a href="#EjbbasedWebServiceswithGlassfishServerpartIJAX-WS-ToConverttheSampleApplicationtoanEclipseIDEProject">To Convert the Sample Application to an Eclipse IDE Project</a></li> 
+       <li><a href="#EjbbasedWebServiceswithGlassfishServerpartIJAX-WS-Theserverapplication">The server application</a></li> 
+       <li><a href="#EjbbasedWebServiceswithGlassfishServerpartIJAX-WS-ToRuntheServerApplication">To Run the Server Application</a></li> 
+       <li><a href="#EjbbasedWebServiceswithGlassfishServerpartIJAX-WS-Theclientapplication">The client application</a></li> 
+       <li><a href="#EjbbasedWebServiceswithGlassfishServerpartIJAX-WS-FurtherReading">Further Reading</a></li> 
+      </ul>
+     </div> <h4><a name="EjbbasedWebServiceswithGlassfishServerpartIJAX-WS-Downloading%2CInstalling%2CandConfiguringRequiredSoftware"></a>Downloading, Installing, and Configuring Required Software</h1> <p>Before you begin, download, install, and configure the required software.</p> 
+     <ol> 
+      <li>Ensure that <a href="http://www.oracle.com/technetwork/java/javase/downloads/jdk-6u31-download-1501634.html">Java Development Kit (JDK) 6</a> is installed and that <a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&amp;id=GSRLN00252">paths and environment variables for the JDK</a> are correct. If the JDK and the Java Runtime Environment (JRE) are installed, ensure that the path to the JDK precedes the path to the JRE in your path statement. Otherwise, GlassFish Server might use a JRE for its Java virtual machine (VM) and steps for compiling JavaServer Pages (JSP) technology pages will fail.</li> 
+      <li>Download and install <a href="http://www.eclipse.org/downloads/packages/eclipse-ide-java-ee-developers/indigosr2">Eclipse IDE for Java EE developers</a>.</li> 
+      <li>Download and install <a href="http://glassfish.java.net/downloads/3.1.2-final.html">GlassFish Server Open Source Edition 3.1.2</a>.</li> 
+      <li>Download and install the <a href="http://glassfishplugins.java.net/eclipse36/index.html#getting">GlassFish Server plugin for Eclipse IDE</a>. When you add an update site, specify the location as <a href="http://download.java.net/glassfish/eclipse/indigo">http://download.java.net/glassfish/eclipse/indigo</a> and not the location that is stated in the instructions.</li> 
+      <li><a href="http://glassfishplugins.java.net/eclipse36/index.html#1">Register your installation of GlassFish Server with Eclipse IDE</a>. When you select the server type, select GlassFish 3.1.2 and not the type that is stated in the instructions.</li> 
+      <li><a href="http://glassfishplugins.java.net/eclipse36/index.html">Change the global preferences for GlassFish Server</a> to meet the requirements of your application. If your application uses the Java DB database that is bundled with GlassFish , select all options on the Preferences page as shown in the following figure.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</li> 
+     </ol> <p><span class="error">Cannot resolve external resource into attachment.</span></p> <h4><a name="EjbbasedWebServiceswithGlassfishServerpartIJAX-WS-SettingUptheDatabaseandDataSource"></a>Setting Up the Database and Data Source</h1> <p>Exactly how to set up the database and data source depends on the database that your application uses. For detailed instructions, see <a href="http://docs.oracle.com/cd/E26576_01/doc.312/e24928/jdbc.htm">Administering Database Connectivity</a> in <em>Oracle GlassFish Server Administration Guide</em>.</p> <h4><a name="EjbbasedWebServiceswithGlassfishServerpartIJAX-WS-ModifyingtheDerbyPoolConnectionPool"></a>Modifying the DerbyPool Connection Pool</h1> <p>The sample application uses the preconfigured <tt>DerbyPool</tt> connection pool for connections to the database. To enable the sample application to use this pool, you must modify the preset values of some properties of the pool.</p> <p>Before you begin, ensure that the option to start the Java DB process with GlassFish Server is set in the global preferences for the GlassFish Server.</p> 
+     <ol> 
+      <li><a href="http://help.eclipse.org/indigo/topic/org.eclipse.wst.server.ui.doc.user/topics/twsrtins.html">Start GlassFish Server in Eclipse IDE</a>. The JavaDB database that is bundled with GlassFish Server is also started.</li> 
+      <li>In the Servers view, select and right-click GlassFish Server.</li> 
+      <li>From the pop-up menu that opens, choose GlassFish→View Admin Console. The GlassFish Server Administration Console is opened in the system browser.</li> 
+      <li>In the navigation tree, under the Resources node, expand the JDBC node.</li> 
+      <li>Under the JDBC node, select the JDBC Connection Pools node. The Connection Pools page opens.</li> 
+      <li>In the table of connection pools, click <tt>DerbyPool</tt>. The Edit Connection Pool page opens.</li> 
+      <li>On the Edit Connection Pool page, click the Additional Properties tab. The Edit Connection Pool Properties page opens.</li> 
+      <li>Edit the properties as follows: 
+       <div class="table-wrap"> 
+        <table class="confluenceTable">
+         <tbody> 
+          <tr> 
+           <th class="confluenceTh"> Property </th> 
+           <th class="confluenceTh"> Value </th> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> User </td> 
+           <td class="confluenceTd"> user </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> Password </td> 
+           <td class="confluenceTd"> user </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> DatabaseName </td> 
+           <td class="confluenceTd"> newdb </td> 
+          </tr> 
+         </tbody>
+        </table> 
+       </div> <p>The following figure shows the Edit Connection Pool Properties page after these properties have been edited. <span class="error">Cannot resolve external resource into attachment.</span></p></li> 
+     </ol> 
+     <ol> 
+      <li>Click Save.</li> 
+      <li>Confirm that the connection to the pool is usable. 
+       <ol> 
+        <li>On the Edit Connection Pool Properties page, click the General tab. The Edit Connection Pool page opens.</li> 
+        <li>On the Edit Connection Pool page, click Ping.</li> 
+       </ol> </li> 
+      <li>Confirm that the JNDI name of the connection pool is correct. 
+       <ol> 
+        <li>In the navigation tree, under the Resources node, expand the JDBC node.</li> 
+        <li>Under the JDBC node, select the JDBC Resources node. The JDBC Resources page opens.</li> 
+       </ol> </li> 
+     </ol> <p>On the JDBC Resources page, select <tt>jdbc/__default</tt>. <tt>DerbyPool</tt> is associated with this JNDI name as shown in the following figure.</p> <p>&nbsp; <span class="error">Cannot resolve external resource into attachment.</span></p> <h4><a name="EjbbasedWebServiceswithGlassfishServerpartIJAX-WS-SampleApplicationoverview"></a>Sample Application overview</h1> <p>The sample application consists of two parts: a "server" application (web service provider) and a "client" application (web service consumer).</p> 
+     <ul> 
+      <li>The client application allows an end-user to enter the name of a customer. It's a simple form that invokes a basic servlet to process the data. The web tier accesses a session bean which implements the business logic (adding an application specific id to the customer). The session bean also acts as a web service consumer sending a SOAP message (the name of the customer with the application-specific id) to the server.</li> 
+      <li>The server application is a session bean which receives the SOAP message and saves it to a RDBMS using a Java persistence entity. The entity accesses the database table that store the entity states. A plain old Java object (POJO) with some annotations specifies how JPA is to store the data persistently.</li> 
+     </ul> <p>You can read more about the JAX-WS 2.2 standard at <a href="http://jax-ws.java.net/2.2.6-2/docs/">jax-ws.java.net</a> , about the SOAP standard at <a href="http://www.w3.org/TR/2007/REC-soap12-part0-20070427/">www.w3.org</a>, about the JPA standard at <a href="http://docs.oracle.com/javaee/6/tutorial/doc/bnbpy.html">Java EE6 tutorial</a>.</p> <h4><a name="EjbbasedWebServiceswithGlassfishServerpartIJAX-WS-ToConverttheSampleApplicationtoanEclipseIDEProject"></a>To Convert the Sample Application to an Eclipse IDE Project</h1> <p>The sample application is distributed as a two web application archive (WAR) files. To use this applications, you must convert them to Eclipse IDE projects.</p> 
+     <ol> 
+      <li>Download the server and the client application WAR file (<a href="http://java.net/projects/glassfish/sources/v2/content/trunk/www/docs/Ejb-Web-Services-JAX-WS/ServerWS-web.war">ServerWS-web.war</a> and <a href="http://java.net/projects/glassfish/sources/v2/content/trunk/www/docs/Ejb-Web-Services-JAX-WS/ClientWS-web.war">ClientWS-web.war</a>).</li> 
+      <li><a href="http://help.eclipse.org/indigo/index.jsp?topic=%2Forg.eclipse.jst.j2ee.doc.user%2Ftopics%2Ftjimpear.html">Import the application WAR files into Eclipse IDE</a>.</li> 
+     </ol> <h4><a name="EjbbasedWebServiceswithGlassfishServerpartIJAX-WS-Theserverapplication"></a>The server application</h1> <p>As of new <a href="http://docs.oracle.com/javaee/6/tutorial/doc/">EE6 specifications</a>, stateless, stateful and <a href="http://docs.oracle.com/javaee/6/tutorial/doc/gipjg.html#gipim">singleton</a> session beans can be used as web service provider. An EJB no longer requires a local business interface: it may expose a <em>no-interface view</em>. EJB's packaging has changed too. Enterprise beans, often providing the business logic of a web application or in this case of a web service, may be packaged within a WAR module as Java programming language class files or within a JAR file that is bundled within the WAR module.</p> 
+     <ol> 
+      <li>Even with EJBs, this is a <a href="http://help.eclipse.org/indigo/index.jsp?topic=%2Forg.eclipse.wst.webtools.doc.user%2Ftopics%2Fccwebprj.html">dynamic web project</a> in Eclipse.</li> 
+      <li>In the source folder of this project, there's a META-INF directory with the persistence.xml file. The application uses the <a href="http://www.oracle.com/technetwork/java/javadb/overview/index.html">JavaDB</a> database, with Glassfish Server. By default, GlassFish Server Open Source Edition uses <a href="http://www.eclipse.org/eclipselink/">EclipseLink</a> as the persistence provider and it controls transactions by using the using the <tt>jdbc/_</tt><tt>default</tt> DataSource object. This object is specified in the <tt>jta-data-source</tt> element of the persistence.xml file as follows: 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: html/xml; gutter: false">&lt;jta-data-source&gt;jdbc/__default&lt;/jta-data-source&gt;</pre> 
+         </div> 
+        </div>
+       </div></li> 
+      <li>The @LocalBean annotation denotes a no-interface ejb and the class, a stateless session bean, also needs to be decorated with the @Stateless and @WebService annotations. Session bean's public methods are exposed through the @WebMethod annotation: 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">@LocalBean
+@Stateless
+@WebService
+public class CustomerServiceBean {
+
+	@PersistenceContext(unitName="CustomerService")
+	   private EntityManager em;
+
+	   @WebMethod
+	    public String addCustomer(Customer customer) throws  InvalidCustomerException{
+		   if(customer.getFirstName().length() == 0)
+	        	throw new InvalidCustomerException("The Customer" +" firstname cannot be empty. Please specify a name for the item. ");
+	        if(customer.getLastName().length() == 0)
+	        	throw new InvalidCustomerException("The Customer" +" lastname cannot be empty. Please specify a name for the item. ");
+	        em.persist(customer);
+	        return "Customer added";
+	    }
+
+}</pre> 
+         </div> 
+        </div>
+       </div></li> 
+     </ol> <h4><a name="EjbbasedWebServiceswithGlassfishServerpartIJAX-WS-ToRuntheServerApplication"></a>To Run the Server Application</h1> 
+     <ol> 
+      <li>In the Project Explorer view, select and right-click the&nbsp;ServerWS-web project.</li> 
+      <li>From the pop-up menu that opens, select Run As→Run on Server. The Run on Server wizard opens.</li> 
+      <li>Ensure that the option to choose an existing server is selected.</li> 
+      <li>From the list of servers, select GlassFish Server and click Next. The Add and Remove page opens.</li> 
+      <li>Confirm that&nbsp;ServerWS-web is listed under the configured projects.</li> 
+      <li>Click Finish.</li> 
+     </ol> <p><a href="http://weblogs.java.net/blog/jitu/archive/2008/03/alternative_to.html">You don't need to run</a> the command <a href="http://docs.oracle.com/javase/6/docs/technotes/tools/share/wsgen.html">wsgen</a>. From JAX-WS RI 2.1.4 onwards the runtime takes care of it by generating these classes and the <a href="http://developers.sun.com/appserver/reference/techart/overview_wsdl.html">WSDL</a> (available at "http://localhost:8080/CustomerServiceBeanService/CustomerServiceBean?wsdl") file dynamically.</p> <h4><a name="EjbbasedWebServiceswithGlassfishServerpartIJAX-WS-Theclientapplication"></a>The client application</h1> 
+     <ol> 
+      <li>The package ee.endpoint is automatically generated. If you don't import the provided Web Archive file ClientWS-web.war into Eclipse you need to run the <a href="http://docs.oracle.com/javase/6/docs/technotes/tools/share/wsimport.html">wsimport</a> command: 
+       <ol> 
+        <li>In the project's source folder open a shell prompt and run the command: "wsimport -keep -verbose <a href="http://localhost.localdomain:8080/CustomerServiceBeanService/CustomerServiceBean?wsdl">http://localhost.localdomain:8080/CustomerServiceBeanService/CustomerServiceBean?wsdl</a>". This tool generates JAX-WS portable artifacts that can be packaged in a WAR file with the WSDL and schema documents along with the web service consumer to be deployed.</li> 
+       </ol> </li> 
+      <li>The <a href="http://docs.oracle.com/javaee/6/api/javax/xml/ws/WebServiceRef.html">WebServiceRef</a> annotation in ClientEjbBean class&nbsp; is used to define a reference to the server application with a URL pointing to the WSDL document for the web service provider. 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">@Stateless
+@LocalBean
+
+public class ClientEjbBean {
+
+	@WebServiceRef(wsdlLocation = "http://localhost.localdomain:8080/CustomerServiceBeanService/CustomerServiceBean?wsdl")
+    private CustomerServiceBeanService service;
+
+   public ClientEjbBean() {
+       // TODO Auto-generated constructor stub
+   }
+
+   public String invokeWS(Customer customer) throws InvalidCustomerException_Exception {
+	   //business method
+	   // it adds a business code to the customer
+       		customer.setAppCode(new Long(1234567));
+			return this.addCustomer(customer);
+   }
+
+   private String addCustomer(ee.endpoint.Customer arg0) throws InvalidCustomerException_Exception {
+	   ee.endpoint.CustomerServiceBean port = service.getCustomerServiceBeanPort();
+       return port.addCustomer(arg0);
+   }
+
+}</pre> 
+         </div> 
+        </div>
+       </div></li> 
+      <li>The Class InvalidCustomerException_Exception (automatically generated) refers to a fault element in the SOAP message. In the server application the web service ejb throws a <a href="http://docs.oracle.com/javase/tutorial/essential/exceptions/definition.html">Java checked exception</a>. Since checked exceptions don't exist in the SOAP protocol, InvalidCustomerException_Exception is not an exception type at all, but a regular bean that acts as a holder for the SOAP Fault information: it uses the @WebFault annotation and extends Exception. 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">@WebFault(name = "InvalidCustomerException", targetNamespace = "http://endpoint.ee/")
+public class InvalidCustomerException_Exception
+    extends Exception
+{
+
+    /**
+     * Java type that goes as soapenv:Fault detail element.
+     *
+     */
+    private InvalidCustomerException faultInfo;
+
+    /**
+     *
+     * @param message
+     * @param faultInfo
+     */
+    public InvalidCustomerException_Exception(String message, InvalidCustomerException faultInfo) {
+        super(message);
+        this.faultInfo = faultInfo;
+    }
+
+    /**
+     *
+     * @param message
+     * @param faultInfo
+     * @param cause
+     */
+    public InvalidCustomerException_Exception(String message, InvalidCustomerException faultInfo, Throwable cause) {
+        super(message, cause);
+        this.faultInfo = faultInfo;
+    }
+
+    /**
+     *
+     * @return
+     *     returns fault bean: ee.endpoint.InvalidCustomerException
+     */
+    public InvalidCustomerException getFaultInfo() {
+        return faultInfo;
+    }
+
+}</pre> 
+         </div> 
+        </div>
+       </div></li> 
+      <li>The Customer object (automatically generated) represents the XML content of the SOAP message. This java class is converted to an XML format by <a href="http://jaxb.java.net/">JAXB</a>. JAXB provides the ability to <a href="http://weblogs.java.net/blog/kohsuke/archive/2005/10/101_ways_to_mar.html">marshal</a> Java objects into XML and the inverse: it binds Java method signatures and WSDL messages and operations. 
+       <div class="code panel" style="border-width: 1px;">
+        <div class="codeContent panelContent"> 
+         <div id="root"> 
+          <pre class="theme: Confluence; brush: java; gutter: false">@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "customer", propOrder = {
+    "appCode",
+    "firstName",
+    "id",
+    "lastName"
+})
+public class Customer {
+
+    protected Long appCode;
+    protected String firstName;
+    protected Long id;
+    protected String lastName;
+
+    /**
+     * Gets the value of the appCode property.
+     *
+     * @return
+     *     possible object is
+     *     {@link Long }
+     *
+     */
+    public Long getAppCode() {
+        return appCode;
+    }
+
+    /**
+     * Sets the value of the appCode property.
+     *
+     * @param value
+     *     allowed object is
+     *     {@link Long }
+     *
+     */
+    public void setAppCode(Long value) {
+        this.appCode = value;
+    }
+
+    /**
+     * Gets the value of the firstName property.
+     *
+     * @return
+     *     possible object is
+     *     {@link String }
+     *
+     */
+    public String getFirstName() {
+        return firstName;
+    }
+
+    /**
+     * Sets the value of the firstName property.
+     *
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *
+     */
+    public void setFirstName(String value) {
+        this.firstName = value;
+    }
+
+    /**
+     * Gets the value of the id property.
+     *
+     * @return
+     *     possible object is
+     *     {@link Long }
+     *
+     */
+    public Long getId() {
+        return id;
+    }
+
+    /**
+     * Sets the value of the id property.
+     *
+     * @param value
+     *     allowed object is
+     *     {@link Long }
+     *
+     */
+    public void setId(Long value) {
+        this.id = value;
+    }
+
+    /**
+     * Gets the value of the lastName property.
+     *
+     * @return
+     *     possible object is
+     *     {@link String }
+     *
+     */
+    public String getLastName() {
+        return lastName;
+    }
+
+    /**
+     * Sets the value of the lastName property.
+     *
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *
+     */
+    public void setLastName(String value) {
+        this.lastName = value;
+    }
+
+}</pre> 
+         </div> 
+        </div>
+       </div></li> 
+      <li>To run the client application, follow the same steps as the <a href="./Ejb+based+Web+Services+with+Glassfish+Server+part+I+JAX-WS#EjbbasedWebServiceswithGlassfishServerpartIJAX-WS-ToRuntheServerApplication.html">server application</a>.</li> 
+     </ol> <h4><a name="EjbbasedWebServiceswithGlassfishServerpartIJAX-WS-FurtherReading"></a>Further Reading</h1> <p>For more information about the technologies in this tutorial, see the following documentation:</p> 
+     <ul> 
+      <li><a href="http://glassfish.java.net/docs/index.html">GlassFish Server Product Documentation</a></li> 
+      <li><a href="http://glassfishplugins.java.net/eclipse36/index.html">Eclipse IDE and GlassFish Server Integration</a></li> 
+      <li><a href="http://docs.oracle.com/javaee/6/tutorial/doc/">The Java EE 6 Tutorial</a></li> 
+      <li><a href="http://help.eclipse.org/indigo/index.jsp">Eclipse documentation - Current Release (Eclipse Indigo)</a></li> 
+      <li><a href="http://jax-ws.java.net/2.2.6-2/docs/">JAX-WS Documentation</a></li> 
+      <li><a href="http://www.w3.org/TR/2007/REC-soap12-part0-20070427/">SOAP Documentation </a></li> 
+      <li><a href="http://jaxb.java.net/2.2.5-2/docs/ch01.html#documentation">JAXB Documentation</a></li> 
+      <li><a href="http://metro.java.net/">Metro</a></li> 
+     </ul> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Jul 17, 2012 by 
+<font color="#0050B2">17555</font>. Exported from wikis.oracle.com on May 27, 2015 20:49.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>
